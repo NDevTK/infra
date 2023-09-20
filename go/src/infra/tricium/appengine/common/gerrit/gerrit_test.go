@@ -23,7 +23,7 @@ func TestCreateRobotComment(t *testing.T) {
 		uuid := "7ae6f43d-22e9-4350-ace4-1fee9014509a"
 
 		Convey("Basic comment fields include UUID and URL", func() {
-			roco := createRobotComment(ctx, runID, tricium.Data_Comment{
+			roco := createRobotComment(ctx, runID, &tricium.Data_Comment{
 				Id:       uuid,
 				Path:     "README.md",
 				Message:  "Message",
@@ -42,7 +42,7 @@ func TestCreateRobotComment(t *testing.T) {
 		})
 
 		Convey("File comment has no position info", func() {
-			roco := createRobotComment(ctx, runID, tricium.Data_Comment{
+			roco := createRobotComment(ctx, runID, &tricium.Data_Comment{
 				Id:       uuid,
 				Path:     "README.md",
 				Message:  "Message",
@@ -54,7 +54,7 @@ func TestCreateRobotComment(t *testing.T) {
 
 		Convey("Line comment has no range info", func() {
 			line := int32(10)
-			roco := createRobotComment(ctx, runID, tricium.Data_Comment{
+			roco := createRobotComment(ctx, runID, &tricium.Data_Comment{
 				Id:        uuid,
 				Path:      "README.md",
 				Message:   "Message",
@@ -70,7 +70,7 @@ func TestCreateRobotComment(t *testing.T) {
 			endLine := 20
 			startChar := 2
 			endChar := 18
-			roco := createRobotComment(ctx, runID, tricium.Data_Comment{
+			roco := createRobotComment(ctx, runID, &tricium.Data_Comment{
 				Id:        uuid,
 				Path:      "README.md",
 				Message:   "Message",
@@ -94,7 +94,7 @@ func TestCreateRobotComment(t *testing.T) {
 			endLine := 20
 			startChar := 2
 			endChar := 18
-			roco := createRobotComment(ctx, runID, tricium.Data_Comment{
+			roco := createRobotComment(ctx, runID, &tricium.Data_Comment{
 				Id:        uuid,
 				Path:      "README.md",
 				Message:   "Message",

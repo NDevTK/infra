@@ -10,7 +10,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -155,7 +155,7 @@ func (g gerritServer) PostRobotComments(c context.Context, host, change, revisio
 		if path == commitMessagePath {
 			adjustCommitMessageComment(&comment)
 		}
-		robos[path] = append(robos[path], createRobotComment(c, runID, comment))
+		robos[path] = append(robos[path], createRobotComment(c, runID, &comment))
 		cnt++
 	}
 	c = logging.SetField(c, "comments", cnt)
@@ -218,21 +218,24 @@ func fetchResponse(c context.Context, url string, headers map[string]string) ([]
 	client := &http.Client{Transport: transport}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "failed to execute HTTP request").Err()
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to read response body").Err()
+	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, err
+		return nil, errors.Reason("received not OK response. status code: %d; response body: %q", resp.StatusCode, respBody).Err()
 	}
-	// Read and convert response.
-	return ioutil.ReadAll(resp.Body)
+	return respBody, nil
 }
 
 // createRobotComment creates a Gerrit robot comment from a Tricium comment.
 //
 // Related documentation:
 // https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#robot-comment-info
-func createRobotComment(c context.Context, runID int64, comment tricium.Data_Comment) *robotCommentInput {
+func createRobotComment(c context.Context, runID int64, comment *tricium.Data_Comment) *robotCommentInput {
 	roco := &robotCommentInput{
 		Message:        comment.Message,
 		RobotID:        comment.Category,
@@ -363,7 +366,7 @@ func (gerritServer) setReview(c context.Context, host, change, revision string, 
 	if resp.StatusCode != http.StatusOK {
 		logging.Debugf(c, "crbug/1152879: posted data %s", data)
 		var msg string
-		switch out, err := ioutil.ReadAll(resp.Body); {
+		switch out, err := io.ReadAll(resp.Body); {
 		case err != nil:
 			msg = fmt.Sprintf("<failed to read gerrit response: %s>", err)
 		default:
