@@ -747,6 +747,46 @@ class IssueEntryTest(unittest.TestCase):
     self.assertEqual(field_values[0].int_value, 3)
     self.assertEqual(field_values[1].int_value, 3737)
 
+  def testProcessFormData_RejectNewLabels(self):
+    """We raise an AssertionError when new labels are added."""
+    mr = testing_helpers.MakeMonorailRequest(path='/p/proj/issues/entry')
+    mr.perms = permissions.USER_PERMISSIONSET
+    mr.auth.user_view = framework_views.StuffUserView(100, 'user@invalid', True)
+    post_data = fake.PostData(
+        template_name=['rutabaga'],
+        summary=['Nya nya I modified the summary'],
+        comment=[self.template.content],
+        status=['New'],
+        label=['freeze_new_label'])
+
+    self.mox.StubOutWithMock(self.servlet, 'PleaseCorrect')
+    self.servlet.PleaseCorrect(
+        mr,
+        component_required=None,
+        fields=[],
+        initial_blocked_on='',
+        initial_blocking='',
+        initial_cc='',
+        initial_comment=self.template.content,
+        initial_components='',
+        initial_owner='',
+        initial_status='New',
+        initial_summary='Nya nya I modified the summary',
+        initial_hotlists='',
+        labels=['freeze_new_label'],
+        template_name='rutabaga')
+    self.mox.ReplayAll()
+    url = self.servlet.ProcessFormData(mr, post_data)
+    self.mox.VerifyAll()
+    self.assertEqual(
+        (
+            'The creation of new labels is blocked for the Chromium project'
+            ' in Monorail. To continue with editing your issue, please'
+            ' remove: freeze_new_label label(s).'),
+        mr.errors.labels,
+    )
+    self.assertIsNone(url)
+
   def testProcessFormData_RejectRestrictedFields(self):
     """We raise an AssertionError when restricted fields are set w/o perms."""
     mr = testing_helpers.MakeMonorailRequest(

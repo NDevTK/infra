@@ -483,6 +483,17 @@ class MonorailApi(remote.Service):
           mar.cnxn, updates_dict['cc_remove']).values())
       updates_dict['labels_add'], updates_dict['labels_remove'] = (
           api_pb2_v1_helpers.split_remove_add(request.updates.labels))
+
+      field_helpers.ValidateLabels(
+          mar.cnxn,
+          self._services,
+          mar.project_id,
+          updates_dict.get('labels_add', []),
+          ezt_errors=mar.errors)
+      if mar.errors.AnyErrors():
+        raise endpoints.BadRequestException(
+            'Invalid field values: %s' % mar.errors.labels)
+
       blocked_on_add_strs, blocked_on_remove_strs = (
           api_pb2_v1_helpers.split_remove_add(request.updates.blockedOn))
       blocking_add_strs, blocking_remove_strs = (
@@ -535,11 +546,12 @@ class MonorailApi(remote.Service):
               'User is not allowed to merge into issue %s:%s' %
               (merge_into_issue.project_name, merge_into_issue.local_id))
         updates_dict['merged_into'] = merge_into_issue.issue_id
-      (updates_dict['field_vals_add'], updates_dict['field_vals_remove'],
-       updates_dict['fields_clear'], updates_dict['fields_labels_add'],
-       updates_dict['fields_labels_remove']) = (
-          api_pb2_v1_helpers.convert_field_values(
-              request.updates.fieldValues, mar, self._services))
+      (
+          updates_dict['field_vals_add'], updates_dict['field_vals_remove'],
+          updates_dict['fields_clear'], updates_dict['fields_labels_add'],
+          updates_dict['fields_labels_remove']) = (
+              api_pb2_v1_helpers.convert_field_values(
+                  request.updates.fieldValues, mar, self._services))
 
     field_helpers.ValidateCustomFields(
         mar.cnxn, self._services,
@@ -950,6 +962,17 @@ class MonorailApi(remote.Service):
       fields_add, _, _, fields_labels, _ = (
           api_pb2_v1_helpers.convert_field_values(
               request.fieldValues, mar, self._services))
+
+      field_helpers.ValidateLabels(
+          mar.cnxn,
+          self._services,
+          mar.project_id,
+          fields_labels,
+          ezt_errors=mar.errors)
+      if mar.errors.AnyErrors():
+        raise endpoints.BadRequestException(
+            'Invalid field values: %s' % mar.errors.labels)
+
       field_helpers.ValidateCustomFields(
           mar.cnxn, self._services, fields_add, mar.config, mar.project,
           ezt_errors=mar.errors)
