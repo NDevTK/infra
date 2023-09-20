@@ -7,6 +7,8 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+from google.appengine.api import app_identity
+
 import collections
 import itertools
 import logging
@@ -29,19 +31,21 @@ INVALID_USER_ID = -1
 
 ParsedFieldDef = collections.namedtuple(
     'ParsedFieldDef',
-    'field_name, field_type_str, min_value, max_value, regex, '
-    'needs_member, needs_perm, grants_perm, notify_on, is_required, '
-    'is_niche, importance, is_multivalued, field_docstring, choices_text, '
-    'applicable_type, applicable_predicate, revised_labels, date_action_str, '
-    'approvers_str, survey, parent_approval_name, is_phase_field, '
-    'is_restricted_field')
+    (
+        'field_name, field_type_str, min_value, max_value, regex, needs_member,'
+        ' needs_perm, grants_perm, notify_on, is_required, is_niche,'
+        ' importance, is_multivalued, field_docstring, choices_text,'
+        ' applicable_type, applicable_predicate, revised_labels,'
+        ' date_action_str, approvers_str, survey, parent_approval_name,'
+        ' is_phase_field, is_restricted_field'),
+)
 
 
 def ListApplicableFieldDefs(issues, config):
   # type: (Sequence[mrproto.tracker_pb2.Issue],
   #     mrproto.tracker_pb2.ProjectIssueConfig) ->
   #     Sequence[mrproto.tracker_pb2.FieldDef]
-  """Return the applicable FieldDefs for the given issues. """
+  """Return the applicable FieldDefs for the given issues."""
   issue_labels = []
   issue_approval_ids = []
   for issue in issues:
@@ -88,8 +92,8 @@ def ParseFieldDefRequest(post_data, config):
   else:
     notify_on = 0
   importance = post_data.get('importance')
-  is_required = (importance == 'required')
-  is_niche = (importance == 'niche')
+  is_required = importance == 'required'
+  is_niche = importance == 'niche'
   is_multivalued = 'is_multivalued' in post_data
   field_docstring = post_data.get('docstring', '')
   choices_text = post_data.get('choices', '')
@@ -108,43 +112,65 @@ def ParseFieldDefRequest(post_data, config):
   is_restricted_field = 'is_restricted_field' in post_data
 
   return ParsedFieldDef(
-      field_name, field_type_str, min_value, max_value, regex, needs_member,
-      needs_perm, grants_perm, notify_on, is_required, is_niche, importance,
-      is_multivalued, field_docstring, choices_text, applicable_type,
-      applicable_predicate, revised_labels, date_action_str, approvers_str,
-      survey, parent_approval_name, is_phase_field, is_restricted_field)
+      field_name,
+      field_type_str,
+      min_value,
+      max_value,
+      regex,
+      needs_member,
+      needs_perm,
+      grants_perm,
+      notify_on,
+      is_required,
+      is_niche,
+      importance,
+      is_multivalued,
+      field_docstring,
+      choices_text,
+      applicable_type,
+      applicable_predicate,
+      revised_labels,
+      date_action_str,
+      approvers_str,
+      survey,
+      parent_approval_name,
+      is_phase_field,
+      is_restricted_field,
+  )
 
 
 def _ParseChoicesIntoWellKnownLabels(
     choices_text, field_name, config, field_type_str):
   """Parse a field's possible choices and integrate them into the config.
 
-  Args:
-    choices_text: string with one label and optional docstring per line.
-    field_name: string name of the field definition being edited.
-    config: ProjectIssueConfig PB of the current project.
-    field_type_str: string name of the new field's type. None if an existing
-      field is being updated
+    Args:
+      choices_text: string with one label and optional docstring per line.
+      field_name: string name of the field definition being edited.
+      config: ProjectIssueConfig PB of the current project.
+      field_type_str: string name of the new field's type. None if an existing
+        field is being updated
 
-  Returns:
-    A revised list of labels that can be used to update the config.
-  """
+    Returns:
+      A revised list of labels that can be used to update the config.
+    """
   fd = tracker_bizobj.FindFieldDef(field_name, config)
   matches = framework_constants.IDENTIFIER_DOCSTRING_RE.findall(choices_text)
   maskingFieldNames = []
   # wkls should only be masked by the field if it is an enum_type.
-  if (field_type_str == 'enum_type') or (
-      fd and fd.field_type is tracker_pb2.FieldTypes.ENUM_TYPE):
+  if (field_type_str
+      == 'enum_type') or (fd and
+                          fd.field_type is tracker_pb2.FieldTypes.ENUM_TYPE):
     maskingFieldNames.append(field_name.lower())
 
   new_labels = [
       ('%s-%s' % (field_name, label), choice_docstring.strip(), False)
-      for label, choice_docstring in matches]
+      for label, choice_docstring in matches
+  ]
   kept_labels = [
       (wkl.label, wkl.label_docstring, wkl.deprecated)
       for wkl in config.well_known_labels
-      if not tracker_bizobj.LabelIsMaskedByField(
-          wkl.label, maskingFieldNames)]
+      if not tracker_bizobj.LabelIsMaskedByField(wkl.label, maskingFieldNames)
+  ]
   revised_labels = kept_labels + new_labels
   return revised_labels
 
@@ -153,18 +179,18 @@ def ShiftEnumFieldsIntoLabels(
     labels, labels_remove, field_val_strs, field_val_strs_remove, config):
   """Look at the custom field values and treat enum fields as labels.
 
-  Args:
-    labels: list of labels to add/set on the issue.
-    labels_remove: list of labels to remove from the issue.
-    field_val_strs: {field_id: [val_str, ...]} of custom fields to add/set.
-    field_val_strs_remove: {field_id: [val_str, ...]} of custom fields to
-        remove.
-    config: ProjectIssueConfig PB including custom field definitions.
+    Args:
+      labels: list of labels to add/set on the issue.
+      labels_remove: list of labels to remove from the issue.
+      field_val_strs: {field_id: [val_str, ...]} of custom fields to add/set.
+      field_val_strs_remove: {field_id: [val_str, ...]} of custom fields to
+          remove.
+      config: ProjectIssueConfig PB including custom field definitions.
 
-  SIDE-EFFECT: the labels and labels_remove lists will be extended with
-  key-value labels corresponding to the enum field values.  Those field
-  entries will be removed from field_val_strs and field_val_strs_remove.
-  """
+    SIDE-EFFECT: the labels and labels_remove lists will be extended with
+    key-value labels corresponding to the enum field values.  Those field
+    entries will be removed from field_val_strs and field_val_strs_remove.
+    """
   for fd in config.field_defs:
     if fd.field_type != tracker_pb2.FieldTypes.ENUM_TYPE:
       continue
@@ -185,10 +211,11 @@ def ShiftEnumFieldsIntoLabels(
 
 
 def ReviseApprovals(approval_id, approver_ids, survey, config):
-  revised_approvals = [(
-      approval.approval_id, approval.approver_ids, approval.survey) for
-                       approval in config.approval_defs if
-                       approval.approval_id != approval_id]
+  revised_approvals = [
+      (approval.approval_id, approval.approver_ids, approval.survey)
+      for approval in config.approval_defs
+      if approval.approval_id != approval_id
+  ]
   revised_approvals.append((approval_id, approver_ids, survey))
   return revised_approvals
 
@@ -232,7 +259,7 @@ def ParseOneFieldValue(cnxn, user_service, fd, val_str):
       return tracker_bizobj.MakeFieldValue(
           fd.field_id, None, None, None, None, val_str, False)
     except ValueError:
-      return None # TODO(jojwang): should bounce
+      return None  # TODO(jojwang): should bounce
 
   else:
     logging.error('Cant parse field with unexpected type %r', fd.field_type)
@@ -253,13 +280,19 @@ def ParseOnePhaseFieldValue(cnxn, user_service, fd, val_str, phase_ids):
   return phase_fvs
 
 
-def ParseFieldValues(cnxn, user_service, field_val_strs, phase_field_val_strs,
-                     config, phase_ids_by_name=None):
+def ParseFieldValues(
+    cnxn,
+    user_service,
+    field_val_strs,
+    phase_field_val_strs,
+    config,
+    phase_ids_by_name=None,
+):
   """Return a list of FieldValue PBs based on the given dict of strings."""
   field_values = []
   for fd in config.field_defs:
-    if fd.is_phase_field and (
-        fd.field_id in phase_field_val_strs) and phase_ids_by_name:
+    if (fd.is_phase_field and (fd.field_id in phase_field_val_strs) and
+        phase_ids_by_name):
       fvs_by_phase_name = phase_field_val_strs.get(fd.field_id, {})
       for phase_name, val_strs in fvs_by_phase_name.items():
         phase_ids = phase_ids_by_name.get(phase_name)
@@ -284,16 +317,16 @@ def ValidateCustomFieldValue(cnxn, project, services, field_def, field_val):
   #     mrproto.tracker_pb2.FieldDef, mrproto.tracker_pb2.FieldValue) -> str
   """Validate one custom field value and return an error string or None.
 
-  Args:
-    cnxn: MonorailConnection object.
-    project: Project PB with info on the project the custom field belongs to.
-    services: Services object referencing services that can be queried.
-    field_def: FieldDef for the custom field we're validating against.
-    field_val: The value of the custom field.
+    Args:
+      cnxn: MonorailConnection object.
+      project: Project PB with info on the project the custom field belongs to.
+      services: Services object referencing services that can be queried.
+      field_def: FieldDef for the custom field we're validating against.
+      field_val: The value of the custom field.
 
-  Returns:
-    A string containing an error message if there was one.
-  """
+    Returns:
+      A string containing an error message if there was one.
+    """
   if field_def.field_type == tracker_pb2.FieldTypes.INT_TYPE:
     if (field_def.min_value is not None and
         field_val.int_value < field_def.min_value):
@@ -307,10 +340,13 @@ def ValidateCustomFieldValue(cnxn, project, services, field_def, field_val):
       try:
         regex = re.compile(field_def.regex)
         if not regex.match(field_val.str_value):
-          return 'Value must match regular expression: %s.' % field_def.regex
+          return ('Value must match regular expression: %s.' % field_def.regex)
       except re.error:
-        logging.info('Failed to process regex %r with value %r. Allowing.',
-                     field_def.regex, field_val.str_value)
+        logging.info(
+            'Failed to process regex %r with value %r. Allowing.',
+            field_def.regex,
+            field_val.str_value,
+        )
         return None
 
   elif field_def.field_type == tracker_pb2.FieldTypes.USER_TYPE:
@@ -329,7 +365,7 @@ def ValidateCustomFieldValue(cnxn, project, services, field_def, field_val):
         has_perm = user_perms.CanUsePerm(
             field_def.needs_perm, auth.effective_ids, project, [])
         if not has_perm:
-          return 'User must have permission "%s".' % field_def.needs_perm
+          return ('User must have permission "%s".' % field_def.needs_perm)
     return None
 
   elif field_def.field_type == tracker_pb2.FieldTypes.DATE_TYPE:
@@ -338,16 +374,35 @@ def ValidateCustomFieldValue(cnxn, project, services, field_def, field_val):
 
   elif field_def.field_type == tracker_pb2.FieldTypes.URL_TYPE:
     if field_val.url_value:
-      if not (validate.IsValidURL(field_val.url_value)
-              or autolink_constants.IS_A_SHORT_LINK_RE.match(
-                  field_val.url_value)
+      if not (validate.IsValidURL(field_val.url_value) or
+              autolink_constants.IS_A_SHORT_LINK_RE.match(field_val.url_value)
               or autolink_constants.IS_A_NUMERIC_SHORT_LINK_RE.match(
-                  field_val.url_value)
-              or autolink_constants.IS_IMPLIED_LINK_RE.match(
-                  field_val.url_value)):
+                  field_val.url_value) or
+              autolink_constants.IS_IMPLIED_LINK_RE.match(field_val.url_value)):
         return 'Value must be a valid url.'
 
   return None
+
+
+def ValidateLabels(cnxn, services, project_id, labels, ezt_errors=None):
+  app_id = app_identity.get_application_id()
+  projects = {'monorail-staging': 1, 'monorail-dev': 16, 'monorail-prod': 16}
+  if app_id == 'testing-app' or (app_id != 'monorail-prod' and
+                                 projects.get(app_id, None) == project_id):
+    new_labels = [
+        l for l in labels if services.config.LookupLabelID(
+            cnxn, project_id, l, autocreate=False, case_sensitive=True) is None
+    ]
+    if len(new_labels) > 0:
+      err_msg = (
+          'The creation of new labels is blocked for the Chromium project'
+          ' in Monorail. To continue with editing your issue, please'
+          ' remove: ' + ', '.join(new_labels) + ' label(s).')
+      if ezt_errors is not None:
+        ezt_errors.labels = err_msg
+      return err_msg
+  return None
+
 
 def ValidateCustomFields(
     cnxn, services, field_values, config, project, ezt_errors=None, issue=None):
@@ -409,8 +464,14 @@ def ValidateCustomFields(
 
 
 def AssertCustomFieldsEditPerms(
-    mr, config, field_vals, field_vals_remove, fields_clear, labels,
-    labels_remove):
+    mr,
+    config,
+    field_vals,
+    field_vals_remove,
+    fields_clear,
+    labels,
+    labels_remove,
+):
   """Check permissions for any kind of custom field edition attempt."""
   # TODO: When clearing phase_fields is possible, include it in this method.
   field_ids = set()
@@ -446,25 +507,25 @@ def ApplyRestrictedDefaultValues(
     mr, config, field_vals, labels, template_field_vals, template_labels):
   """Add default values of template fields that the user cannot edit.
 
-     This method can be called by servlets where restricted field values that
-     a user cannot edit are displayed but do not get returned when the user
-     submits the form (and also assumes that previous assertions ensure these
-     conditions). These missing default values still need to be passed to the
-     services layer when a 'write' is done so that these default values do
-     not get removed.
+    This method can be called by servlets where restricted field values that
+    a user cannot edit are displayed but do not get returned when the user
+    submits the form (and also assumes that previous assertions ensure these
+    conditions). These missing default values still need to be passed to the
+    services layer when a 'write' is done so that these default values do
+    not get removed.
 
-     Args:
-       mr: MonorailRequest Object to hold info about the request and the user.
-       config: ProjectIssueConfig Object for the project.
-       field_vals: list of FieldValues that the user wants to save.
-       labels: list of labels that the user wants to save.
-       template_field_vals: list of FieldValues belonging to the template.
-       template_labels: list of labels belonging to the template.
+    Args:
+      mr: MonorailRequest Object to hold info about the request and the user.
+      config: ProjectIssueConfig Object for the project.
+      field_vals: list of FieldValues that the user wants to save.
+      labels: list of labels that the user wants to save.
+      template_field_vals: list of FieldValues belonging to the template.
+      template_labels: list of labels belonging to the template.
 
-     Side Effect:
-       The default values of a template that the user cannot edit are added
-       to 'field_vals' and 'labels'.
-  """
+    Side Effect:
+      The default values of a template that the user cannot edit are added
+      to 'field_vals' and 'labels'.
+    """
 
   fds_by_id = {fd.field_id: fd for fd in config.field_defs}
   for fv in template_field_vals:
@@ -502,13 +563,28 @@ def ReviseFieldDefFromParsed(parsed, old_fd):
   else:
     date_action = 0
   return tracker_bizobj.MakeFieldDef(
-      old_fd.field_id, old_fd.project_id, old_fd.field_name, old_fd.field_type,
-      parsed.applicable_type, parsed.applicable_predicate, parsed.is_required,
-      parsed.is_niche, parsed.is_multivalued, parsed.min_value,
-      parsed.max_value, parsed.regex, parsed.needs_member, parsed.needs_perm,
-      parsed.grants_perm, parsed.notify_on, date_action, parsed.field_docstring,
-      False, approval_id=old_fd.approval_id or None,
-      is_phase_field=old_fd.is_phase_field)
+      old_fd.field_id,
+      old_fd.project_id,
+      old_fd.field_name,
+      old_fd.field_type,
+      parsed.applicable_type,
+      parsed.applicable_predicate,
+      parsed.is_required,
+      parsed.is_niche,
+      parsed.is_multivalued,
+      parsed.min_value,
+      parsed.max_value,
+      parsed.regex,
+      parsed.needs_member,
+      parsed.needs_perm,
+      parsed.grants_perm,
+      parsed.notify_on,
+      date_action,
+      parsed.field_docstring,
+      False,
+      approval_id=old_fd.approval_id or None,
+      is_phase_field=old_fd.is_phase_field,
+  )
 
 
 def ParsedFieldDefAssertions(mr, parsed):
@@ -525,12 +601,13 @@ def ParsedFieldDefAssertions(mr, parsed):
   # TODO(crbug/monorail/7275): This method is meant to eventually
   # do all assertion checkings (shared by create/update fieldDef)
   # and assign all mr.errors values.
-  if (parsed.is_required and parsed.is_niche):
+  if parsed.is_required and parsed.is_niche:
     mr.errors.is_niche = 'A field cannot be both required and niche.'
   if parsed.date_action_str is not None and (
       parsed.date_action_str not in config_svc.DATE_ACTION_ENUM):
-    mr.errors.date_action = 'The date action should be either: ' + ', '.join(
-        config_svc.DATE_ACTION_ENUM) + '.'
+    mr.errors.date_action = (
+        'The date action should be either: ' +
+        ', '.join(config_svc.DATE_ACTION_ENUM) + '.')
   if (parsed.min_value is not None and parsed.max_value is not None and
       parsed.min_value > parsed.max_value):
     mr.errors.min_value = 'Minimum value must be less than maximum.'

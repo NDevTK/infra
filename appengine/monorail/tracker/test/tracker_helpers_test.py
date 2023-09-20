@@ -1651,6 +1651,23 @@ class CreateIssueHelpersTest(unittest.TestCase):
     tracker_helpers.AssertValidIssueForCreate(
         self.cnxn, self.services, input_issue, 'nonempty description')
 
+  def testAssertValidIssueForCreate_ValidatesLabels(self):
+    input_issue = tracker_pb2.Issue(
+        summary='sum',
+        labels=['freeze_new_label'],
+        status='New',
+        owner_id=111,
+        project_id=789,
+    )
+    with self.assertRaisesRegex(
+        exceptions.InputException,
+        ('The creation of new labels is blocked for the Chromium project'
+         ' in Monorail. To continue with editing your issue, please'
+         ' remove: freeze_new_label label\\(s\\)'),
+    ):
+      tracker_helpers.AssertValidIssueForCreate(
+          self.cnxn, self.services, input_issue, 'nonempty description')
+
   def testAssertValidIssueForCreate_ValidatesOwner(self):
     input_issue = tracker_pb2.Issue(
         summary='sum', status='New', owner_id=222, project_id=789)
@@ -2255,6 +2272,26 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
             delta_1, delta_2, delta_3, delta_4, delta_5, delta_6, delta_7,
             delta_8, delta_9, delta_10, delta_11
         ])
+
+  def testAssertIssueChangesValid_ValidatesLabels(self):
+    """Asserts fields and requried fields.."""
+    issue_1 = _Issue('chicken', 1)
+    self.services.issue.TestAddIssue(issue_1)
+    delta_1 = tracker_pb2.IssueDelta(labels_add=['freeze_new_label'])
+    issue_delta_pairs = [(issue_1, delta_1)]
+    comment = 'just a plain comment'
+    with self.assertRaisesRegex(
+        exceptions.InputException,
+        ('The creation of new labels is blocked for the Chromium project'
+         ' in Monorail. To continue with editing your issue, please'
+         ' remove: freeze_new_label label\\(s\\).'),
+    ):
+      tracker_helpers._AssertIssueChangesValid(
+          self.cnxn,
+          issue_delta_pairs,
+          self.services,
+          comment_content=comment,
+      )
 
   def testAssertIssueChangesValid_RequiredField(self):
     """Asserts fields and requried fields.."""
