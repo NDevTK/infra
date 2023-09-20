@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a784a78_d4d613e3",
+        "filename": "go/src/infra/cros/recovery/internal/components/cache/cache_extractor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-09-20T00:52:32Z",
+      "side": 1,
+      "message": "please extract it to common function for call to reduce duplication and following mistakes if we need updates.",
+      "range": {
+        "startLine": 96,
+        "startChar": 1,
+        "endLine": 101,
+        "endChar": 2
+      },
+      "revId": "4738db2c2dbc9f89e92dd25676783eb98499cbd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4aa7160b_26b9c0a4",
+        "filename": "go/src/infra/cros/recovery/internal/components/cache/cache_extractor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-09-20T00:52:32Z",
+      "side": 1,
+      "message": "please extract this part also to common function. to reduce maintenance.",
+      "range": {
+        "startLine": 111,
+        "startChar": 1,
+        "endLine": 121,
+        "endChar": 88
+      },
+      "revId": "4738db2c2dbc9f89e92dd25676783eb98499cbd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
