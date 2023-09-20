@@ -5,6 +5,7 @@
 # https://golangci-lint.run/usage/configuration/#linters-configuration
 linters:
   enable:
+    - errorlint
     - gci
     - stylecheck
 
