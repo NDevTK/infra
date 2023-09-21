@@ -1,6 +1,6 @@
 # VPython and You ([go/vpython-and-you])
 ## How Chromium Infrastructure handles Python package distribution.
-Authors/Contacts: iannucci@, nodir@, dnj@
+Authors/Contacts: bryner@, fancl@, iannucci@
 
 ### What is VPython?
 [VPython] is a tool created by Chrome Ops to run Python scripts in [Python
@@ -10,7 +10,7 @@ and another needs v2.0, they can both execute on the same system without issues.
 Using VPython ensures that all Python that is run on Infra systems uses isolated
 and reproducible environments.
 
-VPython searches for “[vpython spec]” files (example) to tell it what packages
+VPython searches for “vpython spec” files ([example]) to tell it what packages
 it should load into the VirtualEnv. No spec file means an ‘empty’ VirtualEnv,
 which looks like a fresh installation of Python without any extra packages.
 
@@ -32,12 +32,11 @@ deleting all changes to PYTHONPATH. In this case, the launcher and subscript are
 “in the same bubble”.
 
 ### How can I use VPython?
-`vpython` (and `vpython.bat` on windows) are already in $PATH via [LUCI], and
+`vpython3` (and `vpython3.bat` on windows) are already in $PATH via [LUCI], and
 [depot_tools]. After adding any “vpython spec”s that your script needs to the
-repo containing your script, use `vpython` exactly the way that you would have
+repo containing your script, use `vpython3` exactly the way that you would have
 used `python` to invoke the script. So instead of `python script.py arg arg`,
-call `vpython script.py arg arg`. Recipes can also use vpython by setting
-`venv=True` when using the `python` recipe_module.
+call `vpython3 script.py arg arg`.
 
 ### What if I need a new VPython wheel?
 First check to see if the wheel is already available in [wheels.md]. If not,
@@ -47,9 +46,7 @@ file a bug [here](https://bugs.chromium.org/p/chromium/issues/entry?template=+Vp
 [VPython]: ./vpython.md
 [Python VirtualEnvs]: https://virtualenv.pypa.io/en/stable/
 [PyPI]: https://pypi.python.org/
-[vpython spec]: https://chromium.googlesource.com/chromium/src.git/+/main/.vpython
-[script specific vpython3 spec]: https://chromium.googlesource.com/chromium/tools/depot_tools/+/main/gsutil.vpython3
-[common vpython3 spec]: https://chromium.googlesource.com/website/+/main/.vpython3
+[example]: https://chromium.googlesource.com/chromium/src.git/+/main/.vpython3
 [LUCI]: https://chrome-internal.googlesource.com/infradata/config/+/main/configs/cr-buildbucket/settings.cfg
 [depot_tools]: https://chromium.googlesource.com/chromium/tools/depot_tools/+/main/cipd_manifest.txt#38
 [wheels.md]: https://chromium.googlesource.com/infra/infra/+/main/infra/tools/dockerbuild/wheels.md
