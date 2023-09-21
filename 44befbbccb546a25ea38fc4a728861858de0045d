@@ -16,6 +16,69 @@
       "message": "Hi team, discussed with Eugene offline and I\u0027ve added logic to catch empty hostname. PTAL when you\u0027re available 😎",
       "revId": "44befbbccb546a25ea38fc4a728861858de0045d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b05b3d4f_820b8cbf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-09-21T16:30:18Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "44befbbccb546a25ea38fc4a728861858de0045d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2838ce1_deda47f5",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_call.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-09-21T16:30:18Z",
+      "side": 1,
+      "message": "i think error messages always in lowed case except when used some special words like USB, HMR (abbreviation)",
+      "range": {
+        "startLine": 28,
+        "startChar": 29,
+        "endLine": 28,
+        "endChar": 35
+      },
+      "revId": "44befbbccb546a25ea38fc4a728861858de0045d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72d9c5b2_72477b97",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-09-21T16:30:18Z",
+      "side": 1,
+      "message": "nit: i think single used const do not carry value instead just use them in the error message dirrectly.",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 20
+      },
+      "revId": "44befbbccb546a25ea38fc4a728861858de0045d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
