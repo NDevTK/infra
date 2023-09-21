@@ -63,6 +63,30 @@
       },
       "revId": "d8cd1e666ea216fb98de16e0089cd071434d2226",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9620f38a_d7f168aa",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_call.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-09-21T08:53:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dbd181e2_2a0c2f12",
+      "range": {
+        "startLine": 28,
+        "startChar": 119,
+        "endLine": 28,
+        "endChar": 133
+      },
+      "revId": "d8cd1e666ea216fb98de16e0089cd071434d2226",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
