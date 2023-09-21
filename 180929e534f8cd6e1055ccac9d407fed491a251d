@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ec2ae85_a6c804d8",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-21T13:58:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1579271_c7aba4f6",
+      "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e0ce9822_a47eb833",
@@ -88,6 +106,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "80d4f28d_1bc5135e",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-21T13:58:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0be7dd3f_28583932",
+      "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "60bb859c_51fd4bcf",
@@ -119,6 +155,24 @@
       "side": 1,
       "message": "Thank you. I will use it",
       "parentUuid": "60bb859c_51fd4bcf",
+      "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "54107db3_fb239651",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-21T13:58:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d706dfad_9aa90d87",
       "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -172,6 +226,24 @@
       "side": 1,
       "message": "ah you are right, good catch",
       "parentUuid": "8ccfee76_af81f602",
+      "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc7c9c6d_1cc4d65a",
+        "filename": "go/src/infra/cros/satlab/common/dut/get_shivas_flags_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-21T13:58:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "791a9249_c561ea0d",
       "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
