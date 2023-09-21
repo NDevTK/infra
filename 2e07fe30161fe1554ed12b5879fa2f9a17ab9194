@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7614772_e00321f3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1557599
+      },
+      "writtenOn": "2023-09-21T09:55:35Z",
+      "side": 1,
+      "message": "YJ, I think there is still some missing parts in the test case...",
+      "revId": "2e07fe30161fe1554ed12b5879fa2f9a17ab9194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "777daa1c_d58bbc24",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_call.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1557599
+      },
+      "writtenOn": "2023-09-21T09:55:35Z",
+      "side": 1,
+      "message": "I think we may need to check if `host.GetTouchhost()` is `nil`? because the test doesn\u0027t catch this either. May need a new test for missing touchhost.",
+      "revId": "2e07fe30161fe1554ed12b5879fa2f9a17ab9194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db9df0a7_59ddccbb",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_execs_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1557599
+      },
+      "writtenOn": "2023-09-21T09:55:35Z",
+      "side": 1,
+      "message": "Here is missing `Touchhost: \"hmr-touchhost\"`\n```suggestion\n\t\tState: tlw.HumanMotionRobot_WORKING,\n\t\tTouchhost: \"hmr-touchhost\",\n```",
+      "revId": "2e07fe30161fe1554ed12b5879fa2f9a17ab9194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
