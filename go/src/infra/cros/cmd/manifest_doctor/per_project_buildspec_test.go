@@ -8,6 +8,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -66,15 +67,16 @@ type testConfig struct {
 	projects   map[string][]string
 	otherRepos []string
 	// Map between buildspec name and whether or not to expect a GS write.
-	buildspecs              map[string]bool
-	branches                []string
-	buildspecsExists        bool
-	expectedForce           bool
-	watchPaths              map[string][]string
-	allProjects             []string
-	noLocalManifestProjects []string
-	expectedSetTTL          map[string]time.Duration
-	dryRun                  bool
+	buildspecs                   map[string]bool
+	branches                     []string
+	buildspecsExists             bool
+	expectedForce                bool
+	watchPaths                   map[string][]string
+	allProjects                  []string
+	noLocalManifestProjects      []string
+	expectedSetTTL               map[string]time.Duration
+	dryRun                       bool
+	extraProjectsMissingGSBucket bool
 }
 
 func (tc *testConfig) setUpPPBTest(t *testing.T) (*gs.FakeClient, gerrit.Client) {
@@ -155,11 +157,29 @@ func (tc *testConfig) setUpPPBTest(t *testing.T) (*gs.FakeClient, gerrit.Client)
 			list = []string{"buildspecs/" + buildspec}
 		}
 		expectedBucketLists[relpath] = list
-		expectedBucketLists[relpath] = list
+		expectedBucketLists[""] = []string{"buildspecs/"}
 	}
 	expectedLists := make(map[string]map[string][]string)
 	for _, bucket := range projects {
 		expectedLists[bucket] = expectedBucketLists
+	}
+	// For projects in allProjects (i.e. projects that exist in gerrit)
+	// but not passed in in `projects`, we still need to set
+	// list expectations for the initial bucket existence check.
+	for _, project := range tc.allProjects {
+		toks := strings.Split(project, "/")
+		bucket := fmt.Sprintf("chromeos-%s-%s", toks[2], toks[3])
+		if _, ok := expectedLists[bucket]; !ok {
+			if tc.extraProjectsMissingGSBucket {
+				expectedLists[bucket] = map[string][]string{
+					"": nil,
+				}
+			} else {
+				expectedLists[bucket] = map[string][]string{
+					"": {"buildspecs/"},
+				}
+			}
+		}
 	}
 	if tc.dryRun {
 		expectedWrites = make(map[string][]byte)
@@ -382,8 +402,60 @@ func TestCreateProjectBuildspecMultipleProgram(t *testing.T) {
 			"chromeos/project/galaxy/milkyway",
 			"chromeos/project/galaxy/andromeda",
 			"chromeos/project/galaxy/missing",
-			"chromeos/foo",
+			"chromeos/project/foo/bar",
 		},
+		// Test that a project missing a local manifest file does not doom
+		// the overall run, if wildcards are in use.
+		noLocalManifestProjects: []string{
+			"chromeos/project/galaxy/missing",
+		},
+	}
+	f, gc := tc.setUpPPBTest(t)
+
+	b := projectBuildspec{
+		watchPaths:                 []string{"full/buildspecs/", "buildspecs/"},
+		minMilestone:               94,
+		projects:                   []string{"galaxy/*"},
+		push:                       true,
+		internalBuildspecsGSBucket: internalBuildspecsGSBucketDefault,
+		externalBuildspecsGSBucket: externalBuildspecsGSBucketDefault,
+	}
+	assert.NilError(t, b.CreateBuildspecs(f, gc))
+}
+
+func TestCreateProjectBuildspecMultipleProgram_MissingGSBucket(t *testing.T) {
+	t.Parallel()
+	watchPaths := map[string][]string{
+		"full/buildspecs/": {
+			"full/buildspecs/93/",
+			"full/buildspecs/94/13010.0.0-rc1.xml",
+			"full/buildspecs/94/13011.0.0-rc1.xml",
+		},
+		"buildspecs/": {
+			"full/buildspecs/94/13010.0.0.xml",
+			"full/buildspecs/94/13011.0.0.xml",
+		},
+	}
+
+	tc := testConfig{
+		projects: map[string][]string{
+			"galaxy": {"milkyway", "andromeda"},
+		},
+		buildspecs: map[string]bool{
+			"full/buildspecs/94/13010.0.0-rc1.xml": true,
+			"full/buildspecs/94/13011.0.0-rc1.xml": true,
+			"buildspecs/94/13010.0.0.xml":          true,
+			"buildspecs/94/13011.0.0.xml":          true,
+		},
+		watchPaths: watchPaths,
+		branches:   []string{"refs/heads/release-R94-13904.B"},
+		allProjects: []string{
+			"chromeos/project/galaxy/milkyway",
+			"chromeos/project/galaxy/andromeda",
+			"chromeos/project/galaxy/missing",
+			"chromeos/project/foo/bar",
+		},
+		extraProjectsMissingGSBucket: true,
 		// Test that a project missing a local manifest file does not doom
 		// the overall run, if wildcards are in use.
 		noLocalManifestProjects: []string{

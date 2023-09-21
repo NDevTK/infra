@@ -300,15 +300,35 @@ func (b *projectBuildspec) CreateBuildspecs(gsClient gs.Client, gerritClient ger
 
 		programProject := chromeosProgramPrefix + program
 		projectProject := chromeosProjectPrefix + program + "/" + project
-		projectConfig[programProject] = projectBuildspecConfig{
+
+		programBuildspecConfig := projectBuildspecConfig{
 			uploadPath: gsProgramPath(program),
 			optional:   true,
 			logPrefix:  program + ": ",
 		}
-		projectConfig[projectProject] = projectBuildspecConfig{
+		if _, err := gsClient.List(ctx, programBuildspecConfig.uploadPath.Bucket(), ""); err != nil {
+			if strings.Contains(err.Error(), "doesn't exist") {
+				LogErr("GS bucket gs://%s does not exist for %s, skipping...", programBuildspecConfig.uploadPath.Bucket(), projectProject)
+			} else {
+				errs = append(errs, err)
+			}
+		} else {
+			projectConfig[programProject] = programBuildspecConfig
+		}
+
+		projectBuildspecConfig := projectBuildspecConfig{
 			uploadPath: gsProjectPath(program, project),
 			optional:   false,
 			logPrefix:  fmt.Sprintf("%s/%s: ", program, project),
+		}
+		if _, err := gsClient.List(ctx, projectBuildspecConfig.uploadPath.Bucket(), ""); err != nil {
+			if strings.Contains(err.Error(), "doesn't exist") {
+				LogErr("GS bucket gs://%s does not exist for %s, skipping...", projectBuildspecConfig.uploadPath.Bucket(), projectProject)
+			} else {
+				errs = append(errs, err)
+			}
+		} else {
+			projectConfig[projectProject] = projectBuildspecConfig
 		}
 	}
 

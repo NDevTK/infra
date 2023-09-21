@@ -81,6 +81,9 @@ func (f *FakeClient) List(_ context.Context, bucket string, prefix string) ([]st
 	if !ok {
 		f.T.Fatalf("unexpected list of bucket %s, prefix %s", bucket, prefix)
 	}
+	if data == nil {
+		return nil, errors.New("storage: bucket doesn't exist")
+	}
 	return data, nil
 }
 
