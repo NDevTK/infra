@@ -236,9 +236,13 @@ const (
 
 // GetHiveForDut returns the hive value for a DUT.
 //
+// if the hive is not store in UFS,
 // hive value is derived from the DUT hostname.
 // TODO(b:296635614) use UFS stored data instead of hostname to determine hive.
-func GetHiveForDut(hostname string) string {
+func GetHiveForDut(hostname string, hive string) string {
+	if hive != "" {
+		return hive
+	}
 	// gTransit DUTs.
 	if gtransitRegex.MatchString(hostname) {
 		return gtransitHive

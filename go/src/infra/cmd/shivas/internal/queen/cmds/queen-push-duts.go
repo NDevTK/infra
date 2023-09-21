@@ -84,7 +84,7 @@ func (c *pushDutsRun) innerRun(a subcommands.Application, args []string, env sub
 		lse.Name = ufsUtil.RemovePrefix(lse.Name)
 		availableDuts[i] = &api.DeclareDutsRequest_Dut{
 			Name: lse.GetName(),
-			Hive: ufsUtil.GetHiveForDut(lse.GetName()),
+			Hive: ufsUtil.GetHiveForDut(lse.GetName(), lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive()),
 		}
 	}
 	qc := api.NewInventoryProviderPRPCClient(&prpc.Client{
