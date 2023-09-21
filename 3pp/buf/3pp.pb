@@ -1,6 +1,6 @@
 create {
-  # We are currently building this package only for linux platform.
-  platform_re: "linux-.*"
+  # We are currently building this package only for linux and mac.
+  platform_re: "(linux|mac)-.*"
 
   source {
     git {
