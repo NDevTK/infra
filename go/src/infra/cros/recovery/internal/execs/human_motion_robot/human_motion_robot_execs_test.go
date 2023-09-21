@@ -333,7 +333,7 @@ func Test_CheckHMRStateExec(t *testing.T) {
 		})
 
 		t.Run("Fault_XMLRPC_Call", func(t *testing.T) {
-			wantErrors := []string{"received fail flag", errTouchHostPiBroken}
+			wantErrors := []string{"Unable to make HMR TouchHost call", errTouchHostPiBroken}
 
 			genericTest_checkHMRStateExec(t, goodHMR, faultXMLRPCResponse, expectFail, wantErrors)
 		})
