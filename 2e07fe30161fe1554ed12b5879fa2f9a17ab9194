@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "54cc028b_049dee21",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-09-21T13:01:18Z",
+      "side": 1,
+      "message": "Added logic to catch the empty touchhost.",
+      "parentUuid": "b7614772_e00321f3",
+      "revId": "2e07fe30161fe1554ed12b5879fa2f9a17ab9194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "777daa1c_d58bbc24",
@@ -35,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "570c6bf3_83857193",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_call.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-09-21T13:01:18Z",
+      "side": 1,
+      "message": "Actually the generated code protected us from nil, and it will give empty string instead: https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/cros/recovery/tlw/models.pb.go;l\u003d3124-3128\n\nIt is also why I wanted to add hostname in the beginning, but I think adding a new test is even better 😊",
+      "parentUuid": "777daa1c_d58bbc24",
+      "revId": "2e07fe30161fe1554ed12b5879fa2f9a17ab9194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "db9df0a7_59ddccbb",
@@ -48,6 +84,24 @@
       "writtenOn": "2023-09-21T09:55:35Z",
       "side": 1,
       "message": "Here is missing `Touchhost: \"hmr-touchhost\"`\n```suggestion\n\t\tState: tlw.HumanMotionRobot_WORKING,\n\t\tTouchhost: \"hmr-touchhost\",\n```",
+      "revId": "2e07fe30161fe1554ed12b5879fa2f9a17ab9194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "deb5c5c3_2aaa5f99",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_execs_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-09-21T13:01:18Z",
+      "side": 1,
+      "message": "In the current test this is a Pass case - and yes I think we should add logic to catch cases like this.\n\nUpdated in Patchset4.",
+      "parentUuid": "db9df0a7_59ddccbb",
       "revId": "2e07fe30161fe1554ed12b5879fa2f9a17ab9194",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
