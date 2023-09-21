@@ -1,16 +1,6 @@
-// Copyright 2019 The LUCI Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package clients
 
@@ -57,10 +47,22 @@ func PushAuditDUTs(ctx context.Context, botIDs, actions []string, taskname strin
 	return pushDUTs(ctx, auditBotsQueue, tasks)
 }
 
-func crosRepairTask(botID, expectedState string, swarmingPool string) *tq.Task {
+func validateCrosRepairTask(botID string, swarmingPool string) {
+	if botID == "" {
+		panic("internal error in .../app/clients/taskqueue.go: botID cannot be empty")
+	}
+	if swarmingPool == "" {
+		panic("internal error in .../app/clients/taskqueue.go: swarmingPool cannot be empty")
+	}
+}
+
+func crosRepairTask(botID string, expectedState string, swarmingPool string) *tq.Task {
+	validateCrosRepairTask(botID, swarmingPool)
 	values := url.Values{}
 	values.Set("botID", botID)
-	values.Set("expectedState", expectedState)
+	if expectedState != "" {
+		values.Set("expectedState", expectedState)
+	}
 	values.Set("swarmingPool", swarmingPool)
 	return tq.NewPOSTTask(fmt.Sprintf("/internal/task/cros_repair/%s", botID), values)
 }
