@@ -286,7 +286,7 @@ def _IsReportSuspicious(report):
 
   A report is determined to be suspicious if and only if the absolute difference
   between its line coverage percentage and the most recent visible report is
-  greater than 1.00%.
+  greater than 1.50%.
 
   Args:
     report (PostsubmitReport): The report to be evaluated.
@@ -327,7 +327,7 @@ def _IsReportSuspicious(report):
   most_recent_visible_report = most_recent_visible_reports[0]
   if abs(
       _GetLineCoveragePercentage(report) -
-      _GetLineCoveragePercentage(most_recent_visible_report)) > 0.01:
+      _GetLineCoveragePercentage(most_recent_visible_report)) > 0.015:
     return True
 
   return False
