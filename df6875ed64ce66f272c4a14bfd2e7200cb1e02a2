@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fe6e7ff7_bd41e4af",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-21T14:01:20Z",
+      "side": 1,
+      "message": "Okay, I will rename it.",
+      "parentUuid": "94cefb4b_2731035e",
+      "revId": "df6875ed64ce66f272c4a14bfd2e7200cb1e02a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1e59a691_e4f4184c",
         "filename": "go/src/infra/cros/satlab/common/dut/get.go",
         "patchSetId": 16
@@ -48,6 +66,24 @@
       "writtenOn": "2023-09-21T13:58:51Z",
       "side": 1,
       "message": "nit: `jsonpb` is deprecated, please us `google.golang.org/protobuf` instead",
+      "revId": "df6875ed64ce66f272c4a14bfd2e7200cb1e02a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "60536f06_bf73dc83",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 16
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-21T14:01:20Z",
+      "side": 1,
+      "message": "Thank you. got it.",
+      "parentUuid": "1e59a691_e4f4184c",
       "revId": "df6875ed64ce66f272c4a14bfd2e7200cb1e02a2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
