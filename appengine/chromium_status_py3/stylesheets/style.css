@@ -1,4 +1,22 @@
+/* Default theme is light colored. */
+:root {
+  --status-bg-color-rgb: 255, 255, 255;
+  --status-fg-color-rgb: 0, 0, 0;
+
+  --status-bg-color: rgb(var(--status-bg-color-rgb));
+  --status-fg-color: rgb(var(--status-fg-color-rgb));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --status-bg-color-rgb: 17, 17, 17;
+    --status-fg-color-rgb: 221, 221, 221;
+  }
+}
+
 body {
+  background-color: var(--status-bg-color);
+  color: var(--status-fg-color);
   font-family: Roboto, Helvetica, Arial, sans-serif;
   padding: 0px;
 }
@@ -66,23 +84,28 @@ td.date {
 
 .closed {
   background-color: #E98080;
+  color: black;
 }
 
 .maintenance {
   background-color: #FF80FF;
+  color: black;
 }
 
 .open {
   background-color: #8FDF5F;
+  color: black;
 }
 
 .throttled {
   background-color: #FFFC6C;
+  color: black;
 }
 
 .help {
   border: 1px black solid;
   background-color: #FFFFCA;
+  color: black;
   position: fixed;
   padding: 0.1em;
 }
