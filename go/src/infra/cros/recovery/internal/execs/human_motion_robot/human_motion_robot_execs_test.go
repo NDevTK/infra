@@ -65,8 +65,9 @@ func checkStrContainSegments(
 
 func prepare_stubHMR(state tlw.HumanMotionRobot_State) *tlw.HumanMotionRobot {
 	return &tlw.HumanMotionRobot{
-		Name:  "hmr-hostname",
-		State: tlw.HumanMotionRobot_WORKING,
+		Name:      "hmr-hostname",
+		State:     tlw.HumanMotionRobot_WORKING,
+		Touchhost: "touchhost-hostname",
 	}
 }
 
@@ -289,6 +290,11 @@ func Test_CheckHMRStateExec(t *testing.T) {
 
 	var badHMR *tlw.HumanMotionRobot = nil
 
+	badHMRNoTouchhost := &tlw.HumanMotionRobot{
+		Name:  "hmr-hostname",
+		State: tlw.HumanMotionRobot_WORKING,
+	}
+
 	// == Constants for XMLResponse
 	goodXMLRPCResponse := &tlw.CallTouchHostdResponse{
 		Fault: false,
@@ -323,7 +329,13 @@ func Test_CheckHMRStateExec(t *testing.T) {
 		t.Run("Missing_HMR", func(t *testing.T) {
 			wantErrors := []string{errHMRNotSupported}
 
-			genericTest_checkHMRStateExec(t, badHMR, goodXMLRPCResponse, expectFail, wantErrors)
+			genericTest_checkHMRStateExec(t, badHMR, nil, expectFail, wantErrors)
+		})
+
+		t.Run("Missing_Touchhost", func(t *testing.T) {
+			wantErrors := []string{errMissingTouchHost}
+
+			genericTest_checkHMRStateExec(t, badHMRNoTouchhost, nil, expectFail, wantErrors)
 		})
 
 		t.Run("Error_Touch_Host", func(t *testing.T) {
@@ -333,7 +345,7 @@ func Test_CheckHMRStateExec(t *testing.T) {
 		})
 
 		t.Run("Fault_XMLRPC_Call", func(t *testing.T) {
-			wantErrors := []string{"received fail flag", errTouchHostPiBroken}
+			wantErrors := []string{"Unable to make HMR TouchHost call", errTouchHostPiBroken}
 
 			genericTest_checkHMRStateExec(t, goodHMR, faultXMLRPCResponse, expectFail, wantErrors)
 		})
