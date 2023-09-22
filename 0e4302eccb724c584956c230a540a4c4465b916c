@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f992c197_5484ad13",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1530777
+      },
+      "writtenOn": "2023-09-22T23:20:53Z",
+      "side": 1,
+      "message": "Revalidated, curl util working as expected. New log looks nice.",
+      "revId": "0e4302eccb724c584956c230a540a4c4465b916c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
