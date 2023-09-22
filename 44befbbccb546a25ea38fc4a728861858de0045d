@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "51692a81_82edb566",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_call.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-09-22T00:29:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c2838ce1_deda47f5",
+      "range": {
+        "startLine": 28,
+        "startChar": 29,
+        "endLine": 28,
+        "endChar": 35
+      },
+      "revId": "44befbbccb546a25ea38fc4a728861858de0045d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "72d9c5b2_72477b97",
@@ -76,6 +100,53 @@
         "startChar": 1,
         "endLine": 23,
         "endChar": 20
+      },
+      "revId": "44befbbccb546a25ea38fc4a728861858de0045d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "86e08047_f5fee70a",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-09-22T00:29:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "72d9c5b2_72477b97",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 20
+      },
+      "revId": "44befbbccb546a25ea38fc4a728861858de0045d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9f81ad7c_aef35620",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_execs_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-09-22T00:29:19Z",
+      "side": 1,
+      "message": "Instead of removing capital, checking the error type should be enough in our use case.",
+      "range": {
+        "startLine": 348,
+        "startChar": 27,
+        "endLine": 348,
+        "endChar": 60
       },
       "revId": "44befbbccb546a25ea38fc4a728861858de0045d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
