@@ -4,8 +4,8 @@
 
 'use strict';
 
-import {LitElement, html} from '@polymer/lit-element/lit-element.js';
-import {installRouter} from 'pwa-helpers/router.js';
+import { LitElement, html } from '@polymer/lit-element/lit-element.js';
+import { installRouter } from 'pwa-helpers/router.js';
 
 import './tricium-feedback.js';
 import './tricium-run.js';
@@ -24,7 +24,7 @@ class TriciumApp extends LitElement {
     };
   }
 
-  _render({path}) {
+  _render({ path }) {
     return html`
       <style>
         header {
@@ -43,7 +43,6 @@ class TriciumApp extends LitElement {
       </style>
       <header>
         <a id="main-title" href="/">Tricium</a>
-        <a class="link" href="/rpcexplorer/">RPC explorer</a>
       </header>
       ${this._body(path)}
     `;
