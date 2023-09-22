@@ -13,6 +13,7 @@ import "go.chromium.org/chromiumos/config/proto/chromiumos/config/api/test/xmlrp
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/cbi.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/bluetooth_peer.proto";
 
 // RunRequest represents result of executed command.
 message RunRequest {
@@ -173,6 +174,28 @@ message OpenWrtRouterControllerState {
   chromiumos.test.lab.api.CrosOpenWrtImageBuildInfo device_build_info = 1;
   chromiumos.test.lab.api.OpenWrtWifiRouterDeviceConfig config = 2;
   string expected_image_uuid = 3;
+}
+
+// BluetoothPeerScopeState holds exec state information for btpeer execs.
+// Meant to describe the exec state for a single btpeer.
+// Used only as internal state for scope. Do not use for store data.
+message BluetoothPeerScopeState {
+  // Chameleond holds data related to the state of chameleond on the btpeer.
+  message Chameleond {
+    // The commit of chameleond at which the bundle installed on the btpeer was created.
+    string installed_commit = 1;
+    // The BluetoothPeerChameleondConfig as retrieved from the global config
+    // JSON file stored on GCS. Includes information regarding available
+    // chameleond bundle releases for all btpeers.
+    chromiumos.test.lab.api.BluetoothPeerChameleondConfig release_config = 2;
+    // The config of the chameleond bundle from the release_config that has been
+    // identified as the expected bundle for this specific btpeer.
+    chromiumos.test.lab.api.BluetoothPeerChameleondConfig.ChameleondBundle expected_bundle_config = 3;
+  }
+  // Reference to the BluetoothPeer device this state is for.
+  BluetoothPeer btpeer = 1;
+  // Chameleond state info for this btpeer.
+  Chameleond chameleond = 2;
 }
 
 // VersionRequest holds data for version service request.
