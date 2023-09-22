@@ -20,6 +20,7 @@ const (
 	errHMRNotSupported   = "HMR is not supported"
 	errTouchHostPiBroken = "cannot get HMR TouchHost errors, TouchHost is broken"
 	errHMRBroken         = "HMR is broken"
+	errMissingTouchHost  = "missing TouchHost"
 )
 
 // setHMRStateExec sets the hmr state of the from the actionArgs argument.
@@ -45,10 +46,14 @@ func setHMRStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Reason("set hmr state: state is %q not found", newState).Err()
 }
 
-// checkHMRStateExec call XMLRPC api to check the hmr state.
+// checkHMRStateExec calls XMLRPC api on Touchhost to check the hmr state.
 func checkHMRStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	if info.GetChromeos().GetHumanMotionRobot() == nil {
 		return errors.Reason("check hmr state: %q", errHMRNotSupported).Err()
+	}
+
+	if info.GetChromeos().GetHumanMotionRobot().GetTouchhost() == "" {
+		return errors.Reason("empty hostname for Touchhost Pi: %q", errMissingTouchHost).Err()
 	}
 
 	res, err := Call(ctx, info.GetAccess(), info.GetChromeos().GetHumanMotionRobot(), "GetErrors")

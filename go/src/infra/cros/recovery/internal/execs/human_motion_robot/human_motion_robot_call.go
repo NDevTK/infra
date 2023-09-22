@@ -20,12 +20,12 @@ func Call(ctx context.Context, in tlw.Access, host *tlw.HumanMotionRobot, method
 		return nil, errors.Reason("HMR TouchHost call: method name is empty").Err()
 	}
 	res := in.CallTouchHostd(ctx, &tlw.CallTouchHostdRequest{
-		Resource: host.Name,
+		Resource: host.GetTouchhost(),
 		Method:   method,
 	})
-	log.Debugf(ctx, "HMR TouchHost call %q: received %#v", method, res.GetValue())
+	log.Debugf(ctx, "HMR TouchHost call %q with hostname %q: received %q", method, host.GetTouchhost(), res.GetValue().GetString_())
 	if res.GetFault() {
-		return nil, errors.Reason("HMR TouchHost call %q: received fail flag. The message: %#v", method, res.GetValue()).Err()
+		return nil, errors.Reason("unable to make HMR TouchHost call %q with hostname %q: %q", method, host.GetTouchhost(), res.GetValue().GetString_()).Err()
 	}
 	return res.GetValue(), nil
 }
