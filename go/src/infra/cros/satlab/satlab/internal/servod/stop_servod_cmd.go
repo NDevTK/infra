@@ -58,10 +58,12 @@ func (c *stopServodRun) Run(a subcommands.Application, args []string, env subcom
 
 // innerRun contains the actual logic of the stopServodRun command
 func (c *stopServodRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
+	ctx := cli.GetContext(a, c, env)
+	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
 	dhbSatlabID := c.commonFlags.SatlabID
 	if dhbSatlabID == "" {
 		var err error
-		dhbSatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(&executor.ExecCommander{})
+		dhbSatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(ctx, &executor.ExecCommander{})
 		if err != nil {
 			return err
 		}
@@ -70,8 +72,6 @@ func (c *stopServodRun) innerRun(a subcommands.Application, args []string, env s
 		cmdlib.PrintError(a, err)
 		return err
 	}
-	ctx := cli.GetContext(a, c, env)
-	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
 
 	ufs, err := ufs.NewUFSClient(ctx, c.envFlags.GetUFSService(), &c.authFlags)
 	if err != nil {

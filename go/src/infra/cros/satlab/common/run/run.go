@@ -65,7 +65,7 @@ func (c *Run) TriggerRun(ctx context.Context) (string, error) {
 	}
 
 	// Get drone target based on user input, defaulting to the current box.
-	droneDim, err := c.getDroneTarget()
+	droneDim, err := c.getDroneTarget(ctx)
 	if err != nil {
 		return "", err
 	}
@@ -216,12 +216,12 @@ func ScheduleBuild(ctx context.Context, bbClient BuildbucketClient) (string, err
 }
 
 // Set drone target to user-provided satlab or local satlab if one isn't provided
-func (c *Run) getDroneTarget() (string, error) {
+func (c *Run) getDroneTarget(ctx context.Context) (string, error) {
 	var satlabTarget string
 	if c.SatlabId != "" {
 		satlabTarget = fmt.Sprintf(c.SatlabId)
 	} else { // get id of local satlab if one is not provided
-		localSatlab, err := satlabcommands.GetDockerHostBoxIdentifier(&executor.ExecCommander{})
+		localSatlab, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, &executor.ExecCommander{})
 		if err != nil {
 			return "", errors.Annotate(err, "satlab get docker host box identifier").Err()
 		}

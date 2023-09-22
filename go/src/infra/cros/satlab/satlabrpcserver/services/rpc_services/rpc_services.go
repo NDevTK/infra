@@ -413,19 +413,19 @@ func (s *SatlabRpcServiceServer) RunTest(ctx context.Context, in *pb.RunTestRequ
 
 func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVersionInfoRequest) (*pb.GetVersionInfoResponse, error) {
 	resp := pb.GetVersionInfoResponse{}
-	hostId, err := satlabcommands.GetDockerHostBoxIdentifier(s.commandExecutor)
+	hostId, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
 	}
 	resp.HostId = hostId
-	osVersion, err := satlabcommands.GetOsVersion(s.commandExecutor)
+	osVersion, err := satlabcommands.GetOsVersion(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
 	}
 	resp.Description = osVersion.Description
 	resp.ChromeosVersion = osVersion.Version
 	resp.Track = osVersion.Track
-	version, err := satlabcommands.GetSatlabVersion(s.commandExecutor)
+	version, err := satlabcommands.GetSatlabVersion(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
 	}
@@ -443,7 +443,7 @@ func addPoolsToDUT(ctx context.Context, executor executor.IExecCommander, hostna
 }
 
 func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequest) (*pb.AddPoolResponse, error) {
-	IPHostMap, err := dns.ReadHostsToIPMap(s.commandExecutor)
+	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
 	}
@@ -465,7 +465,7 @@ func removeAllPoolsFromDUT(ctx context.Context, executor executor.IExecCommander
 }
 
 func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePoolRequest) (*pb.UpdatePoolResponse, error) {
-	IPHostMap, err := dns.ReadHostsToIPMap(s.commandExecutor)
+	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
 	}
@@ -494,7 +494,7 @@ func (s *SatlabRpcServiceServer) GetDutDetail(ctx context.Context, in *pb.GetDut
 		return nil, errors.New("need to login before using this")
 	}
 
-	IPHostMap, err := dns.ReadHostsToIPMap(s.commandExecutor)
+	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
 	}
@@ -541,7 +541,7 @@ func (s *SatlabRpcServiceServer) ListDutTasks(ctx context.Context, in *pb.ListDu
 		return nil, errors.New("need to login before using this")
 	}
 
-	IPHostMap, err := dns.ReadHostsToIPMap(s.commandExecutor)
+	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
 	}
@@ -578,7 +578,7 @@ func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListD
 		return nil, errors.New("need to login before using this")
 	}
 
-	IPHostMap, err := dns.ReadHostsToIPMap(s.commandExecutor)
+	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
 	}
