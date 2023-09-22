@@ -35,7 +35,7 @@ func ConvertSwarmingRpcsStringListPair(p *swarmingv1.SwarmingRpcsStringListPair)
 
 // ConvertSwarmingRpcsStringListPair converts an array of string list pairs.
 func ConvertSwarmingRpcsStringListPairs(p []*swarmingv1.SwarmingRpcsStringListPair) []*swarmingv2.StringListPair {
-	out := []*swarmingv2.StringListPair{}
+	out := make([]*swarmingv2.StringListPair, 0, len(p))
 	for _, v := range p {
 		out = append(out, ConvertSwarmingRpcsStringListPair(v))
 	}
@@ -64,4 +64,13 @@ func ConvertSwarmingRpcsBotInfo(i *swarmingv1.SwarmingRpcsBotInfo) *swarmingv2.B
 		State:           i.State,
 		Deleted:         i.Deleted,
 	}
+}
+
+// ConvertSwarmingRpcsBotInfos converts an array of bot infos.
+func ConvertSwarmingRpcsBotInfos(p []*swarmingv1.SwarmingRpcsBotInfo) []*swarmingv2.BotInfo {
+	out := make([]*swarmingv2.BotInfo, 0, len(p))
+	for _, v := range p {
+		out = append(out, ConvertSwarmingRpcsBotInfo(v))
+	}
+	return out
 }

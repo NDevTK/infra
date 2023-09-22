@@ -1,16 +1,6 @@
-// Copyright 2018 The LUCI Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package frontend
 
@@ -24,10 +14,12 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/data/strpair"
+	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
+	"infra/appengine/crosskylabadmin/internal/swarmingconverter"
 	"infra/appengine/crosskylabadmin/internal/tq"
 )
 
@@ -124,7 +116,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 				gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"needs_repair"}}),
-			).AnyTimes().Return([]*swarming.SwarmingRpcsBotInfo{bot1, bot3, bot1LabStation, bot1SchedulingUnit}, nil)
+			).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{bot1, bot3, bot1LabStation, bot1SchedulingUnit}), nil)
 			expectDefaultPerBotRefresh(tf)
 
 			request := fleet.PushBotsForAdminTasksRequest{
@@ -142,7 +134,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 				gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"repair_failed"}}),
-			).AnyTimes().Return([]*swarming.SwarmingRpcsBotInfo{bot2}, nil)
+			).AnyTimes().Return([]*swarmingv2.BotInfo{swarmingconverter.ConvertSwarmingRpcsBotInfo(bot2)}, nil)
 			expectDefaultPerBotRefresh(tf)
 
 			request := fleet.PushBotsForAdminTasksRequest{
@@ -161,7 +153,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 				gomock.Any(),
 				gomock.Eq(config.Get(tf.C).Swarming.BotPool),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"needs_manual_repair"}}),
-			).AnyTimes().Return([]*swarming.SwarmingRpcsBotInfo{bot3, bot4}, nil)
+			).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{bot3, bot4}), nil)
 			expectDefaultPerBotRefresh(tf)
 			request := fleet.PushBotsForAdminTasksRequest{
 				TargetDutState: fleet.DutState_NeedsManualRepair,
@@ -179,7 +171,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 				gomock.Any(),
 				gomock.Eq(config.Get(tf.C).Swarming.BotPool),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"needs_replacement"}}),
-			).AnyTimes().Return([]*swarming.SwarmingRpcsBotInfo{bot3, bot5}, nil)
+			).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{bot3, bot5}), nil)
 			expectDefaultPerBotRefresh(tf)
 			request := fleet.PushBotsForAdminTasksRequest{
 				TargetDutState: fleet.DutState_NeedsReplacement,
@@ -268,7 +260,7 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		bots := []*swarming.SwarmingRpcsBotInfo{bot1, bot2}
 		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 			gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool), gomock.Any(),
-		).AnyTimes().Return(bots, nil)
+		).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos(bots), nil)
 		expectDefaultPerBotRefresh(tf)
 		_, err := tf.Tracker.PushRepairJobsForLabstations(tf.C, &fleet.PushRepairJobsForLabstationsRequest{})
 		So(err, ShouldBeNil)

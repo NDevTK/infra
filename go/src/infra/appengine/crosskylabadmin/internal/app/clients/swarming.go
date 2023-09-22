@@ -1,17 +1,7 @@
-// Copyright 2018 The LUCI Authors.
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 // package clients exports wrappers for client side bindings for API used by
 // crosskylabadmin app. These interfaces provide a way to fake/stub out the API
 // calls for tests.
@@ -29,6 +19,7 @@ import (
 	"time"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	"infra/appengine/crosskylabadmin/internal/swarmingconverter"
 
 	"github.com/golang/protobuf/ptypes/duration"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -39,6 +30,7 @@ import (
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/server/auth"
+	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
 const (
@@ -85,7 +77,7 @@ const paginationChunkSize = 100
 // In prod, a SwarmingClient for interacting with the Swarming service will be
 // used. Tests should use a fake.
 type SwarmingClient interface {
-	ListAliveIdleBotsInPool(c context.Context, pool string, dims strpair.Map) ([]*swarming.SwarmingRpcsBotInfo, error)
+	ListAliveIdleBotsInPool(c context.Context, pool string, dims strpair.Map) ([]*swarmingv2.BotInfo, error)
 	ListAliveBotsInPool(context.Context, string, strpair.Map) ([]*swarming.SwarmingRpcsBotInfo, error)
 	ListBotTasks(id string) BotTasksCursor
 	ListRecentTasks(c context.Context, tags []string, state string, limit int) ([]*swarming.SwarmingRpcsTaskResult, error)
@@ -117,7 +109,9 @@ type SwarmingCreateTaskArgs struct {
 	ServiceAccount       string
 }
 
-type swarmingClientImpl swarming.Service
+type swarmingClientImpl struct {
+	servicev1 *swarming.Service
+}
 
 // NewSwarmingClient returns a SwarmingClient for interaction with the Swarming
 // service.
@@ -133,16 +127,18 @@ func NewSwarmingClient(c context.Context, host string) (SwarmingClient, error) {
 		return nil, errors.Annotate(err, "failed to create swarming client for host %s", host).Err()
 	}
 	srv.BasePath = fmt.Sprintf("https://%s/_ah/api/swarming/v1/", host)
-	return (*swarmingClientImpl)(srv), nil
+	return &swarmingClientImpl{
+		servicev1: srv,
+	}, nil
 }
 
 // ListAliveIdleBotsInPool lists the Swarming bots in the given pool.
 //
 // Use dims to restrict to dimensions beyond pool.
-func (sc *swarmingClientImpl) ListAliveIdleBotsInPool(c context.Context, pool string, dims strpair.Map) ([]*swarming.SwarmingRpcsBotInfo, error) {
+func (sc *swarmingClientImpl) ListAliveIdleBotsInPool(c context.Context, pool string, dims strpair.Map) ([]*swarmingv2.BotInfo, error) {
 	var botsInfo []*swarming.SwarmingRpcsBotInfo
 	dims.Set(PoolDimensionKey, pool)
-	call := sc.Bots.List().Dimensions(dims.Format()...).IsDead("FALSE").IsBusy("FALSE")
+	call := sc.servicev1.Bots.List().Dimensions(dims.Format()...).IsDead("FALSE").IsBusy("FALSE")
 	for {
 		ic, cancel := context.WithTimeout(c, 60*time.Second)
 		defer cancel()
@@ -156,7 +152,7 @@ func (sc *swarmingClientImpl) ListAliveIdleBotsInPool(c context.Context, pool st
 		}
 		call = call.Cursor(response.Cursor)
 	}
-	return botsInfo, nil
+	return swarmingconverter.ConvertSwarmingRpcsBotInfos(botsInfo), nil
 }
 
 // ListAliveBotsInPool lists the Swarming bots in the given pool.
@@ -165,7 +161,7 @@ func (sc *swarmingClientImpl) ListAliveIdleBotsInPool(c context.Context, pool st
 func (sc *swarmingClientImpl) ListAliveBotsInPool(c context.Context, pool string, dims strpair.Map) ([]*swarming.SwarmingRpcsBotInfo, error) {
 	bis := []*swarming.SwarmingRpcsBotInfo{}
 	dims.Set(PoolDimensionKey, pool)
-	call := sc.Bots.List().Dimensions(dims.Format()...).IsDead("FALSE").Limit(500)
+	call := sc.servicev1.Bots.List().Dimensions(dims.Format()...).IsDead("FALSE").Limit(500)
 	for {
 		var response *swarming.SwarmingRpcsBotList
 		f := func() (err error) {
@@ -223,7 +219,7 @@ func (sc *swarmingClientImpl) CreateTask(c context.Context, name string, args *S
 	}
 	ic, cancel := context.WithTimeout(c, 60*time.Second)
 	defer cancel()
-	resp, err := sc.Tasks.New(ntr).Context(ic).Do()
+	resp, err := sc.servicev1.Tasks.New(ntr).Context(ic).Do()
 	if err != nil {
 		return "", errors.Reason("Failed to create task").InternalReason(err.Error()).Err()
 	}
@@ -270,7 +266,7 @@ func convertToDimensions(args *SwarmingCreateTaskArgs) ([]*swarming.SwarmingRpcs
 
 // GetTaskResult gets the task result for a given task ID.
 func (sc *swarmingClientImpl) GetTaskResult(ctx context.Context, tid string) (*swarming.SwarmingRpcsTaskResult, error) {
-	call := sc.Task.Result(tid)
+	call := sc.servicev1.Task.Result(tid)
 	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 	resp, err := call.Context(ctx).Do()
@@ -290,7 +286,7 @@ func (sc *swarmingClientImpl) ListRecentTasks(c context.Context, tags []string, 
 	}
 
 	trs := []*swarming.SwarmingRpcsTaskResult{}
-	call := sc.Tasks.List().Tags(tags...)
+	call := sc.servicev1.Tasks.List().Tags(tags...)
 	if state != "" {
 		call.State(state)
 	}
@@ -355,7 +351,7 @@ func (c *botTasksCursorImpl) Next(ctx context.Context, n int64) ([]*swarming.Swa
 func (sc *swarmingClientImpl) ListBotTasks(id string) BotTasksCursor {
 	// TODO(pprabhu): These should really be sorted by STARTED_TS.
 	// See crbug.com/857595 and crbug.com/857598
-	call := sc.Bot.Tasks(id).Sort("CREATED_TS")
+	call := sc.servicev1.Bot.Tasks(id).Sort("CREATED_TS")
 	return &botTasksCursorImpl{
 		description: fmt.Sprintf("tasks for bot %s", id),
 		call:        call,
@@ -480,6 +476,20 @@ func GetStateDimension(dims []*swarming.SwarmingRpcsStringListPair) fleet.DutSta
 			return fleet.DutState_DutStateInvalid
 		}
 		return dutStateMap[p.Value[0]]
+	}
+	return fleet.DutState_DutStateInvalid
+}
+
+// GetStateDimensionV2 gets the dut_state value from a dimension slice.
+func GetStateDimensionV2(dims []*swarmingv2.StringListPair) fleet.DutState {
+	for _, p := range dims {
+		if p.GetKey() != DutStateDimensionKey {
+			continue
+		}
+		if len(p.GetValue()) != 1 {
+			return fleet.DutState_DutStateInvalid
+		}
+		return dutStateMap[p.GetValue()[0]]
 	}
 	return fleet.DutState_DutStateInvalid
 }

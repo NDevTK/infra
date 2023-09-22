@@ -16,9 +16,11 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
+	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"
+	"infra/appengine/crosskylabadmin/internal/swarmingconverter"
 	"infra/appengine/crosskylabadmin/internal/tq"
 	"infra/cros/recovery/logger/metrics"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -54,10 +56,10 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 	defer validate()
 	ctx := tf.C
 	tq.GetTestable(ctx).CreateQueue("repair-bots")
-	tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), gomock.Any(), gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+	tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), gomock.Any(), gomock.Any()).Return([]*swarmingv2.BotInfo{
 		{
 			BotId: "fake-bot-a",
-			Dimensions: []*swarming.SwarmingRpcsStringListPair{
+			Dimensions: []*swarmingv2.StringListPair{
 				{
 					Key:   "id",
 					Value: []string{"fake-bot-a"},
@@ -74,7 +76,7 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 		},
 		{
 			BotId: "fake-bot-b",
-			Dimensions: []*swarming.SwarmingRpcsStringListPair{
+			Dimensions: []*swarmingv2.StringListPair{
 				{
 					Key:   "id",
 					Value: []string{"fake-bot-b"},
@@ -181,7 +183,7 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 		tqt := tq.GetTestable(ctx)
 		qn := "repair-bots"
 		tqt.CreateQueue(qn)
-		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "fake-bot-pool", gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "fake-bot-pool", gomock.Any()).Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{
 			{
 				BotId: "fake-bot-a",
 				Dimensions: []*swarming.SwarmingRpcsStringListPair{
@@ -216,8 +218,8 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 					},
 				},
 			},
-		}, nil)
-		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-a", gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+		}), nil)
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-a", gomock.Any()).Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{
 			{
 				BotId: "pool-cfg-bot-a",
 				Dimensions: []*swarming.SwarmingRpcsStringListPair{
@@ -235,9 +237,9 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 					},
 				},
 			},
-		}, nil)
+		}), nil)
 
-		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-b", gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-b", gomock.Any()).Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{
 			{
 				BotId: "pool-cfg-bot-b",
 				Dimensions: []*swarming.SwarmingRpcsStringListPair{
@@ -255,7 +257,7 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 					},
 				},
 			},
-		}, nil)
+		}), nil)
 
 		ctx = config.Use(ctx, &config.Config{
 			Swarming: &config.Swarming{
@@ -306,7 +308,7 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 		tqt := tq.GetTestable(ctx)
 		qn := "repair-bots"
 		tqt.CreateQueue(qn)
-		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "fake-bot-pool", gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "fake-bot-pool", gomock.Any()).Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{
 			{
 				BotId: "fake-bot-a",
 				Dimensions: []*swarming.SwarmingRpcsStringListPair{
@@ -341,11 +343,11 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 					},
 				},
 			},
-		}, nil)
+		}), nil)
 
 		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-a", gomock.Any()).Return(nil, errors.Reason("Fake Error").Err())
 
-		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-b", gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-b", gomock.Any()).Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{
 			{
 				BotId: "pool-cfg-bot-b",
 				Dimensions: []*swarming.SwarmingRpcsStringListPair{
@@ -363,7 +365,7 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 					},
 				},
 			},
-		}, nil)
+		}), nil)
 
 		ctx = config.Use(ctx, &config.Config{
 			Swarming: &config.Swarming{

@@ -10,10 +10,10 @@ import (
 	"sort"
 	"time"
 
-	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
@@ -81,7 +81,7 @@ func (p *adminTaskBotPusher) getDUTsForLabstations(ctx context.Context, labstati
 // dims         -- a list of additional dimensions to map
 // holdouts     -- a list of bot names to exclude (NOT dut names). Holdouts is read-only, so this parameter may be nil.
 func (p *adminTaskBotPusher) pushRepairDUTsForGivenPool(ctx context.Context, swarmingPool string, dutState string, dims strpair.Map, holdouts map[string]bool) error {
-	var bots []*swarming.SwarmingRpcsBotInfo
+	var bots []*swarmingv2.BotInfo
 	rawBots, err := p.swarmingClient.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
 	for _, bot := range rawBots {
 		if !holdouts[bot.BotId] {

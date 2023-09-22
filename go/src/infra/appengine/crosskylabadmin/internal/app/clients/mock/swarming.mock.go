@@ -17,6 +17,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	strpair "go.chromium.org/luci/common/data/strpair"
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
 // MockSwarmingClient is a mock of SwarmingClient interface.
@@ -88,10 +89,10 @@ func (mr *MockSwarmingClientMockRecorder) ListAliveBotsInPool(arg0, arg1, arg2 i
 }
 
 // ListAliveIdleBotsInPool mocks base method.
-func (m *MockSwarmingClient) ListAliveIdleBotsInPool(c context.Context, pool string, dims strpair.Map) ([]*swarming.SwarmingRpcsBotInfo, error) {
+func (m *MockSwarmingClient) ListAliveIdleBotsInPool(c context.Context, pool string, dims strpair.Map) ([]*apipb.BotInfo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListAliveIdleBotsInPool", c, pool, dims)
-	ret0, _ := ret[0].([]*swarming.SwarmingRpcsBotInfo)
+	ret0, _ := ret[0].([]*apipb.BotInfo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

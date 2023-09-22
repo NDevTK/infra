@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/auth"
+	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
@@ -178,7 +179,7 @@ func (tsi *TrackerServerImpl) PushRepairJobsForLabstations(ctx context.Context, 
 	// and rebooting labstations to ensure they're in good state.
 	dims := make(strpair.Map)
 	dims[clients.DutOSDimensionKey] = []string{"OS_TYPE_LABSTATION"}
-	bots, err := sc.ListAliveIdleBotsInPool(ctx, cfg.Swarming.BotPool, dims)
+	bots, err := sc.ListAliveIdleBotsInPool(ctx, cfg.GetSwarming().GetBotPool(), dims)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to list alive idle labstation bots").Err()
 	}
@@ -232,10 +233,10 @@ var dutStatesForRepairTask = map[fleet.DutState]bool{
 }
 
 // identifyBotsForRepair identifies duts that need run admin repair.
-func identifyBotsForRepair(ctx context.Context, bots []*swarming.SwarmingRpcsBotInfo) (repairBOTs []string) {
+func identifyBotsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo) (repairBOTs []string) {
 	repairBOTs = make([]string, 0, len(bots))
 	for _, b := range bots {
-		dims := util.DimensionsMap(b.Dimensions)
+		dims := util.DimensionsMapV2(b.Dimensions)
 		os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
 		// Some bot may not have os dimension(e.g. scheduling unit), so we ignore the error here.
 		if err == nil && os == "OS_TYPE_LABSTATION" {
@@ -247,7 +248,7 @@ func identifyBotsForRepair(ctx context.Context, bots []*swarming.SwarmingRpcsBot
 			continue
 		}
 
-		s := clients.GetStateDimension(b.Dimensions)
+		s := clients.GetStateDimensionV2(b.GetDimensions())
 		if dutStatesForRepairTask[s] {
 			logging.Infof(ctx, "BOT: %s - Needs repair", id)
 			repairBOTs = append(repairBOTs, id)
@@ -314,10 +315,10 @@ func identifyBotsForAudit(ctx context.Context, bots []*swarming.SwarmingRpcsBotI
 }
 
 // identifyLabstationsForRepair identifies labstations that need repair.
-func identifyLabstationsForRepair(ctx context.Context, bots []*swarming.SwarmingRpcsBotInfo) []string {
+func identifyLabstationsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo) []string {
 	botIDs := make([]string, 0, len(bots))
 	for _, b := range bots {
-		dims := util.DimensionsMap(b.Dimensions)
+		dims := util.DimensionsMapV2(b.GetDimensions())
 		os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
 		if err != nil {
 			logging.Warningf(ctx, "failed to obtain os type for bot %q", b.BotId)
