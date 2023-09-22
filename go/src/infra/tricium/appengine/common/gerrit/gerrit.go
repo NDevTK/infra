@@ -201,14 +201,6 @@ func fetchChangedLines(c context.Context, host, change, revision string) (Change
 }
 
 func fetchResponse(c context.Context, url string, headers map[string]string) ([]byte, error) {
-	// Compose, connect, and send.
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	for name, value := range headers {
-		req.Header.Set(name, value)
-	}
 	c, cancel := context.WithTimeout(c, gerritTimeout)
 	defer cancel()
 	transport, err := auth.GetRPCTransport(c, auth.AsSelf, auth.WithScopes(scope))
@@ -216,6 +208,14 @@ func fetchResponse(c context.Context, url string, headers map[string]string) ([]
 		return nil, err
 	}
 	client := &http.Client{Transport: transport}
+	// Compose, connect, and send.
+	req, err := http.NewRequestWithContext(c, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	for name, value := range headers {
+		req.Header.Set(name, value)
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to execute HTTP request").Err()
@@ -345,18 +345,19 @@ func (gerritServer) setReview(c context.Context, host, change, revision string, 
 	}
 	url := fmt.Sprintf("https://%s/a/changes/%s/revisions/%s/review", host, change, PatchSetNumber(revision))
 	logging.Debugf(c, "Posting comments using URL %q.", url)
-	req, err := http.NewRequest("POST", url, bytes.NewReader(data))
-	if err != nil {
-		return errors.Annotate(err, "failed to create POST request").Err()
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
+
 	c, cancel := context.WithTimeout(c, gerritTimeout)
 	defer cancel()
 	transport, err := auth.GetRPCTransport(c, auth.AsSelf, auth.WithScopes(scope))
 	if err != nil {
 		return err
 	}
+	req, err := http.NewRequestWithContext(c, http.MethodPost, url, bytes.NewReader(data))
+	if err != nil {
+		return errors.Annotate(err, "failed to create POST request").Err()
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
 	client := &http.Client{Transport: transport}
 	resp, err := client.Do(req)
 	if err != nil {
