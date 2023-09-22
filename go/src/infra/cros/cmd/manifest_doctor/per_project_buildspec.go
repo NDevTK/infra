@@ -308,7 +308,7 @@ func (b *projectBuildspec) CreateBuildspecs(gsClient gs.Client, gerritClient ger
 		}
 		if _, err := gsClient.List(ctx, programBuildspecConfig.uploadPath.Bucket(), ""); err != nil {
 			if strings.Contains(err.Error(), "doesn't exist") {
-				LogErr("GS bucket gs://%s does not exist for %s, skipping...", programBuildspecConfig.uploadPath.Bucket(), projectProject)
+				LogErr("GS bucket gs://%s does not exist for %s, skipping...", programBuildspecConfig.uploadPath.Bucket(), programProject)
 			} else {
 				errs = append(errs, err)
 			}
