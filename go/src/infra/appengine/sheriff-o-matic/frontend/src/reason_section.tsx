@@ -6,6 +6,7 @@ import { CacheProvider } from '@emotion/react';
 import createCache, { EmotionCache } from '@emotion/cache';
 import { AlertReasonJson, AlertReasonTestJson } from './server_json';
 import { DisableTestButton } from './disable_button';
+import BugReportIcon from '@mui/icons-material/BugReport';
 
 
 interface ReasonSectionProps {
@@ -42,12 +43,15 @@ const historyLink = (t: AlertReasonTestJson): string => {
     return `https://ci.chromium.org/ui/test/${project}/${testId}?q=${query}`;
 }
 
-const similarFailuresLink = (t: AlertReasonTestJson): string => {
-    const [project, algorithm, id] = t.cluster_name.split('/', 3);
+interface SimilarFailuresLinkProps {
+    test: AlertReasonTestJson
+}
+const SimilarFailuresLink = ({test}: SimilarFailuresLinkProps) => {
+    const [project, algorithm, id] = test.cluster_name.split('/', 3);
     if (algorithm.startsWith('rules')) {
-        return `https://luci-analysis.appspot.com/p/${project}/rules/${id}`;
+        return <a style={{display: 'flex', alignItems: 'center'}} href={`https://luci-analysis.appspot.com/p/${project}/rules/${id}`} target="_blank"><BugReportIcon />  Bug</a>;
     }
-    return `https://luci-analysis.appspot.com/p/${project}/clusters/${algorithm}/${id}`;
+    return <a href={`https://luci-analysis.appspot.com/p/${project}/clusters/${algorithm}/${id}`} target="_blank">Similar Failures</a>;
 }
 
 const chromiumTrees = ['chromium', 'chromium.gpu', 'chromium.perf', 'chrome_browser_release'];
@@ -70,7 +74,7 @@ export const ReasonSection = (props: ReasonSectionProps) => {
                     <td>{t.test_name}</td>
                     <td>{isChromiumTree(props.tree)?<a href={codeSearchLink(t)} target="_blank">Code Search</a>:null}</td>
                     <td><a href={historyLink(t)} target="_blank">History</a></td>
-                    <td><a href={similarFailuresLink(t)} target="_blank">Similar Failures</a></td>
+                    <td><SimilarFailuresLink test={t} /></td>
                     <td>{isChromiumTree(props.tree)?<DisableTestButton bugs={props.bugs} testName={t.test_name} testID={t.test_id} failure_bbid={props.failure_bbid} />:null}</td>
                 </tr>)}
             </tbody>
