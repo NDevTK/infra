@@ -4,10 +4,10 @@
   <center>
   <h2>Last {{ limit }} {{ app_name }} LKGR commits</h2>
   <table border="1" cellpadding="5">
-  <tr bgcolor="#CCCCFF">
-    <td><b>Git Hash</b></td>
-    <td><b>Commit Position</b></td>
-    <td><b>When</b></td>
+  <tr class="table-header">
+    <td>Git Hash</td>
+    <td>Commit Position</td>
+    <td>When</td>
   </tr>
   {% for commit in commits %}
     <tr>

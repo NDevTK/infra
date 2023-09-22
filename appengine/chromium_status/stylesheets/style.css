@@ -86,3 +86,9 @@ td.date {
   position: fixed;
   padding: 0.1em;
 }
+
+.table-header {
+  background-color: #CCCCFF;
+  color: #000;
+  font-weight: bold;
+}

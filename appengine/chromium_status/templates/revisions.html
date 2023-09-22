@@ -4,12 +4,12 @@
   <center>
   <h2>Last 100 {{ app_name }} revisions status</h2>
   <table border="1" cellpadding="5">
-  <tr bgcolor="#CCCCFF">
-    <td><b>Revision</b></td>
-    <td><b>Git Hash</b></td>
-    <td><b>When</b></td>
-    <td><b>Status</b></td>
-    <td><b>Failed steps</b></td>
+  <tr class="table-header>
+    <td>Revision</td>
+    <td>Git Hash</td>
+    <td>When</td>
+    <td>Status</td>
+    <td>Failed steps</td>
   </tr>
   {% for revision in revisions %}
     <tr>
