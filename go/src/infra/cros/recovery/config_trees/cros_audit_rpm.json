@@ -10177,6 +10177,17 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
+              "name": "Is not in cr50 pools",
+              "docs": [
+                "Verify that DUT is not in a cr-50 pools."
+              ],
+              "exec_name": "dut_not_in_pool_regex",
+              "exec_args": [
+                "regex:(?i)^faft-cr50"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
               "name": "Expected CCD factory settings",
               "docs": [
                 "This devices should use testlab to open CCD and reset capabilities to factory settings."

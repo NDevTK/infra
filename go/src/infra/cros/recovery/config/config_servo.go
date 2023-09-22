@@ -681,6 +681,7 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Is not Flex device",
+					"Is not in cr50 pools",
 					"Expected CCD factory settings",
 				},
 				Dependencies: []string{
@@ -697,6 +698,16 @@ func servoRepairPlan() *Plan {
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
 				},
+			},
+			"Is not in cr50 pools": {
+				Docs: []string{
+					"Verify that DUT is not in a cr-50 pools.",
+				},
+				ExecName: "dut_not_in_pool_regex",
+				ExecExtraArgs: []string{
+					"regex:(?i)^faft-cr50",
+				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Open gsc testlab": {
 				Docs: []string{
