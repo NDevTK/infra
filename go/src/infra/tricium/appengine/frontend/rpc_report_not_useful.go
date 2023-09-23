@@ -86,7 +86,7 @@ func responseForComment(comment *track.Comment) *tricium.ReportNotUsefulResponse
 	case name == "PDFiumWrapper" || name == "PdfiumTryPdfiumAnalysis":
 		return &tricium.ReportNotUsefulResponse{Owner: "nigi@chromium.org", MonorailComponent: comp}
 	default:
-		return &tricium.ReportNotUsefulResponse{Owner: "qyearsley@chromium.org", MonorailComponent: comp}
+		return &tricium.ReportNotUsefulResponse{Owner: "yiwzhang@google.com", MonorailComponent: comp}
 	}
 }
 

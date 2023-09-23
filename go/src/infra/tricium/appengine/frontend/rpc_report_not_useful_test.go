@@ -64,7 +64,7 @@ func TestReportNotUseful(t *testing.T) {
 			response, err := server.ReportNotUseful(ctx, request)
 			So(err, ShouldBeNil)
 			So(response, ShouldResemble, &tricium.ReportNotUsefulResponse{
-				Owner:             "qyearsley@chromium.org",
+				Owner:             "yiwzhang@google.com",
 				MonorailComponent: "Infra>LUCI>BuildService>PreSubmit>Tricium",
 			})
 			So(ds.Get(ctx, feedback), ShouldBeNil)
@@ -102,13 +102,13 @@ func TestReportNotUseful(t *testing.T) {
 			response, err := server.ReportNotUseful(ctx, request)
 			So(err, ShouldBeNil)
 			So(response, ShouldResemble, &tricium.ReportNotUsefulResponse{
-				Owner:             "qyearsley@chromium.org",
+				Owner:             "yiwzhang@google.com",
 				MonorailComponent: "Infra>LUCI>BuildService>PreSubmit>Tricium",
 			})
 			response, err = server.ReportNotUseful(ctx, request)
 			So(err, ShouldBeNil)
 			So(response, ShouldResemble, &tricium.ReportNotUsefulResponse{
-				Owner:             "qyearsley@chromium.org",
+				Owner:             "yiwzhang@google.com",
 				MonorailComponent: "Infra>LUCI>BuildService>PreSubmit>Tricium",
 			})
 			So(ds.Get(ctx, feedback), ShouldBeNil)
