@@ -114,6 +114,16 @@ func TestValidateDutAndAssetLocation(t *testing.T) {
 			},
 			expectedErr: true,
 		},
+		{
+			name: "DUT name with Satlab Zone",
+			ctx:  context.Background(),
+			ic:   nil,
+			dutParam: &dutDeployUFSParams{
+				DUT:   &ufspb.MachineLSE{Name: "satlab-abc123-host1"},
+				Asset: &ufspb.Asset{Location: &ufspb.Location{Zone: ufspb.Zone_ZONE_SATLAB}},
+			},
+			expectedErr: false,
+		},
 	}
 	for _, tt := range tests {
 		tt := tt

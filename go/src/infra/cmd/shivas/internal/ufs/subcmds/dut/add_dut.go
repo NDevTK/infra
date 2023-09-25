@@ -67,6 +67,7 @@ var AddDUTCmd = &subcommands.Command{
 		// Asset location fields
 		c.Flags.StringVar(&c.zone, "zone", "", "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)
 		c.Flags.StringVar(&c.rack, "rack", "", "Rack that the asset is in.")
+		c.Flags.StringVar(&c.hive, "hive", "", "Hive that the DUT belongs to. Example: satlab-abc123")
 
 		// DUT/MachineLSE common fields
 		c.Flags.StringVar(&c.hostname, "name", "", "hostname of the DUT.")
@@ -142,6 +143,7 @@ type addDUT struct {
 	pools                    []string
 	rpm                      string
 	rpmOutlet                string
+	hive                     string
 
 	ignoreUFS        bool
 	deployTags       []string
@@ -590,6 +592,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	lse.Name = name
 	lse.Hostname = name
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hostname = name
+	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
 	lse.Machines = machines
 
 	// Use the input params if available for all the options.
