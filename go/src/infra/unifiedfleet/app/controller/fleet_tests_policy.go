@@ -187,7 +187,7 @@ func isPublicGroupMember(ctx context.Context, req *api.CheckFleetTestsPolicyRequ
 }
 
 func getValidPublicTestNames() []string {
-	return []string{"tast.lacros", "chromium", "chromium_Graphics"}
+	return []string{"tast.lacros", "chromium", "chromium_Graphics", "tast.lacros-from-gcs"}
 }
 
 func validatePublicBoardModel(ctx context.Context, board string, model string) error {
