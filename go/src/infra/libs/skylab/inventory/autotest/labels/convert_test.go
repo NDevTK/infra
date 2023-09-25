@@ -94,6 +94,9 @@ peripherals: {
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   hmr_state: 1
+  peripheral_wifi_state: 1
+  wifi_router_features: [2,3,4,5]
+  wifi_router_models: ["OPENWRT[Ubiquiti_Unifi_6_Lite]","gale"]
 }
 os_type: 2
 model: "modelval"
@@ -257,6 +260,7 @@ var fullLabels = []string{
 	"modem_supported_bands:bands",
 	"modem_type:qualcomm_sc7180",
 	"os:cros",
+	"peripheral_wifi_state:WORKING",
 	"phase:DVT2",
 	"platform:platformval",
 	"pool:bvt",
@@ -317,6 +321,12 @@ var fullLabels = []string{
 	"variant:somevariant",
 	"webcam",
 	"wifi_chip:wireless_xxxx",
+	"wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_A",
+	"wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_B",
+	"wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_G",
+	"wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_N",
+	"wifi_router_models:OPENWRT[Ubiquiti_Unifi_6_Lite]",
+	"wifi_router_models:gale",
 	"wifi_state:NEED_REPLACEMENT",
 	"wificell",
 	"working_bluetooth_btpeer:3",
@@ -708,6 +718,9 @@ peripherals: {
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   hmr_state: 1
+  peripheral_wifi_state: 1
+  wifi_router_features: [2,3,4,5]
+  wifi_router_models: ["OPENWRT[Ubiquiti_Unifi_6_Lite]", "gale"]
 }
 os_type: 2
 model: "modelval"
@@ -870,6 +883,7 @@ var fullLabelsSpecial = []string{
 	"modem_supported_bands:bands",
 	"modem_type:qualcomm_sc7180",
 	"os:cros",
+	"peripheral_wifi_state:WORKING",
 	"phase:DVT2",
 	"platform:platformval",
 	"pool:bvt",
@@ -925,6 +939,12 @@ var fullLabelsSpecial = []string{
 	"variant:",
 	"webcam",
 	"wifi_chip:wireless_xxxx",
+	"wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_A",
+	"wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_B",
+	"wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_G",
+	"wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_N",
+	"wifi_router_models:OPENWRT[Ubiquiti_Unifi_6_Lite]",
+	"wifi_router_models:gale",
 	"wificell",
 	"working_bluetooth_btpeer:3",
 }
