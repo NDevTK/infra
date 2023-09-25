@@ -2703,6 +2703,9 @@ class IssueServiceTest(unittest.TestCase):
     self.services.issue.issueapproval2approver_tbl.Delete = Mock()
     self.services.issue.issue2approvalvalue_tbl.Update = Mock()
 
+    issue_update_id_rows = [(78914,), (78915,)]
+    self.services.issue.issueupdate_tbl.Select = Mock(
+        return_value=issue_update_id_rows)
     self.services.issue.issueupdate_tbl.Update = Mock()
 
     self.services.issue.issue2notify_tbl.Delete = Mock()
@@ -2729,12 +2732,12 @@ class IssueServiceTest(unittest.TestCase):
     commit = False
     limit = 50
 
-    affected_user_ids = self.services.issue.ExpungeUsersInIssues(
+    affected_issue_ids = self.services.issue.ExpungeUsersInIssues(
         self.cnxn, user_ids_by_email, limit=limit)
     six.assertCountEqual(
-        self, affected_user_ids, [
+        self, affected_issue_ids, [
             78901, 78902, 78903, 78904, 78905, 78906, 78907, 78908, 78909,
-            78910, 78911, 78912, 78913
+            78910, 78911, 78912, 78913, 78914, 78915
         ])
 
     self.services.issue.comment_tbl.Select.assert_called_once()
@@ -2801,9 +2804,6 @@ Delete.assert_called_once_with(
         self.cnxn, {'reporter_id': framework_constants.DELETED_USER_ID},
         id=[row[0] for row in reporter_issue_id_rows], commit=commit)
 
-    self.assertEqual(
-        3, len(self.services.issue.issue_tbl.Update.call_args_list))
-
     # issue updates
     self.services.issue.issueupdate_tbl.Update.assert_any_call(
         self.cnxn, {'added_user_id': framework_constants.DELETED_USER_ID},
@@ -2813,6 +2813,14 @@ Delete.assert_called_once_with(
         removed_user_id=user_ids, commit=commit)
     self.assertEqual(
         2, len(self.services.issue.issueupdate_tbl.Update.call_args_list))
+
+    # check updates across all issues
+    self.services.issue.issue_tbl.Update.assert_any_call(
+        self.cnxn, {'migration_modified': self.now},
+        id=affected_issue_ids,
+        commit=commit)
+    self.assertEqual(
+        4, len(self.services.issue.issue_tbl.Update.call_args_list))
 
     # issue notify
     call_args_list = self.services.issue.issue2notify_tbl.Delete.call_args_list

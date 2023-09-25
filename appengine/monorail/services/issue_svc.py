@@ -2833,8 +2833,10 @@ class IssueService(object):
     user_ids = list(user_ids_by_email.values())
     user_emails = list(user_ids_by_email.keys())
     # Track issue_ids for issues that will have different search documents
-    # as a result of removing users.
+    # and need updates to modification time as a result of removing users.
     affected_issue_ids = []
+
+    timestamp = int(time.time())
 
     # Reassign commenter_id and delete inbound_messages.
     shard_id = sql.RandomShardID()
@@ -2919,6 +2921,18 @@ class IssueService(object):
     # User rows can be deleted safely. No limit will be applied.
 
     # Remove users in issue updates.
+    user_added_id_rows = self.issueupdate_tbl.Select(
+        cnxn,
+        cols=['IssueUpdate.issue_id'],
+        added_user_id=user_ids,
+        shard_id=shard_id,
+        limit=limit)
+    user_removed_id_rows = self.issueupdate_tbl.Select(
+        cnxn,
+        cols=['IssueUpdate.issue_id'],
+        removed_user_id=user_ids,
+        shard_id=shard_id,
+        limit=limit)
     self.issueupdate_tbl.Update(
         cnxn,
         {'added_user_id': framework_constants.DELETED_USER_ID},
@@ -2929,6 +2943,8 @@ class IssueService(object):
         {'removed_user_id': framework_constants.DELETED_USER_ID},
         removed_user_id=user_ids,
         commit=commit)
+    affected_issue_ids.extend([row[0] for row in user_added_id_rows])
+    affected_issue_ids.extend([row[0] for row in user_removed_id_rows])
 
     # Remove users in issue notify.
     self.issue2notify_tbl.Delete(
@@ -2948,4 +2964,11 @@ class IssueService(object):
     self.issuesnapshot2cc_tbl.Delete(
         cnxn, cc_id=user_ids, commit=commit, limit=limit)
 
-    return list(set(affected_issue_ids))
+    # Update migration_modified timestamp for affected issues.
+    deduped_issue_ids = list(set(affected_issue_ids))
+    self.issue_tbl.Update(
+        cnxn, {'migration_modified': timestamp},
+        id=deduped_issue_ids,
+        commit=commit)
+
+    return deduped_issue_ids
