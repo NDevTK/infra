@@ -29,9 +29,10 @@ const HwidDataKind string = "HwidData"
 
 // HwidDataEntity is a datastore entity that tracks a HwidData.
 type HwidDataEntity struct {
-	_kind    string `gae:"$kind,HwidData"`
-	ID       string `gae:"$id"`
-	HwidData []byte `gae:",noindex"`
+	_kind    string                `gae:"$kind,HwidData"`
+	_extra   datastore.PropertyMap `gae:"-,extra"`
+	ID       string                `gae:"$id"`
+	HwidData []byte                `gae:",noindex"`
 	Updated  time.Time
 }
 

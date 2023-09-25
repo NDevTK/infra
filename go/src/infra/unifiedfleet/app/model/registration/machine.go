@@ -29,7 +29,8 @@ const MachineKind string = "Machine"
 
 // MachineEntity is a datastore entity that tracks Machine.
 type MachineEntity struct {
-	_kind string `gae:"$kind,Machine"`
+	_kind  string                `gae:"$kind,Machine"`
+	_extra datastore.PropertyMap `gae:"-,extra"`
 	// ufspb.Machine.Name
 	ID               string   `gae:"$id"`
 	SerialNumber     string   `gae:"serial_number"`

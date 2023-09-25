@@ -26,7 +26,8 @@ const IPKind string = "IP"
 
 // IPEntity is a datastore entity that tracks IP.
 type IPEntity struct {
-	_kind string `gae:"$kind,IP"`
+	_kind  string                `gae:"$kind,IP"`
+	_extra datastore.PropertyMap `gae:"-,extra"`
 	// To avoid duplication, the internal reference ID for IP: vlanName/IPv4, e.g. browser:120/20123455612
 	ID       string `gae:"$id"`
 	IPv4     uint32 `gae:"ipv4"`

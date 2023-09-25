@@ -26,25 +26,26 @@ const VMKind string = "ChromeVM"
 
 // VMEntity is a datastore entity that tracks VM.
 type VMEntity struct {
-	_kind          string   `gae:"$kind,ChromeVM"`
-	ID             string   `gae:"$id"`
-	OSVersion      string   `gae:"os_version"`
-	Vlan           string   `gae:"vlan_id"`
-	HostID         string   `gae:"host_id"`
-	State          string   `gae:"state"`
-	Lab            string   `gae:"lab"` // deprecated
-	Zone           string   `gae:"zone"`
-	Tags           []string `gae:"tags"`
-	OS             []string `gae:"os"`
-	MacAddress     string   `gae:"mac_address"`
-	CpuCores       int32    `gae:"cpu_cores"`
-	Memory         int64    `gae:"memory"`
-	Storage        int64    `gae:"storage"`
-	Pool           string   `gae:"pool"`
-	SwarmingServer string   `gae:"swarming_server"`
-	Customer       string   `gae:"customer"`
-	SecurityLevel  string   `gae:"security_level"`
-	MibaRealm      string   `gae:"miba_realm,noindex"` // deprecated
+	_kind          string                `gae:"$kind,ChromeVM"`
+	_extra         datastore.PropertyMap `gae:"-,extra"`
+	ID             string                `gae:"$id"`
+	OSVersion      string                `gae:"os_version"`
+	Vlan           string                `gae:"vlan_id"`
+	HostID         string                `gae:"host_id"`
+	State          string                `gae:"state"`
+	Lab            string                `gae:"lab"` // deprecated
+	Zone           string                `gae:"zone"`
+	Tags           []string              `gae:"tags"`
+	OS             []string              `gae:"os"`
+	MacAddress     string                `gae:"mac_address"`
+	CpuCores       int32                 `gae:"cpu_cores"`
+	Memory         int64                 `gae:"memory"`
+	Storage        int64                 `gae:"storage"`
+	Pool           string                `gae:"pool"`
+	SwarmingServer string                `gae:"swarming_server"`
+	Customer       string                `gae:"customer"`
+	SecurityLevel  string                `gae:"security_level"`
+	MibaRealm      string                `gae:"miba_realm,noindex"` // deprecated
 	// Follow others entities, store ufspb.VM bytes.
 	VM []byte `gae:",noindex"`
 }

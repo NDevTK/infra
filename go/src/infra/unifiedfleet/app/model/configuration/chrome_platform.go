@@ -26,10 +26,11 @@ const ChromePlatformKind string = "ChromePlatform"
 
 // ChromePlatformEntity is a datastore entity that tracks a platform.
 type ChromePlatformEntity struct {
-	_kind        string   `gae:"$kind,ChromePlatform"`
-	ID           string   `gae:"$id"`
-	Tags         []string `gae:"tags"`
-	Manufacturer string   `gae:"manufacturer"`
+	_kind        string                `gae:"$kind,ChromePlatform"`
+	_extra       datastore.PropertyMap `gae:"-,extra"`
+	ID           string                `gae:"$id"`
+	Tags         []string              `gae:"tags"`
+	Manufacturer string                `gae:"manufacturer"`
 	// ufspb.ChromePlatform cannot be directly used as it contains pointer.
 	Platform []byte `gae:",noindex"`
 }

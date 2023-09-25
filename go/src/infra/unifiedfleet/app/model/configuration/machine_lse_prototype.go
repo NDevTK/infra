@@ -26,9 +26,10 @@ const MachineLSEPrototypeKind string = "MachineLSEPrototype"
 
 // MachineLSEPrototypeEntity is a datastore entity that tracks a platform.
 type MachineLSEPrototypeEntity struct {
-	_kind string   `gae:"$kind,MachineLSEPrototype"`
-	ID    string   `gae:"$id"`
-	Tags  []string `gae:"tags"`
+	_kind  string                `gae:"$kind,MachineLSEPrototype"`
+	_extra datastore.PropertyMap `gae:"-,extra"`
+	ID     string                `gae:"$id"`
+	Tags   []string              `gae:"tags"`
 	// ufspb.MachineLSEPrototype cannot be directly used as it contains pointer.
 	MachineLSEPrototype []byte `gae:",noindex"`
 }

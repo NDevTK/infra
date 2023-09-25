@@ -26,13 +26,14 @@ const SwitchKind string = "Switch"
 
 // SwitchEntity is a datastore entity that tracks switch.
 type SwitchEntity struct {
-	_kind string   `gae:"$kind,Switch"`
-	ID    string   `gae:"$id"`
-	Lab   string   `gae:"lab"` // deprecated
-	Zone  string   `gae:"zone"`
-	Rack  string   `gae:"rack"`
-	Tags  []string `gae:"tags"`
-	State string   `gae:"state"`
+	_kind  string                `gae:"$kind,Switch"`
+	_extra datastore.PropertyMap `gae:"-,extra"`
+	ID     string                `gae:"$id"`
+	Lab    string                `gae:"lab"` // deprecated
+	Zone   string                `gae:"zone"`
+	Rack   string                `gae:"rack"`
+	Tags   []string              `gae:"tags"`
+	State  string                `gae:"state"`
 	// ufspb.Switch cannot be directly used as it contains pointer (timestamp).
 	Switch []byte `gae:",noindex"`
 }

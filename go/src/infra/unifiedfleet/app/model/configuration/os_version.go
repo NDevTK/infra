@@ -23,8 +23,9 @@ const OSVersionKind string = "OSVersion"
 
 // OSVersionEntity is a datastore entity that tracks an os_version.
 type OSVersionEntity struct {
-	_kind string `gae:"$kind,OSVersion"`
-	ID    string `gae:"$id"`
+	_kind  string                `gae:"$kind,OSVersion"`
+	_extra datastore.PropertyMap `gae:"-,extra"`
+	ID     string                `gae:"$id"`
 	// fleet.OSVersion cannot be directly used as it contains pointer.
 	OSVersion []byte `gae:",noindex"`
 }

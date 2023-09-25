@@ -18,8 +18,9 @@ const ProjectConfigKind string = "ProjectConfig"
 
 // ProjectConfigEntity is a datastore entity that stores the project configs.
 type ProjectConfigEntity struct {
-	_kind            string `gae:"$kind,ProjectConfig"`
-	Name             string `gae:"$id"`
+	_kind            string                `gae:"$kind,ProjectConfig"`
+	_extra           datastore.PropertyMap `gae:"-,extra"`
+	Name             string                `gae:"$id"`
 	DailyDumpTimeStr string
 }
 

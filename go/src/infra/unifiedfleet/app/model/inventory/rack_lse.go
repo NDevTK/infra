@@ -26,13 +26,14 @@ const RackLSEKind string = "RackLSE"
 
 // RackLSEEntity is a datastore entity that tracks RackLSE.
 type RackLSEEntity struct {
-	_kind              string   `gae:"$kind,RackLSE"`
-	ID                 string   `gae:"$id"`
-	RackIDs            []string `gae:"rack_ids"`
-	RackLSEProtoTypeID string   `gae:"racklse_prototype_id"`
-	KVMIDs             []string `gae:"kvm_ids"`
-	RPMIDs             []string `gae:"rpm_ids"`
-	SwitchIDs          []string `gae:"switch_ids"`
+	_kind              string                `gae:"$kind,RackLSE"`
+	_extra             datastore.PropertyMap `gae:"-,extra"`
+	ID                 string                `gae:"$id"`
+	RackIDs            []string              `gae:"rack_ids"`
+	RackLSEProtoTypeID string                `gae:"racklse_prototype_id"`
+	KVMIDs             []string              `gae:"kvm_ids"`
+	RPMIDs             []string              `gae:"rpm_ids"`
+	SwitchIDs          []string              `gae:"switch_ids"`
 	// ufspb.RackLSE cannot be directly used as it contains pointer.
 	RackLSE []byte `gae:",noindex"`
 }

@@ -19,10 +19,11 @@ const PublicBoardModelDataKind string = "PublicBoardModelData"
 
 // PublicBoardModelDataEntity is a datastore entity that tracks a PublicBoardModelData.
 type PublicBoardModelDataEntity struct {
-	_kind                 string   `gae:"$kind,PublicBoardModel"`
-	Board                 string   `gae:"$id"`
-	Models                []string `gae:"models"`
-	BoardHasPrivateModels bool     `gae:"boardHasPrivateModels"`
+	_kind                 string                `gae:"$kind,PublicBoardModel"`
+	_extra                datastore.PropertyMap `gae:"-,extra"`
+	Board                 string                `gae:"$id"`
+	Models                []string              `gae:"models"`
+	BoardHasPrivateModels bool                  `gae:"boardHasPrivateModels"`
 }
 
 // AddPublicBoardModelData adds a public board name and its corresponding models in the datastore.

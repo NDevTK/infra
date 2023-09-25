@@ -31,9 +31,10 @@ type ServiceConfig struct {
 // ServiceConfigEntity is a datastore entity that records service-level configs.
 type ServiceConfigEntity struct {
 	// ServiceConfig is the datastore entity kind for service-level configs.
-	_kind      string        `gae:"$kind,ServiceConfig"`
-	ID         string        `gae:"$id"`
-	Data       ServiceConfig `gae:",noindex"`
+	_kind      string                `gae:"$kind,ServiceConfig"`
+	_extra     datastore.PropertyMap `gae:"-,extra"`
+	ID         string                `gae:"$id"`
+	Data       ServiceConfig         `gae:",noindex"`
 	UpdateTime time.Time
 }
 

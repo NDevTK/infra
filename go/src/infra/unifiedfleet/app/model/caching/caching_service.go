@@ -26,9 +26,10 @@ const CachingServiceKind string = "CachingService"
 
 // CSEntity is a datastore entity that tracks a platform.
 type CSEntity struct {
-	_kind string `gae:"$kind,CachingService"`
-	ID    string `gae:"$id"`
-	State string `gae:"state"`
+	_kind  string                `gae:"$kind,CachingService"`
+	_extra datastore.PropertyMap `gae:"-,extra"`
+	ID     string                `gae:"$id"`
+	State  string                `gae:"state"`
 	// b/188491698: The field of Subnet has been deprecated. Use 'Subnets'
 	// instead.
 	Subnet  string   `gae:"subnet"`
