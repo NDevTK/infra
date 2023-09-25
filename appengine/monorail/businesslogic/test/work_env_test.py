@@ -7486,35 +7486,3 @@ class WorkEnvTest(unittest.TestCase):
 
   # FUTURE: UpdateHotlist()
   # FUTURE: DeleteHotlist()
-
-  def setUpExpungeUsersFromStars(self):
-    config = fake.MakeTestConfig(789, [], [])
-    self.work_env.services.project_star.SetStarsBatch(
-        self.cnxn, 789, [222, 444, 555], True)
-    self.work_env.services.issue_star.SetStarsBatch(
-        self.cnxn, self.services, config, 78901, [222, 444, 666], True)
-    self.work_env.services.hotlist_star.SetStarsBatch(
-        self.cnxn, 1678, [222, 444, 555], True)
-    self.work_env.services.user_star.SetStarsBatch(
-        self.cnxn, 888, [222, 333, 777], True)
-    self.work_env.services.user_star.SetStarsBatch(
-        self.cnxn, 999, [111, 222, 333], True)
-
-  def testExpungeUsersFromStars(self):
-    self.setUpExpungeUsersFromStars()
-    user_ids = [999, 222, 555]
-    self.work_env.expungeUsersFromStars(user_ids)
-    self.assertEqual(
-        self.work_env.services.project_star.LookupItemStarrers(self.cnxn, 789),
-        [444])
-    self.assertEqual(
-        self.work_env.services.issue_star.LookupItemStarrers(self.cnxn, 78901),
-        [444, 666])
-    self.assertEqual(
-        self.work_env.services.hotlist_star.LookupItemStarrers(self.cnxn, 1678),
-        [444])
-    self.assertEqual(
-        self.work_env.services.user_star.LookupItemStarrers(self.cnxn, 888),
-        [333, 777])
-    self.assertEqual(
-        self.work_env.services.user_star.expunged_item_ids, [999, 222, 555])

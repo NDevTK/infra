@@ -3849,20 +3849,6 @@ class WorkEnv(object):
       self.services.features.UpdateHotlistItemsFields(
           self.mc.cnxn, hotlist_id, new_notes=new_notes)
 
-  def expungeUsersFromStars(self, user_ids):
-    """Wipes any starred user or user's stars from all star services.
-
-    This method will not commit the operation. This method will not
-    make changes to in-memory data.
-    """
-
-    self.services.project_star.ExpungeStarsByUsers(self.mc.cnxn, user_ids)
-    self.services.issue_star.ExpungeStarsByUsers(self.mc.cnxn, user_ids)
-    self.services.hotlist_star.ExpungeStarsByUsers(self.mc.cnxn, user_ids)
-    self.services.user_star.ExpungeStarsByUsers(self.mc.cnxn, user_ids)
-    for user_id in user_ids:
-      self.services.user_star.ExpungeStars(self.mc.cnxn, user_id, commit=False)
-
   # Permissions
 
   # ListFooPermission methods will return the list of permissions in addition to
