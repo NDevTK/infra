@@ -54,7 +54,14 @@ class AbstractStarService(object):
     self.star_count_cache = caches.RamCache(cache_manager, cache_kind)
 
   def ExpungeStars(self, cnxn, item_id, commit=True, limit=None):
-    """Wipes an item's stars from the system."""
+    """Wipes an item's stars from the system.
+
+    Args:
+      cnxn: connection to SQL database.
+      item_id: ID of the item that's starred. ie: an issue, project, etc
+      commit: whether to commit the change.
+      limit: max stars to delete for performance reasons.
+    """
     self.tbl.Delete(
         cnxn, commit=commit, limit=limit, **{self.item_col: item_id})
 
@@ -192,6 +199,45 @@ class IssueStarService(AbstractStarService):
     tbl = sql.SQLTableManager(ISSUESTAR_TABLE_NAME)
     super(IssueStarService, self).__init__(
         cache_manager, tbl, 'issue_id', 'user_id', 'issue')
+
+    # HACK. Usually Monorail SQL table references should stay in their
+    # respective service layer class. But for performance reasons, it's better
+    # for us to directly query the Issue table here.
+    self.issue_tbl = sql.SQLTableManager('Issue')
+
+  def ExpungeStarsByUsers(self, cnxn, user_ids, limit=None):
+    """Wipes a user's stars from the system.
+
+    Ensure that issue metadata is updated on expunging.
+
+    Args:
+      cnxn: connection to SQL database.
+      services:  connections to persistence layer.
+      user_ids: users to delete stars for.
+      limit: max stars to delete for performance reasons.
+    """
+    # TODO(zhangtiff): update star_count for updated issues. This is tricky
+    # because star_count needs to be recomputd for each issue, so this likely
+    # requires a task queue.
+
+    timestamp = int(time.time())
+
+    shard_id = sql.RandomShardID()
+    issue_id_rows = self.tbl.Select(
+        cnxn,
+        cols=['IssueStar.issue_id'],
+        user_id=user_ids,
+        shard_id=shard_id,
+        limit=limit)
+
+    super(IssueStarService, self).ExpungeStarsByUsers(
+        cnxn, user_ids, limit=limit)
+
+    self.issue_tbl.Update(
+        cnxn, {'migration_modified': timestamp},
+        id=[row[0] for row in issue_id_rows],
+        commit=False,
+        limit=limit)
 
   # pylint: disable=arguments-differ
   def SetStar(

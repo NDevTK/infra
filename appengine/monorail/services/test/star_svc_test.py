@@ -194,6 +194,8 @@ class IssueStarServiceTest(unittest.TestCase):
     self.mock_tbl.Delete = mock.Mock()
     self.mock_tbl.InsertRows = mock.Mock()
 
+    self.mock_issue_tbl = self.mox.CreateMock(sql.SQLTableManager)
+
     self.services = service_manager.Services()
     self.services.issue = fake.IssueService()
     self.services.config = fake.ConfigService()
@@ -204,9 +206,34 @@ class IssueStarServiceTest(unittest.TestCase):
         'framework.sql.SQLTableManager', return_value=self.mock_tbl):
       self.issue_star = star_svc.IssueStarService(
           self.cache_manager)
+      self.issue_star.issue_tbl = self.mock_issue_tbl
 
     self.cnxn = 'fake connection'
     self.now = int(time.time())
+
+  def testExpungeStarsByUsers(self):
+    self.mock_tbl.Select = mock.Mock(return_value=[(78901,), (78902,)])
+    self.mock_issue_tbl.Update = mock.Mock()
+
+    user_ids = [2, 3, 4]
+
+    self.mox.ReplayAll()
+    self.issue_star.ExpungeStarsByUsers(self.cnxn, user_ids, limit=40)
+    self.mox.VerifyAll()
+
+    self.mock_tbl.Select.assert_called_once_with(
+        self.cnxn,
+        cols=['IssueStar.issue_id'],
+        user_id=user_ids,
+        shard_id=mox.IgnoreArg(),
+        limit=40)
+    self.mock_tbl.Delete.assert_called_once_with(
+        self.cnxn, user_id=user_ids, commit=False, limit=40)
+    self.mock_issue_tbl.Update.assert_called_once_with(
+        self.cnxn, {'migration_modified': self.now},
+        id=[78901, 78902],
+        commit=False,
+        limit=40)
 
   def testSetStarsBatch_Add(self):
     issue = fake.MakeTestIssue(
