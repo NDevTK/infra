@@ -51,7 +51,7 @@ func pushToDroneQueen(ctx context.Context) (err error) {
 		}
 		// Get all the MachineLSEs
 		// Set keysOnly to true to get only keys. This is faster and consumes less data.
-		lses, err := inventory.ListAllMachineLSEsNameHive(ctx)
+		lses, err := inventory.ListAllMachineLSEs(ctx, true)
 		if err != nil {
 			err = errors.Annotate(err, "failed to list all MachineLSEs for chrome %s namespace", ns).Err()
 			logging.Errorf(ctx, err.Error())
@@ -78,7 +78,7 @@ func pushToDroneQueen(ctx context.Context) (err error) {
 			if !lseInSUnitMap[lse.GetName()] {
 				availableDuts = append(availableDuts, &dronequeenapi.DeclareDutsRequest_Dut{
 					Name: lse.GetName(),
-					Hive: util.GetHiveForDut(lse.GetName(), lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive()),
+					Hive: util.GetHiveForDut(lse.GetName()),
 				})
 			}
 		}

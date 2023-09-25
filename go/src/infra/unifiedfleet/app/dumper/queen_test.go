@@ -16,7 +16,6 @@ import (
 
 	dronequeenapi "infra/appengine/drone-queen/api"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/util"
 )
@@ -34,31 +33,6 @@ func addMachineLSE(ctx context.Context, name string) (*ufspb.MachineLSE, error) 
 	})
 	if err != nil {
 		return nil, fmt.Errorf("Error creating machineLSE: %s", err)
-	}
-
-	return m, nil
-}
-
-// addMachineLSEHive registers a machine with hive
-func addMachineLSEHive(ctx context.Context, name string, hive string) (*ufspb.MachineLSE, error) {
-	m, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
-		Name: name,
-		Lse: &ufspb.MachineLSE_ChromeosMachineLse{
-			ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
-				ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
-					DeviceLse: &ufspb.ChromeOSDeviceLSE{
-						Device: &ufspb.ChromeOSDeviceLSE_Dut{
-							Dut: &chromeosLab.DeviceUnderTest{
-								Hive: hive,
-							},
-						},
-					},
-				},
-			},
-		},
-	})
-	if err != nil {
-		return nil, fmt.Errorf("Error creating machineLSE: %w", err)
 	}
 
 	return m, nil
@@ -87,7 +61,7 @@ func getStubSingletonDroneQueenClient(ctx context.Context) (dronequeenapi.Invent
 
 // TestPushToDroneQueenNamespaces creates DUTs in three namespaces, and then
 // verifies correct behavior wrt which namespaces we push DUTs for
-func TestPushToDroneQueenNamespaces(t *testing.T) {
+func TestPushToDroneQueenNamesapces(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	droneQueenGenerator = getStubSingletonDroneQueenClient
@@ -100,21 +74,11 @@ func TestPushToDroneQueenNamespaces(t *testing.T) {
 	partnerMachine, _ := addMachineLSE(partnerCtx, "partner")
 	_, _ = addMachineLSE(browserCtx, "browser")
 
-	// DUT with hive
-	osMachineHive, _ := addMachineLSEHive(osCtx, "os1", "hive1")
-	// Satlab DUT without hive
-	osMachineSatlabNoHive, _ := addMachineLSEHive(osCtx, "satlab-abc-host1", "")
-	//Satlab DUT with hive
-	osMachineSatlabWithHive, _ := addMachineLSEHive(osCtx, "satlab-abc-host2", "satlab-1")
-
 	// only want os, partner machines to be pushed
 	want := &dronequeenapi.DeclareDutsRequest{
 		AvailableDuts: []*dronequeenapi.DeclareDutsRequest_Dut{
-			{Name: osMachine.Name, Hive: ""},
-			{Name: osMachineSatlabNoHive.Name, Hive: "satlab-abc"},
-			{Name: osMachineHive.Name, Hive: "hive1"},
-			{Name: osMachineSatlabWithHive.Name, Hive: "satlab-1"},
-			{Name: partnerMachine.Name, Hive: ""},
+			{Name: osMachine.Name},
+			{Name: partnerMachine.Name},
 		},
 	}
 
