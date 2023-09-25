@@ -55,17 +55,20 @@ func (c *repairDUTCmd) innerRun(a subcommands.Application, args []string, env su
 	}
 
 	qualifiedHostname := site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, args[0])
-	action := shivas.Verify
+	action := shivas.Normal
 	if c.Deep {
 		action = shivas.DeepRepair
 	}
 
 	res, err := (&shivas.DUTRepairer{
-		Name:     qualifiedHostname,
-		Executor: &executor.ExecCommander{},
+		Name:      qualifiedHostname,
+		Namespace: c.envFlags.GetNamespace(),
+		Executor:  &executor.ExecCommander{},
 	}).Repair(context.Background(), action)
+	if err != nil {
+		return errors.Annotate(err, "repair dut").Err()
+	}
 
 	fmt.Printf("Build Link: %v\n### Batch tasks URL ###\nTask Link: %v\n", res.BuildLink, res.TaskLink)
-
-	return err
+	return nil
 }

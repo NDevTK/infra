@@ -12,6 +12,7 @@ import (
 	"regexp"
 
 	"infra/cros/satlab/common/paths"
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
 )
 
@@ -21,15 +22,16 @@ const (
 	// Verify run only verify actions.
 	Verify RepairAction = "-verify"
 	// DeepRepair use deep-repair task when scheduling a task.
-	DeepRepair = "-deep"
+	DeepRepair RepairAction = "-deep"
 	// Normal don't specify `verify` and `deep` flag to shivas CLI
-	Normal = ""
+	Normal RepairAction = ""
 )
 
 // DUTRepairer repairs a DUT with the given name.
 type DUTRepairer struct {
-	Name     string
-	Executor executor.IExecCommander
+	Name      string
+	Namespace string
+	Executor  executor.IExecCommander
 }
 
 type DUTRepairResponse struct {
@@ -44,12 +46,7 @@ func (u *DUTRepairer) Repair(
 	ctx context.Context,
 	action RepairAction,
 ) (*DUTRepairResponse, error) {
-	args := []string{
-		paths.ShivasCLI,
-		"repair-duts",
-		string(action),
-		u.Name,
-	}
+	args := u.constructArguments(action)
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
 	out, err := u.Executor.Exec(command)
 	if err != nil {
@@ -65,4 +62,19 @@ func (u *DUTRepairer) Repair(
 	}
 
 	return &DUTRepairResponse{BuildLink: matches[0], TaskLink: matches[1]}, nil
+}
+
+func (u *DUTRepairer) constructArguments(action RepairAction) []string {
+	args := []string{
+		paths.ShivasCLI,
+		"repair-duts",
+		"-bucket", site.GetDeployBucket(),
+		"-builder", site.RepairBuilderName,
+		"-namespace", u.Namespace,
+	}
+	if action != "" {
+		args = append(args, string(action))
+	}
+	args = append(args, u.Name)
+	return args
 }
