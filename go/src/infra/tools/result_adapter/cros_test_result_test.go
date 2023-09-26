@@ -35,6 +35,12 @@ const (
 	// Test result JSON file with skipped test results.
 	skippedTestResultFile = "test_data/cros_test_result/skipped_test_result.json"
 
+	// Test result JSON file with passed (with warning) test results.
+	warnTestResultFile = "test_data/cros_test_result/warn_test_result.json"
+
+	// Test result JSON file with failing test results.
+	failedTestResultFile = "test_data/cros_test_result/failed_test_result.json"
+
 	// Test result JSON file with missing test id.
 	missingTestIdFile = "test_data/cros_test_result/missing_test_id.json"
 )
@@ -43,7 +49,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	testResultsJson := ReadJSONFileToString(simpleTestResultFile)
+	testResultsJSON := ReadJSONFileToString(simpleTestResultFile)
 
 	testResult := &artifactpb.TestResult{
 		Version: 1,
@@ -132,7 +138,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 
 	Convey(`From JSON works`, t, func() {
 		results := &CrosTestResult{}
-		err := results.ConvertFromJSON(strings.NewReader(testResultsJson))
+		err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
 		So(err, ShouldBeNil)
 		So(results.TestResult, ShouldResembleProto, testResult)
 	})
@@ -140,7 +146,8 @@ func TestCrosTestResultConversions(t *testing.T) {
 	Convey(`ToProtos works`, t, func() {
 		Convey("Basic", func() {
 			results := &CrosTestResult{}
-			results.ConvertFromJSON(strings.NewReader(testResultsJson))
+			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			So(err, ShouldBeNil)
 			testResults, err := results.ToProtos(ctx)
 			So(err, ShouldBeNil)
 
@@ -188,7 +195,8 @@ func TestCrosTestResultConversions(t *testing.T) {
 			}
 
 			for i, tr := range expected {
-				PopulateProperties(tr, results.TestResult.TestRuns[i])
+				err := PopulateProperties(tr, results.TestResult.TestRuns[i])
+				So(err, ShouldBeNil)
 			}
 
 			So(testResults, ShouldHaveLength, 2)
@@ -199,9 +207,10 @@ func TestCrosTestResultConversions(t *testing.T) {
 		})
 
 		Convey(`Check expected skip and unexpected skip tests`, func() {
-			testResultsJson := ReadJSONFileToString(skippedTestResultFile)
+			testResultsJSON := ReadJSONFileToString(skippedTestResultFile)
 			results := &CrosTestResult{}
-			results.ConvertFromJSON(strings.NewReader(testResultsJson))
+			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			So(err, ShouldBeNil)
 			testResults, err := results.ToProtos(ctx)
 			So(err, ShouldBeNil)
 
@@ -235,7 +244,8 @@ func TestCrosTestResultConversions(t *testing.T) {
 			}
 
 			for i, tr := range expected {
-				PopulateProperties(tr, results.TestResult.TestRuns[i])
+				err := PopulateProperties(tr, results.TestResult.TestRuns[i])
+				So(err, ShouldBeNil)
 			}
 
 			So(testResults, ShouldHaveLength, 2)
@@ -244,11 +254,92 @@ func TestCrosTestResultConversions(t *testing.T) {
 				So(tr.GetProperties().GetFields(), ShouldNotBeEmpty)
 			}
 		})
+		Convey(`Warning results`, func() {
+			testResultsJSON := ReadJSONFileToString(warnTestResultFile)
+			results := &CrosTestResult{}
+			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			So(err, ShouldBeNil)
+			testResults, err := results.ToProtos(ctx)
+			So(err, ShouldBeNil)
+
+			expected := []*sinkpb.TestResult{
+				{
+					TestId:   "rlz_CheckPing",
+					Expected: true,
+					// Warning results are reported as pass, and without
+					// the failure reason set. Warning messages are included
+					// in the test result properties.
+					Status:    pb.TestStatus_PASS,
+					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 60},
+				},
+			}
+
+			for i, tr := range expected {
+				err := PopulateProperties(tr, results.TestResult.TestRuns[i])
+				So(err, ShouldBeNil)
+			}
+
+			So(testResults, ShouldResembleProto, expected)
+			for _, tr := range testResults {
+				So(tr.GetProperties().GetFields(), ShouldNotBeEmpty)
+			}
+		})
+		Convey(`Failed results`, func() {
+			testResultsJSON := ReadJSONFileToString(failedTestResultFile)
+			results := &CrosTestResult{}
+			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			So(err, ShouldBeNil)
+			testResults, err := results.ToProtos(ctx)
+			So(err, ShouldBeNil)
+
+			expected := []*sinkpb.TestResult{
+				{
+					TestId:   "rlz_CheckPing",
+					Expected: false,
+					Status:   pb.TestStatus_ABORT,
+					FailureReason: &pb.FailureReason{
+						PrimaryErrorMessage: "Failed to start Chrome: login failed: context timeout",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "Failed to start Chrome: login failed: context timeout"},
+						},
+					},
+					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 60},
+				},
+				{
+					TestId:   "power_Resume",
+					Expected: false,
+					Status:   pb.TestStatus_FAIL,
+					FailureReason: &pb.FailureReason{
+						PrimaryErrorMessage: "Failed to start Chrome: login failed: OOBE not dismissed, it is on screen \"signin-fatal-error\"",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "Failed to start Chrome: login failed: OOBE not dismissed, it is on screen \"signin-fatal-error\""},
+							{Message: "Failed to clean-up Chrome: some error"},
+							{Message: "Error three"},
+						},
+					},
+					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
+				},
+			}
+
+			for i, tr := range expected {
+				err := PopulateProperties(tr, results.TestResult.TestRuns[i])
+				So(err, ShouldBeNil)
+			}
+
+			So(testResults, ShouldResembleProto, expected)
+			for _, tr := range testResults {
+				So(tr.GetProperties().GetFields(), ShouldNotBeEmpty)
+			}
+		})
 
 		Convey(`Check the full list of tags`, func() {
-			testResultsJson := ReadJSONFileToString(fullTestResultFile)
+			testResultsJSON := ReadJSONFileToString(fullTestResultFile)
 			results := &CrosTestResult{}
-			results.ConvertFromJSON(strings.NewReader(testResultsJson))
+			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			So(err, ShouldBeNil)
 			testResults, err := results.ToProtos(ctx)
 			So(err, ShouldBeNil)
 
@@ -294,7 +385,8 @@ func TestCrosTestResultConversions(t *testing.T) {
 					}),
 				},
 			}
-			PopulateProperties(expected[0], results.TestResult.TestRuns[0])
+			err = PopulateProperties(expected[0], results.TestResult.TestRuns[0])
+			So(err, ShouldBeNil)
 
 			So(testResults, ShouldHaveLength, 1)
 			So(testResults, ShouldResembleProto, expected)
@@ -302,9 +394,10 @@ func TestCrosTestResultConversions(t *testing.T) {
 		})
 
 		Convey(`Check multi DUT testing`, func() {
-			testResultsJson := ReadJSONFileToString(multiDUTTestResultFile)
+			testResultsJSON := ReadJSONFileToString(multiDUTTestResultFile)
 			results := &CrosTestResult{}
-			results.ConvertFromJSON(strings.NewReader(testResultsJson))
+			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			So(err, ShouldBeNil)
 			testResults, err := results.ToProtos(ctx)
 			So(err, ShouldBeNil)
 
@@ -332,7 +425,8 @@ func TestCrosTestResultConversions(t *testing.T) {
 				},
 			}
 
-			PopulateProperties(expected[0], results.TestResult.TestRuns[0])
+			err = PopulateProperties(expected[0], results.TestResult.TestRuns[0])
+			So(err, ShouldBeNil)
 
 			So(testResults, ShouldHaveLength, 1)
 			So(testResults, ShouldResembleProto, expected)
@@ -345,10 +439,11 @@ func TestCrosTestResultConversions(t *testing.T) {
 			// third one doesn't have id and name, so it would throw an error
 			// to surface the problem explicitly and the first two would be
 			// skipped.
-			testResultsJson := ReadJSONFileToString(missingTestIdFile)
+			testResultsJSON := ReadJSONFileToString(missingTestIdFile)
 			results := &CrosTestResult{}
-			results.ConvertFromJSON(strings.NewReader(testResultsJson))
-			_, err := results.ToProtos(ctx)
+			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			So(err, ShouldBeNil)
+			_, err = results.ToProtos(ctx)
 			So(err, ShouldErrLike, "testId is unspecified due to the missing id in test case")
 		})
 	})

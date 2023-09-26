@@ -1,0 +1,53 @@
+{
+    "test_runs":[
+        {
+            "test_case_info":{
+                "test_case_metadata":{
+                    "test_case":{
+                        "id":{
+                            "value":"rlz_CheckPing"
+                        },
+                        "name":"rlz_CheckPing"
+                    }
+                },
+                "test_case_result":{
+                    "test_case_id": {
+                        "value": "rlz_CheckPing"
+                    },
+                    "abort":{},
+                    "reason": "Failed to start Chrome: login failed: context timeout",
+                    "start_time":"2022-09-07T18:53:33.983328614Z",
+                    "duration": "60s"
+                }
+            }
+        },
+        {
+            "test_case_info":{
+                "test_case_metadata":{
+                    "test_case":{
+                        "id":{
+                            "value":"power_Resume"
+                        },
+                        "name":"power_Resume"
+                    }
+                },
+                "test_case_result":{
+                    "test_case_id": {
+                        "value": "power_Resume"
+                    },
+                    "fail":{},
+                    "reason": "Failed to start Chrome: login failed: OOBE not dismissed, it is on screen \"signin-fatal-error\"",
+                    "errors": [{
+                        "message": "Failed to start Chrome: login failed: OOBE not dismissed, it is on screen \"signin-fatal-error\""
+                    }, {
+                        "message": "Failed to clean-up Chrome: some error"
+                    }, {
+                        "message": "Error three"
+                    }],
+                    "start_time":"2022-09-07T18:53:34.983328614Z",
+                    "duration": "120.1s"
+                }
+            }
+        }
+    ]
+}

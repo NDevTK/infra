@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gogo/protobuf/proto"
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	"go.chromium.org/luci/common/errors"
@@ -66,7 +67,34 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 			Tags: genTestResultTags(testRun, r.TestResult.GetTestInvocation()),
 		}
 
-		if testCaseResult.GetReason() != "" {
+		if len(testCaseResult.Errors) > 0 &&
+			(status == pb.TestStatus_FAIL || status == pb.TestStatus_ABORT || status == pb.TestStatus_CRASH) {
+			var rdbErrors []*pb.FailureReason_Error
+			var errorsSize int
+			for _, e := range testCaseResult.Errors {
+				rdbError := &pb.FailureReason_Error{
+					Message: truncateString(e.Message, maxErrorMessageBytes),
+				}
+				errorSize := proto.Size(rdbError)
+				if errorsSize+errorSize > maxErrorsBytes {
+					// No more errors fit.
+					break
+				}
+				rdbErrors = append(rdbErrors, rdbError)
+				errorsSize += errorSize
+			}
+
+			tr.FailureReason = &pb.FailureReason{
+				PrimaryErrorMessage:  truncateString(testCaseResult.Errors[0].Message, maxErrorMessageBytes),
+				Errors:               rdbErrors,
+				TruncatedErrorsCount: int32(len(testCaseResult.Errors) - len(rdbErrors)),
+			}
+		} else if testCaseResult.GetReason() != "" && status != pb.TestStatus_PASS {
+			// This path exists to support legacy results until Testhaus UI
+			// migration is complete.
+			// In future, failure reason should only be set for results considered
+			// failed/crashed/aborted by ResultDB; not skipped or passed results.
+			// See go/resultdb-failure-reason-integrity-proposal.
 			reason := truncateString(
 				testCaseResult.GetReason(), maxErrorMessageBytes)
 			tr.FailureReason = &pb.FailureReason{
