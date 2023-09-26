@@ -2703,6 +2703,29 @@ class WorkEnvTest(unittest.TestCase):
       'features.send_notifications.PrepareAndSendIssueBlockingNotification')
   @mock.patch(
       'features.send_notifications.PrepareAndSendIssueChangeNotification')
+  def testUpdateIssue_FreezeLabels(self, fake_pasicn, fake_pasibn):
+    """We cannot add new labels."""
+    self.SignIn()
+    issue = fake.MakeTestIssue(789, 1, 'summary', 'Available', 111)
+    self.services.issue.TestAddIssue(issue)
+    delta = tracker_pb2.IssueDelta(labels_add=['freeze_new_label'])
+
+    with self.assertRaisesRegex(
+        exceptions.InputException,
+        ('The creation of new labels is blocked for the Chromium project'
+         ' in Monorail. To continue with editing your issue, please'
+         ' remove: freeze_new_label label\\(s\\)')):
+      comment = 'Fake comment'
+      with self.work_env as we:
+        we.UpdateIssue(issue, delta, comment)
+
+    fake_pasicn.assert_not_called()
+    fake_pasibn.assert_not_called()
+
+  @mock.patch(
+      'features.send_notifications.PrepareAndSendIssueBlockingNotification')
+  @mock.patch(
+      'features.send_notifications.PrepareAndSendIssueChangeNotification')
   def testUpdateIssue_EditTooLongComment(self, fake_pasicn, fake_pasibn):
     """We cannot edit an issue description with too long a comment."""
     self.SignIn(222)

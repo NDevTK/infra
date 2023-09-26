@@ -388,6 +388,12 @@ class IssueEntry(servlet.Servlet):
         mr, config, field_values, labels, template.field_values,
         template.labels)
 
+    # This ValidateLabels call is redundant with work already done
+    # in CreateIssue. However, this instance passes in an ezt_errors object
+    # to allow showing related errors next to the fields they happen on.
+    field_helpers.ValidateLabels(
+        mr.cnxn, self.services, mr.project_id, labels, ezt_errors=mr.errors)
+
     # This ValidateCustomFields call is redundant with work already done
     # in CreateIssue. However, this instance passes in an ezt_errors object
     # to allow showing related errors next to the fields they happen on.

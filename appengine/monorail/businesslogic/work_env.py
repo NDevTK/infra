@@ -1919,7 +1919,13 @@ class WorkEnv(object):
     field_ids = [fv.field_id for fv in delta.field_vals_add]
     field_ids.extend([fvr.field_id for fvr in delta.field_vals_remove])
     field_ids.extend(delta.fields_clear)
+
     labels = itertools.chain(delta.labels_add, delta.labels_remove)
+    labels_err_msg = field_helpers.ValidateLabels(
+        self.mc.cnxn, self.services, issue.project_id, delta.labels_add)
+    if labels_err_msg:
+      raise exceptions.InputException(labels_err_msg)
+
     self._AssertUserCanEditFieldsAndEnumMaskedLabels(
         project, config, field_ids, labels)
 

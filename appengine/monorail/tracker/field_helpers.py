@@ -11,6 +11,9 @@ import collections
 import itertools
 import logging
 import re
+import settings
+
+from google.appengine.api import app_identity
 
 from features import autolink_constants
 from framework import authdata
@@ -277,6 +280,35 @@ def ParseFieldValues(cnxn, user_service, field_val_strs, phase_field_val_strs,
           field_values.append(fv)
 
   return field_values
+
+
+def ValidateLabels(cnxn, services, project_id, labels, ezt_errors=None):
+  """Validate labels to block creation of new labels for the Chromium project in
+    Monorail and return an error string or None.
+
+  Args:
+    cnxn: MonorailConnection object.
+    services: Services object referencing services that can be queried.
+    project_id: Project ID.
+    labels: List of labels to be validated.
+
+  Returns:
+    A string containing an error message if there was one.
+  """
+  if settings.unit_test_mode or project_id in settings.label_freeze_project_ids:
+    new_labels = [
+        l for l in labels if services.config.LookupLabelID(
+            cnxn, project_id, l, autocreate=False, case_sensitive=True) is None
+    ]
+    if len(new_labels) > 0:
+      err_msg = (
+          "The creation of new labels is blocked for the Chromium project"
+          " in Monorail. To continue with editing your issue, please"
+          " remove: {} label(s).").format(", ".join(new_labels))
+      if ezt_errors is not None:
+        ezt_errors.labels = err_msg
+      return err_msg
+  return None
 
 
 def ValidateCustomFieldValue(cnxn, project, services, field_def, field_val):

@@ -208,6 +208,9 @@
          <input type="text" class="labelinput" id="label23" size="20" autocomplete="off"
                 name="label" value="[label23]">
         </div>
+        [if-any errors.labels]
+          <div class="fielderror">[errors.labels]</div>
+        [end]
       </td>
    </tr>
 

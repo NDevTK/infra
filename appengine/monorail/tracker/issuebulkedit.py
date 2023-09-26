@@ -200,6 +200,14 @@ class IssueBulkEdit(servlet.Servlet):
 
     parsed = tracker_helpers.ParseIssueRequest(
         mr.cnxn, post_data, self.services, mr.errors, mr.project_name)
+
+    field_helpers.ValidateLabels(
+        mr.cnxn,
+        self.services,
+        mr.project_id,
+        parsed.labels,
+        ezt_errors=mr.errors)
+
     bounce_labels = (
         parsed.labels[:] +
         ['-%s' % lr for lr in parsed.labels_remove])

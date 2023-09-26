@@ -298,6 +298,9 @@ recognized_codesite_projects = [
 ####
 # Part 5:  Instance-specific settings that override lines above.
 # This ID is for -staging and other misc deployments. Prod is defined below.
+
+# IDs of the project for which label freezing should happen
+label_freeze_project_ids = set()
 analytics_id = 'UA-55762617-20'
 
 if unit_test_mode:
@@ -323,6 +326,8 @@ else:
     domain_to_default_project = domain_to_default_project_dev
     # Use replicas created when testing the restore procedures on 2021-02-24
     db_replica_prefix = 'replica-2'
+    # Project ID for Chromium in DEV
+    label_freeze_project_ids = set([16])
 
   elif app_id == 'monorail-prod':
     send_all_email_to = None  # Deliver it to the intended users.

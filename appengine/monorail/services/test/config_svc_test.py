@@ -441,6 +441,22 @@ class ConfigServiceTest(unittest.TestCase):
         self.cnxn, 789, 'NewLabel', autocreate=False))
     self.mox.VerifyAll()
 
+  def testLookupLabelID_CaseSensitive(self):
+    label_dicts = {101: 'security', 201: 'ux'}, {'security': 101, 'ux': 201}
+    self.config_service.label_cache.CacheItem(789, label_dicts)
+
+    self.config_service.labeldef_tbl.Select(
+        self.cnxn,
+        cols=['id'],
+        project_id=789,
+        where=[('label = %s', ['Security'])],
+        limit=1).AndReturn([])
+    self.mox.ReplayAll()
+    self.assertIsNone(
+        self.config_service.LookupLabelID(
+            self.cnxn, 789, 'Security', autocreate=False, case_sensitive=True))
+    self.mox.VerifyAll()
+
   def testLookupLabelIDs_Hit(self):
     label_dicts = {1: 'Security', 2: 'UX'}, {'security': 1, 'ux': 2}
     self.config_service.label_cache.CacheItem(789, label_dicts)

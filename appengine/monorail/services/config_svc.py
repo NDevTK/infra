@@ -556,7 +556,8 @@ class ConfigService(object):
         project_id)
     return label_id_to_name.get(label_id)
 
-  def LookupLabelID(self, cnxn, project_id, label, autocreate=True):
+  def LookupLabelID(
+      self, cnxn, project_id, label, autocreate=True, case_sensitive=False):
     """Look up a label ID, optionally interning it.
 
     Args:
@@ -564,6 +565,7 @@ class ConfigService(object):
       project_id: int ID of the project where the statuses are defined.
       label: label string.
       autocreate: if not already in the DB, store it and generate a new ID.
+      case_sensitive: if label lookup is case sensivite
 
     Returns:
       The label ID for the given label string.
@@ -571,14 +573,19 @@ class ConfigService(object):
     self._EnsureLabelCacheEntry(cnxn, project_id)
     _label_id_to_name, label_name_to_id = self.label_cache.GetItem(
         project_id)
-    if label.lower() in label_name_to_id:
-      return label_name_to_id[label.lower()]
+
+    label_lower = label.lower() if not case_sensitive else label
+    if label_lower in label_name_to_id:
+      return label_name_to_id[label_lower]
+
+    if not case_sensitive:
+      where = [('LOWER(label) = %s', [label_lower])]
+    else:
+      where = [('label = %s', [label])]
 
     # Double check that the label does not already exist in the DB.
     rows = self.labeldef_tbl.Select(
-        cnxn, cols=['id'], project_id=project_id,
-        where=[('LOWER(label) = %s', [label.lower()])],
-        limit=1)
+        cnxn, cols=['id'], project_id=project_id, where=where, limit=1)
     logging.info('Double checking for %r gave %r', label, rows)
     if rows:
       self.label_row_2lc.cache.LocalInvalidate(project_id)

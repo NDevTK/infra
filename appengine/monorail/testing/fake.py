@@ -1271,9 +1271,16 @@ class ConfigService(object):
       return None
     return 'label_%d_%d' % (project_id, label_id)
 
-  def LookupLabelID(self, cnxn, project_id, label, autocreate=True):
+  def LookupLabelID(
+      self, cnxn, project_id, label, autocreate=True, case_sensitive=False):
     if label in self.label_to_id:
       return self.label_to_id[label]
+    # TODO: The condition here is specifically added to return 'None' and
+    # allow testing for label freezing. This can be removed after refactoring
+    # other dependent tests to not fail for returning 'None' instead of '1'
+    # when label is not found in 'label_to_id' dict.
+    if label == 'freeze_new_label':
+      return None
     return 1
 
   def LookupLabelIDs(self, cnxn, project_id, labels, autocreate=False):

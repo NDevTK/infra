@@ -224,6 +224,38 @@ class IssueBulkEditTest(unittest.TestCase):
     url = self.servlet.ProcessFormData(mr, post_data)
     self.assertTrue('list?can=1&q=&saved=1' in url)
 
+  def testProcessFormData_FreezeLabels(self):
+    """Test that PFD works in a normal no-corner-cases case."""
+    created_issue_1 = fake.MakeTestIssue(
+        789, 1, 'issue summary', 'New', 111, reporter_id=111)
+    self.services.issue.TestAddIssue(created_issue_1)
+    local_id_1 = created_issue_1.local_id
+
+    mr = testing_helpers.MakeMonorailRequest(
+        project=self.project,
+        perms=permissions.OWNER_ACTIVE_PERMISSIONSET,
+        user_info={'user_id': 111})
+    mr.local_id_list = [local_id_1]
+
+    post_data = fake.PostData(
+        owner=['owner@example.com'],
+        can=[1],
+        q=[''],
+        colspec=[''],
+        sort=[''],
+        groupby=[''],
+        start=[0],
+        num=[100],
+        label=['freeze_new_label'])
+    self._MockMethods()
+    self.servlet.response = flask.Response()
+    self.servlet.ProcessFormData(mr, post_data)
+    self.assertEqual(
+        (
+            "The creation of new labels is blocked for the Chromium project"
+            " in Monorail. To continue with editing your issue, please"
+            " remove: freeze_new_label label(s)."), mr.errors.labels)
+
   def testProcessFormData_NoIssues(self):
     """Test PFD when no issues are specified."""
     mr = testing_helpers.MakeMonorailRequest(
