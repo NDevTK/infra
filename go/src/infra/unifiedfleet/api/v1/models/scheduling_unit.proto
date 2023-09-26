@@ -58,6 +58,8 @@ message SchedulingUnit {
   ExposeType expose_type = 9;
   // Indicates if the scheduling unit is entirely hosted in a wifecell box.
   bool wificell = 10;
+  // Indicates the scheduling unit is in a cellular testbed with a specific carrier.
+  string carrier = 11;
 }
 
 enum SchedulingUnitType {
