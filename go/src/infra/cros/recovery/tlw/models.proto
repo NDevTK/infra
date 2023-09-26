@@ -550,6 +550,26 @@ message HumanMotionRobot {
   string touchhost = 3;
 }
 
+// AudioLatencyToolkit holds info about Teensy audio latency toolkit on the DUT
+message AudioLatencyToolkit {
+  // Teensy Version
+  string version = 1; // default: "4.1"
+
+  // State describes the state of device.
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    // Device and software on it is working as expected.
+    WORKING = 1;
+    // Device is broken or not working as expected.
+    BROKEN = 2;
+    // Device State is not applicable.
+    NOT_APPLICABLE = 3;
+  }
+
+  // State of the device.
+  State state = 2;
+}
+
 // Chrome OS specific DUT details
 message ChromeOS {
   reserved 1;
@@ -661,6 +681,9 @@ message ChromeOS {
 
   // Testbed Capability info
   TestbedCapability testbed_capability = 28;
+
+  // Audio Latency Toolkit info.
+  AudioLatencyToolkit audio_latency_toolkit = 29;
 }
 
 // TestbedCapability specifies whether the testbed can execute certain tests.
