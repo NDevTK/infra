@@ -19,6 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"infra/unifiedfleet/app/config"
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/util"
@@ -518,6 +519,37 @@ func ListAllMachineLSEs(ctx context.Context, keysOnly bool) (res []*ufspb.Machin
 			machineLSE := pm.(*ufspb.MachineLSE)
 			res = append(res, machineLSE)
 		}
+	}
+	return
+}
+
+// ListAllMachineLSEsNameHive return all machine lses name and hive in datastore.
+func ListAllMachineLSEsNameHive(ctx context.Context) (res []*ufspb.MachineLSE, err error) {
+	var entities []*MachineLSEEntity
+	q := datastore.NewQuery(MachineLSEKind).Project("hive").FirestoreMode(true)
+	if err = datastore.GetAll(ctx, q, &entities); err != nil {
+		return nil, err
+	}
+	for _, ent := range entities {
+		lse := &ufspb.MachineLSE{
+			Name: ent.ID,
+		}
+		if ent.Hive != "" {
+			lse.Lse = &ufspb.MachineLSE_ChromeosMachineLse{
+				ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+					ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+						DeviceLse: &ufspb.ChromeOSDeviceLSE{
+							Device: &ufspb.ChromeOSDeviceLSE_Dut{
+								Dut: &chromeosLab.DeviceUnderTest{
+									Hive: ent.Hive,
+								},
+							},
+						},
+					},
+				},
+			}
+		}
+		res = append(res, lse)
 	}
 	return
 }

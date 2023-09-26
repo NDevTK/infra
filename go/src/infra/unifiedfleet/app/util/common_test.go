@@ -12,18 +12,19 @@ import (
 
 func TestGetHiveForDut(t *testing.T) {
 	Convey("Test GetHiveForDut", t, func() {
-		So(GetHiveForDut("satlab-xx12sha23-chromeos1-row2-rack3-host4"), ShouldEqual, "satlab-xx12sha23")
-		So(GetHiveForDut("satlab-12:sha45-em25-desk-noogler"), ShouldEqual, "satlab-12:sha45")
-		So(GetHiveForDut("chromeos1-row2-rack3-host4"), ShouldEqual, "")
-		So(GetHiveForDut("cros-mtv1950-144-rack204-host1"), ShouldEqual, gtransitHive)
-		So(GetHiveForDut("cros-mtv1950-144-rack204-host2"), ShouldEqual, gtransitHive)
-		So(GetHiveForDut("cros-mtv1950-144-rack204-labstation1"), ShouldEqual, gtransitHive)
-		So(GetHiveForDut("chromeos8-foo"), ShouldEqual, sfo36OSHive)
-		So(GetHiveForDut("chrome-chromeos8-foo"), ShouldEqual, sfo36OSHive)
-		So(GetHiveForDut(ChromiumNamePrefix), ShouldEqual, chromiumHive)
-		So(GetHiveForDut("chromium-bar"), ShouldEqual, chromiumHive)
-		So(GetHiveForDut("chrome-perf-chromeos8-host2"), ShouldEqual, chromePerfHive)
-		So(GetHiveForDut("cri12-host8"), ShouldEqual, iad65OSHive)
+		So(GetHiveForDut("satlab-xx12sha23-chromeos1-row2-rack3-host4", ""), ShouldEqual, "satlab-xx12sha23")
+		So(GetHiveForDut("satlab-12:sha45-em25-desk-noogler", ""), ShouldEqual, "satlab-12:sha45")
+		So(GetHiveForDut("satlab-abc123-host1", "satlab-nothash"), ShouldEqual, "satlab-nothash")
+		So(GetHiveForDut("chromeos1-row2-rack3-host4", ""), ShouldEqual, "")
+		So(GetHiveForDut("cros-mtv1950-144-rack204-host1", ""), ShouldEqual, gtransitHive)
+		So(GetHiveForDut("cros-mtv1950-144-rack204-host2", ""), ShouldEqual, gtransitHive)
+		So(GetHiveForDut("cros-mtv1950-144-rack204-labstation1", ""), ShouldEqual, gtransitHive)
+		So(GetHiveForDut("chromeos8-foo", ""), ShouldEqual, sfo36OSHive)
+		So(GetHiveForDut("chrome-chromeos8-foo", ""), ShouldEqual, sfo36OSHive)
+		So(GetHiveForDut(ChromiumNamePrefix, ""), ShouldEqual, chromiumHive)
+		So(GetHiveForDut("chromium-bar", ""), ShouldEqual, chromiumHive)
+		So(GetHiveForDut("chrome-perf-chromeos8-host2", ""), ShouldEqual, chromePerfHive)
+		So(GetHiveForDut("cri12-host8", ""), ShouldEqual, iad65OSHive)
 	})
 }
 
