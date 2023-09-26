@@ -29,17 +29,18 @@ const RackKind string = "Rack"
 
 // RackEntity is a datastore entity that tracks Rack.
 type RackEntity struct {
-	_kind     string   `gae:"$kind,Rack"`
-	ID        string   `gae:"$id"`
-	Bbnum     int32    `gae:"bbnum"`
-	SwitchIDs []string `gae:"switch_ids"` // deprecated. Do not use.
-	KVMIDs    []string `gae:"kvm_ids"`    // deprecated. Do not use.
-	RPMIDs    []string `gae:"rpm_ids"`    // deprecated. Do not use.
-	Lab       string   `gae:"lab"`        // deprecated
-	Zone      string   `gae:"zone"`
-	Tags      []string `gae:"tags"`
-	State     string   `gae:"state"`
-	Realm     string   `gae:"realm"`
+	_kind     string                `gae:"$kind,Rack"`
+	Extra     datastore.PropertyMap `gae:",extra"`
+	ID        string                `gae:"$id"`
+	Bbnum     int32                 `gae:"bbnum"`
+	SwitchIDs []string              `gae:"switch_ids"` // deprecated. Do not use.
+	KVMIDs    []string              `gae:"kvm_ids"`    // deprecated. Do not use.
+	RPMIDs    []string              `gae:"rpm_ids"`    // deprecated. Do not use.
+	Lab       string                `gae:"lab"`        // deprecated
+	Zone      string                `gae:"zone"`
+	Tags      []string              `gae:"tags"`
+	State     string                `gae:"state"`
+	Realm     string                `gae:"realm"`
 	// ufspb.Rack cannot be directly used as it contains pointer.
 	Rack []byte `gae:",noindex"`
 }

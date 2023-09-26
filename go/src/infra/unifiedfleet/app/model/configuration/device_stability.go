@@ -22,9 +22,10 @@ const DeviceStabilityKind string = "DeviceStability"
 
 // DeviceStabilityEntity is a datastore entity that tracks a device stability record .
 type DeviceStabilityEntity struct {
-	_kind         string `gae:"$kind,DeviceStability"`
-	ID            string `gae:"$id"`
-	StabilityData []byte `gae:",noindex"`
+	_kind         string                `gae:"$kind,DeviceStability"`
+	Extra         datastore.PropertyMap `gae:",extra"`
+	ID            string                `gae:"$id"`
+	StabilityData []byte                `gae:",noindex"`
 	Updated       time.Time
 }
 
