@@ -225,20 +225,21 @@ var devUFSState = chromeosLab.DutState{
 	Id: &chromeosLab.ChromeOSDeviceID{
 		Value: "test_dut",
 	},
-	Servo:                  chromeosLab.PeripheralState_BROKEN,
-	Chameleon:              chromeosLab.PeripheralState_WORKING,
-	AudioLoopbackDongle:    chromeosLab.PeripheralState_NOT_CONNECTED,
-	WorkingBluetoothBtpeer: 3,
-	Cr50Phase:              chromeosLab.DutState_CR50_PHASE_PVT,
-	Cr50KeyEnv:             chromeosLab.DutState_CR50_KEYENV_PROD,
-	StorageState:           chromeosLab.HardwareState_HARDWARE_NORMAL,
-	ServoUsbState:          chromeosLab.HardwareState_HARDWARE_NEED_REPLACEMENT,
-	BatteryState:           chromeosLab.HardwareState_HARDWARE_UNKNOWN,
-	WifiState:              chromeosLab.HardwareState_HARDWARE_ACCEPTABLE,
-	BluetoothState:         chromeosLab.HardwareState_HARDWARE_NORMAL,
-	CellularModemState:     chromeosLab.HardwareState_HARDWARE_NORMAL,
-	RpmState:               chromeosLab.PeripheralState_WORKING,
-	WifiPeripheralState:    chromeosLab.PeripheralState_WORKING,
+	Servo:                    chromeosLab.PeripheralState_BROKEN,
+	Chameleon:                chromeosLab.PeripheralState_WORKING,
+	AudioLoopbackDongle:      chromeosLab.PeripheralState_NOT_CONNECTED,
+	WorkingBluetoothBtpeer:   3,
+	Cr50Phase:                chromeosLab.DutState_CR50_PHASE_PVT,
+	Cr50KeyEnv:               chromeosLab.DutState_CR50_KEYENV_PROD,
+	StorageState:             chromeosLab.HardwareState_HARDWARE_NORMAL,
+	ServoUsbState:            chromeosLab.HardwareState_HARDWARE_NEED_REPLACEMENT,
+	BatteryState:             chromeosLab.HardwareState_HARDWARE_UNKNOWN,
+	WifiState:                chromeosLab.HardwareState_HARDWARE_ACCEPTABLE,
+	BluetoothState:           chromeosLab.HardwareState_HARDWARE_NORMAL,
+	CellularModemState:       chromeosLab.HardwareState_HARDWARE_NORMAL,
+	RpmState:                 chromeosLab.PeripheralState_WORKING,
+	WifiPeripheralState:      chromeosLab.PeripheralState_WORKING,
+	AudioLatencyToolkitState: chromeosLab.PeripheralState_WORKING,
 }
 
 var labstationMachine = ufspb.Machine{
@@ -575,6 +576,7 @@ common {
 			router_802_11ax: true
 			working_bluetooth_btpeer: 3
 			hmr_state: UNKNOWN
+			audio_latency_toolkit_state: WORKING
 		}
 		phase: PHASE_DVT
 		platform: "coral"
@@ -679,6 +681,7 @@ common {
 			peripheral_wifi_state: WORKING
 			chameleon_state: WORKING
 			hmr_state: UNKNOWN
+			audio_latency_toolkit_state: WORKING
 		}
 		platform:""
 		test_coverage_hints {
