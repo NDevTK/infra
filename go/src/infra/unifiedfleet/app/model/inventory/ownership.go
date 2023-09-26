@@ -35,10 +35,11 @@ const AssetTypeVM string = "VM"
 
 // OwnershipDataEntity is a datastore entity that tracks a OwnershipData.
 type OwnershipDataEntity struct {
-	_kind         string `gae:"$kind,Ownership"`
-	Name          string `gae:"$id"`
-	AssetType     string `gae:"AssetType"`
-	OwnershipData []byte `gae:",noindex"`
+	_kind         string                `gae:"$kind,Ownership"`
+	Extra         datastore.PropertyMap `gae:",extra"`
+	Name          string                `gae:"$id"`
+	AssetType     string                `gae:"AssetType"`
+	OwnershipData []byte                `gae:",noindex"`
 }
 
 // GetProto returns the unmarshaled OwnershipData.

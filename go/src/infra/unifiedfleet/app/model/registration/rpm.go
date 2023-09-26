@@ -26,14 +26,15 @@ const RPMKind string = "RPM"
 
 // RPMEntity is a datastore entity that tracks RPM.
 type RPMEntity struct {
-	_kind      string   `gae:"$kind,RPM"`
-	ID         string   `gae:"$id"`
-	Lab        string   `gae:"lab"` // deprecated
-	Zone       string   `gae:"zone"`
-	Rack       string   `gae:"rack"`
-	Tags       []string `gae:"tags"`
-	MacAddress string   `gae:"mac_address"`
-	State      string   `gae:"state"`
+	_kind      string                `gae:"$kind,RPM"`
+	Extra      datastore.PropertyMap `gae:",extra"`
+	ID         string                `gae:"$id"`
+	Lab        string                `gae:"lab"` // deprecated
+	Zone       string                `gae:"zone"`
+	Rack       string                `gae:"rack"`
+	Tags       []string              `gae:"tags"`
+	MacAddress string                `gae:"mac_address"`
+	State      string                `gae:"state"`
 	// ufspb.RPM cannot be directly used as it contains pointer.
 	RPM []byte `gae:",noindex"`
 }

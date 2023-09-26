@@ -26,12 +26,13 @@ const SchedulingUnitKind string = "SchedulingUnit"
 
 // SchedulingUnitEntity is a datastore entity that tracks a SchedulingUnit.
 type SchedulingUnitEntity struct {
-	_kind       string   `gae:"$kind,SchedulingUnit"`
-	ID          string   `gae:"$id"`
-	Type        string   `gae:"type"`
-	Pools       []string `gae:"pools"`
-	MachineLSEs []string `gae:"machinelses"`
-	Tags        []string `gae:"tags"`
+	_kind       string                `gae:"$kind,SchedulingUnit"`
+	Extra       datastore.PropertyMap `gae:",extra"`
+	ID          string                `gae:"$id"`
+	Type        string                `gae:"type"`
+	Pools       []string              `gae:"pools"`
+	MachineLSEs []string              `gae:"machinelses"`
+	Tags        []string              `gae:"tags"`
 	// ufspb.SchedulingUnit cannot be directly used as it contains pointer.
 	SchedulingUnit []byte `gae:",noindex"`
 }

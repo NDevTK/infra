@@ -12,6 +12,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/gae/service/datastore"
 
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	ufsds "infra/unifiedfleet/app/model/datastore"
@@ -23,9 +24,10 @@ const DeviceConfigKind string = "DeviceConfig"
 
 // DeviceConfigEntity is a datastore entity that tracks a DeviceConfig.
 type DeviceConfigEntity struct {
-	_kind        string `gae:"$kind,DeviceConfig"`
-	ID           string `gae:"$id"`
-	DeviceConfig []byte `gae:",noindex"`
+	_kind        string                `gae:"$kind,DeviceConfig"`
+	Extra        datastore.PropertyMap `gae:",extra"`
+	ID           string                `gae:"$id"`
+	DeviceConfig []byte                `gae:",noindex"`
 	Updated      time.Time
 	Realm        string `gae:"realm"` // Realm for this entity
 }
