@@ -164,6 +164,10 @@ deps = {
         'version': 'fastboot_version:5943271ace17',
       },
 
+      {
+        'package': 'infra/3pp/tools/golangci-lint/${{platform}}',
+        'version': 'version:2@1.54.2',
+      },
     ],
     'dep_type': 'cipd',
   },
