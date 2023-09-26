@@ -9,8 +9,6 @@ platforms:
   - freebsd-riscv64
   - illumos-amd64
   - linux-386
-  - linux-amd64
-  - linux-arm64
   - linux-loong64
   - linux-mips
   - linux-mips64
@@ -25,8 +23,6 @@ platforms:
   - openbsd-amd64
   - openbsd-arm64
   - solaris-amd64
-  - windows-amd64
-  - windows-arm64
 go_build_environ:
   CGO_ENABLED:
     linux: 0 # to avoid linking to system dynamic libraries
