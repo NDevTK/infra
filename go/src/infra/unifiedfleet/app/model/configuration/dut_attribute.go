@@ -25,10 +25,9 @@ const DutAttributeKind string = "DutAttribute"
 
 // DutAttributeEntity is a datastore entity that tracks a DutAttribute.
 type DutAttributeEntity struct {
-	_kind         string                `gae:"$kind,DutAttribute"`
-	_extra        datastore.PropertyMap `gae:"-,extra"`
-	ID            string                `gae:"$id"`
-	AttributeData []byte                `gae:",noindex"`
+	_kind         string `gae:"$kind,DutAttribute"`
+	ID            string `gae:"$id"`
+	AttributeData []byte `gae:",noindex"`
 	Updated       time.Time
 }
 

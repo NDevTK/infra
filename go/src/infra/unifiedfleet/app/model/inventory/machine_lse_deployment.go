@@ -26,12 +26,11 @@ const MachineLSEDeploymentKind string = "MachineLSEDeployment"
 
 // MachineLSEDeploymentEntity is a datastore entity that tracks the deployment info for a host.
 type MachineLSEDeploymentEntity struct {
-	_kind                string                `gae:"$kind,MachineLSEDeployment"`
-	_extra               datastore.PropertyMap `gae:"-,extra"`
-	ID                   string                `gae:"$id"`
-	Hostname             string                `gae:"hostname"`
-	DeploymentIdentifier string                `gae:"deployment_identifier"`
-	DeploymentEnv        string                `gae:"deployment_env"`
+	_kind                string `gae:"$kind,MachineLSEDeployment"`
+	ID                   string `gae:"$id"`
+	Hostname             string `gae:"hostname"`
+	DeploymentIdentifier string `gae:"deployment_identifier"`
+	DeploymentEnv        string `gae:"deployment_env"`
 	// Follow others entities, store ufspb.MachineLSEDeployment bytes.
 	DeploymentInfo []byte `gae:",noindex"`
 }

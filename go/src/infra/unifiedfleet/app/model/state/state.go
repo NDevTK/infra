@@ -26,8 +26,7 @@ const RecordKind string = "State"
 
 // RecordEntity is a datastore entity that tracks dhcp.
 type RecordEntity struct {
-	_kind  string                `gae:"$kind,State"`
-	_extra datastore.PropertyMap `gae:"-,extra"`
+	_kind string `gae:"$kind,State"`
 	// refer to the hostname
 	ResourceName string `gae:"$id"`
 	ResourceType string `gae:"resource_type"`

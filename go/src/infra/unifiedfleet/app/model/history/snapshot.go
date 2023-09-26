@@ -19,8 +19,7 @@ const SnapshotMsgKind string = "SnapshotMsg"
 
 // SnapshotMsgEntity is a datastore entity that stores the snapshot msgs.
 type SnapshotMsgEntity struct {
-	_kind  string                `gae:"$kind,SnapshotMsg"`
-	_extra datastore.PropertyMap `gae:"-,extra"`
+	_kind string `gae:"$kind,SnapshotMsg"`
 	// Add an auto-increment ID as key for deleting
 	ID           int64  `gae:"$id"`
 	ResourceName string `gae:"resource_name"`

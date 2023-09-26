@@ -14,7 +14,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -27,10 +26,9 @@ const ConfigBundleKind string = "ConfigBundle"
 
 // ConfigBundleEntity is a datastore entity that tracks a ConfigBundle.
 type ConfigBundleEntity struct {
-	_kind      string                `gae:"$kind,ConfigBundle"`
-	_extra     datastore.PropertyMap `gae:"-,extra"`
-	ID         string                `gae:"$id"`
-	ConfigData []byte                `gae:",noindex"`
+	_kind      string `gae:"$kind,ConfigBundle"`
+	ID         string `gae:"$id"`
+	ConfigData []byte `gae:",noindex"`
 	Updated    time.Time
 }
 
@@ -137,10 +135,9 @@ const FlatConfigKind string = "FlatConfig"
 
 // FlatConfigEntity is a datastore entity that tracks a FlatConfig.
 type FlatConfigEntity struct {
-	_kind      string                `gae:"$kind,FlatConfig"`
-	_extra     datastore.PropertyMap `gae:"-,extra"`
-	ID         string                `gae:"$id"`
-	ConfigData []byte                `gae:",noindex"`
+	_kind      string `gae:"$kind,FlatConfig"`
+	ID         string `gae:"$id"`
+	ConfigData []byte `gae:",noindex"`
 	Updated    time.Time
 }
 

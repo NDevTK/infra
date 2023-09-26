@@ -29,18 +29,17 @@ const AssetKind string = "Asset"
 
 // AssetEntity is a datastore entity that tracks Assets
 type AssetEntity struct {
-	_kind       string                `gae:"$kind,Asset"`
-	_extra      datastore.PropertyMap `gae:"-,extra"`
-	Name        string                `gae:"$id"`
-	Zone        string                `gae:"zone"`
-	Type        string                `gae:"type"`
-	Model       string                `gae:"model"`
-	Rack        string                `gae:"rack"`
-	BuildTarget string                `gae:"build_target"`
-	Phase       string                `gae:"phase"`
-	Tags        []string              `gae:"tags"`
-	Realm       string                `gae:"realm"`
-	Asset       []byte                `gae:",noindex"` // Marshalled Asset proto
+	_kind       string   `gae:"$kind,Asset"`
+	Name        string   `gae:"$id"`
+	Zone        string   `gae:"zone"`
+	Type        string   `gae:"type"`
+	Model       string   `gae:"model"`
+	Rack        string   `gae:"rack"`
+	BuildTarget string   `gae:"build_target"`
+	Phase       string   `gae:"phase"`
+	Tags        []string `gae:"tags"`
+	Realm       string   `gae:"realm"`
+	Asset       []byte   `gae:",noindex"` // Marshalled Asset proto
 }
 
 // GetProto returns unmarshalled Asset.

@@ -26,17 +26,16 @@ const DracKind string = "Drac"
 
 // DracEntity is a datastore entity that tdracs Drac.
 type DracEntity struct {
-	_kind      string                `gae:"$kind,Drac"`
-	_extra     datastore.PropertyMap `gae:"-,extra"`
-	ID         string                `gae:"$id"`
-	SwitchID   string                `gae:"switch_id"`
-	Lab        string                `gae:"lab"` // deprecated
-	Zone       string                `gae:"zone"`
-	Machine    string                `gae:"machine"`
-	Rack       string                `gae:"rack"`
-	Tags       []string              `gae:"tags"`
-	MacAddress string                `gae:"mac_address"`
-	SwitchPort string                `gae:"switch_port"`
+	_kind      string   `gae:"$kind,Drac"`
+	ID         string   `gae:"$id"`
+	SwitchID   string   `gae:"switch_id"`
+	Lab        string   `gae:"lab"` // deprecated
+	Zone       string   `gae:"zone"`
+	Machine    string   `gae:"machine"`
+	Rack       string   `gae:"rack"`
+	Tags       []string `gae:"tags"`
+	MacAddress string   `gae:"mac_address"`
+	SwitchPort string   `gae:"switch_port"`
 	// ufspb.Drac cannot be directly used as it contains pointer.
 	Drac []byte `gae:",noindex"`
 }

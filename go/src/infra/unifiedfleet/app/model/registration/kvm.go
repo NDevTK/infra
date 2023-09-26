@@ -26,16 +26,15 @@ const KVMKind string = "KVM"
 
 // KVMEntity is a datastore entity that tracks KVM.
 type KVMEntity struct {
-	_kind            string                `gae:"$kind,KVM"`
-	_extra           datastore.PropertyMap `gae:"-,extra"`
-	ID               string                `gae:"$id"`
-	ChromePlatformID string                `gae:"chrome_platform_id"`
-	Lab              string                `gae:"lab"` // deprecated
-	Zone             string                `gae:"zone"`
-	Rack             string                `gae:"rack"`
-	Tags             []string              `gae:"tags"`
-	MacAddress       string                `gae:"mac_address"`
-	State            string                `gae:"state"`
+	_kind            string   `gae:"$kind,KVM"`
+	ID               string   `gae:"$id"`
+	ChromePlatformID string   `gae:"chrome_platform_id"`
+	Lab              string   `gae:"lab"` // deprecated
+	Zone             string   `gae:"zone"`
+	Rack             string   `gae:"rack"`
+	Tags             []string `gae:"tags"`
+	MacAddress       string   `gae:"mac_address"`
+	State            string   `gae:"state"`
 	// ufspb.KVM cannot be directly used as it contains pointer.
 	KVM []byte `gae:",noindex"`
 }

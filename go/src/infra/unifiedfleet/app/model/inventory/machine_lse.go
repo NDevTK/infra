@@ -29,37 +29,36 @@ const MachineLSEKind string = "MachineLSE"
 
 // MachineLSEEntity is a datastore entity that tracks MachineLSE.
 type MachineLSEEntity struct {
-	_kind                 string                `gae:"$kind,MachineLSE"`
-	_extra                datastore.PropertyMap `gae:"-,extra"`
-	ID                    string                `gae:"$id"`
-	MachineIDs            []string              `gae:"machine_ids"`
-	MachineLSEProtoTypeID string                `gae:"machinelse_prototype_id"`
-	SwitchID              string                `gae:"switch_id"`
-	RPMID                 string                `gae:"rpm_id"`
-	RPMPort               string                `gae:"rpm_port"`
-	VlanID                string                `gae:"vlan_id"`
-	ServoID               string                `gae:"servo_id"`
-	ServoType             string                `gae:"servo_type"`
-	Rack                  string                `gae:"rack"`
-	Lab                   string                `gae:"lab"` // deprecated
-	Zone                  string                `gae:"zone"`
-	Manufacturer          string                `gae:"manufacturer"`
-	Tags                  []string              `gae:"tags"`
-	State                 string                `gae:"state"`
-	OS                    []string              `gae:"os"`
-	VirtualDatacenter     string                `gae:"virtualdatacenter"`
-	Nic                   string                `gae:"nic"`
-	Pools                 []string              `gae:"pools"`
-	AssociatedHostname    string                `gae:"associated_hostname"`
-	AssociatedHostPort    string                `gae:"associated_host_port"`
-	Pool                  string                `gae:"pool"`
-	SwarmingServer        string                `gae:"swarming_server"`
-	Customer              string                `gae:"customer"`
-	SecurityLevel         string                `gae:"security_level"`
-	MibaRealm             string                `gae:"miba_realm,noindex"` // deprecated
-	LogicalZone           string                `gae:"logical_zone"`
-	Realm                 string                `gae:"realm"`
-	Hive                  string                `gae:"hive"`
+	_kind                 string   `gae:"$kind,MachineLSE"`
+	ID                    string   `gae:"$id"`
+	MachineIDs            []string `gae:"machine_ids"`
+	MachineLSEProtoTypeID string   `gae:"machinelse_prototype_id"`
+	SwitchID              string   `gae:"switch_id"`
+	RPMID                 string   `gae:"rpm_id"`
+	RPMPort               string   `gae:"rpm_port"`
+	VlanID                string   `gae:"vlan_id"`
+	ServoID               string   `gae:"servo_id"`
+	ServoType             string   `gae:"servo_type"`
+	Rack                  string   `gae:"rack"`
+	Lab                   string   `gae:"lab"` // deprecated
+	Zone                  string   `gae:"zone"`
+	Manufacturer          string   `gae:"manufacturer"`
+	Tags                  []string `gae:"tags"`
+	State                 string   `gae:"state"`
+	OS                    []string `gae:"os"`
+	VirtualDatacenter     string   `gae:"virtualdatacenter"`
+	Nic                   string   `gae:"nic"`
+	Pools                 []string `gae:"pools"`
+	AssociatedHostname    string   `gae:"associated_hostname"`
+	AssociatedHostPort    string   `gae:"associated_host_port"`
+	Pool                  string   `gae:"pool"`
+	SwarmingServer        string   `gae:"swarming_server"`
+	Customer              string   `gae:"customer"`
+	SecurityLevel         string   `gae:"security_level"`
+	MibaRealm             string   `gae:"miba_realm,noindex"` // deprecated
+	LogicalZone           string   `gae:"logical_zone"`
+	Realm                 string   `gae:"realm"`
+	Hive                  string   `gae:"hive"`
 	// ufspb.MachineLSE cannot be directly used as it contains pointer.
 	MachineLSE []byte `gae:",noindex"`
 }

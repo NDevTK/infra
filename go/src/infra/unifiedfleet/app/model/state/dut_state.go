@@ -30,8 +30,7 @@ const DutStateKind string = "DutState"
 
 // DutStateEntity is a datastore entity that tracks dut state.
 type DutStateEntity struct {
-	_kind  string                `gae:"$kind,DutState"`
-	_extra datastore.PropertyMap `gae:"-,extra"`
+	_kind string `gae:"$kind,DutState"`
 	// refer to the device id
 	ID       string `gae:"$id"`
 	Hostname string `gae:"hostname"`

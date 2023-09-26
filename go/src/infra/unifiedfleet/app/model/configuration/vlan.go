@@ -26,13 +26,12 @@ const VlanKind string = "Vlan"
 
 // VlanEntity is a datastore entity that tvlans Vlan.
 type VlanEntity struct {
-	_kind     string                `gae:"$kind,Vlan"`
-	_extra    datastore.PropertyMap `gae:"-,extra"`
-	ID        string                `gae:"$id"`
-	State     string                `gae:"state"`
-	CidrBlock string                `gae:"cidr_block"`
-	Zones     []string              `gae:"zone"`
-	Tags      []string              `gae:"tags"`
+	_kind     string   `gae:"$kind,Vlan"`
+	ID        string   `gae:"$id"`
+	State     string   `gae:"state"`
+	CidrBlock string   `gae:"cidr_block"`
+	Zones     []string `gae:"zone"`
+	Tags      []string `gae:"tags"`
 	// ufspb.Vlan cannot be directly used as it contains pointer.
 	Vlan []byte `gae:",noindex"`
 }

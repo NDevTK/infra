@@ -26,10 +26,9 @@ const RackLSEPrototypeKind string = "RackLSEPrototype"
 
 // RackLSEPrototypeEntity is a datastore entity that tracks a platform.
 type RackLSEPrototypeEntity struct {
-	_kind  string                `gae:"$kind,RackLSEPrototype"`
-	_extra datastore.PropertyMap `gae:"-,extra"`
-	ID     string                `gae:"$id"`
-	Tags   []string              `gae:"tags"`
+	_kind string   `gae:"$kind,RackLSEPrototype"`
+	ID    string   `gae:"$id"`
+	Tags  []string `gae:"tags"`
 	// ufspb.RackLSEPrototype cannot be directly used as it contains pointer.
 	RackLSEPrototype []byte `gae:",noindex"`
 }
