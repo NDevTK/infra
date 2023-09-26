@@ -1,3 +1,7 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 'use strict';
 
 // Refresh delay for on-call rotations in milliseconds.
@@ -38,7 +42,7 @@ const ROTATIONS = {
     },
     {
       name: 'Fleet Software',
-      url: 'https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-fleet-software',
+      url: 'https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:peep-fleet-infra-sw',
     },
     {
       name: 'Gardener',
