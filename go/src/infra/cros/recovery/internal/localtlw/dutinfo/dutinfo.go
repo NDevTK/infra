@@ -199,6 +199,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Cbx:                 dut.GetCbx(),
 			HumanMotionRobot:    createDUTHumanMotionRobot(p, ds),
 			TestbedCapability:   createTestbedCapability(p.GetCable()),
+			AudioLatencyToolkit: createDUTAudioLatencyToolkit(p, ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -452,6 +453,15 @@ func createDUTCellular(ds *ufslab.DutState, p *ufslab.Peripherals, m *ufslab.Mod
 	}
 }
 
+func createDUTAudioLatencyToolkit(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.AudioLatencyToolkit {
+	pAudioLatencyToolkit := p.GetAudioLatencyToolkit()
+
+	return &tlw.AudioLatencyToolkit{
+		Version: pAudioLatencyToolkit.GetVersion(),
+		State:   convertAudioLatencyToolkitStates(ds.GetAudioLatencyToolkitState()),
+	}
+}
+
 func configHasFeature(dc *ufsdevice.Config, hf ufsdevice.Config_HardwareFeature) bool {
 	for _, f := range dc.GetHardwareFeatures() {
 		if f == hf {
@@ -602,6 +612,10 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 			state.AudioLoopbackDongle = ufslab.PeripheralState_UNKNOWN
 		}
 		state.WifiPeripheralState = convertPeripheralWifiStateToUFS(chromeos.GetPeripheralWifiState())
+
+		if audioLatencyToolkit := chromeos.GetAudioLatencyToolkit(); audioLatencyToolkit != nil {
+			state.AudioLatencyToolkitState = convertAudioLatencyToolkitStatesToUFS(audioLatencyToolkit.GetState())
+		}
 	} else if devboard := dut.GetDevBoard(); devboard != nil {
 		if s := devboard.GetServo(); s != nil {
 			for us, ls := range servoStates {

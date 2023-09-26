@@ -236,6 +236,31 @@ func convertPeripheralWifiStateToUFS(s tlw.ChromeOS_PeripheralWifiState) ufslab.
 	return ufslab.PeripheralState_UNKNOWN
 }
 
+// audioLatencyToolkitStates maps the ufs peripheral state to tlw peripheral audio latency toolkit state
+var audioLatencyToolkitStates = map[ufslab.PeripheralState]tlw.AudioLatencyToolkit_State{
+	ufslab.PeripheralState_WORKING:        tlw.AudioLatencyToolkit_WORKING,
+	ufslab.PeripheralState_BROKEN:         tlw.AudioLatencyToolkit_BROKEN,
+	ufslab.PeripheralState_NOT_APPLICABLE: tlw.AudioLatencyToolkit_NOT_APPLICABLE,
+}
+
+// converts AudioLatencyToolkit UFS state to TLW state
+func convertAudioLatencyToolkitStates(s ufslab.PeripheralState) tlw.AudioLatencyToolkit_State {
+	if ns, ok := audioLatencyToolkitStates[s]; ok {
+		return ns
+	}
+	return tlw.AudioLatencyToolkit_STATE_UNSPECIFIED
+}
+
+// converts AudioLatencyToolkit TLW state to UFS state
+func convertAudioLatencyToolkitStatesToUFS(s tlw.AudioLatencyToolkit_State) ufslab.PeripheralState {
+	for us, ls := range audioLatencyToolkitStates {
+		if ls == s {
+			return us
+		}
+	}
+	return ufslab.PeripheralState_UNKNOWN
+}
+
 var rpmStates = map[ufslab.PeripheralState]tlw.RPMOutlet_State{
 	ufslab.PeripheralState_WORKING:        tlw.RPMOutlet_WORKING,
 	ufslab.PeripheralState_MISSING_CONFIG: tlw.RPMOutlet_MISSING_CONFIG,
