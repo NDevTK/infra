@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "990e2ead_07a9575f",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/args/generator.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 635,
+      "author": {
+        "id": 1557583
+      },
+      "writtenOn": "2023-09-26T23:16:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e614d00_ce60dcbf",
+      "range": {
+        "startLine": 635,
+        "startChar": 2,
+        "endLine": 635,
+        "endChar": 28
+      },
+      "revId": "721f420d49976e0f51dc99d3952b79bdeef2b54e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "54f370b6_7963be0a",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-09-26T22:46:56Z",
       "side": 1,
       "message": "make this else if",
+      "range": {
+        "startLine": 637,
+        "startChar": 1,
+        "endLine": 637,
+        "endChar": 3
+      },
+      "revId": "721f420d49976e0f51dc99d3952b79bdeef2b54e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "77ac34b0_a3eab403",
+        "filename": "go/src/infra/cmd/cros_test_platform/internal/execution/args/generator.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 637,
+      "author": {
+        "id": 1557583
+      },
+      "writtenOn": "2023-09-26T23:16:56Z",
+      "side": 1,
+      "message": "created a new cl https://chromium-review.googlesource.com/c/infra/infra/+/4886985",
+      "parentUuid": "54f370b6_7963be0a",
       "range": {
         "startLine": 637,
         "startChar": 1,
