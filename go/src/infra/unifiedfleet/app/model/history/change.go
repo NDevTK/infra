@@ -24,7 +24,8 @@ const ChangeEventKind string = "ChangeEvent"
 
 // ChangeEventEntity is a datastore entity that tracks a platform.
 type ChangeEventEntity struct {
-	_kind string `gae:"$kind,ChangeEvent"`
+	_kind string                `gae:"$kind,ChangeEvent"`
+	Extra datastore.PropertyMap `gae:",extra"`
 	// Add an auto-increment ID as key for deleting
 	ID        int64  `gae:"$id"`
 	Name      string `gae:"name"`

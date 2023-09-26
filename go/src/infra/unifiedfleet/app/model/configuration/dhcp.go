@@ -26,7 +26,8 @@ const DHCPKind string = "DHCP"
 
 // DHCPEntity is a datastore entity that tracks dhcp.
 type DHCPEntity struct {
-	_kind string `gae:"$kind,DHCP"`
+	_kind string                `gae:"$kind,DHCP"`
+	Extra datastore.PropertyMap `gae:",extra"`
 	// refer to the hostname
 	ID   string `gae:"$id"`
 	IPv4 string `gae:"ipv4"`
