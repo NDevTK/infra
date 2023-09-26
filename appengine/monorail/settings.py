@@ -300,6 +300,12 @@ recognized_codesite_projects = [
 # This ID is for -staging and other misc deployments. Prod is defined below.
 analytics_id = 'UA-55762617-20'
 
+# Project IDs which have opted into freezing project configs.
+config_freeze_project_ids = set()
+config_freeze_override_users = {
+    'benhenry@google.com', 'zhangtiff@google.com', 'example@example.com'
+}
+
 if unit_test_mode:
   db_cloud_project = ''  # No real database is used during unit testing.
   app_id = ''
@@ -314,6 +320,8 @@ else:
     branded_domains = branded_domains_staging
     domain_to_default_project = domain_to_default_project_staging
 
+    config_freeze_project_ids = {16}
+
   elif app_id == 'monorail-dev':
     site_name = 'Monorail Dev'
     banner_message = 'This dev site does not send emails.'
@@ -324,6 +332,8 @@ else:
     # Use replicas created when testing the restore procedures on 2021-02-24
     db_replica_prefix = 'replica-2'
 
+    config_freeze_project_ids = {16}
+
   elif app_id == 'monorail-prod':
     send_all_email_to = None  # Deliver it to the intended users.
     # The Google Cloud SQL databases to use.
@@ -331,6 +341,8 @@ else:
     analytics_id = 'UA-55762617-14'
     branded_domains = branded_domains_prod
     domain_to_default_project = domain_to_default_project_prod
+
+    config_freeze_project_ids = set()
 
 if local_mode:
   site_name = 'Monorail Local'
