@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -17,16 +16,20 @@ import (
 	"sort"
 	"strings"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
 	"infra/tools/pkgbuild/pkg/stdenv"
+
+	"go.chromium.org/luci/cipd/client/cipd/ensure"
+	"go.chromium.org/luci/cipkg/base/generators"
+	"go.chromium.org/luci/common/system/environ"
 )
 
 // TODO(fancl): Use all:from_spec/build-support after go 1.18.
 //
 //go:embed from_spec/*
-var fromSpecSupport embed.FS
+var fromSpecEmbed embed.FS
+var fromSpecGen = generators.InitEmbeddedFS(
+	"from_spec_support", fromSpecEmbed,
+).SubDir("from_spec")
 
 // Load 3pp Spec and convert it into a stdenv generator.
 type SpecLoader struct {
@@ -34,7 +37,7 @@ type SpecLoader struct {
 	cipdSourceCachePrefix string
 	sourceResolver        SourceResolver
 
-	embedSupportFilesDerivation cipkg.Generator
+	supportFiles generators.Generator
 
 	// Mapping packages's full name to definition.
 	specs map[string]*PackageDef
@@ -57,18 +60,8 @@ func DefaultSpecLoaderConfig(vpythonSpecPath string) *SpecLoaderConfig {
 	}
 }
 
-func NewSpecLoader(dir fs.FS, cfg *SpecLoaderConfig) (*SpecLoader, error) {
-	// Copy embedded files
-	fromSpecFS, err := fs.Sub(fromSpecSupport, "from_spec")
-	if err != nil {
-		return nil, err
-	}
-	embedSupportFilesDerivation := &builtins.CopyFiles{
-		Name:  "from_spec_support",
-		Files: fromSpecFS,
-	}
-
-	defs, err := FindPackageDefs(dir)
+func NewSpecLoader(root string, cfg *SpecLoaderConfig) (*SpecLoader, error) {
+	defs, err := FindPackageDefs(root)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +76,7 @@ func NewSpecLoader(dir fs.FS, cfg *SpecLoaderConfig) (*SpecLoader, error) {
 		cipdSourceCachePrefix: cfg.CIPDSourceCachePrefix,
 		sourceResolver:        cfg.SourceResolver,
 
-		embedSupportFilesDerivation: embedSupportFilesDerivation,
+		supportFiles: fromSpecGen,
 
 		specs: specs,
 		pkgs:  make(map[string]*stdenv.Generator),
@@ -128,9 +121,11 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 	}
 
 	// Copy files for building from spec
-	defDerivation := &builtins.CopyFiles{
-		Name:  fmt.Sprintf("%s_from_spec_def", def.DerivationName()),
-		Files: def.Dir,
+	defDerivation := &generators.ImportTargets{
+		Name: fmt.Sprintf("%s_from_spec_def", def.DerivationName()),
+		Targets: map[string]generators.ImportTarget{
+			".": {Source: filepath.ToSlash(def.Dir), Mode: fs.ModeDir, FollowSymlinks: true},
+		},
 	}
 
 	// Parse create spec for host
@@ -141,44 +136,46 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 	if err := create.ParseSource(def, l.cipdPackagePrefix, l.cipdSourceCachePrefix, hostCipdPlatform, l.sourceResolver); err != nil {
 		return nil, err
 	}
-	if err := create.FindPatches(defDerivation); err != nil {
+	if err := create.FindPatches(defDerivation.Name, def.Dir); err != nil {
 		return nil, err
 	}
-	if err := create.ParseBuilder(defDerivation); err != nil {
+	if err := create.ParseBuilder(); err != nil {
 		return nil, err
 	}
 	if err := create.LoadDependencies(buildCipdPlatform, l); err != nil {
 		return nil, err
 	}
 
-	plat := utilities.PlatformFromCIPD(hostCipdPlatform)
+	plat := generators.PlatformFromCIPD(hostCipdPlatform)
+
+	env := create.Enviroments.Clone()
+	env.Set("patches", strings.Join(create.Patches, string(os.PathListSeparator)))
+	env.Set("fromSpecInstall", create.Installer)
+	env.Set("_3PP_DEF", fmt.Sprintf("{{.%s}}", defDerivation.Name))
+	env.Set("_3PP_PLATFORM", hostCipdPlatform)
+	env.Set("_3PP_TOOL_PLATFORM", buildCipdPlatform)
+
+	// TODO: These should be moved to go package
+	env.Set("GOOS", plat.OS())
+	env.Set("GOARCH", plat.Arch())
+
 	g := &stdenv.Generator{
 		Name:   def.DerivationName(),
 		Source: create.Source,
-		Dependencies: append([]utilities.BaseDependency{
-			{Type: cipkg.DepsBuildHost, Generator: defDerivation},
-			{Type: cipkg.DepsBuildHost, Generator: l.embedSupportFilesDerivation},
+		Dependencies: append([]generators.Dependency{
+			{Type: generators.DepsBuildHost, Generator: defDerivation},
+			{Type: generators.DepsBuildHost, Generator: l.supportFiles},
 		}, create.Dependencies...),
-		Env: append([]string{
-			fmt.Sprintf("patches=%s", strings.Join(create.Patches, string(os.PathListSeparator))),
-			fmt.Sprintf("fromSpecInstall=%s", create.Installer),
-			fmt.Sprintf("_3PP_DEF={{.%s}}", defDerivation.Name),
-			fmt.Sprintf("_3PP_PLATFORM=%s", hostCipdPlatform),
-			fmt.Sprintf("_3PP_TOOL_PLATFORM=%s", buildCipdPlatform),
-
-			// TODO: These should be moved to go package
-			fmt.Sprintf("GOOS=%s", plat.OS()),
-			fmt.Sprintf("GOARCH=%s", plat.Arch()),
-		}, create.Enviroments...),
-		CacheKey: def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
+		Env:      env,
+		CIPDName: def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
 		Version:  create.Version,
 	}
 
 	switch hostCipdPlatform {
 	case "mac-amd64":
-		g.Env = append(g.Env, "MACOSX_DEPLOYMENT_TARGET=10.10")
+		g.Env.Set("MACOSX_DEPLOYMENT_TARGET", "10.10")
 	case "mac-arm64":
-		g.Env = append(g.Env, "MACOSX_DEPLOYMENT_TARGET=11.0")
+		g.Env.Set("MACOSX_DEPLOYMENT_TARGET", "11.0")
 		// TODO(fancl): set CROSS_TRIPLE for Mac?
 	}
 
@@ -193,8 +190,8 @@ type createParser struct {
 	Version      string
 	Patches      []string
 	Installer    string
-	Dependencies []utilities.BaseDependency
-	Enviroments  []string
+	Dependencies []generators.Dependency
+	Enviroments  environ.Env
 
 	host   string
 	create *Spec_Create
@@ -208,7 +205,8 @@ var (
 // spec.
 func newCreateParser(host string, creates []*Spec_Create) (*createParser, error) {
 	p := &createParser{
-		host: host,
+		host:        host,
+		Enviroments: environ.New(nil),
 	}
 
 	for _, c := range creates {
@@ -254,7 +252,7 @@ func gitCachePath(url string) string {
 // Fetch the latest version and convert source section in create to source
 // definition in stdenv. Versions are fetched during the parsing so the source
 // definition can be deterministic.
-// Source may be cached based on CacheKey.
+// Source may be cached based on its CIPDName.
 func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePrefix, hostCipdPlatform string, resolver SourceResolver) error {
 	source := p.create.GetSource()
 
@@ -267,11 +265,11 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 	// Git used to be unpacked - which means we always want to unpack the source
 	// if it's a git method.
 	if source.GetUnpackArchive() || source.GetGit() != nil {
-		p.Enviroments = append(p.Enviroments, "_3PP_UNPACK_ARCHIVE=1")
+		p.Enviroments.Set("_3PP_UNPACK_ARCHIVE", "1")
 	}
 
 	if source.GetNoArchivePrune() {
-		p.Enviroments = append(p.Enviroments, "_3PP_NO_ARCHIVE_PRUNE=1")
+		p.Enviroments.Set("_3PP_NO_ARCHIVE_PRUNE", "1")
 	}
 
 	s, v, err := func() (stdenv.Source, string, error) {
@@ -286,13 +284,8 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 				URL: s.GetRepo(),
 				Ref: info.Commit,
 
-				CacheKey: (&url.URL{
-					Path: path.Join(packagePrefix, sourceCachePrefix, "git", gitCachePath(s.GetRepo())),
-					RawQuery: url.Values{
-						"subdir": {"src"},
-						"tag":    {fmt.Sprintf("3@%s", info.Tag)},
-					}.Encode(),
-				}).String(),
+				CIPDName: path.Join(packagePrefix, sourceCachePrefix, "git", gitCachePath(s.Repo)),
+				Version:  fmt.Sprintf("3@%s", info.Tag),
 			}, info.Tag, nil
 		case *Spec_Create_Source_Url:
 			s := source.GetUrl()
@@ -302,17 +295,15 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 			}
 			return &stdenv.SourceURLs{
 				URLs: []stdenv.SourceURL{
-					{URL: s.GetDownloadUrl(), Filename: fmt.Sprintf("raw_source_0%s", ext), HashAlgorithm: builtins.HashIgnore},
+					{URL: s.GetDownloadUrl(), Filename: fmt.Sprintf("raw_source_0%s", ext)},
 				},
-				CacheKey: (&url.URL{
-					Path: path.Join(packagePrefix, sourceCachePrefix, "url", def.FullNameWithOverride(), p.host),
-					RawQuery: url.Values{
-						"tag": {fmt.Sprintf("3@%s", s.GetVersion())},
-					}.Encode(),
-				}).String(),
-			}, s.GetVersion(), nil
+
+				CIPDName: path.Join(packagePrefix, sourceCachePrefix, "url", def.FullNameWithOverride(), p.host),
+				Version:  fmt.Sprintf("3@%s", s.Version),
+			}, s.Version, nil
 		case *Spec_Create_Source_Cipd:
 			// source.GetCipd()
+			panic("unimplemented")
 		case *Spec_Create_Source_Script:
 			s := source.GetScript()
 			info, err := resolver.ResolveScriptSource(hostCipdPlatform, def.Dir, s)
@@ -336,20 +327,16 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 			var urls []stdenv.SourceURL
 			for i, url := range info.URL {
 				urls = append(urls, stdenv.SourceURL{
-					URL:           url,
-					Filename:      names[i],
-					HashAlgorithm: builtins.HashIgnore,
+					URL:      url,
+					Filename: names[i],
 				})
 			}
 
 			return &stdenv.SourceURLs{
 				URLs: urls,
-				CacheKey: (&url.URL{
-					Path: path.Join(packagePrefix, sourceCachePrefix, "script", def.FullNameWithOverride(), p.host),
-					RawQuery: url.Values{
-						"tag": {fmt.Sprintf("3@%s", info.Version)},
-					}.Encode(),
-				}).String(),
+
+				CIPDName: path.Join(packagePrefix, sourceCachePrefix, "script", def.FullNameWithOverride(), p.host),
+				Version:  fmt.Sprintf("3@%s", info.Version),
 			}, info.Version, nil
 		}
 		return nil, "", fmt.Errorf("unknown source type from spec")
@@ -358,9 +345,9 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 		return err
 	}
 
-	p.Enviroments = append(p.Enviroments, fmt.Sprintf("_3PP_VERSION=%s", v))
+	p.Enviroments.Set("_3PP_VERSION", v)
 	if pv := p.create.GetSource().GetPatchVersion(); pv != "" {
-		p.Enviroments = append(p.Enviroments, fmt.Sprintf("_3PP_PATCH_VERSION=%s", pv))
+		p.Enviroments.Set("_3PP_PATCH_VERSION", pv)
 		v = v + "." + pv
 	}
 	p.Version = v
@@ -369,12 +356,12 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 	return nil
 }
 
-func (p *createParser) FindPatches(drv *builtins.CopyFiles) error {
+func (p *createParser) FindPatches(name, dir string) error {
 	source := p.create.GetSource()
 
-	prefix := fmt.Sprintf("{{.%s}}", drv.Name)
+	prefix := fmt.Sprintf("{{.%s}}", name)
 	for _, pdir := range source.GetPatchDir() {
-		dir, err := fs.ReadDir(drv.Files, pdir)
+		dir, err := os.ReadDir(filepath.Join(dir, pdir))
 		if err != nil {
 			return err
 		}
@@ -387,7 +374,7 @@ func (p *createParser) FindPatches(drv *builtins.CopyFiles) error {
 	return nil
 }
 
-func (p *createParser) ParseBuilder(drv *builtins.CopyFiles) error {
+func (p *createParser) ParseBuilder() error {
 	build := p.create.GetBuild()
 
 	installArgs := build.GetInstall()
@@ -407,11 +394,11 @@ func (p *createParser) ParseBuilder(drv *builtins.CopyFiles) error {
 func (p *createParser) LoadDependencies(buildCipdPlatform string, l *SpecLoader) error {
 	build := p.create.GetBuild()
 	if build == nil {
-		p.Enviroments = append(p.Enviroments, "_3PP_NO_INSTALL=1")
+		p.Enviroments.Set("_3PP_NO_INSTALL", "1")
 		return nil
 	}
 
-	fromSpecByURI := func(dep, hostCipdPlatform string) (cipkg.Generator, error) {
+	fromSpecByURI := func(dep, hostCipdPlatform string) (generators.Generator, error) {
 		// tools/go117@1.17.10
 		var name, ver string
 		ss := strings.SplitN(dep, "@", 2)
@@ -425,7 +412,16 @@ func (p *createParser) LoadDependencies(buildCipdPlatform string, l *SpecLoader)
 			return nil, fmt.Errorf("failed to load dependency %s on %s: %w", name, hostCipdPlatform, err)
 		}
 		if ver != "" && ver != g.Version {
-			return nil, fmt.Errorf("dependency version mismatch: %s, require: %s, have: %s", dep, ver, g.Version)
+			return &generators.CIPDExport{
+				Name: g.Name,
+				Ensure: ensure.File{
+					PackagesBySubdir: map[string]ensure.PackageSlice{
+						"": {
+							{PackageTemplate: g.CIPDName, UnresolvedVersion: fmt.Sprintf("version:%s", ver)},
+						},
+					},
+				},
+			}, nil
 		}
 
 		return g, nil
@@ -436,8 +432,8 @@ func (p *createParser) LoadDependencies(buildCipdPlatform string, l *SpecLoader)
 		if err != nil {
 			return err
 		}
-		p.Dependencies = append(p.Dependencies, utilities.BaseDependency{
-			Type:      cipkg.DepsBuildHost,
+		p.Dependencies = append(p.Dependencies, generators.Dependency{
+			Type:      generators.DepsBuildHost,
 			Generator: g,
 		})
 	}
@@ -446,27 +442,11 @@ func (p *createParser) LoadDependencies(buildCipdPlatform string, l *SpecLoader)
 		if err != nil {
 			return err
 		}
-		p.Dependencies = append(p.Dependencies, utilities.BaseDependency{
-			Type:      cipkg.DepsHostTarget,
+		p.Dependencies = append(p.Dependencies, generators.Dependency{
+			Type:      generators.DepsHostTarget,
 			Generator: g,
 		})
 	}
 
 	return nil
-}
-
-// Convert CIPD platform to cipkg platform.
-func ParseCIPDPlatform(plat string) (cipkg.Platform, error) {
-	idx := strings.Index(plat, "-")
-	if idx == -1 {
-		return nil, fmt.Errorf("invalid cipd target platform: %s", plat)
-	}
-	os, arch := plat[:idx], plat[idx+1:]
-	if os == "mac" {
-		os = "darwin"
-	}
-	if arch == "armv6l" {
-		arch = "arm"
-	}
-	return utilities.NewPlatform(os, arch), nil
 }

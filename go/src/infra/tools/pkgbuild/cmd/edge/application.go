@@ -1,25 +1,24 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package main
 
 import (
 	"context"
-	"crypto"
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
-	"time"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
-	"infra/tools/pkgbuild/pkg/packages"
 	"infra/tools/pkgbuild/pkg/spec"
 
 	"go.chromium.org/luci/cipd/client/cipd/platform"
+	"go.chromium.org/luci/cipkg/base/actions"
+	"go.chromium.org/luci/cipkg/base/generators"
+	"go.chromium.org/luci/cipkg/base/workflow"
+	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
@@ -56,7 +55,7 @@ type Application struct {
 	Packages []string
 
 	// Local Package Manager
-	packages *utilities.LocalPackageManager
+	PackageManager *workflow.LocalPackageManager
 }
 
 func (a *Application) Parse(args []string) error {
@@ -110,37 +109,46 @@ func (a *Application) Parse(args []string) error {
 
 	a.Packages = fs.Args()
 
+	pm, err := workflow.NewLocalPackageManager(a.StorageDir)
+	if err != nil {
+		return err
+	}
+	a.PackageManager = pm
+
 	return nil
 }
 
 func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
-	var err error
-	a.packages, err = utilities.NewLocalPackageManager(a.StorageDir)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to load storage").Err()
-	}
-	pm := packages.NewCIPDPackageManager(ctx, a.CIPDService, a.packages)
-
-	target, err := spec.ParseCIPDPlatform(a.TargetPlatform)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to parse cipd platform").Err()
-	}
-
 	vpythonSpecPath := filepath.Join(a.SpecPoolDir, ".vpython3")
 	if _, err := os.Stat(vpythonSpecPath); err != nil {
 		return nil, errors.Annotate(err, "failed to find vpython3 specs").Err()
 	}
 	specLoaderCfg := spec.DefaultSpecLoaderConfig(vpythonSpecPath)
 	specLoaderCfg.CIPDPackagePrefix = a.CIPDPackagePrefix
-	loader, err := spec.NewSpecLoader(os.DirFS(a.SpecPoolDir), specLoaderCfg)
+	loader, err := spec.NewSpecLoader(a.SpecPoolDir, specLoaderCfg)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to load specs").Err()
 	}
 
+	ap := actions.NewActionProcessor()
+
+	target := generators.PlatformFromCIPD(a.TargetPlatform)
+	plats := generators.Platforms{
+		Build:  generators.CurrentPlatform(),
+		Host:   target,
+		Target: target,
+	}
+
+	builder := workflow.NewBuilder(plats, a.PackageManager, ap)
+	builder.SetPreExecuteHook(func(ctx context.Context, pkg actions.Package) error {
+		// TODO: Fetch package from cipd, if available
+		return nil
+	})
+
 	return &PackageBuilder{
-		Packages: pm,
-		Platforms: cipkg.Platforms{
-			Build:  utilities.CurrentPlatform(),
+		Packages: a.PackageManager,
+		Platforms: generators.Platforms{
+			Build:  generators.CurrentPlatform(),
 			Host:   target,
 			Target: target,
 		},
@@ -149,133 +157,46 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 		CIPDTarget: a.TargetPlatform,
 		SpecLoader: loader,
 
-		BuildTempDir:      filepath.Join(a.StorageDir, "temp"),
-		DerivationBuilder: utilities.NewBuilder(pm),
-
-		StatisticsDir: a.StatisticsDir,
+		BuildTempDir: filepath.Join(a.StorageDir, "temp"),
+		Builder:      builder,
 	}, nil
 }
 
-func (a *Application) Prune(ctx context.Context, ttl time.Duration, max int) {
-	a.packages.Prune(ctx, ttl, max)
-}
-
 type PackageBuilder struct {
-	Packages  cipkg.PackageManager
-	Platforms cipkg.Platforms
+	Packages  core.PackageManager
+	Platforms generators.Platforms
 
 	CIPDHost   string
 	CIPDTarget string
 	SpecLoader *spec.SpecLoader
 
-	BuildTempDir      string
-	DerivationBuilder *utilities.Builder
+	BuildTempDir string
+	Builder      *workflow.Builder
 
-	StatisticsDir string
-
-	// Override the default build func
-	BuildFunc func(p cipkg.Package) error
+	loaded []generators.Generator
 }
 
-// Add(...) loads 3pp spec by name and convert it into a cipkg.Package. If the
-// 3pp spec depends on other specs, they will also be loaded and added.
-// The package is added to the builder so its content will be available after
-// BuildAll(...) executed.
-func (b *PackageBuilder) Add(ctx context.Context, name string) (cipkg.Package, error) {
+// Load 3pp spec by name and convert it into a cipkg.Package. If the 3pp spec
+// depends on other specs, they will also be loaded and added. The package is
+// added to the builder so its content will be available after BuildAll
+// executed.
+func (b *PackageBuilder) Load(ctx context.Context, name string) error {
 	g, err := b.SpecLoader.FromSpec(name, b.CIPDHost, b.CIPDTarget)
 	if err != nil {
+		return err
+	}
+	b.loaded = append(b.loaded, g)
+	return nil
+}
+
+// BuildAll builds all added packages.
+func (b *PackageBuilder) BuildAll(ctx context.Context) ([]actions.Package, error) {
+	if err := filesystem.RemoveAll(b.BuildTempDir); err != nil {
+		return nil, err
+	}
+	if err := os.Mkdir(b.BuildTempDir, os.ModePerm); err != nil {
 		return nil, err
 	}
 
-	// Generate derivations
-	bctx := &cipkg.BuildContext{
-		Platforms: b.Platforms,
-		Packages:  b.Packages,
-		Context:   ctx,
-	}
-
-	drv, meta, err := g.Generate(bctx)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to generate derivation").Err()
-	}
-	pkg := b.Packages.Add(drv, meta)
-
-	if err := b.DerivationBuilder.Add(pkg); err != nil {
-		return nil, errors.Annotate(err, "failed to add package to builder").Err()
-	}
-
-	return pkg, nil
-}
-
-// BuildAll(...) builds all added packages.
-func (b *PackageBuilder) BuildAll(ctx context.Context) error {
-	if err := filesystem.RemoveAll(b.BuildTempDir); err != nil {
-		return err
-	}
-	if err := os.Mkdir(b.BuildTempDir, os.ModePerm); err != nil {
-		return err
-	}
-
-	f := func(p cipkg.Package) error {
-		id := p.Derivation().ID()
-		logging.Infof(ctx, "build package %s", id)
-
-		d, err := os.MkdirTemp(b.BuildTempDir, fmt.Sprintf("%s-", id))
-		if err != nil {
-			return err
-		}
-		var out strings.Builder
-		cmd := utilities.CommandFromPackage(p)
-		cmd.Stdout = &out
-		cmd.Stderr = &out
-		cmd.Dir = d
-		if err := builtins.Execute(ctx, cmd); err != nil {
-			logging.Errorf(ctx, "%s", out.String())
-			return err
-		}
-		logging.Debugf(ctx, "%s", out.String())
-		return nil
-	}
-
-	if b.StatisticsDir != "" {
-		if err := os.MkdirAll(b.StatisticsDir, os.ModePerm); err != nil {
-			return err
-		}
-		buildF := f
-		f = func(p cipkg.Package) error {
-			id := p.Derivation().ID()
-
-			startTime := time.Now()
-			if err := buildF(p); err != nil {
-				return err
-			}
-			endTime := time.Now()
-
-			h := crypto.SHA256.New()
-			if err := builtins.WalkDir(os.DirFS(p.Directory()), ".", h, func(string, fs.DirEntry, error) error { return nil }); err != nil {
-				return err
-			}
-
-			stat, err := os.Create(filepath.Join(b.StatisticsDir, id+".json"))
-			if err != nil {
-				return err
-			}
-			defer stat.Close()
-
-			return json.NewEncoder(stat).Encode(map[string]any{
-				"buildTimeSeconds": endTime.Sub(startTime).Seconds(),
-				"resultSHA256":     fmt.Sprintf("%x", h.Sum(nil)),
-			})
-		}
-	}
-
-	if b.BuildFunc != nil {
-		f = b.BuildFunc
-	}
-
-	if err := b.DerivationBuilder.BuildAll(f); err != nil {
-		return errors.Annotate(err, "failed to build package").Err()
-	}
-
-	return nil
+	return b.Builder.BuildAll(ctx, b.BuildTempDir, b.loaded)
 }

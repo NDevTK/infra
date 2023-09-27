@@ -4,27 +4,34 @@
 package stdenv
 
 import (
+	"context"
 	"embed"
 	"fmt"
 	"io/fs"
 	"os/exec"
 	"path"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
-
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
+	"go.chromium.org/luci/cipkg/base/generators"
+	"go.chromium.org/luci/cipkg/base/workflow"
+	"go.chromium.org/luci/cipkg/core"
+	"go.chromium.org/luci/common/system/environ"
 )
 
 var (
 	//go:embed all:setup
-	stdenv embed.FS
+	stdenvEmbed embed.FS
+	stdenvGen   = generators.InitEmbeddedFS(
+		"stdenv", stdenvEmbed,
+	)
 
 	//go:embed all:resources
-	resources embed.FS
+	resourcesEmbed embed.FS
+	resourcesGen   = generators.InitEmbeddedFS(
+		"setup", resourcesEmbed,
+	).SubDir("resources")
 
-	baseByOS = map[string][]cipkg.Generator{}
+	baseByOS = map[string][]generators.Generator{}
 )
 
 const (
@@ -33,7 +40,7 @@ const (
 )
 
 var (
-	git = &builtins.CIPDExport{
+	git = &generators.CIPDExport{
 		Name: "stdenv_git",
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
@@ -43,7 +50,7 @@ var (
 			},
 		},
 	}
-	cpython = &builtins.CIPDExport{
+	cpython = &generators.CIPDExport{
 		Name: "stdenv_python3",
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
@@ -56,16 +63,16 @@ var (
 )
 
 type Config struct {
-	XcodeDeveloper cipkg.Generator
-	WinSDK         cipkg.Generator
-	FindBinary     builtins.FindBinaryFunc
-	BuildPlatform  *utilities.Platform
+	XcodeDeveloper generators.Generator
+	WinSDK         generators.Generator
+	FindBinary     generators.FindBinaryFunc
+	BuildPlatform  generators.Platform
 }
 
 func DefaultConfig() *Config {
 	return &Config{
 		FindBinary:    exec.LookPath,
-		BuildPlatform: utilities.CurrentPlatform(),
+		BuildPlatform: generators.CurrentPlatform(),
 	}
 }
 
@@ -76,30 +83,17 @@ func Init(cfg *Config) error {
 	if _, ok := baseByOS[os]; ok {
 		return nil
 	}
-	var base []cipkg.Generator
+	var base []generators.Generator
 
-	// Prebuilt binaries
-	files, err := fs.Sub(resources, path.Join("resources", os))
-	if err != nil {
-		return err
-	}
+	// Embedded files
 	base = append(base,
-		&builtins.CopyFiles{
-			Name:  "stdenv",
-			Files: stdenv,
-		},
-		&builtins.CopyFiles{
-			Name: "setup",
-			Files: builtins.FSWithMode{
-				FS: files,
-				ModeOverride: func(info fs.FileInfo) (fs.FileMode, error) {
-					if path.Dir(info.Name()) == "bin" {
-						return info.Mode() | fs.ModePerm, nil
-					}
-					return info.Mode(), nil
-				},
-			},
-		},
+		stdenvGen,
+		resourcesGen.SubDir(os).WithModeOverride(func(info fs.FileInfo) (fs.FileMode, error) {
+			if path.Dir(info.Name()) == "bin" {
+				return info.Mode() | fs.ModePerm, nil
+			}
+			return info.Mode(), nil
+		}),
 	)
 
 	// Prebuilt binaries
@@ -154,7 +148,7 @@ func Init(cfg *Config) error {
 	}
 
 	// OS specified
-	gs, err := func() ([]cipkg.Generator, error) {
+	gs, err := func() ([]generators.Generator, error) {
 		switch os {
 		case "linux":
 			posixUtils = append(posixUtils, "cpio", "egrep", "fgrep")
@@ -181,59 +175,62 @@ func Init(cfg *Config) error {
 type Generator struct {
 	Name         string
 	Source       Source
-	Env          []string
-	Dependencies []utilities.BaseDependency
+	Env          environ.Env
+	Dependencies []generators.Dependency
 
-	CacheKey string
+	CIPDName string
 	Version  string
 }
 
-func (g *Generator) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.PackageMetadata, error) {
+func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*core.Action, error) {
 	src, srcsEnv, err := g.fetchSource()
 	if err != nil {
-		return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+		return nil, err
 	}
 
-	deps := append([]utilities.BaseDependency{
-		{Type: cipkg.DepsBuildHost, Generator: src},
+	deps := append([]generators.Dependency{
+		{Type: generators.DepsBuildHost, Generator: src},
 	}, g.Dependencies...)
-	for _, g := range baseByOS[ctx.Platforms.Build.OS()] {
-		deps = append(deps, utilities.BaseDependency{
-			Type:      cipkg.DepsBuildHost,
+	for _, g := range baseByOS[plats.Build.OS()] {
+		deps = append(deps, generators.Dependency{
+			Type:      generators.DepsBuildHost,
 			Generator: g,
 		})
 	}
 
-	tmpl := &utilities.BaseGenerator{
-		Name:    g.Name,
-		Builder: "{{.stdenv_python3}}/bin/python3",
-		Args:    []string{"-I", "-B", "{{.stdenv}}/setup/main.py"},
-		Env: append([]string{
-			"buildFlags=",
-			"installFlags=",
-			srcsEnv,
-		}, g.Env...),
+	env := g.Env.Clone()
+	env.Set("buildFlags", "")
+	env.Set("installFlags", "")
+	env.SetEntry(srcsEnv)
+	tmpl := &workflow.Generator{
+		Name: g.Name,
+		Metadata: &core.Action_Metadata{
+			Cipd: &core.Action_Metadata_CIPD{
+				Name:    g.CIPDName,
+				Version: g.Version,
+			},
+		},
+		Args:         []string{"{{.stdenv_python3}}/bin/python3", "-I", "-B", "{{.stdenv}}/setup/main.py"},
+		Env:          env,
 		Dependencies: deps,
-		CacheKey:     g.CacheKey,
-		Version:      g.Version,
 	}
 
-	switch ctx.Platforms.Build.OS() {
+	switch plats.Build.OS() {
 	case "linux":
-		if err := g.generateLinux(ctx, tmpl); err != nil {
-			return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+		if err := g.generateLinux(plats, tmpl); err != nil {
+			return nil, err
 		}
 	case "darwin":
-		if err := g.generateDarwin(ctx, tmpl); err != nil {
-			return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+		if err := g.generateDarwin(plats, tmpl); err != nil {
+			return nil, err
 		}
 	case "windows":
-		if err := g.generateWindows(ctx, tmpl); err != nil {
-			return cipkg.Derivation{}, cipkg.PackageMetadata{}, err
+		if err := g.generateWindows(plats, tmpl); err != nil {
+			return nil, err
 		}
 	default:
-		return cipkg.Derivation{}, cipkg.PackageMetadata{}, fmt.Errorf("unknown build os: %s", ctx.Platforms.Build.OS())
+		return nil, fmt.Errorf("unknown build os: %s", plats.Build.OS())
 	}
 
-	return tmpl.Generate(ctx)
+	return tmpl.Generate(ctx, plats)
 }
