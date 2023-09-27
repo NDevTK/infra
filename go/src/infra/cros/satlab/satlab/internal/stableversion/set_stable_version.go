@@ -69,12 +69,13 @@ type setStableVersionRun struct {
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
 
-	board    string
-	model    string
-	hostname string
-	os       string
-	fw       string
-	fwImage  string
+	board     string
+	model     string
+	hostname  string
+	os        string
+	fw        string
+	fwImage   string
+	isPartner bool
 }
 
 // Run runs the command, prints the error if there is one, and returns an exit status.
@@ -90,26 +91,26 @@ func (c *setStableVersionRun) Run(a subcommands.Application, args []string, env 
 // InnerRun implements Run using Board/Model or Hostname depending on provided args.
 func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
-	err := c.validateArgs()
-	if err != nil {
-		return err
+	if os.Getenv("UFS_NAMESPACE") == "os-partner" {
+		c.isPartner = true
 	}
-
-	// Hostname flow: INTERNAL USERS ONLY
-	if c.hostname != "" {
-		err := c.innerRunHostname(ctx, a, args, env)
+	stableVersion := &models.RecoveryVersion{
+		Board:     c.board,
+		Model:     c.model,
+		OsImage:   c.os,
+		FwVersion: c.fw,
+		FwImage:   c.fwImage,
+	}
+	// Board Model flow: SFP EXTERNAL USERS ONLY
+	if c.isPartner {
+		err := c.innerRunBoardModel(ctx, a, args, env, stableVersion)
 		if err != nil {
 			return err
 		}
-	} else if c.board != "" && c.model != "" { // Board Model flow: SFP EXTERNAL USERS ONLY
-		recovery_version := &models.RecoveryVersion{
-			Board:     c.board,
-			Model:     c.model,
-			OsImage:   c.os,
-			FwVersion: c.fw,
-			FwImage:   c.fwImage,
-		}
-		err := innerRunBoardModel(ctx, a, args, env, recovery_version)
+	}
+	// Hostname flow: INTERNAL USERS ONLY
+	if !c.isPartner {
+		err := c.innerRunHostname(ctx, a, args, env, stableVersion)
 		if err != nil {
 			return err
 		}
@@ -118,18 +119,20 @@ func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Applic
 }
 
 // InnerRunBoardModel is the implementation of setStableVersion that uses Board/Model and circumvents the cros-inventory call.
-func innerRunBoardModel(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env, rv *models.RecoveryVersion) error {
+func (c *setStableVersionRun) innerRunBoardModel(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env, rv *models.RecoveryVersion) error {
 
-	fmt.Println("WARNING: internal users must use -hostname override instead of board/model")
+	fmt.Println("Satlab for Partners user detected...")
+	numArgs, err := c.validateBoardModelArgs()
+	if err != nil {
+		return err
+	}
 
-	// Count how many of OS, FW or FW Image are provided
-	numArgs := validateStableVersionArgs(rv.OsImage, rv.FwVersion, rv.FwImage)
 	moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
-	if numArgs == 0 { // If none provided, use board/model to fetch arbitrary version
+	if numArgs == 0 { // If os,fw, and fwImage not provided, use board/model to fetch arbitrary version
 		if err != nil {
 			return errors.Annotate(err, "satlab new moblab api build client").Err()
 		}
-		rv, err = FindMostStableBuild(ctx, moblabClient, rv.Board, rv.Model)
+		rv, err = FindMostStableBuild(ctx, moblabClient, c.board, c.model)
 		if err != nil {
 			return errors.Annotate(err, "find most stable build").Err()
 		}
@@ -144,10 +147,13 @@ func innerRunBoardModel(ctx context.Context, a subcommands.Application, args []s
 }
 
 // InnerRunHostname is the implementation of setStableVersion for internal Satlab users that requires hostname et al.
-func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env, rv *models.RecoveryVersion) error {
 
-	fmt.Println("WARNING: Satlab for Partners users must use board/model override instead of hostname")
-
+	fmt.Println("Internal Satlab user detected...")
+	err := c.validateHostnameArgs()
+	if err != nil {
+		return err
+	}
 	newHostname, err := preprocessHostname(ctx, c.commonFlags, c.hostname, nil, nil)
 	if err != nil {
 		return errors.Annotate(err, "set stable version").Err()
@@ -176,13 +182,15 @@ func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommand
 	if err != nil {
 		return errors.Annotate(err, "get stable version").Err()
 	}
-	out, err := protojson.MarshalOptions{
+	_, err = protojson.MarshalOptions{
 		Indent: "  ",
 	}.Marshal(resp)
 	if err != nil {
 		return errors.Annotate(err, "get stable version").Err()
 	}
-	fmt.Fprintf(a.GetOut(), "%s\n", out)
+
+	stableVersion, _ := json.MarshalIndent(rv, "", " ")
+	fmt.Println("-- Stable Version set successfully --\n", string(stableVersion))
 	return nil
 }
 
@@ -283,28 +291,40 @@ func FindMostStableBuild(ctx context.Context, moblabClient MoblabClient, board s
 	return rv, nil
 }
 
-func (c *setStableVersionRun) validateArgs() error {
-	if (c.board != "" && c.model == "") || (c.board == "" && c.model != "") {
-		return errors.Reason("Please provide both -board AND -model").Err()
+func (c *setStableVersionRun) validateBoardModelArgs() (int, error) {
+	if c.board == "" {
+		return 0, errors.Reason("Please provide -board").Err()
 	}
-	if c.hostname == "" && c.board == "" && c.model == "" {
-		return errors.Reason("Please provide either -hostname OR -board and -model").Err()
+	if c.model == "" {
+		return 0, errors.Reason("Please provide -model").Err()
 	}
-	return nil
+	count := 0
+	if c.os != "" {
+		count++
+	}
+	if c.fw != "" {
+		count++
+	}
+	if c.fwImage != "" {
+		count++
+	}
+	return count, nil
 }
 
-func validateStableVersionArgs(os string, fw string, fwImage string) int {
-	count := 0
-	if os != "" {
-		count++
+func (c *setStableVersionRun) validateHostnameArgs() error {
+	if c.hostname == "" {
+		return errors.Reason("Please provide -hostname of DUT").Err()
 	}
-	if fw != "" {
-		count++
+	if c.os == "" {
+		return errors.Reason("Please provide -os").Err()
 	}
-	if fwImage != "" {
-		count++
+	if c.fw == "" {
+		return errors.Reason("Please provide -fw").Err()
 	}
-	return count
+	if c.fwImage == "" {
+		return errors.Reason("Please provide -fwImage").Err()
+	}
+	return nil
 }
 
 // ProduceRequest creates a request that can be used as a key to set the stable version.
