@@ -68,6 +68,7 @@ func pushToDroneQueen(ctx context.Context) (err error) {
 			if len(su.GetMachineLSEs()) > 0 {
 				availableDuts = append(availableDuts, &dronequeenapi.DeclareDutsRequest_Dut{
 					Name: su.GetName(),
+					Hive: util.GetHiveForDut(su.GetName(), ""),
 				})
 				for _, lseName := range su.GetMachineLSEs() {
 					lseInSUnitMap[lseName] = true
