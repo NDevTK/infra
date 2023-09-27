@@ -27,6 +27,7 @@ from mrproto import site_pb2
 from mrproto import tracker_pb2
 from mrproto import user_pb2
 from mrproto import usergroup_pb2
+from services import service_manager
 from testing import fake
 from testing import testing_helpers
 from tracker import tracker_bizobj
@@ -1241,6 +1242,12 @@ class IssuePermissionsTest(unittest.TestCase):
   ADMIN_PERMS = permissions.ADMIN_PERMISSIONSET
   PERMS = permissions.EMPTY_PERMISSIONSET
 
+  def setUp(self):
+    self.user_svc = fake.UserService()
+    self.services = service_manager.Services(user=self.user_svc)
+
+    self.user_svc.TestAddUser('allowlisteduser@test.com', 567)
+
   def testUpdateIssuePermissions_Normal(self):
     perms = permissions.UpdateIssuePermissions(
         permissions.COMMITTER_ACTIVE_PERMISSIONSET, self.PROJECT,
@@ -1675,6 +1682,39 @@ class IssuePermissionsTest(unittest.TestCase):
     self.assertFalse(permissions.CanUpdateApprovers(
         {111, 222}, permissions.PermissionSet([]), self.PROJECT,
         [333]))
+
+  def testCanEditProjectConfig_Admin(self):
+    mr = testing_helpers.MakeMonorailRequest(
+        project=fake.Project(project_id=789))
+    mr.perms = permissions.ADMIN_PERMISSIONSET
+    self.assertTrue(permissions.CanEditProjectConfig(mr, self.services))
+
+  def testCanEditProjectConfig_NormalUser(self):
+    mr = testing_helpers.MakeMonorailRequest(
+        project=fake.Project(project_id=789))
+    mr.perms = permissions.CONTRIBUTOR_ACTIVE_PERMISSIONSET
+    self.assertFalse(permissions.CanEditProjectConfig(mr, self.services))
+
+  def testCanEditProjectConfig_Admin_FrozenConfig(self):
+    mr = testing_helpers.MakeMonorailRequest(
+        project=fake.Project(project_id=789))
+    mr.perms = permissions.ADMIN_PERMISSIONSET
+    mr.auth.effective_ids = {567}
+
+    settings.config_freeze_override_users = {}
+    settings.config_freeze_project_ids = {789}
+    self.assertFalse(permissions.CanEditProjectConfig(mr, self.services))
+
+  def testCanEditProjectConfig_Admin_FrozenConfig_AllowedUser(self):
+    mr = testing_helpers.MakeMonorailRequest(
+        project=fake.Project(project_id=789))
+    mr.perms = permissions.ADMIN_PERMISSIONSET
+    mr.auth.effective_ids = {567}
+
+    settings.config_freeze_override_users = {'allowlisteduser@test.com'}
+    settings.config_freeze_project_ids = {789}
+
+    self.assertTrue(permissions.CanEditProjectConfig(mr, self.services))
 
   def testCanViewComponentDef_ComponentAdmin(self):
     cd = tracker_pb2.ComponentDef(admin_ids=[111])
