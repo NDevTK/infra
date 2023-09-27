@@ -70,6 +70,8 @@ func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env 
 		ds = tlw.DUTSetupTypeAndroid
 	case "cros":
 		ds = tlw.DUTSetupTypeCros
+	case "browser":
+		ds = tlw.DUTSetupTypeCrosBrowser
 	default:
 		return errors.Reason("upsupported device type %s", c.deviceType).Err()
 	}
