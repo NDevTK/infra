@@ -1,0 +1,2553 @@
+{
+  "plans": [
+    {
+      "name": "cros",
+      "critical_actions": [
+        {
+          "name": "Set state: repair_failed",
+          "docs": [
+            "The action set devices with state means that repair tsk did not success to recover the devices."
+          ],
+          "exec_name": "dut_set_state",
+          "exec_args": [
+            "state:repair_failed"
+          ],
+          "run_control": "RUN_ONCE"
+        },
+        {
+          "name": "Device is SSHable",
+          "docs": [
+            "Verify that device is reachable by SSH.",
+            "Limited to 15 seconds."
+          ],
+          "exec_name": "cros_ssh",
+          "timeout": "15s",
+          "recoveries": [
+            {
+              "name": "Power cycle DUT by RPM and wait",
+              "docs": [
+                "Perform RPM cycle and wait to device to boot back."
+              ],
+              "conditions": [
+                {
+                  "name": "has_rpm_info",
+                  "exec_name": "has_rpm_info",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "dependencies": [
+                {
+                  "name": "rpm_power_cycle",
+                  "exec_name": "rpm_power_cycle",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Wait to be pingable (normal boot)",
+                  "docs": [
+                    "Wait DUT to be pingable after some action on it.",
+                    "Waiting time 150 seconds."
+                  ],
+                  "exec_name": "cros_ping",
+                  "timeout": "2m30s",
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
+          "run_control": "ALWAYS_RUN"
+        },
+        {
+          "name": "Ensure firmware is in good state",
+          "docs": [
+            "Ensure that firmware is in good state."
+          ],
+          "conditions": [
+            {
+              "name": "dut_is_not_browser_legacy_duts",
+              "exec_name": "dut_is_not_browser_legacy_duts",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "dependencies": [
+            {
+              "name": "Internal storage is responsive",
+              "docs": [
+                "Verify that internal storage is responsive"
+              ],
+              "dependencies": [
+                {
+                  "name": "Device is SSHable",
+                  "docs": [
+                    "Verify that device is reachable by SSH.",
+                    "Limited to 15 seconds."
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "15s",
+                  "recoveries": [
+                    {
+                      "name": "Power cycle DUT by RPM and wait",
+                      "docs": [
+                        "Perform RPM cycle and wait to device to boot back."
+                      ],
+                      "conditions": [
+                        {
+                          "name": "has_rpm_info",
+                          "exec_name": "has_rpm_info",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "rpm_power_cycle",
+                          "exec_name": "rpm_power_cycle",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Wait to be pingable (normal boot)",
+                          "docs": [
+                            "Wait DUT to be pingable after some action on it.",
+                            "Waiting time 150 seconds."
+                          ],
+                          "exec_name": "cros_ping",
+                          "timeout": "2m30s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "cros_is_file_system_writable",
+              "exec_args": [
+                "paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted"
+              ],
+              "recoveries": [
+                {
+                  "name": "Quick provision OS",
+                  "docs": [
+                    "Install stable OS on the device."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Recovery version has OS image path",
+                      "docs": [
+                        "Verify that recovery version has OS image path."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Has a stable-version service",
+                          "docs": [
+                            "Verify if we have access to the service provided access to the stable version"
+                          ],
+                          "exec_name": "has_stable_version_service_path",
+                          "run_control": "RUN_ONCE"
+                        }
+                      ],
+                      "exec_name": "has_stable_version_cros_image",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "Verify that device is reachable by SSH.",
+                        "Limited to 15 seconds."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "15s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Internal storage is responsive",
+                      "docs": [
+                        "Verify that internal storage is responsive"
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "Verify that device is reachable by SSH.",
+                            "Limited to 15 seconds."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "15s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "cros_is_file_system_writable",
+                      "exec_args": [
+                        "paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Call provision for DUT",
+                      "docs": [
+                        "Call provision OS of the DUT."
+                      ],
+                      "exec_name": "cros_provision",
+                      "timeout": "1h0m0s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Remove PROVISION repair-request",
+                      "docs": [
+                        "Remove a PROVISION repair-request."
+                      ],
+                      "exec_name": "dut_remove_repair_requests",
+                      "exec_args": [
+                        "requests:PROVISION"
+                      ],
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Repair by powerwash",
+                  "docs": [
+                    "Install the stable test image designated for the DUT."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "Verify that device is reachable by SSH.",
+                        "Limited to 15 seconds."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "15s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Internal storage is responsive",
+                      "docs": [
+                        "Verify that internal storage is responsive"
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "Verify that device is reachable by SSH.",
+                            "Limited to 15 seconds."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "15s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "cros_is_file_system_writable",
+                      "exec_args": [
+                        "paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Write factory-install-reset to file system",
+                      "exec_name": "cros_run_shell_command",
+                      "exec_args": [
+                        "echo \"fast safe\" \u003e /mnt/stateful_partition/factory_install_reset"
+                      ],
+                      "allow_fail_after_recovery": true,
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Simple reboot",
+                      "docs": [
+                        "Simple un-blocker reboot."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "Verify that device is reachable by SSH.",
+                            "Limited to 15 seconds."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "15s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "cros_run_command",
+                      "exec_args": [
+                        "host:dut",
+                        "command:reboot",
+                        "background:true"
+                      ],
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Wait to be SSHable (normal boot)",
+                      "docs": [
+                        "Try to wait device to be sshable after the device being rebooted.",
+                        "Waiting time 150 seconds."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "2m30s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Call provision for DUT",
+                      "docs": [
+                        "Call provision OS of the DUT."
+                      ],
+                      "exec_name": "cros_provision",
+                      "timeout": "1h0m0s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Remove PROVISION repair-request",
+                      "docs": [
+                        "Remove a PROVISION repair-request."
+                      ],
+                      "exec_name": "dut_remove_repair_requests",
+                      "exec_args": [
+                        "requests:PROVISION"
+                      ],
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "exec_name": "cros_is_firmware_in_good_state",
+          "recoveries": [
+            {
+              "name": "Fix FW on the DUT to match stable-version and wait to boot",
+              "docs": [
+                "Update firmware from the host and reboot, then wait for host be available for SSH."
+              ],
+              "dependencies": [
+                {
+                  "name": "Fix FW on the DUT to match stable-version",
+                  "docs": [
+                    "Download firmware image based on stable_version and install via firmware updater from DUT",
+                    "Update FW required the DUT to be run on stable-version OS.",
+                    "The reboot is not triggered as part of the action.",
+                    "Set timeout to 120 minutes = 10 minutes for download + 100 minutes for find and extract AP/EC images + 10 minutes for run updater."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Recovery version has OS image path",
+                      "docs": [
+                        "Verify that recovery version has OS image path."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Has a stable-version service",
+                          "docs": [
+                            "Verify if we have access to the service provided access to the stable version"
+                          ],
+                          "exec_name": "has_stable_version_service_path",
+                          "run_control": "RUN_ONCE"
+                        }
+                      ],
+                      "exec_name": "has_stable_version_cros_image",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Recovery version has firmware image path",
+                      "docs": [
+                        "Verify that recovery version has firmware image path."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Has a stable-version service",
+                          "docs": [
+                            "Verify if we have access to the service provided access to the stable version"
+                          ],
+                          "exec_name": "has_stable_version_service_path",
+                          "run_control": "RUN_ONCE"
+                        }
+                      ],
+                      "exec_name": "has_stable_version_fw_image",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Provision OS if needed",
+                      "docs": [
+                        "Perform provision OS if device is not running on it."
+                      ],
+                      "conditions": [
+                        {
+                          "name": "Recovery version has OS image path",
+                          "docs": [
+                            "Verify that recovery version has OS image path."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Has a stable-version service",
+                              "docs": [
+                                "Verify if we have access to the service provided access to the stable version"
+                              ],
+                              "exec_name": "has_stable_version_service_path",
+                              "run_control": "RUN_ONCE"
+                            }
+                          ],
+                          "exec_name": "has_stable_version_cros_image",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "DUT not on stable version",
+                          "docs": [
+                            "Confirm that DUT does not have stable version."
+                          ],
+                          "exec_name": "cros_not_on_stable_version",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "Verify that device is reachable by SSH.",
+                            "Limited to 15 seconds."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "15s",
+                          "run_control": "ALWAYS_RUN"
+                        },
+                        {
+                          "name": "Call provision for DUT",
+                          "docs": [
+                            "Call provision OS of the DUT."
+                          ],
+                          "exec_name": "cros_provision",
+                          "timeout": "1h0m0s",
+                          "run_control": "ALWAYS_RUN"
+                        },
+                        {
+                          "name": "Remove PROVISION repair-request",
+                          "docs": [
+                            "Remove a PROVISION repair-request."
+                          ],
+                          "exec_name": "dut_remove_repair_requests",
+                          "exec_args": [
+                            "requests:PROVISION"
+                          ],
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Disable software-controlled write-protect for 'host'",
+                      "docs": [
+                        "Disable write-protect fprom 'host'."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "Verify that device is reachable by SSH.",
+                            "Limited to 15 seconds."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "15s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "cros_disable_fprom_write_protect",
+                      "exec_args": [
+                        "fprom:host"
+                      ],
+                      "timeout": "5m0s",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Disable software-controlled write-protect for 'ec'",
+                      "docs": [
+                        "Disable write-protect fprom 'ec'."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "Verify that device is reachable by SSH.",
+                            "Limited to 15 seconds."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "15s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "cros_disable_fprom_write_protect",
+                      "exec_args": [
+                        "fprom:ec"
+                      ],
+                      "timeout": "5m0s",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_update_firmware_from_firmware_image",
+                  "exec_args": [
+                    "mode:recovery",
+                    "force:true",
+                    "update_ec_attempt_count:1",
+                    "update_ap_attempt_count:1",
+                    "updater_timeout:600",
+                    "use_cache_extractor:true"
+                  ],
+                  "timeout": "2h0m0s",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Simple reboot",
+                  "docs": [
+                    "Simple un-blocker reboot."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "Verify that device is reachable by SSH.",
+                        "Limited to 15 seconds."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "15s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:reboot",
+                    "background:true"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Wait to be SSHable (normal boot)",
+                  "docs": [
+                    "Try to wait device to be sshable after the device being rebooted.",
+                    "Waiting time 150 seconds."
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "2m30s",
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "RO Firmware validations without servo",
+          "docs": [
+            "Check if the version of RO firmware on DUT matches the stable firmware version."
+          ],
+          "conditions": [
+            {
+              "name": "dut_is_not_browser_legacy_duts",
+              "exec_name": "dut_is_not_browser_legacy_duts",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "has_stable_version_fw_version",
+              "exec_name": "has_stable_version_fw_version",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "has_stable_version_fw_image",
+              "exec_name": "has_stable_version_fw_image",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "exec_name": "cros_is_on_ro_firmware_stable_version",
+          "recoveries": [
+            {
+              "name": "Fix FW on the DUT to match stable-version and wait to boot",
+              "docs": [
+                "Update firmware from the host and reboot, then wait for host be available for SSH."
+              ],
+              "dependencies": [
+                {
+                  "name": "Fix FW on the DUT to match stable-version",
+                  "docs": [
+                    "Download firmware image based on stable_version and install via firmware updater from DUT",
+                    "Update FW required the DUT to be run on stable-version OS.",
+                    "The reboot is not triggered as part of the action.",
+                    "Set timeout to 120 minutes = 10 minutes for download + 100 minutes for find and extract AP/EC images + 10 minutes for run updater."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Recovery version has OS image path",
+                      "docs": [
+                        "Verify that recovery version has OS image path."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Has a stable-version service",
+                          "docs": [
+                            "Verify if we have access to the service provided access to the stable version"
+                          ],
+                          "exec_name": "has_stable_version_service_path",
+                          "run_control": "RUN_ONCE"
+                        }
+                      ],
+                      "exec_name": "has_stable_version_cros_image",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Recovery version has firmware image path",
+                      "docs": [
+                        "Verify that recovery version has firmware image path."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Has a stable-version service",
+                          "docs": [
+                            "Verify if we have access to the service provided access to the stable version"
+                          ],
+                          "exec_name": "has_stable_version_service_path",
+                          "run_control": "RUN_ONCE"
+                        }
+                      ],
+                      "exec_name": "has_stable_version_fw_image",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Provision OS if needed",
+                      "docs": [
+                        "Perform provision OS if device is not running on it."
+                      ],
+                      "conditions": [
+                        {
+                          "name": "Recovery version has OS image path",
+                          "docs": [
+                            "Verify that recovery version has OS image path."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Has a stable-version service",
+                              "docs": [
+                                "Verify if we have access to the service provided access to the stable version"
+                              ],
+                              "exec_name": "has_stable_version_service_path",
+                              "run_control": "RUN_ONCE"
+                            }
+                          ],
+                          "exec_name": "has_stable_version_cros_image",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "DUT not on stable version",
+                          "docs": [
+                            "Confirm that DUT does not have stable version."
+                          ],
+                          "exec_name": "cros_not_on_stable_version",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "Verify that device is reachable by SSH.",
+                            "Limited to 15 seconds."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "15s",
+                          "run_control": "ALWAYS_RUN"
+                        },
+                        {
+                          "name": "Call provision for DUT",
+                          "docs": [
+                            "Call provision OS of the DUT."
+                          ],
+                          "exec_name": "cros_provision",
+                          "timeout": "1h0m0s",
+                          "run_control": "ALWAYS_RUN"
+                        },
+                        {
+                          "name": "Remove PROVISION repair-request",
+                          "docs": [
+                            "Remove a PROVISION repair-request."
+                          ],
+                          "exec_name": "dut_remove_repair_requests",
+                          "exec_args": [
+                            "requests:PROVISION"
+                          ],
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Disable software-controlled write-protect for 'host'",
+                      "docs": [
+                        "Disable write-protect fprom 'host'."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "Verify that device is reachable by SSH.",
+                            "Limited to 15 seconds."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "15s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "cros_disable_fprom_write_protect",
+                      "exec_args": [
+                        "fprom:host"
+                      ],
+                      "timeout": "5m0s",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Disable software-controlled write-protect for 'ec'",
+                      "docs": [
+                        "Disable write-protect fprom 'ec'."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "Verify that device is reachable by SSH.",
+                            "Limited to 15 seconds."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "15s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "cros_disable_fprom_write_protect",
+                      "exec_args": [
+                        "fprom:ec"
+                      ],
+                      "timeout": "5m0s",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_update_firmware_from_firmware_image",
+                  "exec_args": [
+                    "mode:recovery",
+                    "force:true",
+                    "update_ec_attempt_count:1",
+                    "update_ap_attempt_count:1",
+                    "updater_timeout:600",
+                    "use_cache_extractor:true"
+                  ],
+                  "timeout": "2h0m0s",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Simple reboot",
+                  "docs": [
+                    "Simple un-blocker reboot."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "Verify that device is reachable by SSH.",
+                        "Limited to 15 seconds."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "15s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:reboot",
+                    "background:true"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Wait to be SSHable (normal boot)",
+                  "docs": [
+                    "Try to wait device to be sshable after the device being rebooted.",
+                    "Waiting time 150 seconds."
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "2m30s",
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "Has repair-request for re-provision",
+          "docs": [
+            "Check if PROVISION repair-request is present."
+          ],
+          "exec_name": "dut_has_any_repair_requests",
+          "exec_args": [
+            "requests:PROVISION"
+          ],
+          "recoveries": [
+            {
+              "name": "Quick provision OS",
+              "docs": [
+                "Install stable OS on the device."
+              ],
+              "conditions": [
+                {
+                  "name": "Recovery version has OS image path",
+                  "docs": [
+                    "Verify that recovery version has OS image path."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Has a stable-version service",
+                      "docs": [
+                        "Verify if we have access to the service provided access to the stable version"
+                      ],
+                      "exec_name": "has_stable_version_service_path",
+                      "run_control": "RUN_ONCE"
+                    }
+                  ],
+                  "exec_name": "has_stable_version_cros_image",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Device is SSHable",
+                  "docs": [
+                    "Verify that device is reachable by SSH.",
+                    "Limited to 15 seconds."
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "15s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Internal storage is responsive",
+                  "docs": [
+                    "Verify that internal storage is responsive"
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "Verify that device is reachable by SSH.",
+                        "Limited to 15 seconds."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "15s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_is_file_system_writable",
+                  "exec_args": [
+                    "paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "dependencies": [
+                {
+                  "name": "Call provision for DUT",
+                  "docs": [
+                    "Call provision OS of the DUT."
+                  ],
+                  "exec_name": "cros_provision",
+                  "timeout": "1h0m0s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Remove PROVISION repair-request",
+                  "docs": [
+                    "Remove a PROVISION repair-request."
+                  ],
+                  "exec_name": "dut_remove_repair_requests",
+                  "exec_args": [
+                    "requests:PROVISION"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Install OS in recovery mode by booting from servo USB-drive",
+              "docs": [
+                "This action installs the test image on DUT utilizing the features of servo.",
+                "DUT will be booted in recovery mode."
+              ],
+              "conditions": [
+                {
+                  "name": "Is servod running",
+                  "docs": [
+                    "Verify that servo host specified in setup and servod is running."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Setup has servo info",
+                      "exec_name": "dut_servo_host_present",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Verify servod is responsive",
+                      "conditions": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servod_echo",
+                      "exec_args": [
+                        "ssh_check:false"
+                      ],
+                      "timeout": "10s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Is not Flex device",
+                  "docs": [
+                    "Check that DUT is not a Flex board"
+                  ],
+                  "exec_name": "dut_check_board",
+                  "exec_args": [
+                    "string_values:aurora,reven",
+                    "invert_result:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Is servo USB key detected",
+                  "docs": [
+                    "The action used as codiion.",
+                    "The action verify that USB-key is detected and readable."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_usbkey_is_detected",
+                  "exec_args": [
+                    "file_check:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "dependencies": [
+                {
+                  "name": "Servo USB-Key needs to be reflashed",
+                  "docs": [
+                    "Check if it is time to download image to servo usbkey.",
+                    "If so, then download the stable image to usbkey."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "It is time to update USB-drive image",
+                      "docs": [
+                        "Check if it is time to force download image to usbkey",
+                        "from the number of failed recoveries since last successful PARIS repair task."
+                      ],
+                      "exec_name": "cros_is_time_to_force_download_image_to_usbkey",
+                      "exec_args": [
+                        "task_name:recovery",
+                        "repair_failed_count:1",
+                        "repair_failed_interval:10"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Download stable image to USB-key",
+                      "docs": [
+                        "Download lab stable image on servo USB-key",
+                        "Download the image can take longer if labstation download parallel a few images.",
+                        "This step is allowed to complete successfully even if some",
+                        " errors happen during download because the image can already",
+                        " be present on the USB-drive."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Is servo USB key detected",
+                          "docs": [
+                            "The action used as codiion.",
+                            "The action verify that USB-key is detected and readable."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Is servod running",
+                              "docs": [
+                                "Verify that servo host specified in setup and servod is running."
+                              ],
+                              "dependencies": [
+                                {
+                                  "name": "Setup has servo info",
+                                  "exec_name": "dut_servo_host_present",
+                                  "run_control": "RERUN_AFTER_RECOVERY"
+                                },
+                                {
+                                  "name": "Verify servod is responsive",
+                                  "conditions": [
+                                    {
+                                      "name": "Setup has servo info",
+                                      "exec_name": "dut_servo_host_present",
+                                      "run_control": "RERUN_AFTER_RECOVERY"
+                                    }
+                                  ],
+                                  "exec_name": "servod_echo",
+                                  "exec_args": [
+                                    "ssh_check:false"
+                                  ],
+                                  "timeout": "10s",
+                                  "run_control": "ALWAYS_RUN"
+                                }
+                              ],
+                              "exec_name": "sample_pass",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servo_usbkey_is_detected",
+                          "exec_args": [
+                            "file_check:true"
+                          ],
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Call servod to download image to USB-key",
+                          "docs": [
+                            "This action calls servod to download stable version OS image to servo USB-key."
+                          ],
+                          "exec_name": "servo_download_image_to_usb",
+                          "timeout": "50m0s",
+                          "run_control": "ALWAYS_RUN"
+                        },
+                        {
+                          "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                          "docs": [
+                            "Remove UPDATE_USBKEY_IMAGE from repair-requests."
+                          ],
+                          "exec_name": "dut_remove_repair_requests",
+                          "exec_args": [
+                            "requests:UPDATE_USBKEY_IMAGE"
+                          ],
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Download stable version OS image to servo usbkey if necessary (allow fail)",
+                  "docs": [
+                    "This action will download model specific stable version OS image to servo usbkey.",
+                    "The action will be skipped if the required image is already loaded."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Setup has servo info",
+                      "exec_name": "dut_servo_host_present",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Has a stable-version service",
+                      "docs": [
+                        "Verify if we have access to the service provided access to the stable version"
+                      ],
+                      "exec_name": "has_stable_version_service_path",
+                      "run_control": "RUN_ONCE"
+                    },
+                    {
+                      "name": "Stable version image is missing from servo usbkey",
+                      "docs": [
+                        "This is a reverse action which fails when required image is already cached in servo usbkey.",
+                        "The purpose is to serve as a condition of Download stable image to USB-key action, so that we don't do duplicate download.",
+                        "If this action fails, it means the servo usbkey already have required stable_version OS image cached."
+                      ],
+                      "conditions": [
+                        {
+                          "name": "Servo usbkey has stable image",
+                          "docs": [
+                            "Check if the usbkey has the stable_version OS image.",
+                            "TODO: Collect data on the usual number of retries and tweak the default"
+                          ],
+                          "exec_name": "servo_usbkey_has_stable_image",
+                          "exec_args": [
+                            "retry_count:3",
+                            "retry_interval:1",
+                            "usb_file_check:true"
+                          ],
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "sample_fail",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "servo_servod_echo_host",
+                      "exec_name": "servo_servod_echo_host",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Is servo USB key detected",
+                      "docs": [
+                        "The action used as codiion.",
+                        "The action verify that USB-key is detected and readable."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Is servod running",
+                          "docs": [
+                            "Verify that servo host specified in setup and servod is running."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            },
+                            {
+                              "name": "Verify servod is responsive",
+                              "conditions": [
+                                {
+                                  "name": "Setup has servo info",
+                                  "exec_name": "dut_servo_host_present",
+                                  "run_control": "RERUN_AFTER_RECOVERY"
+                                }
+                              ],
+                              "exec_name": "servod_echo",
+                              "exec_args": [
+                                "ssh_check:false"
+                              ],
+                              "timeout": "10s",
+                              "run_control": "ALWAYS_RUN"
+                            }
+                          ],
+                          "exec_name": "sample_pass",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servo_usbkey_is_detected",
+                      "exec_args": [
+                        "file_check:true"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Call servod to download image to USB-key",
+                      "docs": [
+                        "This action calls servod to download stable version OS image to servo USB-key."
+                      ],
+                      "exec_name": "servo_download_image_to_usb",
+                      "timeout": "50m0s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                      "docs": [
+                        "Remove UPDATE_USBKEY_IMAGE from repair-requests."
+                      ],
+                      "exec_name": "dut_remove_repair_requests",
+                      "exec_args": [
+                        "requests:UPDATE_USBKEY_IMAGE"
+                      ],
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RUN_ONCE"
+                },
+                {
+                  "name": "Boot DUT in recovery and install from USB-drive",
+                  "docs": [
+                    "This action installs the test image on DUT utilizing ",
+                    "the features of servo. DUT will be booted in recovery ",
+                    "mode. In some cases RO FW is not allowed to boot in ",
+                    "recovery mode with active PD, so we will change it to ",
+                    "sink-mode if required."
+                  ],
+                  "exec_name": "cros_install_in_recovery_mode",
+                  "exec_args": [
+                    "run_tpm_reset:true",
+                    "run_os_install:true",
+                    "boot_timeout:480",
+                    "boot_interval:10",
+                    "boot_retry:2",
+                    "halt_timeout:120",
+                    "install_timeout:1200",
+                    "tpm_reset_timeout:60",
+                    "post_install_boot_time:15",
+                    "badblocks_mode:auto",
+                    "rw_badblocks_timeout:5400",
+                    "ro_badblocks_timeout:3600"
+                  ],
+                  "timeout": "2h13m20s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Wait to be SSHable (normal boot)",
+                  "docs": [
+                    "Try to wait device to be sshable after the device being rebooted.",
+                    "Waiting time 150 seconds."
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "2m30s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Remove REIMAGE_BY_USBKEY repair-request",
+                  "docs": [
+                    "Remove REIMAGE_BY_USBKEY and PROVISION repair-requests."
+                  ],
+                  "exec_name": "dut_remove_repair_requests",
+                  "exec_args": [
+                    "requests:PROVISION,REIMAGE_BY_USBKEY"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "ALWAYS_RUN"
+            },
+            {
+              "name": "Install OS in recovery mode by booting from servo USB-drive (Flex)",
+              "docs": [
+                "The action design only for Flex devices.",
+                "This action installs the test image on DUT utilizing the features of servo.",
+                "When DUT sees USB-key it will always try to boot from it."
+              ],
+              "conditions": [
+                {
+                  "name": "Is Flex device",
+                  "docs": [
+                    "Check that DUT is a Flex board"
+                  ],
+                  "exec_name": "dut_check_board",
+                  "exec_args": [
+                    "string_values:aurora,reven",
+                    "invert_result:false"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Is servod running",
+                  "docs": [
+                    "Verify that servo host specified in setup and servod is running."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Setup has servo info",
+                      "exec_name": "dut_servo_host_present",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Verify servod is responsive",
+                      "conditions": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servod_echo",
+                      "exec_args": [
+                        "ssh_check:false"
+                      ],
+                      "timeout": "10s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Is servo USB key detected",
+                  "docs": [
+                    "The action used as codiion.",
+                    "The action verify that USB-key is detected and readable."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_usbkey_is_detected",
+                  "exec_args": [
+                    "file_check:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "dependencies": [
+                {
+                  "name": "Servo USB-Key needs to be reflashed",
+                  "docs": [
+                    "Check if it is time to download image to servo usbkey.",
+                    "If so, then download the stable image to usbkey."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "It is time to update USB-drive image",
+                      "docs": [
+                        "Check if it is time to force download image to usbkey",
+                        "from the number of failed recoveries since last successful PARIS repair task."
+                      ],
+                      "exec_name": "cros_is_time_to_force_download_image_to_usbkey",
+                      "exec_args": [
+                        "task_name:recovery",
+                        "repair_failed_count:1",
+                        "repair_failed_interval:10"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Download stable image to USB-key",
+                      "docs": [
+                        "Download lab stable image on servo USB-key",
+                        "Download the image can take longer if labstation download parallel a few images.",
+                        "This step is allowed to complete successfully even if some",
+                        " errors happen during download because the image can already",
+                        " be present on the USB-drive."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Is servo USB key detected",
+                          "docs": [
+                            "The action used as codiion.",
+                            "The action verify that USB-key is detected and readable."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Is servod running",
+                              "docs": [
+                                "Verify that servo host specified in setup and servod is running."
+                              ],
+                              "dependencies": [
+                                {
+                                  "name": "Setup has servo info",
+                                  "exec_name": "dut_servo_host_present",
+                                  "run_control": "RERUN_AFTER_RECOVERY"
+                                },
+                                {
+                                  "name": "Verify servod is responsive",
+                                  "conditions": [
+                                    {
+                                      "name": "Setup has servo info",
+                                      "exec_name": "dut_servo_host_present",
+                                      "run_control": "RERUN_AFTER_RECOVERY"
+                                    }
+                                  ],
+                                  "exec_name": "servod_echo",
+                                  "exec_args": [
+                                    "ssh_check:false"
+                                  ],
+                                  "timeout": "10s",
+                                  "run_control": "ALWAYS_RUN"
+                                }
+                              ],
+                              "exec_name": "sample_pass",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servo_usbkey_is_detected",
+                          "exec_args": [
+                            "file_check:true"
+                          ],
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Call servod to download image to USB-key",
+                          "docs": [
+                            "This action calls servod to download stable version OS image to servo USB-key."
+                          ],
+                          "exec_name": "servo_download_image_to_usb",
+                          "timeout": "50m0s",
+                          "run_control": "ALWAYS_RUN"
+                        },
+                        {
+                          "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                          "docs": [
+                            "Remove UPDATE_USBKEY_IMAGE from repair-requests."
+                          ],
+                          "exec_name": "dut_remove_repair_requests",
+                          "exec_args": [
+                            "requests:UPDATE_USBKEY_IMAGE"
+                          ],
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Download stable version OS image to servo usbkey if necessary (allow fail)",
+                  "docs": [
+                    "This action will download model specific stable version OS image to servo usbkey.",
+                    "The action will be skipped if the required image is already loaded."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Setup has servo info",
+                      "exec_name": "dut_servo_host_present",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Has a stable-version service",
+                      "docs": [
+                        "Verify if we have access to the service provided access to the stable version"
+                      ],
+                      "exec_name": "has_stable_version_service_path",
+                      "run_control": "RUN_ONCE"
+                    },
+                    {
+                      "name": "Stable version image is missing from servo usbkey",
+                      "docs": [
+                        "This is a reverse action which fails when required image is already cached in servo usbkey.",
+                        "The purpose is to serve as a condition of Download stable image to USB-key action, so that we don't do duplicate download.",
+                        "If this action fails, it means the servo usbkey already have required stable_version OS image cached."
+                      ],
+                      "conditions": [
+                        {
+                          "name": "Servo usbkey has stable image",
+                          "docs": [
+                            "Check if the usbkey has the stable_version OS image.",
+                            "TODO: Collect data on the usual number of retries and tweak the default"
+                          ],
+                          "exec_name": "servo_usbkey_has_stable_image",
+                          "exec_args": [
+                            "retry_count:3",
+                            "retry_interval:1",
+                            "usb_file_check:true"
+                          ],
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "sample_fail",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "servo_servod_echo_host",
+                      "exec_name": "servo_servod_echo_host",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Is servo USB key detected",
+                      "docs": [
+                        "The action used as codiion.",
+                        "The action verify that USB-key is detected and readable."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Is servod running",
+                          "docs": [
+                            "Verify that servo host specified in setup and servod is running."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            },
+                            {
+                              "name": "Verify servod is responsive",
+                              "conditions": [
+                                {
+                                  "name": "Setup has servo info",
+                                  "exec_name": "dut_servo_host_present",
+                                  "run_control": "RERUN_AFTER_RECOVERY"
+                                }
+                              ],
+                              "exec_name": "servod_echo",
+                              "exec_args": [
+                                "ssh_check:false"
+                              ],
+                              "timeout": "10s",
+                              "run_control": "ALWAYS_RUN"
+                            }
+                          ],
+                          "exec_name": "sample_pass",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servo_usbkey_is_detected",
+                      "exec_args": [
+                        "file_check:true"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Call servod to download image to USB-key",
+                      "docs": [
+                        "This action calls servod to download stable version OS image to servo USB-key."
+                      ],
+                      "exec_name": "servo_download_image_to_usb",
+                      "timeout": "50m0s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                      "docs": [
+                        "Remove UPDATE_USBKEY_IMAGE from repair-requests."
+                      ],
+                      "exec_name": "dut_remove_repair_requests",
+                      "exec_args": [
+                        "requests:UPDATE_USBKEY_IMAGE"
+                      ],
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RUN_ONCE"
+                },
+                {
+                  "name": "Power OFF DUT by servo",
+                  "docs": [
+                    "Turn DUT OFF by servo and do not wait."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_set",
+                  "exec_args": [
+                    "command:power_state",
+                    "string_value:off",
+                    "timeout:30"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Direct USB-drive to DUT",
+                  "docs": [
+                    "Switch servo's USB-drive to point to DUT."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_set",
+                  "exec_args": [
+                    "command:image_usbkey_direction",
+                    "string_value:dut_sees_usbkey"
+                  ],
+                  "timeout": "20s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Sleep 10 seconds",
+                  "exec_name": "sample_sleep",
+                  "exec_args": [
+                    "sleep:10"
+                  ],
+                  "timeout": "11s",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Power ON DUT by servo",
+                  "docs": [
+                    "Turn DUT ON by servo and do not wait."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_set",
+                  "exec_args": [
+                    "command:power_state",
+                    "string_value:on"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Sleep 10 seconds",
+                  "exec_name": "sample_sleep",
+                  "exec_args": [
+                    "sleep:10"
+                  ],
+                  "timeout": "11s",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Wait to be SSHable (normal boot)",
+                  "docs": [
+                    "Try to wait device to be sshable after the device being rebooted.",
+                    "Waiting time 150 seconds."
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "2m30s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Print active devices",
+                  "docs": [
+                    "Print active devices visible for DUT."
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:lsblk",
+                    "background:false"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Is Flex booted from USB-drive",
+                  "docs": [
+                    "Check if device booted from USB in installer mode."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Is Flex device",
+                      "docs": [
+                        "Check that DUT is a Flex board"
+                      ],
+                      "exec_name": "dut_check_board",
+                      "exec_args": [
+                        "string_values:aurora,reven",
+                        "invert_result:false"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:is_running_from_installer |grep yes",
+                    "background:false"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Run chromeos-install for Flex",
+                  "docs": [
+                    "Run chromeos-install for Flex DUTs with detecting destination.",
+                    "Flex device does not detect destination as part of chromeos-install script."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is Flex device",
+                      "docs": [
+                        "Check that DUT is a Flex board"
+                      ],
+                      "exec_name": "dut_check_board",
+                      "exec_args": [
+                        "string_values:aurora,reven",
+                        "invert_result:false"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:chromeos-install --dst $(lsblk --bytes --output NAME  --paths -I 259 -n -d) --yes",
+                    "background:false"
+                  ],
+                  "timeout": "10m0s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Sleep 10 seconds",
+                  "exec_name": "sample_sleep",
+                  "exec_args": [
+                    "sleep:10"
+                  ],
+                  "timeout": "11s",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Power OFF DUT by servo",
+                  "docs": [
+                    "Turn DUT OFF by servo and do not wait."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_set",
+                  "exec_args": [
+                    "command:power_state",
+                    "string_value:off",
+                    "timeout:30"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Direct USB-drive to servo host",
+                  "docs": [
+                    "Switch servo's USB-drive to point to servo-host."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_set",
+                  "exec_args": [
+                    "command:image_usbkey_direction",
+                    "string_value:servo_sees_usbkey"
+                  ],
+                  "timeout": "20s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Power ON DUT by servo",
+                  "docs": [
+                    "Turn DUT ON by servo and do not wait."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_set",
+                  "exec_args": [
+                    "command:power_state",
+                    "string_value:on"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Wait to be SSHable (normal boot)",
+                  "docs": [
+                    "Try to wait device to be sshable after the device being rebooted.",
+                    "Waiting time 150 seconds."
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "2m30s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Remove REIMAGE_BY_USBKEY repair-request",
+                  "docs": [
+                    "Remove REIMAGE_BY_USBKEY and PROVISION repair-requests."
+                  ],
+                  "exec_name": "dut_remove_repair_requests",
+                  "exec_args": [
+                    "requests:PROVISION,REIMAGE_BY_USBKEY"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "ALWAYS_RUN"
+            },
+            {
+              "name": "Install OS in DEV mode, with force to DEV-mode",
+              "docs": [
+                "Install OS on the device from USB-key when device is in DEV-mode."
+              ],
+              "conditions": [
+                {
+                  "name": "Is servod running",
+                  "docs": [
+                    "Verify that servo host specified in setup and servod is running."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Setup has servo info",
+                      "exec_name": "dut_servo_host_present",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Verify servod is responsive",
+                      "conditions": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servod_echo",
+                      "exec_args": [
+                        "ssh_check:false"
+                      ],
+                      "timeout": "10s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Is not Flex device",
+                  "docs": [
+                    "Check that DUT is not a Flex board"
+                  ],
+                  "exec_name": "dut_check_board",
+                  "exec_args": [
+                    "string_values:aurora,reven",
+                    "invert_result:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "dependencies": [
+                {
+                  "name": "Set GBB flags to 0x18 by servo",
+                  "docs": [
+                    "Force to set GBB flags to 0x18 to boot in DEV mode and enable to boot from USB-drive.",
+                    "Allowed to fail as flags can applied but fail by some reason"
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "cros_set_gbb_by_servo",
+                  "exec_args": [
+                    "gbb_flags:0x18"
+                  ],
+                  "timeout": "5m0s",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Install OS in DEV mode by USB-drive",
+                  "docs": [
+                    "This action installs the test image on DUT after booking the DUT in dev mode."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Recovery version has OS image path",
+                      "docs": [
+                        "Verify that recovery version has OS image path."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Has a stable-version service",
+                          "docs": [
+                            "Verify if we have access to the service provided access to the stable version"
+                          ],
+                          "exec_name": "has_stable_version_service_path",
+                          "run_control": "RUN_ONCE"
+                        }
+                      ],
+                      "exec_name": "has_stable_version_cros_image",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Is not Flex device",
+                      "docs": [
+                        "Check that DUT is not a Flex board"
+                      ],
+                      "exec_name": "dut_check_board",
+                      "exec_args": [
+                        "string_values:aurora,reven",
+                        "invert_result:true"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Is servo USB key detected",
+                      "docs": [
+                        "The action used as codiion.",
+                        "The action verify that USB-key is detected and readable."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Is servod running",
+                          "docs": [
+                            "Verify that servo host specified in setup and servod is running."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            },
+                            {
+                              "name": "Verify servod is responsive",
+                              "conditions": [
+                                {
+                                  "name": "Setup has servo info",
+                                  "exec_name": "dut_servo_host_present",
+                                  "run_control": "RERUN_AFTER_RECOVERY"
+                                }
+                              ],
+                              "exec_name": "servod_echo",
+                              "exec_args": [
+                                "ssh_check:false"
+                              ],
+                              "timeout": "10s",
+                              "run_control": "ALWAYS_RUN"
+                            }
+                          ],
+                          "exec_name": "sample_pass",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servo_usbkey_is_detected",
+                      "exec_args": [
+                        "file_check:true"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Boot DUT from USB in DEV mode",
+                      "docs": [
+                        "Restart and try to boot from USB-drive",
+                        "First boot in dev mode can take time so set boot time to 10 minutes."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "cros_dev_mode_boot_from_servo_usb_drive",
+                      "exec_args": [
+                        "boot_retry:2",
+                        "boot_timeout:600",
+                        "retry_interval:1",
+                        "verify_usbkey_boot:true"
+                      ],
+                      "timeout": "10m50s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Run install after boot from USB-drive",
+                      "docs": [
+                        "Perform install process when device booted from USB-drive."
+                      ],
+                      "exec_name": "cros_run_chromeos_install_command_after_boot_usbdrive",
+                      "timeout": "20m0s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Cold reset DUT by servo and wait to boot",
+                      "docs": [
+                        "Cold reset device by servo and wait for DUT to become ping-able."
+                      ],
+                      "conditions": [
+                        {
+                          "name": "Is servod running",
+                          "docs": [
+                            "Verify that servo host specified in setup and servod is running."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            },
+                            {
+                              "name": "Verify servod is responsive",
+                              "conditions": [
+                                {
+                                  "name": "Setup has servo info",
+                                  "exec_name": "dut_servo_host_present",
+                                  "run_control": "RERUN_AFTER_RECOVERY"
+                                }
+                              ],
+                              "exec_name": "servod_echo",
+                              "exec_args": [
+                                "ssh_check:false"
+                              ],
+                              "timeout": "10s",
+                              "run_control": "ALWAYS_RUN"
+                            }
+                          ],
+                          "exec_name": "sample_pass",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Cold reset DUT by servo",
+                          "docs": [
+                            "Cold reset device by servo and do not wait."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Is servod running",
+                              "docs": [
+                                "Verify that servo host specified in setup and servod is running."
+                              ],
+                              "dependencies": [
+                                {
+                                  "name": "Setup has servo info",
+                                  "exec_name": "dut_servo_host_present",
+                                  "run_control": "RERUN_AFTER_RECOVERY"
+                                },
+                                {
+                                  "name": "Verify servod is responsive",
+                                  "conditions": [
+                                    {
+                                      "name": "Setup has servo info",
+                                      "exec_name": "dut_servo_host_present",
+                                      "run_control": "RERUN_AFTER_RECOVERY"
+                                    }
+                                  ],
+                                  "exec_name": "servod_echo",
+                                  "exec_args": [
+                                    "ssh_check:false"
+                                  ],
+                                  "timeout": "10s",
+                                  "run_control": "ALWAYS_RUN"
+                                }
+                              ],
+                              "exec_name": "sample_pass",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servo_set",
+                          "exec_args": [
+                            "command:power_state",
+                            "string_value:reset",
+                            "timeout:30"
+                          ],
+                          "run_control": "ALWAYS_RUN"
+                        },
+                        {
+                          "name": "Wait to be pingable (normal boot)",
+                          "docs": [
+                            "Wait DUT to be pingable after some action on it.",
+                            "Waiting time 150 seconds."
+                          ],
+                          "exec_name": "cros_ping",
+                          "timeout": "2m30s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Wait to be SSHable (normal boot)",
+                      "docs": [
+                        "Try to wait device to be sshable after the device being rebooted.",
+                        "Waiting time 150 seconds."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "2m30s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Remove REIMAGE_BY_USBKEY repair-request",
+                      "docs": [
+                        "Remove REIMAGE_BY_USBKEY and PROVISION repair-requests."
+                      ],
+                      "exec_name": "dut_remove_repair_requests",
+                      "exec_args": [
+                        "requests:PROVISION,REIMAGE_BY_USBKEY"
+                      ],
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "Update provisioned info",
+          "docs": [
+            "Update cros_version and job_repo_url fields of provision info."
+          ],
+          "exec_name": "cros_update_provision_info",
+          "exec_args": [
+            "update_job_repo_url:true"
+          ],
+          "recoveries": [
+            {
+              "name": "Sleep 1s",
+              "exec_name": "sample_sleep",
+              "exec_args": [
+                "sleep:1"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
+          "run_control": "ALWAYS_RUN"
+        },
+        {
+          "name": "Set state: ready",
+          "docs": [
+            "The action set devices with state ready for the testing."
+          ],
+          "dependencies": [
+            {
+              "name": "All repair-requests resolved",
+              "docs": [
+                "Checks if all repair requests are resolved"
+              ],
+              "exec_name": "dut_has_no_repair_requests",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Reset DUT-state reason",
+              "docs": [
+                "Reset DUT-state-reason for good DUT as it becomes stale."
+              ],
+              "exec_name": "dut_reset_state_reason",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "exec_name": "dut_set_state",
+          "exec_args": [
+            "state:ready"
+          ],
+          "run_control": "RUN_ONCE"
+        }
+      ]
+    },
+    {
+      "name": "close",
+      "critical_actions": [
+        {
+          "name": "Update DUT state for failures more than threshold",
+          "docs": [
+            "Set the DUT state to the value passed in the ",
+            "extra args."
+          ],
+          "conditions": [
+            {
+              "name": "DUT state is repair_failed",
+              "docs": [
+                "Check if the DUT's state is in repair_failed state, if not then fail."
+              ],
+              "exec_name": "dut_state_match",
+              "exec_args": [
+                "state:repair_failed"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Failure count above threshold",
+              "docs": [
+                "Check if the number of times the recovery task ",
+                "has failed is greater than a threshold value or ",
+                "not."
+              ],
+              "conditions": [
+                {
+                  "name": "Is not Flex device",
+                  "docs": [
+                    "Verify that device is belong Reven models"
+                  ],
+                  "exec_name": "dut_check_board",
+                  "exec_args": [
+                    "string_values:aurora,reven",
+                    "invert_result:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "metrics_check_task_failures",
+              "exec_args": [
+                "task_name:recovery",
+                "repair_failed_count:6"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Failure count above threshold (Flex)",
+              "docs": [
+                "Check if the number of times the recovery task ",
+                "has failed is greater than a threshold value or ",
+                "not."
+              ],
+              "conditions": [
+                {
+                  "name": "Is Flex device",
+                  "docs": [
+                    "Verify that device is belong Reven models"
+                  ],
+                  "exec_name": "dut_check_board",
+                  "exec_args": [
+                    "string_values:aurora,reven"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "metrics_check_task_failures",
+              "exec_args": [
+                "task_name:recovery",
+                "repair_failed_count:3"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Set state: needs_manual_repair",
+              "docs": [
+                "Set DUT state as needs_manual_repair."
+              ],
+              "exec_name": "dut_set_state",
+              "exec_args": [
+                "state:needs_manual_repair"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
+          "exec_name": "dut_set_state_reason",
+          "exec_args": [
+            "allow_override:false",
+            "reason:REPAIR_RETRY_REACHED_THRESHOLD"
+          ],
+          "run_control": "RERUN_AFTER_RECOVERY"
+        }
+      ],
+      "allow_fail": true
+    }
+  ]
+}

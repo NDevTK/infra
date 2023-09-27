@@ -20,6 +20,7 @@ func CrosBrowserDUTRepairConfig() *Configuration {
 					"Device is SSHable",
 					"Ensure firmware is in good state",
 					"RO Firmware validations without servo",
+					"Has repair-request for re-provision",
 					"Update provisioned info",
 					"Set state: ready",
 				},

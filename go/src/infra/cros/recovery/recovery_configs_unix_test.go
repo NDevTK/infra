@@ -82,6 +82,18 @@ var configTreeChangesCases = []struct {
 		buildbucket.Deploy,
 		"labstation_deploy.json",
 	},
+	{
+		"Chrome Browser Repair",
+		tlw.DUTSetupTypeCrosBrowser,
+		buildbucket.Recovery,
+		"browser_repair.json",
+	},
+	{
+		"Chrome Browser Deploy",
+		tlw.DUTSetupTypeCrosBrowser,
+		buildbucket.Deploy,
+		"browser_deploy.json",
+	},
 }
 
 // CreateTreeFileIfNotExist controls whether we create tree files.
