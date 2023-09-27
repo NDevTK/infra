@@ -6,6 +6,8 @@ package templates
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
@@ -44,6 +46,7 @@ func (p *crosDutProcessor) Process(request *api.StartTemplatedContainerRequest) 
 		Network: request.Network,
 		Expose:  expose,
 		Volume:  []string{volume},
+		Env:     additionalEnvs(),
 	}
 	startCommand := []string{
 		"cros-dut",
@@ -57,4 +60,20 @@ func (p *crosDutProcessor) Process(request *api.StartTemplatedContainerRequest) 
 func (p *crosDutProcessor) discoverPort(request *api.StartTemplatedContainerRequest) (*api.Container_PortBinding, error) {
 	// delegate to default impl, any template-specific logic should be implemented here.
 	return defaultDiscoverPort(p.cmdExecutor, request)
+}
+
+func additionalEnvs() []string {
+	var env []string
+	bbidEnv := os.Getenv("LOGDOG_STREAM_PREFIX")
+	if bbidEnv != "" {
+		s := strings.Split(bbidEnv, "/")
+		bbid := s[len(s)-1]
+		env = append(env, fmt.Sprintf("BUILD_BUCKET_ID=%s", bbid))
+	}
+
+	swarmingTaskID := os.Getenv("SWARMING_TASK_ID")
+	if swarmingTaskID != "" {
+		env = append(env, fmt.Sprintf("SWARMING_TASK_ID=%s", swarmingTaskID))
+	}
+	return env
 }
