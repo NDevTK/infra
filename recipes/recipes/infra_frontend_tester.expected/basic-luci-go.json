@@ -359,67 +359,6 @@
       "npm",
       "ci"
     ],
-    "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci/bisection/frontend/ui",
-    "env": {
-      "npm_config_cache": "[CACHE]/npmcache/npm",
-      "npm_config_prefix": "[CACHE]/npmcache/pfx"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/npmcache/pfx/bin",
-        "[CACHE]/nodejs/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/luci/luci-go:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "bisection npm install"
-  },
-  {
-    "cmd": [
-      "npm",
-      "run",
-      "test"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci/bisection/frontend/ui",
-    "env": {
-      "npm_config_cache": "[CACHE]/npmcache/npm",
-      "npm_config_prefix": "[CACHE]/npmcache/pfx"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/npmcache/pfx/bin",
-        "[CACHE]/nodejs/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra/luci/luci-go:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "bisection test"
-  },
-  {
-    "cmd": [
-      "npm",
-      "ci"
-    ],
     "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci/milo/ui",
     "env": {
       "npm_config_cache": "[CACHE]/npmcache/npm",

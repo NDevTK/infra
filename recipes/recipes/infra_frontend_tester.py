@@ -96,9 +96,6 @@ def RunLuciGoTests(api, root_path):
   cwd = root_path.join('analysis', 'frontend', 'ui')
   RunFrontendTests(api, cwd, 'analysis')
 
-  cwd = root_path.join('bisection', 'frontend', 'ui')
-  RunFrontendTests(api, cwd, 'bisection')
-
   cwd = root_path.join('milo', 'ui')
   RunFrontendTests(api, cwd, 'milo')
 
