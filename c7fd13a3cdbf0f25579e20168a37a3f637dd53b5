@@ -16,6 +16,24 @@
       "message": "typo: config",
       "revId": "c7fd13a3cdbf0f25579e20168a37a3f637dd53b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6894fb7f_98643819",
+        "filename": "appengine/monorail/framework/permissions.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1130,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2023-09-27T18:08:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c44f939_1e5e265b",
+      "revId": "c7fd13a3cdbf0f25579e20168a37a3f637dd53b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
