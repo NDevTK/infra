@@ -1126,6 +1126,35 @@ def CanUpdateApprovers(effective_ids, perms, project, current_approver_ids):
   return perms.CanUsePerm(EDIT_ISSUE_APPROVAL, effective_ids, project, [])
 
 
+def CanEditProjectConfig(mr, services):
+  """ Special function to check if a user can edit a project config.
+
+  This function accoutns for special edge cases pertaining only to project
+  configuration editing permissions, such as checking if a project is frozen
+  for config edits or if a user is in the allowlist of users who can override
+  a config freeze.
+
+  Args:
+    mr: MonorailRequest object.
+    services: reference to database layer.
+
+  Returns:
+    True if the user can edit the project.
+  """
+  if mr.project.project_id not in settings.config_freeze_project_ids:
+    return mr.perms.CanUsePerm(
+        EDIT_PROJECT, mr.auth.effective_ids, mr.project, [])
+
+  effective_users = services.user.GetUsersByIDs(
+      mr.cnxn, list(mr.auth.effective_ids))
+
+  for _, user in effective_users.items():
+    if user.email in settings.config_freeze_override_users:
+      return True
+
+  return False
+
+
 def CanViewComponentDef(effective_ids, perms, project, component_def):
   """Return True if a user can view the given component definition."""
   if not effective_ids.isdisjoint(component_def.admin_ids):

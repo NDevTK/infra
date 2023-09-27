@@ -33,7 +33,7 @@ MEMBERS_PER_PAGE = 50
 
 
 class PeopleList(servlet.Servlet):
-  """People list page shows a paginatied list of project members."""
+  """People list page shows a paginated list of project members."""
 
   _PAGE_TEMPLATE = 'project/people-list-page.ezt'
   _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PEOPLE
@@ -91,8 +91,8 @@ class PeopleList(servlet.Servlet):
         mr.GetPositiveIntParam('start'), mr.project_name, urls.PEOPLE_LIST,
         url_params=url_params)
 
-    offer_membership_editing = mr.perms.HasPerm(
-        permissions.EDIT_PROJECT, mr.auth.user_id, mr.project)
+    offer_membership_editing = permissions.CanEditProjectConfig(
+        mr, self.services)
 
     check_abandonment = permissions.ShouldCheckForAbandonment(mr)
 
@@ -152,8 +152,7 @@ class PeopleList(servlet.Servlet):
 
   def ProcessFormData(self, mr, post_data):
     """Process the posted form."""
-    permit_edit = mr.perms.HasPerm(
-        permissions.EDIT_PROJECT, mr.auth.user_id, mr.project)
+    permit_edit = permissions.CanEditProjectConfig(mr, self.services)
     if not permit_edit:
       raise permissions.PermissionException(
           'User is not permitted to edit project membership')
