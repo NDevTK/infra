@@ -77,6 +77,12 @@ message Swarming {
     string bot_prefix = 3;
     //UfsNamespace specifies the namespace to be used to fetch DUT information.
     string ufs_namespace = 4;
+    // Indicates whether the service should schedule USB drive audit tasks.
+    bool schedule_audit_usb = 5;
+    // Indicates whether the service should schedule RPM audit tasks.
+    bool schedule_audit_rpm = 6;
+    // Indicates whether the service should schedule storage audit tasks.
+    bool schedule_audit_storage = 7;
   }
 }
 
