@@ -112,6 +112,8 @@ func deployActions() map[string]*Action {
 				"Is it first deployment task",
 				//TODO(b:231627918): Flex does not have own firmware for EC/AP
 				"Is not Flex device",
+				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
+				"Collect HWID into inventory",
 				"Device not in MP Signed AP FW pool",
 				"Has a stable-version service",
 				"Check stable firmware version exists",
