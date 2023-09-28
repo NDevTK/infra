@@ -4,7 +4,7 @@
 [if-any read_only][include "../framework/read-only-rejection.ezt"]
 [else]
 
-[if-any perms.EditProject]
+[if-any can_edit_project]
   <h4>Default templates</h4>
   <div class="section" style="padding-top:0">
     <form action="adminTemplates.do" id="adminTemplates" method="POST">
@@ -54,7 +54,7 @@
         </tr>
       [end]
       [for config.templates]
-        [if-any config.templates.can_view perms.EditProject]
+        [if-any config.templates.can_view can_edit_project]
           [define detail_url]/p/[projectname]/templates/detail?template=[format "url"][config.templates.name][end][end]
             <tr data-url="detail_url">
               <td style="white-space:nowrap" class="id">
@@ -66,7 +66,7 @@
     </tbody>
   </table>
 
-  [if-any perms.EditProject]
+  [if-any can_edit_project]
     <p><a href="/p/[projectname]/templates/create" class="buttonify primary">Add template</a></p>
   [end]
 </div>

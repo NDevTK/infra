@@ -1221,8 +1221,7 @@ class MonorailApi(remote.Service):
       name='components.create')
   def components_create(self, mar, request):
     """Create a component."""
-    if not mar.perms.CanUsePerm(
-        permissions.EDIT_PROJECT, mar.auth.effective_ids, mar.project, []):
+    if not permissions.CanEditProjectConfig(mar, self._services):
       raise permissions.PermissionException(
           'User is not allowed to create components for this project')
 
@@ -1238,8 +1237,8 @@ class MonorailApi(remote.Service):
       if not parent_def:
         raise exceptions.NoSuchComponentException(
             'Parent component %s does not exist.' % parent_path)
-      if not permissions.CanEditComponentDef(
-          mar.auth.effective_ids, mar.perms, mar.project, parent_def, config):
+      if not permissions.CanEditComponentDef(mar, self._services, parent_def,
+                                             config):
         raise permissions.PermissionException(
             'User is not allowed to add a subcomponent to component %s' %
             parent_path)
@@ -1297,8 +1296,8 @@ class MonorailApi(remote.Service):
         mar.auth.effective_ids, mar.perms, mar.project, component_def):
       raise permissions.PermissionException(
           'User is not allowed to view this component %s' % component_path)
-    if not permissions.CanEditComponentDef(
-        mar.auth.effective_ids, mar.perms, mar.project, component_def, config):
+    if not permissions.CanEditComponentDef(mar, self._services, component_def,
+                                           config):
       raise permissions.PermissionException(
           'User is not allowed to delete this component %s' % component_path)
 
@@ -1333,8 +1332,8 @@ class MonorailApi(remote.Service):
         mar.auth.effective_ids, mar.perms, mar.project, component_def):
       raise permissions.PermissionException(
           'User is not allowed to view this component %s' % component_path)
-    if not permissions.CanEditComponentDef(
-        mar.auth.effective_ids, mar.perms, mar.project, component_def, config):
+    if not permissions.CanEditComponentDef(mar, self._services, component_def,
+                                           config):
       raise permissions.PermissionException(
           'User is not allowed to edit this component %s' % component_path)
 

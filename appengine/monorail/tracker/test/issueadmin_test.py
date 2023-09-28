@@ -14,6 +14,7 @@ except ImportError:
 import six
 import unittest
 
+import settings
 from mock import Mock, patch
 
 from framework import permissions
@@ -47,6 +48,8 @@ class TestBase(unittest.TestCase):
     self.cnxn = fake.MonorailConnection()
     self.mr = testing_helpers.MakeMonorailRequest(
         path='/p/proj/admin', project=self.project)
+    # Default to admin perms given that most tests assume the user can edit.
+    self.mr.perms = permissions.ADMIN_PERMISSIONSET
     self.mox = mox.Mox()
     self.test_template = tracker_bizobj.MakeIssueTemplate(
         'Test Template', 'sum', 'New', 111, 'content', [], [], [], [])
@@ -57,6 +60,8 @@ class TestBase(unittest.TestCase):
         .return_value = self.test_templates
     self.services.template.GetTemplateSetForProject\
         .return_value = [(12345, 'Test template', 0)]
+
+    settings.config_freeze_project_ids = {}
 
   def tearDown(self):
     self.mox.UnsetStubs()
@@ -81,9 +86,10 @@ class IssueAdminBaseTest(TestBase):
     self.mox.VerifyAll()
 
     six.assertCountEqual(
-        self,
-        ['admin_tab_mode', 'config', 'open_text', 'closed_text', 'labels_text'],
-        list(page_data.keys()))
+        self, [
+            'admin_tab_mode', 'config', 'open_text', 'closed_text',
+            'labels_text', 'can_edit_project'
+        ], list(page_data.keys()))
     config_view = page_data['config']
     self.assertEqual(789, config_view.project_id)
 
@@ -148,7 +154,7 @@ class AdminLabelsTest(TestBase):
     six.assertCountEqual(
         self, [
             'admin_tab_mode', 'config', 'field_defs', 'open_text',
-            'closed_text', 'labels_text'
+            'closed_text', 'labels_text', 'can_edit_project'
         ], list(page_data.keys()))
     config_view = page_data['config']
     self.assertEqual(789, config_view.project_id)
@@ -307,7 +313,7 @@ class AdminComponentsTest(TestBase):
         self, [
             'admin_tab_mode', 'failed_templ', 'component_defs', 'failed_perm',
             'config', 'failed_subcomp', 'open_text', 'closed_text',
-            'labels_text'
+            'labels_text', 'can_edit_project'
         ], list(page_data.keys()))
     config_view = page_data['config']
     self.assertEqual(789, config_view.project_id)
@@ -375,7 +381,7 @@ class AdminViewsTest(TestBase):
         self, [
             'canned_queries', 'admin_tab_mode', 'config', 'issue_notify',
             'new_query_indexes', 'max_queries', 'open_text', 'closed_text',
-            'labels_text'
+            'labels_text', 'can_edit_project'
         ], list(page_data.keys()))
     config_view = page_data['config']
     self.assertEqual(789, config_view.project_id)
@@ -464,7 +470,8 @@ class AdminRulesTest(TestBase):
     six.assertCountEqual(
         self, [
             'admin_tab_mode', 'config', 'rules', 'new_rule_indexes',
-            'max_rules', 'open_text', 'closed_text', 'labels_text'
+            'max_rules', 'open_text', 'closed_text', 'labels_text',
+            'can_edit_project'
         ], list(page_data.keys()))
     config_view = page_data['config']
     self.assertEqual(789, config_view.project_id)

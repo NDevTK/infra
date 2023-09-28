@@ -7,7 +7,7 @@
 <form action="adminStatuses.do" id="adminStatuses" method="POST">
  <input type="hidden" name="token" value="[form_token]">
 
-  [if-any perms.EditProject]
+  [if-any can_edit_project]
     <table class="vt">
      <tr><td>
        <h4>Open Issue Status Values</h4>
@@ -72,7 +72,7 @@
   [end]
 
 
- [if-any perms.EditProject]
+ [if-any can_edit_project]
    <input type="submit" id="savechanges" name="btn" value="Save changes" class="submit">
  [end]
 </form>

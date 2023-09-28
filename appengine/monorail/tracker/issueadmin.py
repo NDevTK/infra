@@ -55,12 +55,19 @@ class IssueAdminBase(servlet.Servlet):
     labels_text = tracker_views.LabelDefsAsText(config)
 
     return {
-        'admin_tab_mode': self._PROCESS_SUBTAB,
-        'config': config_view,
-        'open_text': open_text,
-        'closed_text': closed_text,
-        'labels_text': labels_text,
-        }
+        'admin_tab_mode':
+            self._PROCESS_SUBTAB,
+        'config':
+            config_view,
+        'open_text':
+            open_text,
+        'closed_text':
+            closed_text,
+        'labels_text':
+            labels_text,
+        'can_edit_project':
+            permissions.CanEditProjectConfig(mr, self.services) or None,
+    }
 
   def ProcessFormData(self, mr, post_data):
     """Validate and store the contents of the issues tracker admin page.
@@ -95,7 +102,7 @@ class AdminStatuses(IssueAdminBase):
     Returns:
       The URL of the page to show after processing.
     """
-    if not self.CheckPerm(mr, permissions.EDIT_PROJECT):
+    if not permissions.CanEditProjectConfig(mr, self.services):
       raise permissions.PermissionException(
           'Only project owners may edit the status definitions')
 
@@ -178,7 +185,7 @@ class AdminLabels(IssueAdminBase):
     Returns:
       The URL of the page to show after processing.
     """
-    if not self.CheckPerm(mr, permissions.EDIT_PROJECT):
+    if not permissions.CanEditProjectConfig(mr, self.services):
       raise permissions.PermissionException(
           'Only project owners may edit the label definitions')
 
@@ -257,7 +264,7 @@ class AdminTemplates(IssueAdminBase):
     Returns:
       The URL of the page to show after processing.
     """
-    if not self.CheckPerm(mr, permissions.EDIT_PROJECT):
+    if not permissions.CanEditProjectConfig(mr, self.services):
       raise permissions.PermissionException(
           'Only project owners may edit the default templates')
 
@@ -381,7 +388,7 @@ class AdminComponents(IssueAdminBase):
 
     for component_def in component_defs:
       allow_edit = permissions.CanEditComponentDef(
-          mr.auth.effective_ids, mr.perms, mr.project, component_def, config)
+          mr, self.services, component_def, config)
       if not allow_edit:
         perm_errors.append(component_def.path)
 
@@ -458,7 +465,7 @@ class AdminViews(IssueAdminBase):
     Returns:
       The URL of the page to show after processing.
     """
-    if not self.CheckPerm(mr, permissions.EDIT_PROJECT):
+    if not permissions.CanEditProjectConfig(mr, self.services):
       raise permissions.PermissionException(
           'Only project owners may edit the default views')
     existing_queries = savedqueries_helpers.ParseSavedQueries(
@@ -541,7 +548,7 @@ class AdminRules(IssueAdminBase):
       mr: commonly used info parsed from the request.
     """
     super(AdminRules, self).AssertBasePermission(mr)
-    if not self.CheckPerm(mr, permissions.EDIT_PROJECT):
+    if not permissions.CanEditProjectConfig(mr, self.services):
       raise permissions.PermissionException(
           'User is not allowed to administer this project')
 

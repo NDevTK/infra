@@ -8,7 +8,7 @@
  <input type="hidden" name="token" value="[form_token]">
 
  <h4>Issue components</h4>
- [if-any perms.EditProject]
+ [if-any can_edit_project]
    <span style="margin:0 .7em">Show:
     <select id="rowfilter">
      <option label="All components" value="all">
@@ -26,7 +26,7 @@
  [end]
 
  <div class="list-foot"></div>
- [if-any perms.EditProject]
+ [if-any can_edit_project]
    <form action="adminComponents.do" method="POST">
      <a href="/p/[projectname]/components/create" class="buttonify primary">Create component</a>
      <input type="hidden" name="delete_components">
@@ -53,7 +53,7 @@
    <table cellspacing="0" cellpadding="2" border="0" class="comptable results striped vt active" id="resultstable" width="100%">
    <tbody>
      <tr>
-       [if-any perms.EditProject]<th></th>[end]
+       [if-any can_edit_project]<th></th>[end]
        <th>ID</th>
        <th>Name</th>
        <th>Administrators</th>
@@ -73,7 +73,7 @@
      [for component_defs]
        [define detail_url]/p/[projectname]/components/detail?component=[format "url"][component_defs.path][end][end]
        <tr data-url="[detail_url]" class="comprow [component_defs.classes]">
-         [if-any perms.EditProject]
+         [if-any can_edit_project]
            <td class="cb rowwidgets">
              <input type="checkbox" data-path="[component_defs.path]" class="checkRangeSelect">
            </td>
@@ -109,7 +109,7 @@
  </div>[# section]
 
  <div class="list-foot"></div>
- [if-any perms.EditProject]
+ [if-any can_edit_project]
    <form action="adminComponents.do" method="POST">
      <a href="/p/[projectname]/components/create" class="buttonify primary">Create component</a>
      <input type="hidden" name="delete_components">

@@ -36,7 +36,7 @@ class FieldCreate(servlet.Servlet):
       mr: commonly used info parsed from the request.
     """
     super(FieldCreate, self).AssertBasePermission(mr)
-    if not self.CheckPerm(mr, permissions.EDIT_PROJECT):
+    if not permissions.CanEditProjectConfig(mr, self.services):
       raise permissions.PermissionException(
           'You are not allowed to administer this project')
 

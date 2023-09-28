@@ -1248,6 +1248,8 @@ class IssuePermissionsTest(unittest.TestCase):
 
     self.user_svc.TestAddUser('allowlisteduser@test.com', 567)
 
+    settings.config_freeze_project_ids = {}
+
   def testUpdateIssuePermissions_Normal(self):
     perms = permissions.UpdateIssuePermissions(
         permissions.COMMITTER_ACTIVE_PERMISSIONSET, self.PROJECT,
@@ -1733,36 +1735,51 @@ class IssuePermissionsTest(unittest.TestCase):
         {111}, permissions.PermissionSet([]),
         None, cd))
 
-  def testCanEditComponentDef_ComponentAdmin(self):
+  def testCanEditComponentDefLegacy_ComponentAdmin(self):
     cd = tracker_pb2.ComponentDef(admin_ids=[111], path='Whole')
     sub_cd = tracker_pb2.ComponentDef(admin_ids=[222], path='Whole>Part')
     config = tracker_bizobj.MakeDefaultProjectIssueConfig(789)
     config.component_defs.append(cd)
     config.component_defs.append(sub_cd)
     perms = permissions.PermissionSet([])
-    self.assertTrue(permissions.CanEditComponentDef(
-        {111}, perms, None, cd, config))
-    self.assertFalse(permissions.CanEditComponentDef(
-        {222}, perms, None, cd, config))
-    self.assertFalse(permissions.CanEditComponentDef(
-        {999}, perms, None, cd, config))
-    self.assertTrue(permissions.CanEditComponentDef(
-        {111}, perms, None, sub_cd, config))
-    self.assertTrue(permissions.CanEditComponentDef(
-        {222}, perms, None, sub_cd, config))
-    self.assertFalse(permissions.CanEditComponentDef(
-        {999}, perms, None, sub_cd, config))
+    self.assertTrue(
+        permissions.CanEditComponentDefLegacy({111}, perms, None, cd, config))
+    self.assertFalse(
+        permissions.CanEditComponentDefLegacy({222}, perms, None, cd, config))
+    self.assertFalse(
+        permissions.CanEditComponentDefLegacy({999}, perms, None, cd, config))
+    self.assertTrue(
+        permissions.CanEditComponentDefLegacy(
+            {111}, perms, None, sub_cd, config))
+    self.assertTrue(
+        permissions.CanEditComponentDefLegacy(
+            {222}, perms, None, sub_cd, config))
+    self.assertFalse(
+        permissions.CanEditComponentDefLegacy(
+            {999}, perms, None, sub_cd, config))
 
-  def testCanEditComponentDef_ProjectOwners(self):
+  def testCanEditComponentDefLegacy_ProjectOwners(self):
     cd = tracker_pb2.ComponentDef(path='Whole')
     config = tracker_bizobj.MakeDefaultProjectIssueConfig(789)
     config.component_defs.append(cd)
-    self.assertTrue(permissions.CanEditComponentDef(
-        {111}, permissions.PermissionSet([permissions.EDIT_PROJECT]),
-        None, cd, config))
-    self.assertFalse(permissions.CanEditComponentDef(
-        {111}, permissions.PermissionSet([]),
-        None, cd, config))
+    self.assertTrue(
+        permissions.CanEditComponentDefLegacy(
+            {111}, permissions.PermissionSet([permissions.EDIT_PROJECT]), None,
+            cd, config))
+    self.assertFalse(
+        permissions.CanEditComponentDefLegacy(
+            {111}, permissions.PermissionSet([]), None, cd, config))
+
+  def testCanEditComponentDefLegacy_FrozenProject(self):
+    cd = tracker_pb2.ComponentDef(path='Whole')
+    config = tracker_bizobj.MakeDefaultProjectIssueConfig(789)
+    config.component_defs.append(cd)
+    project = project_pb2.Project(project_id=789)
+    settings.config_freeze_project_ids = {789}
+    self.assertFalse(
+        permissions.CanEditComponentDefLegacy(
+            {111}, permissions.PermissionSet([permissions.EDIT_PROJECT]),
+            project, cd, config))
 
   def testCanViewFieldDef_FieldAdmin(self):
     fd = tracker_pb2.FieldDef(admin_ids=[111])

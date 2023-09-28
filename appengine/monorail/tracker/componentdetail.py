@@ -86,7 +86,7 @@ class ComponentDetail(servlet.Servlet):
         mr, component_def.modifier_id, component_def.modified)
 
     allow_edit = permissions.CanEditComponentDef(
-        mr.auth.effective_ids, mr.perms, mr.project, component_def, config)
+        mr, self.services, component_def, config)
 
     subcomponents = tracker_bizobj.FindDescendantComponents(
         config, component_def)
@@ -125,7 +125,7 @@ class ComponentDetail(servlet.Servlet):
     """
     config, component_def = self._GetComponentDef(mr)
     allow_edit = permissions.CanEditComponentDef(
-        mr.auth.effective_ids, mr.perms, mr.project, component_def, config)
+        mr, self.services, component_def, config)
     if not allow_edit:
       raise permissions.PermissionException(
           'User is not allowed to edit or delete this component')

@@ -948,7 +948,7 @@ class WorkEnv(object):
             'Ancestor path %s is invalid.' % ancestor_path)
       project_perms = permissions.GetPermissions(
           self.mc.auth.user_pb, self.mc.auth.effective_ids, project)
-      if not permissions.CanEditComponentDef(
+      if not permissions.CanEditComponentDefLegacy(
           self.mc.auth.effective_ids, project_perms, project, ancestor_def,
           config):
         raise permissions.PermissionException(
@@ -989,7 +989,7 @@ class WorkEnv(object):
 
     project_perms = permissions.GetPermissions(
         self.mc.auth.user_pb, self.mc.auth.effective_ids, project)
-    if not permissions.CanEditComponentDef(
+    if not permissions.CanEditComponentDefLegacy(
         self.mc.auth.effective_ids, project_perms, project, component_def,
         config):
       raise permissions.PermissionException(

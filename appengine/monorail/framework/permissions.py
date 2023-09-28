@@ -1129,7 +1129,7 @@ def CanUpdateApprovers(effective_ids, perms, project, current_approver_ids):
 def CanEditProjectConfig(mr, services):
   """ Special function to check if a user can edit a project config.
 
-  This function accoutns for special edge cases pertaining only to project
+  This function accounts for special edge cases pertaining only to project
   configuration editing permissions, such as checking if a project is frozen
   for config edits or if a user is in the allowlist of users who can override
   a config freeze.
@@ -1164,8 +1164,53 @@ def CanViewComponentDef(effective_ids, perms, project, component_def):
   return perms.CanUsePerm(VIEW, effective_ids, project, [])
 
 
-def CanEditComponentDef(effective_ids, perms, project, component_def, config):
-  """Return True if a user can edit the given component definition."""
+def CanEditComponentDef(mr, services, component_def, config):
+  """ Checks if the currently logged in user can edit a component.
+
+  Args:
+    mr: MonorailRequest object.
+    services: reference to database layer.
+    component_def: the component to check permissions for.
+    config: project config of the project the component is in.
+
+  Returns:
+    True if a user can edit the given component definition."""
+  if mr.project.project_id in settings.config_freeze_project_ids:
+    return CanEditProjectConfig(mr, services)
+
+  if not mr.auth.effective_ids.isdisjoint(component_def.admin_ids):
+    return True  # Component admins can edit that component.
+
+  # Check to see if user is admin of any parent component.
+  parent_components = tracker_bizobj.FindAncestorComponents(
+      config, component_def)
+  for parent in parent_components:
+    if not mr.auth.effective_ids.isdisjoint(parent.admin_ids):
+      return True
+
+  return CanEditProjectConfig(mr, services)
+
+
+def CanEditComponentDefLegacy(
+    effective_ids, perms, project, component_def, config):
+  """ Legacy version of CanEditComponentDef for codepaths without access to mr.
+  This function is entirely used in API clients.
+
+  Args:
+    effective_ids: Set containing IDs for the user and their groups
+      linked accounts, etc.
+    perms: PermissionSet for current user.
+    project: the project the component is in.
+    component_def: the component to check permissions for.
+    config: project config of the project the component is in.
+
+  Returns:
+    True if a user can edit the given component definition."""
+  # Do not bother checking if API client users are allowlisted to override
+  # the config freeze. Only human users are currently being allowlisted.
+  if project and project.project_id in settings.config_freeze_project_ids:
+    return False
+
   if not effective_ids.isdisjoint(component_def.admin_ids):
     return True  # Component admins can edit that component.
 

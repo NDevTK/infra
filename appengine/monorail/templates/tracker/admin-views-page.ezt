@@ -27,7 +27,7 @@
   </div>
   <br>
 
-  [if-any perms.EditProject]
+  [if-any can_edit_project]
     [include "../framework/saved-queries-admin-part.ezt" "project"]
   [else]
     <table cellspacing="0" cellpadding="2" border="0" class="results striped">
@@ -60,7 +60,7 @@
  </div>
 </div>
 
- [if-any perms.EditProject]
+ [if-any can_edit_project]
    <input type="submit" id="savechanges" name="btn" value="Save changes" class="submit">
  [end]
 </form>

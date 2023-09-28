@@ -35,7 +35,7 @@ class ComponentCreate(servlet.Servlet):
       mr: commonly used info parsed from the request.
     """
     super(ComponentCreate, self).AssertBasePermission(mr)
-    if not self.CheckPerm(mr, permissions.EDIT_PROJECT):
+    if not permissions.CanEditProjectConfig(mr, self.services):
       raise permissions.PermissionException(
           'User is not allowed to administer this project')
 
@@ -95,7 +95,7 @@ class ComponentCreate(servlet.Servlet):
       if not parent_def:
         self.abort(500, 'parent component not found')
       allow_parent_edit = permissions.CanEditComponentDef(
-          mr.auth.effective_ids, mr.perms, mr.project, parent_def, config)
+          mr, self.services, parent_def, config)
       if not allow_parent_edit:
         raise permissions.PermissionException(
             'User is not allowed to add a subcomponent here')
