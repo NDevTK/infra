@@ -123,7 +123,6 @@ func executeHwTests(
 	sk.DockerKeyFileLocation = dockerKeyFile
 	sk.GcsPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.GcsUrl = gcsurl
-	sk.StainlessUrl = common.GetStainlessUrl(gcsurl)
 	sk.TesthausUrl = common.GetTesthausUrl(gcsurl)
 	sk.ContainerImages = containerImagesMap
 
@@ -137,7 +136,7 @@ func executeHwTests(
 	_ = sk.Injectables.Set("req", req)
 	_ = sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions())
 	_ = sk.Injectables.Set("gcs-url", gcsurl)
-	_ = sk.Injectables.Set("stainless-url", common.GetStainlessUrl(gcsurl))
+	_ = sk.Injectables.Set("testhaus-url", common.GetTesthausUrl(gcsurl))
 
 	// Generate config
 	hwTestConfig := configs.NewTrv2ExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, req.GetStepsConfig())

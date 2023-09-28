@@ -130,11 +130,6 @@ func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.
 	return value
 }
 
-// GetStainlessUrl gets stainless log viewer url.
-func GetStainlessUrl(gcsUrl string) string {
-	return fmt.Sprintf("%s%s", StainlessUrlPrefix, gcsUrl[len("gs://"):])
-}
-
 // GetTesthausUrl gets testhaus log viewer url.
 func GetTesthausUrl(gcsUrl string) string {
 	return fmt.Sprintf("%s%s", TesthausUrlPrefix, gcsUrl[len("gs://"):])

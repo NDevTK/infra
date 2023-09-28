@@ -34,7 +34,6 @@ type TkoDirectUploadCmd struct {
 	CftTestRequest   *skylab_test_runner.CFTTestRequest
 	TkoJobName       string // Optional but depends on env var
 	GcsUrl           string // Optional
-	StainlessUrl     string // Optional
 	TesthausUrl      string // Optional
 }
 
@@ -127,9 +126,6 @@ func (cmd *TkoDirectUploadCmd) uploadTestResultToTKO(ctx context.Context, testRe
 	if cmd.GcsUrl != "" {
 		kvList = append(kvList, fmt.Sprintf("%s=%s", "synchronous_log_data_url", cmd.GcsUrl))
 	}
-	if cmd.StainlessUrl != "" {
-		kvList = append(kvList, fmt.Sprintf("%s=%s", "synchronous_log_data_stainless_url", cmd.StainlessUrl))
-	}
 	if cmd.TesthausUrl != "" {
 		kvList = append(kvList, fmt.Sprintf("%s=%s", "synchronous_log_data_testhaus_url", cmd.TesthausUrl))
 	}
@@ -194,9 +190,6 @@ func tkoParseCmd(ctx context.Context, resultsDirPath string, jobName string) (*e
 func (cmd *TkoDirectUploadCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
 	if sk.GcsUrl == "" {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: GcsUrl", cmd.GetCommandType())
-	}
-	if sk.StainlessUrl == "" {
-		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: StainlessUrl", cmd.GetCommandType())
 	}
 	if sk.TesthausUrl == "" {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TesthausUrl", cmd.GetCommandType())

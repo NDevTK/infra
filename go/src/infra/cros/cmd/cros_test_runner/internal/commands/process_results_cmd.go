@@ -28,7 +28,6 @@ type ProcessResultsCmd struct {
 	// Deps (all are optional)
 	CftTestRequest  *skylab_test_runner.CFTTestRequest
 	GcsUrl          string
-	StainlessUrl    string
 	TesthausUrl     string
 	ProvisionResp   *api.InstallResponse
 	TestResponses   *api.CrosTestResponse
@@ -87,13 +86,13 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Results")
 	defer func() { step.End(build.AttachStatus(err, bbpb.Status_FAILURE, nil)) }()
 
-	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausUrl, cmd.StainlessUrl, common.GetGcsClickableLink(cmd.GcsUrl))
+	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausUrl, common.GetGcsClickableLink(cmd.GcsUrl))
 
 	// Default values
 	prejobVerdict := skylab_test_runner.Result_Prejob_Step_VERDICT_UNDEFINED
 	prejobReason := ""
 	isIncomplete := true
-	logData := getLogData(cmd.TesthausUrl, cmd.StainlessUrl, cmd.GcsUrl)
+	logData := getLogData(cmd.TesthausUrl, cmd.GcsUrl)
 
 	// Parse provision info
 	var prejob *skylab_test_runner.Result_Prejob = nil
@@ -183,9 +182,6 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	if sk.GcsUrl == "" {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: GcsUrl", cmd.GetCommandType())
 	}
-	if sk.StainlessUrl == "" {
-		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: StainlessUrl", cmd.GetCommandType())
-	}
 	if sk.TesthausUrl == "" {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TesthausUrl", cmd.GetCommandType())
 	}
@@ -200,7 +196,6 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	}
 	cmd.TestResponses = sk.TestResponses
 	cmd.GcsUrl = sk.GcsUrl
-	cmd.StainlessUrl = sk.StainlessUrl
 	cmd.TesthausUrl = sk.TesthausUrl
 	cmd.CurrentDutState = sk.CurrentDutState
 
@@ -266,13 +261,10 @@ func getDefaultAutotestTestCasesResult(ctx context.Context, req *skylab_test_run
 }
 
 // getLogData constructs tasklogdata from provided links.
-func getLogData(testhausUrl string, stainlessUrl string, gcsUrl string) *commonpb.TaskLogData {
+func getLogData(testhausUrl string, gcsUrl string) *commonpb.TaskLogData {
 	logData := &commonpb.TaskLogData{}
 	if testhausUrl != "" {
 		logData.TesthausUrl = testhausUrl
-	}
-	if stainlessUrl != "" {
-		logData.StainlessUrl = testhausUrl
 	}
 	if gcsUrl != "" {
 		logData.GsUrl = gcsUrl

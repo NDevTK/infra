@@ -159,11 +159,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 	Convey("ProvisionStartCmd extract deps with TestResultForRdb", t, func() {
 		ctx := context.Background()
 		wantInvId := "Inv-1234"
-		wantStainlessUrl := "www.stainless.com"
 		wantTesthausUrl := "www.testhaus.com"
 		sk := &data.HwTestStateKeeper{
 			CurrentInvocationId: wantInvId,
-			StainlessUrl:        wantStainlessUrl,
 			TesthausUrl:         wantTesthausUrl,
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
@@ -194,7 +192,6 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldBeNil)
 		So(cmd.CurrentInvocationId, ShouldEqual, wantInvId)
-		So(cmd.StainlessUrl, ShouldEqual, wantStainlessUrl)
 		So(cmd.TesthausUrl, ShouldEqual, wantTesthausUrl)
 		So(cmd.Sources, ShouldResembleProto, &metadata.PublishRdbMetadata_Sources{
 			GsPath:            "gs://some-bucket/builder/build-12345/metadata/sources.jsonpb",
@@ -205,11 +202,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 	Convey("ProvisionStartCmd extract deps without TestResultForRdb", t, func() {
 		ctx := context.Background()
 		wantInvId := "Inv-1234"
-		wantStainlessUrl := "www.stainless.com"
 		wantTesthausUrl := "www.testhaus.com"
 		sk := &data.HwTestStateKeeper{
 			CurrentInvocationId: wantInvId,
-			StainlessUrl:        wantStainlessUrl,
 			TesthausUrl:         wantTesthausUrl,
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{

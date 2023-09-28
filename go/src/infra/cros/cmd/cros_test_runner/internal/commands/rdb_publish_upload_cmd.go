@@ -30,7 +30,6 @@ type RdbPublishUploadCmd struct {
 
 	// Deps
 	CurrentInvocationId string
-	StainlessUrl        string
 	TesthausUrl         string
 	Sources             *testapi_metadata.PublishRdbMetadata_Sources
 
@@ -70,9 +69,6 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	if sk.CurrentInvocationId == "" {
 		return fmt.Errorf("Cmd %q missing dependency: CurrentInvocationId", cmd.GetCommandType())
 	}
-	if sk.StainlessUrl == "" {
-		return fmt.Errorf("Cmd %q missing dependency: StainlessUrl", cmd.GetCommandType())
-	}
 	if sk.TesthausUrl == "" {
 		return fmt.Errorf("Cmd %q missing dependency: TesthausUrl", cmd.GetCommandType())
 	}
@@ -106,7 +102,6 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	}
 
 	cmd.CurrentInvocationId = sk.CurrentInvocationId
-	cmd.StainlessUrl = sk.StainlessUrl
 	cmd.TestResultForRdb = sk.TestResultForRdb
 	cmd.TesthausUrl = sk.TesthausUrl
 

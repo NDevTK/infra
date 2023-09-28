@@ -302,8 +302,8 @@ func (b *Build) Result() *steps.ExecuteResponse_TaskResult {
 	if ld := b.result.GetLogData(); ld != nil {
 		r.LogData = proto.Clone(ld).(*common.TaskLogData)
 		// Clients use r.LogUrl to link to logs as it pre-dates the introduction
-		// of r.LogData.StainlessUrl
-		r.LogUrl = r.LogData.StainlessUrl
+		// of r.LogData.TesthausUrl
+		r.LogUrl = r.LogData.TesthausUrl
 	}
 	return r
 }

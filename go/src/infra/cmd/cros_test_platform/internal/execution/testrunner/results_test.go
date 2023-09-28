@@ -225,7 +225,6 @@ func TestSingleAutotestTaskResults(t *testing.T) {
 					if result.LogData != nil {
 						So(result.LogData.GsUrl, ShouldEqual, "gs://some-url")
 					}
-					So(result.LogUrl, ShouldEqual, "https://stainless.corp.google.com/browse/some-url")
 				})
 			})
 		}
@@ -426,8 +425,7 @@ func callTaskResult(autotestResult *skylab_test_runner.Result_Autotest, prejob *
 				AutotestResult: autotestResult,
 			},
 			LogData: &common.TaskLogData{
-				GsUrl:        "gs://some-url",
-				StainlessUrl: "https://stainless.corp.google.com/browse/some-url",
+				GsUrl: "gs://some-url",
 			},
 			Prejob: prejob,
 		},

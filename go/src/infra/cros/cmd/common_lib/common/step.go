@@ -17,15 +17,11 @@ import (
 func AddLinksToStepSummaryMarkdown(
 	step *build.Step,
 	testHausUrl string,
-	stainlessUrl string,
 	gcsLink string) {
 
 	links := []string{}
 	if testHausUrl != "" {
 		links = append(links, fmt.Sprintf("* [Testhaus Link](%s)", testHausUrl))
-	}
-	if stainlessUrl != "" {
-		links = append(links, fmt.Sprintf("* [Stainless Link](%s)", stainlessUrl))
 	}
 	if gcsLink != "" {
 		links = append(links, fmt.Sprintf("* [Test Artifacts Gcs Link](%s)", gcsLink))
