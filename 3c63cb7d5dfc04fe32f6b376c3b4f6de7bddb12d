@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "078757f5_f0a5912c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1159599
+      },
+      "writtenOn": "2023-09-28T22:32:47Z",
+      "side": 1,
+      "message": "PTAL, hoping to deploy this change next week!",
+      "revId": "3c63cb7d5dfc04fe32f6b376c3b4f6de7bddb12d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
