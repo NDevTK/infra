@@ -21,6 +21,7 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/swarmingconverter"
 	"infra/appengine/crosskylabadmin/internal/tq"
+	"infra/cros/recovery/logger/metrics"
 )
 
 const repairQ = "repair-bots"
@@ -111,8 +112,14 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 		tqt := tq.GetTestable(tf.C)
 		tqt.CreateQueue(repairQ)
 
+		So(tf.MockKarte, ShouldNotBeNil)
+
 		Convey("run needs_repair status", func() {
 			tqt.ResetTasks()
+			tf.MockKarte.EXPECT().Search(gomock.Any(), gomock.Any()).Return(&metrics.QueryResult{
+				Actions:   nil,
+				PageToken: "",
+			}, nil)
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 				gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"needs_repair"}}),

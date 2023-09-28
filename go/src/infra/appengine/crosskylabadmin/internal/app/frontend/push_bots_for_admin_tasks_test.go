@@ -33,6 +33,13 @@ func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
 	defer validate()
 	ctx := tf.C
 	tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), gomock.Any(), gomock.Any())
+	tf.MockKarte.EXPECT().Search(gomock.Any(), gomock.Any()).Return(
+		&metrics.QueryResult{
+			Actions:   nil,
+			PageToken: "",
+		},
+		nil,
+	)
 	ctx = config.Use(ctx, &config.Config{
 		Swarming: &config.Swarming{
 			BotPool: "fake-bot-pool",
@@ -43,6 +50,7 @@ func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
 	}
 	_, err := (&adminTaskBotPusher{
 		swarmingClient: tf.MockSwarming,
+		metricsClient:  tf.MockKarte,
 	}).pushBotsForAdminTasksImpl(ctx, req)
 
 	if err != nil {
@@ -56,6 +64,14 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 	defer validate()
 	ctx := tf.C
 	tq.GetTestable(ctx).CreateQueue("repair-bots")
+	tf.MockUFS.EXPECT().GetDUTsForLabstation(gomock.Any(), gomock.Any())
+	tf.MockKarte.EXPECT().Search(gomock.Any(), gomock.Any()).Return(
+		&metrics.QueryResult{
+			Actions:   nil,
+			PageToken: "",
+		},
+		nil,
+	)
 	tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), gomock.Any(), gomock.Any()).Return([]*swarmingv2.BotInfo{
 		{
 			BotId: "fake-bot-a",
@@ -183,6 +199,14 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 		tqt := tq.GetTestable(ctx)
 		qn := "repair-bots"
 		tqt.CreateQueue(qn)
+		tf.MockUFS.EXPECT().GetDUTsForLabstation(gomock.Any(), gomock.Any())
+		tf.MockKarte.EXPECT().Search(gomock.Any(), gomock.Any()).Return(
+			&metrics.QueryResult{
+				Actions:   nil,
+				PageToken: "",
+			},
+			nil,
+		)
 		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "fake-bot-pool", gomock.Any()).Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{
 			{
 				BotId: "fake-bot-a",
@@ -308,6 +332,14 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 		tqt := tq.GetTestable(ctx)
 		qn := "repair-bots"
 		tqt.CreateQueue(qn)
+		tf.MockUFS.EXPECT().GetDUTsForLabstation(gomock.Any(), gomock.Any())
+		tf.MockKarte.EXPECT().Search(gomock.Any(), gomock.Any()).Return(
+			&metrics.QueryResult{
+				Actions:   nil,
+				PageToken: "",
+			},
+			nil,
+		)
 		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "fake-bot-pool", gomock.Any()).Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{
 			{
 				BotId: "fake-bot-a",

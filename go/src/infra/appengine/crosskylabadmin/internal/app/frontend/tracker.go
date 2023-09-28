@@ -38,6 +38,7 @@ type TrackerServerImpl struct {
 	//
 	// If SwarmingFactory is nil, clients.NewSwarmingClient is used.
 	SwarmingFactory SwarmingFactory
+	MetricsClient   metrics.Metrics
 }
 
 func (tsi *TrackerServerImpl) newSwarmingClient(c context.Context, host string) (clients.SwarmingClient, error) {
@@ -47,7 +48,10 @@ func (tsi *TrackerServerImpl) newSwarmingClient(c context.Context, host string) 
 	return clients.NewSwarmingClient(c, host)
 }
 
-func getKarteClient(ctx context.Context) (metrics.Metrics, error) {
+func (tsi *TrackerServerImpl) getKarteClient(ctx context.Context) (metrics.Metrics, error) {
+	if tsi.MetricsClient != nil {
+		return tsi.MetricsClient, nil
+	}
 	cfg := config.Get(ctx)
 	// Create the Karte client
 	transport, err := auth.GetRPCTransport(ctx, auth.AsSelf)
@@ -60,6 +64,7 @@ func getKarteClient(ctx context.Context) (metrics.Metrics, error) {
 	if err != nil {
 		return nil, err
 	}
+	tsi.MetricsClient = kClient
 	return kClient, nil
 }
 
@@ -83,7 +88,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminTasks(ctx context.Context, req *fl
 	if err != nil {
 		logging.Errorf(ctx, "error setting up UFS client: %s", err)
 	}
-	metricsClient, err := getKarteClient(ctx)
+	metricsClient, err := tsi.getKarteClient(ctx)
 	if err != nil {
 		logging.Errorf(ctx, "error setting up Karte client: %s", err)
 	}
