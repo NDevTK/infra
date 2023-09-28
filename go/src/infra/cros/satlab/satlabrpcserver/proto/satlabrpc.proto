@@ -33,6 +33,7 @@ service SatlabRpcService {
   rpc get_dut_detail (GetDutDetailRequest) returns (GetDutDetailResponse);
   rpc list_dut_tasks (ListDutTasksRequest) returns (ListDutTasksResponse);
   rpc list_dut_events (ListDutEventsRequest) returns (ListDutEventsResponse);
+  rpc list_enrolled_duts (ListEnrolledDutsRequest) returns (ListEnrolledDutsResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -296,4 +297,22 @@ message RunTestRequest {
 // NEXT_TAG = 2
 message RunTestResponse {
   string build_link = 1;
+}
+
+// NEXT_TAG = 1
+message ListEnrolledDutsRequest {}
+
+// NEXT_TAG = 7
+message Dut {
+  string address = 1;
+  string name = 2;
+  string hostname = 3;
+  string board = 4;
+  string model = 5;
+  repeated string pools = 6;
+}
+
+// NEXT_TAG = 2
+message ListEnrolledDutsResponse {
+  repeated Dut duts = 1;
 }

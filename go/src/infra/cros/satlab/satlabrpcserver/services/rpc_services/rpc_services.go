@@ -14,6 +14,7 @@ import (
 
 	"github.com/hashicorp/go-version"
 
+	"infra/cros/satlab/common/asset"
 	"infra/cros/satlab/common/dns"
 	dut_pkg "infra/cros/satlab/common/dut"
 	run_pkg "infra/cros/satlab/common/run"
@@ -608,4 +609,60 @@ func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListD
 		Cursor: r.Cursor,
 		Events: events,
 	}, nil
+}
+
+func (s *SatlabRpcServiceServer) ListEnrolledDuts(ctx context.Context, in *pb.ListEnrolledDutsRequest) (*pb.ListEnrolledDutsResponse, error) {
+	satlabID, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+	// Use rack and satlab id to filter
+	satlabRackFilter := []string{site.MaybePrepend(site.Satlab, satlabID, "rack")}
+	d := dut_pkg.GetDUT{
+		Racks: satlabRackFilter,
+	}
+	a := asset.GetAsset{
+		Racks: satlabRackFilter,
+	}
+
+	HostMap, err := dns.ReadHostsToHostMap(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
+	duts, err := d.TriggerRun(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
+	assets, err := a.TriggerRun(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
+	res := []*pb.Dut{}
+
+	for _, dut := range duts {
+		e := &pb.Dut{
+			Name:     dut.Name,
+			Hostname: dut.Hostname,
+			Pools:    dut.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools,
+		}
+
+		address := HostMap[dut.Hostname]
+		e.Address = address
+
+		for _, asset := range assets {
+			if len(dut.Machines) > 0 {
+				if asset.Name == dut.Machines[0] {
+					e.Model = asset.Model
+					e.Board = asset.Info.BuildTarget
+				}
+			}
+		}
+
+		res = append(res, e)
+	}
+
+	return &pb.ListEnrolledDutsResponse{Duts: res}, nil
 }

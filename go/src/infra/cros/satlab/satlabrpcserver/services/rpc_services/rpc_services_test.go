@@ -6,6 +6,8 @@ package rpc_services
 import (
 	"context"
 	"errors"
+	"fmt"
+	"os/exec"
 	"reflect"
 	"testing"
 	"time"
@@ -969,5 +971,119 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 
 	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts); diff != "" {
 		t.Errorf("Expected: {%v}, got: {%v}, %v", expected, resp, diff)
+	}
+}
+
+func shivasTestHelper() executor.IExecCommander {
+	return &executor.FakeCommander{
+		FakeFn: func(in *exec.Cmd) ([]byte, error) {
+			if in.Path == "/usr/local/bin/shivas" {
+				for _, arg := range in.Args {
+					if arg == "dut" {
+						// execute a command to get dut
+						return []byte(`[{
+"name": "satlab-0wgatfqi21498062-jeff137-c",
+"machineLsePrototype": "",
+"hostname": "satlab-0wgatfqi21498062-jeff137-c",
+"chromeosMachineLse": {
+"deviceLse": {
+  "dut": {
+    "hostname": "satlab-0wgatfqi21498062-jeff137-c",
+    "pools": [
+        "jev-satlab"
+      ]
+    }
+  }
+},
+"machines": [
+  "JEFF137-c"
+]}]`), nil
+					}
+
+					if arg == "asset" {
+						// execute a command to get asset
+						return []byte(`[{
+"name": "JEFF137-c",
+"type": "DUT",
+"model": "atlas",
+"info": {
+  "model": "atlas",
+  "buildTarget": "atlas"
+}}]`), nil
+					}
+				}
+			}
+
+			if in.Path == "/usr/local/bin/get_host_identifier" {
+				return []byte("satlab-id"), nil
+			}
+			if in.Path == "/usr/local/bin/docker" {
+				return []byte("192.168.231.222	satlab-0wgatfqi21498062-jeff137-c"), nil
+			}
+
+			return nil, errors.New(fmt.Sprintf("handle command: %v", in.Path))
+		},
+	}
+
+}
+
+func TestListEnrolledDutsShouldSuccess(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	// Create a mock data
+	s := createMockServer(t)
+
+	s.commandExecutor = shivasTestHelper()
+	req := &pb.ListEnrolledDutsRequest{}
+	resp, err := s.ListEnrolledDuts(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: {%v}", err)
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListEnrolledDutsResponse{}, pb.Dut{})
+
+	// Create a expected result
+	expected := &pb.ListEnrolledDutsResponse{
+		Duts: []*pb.Dut{
+			{
+				Name:     "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname: "satlab-0wgatfqi21498062-jeff137-c",
+				Address:  "192.168.231.222",
+				Pools:    []string{"jev-satlab"},
+				Model:    "atlas",
+				Board:    "atlas",
+			},
+		},
+	}
+
+	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts); diff != "" {
+		t.Errorf("diff: %v\n", diff)
+	}
+}
+
+func TestListEnrolledDutsShouldFail(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	// Create a mock data
+	s := createMockServer(t)
+
+	s.commandExecutor = &executor.FakeCommander{
+		Err: errors.New("execute command failed"),
+	}
+	req := &pb.ListEnrolledDutsRequest{}
+	resp, err := s.ListEnrolledDuts(ctx, req)
+
+	// Assert
+	if err == nil {
+		t.Errorf("Should be failed in this test case")
+	}
+
+	if resp != nil {
+		t.Errorf("Should get the empty result.")
 	}
 }

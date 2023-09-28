@@ -39,9 +39,13 @@ func (e *ExecCommander) Wait(cmd *exec.Cmd) error {
 type FakeCommander struct {
 	CmdOutput string
 	Err       error
+	FakeFn    func(*exec.Cmd) ([]byte, error)
 }
 
-func (f *FakeCommander) Exec(_ *exec.Cmd) ([]byte, error) {
+func (f *FakeCommander) Exec(in *exec.Cmd) ([]byte, error) {
+	if f.FakeFn != nil {
+		return f.FakeFn(in)
+	}
 	return []byte(f.CmdOutput), f.Err
 }
 
