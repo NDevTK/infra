@@ -561,6 +561,7 @@ func (s *SatlabRpcServiceServer) ListDutTasks(ctx context.Context, in *pb.ListDu
 	for _, t := range r.Tasks {
 		tasks = append(tasks, &pb.Task{
 			Id:        t.Id,
+			Name:      t.Name,
 			StartAt:   t.StartAt,
 			Duration:  t.Duration,
 			Url:       t.Url,

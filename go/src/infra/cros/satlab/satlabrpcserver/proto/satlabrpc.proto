@@ -246,13 +246,14 @@ message ListDutTasksRequest {
   int32 page_size = 3;
 }
 
-// NEXT_TAG = 6
+// NEXT_TAG = 7
 message Task {
   string id = 1;
   google.protobuf.Timestamp start_at = 2;
   float duration = 3;
   string url = 4;
   bool is_success = 5;
+  string name = 6;
 }
 
 // NEXT_TAG = 4

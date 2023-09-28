@@ -21,6 +21,7 @@ import (
 // to show on the UI
 type Task struct {
 	Id      string
+	Name    string
 	StartAt *timestamp.Timestamp
 	// Duration uses second
 	Duration  float32
@@ -145,6 +146,7 @@ func (s *SwarmingService) ListBotTasks(
 	for _, row := range resp.GetItems() {
 		tasks = append(tasks, Task{
 			Id:        row.GetRunId(),
+			Name:      row.GetName(),
 			StartAt:   row.GetStartedTs(),
 			Duration:  row.GetDuration(),
 			Url:       createTaskLink(row.GetRunId()),
