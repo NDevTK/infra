@@ -21,8 +21,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -148,14 +146,24 @@ func mainImpl(ctx context.Context, toLoad, outputDir string, msg protoreflect.Me
 }
 
 func withConfigClient(ctx context.Context) (context.Context, error) {
-	auth := auth.NewAuthenticator(ctx, auth.SilentLogin, chromeinfra.DefaultAuthOptions())
-	client, err := auth.Client()
+	host := *configService
+	authOpts := chromeinfra.DefaultAuthOptions()
+	authOpts.UseIDTokens = true
+	authOpts.Audience = "https://" + host
+
+	creds, err := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts).PerRPCCredentials()
 	if err != nil {
-		return ctx, err
+		return nil, errors.Annotate(err, "failed to get credentials to access %s", host).Err()
 	}
-	return cfgclient.Use(ctx, remote.NewV1(*configService, false, func(context.Context) (*http.Client, error) {
-		return client, nil
-	})), nil
+	iface, err := remote.NewV2(ctx, remote.V2Options{
+		Host:      host,
+		Creds:     creds,
+		UserAgent: "cfggrab",
+	})
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to create config interface").Err()
+	}
+	return cfgclient.Use(ctx, iface), nil
 }
 
 func gatherProjectSources(ctx context.Context, fileName string) ([]source, error) {
@@ -216,7 +224,7 @@ func processConfig(outputDir string, msg protoreflect.Message) func(context.Cont
 			dest := filepath.Join(outputDir, source.String())
 			fmt.Printf("writing %s\n", dest)
 			if err = os.MkdirAll(filepath.Dir(dest), 0777); err == nil {
-				err = ioutil.WriteFile(dest, raw, 0666)
+				err = os.WriteFile(dest, raw, 0666)
 			}
 			return
 		}
