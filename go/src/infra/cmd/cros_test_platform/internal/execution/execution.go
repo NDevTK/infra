@@ -287,6 +287,9 @@ func (r *runner) checkTasksAndRetry(ctx context.Context, c trservice.Client, log
 			}
 		}
 		lastSeenRuntimePerTask[t].allDone = taskSetStatus
+		if taskSetStatus {
+			ts.Close()
+		}
 		allDone = allDone && taskSetStatus
 	}
 	return allDone, nil
