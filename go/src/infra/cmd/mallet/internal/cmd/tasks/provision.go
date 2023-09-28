@@ -6,9 +6,12 @@ package tasks
 
 import (
 	b64 "encoding/base64"
+	"encoding/json"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
@@ -17,19 +20,23 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
+	"infra/libs/skylab/swarming"
 )
 
 // Recovery subcommand: Recovering the devices.
 var CustomProvision = &subcommands.Command{
-	UsageLine: "provision",
-	ShortDesc: "Quick provision Cros DUT.",
-	LongDesc:  "Quick provision Cros DUT. Tool allows provide custom values for provisioning.",
+	UsageLine: "provision DUT1 DUT2 DUT3 ...",
+	ShortDesc: "Quick provision ChromeOS device(s).",
+	LongDesc:  "Quick provision ChromeOS device(s). Tool allows provide custom values for provisioning.",
 	CommandRun: func() subcommands.CommandRun {
 		c := &customProvisionRun{}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.osName, "os", "", "ChromeOS version name like eve-release/R86-13380.0.0")
 		c.Flags.StringVar(&c.osPath, "os-path", "", "GS path to where the payloads are located. Example: gs://chromeos-image-archive/eve-release/R86-13380.0.0")
+		c.Flags.StringVar(&c.adminSession, "admin-session", "", "Admin session used to group created tasks. By default generated.")
+		c.Flags.BoolVar(&c.noReboot, "no-reboot", false, "prevent reboot during the provision.")
+		c.Flags.BoolVar(&c.latest, "latest", false, "Use latest version of CIPD when scheduling. By default no.")
 		return c
 	},
 }
@@ -39,8 +46,11 @@ type customProvisionRun struct {
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
 
-	osName string
-	osPath string
+	osName       string
+	osPath       string
+	adminSession string
+	noReboot     bool
+	latest       bool
 }
 
 func (c *customProvisionRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -49,6 +59,16 @@ func (c *customProvisionRun) Run(a subcommands.Application, args []string, env s
 		return 1
 	}
 	return 0
+}
+
+func (c *customProvisionRun) validateInput(args []string) error {
+	if len(args) == 0 {
+		return errors.Reason("Validate input: No target unit(s) specified").Err()
+	}
+	if c.osName != "" && c.osPath != "" {
+		return errors.Reason("Validate input: Both os name and os path are specified, you must specify only one of them at a time.").Err()
+	}
+	return nil
 }
 
 func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
@@ -61,39 +81,54 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 	if err != nil {
 		return errors.Annotate(err, "custom provision run").Err()
 	}
-	if len(args) == 0 {
-		return errors.Reason("create recovery task: unit is not specified").Err()
+	if err := c.validateInput(args); err != nil {
+		return errors.Annotate(err, "custom provision run").Err()
 	}
-	unit := args[0]
-	unit = heuristics.NormalizeBotNameToDeviceName(unit)
+	// Admin session used to created common tag across created tasks.
+	if c.adminSession == "" {
+		c.adminSession = uuid.New().String()
+	}
+	sessionTag := fmt.Sprintf("admin-session:%s", c.adminSession)
 	e := c.envFlags.Env()
 	v := buildbucket.CIPDProd
-	configuration := b64.StdEncoding.EncodeToString([]byte(c.createPlan()))
-	url, _, err := buildbucket.ScheduleTask(
-		ctx,
-		bc,
-		v,
-		&buildbucket.Params{
-			UnitName:         unit,
-			TaskName:         string(buildbucket.Custom),
-			AdminService:     e.AdminService,
-			InventoryService: e.UFSService,
-			NoMetrics:        false,
-			Configuration:    configuration,
-			// We do not update as this is just manual action.
-			UpdateInventory: false,
-			ExtraTags: []string{
-				"task:custom_provision",
-				site.ClientTag,
-				fmt.Sprintf("version:%s", v),
-			},
-		},
-		"mallet",
-	)
-	if err != nil {
-		return errors.Annotate(err, "create recovery task").Err()
+	if c.latest {
+		v = buildbucket.CIPDLatest
 	}
-	fmt.Fprintf(a.GetOut(), "Created recovery task for %s: %s\n", unit, url)
+	plan, err := c.createPlan()
+	if err != nil {
+		return errors.Annotate(err, "custom provision run").Err()
+	}
+	configuration := b64.StdEncoding.EncodeToString([]byte(plan))
+	for _, unit := range args {
+		unit = heuristics.NormalizeBotNameToDeviceName(unit)
+		url, _, err := buildbucket.ScheduleTask(
+			ctx,
+			bc,
+			v,
+			&buildbucket.Params{
+				UnitName:         unit,
+				TaskName:         string(buildbucket.Custom),
+				AdminService:     e.AdminService,
+				InventoryService: e.UFSService,
+				NoMetrics:        false,
+				Configuration:    configuration,
+				// We do not update as this is just manual action.
+				UpdateInventory: false,
+				ExtraTags: []string{
+					sessionTag,
+					"task:custom_provision",
+					site.ClientTag,
+					fmt.Sprintf("version:%s", v),
+				},
+			},
+			"mallet",
+		)
+		if err != nil {
+			return errors.Annotate(err, "create provision task").Err()
+		}
+		fmt.Fprintf(a.GetOut(), "Created provision task for %s: %s\n", unit, url)
+	}
+	fmt.Fprintf(a.GetOut(), "Created tasks: %s\n", swarming.TaskListURLForTags(e.SwarmingService, []string{sessionTag}))
 	return nil
 }
 
@@ -120,14 +155,13 @@ const customProvisionPlanStart = `
 					],
 					"exec_name": "cros_ssh"
 				},
-				"Custom provision":{
-					"docs":[
+				"Custom provision": {
+					"docs": [
 						"Provision device to the custom os version"
 					],
 					"exec_name": "cros_provision",
-					"exec_extra_args":[`
-const customProvisionPlanTail = `
-					],
+					"exec_extra_args": `
+const customProvisionPlanTail = `,
 					"exec_timeout": {
 						"seconds": 3600
 					}
@@ -137,14 +171,23 @@ const customProvisionPlanTail = `
 	}
 }`
 
-func (c *customProvisionRun) createPlan() string {
-	var customArg string
+func (c *customProvisionRun) createPlan() (string, error) {
+	customArg := []string{}
 	if c.osPath != "" {
-		customArg = fmt.Sprintf("os_image_path:%s", c.osPath)
+		customArg = append(customArg, fmt.Sprintf("os_image_path:%s", c.osPath))
 	} else if c.osName != "" {
-		customArg = fmt.Sprintf("os_name:%s", c.osName)
-	} else {
-		return customProvisionPlanStart + customProvisionPlanTail
+		customArg = append(customArg, fmt.Sprintf("os_name:%s", c.osName))
 	}
-	return fmt.Sprintf("%s%q%s", customProvisionPlanStart, customArg, customProvisionPlanTail)
+	if c.noReboot {
+		customArg = append(customArg, "no_reboot")
+	}
+	if len(customArg) > 0 {
+		j, err := json.Marshal(customArg)
+		if err != nil {
+			return "", errors.Annotate(err, "create plan").Err()
+		}
+		return fmt.Sprintf("%s%s%s", customProvisionPlanStart, string(j), customProvisionPlanTail), nil
+	} else {
+		return fmt.Sprintf("%s%s%s", customProvisionPlanStart, "[]", customProvisionPlanTail), nil
+	}
 }
