@@ -62,6 +62,8 @@ type Generator struct {
 	// What swarming pool the test runner build should run in. If not provided,
 	// assumed to be `ChromeOSSkylab`
 	SwarmingPool string
+	// Current build instance
+	BuildInstance *bbpb.Build
 }
 
 // CheckConsistency checks the internal consistency of the various inputs to the
@@ -446,6 +448,11 @@ func (g *Generator) swarmingTags(ctx context.Context, kv map[string]string, cmd 
 		"luci_project:" + g.WorkerConfig.LuciProject,
 		"log_location:" + cmd.LogDogAnnotationURL,
 	}
+	// Propagate ctp creator to test_runner
+	if g.BuildInstance != nil && g.BuildInstance.CreatedBy != "" {
+		tags = append(tags, "parent_created_by:"+g.BuildInstance.CreatedBy)
+	}
+
 	// CTP "builds" triggered by `led` don't have a buildbucket ID.
 	if g.ParentBuildID != 0 {
 		tags = append(tags, "parent_buildbucket_id:"+strconv.FormatInt(g.ParentBuildID, 10))

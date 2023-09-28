@@ -114,6 +114,7 @@ func NewRequestTaskSet(
 			Experiments:         buildInstance.GetInput().GetExperiments(),
 			GerritChanges:       buildInstance.GetInput().GetGerritChanges(),
 			SwarmingPool:        pool,
+			BuildInstance:       buildInstance,
 		}
 		// test, params, workerConfig, tc.ParentTaskID, tc.RequestUID, tc.Deadline)
 		invocationResponses[iid] = response.NewInvocation(test.GetTest().GetName())
