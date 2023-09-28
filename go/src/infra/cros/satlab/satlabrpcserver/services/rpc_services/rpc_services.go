@@ -16,8 +16,8 @@ import (
 
 	"infra/cros/satlab/common/asset"
 	"infra/cros/satlab/common/dns"
-	dut_pkg "infra/cros/satlab/common/dut"
-	run_pkg "infra/cros/satlab/common/run"
+	"infra/cros/satlab/common/dut"
+	"infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/site"
@@ -380,7 +380,7 @@ func (s *SatlabRpcServiceServer) Close() {
 
 // Run suite triggers the test suite on the satlab. Right now, this is implemented using CTPBuildRequest
 func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRequest) (*pb.RunSuiteResponse, error) {
-	r := &run_pkg.Run{
+	r := &run.Run{
 		Suite:     in.Suite,
 		Model:     in.Model,
 		Board:     in.BuildTarget,
@@ -396,7 +396,7 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 }
 
 func (s *SatlabRpcServiceServer) RunTest(ctx context.Context, in *pb.RunTestRequest) (*pb.RunTestResponse, error) {
-	r := &run_pkg.Run{
+	r := &run.Run{
 		Tests:     in.GetTests(),
 		TestArgs:  in.GetTestArgs(),
 		Board:     in.GetBoard(),
@@ -435,7 +435,7 @@ func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVe
 }
 
 func addPoolsToDUT(ctx context.Context, executor executor.IExecCommander, hostname string, pools []string) error {
-	req := dut_pkg.UpdateDUT{
+	req := dut.UpdateDUT{
 		Pools:    pools,
 		Hostname: hostname,
 	}
@@ -618,7 +618,7 @@ func (s *SatlabRpcServiceServer) ListEnrolledDuts(ctx context.Context, in *pb.Li
 	}
 	// Use rack and satlab id to filter
 	satlabRackFilter := []string{site.MaybePrepend(site.Satlab, satlabID, "rack")}
-	d := dut_pkg.GetDUT{
+	d := dut.GetDUT{
 		Racks: satlabRackFilter,
 	}
 	a := asset.GetAsset{
