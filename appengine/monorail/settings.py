@@ -347,7 +347,7 @@ else:
     branded_domains = branded_domains_prod
     domain_to_default_project = domain_to_default_project_prod
 
-    config_freeze_project_ids = set()
+    config_freeze_project_ids = {16}
 
 if local_mode:
   site_name = 'Monorail Local'
