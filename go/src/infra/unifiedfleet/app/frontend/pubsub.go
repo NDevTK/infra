@@ -177,7 +177,7 @@ func updateAssetInfoFromHart(ufsAssetInfo, hartAssetInfo *ufspb.AssetInfo) *ufsp
 	}
 	if ufsAssetInfo.GetModel() == "" {
 		updated = true
-		//  Update Model if we don't have it
+		// Update Model if we don't have it
 		ufsAssetInfo.Model = hartAssetInfo.GetModel()
 	}
 	if ufsAssetInfo.GetBuildTarget() == "" {
@@ -215,9 +215,9 @@ func updateAssetInfoFromHart(ufsAssetInfo, hartAssetInfo *ufspb.AssetInfo) *ufsp
 		// Update phase if it's changed
 		ufsAssetInfo.Phase = hartAssetInfo.GetPhase()
 	}
-	if ufsAssetInfo.GetSku() != hartAssetInfo.GetSku() {
+	if ufsAssetInfo.GetSku() == "" {
 		updated = true
-		// Update sku if it's changed
+		// Update sku if we don't have it
 		ufsAssetInfo.Sku = hartAssetInfo.GetSku()
 	}
 	if ufsAssetInfo.GetReferenceDesign() != hartAssetInfo.GetReferenceDesign() {
