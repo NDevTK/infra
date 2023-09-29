@@ -163,5 +163,5 @@ func (c *AsusWrtRouterController) Features() ([]labapi.WifiRouterFeature, error)
 // Reboot will reboot the router and wait for it to come back up. A non-nil
 // error indicates that the router was rebooted and is ssh-able again.
 func (c *AsusWrtRouterController) Reboot(ctx context.Context) error {
-	return ssh.Reboot(ctx, c.sshRunner)
+	return ssh.Reboot(ctx, c.sshRunner, defaultPostRebootSSHDelay, defaultPostRebootSSHInterval, defaultPostRebootSSHTimeout)
 }

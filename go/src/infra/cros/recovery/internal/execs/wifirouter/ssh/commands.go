@@ -60,7 +60,7 @@ func CatFile(ctx context.Context, sshRunner Runner, remoteFilePath string) (stri
 
 // Reboot runs `reboot` on the host and then waits for the reboot to
 // complete. The reboot is seen as finished when the device is ssh-able again.
-func Reboot(ctx context.Context, sshRunner Runner) error {
+func Reboot(ctx context.Context, sshRunner Runner, reconnectDelay time.Duration, reconnectInterval time.Duration, reconnectTimeout time.Duration) error {
 	// Start reboot over ssh.
 	log.Debugf(ctx, "Rebooting host over ssh")
 	if err := sshRunner.RunInBackground(ctx, 0, "reboot"); err != nil {
@@ -68,10 +68,10 @@ func Reboot(ctx context.Context, sshRunner Runner) error {
 	}
 
 	// Wait to give it time to shut down ssh until verifying it is back up.
-	log.Debugf(ctx, "Waiting 10s for host to start rebooting before reconnecting")
-	time.Sleep(10 * time.Second)
-	log.Debugf(ctx, "Attempting to reconnect to host after reboot")
-	return cros.WaitUntilSSHable(ctx, 3*time.Minute, 10*time.Second, sshRunner.Run, log.Get(ctx))
+	log.Debugf(ctx, "Waiting %s for host to start rebooting before reconnecting", reconnectDelay)
+	time.Sleep(reconnectDelay)
+	log.Debugf(ctx, "Attempting to reconnect to host after reboot (%s interval, %s timeout)", reconnectInterval, reconnectTimeout)
+	return cros.WaitUntilSSHable(ctx, reconnectTimeout, reconnectInterval, sshRunner.Run, log.Get(ctx))
 }
 
 // TryAccess will attempt to run a simple bash command, `true`, on the host over

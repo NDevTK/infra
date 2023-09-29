@@ -26,6 +26,20 @@ import (
 // all wifi-related ChromeOS connectivity test artifact GCS objects.
 const wifiRouterArtifactsGCSBasePath = "gs://chromeos-connectivity-test-artifacts/wifi_router"
 
+const (
+	// defaultPostRebootSSHDelay is the default amount of time to wait after
+	// triggering a reboot to start trying to connect to the device over ssh.
+	defaultPostRebootSSHDelay = 10 * time.Second
+
+	// defaultPostRebootSSHInterval is the default amount of time to wait
+	// after a failed post-reboot ssh attempt before retrying.
+	defaultPostRebootSSHInterval = 10 * time.Second
+
+	// defaultPostRebootSSHTimeout is the default overall timeout for post-reboot
+	// ssh connection attempts.
+	defaultPostRebootSSHTimeout = 3 * time.Minute
+)
+
 // invalidDeviceNameCharacterRegex matches one or more invalid device name
 // characters and underscores so that they may be replaced with a single
 // underscore.

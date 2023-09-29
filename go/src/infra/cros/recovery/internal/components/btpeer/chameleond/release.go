@@ -6,15 +6,95 @@ package chameleond
 
 import (
 	"context"
+	"path/filepath"
 	"sort"
 	"strings"
+	"time"
+
+	"google.golang.org/protobuf/encoding/protojson"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cache"
 	"infra/cros/recovery/internal/components/cros"
+	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/internal/log"
 )
+
+const (
+	// btpeerArtifactsGCSBasePath is the base GCS storage path for all btpeer-
+	// related artifacts.
+	btpeerArtifactsGCSBasePath = "gs://chromeos-connectivity-test-artifacts/btpeer"
+
+	// btpeerChameleondConfigProdGCSPath is the path to the production chameleond
+	// config JSON file meant to be used by any automated process updating
+	// chameleond on btpeers.
+	btpeerChameleondConfigProdGCSPath = btpeerArtifactsGCSBasePath + "/btpeer_chameleond_config_prod.json"
+)
+
+// CacheAccess is a subset of tlw.Access that just has the ability to access the
+// cache server.
+type CacheAccess interface {
+	// GetCacheUrl provides URL to download requested path to file.
+	// URL will use to download image to USB-drive and provisioning.
+	GetCacheUrl(ctx context.Context, resourceName, filePath string) (string, error)
+}
+
+// DownloadChameleondBundle downloads the bundle archive for the bundleConfig to
+// the btpeer from GCS via the cache server. Returns the path of the bundle on
+// the btpeer.
+func DownloadChameleondBundle(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string, bundleConfig *labapi.BluetoothPeerChameleondConfig_ChameleondBundle) (string, error) {
+	bundleArchivePath := bundleConfig.GetArchivePath()
+	if !strings.HasPrefix(bundleArchivePath, btpeerArtifactsGCSBasePath) {
+		return "", errors.Reason("invalid bundle archive path %q", bundleArchivePath).Err()
+	}
+	bundleFilename := filepath.Base(bundleArchivePath)
+	dstPath := filepath.Join(installDir, bundleFilename)
+	downloadURL, err := cacheAccess.GetCacheUrl(ctx, hostResource, bundleArchivePath)
+	if err != nil {
+		return "", errors.Annotate(err, "failed to get download URL from cache server for file path %q", bundleArchivePath).Err()
+	}
+	if _, err := cache.CurlFile(ctx, sshRunner.Run, downloadURL, dstPath, 1*time.Minute); err != nil {
+		return "", errors.Annotate(err, "failed to download bundle archive %q to btpeer at %q", bundleArchivePath, dstPath).Err()
+	}
+	return dstPath, nil
+}
+
+// FetchBtpeerChameleondReleaseConfig downloads the production
+// BluetoothPeerChameleondConfig JSON file from GCS via the cache server through
+// the host and returns its unmarshalled contents.
+func FetchBtpeerChameleondReleaseConfig(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string) (*labapi.BluetoothPeerChameleondConfig, error) {
+	downloadURL, err := cacheAccess.GetCacheUrl(ctx, hostResource, btpeerChameleondConfigProdGCSPath)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to get download URL from cache server for file path %q", btpeerChameleondConfigProdGCSPath).Err()
+	}
+	btpeerChameleondConfigJSON, _, err := cache.CurlFileContents(ctx, sshRunner.Run, downloadURL, 10*time.Second)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to read %q on the host through the cache server at %q", btpeerChameleondConfigProdGCSPath, downloadURL).Err()
+	}
+	config := &labapi.BluetoothPeerChameleondConfig{}
+	if err := protojson.Unmarshal([]byte(btpeerChameleondConfigJSON), config); err != nil {
+		return nil, errors.Annotate(err, "failed to unmarshal BluetoothPeerChameleondConfig from %q", btpeerChameleondConfigProdGCSPath).Err()
+	}
+	return config, nil
+}
+
+// MarshalBtpeerChameleondReleaseConfig marshals the config into JSON using
+// the same settings as btpeer_manager, which is what is used to create the
+// config JSON that this would be parsed from, so that the look is consistent.
+func MarshalBtpeerChameleondReleaseConfig(config *labapi.BluetoothPeerChameleondConfig) (string, error) {
+	marshaller := protojson.MarshalOptions{
+		Multiline:       true,
+		Indent:          "  ",
+		EmitUnpopulated: true,
+	}
+	configJSON, err := marshaller.Marshal(config)
+	if err != nil {
+		return "", errors.Annotate(err, "marshal btpeer chameleond release config").Err()
+	}
+	return string(configJSON), nil
+}
 
 // SelectChameleondBundleByChameleondCommit returns the bundle config from the
 // chameleond config that has a matching chameleond commit. Returns a non-nil
