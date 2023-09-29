@@ -1273,3 +1273,43 @@ class FieldHelpersTest(unittest.TestCase):
     self.assertEqual(
         self.mr.errors.min_value, 'Minimum value must be less than maximum.')
     self.assertEqual(self.mr.errors.regex, 'Invalid regular expression.')
+
+  def testValidateLabels_NoLabels(self):
+    err_msg = field_helpers.ValidateLabels(
+        self.mr.cnxn,
+        self.services,
+        self.mr.project_id, [''],
+        ezt_errors=self.errors)
+    self.assertFalse(self.errors.AnyErrors())
+    self.assertEqual(err_msg, None)
+
+  def testValidateLabels_ExistingLabel(self):
+    err_msg = field_helpers.ValidateLabels(
+        self.mr.cnxn,
+        self.services,
+        self.mr.project_id, ['old_label'],
+        ezt_errors=self.errors)
+    self.assertFalse(self.errors.AnyErrors())
+    self.assertEqual(err_msg, None)
+
+  def testValidateLabels_AllowlistedLabel(self):
+    err_msg = field_helpers.ValidateLabels(
+        self.mr.cnxn,
+        self.services,
+        self.mr.project_id, ['old_label', 'CVE-test'],
+        ezt_errors=self.errors)
+    self.assertFalse(self.errors.AnyErrors())
+    self.assertEqual(err_msg, None)
+
+  def testValidateLabels_Error(self):
+    err_msg = field_helpers.ValidateLabels(
+        self.mr.cnxn,
+        self.services,
+        self.mr.project_id, ['freeze_new_label'],
+        ezt_errors=self.errors)
+    self.assertTrue(self.errors.AnyErrors())
+    self.assertEqual(
+        err_msg, (
+            'The creation of new labels is blocked for the Chromium project'
+            ' in Monorail. To continue with editing your issue, please'
+            ' remove: freeze_new_label label(s).'))

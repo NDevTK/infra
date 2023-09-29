@@ -299,6 +299,7 @@ def ValidateLabels(cnxn, services, project_id, labels, ezt_errors=None):
     new_labels = [
         l for l in labels if services.config.LookupLabelID(
             cnxn, project_id, l, autocreate=False, case_sensitive=True) is None
+        and not settings.is_label_allowed(l)
     ]
     if len(new_labels) > 0:
       err_msg = (

@@ -509,3 +509,17 @@ pubsub_topic_id = 'projects/%s/topics/issue-updates' % pubsub_project
 # All users in the following domains will have API access.
 # Important: the @ symbol must be included.
 api_allowed_email_domains = ('@google.com')
+
+label_prefix_allowlist = [
+    'CVE-',
+    'reward_to-',
+    'merge-merge-',
+    'migrated-to-b-',
+    'copybara-migration-complete-',
+    'cob-migrated-to-b-',
+    'incident-id-',
+]
+
+
+def is_label_allowed(label):
+  return any(label.startswith(prefix) for prefix in label_prefix_allowlist)
