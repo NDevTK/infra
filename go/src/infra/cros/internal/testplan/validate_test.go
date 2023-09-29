@@ -147,22 +147,24 @@ func TestValidateMapping(t *testing.T) {
 	})
 
 	tests := []struct {
-		name    string
-		mapping *dirmd.Mapping
+		name     string
+		mapping  *dirmd.Mapping
+		repoRoot string
 	}{
 		{
-			"no ChromeOS metadata",
-			&dirmd.Mapping{
+			name: "no ChromeOS metadata",
+			mapping: &dirmd.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"a/b/c": {
 						TeamEmail: "exampleteam@google.com",
 					},
 				},
 			},
+			repoRoot: "./testdata/good_dirmd",
 		},
 		{
-			"single starlark file",
-			&dirmd.Mapping{
+			name: "single starlark file",
+			mapping: &dirmd.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"a/b/c": {
 						TeamEmail: "exampleteam@google.com",
@@ -184,10 +186,11 @@ func TestValidateMapping(t *testing.T) {
 					},
 				},
 			},
+			repoRoot: "./testdata/good_dirmd",
 		},
 		{
-			"multiple starlark files",
-			&dirmd.Mapping{
+			name: "multiple starlark files",
+			mapping: &dirmd.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"a/b/c": {
 						TeamEmail: "exampleteam@google.com",
@@ -214,10 +217,11 @@ func TestValidateMapping(t *testing.T) {
 					},
 				},
 			},
+			repoRoot: "./testdata/good_dirmd",
 		},
 		{
-			"valid regexps",
-			&dirmd.Mapping{
+			name: "valid regexps",
+			mapping: &dirmd.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"a/b/c": {
 						TeamEmail: "exampleteam@google.com",
@@ -241,10 +245,11 @@ func TestValidateMapping(t *testing.T) {
 					},
 				},
 			},
+			repoRoot: "./testdata/good_dirmd",
 		},
 		{
-			"root directory",
-			&dirmd.Mapping{
+			name: "root directory",
+			mapping: &dirmd.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".": {
 						TeamEmail: "exampleteam@google.com",
@@ -268,10 +273,11 @@ func TestValidateMapping(t *testing.T) {
 					},
 				},
 			},
+			repoRoot: "./testdata/good_dirmd",
 		},
 		{
-			"regexp doesn't match file",
-			&dirmd.Mapping{
+			name: "regexp doesn't match file",
+			mapping: &dirmd.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"a/b": {
 						TeamEmail: "exampleteam@google.com",
@@ -297,10 +303,11 @@ func TestValidateMapping(t *testing.T) {
 					},
 				},
 			},
+			repoRoot: "./testdata/good_dirmd",
 		},
 		{
-			"TagCriteria template parameters",
-			&dirmd.Mapping{
+			name: "TagCriteria template parameters",
+			mapping: &dirmd.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"a/b": {
 						Chromeos: &chromeos.ChromeOS{
@@ -344,10 +351,11 @@ func TestValidateMapping(t *testing.T) {
 					},
 				},
 			},
+			repoRoot: "./testdata/good_dirmd",
 		},
 		{
-			"program TemplateParameters",
-			&dirmd.Mapping{
+			name: "program TemplateParameters",
+			mapping: &dirmd.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"overlay-boardA": {
 						Chromeos: &chromeos.ChromeOS{
@@ -369,7 +377,15 @@ func TestValidateMapping(t *testing.T) {
 							},
 						},
 					},
-					"overlay-boardA-private": {
+				},
+			},
+			repoRoot: "./testdata/good_dirmd",
+		},
+		{
+			name: "program TemplateParameters in private overlay",
+			mapping: &dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					".": {
 						Chromeos: &chromeos.ChromeOS{
 							Cq: &chromeos.ChromeOS_CQ{
 								SourceTestPlans: []*plan.SourceTestPlan{
@@ -391,12 +407,13 @@ func TestValidateMapping(t *testing.T) {
 					},
 				},
 			},
+			repoRoot: "./testdata/private-overlay-boardA",
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			assert.NilError(t, validator.ValidateMapping(ctx, test.mapping, "./testdata/good_dirmd"))
+			assert.NilError(t, validator.ValidateMapping(ctx, test.mapping, test.repoRoot))
 		})
 	}
 }
@@ -860,7 +877,7 @@ func TestValidateMappingErrors(t *testing.T) {
 				},
 			},
 			"./testdata/good_dirmd",
-			`program TemplateParameter is only allowed in overlay directories. Got: "a/b"`,
+			`program TemplateParameter is only allowed in overlay directories. Got: "testdata/good_dirmd/a/b"`,
 		},
 		{
 			"program TemplateParameter wrong overlay",

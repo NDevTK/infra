@@ -1,0 +1,14 @@
+chromeos {
+    cq {
+        source_test_plans {
+            test_plan_starlark_files {
+                host: "chromium.googlesource.com"
+                project: "repo1"
+                path: "templated.star"
+                template_parameters {
+                    program: "boardA"
+                }
+            }
+        }
+    }
+}

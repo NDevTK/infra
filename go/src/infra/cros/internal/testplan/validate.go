@@ -316,7 +316,7 @@ func (v *validator) checkTagCriteriaNonEmpty(
 	return nil
 }
 
-func (v *validator) validateTemplateParameters(ctx context.Context, dir, _ string, plan *planpb.SourceTestPlan) error {
+func (v *validator) validateTemplateParameters(ctx context.Context, dir, repoRoot string, plan *planpb.SourceTestPlan) error {
 	// Get the FieldDescriptor for template_parameters to check whether
 	// TemplateParameters has been set for a given TestPlanStarlarkFile.
 	templateParametersDesc := (&planpb.SourceTestPlan_TestPlanStarlarkFile{}).
@@ -342,7 +342,7 @@ func (v *validator) validateTemplateParameters(ctx context.Context, dir, _ strin
 		}
 
 		if templateParameters.GetProgram() != "" {
-			if err := v.validateProgramTemplateParameters(templateParameters.GetProgram(), dir); err != nil {
+			if err := v.validateProgramTemplateParameters(templateParameters.GetProgram(), dir, repoRoot); err != nil {
 				return fmt.Errorf("error validating program in TemplateParameters: %w", err)
 			}
 		}
@@ -388,11 +388,12 @@ var overlayRegex = regexp.MustCompile(`overlay-(\w+)(-private)?`)
 // program is not the empty string.
 func (v *validator) validateProgramTemplateParameters(
 	program string,
-	dir string,
+	dir, repoRoot string,
 ) error {
-	matches := overlayRegex.FindStringSubmatch(dir)
+	fullPath := filepath.Join(repoRoot, dir)
+	matches := overlayRegex.FindStringSubmatch(fullPath)
 	if matches == nil {
-		return fmt.Errorf("program TemplateParameter is only allowed in overlay directories. Got: %q", dir)
+		return fmt.Errorf("program TemplateParameter is only allowed in overlay directories. Got: %q", fullPath)
 	}
 
 	if matches[1] != program {
