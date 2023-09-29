@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"infra/tools/pkgbuild/pkg/spec"
@@ -79,9 +80,21 @@ func main() {
 		os.Exit(1)
 	}
 
+	tmp, err := os.MkdirTemp("", "pkgbuild-")
+	if err != nil {
+		logging.WithError(err).Errorf(ctx, "failed to create tmp dir")
+		os.Exit(1)
+	}
+	fmt.Println(tmp)
+	// defer filesystem.RemoveAll(tmp)
 	for _, pkg := range pkgs {
 		metadata := pkg.Action.Metadata
 		fmt.Println(metadata.Cipd.Name, metadata.Cipd.Version) // (TODO): Upload package here
+		CIPDCommand("pkg-build",
+			"-name", pkg.Action.Metadata.Cipd.Name,
+			"-in", pkg.Handler.OutputDirectory(),
+			"-out", filepath.Join(tmp, pkg.Derivation.Name),
+		)
 	}
 
 	app.PackageManager.Prune(ctx, time.Hour*24, 256)
