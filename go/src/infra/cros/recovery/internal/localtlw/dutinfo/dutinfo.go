@@ -606,6 +606,18 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 				state.WorkingBluetoothBtpeer += 1
 			}
 		}
+		if len(chromeos.GetBluetoothPeers()) > 0 {
+			if int(state.WorkingBluetoothBtpeer) == len(chromeos.GetBluetoothPeers()) {
+				// All btpeers in the testbed are WORKING, so overall state is WORKING.
+				state.PeripheralBtpeerState = ufslab.PeripheralState_WORKING
+			} else {
+				// At least one btpeer is not WORKING, so overall state is BROKEN.
+				state.PeripheralBtpeerState = ufslab.PeripheralState_BROKEN
+			}
+		} else {
+			// There are no btpeers in the testbed, so this state is not applicable.
+			state.PeripheralBtpeerState = ufslab.PeripheralState_NOT_APPLICABLE
+		}
 		if chromeos.GetAudio().GetLoopbackState() == tlw.DUTAudio_LOOPBACK_WORKING {
 			state.AudioLoopbackDongle = ufslab.PeripheralState_WORKING
 		} else {
