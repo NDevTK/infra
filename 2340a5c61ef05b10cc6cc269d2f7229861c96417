@@ -25,6 +25,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7a4ff92_9c9d80ef",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-29T08:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "927293c4_4d4115a5",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 0
+      },
+      "revId": "2340a5c61ef05b10cc6cc269d2f7229861c96417",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9476f7de_082d7ba4",
@@ -39,6 +63,30 @@
       "side": 1,
       "message": "\u003e Error return value of `stdoutw.Close` is not checked\n\nPlease fix.",
       "parentUuid": "739f2f66_f0cfc2e1",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 87,
+        "endChar": 0
+      },
+      "revId": "2340a5c61ef05b10cc6cc269d2f7229861c96417",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a93c545_6f14ecd4",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-29T08:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9476f7de_082d7ba4",
       "range": {
         "startLine": 87,
         "startChar": 0,
@@ -73,6 +121,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "06707b07_9a2369f6",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-29T08:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2b269194_48500b56",
+      "range": {
+        "startLine": 90,
+        "startChar": 0,
+        "endLine": 90,
+        "endChar": 0
+      },
+      "revId": "2340a5c61ef05b10cc6cc269d2f7229861c96417",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7b8a03a3_c43b8107",
@@ -87,6 +159,30 @@
       "side": 1,
       "message": "\u003e Error return value of `stdoutw.Close` is not checked\n\nPlease fix.",
       "parentUuid": "b1c5869f_e268d6af",
+      "range": {
+        "startLine": 91,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 0
+      },
+      "revId": "2340a5c61ef05b10cc6cc269d2f7229861c96417",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "52c76263_d8040cda",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-29T08:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7b8a03a3_c43b8107",
       "range": {
         "startLine": 91,
         "startChar": 0,
@@ -121,6 +217,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e660869b_cf0f02b8",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-29T08:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "12e59b82_4e2c14da",
+      "range": {
+        "startLine": 94,
+        "startChar": 0,
+        "endLine": 94,
+        "endChar": 0
+      },
+      "revId": "2340a5c61ef05b10cc6cc269d2f7229861c96417",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6a3beff3_232ed7e1",
@@ -135,6 +255,30 @@
       "side": 1,
       "message": "\u003e Error return value of `stderrw.Close` is not checked\n\nPlease fix.",
       "parentUuid": "1ce65f12_5252c0d1",
+      "range": {
+        "startLine": 95,
+        "startChar": 0,
+        "endLine": 95,
+        "endChar": 0
+      },
+      "revId": "2340a5c61ef05b10cc6cc269d2f7229861c96417",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a7c8c36_84a1686e",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-29T08:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6a3beff3_232ed7e1",
       "range": {
         "startLine": 95,
         "startChar": 0,
@@ -169,6 +313,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5083e464_a24e2373",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-29T08:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "507fd920_f509c3d7",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 0
+      },
+      "revId": "2340a5c61ef05b10cc6cc269d2f7229861c96417",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "43ad8af3_a8df96e6",
@@ -183,6 +351,30 @@
       "side": 1,
       "message": "\u003e Error return value of `os.Stderr.Write` is not checked\n\nPlease fix.",
       "parentUuid": "43be54a3_1ca3e111",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 123,
+        "endChar": 0
+      },
+      "revId": "2340a5c61ef05b10cc6cc269d2f7229861c96417",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c1d7909_775deb78",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-29T08:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43ad8af3_a8df96e6",
       "range": {
         "startLine": 123,
         "startChar": 0,
