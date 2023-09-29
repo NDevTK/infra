@@ -28,6 +28,7 @@ type runFlags struct {
 	testArgs      string
 	satlabId      string
 	cft           bool
+	local         bool
 	addedDims     map[string]string
 }
 
@@ -49,5 +50,6 @@ func registerRunFlags(c *run) {
 	c.Flags.StringVar(&c.testArgs, "testArgs", "", "test args to use for test execution")
 	c.Flags.StringVar(&c.satlabId, "satlabId", "", "id of satlab box to execute tests on (e.g. 'satlab-XXXXXXXXX')")
 	c.Flags.BoolVar(&c.cft, "cft", false, "whether to use CFT execution framework")
+	c.Flags.BoolVar(&c.local, "local", false, "whether to execute tests on local satlab")
 	c.Flags.Var(flagx.MapToFlagValue(&c.addedDims), "dims", "Additional scheduling dimension in format key=val or key:val; may be specified multiple times.")
 }

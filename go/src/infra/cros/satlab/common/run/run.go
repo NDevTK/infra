@@ -46,6 +46,7 @@ type Run struct {
 	TestArgs      string
 	SatlabId      string
 	CFT           bool
+	Local         bool
 	AddedDims     map[string]string
 }
 
@@ -69,7 +70,9 @@ func (c *Run) TriggerRun(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	dims["drone"] = droneDim
+	if droneDim != "" {
+		dims["drone"] = droneDim
+	}
 
 	builderId := &buildbucketpb.BuilderID{
 		Project: site.GetLUCIProject(),
@@ -220,7 +223,7 @@ func (c *Run) getDroneTarget(ctx context.Context) (string, error) {
 	var satlabTarget string
 	if c.SatlabId != "" {
 		satlabTarget = fmt.Sprintf(c.SatlabId)
-	} else { // get id of local satlab if one is not provided
+	} else if c.Local { // get id of local satlab if one is not provided
 		localSatlab, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, &executor.ExecCommander{})
 		if err != nil {
 			return "", errors.Annotate(err, "satlab get docker host box identifier").Err()
