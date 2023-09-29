@@ -38,20 +38,24 @@ func (p *adminTaskBotPusher) getLabstations(ctx context.Context, startTime time.
 	}
 	// TODO(gregorynisbet): look at "action:Power cycle by RPM" as well.
 	results, err := p.metricsClient.Search(ctx, &metrics.Query{
-		StartTime:  startTime,
-		StopTime:   stopTime,
 		ActionKind: labstationRebootKind,
-		Limit:      2000,
 	})
 	if err != nil {
 		return nil, err
 	}
 	labstationMap := map[string]struct{}{}
+	skippedLabstationTally := 0
 	for _, action := range results.Actions {
+		// TODO(gregorynisbet): Filter tasks based on time in the query, not here.
+		if action.StartTime.Before(startTime) {
+			skippedLabstationTally++
+			continue
+		}
 		if action.Status == metrics.ActionStatusSuccess {
 			labstationMap[action.Hostname] = struct{}{}
 		}
 	}
+	logging.Debugf(ctx, "getLabstations: number of labstation events skipped %d", skippedLabstationTally)
 	var labstations []string
 	for k := range labstationMap {
 		labstations = append(labstations, k)
