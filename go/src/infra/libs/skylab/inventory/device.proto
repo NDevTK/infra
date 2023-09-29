@@ -415,7 +415,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 44
+// NEXT TAG: 45
 message Peripherals {
   optional bool audio_board = 6;
   // The DUT is housed in an audio box to record / replay audio for audio
@@ -515,7 +515,11 @@ message Peripherals {
   optional HardwareState cellular_modem_state = 34;
   optional PeripheralState rpm_state = 25;
 
-
+  // The overall state of all btpeer peripherals in the testbed.
+  // Sourced from unifiedfleet.api.v1.models.chromeos.lab.DutState.peripheral_btpeer_state.
+  optional PeripheralState peripheral_btpeer_state = 44;
+  // The overall state of all wifi router peripherals in the testbed.
+  // Sourced from unifiedfleet.api.v1.models.chromeos.lab.DutState.wifi_peripheral_state.
   optional PeripheralState peripheral_wifi_state = 31;
   // WifiFeature enums copy UFS peripherals.proto Wifi.Feature and WifiRouter.Feature
   // Next Tag: 12
