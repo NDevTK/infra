@@ -207,6 +207,12 @@ func otherPeripheralsConverter(ls *inventory.SchedulableLabels) []string {
 		labels = append(labels, lv)
 	}
 
+	if peripheralBtpeerState := p.GetPeripheralWifiState(); peripheralBtpeerState != inventory.PeripheralState_UNKNOWN {
+		if pbsState, ok := lab.PeripheralState_name[int32(peripheralBtpeerState)]; ok {
+			labels = append(labels, "peripheral_btpeer_state:"+pbsState)
+		}
+	}
+
 	if peripheralWifiState := p.GetPeripheralWifiState(); peripheralWifiState != inventory.PeripheralState_UNKNOWN {
 		if pwsState, ok := lab.PeripheralState_name[int32(peripheralWifiState)]; ok {
 			labels = append(labels, "peripheral_wifi_state:"+pwsState)
@@ -401,6 +407,11 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) 
 			if index, ok := inventory.Peripherals_CameraboxLight_value[vn]; ok {
 				light := inventory.Peripherals_CameraboxLight(index)
 				p.CameraboxLight = &light
+			}
+		case "peripheral_btpeer_state":
+			if stateValue, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {
+				state := inventory.PeripheralState(stateValue)
+				p.PeripheralBtpeerState = &state
 			}
 		case "peripheral_wifi_state":
 			if stateValue, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {

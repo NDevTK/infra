@@ -239,6 +239,7 @@ var devUFSState = chromeosLab.DutState{
 	CellularModemState:       chromeosLab.HardwareState_HARDWARE_NORMAL,
 	RpmState:                 chromeosLab.PeripheralState_WORKING,
 	WifiPeripheralState:      chromeosLab.PeripheralState_WORKING,
+	PeripheralBtpeerState:    chromeosLab.PeripheralState_WORKING,
 	AudioLatencyToolkitState: chromeosLab.PeripheralState_WORKING,
 }
 
@@ -559,6 +560,7 @@ common {
 			servo_state: BROKEN
 			servo_type: "v3"
 			rpm_state: WORKING
+			peripheral_btpeer_state: WORKING
 			peripheral_wifi_state: WORKING
 			wifi_router_features: WIFI_ROUTER_FEATURE_IEEE_802_11_N
 			wifi_router_features: WIFI_ROUTER_FEATURE_IEEE_802_11_AC
@@ -678,6 +680,7 @@ common {
 			bluetooth_state: HARDWARE_NORMAL
 			cellular_modem_state: HARDWARE_NORMAL
 			rpm_state: WORKING
+			peripheral_btpeer_state: WORKING
 			peripheral_wifi_state: WORKING
 			chameleon_state: WORKING
 			hmr_state: UNKNOWN

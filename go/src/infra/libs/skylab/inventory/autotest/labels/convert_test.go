@@ -94,6 +94,7 @@ peripherals: {
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   hmr_state: 1
+  peripheral_btpeer_state: 1
   peripheral_wifi_state: 1
   wifi_router_features: [2,3,4,5]
   wifi_router_models: ["OPENWRT[Ubiquiti_Unifi_6_Lite]","gale"]
@@ -260,6 +261,7 @@ var fullLabels = []string{
 	"modem_supported_bands:bands",
 	"modem_type:qualcomm_sc7180",
 	"os:cros",
+	"peripheral_btpeer_state:WORKING",
 	"peripheral_wifi_state:WORKING",
 	"phase:DVT2",
 	"platform:platformval",
@@ -718,6 +720,7 @@ peripherals: {
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   hmr_state: 1
+  peripheral_btpeer_state: 1
   peripheral_wifi_state: 1
   wifi_router_features: [2,3,4,5]
   wifi_router_models: ["OPENWRT[Ubiquiti_Unifi_6_Lite]", "gale"]
@@ -883,6 +886,7 @@ var fullLabelsSpecial = []string{
 	"modem_supported_bands:bands",
 	"modem_type:qualcomm_sc7180",
 	"os:cros",
+	"peripheral_btpeer_state:WORKING",
 	"peripheral_wifi_state:WORKING",
 	"phase:DVT2",
 	"platform:platformval",

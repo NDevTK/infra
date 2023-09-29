@@ -169,6 +169,11 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 			appendDim(dims, "label-cellular_modem_state", state[hardwareStatePrefixLength:])
 		}
 	}
+	if peripheralBtpeerState := p.GetPeripheralBtpeerState(); peripheralBtpeerState != inventory.PeripheralState_UNKNOWN {
+		if pwsState, ok := lab.PeripheralState_name[int32(peripheralBtpeerState)]; ok {
+			dims["label-peripheral_btpeer_state"] = []string{pwsState}
+		}
+	}
 	if peripheralWifiState := p.GetPeripheralWifiState(); peripheralWifiState != inventory.PeripheralState_UNKNOWN {
 		if pwsState, ok := lab.PeripheralState_name[int32(peripheralWifiState)]; ok {
 			dims["label-peripheral_wifi_state"] = []string{pwsState}
@@ -307,6 +312,15 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 			p.CellularModemState = &state
 		}
 		delete(d, "label-cellular_modem_state")
+	}
+
+	if pbsStateName, ok := getLastStringValue(d, "label-peripheral_btpeer_state"); ok {
+		pbsState := inventory.PeripheralState_UNKNOWN
+		if sIndex, ok := lab.PeripheralState_value[strings.ToUpper(pbsStateName)]; ok {
+			pbsState = inventory.PeripheralState(sIndex)
+		}
+		p.PeripheralBtpeerState = &pbsState
+		delete(d, "label-peripheral_btpeer_state")
 	}
 
 	if pwsStateName, ok := getLastStringValue(d, "label-peripheral_wifi_state"); ok {

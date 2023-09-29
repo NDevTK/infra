@@ -488,6 +488,7 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	p.CellularModemState = setHardwareState(s.GetCellularModemState())
 	p.RpmState = setPeripheralState(s.GetRpmState())
 	p.PeripheralWifiState = setPeripheralState(s.GetWifiPeripheralState())
+	p.PeripheralBtpeerState = setPeripheralState(s.GetPeripheralBtpeerState())
 	p.HmrState = setPeripheralState(s.GetHmrState())
 	p.AudioLatencyToolkitState = setPeripheralState(s.GetAudioLatencyToolkitState())
 
