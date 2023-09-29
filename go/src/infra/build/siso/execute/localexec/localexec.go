@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sync/atomic"
 	"time"
 
 	rpb "github.com/bazelbuild/remote-apis/build/bazel/remote/execution/v2"
@@ -76,8 +77,58 @@ func run(ctx context.Context, cmd *execute.Cmd) (*rpb.ActionResult, error) {
 	c.Stderr = cmd.StderrWriter()
 	if cmd.Console {
 		c.Stdin = os.Stdin
-		c.Stdout = io.MultiWriter(os.Stdout, c.Stdout)
-		c.Stderr = io.MultiWriter(os.Stderr, c.Stderr)
+
+		// newline after siso status line if cmd outputs.
+		stdoutr, stdoutw, err := os.Pipe()
+		if err != nil {
+			return nil, err
+		}
+		defer stdoutr.Close()
+		defer stdoutw.Close()
+		stderrr, stderrw, err := os.Pipe()
+		if err != nil {
+			stdoutr.Close()
+			stdoutw.Close()
+			return nil, err
+		}
+		defer stderrr.Close()
+		defer stderrw.Close()
+		rctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		var outStarted atomic.Bool
+		go func() {
+			var buf [1]byte
+			n, err := stdoutr.Read(buf[:])
+			if err != nil {
+				return
+			}
+			if outStarted.CompareAndSwap(false, true) {
+				fmt.Fprintln(os.Stdout)
+			}
+			os.Stdout.Write(buf[:n])
+			_, err = io.Copy(os.Stdout, stdoutr)
+			if err != nil {
+				clog.Warningf(rctx, "copy stdout: %v", err)
+			}
+		}()
+		go func() {
+			var buf [1]byte
+			n, err := stderrr.Read(buf[:])
+			if err != nil {
+				return
+			}
+			if outStarted.CompareAndSwap(false, true) {
+				fmt.Fprintln(os.Stderr)
+			}
+			os.Stderr.Write(buf[:n])
+			_, err = io.Copy(os.Stderr, stderrr)
+			if err != nil {
+				clog.Warningf(rctx, "copy stderr: %v", err)
+			}
+		}()
+
+		c.Stdout = io.MultiWriter(stdoutw, c.Stdout)
+		c.Stderr = io.MultiWriter(stderrw, c.Stderr)
 	}
 	s := time.Now()
 
