@@ -5,6 +5,8 @@
 package config
 
 import (
+	"time"
+
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -14,7 +16,9 @@ func btpeerRepairPlan() *Plan {
 			"Set state: BROKEN",
 			"Device is pingable",
 			"Device is SSHable",
-			// TODO(b:261631000) Chameleond is responsive",
+			"Chameleond version is up to date",
+			"Chameleond service is running",
+			"Device has been rebooted recently",
 			"Set state: WORKING",
 		},
 		Actions: map[string]*Action{
@@ -51,46 +55,106 @@ func btpeerRepairPlan() *Plan {
 				ExecName:   "cros_ssh",
 				RunControl: RunControl_ALWAYS_RUN,
 			},
-			"Chameleond is responsive": {
+			"Device has been rebooted recently": {
 				Docs: []string{
-					"Verify chameleond is responsive.",
-					"Expected to receive not empty list of detected statuses.",
+					"Checks the device's uptime and fails if it is not less than one day.",
+					"Recovers by rebooting the device.",
 				},
-				ExecName: "btpeer_get_detected_statuses",
+				ExecName: "btpeer_assert_uptime_is_less_than_duration",
+				ExecExtraArgs: []string{
+					"duration_min:1440",
+				},
 				RecoveryActions: []string{
-					"Restart chameleond and wait",
+					"Reboot device",
 				},
 			},
-			"Restart chameleond and wait": {
+			"Reboot device": {
 				Docs: []string{
-					"Restart chameleond and wait for service to be ready.",
+					"Reboots the device over ssh and waits for the device to become ssh-able again.",
+				},
+				ExecName:    "btpeer_reboot",
+				ExecTimeout: durationpb.New(5 * time.Minute),
+				RunControl:  RunControl_ALWAYS_RUN,
+			},
+			"Chameleond version is up to date": {
+				Docs: []string{
+					"Checks if the chameleond version on the btpeer is outdated and updates it if it is.",
 				},
 				Dependencies: []string{
-					"Restart chameleond command",
-					"Sleep for chameleond restart",
+					"Fetch btpeer chameleond release config from GCS",
+					"Identify expected chameleond release bundle",
+					"Fetch installed chameleond bundle commit from btpeer",
+					"Btpeer has expected chameleond bundle installed",
 				},
 				ExecName: "sample_pass",
 			},
-			"Restart chameleond command": {
+			"Fetch btpeer chameleond release config from GCS": {
 				Docs: []string{
-					"Restart chameleond service.",
+					"Retrieves the production btpeer chameleond config from GCS and stores it in the exec state for later reference.",
 				},
-				ExecName: "cros_run_shell_command",
-				ExecExtraArgs: []string{
-					"sudo service chameleond restart",
+				ExecName: "btpeer_fetch_btpeer_chameleond_release_config",
+			},
+			"Identify expected chameleond release bundle": {
+				Docs: []string{
+					"Identifies the expected chameleond release bundle based off of the config and DUT host.",
+					"Note: For now this step ignores the DUT host and always selects the latest, non-next bundle.",
+				},
+				ExecName: "btpeer_identify_expected_chameleond_release_bundle",
+			},
+			"Fetch installed chameleond bundle commit from btpeer": {
+				Docs: []string{
+					"Retrieves the chameleond commit of the currently installed chameleond version from a log file on the btpeer.",
+					"If it fails to retrieve the commit we assume the chameleond version is too old to have the needed log file and we recover by installing the expected chameleond bundle.",
+				},
+				ExecName: "btpeer_fetch_installed_chameleond_bundle_commit",
+				RecoveryActions: []string{
+					"Install expected chameleond release bundle and then reboot device",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Btpeer has expected chameleond bundle installed": {
+				Docs: []string{
+					"Checks if the installed chameleond commit matches the expected chameleond bundle commit.",
+					"If the check fails, it attempts to recover by updating chameleond with the expected bundle.",
+				},
+				ExecName: "btpeer_assert_btpeer_has_expected_chameleond_release_bundle_installed",
+				RecoveryActions: []string{
+					"Install expected chameleond release bundle and then reboot device",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Install expected chameleond release bundle and then reboot device": {
+				Docs: []string{
+					"Installs/updates chameleond on the btpeer and then reboots the device.",
+				},
+				Dependencies: []string{
+					"Install expected chameleond release bundle",
+					"Reboot device",
+				},
+				ExecName:   "sample_pass",
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Install expected chameleond release bundle": {
+				Docs: []string{
+					"Installs/updates chameleond on the btpeer with the expected chameleond bundle.",
+					"The expected bundle archive is downloaded from GCS to the btpeer through the cache, extracted, and installed via make.",
+				},
+				ExecName:    "btpeer_install_expected_chameleond_release_bundle",
+				ExecTimeout: durationpb.New(15 * time.Minute),
+				RecoveryActions: []string{
+					"Reboot device",
 				},
 			},
-			"Sleep for chameleond restart": {
+			"Chameleond service is running": {
 				Docs: []string{
-					"When we restart chameleond we need wait about 10 seconds to be recovered.",
+					"Checks the status of the chameleond service on the device to see if it is running.",
+					"Fails if the service is not running and attempts recovery by rebooting.",
 				},
-				ExecName: "sample_sleep",
-				ExecExtraArgs: []string{
-					"sleep:10",
+				ExecName: "btpeer_assert_chameleond_service_is_running",
+				RecoveryActions: []string{
+					"Reboot device",
 				},
-				RunControl:             RunControl_ALWAYS_RUN,
-				AllowFailAfterRecovery: true,
-				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+				RunControl: RunControl_ALWAYS_RUN,
 			},
 		},
 	}
