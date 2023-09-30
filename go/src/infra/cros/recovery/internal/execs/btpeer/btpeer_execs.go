@@ -42,24 +42,6 @@ func setStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// getDetectedStatusesExec verifies communication with XMLRPC service running on bluetooth-peer and send one request to verify that service is responsive and initialized.
-func getDetectedStatusesExec(ctx context.Context, info *execs.ExecInfo) error {
-	h, err := activeHost(info.GetActiveResource(), info.GetChromeos())
-	if err != nil {
-		return errors.Annotate(err, "get detected statuses").Err()
-	}
-	res, err := Call(ctx, info.GetAccess(), h, "GetDetectedStatus")
-	if err != nil {
-		return errors.Annotate(err, "get detected statuses").Err()
-	}
-	count := len(res.GetArray().GetValues())
-	if count == 0 {
-		return errors.Reason("get detected statuses: list is empty").Err()
-	}
-	log.Debugf(ctx, "Detected statuses count: %v", count)
-	return nil
-}
-
 // fetchInstalledChameleondBundleCommitExec retrieves the chameleond commit of
 // the currently installed chameleond version from a log file on the btpeer and
 // stores it in the btpeer scope state for later reference.
@@ -254,7 +236,6 @@ func assertUptimeIsLessThanDurationExec(ctx context.Context, info *execs.ExecInf
 func init() {
 	execs.Register("btpeer_state_broken", setStateBrokenExec)
 	execs.Register("btpeer_state_working", setStateWorkingExec)
-	execs.Register("btpeer_get_detected_statuses", getDetectedStatusesExec)
 	execs.Register("btpeer_fetch_installed_chameleond_bundle_commit", fetchInstalledChameleondBundleCommitExec)
 	execs.Register("btpeer_fetch_btpeer_chameleond_release_config", fetchBtpeerChameleondReleaseConfigExec)
 	execs.Register("btpeer_identify_expected_chameleond_release_bundle", identifyExpectedChameleondReleaseBundleExec)
