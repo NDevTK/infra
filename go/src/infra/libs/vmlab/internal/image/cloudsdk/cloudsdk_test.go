@@ -109,6 +109,26 @@ func TestDescribeImagePending(t *testing.T) {
 	}
 }
 
+func TestDescribeImageNotFound(t *testing.T) {
+	imageApi := &cloudsdkImageApi{}
+	client := &mockImageClient{getFunc: func() (*computepb.Image, error) {
+		return nil, errors.New("googleapi: Error 404: The resource 'projects/chromeos-gce-tests/global/images/staging-betty-arc-r-119-8768649798491452801-15630-0-0-58485-cq' was not found")
+	}}
+	gceImage := &api.GceImage{
+		Name:    "my-image",
+		Project: "my-project",
+	}
+
+	gceImage, err := imageApi.describeImage(client, gceImage)
+
+	if err != nil {
+		t.Errorf("describeImage() expected nil error, got %v", err)
+	}
+	if gceImage.Status != api.GceImage_NOT_FOUND {
+		t.Errorf("describeImage() expected status api.GceImage_NOT_FOUND, got %v", gceImage.Status)
+	}
+}
+
 func TestDescribeImageDeleting(t *testing.T) {
 	imageApi := &cloudsdkImageApi{}
 	client := &mockImageClient{getFunc: func() (*computepb.Image, error) {

@@ -103,7 +103,10 @@ func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage,
 
 	if wait {
 		if op != nil {
-			_ = op.Wait(ctx)
+			err = op.Wait(ctx)
+			if err != nil {
+				return nil, fmt.Errorf("failed to wait for image to be imported: %w", err)
+			}
 		} else if gceImage.GetStatus() != api.GceImage_READY {
 			return c.poll(ctx, client, buildInfo, gceImage)
 		}
@@ -238,6 +241,14 @@ func (c *cloudsdkImageApi) describeImage(client computeImagesClient, gceImage *a
 	gceImage.Status = api.GceImage_NOT_FOUND
 	if i != nil {
 		gceImage.Status = parseImageStatus(*i.Status)
+	}
+
+	// When the image doesn't exist, it throws error 404.
+	if err != nil {
+		re := regexp.MustCompile(`Error 404: The resource '.*' was not found`)
+		if re.MatchString(err.Error()) {
+			err = nil
+		}
 	}
 
 	return gceImage, err
