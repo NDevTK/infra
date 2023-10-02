@@ -181,7 +181,8 @@ message FetchDirectoryMetricsRequest {
   // Dates should be specified in YYYY-MM-DD format.
   repeated string dates = 3 [ (google.api.field_behavior) = REQUIRED ];
   // The optional parent node for this data (i.e. The directory to get the child
-  // metrics for). The root parent_id is '/'.
+  // metrics for). The root parent_id is '/'. Passing an empty string will
+  // provide invalid filenames including results with no file name attached
   repeated string parent_ids = 4 [ (google.api.field_behavior) = REQUIRED ];
   // A string filter. This will return metrics for directories that have parts
   // of the tokenized filter. This does not change the metric values of the

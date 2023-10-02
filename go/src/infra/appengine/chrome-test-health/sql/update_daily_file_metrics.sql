@@ -2,7 +2,9 @@ CREATE TEMP FUNCTION directories(filename STRING)
 RETURNS ARRAY<STRING>
 LANGUAGE js
 AS r"""
-  if (filename == null || !filename.startsWith("//"))
+  if (filename == null)
+    return ["Unknown File"]
+  if (!filename.startsWith("//"))
     return ["Invalid path"]
   var dirs = [];
   var path = "//"
@@ -43,7 +45,9 @@ USING (
   ), dir_nodes AS (
     SELECT
       node_name,
-      node_name = f.file_name as is_file,
+      -- null node names means it isn't a proper directory path to have been
+      -- expanded into directory nodes
+      IFNULL(node_name = f.file_name, true) as is_file,
       f.*,
     FROM file_summaries AS f, UNNEST(directories(f.file_name)) AS node_name
   )

@@ -995,7 +995,8 @@ type FetchDirectoryMetricsRequest struct {
 	// Dates should be specified in YYYY-MM-DD format.
 	Dates []string `protobuf:"bytes,3,rep,name=dates,proto3" json:"dates,omitempty"`
 	// The optional parent node for this data (i.e. The directory to get the child
-	// metrics for). The root parent_id is '/'.
+	// metrics for). The root parent_id is '/'. Passing an empty string will
+	// provide invalid filenames including results with no file name attached
 	ParentIds []string `protobuf:"bytes,4,rep,name=parent_ids,json=parentIds,proto3" json:"parent_ids,omitempty"`
 	// A string filter. This will return metrics for directories that have parts
 	// of the tokenized filter. This does not change the metric values of the

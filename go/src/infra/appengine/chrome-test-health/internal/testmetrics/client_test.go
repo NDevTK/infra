@@ -456,9 +456,10 @@ SELECT
 	SUM(num_runs) AS num_runs,
 FROM chrome-test-health-project.normal-dataset.daily_file_metrics, UNNEST(@parents) AS parent
 WHERE
-	STARTS_WITH(node_name, parent || "/")
+	((STARTS_WITH(node_name, parent || "/")
 	-- The child folders and files can't have a / after the parent's name
-	AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$")
+	AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$"))
+	OR (parent = '' AND NOT STARTS_WITH(node_name, "/")))
 	AND DATE(date) IN UNNEST(@dates)
 GROUP BY date, node_name
 ORDER BY is_file, node_name ASC`)
@@ -478,9 +479,10 @@ SELECT
 	SUM(num_runs) AS num_runs,
 FROM chrome-test-health-project.normal-dataset.daily_file_metrics, UNNEST(@parents) AS parent
 WHERE
-	STARTS_WITH(node_name, parent || "/")
+	((STARTS_WITH(node_name, parent || "/")
 	-- The child folders and files can't have a / after the parent's name
-	AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$")
+	AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$"))
+	OR (parent = '' AND NOT STARTS_WITH(node_name, "/")))
 	AND DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
 GROUP BY date, node_name
@@ -509,9 +511,10 @@ WITH nodes AS(
 		SUM(num_runs) AS num_runs,
 	FROM chrome-test-health-project.normal-dataset.daily_file_metrics, UNNEST(@parents) AS parent
 	WHERE
-		STARTS_WITH(node_name, parent || "/")
+		((STARTS_WITH(node_name, parent || "/")
 		-- The child folders and files can't have a / after the parent's name
-		AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$")
+		AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$"))
+		OR (parent = '' AND NOT STARTS_WITH(node_name, "/")))
 		AND DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
 	GROUP BY date, node_name
@@ -632,9 +635,10 @@ JOIN test_summaries t ON
 	AND t.test_component = f.component
 	AND STARTS_WITH(t.node_name, f.node_name)
 WHERE
-	STARTS_WITH(f.node_name, parent || "/")
+	((STARTS_WITH(f.node_name, parent || "/")
 	-- The child folders and files can't have a / after the parent's name
-	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$")
+	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$"))
+	OR (parent = '' AND NOT STARTS_WITH(f.node_name, "/")))
 	AND DATE(f.date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
 GROUP BY date, node_name
@@ -677,9 +681,10 @@ JOIN test_summaries t ON
 	AND t.test_component = f.component
 	AND STARTS_WITH(t.node_name, f.node_name)
 WHERE
-	STARTS_WITH(f.node_name, parent || "/")
+	((STARTS_WITH(f.node_name, parent || "/")
 	-- The child folders and files can't have a / after the parent's name
-	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$")
+	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$"))
+	OR (parent = '' AND NOT STARTS_WITH(f.node_name, "/")))
 	AND DATE(f.date) IN UNNEST(@dates)
 GROUP BY date, node_name
 ORDER BY is_file, node_name ASC`)
@@ -732,9 +737,10 @@ test_summaries AS (
 		AND f.component = t.test_component
 		AND STARTS_WITH(t.node_name, f.node_name)
 	WHERE
-		STARTS_WITH(f.node_name, parent || "/")
+		((STARTS_WITH(f.node_name, parent || "/")
 		-- The child folders and files can't have a / after the parent's name
-		AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$")
+		AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$"))
+		OR (parent = '' AND NOT STARTS_WITH(f.node_name, "/")))
 		AND DATE(f.date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
 	GROUP BY date, node_name

@@ -588,4 +588,47 @@ func TestIntegrationTest(t *testing.T) {
 		// Only 1 test on the 2nd day for component1
 		So(metric, ShouldEqual, (time.Hour).Seconds())
 	})
+
+	Convey("invalid file name summaries", t, func() {
+		// Deleting rows with a streaming buffer doesn't work well, instead
+		// partition the fake table. Use a Sunday to make weekly tests easier
+		testPartition := "2023-02-26"
+
+		// Setup defaults for rdb data
+		rf.timePartition, err = civil.ParseDate(testPartition)
+		if err != nil {
+			t.Fail()
+		}
+		rf.defaultRuntime = (time.Hour * 24).Seconds()
+
+		// Generate the rollups from fake rdb data.
+		if err := createRollupFromResults(ctx, client, testProject, testDataset, fakeChromiumTryRdb, testPartition, []*fakeRdbResult{
+			// All tests exist in the same file but with different component/builder combinations
+			rf.createResult().WithId("test1").WithComponent("Unknown").WithDuration(time.Minute * 1).WithFilename("//dir/name/filename.go"),
+			rf.createResult().WithId("test2").WithComponent("Unknown").WithDuration(time.Minute * 3).WithFilename("Unknown File"),
+			rf.createResult().WithId("test3").WithComponent("Unknown").WithDuration(time.Minute * 7).WithFilename("Unknown File"),
+		}); err != nil {
+			t.Fail()
+		}
+
+		dirResp, err := client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{"Unknown"},
+				Dates:      []string{testPartition},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_RUNTIME,
+				},
+				// "" Should return any file name not in the root "//"
+				ParentIds: []string{""},
+			},
+		)
+		So(err, ShouldBeNil)
+
+		So(len(dirResp.Nodes), ShouldEqual, 1)
+		metric, err := getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_AVG_RUNTIME)
+		So(err, ShouldBeNil)
+		// Only test2 and test3 with "Unknown File" should appear
+		So(metric, ShouldEqual, (time.Minute * 10).Seconds())
+	})
 }
