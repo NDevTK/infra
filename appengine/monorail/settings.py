@@ -334,9 +334,8 @@ else:
     domain_to_default_project = domain_to_default_project_dev
     # Use replicas created when testing the restore procedures on 2021-02-24
     db_replica_prefix = 'replica-2'
-    # Project ID for Chromium in DEV
-    label_freeze_project_ids = set([16])
 
+    label_freeze_project_ids = {16}
     config_freeze_project_ids = {16}
 
   elif app_id == 'monorail-prod':
@@ -347,6 +346,7 @@ else:
     branded_domains = branded_domains_prod
     domain_to_default_project = domain_to_default_project_prod
 
+    label_freeze_project_ids = {16}
     config_freeze_project_ids = {16}
 
 if local_mode:
