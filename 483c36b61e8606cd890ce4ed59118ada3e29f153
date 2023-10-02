@@ -22,6 +22,30 @@
       },
       "revId": "483c36b61e8606cd890ce4ed59118ada3e29f153",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d5a8e8fa_4ee45778",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-10-02T06:11:13Z",
+      "side": 1,
+      "message": "ninja doesn\u0027t update status line for long running steps,\nbut siso updates status lines.",
+      "parentUuid": "c64906d8_bdde69de",
+      "range": {
+        "startLine": 12,
+        "startChar": 45,
+        "endLine": 12,
+        "endChar": 50
+      },
+      "revId": "483c36b61e8606cd890ce4ed59118ada3e29f153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
