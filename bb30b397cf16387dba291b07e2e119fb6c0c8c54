@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a341bfac_f014c58f",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-10-02T05:47:21Z",
+      "side": 1,
+      "message": "Why not return this error?",
+      "range": {
+        "startLine": 83,
+        "startChar": 12,
+        "endLine": 83,
+        "endChar": 17
+      },
+      "revId": "bb30b397cf16387dba291b07e2e119fb6c0c8c54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dcef3baa_8f81c16f",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-10-02T05:47:21Z",
+      "side": 1,
+      "message": "Is it just fine to use Swap here?",
+      "range": {
+        "startLine": 110,
+        "startChar": 17,
+        "endLine": 110,
+        "endChar": 31
+      },
+      "revId": "bb30b397cf16387dba291b07e2e119fb6c0c8c54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0a0df199_a619e1a2",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-10-02T05:47:21Z",
+      "side": 1,
+      "message": "Why not wait for finish of these go routines?",
+      "range": {
+        "startLine": 122,
+        "startChar": 0,
+        "endLine": 124,
+        "endChar": 45
+      },
+      "revId": "bb30b397cf16387dba291b07e2e119fb6c0c8c54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
