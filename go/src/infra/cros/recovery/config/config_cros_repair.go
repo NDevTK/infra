@@ -48,6 +48,7 @@ func crosRepairCriticalActions(skipRepairFailState bool) []string {
 		"Stop if DUT needs replacement",
 		"Firmware validations",
 		"Check if OS on required version for camerabox tablet",
+		"Check audio latency toolkit state",
 		"Login UI is up",
 		"Can list RW VPD Keys",
 		"Verify keys of RW_VPD",
@@ -3365,6 +3366,13 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"camerabox_tablet",
 			},
+		},
+		"Check audio latency toolkit state": {
+			Docs: []string{
+				"Check the state of audio latency toolkit.",
+			},
+			ExecName:               "cros_update_audio_latency_toolkit_state",
+			AllowFailAfterRecovery: true,
 		},
 		"Check if request labstation reboot": {
 			Docs: []string{

@@ -17,8 +17,9 @@ import (
 
 const (
 	// moSysSkuCmd will retrieve the SKU label of the DUT.
-	moSysSkuCmd  = "mosys platform sku"
-	crosIdSkuCmd = "crosid -f SKU"
+	moSysSkuCmd                 = "mosys platform sku"
+	crosIDSkuCmd                = "crosid -f SKU"
+	cmdAudioLatencyToolkitCheck = "lsusb -vv -d 16c0:0483 | grep \"Teensyduino\""
 )
 
 // updateDeviceSKUExec updates device's SKU label if not present in inventory
@@ -32,7 +33,7 @@ func updateDeviceSKUExec(ctx context.Context, info *execs.ExecInfo) error {
 
 	r := info.DefaultRunner()
 	// Try crosid
-	skuLabelOutput, err := r(ctx, time.Minute, crosIdSkuCmd)
+	skuLabelOutput, err := r(ctx, time.Minute, crosIDSkuCmd)
 	if err == nil {
 		log.Debugf(ctx, "Device sku found with crosid.")
 		info.GetChromeos().DeviceSku = skuLabelOutput
@@ -85,8 +86,34 @@ func updateAudioLoopbackLabelExec(ctx context.Context, info *execs.ExecInfo) err
 	return nil
 }
 
+// updateAudioLatencyToolkitStateExec updates the DUT's audio latency toolkit state to the correct state
+// based on the condition as follows:
+// if audio latency toolkit not exists set as not applicable.
+// if lsusb doesn't has audio latency toolkit set as broken.
+// else set as working
+func updateAudioLatencyToolkitStateExec(ctx context.Context, info *execs.ExecInfo) error {
+	if version := info.GetChromeos().GetAudioLatencyToolkit().GetVersion(); version == "" {
+		info.GetChromeos().GetAudioLatencyToolkit().State = tlw.AudioLatencyToolkit_NOT_APPLICABLE
+	} else {
+		log.Debugf(ctx, "Audio Latency Toolkit exists, version: %s", version)
+		cmd := cmdAudioLatencyToolkitCheck
+		res, err := info.DefaultRunner()(ctx, info.GetExecTimeout(), cmd)
+		log.Debugf(ctx, "command \"%s\" shows: %s", cmd, res)
+		if err != nil {
+			log.Debugf(ctx, "command \"%s\" got error: %s", cmd, err)
+			info.GetChromeos().GetAudioLatencyToolkit().State = tlw.AudioLatencyToolkit_BROKEN
+			return errors.Annotate(err, "unable to find audio latency toolkit").Err()
+		} else {
+			info.GetChromeos().GetAudioLatencyToolkit().State = tlw.AudioLatencyToolkit_WORKING
+		}
+	}
+
+	return nil
+}
+
 func init() {
 	execs.Register("cros_update_device_sku", updateDeviceSKUExec)
 	execs.Register("cros_is_audio_loopback_state_working", isAudioLoopBackStateWorkingExec)
 	execs.Register("cros_update_audio_loopback_state_label", updateAudioLoopbackLabelExec)
+	execs.Register("cros_update_audio_latency_toolkit_state", updateAudioLatencyToolkitStateExec)
 }
