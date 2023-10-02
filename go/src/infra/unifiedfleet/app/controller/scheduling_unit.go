@@ -220,6 +220,8 @@ func processSchedulingUnitUpdateMask(ctx context.Context, oldSu *ufspb.Schedulin
 			oldSu.ExposeType = su.GetExposeType()
 		case "wificell":
 			oldSu.Wificell = su.GetWificell()
+		case "carrier":
+			oldSu.Carrier = su.GetCarrier()
 		}
 	}
 	if oldSu.GetPrimaryDut() != "" {
@@ -260,6 +262,7 @@ func validateSchedulingUnitUpdateMask(ctx context.Context, su *ufspb.SchedulingU
 			case "primary-dut":
 			case "expose-type":
 			case "wificell":
+			case "carrier":
 				// Valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "unsupported update mask path %q", path)

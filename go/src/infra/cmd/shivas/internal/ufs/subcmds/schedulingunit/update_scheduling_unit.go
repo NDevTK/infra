@@ -54,6 +54,7 @@ var UpdateSchedulingUnitCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.primaryDut, "primary-dut", "", "set primary dut. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.exposeType, "expose-type", "", "set type of labels to expose. "+cmdhelp.SchedulingUnitExposeTypesHelpText+" "+cmdhelp.ClearFieldHelpText)
 		c.Flags.BoolVar(&c.wificell, "wificell", false, "adding this flag will specify if the scheduling unit is hosted in a wificell.")
+		c.Flags.StringVar(&c.carrier, "carrier", "", "adding this flag will specify a carrier for scheduling units in cellular testbeds. "+cmdhelp.ClearFieldHelpText)
 		return c
 	},
 }
@@ -77,6 +78,7 @@ type updateSchedulingUnit struct {
 	description        string
 	primaryDut         string
 	exposeType         string
+	carrier            string
 	wificell           bool
 }
 
@@ -105,6 +107,7 @@ func (c *updateSchedulingUnit) innerRun(a subcommands.Application, args []string
 		"primary-dut":     "primary-dut",
 		"expose-type":     "expose-type",
 		"wificell":        "wificell",
+		"carrier":         "carrier",
 	})
 	// Check if nothing is being updated. Updating with an empty mask overwrites everything.
 	if len(mask.Paths) == 0 {
@@ -193,6 +196,11 @@ func (c *updateSchedulingUnit) parseArgs(su *ufspb.SchedulingUnit) {
 		su.ExposeType = ufsUtil.ToSchedulingUnitExposeType(c.exposeType)
 	}
 	su.Wificell = c.wificell
+	if c.carrier == utils.ClearFieldValue {
+		su.Carrier = ""
+	} else {
+		su.Carrier = c.carrier
+	}
 }
 
 func (c *updateSchedulingUnit) validateArgs() error {
