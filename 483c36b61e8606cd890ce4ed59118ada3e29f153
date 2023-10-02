@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c64906d8_bdde69de",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-10-02T06:09:52Z",
+      "side": 1,
+      "message": "Hmm, is it difficult to make this have \u0027\\n\u0027 in suffix?\n\nHow does ninja handle this issue?",
+      "range": {
+        "startLine": 12,
+        "startChar": 45,
+        "endLine": 12,
+        "endChar": 50
+      },
+      "revId": "483c36b61e8606cd890ce4ed59118ada3e29f153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
