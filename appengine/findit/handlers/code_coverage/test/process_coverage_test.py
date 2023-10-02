@@ -1342,7 +1342,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': -1}, payload['data']['labels'])
-    self.assertTrue('50%' in payload['data']['message'])
+    self.assertTrue('70%' in payload['data']['message'])
     self.assertTrue('clank' in payload['cohorts_matched'])
     self.assertTrue('clank' in payload['cohorts_violated'])
 
@@ -1773,7 +1773,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': -1}, payload['data']['labels'])
-    self.assertTrue('50%' in payload['data']['message'])
+    self.assertTrue('70%' in payload['data']['message'])
     self.assertTrue('clank' in payload['cohorts_matched'])
     self.assertTrue('clank' in payload['cohorts_violated'])
 
@@ -2223,11 +2223,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             'lines': [{
                 'count': 100,
                 'first': 1,
-                'last': 10,
+                'last': 1,
             }, {
                 'count': 0,
-                'first': 11,
-                'last': 100,
+                'first': 2,
+                'last': 4,
             }],
         }],
         'summaries': None,
@@ -2236,7 +2236,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     mocked_get_validated_data.return_value = coverage_data
     inc_percentages = [
         CoveragePercentage(
-            path='//dir/myfile.java', total_lines=9, covered_lines=1)
+            path='//dir/myfile.java', total_lines=4, covered_lines=1)
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
@@ -2682,7 +2682,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': -1}, payload['data']['labels'])
-    self.assertTrue('50%' in payload['data']['message'])
+    self.assertTrue('70%' in payload['data']['message'])
     self.assertTrue('ios' in payload['cohorts_matched'])
     self.assertTrue('clank' in payload['cohorts_matched'])
     self.assertFalse('ios' in payload['cohorts_violated'])

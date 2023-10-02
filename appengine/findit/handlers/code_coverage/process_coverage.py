@@ -44,9 +44,9 @@ from waterfall import waterfall_config
 # The regex to extract the build id from the url path.
 _BUILD_ID_REGEX = re.compile(r'.*/build/(\d+)$')
 _CHROMIUM_TO_GOOGLER_MAPPING_PATH = '/cr2goog/cr2goog.txt'
-_DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING = 50
+_DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING = 70
 _DEFAULT_RELAX_ABS_COV_THRESHOLD_FOR_BLOCKING = 80
-_DEFAULT_MINIMUM_LINES_OF_CHANGE_FOR_BLOCKING = 10
+_DEFAULT_MINIMUM_LINES_OF_CHANGE_FOR_BLOCKING = 5
 _BUILDBUCKET_HOST = 'cr-buildbucket.appspot.com'
 
 
