@@ -19,6 +19,7 @@ import (
 
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
+	"cloud.google.com/go/storage"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -73,6 +74,26 @@ type computeImagesClient interface {
 	List(ctx context.Context, req *computepb.ListImagesRequest, opts ...gax.CallOption) *compute.ImageIterator
 }
 
+// storageApi contains functions to access GS bucket.
+type storageApi interface {
+	Exists(ctx context.Context, bucket string, object string) bool
+}
+
+// storageClient implements storageApi with real GS client.
+type storageClient struct {
+	c *storage.Client
+}
+
+func (s *storageClient) Exists(ctx context.Context, bucket string, object string) bool {
+	obj := s.c.Bucket(bucket).Object(object)
+	_, err := obj.Attrs(ctx)
+	if err != nil {
+		log.Default().Printf("Error querying image in bucket %s: %v", bucket, err)
+		return false
+	}
+	return true
+}
+
 func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage, error) {
 	buildInfo, err := parseBuildPath(buildPath)
 	if err != nil {
@@ -80,15 +101,26 @@ func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage,
 	}
 	imageName := getImageName(buildInfo, buildPath)
 
-	gceImage := &api.GceImage{
-		Project: project,
-		Name:    imageName,
-		Source:  getGcsImagePath(buildPath),
-	}
-
 	var ctx = context.Background()
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
+
+	gsClient, err := storage.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GS client: %w", err)
+	}
+	sc := &storageClient{c: gsClient}
+
+	gcsImagePath, err := getGcsImagePath(sc, buildPath, ctx)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get GS image path: %w", err)
+	}
+
+	gceImage := &api.GceImage{
+		Project: project,
+		Name:    imageName,
+		Source:  gcsImagePath,
+	}
 
 	client, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
@@ -414,8 +446,20 @@ func getImageLabels(info *buildInfo) map[string]string {
 }
 
 // getGcsImagePath returns the full path of the tarball on GCS.
-func getGcsImagePath(buildPath string) string {
-	return fmt.Sprintf("https://storage.googleapis.com/chromeos-image-archive/%s/chromiumos_test_image_gce.tar.gz", buildPath)
+func getGcsImagePath(s storageApi, buildPath string, ctx context.Context) (string, error) {
+	buckets := []string{
+		"chromeos-image-archive",
+		"staging-chromeos-image-archive",
+	}
+	objPath := fmt.Sprintf("%s/chromiumos_test_image_gce.tar.gz", buildPath)
+
+	for _, bucket := range buckets {
+		if !s.Exists(ctx, bucket, objPath) {
+			continue
+		}
+		return fmt.Sprintf("https://storage.googleapis.com/%s/%s/chromiumos_test_image_gce.tar.gz", bucket, buildPath), nil
+	}
+	return "", fmt.Errorf("could not find source image %s in GS bucket", buildPath)
 }
 
 func parseImageStatus(status string) api.GceImage_Status {

@@ -41,6 +41,14 @@ func (m *mockImageClient) List(ctx context.Context, req *computepb.ListImagesReq
 	return m.listFunc()
 }
 
+type mockStorageClient struct {
+	existsFunc func(bucket string, object string) bool
+}
+
+func (m *mockStorageClient) Exists(ctx context.Context, bucket string, object string) bool {
+	return m.existsFunc(bucket, object)
+}
+
 func TestDescribeImageError(t *testing.T) {
 	imageApi := &cloudsdkImageApi{}
 	client := &mockImageClient{getFunc: func() (*computepb.Image, error) {
@@ -560,6 +568,55 @@ func TestParseImageStatus(t *testing.T) {
 		if expected != actual {
 			t.Errorf("Expected status is %s for %s, but is actual %s", expected, status, actual)
 		}
+	}
+}
+
+func TestGetGcsImagePathExistsNonStaging(t *testing.T) {
+	expected := "https://storage.googleapis.com/chromeos-image-archive/build/chromiumos_test_image_gce.tar.gz"
+
+	client := &mockStorageClient{existsFunc: func(bucket, object string) bool {
+		return bucket == "chromeos-image-archive"
+	}}
+	ctx := context.Background()
+	actual, err := getGcsImagePath(client, "build", ctx)
+
+	if err != nil {
+		t.Errorf("getGcsImagePath() expected nil error, got %v", err)
+	}
+	if actual != expected {
+		t.Errorf("getGcsImagePath() expected %s, got %s", expected, actual)
+	}
+}
+
+func TestGetGcsImagePathExistsStaging(t *testing.T) {
+	expected := "https://storage.googleapis.com/staging-chromeos-image-archive/build/chromiumos_test_image_gce.tar.gz"
+
+	client := &mockStorageClient{existsFunc: func(bucket, object string) bool {
+		return bucket == "staging-chromeos-image-archive"
+	}}
+	ctx := context.Background()
+	actual, err := getGcsImagePath(client, "build", ctx)
+
+	if err != nil {
+		t.Errorf("getGcsImagePath() expected nil error, got %v", err)
+	}
+	if actual != expected {
+		t.Errorf("getGcsImagePath() expected %s, got %s", expected, actual)
+	}
+}
+
+func TestGetGcsImagePathNotExists(t *testing.T) {
+	client := &mockStorageClient{existsFunc: func(bucket, object string) bool {
+		return false
+	}}
+	ctx := context.Background()
+	actual, err := getGcsImagePath(client, "build", ctx)
+
+	if err == nil {
+		t.Errorf("getGcsImagePath() expected error, got nil")
+	}
+	if actual != "" {
+		t.Errorf("getGcsImagePath() expected empty result, got %s", actual)
 	}
 }
 
