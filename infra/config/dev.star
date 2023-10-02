@@ -696,7 +696,7 @@ fakebuild_tree_builder("fake-tree-2-no-bn", 20, 2, "fake-search-no-bn", 2, 10, F
 # Fake builders to make a large cr-buildbucket-dev.cfg to see if it can be
 # handled correctly in Luci-config v2 E2E flow.
 def many_builders():
-    for i in range(0, 40000):
+    for i in range(0, 60000):
         fakebuild_builder(("not-used-%d" % i), 10, 2, 10, True, False, schedule = None)
 
 many_builders()
