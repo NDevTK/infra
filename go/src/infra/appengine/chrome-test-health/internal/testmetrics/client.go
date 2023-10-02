@@ -423,7 +423,7 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 	if req.Filter != "" {
 		for i, filter := range strings.Split(req.Filter, " ") {
 			filterClause += `
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter` + strconv.Itoa(i) + `)`
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter` + strconv.Itoa(i) + `)`
 			filterParameters = append(filterParameters, bigquery.QueryParameter{
 				Name:  "filter" + strconv.Itoa(i),
 				Value: filter,

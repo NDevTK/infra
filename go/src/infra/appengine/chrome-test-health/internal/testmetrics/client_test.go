@@ -111,8 +111,8 @@ WITH base AS (
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter1)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter1)
 	GROUP BY date, test_id
 	ORDER BY test_id ASC
 	LIMIT @page_size OFFSET @page_offset
@@ -186,8 +186,8 @@ WITH base AS (
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
 		AND file_name IN UNNEST(@file_names)
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter1)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter1)
 	GROUP BY date, test_id
 	ORDER BY test_id ASC
 	LIMIT @page_size OFFSET @page_offset
@@ -229,8 +229,8 @@ WITH tests AS (
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter1)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter1)
 	GROUP BY m.date, m.test_id
 ), sorted_day AS (
 	SELECT
@@ -277,8 +277,8 @@ WITH tests AS (
 		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
 	WHERE
 		DATE(date) IN UNNEST(@dates)
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter1)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter1)
 	GROUP BY m.date, m.test_id
 ), sorted_day AS (
 	SELECT
