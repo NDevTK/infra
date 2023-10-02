@@ -224,6 +224,7 @@ builder(
         "builders": [
             "codesearch-gen-chromium-android",
             "codesearch-gen-chromium-chromiumos",
+            "codesearch-gen-chromium-cronet",
             "codesearch-gen-chromium-fuchsia",
             "codesearch-gen-chromium-ios",
             "codesearch-gen-chromium-lacros",
@@ -254,6 +255,24 @@ chromium_genfiles(
         "build_config": "android",
     },
     machine_type = "n1-highmem-8",
+)
+
+chromium_genfiles(
+    short_name = "cronet",
+    name = "codesearch-gen-chromium-cronet",
+    recipe_properties = {
+        # When the is_cronet_build=true argument is added to
+        # the gn args, then only the cronet_package_android
+        # target will be built.
+        "compile_targets": ["all"],
+        "platform": "android",
+        "sync_generated_files": True,
+        "gen_repo_branch": "main",
+        # Generated files will end up in out/android-Debug/gen.
+        "gen_repo_out_dir": "cronet-Debug",
+        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
+        "build_config": "android",
+    },
 )
 
 chromium_genfiles(
