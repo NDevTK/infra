@@ -8,9 +8,11 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -83,7 +85,13 @@ func (ex *CrosTestExecutor) testExecutionCommandExecution(
 	step, ctx := build.StartStep(ctx, "Tests execution")
 	defer func() { step.End(err) }()
 
-	metadata, _ := anypb.New(cmd.TestArgs)
+	var metadata *anypb.Any
+	if cmd.TestArgs != nil {
+		metadata, _ = anypb.New(cmd.TestArgs)
+	} else {
+		metadata, _ = anypb.New(cmd.TastArgs)
+	}
+
 	testReq := &testapi.CrosTestRequest{
 		TestSuites: cmd.TestSuites,
 		Primary:    cmd.PrimaryDevice,
@@ -187,4 +195,38 @@ func (ex *CrosTestExecutor) ExecuteTests(
 	}
 
 	return testResp, nil
+}
+
+func getTastExecutionMetadata(cftTestRequest *skylab_test_runner.CFTTestRequest) (*anypb.Any, error) {
+	var metadata *anypb.Any
+
+	if len(cftTestRequest.TestSuites) == 0 {
+		return metadata, nil
+	}
+
+	firstTest := cftTestRequest.TestSuites[0].GetTestCaseIds().TestCaseIds[0].Value
+	gcsPath := cftTestRequest.PrimaryDut.ProvisionState.SystemImage.SystemImagePath.Path
+
+	if gcsPath != "" {
+		if !strings.HasSuffix(gcsPath, "/") {
+			gcsPath = gcsPath + "/"
+		}
+
+		if strings.HasPrefix(firstTest, "tast") {
+			arg := &testapi.Arg{
+				Flag:  "buildartifactsurl",
+				Value: gcsPath,
+			}
+			tastExecutionMetadata := &testapi.TastExecutionMetadata{
+				Args: []*testapi.Arg{arg},
+			}
+			metadataAny, err := anypb.New(tastExecutionMetadata)
+			if err != nil {
+				return nil, err
+			}
+			return metadataAny, nil
+		}
+	}
+
+	return nil, nil
 }
