@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ca127c9_dcf394bc",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-10-02T05:57:35Z",
+      "side": 1,
+      "message": "it would not matter for step execution in build.",
+      "parentUuid": "a341bfac_f014c58f",
+      "range": {
+        "startLine": 83,
+        "startChar": 12,
+        "endLine": 83,
+        "endChar": 17
+      },
+      "revId": "bb30b397cf16387dba291b07e2e119fb6c0c8c54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dcef3baa_8f81c16f",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8fff04b_96db4326",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-10-02T05:57:35Z",
+      "side": 1,
+      "message": "either is fine.",
+      "parentUuid": "dcef3baa_8f81c16f",
+      "range": {
+        "startLine": 110,
+        "startChar": 17,
+        "endLine": 110,
+        "endChar": 31
+      },
+      "revId": "bb30b397cf16387dba291b07e2e119fb6c0c8c54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0a0df199_a619e1a2",
@@ -60,6 +108,30 @@
       "writtenOn": "2023-10-02T05:47:21Z",
       "side": 1,
       "message": "Why not wait for finish of these go routines?",
+      "range": {
+        "startLine": 122,
+        "startChar": 0,
+        "endLine": 124,
+        "endChar": 45
+      },
+      "revId": "bb30b397cf16387dba291b07e2e119fb6c0c8c54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6245d0e8_9ca0be9b",
+        "filename": "go/src/infra/build/siso/execute/localexec/localexec.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-10-02T05:57:35Z",
+      "side": 1,
+      "message": "because it will finish by closing pipes.",
+      "parentUuid": "0a0df199_a619e1a2",
       "range": {
         "startLine": 122,
         "startChar": 0,
