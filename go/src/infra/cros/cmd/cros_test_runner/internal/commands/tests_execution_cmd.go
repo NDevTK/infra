@@ -9,9 +9,11 @@ import (
 	"fmt"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
+	"strings"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 )
 
@@ -25,6 +27,7 @@ type TestsExecutionCmd struct {
 	PrimaryDevice    *testapi.CrosTestRequest_Device
 	CompanionDevices []*testapi.CrosTestRequest_Device
 	TestArgs         *testapi.AutotestExecutionMetadata
+	TastArgs         *testapi.TastExecutionMetadata
 
 	// Updates
 	TestResponses      *testapi.CrosTestResponse
@@ -84,6 +87,7 @@ func (cmd *TestsExecutionCmd) extractDepsFromHwTestStateKeeper(
 	}
 	cmd.TestSuites = sk.CftTestRequest.GetTestSuites()
 	cmd.TestArgs = sk.TestArgs
+	cmd.TastArgs, _ = getTastExecutionMetadata(sk.CftTestRequest)
 
 	if sk.DutTopology == nil || sk.DutTopology.GetDuts() == nil || len(sk.DutTopology.GetDuts()) == 0 {
 		return fmt.Errorf("Cmd %q missing dependency: PrimaryDevice", cmd.GetCommandType())
@@ -113,6 +117,36 @@ func (cmd *TestsExecutionCmd) updateHwTestStateKeeper(
 		sk.CpconPublishSrcDir = cmd.CpconPublishSrcDir
 	}
 	return nil
+}
+
+func getTastExecutionMetadata(cftTestRequest *skylab_test_runner.CFTTestRequest) (*testapi.TastExecutionMetadata, error) {
+
+	if len(cftTestRequest.GetTestSuites()) == 0 || len(cftTestRequest.GetTestSuites()[0].GetTestCaseIds().GetTestCaseIds()) == 0 {
+		return nil, nil
+	}
+
+	firstTest := cftTestRequest.GetTestSuites()[0].GetTestCaseIds().GetTestCaseIds()[0].Value
+	gcsPath := cftTestRequest.GetPrimaryDut().GetProvisionState().GetSystemImage().GetSystemImagePath().GetPath()
+
+	if gcsPath != "" {
+		if !strings.HasSuffix(gcsPath, "/") {
+			gcsPath = gcsPath + "/"
+		}
+
+		if strings.HasPrefix(firstTest, "tast") {
+			arg := &testapi.Arg{
+				Flag:  "buildartifactsurl",
+				Value: gcsPath,
+			}
+			tastExecutionMetadata := &testapi.TastExecutionMetadata{
+				Args: []*testapi.Arg{arg},
+			}
+
+			return tastExecutionMetadata, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func NewTestsExecutionCmd(executor interfaces.ExecutorInterface) *TestsExecutionCmd {
