@@ -54,6 +54,7 @@ var targetOverrideModels = map[string]string{
 // based on models are not sufficient for them.
 var targetOverridebyHwid = map[string]string{
 	// Nissa board.
+	"JOXER-ZELG B3B-C3A-Q6B-I2C-C9Y-A9N":  "joxer_ufs",
 	"NIRWEN-ZZCR B2B-B2A-B2A-W7H":         "nivviks_ufs",
 	"NEREID-ZZCR A4B-B2C-E3E-F2A-A2B-48T": "nereid_hdmi",
 	"YAVIKS-BVSW B3B-A2C-B2A-Q6W-I3T":     "yaviks_ufs",
