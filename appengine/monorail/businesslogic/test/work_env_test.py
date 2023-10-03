@@ -6827,6 +6827,7 @@ class WorkEnvTest(unittest.TestCase):
       with self.work_env as we:
         we.GetHotlistStarCount(None)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGetHotlistStarCount_NoSuchHotlist(self):
     with self.assertRaises(features_svc.NoSuchHotlistException):
       with self.work_env as we:

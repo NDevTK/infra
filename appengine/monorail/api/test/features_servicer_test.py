@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import pytest
 import unittest
 try:
   from mox3 import mox
@@ -406,6 +407,7 @@ class FeaturesServicerTest(unittest.TestCase):
 
     self.assertEqual(0, len(response.hotlists))
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testListHotlistsByIssue_NonProjectHotlists(self):
     hotlist = self.services.features.CreateHotlist(
         self.cnxn,
