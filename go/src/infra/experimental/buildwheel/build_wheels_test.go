@@ -40,7 +40,9 @@ func expectedFinalBuildPb(status bbpb.Status, fakeTime *timestamppb.Timestamp) (
 		EndTime:   fakeTime,
 		Status:    status,
 		Input:     &bbpb.Build_Input{},
-		Output:    &bbpb.Build_Output{},
+		Output: &bbpb.Build_Output{
+			Status: status,
+		},
 		Steps: []*bbpb.Step{
 			{
 				Name:      "dockerbuild",
