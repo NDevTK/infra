@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e77ae6ea_19df203b",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/tests_execution_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1557583
+      },
+      "writtenOn": "2023-10-03T00:03:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "33b68d12_c74cea1c",
+      "range": {
+        "startLine": 124,
+        "startChar": 23,
+        "endLine": 124,
+        "endChar": 33
+      },
+      "revId": "3d1cbc2417fe5e8349aaa75d2e8f750acbbe458e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3e970f09_90000d1f",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-10-02T23:53:02Z",
       "side": 1,
       "message": "len of this should also be checked on line 124 (I should have done the same in recipes; add there as well if possible)",
+      "range": {
+        "startLine": 128,
+        "startChar": 60,
+        "endLine": 128,
+        "endChar": 74
+      },
+      "revId": "3d1cbc2417fe5e8349aaa75d2e8f750acbbe458e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "08f06321_e88953d9",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/tests_execution_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1557583
+      },
+      "writtenOn": "2023-10-03T00:03:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3e970f09_90000d1f",
       "range": {
         "startLine": 128,
         "startChar": 60,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b97a3e8b_332f8b00",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/tests_execution_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1557583
+      },
+      "writtenOn": "2023-10-03T00:03:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bce5fa41_845ee3f7",
+      "range": {
+        "startLine": 128,
+        "startChar": 1,
+        "endLine": 129,
+        "endChar": 85
+      },
+      "revId": "3d1cbc2417fe5e8349aaa75d2e8f750acbbe458e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "836d61f8_2d3e00de",
@@ -83,6 +155,30 @@
       "writtenOn": "2023-10-02T23:53:02Z",
       "side": 1,
       "message": "Why do we need this here?",
+      "range": {
+        "startLine": 200,
+        "startChar": 0,
+        "endLine": 232,
+        "endChar": 1
+      },
+      "revId": "3d1cbc2417fe5e8349aaa75d2e8f750acbbe458e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee2f6d50_02fc1079",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/executors/cros_test_executor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1557583
+      },
+      "writtenOn": "2023-10-03T00:03:03Z",
+      "side": 1,
+      "message": "Cleaned",
+      "parentUuid": "836d61f8_2d3e00de",
       "range": {
         "startLine": 200,
         "startChar": 0,
