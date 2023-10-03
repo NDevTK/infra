@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2afc7f0d_43077a84",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1383774
+      },
+      "writtenOn": "2023-10-03T07:30:12Z",
+      "side": 1,
+      "message": "Done\n\nRun `make tress` in go/src/infra/cros/recovery`. Please let me know if I should run it in other directories.",
+      "parentUuid": "ea19f4a2_3bd5ea44",
+      "revId": "7f104507095803616eb6e02b1a2d8db2660889ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9addf16b_0ef8f5ea",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-09-20T19:00:54Z",
       "side": 1,
       "message": "IMO best to get rid of \"(host)\" / \"(internal)\" part of this comment entirely, I don\u0027t think it adds any value or clarity.  (Also, it\u0027s not clear at all that it\u0027s meant as a flashrom programmer name.)",
+      "revId": "7f104507095803616eb6e02b1a2d8db2660889ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ba84bde_a873c4cb",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/firmware/firmware_updater.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1383774
+      },
+      "writtenOn": "2023-10-03T07:30:12Z",
+      "side": 1,
+      "message": "Thanks for the suggestion. I\u0027ve removed the \"(internal)\" in this comment.\n\nDo you also think that the \"host\" in the map key \"Disable software-controlled write-protect for \u0027host\u0027\" is also confusing?",
+      "parentUuid": "9addf16b_0ef8f5ea",
       "revId": "7f104507095803616eb6e02b1a2d8db2660889ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
