@@ -127,7 +127,7 @@ func runFirmwareUpdaterExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // runDisableWriteProtectExec disables software-controlled write-protect.
 //
-// ChromeOS devices have 'host' and 'ec' FPROMs, provide by 'fprom:ec'.
+// ChromeOS devices have 'internal' and 'ec' FPROMs, provide by 'fprom:ec'.
 func runDisableFPROMWriteProtectExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.NewRunner(info.GetDut().Name)
 	am := info.GetActionArgs(ctx)
