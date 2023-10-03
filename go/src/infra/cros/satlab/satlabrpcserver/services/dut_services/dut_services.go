@@ -13,6 +13,7 @@ import (
 // of the IP address and is connected.
 type Device struct {
 	IP          string
+	MACAddress  string
 	IsConnected bool
 }
 

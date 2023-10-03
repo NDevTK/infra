@@ -34,6 +34,7 @@ service SatlabRpcService {
   rpc list_dut_tasks (ListDutTasksRequest) returns (ListDutTasksResponse);
   rpc list_dut_events (ListDutEventsRequest) returns (ListDutEventsResponse);
   rpc list_enrolled_duts (ListEnrolledDutsRequest) returns (ListEnrolledDutsResponse);
+  rpc list_duts (ListDutsRequest) returns (ListDutsResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -303,7 +304,7 @@ message RunTestResponse {
 // NEXT_TAG = 1
 message ListEnrolledDutsRequest {}
 
-// NEXT_TAG = 7
+// NEXT_TAG = 9
 message Dut {
   string address = 1;
   string name = 2;
@@ -311,9 +312,19 @@ message Dut {
   string board = 4;
   string model = 5;
   repeated string pools = 6;
+  string mac_address = 7;
+  bool is_connected = 8;
 }
 
 // NEXT_TAG = 2
 message ListEnrolledDutsResponse {
+  repeated Dut duts = 1;
+}
+
+// NEXT_TAG = 1
+message ListDutsRequest {}
+
+// NEXT_TAG = 2
+message ListDutsResponse {
   repeated Dut duts = 1;
 }

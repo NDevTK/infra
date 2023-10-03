@@ -33,6 +33,17 @@ func Subtract[T, U any](sliceA []T, sliceB []U, compare func(a T, b U) bool) []T
 	return acc
 }
 
+// Contains check the element is in the given slice.
+func Contains[T comparable](slice []T, elem T) bool {
+	for _, a := range slice {
+		if a == elem {
+			return true
+		}
+	}
+
+	return false
+}
+
 // Collect the iterator, and then use parser function to compose the result type.
 //
 // TODO Maybe we can think a better way to handle parse error.

@@ -974,42 +974,58 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 	}
 }
 
-func shivasTestHelper() executor.IExecCommander {
+func getDUTOutput() []byte {
+	return []byte(`[{
+"name": "satlab-0wgatfqi21498062-jeff137-c",
+"machineLsePrototype": "",
+"hostname": "satlab-0wgatfqi21498062-jeff137-c",
+"chromeosMachineLse": {
+	"deviceLse": {
+        "dut": {
+			"hostname": "satlab-0wgatfqi21498062-jeff137-c",
+			"pools": [
+				"jev-satlab"
+			]
+        }
+	}
+},
+"machines": [
+      "JEFF137-c"
+]}]`)
+}
+
+func getAssetOutput() []byte {
+	return []byte(`[{
+"name": "JEFF137-c",
+"type": "DUT",
+"model": "atlas",
+"info": {
+	"model": "atlas",
+	"buildTarget": "atlas"
+}}]`)
+}
+
+func shivasTestHelper(hasData bool) executor.IExecCommander {
 	return &executor.FakeCommander{
 		FakeFn: func(in *exec.Cmd) ([]byte, error) {
 			if in.Path == "/usr/local/bin/shivas" {
 				for _, arg := range in.Args {
 					if arg == "dut" {
 						// execute a command to get dut
-						return []byte(`[{
-"name": "satlab-0wgatfqi21498062-jeff137-c",
-"machineLsePrototype": "",
-"hostname": "satlab-0wgatfqi21498062-jeff137-c",
-"chromeosMachineLse": {
-"deviceLse": {
-  "dut": {
-    "hostname": "satlab-0wgatfqi21498062-jeff137-c",
-    "pools": [
-        "jev-satlab"
-      ]
-    }
-  }
-},
-"machines": [
-  "JEFF137-c"
-]}]`), nil
+						if hasData {
+							return getDUTOutput(), nil
+						} else {
+							return []byte("[]"), nil
+						}
 					}
 
 					if arg == "asset" {
 						// execute a command to get asset
-						return []byte(`[{
-"name": "JEFF137-c",
-"type": "DUT",
-"model": "atlas",
-"info": {
-  "model": "atlas",
-  "buildTarget": "atlas"
-}}]`), nil
+						if hasData {
+							return getAssetOutput(), nil
+						} else {
+							return []byte("[]"), nil
+						}
 					}
 				}
 			}
@@ -1034,7 +1050,7 @@ func TestListEnrolledDutsShouldSuccess(t *testing.T) {
 	// Create a mock data
 	s := createMockServer(t)
 
-	s.commandExecutor = shivasTestHelper()
+	s.commandExecutor = shivasTestHelper(true)
 	req := &pb.ListEnrolledDutsRequest{}
 	resp, err := s.ListEnrolledDuts(ctx, req)
 
@@ -1085,5 +1101,263 @@ func TestListEnrolledDutsShouldFail(t *testing.T) {
 
 	if resp != nil {
 		t.Errorf("Should get the empty result.")
+	}
+}
+
+func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock data
+	s := createMockServer(t)
+	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
+	}, nil)
+	s.commandExecutor = shivasTestHelper(true)
+
+	req := &pb.ListDutsRequest{}
+	resp, err := s.ListDuts(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: {%v}", err)
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutsResponse{}, pb.Dut{})
+	// Create a expected result
+	expected := &pb.ListDutsResponse{
+		Duts: []*pb.Dut{
+			{
+				Name:        "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:    "satlab-0wgatfqi21498062-jeff137-c",
+				Address:     "192.168.231.222",
+				Pools:       []string{"jev-satlab"},
+				Model:       "atlas",
+				Board:       "atlas",
+				IsConnected: true,
+				MacAddress:  "00:14:3d:14:c4:02",
+			},
+			{
+				Name:        "",
+				Hostname:    "",
+				Address:     "192.168.231.2",
+				Pools:       nil,
+				Model:       "",
+				Board:       "",
+				MacAddress:  "e8:9f:80:83:3d:c8",
+				IsConnected: true,
+			},
+		},
+	}
+
+	sortModelsOpts := cmpopts.SortSlices(
+		func(x, y *pb.Dut) bool {
+			return x.GetAddress() > y.GetAddress()
+		})
+
+	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts, sortModelsOpts); diff != "" {
+		t.Errorf("diff: %v\n", diff)
+	}
+}
+
+func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	// Create a mock data
+
+	s := createMockServer(t)
+	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
+	}, nil)
+	s.commandExecutor = shivasTestHelper(true)
+
+	req := &pb.ListDutsRequest{}
+	resp, err := s.ListDuts(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: {%v}", err)
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutsResponse{}, pb.Dut{})
+
+	// Create a expected result
+	expected := &pb.ListDutsResponse{
+		Duts: []*pb.Dut{
+			{
+				Name:        "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:    "satlab-0wgatfqi21498062-jeff137-c",
+				Address:     "192.168.231.222",
+				Pools:       []string{"jev-satlab"},
+				Model:       "atlas",
+				Board:       "atlas",
+				IsConnected: false,
+				MacAddress:  "00:14:3d:14:c4:02",
+			},
+			{
+				Name:        "",
+				Hostname:    "",
+				Address:     "192.168.231.2",
+				Pools:       nil,
+				Model:       "",
+				Board:       "",
+				MacAddress:  "e8:9f:80:83:3d:c8",
+				IsConnected: false,
+			},
+		},
+	}
+
+	sortModelsOpts := cmpopts.SortSlices(
+		func(x, y *pb.Dut) bool {
+			return x.GetAddress() > y.GetAddress()
+		})
+
+	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts, sortModelsOpts); diff != "" {
+		t.Errorf("diff: %v\n", diff)
+	}
+}
+func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock data
+	s := createMockServer(t)
+	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
+	}, nil)
+	s.commandExecutor = shivasTestHelper(false)
+
+	req := &pb.ListDutsRequest{}
+	resp, err := s.ListDuts(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: {%v}", err)
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutsResponse{}, pb.Dut{})
+
+	// Create a expected result
+	expected := &pb.ListDutsResponse{
+		Duts: []*pb.Dut{
+			{
+				Name:        "",
+				Hostname:    "",
+				Address:     "192.168.231.222",
+				Pools:       nil,
+				Model:       "",
+				Board:       "",
+				IsConnected: true,
+				MacAddress:  "00:14:3d:14:c4:02",
+			},
+			{
+				Name:        "",
+				Hostname:    "",
+				Address:     "192.168.231.2",
+				Pools:       nil,
+				Model:       "",
+				Board:       "",
+				MacAddress:  "e8:9f:80:83:3d:c8",
+				IsConnected: true,
+			},
+		},
+	}
+
+	sortModelsOpts := cmpopts.SortSlices(
+		func(x, y *pb.Dut) bool {
+			return x.GetAddress() > y.GetAddress()
+		})
+
+	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts, sortModelsOpts); diff != "" {
+		t.Errorf("diff: %v\n", diff)
+	}
+}
+func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock data
+	s := createMockServer(t)
+	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
+	}, nil)
+	s.commandExecutor = shivasTestHelper(false)
+
+	req := &pb.ListDutsRequest{}
+	resp, err := s.ListDuts(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: {%v}", err)
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutsResponse{}, pb.Dut{})
+
+	// Create a expected result
+	expected := &pb.ListDutsResponse{
+		Duts: []*pb.Dut{
+			{
+				Name:        "",
+				Hostname:    "",
+				Address:     "192.168.231.222",
+				Pools:       nil,
+				Model:       "",
+				Board:       "",
+				IsConnected: false,
+				MacAddress:  "00:14:3d:14:c4:02",
+			},
+			{
+				Name:        "",
+				Hostname:    "",
+				Address:     "192.168.231.2",
+				Pools:       nil,
+				Model:       "",
+				Board:       "",
+				MacAddress:  "e8:9f:80:83:3d:c8",
+				IsConnected: false,
+			},
+		},
+	}
+
+	sortModelsOpts := cmpopts.SortSlices(
+		func(x, y *pb.Dut) bool {
+			return x.GetAddress() > y.GetAddress()
+		})
+
+	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts, sortModelsOpts); diff != "" {
+		t.Errorf("diff: %v\n", diff)
+	}
+}
+func TestListConnectedDutsShouldFail(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock data
+	s := createMockServer(t)
+	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
+	}, nil)
+	s.commandExecutor = &executor.FakeCommander{
+		Err: errors.New("execute command failed"),
+	}
+
+	req := &pb.ListDutsRequest{}
+	resp, err := s.ListDuts(ctx, req)
+
+	// Assert
+	if err == nil {
+		t.Errorf("should fail")
+	}
+	if resp != nil {
+		t.Errorf("response should be empty, but got %v", resp)
 	}
 }

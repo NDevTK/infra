@@ -41,6 +41,7 @@ const (
 	SatlabRpcService_ListDutTasks_FullMethodName              = "/satlabrpcserver.SatlabRpcService/list_dut_tasks"
 	SatlabRpcService_ListDutEvents_FullMethodName             = "/satlabrpcserver.SatlabRpcService/list_dut_events"
 	SatlabRpcService_ListEnrolledDuts_FullMethodName          = "/satlabrpcserver.SatlabRpcService/list_enrolled_duts"
+	SatlabRpcService_ListDuts_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/list_duts"
 )
 
 // SatlabRpcServiceClient is the client API for SatlabRpcService service.
@@ -68,6 +69,7 @@ type SatlabRpcServiceClient interface {
 	ListDutTasks(ctx context.Context, in *ListDutTasksRequest, opts ...grpc.CallOption) (*ListDutTasksResponse, error)
 	ListDutEvents(ctx context.Context, in *ListDutEventsRequest, opts ...grpc.CallOption) (*ListDutEventsResponse, error)
 	ListEnrolledDuts(ctx context.Context, in *ListEnrolledDutsRequest, opts ...grpc.CallOption) (*ListEnrolledDutsResponse, error)
+	ListDuts(ctx context.Context, in *ListDutsRequest, opts ...grpc.CallOption) (*ListDutsResponse, error)
 }
 
 type satlabRpcServiceClient struct {
@@ -240,6 +242,15 @@ func (c *satlabRpcServiceClient) ListEnrolledDuts(ctx context.Context, in *ListE
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) ListDuts(ctx context.Context, in *ListDutsRequest, opts ...grpc.CallOption) (*ListDutsResponse, error) {
+	out := new(ListDutsResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_ListDuts_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SatlabRpcServiceServer is the server API for SatlabRpcService service.
 // All implementations must embed UnimplementedSatlabRpcServiceServer
 // for forward compatibility
@@ -265,6 +276,7 @@ type SatlabRpcServiceServer interface {
 	ListDutTasks(context.Context, *ListDutTasksRequest) (*ListDutTasksResponse, error)
 	ListDutEvents(context.Context, *ListDutEventsRequest) (*ListDutEventsResponse, error)
 	ListEnrolledDuts(context.Context, *ListEnrolledDutsRequest) (*ListEnrolledDutsResponse, error)
+	ListDuts(context.Context, *ListDutsRequest) (*ListDutsResponse, error)
 	mustEmbedUnimplementedSatlabRpcServiceServer()
 }
 
@@ -325,6 +337,9 @@ func (UnimplementedSatlabRpcServiceServer) ListDutEvents(context.Context, *ListD
 }
 func (UnimplementedSatlabRpcServiceServer) ListEnrolledDuts(context.Context, *ListEnrolledDutsRequest) (*ListEnrolledDutsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListEnrolledDuts not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) ListDuts(context.Context, *ListDutsRequest) (*ListDutsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDuts not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) mustEmbedUnimplementedSatlabRpcServiceServer() {}
 
@@ -663,6 +678,24 @@ func _SatlabRpcService_ListEnrolledDuts_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_ListDuts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDutsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).ListDuts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_ListDuts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).ListDuts(ctx, req.(*ListDutsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SatlabRpcService_ServiceDesc is the grpc.ServiceDesc for SatlabRpcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -741,6 +774,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "list_enrolled_duts",
 			Handler:    _SatlabRpcService_ListEnrolledDuts_Handler,
+		},
+		{
+			MethodName: "list_duts",
+			Handler:    _SatlabRpcService_ListDuts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

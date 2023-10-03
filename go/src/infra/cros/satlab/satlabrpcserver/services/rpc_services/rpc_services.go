@@ -612,8 +612,8 @@ func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListD
 	}, nil
 }
 
-func (s *SatlabRpcServiceServer) ListEnrolledDuts(ctx context.Context, in *pb.ListEnrolledDutsRequest) (*pb.ListEnrolledDutsResponse, error) {
-	satlabID, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, s.commandExecutor)
+func getConnectedDuts(ctx context.Context, executor executor.IExecCommander) ([]*pb.Dut, error) {
+	satlabID, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, executor)
 	if err != nil {
 		return nil, err
 	}
@@ -626,17 +626,17 @@ func (s *SatlabRpcServiceServer) ListEnrolledDuts(ctx context.Context, in *pb.Li
 		Racks: satlabRackFilter,
 	}
 
-	HostMap, err := dns.ReadHostsToHostMap(ctx, s.commandExecutor)
+	HostMap, err := dns.ReadHostsToHostMap(ctx, executor)
 	if err != nil {
 		return nil, err
 	}
 
-	duts, err := d.TriggerRun(ctx, s.commandExecutor)
+	duts, err := d.TriggerRun(ctx, executor)
 	if err != nil {
 		return nil, err
 	}
 
-	assets, err := a.TriggerRun(ctx, s.commandExecutor)
+	assets, err := a.TriggerRun(ctx, executor)
 	if err != nil {
 		return nil, err
 	}
@@ -665,5 +665,52 @@ func (s *SatlabRpcServiceServer) ListEnrolledDuts(ctx context.Context, in *pb.Li
 		res = append(res, e)
 	}
 
-	return &pb.ListEnrolledDutsResponse{Duts: res}, nil
+	return res, nil
+}
+
+func (s *SatlabRpcServiceServer) ListEnrolledDuts(ctx context.Context, in *pb.ListEnrolledDutsRequest) (*pb.ListEnrolledDutsResponse, error) {
+	duts, err := getConnectedDuts(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ListEnrolledDutsResponse{Duts: duts}, nil
+}
+
+func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRequest) (*pb.ListDutsResponse, error) {
+	connectedDevices, err := s.dutService.GetConnectedIPs(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	duts, err := getConnectedDuts(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
+	enrolledIPs := []string{}
+
+	for _, dut := range duts {
+		for _, device := range connectedDevices {
+			if dut.Address == device.IP {
+				dut.IsConnected = device.IsConnected
+				dut.MacAddress = device.MACAddress
+				enrolledIPs = append(enrolledIPs, dut.Address)
+			}
+		}
+	}
+
+	unenrolledDevices := utils.Subtract(connectedDevices, enrolledIPs, func(a dut_services.Device, b string) bool {
+		return a.IP == b
+	})
+
+	for _, device := range unenrolledDevices {
+		duts = append(duts, &pb.Dut{
+			Address:     device.IP,
+			MacAddress:  device.MACAddress,
+			IsConnected: device.IsConnected,
+		})
+	}
+
+	return &pb.ListDutsResponse{Duts: duts}, nil
 }

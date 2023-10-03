@@ -174,7 +174,7 @@ func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd
 
 var subnetSearchRe = regexp.MustCompile(`(?P<IP>192\.168\.231\.[0-9][0-9]*[0-9]*).*`)
 
-func (d *DUTServicesImpl) fetchLeasesFile() ([]string, error) {
+func (d *DUTServicesImpl) fetchLeasesFile() (map[string]string, error) {
 	// List all IPs that we applied.
 	out, err := d.commandExecutor.Exec(exec.Command(
 		paths.DockerPath,
@@ -185,23 +185,25 @@ func (d *DUTServicesImpl) fetchLeasesFile() ([]string, error) {
 	))
 
 	if err != nil {
-		return []string{}, err
+		return nil, err
 	}
 
 	rawData := strings.Split(string(out), "\n")
-	potentialIPs := []string{}
+	ipToMAC := map[string]string{}
 
 	dnsmasqIPIndex := 2
+	dnsmasqMACAddressIndex := 1
 	for _, row := range rawData {
 		fields := strings.Fields(row)
 		// Handle valid data
 		if len(fields) == 5 {
 			IP := fields[dnsmasqIPIndex]
-			potentialIPs = append(potentialIPs, IP)
+			mac := fields[dnsmasqMACAddressIndex]
+			ipToMAC[IP] = mac
 		}
 	}
 
-	return potentialIPs, nil
+	return ipToMAC, nil
 }
 
 func (d *DUTServicesImpl) pingDUTs(ctx context.Context, potentialIPs []string) ([]string, error) {
@@ -239,16 +241,23 @@ func (d *DUTServicesImpl) pingDUTs(ctx context.Context, potentialIPs []string) (
 // and then check the IPs are alive.
 func (d *DUTServicesImpl) GetConnectedIPs(ctx context.Context) ([]Device, error) {
 	// This will list all IPs from a leases file
-	potentialIPs, err := d.fetchLeasesFile()
+	ipToMACMap, err := d.fetchLeasesFile()
 	if err != nil {
 		return []Device{}, err
 	}
 
 	// Try to ping the IPs and get the active IPs
+	potentialIPs := []string{}
+	for IP := range ipToMACMap {
+		potentialIPs = append(potentialIPs, IP)
+	}
 	activeIPs, err := d.pingDUTs(ctx, potentialIPs)
 	if err != nil {
 		return []Device{}, err
 	}
+	inactiveIPs := utils.Subtract(potentialIPs, activeIPs, func(a, b string) bool {
+		return a == b
+	})
 
 	// We need to send a command to make sure ssh connection is avaliable.
 	// Some DUTs can be pingable, but they can't establish the ssh connection.
@@ -256,14 +265,20 @@ func (d *DUTServicesImpl) GetConnectedIPs(ctx context.Context) ([]Device, error)
 
 	result := []Device{}
 	for _, r := range res {
+		macAddress := ipToMACMap[r.IP]
 		if r.Error != nil {
-			result = append(result, Device{IP: r.IP, IsConnected: false})
+			result = append(result, Device{IP: r.IP, IsConnected: false, MACAddress: macAddress})
 		} else {
 			// we check the some DUTs which install the stable image but they can
 			// open the ssh connection.
 			hasTestImage := strings.Contains(strings.ToLower(r.Value), constants.ChromeosTestImageReleaseTrack)
-			result = append(result, Device{IP: r.IP, IsConnected: hasTestImage})
+			result = append(result, Device{IP: r.IP, IsConnected: hasTestImage, MACAddress: macAddress})
 		}
+	}
+
+	for _, r := range inactiveIPs {
+		macAddress := ipToMACMap[r]
+		result = append(result, Device{IP: r, IsConnected: false, MACAddress: macAddress})
 	}
 
 	return result, nil
