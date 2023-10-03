@@ -175,12 +175,12 @@ func updateAssetInfoFromHart(ufsAssetInfo, hartAssetInfo *ufspb.AssetInfo) *ufsp
 		// Update GoogleCodeName if it's changed
 		ufsAssetInfo.GoogleCodeName = hartAssetInfo.GetGoogleCodeName()
 	}
-	if ufsAssetInfo.GetModel() == "" {
+	if ufsAssetInfo.GetModel() == "" && hartAssetInfo.GetModel() != "" {
 		updated = true
 		// Update Model if we don't have it
 		ufsAssetInfo.Model = hartAssetInfo.GetModel()
 	}
-	if ufsAssetInfo.GetBuildTarget() == "" {
+	if ufsAssetInfo.GetBuildTarget() == "" && hartAssetInfo.GetBuildTarget() != "" {
 		updated = true
 		// Update BuildTarget if we don't have it
 		ufsAssetInfo.BuildTarget = hartAssetInfo.GetBuildTarget()
@@ -189,11 +189,6 @@ func updateAssetInfoFromHart(ufsAssetInfo, hartAssetInfo *ufspb.AssetInfo) *ufsp
 		updated = true
 		// Update ReferenceBoard if it's changed
 		ufsAssetInfo.ReferenceBoard = hartAssetInfo.GetReferenceBoard()
-	}
-	if ufsAssetInfo.GetPhase() != hartAssetInfo.GetPhase() {
-		updated = true
-		// Update Phase if it's changed
-		ufsAssetInfo.Phase = hartAssetInfo.GetPhase()
 	}
 	if ufsAssetInfo.GetEthernetMacAddress() != hartAssetInfo.GetEthernetMacAddress() {
 		updated = true
@@ -205,9 +200,9 @@ func updateAssetInfoFromHart(ufsAssetInfo, hartAssetInfo *ufspb.AssetInfo) *ufsp
 		// Update GPN if it's changed
 		ufsAssetInfo.Gpn = hartAssetInfo.GetGpn()
 	}
-	if ufsAssetInfo.GetHwid() != hartAssetInfo.GetHwid() {
+	if ufsAssetInfo.GetHwid() == "" && hartAssetInfo.GetHwid() != "" {
 		updated = true
-		// Update hwid if it's changed
+		// Update hwid if we don't have it
 		ufsAssetInfo.Hwid = hartAssetInfo.GetHwid()
 	}
 	if ufsAssetInfo.GetPhase() != hartAssetInfo.GetPhase() {
@@ -215,7 +210,7 @@ func updateAssetInfoFromHart(ufsAssetInfo, hartAssetInfo *ufspb.AssetInfo) *ufsp
 		// Update phase if it's changed
 		ufsAssetInfo.Phase = hartAssetInfo.GetPhase()
 	}
-	if ufsAssetInfo.GetSku() == "" {
+	if ufsAssetInfo.GetSku() == "" && hartAssetInfo.GetSku() != "" {
 		updated = true
 		// Update sku if we don't have it
 		ufsAssetInfo.Sku = hartAssetInfo.GetSku()
