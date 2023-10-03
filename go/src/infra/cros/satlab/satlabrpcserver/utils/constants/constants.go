@@ -9,7 +9,7 @@ import "time"
 const F64Epsilon = 2.2204460492503131e-16
 
 // SSHKeyPath the path where ssh key
-const SSHKeyPath = "/usr/src/satlab_rpcserver/server/testing_rsa"
+const SSHKeyPath = "/home/moblab/.ssh/testing_rsa"
 
 // SSHUser the username of DUT ssh
 const SSHUser = "root"
