@@ -69,6 +69,24 @@
       "parentUuid": "9addf16b_0ef8f5ea",
       "revId": "7f104507095803616eb6e02b1a2d8db2660889ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a253ca5e_0c18fc0a",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/firmware/firmware_updater.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1291807
+      },
+      "writtenOn": "2023-10-03T18:28:19Z",
+      "side": 1,
+      "message": "Those cases of `\u0027host\u0027` are meant to indicate flashrom programmer names, right?  They should be changed to `\u0027internal\u0027`.  I\u0027ve made a separate comment for that tagged at one of those lines, we can mark this one resolved.",
+      "parentUuid": "5ba84bde_a873c4cb",
+      "revId": "7f104507095803616eb6e02b1a2d8db2660889ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4edf7431_ccbb50a7",
+        "filename": "go/src/infra/cros/recovery/config_trees/browser_repair.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1291807
+      },
+      "writtenOn": "2023-10-03T18:28:19Z",
+      "side": 1,
+      "message": "It looks like these \"name\" values are documenting the flashrom programmer name, in which case they should be changed to `\u0027internal\u0027` as well.",
+      "range": {
+        "startLine": 450,
+        "startChar": 77,
+        "endLine": 450,
+        "endChar": 83
+      },
+      "revId": "b9eedc1049f0f27485df1e47a8ce23eb2ab148a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
