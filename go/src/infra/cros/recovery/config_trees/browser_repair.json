@@ -449,7 +449,7 @@
                     {
                       "name": "Disable software-controlled write-protect for 'host'",
                       "docs": [
-                        "Disable write-protect fprom 'host'."
+                        "Disable write-protect fprom 'internal'."
                       ],
                       "dependencies": [
                         {
@@ -465,7 +465,7 @@
                       ],
                       "exec_name": "cros_disable_fprom_write_protect",
                       "exec_args": [
-                        "fprom:host"
+                        "fprom:internal"
                       ],
                       "timeout": "5m0s",
                       "allow_fail_after_recovery": true,
@@ -700,7 +700,7 @@
                     {
                       "name": "Disable software-controlled write-protect for 'host'",
                       "docs": [
-                        "Disable write-protect fprom 'host'."
+                        "Disable write-protect fprom 'internal'."
                       ],
                       "dependencies": [
                         {
@@ -716,7 +716,7 @@
                       ],
                       "exec_name": "cros_disable_fprom_write_protect",
                       "exec_args": [
-                        "fprom:host"
+                        "fprom:internal"
                       ],
                       "timeout": "5m0s",
                       "allow_fail_after_recovery": true,
