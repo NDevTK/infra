@@ -24,8 +24,8 @@ type FirmwareUpdaterRequest struct {
 	Force bool
 	// Time Specified to run firmware updater.
 	UpdaterTimeout time.Duration
-	// AP (host) firmware image (image.bin). If provided firmware updater will use this
-	// image instead of OS bundled firmware. Cannot be used together with FirmwareArchive.
+	// AP firmware image (image.bin). If provided firmware updater will use this image
+	// instead of OS bundled firmware. Cannot be used together with FirmwareArchive.
 	ApImage string
 	// EC firmware image (i.e, ec.bin). If provided firmware updater will use this image
 	// instead of OS bundled firmware. Cannot be used together with FirmwareArchive.
@@ -87,7 +87,7 @@ func RunFirmwareUpdater(ctx context.Context, req *FirmwareUpdaterRequest, run co
 // DisableWriteProtect disables software-controlled write-protect for both FPROMs, and install the RO firmware
 func DisableWriteProtect(ctx context.Context, run components.Runner, log logger.Logger, timeout time.Duration, fprom string) error {
 	switch fprom {
-	case "host", "ec":
+	case "internal", "ec":
 	default:
 		return errors.Reason("disable write-protect %q: unsupported", fprom).Err()
 	}

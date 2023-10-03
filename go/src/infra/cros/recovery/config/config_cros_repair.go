@@ -2257,14 +2257,14 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Disable software-controlled write-protect for 'host'": {
 			Docs: []string{
-				"Disable write-protect fprom 'host'.",
+				"Disable write-protect fprom 'internal'.",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
 			ExecName: "cros_disable_fprom_write_protect",
 			ExecExtraArgs: []string{
-				"fprom:host",
+				"fprom:internal",
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 300},
 			AllowFailAfterRecovery: true,
