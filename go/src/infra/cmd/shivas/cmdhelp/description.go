@@ -2218,6 +2218,23 @@ shivas add peripheral-wifi -f {fpath.csv}
 shivas replace peripheral-wifi -f {fpath.csv}
 shivas delete peripheral-wifi -f {fpath.csv}
 `
+	// ManagePeripheralAudioLatencyToolkitLongDesc is a long description for
+	// peripheral audio latency toolkit subcommands.
+	ManagePeripheralAudioLatencyToolkitLongDesc string = `Manage peripheral audio latency toolkit associated to a DUT.
+
+This cmd always runs in the OS namespace.
+The command requires specifying an action which is either add or delete.
+Only one Audio Latency Toolkit is allowed per DUT.
+
+Add adds the specified Audio Latency Toolkit to the DUT.
+Delete deletes the Audio Latency Toolkit attached to the DUT.
+
+Examples:
+shivas add peripheral-audio-latency-toolkit -dut {DUT name}
+shivas add peripheral-alt -dut {DUT name}
+shivas delete peripheral-audio-latency-toolkit -dut {DUT name}
+shivas delete peripheral-alt -dut {DUT name}
+`
 
 	// AddDevboardLSELongDesc long description for AddDevboardCmd
 	AddDevboardLSELongDesc string = `Add a devboard LSE.
