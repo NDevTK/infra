@@ -83,7 +83,13 @@ func (ex *CrosTestExecutor) testExecutionCommandExecution(
 	step, ctx := build.StartStep(ctx, "Tests execution")
 	defer func() { step.End(err) }()
 
-	metadata, _ := anypb.New(cmd.TestArgs)
+	var metadata *anypb.Any
+	if cmd.TestArgs != nil {
+		metadata, _ = anypb.New(cmd.TestArgs)
+	} else {
+		metadata, _ = anypb.New(cmd.TastArgs)
+	}
+
 	testReq := &testapi.CrosTestRequest{
 		TestSuites: cmd.TestSuites,
 		Primary:    cmd.PrimaryDevice,
