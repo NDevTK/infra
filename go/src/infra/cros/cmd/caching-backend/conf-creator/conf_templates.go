@@ -99,8 +99,6 @@ http {
   }
   server {
     listen *:8082;
-    # TODO(guocb) Remove this after removing provision branch using gs_cache.
-    listen *:8888;
     server_name           gs-cache;
     index  index.html index.htm index.php;
     access_log            /var/log/nginx/gs-cache.access.log main_json;
