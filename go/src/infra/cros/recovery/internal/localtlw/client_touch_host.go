@@ -71,31 +71,7 @@ func callTouchHostd(ctx context.Context, req *tlw.CallTouchHostdRequest, sp ssh.
 	}
 
 	// port forwarding
-	newAddressStr, err := getForwardedAddress(ctx, req.GetResource(), sp)
-	if err != nil {
-		return nil, errors.Annotate(err, "unable to establish port forwarding").Err()
-	}
-	newAddress, newPort, err := addressParser(*newAddressStr)
-	if err != nil {
-		return nil, errors.Annotate(err, "unable to parse address").Err()
-	}
-
-	// prepare the XMLRPC call
-	callTimeout := 30 * time.Second
-	if req.GetTimeout().GetSeconds() > 0 {
-		callTimeout = req.GetTimeout().AsDuration()
-	}
-	client := xmlrpc.New(newAddress, *newPort)
-	val, err := callXMLRpc(ctx, client, callTimeout, req.Method, req.GetArgs())
-	if err != nil {
-		return nil, errors.Annotate(err, "unable to call touchhost with hostname: %s, port %q", newAddress, *newPort).Err()
-	}
-	return val, nil
-}
-
-// getForwardedAddress make port forwarding and return the address of forwarder.
-func getForwardedAddress(ctx context.Context, hostname string, sp ssh.SSHProvider) (*string, error) {
-	host := localproxy.BuildAddr(hostname)
+	host := localproxy.BuildAddr(req.GetResource())
 
 	sc, err := sp.Get(host)
 	if err != nil {
@@ -103,10 +79,8 @@ func getForwardedAddress(ctx context.Context, hostname string, sp ssh.SSHProvide
 	}
 	defer func() {
 		if err := sc.Close(); err != nil {
-			// TODO(b:270462604): Delete the log after finish migration.
 			log.Debugf(ctx, "SSH client closed with error: %s", err)
 		} else {
-			// TODO(b:270462604): Delete the log after finish migration.
 			log.Debugf(ctx, "SSH client closed!")
 		}
 	}()
@@ -116,25 +90,42 @@ func getForwardedAddress(ctx context.Context, hostname string, sp ssh.SSHProvide
 		log.Debugf(ctx, "failed while forwarding: %s", fErr)
 	})
 	if err != nil {
-		return nil, errors.Annotate(err, "call touchhost Pi").Err()
+		return nil, errors.Annotate(err, "failed to forward touchhost Pi").Err()
 	}
 	defer f.Close()
 
-	newAddr := f.LocalAddr().String()
-	return &newAddr, nil
+	newAddressStr := f.LocalAddr().String()
+	log.Debugf(ctx, "new address: %s", newAddressStr)
+	newAddress, newPort, err := addressParser(newAddressStr)
+	if err != nil {
+		return nil, errors.Annotate(err, "unable to parse address").Err()
+	}
+	log.Debugf(ctx, "new address after parsed - host: %s , port: %d", newAddress, newPort)
+
+	// prepare the XMLRPC call
+	callTimeout := 30 * time.Second
+	if req.GetTimeout().GetSeconds() > 0 {
+		callTimeout = req.GetTimeout().AsDuration()
+	}
+	client := xmlrpc.New(newAddress, newPort)
+	val, err := callXMLRpc(ctx, client, callTimeout, req.Method, req.GetArgs())
+	if err != nil {
+		return nil, errors.Annotate(err, "call touchhostd").Err()
+	}
+	return val, nil
 }
 
 // addressParser parses address into host and port
-func addressParser(address string) (string, *int, error) {
+func addressParser(address string) (string, int, error) {
 	host, portString, err := net.SplitHostPort(address)
 	if err != nil {
-		return host, nil, errors.Annotate(err, "unable to split address %s", address).Err()
+		return host, 0, errors.Annotate(err, "unable to split address %s", address).Err()
 	}
 	newPort, err := strconv.Atoi(portString)
 	if err != nil {
-		return host, &newPort, errors.Annotate(err, "unable to parse port %s", portString).Err()
+		return host, newPort, errors.Annotate(err, "unable to parse port %s", portString).Err()
 	}
-	return host, &newPort, nil
+	return host, newPort, nil
 }
 
 // callXMLRpc calls xmlrpc service with provided method and arguments.
@@ -147,7 +138,7 @@ func callXMLRpc(ctx context.Context, client *xmlrpc.XMLRpc, timeout time.Duratio
 	call := xmlrpc.NewCallTimeout(timeout, method, iArgs...)
 	val := &xmlrpclib.Value{}
 	if err := client.Run(ctx, call, val); err != nil {
-		return nil, errors.Annotate(err, "unable to call touchhostd %q: %s", client, method).Err()
+		return nil, errors.Annotate(err, "call xmlrpc").Err()
 	}
 	return val, nil
 }
