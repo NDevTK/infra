@@ -9,11 +9,11 @@ import (
 	"os"
 	"time"
 
-	"infra/libs/cipkg"
 	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/stdenv"
 
 	"go.chromium.org/luci/cipd/client/cipd/platform"
+	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
@@ -22,6 +22,8 @@ import (
 func main() {
 	ctx := gologger.StdConfig.Use(context.Background())
 	ctx = logging.SetLevel(ctx, logging.Error)
+
+	actions.NewReexecRegistry().Intercept(ctx)
 
 	app := Application{
 		LoggingLevel:   logging.Error,
@@ -57,10 +59,8 @@ func main() {
 		names = b.SpecLoader.ListAllByFullName()
 	}
 
-	var pkgs []cipkg.Package
 	for _, name := range names {
-		pkg, err := b.Add(ctx, name)
-		if err != nil {
+		if err := b.Load(ctx, name); err != nil {
 			// Only skip a package if it's directly unavailable without checking
 			// inner errors. A package marked as available on the target platform has
 			// any dependency unavailable shouldn't be skipped.
@@ -71,17 +71,18 @@ func main() {
 			logging.WithError(err).Errorf(ctx, "failed to add %s", name)
 			os.Exit(1)
 		}
-		pkgs = append(pkgs, pkg)
 	}
 
-	if err := b.BuildAll(ctx); err != nil {
+	pkgs, err := b.BuildAll(ctx)
+	if err != nil {
 		logging.WithError(err).Errorf(ctx, "failed to build packages")
 		os.Exit(1)
 	}
 
 	for _, pkg := range pkgs {
-		fmt.Println(pkg.Metadata().CacheKey, pkg.Metadata().Version) // (TODO): Upload package here
+		metadata := pkg.Action.Metadata
+		fmt.Println(metadata.Cipd.Name, metadata.Cipd.Version) // (TODO): Upload package here
 	}
 
-	app.Prune(ctx, time.Hour*24, 256)
+	app.PackageManager.Prune(ctx, time.Hour*24, 256)
 }

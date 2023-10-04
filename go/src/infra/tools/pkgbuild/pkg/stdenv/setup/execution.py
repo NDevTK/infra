@@ -1,6 +1,7 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 """General purpose build workflow.
 
 The module is supposed to be executed by stdenv derivation and will assume all
