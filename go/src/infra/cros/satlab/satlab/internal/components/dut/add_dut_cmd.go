@@ -103,20 +103,29 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 		c.rack = "rack"
 	}
 
-	// Check if board/model are provided and stable version not yet created.
-	if c.board != "" && c.model != "" && shouldCreateStableVersion(c.board, c.model) {
-		// Fetch an arbitrary stable version and save locally.
-		moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
-		if err != nil {
-			return errors.Annotate(err, "add dut - satlab new moblab api build client").Err()
+	// If Satlab for Partners user, then stage and write local stable version
+	if site.IsPartner() {
+		// Check if board/model are provided and stable version not yet created.
+		if c.board == "" {
+			return errors.Reason("Please provide -board").Err()
 		}
-		recovery_version, err := stableversion.FindMostStableBuild(ctx, moblabClient, c.board, c.model)
-		if err != nil {
-			return errors.Annotate(err, "add dut - find most stable build").Err()
+		if c.model == "" {
+			return errors.Reason("Please provide -model").Err()
 		}
-		err = stableversion.StageAndWriteLocalStableVersion(ctx, moblabClient, recovery_version)
-		if err != nil {
-			return errors.Annotate(err, "stage and write local stable version").Err()
+		if shouldCreateStableVersion(c.board, c.model) {
+			// Fetch an arbitrary stable version and save locally.
+			moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
+			if err != nil {
+				return errors.Annotate(err, "add dut - satlab new moblab api build client").Err()
+			}
+			recoveryVersion, err := stableversion.FindMostStableBuild(ctx, moblabClient, c.board, c.model)
+			if err != nil {
+				return errors.Annotate(err, "add dut - find most stable build").Err()
+			}
+			err = stableversion.StageAndWriteLocalStableVersion(ctx, moblabClient, recoveryVersion)
+			if err != nil {
+				return errors.Annotate(err, "stage and write local stable version").Err()
+			}
 		}
 	}
 

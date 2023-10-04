@@ -181,6 +181,11 @@ func GetNamespace(namespace string) string {
 
 }
 
+// IsPartner determines if user is internal or external. Returns true if external.
+func IsPartner() bool {
+	return os.Getenv(UFSNamespaceEnv) == "os-partner"
+}
+
 // GetCrosAdmService returns the hostname of the CrOSSkylabAdmin service that is
 // appropriate for the given environment.
 func (f *EnvFlags) GetCrosAdmService() string {

@@ -91,9 +91,6 @@ func (c *setStableVersionRun) Run(a subcommands.Application, args []string, env 
 // InnerRun implements Run using Board/Model or Hostname depending on provided args.
 func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
-	if os.Getenv("UFS_NAMESPACE") == "os-partner" {
-		c.isPartner = true
-	}
 	stableVersion := &models.RecoveryVersion{
 		Board:     c.board,
 		Model:     c.model,
@@ -102,14 +99,14 @@ func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Applic
 		FwImage:   c.fwImage,
 	}
 	// Board Model flow: SFP EXTERNAL USERS ONLY
-	if c.isPartner {
+	if site.IsPartner() {
 		err := c.innerRunBoardModel(ctx, a, args, env, stableVersion)
 		if err != nil {
 			return err
 		}
 	}
 	// Hostname flow: INTERNAL USERS ONLY
-	if !c.isPartner {
+	if !site.IsPartner() {
 		err := c.innerRunHostname(ctx, a, args, env, stableVersion)
 		if err != nil {
 			return err
