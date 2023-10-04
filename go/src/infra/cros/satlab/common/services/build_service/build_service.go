@@ -1,7 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package build_services
+package build_service
 
 import (
 	"context"
@@ -9,10 +9,31 @@ import (
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 )
 
-// IBuildServices is the interface that provide the services
+type BuildVersion struct {
+	Version string
+	Status  BuildStatus
+}
+
+type BuildStatus int
+
+const (
+	AVAILABLE BuildStatus = iota
+	FAILED
+	RUNNING
+	ABORTED
+)
+
+var FromGCSBucketBuildStatusMap = map[moblabapipb.Build_BuildStatus]BuildStatus{
+	moblabapipb.Build_PASS:    AVAILABLE,
+	moblabapipb.Build_FAIL:    FAILED,
+	moblabapipb.Build_RUNNING: RUNNING,
+	moblabapipb.Build_ABORTED: ABORTED,
+}
+
+// IBuildService is the interface that provide the services
 // It should not contain any `Business Logic` here, because it
 // is to mock the interface for testing.
-type IBuildServices interface {
+type IBuildService interface {
 	// ListBuildTargets returns all the board.
 	ListBuildTargets(ctx context.Context) ([]string, error)
 

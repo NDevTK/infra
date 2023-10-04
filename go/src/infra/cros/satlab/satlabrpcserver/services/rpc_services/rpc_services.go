@@ -20,6 +20,7 @@ import (
 	"infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/services"
+	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/collection"
 	e "infra/cros/satlab/common/utils/errors"
@@ -28,7 +29,6 @@ import (
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
-	"infra/cros/satlab/satlabrpcserver/services/build_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
@@ -37,7 +37,7 @@ import (
 type SatlabRpcServiceServer struct {
 	pb.UnimplementedSatlabRpcServiceServer
 	// buildService the connector to `BuildClient`
-	buildService build_services.IBuildServices
+	buildService build_service.IBuildService
 	// bucketService the connector to partner bucket
 	bucketService bucket_services.IBucketServices
 	// dutService the service to connect to DUTs
@@ -51,7 +51,7 @@ type SatlabRpcServiceServer struct {
 }
 
 func New(
-	buildService build_services.IBuildServices,
+	buildService build_service.IBuildService,
 	bucketService bucket_services.IBucketServices,
 	dutService dut_services.IDUTServices,
 	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator,
@@ -193,7 +193,7 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 		return nil, err
 	}
 
-	var remoteBuilds []*build_services.BuildVersion
+	var remoteBuilds []*build_service.BuildVersion
 	// Check the bucket is in asia, if it isn't in asia, we can fetch the builds from `BuildClient`
 	isBucketInAsia, err := s.bucketService.IsBucketInAsia(ctx)
 	if err != nil {
@@ -220,13 +220,13 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 
 	// Filter the remoteBuilds not in the bucketBuilds,
 	// and then mapping the remoteBuilds to response type `BuildItem`
-	for _, build := range collection.Subtract(remoteBuilds, bucketBuilds, func(a *build_services.BuildVersion, b string) bool {
+	for _, build := range collection.Subtract(remoteBuilds, bucketBuilds, func(a *build_service.BuildVersion, b string) bool {
 		return a.Version == b
 	}) {
 		res = append(res, &pb.BuildItem{
 			Value:    build.Version,
 			IsStaged: false,
-			Status:   build_services.ToResponseBuildStatusMap[build.Status],
+			Status:   constants.ToResponseBuildStatusMap[build.Status],
 		})
 	}
 

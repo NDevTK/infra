@@ -13,11 +13,11 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"infra/cros/satlab/common/services"
+	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
-	"infra/cros/satlab/satlabrpcserver/services/build_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/services/rpc_services"
 	m "infra/cros/satlab/satlabrpcserver/utils/monitor"
@@ -48,7 +48,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create a bucket connector %v", err)
 	}
-	buildService, err := build_services.New(ctx)
+	buildService, err := build_service.New(ctx)
 	if err != nil {
 		log.Fatalf("Failed to create a build connector %v", err)
 	}

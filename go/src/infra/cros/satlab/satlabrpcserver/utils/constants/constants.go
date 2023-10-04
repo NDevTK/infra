@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 package constants
 
-import "time"
+import (
+	"time"
+
+	"infra/cros/satlab/common/services/build_service"
+	pb "infra/cros/satlab/satlabrpcserver/proto"
+)
 
 // F64Epsilon Machine epsilon value for f64
 const F64Epsilon = 2.2204460492503131e-16
@@ -45,3 +50,10 @@ const UpdateFirmwareCommand = "/usr/sbin/chromeos-firmwareupdate --mode autoupda
 const CheckDUTIsConnectedCommand = "timeout 2 cat /etc/lsb-release"
 
 const ChromeosTestImageReleaseTrack = "chromeos_release_track=testimage-channel"
+
+var ToResponseBuildStatusMap = map[build_service.BuildStatus]pb.BuildItem_BuildStatus{
+	build_service.AVAILABLE: pb.BuildItem_BUILD_STATUS_PASS,
+	build_service.FAILED:    pb.BuildItem_BUILD_STATUS_FAIL,
+	build_service.RUNNING:   pb.BuildItem_BUILD_STATUS_RUNNING,
+	build_service.ABORTED:   pb.BuildItem_BUILD_STATUS_ABORTED,
+}

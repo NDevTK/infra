@@ -19,13 +19,13 @@ import (
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	"infra/cros/satlab/common/services"
+	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
 	mk "infra/cros/satlab/satlabrpcserver/mocks"
 	"infra/cros/satlab/satlabrpcserver/models"
 	cpu "infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
-	"infra/cros/satlab/satlabrpcserver/services/build_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
@@ -45,7 +45,7 @@ func checkShouldRaiseError(t *testing.T, err error, expectedErr error) {
 
 func createMockServer(t *testing.T) *SatlabRpcServiceServer {
 	// Create a Mock `IBuildService`
-	var mockBuildService = new(mk.MockBuildServices)
+	var mockBuildService = new(build_service.MockBuildService)
 
 	// Create a Mock `IBucketService`
 	var mockBucketService = new(mk.MockBucketServices)
@@ -73,7 +73,7 @@ func TestListBuildTargetsShouldSuccess(t *testing.T) {
 
 	// Setup some data to Mock
 	expected := []string{"zork"}
-	s.buildService.(*mk.MockBuildServices).On("ListBuildTargets", ctx).Return(
+	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return(
 		expected, nil)
 
 	req := &pb.ListBuildTargetsRequest{}
@@ -104,7 +104,7 @@ func TestListBuildTargetsShouldFailWhenMakeARequestToBuildClientFailed(t *testin
 
 	// Setup some data to Mock
 	expectedErr := errors.New("network error")
-	s.buildService.(*mk.MockBuildServices).On("ListBuildTargets", ctx).Return(
+	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return(
 		[]string{}, expectedErr)
 
 	req := &pb.ListBuildTargetsRequest{}
@@ -130,7 +130,7 @@ func TestListMilestonesShouldSuccess(t *testing.T) {
 	board := "zork"
 	model := "dirinboz"
 	expectedMilestones := []string{"114", "113"}
-	s.buildService.(*mk.MockBuildServices).On("ListAvailableMilestones", ctx, board, model).Return(
+	s.buildService.(*build_service.MockBuildService).On("ListAvailableMilestones", ctx, board, model).Return(
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
@@ -185,7 +185,7 @@ func TestListMilestonesShouldSuccessWhenBucketInAsia(t *testing.T) {
 	board := "zork"
 	model := "dirinboz"
 	expectedMilestones := []string{"114", "113"}
-	s.buildService.(*mk.MockBuildServices).On("ListAvailableMilestones", ctx, board, model).Return(
+	s.buildService.(*build_service.MockBuildService).On("ListAvailableMilestones", ctx, board, model).Return(
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
@@ -237,7 +237,7 @@ func TestListMilestonesShouldFailWhenMakeARequestToBucketFailed(t *testing.T) {
 	model := "dirinboz"
 	expectedMilestones := []string{"114", "113"}
 	expectedErr := errors.New("can't make a request")
-	s.buildService.(*mk.MockBuildServices).On("ListAvailableMilestones", ctx, board, model).Return(
+	s.buildService.(*build_service.MockBuildService).On("ListAvailableMilestones", ctx, board, model).Return(
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
@@ -269,7 +269,7 @@ func TestListAccessibleModelShouldSuccess(t *testing.T) {
 	// Setup some data to Mock
 	board := "zork"
 	in := []string{"buildTargets/zork/models/model1", "buildTargets/zork/models/model2", "buildTargets/zork/models/dirinboz"}
-	s.buildService.(*mk.MockBuildServices).On("ListModels", ctx, board).Return(
+	s.buildService.(*build_service.MockBuildService).On("ListModels", ctx, board).Return(
 		in, nil)
 
 	req := &pb.ListAccessibleModelsRequest{
@@ -331,7 +331,7 @@ func TestListAccessibleModelShouldFailWhenMakeARequestToBucketFailed(t *testing.
 	board := "zork"
 	in := []string{"buildTargets/zork/models/model1", "buildTargets/zork/models/model2", "buildTargets/zork/models/dirinboz"}
 	expectedErr := errors.New("can't make a request to bucket")
-	s.buildService.(*mk.MockBuildServices).On("ListModels", ctx, board).Return(
+	s.buildService.(*build_service.MockBuildService).On("ListModels", ctx, board).Return(
 		in, expectedErr)
 
 	req := &pb.ListAccessibleModelsRequest{
@@ -361,20 +361,20 @@ func TestListBuildVersionsShouldSuccess(t *testing.T) {
 		On("GetBuilds", ctx, board, milestone).
 		Return([]string{"14820.8.0"}, nil)
 
-	s.buildService.(*mk.MockBuildServices).
+	s.buildService.(*build_service.MockBuildService).
 		On("ListBuildsForMilestone", ctx, board, model, milestone).
-		Return([]*build_services.BuildVersion{
+		Return([]*build_service.BuildVersion{
 			{
 				Version: "14820.100.0",
-				Status:  build_services.FAILED,
+				Status:  build_service.FAILED,
 			},
 			{
 				Version: "14820.20.0",
-				Status:  build_services.AVAILABLE,
+				Status:  build_service.AVAILABLE,
 			},
 			{
 				Version: "14820.8.0",
-				Status:  build_services.AVAILABLE,
+				Status:  build_service.AVAILABLE,
 			},
 		}, nil)
 
@@ -439,9 +439,9 @@ func TestListBuildVersionsShouldFailWhenMakeARequestToBuildClientFailed(t *testi
 	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		false, nil)
 
-	s.buildService.(*mk.MockBuildServices).
+	s.buildService.(*build_service.MockBuildService).
 		On("ListBuildsForMilestone", ctx, board, model, milestone).
-		Return([]*build_services.BuildVersion{}, expectedErr)
+		Return([]*build_service.BuildVersion{}, expectedErr)
 
 	req := &pb.ListBuildVersionsRequest{Board: board, Model: model, Milestone: milestone}
 
@@ -472,7 +472,7 @@ func TestStageBuildShouldSuccess(t *testing.T) {
 		Path:   "buildTargets/zork/models/dirinboz/builds/1234.0.0/artifacts/chromeos-image-archive",
 	}
 
-	s.buildService.(*mk.MockBuildServices).
+	s.buildService.(*build_service.MockBuildService).
 		On("StageBuild", ctx, board, model, build, bucketName).
 		Return(expectedArtifact, nil)
 
@@ -516,7 +516,7 @@ func TestStageBuildShouldFailWhenMakeARequestToBuildClientFailed(t *testing.T) {
 	}
 	expectedErr := errors.New("can't make a request")
 
-	s.buildService.(*mk.MockBuildServices).
+	s.buildService.(*build_service.MockBuildService).
 		On("StageBuild", ctx, board, model, build, bucketName).
 		Return(expectedArtifact, expectedErr)
 

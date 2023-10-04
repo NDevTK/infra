@@ -1,7 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package build_services
+package build_service
 
 import (
 	"context"
@@ -38,28 +38,28 @@ func ParseBuildArtifactPath(board string, model string, buildVersion string, buc
 	return fmt.Sprintf("buildTargets/%s/models/%s/builds/%s/artifacts/%s", board, model, buildVersion, bucket)
 }
 
-// BuildConnector is an object for connecting the build client.
-type BuildConnector struct {
+// BuildServiceImpl is an object for connecting the build client.
+type BuildServiceImpl struct {
 	// client the `BuildClient`
 	client *moblabapi.BuildClient
 }
 
 // New sets up the `BuildClient` and returns a BuildConnector.
 // The service account is set in the global environment.
-func New(ctx context.Context) (IBuildServices, error) {
+func New(ctx context.Context) (IBuildService, error) {
 	// Set your service account: $ export GOOGLE_APPLICATION_CREDENTIALS="service_account.json"
 	// Client need not be created for each request
 	client, err := moblabapi.NewBuildClient(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return &BuildConnector{
+	return &BuildServiceImpl{
 		client: client,
 	}, nil
 }
 
 // ListBuildTargets returns all the board.
-func (b *BuildConnector) ListBuildTargets(ctx context.Context) ([]string, error) {
+func (b *BuildServiceImpl) ListBuildTargets(ctx context.Context) ([]string, error) {
 	log.Println("Trying to list build targets")
 
 	req := &moblabapipb.ListBuildTargetsRequest{
@@ -84,7 +84,7 @@ func (b *BuildConnector) ListBuildTargets(ctx context.Context) ([]string, error)
 // ListModels returns all models by given board.
 //
 // string board is the board name that we use it as a filter.
-func (b *BuildConnector) ListModels(ctx context.Context, board string) ([]string, error) {
+func (b *BuildServiceImpl) ListModels(ctx context.Context, board string) ([]string, error) {
 	log.Println("Trying to list models")
 
 	parent := ParseBuildTargetsPath(board)
@@ -114,7 +114,7 @@ func (b *BuildConnector) ListModels(ctx context.Context, board string) ([]string
 //
 // string board is the board name that we use it as a filter.
 // string model is the model name that we use it as a filter.
-func (b *BuildConnector) ListAvailableMilestones(ctx context.Context, board string, model string) ([]string, error) {
+func (b *BuildServiceImpl) ListAvailableMilestones(ctx context.Context, board string, model string) ([]string, error) {
 	log.Println("Trying to list available milestones")
 
 	fm := &field_mask.FieldMask{
@@ -152,7 +152,7 @@ func (b *BuildConnector) ListAvailableMilestones(ctx context.Context, board stri
 // FindMostStableBuild find the stable build version by given board.
 //
 // string board is the board name that we use it as a filter.
-func (b *BuildConnector) FindMostStableBuild(ctx context.Context, board string) (string, error) {
+func (b *BuildServiceImpl) FindMostStableBuild(ctx context.Context, board string) (string, error) {
 	buildTarget := ParseBuildTargetsPath(board)
 
 	req := &moblabapipb.FindMostStableBuildRequest{
@@ -178,7 +178,7 @@ func (b *BuildConnector) FindMostStableBuild(ctx context.Context, board string) 
 // string board is the board name that we use it as a filter.
 // string model is the model name that we use it as a filter.
 // int32 milestone is the milestone that we use it as a filter.
-func (b *BuildConnector) ListBuildsForMilestone(
+func (b *BuildServiceImpl) ListBuildsForMilestone(
 	ctx context.Context,
 	board string,
 	model string,
@@ -216,7 +216,7 @@ func (b *BuildConnector) ListBuildsForMilestone(
 // string model is the model name that we use it as a filter.
 // string buildVersion is the build version that we use it as a filter.
 // string bucketName the bucket we need to check the build version is in this bucket.\fc
-func (b *BuildConnector) CheckBuildStageStatus(
+func (b *BuildServiceImpl) CheckBuildStageStatus(
 	ctx context.Context,
 	board string,
 	model string,
@@ -241,7 +241,7 @@ func (b *BuildConnector) CheckBuildStageStatus(
 // string model is the model that we want to stage.
 // string buildVersion is the build version that we want to stage.
 // string bucketName which bucket we want to put the build version in.
-func (b *BuildConnector) StageBuild(ctx context.Context,
+func (b *BuildServiceImpl) StageBuild(ctx context.Context,
 	board string,
 	model string,
 	buildVersion string,
@@ -265,6 +265,6 @@ func (b *BuildConnector) StageBuild(ctx context.Context,
 }
 
 // Close to close the client connection.
-func (b *BuildConnector) Close() error {
+func (b *BuildServiceImpl) Close() error {
 	return b.client.Close()
 }
