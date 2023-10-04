@@ -785,6 +785,13 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 			},
 		},
 	}
+	// TODO(cdelagarza): Remove once plumbing is complete for the translation boolean
+	runViaTrv2 := g.Params.GetRunViaTrv2()
+	shouldTranslate := false
+	if kv["suite"] == "tfc-demo" {
+		runViaTrv2 = true
+		shouldTranslate = true
+	}
 	// TODO(b/220801220): Pass in companion duts info for multi-duts cases.
 	return &skylab_test_runner.CFTTestRequest{
 		Deadline:         deadline,
@@ -800,7 +807,8 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		TestSuites:                   testSuites,
 		DefaultTestExecutionBehavior: g.Params.GetTestExecutionBehavior(),
 		AutotestKeyvals:              kv,
-		RunViaTrv2:                   g.Params.GetRunViaTrv2(),
+		RunViaTrv2:                   runViaTrv2,
 		StepsConfig:                  g.Params.GetTrv2StepsConfig(),
+		TranslateTrv2Request:         shouldTranslate,
 	}, nil
 }
