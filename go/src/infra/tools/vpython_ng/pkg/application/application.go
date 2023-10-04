@@ -14,12 +14,12 @@ import (
 	"strings"
 	"time"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
 	"infra/tools/vpython_ng/pkg/common"
 
 	"go.chromium.org/luci/cipd/client/cipd"
+	"go.chromium.org/luci/cipkg/base/actions"
+	"go.chromium.org/luci/cipkg/base/generators"
+	"go.chromium.org/luci/cipkg/base/workflow"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
@@ -29,8 +29,6 @@ import (
 	vpythonAPI "go.chromium.org/luci/vpython/api/vpython"
 	"go.chromium.org/luci/vpython/python"
 	"go.chromium.org/luci/vpython/spec"
-
-	"github.com/mitchellh/go-homedir"
 )
 
 const (
@@ -85,6 +83,9 @@ type Application struct {
 	// bootstrapping and execute with the local system interpreter.
 	Bypass bool
 
+	// Loglevel is used to configure the default logger set in the context.
+	LogLevel logging.Level
+
 	// Help, if true, displays the usage from both vpython and python
 	Help  bool
 	Usage string
@@ -118,9 +119,6 @@ type Application struct {
 	// empty, uses the bundled python from paths relative to the vpython binary.
 	InterpreterPath string
 
-	// Context used through runtime. By default it will be context.Background.
-	Context context.Context
-
 	Environments []string
 	Arguments    []string
 
@@ -133,44 +131,34 @@ type Application struct {
 	Close func()
 }
 
-func (a *Application) Must(err error) {
-	if err == nil {
-		return
-	}
-	a.Fatal(err)
-}
-
-func (a *Application) Fatal(err error) {
-	logging.Errorf(a.Context, "fatal error: %v", err)
-	os.Exit(1)
-}
-
 // Initialize logger first to make it available for all steps after.
-func (a *Application) Initialize() {
-	if a.Context == nil {
-		a.Context = context.Background()
-	}
-	defaultLogLevel := logging.Error
+func (a *Application) Initialize(ctx context.Context) context.Context {
+	a.LogLevel = logging.Error
 	if os.Getenv(LogTraceENV) != "" {
-		defaultLogLevel = logging.Debug
+		a.LogLevel = logging.Debug
 	}
-	ctx := gologger.StdConfig.Use(a.Context)
-	a.Context = logging.SetLevel(ctx, defaultLogLevel)
 	a.Close = func() {}
+
+	ctx = gologger.StdConfig.Use(ctx)
+	return logging.SetLevel(ctx, a.LogLevel)
 }
 
-func (a *Application) ParseEnvs() (err error) {
+func (a *Application) SetLogLevel(ctx context.Context) context.Context {
+	return logging.SetLevel(ctx, a.LogLevel)
+}
+
+func (a *Application) ParseEnvs(ctx context.Context) (err error) {
 	e := environ.New(a.Environments)
 
 	// Determine our VirtualEnv base directory.
 	if v, ok := e.Lookup(VirtualEnvRootENV); ok {
 		a.VpythonRoot = v
 	} else {
-		hdir, err := homedir.Dir()
+		cdir, err := os.UserCacheDir()
 		if err != nil {
 			return errors.Annotate(err, "failed to get user home directory").Err()
 		}
-		a.VpythonRoot = filepath.Join(hdir, ".vpython-root")
+		a.VpythonRoot = filepath.Join(cdir, ".vpython-root")
 	}
 
 	// Get default spec path
@@ -196,7 +184,7 @@ func (a *Application) ParseEnvs() (err error) {
 	return nil
 }
 
-func (a *Application) ParseArgs() (err error) {
+func (a *Application) ParseArgs(ctx context.Context) (err error) {
 	var fs flag.FlagSet
 	fs.BoolVar(&a.Help, "help", a.Help,
 		"Display help for 'vpython' top-level arguments.")
@@ -214,8 +202,7 @@ func (a *Application) ParseArgs() (err error) {
 			"install: installs the configured virtual environment.\n"+
 			"verify: verifies that a spec and its wheels are valid.")
 
-	logLevel := logging.GetLevel(a.Context)
-	fs.Var(&logLevel, "vpython-log-level",
+	fs.Var(&a.LogLevel, "vpython-log-level",
 		"The logging level. Valid options are: debug, info, warning, error.")
 
 	vpythonArgs, pythonArgs, err := extractFlagsForSet("vpython-", a.Arguments, &fs)
@@ -230,9 +217,6 @@ func (a *Application) ParseArgs() (err error) {
 	if a.CIPDCacheDir == "" {
 		a.CIPDCacheDir = filepath.Join(a.VpythonRoot, "cipd")
 	}
-
-	// Set log level
-	a.Context = logging.SetLevel(a.Context, logLevel)
 
 	if a.PythonCommandLine, err = python.ParseCommandLine(pythonArgs); err != nil {
 		return errors.Annotate(err, "failed to parse python commandline").Err()
@@ -253,9 +237,7 @@ func (a *Application) ParseArgs() (err error) {
 	return nil
 }
 
-func (a *Application) LoadSpec() error {
-	ctx := a.Context
-
+func (a *Application) LoadSpec(ctx context.Context) error {
 	if a.SpecPath != "" {
 		var sp vpythonAPI.Spec
 		if err := spec.Load(a.SpecPath, &sp); err != nil {
@@ -308,9 +290,7 @@ func (a *Application) LoadSpec() error {
 	return nil
 }
 
-func (a *Application) BuildVENV(venv cipkg.Generator) error {
-	ctx := a.Context
-
+func (a *Application) BuildVENV(ctx context.Context, ap *actions.ActionProcessor, venv generators.Generator) error {
 	root := a.VpythonRoot
 	if root == "" {
 		tmp, err := os.MkdirTemp("", "vpython")
@@ -320,71 +300,39 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 		root = tmp
 	}
 
-	pm, err := NewLocalPackageManagerWithStamp(filepath.Join(root, "store"))
+	pm, err := workflow.NewLocalPackageManager(filepath.Join(root, "store"))
 	if err != nil {
 		return errors.Annotate(err, "failed to load storage").Err()
 	}
 
 	// Generate derivations
-	curPlat := utilities.CurrentPlatform()
-	bctx := &cipkg.BuildContext{
-		Platforms: cipkg.Platforms{
-			Build:  curPlat,
-			Host:   curPlat,
-			Target: curPlat,
-		},
-		Packages: pm,
-		Context:  ctx,
+	curPlat := generators.CurrentPlatform()
+	plats := generators.Platforms{
+		Build:  curPlat,
+		Host:   curPlat,
+		Target: curPlat,
 	}
 
-	drv, meta, err := venv.Generate(bctx)
+	b := workflow.NewBuilder(plats, pm, ap)
+	pkg, err := b.Build(ctx, "", venv)
 	if err != nil {
 		return errors.Annotate(err, "failed to generate venv derivation").Err()
 	}
-	pkg := pm.Add(drv, meta)
-
-	// Build derivations
-	b := utilities.NewBuilder(pm)
-	if err := b.Add(pkg); err != nil {
-		return errors.Annotate(err, "failed to add venv to builder").Err()
-	}
-
-	if err := b.BuildAll(func(p cipkg.Package) error {
-		var out strings.Builder
-		// We don't expect to use a temporary directory. So command is executed
-		// in the output directory.
-		cmd := utilities.CommandFromPackage(p)
-		cmd.Stdout = &out
-		cmd.Stderr = &out
-		cmd.Dir = p.Directory()
-		if err := builtins.Execute(ctx, cmd); err != nil {
-			logging.Errorf(ctx, "%s", out.String())
-			return err
-		}
-		return nil
-	}); err != nil {
-		return errors.Annotate(err, "failed to build venv").Err()
-	}
-
-	if err := utilities.IncRefRecursive(pm, pkg); err != nil {
-		return errors.Annotate(err, "failed to refer venv").Err()
-	}
+	workflow.MustIncRefRecursiveRuntime(pkg)
 	a.Close = func() {
-		a.Must(utilities.DecRefRecursive(pm, pkg))
+		workflow.MustDecRefRecursiveRuntime(pkg)
 	}
-
-	a.PythonExecutable = common.PythonVENV(pkg.Directory(), a.PythonExecutable)
 
 	// Prune used packages
 	if a.PruneThreshold > 0 {
 		pm.Prune(ctx, a.PruneThreshold, a.MaxPrunesPerSweep)
 	}
+
+	a.PythonExecutable = common.PythonVENV(pkg.Handler.OutputDirectory(), a.PythonExecutable)
 	return nil
 }
 
-func (a *Application) ExecutePython() error {
-	ctx := a.Context
-
+func (a *Application) ExecutePython(ctx context.Context) error {
 	if a.Bypass {
 		var err error
 		if a.PythonExecutable, err = exec.LookPath(a.PythonExecutable); err != nil {
@@ -416,19 +364,4 @@ func (a *Application) GetExecCommand() *exec.Cmd {
 		Env:  env.Sorted(),
 		Dir:  a.WorkDir,
 	}
-}
-
-// Update the complete.flag under the storage root, which will be treated as a
-// single venv in the old vpython implementation.
-// TODO(fancl): Remove after legacy vpython eliminated.
-func NewLocalPackageManagerWithStamp(path string) (*utilities.LocalPackageManager, error) {
-	pm, err := utilities.NewLocalPackageManager(path)
-	if err != nil {
-		return nil, err
-	}
-	stamp := filepath.Join(path, "complete.flag")
-	if err := filesystem.Touch(stamp, time.Time{}, 0644); err != nil {
-		return nil, errors.Annotate(err, "failed to update legacy complete flag").Err()
-	}
-	return pm, nil
 }

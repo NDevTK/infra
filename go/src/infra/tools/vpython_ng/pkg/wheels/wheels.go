@@ -6,74 +6,89 @@ package wheels
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
+	"infra/tools/vpython_ng/pkg/common"
 
+	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipd/client/cipd/template"
+	"go.chromium.org/luci/cipkg/base/actions"
+	"go.chromium.org/luci/cipkg/base/generators"
+	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/vpython/api/vpython"
 	"go.chromium.org/luci/vpython/spec"
 	"go.chromium.org/luci/vpython/wheel"
-	"google.golang.org/protobuf/proto"
+
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
-func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error) {
-	raw, err := proto.Marshal(spec)
+type vpythonSpecGenerator struct {
+	spec       *vpython.Spec
+	pep425tags generators.Generator
+}
+
+func (g *vpythonSpecGenerator) Generate(ctx context.Context, plats generators.Platforms) (*core.Action, error) {
+	p, err := g.pep425tags.Generate(ctx, plats)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to marshal vpython spec").Err()
+		return nil, err
 	}
-
-	env := []string{
-		"python_pep425tags={{.python_pep425tags}}",
+	s, err := anypb.New(g.spec)
+	if err != nil {
+		return nil, err
 	}
-
-	return &utilities.BaseGenerator{
-		Name:    "wheels",
-		Builder: "builtin:udf:ensureWheels",
-		Args:    []string{"v1", base64.RawStdEncoding.EncodeToString(raw)},
-		Dependencies: []utilities.BaseDependency{
-			{Type: cipkg.DepsHostTarget, Generator: tags},
-		},
-		Env: env,
+	return &core.Action{
+		Name: "wheels",
+		Deps: []*core.Action{p},
+		Spec: &core.Action_Extension{Extension: s},
 	}, nil
 }
 
-type wheels struct {
-	CIPDCacheDir string
+func FromSpec(spec *vpython.Spec, pep425tags generators.Generator) generators.Generator {
+	return &vpythonSpecGenerator{spec: spec, pep425tags: pep425tags}
 }
 
-func Init(cipdCache string) {
-	w := &wheels{
-		CIPDCacheDir: cipdCache,
+func MustSetTransformer(cipdCacheDir string, ap *actions.ActionProcessor) {
+	v := &vpythonSpecTransformer{
+		cipdCacheDir: cipdCacheDir,
 	}
-	builtins.RegisterUserDefinedFunction("ensureWheels", w.ensureWheels)
+	actions.MustSetTransformer[*vpython.Spec](ap, v.Transform)
 }
 
-func (w *wheels) ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
-	// cmd.Args = ["builtin:udf:ensureWheels", Version, Spec]
+type vpythonSpecTransformer struct {
+	cipdCacheDir string
+}
 
-	// Parse spec file
-	var s vpython.Spec
-	rawSpec, err := base64.RawStdEncoding.DecodeString(cmd.Args[2])
+func (v *vpythonSpecTransformer) Transform(spec *vpython.Spec, deps []actions.Package) (*core.Derivation, error) {
+	drv, err := actions.ReexecDerivation(spec, true)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if err := proto.Unmarshal(rawSpec, &s); err != nil {
-		return err
+	env := environ.New(drv.Env)
+	env.Set(cipd.EnvCacheDir, v.cipdCacheDir)
+	for _, d := range deps {
+		drv.FixedOutput += "+" + d.DerivationID
+		env.Set(d.Action.Name, d.Handler.OutputDirectory())
 	}
+	drv.Env = env.Sorted()
+	return drv, nil
+}
+
+func MustSetExecutor(reexec *actions.ReexecRegistry) {
+	actions.MustSetExecutor[*vpython.Spec](reexec, actionVPythonSpecExecutor)
+}
+
+func actionVPythonSpecExecutor(ctx context.Context, a *vpython.Spec, out string) error {
+	envs := environ.FromCtx(ctx)
 
 	// Parse tags file
 	var tags []*vpython.PEP425Tag
-	tagsDir := builtins.GetEnv("python_pep425tags", cmd.Env)
+	tagsDir := envs.Get("python_pep425tags")
 	raw, err := os.Open(filepath.Join(tagsDir, "pep425tags.json"))
 	if err != nil {
 		return err
@@ -84,7 +99,7 @@ func (w *wheels) ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 	}
 
 	// Remove unmatched wheels from spec
-	if err := spec.NormalizeSpec(&s, tags); err != nil {
+	if err := spec.NormalizeSpec(a, tags); err != nil {
 		return err
 	}
 
@@ -99,7 +114,7 @@ func (w *wheels) ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 	}
 
 	// Translates packages' name in spec into a CIPD ensure file.
-	ef, err := ensureFileFromWheels(expander, s.Wheel)
+	ef, err := ensureFileFromWheels(expander, a.Wheel)
 	if err != nil {
 		return err
 	}
@@ -108,21 +123,15 @@ func (w *wheels) ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 		return err
 	}
 
-	// Construct CIPD command and execute
-	export := builtins.CIPDCommand("export", "-cache-dir", w.CIPDCacheDir, "-root", builtins.GetEnv("out", cmd.Env), "-ensure-file", "-")
-	export.Env = os.Environ() // Pass host environment variables to cipd.
-	export.Dir = cmd.Dir
-	export.Stdin = strings.NewReader(efs.String())
-	export.Stdout = cmd.Stdout
-	export.Stderr = cmd.Stderr
-
-	if err := export.Run(); err != nil {
-		return errors.Annotate(err, "failed to export packages").Err()
+	// Execute cipd export
+	if err := actions.ActionCIPDExportExecutor(ctx, &core.ActionCIPDExport{
+		EnsureFile: efs.String(),
+		Env:        envs.Sorted(),
+	}, out); err != nil {
+		return err
 	}
 
 	// Generate requirements.txt
-	out := builtins.GetEnv("out", cmd.Env)
-
 	wheels := filepath.Join(out, "wheels")
 	ws, err := wheel.ScanDir(wheels)
 	if err != nil {
@@ -183,7 +192,7 @@ func Verify(spec *vpython.Spec) error {
 			return err
 		}
 
-		cmd := builtins.CIPDCommand("ensure-file-verify", "-ensure-file", "-")
+		cmd := common.CIPDCommand("ensure-file-verify", "-ensure-file", "-")
 		cmd.Stdin = strings.NewReader(efs.String())
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr

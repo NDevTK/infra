@@ -5,30 +5,30 @@
 package python
 
 import (
-	_ "embed"
+	"embed"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"runtime"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
 	"infra/tools/vpython_ng/pkg/common"
 
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
+	"go.chromium.org/luci/cipkg/base/generators"
+	"go.chromium.org/luci/cipkg/base/workflow"
 	"go.chromium.org/luci/common/errors"
 )
 
 type Environment struct {
 	Executable string
-	CPython    cipkg.Generator
-	Virtualenv cipkg.Generator
+	CPython    generators.Generator
+	Virtualenv generators.Generator
 }
 
-func CPython3FromCIPD(version string) cipkg.Generator {
-	return &builtins.CIPDExport{
+func CPython3FromCIPD(version string) generators.Generator {
+	return &generators.CIPDExport{
 		Name: "cpython",
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
@@ -40,8 +40,8 @@ func CPython3FromCIPD(version string) cipkg.Generator {
 	}
 }
 
-func VirtualenvFromCIPD(version string) cipkg.Generator {
-	return &builtins.CIPDExport{
+func VirtualenvFromCIPD(version string) generators.Generator {
+	return &generators.CIPDExport{
 		Name: "virtualenv",
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
@@ -53,50 +53,55 @@ func VirtualenvFromCIPD(version string) cipkg.Generator {
 	}
 }
 
-//go:embed pep425tags.py
-var pythonPep425TagsScript string
+//go:embed bootstrap.py pep425tags.py
+var bootstrapEmbed embed.FS
+var bootstrapGen = generators.InitEmbeddedFS("bootstrap", bootstrapEmbed)
 
-func (e *Environment) Pep425Tags() cipkg.Generator {
+func (e *Environment) Pep425Tags() generators.Generator {
 	// Generate an empty virtual environment to probe the pep425tags
-	empty := &utilities.BaseGenerator{
-		Name:    "python_venv",
-		Builder: common.Python("{{.cpython}}", e.Executable),
-		Args:    []string{"-c", pythonVenvBootstrapScript},
-		Dependencies: []utilities.BaseDependency{
-			{Type: cipkg.DepsHostTarget, Generator: e.CPython, Runtime: true},
-			{Type: cipkg.DepsHostTarget, Generator: e.Virtualenv},
+	empty := &workflow.Generator{
+		Name: "python_venv",
+		Args: []string{
+			common.Python("{{.cpython}}", e.Executable),
+			filepath.Join("{{.bootstrap}}", "bootstrap.py"),
+		},
+		Dependencies: []generators.Dependency{
+			{Type: generators.DepsHostTarget, Generator: e.CPython, Runtime: true},
+			{Type: generators.DepsHostTarget, Generator: e.Virtualenv},
+			{Type: generators.DepsHostTarget, Generator: bootstrapGen},
 		},
 	}
-	return &utilities.BaseGenerator{
-		Name:    "python_pep425tags",
-		Builder: common.PythonVENV("{{.python_venv}}", e.Executable),
-		Args:    []string{"-c", pythonPep425TagsScript},
-		Dependencies: []utilities.BaseDependency{
-			{Type: cipkg.DepsHostTarget, Generator: empty},
+	return &workflow.Generator{
+		Name: "python_pep425tags",
+		Args: []string{
+			common.PythonVENV("{{.python_venv}}", e.Executable),
+			filepath.Join("{{.bootstrap}}", "pep425tags.py"),
 		},
-	}
-}
-
-//go:embed bootstrap.py
-var pythonVenvBootstrapScript string
-
-func (e *Environment) WithWheels(wheels cipkg.Generator) cipkg.Generator {
-	return &utilities.BaseGenerator{
-		Name:    "python_venv",
-		Builder: common.Python("{{.cpython}}", e.Executable),
-		Args:    []string{"-c", pythonVenvBootstrapScript},
-		Dependencies: []utilities.BaseDependency{
-			{Type: cipkg.DepsHostTarget, Generator: e.CPython, Runtime: true},
-			{Type: cipkg.DepsHostTarget, Generator: e.Virtualenv},
-			{Type: cipkg.DepsHostTarget, Generator: wheels},
-		},
-		Env: []string{
-			"wheels={{.wheels}}",
+		Dependencies: []generators.Dependency{
+			{Type: generators.DepsHostTarget, Generator: empty},
+			{Type: generators.DepsHostTarget, Generator: bootstrapGen},
 		},
 	}
 }
 
-func CPythonFromPath(dir, cipdName string) (cipkg.Generator, error) {
+func (e *Environment) WithWheels(wheels generators.Generator) generators.Generator {
+	return &workflow.Generator{
+		Name: "python_venv",
+		Args: []string{
+			common.Python("{{.cpython}}", e.Executable),
+			"-BssE",
+			filepath.Join("{{.bootstrap}}", "bootstrap.py"),
+		},
+		Dependencies: []generators.Dependency{
+			{Type: generators.DepsHostTarget, Generator: e.CPython, Runtime: true},
+			{Type: generators.DepsHostTarget, Generator: e.Virtualenv},
+			{Type: generators.DepsHostTarget, Generator: wheels},
+			{Type: generators.DepsHostTarget, Generator: bootstrapGen},
+		},
+	}
+}
+
+func CPythonFromPath(dir, cipdName string) (generators.Generator, error) {
 	cpythonDir := dir
 	if !filepath.IsAbs(dir) {
 		path, err := os.Executable()
@@ -120,9 +125,10 @@ func CPythonFromPath(dir, cipdName string) (cipkg.Generator, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read version file").Err()
 	}
-	return &builtins.CopyFiles{
-		Name:    "cpython",
-		Files:   os.DirFS(cpythonDir),
-		Version: string(version),
+	return &generators.ImportTargets{
+		Name: "cpython",
+		Targets: map[string]generators.ImportTarget{
+			".": {Source: cpythonDir, Version: string(version), Mode: fs.ModeDir, FollowSymlinks: true},
+		},
 	}, nil
 }

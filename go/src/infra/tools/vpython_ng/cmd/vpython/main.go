@@ -5,8 +5,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -16,6 +18,7 @@ import (
 	"infra/tools/vpython_ng/pkg/python"
 	"infra/tools/vpython_ng/pkg/wheels"
 
+	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/common/errors"
 )
 
@@ -65,10 +68,13 @@ func DefaultPythonVersion() string {
 	}
 }
 
-func main() {
-	rt := GetPythonRuntime(DefaultPythonVersion())
+func Main(ctx context.Context) error {
+	reexecRegistry := actions.NewReexecRegistry()
+	wheels.MustSetExecutor(reexecRegistry)
+	reexecRegistry.Intercept(ctx)
 
-	app := application.Application{
+	rt := GetPythonRuntime(DefaultPythonVersion())
+	app := &application.Application{
 		PruneThreshold:    7 * 24 * time.Hour, // One week.
 		MaxPrunesPerSweep: 3,
 
@@ -77,32 +83,39 @@ func main() {
 		Environments: os.Environ(),
 		Arguments:    os.Args[1:],
 	}
-	app.Initialize()
+	ctx = app.Initialize(ctx)
+	if err := app.ParseEnvs(ctx); err != nil {
+		return err
+	}
+	if err := app.ParseArgs(ctx); err != nil {
+		return err
+	}
+	ctx = app.SetLogLevel(ctx)
 
-	app.Must(app.ParseEnvs())
-	app.Must(app.ParseArgs())
-
-	wheels.Init(app.CIPDCacheDir)
+	actionProcessor := actions.NewActionProcessor()
+	wheels.MustSetTransformer(app.CIPDCacheDir, actionProcessor)
 
 	if app.Bypass {
 		// no-op for tool mode if we are bypassing vpython
 		if app.ToolMode != "" {
-			return
+			return nil
 		}
 		app.PythonExecutable = rt.Executable
-		app.Must(app.ExecutePython())
-		return
+		return app.ExecutePython(ctx)
 	}
 
-	app.Must(app.LoadSpec())
+	if err := app.LoadSpec(ctx); err != nil {
+		return err
+	}
 
 	// Update the Python Runtime based on vpython spec, if specified.
 	if v := app.VpythonSpec.PythonVersion; v != "" {
 		if strings.HasPrefix(rt.Version, "3.") && strings.HasPrefix(v, "2.") {
-			app.Fatal(errors.Reason("Python2 specs must be explicitly executed using 'vpython'.").Err())
+			return errors.Reason("Python2 specs must be explicitly executed using 'vpython'.").Err()
 		}
 		rt = GetPythonRuntime(v)
 	}
+	app.PythonExecutable = rt.Executable
 
 	bundle := common.DefaultBundleDir(rt.Version)
 	if app.InterpreterPath != "" {
@@ -110,40 +123,49 @@ func main() {
 	}
 	cpython, err := python.CPythonFromPath(bundle, rt.CIPDName)
 	if err != nil {
-		app.Fatal(err)
+		return err
 	}
-	app.PythonExecutable = rt.Executable
 
 	env := python.Environment{
-		Executable: rt.Executable,
+		Executable: app.PythonExecutable,
 		CPython:    cpython,
 		Virtualenv: python.VirtualenvFromCIPD(rt.Virtualenv),
 	}
-	wheel, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
-	if err != nil {
-		app.Fatal(err)
-	}
-	venv := env.WithWheels(wheel)
+	venv := env.WithWheels(wheels.FromSpec(app.VpythonSpec, env.Pep425Tags()))
 
 	if !app.Help && app.ToolMode != "" {
-		app.Must(func() error {
-			switch app.ToolMode {
-			case "install":
-				app.PruneThreshold = 0
-				return app.BuildVENV(venv)
-			case "verify":
-				return wheels.Verify(app.VpythonSpec)
-			default:
-				return errors.Reason("unknown -vpython-tool command: %s", app.ToolMode).Err()
-			}
-		}())
-		return
+		switch app.ToolMode {
+		case "install":
+			app.PruneThreshold = 0
+			return app.BuildVENV(ctx, actionProcessor, venv)
+		case "verify":
+			return wheels.Verify(app.VpythonSpec)
+		default:
+			return errors.Reason("unknown -vpython-tool command: %s", app.ToolMode).Err()
+		}
 	}
 
 	if app.Help {
 		// Continue to execute python to print its help message after vpython's.
 		fmt.Println(app.Usage)
 	}
-	app.Must(app.BuildVENV(venv))
-	app.Must(app.ExecutePython())
+	if err := app.BuildVENV(ctx, actionProcessor, venv); err != nil {
+		return err
+	}
+	if err := app.ExecutePython(ctx); err != nil {
+		return err
+	}
+	return errors.New("unreachable")
+}
+
+func main() {
+	ctx := context.Background()
+	if err := Main(ctx); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			os.Exit(exitErr.ExitCode())
+		}
+		os.Exit(1)
+	}
 }

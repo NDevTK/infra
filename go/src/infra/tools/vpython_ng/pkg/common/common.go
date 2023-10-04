@@ -5,6 +5,7 @@
 package common
 
 import (
+	"os/exec"
 	"path/filepath"
 	"runtime"
 )
@@ -31,4 +32,18 @@ func DefaultBundleDir(version string) string {
 		return filepath.Join("..", "Resources", version)
 	}
 	return version
+}
+
+func CIPDCommand(arg ...string) *exec.Cmd {
+	cipd, err := exec.LookPath("cipd")
+	if err != nil {
+		cipd = "cipd"
+	}
+
+	// Use cmd to execute batch file on windows.
+	if filepath.Ext(cipd) == ".bat" {
+		return exec.Command("cmd.exe", append([]string{"/C", cipd}, arg...)...)
+	}
+
+	return exec.Command(cipd, arg...)
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,261 +7,153 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
-	"time"
 
-	"infra/tools/vpython_ng/pkg/application"
-	"infra/tools/vpython_ng/pkg/python"
-	"infra/tools/vpython_ng/pkg/wheels"
+	"infra/tools/vpython_ng/pkg/common"
 
-	cipdClient "go.chromium.org/luci/cipd/client/cipd"
+	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/system/exitcode"
-	"go.chromium.org/luci/common/system/filesystem"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
-	"go.chromium.org/luci/vpython/api/vpython"
-	"go.chromium.org/luci/vpython/cipd"
-	"go.chromium.org/luci/vpython/venv"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func testData(filename string) string {
-	return filepath.Join("..", "..", "testdata", filename)
+const vpythonTestReexec = "_VPYTHON_TEST_REEXEC"
+
+func cpythonEnsureFile() string {
+	s := `
+@Subdir ${prefix}3.8
+infra/3pp/tools/cpython3/${platform} version:2@3.8.10.chromium.25
+@Subdir ${prefix}3.11
+infra/3pp/tools/cpython3/${platform} version:2@3.11.1.chromium.25
+`
+	var prefix string
+	if runtime.GOOS == "darwin" {
+		prefix = "Contents/Resources/"
+	}
+	return strings.ReplaceAll(s, "${prefix}", prefix)
 }
 
-var testStorageDir string
-
-func getPythonEnvironment(ver string) *python.Environment {
-	rt := GetPythonRuntime(ver)
-	return &python.Environment{
-		Executable: "python3",
-		CPython: python.CPython3FromCIPD(map[string]string{
-			"3.8":  "version:2@3.8.10.chromium.24",
-			"3.11": "version:2@3.11.1.chromium.25",
-		}[ver]),
-		Virtualenv: python.VirtualenvFromCIPD(rt.Virtualenv),
+func vpythonPath(root string) string {
+	switch runtime.GOOS {
+	case "windows":
+		return filepath.Join(root, "vpython.exe")
+	case "darwin":
+		return filepath.Join(root, "Contents", "MacOS", "vpython")
+	default:
+		return filepath.Join(root, "vpython")
 	}
 }
 
-func setupApp(app *application.Application) {
-	app.Arguments = append([]string{
-		"-vpython-root",
-		testStorageDir,
-	}, app.Arguments...)
+func setupExecutable(tb testing.TB, root string) {
+	tb.Helper()
 
-	app.Initialize()
+	cmd := common.CIPDCommand("export", "-root", root, "-ensure-file", "-")
+	cmd.Stdin = strings.NewReader(cpythonEnsureFile())
+	if err := cmd.Run(); err != nil {
+		tb.Fatalf("failed to export cpython packages: %v", err)
+	}
 
-	So(app.ParseEnvs(), ShouldBeNil)
-	So(app.ParseArgs(), ShouldBeNil)
-
-	So(app.LoadSpec(), ShouldBeNil)
+	self, err := os.Executable()
+	if err != nil {
+		tb.Fatalf("failed to get self: %v", err)
+	}
+	src, err := os.Open(self)
+	if err != nil {
+		tb.Fatalf("failed to open src: %v", err)
+	}
+	defer src.Close()
+	if err := os.MkdirAll(filepath.Dir(vpythonPath(root)), fs.ModePerm); err != nil {
+		tb.Fatalf("failed to mkdir dst: %v", err)
+	}
+	dst, err := os.Create(vpythonPath(root))
+	if err != nil {
+		tb.Fatalf("failed to open dst: %v", err)
+	}
+	defer dst.Close()
+	if _, err := io.Copy(dst, src); err != nil {
+		tb.Fatalf("failed to copy self: %v", err)
+	}
+	srcInfo, err := src.Stat()
+	if err != nil {
+		tb.Fatalf("failed to stat src: %v", err)
+	}
+	if err := dst.Chmod(srcInfo.Mode()); err != nil {
+		tb.Fatalf("failed to chmod dst: %v", err)
+	}
 }
 
-func cmd(app *application.Application, env *python.Environment) *exec.Cmd {
-	if env == nil {
-		env = getPythonEnvironment(DefaultPythonVersion)
-	}
-	app.PythonExecutable = env.Executable
+func generateSpec(tb testing.TB, dir, ver string) string {
+	tb.Helper()
 
-	setupApp(app)
-
-	wheels, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
+	spec := filepath.Join(dir, "test.vpython")
+	f, err := os.Create(spec)
+	defer f.Close()
 	So(err, ShouldBeNil)
-	venv := env.WithWheels(wheels)
-
-	So(app.BuildVENV(venv), ShouldBeNil)
-
-	// Release all the resources so the temporary vpython root directory can be
-	// removed on Windows.
-	defer app.Close()
-
-	return app.GetExecCommand()
+	_, err = fmt.Fprintf(f, `python_version: "%s"`, ver)
+	So(err, ShouldBeNil)
+	return spec
 }
 
-func output(c *exec.Cmd) interface{} {
-	var out strings.Builder
-	c.Stdout = &out
-	c.Stderr = &out
-	if err := c.Run(); err != nil {
-		return errors.Annotate(err, out.String()).Err()
-	}
-	return strings.TrimSpace(out.String())
+func vpython(root string, arg ...string) *exec.Cmd {
+	arg = append([]string{"-vpython-root", filepath.Join(root, "vpython-root")}, arg...)
+	cmd := exec.Command(vpythonPath(root), arg...)
+	cmd.Env = append(os.Environ(), vpythonTestReexec+"=1")
+	return cmd
 }
 
 func TestMain(m *testing.M) {
-	var err error
-
-	if testStorageDir, err = os.MkdirTemp("", "vpython-test-"); err != nil {
-		panic(err)
-	}
-	defer func() {
-		if err = filesystem.RemoveAll(testStorageDir); err != nil {
+	if os.Getenv(vpythonTestReexec) != "" || os.Getenv("_CIPKG_EXEC_CMD") != "" {
+		if err := os.Unsetenv(vpythonTestReexec); err != nil {
 			panic(err)
 		}
-	}()
+		if err := Main(context.Background()); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
 
-	wheels.Init(filepath.Join(testStorageDir, "cipd"))
-
-	rc := m.Run()
-
-	os.Exit(rc)
+	os.Exit(m.Run())
 }
 
 func TestPythonBasic(t *testing.T) {
-	Convey("Test python basic", t, func() {
-		var env *python.Environment
+	root := t.TempDir()
+	setupExecutable(t, root)
+	if err := os.Setenv(cipd.EnvCacheDir, filepath.Join(root, ".cipd")); err != nil {
+		t.Fatalf("failed setenv %s", err)
+	}
+
+	Convey("main", t, func() {
 		for _, ver := range []string{"3.8", "3.11"} {
-			env = getPythonEnvironment(ver)
-		}
+			spec := generateSpec(t, t.TempDir(), ver)
 
-		Convey("test bad cwd", func() {
-			cwd, err := os.Getwd()
-			So(err, ShouldBeNil)
-			err = os.Chdir(testData("test_bad_cwd"))
-			So(err, ShouldBeNil)
+			Convey(ver, func() {
+				Convey("ok", func() {
+					out, err := vpython(root, "-vpython-spec", spec, "-c", "print(123)").CombinedOutput()
+					So(string(out), ShouldEqualTrimSpace, "123")
+					So(err, ShouldBeNil)
+				})
 
-			c := cmd(&application.Application{
-				Arguments: []string{
-					"bisect.py",
-				},
-			}, env)
-			So(output(c), ShouldEqual, "SUCCESS")
+				Convey("exit code", func() {
+					out, err := vpython(root, "-vpython-spec", spec, "-c", "exit(42)").CombinedOutput()
+					So(string(out), ShouldBeEmpty)
+					var exitErr *exec.ExitError
+					So(errors.As(err, &exitErr), ShouldBeTrue)
+					So(exitErr.ExitCode(), ShouldEqual, 42)
+				})
 
-			err = os.Chdir(cwd)
-			So(err, ShouldBeNil)
-		})
-
-		Convey("Test exit code", func() {
-			c := cmd(&application.Application{
-				Arguments: []string{
-					"-vpython-spec",
-					testData("default.vpython3"),
-					testData("test_exit_code.py"),
-				},
-			}, env)
-
-			err := output(c).(error)
-			rc, has := exitcode.Get(err)
-			So(has, ShouldBeTrue)
-			So(rc, ShouldEqual, 42)
-		})
-	})
-}
-
-func TestPythonFromPath(t *testing.T) {
-	Convey("Test python from path", t, func() {
-		env := getPythonEnvironment(DefaultPythonVersion)
-
-		app := &application.Application{
-			Arguments: []string{
-				"-vpython-spec",
-				testData("default.vpython3"),
-				testData("test_exit_code.py"),
-			},
-			PythonExecutable: env.Executable,
-		}
-		setupApp(app)
-
-		// We are not actually building venv, but this should also work for python
-		// package.
-		err := app.BuildVENV(env.CPython)
-		So(err, ShouldBeNil)
-
-		// Python located at ${CPython}/bin/python3
-		dir := filepath.Dir(filepath.Dir(app.PythonExecutable))
-		py, err := python.CPythonFromPath(dir, "cpython3")
-		So(err, ShouldBeNil)
-		env.CPython = py
-
-		// Run actual command
-		c := cmd(app, env)
-		err = output(c).(error)
-		rc, has := exitcode.Get(err)
-		So(has, ShouldBeTrue)
-		So(rc, ShouldEqual, 42)
-	})
-}
-
-func TestLegacyCache(t *testing.T) {
-	Convey("Test legacy cache", t, func() {
-		// Run new vpython's venv creation
-		c := cmd(&application.Application{
-			Arguments: []string{
-				"-vpython-spec",
-				testData("default.vpython3"),
-				testData("something.py"),
-			},
-		}, nil)
-
-		// Run old vpython's venv creation and trigger prune
-		cfg := venv.Config{
-			BaseDir: testStorageDir,
-			Python:  map[string]string{"3.8": c.Path},
-			Spec: &vpython.Spec{
-				PythonVersion: "3.8",
-				Virtualenv: &vpython.Spec_Package{
-					Name:    "infra/3pp/tools/virtualenv",
-					Version: "version:2@16.7.12.chromium.7",
-				},
-			},
-			Loader: &cipd.PackageLoader{
-				Options: cipdClient.ClientOptions{
-					ServiceURL: chromeinfra.CIPDServiceURL,
-					UserAgent:  fmt.Sprintf("vpython, %s", cipdClient.UserAgent),
-				},
-			},
-			PruneThreshold:    time.Hour,
-			MaxPrunesPerSweep: -1,
-		}
-		var root string
-		err := venv.With(context.Background(), cfg, func(ctx context.Context, env *venv.Env) error {
-			root = env.Root
-			return nil
-		})
-		So(err, ShouldBeNil)
-
-		// Check new vpython cache exist
-		_, err = os.Stat(c.Path)
-		So(err, ShouldBeNil)
-
-		// Run new vpython's venv creation again to trigger prune
-		_ = cmd(&application.Application{
-			PruneThreshold:    time.Hour,
-			MaxPrunesPerSweep: -1,
-			Arguments: []string{
-				"-vpython-spec",
-				testData("default.vpython3"),
-				testData("something.py"),
-			},
-		}, nil)
-
-		// Check old vpython cache exist
-		_, err = os.Stat(root)
-		So(err, ShouldBeNil)
-	})
-}
-
-func BenchmarkStartup(b *testing.B) {
-	Convey("Benchmark startup", b, func() {
-		c := func() *exec.Cmd {
-			return cmd(&application.Application{
-				Arguments: []string{
-					"-vpython-spec",
-					testData("default.vpython3"),
-					"-c",
-					"print(1)",
-				},
-			}, nil)
-		}
-		So(output(c()), ShouldEqual, "1")
-		b.ResetTimer()
-		for n := 0; n < b.N; n++ {
-			_ = c()
+				Convey("help", func() {
+					out, err := vpython(root, "-vpython-spec", spec, "-help").CombinedOutput()
+					So(string(out), ShouldContainSubstring, "Usage of vpython:")
+					So(err, ShouldBeNil)
+				})
+			})
 		}
 	})
 }

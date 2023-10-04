@@ -4,6 +4,7 @@
 package application
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -14,13 +15,15 @@ import (
 
 func TestParseArguments(t *testing.T) {
 	Convey("Test parse arguments", t, func() {
+		ctx := context.Background()
+
 		app := &Application{}
-		app.Initialize()
+		app.Initialize(ctx)
 
 		parseArgs := func(args ...string) error {
 			app.Arguments = args
-			So(app.ParseEnvs(), ShouldBeNil)
-			return app.ParseArgs()
+			So(app.ParseEnvs(ctx), ShouldBeNil)
+			return app.ParseArgs(ctx)
 		}
 
 		Convey("Test log level", func() {
@@ -29,7 +32,8 @@ func TestParseArguments(t *testing.T) {
 				"warning",
 			)
 			So(err, ShouldBeNil)
-			So(logging.GetLevel(app.Context), ShouldEqual, logging.Warning)
+			ctx = app.SetLogLevel(ctx)
+			So(logging.GetLevel(ctx), ShouldEqual, logging.Warning)
 		})
 
 		Convey("Test unknown argument", func() {

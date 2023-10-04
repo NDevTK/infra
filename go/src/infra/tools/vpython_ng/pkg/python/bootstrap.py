@@ -11,9 +11,9 @@ ISOLATION_FLAG = '-I' if sys.version_info[0] > 2 else '-sSE'
 
 # Create virtual environment in ${out} directory
 virtualenv = glob.glob(
-    os.path.join(r'{{.virtualenv}}', '*', 'virtualenv.py*'))[0]
+    os.path.join(os.environ['virtualenv'], '*', 'virtualenv.py*'))[0]
 subprocess.check_call([
-    sys.executable, ISOLATION_FLAG, virtualenv,
+    sys.executable, '-B', ISOLATION_FLAG, virtualenv,
     '--no-download', '--always-copy', os.environ['out']
 ])
 
