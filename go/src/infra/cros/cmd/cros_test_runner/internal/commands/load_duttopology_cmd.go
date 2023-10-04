@@ -12,7 +12,6 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 )
 
 // LoadDutTopologyCmd represents load dut toplogy cmd.
@@ -85,11 +84,6 @@ func (cmd *LoadDutTopologyCmd) updateHwTestStateKeeper(
 		sk.DutTopology = cmd.DutTopology
 		if err := sk.Injectables.Set("dutTopology", sk.DutTopology); err != nil {
 			return fmt.Errorf("Cmd %s failed to set dutTopology in the injectables storage, %s", cmd.GetCommandType(), err)
-		}
-		if len(sk.DutTopology.Duts) > 1 {
-			if err := sk.Injectables.Set("cache-server", sk.DutTopology.Duts[0].GetCacheServer().GetAddress()); err != nil {
-				logging.Infof(ctx, "Warning: cmd %s failed to set cache-server in the injectables storage, %s", cmd.GetCommandType(), err)
-			}
 		}
 	}
 

@@ -12,19 +12,46 @@ import (
 	"infra/cros/cmd/common_lib/common"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
 
 func TestGenerateHwConfigs(t *testing.T) {
 	t.Parallel()
 	Convey("GenerateHwConfigs", t, func() {
 		ctx := context.Background()
-		hwConfigs := GenerateHwConfigs(ctx, nil, false)
+		hwConfigs := GenerateHwConfigs(ctx, nil, nil, false)
 
 		So(hwConfigs, ShouldNotBeNil)
 		So(hwConfigs.MainConfigs, ShouldNotBeNil)
 		So(hwConfigs.CleanupConfigs, ShouldNotBeNil)
 		So(len(hwConfigs.MainConfigs), ShouldBeGreaterThan, 0)
 		So(len(hwConfigs.CleanupConfigs), ShouldBeGreaterThan, 0)
+	})
+
+	Convey("GenerateHwConfigs with CrosTestRunnerRequest", t, func() {
+		ctx := context.Background()
+		req := &skylab_test_runner.CrosTestRunnerRequest{
+			OrderedTasks: []*skylab_test_runner.CrosTestRunnerRequest_Task{
+				{
+					OrderedContainerRequests: []*skylab_test_runner.ContainerRequest{
+						{
+							DynamicIdentifier: "container",
+						},
+					},
+					Task: &skylab_test_runner.CrosTestRunnerRequest_Task_Provision{
+						Provision: &skylab_test_runner.ProvisionRequest{},
+					},
+				},
+			},
+		}
+		hwConfigs := GenerateHwConfigs(ctx, nil, req, false)
+
+		So(hwConfigs, ShouldNotBeNil)
+		So(hwConfigs.MainConfigs, ShouldNotBeNil)
+		So(hwConfigs.CleanupConfigs, ShouldNotBeNil)
+		So(len(hwConfigs.MainConfigs), ShouldBeGreaterThan, 0)
+		So(hwConfigs.MainConfigs, ShouldContain, GenericProvision_GenericProvisionExecutor)
+		So(len(hwConfigs.CleanupConfigs), ShouldEqual, 0)
 	})
 
 	Convey("hwConfigsForPlatform for VM", t, func() {

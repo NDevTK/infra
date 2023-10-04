@@ -137,3 +137,9 @@ func LogExecutionDetails(ctx context.Context, step *build.Step, cmds []string) {
 		logging.Infof(ctx, "Failed to create execution details for cmd: %q", cmds)
 	}
 }
+
+func LogWarningIfErr(ctx context.Context, err error) {
+	if err != nil {
+		logging.Infof(ctx, fmt.Sprintf("Warning: %s", err))
+	}
+}

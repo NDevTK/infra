@@ -95,8 +95,11 @@ func GetCmdExecPair(pair_base *common_configs.CommandExecutorPairedConfig, requi
 }
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
-func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, isAndroidProvisionRequired bool) *common_configs.Configs {
+func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *skylab_test_runner.CrosTestRunnerRequest, isAndroidProvisionRequired bool) *common_configs.Configs {
 	platform := common.GetBotProvider()
+	if inputV2 != nil {
+		return hwConfigsForPlatformV2(cftHwStepsConfig, inputV2, platform)
+	}
 	return hwConfigsForPlatform(cftHwStepsConfig, platform, isAndroidProvisionRequired)
 }
 
@@ -248,6 +251,44 @@ func GeneratePreLocalConfigs(ctx context.Context) *common_configs.Configs {
 	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }
 
+// hwConfigsForPlatformV2 generates the command/executor pair configs for the CrosTestRunnerRequest.
+func hwConfigsForPlatformV2(cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *skylab_test_runner.CrosTestRunnerRequest, platform common.SwarmingBotProvider) *common_configs.Configs {
+	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
+	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
+
+	// TODO(cdelagarza): provide check for whether platform is VM and handle how DUTs get loaded.
+
+	mainConfigs = append(mainConfigs,
+		InputValidation_NoExecutor,
+		ParseEnvInfo_NoExecutor)
+
+	if !cftHwStepsConfig.GetSkipLoadingDutTopology() {
+		mainConfigs = append(mainConfigs,
+			InvServiceStart_InvExecutor,
+			LoadDutTopology_InvExecutor,
+			InvServiceStop_InvExecutor,
+			ParseDutTopology_NoExecutor)
+	}
+
+	// Start CTR and gcloud auth commands
+	mainConfigs = append(mainConfigs,
+		CtrStartAsync_CtrExecutor,
+		GcloudAuth_CtrExecutor,
+		ContainerReadLogs_ContainerExecutor)
+
+	// Add task configs
+	mainConfigs = append(mainConfigs, generateTaskConfigs(inputV2).MainConfigs...)
+
+	// Stop CTR and result processing commands
+	mainConfigs = append(mainConfigs,
+		GetCmdExecPair(ContainerCloseLogs_ContainerExecutor, true),
+		GetCmdExecPair(CtrStop_CtrExecutor, true),
+		GetCmdExecPair(UpdateDutState_NoExecutor, true),
+		GetCmdExecPair(ProcessResults_NoExecutor, true))
+
+	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+}
+
 func GenerateLocalConfigs(ctx context.Context, sk *data.LocalTestStateKeeper) *common_configs.Configs {
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{
 		CtrStartAsync_CtrExecutor,
@@ -337,6 +378,7 @@ func generateTaskConfigs(inputV2 *skylab_test_runner.CrosTestRunnerRequest) *com
 		case *skylab_test_runner.CrosTestRunnerRequest_Task_PostTest:
 		case *skylab_test_runner.CrosTestRunnerRequest_Task_Publish:
 			mainConfigs = append(mainConfigs,
+				GetCmdExecPair(GcloudAuth_CtrExecutor, task.Required),
 				GetCmdExecPair(GenericPublish_GenericPublishExecutor, task.Required))
 		default:
 		}

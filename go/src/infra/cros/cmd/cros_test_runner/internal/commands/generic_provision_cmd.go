@@ -123,8 +123,7 @@ func (cmd *GenericProvisionCmd) extractDepsFromHwTestStateKeeper(
 		}
 	}
 
-	// TODO(cdelagarza): Move provision target value from keyvals to ProvisionRequest
-	cmd.TargetDevice = common.GetValueFromRequestKeyvals(ctx, nil, sk.CrosTestRunnerRequest, cmd.Identifier+"-target")
+	cmd.TargetDevice = cmd.ProvisionRequest.GetTarget()
 	if cmd.TargetDevice == "" {
 		logging.Infof(ctx, "Warning: cmd %q missing preferred dependency: TargetDevice", cmd.GetCommandType())
 	}

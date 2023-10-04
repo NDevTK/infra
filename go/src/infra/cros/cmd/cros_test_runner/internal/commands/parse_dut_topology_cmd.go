@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+	"golang.org/x/exp/slices"
 )
 
 // ParseDutTopologyCmd represents build input validation command.
@@ -27,12 +28,18 @@ type ParseDutTopologyCmd struct {
 
 	// Deps
 	DutTopology     *labapi.DutTopology
+	PrimaryBoard    string
 	CompanionBoards []string
 
 	// Updates
 	Devices           map[string]*testapi.CrosTestRequest_Device
 	DevicesMetadata   map[string]*skylab_test_runner.CFTTestRequest_Device
 	DeviceIdentifiers []string
+}
+
+type DeviceInfo struct {
+	Device   *testapi.CrosTestRequest_Device
+	Metadata *skylab_test_runner.CFTTestRequest_Device
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -88,46 +95,72 @@ func (cmd *ParseDutTopologyCmd) Execute(ctx context.Context) error {
 	cmd.Devices = make(map[string]*testapi.CrosTestRequest_Device)
 	cmd.DevicesMetadata = make(map[string]*skylab_test_runner.CFTTestRequest_Device)
 	cmd.DeviceIdentifiers = []string{}
-	companionsToLoad := map[string]int{}
-	for _, board := range cmd.CompanionBoards {
-		if _, ok := companionsToLoad[board]; !ok {
-			companionsToLoad[board] = 0
-		}
-		companionsToLoad[board] += 1
+
+	devicePool := []*DeviceInfo{}
+	for _, dut := range cmd.DutTopology.GetDuts() {
+		device, deviceMetadata := parseDut(dut)
+		devicePool = append(devicePool, &DeviceInfo{
+			Device:   device,
+			Metadata: deviceMetadata,
+		})
 	}
 
-	for i, dut := range cmd.DutTopology.Duts {
-		device, deviceMetadata := parseDut(dut)
-		var deviceId string
-		if i == 0 {
-			deviceId = "primaryDevice"
-		} else {
-			if left, ok := companionsToLoad[deviceMetadata.GetDutModel().GetBuildTarget()]; !ok || left < 1 {
-				continue
-			} else {
-				companionsToLoad[deviceMetadata.GetDutModel().GetBuildTarget()] -= 1
-			}
-			deviceId = "companionDevice_" + deviceMetadata.GetDutModel().GetBuildTarget()
-			if _, ok := cmd.Devices[deviceId]; ok {
-				// deviceId already exists, try postfixing
-				postfix := 2
-				for {
-					if _, ok := cmd.Devices[fmt.Sprintf("%s_%d", deviceId, postfix)]; !ok {
-						deviceId = fmt.Sprintf("%s_%d", deviceId, postfix)
-						break
-					}
-					postfix += 1
+	// Match primary board to dut.
+	if cmd.PrimaryBoard != "" {
+		info, err := cmd.matchDut(devicePool, cmd.PrimaryBoard)
+		if err != nil {
+			return fmt.Errorf("Failed to match primaryDevice, %s", err)
+		}
+		cmd.appendDevice("primaryDevice", info)
+	}
+
+	for _, companionBoard := range cmd.CompanionBoards {
+		info, err := cmd.matchDut(devicePool, companionBoard)
+		if err != nil {
+			return fmt.Errorf("Failed to match companionDevice, %s", err)
+		}
+		deviceId := "companionDevice_" + info.Metadata.GetDutModel().GetBuildTarget()
+		if _, ok := cmd.Devices[deviceId]; ok {
+			// deviceId already exists, try postfixing
+			// Standard within swarming when there are duplicate boards
+			// is to postfix with `_2`. (e.g. `brya | brya_2`)
+			postfix := 2
+			for {
+				if _, ok := cmd.Devices[fmt.Sprintf("%s_%d", deviceId, postfix)]; !ok {
+					deviceId = fmt.Sprintf("%s_%d", deviceId, postfix)
+					break
 				}
+				postfix += 1
 			}
 		}
-
-		cmd.DeviceIdentifiers = append(cmd.DeviceIdentifiers, deviceId)
-		cmd.Devices[deviceId] = device
-		cmd.DevicesMetadata[deviceId] = deviceMetadata
+		cmd.appendDevice(deviceId, info)
 	}
 
 	return nil
+}
 
+// appendDevice handles storing deviceInfo within top-level stores.
+func (cmd *ParseDutTopologyCmd) appendDevice(deviceId string, deviceInfo *DeviceInfo) {
+	cmd.DeviceIdentifiers = append(cmd.DeviceIdentifiers, deviceId)
+	cmd.Devices[deviceId] = deviceInfo.Device
+	cmd.DevicesMetadata[deviceId] = deviceInfo.Metadata
+}
+
+// matchDut finds a dut within the dutPool that contains a board that matches the requested board.
+func (cmd *ParseDutTopologyCmd) matchDut(dutPool []*DeviceInfo, board string) (*DeviceInfo, error) {
+	foundIndex := -1
+	for i, deviceMetadataPair := range dutPool {
+		if deviceMetadataPair.Metadata.GetDutModel().GetBuildTarget() == board {
+			foundIndex = i
+			break
+		}
+	}
+	if foundIndex == -1 {
+		return nil, fmt.Errorf("Failed to find board_target %s within dut_topology", board)
+	}
+	match := dutPool[foundIndex]
+	dutPool = slices.Delete(dutPool, foundIndex, foundIndex+1)
+	return match, nil
 }
 
 func (cmd *ParseDutTopologyCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
@@ -136,11 +169,19 @@ func (cmd *ParseDutTopologyCmd) extractDepsFromHwTestStateKeeper(ctx context.Con
 	}
 	cmd.DutTopology = sk.DutTopology
 
+	primaryBoard := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "primary-board")
+	if primaryBoard == "" {
+		logging.Infof(ctx, "Cmd %s missing non-required dependency: primary-board", cmd.GetCommandType())
+	}
+	cmd.PrimaryBoard = primaryBoard
+
 	companionBoards := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "companion-boards")
 	if companionBoards == "" {
 		logging.Infof(ctx, "Cmd %s missing non-required dependency: companion-boards", cmd.GetCommandType())
+		cmd.CompanionBoards = []string{}
+	} else {
+		cmd.CompanionBoards = strings.Split(companionBoards, ",")
 	}
-	cmd.CompanionBoards = strings.Split(companionBoards, ",")
 
 	return nil
 }
@@ -185,6 +226,8 @@ func (cmd *ParseDutTopologyCmd) updateHwTestStateKeeper(
 	return nil
 }
 
+// parseDut extracts ssh and board/model info from the lab dut and constructs
+// a pair of CFT compatible objects.
 func parseDut(dut *labapi.Dut) (*testapi.CrosTestRequest_Device, *skylab_test_runner.CFTTestRequest_Device) {
 	var ssh *labapi.IpEndpoint
 	var model *labapi.DutModel

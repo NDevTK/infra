@@ -55,10 +55,24 @@ func (cmd *BuildInputValidationCmd) Execute(ctx context.Context) error {
 			step.SetSummaryMarkdown(fmt.Sprintf("* [parent CTP](https://cr-buildbucket.appspot.com/build/%d)", cmd.CrosTestRunnerRequest.GetBuild().GetParentBuildId()))
 		}
 
-		req := step.Log("request")
-		marsh := jsonpb.Marshaler{Indent: "  "}
-		if err = marsh.Marshal(req, cmd.CrosTestRunnerRequest); err != nil {
-			err = errors.Annotate(err, "failed to marshal proto").Err()
+		if cmd.CftTestRequest != nil && cmd.CftTestRequest.GetTranslateTrv2Request() {
+			cftReq := step.Log("CftTestRequest")
+			marsh := jsonpb.Marshaler{Indent: "  "}
+			if err = marsh.Marshal(cftReq, cmd.CftTestRequest); err != nil {
+				err = errors.Annotate(err, "failed to marshal proto").Err()
+				return err
+			}
+			translatedReq := step.Log("Translated CrosTestRunnerRequest")
+			if err = marsh.Marshal(translatedReq, cmd.CrosTestRunnerRequest); err != nil {
+				err = errors.Annotate(err, "failed to marshal proto").Err()
+				return err
+			}
+		} else {
+			req := step.Log("request")
+			marsh := jsonpb.Marshaler{Indent: "  "}
+			if err = marsh.Marshal(req, cmd.CrosTestRunnerRequest); err != nil {
+				err = errors.Annotate(err, "failed to marshal proto").Err()
+			}
 		}
 
 		return err
@@ -84,6 +98,10 @@ func (cmd *BuildInputValidationCmd) extractDepsFromHwTestStateKeeper(ctx context
 		cmd.CftTestRequest = sk.CftTestRequest
 	} else {
 		cmd.CrosTestRunnerRequest = sk.CrosTestRunnerRequest
+		// Translation path.
+		if sk.CftTestRequest != nil && sk.CftTestRequest.GetTranslateTrv2Request() {
+			cmd.CftTestRequest = sk.CftTestRequest
+		}
 	}
 
 	return nil

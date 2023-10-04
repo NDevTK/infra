@@ -14,6 +14,7 @@ import (
 	"os"
 	"strings"
 
+	api_common "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
 	"go.chromium.org/luci/common/errors"
@@ -49,7 +50,23 @@ func HwExecution() {
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
 			resp := &steps.RunTestsResponse{}
 			// TODO (azrahman): After stablizing in prod, move log data gs root to cft/new proto.
-			skylabResult, err := executeHwTests(ctx, input.CftTestRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+			var skylabResult *skylab_test_runner.Result
+			var err error
+			if input.CrosTestRunnerRequest != nil {
+				// If the request is a CrosTestRunner dynamic request...
+				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+			} else if input.CftTestRequest.TranslateTrv2Request {
+				// If the request is a CrosTestRunner non-dynamic request with translation flag...
+				builder := &common.CrosTestRunnerRequestBuilder{}
+				constructor := &common.CftCrosTestRunnerRequestConstructor{
+					Cft: input.CftTestRequest,
+				}
+				crosTestRunnerRequest := builder.Build(constructor)
+				skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+			} else {
+				// If the request is a CrosTestRunner non-dynamic request...
+				skylabResult, err = executeHwTests(ctx, input.CftTestRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+			}
 			if skylabResult != nil {
 				m, _ := proto.Marshal(skylabResult)
 				var b bytes.Buffer
@@ -79,23 +96,13 @@ func executeHwTests(
 	buildState *build.State) (*skylab_test_runner.Result, error) {
 
 	// Validation
-	if ctrCipdVersion == "" {
-		return nil, fmt.Errorf("Cros-tool-runner cipd version cannot be empty for hw test execution.")
-	}
-	if gsRoot == "" {
-		return nil, fmt.Errorf("GS root cannot be empty for hw test execution.")
+	err := validateHwExecution(ctrCipdVersion, gsRoot)
+	if err != nil {
+		return nil, err
 	}
 
 	// Create ctr
-	ctrCipdInfo := crostoolrunner.CtrCipdInfo{
-		Version:        ctrCipdVersion,
-		CtrCipdPackage: common.CtrCipdPackage,
-	}
-
-	ctr := &crostoolrunner.CrosToolRunner{
-		CtrCipdInfo:       ctrCipdInfo,
-		EnvVarsToPreserve: configs.GetHwConfigsEnvVars(),
-	}
+	ctr := setupCtr(ctrCipdVersion)
 
 	// Create configs
 	metadataContainers := req.GetContainerMetadata().GetContainers()
@@ -126,17 +133,20 @@ func executeHwTests(
 	sk.TesthausUrl = common.GetTesthausUrl(gcsurl)
 	sk.ContainerImages = containerImagesMap
 
+	if sk.CftTestRequest.GetPrimaryDut() != nil {
+		sk.CftTestRequest.AutotestKeyvals["primary-board"] = sk.CftTestRequest.GetPrimaryDut().GetDutModel().GetBuildTarget()
+	}
 	companionBoards := []string{}
-	for _, companion := range sk.CftTestRequest.CompanionDuts {
+	for _, companion := range sk.CftTestRequest.GetCompanionDuts() {
 		companionBoards = append(companionBoards, companion.GetDutModel().GetBuildTarget())
 	}
 	sk.CftTestRequest.AutotestKeyvals["companion-boards"] = strings.Join(companionBoards, ",")
 
 	// For demonstration/logging purposes.
-	_ = sk.Injectables.Set("req", req)
-	_ = sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions())
-	_ = sk.Injectables.Set("gcs-url", gcsurl)
-	_ = sk.Injectables.Set("testhaus-url", common.GetTesthausUrl(gcsurl))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions()))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("gcs-url", gcsurl))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausUrl(gcsurl)))
 
 	// Generate config
 	hwTestConfig := configs.NewTrv2ExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, req.GetStepsConfig())
@@ -147,9 +157,136 @@ func executeHwTests(
 
 	// Execute config
 	err = hwTestConfig.Execute(ctx)
+	// For demonstration/logging purposes.
 	sk.Injectables.LogStorageToBuild(ctx, buildState)
 	if err != nil {
 		return sk.SkylabResult, errors.Annotate(err, "error during executing hw test configs: ").Err()
 	}
 	return sk.SkylabResult, nil
+}
+
+// executeHwTestsV2 uses the dynamic CrosTestRunner request to construct
+// a hardware test execution environment.
+func executeHwTestsV2(
+	ctx context.Context,
+	cft *skylab_test_runner.CFTTestRequest,
+	req *skylab_test_runner.CrosTestRunnerRequest,
+	ctrCipdVersion string,
+	gsRoot string,
+	buildState *build.State) (*skylab_test_runner.Result, error) {
+
+	// Validation
+	err := validateHwExecution(ctrCipdVersion, gsRoot)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create ctr
+	ctr := setupCtr(ctrCipdVersion)
+
+	// Create configs
+	metadataContainers := req.GetParams().GetContainerMetadata().GetContainers()
+	buildTarget, ok := req.GetParams().GetKeyvals()["build_target"]
+	if !ok {
+		return nil, fmt.Errorf("Provided keyvals in CrosTestRunnerRequest missing key 'build_target'")
+	}
+	metadataMap, ok := metadataContainers[buildTarget]
+	if !ok {
+		return nil, fmt.Errorf("Provided key %q does not exist in provided container metadata.", buildTarget)
+	}
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	if err != nil {
+		return nil, fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
+	}
+	containerImagesMap := metadataMap.GetImages()
+	executorCfg := configs.NewExecutorConfig(ctr, nil)
+	cmdCfg := configs.NewCommandConfig(executorCfg)
+
+	// Create state keeper
+	gcsurl := common.GetGcsUrl(gsRoot)
+	sk := data.NewHwTestStateKeeper()
+	sk.BuildState = buildState
+	sk.CrosTestRunnerRequest = req
+	sk.CftTestRequest = cft
+	sk.Ctr = ctr
+	sk.DockerKeyFileLocation = dockerKeyFile
+	sk.GcsPublishSrcDir = os.Getenv("TEMPDIR")
+	sk.GcsUrl = gcsurl
+	sk.TesthausUrl = common.GetTesthausUrl(gcsurl)
+	sk.ContainerImages = containerImagesMap
+
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions()))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("gcs-url", gcsurl))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausUrl(gcsurl)))
+
+	populateRequestQueues(sk, req)
+
+	// Generate config
+	hwTestConfig := configs.NewTrv2ExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, &api_common.CftStepsConfig{})
+	err = hwTestConfig.GenerateConfig(ctx)
+	if err != nil {
+		return sk.SkylabResult, errors.Annotate(err, "error during generating hw test configs: ").Err()
+	}
+
+	// Execute config
+	err = hwTestConfig.Execute(ctx)
+	// For debugging purposes, logs the final state of the Injectables
+	// Storage to the top level of the buildState.
+	sk.Injectables.LogStorageToBuild(ctx, buildState)
+	if err != nil {
+		return sk.SkylabResult, errors.Annotate(err, "error during executing hw test configs: ").Err()
+	}
+	return sk.SkylabResult, nil
+}
+
+// populateRequestQueues parses through the OrderedTasks of a CrosTestRunnerRequest
+// to populate corresponding queues of requests.
+func populateRequestQueues(sk *data.HwTestStateKeeper, req *skylab_test_runner.CrosTestRunnerRequest) {
+	if req != nil {
+		for _, taskRequest := range req.OrderedTasks {
+			for _, containerRequest := range taskRequest.OrderedContainerRequests {
+				sk.ContainerQueue.PushBack(containerRequest)
+			}
+
+			switch typedRequest := taskRequest.Task.(type) {
+			case *skylab_test_runner.CrosTestRunnerRequest_Task_Provision:
+				sk.ProvisionQueue.PushBack(typedRequest.Provision)
+			case *skylab_test_runner.CrosTestRunnerRequest_Task_PreTest:
+				sk.PreTestQueue.PushBack(typedRequest.PreTest)
+			case *skylab_test_runner.CrosTestRunnerRequest_Task_Test:
+				sk.TestQueue.PushBack(typedRequest.Test)
+			case *skylab_test_runner.CrosTestRunnerRequest_Task_PostTest:
+				sk.PostTestQueue.PushBack(typedRequest.PostTest)
+			case *skylab_test_runner.CrosTestRunnerRequest_Task_Publish:
+				sk.PublishQueue.PushBack(typedRequest.Publish)
+			default:
+			}
+		}
+	}
+}
+
+// validateHwExecution ensures values are set for HW.
+func validateHwExecution(ctrCipdVersion, gsRoot string) error {
+	if ctrCipdVersion == "" {
+		return fmt.Errorf("Cros-tool-runner cipd version cannot be empty for hw test execution.")
+	}
+	if gsRoot == "" {
+		return fmt.Errorf("GS root cannot be empty for hw test execution.")
+	}
+
+	return nil
+}
+
+// setupCtr creates an instance for CrosToolRunner.
+func setupCtr(ctrCipdVersion string) *crostoolrunner.CrosToolRunner {
+	ctrCipdInfo := crostoolrunner.CtrCipdInfo{
+		Version:        ctrCipdVersion,
+		CtrCipdPackage: common.CtrCipdPackage,
+	}
+
+	return &crostoolrunner.CrosToolRunner{
+		CtrCipdInfo:       ctrCipdInfo,
+		EnvVarsToPreserve: configs.GetHwConfigsEnvVars(),
+	}
 }

@@ -105,9 +105,12 @@ func (ex *ContainerExecutor) startContainerCommandExecution(
 }
 
 func (ex *ContainerExecutor) ReadLogs(ctx context.Context) error {
+	stepStarted := make(chan struct{})
 	go func() {
 		var err error
 		step, ctx := build.StartStep(ctx, "Read Container Logs")
+
+		stepStarted <- struct{}{}
 
 		defer func() {
 			step.End(err)
@@ -118,6 +121,8 @@ func (ex *ContainerExecutor) ReadLogs(ctx context.Context) error {
 		}
 	}()
 
+	// Confirm the step has started.
+	<-stepStarted
 	return nil
 }
 

@@ -24,6 +24,7 @@ const (
 	GcsPublishTestArtifactsDir             = "/tmp/gcs-publish-test-artifacts/"
 	TKOPublishTestArtifactsDir             = "/tmp/tko-publish-test-artifacts/"
 	CpconPublishTestArtifactsDir           = "/tmp/cpcon-publish-test-artifacts/"
+	RdbPublishTestArtifactDir              = "/tmp/rdb-publish-test-artifacts/"
 	TesthausUrlPrefix                      = "https://cros-test-analytics.appspot.com/p/chromeos/logs/browse/"
 	GcsUrlPrefix                           = "https://pantheon.corp.google.com/storage/browser/"
 	HwTestCtrInputPropertyName             = "$chromeos/cros_tool_runner"
@@ -52,4 +53,16 @@ const (
 	// GROUP: Read
 	// OTHER: Read
 	FilePermission = 0644
+)
+
+// Constants relating to dynamic dependency storage.
+const (
+	CrosProvision         = "cros-provision"
+	AndroidProvision      = "android-provision"
+	CrosDut               = "cros-dut"
+	CrosTest              = "cros-test"
+	CrosPublish           = "cros-publish"
+	PrimaryDevice         = "primaryDevice"
+	CompanionDevices      = "companionDevices"
+	CompanionDevicePrefix = "companionDevice_"
 )
