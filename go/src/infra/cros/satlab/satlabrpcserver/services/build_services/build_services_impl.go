@@ -13,8 +13,8 @@ import (
 	"google.golang.org/genproto/protobuf/field_mask"
 
 	moblabapi "infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
+	"infra/cros/satlab/common/utils/collection"
 	"infra/cros/satlab/common/utils/parser"
-	"infra/cros/satlab/satlabrpcserver/utils"
 )
 
 // PageSize The number of items to return in a page
@@ -67,7 +67,7 @@ func (b *BuildConnector) ListBuildTargets(ctx context.Context) ([]string, error)
 	}
 
 	iter := b.client.ListBuildTargets(ctx, req)
-	res, err := utils.Collect(
+	res, err := collection.Collect(
 		iter.Next,
 		func(board *moblabapipb.BuildTarget) (string, error) {
 			return board.GetName(), nil
@@ -96,7 +96,7 @@ func (b *BuildConnector) ListModels(ctx context.Context, board string) ([]string
 
 	iter := b.client.ListModels(ctx, req)
 
-	res, err := utils.Collect(
+	res, err := collection.Collect(
 		iter.Next,
 		func(model *moblabapipb.Model) (string, error) {
 			return model.GetName(), nil
@@ -130,7 +130,7 @@ func (b *BuildConnector) ListAvailableMilestones(ctx context.Context, board stri
 
 	iter := b.client.ListBuilds(ctx, req)
 
-	res, err := utils.Collect(
+	res, err := collection.Collect(
 		iter.Next,
 		func(build *moblabapipb.Build) (string, error) {
 			milestone, err := parser.ExtractMilestoneFrom(build.GetMilestone())
@@ -193,7 +193,7 @@ func (b *BuildConnector) ListBuildsForMilestone(
 
 	iter := b.client.ListBuilds(ctx, req)
 
-	res, err := utils.Collect(
+	res, err := collection.Collect(
 		iter.Next,
 		func(build *moblabapipb.Build) (*BuildVersion, error) {
 			status := FromGCSBucketBuildStatusMap[build.GetStatus()]

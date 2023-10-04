@@ -21,6 +21,7 @@ import (
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/collection"
 	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/common/utils/parser"
@@ -29,7 +30,6 @@ import (
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/build_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
-	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
@@ -122,7 +122,7 @@ func (s *SatlabRpcServiceServer) ListMilestones(ctx context.Context, in *pb.List
 
 	// Filter the remoteMilestones not in the bucketMilestones,
 	// and then mapping the milestones to response type `BuildItem`
-	for _, item := range utils.Subtract(remoteMilestones, bucketMilestones, func(a string, b string) bool {
+	for _, item := range collection.Subtract(remoteMilestones, bucketMilestones, func(a string, b string) bool {
 		return a == b
 	}) {
 		res = append(res, &pb.BuildItem{
@@ -220,7 +220,7 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 
 	// Filter the remoteBuilds not in the bucketBuilds,
 	// and then mapping the remoteBuilds to response type `BuildItem`
-	for _, build := range utils.Subtract(remoteBuilds, bucketBuilds, func(a *build_services.BuildVersion, b string) bool {
+	for _, build := range collection.Subtract(remoteBuilds, bucketBuilds, func(a *build_services.BuildVersion, b string) bool {
 		return a.Version == b
 	}) {
 		res = append(res, &pb.BuildItem{
@@ -698,7 +698,7 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 		}
 	}
 
-	unenrolledDevices := utils.Subtract(connectedDevices, enrolledIPs, func(a dut_services.Device, b string) bool {
+	unenrolledDevices := collection.Subtract(connectedDevices, enrolledIPs, func(a dut_services.Device, b string) bool {
 		return a.IP == b
 	})
 

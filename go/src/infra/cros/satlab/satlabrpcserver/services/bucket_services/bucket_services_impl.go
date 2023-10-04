@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"strings"
 
-	"infra/cros/satlab/satlabrpcserver/utils"
-
 	"cloud.google.com/go/storage"
+
+	"infra/cros/satlab/common/utils/collection"
 )
 
 // BucketConnector is an object for connecting the GCS bucket storage.
@@ -46,7 +46,7 @@ func (b *BucketConnector) getPartialObjectPath(ctx context.Context, prefix strin
 	bucket := b.client.Bucket(b.bucketName)
 	iter := bucket.Objects(ctx, &storage.Query{Prefix: prefix, Delimiter: delimiter})
 
-	return utils.Collect(iter.Next, func(obj *storage.ObjectAttrs) (string, error) {
+	return collection.Collect(iter.Next, func(obj *storage.ObjectAttrs) (string, error) {
 		return obj.Prefix, nil
 	})
 }

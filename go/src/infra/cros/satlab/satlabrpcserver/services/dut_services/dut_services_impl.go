@@ -17,6 +17,7 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"infra/cros/satlab/common/paths"
+	"infra/cros/satlab/common/utils/collection"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/satlabrpcserver/models"
 	"infra/cros/satlab/satlabrpcserver/utils"
@@ -255,7 +256,7 @@ func (d *DUTServicesImpl) GetConnectedIPs(ctx context.Context) ([]Device, error)
 	if err != nil {
 		return []Device{}, err
 	}
-	inactiveIPs := utils.Subtract(potentialIPs, activeIPs, func(a, b string) bool {
+	inactiveIPs := collection.Subtract(potentialIPs, activeIPs, func(a, b string) bool {
 		return a == b
 	})
 
