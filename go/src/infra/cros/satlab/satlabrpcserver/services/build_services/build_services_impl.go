@@ -13,6 +13,7 @@ import (
 	"google.golang.org/genproto/protobuf/field_mask"
 
 	moblabapi "infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
+	"infra/cros/satlab/common/utils/parser"
 	"infra/cros/satlab/satlabrpcserver/utils"
 )
 
@@ -41,8 +42,6 @@ func ParseBuildArtifactPath(board string, model string, buildVersion string, buc
 type BuildConnector struct {
 	// client the `BuildClient`
 	client *moblabapi.BuildClient
-	// labelParser the label parser for parsing the label
-	labelParser *utils.LabelParser
 }
 
 // New sets up the `BuildClient` and returns a BuildConnector.
@@ -54,10 +53,8 @@ func New(ctx context.Context) (IBuildServices, error) {
 	if err != nil {
 		return nil, err
 	}
-	labelParser, err := utils.NewLabelParser()
 	return &BuildConnector{
-		client:      client,
-		labelParser: labelParser,
+		client: client,
 	}, nil
 }
 
@@ -136,7 +133,7 @@ func (b *BuildConnector) ListAvailableMilestones(ctx context.Context, board stri
 	res, err := utils.Collect(
 		iter.Next,
 		func(build *moblabapipb.Build) (string, error) {
-			milestone, err := b.labelParser.ExtractMilestone(build.GetMilestone())
+			milestone, err := parser.ExtractMilestoneFrom(build.GetMilestone())
 			if err != nil {
 				log.Printf("the milestone format isn't match %v\n", build.GetMilestone())
 				return "", err
@@ -168,7 +165,7 @@ func (b *BuildConnector) FindMostStableBuild(ctx context.Context, board string) 
 		return "", err
 	}
 
-	milestone, err := b.labelParser.ExtractMilestone(res.GetBuild().GetMilestone())
+	milestone, err := parser.ExtractMilestoneFrom(res.GetBuild().GetMilestone())
 	if err != nil {
 		return "", errors.New(fmt.Sprintf("milestone pattern doesn't match %v\n", res.GetBuild().GetMilestone()))
 	}

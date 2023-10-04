@@ -1,9 +1,10 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package models
+package errors
 
-type BoardAndModelPair struct {
-	Board string
-	Model string
-}
+import "errors"
+
+var (
+	NotMatch = errors.New("can't match the value")
+)

@@ -21,7 +21,9 @@ import (
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/site"
+	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
+	"infra/cros/satlab/common/utils/parser"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
@@ -40,8 +42,6 @@ type SatlabRpcServiceServer struct {
 	bucketService bucket_services.IBucketServices
 	// dutService the service to connect to DUTs
 	dutService dut_services.IDUTServices
-	// labelParser the parser for parsing label
-	labelParser *utils.LabelParser
 	// cpuTemperatureOrchestrator the CPU temperature orchestrator
 	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator
 	// commandExecutor provides an interface to run a command. It is good for testing
@@ -54,7 +54,6 @@ func New(
 	buildService build_services.IBuildServices,
 	bucketService bucket_services.IBucketServices,
 	dutService dut_services.IDUTServices,
-	labelParser *utils.LabelParser,
 	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator,
 	swarmingService services.ISwarmingService,
 ) *SatlabRpcServiceServer {
@@ -62,7 +61,6 @@ func New(
 		bucketService:              bucketService,
 		buildService:               buildService,
 		dutService:                 dutService,
-		labelParser:                labelParser,
 		cpuTemperatureOrchestrator: cpuTemperatureOrchestrator,
 		commandExecutor:            &executor.ExecCommander{},
 		swarmingService:            swarmingService,
@@ -161,8 +159,8 @@ func (s *SatlabRpcServiceServer) ListAccessibleModels(ctx context.Context, in *p
 	data := make(map[string][]string)
 
 	for _, item := range rawData {
-		boardAndModelPair, err := s.labelParser.ExtractBoardAndModelFrom(item)
-		if err == utils.NotMatch {
+		boardAndModelPair, err := parser.ExtractBoardAndModelFrom(item)
+		if errors.Is(err, e.NotMatch) {
 			log.Printf("The model name (%s) doesn't match `buildTargets/{board}/models/{model}`", item)
 		} else {
 			data[boardAndModelPair.Model] = append(data[boardAndModelPair.Model], boardAndModelPair.Board)

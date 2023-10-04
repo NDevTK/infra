@@ -20,7 +20,6 @@ import (
 	"infra/cros/satlab/satlabrpcserver/services/build_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/services/rpc_services"
-	"infra/cros/satlab/satlabrpcserver/utils"
 	m "infra/cros/satlab/satlabrpcserver/utils/monitor"
 )
 
@@ -53,10 +52,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create a build connector %v", err)
 	}
-	labelParser, err := utils.NewLabelParser()
-	if err != nil {
-		log.Fatalf("Failed to create a label parser %v", err)
-	}
 	dutService, err := dut_services.New()
 	if err != nil {
 		log.Fatalf("Failed to create a DUT service")
@@ -82,7 +77,6 @@ func main() {
 		buildService,
 		bucketService,
 		dutService,
-		labelParser,
 		cpuTemperatureOrchestrator,
 		swarmingService,
 	)

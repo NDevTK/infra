@@ -53,17 +53,11 @@ func createMockServer(t *testing.T) *SatlabRpcServiceServer {
 	// Create a Mock `IDUTService`
 	var mockDUTService = new(mk.MockDUTServices)
 
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
-
 	// Create a Mock `ISwarmingService`
 	var swarmingService = new(services.MockSwarmingService)
 
 	// Create a SATLab Server
-	return New(mockBuildService, mockBucketService, mockDUTService, labelParser, nil, swarmingService)
+	return New(mockBuildService, mockBucketService, mockDUTService, nil, swarmingService)
 }
 
 // TestListBuildTargetsShouldSuccess test `ListBuildTargets` function.
