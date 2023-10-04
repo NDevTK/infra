@@ -183,6 +183,10 @@ func depsCmd(ctx context.Context, b *Builder, step *Step) error {
 	if found {
 		start := time.Now()
 		// TODO: same as depsFastStep
+		depsIns, err := ds.DepsCmd(ctx, b, step)
+		if step.cmd.Platform["OSFamily"] != "Windows" {
+			depsIns = step.def.ExpandCaseSensitives(ctx, depsIns)
+		}
 		var stepInputs []string
 		switch step.cmd.Deps {
 		case "gcc", "msvc":
@@ -191,10 +195,6 @@ func depsCmd(ctx context.Context, b *Builder, step *Step) error {
 			stepInputs = step.cmd.ToolInputs
 		default:
 			stepInputs = step.def.Inputs(ctx) // use ToolInputs?
-		}
-		depsIns, err := ds.DepsCmd(ctx, b, step)
-		if step.cmd.Platform["OSFamily"] != "Windows" {
-			depsIns = step.def.ExpandCaseSensitives(ctx, depsIns)
 		}
 		inputs := uniqueFiles(stepInputs, depsIns)
 		clog.Infof(ctx, "%s-deps %d %s: %v", step.cmd.Deps, len(inputs), time.Since(start), err)

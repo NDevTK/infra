@@ -39,7 +39,7 @@ func (gcc depsGCC) DepsFastCmd(ctx context.Context, b *Builder, cmd *execute.Cmd
 	// sets include dirs + sysroots to ToolInputs.
 	// Inputs will be overridden by deps log data.
 	newCmd.ToolInputs = append(newCmd.ToolInputs, inputs...)
-	gcc.fixForSplitDwarf(ctx, newCmd)
+	gcc.fixForCommandline(ctx, b, newCmd)
 	return newCmd, nil
 }
 
@@ -92,12 +92,19 @@ func (gcc depsGCC) fixCmdInputs(ctx context.Context, b *Builder, cmd *execute.Cm
 }
 
 // TODO: use handler?
-func (depsGCC) fixForSplitDwarf(ctx context.Context, cmd *execute.Cmd) {
+func (depsGCC) fixForCommandline(ctx context.Context, b *Builder, cmd *execute.Cmd) {
 	hasSplitDwarf := false
 	for _, arg := range cmd.Args {
 		if arg == "-gsplit-dwarf" {
 			hasSplitDwarf = true
-			break
+			continue
+		}
+		if strings.HasPrefix(arg, "-fprofile-sample-use=") {
+			sample := strings.TrimPrefix(arg, "-fprofile-sample-use=")
+			sample = b.path.MustFromWD(sample)
+			clog.Infof(ctx, "add input %s", sample)
+			cmd.ToolInputs = append(cmd.ToolInputs, sample)
+			continue
 		}
 	}
 	if !hasSplitDwarf {
@@ -153,7 +160,7 @@ func (gcc depsGCC) DepsCmd(ctx context.Context, b *Builder, step *Step) ([]strin
 		}
 		depsIns = append(depsIns, inputs...)
 	}
-	gcc.fixForSplitDwarf(ctx, step.cmd)
+	gcc.fixForCommandline(ctx, b, step.cmd)
 	return depsIns, err
 }
 
