@@ -115,7 +115,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/infra/tools/cloudbuildhelper/git_revision%3Ad8ce7f0ecf5d56e619686c0e82313227ba05c53b"
+      "[START_DIR]/cipd_tool/infra/tools/cloudbuildhelper/00f2eac9e137e9dda42e530d7dd7f0df0f0ec4690087c8f9426a5dfcc854e7ed"
     ],
     "infra_step": true,
     "name": "install infra/tools/cloudbuildhelper.ensure package directory",
@@ -128,7 +128,7 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/infra/tools/cloudbuildhelper/git_revision%3Ad8ce7f0ecf5d56e619686c0e82313227ba05c53b",
+      "[START_DIR]/cipd_tool/infra/tools/cloudbuildhelper/00f2eac9e137e9dda42e530d7dd7f0df0f0ec4690087c8f9426a5dfcc854e7ed",
       "-ensure-file",
       "infra/tools/cloudbuildhelper/${platform} git_revision:d8ce7f0ecf5d56e619686c0e82313227ba05c53b",
       "-max-threads",
@@ -155,7 +155,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/cloudbuildhelper/git_revision%3Ad8ce7f0ecf5d56e619686c0e82313227ba05c53b/cloudbuildhelper",
+      "[START_DIR]/cipd_tool/infra/tools/cloudbuildhelper/00f2eac9e137e9dda42e530d7dd7f0df0f0ec4690087c8f9426a5dfcc854e7ed/cloudbuildhelper",
       "version"
     ],
     "name": "cloudbuildhelper version",
@@ -165,7 +165,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/tools/cloudbuildhelper/git_revision%3Ad8ce7f0ecf5d56e619686c0e82313227ba05c53b/cloudbuildhelper",
+      "[START_DIR]/cipd_tool/infra/tools/cloudbuildhelper/00f2eac9e137e9dda42e530d7dd7f0df0f0ec4690087c8f9426a5dfcc854e7ed/cloudbuildhelper",
       "build",
       "[CACHE]/builder/repo/build/images/target.yaml",
       "-canonical-tag",
