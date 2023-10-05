@@ -151,6 +151,7 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig, init
 								c.LogErr("Failed to retry %d: %v", build.GetId(), err)
 								c.LogErr("Continuing with best effort collection")
 							} else {
+								c.LogOut("Retrying %s with build %s.", bbid, newBBID)
 								newWatchSet = append(newWatchSet, newBBID)
 								previousBuild[newBBID] = bbid
 								state.recordRetry(build, originalBBID)
