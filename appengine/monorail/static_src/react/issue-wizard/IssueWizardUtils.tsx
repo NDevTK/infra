@@ -126,7 +126,7 @@ export function buildIssueDescription(
 
 export function buildIssueLabels(category: string, osName: string, chromeVersion: string, configLabels: Array<string> | null | undefined): Array<any> {
   const labels = [
-    {label:'via-wizard-'+category},
+    {label:'Via-Wizard'},
     {label:'Pri-2'},
   ];
 
