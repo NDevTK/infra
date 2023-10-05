@@ -22,6 +22,30 @@
       },
       "revId": "79dfb618c38108f6621b2cc180aa9fe1cc4eb80b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4fe4de81_7886724c",
+        "filename": "go/src/infra/build/siso/build/deps_gcc.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-10-05T01:59:11Z",
+      "side": 1,
+      "message": "can apply all clang invocations.\n\nbtw, it is better to fix gn rules to include it as inputs to make build graph correct?",
+      "parentUuid": "c47ddbb8_c48b8e69",
+      "range": {
+        "startLine": 102,
+        "startChar": 2,
+        "endLine": 109,
+        "endChar": 0
+      },
+      "revId": "79dfb618c38108f6621b2cc180aa9fe1cc4eb80b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
