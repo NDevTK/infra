@@ -47,7 +47,7 @@ export interface Path extends Node {
 export interface Params {
   host: string,
   project: string,
-  ref: string,
+  gitilesRef: string,
   revision: string,
   unitTestsOnly: boolean,
   platform: string,
@@ -56,27 +56,33 @@ export interface Params {
   platformList: Platform[]
 }
 
+export enum DataActionType {
+  MERGE_DIR = 'merge_dir',
+  BUILD_TREE = 'build_tree',
+  CLEAR_DIR = 'clear_dir'
+}
+
 type DataAction =
   | {
-    type: 'merge_dir',
+    type: DataActionType.MERGE_DIR,
     summaryNodes: SummaryNode[],
     loaded: boolean,
     onExpand: (node: Node) => void,
     parentId?: string
   }
   | {
-    type: 'build_tree',
+    type: DataActionType.BUILD_TREE,
     summaryNodes: SummaryNode[],
     onExpand: (node: Node) => void,
   }
   | {
-    type: 'clear_dir'
+    type: DataActionType.CLEAR_DIR
   }
 
 export function dataReducer(state: Node[], action: DataAction): Node[] {
   let nodes: Node[] = [];
   switch (action.type) {
-    case 'merge_dir': {
+    case DataActionType.MERGE_DIR: {
       nodes = action.summaryNodes.map(
           (node) => {
             return createPathNode(
@@ -100,13 +106,13 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
         return [...state];
       }
     }
-    case 'build_tree': {
+    case DataActionType.BUILD_TREE: {
       action.summaryNodes.forEach((summaryNode) => {
         nodes.push(mergeSubTree(summaryNode, action.onExpand));
       });
       return nodes;
     }
-    case 'clear_dir': {
+    case DataActionType.CLEAR_DIR: {
       return [] as Node[];
     }
   }
@@ -145,7 +151,7 @@ export function loadSummary(
   const request: GetSummaryCoverageRequest = {
     gitiles_host: params.host,
     gitiles_project: params.project,
-    gitiles_ref: params.ref,
+    gitiles_ref: params.gitilesRef,
     gitiles_revision: params.revision,
     path: path,
     unit_tests_only: params.unitTestsOnly,
@@ -171,7 +177,7 @@ export function loadSummaryByComponents(
   const request: GetSummaryByComponentRequest = {
     gitiles_host: params.host,
     gitiles_project: params.project,
-    gitiles_ref: params.ref,
+    gitiles_ref: params.gitilesRef,
     gitiles_revision: params.revision,
     components,
     unit_tests_only: params.unitTestsOnly,

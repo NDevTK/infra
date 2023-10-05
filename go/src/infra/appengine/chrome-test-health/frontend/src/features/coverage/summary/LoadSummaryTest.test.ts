@@ -4,6 +4,7 @@
 
 import { SummaryNode } from '../../../api/coverage';
 import {
+  DataActionType,
   DirectoryNodeType,
   MetricData,
   MetricType,
@@ -140,7 +141,7 @@ describe('merge_dir action', () => {
     const modifiedTree = dataReducer(
         tree,
         {
-          type: 'merge_dir',
+          type: DataActionType.MERGE_DIR,
           summaryNodes: summaryNodes,
           loaded: true,
           onExpand,
@@ -163,7 +164,7 @@ describe('build_tree action', () => {
   it('aggregates the summary nodes correctly', () => {
     const onExpand = () => {/**/};
     const tree = dataReducer([], {
-      type: 'build_tree',
+      type: DataActionType.BUILD_TREE,
       summaryNodes: mockSummaryNodes,
       onExpand,
     });
@@ -213,7 +214,7 @@ describe('clear_dir action', () => {
           DirectoryNodeType.FILENAME, [],
       ),
     ];
-    const clearedTree = dataReducer(tree, { type: 'clear_dir' });
+    const clearedTree = dataReducer(tree, { type: DataActionType.CLEAR_DIR });
     expect(clearedTree).toHaveLength(0);
   });
 });
