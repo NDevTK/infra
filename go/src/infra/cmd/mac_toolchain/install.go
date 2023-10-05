@@ -37,6 +37,14 @@ func removeCipdFiles(xcodePackagePath string) error {
 	return nil
 }
 
+func getIOSVersionWithoutPatch(iosVersion string) string {
+	parts := strings.Split(iosVersion, ".")
+	if len(parts) >= 2 {
+		return parts[0] + "." + parts[1]
+	}
+	return iosVersion
+}
+
 // InstallPackagesArgs are the parameters for installPackages() to keep them manageable.
 type InstallPackagesArgs struct {
 	ref                string
@@ -379,7 +387,10 @@ func addRuntimeDMG(ctx context.Context, xcodeAppPath string, dmgFilePath string)
 			return errors.Annotate(err, "failed when parsing `xcrun simctl runtime match list -j` output").Err()
 		}
 		overriddenBuild := ""
-		iphoneSdk := "iphoneos" + iosVersion
+		// the iphoneSdk key only has the version without patch number
+		// e.g. if the iosVersion is 17.0.1, then the key is 17.0
+		truncatedVersion := getIOSVersionWithoutPatch(iosVersion)
+		iphoneSdk := "iphoneos" + truncatedVersion
 		for id, sdkRuntime := range sdkRuntimes {
 			if id == iphoneSdk {
 				overriddenBuild = sdkRuntime.SdkBuild
@@ -391,7 +402,7 @@ func addRuntimeDMG(ctx context.Context, xcodeAppPath string, dmgFilePath string)
 		}
 
 		// Override the default runtime build with the desired one
-		logging.Warningf(ctx, "Overriding runtime %s with %s", overridingBuild, overriddenBuild)
+		logging.Warningf(ctx, "Overriding runtime %s with %s", overriddenBuild, overridingBuild)
 		err = RunCommand(ctx, "xcrun", "simctl", "runtime", "match", "set", iphoneSdk, overridingBuild, "--sdkBuild", overriddenBuild)
 		if err != nil {
 			return errors.Annotate(err, "failed when trying to override runtime %s with %s", overridingBuild, overriddenBuild).Err()
@@ -540,8 +551,7 @@ func shouldInstallRuntime(ctx context.Context, cipdPackagePrefix, iosVersion, xc
 			return errors.Annotate(err, "failed when parsing `xcrun simctl runtime list -j` output").Err()
 		}
 		for _, runtime := range runtimes {
-			// check whether runtime already exists
-			if iosVersion == runtime.Version && strings.EqualFold(runtimeBuildOnCipd, runtime.Build) {
+			if strings.EqualFold(runtimeBuildOnCipd, runtime.Build) {
 				logging.Warningf(ctx, "Runtime %s Build %s should not be installed because it already exists", iosVersion, runtimeBuildOnCipd)
 				shouldInstallRuntime = false
 				return nil

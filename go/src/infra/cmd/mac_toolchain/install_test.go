@@ -1643,4 +1643,22 @@ func TestInstallXcode(t *testing.T) {
 		})
 	})
 
+	Convey("getIOSVersionWithoutPatch works", t, func() {
+		Convey("Version without patch number should return original", func() {
+			iosVersion := "17.0"
+			trunctedVersion := getIOSVersionWithoutPatch(iosVersion)
+
+			// folder is empty but it should still succeed
+			So(trunctedVersion, ShouldEqual, iosVersion)
+		})
+
+		Convey("Version without patch number should return version without patch", func() {
+			iosVersion := "17.0.1.2"
+			trunctedVersion := getIOSVersionWithoutPatch(iosVersion)
+
+			// folder is empty but it should still succeed
+			So(trunctedVersion, ShouldEqual, "17.0")
+		})
+	})
+
 }
