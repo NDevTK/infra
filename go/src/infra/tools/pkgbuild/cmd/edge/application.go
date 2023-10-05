@@ -9,7 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path"
+	"os/exec"
 	"path/filepath"
 
 	"infra/tools/pkgbuild/pkg/spec"
@@ -101,10 +101,6 @@ func (a *Application) Parse(args []string) error {
 	if a.CIPDPackagePrefix == "" {
 		fs.Usage()
 		return fmt.Errorf("cipd-package-prefix is required")
-	}
-
-	if a.Experiment {
-		a.CIPDPackagePrefix = path.Join("experimental", a.CIPDPackagePrefix)
 	}
 
 	a.Packages = fs.Args()
@@ -199,4 +195,18 @@ func (b *PackageBuilder) BuildAll(ctx context.Context) ([]actions.Package, error
 	}
 
 	return b.Builder.BuildAll(ctx, b.BuildTempDir, b.loaded)
+}
+
+func CIPDCommand(arg ...string) *exec.Cmd {
+	cipd, err := exec.LookPath("cipd")
+	if err != nil {
+		cipd = "cipd"
+	}
+
+	// Use cmd to execute batch file on windows.
+	if filepath.Ext(cipd) == ".bat" {
+		return exec.Command("cmd.exe", append([]string{"/C", cipd}, arg...)...)
+	}
+
+	return exec.Command(cipd, arg...)
 }
