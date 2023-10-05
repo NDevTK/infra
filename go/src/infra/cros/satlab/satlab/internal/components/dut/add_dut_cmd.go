@@ -80,6 +80,9 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 	if err := validateHostname(c.hostname); err != nil {
 		return errors.Annotate(err, "bad hostname").Err()
 	}
+	if err = validateBoardModel(c.board, c.model); err != nil {
+		return err
+	}
 
 	// This function has a single defer block that inspects the return value err to see if it
 	// is nil. This defer block does *not* set the err back to nil if it succeeds in cleaning up
@@ -105,13 +108,6 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 
 	// If Satlab for Partners user, then stage and write local stable version
 	if site.IsPartner() {
-		// Check if board/model are provided and stable version not yet created.
-		if c.board == "" {
-			return errors.Reason("Please provide -board").Err()
-		}
-		if c.model == "" {
-			return errors.Reason("Please provide -model").Err()
-		}
 		if shouldCreateStableVersion(c.board, c.model) {
 			// Fetch an arbitrary stable version and save locally.
 			moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
@@ -265,6 +261,16 @@ func validateHostname(host string) error {
 		return errors.New("hostname must be 32 characters or less")
 	}
 
+	return nil
+}
+
+func validateBoardModel(board string, model string) error {
+	if board == "" {
+		return errors.Reason("Please provide -board").Err()
+	}
+	if model == "" {
+		return errors.Reason("Please provide -model").Err()
+	}
 	return nil
 }
 
