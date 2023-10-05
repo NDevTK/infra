@@ -213,6 +213,10 @@ message VersionRequest {
   // Version type describe type of versions and device type associated with
   // that.
   VersionType type = 2;
+  // Board of the device.
+  string board = 3;
+  // Model of the device.
+  string model = 4;
 }
 
 // VersionResponse holds data received from service.
