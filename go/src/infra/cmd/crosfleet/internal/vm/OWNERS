@@ -1,5 +1,0 @@
-# VM Lab Owners (PEEP Infra Software)
-include chromiumos/owners:v1:/infra/OWNERS.fleetplatform
-
-# Individual contributors
-yixie@google.com
