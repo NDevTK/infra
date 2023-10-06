@@ -77,7 +77,7 @@ golang/bootstrap-go/${platform} %v
 		if inputs.NodeVersion != "" {
 			cipdDeps += fmt.Sprintf(`
 @Subdir nodejs
-infra/3pp/tools/nodejs/${platform} %v
+infra/3pp/tools/nodejs/${platform} version:%v
 `, inputs.NodeVersion)
 		}
 	}
