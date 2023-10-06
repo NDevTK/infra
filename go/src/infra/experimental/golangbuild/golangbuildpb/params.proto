@@ -77,7 +77,7 @@ message Inputs {
   // Required.
   string git_cache = 8;
 
-  // On Macs, the version of XCode to use. Because installing it is expensive,
+  // On Macs, the version of Xcode to use. Because installing it is expensive,
   // it should be the same for all builders that run on a given host.
   string xcode_version = 9;
 

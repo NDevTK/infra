@@ -39,8 +39,8 @@ infra/tools/luci/cas/${platform} latest
 infra/tools/result_adapter/${platform} latest
 `
 
-// CIPD dependency for XCode.
-const cipdXCodeDep = `
+// CIPD dependency for Xcode.
+const cipdXcodeDep = `
 @Subdir
 infra/tools/mac_toolchain/${platform} latest
 `
@@ -51,7 +51,7 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 
 	// Construct the CIPD ensure file.
 	var cipdDeps string
-	gotXCode := false
+	gotXcode := false
 
 	if inputs.GetMode() == golangbuildpb.Mode_MODE_COORDINATOR {
 		cipdDeps = cipdToolDeps
@@ -66,8 +66,8 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 golang/bootstrap-go/${platform} %v
 `, inputs.BootstrapVersion)
 		if inputs.XcodeVersion != "" {
-			gotXCode = true
-			cipdDeps += cipdXCodeDep
+			gotXcode = true
+			cipdDeps += cipdXcodeDep
 		}
 	}
 
@@ -102,16 +102,16 @@ golang/bootstrap-go/${platform} %v
 		return "", err
 	}
 
-	// Set up XCode.
+	// Set up Xcode.
 	// See https://source.corp.google.com/h/chromium/infra/infra/+/main:go/src/infra/cmd/mac_toolchain/README.md and
 	// https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/recipes/recipe_modules/osx_sdk/api.py
-	if gotXCode {
-		xcodeInstall := exec.CommandContext(ctx, filepath.Join(toolsRoot, "mac_toolchain"), "install", "-xcode-version", inputs.XcodeVersion, "-output-dir", filepath.Join(toolsRoot, "XCode.app"))
-		if err := cmdStepRun(ctx, "install XCode "+inputs.XcodeVersion, xcodeInstall, true); err != nil {
+	if gotXcode {
+		xcodeInstall := exec.CommandContext(ctx, filepath.Join(toolsRoot, "mac_toolchain"), "install", "-xcode-version", inputs.XcodeVersion, "-output-dir", filepath.Join(toolsRoot, "Xcode.app"))
+		if err := cmdStepRun(ctx, "install Xcode "+inputs.XcodeVersion, xcodeInstall, true); err != nil {
 			return "", err
 		}
-		xcodeSelect := exec.CommandContext(ctx, "sudo", "xcode-select", "--switch", filepath.Join(toolsRoot, "XCode.app"))
-		if err := cmdStepRun(ctx, "select XCode "+inputs.XcodeVersion, xcodeSelect, true); err != nil {
+		xcodeSelect := exec.CommandContext(ctx, "sudo", "xcode-select", "--switch", filepath.Join(toolsRoot, "Xcode.app"))
+		if err := cmdStepRun(ctx, "select Xcode "+inputs.XcodeVersion, xcodeSelect, true); err != nil {
 			return "", err
 		}
 	}
