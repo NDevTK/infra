@@ -48,7 +48,7 @@ var targetOverrideModels = map[string]string{
 	// Volteer board.
 	"lillipup": "lindar",
 	// Screebo board
-	"screebo": "screebo4es",
+	"screebo4es": "screebo4es",
 }
 
 // targetOverrideHwidSkus holds a map of hwid that need to override its firmware target.
