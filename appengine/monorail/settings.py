@@ -306,7 +306,8 @@ analytics_id = 'UA-55762617-20'
 # Project IDs which have opted into freezing project configs.
 config_freeze_project_ids = set()
 config_freeze_override_users = {
-    'benhenry@google.com', 'zhangtiff@google.com', 'example@example.com'
+    'benhenry@google.com', 'zhangtiff@google.com', 'summermcdonald@google.com',
+    'example@example.com'
 }
 
 if unit_test_mode:
@@ -518,6 +519,7 @@ label_prefix_allowlist = [
     'copybara-migration-complete-',
     'cob-migrated-to-b-',
     'incident-id-',
+    'version-',
 ]
 
 
