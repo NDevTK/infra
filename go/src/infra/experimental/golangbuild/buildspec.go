@@ -233,6 +233,12 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 		}
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, ccPath))
 	}
+	if env.Get("GOOS") == "js" && env.Get("GOARCH") == "wasm" {
+		// Add go_js_wasm_exec and node to PATH.
+		env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.goroot, "misc/wasm"), os.PathListSeparator, env.Get("PATH")))
+		env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "nodejs/bin"), os.PathListSeparator, env.Get("PATH")))
+	}
+
 	return env.SetInCtx(ctx)
 }
 

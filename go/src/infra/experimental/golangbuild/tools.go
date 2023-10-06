@@ -53,9 +53,10 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 	var cipdDeps string
 	gotXcode := false
 
-	if inputs.GetMode() == golangbuildpb.Mode_MODE_COORDINATOR {
+	switch inputs.GetMode() {
+	case golangbuildpb.Mode_MODE_COORDINATOR:
 		cipdDeps = cipdToolDeps
-	} else {
+	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_BUILD, golangbuildpb.Mode_MODE_TEST:
 		// Don't install git from CIPD on less-common platforms. We'll get it from the external OS as needed.
 		if _, bestEffortPlatform := experiments["luci.best_effort_platform"]; !bestEffortPlatform {
 			cipdDeps = cipdBuildDeps
@@ -68,6 +69,16 @@ golang/bootstrap-go/${platform} %v
 		if inputs.XcodeVersion != "" {
 			gotXcode = true
 			cipdDeps += cipdXcodeDep
+		}
+	}
+	// Append test-only dependencies.
+	switch inputs.GetMode() {
+	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_TEST:
+		if inputs.NodeVersion != "" {
+			cipdDeps += fmt.Sprintf(`
+@Subdir nodejs
+infra/3pp/tools/nodejs/${platform} %v
+`, inputs.NodeVersion)
 		}
 	}
 
