@@ -70,8 +70,6 @@ func TestGenerateHwConfigs(t *testing.T) {
 		So(hwConfigs.MainConfigs, ShouldContain, DutServerStart_CrosDutExecutor)
 		So(hwConfigs.MainConfigs, ShouldContain, UpdateDutState_NoExecutor)
 		So(hwConfigs.CleanupConfigs, ShouldContain, UpdateDutState_NoExecutor)
-		So(hwConfigs.MainConfigs, ShouldNotContain, DutVmRelease_CrosDutVmExecutor)
-		So(hwConfigs.CleanupConfigs, ShouldNotContain, DutVmRelease_CrosDutVmExecutor)
 	})
 }
 

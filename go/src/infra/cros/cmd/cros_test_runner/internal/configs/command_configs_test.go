@@ -81,12 +81,6 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 		So(cmd.GetCommandType(), ShouldEqual, commands.DutVmGetImageCmdType)
 		So(err, ShouldBeNil)
 
-		cmd, err = cmdConfig.GetCommand(commands.DutVmLeaseCmdType, executors.CrosDutVmExecutorType)
-		So(cmd.GetCommandType(), ShouldEqual, commands.DutVmLeaseCmdType)
-		So(err, ShouldBeNil)
-
-		cmd, err = cmdConfig.GetCommand(commands.DutVmReleaseCmdType, executors.CrosDutVmExecutorType)
-		So(cmd.GetCommandType(), ShouldEqual, commands.DutVmReleaseCmdType)
 		So(err, ShouldBeNil)
 
 		cmd, err = cmdConfig.GetCommand(commands.DutVmCacheServerStartCmdType, executors.CrosDutVmExecutorType)
@@ -162,6 +156,26 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		cmd, err = cmdConfig.GetCommand(commands.UpdateContainerImagesLocallyCmdType, executors.NoExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.VMProvisionServiceStartCmdType, executors.CrosVMProvisionExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.VMProvisionLeaseCmdType, executors.CrosVMProvisionExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.VMProvisionReleaseCmdType, executors.CrosVMProvisionExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.AndroidProvisionServiceStartCmdType, executors.AndroidProvisionExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.AndroidProvisionInstallCmdType, executors.AndroidProvisionExecutorType)
 		So(cmd, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 	})

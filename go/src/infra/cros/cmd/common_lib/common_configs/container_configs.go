@@ -105,6 +105,12 @@ func (cfg *ContainerConfig) GetContainer(contType interfaces.ContainerType) (int
 			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
 		}
 		cont = containers.NewCrosVMProvisionTemplatedContainer(containerImage, cfg.Ctr)
+	case containers.AndroidProvisionTemplatedContainerType:
+		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
+		}
+		cont = containers.NewGenericProvisionTemplatedContainer(key, containerImage, cfg.Ctr)
 
 	default:
 		return nil, fmt.Errorf("Container type %s not supported in container configs!", contType)
