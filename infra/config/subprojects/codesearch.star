@@ -261,10 +261,16 @@ chromium_genfiles(
     short_name = "cronet",
     name = "codesearch-gen-chromium-cronet",
     recipe_properties = {
-        # When the is_cronet_build=true argument is added to
-        # the gn args, then only the cronet_package_android
-        # target will be built.
-        "compile_targets": ["all"],
+        "compile_targets": [
+            "cronet_package",
+            "cronet_perf_test_apk",
+            "cronet_sample_test_apk",
+            "cronet_smoketests_missing_native_library_instrumentation_apk",
+            "cronet_smoketests_platform_only_instrumentation_apk",
+            "cronet_test_instrumentation_apk",
+            "cronet_unittests_android",
+            "net_unittests",
+        ],
         "platform": "android",
         "sync_generated_files": True,
         "gen_repo_branch": "main",
