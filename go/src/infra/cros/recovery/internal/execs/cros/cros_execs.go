@@ -71,7 +71,7 @@ func isOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 	expected := argsMap.AsString(ctx, "os_name", "")
 	if expected == "" {
 		deviceType := argsMap.AsString(ctx, "device_type", components.VersionDeviceCros)
-		sv, err := info.Versioner().GetVersion(ctx, deviceType, info.GetActiveResource())
+		sv, err := info.Versioner().GetVersion(ctx, deviceType, info.GetActiveResource(), "", "")
 		if err != nil {
 			return errors.Annotate(err, "match os version").Err()
 		}

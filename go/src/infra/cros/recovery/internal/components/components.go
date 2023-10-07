@@ -99,5 +99,5 @@ type Versioner interface {
 	// Deprecated. please use GetVersion.
 	Cros(ctx context.Context, resource string) (*VersionInfo, error)
 	// GetVersion return version info for the requested device.
-	GetVersion(ctx context.Context, deviceType VersionDeviceType, resource string) (*VersionInfo, error)
+	GetVersion(ctx context.Context, deviceType VersionDeviceType, resource, board, model string) (*VersionInfo, error)
 }

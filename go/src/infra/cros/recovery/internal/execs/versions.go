@@ -28,13 +28,17 @@ func (ei *ExecInfo) Versioner() components.Versioner {
 // Cros return version info for request Chrome OS device.
 // Deprecated. please use GetVersion.
 func (v *versioner) Cros(ctx context.Context, resource string) (*components.VersionInfo, error) {
-	res, err := v.GetVersion(ctx, components.VersionDeviceCros, resource)
+	res, err := v.GetVersion(ctx, components.VersionDeviceCros, resource, "", "")
 	return res, errors.Annotate(err, "cros version").Err()
 }
 
 // GetVersion returns version info for the requested device.
-func (v *versioner) GetVersion(ctx context.Context, deviceType components.VersionDeviceType, resource string) (*components.VersionInfo, error) {
-	req := &tlw.VersionRequest{Resource: resource}
+func (v *versioner) GetVersion(ctx context.Context, deviceType components.VersionDeviceType, resource, board, model string) (*components.VersionInfo, error) {
+	req := &tlw.VersionRequest{
+		Resource: resource,
+		Board:    board,
+		Model:    model,
+	}
 	switch deviceType {
 	case components.VersionDeviceCros:
 		req.Type = tlw.VersionRequest_CROS

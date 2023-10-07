@@ -30,7 +30,7 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 	osImageName := argsMap.AsString(ctx, "os_name", "")
 	if osImageName == "" {
 		deviceType := argsMap.AsString(ctx, "device_type", components.VersionDeviceCros)
-		sv, err := info.Versioner().GetVersion(ctx, deviceType, info.GetActiveResource())
+		sv, err := info.Versioner().GetVersion(ctx, deviceType, info.GetActiveResource(), "", "")
 		if err != nil {
 			return errors.Annotate(err, "cros provision").Err()
 		}
@@ -126,32 +126,25 @@ func isLastProvisionSuccessfulExec(ctx context.Context, info *execs.ExecInfo) er
 	return nil
 }
 
-// chartOSMap is the required version for chart devices.
-// It is used until new stable version tool is ready.
-var chartOSMap = map[string]string{
-	"scarlet,dru":   "scarlet-release/R107-15110.0.0",
-	"kukui,krane":   "kukui-release/R107-15117.112.0",
-	"nami,pantheon": "nami-release/R106-15054.42.0",
-}
+// Suffix used to distinguish model of the DUT vs tablet used for testbed.
+const tabletModelSuffix = "_tablet"
 
 // getChartOS returns the required os of chart if predefined in chartOSMap
 // TODO(b/248285635): use version service when will be ready.
-func getChartOS(ctx context.Context, info *execs.ExecInfo) (string, error) {
-	b := fmt.Sprintf("%s,%s", info.GetChromeos().GetBoard(), info.GetChromeos().GetModel())
-	expectedOS, ok := chartOSMap[b]
-	if !ok {
-		return "", errors.Reason("get chart os: os not defined for %s device", b).Err()
+func getChartOS(ctx context.Context, info *execs.ExecInfo, suffix string) (string, error) {
+	board := info.GetChromeos().GetBoard()
+	model := fmt.Sprintf("%s%s", info.GetChromeos().GetModel(), suffix)
+	sv, err := info.Versioner().GetVersion(ctx, components.VersionDeviceCros, info.GetDut().Name, board, model)
+	if err != nil {
+		return "", errors.Annotate(err, "get version for %q", suffix).Err()
 	}
-	if expectedOS == "" {
-		return "", errors.Reason("get chart os: is empty or not specified for %q", b).Err()
-	}
-	return expectedOS, nil
+	return sv.OSImage, nil
 }
 
 // isCameraboxTabletOnOSVersionExec check if the tablet is on the required os
 // version.
 func isCameraboxTabletOnOSVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	expectedOS, err := getChartOS(ctx, info)
+	expectedOS, err := getChartOS(ctx, info, tabletModelSuffix)
 	if err != nil {
 		return errors.Annotate(err, "camerabox tablet match os version").Err()
 	}
@@ -169,7 +162,7 @@ func isCameraboxTabletOnOSVersionExec(ctx context.Context, info *execs.ExecInfo)
 
 // provisionCameraboxTabletExec
 func provisionCameraboxTabletExec(ctx context.Context, info *execs.ExecInfo) error {
-	chartOSName, err := getChartOS(ctx, info)
+	chartOSName, err := getChartOS(ctx, info, tabletModelSuffix)
 	if err != nil {
 		return errors.Annotate(err, "provision camerabox tablet").Err()
 	}

@@ -295,16 +295,16 @@ func (mr *MockVersionerMockRecorder) Cros(ctx, resource interface{}) *gomock.Cal
 }
 
 // GetVersion mocks base method.
-func (m *MockVersioner) GetVersion(ctx context.Context, deviceType components.VersionDeviceType, resource string) (*components.VersionInfo, error) {
+func (m *MockVersioner) GetVersion(ctx context.Context, deviceType components.VersionDeviceType, resource, board, model string) (*components.VersionInfo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetVersion", ctx, deviceType, resource)
+	ret := m.ctrl.Call(m, "GetVersion", ctx, deviceType, resource, board, model)
 	ret0, _ := ret[0].(*components.VersionInfo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetVersion indicates an expected call of GetVersion.
-func (mr *MockVersionerMockRecorder) GetVersion(ctx, deviceType, resource interface{}) *gomock.Call {
+func (mr *MockVersionerMockRecorder) GetVersion(ctx, deviceType, resource, board, model interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVersion", reflect.TypeOf((*MockVersioner)(nil).GetVersion), ctx, deviceType, resource)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVersion", reflect.TypeOf((*MockVersioner)(nil).GetVersion), ctx, deviceType, resource, board, model)
 }

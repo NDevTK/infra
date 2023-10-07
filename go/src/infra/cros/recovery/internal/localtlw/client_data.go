@@ -47,23 +47,34 @@ func (c *tlwClient) GetDut(ctx context.Context, name string) (*tlw.Dut, error) {
 
 // Version provides versions for requested device and type of versions.
 func (c *tlwClient) Version(ctx context.Context, req *tlw.VersionRequest) (*tlw.VersionResponse, error) {
-	if req == nil || req.Resource == "" {
+	if req == nil {
 		return nil, errors.Reason("version: request is not provided").Err()
 	}
+	var versionKey string
+	var dut *tlw.Dut
 	// Creating cache key for versions based on hostname which is targeted.
-	versionKey := fmt.Sprintf("%s|%s", req.GetType(), req.Resource)
+	if req.GetResource() != "" {
+		versionKey = fmt.Sprintf("%s|%s", req.GetType(), req.GetResource())
+		var err error
+		dut, err = c.getDevice(ctx, req.GetResource())
+		if err != nil {
+			return nil, errors.Annotate(err, "version").Err()
+		}
+	}
+	if req.GetBoard() != "" || req.GetModel() != "" {
+		versionKey = fmt.Sprintf("%s|%s|%s", req.GetType(), req.GetBoard(), req.GetModel())
+	}
+	if versionKey == "" {
+		return nil, errors.Reason("version: request is empty").Err()
+	}
 	if v, ok := c.versionMap[versionKey]; ok {
 		log.Debugf(ctx, "Received version %q (cache): %#v", req.GetType(), v)
 		return v, nil
 	}
-	dut, err := c.getDevice(ctx, req.Resource)
-	if err != nil {
-		return nil, errors.Annotate(err, "version").Err()
-	}
 	switch req.GetType() {
 	case tlw.VersionRequest_CROS:
-		sv, err := c.getCrosStableVersion(ctx, dut)
-		if err != nil {
+		sv, err := c.getCrosStableVersion(ctx, dut, req)
+		if err != nil && dut != nil {
 			log.Debugf(ctx, "version: %s", err)
 			log.Debugf(ctx, "Failed to fetch stable version from Cros Skylab Admin. Checking for local stable version...")
 			sv, err = c.getLocalStableVersion(ctx, dut)
@@ -237,8 +248,19 @@ func (c *tlwClient) unCacheDevice(dut *tlw.Dut) {
 }
 
 // getCrosStableVersion receives stable versions for ChromeOS device.
-func (c *tlwClient) getCrosStableVersion(ctx context.Context, dut *tlw.Dut) (*tlw.VersionResponse, error) {
-	req := &fleet.GetStableVersionRequest{Hostname: dut.Name}
+func (c *tlwClient) getCrosStableVersion(ctx context.Context, dut *tlw.Dut, vReq *tlw.VersionRequest) (*tlw.VersionResponse, error) {
+	var req *fleet.GetStableVersionRequest
+	if vReq.GetBoard() != "" && vReq.GetModel() != "" {
+		log.Debugf(ctx, "Use board: %q and model: %q to find stable version!", vReq.GetBoard(), vReq.GetModel())
+		// Do not pass hostname to avoid use of it as primary key of the request.
+		req = &fleet.GetStableVersionRequest{
+			BuildTarget: vReq.GetBoard(),
+			Model:       vReq.GetModel(),
+		}
+	} else {
+		log.Debugf(ctx, "Use host: %q to find stable version!", dut.Name)
+		req = &fleet.GetStableVersionRequest{Hostname: dut.Name}
+	}
 	if c.csaClient == nil {
 		return nil, errors.Reason("get stable-version %q: service is not specified", dut.Name).Err()
 	}
