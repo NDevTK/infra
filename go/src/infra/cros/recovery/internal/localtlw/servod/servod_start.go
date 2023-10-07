@@ -92,7 +92,7 @@ func startServodOnLocalContainer(ctx context.Context, req *StartServodRequest) e
 	if err != nil {
 		return errors.Annotate(err, "start servod container").Err()
 	}
-	log.Debugf(ctx, "Container started with id:%s\n with errout: %#v", res)
+	log.Debugf(ctx, "Container started with id:%s\n with errout: %#v and code:%v", res.Stdout, res.Stderr, res.ExitCode)
 	if startServod {
 		// Waiting to finish servod initialization.
 		// Wait 3 seconds as sometimes container is not fully initialized and fail
