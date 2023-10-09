@@ -143,7 +143,7 @@ func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {
 	var err error
 	if c.Suite != "" {
 		tp = builder.TestPlanForSuites([]string{c.Suite})
-	} else if len(c.Tests) != 0 {
+	} else if c.Tests != nil {
 		tp = builder.TestPlanForTests(c.TestArgs, c.Harness, c.Tests)
 	} else if c.Testplan != "" {
 		fmt.Printf("Fetching testplan...\n")

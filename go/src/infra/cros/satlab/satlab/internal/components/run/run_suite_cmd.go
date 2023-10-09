@@ -50,6 +50,10 @@ func (c *run) Run(a subcommands.Application, args []string, env subcommands.Env)
 // InnerRun is the implementation of the run command.
 func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env subcommands.Env) error {
 	ctx := context.Background()
+	var tests []string
+	if c.test != "" {
+		tests = append(tests, c.test)
+	}
 	r := &common_run.Run{
 		Image:         c.image,
 		Model:         c.model,
@@ -58,7 +62,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		Build:         c.build,
 		Pool:          c.pool,
 		Suite:         c.suite,
-		Tests:         []string{c.test},
+		Tests:         tests,
 		Testplan:      c.testplan,
 		TestplanLocal: c.testplanLocal,
 		Harness:       c.harness,
