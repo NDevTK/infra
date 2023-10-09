@@ -271,13 +271,13 @@ chromium_genfiles(
             "cronet_unittests_android",
             "net_unittests",
         ],
-        "platform": "android",
+        "platform": "cronet",
         "sync_generated_files": True,
         "gen_repo_branch": "main",
         # Generated files will end up in out/android-Debug/gen.
         "gen_repo_out_dir": "cronet-Debug",
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
-        "build_config": "android",
+        "build_config": "cronet",
     },
 )
 
