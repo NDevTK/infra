@@ -24,6 +24,18 @@ func TestRead(t *testing.T) {
 		".": {Mixins: map[string]*dirmdpb.Metadata{}},
 	}
 
+	mxKey := testDataKey + "/mixins"
+	dummyMixinRepos := map[string]*dirmdpb.Repo{
+		".": {Mixins: map[string]*dirmdpb.Metadata{
+			"//" + mxKey + "/FOO_METADATA": {
+				Monorail: &dirmdpb.Monorail{
+					Project:   "chromium",
+					Component: "foo",
+				},
+			},
+		}},
+	}
+
 	Convey(`ReadMapping`, t, func() {
 		ctx := context.Background()
 		rootKey := testDataKey + "/root"
@@ -67,6 +79,16 @@ func TestRead(t *testing.T) {
 									},
 								},
 							},
+							{
+								FilePatterns: []string{
+									"*.json",
+								},
+								Metadata: &dirmdpb.Metadata{
+									Mixins: []string{
+										"//" + mxKey + "/FOO_METADATA",
+									},
+								},
+							},
 						},
 					},
 					rootKey + "/subdir_with_owners": {
@@ -81,13 +103,18 @@ func TestRead(t *testing.T) {
 					// no metadata.
 				},
 				Files: map[string]*dirmdpb.Metadata{
+					rootKey + "/subdir_with_files/dummy.json": {
+						Mixins: []string{
+							"//" + mxKey + "/FOO_METADATA",
+						},
+					},
 					rootKey + "/subdir_with_files/dummy.txt": {
 						Monorail: &dirmdpb.Monorail{
 							Component: "Some>Other>Component",
 						},
 					},
 				},
-				Repos: dummyRepos,
+				Repos: dummyMixinRepos,
 			})
 		})
 
@@ -169,19 +196,34 @@ func TestRead(t *testing.T) {
 									},
 								},
 							},
+							{
+								FilePatterns: []string{
+									"*.json",
+								},
+								Metadata: &dirmdpb.Metadata{
+									Mixins: []string{
+										"//" + mxKey + "/FOO_METADATA",
+									},
+								},
+							},
 						},
 					},
 					// "subdir_with_owners/nested_dir" is not present because it has
 					// no metadata.
 				},
 				Files: map[string]*dirmdpb.Metadata{
+					rootKey + "/subdir_with_files/dummy.json": {
+						Mixins: []string{
+							"//" + mxKey + "/FOO_METADATA",
+						},
+					},
 					rootKey + "/subdir_with_files/dummy.txt": {
 						Monorail: &dirmdpb.Monorail{
 							Component: "Some>Other>Component",
 						},
 					},
 				},
-				Repos: dummyRepos,
+				Repos: dummyMixinRepos,
 			})
 		})
 
@@ -247,8 +289,14 @@ func TestRead(t *testing.T) {
 							Component: "Some>Other>Component",
 						},
 					},
+					rootKey + "/subdir_with_files/dummy.json": {
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "foo",
+						},
+					},
 				},
-				Repos: dummyRepos,
+				Repos: dummyMixinRepos,
 			})
 		})
 
@@ -298,8 +346,14 @@ func TestRead(t *testing.T) {
 							Component: "Some>Other>Component",
 						},
 					},
+					rootKey + "/subdir_with_files/dummy.json": {
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "foo",
+						},
+					},
 				},
-				Repos: dummyRepos,
+				Repos: dummyMixinRepos,
 			})
 		})
 
@@ -369,8 +423,14 @@ func TestRead(t *testing.T) {
 							Component: "Some>Other>Component",
 						},
 					},
+					rootKey + "/subdir_with_files/dummy.json": {
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "foo",
+						},
+					},
 				},
-				Repos: dummyRepos,
+				Repos: dummyMixinRepos,
 			})
 		})
 
@@ -423,13 +483,18 @@ func TestRead(t *testing.T) {
 							Component: "Some>Other>Component",
 						},
 					},
+					rootKey + "/subdir_with_files/dummy.json": {
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "foo",
+						},
+					},
 				},
-				Repos: dummyRepos,
+				Repos: dummyMixinRepos,
 			})
 		})
 
 		Convey(`Computed, with mixin`, func() {
-			mxKey := testDataKey + "/mixins"
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, false, "testdata/mixins")
 			So(err, ShouldBeNil)
 			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
@@ -594,6 +659,16 @@ func TestRead(t *testing.T) {
 									},
 								},
 							},
+							{
+								FilePatterns: []string{
+									"*.json",
+								},
+								Metadata: &dirmdpb.Metadata{
+									Mixins: []string{
+										"//" + mxKey + "/FOO_METADATA",
+									},
+								},
+							},
 						},
 					},
 					rootKey + "/subdir_with_owners": {
@@ -610,8 +685,14 @@ func TestRead(t *testing.T) {
 							Component: "Some>Other>Component",
 						},
 					},
+					rootKey + "/subdir_with_files/dummy.json": {
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "foo",
+						},
+					},
 				},
-				Repos: dummyRepos,
+				Repos: dummyMixinRepos,
 			})
 		})
 	})

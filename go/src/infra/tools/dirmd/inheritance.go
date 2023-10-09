@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package dirmd
 
@@ -42,6 +42,14 @@ func (m *Mapping) ComputeAll() error {
 		}
 		m.Dirs[dir] = meta
 	}
+
+	// Process files. doesn't have to be longest to smallest since nothing
+	// is inherited for overrides; just the mixin metadata needs to be applied
+	// correctly.
+	if err := m.applyFileMixins(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -53,6 +61,11 @@ func (m *Mapping) Reduce() error {
 	// The function maintains two mappings: computed and reduced, and both are
 	// being built simultaneously, top-bottom.
 	// In the end, m contains the reduced mapping.
+
+	// Process files first, in case there are redundancies to remove.
+	if err := m.applyFileMixins(); err != nil {
+		return err
+	}
 
 	// Process directories in the shorest-path to longest-path order,
 	// such that, when computing the expanded metadata for a given directory,
@@ -82,12 +95,13 @@ func (m *Mapping) Reduce() error {
 		mdComputed.Overrides = nil
 		computed.Dirs[dir] = mdComputed
 	}
+
 	return nil
 }
 
 // apply updates dst with the metadata for the dir key.
 // The applied metadata includes mixins.
-// dst.Mixins are cleared.
+// dst.Mixins and dst.Overrides are cleared.
 func (m *Mapping) apply(dst *dirmdpb.Metadata, dirKey string) error {
 	src := m.Dirs[dirKey]
 
@@ -124,6 +138,29 @@ func (m *Mapping) applyMixins(dst, src *dirmdpb.Metadata, srcDirKey string) erro
 			Merge(dst, imMD)
 		}
 	}
+
+	return nil
+}
+
+// applyFileMixins applies mixins to file override definitions
+func (m *Mapping) applyFileMixins() error {
+	// Process files. doesn't have to be longest to smallest since nothing
+	// is inherited for overrides; just the mixin metadata needs to be applied
+	// correctly.
+	for file, filemeta := range m.Files {
+		meta := cloneMD(filemeta)
+
+		if err := m.applyMixins(meta, filemeta, file); err != nil {
+			return errors.Annotate(err, "file %q", file).Err()
+		}
+
+		// Zero out mixins and overrides in case they are copied or inherited.
+		meta.Mixins = nil
+		meta.Overrides = nil
+
+		m.Files[file] = meta
+	}
+
 	return nil
 }
 

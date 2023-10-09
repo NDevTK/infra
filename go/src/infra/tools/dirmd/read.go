@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package dirmd
 
@@ -391,6 +391,44 @@ func (r *mappingReader) ReadGitFiles(ctx context.Context, repo *repoInfo, absTre
 	return scan.Err()
 }
 
+func (r *mappingReader) handleMixins(repo *repoInfo, absDir string, mixins []string) error {
+	for _, mx := range mixins {
+		mx := mx
+		if strings.Contains(mx, "\\") {
+			return errors.Reason(
+				"%s: mixin path %s contains back slashes; only forward slashes are allowed",
+				absDir, mx,
+			).Err()
+		}
+		if path.Base(mx) == "DIR_METADATA" {
+			return errors.Reason(
+				"%s imports a file with base name 'DIR_METADATA'; this is prohibited "+
+					"to avoid a wrong expectation that the imported file implicitly includes metadata from its ancesors",
+				absDir,
+			).Err()
+		}
+		if _, ok := repo.Mixins[mx]; !ok {
+			repo.Mixins[mx] = nil // mark as seen
+			r.eg.Go(func() error {
+				mxFileName := filepath.Join(repo.absRoot, filepath.FromSlash(strings.TrimPrefix(mx, "//")))
+				switch mxMd, err := ReadFile(mxFileName); {
+				case err != nil:
+					return errors.Annotate(err, "failed to read %q", mxFileName).Err()
+				case len(mxMd.Mixins) != 0:
+					return errors.Reason("%s: importing a mixin in a mixin is not supported", mxFileName).Err()
+				default:
+					r.mu.Lock()
+					repo.Mixins[mx] = mxMd
+					r.mu.Unlock()
+					return nil
+				}
+			})
+		}
+	}
+
+	return nil
+}
+
 // goReadDir starts a goroutine with r.eg to read the metadata of the directory.
 func (r *mappingReader) goReadDir(ctx context.Context, repo *repoInfo, absDir, key string, onlyDirmd bool) {
 	r.eg.Go(func() error {
@@ -411,48 +449,20 @@ func (r *mappingReader) goReadDir(ctx context.Context, repo *repoInfo, absDir, k
 		defer r.mu.Unlock()
 
 		r.Dirs[key] = md
-		r.processFiles(ctx, absDir, key, md)
+		if err := r.processFiles(ctx, absDir, key, md, repo); err != nil {
+			return err
+		}
 
 		// If the file imports mixins, read them too.
-		for _, mx := range md.Mixins {
-			mx := mx
-			if strings.Contains(mx, "\\") {
-				return errors.Reason(
-					"%s: mixin path %s contains back slashes; only forward slashes are allowed",
-					absDir, mx,
-				).Err()
-			}
-			if path.Base(mx) == "DIR_METADATA" {
-				return errors.Reason(
-					"%s imports a file with base name 'DIR_METADATA'; this is prohibited "+
-						"to avoid a wrong expectation that the imported file implicitly includes metadata from its ancesors",
-					absDir,
-				).Err()
-			}
-			if _, ok := repo.Mixins[mx]; !ok {
-				repo.Mixins[mx] = nil // mark as seen
-				r.eg.Go(func() error {
-					mxFileName := filepath.Join(repo.absRoot, filepath.FromSlash(strings.TrimPrefix(mx, "//")))
-					switch mxMd, err := ReadFile(mxFileName); {
-					case err != nil:
-						return errors.Annotate(err, "failed to read %q", mxFileName).Err()
-					case len(mxMd.Mixins) != 0:
-						return errors.Reason("%s: importing a mixin in a mixin is not supported", mxFileName).Err()
-					default:
-						r.mu.Lock()
-						repo.Mixins[mx] = mxMd
-						r.mu.Unlock()
-						return nil
-					}
-				})
-			}
+		if err := r.handleMixins(repo, absDir, md.Mixins); err != nil {
+			return err
 		}
 
 		return nil
 	})
 }
 
-func (r *mappingReader) processFiles(ctx context.Context, absDir string, key string, md *dirmdpb.Metadata) error {
+func (r *mappingReader) processFiles(ctx context.Context, absDir string, key string, md *dirmdpb.Metadata, repo *repoInfo) error {
 	// walk through all Dirs that have already been processed to identify file based overrides.
 	if md == nil {
 		return nil
@@ -486,6 +496,12 @@ func (r *mappingReader) processFiles(ctx context.Context, absDir string, key str
 				if cPath == key {
 					fkey := path.Join(key, fileName)
 					r.Files[fkey] = omd.Metadata
+					// Import mixin if override specifies it. The dirkey in this caase is
+					// the path to the file. The actual application of mixins to the metadata
+					// is done when we Compute or Reduce.
+					if err := r.handleMixins(repo, fkey, omd.Metadata.Mixins); err != nil {
+						return err
+					}
 				}
 			}
 		}

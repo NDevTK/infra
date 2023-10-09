@@ -11,5 +11,11 @@ overrides [
         component: "Some>Other>Component"
       }
     }
+  },
+  {
+    file_patterns: ["*.json"]
+    metadata {
+      mixins: "//go/src/infra/tools/dirmd/testdata/mixins/FOO_METADATA"
+    }
   }
 ]
