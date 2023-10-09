@@ -40,7 +40,7 @@ export interface Row<T extends Row<T>> {
 export interface Column {
   name: string,
   // Can return undefined to render no cell, or an optional colSpan
-  renderer: <T extends Row<any>>(column: Column, row: T) => string | [string, number] | undefined,
+  renderer: <T extends Row<any>>(column: Column, row: T) => string | [string, number] | [string, number|undefined, SxProps<Theme>] | undefined,
   align: any,
   isSortedBy?: boolean,
   isSortAscending?: boolean,
