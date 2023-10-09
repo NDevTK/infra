@@ -2044,17 +2044,31 @@ func updateRecoveryPeripheralAudioboxJackplugger(ctx context.Context, p *chromeo
 // TODO(xianuowang): Move this function out of UFS since UFS doesn't have knowledge of
 // how this should works.
 func extractServoComponents(st *chromeosLab.ServoTopology) []string {
+	addComponent := func(componentType string, components *map[string]bool) {
+		(*components)[componentType] = true
+		if strings.HasPrefix(componentType, "ccd") {
+			(*components)["ccd"] = true
+		}
+		switch componentType {
+		case "c2d2", "servo_micro":
+			(*components)["debug_header"] = true
+		case "servo_v4", "servo_v4p1":
+			(*components)["servo_v4x"] = true
+		}
+	}
+
 	var servoComponents []string
 	if st != nil && st.GetMain() != nil && st.GetMain().GetType() != "" {
 		components := make(map[string]bool)
-		components[st.GetMain().GetType()] = true
-		servoComponents = append(servoComponents, st.GetMain().GetType())
+		addComponent(st.GetMain().GetType(), &components)
 		for _, c := range st.GetChildren() {
-			if c == nil || c.GetType() == "" || components[c.GetType()] {
+			if c == nil || c.GetType() == "" {
 				continue
 			}
-			components[c.GetType()] = true
-			servoComponents = append(servoComponents, c.GetType())
+			addComponent(c.GetType(), &components)
+		}
+		for k := range components {
+			servoComponents = append(servoComponents, k)
 		}
 	}
 	return servoComponents
