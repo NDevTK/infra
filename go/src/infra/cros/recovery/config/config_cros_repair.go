@@ -3831,7 +3831,26 @@ func crosRepairActions() map[string]*Action {
 				"host:",
 				"command:crosid",
 			},
+			RecoveryActions: []string{
+				"Quick provision OS",
+				"Delete whitelabel_tag from vpd",
+			},
 			AllowFailAfterRecovery: true,
+		},
+		"Delete whitelabel_tag from vpd": {
+			Docs: []string{
+				"Remove whitelabel_tagfrom vpd as it can cause issue related to crosid readability.",
+			},
+			Dependencies: []string{
+				"Is not Flex device",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:vpd -d whitelabel_tag",
+				"background:false",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Battery cut-off by servo and wait for SSH": {
 			Docs: []string{
