@@ -5,264 +5,62 @@
 package dut
 
 import (
-	"strings"
-
-	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/auth/client/authcli"
-
 	"infra/cmd/shivas/cmdhelp"
 	"infra/cmd/shivas/utils"
 	"infra/cros/satlab/common/site"
 )
 
-// MakeShivasFlags takes an add DUT command and serializes its flags in such
-// a way that they will parse to same values.
-func makeAddShivasFlags(c *addDUT) flagmap {
-	out := make(flagmap)
-
-	// These other flags are inherited from shivas.
-	if c.newSpecsFile != "" {
-		// Do nothing.
-		// This flag is intentionally unsupported.
-		// We tweak the names of fields therefore we cannot deploy
-		// using a spec file.
-	}
-	if c.zone != "" {
-		//NOTE: Do not pass the zone.
-		// If you add dut with a zone field, it tries to update the asset's zone.
-		// This feature was added to make it easier for the labops for machine
-		// migration from on zone to another. if want to you pass zone, then also
-		// pass the rack information below.
-	}
-	if c.rack != "" {
-		// Do nothing.
-		// The rack must be qualified when passed to shivas.
-	}
-	if c.hostname != "" {
-		// Do nothing. The hostname must be qualified when passed to
-		// shivas.
-	}
-	if c.asset != "" {
-		out["asset"] = []string{c.asset}
-	}
-	if c.servo != "" {
-		// Do nothing.
-		// The servo must be qualified when passed to shivas.
-	}
-	if c.servoSerial != "" {
-		out["servo-serial"] = []string{c.servoSerial}
-	}
-	if c.servoSetupType != "" {
-		out["servo-setup"] = []string{c.servoSetupType}
-	}
-	if c.servoDockerContainerName != "" {
-		out["servod-docker"] = []string{c.servoDockerContainerName}
-	}
-	if len(c.pools) != 0 {
-		out["pools"] = []string{strings.Join(c.pools, ",")}
-	}
-	if len(c.licenseTypes) != 0 {
-		out["licensetype"] = []string{strings.Join(c.licenseTypes, ",")}
-	}
-	if c.rpm != "" {
-		out["rpm"] = []string{c.rpm}
-	}
-	if c.rpmOutlet != "" {
-		out["rpm-outlet"] = []string{c.rpmOutlet}
-	}
-	if c.ignoreUFS {
-		// This flag is unsupported.
-	}
-	if len(c.deployTags) != 0 {
-		out["deploy-tags"] = []string{strings.Join(c.deployTags, ",")}
-	}
-	if len(c.tags) != 0 {
-		out["tags"] = []string{strings.Join(c.tags, ",")}
-	}
-	if c.state != "" {
-		// This flag is unsupported.
-	}
-	if c.description != "" {
-		out["desc"] = []string{c.description}
-	}
-	if len(c.chameleons) != 0 {
-		out["chameleons"] = []string{strings.Join(c.chameleons, ",")}
-	}
-	if len(c.cameras) != 0 {
-		out["cameras"] = []string{strings.Join(c.cameras, ",")}
-	}
-	if len(c.cables) != 0 {
-		out["cables"] = []string{strings.Join(c.cables, ",")}
-	}
-	if c.antennaConnection != "" {
-		out["antennaconnection"] = []string{c.antennaConnection}
-	}
-	if c.router != "" {
-		out["router"] = []string{c.router}
-	}
-	if c.facing != "" {
-		out["facing"] = []string{c.facing}
-	}
-	if c.light != "" {
-		out["light"] = []string{c.light}
-	}
-	if c.carrier != "" {
-		out["carrier"] = []string{c.carrier}
-	}
-	if c.audioBoard {
-		out["audioboard"] = []string{}
-	}
-	if c.audioBox {
-		out["audiobox"] = []string{}
-	}
-	if c.atrus {
-		out["atrus"] = []string{}
-	}
-	if c.wifiCell {
-		out["wificell"] = []string{}
-	}
-	if c.touchMimo {
-		out["touchmimo"] = []string{}
-	}
-	if c.cameraBox {
-		out["camerabox"] = []string{}
-	}
-	if c.chaos {
-		out["chaos"] = []string{}
-	}
-	if c.audioCable {
-		out["audiocable"] = []string{}
-	}
-	if c.smartUSBHub {
-		out["smartusbhub"] = []string{}
-	}
-	if c.model != "" {
-		out["model"] = []string{c.model}
-	}
-	if c.board != "" {
-		out["board"] = []string{c.board}
-	}
-	if c.envFlags.GetNamespace() != "" {
-		out["namespace"] = []string{c.envFlags.GetNamespace()}
-	}
-	return out
-}
-
-// ShivasAddDUT contains all the commands for "satlab add dut" inherited from shivas.
-//
-// Keep this up to date with infra/cmd/shivas/ufs/subcmds/dut/add_dut.go
-type shivasAddDUT struct {
-	subcommands.CommandRunBase
-
-	authFlags   authcli.Flags
-	envFlags    site.EnvFlags
-	commonFlags site.CommonFlags
-
-	newSpecsFile             string
-	hostname                 string
-	asset                    string
-	servo                    string
-	servoSerial              string
-	servoSetupType           string
-	servoDockerContainerName string
-	licenseTypes             []string
-	licenseIds               []string
-	pools                    []string
-	rpm                      string
-	rpmOutlet                string
-
-	ignoreUFS        bool
-	deployTags       []string
-	deploymentTicket string
-	tags             []string
-	state            string
-	description      string
-
-	// Asset location fields
-	zone string
-	rack string
-
-	// ACS DUT fields
-	chameleons        []string
-	cameras           []string
-	antennaConnection string
-	router            string
-	cables            []string
-	facing            string
-	light             string
-	carrier           string
-	audioBoard        bool
-	audioBox          bool
-	atrus             bool
-	wifiCell          bool
-	touchMimo         bool
-	cameraBox         bool
-	chaos             bool
-	audioCable        bool
-	smartUSBHub       bool
-
-	// Machine specific fields
-	model string
-	board string
-}
-
-// DefaultDeployTaskActions are the default actoins run at deploy time.
-// TODO(gregorynisbet): this about which actions make sense for satlab.
-var defaultDeployTaskActions = []string{"servo-verification", "update-label", "run-pre-deploy-verification"}
-
 // Register flags inherited from shivas in place in the add DUT command.
 // Keep this up to date with infra/cmd/shivas/ufs/subcmds/dut/add_dut.go
-func registerAddShivasFlags(c *addDUT) {
+func registerAddShivasFlags(c *addDUTCmd) {
 	c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
-	c.envFlags.Register(&c.Flags)
-	c.commonFlags.Register(&c.Flags)
 
-	c.Flags.StringVar(&c.newSpecsFile, "f", "", cmdhelp.DUTRegistrationFileText)
+	c.Flags.StringVar(&c.NewSpecsFile, "f", "", cmdhelp.DUTRegistrationFileText)
 
 	// Asset location fields
-	c.Flags.StringVar(&c.zone, "zone", site.GetUFSZone(), "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)
-	c.Flags.StringVar(&c.rack, "rack", "", "Rack that the asset is in.")
+	c.Flags.StringVar(&c.Zone, "zone", site.GetUFSZone(), "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)
+	c.Flags.StringVar(&c.Rack, "rack", "", "Rack that the asset is in.")
 
 	// DUT/MachineLSE common fields
-	c.Flags.StringVar(&c.hostname, "name", "", "hostname of the DUT.")
-	c.Flags.StringVar(&c.asset, "asset", "", "asset tag of the machine.")
-	c.Flags.StringVar(&c.servo, "servo", "", "servo hostname and port as hostname:port. (port is assigned by UFS if missing)")
-	c.Flags.StringVar(&c.servoSerial, "servo-serial", "", "serial number for the servo. Can skip for Servo V3.")
-	c.Flags.StringVar(&c.servoSetupType, "servo-setup", "", "servo setup type. Allowed values are "+cmdhelp.ServoSetupTypeAllowedValuesString()+", UFS assigns REGULAR if unassigned.")
-	c.Flags.StringVar(&c.servoDockerContainerName, "servod-docker", "", "servod docker container name. Required if serovd is running on docker")
-	c.Flags.Var(utils.CSVString(&c.pools), "pools", "comma separated pools assigned to the DUT. 'satlab-<identifier>' is used if nothing is specified")
-	c.Flags.Var(utils.CSVString(&c.licenseTypes), "licensetype", cmdhelp.LicenseTypeHelpText)
-	c.Flags.Var(utils.CSVString(&c.licenseIds), "licenseid", "the name of the license type. Can specify multiple comma separated values.")
-	c.Flags.StringVar(&c.rpm, "rpm", "", "rpm assigned to the DUT.")
-	c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "rpm outlet used for the DUT.")
-	c.Flags.BoolVar(&c.ignoreUFS, "ignore-ufs", false, "skip updating UFS create a deploy task.")
-	c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma separated tags for deployment task.")
-	c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine.")
-	c.Flags.Var(utils.CSVString(&c.tags), "tags", "comma separated tags.")
-	c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
-	c.Flags.StringVar(&c.description, "desc", "", "description for the machine.")
+	c.Flags.StringVar(&c.Hostname, "name", "", "hostname of the DUT.")
+	c.Flags.StringVar(&c.Asset, "asset", "", "asset tag of the machine.")
+	c.Flags.StringVar(&c.Servo, "servo", "", "servo hostname and port as hostname:port. (port is assigned by UFS if missing)")
+	c.Flags.StringVar(&c.ServoSerial, "servo-serial", "", "serial number for the servo. Can skip for Servo V3.")
+	c.Flags.StringVar(&c.ServoSetupType, "servo-setup", "", "servo setup type. Allowed values are "+cmdhelp.ServoSetupTypeAllowedValuesString()+", UFS assigns REGULAR if unassigned.")
+	c.Flags.StringVar(&c.ServoDockerContainerName, "servod-docker", "", "servod docker container name. Required if serovd is running on docker")
+	c.Flags.Var(utils.CSVString(&c.Pools), "pools", "comma separated pools assigned to the DUT. 'satlab-<identifier>' is used if nothing is specified")
+	c.Flags.Var(utils.CSVString(&c.LicenseTypes), "licensetype", cmdhelp.LicenseTypeHelpText)
+	c.Flags.Var(utils.CSVString(&c.LicenseIds), "licenseid", "the name of the license type. Can specify multiple comma separated values.")
+	c.Flags.StringVar(&c.Rpm, "rpm", "", "rpm assigned to the DUT.")
+	c.Flags.StringVar(&c.RpmOutlet, "rpm-outlet", "", "rpm outlet used for the DUT.")
+	c.Flags.BoolVar(&c.IgnoreUFS, "ignore-ufs", false, "skip updating UFS create a deploy task.")
+	c.Flags.Var(utils.CSVString(&c.DeployTags), "deploy-tags", "comma separated tags for deployment task.")
+	c.Flags.StringVar(&c.DeploymentTicket, "ticket", "", "the deployment ticket for this machine.")
+	c.Flags.Var(utils.CSVString(&c.Tags), "tags", "comma separated tags.")
+	c.Flags.StringVar(&c.State, "state", "", cmdhelp.StateHelp)
+	c.Flags.StringVar(&c.Description, "desc", "", "description for the machine.")
 
 	// ACS DUT fields
-	c.Flags.Var(utils.CSVString(&c.chameleons), "chameleons", cmdhelp.ChameleonTypeHelpText)
-	c.Flags.Var(utils.CSVString(&c.cameras), "cameras", cmdhelp.CameraTypeHelpText)
-	c.Flags.Var(utils.CSVString(&c.cables), "cables", cmdhelp.CableTypeHelpText)
-	c.Flags.StringVar(&c.antennaConnection, "antennaconnection", "", cmdhelp.AntennaConnectionHelpText)
-	c.Flags.StringVar(&c.router, "router", "", cmdhelp.RouterHelpText)
-	c.Flags.StringVar(&c.facing, "facing", "", cmdhelp.FacingHelpText)
-	c.Flags.StringVar(&c.light, "light", "", cmdhelp.LightHelpText)
-	c.Flags.StringVar(&c.carrier, "carrier", "", "name of the carrier.")
-	c.Flags.BoolVar(&c.audioBoard, "audioboard", false, "adding this flag will specify if audioboard is present")
-	c.Flags.BoolVar(&c.audioBox, "audiobox", false, "adding this flag will specify if audiobox is present")
-	c.Flags.BoolVar(&c.atrus, "atrus", false, "adding this flag will specify if atrus is present")
-	c.Flags.BoolVar(&c.wifiCell, "wificell", false, "adding this flag will specify if wificell is present")
-	c.Flags.BoolVar(&c.touchMimo, "touchmimo", false, "adding this flag will specify if touchmimo is present")
-	c.Flags.BoolVar(&c.cameraBox, "camerabox", false, "adding this flag will specify if camerabox is present")
-	c.Flags.BoolVar(&c.chaos, "chaos", false, "adding this flag will specify if chaos is present")
-	c.Flags.BoolVar(&c.audioCable, "audiocable", false, "adding this flag will specify if audiocable is present")
-	c.Flags.BoolVar(&c.smartUSBHub, "smartusbhub", false, "adding this flag will specify if smartusbhub is present")
+	c.Flags.Var(utils.CSVString(&c.Chameleons), "chameleons", cmdhelp.ChameleonTypeHelpText)
+	c.Flags.Var(utils.CSVString(&c.Cameras), "cameras", cmdhelp.CameraTypeHelpText)
+	c.Flags.Var(utils.CSVString(&c.Cables), "cables", cmdhelp.CableTypeHelpText)
+	c.Flags.StringVar(&c.AntennaConnection, "antennaconnection", "", cmdhelp.AntennaConnectionHelpText)
+	c.Flags.StringVar(&c.Router, "router", "", cmdhelp.RouterHelpText)
+	c.Flags.StringVar(&c.Facing, "facing", "", cmdhelp.FacingHelpText)
+	c.Flags.StringVar(&c.Light, "light", "", cmdhelp.LightHelpText)
+	c.Flags.StringVar(&c.Carrier, "carrier", "", "name of the carrier.")
+	c.Flags.BoolVar(&c.AudioBoard, "audioboard", false, "adding this flag will specify if audioboard is present")
+	c.Flags.BoolVar(&c.AudioBox, "audiobox", false, "adding this flag will specify if audiobox is present")
+	c.Flags.BoolVar(&c.Atrus, "atrus", false, "adding this flag will specify if atrus is present")
+	c.Flags.BoolVar(&c.WifiCell, "wificell", false, "adding this flag will specify if wificell is present")
+	c.Flags.BoolVar(&c.TouchMimo, "touchmimo", false, "adding this flag will specify if touchmimo is present")
+	c.Flags.BoolVar(&c.CameraBox, "camerabox", false, "adding this flag will specify if camerabox is present")
+	c.Flags.BoolVar(&c.Chaos, "chaos", false, "adding this flag will specify if chaos is present")
+	c.Flags.BoolVar(&c.AudioCable, "audiocable", false, "adding this flag will specify if audiocable is present")
+	c.Flags.BoolVar(&c.SmartUSBHub, "smartusbhub", false, "adding this flag will specify if smartusbhub is present")
 
 	// Machine fields
 	// crbug.com/1188488 showed us that it might be wise to add model/board during deployment if required.
-	c.Flags.StringVar(&c.model, "model", "", "model of the DUT undergoing deployment. If not given, HaRT data is used. Fails if model is not known for the DUT")
-	c.Flags.StringVar(&c.board, "board", "", "board of the DUT undergoing deployment. If not given, HaRT data is used. Fails if board is not known for the DUT")
+	c.Flags.StringVar(&c.Model, "model", "", "model of the DUT undergoing deployment. If not given, HaRT data is used. Fails if model is not known for the DUT")
+	c.Flags.StringVar(&c.Board, "board", "", "board of the DUT undergoing deployment. If not given, HaRT data is used. Fails if board is not known for the DUT")
 }

@@ -8,19 +8,11 @@ import (
 	"os/exec"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/executor"
 )
-
-// cmdRunTracker holds the last command run.
-type cmdRunTracker struct {
-	lastCall string
-}
-
-// fakeRunCmd returns benign data but tracks the command that was executed.
-func (c *cmdRunTracker) fakeRunCmd(e *exec.Cmd) error {
-	c.lastCall = e.String()
-	return nil
-}
 
 // TestDUT_add ensures for given inputs, we run a specific command.
 // This works largely because we sort the flags map beforehand so we have
@@ -51,8 +43,11 @@ func TestDUT_add(t *testing.T) {
 
 			// Set package level `commandRunner` to replace command execution
 			// with our own function
-			c := cmdRunTracker{}
-			commandRunner = c.fakeRunCmd
+			commander := &executor.FakeCommander{
+				FakeFn: func(c *exec.Cmd) ([]byte, error) {
+					return []byte(c.String()), nil
+				},
+			}
 
 			for key, val := range tt.inputEnv {
 				t.Setenv(key, val)
@@ -66,13 +61,13 @@ func TestDUT_add(t *testing.T) {
 				Rack:       "rack",
 				ShivasArgs: map[string][]string{"pools": {"swimming"}},
 			}
-			err := d.add()
+			out, err := d.add(commander)
 			if err != nil {
 				t.Errorf("unexpected err: %s", err)
 			}
 
-			if c.lastCall != tt.wantCall {
-				t.Errorf("got: %s, expected: %s", c.lastCall, tt.wantCall)
+			if diff := cmp.Diff(out, tt.wantCall); diff != "" {
+				t.Errorf("diff: %v\n", diff)
 			}
 		})
 	}

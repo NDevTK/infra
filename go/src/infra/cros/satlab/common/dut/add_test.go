@@ -14,43 +14,37 @@ func TestHasServo(t *testing.T) {
 	t.Parallel()
 	satlabId := "satlab123"
 	Convey("Register servo for labstation", t, func() {
-		ad := &addDUT{
-			shivasAddDUT: shivasAddDUT{
-				servo:       "servo_1",
-				servoSerial: "servo_serial",
-			},
+		ad := &AddDUT{
+			Servo:       "servo_1",
+			ServoSerial: "servo_serial",
 		}
-		if yes := ad.setupServoArguments(satlabId); !yes {
+		if yes := ad.setupServo(satlabId); !yes {
 			t.Errorf("Expected servo is not detected but expected!")
 		}
 		So(ad.qualifiedServo, ShouldEqual, "satlab-satlab123-servo_1")
-		So(ad.servoDockerContainerName, ShouldEqual, "")
+		So(ad.ServoDockerContainerName, ShouldEqual, "")
 	})
 	Convey("Register servo for container", t, func() {
-		ad := &addDUT{
-			shivasAddDUT: shivasAddDUT{
-				servo:       "",
-				servoSerial: "servo_serial",
-			},
+		ad := &AddDUT{
+			Servo:       "",
+			ServoSerial: "servo_serial",
 		}
-		if yes := ad.setupServoArguments(satlabId); !yes {
+		if yes := ad.setupServo(satlabId); !yes {
 			t.Errorf("Expected servo is not detected but expected!")
 		}
 		So(ad.qualifiedServo, ShouldEqual, "satlab-satlab123--docker_servod:9999")
-		So(ad.servoDockerContainerName, ShouldEqual, "satlab-satlab123--docker_servod")
+		So(ad.ServoDockerContainerName, ShouldEqual, "satlab-satlab123--docker_servod")
 	})
 	Convey("Servo-less setup", t, func() {
-		ad := &addDUT{
-			shivasAddDUT: shivasAddDUT{
-				servo:       "",
-				servoSerial: "",
-			},
+		ad := &AddDUT{
+			Servo:       "",
+			ServoSerial: "",
 		}
-		if yes := ad.setupServoArguments(satlabId); yes {
+		if yes := ad.setupServo(satlabId); yes {
 			t.Errorf("Expected servo is detected but not expected!")
 		}
 		So(ad.qualifiedServo, ShouldEqual, "")
-		So(ad.servoDockerContainerName, ShouldEqual, "")
+		So(ad.ServoDockerContainerName, ShouldEqual, "")
 	})
 }
 
@@ -79,6 +73,11 @@ func TestValidateHostname(t *testing.T) {
 		{
 			testname: "too long",
 			hostname: "eli-123-eli-123-eli-123-eli-123-eli-123-eli-123-",
+			wantErr:  true,
+		},
+		{
+			testname: "empty string",
+			hostname: "",
 			wantErr:  true,
 		},
 	}

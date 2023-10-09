@@ -5,8 +5,7 @@
 package shivas
 
 import (
-	"fmt"
-	"os"
+	"bytes"
 	"os/exec"
 
 	"go.chromium.org/luci/common/errors"
@@ -14,6 +13,8 @@ import (
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/satlabcommands"
+	e "infra/cros/satlab/common/utils/errors"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 // Rack is a group of arguments for adding a rack.
@@ -24,21 +25,21 @@ type Rack struct {
 }
 
 // CheckAndAdd runs check and then update if the item does not exist.
-func (r *Rack) CheckAndAdd() error {
-	rackMsg, err := r.check()
+func (r *Rack) CheckAndAdd(executor executor.IExecCommander) (string, error) {
+	rackMsg, err := r.check(executor)
 	if err != nil {
-		return errors.Annotate(err, "check and update").Err()
+		return "", errors.Annotate(err, "check and update").Err()
 	}
+
 	if len(rackMsg) == 0 {
-		return r.add()
+		return r.add(executor)
 	} else {
-		fmt.Fprintf(os.Stderr, "Rack already added\n")
+		return "", e.RackExist
 	}
-	return nil
 }
 
-// Check checks if a rack exists.
-func (r *Rack) check() (string, error) {
+// check checks if a rack exists.
+func (r *Rack) check(executor executor.IExecCommander) (string, error) {
 	args := (&commands.CommandWithFlags{
 		Commands:       []string{paths.ShivasCLI, "get", "rack"},
 		PositionalArgs: []string{r.Name},
@@ -46,20 +47,22 @@ func (r *Rack) check() (string, error) {
 			"namespace": {r.Namespace},
 		},
 	}).ToCommand()
-	fmt.Fprintf(os.Stderr, "Add rack: run %s\n", args)
+	var b bytes.Buffer
+
 	command := exec.Command(args[0], args[1:]...)
-	command.Stderr = os.Stderr
-	rackMsgBytes, err := command.Output()
-	rackMsg := satlabcommands.TrimOutput(rackMsgBytes)
+	command.Stderr = &b
+	rackMsgBytes, err := executor.Exec(command)
+
 	if err != nil {
-		return "", errors.Annotate(err, "add rack").Err()
+		return "", errors.Annotate(err, "check rack - %s", b.String()).Err()
 	}
+	rackMsg := satlabcommands.TrimOutput(rackMsgBytes)
+
 	return rackMsg, nil
 }
 
-// Add adds a rack unconditionally to UFS.
-func (r *Rack) add() error {
-	fmt.Fprintf(os.Stderr, "Adding rack\n")
+// add adds a rack unconditionally to UFS.
+func (r *Rack) add(executor executor.IExecCommander) (string, error) {
 	args := (&commands.CommandWithFlags{
 		Commands: []string{paths.ShivasCLI, "add", "rack"},
 		Flags: map[string][]string{
@@ -69,10 +72,14 @@ func (r *Rack) add() error {
 			"zone":      {r.Zone},
 		},
 	}).ToCommand()
-	fmt.Fprintf(os.Stderr, "Add rack: run %s\n", args)
+
+	var b bytes.Buffer
 	command := exec.Command(args[0], args[1:]...)
-	command.Stdout = os.Stdout
-	command.Stderr = os.Stderr
-	err := command.Run()
-	return errors.Annotate(err, "add rack").Err()
+	command.Stderr = &b
+	out, err := executor.Exec(command)
+	if err != nil {
+		return "", errors.Annotate(err, "add rack - %s", b.String()).Err()
+	}
+
+	return string(out), nil
 }

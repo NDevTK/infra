@@ -8,6 +8,8 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
+
+	"infra/cros/recovery/models"
 )
 
 // MockBuildService This object is only for testing
@@ -40,6 +42,11 @@ func (m *MockBuildService) ListAvailableMilestones(ctx context.Context, board, m
 func (m *MockBuildService) FindMostStableBuild(ctx context.Context, board string) (string, error) {
 	args := m.Called(ctx, board)
 	return args.String(0), args.Error(1)
+}
+
+func (m *MockBuildService) FindMostStableBuildByBoardAndModel(ctx context.Context, board, model string) (*models.RecoveryVersion, error) {
+	args := m.Called(ctx, board)
+	return args.Get(0).(*models.RecoveryVersion), args.Error(1)
 }
 
 // ListBuildsForMilestone Mock the function instead of calling an API.

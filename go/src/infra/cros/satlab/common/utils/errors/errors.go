@@ -6,5 +6,8 @@ package errors
 import "errors"
 
 var (
-	NotMatch = errors.New("can't match the value")
+	NotMatch   = errors.New("can't match the value")
+	RackExist  = errors.New("rack already added")
+	AssetExist = errors.New("asset already added")
+	DUTExist   = errors.New("DUT already added")
 )

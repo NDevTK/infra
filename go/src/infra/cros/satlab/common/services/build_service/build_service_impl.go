@@ -8,10 +8,12 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/genproto/protobuf/field_mask"
 
+	"infra/cros/recovery/models"
 	moblabapi "infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/common/utils/collection"
 	"infra/cros/satlab/common/utils/parser"
@@ -149,28 +151,88 @@ func (b *BuildServiceImpl) ListAvailableMilestones(ctx context.Context, board st
 	return res, nil
 }
 
-// FindMostStableBuild find the stable build version by given board.
-//
-// string board is the board name that we use it as a filter.
-func (b *BuildServiceImpl) FindMostStableBuild(ctx context.Context, board string) (string, error) {
+func (b *BuildServiceImpl) findMostStableBuildByBoard(ctx context.Context, board string) (*moblabapipb.Build, error) {
 	buildTarget := ParseBuildTargetsPath(board)
 
 	req := &moblabapipb.FindMostStableBuildRequest{
 		BuildTarget: buildTarget,
 	}
 
-	res, err := b.client.FindMostStableBuild(ctx, req)
+	resp, err := b.client.FindMostStableBuild(ctx, req)
+	if err != nil {
+		return nil, err
+	}
 
+	return resp.GetBuild(), nil
+}
+
+func buildToOS(milestone, build string) string {
+	return fmt.Sprintf("R%s-%s", milestone, build)
+}
+
+// FindMostStableBuild find the stable build version by given board.
+//
+// string board is the board name that we use it as a filter.
+func (b *BuildServiceImpl) FindMostStableBuild(ctx context.Context, board string) (string, error) {
+	resp, err := b.findMostStableBuildByBoard(ctx, board)
 	if err != nil {
 		return "", err
 	}
 
-	milestone, err := parser.ExtractMilestoneFrom(res.GetBuild().GetMilestone())
+	milestone, err := parser.ExtractMilestoneFrom(resp.GetMilestone())
 	if err != nil {
-		return "", errors.New(fmt.Sprintf("milestone pattern doesn't match %v\n", res.GetBuild().GetMilestone()))
+		return "", errors.New(fmt.Sprintf("milestone pattern doesn't match %v\n", resp.GetMilestone()))
 	}
 
-	return fmt.Sprintf("R%s-%s", milestone, res.GetBuild().GetBuildVersion()), nil
+	return buildToOS(milestone, resp.GetBuildVersion()), nil
+}
+
+// FindMostStableBuildByBoardAndModel find the stable recovery version by board and model
+func (b *BuildServiceImpl) FindMostStableBuildByBoardAndModel(ctx context.Context, board, model string) (*models.RecoveryVersion, error) {
+	resp, err := b.findMostStableBuildByBoard(ctx, board)
+	if err != nil {
+		return nil, err
+	}
+	milestone, err := parser.ExtractMilestoneFrom(resp.GetMilestone())
+	os := buildToOS(milestone, resp.GetBuildVersion())
+	fw := resp.GetRwFirmwareVersion()
+
+	listMilestonesRequest := &moblabapipb.ListBuildsRequest{
+		Parent: ParseModelPath(board, model),
+		Filter: "type=firmware",
+	}
+	listMilestonesResponse := b.client.ListBuilds(ctx, listMilestonesRequest)
+	milestoneBuild, err := listMilestonesResponse.Next()
+	if err != nil {
+		return nil, err
+	}
+	fwMilestoneList := strings.Split(milestoneBuild.GetMilestone(), "/")
+	if len(fwMilestoneList) < 2 {
+		return nil, errors.New("Invalid milestone")
+	}
+	fwMilestone := fwMilestoneList[1]
+
+	// fetch firmware build version
+	listBuildRequest := &moblabapipb.ListBuildsRequest{
+		Parent:   ParseModelPath(board, model),
+		Filter:   fmt.Sprintf("type=firmware+milestone=milestones/%s", fwMilestone),
+		PageSize: 1,
+	}
+	listBuildResponse := b.client.ListBuilds(ctx, listBuildRequest)
+	firmwareBuild, err := listBuildResponse.Next()
+	if err != nil {
+		return nil, err
+	}
+	fwImage := fmt.Sprintf("%s-firmware/R%s-%s", board, fwMilestone, firmwareBuild.GetBuildVersion())
+
+	return &models.RecoveryVersion{
+		Board:     board,
+		Model:     model,
+		OsImage:   os,
+		FwVersion: fw,
+		FwImage:   fwImage,
+	}, nil
+
 }
 
 // ListBuildsForMilestone returns all build versions by given board, model, and milestone.
