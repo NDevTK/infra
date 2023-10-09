@@ -20,7 +20,7 @@ func DownloadImageToServoUSBDrive(gsImagePath, imageName string) *Configuration 
 	// Remove closing plan as we do not collect any logs or update states kin spacial ways.
 	delete(rc.Plans, PlanClosing)
 	cp := rc.Plans[PlanCrOS]
-	const targetAction = "Download stable image to USB-key"
+	const targetAction = "Call servod to download image to USB-key"
 	cp.CriticalActions = []string{targetAction}
 	var newArgs []string
 	if gsImagePath != "" {
