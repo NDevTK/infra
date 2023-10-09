@@ -459,12 +459,62 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_battery_chargable_or_good_level",
 			RecoveryActions: []string{
+				"Restore changer control",
+				"Recover Charging ability and wait",
 				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive",
 			},
+		},
+		"Restore changer control": {
+			Docs: []string{
+				"Restore charging control.",
+			},
+			Conditions: []string{
+				"DUT has CrOS EC",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:ectool chargecontrol normal",
+			},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+		},
+		"Recover Charging ability and wait": {
+			Docs: []string{
+				"Restore PD for the DUT by long fake disconnect.",
+				"Fo now enable only for board wwithout chromeOS EC.",
+			},
+			Conditions: []string{
+				"DUT doesn't have CrOS EC",
+			},
+			Dependencies: []string{
+				"Power OFF DUT by servo",
+				"Sleep 10 seconds",
+				"Servo Fake disconnect 20 seconds",
+				"Sleep 10 seconds",
+				"Sleep 10 seconds",
+				"Power DUT by power-button press",
+				"Sleep 10 seconds",
+				"Power ON DUT by servo",
+				"Wait to be pingable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Servo Fake disconnect 20 seconds": {
+			Docs: []string{
+				"Fake disconnect servo from DUT for 20 seconds.",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:servo_v4_uart_cmd",
+				"string_value:fakedisconnect 100 20000",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Power is recognized by DUT": {
 			Docs: []string{
@@ -2313,11 +2363,24 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Is servod running",
 			},
+			ExecName: "servo_check_servod_control",
 			ExecExtraArgs: []string{
 				"command:supports_cros_ec_communication",
 				"expected_string_value:yes",
 			},
+		},
+		"DUT doesn't have CrOS EC": {
+			Docs: []string{
+				"Verify if DUT doesn have ChromeOS firmware for EC",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
 			ExecName: "servo_check_servod_control",
+			ExecExtraArgs: []string{
+				"command:supports_cros_ec_communication",
+				"expected_string_value:no",
+			},
 		},
 		"Install OS in recovery mode by booting from servo USB-drive": {
 			Docs: []string{
@@ -2652,6 +2715,20 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"command:power_state",
 				"string_value:on",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Power DUT by power-button press": {
+			Docs: []string{
+				"Turn DUT ON by press to power-button.",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:power_key",
+				"string_value:tab",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
