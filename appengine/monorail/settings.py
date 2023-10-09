@@ -520,6 +520,7 @@ label_prefix_allowlist = [
     'cob-migrated-to-b-',
     'incident-id-',
     'version-',
+    'copybara-migrate-c-',
 ]
 
 
