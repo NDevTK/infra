@@ -13,6 +13,7 @@ import (
 
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/executor"
+	"infra/cros/satlab/common/utils/misc"
 )
 
 // Decision is a classification of a line in a file.
@@ -46,7 +47,7 @@ func GetDockerHostBoxIdentifier(ctx context.Context, executor executor.IExecComm
 	out, err := executor.Exec(exec.CommandContext(ctx, paths.GetHostIdentifierScript))
 	// Immediately normalize the satlab prefix to lowercase. It will save a lot of
 	// trouble later.
-	return strings.ToLower(TrimOutput(out)), errors.Annotate(err, "get host identifier").Err()
+	return strings.ToLower(misc.TrimOutput(out)), errors.Annotate(err, "get host identifier").Err()
 }
 
 // parseOutput parse the raw data "<value>\\n"

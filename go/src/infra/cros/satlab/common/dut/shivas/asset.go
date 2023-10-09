@@ -12,9 +12,9 @@ import (
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/satlabcommands"
 	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
+	"infra/cros/satlab/common/utils/misc"
 )
 
 // Asset is a group of parameters needed to add an asset to UFS.
@@ -64,7 +64,7 @@ func (a *Asset) check(executor executor.IExecCommander) (string, error) {
 	if err != nil {
 		return "", errors.Annotate(err, "check asset - %s", b.String()).Err()
 	}
-	assetMsg := satlabcommands.TrimOutput(assetMsgBytes)
+	assetMsg := misc.TrimOutput(assetMsgBytes)
 
 	return assetMsg, nil
 }

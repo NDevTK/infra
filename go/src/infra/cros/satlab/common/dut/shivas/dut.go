@@ -13,10 +13,10 @@ import (
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
+	"infra/cros/satlab/common/utils/misc"
 )
 
 // DUT contains all the information necessary to add a DUT.
@@ -61,7 +61,7 @@ func (d *DUT) check(executor executor.IExecCommander) (string, error) {
 	command.Stderr = &b
 	out, err := executor.Exec(command)
 
-	dutMsg := satlabcommands.TrimOutput(out)
+	dutMsg := misc.TrimOutput(out)
 	if err != nil {
 		return "", errors.Annotate(err, "check DUT in UFS: running %s\nreascon: %s", strings.Join(args, " "), b.String()).
 			Err()

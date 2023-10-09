@@ -71,3 +71,27 @@ func writeLocalStableVersion(recovery_version *models.RecoveryVersion, path stri
 
 	return nil
 }
+
+// MakeTempFile makes a temporary file.
+func MakeTempFile(content string) (string, error) {
+	f, err := os.CreateTemp("", "")
+	if err != nil {
+		return "", errors.Annotate(err, "makeTempFile").Err()
+	}
+	name := f.Name()
+	if err := f.Close(); err != nil {
+		return "", errors.Annotate(err, "makeTempFile").Err()
+	}
+	if err := os.WriteFile(name, []byte(content), 0o077); err != nil {
+		return "", errors.Annotate(err, "makeTempFile").Err()
+	}
+	return name, nil
+}
+
+// TrimOutput trims trailing whitespace from command output.
+func TrimOutput(output []byte) string {
+	if len(output) == 0 {
+		return ""
+	}
+	return strings.TrimRight(string(output), "\n\t")
+}

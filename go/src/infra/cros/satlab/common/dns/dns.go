@@ -17,6 +17,7 @@ import (
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/utils/executor"
+	"infra/cros/satlab/common/utils/misc"
 )
 
 // A classifier takes a line and determines whether to keep, remove, or modify it.
@@ -96,7 +97,7 @@ func ReadHostsToHostMap(
 
 // SetDNSFileContent set the content of the DNS file.
 func SetDNSFileContent(content string) error {
-	name, err := satlabcommands.MakeTempFile(content)
+	name, err := misc.MakeTempFile(content)
 	if err != nil {
 		return errors.Annotate(err, "set dns file content").Err()
 	}
@@ -154,7 +155,7 @@ func ensureRecords(
 
 // WriteBackup set the content of the backup DNS file.
 func writeBackup(content string) error {
-	name, err := satlabcommands.MakeTempFile(content)
+	name, err := misc.MakeTempFile(content)
 	if err != nil {
 		return errors.Annotate(err, "set backup dns file content").Err()
 	}

@@ -12,9 +12,9 @@ import (
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/satlabcommands"
 	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
+	"infra/cros/satlab/common/utils/misc"
 )
 
 // Rack is a group of arguments for adding a rack.
@@ -56,7 +56,7 @@ func (r *Rack) check(executor executor.IExecCommander) (string, error) {
 	if err != nil {
 		return "", errors.Annotate(err, "check rack - %s", b.String()).Err()
 	}
-	rackMsg := satlabcommands.TrimOutput(rackMsgBytes)
+	rackMsg := misc.TrimOutput(rackMsgBytes)
 
 	return rackMsg, nil
 }
