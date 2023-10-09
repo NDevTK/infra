@@ -1995,7 +1995,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(peri.GetSmartUsbhub(), ShouldBeTrue)
 			So(peri.Servo.GetServoType(), ShouldEqual, "fake-type")
 			So(peri.Servo.GetServoTopology(), ShouldResembleProto, topology)
-			So(peri.Servo.GetServoComponent(), ShouldResemble, []string{"v4", "c2d2", "debug_header"})
+			So(peri.Servo.GetServoComponent(), ShouldResemble, []string{"v4", "c2d2"})
 			So(peri.GetWifi().GetWifiRouters()[0].GetHostname(), ShouldEqual, machineName+"-router")
 			So(peri.GetWifi().GetWifiRouters()[0].GetState(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
 			So(peri.GetWifi().GetWifiRouters()[1].GetHostname(), ShouldEqual, machineName+"-pcap")
