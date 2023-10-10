@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "632e733e_9e205f50",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummarySearchParams.tsx",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1545642
+      },
+      "writtenOn": "2023-10-10T16:10:39Z",
+      "side": 1,
+      "message": "Let\u0027s shorten these constants to prevent bloating of the url.\n`rev`\n`isTest`\n`plat`",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 35
+      },
+      "revId": "bc5f3bc0a925c4061086fae5df963f639010a96c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
