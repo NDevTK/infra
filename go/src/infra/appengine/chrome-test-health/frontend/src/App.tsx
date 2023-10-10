@@ -13,6 +13,7 @@ import {
   URL_COMPONENT,
 } from './features/components/ComponentContext';
 import { AuthContext } from './features/auth/AuthContext';
+import CoveragePage from './pages/coverage/CoveragePage';
 
 const App = () => {
   const { auth } = useContext(AuthContext);
@@ -43,6 +44,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Navigate to='resources/tests'/>} />
               <Route path="/resources/tests" element={<TestsPage/>} />
+              <Route path="/coverage/summary" element={<CoveragePage/>} />
             </Routes>
           </Box>
         </ComponentContextProvider>
