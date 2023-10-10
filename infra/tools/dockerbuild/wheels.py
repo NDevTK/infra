@@ -1767,6 +1767,7 @@ SPECS.update({
         Universal('pytest-home', '0.5.0', pyversions=['py3']),
         Universal('pytest-reportlog', '0.1.2', pyversions=['py3']),
         Universal('pytest-rerunfailures', '11.1.2', pyversions=['py3']),
+        Universal('pytest-timeout', '2.1.0', pyversions=['py3']),
         Universal('pytest-xdist', '1.31.0'),
         Universal('pytest-xdist', '3.3.1', pyversions=['py3']),
         Universal('python-dateutil', '2.7.3'),
