@@ -79,7 +79,20 @@ builder(
 )
 
 luci.notifier(
-    name = "release-tarballs",
+    name = "Build From Tarball Notifier",
+    on_failure = False,
+    on_status_change = True,
+    notify_emails = [
+        "thestig@chromium.org",
+        "thomasanderson@chromium.org",
+    ],
+    notified_by = [
+        "Build From Tarball",
+    ],
+)
+
+luci.notifier(
+    name = "publish_tarball Notifier",
     on_failure = True,
     on_status_change = True,
     notify_emails = [
@@ -90,7 +103,6 @@ luci.notifier(
         "thomasanderson@chromium.org",
     ],
     notified_by = [
-        "Build From Tarball",
         "publish_tarball",
     ],
 )
