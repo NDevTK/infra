@@ -472,9 +472,9 @@ func (r *mappingReader) processFiles(ctx context.Context, absDir string, key str
 	for _, omd := range md.Overrides {
 		absRoot, _ := filepath.Split(absDir)
 		for _, fp := range omd.FilePatterns {
-			regex_path := filepath.Join(absRoot, fp)
+			regexPath := filepath.Join(absDir, fp)
 			// use git ls-files to determine all files associated with for each regex defined.
-			cmd := exec.CommandContext(ctx, gitBinary, "-C", absRoot, "ls-files", "--full-name", regex_path)
+			cmd := exec.CommandContext(ctx, gitBinary, "-C", absRoot, "ls-files", "--full-name", regexPath)
 			stdout, err := cmd.StdoutPipe()
 			if err != nil {
 				return err
@@ -496,7 +496,7 @@ func (r *mappingReader) processFiles(ctx context.Context, absDir string, key str
 				if cPath == key {
 					fkey := path.Join(key, fileName)
 					r.Files[fkey] = omd.Metadata
-					// Import mixin if override specifies it. The dirkey in this caase is
+					// Import mixin if override specifies it. The dirkey in this case is
 					// the path to the file. The actual application of mixins to the metadata
 					// is done when we Compute or Reduce.
 					if err := r.handleMixins(repo, fkey, omd.Metadata.Mixins); err != nil {
