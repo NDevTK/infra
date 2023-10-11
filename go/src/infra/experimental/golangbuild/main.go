@@ -142,13 +142,15 @@ func main() {
 
 		// Populate output properties.
 		var outpb golangbuildpb.Outputs
-		outpb.Failure = new(golangbuildpb.FailureSummary)
-		outpb.Failure.Description = runErr.Error()
-		for _, link := range links {
-			outpb.Failure.Links = append(outpb.Failure.Links, &golangbuildpb.Link{
-				Name: link.name,
-				Url:  link.url,
-			})
+		if runErr != nil {
+			outpb.Failure = new(golangbuildpb.FailureSummary)
+			outpb.Failure.Description = runErr.Error()
+			for _, link := range links {
+				outpb.Failure.Links = append(outpb.Failure.Links, &golangbuildpb.Link{
+					Name: link.name,
+					Url:  link.url,
+				})
+			}
 		}
 		if spec != nil {
 			if spec.goSrc != nil {
