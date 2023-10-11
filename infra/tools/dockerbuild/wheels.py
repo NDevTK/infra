@@ -1029,7 +1029,6 @@ SPECS.update({
             skip_plat=build_platform.ALL_PY311,
             pyversions=['py3'],
         ),
-        # TODO: version 1.14.0+ of wrapt for python 3.11.
         SourceOrPrebuilt(
             'wrapt',
             '1.10.11',
