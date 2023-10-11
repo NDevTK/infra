@@ -1215,6 +1215,30 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         expected_builders=['android-nougat-x86-rel', 'android-pie-x86-rel'],
         successful_builders=['android-pie-x86-rel'],
         processed_builders=['android-pie-x86-rel']).put()
+    # PreSubmitCoverageData entity created during the processing of a coverage build earlier
+    # i.e. chromium/try/android-pie-x86-rel
+    PresubmitCoverageData.Create(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4,
+        data={
+            'dirs': None,
+            'files': [{
+                'path':
+                    '//dir/myfile.java',
+                'lines': [{
+                    'count': 100,
+                    'first': 1,
+                    'last': 10,
+                }, {
+                    'count': 0,
+                    'first': 11,
+                    'last': 100,
+                }],
+            }],
+            'summaries': None,
+            'components': None,
+        }).put()
 
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)

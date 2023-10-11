@@ -960,9 +960,13 @@ class ProcessCodeCoverageData(BaseHandler):
       self._UpdateBlockingLowCoverageTracker(
           patch=build.input.gerrit_changes[0],
           processed_builders=[build.builder.builder])
-      if LowCoverageBlocking.Get(
-          server_host=patch.host, change=patch.change, patchset=patch.patchset
-      ).blocking_status == BlockingStatus.READY_FOR_VERDICT:
+      if PresubmitCoverageData.Get(
+          server_host=patch.host, change=patch.change,
+          patchset=patch.patchset) and LowCoverageBlocking.Get(
+              server_host=patch.host,
+              change=patch.change,
+              patchset=patch.patchset
+          ).blocking_status == BlockingStatus.READY_FOR_VERDICT:
         logging.info("checking for low coverage for change=%d, patch=%d",
                      patch.change, patch.patchset)
         self._MayBeBlockCLForLowCoverage(patch)
