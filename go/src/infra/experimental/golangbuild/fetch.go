@@ -84,6 +84,32 @@ func (s *sourceSpec) asURL() string {
 	panic("no commit or change in sourceSpec")
 }
 
+// asMarkdown returns a markdown-formatted representation of the source.
+func (s *sourceSpec) asMarkdown() string {
+	var linkText string
+	switch {
+	case s.commit != nil && s.change == nil:
+		linkText = fmt.Sprintf("commit %s", s.commit.Id[:7])
+	case s.commit == nil && s.change != nil:
+		linkText = fmt.Sprintf("change %d", s.change.Change)
+	}
+	return fmt.Sprintf("%s on %s ([%s](%s))", s.project, s.branch, linkText, s.asURL())
+}
+
+// asSource returns a golangbuildpb.Source for the sourceSpec.
+func (s *sourceSpec) asSource() *golangbuildpb.Source {
+	var src golangbuildpb.Source
+	switch {
+	case s.commit != nil && s.change != nil:
+		panic("sourceSpec has both a change and a commit")
+	case s.commit != nil && s.change == nil:
+		src.GitilesCommit = s.commit
+	case s.commit == nil && s.change != nil:
+		src.GerritChange = s.change
+	}
+	return &src
+}
+
 // fetchRepo fetches a repository according to src and places it at dst.
 func fetchRepo(ctx context.Context, src *sourceSpec, dst string, inputs *golangbuildpb.Inputs) (err error) {
 	step, ctx := build.StartStep(ctx, "fetch "+src.project)

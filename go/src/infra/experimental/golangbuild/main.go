@@ -124,6 +124,7 @@ import (
 	"os"
 	"strings"
 
+	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/experimental/golangbuild/golangbuildpb"
@@ -133,39 +134,62 @@ func main() {
 	inputs := new(golangbuildpb.Inputs)
 	var writeOutputProps func(*golangbuildpb.Outputs)
 	build.Main(inputs, &writeOutputProps, nil, func(ctx context.Context, args []string, st *build.State) error {
-		err := run(ctx, args, st, inputs)
-		if err == nil {
-			return nil
-		}
+		spec, runErr := run(ctx, args, st, inputs)
 
-		// Extract any links from the error.
-		links := extractLinks(err)
+		// Extract any links from the error. nil errors are OK and have no links.
+		links := extractLinks(runErr)
+		status, _ := build.ExtractStatus(runErr)
 
 		// Populate output properties.
 		var outpb golangbuildpb.Outputs
 		outpb.Failure = new(golangbuildpb.FailureSummary)
-		outpb.Failure.Description = err.Error()
+		outpb.Failure.Description = runErr.Error()
 		for _, link := range links {
 			outpb.Failure.Links = append(outpb.Failure.Links, &golangbuildpb.Link{
 				Name: link.name,
 				Url:  link.url,
 			})
 		}
+		if spec != nil {
+			if spec.goSrc != nil {
+				outpb.Sources = []*golangbuildpb.Source{spec.goSrc.asSource()}
+			}
+			if spec.subrepoSrc != nil {
+				outpb.Sources = append(outpb.Sources, spec.subrepoSrc.asSource())
+			}
+		}
 		writeOutputProps(&outpb)
 
 		// Set summary markdown.
 		var sb strings.Builder
-		fmt.Fprintf(&sb, "%v\n", err)
-		for _, link := range links {
-			fmt.Fprintf(&sb, "* [%s](%s)\n", link.name, link.url)
+		fmt.Fprintf(&sb, "**%s**\n\n", strings.ReplaceAll(bbpb.Status_name[int32(status)], "_", " "))
+		if spec != nil {
+			needNewLine := false
+			if spec.goSrc != nil {
+				fmt.Fprintf(&sb, "* %s\n", spec.goSrc.asMarkdown())
+				needNewLine = true
+			}
+			if spec.subrepoSrc != nil {
+				fmt.Fprintf(&sb, "* %s\n", spec.subrepoSrc.asMarkdown())
+				needNewLine = true
+			}
+			if needNewLine {
+				fmt.Fprintln(&sb)
+			}
+		}
+		if runErr != nil {
+			fmt.Fprintf(&sb, "error: %v\n", runErr)
+			for _, link := range links {
+				fmt.Fprintf(&sb, "* [%s](%s)\n", link.name, link.url)
+			}
 		}
 		st.SetSummaryMarkdown(sb.String())
 
-		return err
+		return runErr
 	})
 }
 
-func run(ctx context.Context, args []string, st *build.State, inputs *golangbuildpb.Inputs) (err error) {
+func run(ctx context.Context, args []string, st *build.State, inputs *golangbuildpb.Inputs) (spec *buildSpec, err error) {
 	log.Printf("run starting")
 
 	// Collect enabled experiments.
@@ -177,26 +201,26 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	// Install some tools we'll need, including a bootstrap toolchain.
 	toolsRoot, err := installTools(ctx, inputs, experiments)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	log.Printf("installed tools")
 
 	// Define working directory.
 	cwd, err := os.Getwd()
 	if err != nil {
-		return infraErrorf("get CWD")
+		return nil, infraErrorf("get CWD")
 	}
 
-	spec, err := deriveBuildSpec(ctx, cwd, toolsRoot, experiments, st, inputs)
+	spec, err = deriveBuildSpec(ctx, cwd, toolsRoot, experiments, st, inputs)
 	if err != nil {
-		return infraWrap(err)
+		return nil, infraWrap(err)
 	}
 
 	// Set up environment.
 	ctx = spec.setEnv(ctx)
 	ctx, err = spec.installDatastoreClient(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Select a runner based on the mode, then initialize and invoke it.
@@ -212,9 +236,9 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		rn, err = newTestRunner(inputs.GetTestMode(), inputs.GetTestShard())
 	}
 	if err != nil {
-		return infraErrorf("initializing runner: %w", err)
+		return nil, infraErrorf("initializing runner: %w", err)
 	}
-	return rn.Run(ctx, spec)
+	return spec, rn.Run(ctx, spec)
 }
 
 // runner is an interface that provides an abstraction over golangbuild's various modes.

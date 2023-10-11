@@ -8,6 +8,8 @@ package golangbuildpb;
 
 option go_package = "infra/experimental/golangbuild/golangbuildpb";
 
+import "go.chromium.org/luci/buildbucket/proto/common.proto";
+
 // Input properties.
 message Inputs {
   // Name of the Gerrit project to be tested.
@@ -179,6 +181,9 @@ message TestShard {
 message Outputs {
   // Human-friendly failure description.
   FailureSummary failure = 1;
+
+  // The source code inputs that were used for this build.
+  repeated Source sources = 2;
 }
 
 // FailureSummary summarizes a failure without all the build step structure.
@@ -199,4 +204,14 @@ message Link {
 
   // The link's URL.
   string url = 2;
+}
+
+// Source is a remote source location. Only one of the following fields will
+// be present at any given time.
+message Source {
+  // A git commit from a googlesource.com host.
+  buildbucket.v2.GitilesCommit gitiles_commit = 1;
+
+  // A change from a Gerrit host.
+  buildbucket.v2.GerritChange gerrit_change = 2;
 }
