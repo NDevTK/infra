@@ -20,7 +20,6 @@ from gae_libs.handlers.base_handler import Permission
 
 from common import constants
 from common.waterfall.buildbucket_client import GetV2Build
-from model.isolated_target import IsolatedTarget
 
 _PROP_NAME_REGEX = re.compile(
     r'swarm_hashes_(?P<ref>.*)\(at\)\{\#(?P<cp>[0-9]+)\}'
