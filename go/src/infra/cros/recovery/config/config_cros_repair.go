@@ -1371,9 +1371,11 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_match_dev_tpm_firmware_version",
 			RecoveryActions: []string{
+				"Quick provision OS",
 				"ChromeOS TMP recovery (not critical)",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive",
+				"Repair by powerwash",
 			},
 		},
 		"Verify tpm_kernver is updated correctly": {
