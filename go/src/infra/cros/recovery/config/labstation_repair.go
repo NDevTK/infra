@@ -27,6 +27,7 @@ func LabstationRepairConfig() *Configuration {
 					"Update provisioned info",
 					"booted_from_right_kernel",
 					"reboot_by_request",
+					"Reboot labstation if uptime longer than 7 days",
 					// TODO(b/245824583): remove this action once the bug fixed.
 					"Cleanup bluetooth",
 					"Update inventory info",
@@ -139,6 +140,23 @@ func LabstationRepairConfig() *Configuration {
 						},
 						// If condition passed then action will fail and request recovery actions.
 						ExecName: "sample_fail",
+						RecoveryActions: []string{
+							"Labstation reboot",
+							"Power cycle by RPM",
+						},
+					},
+					"Reboot labstation if uptime longer than 7 days": {
+						Docs: []string{
+							"Check labstation uptime and trigger a reboot if it's longer than 7 days (168 hours).",
+						},
+						Conditions: []string{
+							// No need to run this action if there is servo in use as we don't want reboot interrupt active servos.
+							"cros_has_no_servo_in_use",
+						},
+						ExecName: "cros_validate_uptime",
+						ExecExtraArgs: []string{
+							"max_duration:168",
+						},
 						RecoveryActions: []string{
 							"Labstation reboot",
 							"Power cycle by RPM",

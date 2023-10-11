@@ -519,6 +519,175 @@
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
+          "name": "Reboot labstation if uptime longer than 7 days",
+          "docs": [
+            "Check labstation uptime and trigger a reboot if it's longer than 7 days (168 hours)."
+          ],
+          "conditions": [
+            {
+              "name": "cros_has_no_servo_in_use",
+              "exec_name": "cros_has_no_servo_in_use",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "exec_name": "cros_validate_uptime",
+          "exec_args": [
+            "max_duration:168"
+          ],
+          "recoveries": [
+            {
+              "name": "Labstation reboot",
+              "docs": [
+                "Perform reboot of the host and perform additional actions as necessary.",
+                "If reboot succeed then we can remove all request for reboot as we just did it."
+              ],
+              "dependencies": [
+                {
+                  "name": "cros_stop_powerd",
+                  "exec_name": "cros_run_shell_command",
+                  "exec_args": [
+                    "stop",
+                    "powerd"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "cros_clean_tmp_owner_request",
+                  "docs": [
+                    "In some cases, the update flow puts the TPM into a state such that it fails verification.",
+                    "We don't know why. However, this call papers over the problem by clearing the TPM during the reboot.",
+                    "We ignore failures from 'crossystem'.",
+                    "Although failure here is unexpected, and could signal a bug, the point of the exercise is to paper over problems."
+                  ],
+                  "exec_name": "cros_clean_tmp_owner_request",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "cros_allowed_reboot",
+                  "exec_name": "cros_allowed_reboot",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Simple reboot",
+                  "docs": [
+                    "Simple un-blocker reboot.",
+                    "The action will not run if the labstation's filesystem I/O is blocked because /sbin/reboot may not work if the filesystem is hosed."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "cros_filesystem_io_not_blocked",
+                      "exec_name": "cros_filesystem_io_not_blocked",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "command:reboot",
+                    "background:true"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Sysrq reboot",
+                  "docs": [
+                    "Immediately reboot the system, without unmounting or syncing filesystems",
+                    "The action only runs when the filesystem is hosed where regular reboot executable will not work."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Filesystem IO blocked",
+                      "docs": [
+                        "Filesystem I/O is blocked on the labstation.",
+                        "The action is expected to fail when filesystem I/O is not blocked on the labstation."
+                      ],
+                      "conditions": [
+                        {
+                          "name": "cros_filesystem_io_not_blocked",
+                          "exec_name": "cros_filesystem_io_not_blocked",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "sample_fail",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "cros_run_shell_command",
+                  "exec_args": [
+                    "echo b \u003e /proc/sysrq-trigger"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Wait to be SSHable",
+                  "docs": [
+                    "Try to wait device to be sshable during after the device being rebooted."
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "10m0s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Remove reboot requests",
+                  "docs": [
+                    "Remove all requests for reboot on the host.",
+                    "The action has to be called after reboot of the device."
+                  ],
+                  "exec_name": "cros_remove_all_reboot_request",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "ALWAYS_RUN"
+            },
+            {
+              "name": "Power cycle by RPM",
+              "docs": [
+                "Action is always runnable."
+              ],
+              "conditions": [
+                {
+                  "name": "has_rpm_info",
+                  "exec_name": "has_rpm_info",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "dependencies": [
+                {
+                  "name": "rpm_power_cycle",
+                  "exec_name": "rpm_power_cycle",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Wait to be SSHable",
+                  "docs": [
+                    "Try to wait device to be sshable during after the device being rebooted."
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "10m0s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Remove reboot requests",
+                  "docs": [
+                    "Remove all requests for reboot on the host.",
+                    "The action has to be called after reboot of the device."
+                  ],
+                  "exec_name": "cros_remove_all_reboot_request",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
           "name": "Cleanup bluetooth",
           "docs": [
             "Attempt to remove bluetooth device and then power off BT adapter.",
