@@ -63,7 +63,7 @@ func (c *deleteDNSRun) runCmdInjected(ctx context.Context, args []string, dhbIDF
 		return err
 	}
 
-	_, err = DeleteRecord(ensureRecords, func() (string, error) {
+	_, err = dns.DeleteRecord(dns.EnsureRecords, func() (string, error) {
 		return dns.ReadContents(ctx, &executor.ExecCommander{})
 	}, c.host)
 	return err

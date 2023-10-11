@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
@@ -57,7 +58,7 @@ func (c *updateDNSRun) Run(a subcommands.Application, args []string, env subcomm
 // innerRun gathers all needed function and interface implementations and calls the business logic
 func (c *updateDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
-	return c.runCmdInjected(ctx, args, satlabcommands.GetDockerHostBoxIdentifier, UpdateRecord)
+	return c.runCmdInjected(ctx, args, satlabcommands.GetDockerHostBoxIdentifier, dns.UpdateRecord)
 }
 
 // runCmdInjected executes actual logic of command

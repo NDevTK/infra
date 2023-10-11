@@ -73,7 +73,7 @@ func UpdateRecord(ctx context.Context, host string, addr string) (string, error)
 	if err != nil {
 		return "", errors.Annotate(err, "update record").Err()
 	}
-	if err := ensureRecords(content, map[string]string{host: addr}, map[string]bool{}); err != nil {
+	if err := EnsureRecords(content, map[string]string{host: addr}, map[string]bool{}); err != nil {
 		return "", errors.Annotate(err, "update record").Err()
 	}
 	return content, nil
@@ -127,9 +127,9 @@ func ForceReloadDNSMasqProcess() error {
 	return errors.Annotate(err, "hup dns process").Err()
 }
 
-// ensureRecords ensures that the given DNS records in question are up to date with respect to
+// EnsureRecords ensures that the given DNS records in question are up to date with respect to
 // a map mapping hostnames to addresses.
-func ensureRecords(
+func EnsureRecords(
 	content string,
 	newRecords map[string]string,
 	deletedRecords map[string]bool,
@@ -151,6 +151,40 @@ func ensureRecords(
 		return errors.Annotate(err, "ensure dns records").Err()
 	}
 	return nil
+}
+
+// todo(elijahtrexler) The next two types are solely to facilitate testing, i think ultimately we should refactor `ensureRecords`
+// maybe it accepts a ReaderWriter interface and a function to reload the config.
+
+// hostsfileReaderFunc extracts the contents of a hostfiles into a string.
+type hostsfileReaderFunc func() (string, error)
+
+// recordEnsurer makes sure a given content string is appropriately updated with newRecords and deletedRecords.
+// A content string is a series of lines containing "<address> <hostname>" pairs and after this function should include, in order of priority
+//  1. No records with hostname found in `deletedRecords`
+//  2. All records with hostname found in `newRecords`, with the corresponding address from `newRecords`- these records should be upserted
+//  3. The existing set of records
+//
+// A recordEnsurer should also ensure the content string is *applied*, generally meaning that it writes the string and then triggers a conf reload.
+// It can optionally backup the original content string.
+type recordEnsurer func(content string, newRecords map[string]string, deletedRecords map[string]bool) error
+
+// DeleteRecord removes an addr, host pairing from the /etc/hosts file if it is present
+// and returns the original contents before modification, to allow its caller to undo the modification.
+func DeleteRecord(recordEnsurer recordEnsurer, hostsfileReader hostsfileReaderFunc, host string) (string, error) {
+	if host == "" {
+		return "", errors.New("delete record: no hostname")
+	}
+	content, err := hostsfileReader()
+	if err != nil {
+		return "", errors.Annotate(err, "delete record").Err()
+	}
+
+	err = recordEnsurer(content, map[string]string{}, map[string]bool{host: true})
+	if err != nil {
+		return "", errors.Annotate(err, "delete record").Err()
+	}
+	return content, nil
 }
 
 // WriteBackup set the content of the backup DNS file.
