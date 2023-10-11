@@ -26,6 +26,21 @@ func ValidateLeaseVMRequest(r *api.LeaseVMRequest) error {
 	if hostReqs == nil {
 		return status.Errorf(codes.InvalidArgument, "VM requirements must be set.")
 	}
+	if r.GetTestingClient() == api.VMTestingClient_VM_TESTING_CLIENT_CROSFLEET {
+		l := r.GetLabels()
+		if l == nil {
+			return status.Errorf(codes.InvalidArgument, "Labels should not be nil")
+		}
+
+		client, ok := l["client"]
+		if !ok || client != "crosfleet" {
+			return status.Errorf(codes.InvalidArgument, "Labels should contain \"client\"=\"crosfleet\"")
+		}
+		_, ok = l["leased-by"]
+		if !ok {
+			return status.Errorf(codes.InvalidArgument, "Labels should contain \"leased-by\"={email}")
+		}
+	}
 	if err := ValidateVMRequirements(hostReqs); err != nil {
 		return err
 	}

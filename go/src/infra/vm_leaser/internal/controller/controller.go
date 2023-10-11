@@ -96,6 +96,7 @@ func CreateInstance(parentCtx context.Context, client computeInstancesClient, en
 			MachineType:       proto.String(fmt.Sprintf("zones/%s/machineTypes/%s", zone, hostReqs.GetGceMachineType())),
 			Metadata:          metadata,
 			NetworkInterfaces: networkInterfaces,
+			Labels:            r.GetLabels(),
 		},
 	}
 

@@ -7,6 +7,8 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
+	"reflect"
 	"testing"
 	"time"
 
@@ -25,7 +27,7 @@ import (
 type mockComputeInstancesClient struct {
 	deleteFunc         func() (*compute.Operation, error)
 	getFunc            func() (*computepb.Instance, error)
-	insertFunc         func() (*compute.Operation, error)
+	insertFunc         func(r *computepb.InsertInstanceRequest) (*compute.Operation, error)
 	listFunc           func() *compute.InstanceIterator
 	aggregatedListFunc func() *compute.InstancesScopedListPairIterator
 }
@@ -41,8 +43,8 @@ func (m *mockComputeInstancesClient) Get(context.Context, *computepb.GetInstance
 }
 
 // Insert mocks the Insert instance method of the compute client.
-func (m *mockComputeInstancesClient) Insert(context.Context, *computepb.InsertInstanceRequest, ...gax.CallOption) (*compute.Operation, error) {
-	return m.insertFunc()
+func (m *mockComputeInstancesClient) Insert(ctx context.Context, r *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*compute.Operation, error) {
+	return m.insertFunc(r)
 }
 
 // List mocks the List instance method of the compute client.
@@ -77,7 +79,7 @@ func TestCreateInstance(t *testing.T) {
 	Convey("Test CreateInstance", t, func() {
 		Convey("CreateInstance - error: unable to create", func() {
 			client := &mockComputeInstancesClient{
-				insertFunc: func() (*compute.Operation, error) {
+				insertFunc: func(*computepb.InsertInstanceRequest) (*compute.Operation, error) {
 					return nil, errors.New("failed insert")
 				},
 			}
@@ -97,7 +99,7 @@ func TestCreateInstance(t *testing.T) {
 		})
 		Convey("CreateInstance - error: no operation returned", func() {
 			client := &mockComputeInstancesClient{
-				insertFunc: func() (*compute.Operation, error) {
+				insertFunc: func(*computepb.InsertInstanceRequest) (*compute.Operation, error) {
 					return nil, nil
 				},
 			}
@@ -115,9 +117,34 @@ func TestCreateInstance(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "no operation returned for waiting")
 		})
+		Convey("CreateInstance - with labels - error: no operation returned", func() {
+			labels := map[string]string{"k": "v"}
+			client := &mockComputeInstancesClient{
+				insertFunc: func(r *computepb.InsertInstanceRequest) (*compute.Operation, error) {
+					if !reflect.DeepEqual(r.InstanceResource.GetLabels(), labels) {
+						return nil, fmt.Errorf("Expected labels to be %v, but is %v", labels, r.InstanceResource.GetLabels())
+					}
+					return nil, nil
+				},
+			}
+			leaseReq := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceImage:       "test-image",
+					GceRegion:      "test-region",
+					GceProject:     "test-project",
+					GceMachineType: "test-machine-type",
+					GceNetwork:     "test-network",
+					GceDiskSize:    100,
+				},
+				Labels: labels,
+			}
+			err := CreateInstance(ctx, client, "dev", "test-id", leaseReq)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "no operation returned for waiting")
+		})
 		Convey("CreateInstance - error: failed to get network interface", func() {
 			client := &mockComputeInstancesClient{
-				insertFunc: func() (*compute.Operation, error) {
+				insertFunc: func(*computepb.InsertInstanceRequest) (*compute.Operation, error) {
 					return nil, nil
 				},
 			}

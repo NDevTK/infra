@@ -34,6 +34,7 @@ type Config struct {
 type Client struct {
 	conn           *grpc.ClientConn
 	VMLeaserClient api.VMLeaserServiceClient
+	Email          string
 }
 
 // Close closes the client.
@@ -85,10 +86,11 @@ func NewClient(ctx context.Context, c *Config) (*Client, error) {
 		grpc.WithBlock(),
 	}
 
-	creds, err := auth.NewAuthenticator(ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
+	auth := auth.NewAuthenticator(ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
 		UseIDTokens: true,
 		Audience:    "https://" + c.vmLeaserServiceEndpoint,
-	})).PerRPCCredentials()
+	}))
+	creds, err := auth.PerRPCCredentials()
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +105,10 @@ func NewClient(ctx context.Context, c *Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	email, _ := auth.GetEmail()
 	return &Client{
 		conn:           conn,
 		VMLeaserClient: api.NewVMLeaserServiceClient(conn),
+		Email:          email,
 	}, nil
 }

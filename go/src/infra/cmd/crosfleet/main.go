@@ -18,6 +18,7 @@ import (
 	"infra/cmd/crosfleet/internal/meta"
 	"infra/cmd/crosfleet/internal/run"
 	"infra/cmd/crosfleet/internal/site"
+	"infra/cmd/crosfleet/internal/vm"
 )
 
 var application = &cli.Application{
@@ -40,6 +41,7 @@ Full documentation http://go/crosfleet-cli`,
 		subcommands.Section("Tasks"),
 		dut.CmdDut,
 		run.CmdRun,
+		vm.CmdVm,
 		subcommands.CmdHelp,
 	},
 }

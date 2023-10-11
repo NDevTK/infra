@@ -19,6 +19,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"infra/libs/vmlab"
+	vmapi "infra/libs/vmlab/api"
 	"infra/vm_leaser/internal/constants"
 	"infra/vm_leaser/internal/controller"
 	"infra/vm_leaser/internal/validation"
@@ -194,6 +196,22 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 
 	return &api.ReleaseVMResponse{
 		LeaseId: r.GetLeaseId(),
+	}, nil
+}
+
+// ImportImage imports a VM custom image using image sync.
+func (s *Server) ImportImage(ctx context.Context, r *api.ImportImageRequest) (*api.ImportImageResponse, error) {
+	imageApi, err := vmlab.NewImageApi(vmapi.ProviderId_CLOUDSDK)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "cannot get image api provider: %v", err)
+	}
+
+	gceImage, err := imageApi.GetImage(r.ImagePath, true)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to import image: %v", err)
+	}
+	return &api.ImportImageResponse{
+		ImageName: gceImage.GetName(),
 	}, nil
 }
 

@@ -98,6 +98,75 @@ func TestValidateLeaseVM(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "GCE machine disk size must be set (in GB).")
 		})
+		Convey("Valid request - successful path for crosfleet", func() {
+			req := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceImage:       "test-image",
+					GceRegion:      "test-region",
+					GceProject:     "test-project",
+					GceMachineType: "test-machine-type",
+					GceDiskSize:    100,
+				},
+				TestingClient: api.VMTestingClient_VM_TESTING_CLIENT_CROSFLEET,
+				Labels: map[string]string{
+					"client":    "crosfleet",
+					"leased-by": "example_google_com",
+				},
+			}
+			err := ValidateLeaseVMRequest(req)
+			So(err, ShouldBeNil)
+		})
+		Convey("Invalid request - missing labels for crosfleet", func() {
+			req := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceImage:       "test-image",
+					GceRegion:      "test-region",
+					GceProject:     "test-project",
+					GceMachineType: "test-machine-type",
+					GceDiskSize:    100,
+				},
+				TestingClient: api.VMTestingClient_VM_TESTING_CLIENT_CROSFLEET,
+			}
+			err := ValidateLeaseVMRequest(req)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "Labels should not be nil")
+		})
+		Convey("Invalid request - missing client label for crosfleet", func() {
+			req := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceImage:       "test-image",
+					GceRegion:      "test-region",
+					GceProject:     "test-project",
+					GceMachineType: "test-machine-type",
+					GceDiskSize:    100,
+				},
+				TestingClient: api.VMTestingClient_VM_TESTING_CLIENT_CROSFLEET,
+				Labels: map[string]string{
+					"leased-by": "example_google_com",
+				},
+			}
+			err := ValidateLeaseVMRequest(req)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "Labels should contain \"client\"=\"crosfleet\"")
+		})
+		Convey("Invalid request - missing leased-by label for crosfleet", func() {
+			req := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceImage:       "test-image",
+					GceRegion:      "test-region",
+					GceProject:     "test-project",
+					GceMachineType: "test-machine-type",
+					GceDiskSize:    100,
+				},
+				TestingClient: api.VMTestingClient_VM_TESTING_CLIENT_CROSFLEET,
+				Labels: map[string]string{
+					"client": "crosfleet",
+				},
+			}
+			err := ValidateLeaseVMRequest(req)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "Labels should contain \"leased-by\"={email}")
+		})
 	})
 }
 
