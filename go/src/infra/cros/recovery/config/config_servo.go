@@ -29,6 +29,7 @@ func servoRepairPlan() *Plan {
 			"Start UART capture",
 			"Servod is responsive to dut-control",
 			"Read servo serial by servod harness",
+			"Set cold_reset for c2d2",
 			"Verify servo connected to the DUT",
 			"Debug header servo present",
 			"Cold reset pin is detected",
@@ -152,6 +153,21 @@ func servoRepairPlan() *Plan {
 					"Reset GSC from DUT and stop servod",
 					"Create request to reboot labstation",
 				},
+			},
+			"Set cold_reset for c2d2": {
+				Docs: []string{
+					"https://issuetracker.google.com/302370064 Use gsc_ec_reset instead of gsc_reset for c2d2 devices.",
+					"This is faft ccd should be open and in factory mode, so gsc_ec_reset should be accessible.",
+				},
+				Conditions: []string{
+					"Servo used c2d2",
+				},
+				ExecName: "servo_set",
+				ExecExtraArgs: []string{
+					"command:cold_reset_select",
+					"string_value:gsc_ec_reset",
+				},
+				AllowFailAfterRecovery: true,
 			},
 			"Stop servod and request to use recovery-mode for servod": {
 				Docs: []string{
@@ -623,6 +639,15 @@ func servoRepairPlan() *Plan {
 					"Verify that main device is c2d2/cr50/GSC",
 				},
 				ExecName: "servo_main_device_is_gsc",
+			},
+			"Servo used c2d2": {
+				Docs: []string{
+					"Verify that servo uses c2d2",
+				},
+				ExecName: "servo_type_regex_match",
+				ExecExtraArgs: []string{
+					"regex:c2d2",
+				},
 			},
 			"Servo main device is CCD": {
 				Docs: []string{

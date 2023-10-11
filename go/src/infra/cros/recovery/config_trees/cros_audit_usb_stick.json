@@ -2142,6 +2142,33 @@
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
+          "name": "Set cold_reset for c2d2",
+          "docs": [
+            "https://issuetracker.google.com/302370064 Use gsc_ec_reset instead of gsc_reset for c2d2 devices.",
+            "This is faft ccd should be open and in factory mode, so gsc_ec_reset should be accessible."
+          ],
+          "conditions": [
+            {
+              "name": "Servo used c2d2",
+              "docs": [
+                "Verify that servo uses c2d2"
+              ],
+              "exec_name": "servo_type_regex_match",
+              "exec_args": [
+                "regex:c2d2"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "exec_name": "servo_set",
+          "exec_args": [
+            "command:cold_reset_select",
+            "string_value:gsc_ec_reset"
+          ],
+          "allow_fail_after_recovery": true,
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
           "name": "Verify servo connected to the DUT",
           "docs": [
             "Verify if servo connected to the DUTand received required voltage from it."

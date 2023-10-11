@@ -225,18 +225,39 @@ func servoTypeRegexMatchExec(ctx context.Context, info *execs.ExecInfo) error {
 	if regex == "" {
 		return errors.Reason("servo-type regex match: regex is empty").Err()
 	}
-	servoType, err := servo.GetServoType(ctx, info.NewServod())
-	if err != nil {
-		return errors.Annotate(err, "servo-type regex match").Err()
+	regexMatch := func(servoType string) error {
+		m, err := regexp.MatchString(regex, servoType)
+		if err != nil {
+			return errors.Annotate(err, "regex match").Err()
+		}
+		if !m {
+			return errors.Reason("regex match: not match").Err()
+		}
+		return nil
 	}
-	m, err := regexp.MatchString(regex, servoType.String())
-	if err != nil {
-		return errors.Annotate(err, "servo-type regex match").Err()
+	if actionMap.AsBool(ctx, "check_info", true) {
+		if st := info.GetChromeos().GetServo().GetServodType(); st != "" {
+			if err := regexMatch(st); err == nil {
+				log.Debugf(ctx, "Servo type matches by %q inventory data", regex)
+				return nil
+			} else {
+				log.Debugf(ctx, "Matching servo type from inventory failed: %q", err)
+			}
+		}
 	}
-	if !m {
-		return errors.Reason("servo-type regex match: not match").Err()
+	if actionMap.AsBool(ctx, "read_servod", true) {
+		if sType, err := WrappedServoType(ctx, info); err != nil {
+			return errors.Annotate(err, "servo verify servo ccd").Err()
+		} else {
+			if err := regexMatch(sType.String()); err == nil {
+				log.Debugf(ctx, "Servo type matches by %q servod data", regex)
+				return nil
+			} else {
+				log.Debugf(ctx, "Matching servo type from inventory failed: %q", err)
+			}
+		}
 	}
-	return nil
+	return errors.Reason("servo-type regex match: not match").Err()
 }
 
 // servoHasDebugHeaderExec checks if any of servo component is not ccd.
