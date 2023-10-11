@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -74,8 +73,8 @@ func Register() {
 			logging.Warningf(c, "Failed to update puppet metrics: %v", err)
 		}
 
-		if path, err := isPuppetCanaryFile(); err != nil {
-			logging.Warningf(c, "Failed to get is_puppet_canary path: %v", err)
+		if path, err := puppetConfFiles(); err != nil {
+			logging.Warningf(c, "Failed to get puppet.conf path: %v", err)
 		} else if err = updateIsCanary(c, path); err != nil {
 			logging.Warningf(c, "Failed to update puppet canary metric: %v", err)
 		}
@@ -124,10 +123,20 @@ func updateLastRunStats(c context.Context, path string) error {
 	return nil
 }
 
-func updateIsCanary(c context.Context, path string) error {
-	_, err := os.Stat(path)
-	isCanary.Set(c, err == nil)
-	return nil
+func updateIsCanary(c context.Context, paths []string) error {
+	for _, path := range paths {
+		raw, err := ioutil.ReadFile(path)
+		if err != nil {
+			continue // Try other paths in the list
+		}
+
+		if strings.Contains(string(raw), "environment=canary") {
+			isCanary.Set(c, err == nil)
+		}
+		return nil
+	}
+
+	return fmt.Errorf("no files found: %s", paths)
 }
 
 func updateExitStatus(c context.Context, paths []string) error {

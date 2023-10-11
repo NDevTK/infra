@@ -20,12 +20,12 @@ func lastRunFile() (string, error) {
 	return appdata + `\PuppetLabs\puppet\var\state\last_run_summary.yaml`, nil
 }
 
-func isPuppetCanaryFile() (string, error) {
+func puppetConfFile() (string, error) {
 	appdata, err := commonAppdataPath()
 	if err != nil {
 		return "", err
 	}
-	return appdata + `\PuppetLabs\puppet\var\lib\is_puppet_canary`, nil
+	return appdata + `\PuppetLabs\puppet\etc\puppet.conf`, nil
 }
 
 func commonAppdataPath() (string, error) {

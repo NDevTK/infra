@@ -11,8 +11,8 @@ func lastRunFile() (string, error) {
 	return "/var/lib/puppet_last_run_summary.yaml", nil
 }
 
-func isPuppetCanaryFile() (string, error) {
-	return "/var/lib/is_puppet_canary", nil
+func puppetConfFiles() ([]string, error) {
+	return []string{"/etc/puppetlabs/puppet/puppet.conf", "/etc/puppet/puppet.conf"}, nil
 }
 
 func exitStatusFiles() []string {
