@@ -27,7 +27,7 @@ type UFSClient interface {
 	UpdateMachineLSE(context.Context, *ufsApi.UpdateMachineLSERequest, ...grpc.CallOption) (*ufsModels.MachineLSE, error)
 }
 
-//  implementation of UFS client
+// implementation of UFS client
 type clientImpl struct {
 	client ufsApi.FleetClient
 }

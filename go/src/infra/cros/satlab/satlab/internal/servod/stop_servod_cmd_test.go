@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/satlab/satlab/internal/components/ufs"
+	"infra/cros/satlab/common/services/ufs"
 )
 
 // TestStopServodCmd tests that given a command + docker/ufs client behavior we get expected end conditions

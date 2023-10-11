@@ -16,8 +16,8 @@ import (
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/dutstate"
+	"infra/cros/satlab/common/services/ufs"
 	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/components/ufs"
 	ufsProto "infra/unifiedfleet/api/v1/models"
 )
 
