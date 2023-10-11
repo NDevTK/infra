@@ -521,6 +521,7 @@ label_prefix_allowlist = [
     'incident-id-',
     'version-',
     'copybara-migrate-c-',
+    'reward-',
 ]
 
 
