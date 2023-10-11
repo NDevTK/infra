@@ -1010,7 +1010,13 @@ SPECS.update({
             'ruamel.yaml.clib',
             '0.2.6',
             packaged=(),
-            skip_plat=build_platform.ALL_PY311,  # TODO: version 0.2.7+
+            skip_plat=build_platform.ALL_PY311,
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
+            'ruamel.yaml.clib',
+            '0.2.8',
+            packaged=(),
             pyversions=['py3'],
         ),
         # TODO: No release of typed-ast yet for python 3.11; authors
