@@ -242,6 +242,26 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	return env.SetInCtx(ctx)
 }
 
+// testedPort returns the port we're actually testing.
+//
+// Unfortunately b.targetPort is insufficient because certain platforms like js/wasm
+// still want their target to appear as something else (like linux/amd64), for example
+// to decide which prebuilt toolchain to create and download.
+//
+// TODO(mknyszek): Replace this function with b.targetPort, and refactor other users
+// of targetPort to do the necessary translation for the ports that require prebuilt
+// toolchains of other ports.
+func (b *buildSpec) testedPort() Port {
+	port := b.targetPort
+	if goos, ok := b.inputs.Env["GOOS"]; ok {
+		port.GOOS = goos
+	}
+	if goarch, ok := b.inputs.Env["GOARCH"]; ok {
+		port.GOARCH = goarch
+	}
+	return port
+}
+
 func addPortEnv(ctx context.Context, port Port, extraEnv ...string) context.Context {
 	if port == currentPort {
 		return ctx
@@ -395,11 +415,38 @@ func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
 		}
 	}
 
+	// Compute all the test tags and variants we want to send to ResultDB.
+	rdbArgs := []string{
+		"-var", fmt.Sprintf("goos:%s", b.testedPort().GOOS),
+		"-var", fmt.Sprintf("goarch:%s", b.testedPort().GOARCH),
+		"-var", fmt.Sprintf("host_goos:%s", host.GOOS),
+		"-var", fmt.Sprintf("host_goarch:%s", host.GOARCH),
+		"-var", fmt.Sprintf("builder:%s", b.builderName),
+		"-var", fmt.Sprintf("go_branch:%s", b.inputs.GoBranch),
+		"-tag", fmt.Sprintf("bootstrap_version:%s", b.inputs.BootstrapVersion),
+	}
+	if b.inputs.RaceMode {
+		rdbArgs = append(rdbArgs, "-tag", "run_mod:race")
+	}
+	if b.inputs.LongTest {
+		rdbArgs = append(rdbArgs, "-tag", "run_mod:longtest")
+	}
+	if b.inputs.XcodeVersion != "" {
+		rdbArgs = append(rdbArgs, "-tag", "xcode_version:"+b.inputs.XcodeVersion)
+	}
+	if b.inputs.NodeVersion != "" {
+		rdbArgs = append(rdbArgs, "-tag", "node_version:"+b.inputs.NodeVersion)
+	}
+
+	// Assemble args.
+	args := []string{cmd.Path, "stream"}
+	args = append(args, rdbArgs...)
+	args = append(args, "--", b.toolPath("result_adapter"), "go", "--")
+	args = append(args, cmd.Args...)
+
+	// Update the command.
 	cmd.Path = b.toolPath("rdb")
-	cmd.Args = append([]string{
-		cmd.Path, "stream", "--",
-		b.toolPath("result_adapter"), "go", "--",
-	}, cmd.Args...)
+	cmd.Args = args
 	return cmd
 }
 
