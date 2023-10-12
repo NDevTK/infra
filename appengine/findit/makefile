@@ -10,7 +10,7 @@ STAGING_APPID := "findit-for-me-staging"
 # ...$ gclient sync
 PROTOC := "../../cipd/protoc"
 PROTO_PATH ?= "model/proto/"
-CODE_COVERAGE_MODULES := default code-coverage-frontend code-coverage-backend code-coverage-experimental-coverage-worker code-coverage-referenced-coverage-worker
+CODE_COVERAGE_MODULES := default code-coverage-frontend code-coverage-backend code-coverage-auxiliary-coverage-worker
 LOCAL_VERSION := `$(INFRAPYTHON) $(GAE_PY) version`
 LOCAL_HASH := `git rev-parse --short HEAD`
 # If there are multiple active versions just use the latest one.

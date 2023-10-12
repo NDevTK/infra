@@ -6,13 +6,13 @@ dispatch:
     module: code-coverage-frontend
 
   - url: "*/coverage/task/gerrit-filter-coverage*"
-    module: code-coverage-experimental-coverage-worker
+    module: code-coverage-auxiliary-coverage-worker
 
   - url: "*/coverage/task/incremental-coverage*"
-    module: code-coverage-referenced-coverage-worker
+    module: code-coverage-auxiliary-coverage-worker
 
   - url: "*/coverage/task/low-coverage-blocking*"
-    module: code-coverage-referenced-coverage-worker
+    module: code-coverage-auxiliary-coverage-worker
 
   - url: "*/coverage/cron/*"
     module: code-coverage-backend

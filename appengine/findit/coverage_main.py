@@ -18,27 +18,19 @@ from handlers.code_coverage import serve_ci_coverage
 from handlers.code_coverage import serve_cq_coverage
 from handlers.code_coverage import update_postsubmit_report
 
-# Feaure coverage worker module.
-experimental_coverage_worker_handler_mappings = [
+# auxiliary coverage worker module.
+auxiliary_coverage_worker_handler_mappings = [
     ('.*/coverage/task/gerrit-filter-coverage.*',
      export_gerrit_filter_coverage.ExportCoverageMetrics),
-]
-experimental_coverage_worker_application = webapp2.WSGIApplication(
-    experimental_coverage_worker_handler_mappings, debug=False)
-if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(experimental_coverage_worker_application)
-
-# Referenced coverage worker module.
-referenced_coverage_worker_handler_mappings = [
     ('.*/coverage/task/incremental-coverage',
      export_incremental_coverage.ExportIncrementalCoverageMetrics),
     ('.*/coverage/task/low-coverage-blocking',
      post_review_to_gerrit.PostReviewToGerrit),
 ]
-referenced_coverage_worker_application = webapp2.WSGIApplication(
-    referenced_coverage_worker_handler_mappings, debug=False)
+auxiliary_coverage_worker_application = webapp2.WSGIApplication(
+    auxiliary_coverage_worker_handler_mappings, debug=False)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(referenced_coverage_worker_application)
+  gae_ts_mon.initialize_prod(auxiliary_coverage_worker_application)
 
 
 # "code-coverage-backend" module.

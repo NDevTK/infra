@@ -1,19 +1,22 @@
 application: findit-for-me-staging
-module: code-coverage-referenced-coverage-worker
+module: code-coverage-auxiliary-coverage-worker
 version: 1
 runtime: python27
 api_version: 1
 threadsafe: true
 instance_class: B8  # 1GB memory, 4.8GHz CPU.
 manual_scaling:
-  instances: 3
+  instances: 8
 
 handlers:
+- url: .*/coverage/task/gerrit-filter-coverage.*
+  script: coverage_main.auxiliary_coverage_worker_application
+  secure: always
 - url: .*/coverage/task/incremental-coverage.*
-  script: coverage_main.referenced_coverage_worker_application
+  script: coverage_main.auxiliary_coverage_worker_application
   secure: always
 - url: .*/coverage/task/low-coverage-blocking.*
-  script: coverage_main.referenced_coverage_worker_application
+  script: coverage_main.auxiliary_coverage_worker_application
   secure: always
 
 skip_files:
