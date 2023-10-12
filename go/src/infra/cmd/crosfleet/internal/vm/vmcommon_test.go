@@ -24,6 +24,7 @@ const (
 
 type mockVMLeaserClient struct {
 	listLeasesFunc func(*api.ListLeasesRequest) (*api.ListLeasesResponse, error)
+	releaseVMFunc  func(*api.ReleaseVMRequest) (*api.ReleaseVMResponse, error)
 }
 
 func (m mockVMLeaserClient) ListLeases(ctx context.Context, in *api.ListLeasesRequest, opts ...grpc.CallOption) (*api.ListLeasesResponse, error) {
@@ -34,7 +35,7 @@ func (m mockVMLeaserClient) LeaseVM(ctx context.Context, in *api.LeaseVMRequest,
 }
 
 func (m mockVMLeaserClient) ReleaseVM(ctx context.Context, in *api.ReleaseVMRequest, opts ...grpc.CallOption) (*api.ReleaseVMResponse, error) {
-	return nil, errors.New("Not implemented")
+	return m.releaseVMFunc(in)
 }
 
 func (m mockVMLeaserClient) ExtendLease(ctx context.Context, in *api.ExtendLeaseRequest, opts ...grpc.CallOption) (*api.ExtendLeaseResponse, error) {

@@ -17,6 +17,7 @@ var vmApplication = &cli.Application{
 	Name:  fmt.Sprintf("crosfleet %s", vmCmdName),
 	Title: "Interact with VMs.",
 	Commands: []*subcommands.Command{
+		abandon,
 		lease,
 		leases,
 		subcommands.CmdHelp,
