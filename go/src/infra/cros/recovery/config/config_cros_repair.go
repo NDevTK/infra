@@ -37,7 +37,7 @@ func crosRepairCriticalActions(skipRepairFailState bool) []string {
 		"Check power sources",
 		"Check TPM statuses",
 		"Read TPM ownership",
-		"Verify tmp_fwver is updated correctly",
+		"Verify tpm_fwver is updated correctly",
 		"Verify tpm_kernver is updated correctly",
 		"Verify present of gsctool",
 		"Audit battery",
@@ -1358,10 +1358,10 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
 		},
-		"Verify tmp_fwver is updated correctly": {
+		"Verify tpm_fwver is updated correctly": {
 			Docs: []string{
 				"For dev-signed firmware, tpm_fwver reported from crossystem should always be 0x10001.",
-				"Firmware update on DUTs with incorrect tmp_fwver may fail due to firmware rollback protection.",
+				"Firmware update on DUTs with incorrect tpm_fwver may fail due to firmware rollback protection.",
 			},
 			Conditions: []string{
 				"Is not Flex device",
