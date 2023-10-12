@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// We only test the builder on a subset of platforms we support.
+// Other platforms should be cross-compiled.
+//go:build amd64 || (arm64 && darwin)
+
 package main
 
 import (
