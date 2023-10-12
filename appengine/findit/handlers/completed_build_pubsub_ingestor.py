@@ -6,28 +6,14 @@
 import base64
 import json
 import logging
-import re
-import urlparse
 
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
-from google.protobuf import json_format
-from google.protobuf.field_mask_pb2 import FieldMask
 
-from gae_libs import appengine_util
 from gae_libs.handlers.base_handler import BaseHandler
 from gae_libs.handlers.base_handler import Permission
 
-from common import constants
 from common.waterfall.buildbucket_client import GetV2Build
-
-_PROP_NAME_REGEX = re.compile(
-    r'swarm_hashes_(?P<ref>.*)\(at\)\{\#(?P<cp>[0-9]+)\}'
-    r'(?P<suffix>(_with(out)?_patch))?')
-
-# Builds from such LUCI projects should be intercepted by Findit v2.
-# It doesn't necessarily mean build failures will be analyzed in v2 though.
-_FINDIT_V2_INTERCEPT_PROJECTS = []
 
 
 class CompletedBuildPubsubIngestor(BaseHandler):
@@ -40,10 +26,7 @@ class CompletedBuildPubsubIngestor(BaseHandler):
 
   def HandlePost(self):
     build_id = None
-    build_result = None
     status = None
-    project = None
-    bucket = None
     builder_name = None
     try:
       envelope = json.loads(self.request.body)
@@ -53,10 +36,7 @@ class CompletedBuildPubsubIngestor(BaseHandler):
         return
       build_id = envelope['message']['attributes']['build_id']
       build = json.loads(base64.b64decode(envelope['message']['data']))['build']
-      build_result = build.get('result')
       status = build['status']
-      project = build['project']
-      bucket = build['bucket']
       parameters_json = json.loads(build['parameters_json'])
       builder_name = parameters_json['builder_name']
     except (ValueError, KeyError) as e:
@@ -77,12 +57,6 @@ class CompletedBuildPubsubIngestor(BaseHandler):
         return
 
       _HandlePossibleCodeCoverageBuild(int(build_id))
-      if project in _FINDIT_V2_INTERCEPT_PROJECTS:
-        _HandlePossibleFailuresInBuild(project, bucket, builder_name,
-                                       int(build_id), build_result)
-        if project == 'chromium':
-          # Only ingests chromium builds.
-          return _IngestProto(int(build_id))
     # We don't care about pending or non-supported builds, so we accept the
     # notification by returning 200, and prevent pubsub from retrying it.
 
@@ -99,135 +73,3 @@ def _HandlePossibleCodeCoverageBuild(build_id):  # pragma: no cover
   except (taskqueue.TombstonedTaskError, taskqueue.TaskAlreadyExistsError):
     logging.warning('Build %s was already scheduled to be processed', build_id)
 
-
-def _HandlePossibleFailuresInBuild(project, bucket, builder_name, build_id,
-                                   build_result):  # pragma: no cover
-  """Schedules a taskqueue task to process a completed failed build."""
-  try:
-    taskqueue.add(
-        name='buildfailure-%s' % build_id,  # Avoid duplicate tasks.
-        url='/findit/internal/v2/task/build-completed',
-        payload=json.dumps({
-            'project': project,
-            'bucket': bucket,
-            'builder_name': builder_name,
-            'build_id': build_id,
-            'build_result': build_result,
-        }),
-        target=appengine_util.GetTargetNameForModule('findit-backend'),
-        queue_name='failure-detection-queue')
-  except (taskqueue.TombstonedTaskError, taskqueue.TaskAlreadyExistsError):
-    logging.warning('Build %s was already scheduled to be processed', build_id)
-
-
-def _DecodeSwarmingHashesPropertyName(prop):
-  """Extracts ref, commit position and patch status from property name.
-
-  Args:
-    prop(str): The property name is expected to be in the following format:
-  swarm_hashes_<ref>(at){#<commit_position}<optional suffix>
-  """
-  matches = _PROP_NAME_REGEX.match(prop)
-  with_patch = matches.group('suffix') == '_with_patch'
-  return matches.group('ref'), int(matches.group('cp')), with_patch
-
-
-def _IngestProto(build_id):
-  """Process a build described in a proto, i.e. buildbucket v2 api format."""
-  assert build_id
-  build = GetV2Build(
-      build_id,
-      fields=FieldMask(
-          paths=['id', 'output.properties', 'input', 'status', 'builder']))
-
-  if not build:
-    logging.error(
-        'Could not retrieve build #%d from buildbucket, '
-        'acknowledging to avoid retries', build_id)
-    return
-
-  # Sanity check.
-  assert build_id == build.id
-
-  commit = build.input.gitiles_commit
-  patches = build.input.gerrit_changes
-
-  # Convert the Struct to standard dict, to use .get, .iteritems etc.
-  input_properties = json_format.MessageToDict(build.input.properties)
-  output_properties = json_format.MessageToDict(build.output.properties)
-
-  swarm_hashes_properties = {}
-  for k, v in output_properties.iteritems():
-    if _PROP_NAME_REGEX.match(k):
-      swarm_hashes_properties[k] = v
-
-  if not swarm_hashes_properties:
-    logging.debug('Build %d does not have swarm_hashes property', build_id)
-    return
-
-  # TODO(https://crbug.com/1109276) Once all builders use builder_group
-  # property, do not check the mastername property
-  master_name = (
-      output_properties.get('target_builder_group') or
-      input_properties.get('target_builder_group') or
-      output_properties.get('target_mastername') or
-      input_properties.get('target_mastername') or
-      output_properties.get('builder_group') or
-      input_properties.get('builder_group') or
-      output_properties.get('mastername') or input_properties.get('mastername'))
-  if not master_name:
-    logging.error('Build %d does not have expected "mastername" property',
-                  build_id)
-    return
-
-  luci_project = build.builder.project
-  luci_bucket = build.builder.bucket
-  luci_builder = output_properties.get(
-      'target_buildername') or build.builder.builder
-
-  if commit.host:
-    gitiles_host = commit.host
-    gitiles_project = commit.project
-    gitiles_ref = commit.ref or 'refs/heads/main'
-  else:
-    # Non-ci build, use 'repository' property instead to get base revision
-    # information.
-    repo_url = urlparse.urlparse(output_properties.get('repository', ''))
-    gitiles_host = repo_url.hostname or ''
-    gitiles_project = repo_url.path or ''
-
-    # Trim "/" prefix so that "/chromium/src" becomes
-    # "chromium/src", also remove ".git" suffix if present.
-    if gitiles_project.startswith('/'):  # pragma: no branch
-      gitiles_project = gitiles_project[1:]
-    if gitiles_project.endswith('.git'):  # pragma: no branch
-      gitiles_project = gitiles_project[:-len('.git')]
-    gitiles_ref = output_properties.get('gitiles_ref', 'refs/heads/master')
-
-  gerrit_patch = None
-  if len(patches) > 0:
-    gerrit_patch = '/'.join(
-        map(str, [patches[0].host, patches[0].change, patches[0].patchset]))
-
-  entities = []
-  for prop_name, swarm_hashes in swarm_hashes_properties.iteritems():
-    ref, commit_position, with_patch = _DecodeSwarmingHashesPropertyName(
-        prop_name)
-    for target_name, isolated_hash in swarm_hashes.items():
-      entities.append(
-          IsolatedTarget.Create(
-              build_id=build_id,
-              luci_project=luci_project,
-              bucket=luci_bucket,
-              master_name=master_name,
-              builder_name=luci_builder,
-              gitiles_host=gitiles_host,
-              gitiles_project=gitiles_project,
-              gitiles_ref=gitiles_ref or ref,
-              gerrit_patch=gerrit_patch if with_patch else '',
-              target_name=target_name,
-              isolated_hash=isolated_hash,
-              commit_position=commit_position,
-              revision=output_properties.get('got_revision')))
-  result = [key.pairs() for key in ndb.put_multi(entities)]
-  return {'data': {'created_rows': result}}

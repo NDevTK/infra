@@ -26,8 +26,6 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
                                        debug=True)
 
   @mock.patch.object(completed_build_pubsub_ingestor,
-                     '_HandlePossibleFailuresInBuild')
-  @mock.patch.object(completed_build_pubsub_ingestor,
                      '_HandlePossibleCodeCoverageBuild')
   @mock.patch.object(FinditHttpClient, 'Post')
   def testPushNoBuild(self, mock_post, *_):
@@ -57,8 +55,6 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
     self.assertEqual(200, response.status_int)
 
   @mock.patch.object(completed_build_pubsub_ingestor,
-                     '_HandlePossibleFailuresInBuild')
-  @mock.patch.object(completed_build_pubsub_ingestor,
                      '_HandlePossibleCodeCoverageBuild')
   @mock.patch.object(FinditHttpClient, 'Post')
   def testPushPendingBuild(self, mock_post, *_):
@@ -85,8 +81,6 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
     self.assertEqual(200, response.status_int)
 
   @mock.patch.object(completed_build_pubsub_ingestor,
-                     '_HandlePossibleFailuresInBuild')
-  @mock.patch.object(completed_build_pubsub_ingestor,
                      '_HandlePossibleCodeCoverageBuild')
   @mock.patch.object(FinditHttpClient, 'Post')
   def testSucessfulPushBadFormat(self, mock_post, *_):
@@ -98,8 +92,6 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
     self.assertFalse(mock_post.called)
     self.assertEqual(200, response.status_int)
 
-  @mock.patch.object(completed_build_pubsub_ingestor,
-                     '_HandlePossibleFailuresInBuild')
   @mock.patch.object(completed_build_pubsub_ingestor,
                      '_HandlePossibleCodeCoverageBuild')
   @mock.patch.object(buildbucket_client, 'GetV2Build')
@@ -146,8 +138,6 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
     self.assertNotIn('created_rows', response.body)
 
   @mock.patch.object(completed_build_pubsub_ingestor,
-                     '_HandlePossibleFailuresInBuild')
-  @mock.patch.object(completed_build_pubsub_ingestor,
                      '_HandlePossibleCodeCoverageBuild')
   @mock.patch.object(buildbucket_client, 'GetV2Build')
   @mock.patch.object(FinditHttpClient, 'Post')
@@ -193,8 +183,6 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
     self.assertEqual(200, response.status_int)
     self.assertNotIn('created_rows', response.body)
 
-  @mock.patch.object(completed_build_pubsub_ingestor,
-                     '_HandlePossibleFailuresInBuild')
   @mock.patch.object(completed_build_pubsub_ingestor,
                      '_HandlePossibleCodeCoverageBuild')
   @mock.patch.object(FinditHttpClient, 'Post')
