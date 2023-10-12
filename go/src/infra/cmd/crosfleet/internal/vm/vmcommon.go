@@ -5,7 +5,18 @@
 package vm
 
 import (
+	"context"
+	"fmt"
+	"io"
 	"regexp"
+	"strings"
+	"text/tabwriter"
+	"time"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+
+	croscommon "infra/cros/cmd/common_lib/common"
+	"infra/vm_leaser/client"
 )
 
 // sanitizeForLabel replaces all unsupported characters with _ to be compatible
@@ -13,4 +24,36 @@ import (
 func sanitizeForLabel(str string) string {
 	re := regexp.MustCompile(`[^a-z0-9-]`)
 	return re.ReplaceAllString(str, "_")
+}
+
+// listLeases lists all active leases for the current user.
+func listLeases(vmLeaser *client.Client, ctx context.Context) ([]*api.VM, error) {
+	resp, err := vmLeaser.VMLeaserClient.ListLeases(ctx, &api.ListLeasesRequest{
+		Parent: fmt.Sprintf("projects/%s", croscommon.GceProject),
+		Filter: fmt.Sprintf("labels.client:crosfleet AND labels.leased-by:%s AND status:RUNNING", sanitizeForLabel(vmLeaser.Email)),
+	})
+
+	vms := resp.GetVms()
+	for _, vm := range vms {
+		// GceRegion is in full URL format https://www.googleapis.com/compute/v1/projects/chromeos-gce-tests/zones/us-west1-b
+		splits := strings.Split(vm.GetGceRegion(), "/")
+		vm.GceRegion = splits[len(splits)-1]
+	}
+
+	return resp.GetVms(), err
+}
+
+// printVMList pretty prints the list of VMs to a io.Writer.
+func printVMList(vms []*api.VM, w io.Writer) {
+	tw := tabwriter.NewWriter(w, 1, 1, 2, ' ', 0)
+	fmt.Fprintln(tw, "Name\tZone\tIP Address\tSSH Port\tTime remaining\t")
+	for _, vm := range vms {
+		remainTime := ""
+		if vm.GetExpirationTime() != nil {
+			expiry := vm.GetExpirationTime().AsTime()
+			remainTime = expiry.Sub(time.Now()).Round(time.Second).String()
+		}
+		fmt.Fprintf(tw, "%s\t%s\t%s\t%d\t%s\t\n", vm.GetId(), vm.GetGceRegion(), vm.GetAddress().GetHost(), vm.GetAddress().GetPort(), remainTime)
+	}
+	tw.Flush()
 }

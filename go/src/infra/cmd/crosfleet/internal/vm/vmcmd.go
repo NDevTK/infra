@@ -18,6 +18,7 @@ var vmApplication = &cli.Application{
 	Title: "Interact with VMs.",
 	Commands: []*subcommands.Command{
 		lease,
+		leases,
 		subcommands.CmdHelp,
 	},
 }

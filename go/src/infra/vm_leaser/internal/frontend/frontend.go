@@ -7,6 +7,7 @@ package frontend
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,6 +19,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/libs/vmlab"
 	vmapi "infra/libs/vmlab/api"
@@ -236,6 +238,16 @@ func (s *Server) ListLeases(ctx context.Context, r *api.ListLeasesRequest) (*api
 			logging.Warningf(ctx, "instance %s does not have a network interface", in.GetName())
 		}
 
+		var expirationTime *timestamppb.Timestamp
+		for _, i := range in.GetMetadata().GetItems() {
+			if i.GetKey() == "expiration_time" {
+				if unixTime, err := strconv.ParseInt(i.GetValue(), 10, 64); err == nil {
+					expirationTime = timestamppb.New(time.Unix(unixTime, 0))
+				}
+				break
+			}
+		}
+
 		vms = append(vms, &api.VM{
 			Id:        in.GetName(),
 			GceRegion: in.GetZone(),
@@ -245,6 +257,7 @@ func (s *Server) ListLeases(ctx context.Context, r *api.ListLeasesRequest) (*api
 				// Temporarily hardcode as port 22.
 				Port: 22,
 			},
+			ExpirationTime: expirationTime,
 		})
 	}
 

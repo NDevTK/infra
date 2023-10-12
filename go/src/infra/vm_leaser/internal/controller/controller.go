@@ -203,11 +203,6 @@ func ListInstances(ctx context.Context, client computeInstancesClient, r *api.Li
 	project := matches[validation.ValidLeaseParent.SubexpIndex("project")]
 	zone := matches[validation.ValidLeaseParent.SubexpIndex("zone")]
 
-	// TODO (b/295547037): Implement filtering for list method.
-	if r.GetFilter() != "" {
-		logging.Warningf(ctx, "ListInstances: filtering is not yet implemented; filter string will be ignored")
-	}
-
 	if zone == "" {
 		return listAllInstances(ctx, client, project, r)
 	}
@@ -221,7 +216,7 @@ func listAllInstances(ctx context.Context, client computeInstancesClient, projec
 		Project:    project,
 		PageToken:  proto.String(r.GetPageToken()),
 		MaxResults: &maxResults,
-		Filter:     proto.String("name eq ^vm-.*"),
+		Filter:     proto.String(filterString(r)),
 	}
 
 	var instances []*computepb.Instance
@@ -255,7 +250,7 @@ func listZoneInstances(ctx context.Context, client computeInstancesClient, proje
 		Project:    project,
 		MaxResults: &maxResults,
 		Zone:       zone,
-		Filter:     proto.String("name eq ^vm-.*"),
+		Filter:     proto.String(filterString(r)),
 	}
 
 	var instances []*computepb.Instance
@@ -275,6 +270,15 @@ func listZoneInstances(ctx context.Context, client computeInstancesClient, proje
 	}
 	logging.Infof(ctx, "listZoneInstances: found %v instances in project %s zone %s", len(instances), project, zone)
 	return instances, nil
+}
+
+// filterString generates a full filter string based on the request.
+func filterString(r *api.ListLeasesRequest) string {
+	filterString := "name:vm-*"
+	if r.GetFilter() != "" {
+		filterString += " AND " + r.GetFilter()
+	}
+	return filterString
 }
 
 // computeExpirationTime calculates the expiration time of a VM
