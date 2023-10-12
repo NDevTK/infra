@@ -387,7 +387,10 @@ class ServeCodeCoverageData(BaseHandler):
     list_reports = self.request.get('list_reports', 'False').lower() == 'true'
     path = self.request.get('path')
     test_suite_type = self.request.get('test_suite_type', 'any')
-    modifier_id = int(self.request.get('modifier_id', '0'))
+    try:
+      modifier_id = int(self.request.get('modifier_id', '0'))
+    except ValueError as e:
+      return BaseHandler.CreateError('Malformed request = %s' % str(e), 400)
 
     logging.info('host=%s', host)
     logging.info('project=%s', project)
