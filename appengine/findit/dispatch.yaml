@@ -14,9 +14,6 @@ dispatch:
   - url: "*/coverage/task/low-coverage-blocking*"
     module: code-coverage-referenced-coverage-worker
 
-  - url: "*/coverage/task/author-coverage*"
-    module: code-coverage-experimental-coverage-worker
-
   - url: "*/coverage/cron/*"
     module: code-coverage-backend
 

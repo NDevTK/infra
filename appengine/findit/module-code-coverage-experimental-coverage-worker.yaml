@@ -13,10 +13,6 @@ handlers:
   script: coverage_main.experimental_coverage_worker_application
   secure: always
 
-- url: .*/coverage/task/author-coverage.*
-  script: coverage_main.experimental_coverage_worker_application
-  secure: always
-
 skip_files:
 - ^(.*/)?#.*#$
 - ^(.*/)?.*~$
