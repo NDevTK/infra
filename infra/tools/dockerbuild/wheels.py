@@ -1169,7 +1169,6 @@ SPECS.update({
             '4.6.2',
             ['manylinux-x64-py3.8'],
         ),
-        # TODO: version 9.2.0+ of pillow needed for python 3.11.
         Prebuilt(
             'pillow',
             '8.1.2',
@@ -1192,6 +1191,28 @@ SPECS.update({
                 'windows-x86-py3.8',
             ],
             arch_map={'linux-arm64-py3.8': ['manylinux2014_aarch64']},
+        ),
+        Prebuilt(
+            'pillow',
+            '9.5.0',
+            [
+                'manylinux-x64-py3.8',
+                'manylinux-x64-py3.11',
+                'linux-arm64-py3.8',
+                'linux-arm64-py3.11',
+                'mac-x64-py3.8',
+                'mac-x64-py3.11',
+                'mac-arm64-py3.8',
+                'mac-arm64-py3.11',
+                'windows-x64-py3.8',
+                'windows-x64-py3.11',
+                'windows-x86-py3.8',
+                'windows-x86-py3.11',
+            ],
+            arch_map={
+                'linux-arm64-py3.8': ['manylinux_2_17_aarch64'],
+                'linux-arm64-py3.11': ['manylinux_2_17_aarch64']
+            },
         ),
         Prebuilt(
             'pywin32',
