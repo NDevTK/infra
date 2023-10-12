@@ -1959,7 +1959,7 @@ SPECS.update({
                 Universal('pyina', '0.2.4'),
             ]),
             pyversions=['py3'],
-            skip_plat=build_platform.ALL_PY311,  # TODO: version 3.1.4+
+            skip_plat=build_platform.ALL_PY311,
         ),
         # This should actually be 0.3.0, but the version needs to change in
         # order to remove dependencies that were erroneously included when
@@ -1981,7 +1981,6 @@ SPECS.update({
                 Universal('ppft', '1.7.6.6', pyversions=['py3']),
             ]),
             pyversions=['py3'],
-            skip_plat=build_platform.ALL_PY311,  # TODO
         ),
         # This should actually be 4.8.0, but the version needs to change in
         # order to pick up dependencies that weren't included when the
