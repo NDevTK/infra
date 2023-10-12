@@ -4,3 +4,8 @@ mingkong@google.com
 
 # ChromeOS CI Team
 include chromiumos/owners:v1:/infra/OWNERS.ci
+
+# ChromeOS Fleet Shared Infra Software Team
+denizkara@google.com
+justinsuen@google.com
+xixuan@google.com
