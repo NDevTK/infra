@@ -34,6 +34,7 @@ This command's behavior is subject to change without notice.
 Do not build automation around this subcommand.`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &abandonRun{}
+		c.envFlags.register(&c.Flags)
 		c.abandonFlags.register(&c.Flags)
 		return c
 	},
@@ -41,6 +42,7 @@ Do not build automation around this subcommand.`,
 
 type abandonRun struct {
 	subcommands.CommandRunBase
+	envFlags
 	abandonFlags
 }
 
@@ -55,7 +57,11 @@ func (c *abandonRun) Run(a subcommands.Application, args []string, env subcomman
 func (c *abandonRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
 
-	vmLeaser, err := client.NewClient(ctx, client.LocalConfig())
+	config, err := c.envFlags.getClientConfig()
+	if err != nil {
+		return err
+	}
+	vmLeaser, err := client.NewClient(ctx, config)
 	if err != nil {
 		return err
 	}
