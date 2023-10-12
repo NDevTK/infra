@@ -72,16 +72,23 @@ func TestNoDeleteNoExpired(t *testing.T) {
 			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionRelease + time.Hour)),
 		},
 		{
+			Name: "snapshot-noexpire",
+			Labels: map[string]string{
+				"build-type": "snapshot",
+			},
+			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionDefault + time.Hour)),
+		},
+		{
 			Name: "unknown-noexpire",
 			Labels: map[string]string{
 				"build-type": "unknown",
 			},
-			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionUnknown + time.Hour)),
+			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionDefault + time.Hour)),
 		},
 		{
 			Name:        "unknown-noexpire-nolabel",
 			Labels:      map[string]string{},
-			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionUnknown + time.Hour)),
+			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionDefault + time.Hour)),
 		},
 	}
 
@@ -143,16 +150,23 @@ func TestDeleteExpired(t *testing.T) {
 			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionRelease - time.Hour)),
 		},
 		{
+			Name: "snapshot-expire",
+			Labels: map[string]string{
+				"build-type": "snapshot",
+			},
+			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionDefault - time.Hour)),
+		},
+		{
 			Name: "unknown-expire",
 			Labels: map[string]string{
 				"build-type": "unknown",
 			},
-			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionUnknown - time.Hour)),
+			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionDefault - time.Hour)),
 		},
 		{
 			Name:        "unknown-expire-nolabel",
 			Labels:      map[string]string{},
-			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionUnknown - time.Hour)),
+			TimeCreated: timestamppb.New(time.Now().Add(-imageRetentionDefault - time.Hour)),
 		},
 	}
 
@@ -174,7 +188,7 @@ func TestDeleteExpired(t *testing.T) {
 	expectedResult := cleanImagesResult{
 		Total: len(gceImages),
 		Deleted: []string{
-			"cq-expire", "postsubmit-expire", "release-expire", "unknown-expire", "unknown-expire-nolabel",
+			"cq-expire", "postsubmit-expire", "release-expire", "snapshot-expire", "unknown-expire", "unknown-expire-nolabel",
 		},
 		Failed:  []string{},
 		Unknown: []string{"unknown-expire", "unknown-expire-nolabel"},

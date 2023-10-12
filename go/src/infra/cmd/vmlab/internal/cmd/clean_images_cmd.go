@@ -56,7 +56,7 @@ const (
 	imageRetentionCQ         = time.Hour * 24 * 7
 	imageRetentionPostsubmit = time.Hour * 24 * 14
 	imageRetentionRelease    = time.Hour * 24 * 30
-	imageRetentionUnknown    = time.Hour * 24 * 3
+	imageRetentionDefault    = time.Hour * 24 * 3
 )
 
 func (c *cleanImagesRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -177,6 +177,9 @@ func getImageRetention(buildType string) (time.Duration, error) {
 		return imageRetentionPostsubmit, nil
 	case "release":
 		return imageRetentionRelease, nil
+	case "snapshot":
+		return imageRetentionDefault, nil
+	default:
+		return imageRetentionDefault, fmt.Errorf("unknown build type %s", buildType)
 	}
-	return imageRetentionUnknown, fmt.Errorf("Unknown build type %s", buildType)
 }
