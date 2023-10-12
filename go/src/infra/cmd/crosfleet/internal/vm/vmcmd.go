@@ -20,6 +20,7 @@ var vmApplication = &cli.Application{
 		abandon,
 		lease,
 		leases,
+		tunnel,
 		subcommands.CmdHelp,
 	},
 }
