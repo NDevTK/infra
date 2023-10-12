@@ -434,18 +434,6 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
         '/source-files-for-coverage/chromium.googlesource.com/chromium/'
         'src.git/dir/myfile.cc/bbbbb')
 
-  def testServeFullRepoReferencedReport_RedirectsWithModifier(self):
-    self.mock_current_user(user_email='test@google.com', is_admin=False)
-    CoverageReportModifier(
-        reference_commit='past_commit',
-        reference_commit_timestamp=datetime(2020, 12, 31),
-        id=123).put()
-    request_url = '/coverage/p/chromium/referenced2021'
-    response = self.test_app.get(request_url)
-    self.assertEqual(302, response.status_int)
-    self.assertIn('/coverage/p/chromium?modifier_id=123',
-                  response.headers.get('Location', ''))
-
   @mock.patch.object(utils, 'GetFileContentFromGs')
   def testServeFullRepoFileViewWithNonAsciiChars(self, mock_get_file_from_gs):
     self.mock_current_user(user_email='test@google.com', is_admin=False)

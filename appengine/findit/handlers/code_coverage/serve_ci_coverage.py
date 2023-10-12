@@ -357,30 +357,6 @@ class ServeCodeCoverageData(BaseHandler):
 
     host = self.request.get('host', default_config['host'])
     project = self.request.get('project', default_config['project'])
-
-    def _GetReferencedCoverageYear():
-      match = _REFERENCED_COVERAGE_YEAR_REGEX.match(self.request.path)
-      return int(match.group(1)) if match else None
-
-    # If the request is for referenced coverage, find the corresponding
-    # CoverageReportModifier and redirect with modifier_id in params
-    referenced_coverage_year = _GetReferencedCoverageYear()
-    if referenced_coverage_year:
-      modifier_id = utils.GetLastActiveReferenceCommitForYear(
-          host, project, referenced_coverage_year - 1)
-      if not modifier_id:
-        return BaseHandler.CreateError(
-            'No reference commit found for host %s, project %s and year %d' %
-            host, project, referenced_coverage_year)
-      path = self.request.path[:-len('/referencedYYYY')]
-      query_string = self.request.query_string
-      if query_string:
-        query_string = '%s&modifier_id=%d' % (query_string, modifier_id)
-      else:
-        query_string = 'modifier_id=%d' % (modifier_id)
-      new_url = 'https://%s%s?%s' % (self.request.host, path, query_string)
-      return self.CreateRedirect(new_url)
-
     ref = self.request.get('ref', default_config['ref'])
     revision = self.request.get('revision')
     platform = self.request.get('platform', default_config['platform'])

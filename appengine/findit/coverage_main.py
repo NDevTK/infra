@@ -9,7 +9,6 @@ import gae_ts_mon
 from gae_libs import appengine_util
 
 from handlers.code_coverage import create_author_coverage
-from handlers.code_coverage import create_referenced_coverage
 from handlers.code_coverage import export_absolute_coverage
 from handlers.code_coverage import export_incremental_coverage
 from handlers.code_coverage import export_gerrit_filter_coverage
@@ -34,8 +33,6 @@ if appengine_util.IsInProductionApp():
 
 # Referenced coverage worker module.
 referenced_coverage_worker_handler_mappings = [
-    ('.*/coverage/task/referenced-coverage.*',
-     create_referenced_coverage.CreateReferencedCoverageMetrics),
     ('.*/coverage/task/incremental-coverage',
      export_incremental_coverage.ExportIncrementalCoverageMetrics),
     ('.*/coverage/task/low-coverage-blocking',
@@ -64,8 +61,6 @@ code_coverage_backend_handler_mappings = [
      export_gerrit_filter_coverage.ExportAllCoverageMetrics),
     ('.*/coverage/cron/author-coverage',
      create_author_coverage.CreateAuthorCoverageMetricsCron),
-    ('.*/coverage/cron/referenced-coverage',
-     create_referenced_coverage.CreateReferencedCoverageMetricsCron),
     ('.*/coverage/task/postsubmit-report/update',
      update_postsubmit_report.UpdatePostsubmitReport),
 ]
