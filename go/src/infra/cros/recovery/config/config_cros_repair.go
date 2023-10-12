@@ -158,6 +158,7 @@ func crosRepairActions() map[string]*Action {
 				"Restore AC detection by EC console and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Update FW from fw-image by servo and wait for boot",
+				"Update fingerpprint FW from USB drive",
 				"Install OS in recovery mode by booting from servo USB-drive (special pools)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode by USB-drive",
@@ -183,6 +184,7 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset by servo and wait for SSH",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Update FW from fw-image by servo and wait for boot",
+				"Update fingerpprint FW from USB drive",
 				"Install OS in recovery mode by booting from servo USB-drive (special pools)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode by USB-drive",
@@ -3038,6 +3040,48 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 1000},
 			RunControl:  RunControl_ALWAYS_RUN,
+		},
+		"Update fingerpprint FW from USB drive": {
+			Docs: []string{
+				// The action runs USB-drive as devices with fp issue usually in reboot loop.
+				// The action can also run when boot from USB drive with ctrl+U.
+				"The goal to force update fingerprint fw when devices booted from USB-stick",
+			},
+			Conditions: []string{
+				"Is servod running",
+				"Is not Flex device",
+				"Is servo USB key detected",
+			},
+			Dependencies: []string{
+				"Set fw_wp_state to force_off",
+			},
+			ExecName: "cros_install_in_recovery_mode",
+			ExecExtraArgs: []string{
+				"badblocks_mode:not",
+				"run_custom_commands:true",
+				"boot_timeout:480",
+				"boot_interval:10",
+				"boot_retry:1",
+				"halt_timeout:120",
+				"custom_command_allowed_to_fail:true",
+				"custom_command_timeout:60",
+				"custom_commands:flash_fp_mcu fw_wp_state:force_off /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 1000},
+			RunControl:  RunControl_ALWAYS_RUN,
+		},
+		"Set fw_wp_state to force_off": {
+			Docs: []string{
+				"Force disable wp of FW by servo.",
+			},
+			Dependencies: []string{
+				"Setup has servo info",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:fw_wp_state",
+				"string_value:force_off",
+			},
 		},
 		"Boot DUT from USB in DEV mode": {
 			Docs: []string{

@@ -12731,6 +12731,137 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
+              "name": "Update fingerpprint FW from USB drive",
+              "docs": [
+                "The goal to force update fingerprint fw when devices booted from USB-stick"
+              ],
+              "conditions": [
+                {
+                  "name": "Is servod running",
+                  "docs": [
+                    "Verify that servo host specified in setup and servod is running."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Setup has servo info",
+                      "exec_name": "dut_servo_host_present",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Verify servod is responsive",
+                      "conditions": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servod_echo",
+                      "exec_args": [
+                        "ssh_check:false"
+                      ],
+                      "timeout": "10s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Is not Flex device",
+                  "docs": [
+                    "Check that DUT is not a Flex board"
+                  ],
+                  "exec_name": "dut_check_board",
+                  "exec_args": [
+                    "string_values:aurora,reven",
+                    "invert_result:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Is servo USB key detected",
+                  "docs": [
+                    "The action used as codiion.",
+                    "The action verify that USB-key is detected and readable."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_usbkey_is_detected",
+                  "exec_args": [
+                    "file_check:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "dependencies": [
+                {
+                  "name": "Set fw_wp_state to force_off",
+                  "docs": [
+                    "Force disable wp of FW by servo."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Setup has servo info",
+                      "exec_name": "dut_servo_host_present",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_set",
+                  "exec_args": [
+                    "command:fw_wp_state",
+                    "string_value:force_off"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "cros_install_in_recovery_mode",
+              "exec_args": [
+                "badblocks_mode:not",
+                "run_custom_commands:true",
+                "boot_timeout:480",
+                "boot_interval:10",
+                "boot_retry:1",
+                "halt_timeout:120",
+                "custom_command_allowed_to_fail:true",
+                "custom_command_timeout:60",
+                "custom_commands:flash_fp_mcu fw_wp_state:force_off /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin"
+              ],
+              "timeout": "16m40s",
+              "run_control": "ALWAYS_RUN"
+            },
+            {
               "name": "Install OS in recovery mode by booting from servo USB-drive (special pools)",
               "docs": [
                 "This action installs the test image on DUT utilizing the features of servo.",
