@@ -25,10 +25,10 @@ import (
 	ppb "infra/third_party/reclient/api/proxy"
 )
 
-func (b *Builder) runReproxy(ctx context.Context, step *Step) error {
-	ctx, span := trace.NewSpan(ctx, "run-reproxy")
+func (b *Builder) execReproxy(ctx context.Context, step *Step) error {
+	ctx, span := trace.NewSpan(ctx, "exec-reproxy")
 	defer span.Close(nil)
-	clog.Infof(ctx, "run reproxy %s", step.cmd.Desc)
+	clog.Infof(ctx, "exec reproxy %s", step.cmd.Desc)
 	step.setPhase(stepInput)
 	// expand inputs to get full action inputs,
 	// before preparing inputs on local disk for reproxy.
