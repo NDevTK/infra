@@ -59,7 +59,7 @@ const (
 
 	// This command, when executed from servo host, checks whether the
 	// servod process is responsive.
-	servodHostCheckupCmd = "dut-control -p %d serialname"
+	servodHostCheckupCmd = "dut-control -p %d root.serialname"
 
 	// This is the threshold voltage values between DUT and servo
 	// Bus voltage on ppdut5. Value can be:

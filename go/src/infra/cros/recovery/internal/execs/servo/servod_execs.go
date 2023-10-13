@@ -38,7 +38,7 @@ func servodEchoActionExec(ctx context.Context, info *execs.ExecInfo) error {
 			info.AddObservation(metrics.NewStringObservation("ssh_check", "pass"))
 		}
 	}
-	res, err := servodGetString(ctx, info.NewServod(), "serialname")
+	res, err := servodGetString(ctx, info.NewServod(), "root.serialname")
 	if err != nil {
 		return errors.Annotate(err, "servod echo exec").Err()
 	} else if res == "" {
