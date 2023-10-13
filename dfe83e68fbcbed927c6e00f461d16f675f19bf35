@@ -46,6 +46,30 @@
       },
       "revId": "dfe83e68fbcbed927c6e00f461d16f675f19bf35",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2dc0e76e_ef8b8cea",
+        "filename": "go/src/infra/build/siso/build/run_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-10-13T07:57:13Z",
+      "side": 0,
+      "message": "Reproxy mode also uses the inputs added by Siso config. So, I guess it\u0027s necessary.",
+      "parentUuid": "63117146_a3f346c1",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 12
+      },
+      "revId": "dfe83e68fbcbed927c6e00f461d16f675f19bf35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

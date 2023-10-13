@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b71cdf4d_2264adf2",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-10-13T07:57:13Z",
+      "side": 1,
+      "message": "I think you can merge the two `if err \u003d\u003d nil` blocks.\n\n```suggestion\n\t\tif err \u003d\u003d nil; err \u003d b.outputs(ctx, step); err \u003d\u003d nil {\n\t\t     return nil\n\t\t}\n\t\tclog.Infof(ctx, \"cmd cache miss: %v\", err)\n```\n\nYou could also move `b.outputs()` to `execRemoteCache`.",
+      "range": {
+        "startLine": 107,
+        "startChar": 2,
+        "endLine": 113,
+        "endChar": 0
+      },
+      "revId": "668a873d9c36ff15d2c1d66b7fc9194f7a81816b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

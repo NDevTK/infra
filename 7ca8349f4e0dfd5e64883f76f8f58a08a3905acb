@@ -1,6 +1,30 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "23e8b83f_026bd086",
+        "filename": "go/src/infra/build/siso/build/run_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-10-13T07:57:13Z",
+      "side": 1,
+      "message": "\u003e Error return value of `b.preprocSema.Do` is not checked\n\nAlready fixed.",
+      "parentUuid": "06797251_d46c6fbf",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 0
+      },
+      "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6f299b64_906b5d37",
@@ -43,6 +67,30 @@
         "startChar": 18,
         "endLine": 18,
         "endChar": 27
+      },
+      "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb90690c_fd673d78",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-10-13T07:57:13Z",
+      "side": 1,
+      "message": "\u003e Error return value of `b.preprocSema.Do` is not checked\n\nAlready fixed.",
+      "parentUuid": "12d99043_df8b7020",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 0
       },
       "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
