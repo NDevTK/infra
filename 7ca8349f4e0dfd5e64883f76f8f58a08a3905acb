@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b900402_0085c6d3",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-10-13T07:42:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6f299b64_906b5d37",
+      "range": {
+        "startLine": 18,
+        "startChar": 18,
+        "endLine": 18,
+        "endChar": 27
+      },
+      "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "84276ae5_22f2bb52",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-10-13T06:49:34Z",
       "side": 1,
       "message": "execRemote?",
+      "range": {
+        "startLine": 31,
+        "startChar": 10,
+        "endLine": 31,
+        "endChar": 23
+      },
+      "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "29990127_8a738dec",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-10-13T07:42:05Z",
+      "side": 1,
+      "message": "no. runRemoteStep to check cache too.",
+      "parentUuid": "84276ae5_22f2bb52",
       "range": {
         "startLine": 31,
         "startChar": 10,
@@ -72,6 +120,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "c029e64b_0d00d974",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-10-13T07:42:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd2ddbd6_9641ab9c",
+      "range": {
+        "startLine": 60,
+        "startChar": 74,
+        "endLine": 60,
+        "endChar": 85
+      },
+      "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "a5dbed49_44429f78",
         "filename": "go/src/infra/build/siso/build/run_remote.go",
         "patchSetId": 2
@@ -83,6 +155,30 @@
       "writtenOn": "2023-10-13T06:49:34Z",
       "side": 1,
       "message": "Just curious. How does Ninja/{Goma, Reclient} handle invalid deps cache?",
+      "range": {
+        "startLine": 92,
+        "startChar": 1,
+        "endLine": 95,
+        "endChar": 0
+      },
+      "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ee9fbcb_9cb3a3a2",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-10-13T07:42:05Z",
+      "side": 1,
+      "message": "ninja uses deps log to add unspecified dependencies of the step for incremental build. i.e. if some of them are updated or missing, rerun command.\n\ngoma, reclient doesn\u0027t use the deps log.\n\ngoma, reclient deps cache records input\u0027s file/hash of directive lines) and use them when all matches.",
+      "parentUuid": "a5dbed49_44429f78",
       "range": {
         "startLine": 92,
         "startChar": 1,
