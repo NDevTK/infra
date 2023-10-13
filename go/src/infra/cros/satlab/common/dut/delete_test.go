@@ -7,16 +7,19 @@ package dut
 import (
 	"context"
 	"fmt"
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufsApi "infra/unifiedfleet/api/v1/rpc"
-	ufspb "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"os/exec"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/grpc"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+
+	"infra/cros/satlab/common/utils/executor"
+	ufsModels "infra/unifiedfleet/api/v1/models"
+	ufsApi "infra/unifiedfleet/api/v1/rpc"
+	ufspb "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 type mockDeleteClient struct {
@@ -50,20 +53,18 @@ func (c *mockDeleteClient) GetMachineLSE(ctx context.Context, req *ufsApi.GetMac
 	}, nil
 }
 
-func Test_innerRunWithClients(t *testing.T) {
+func Test_TriggerRun(t *testing.T) {
 	tests := []struct {
 		name                 string
-		cmd                  *deleteDUT
-		dutNames             []string
+		cmd                  *DeleteDUT
 		wantGetCalls         []*ufsApi.GetMachineLSERequest
 		wantDeleteLSECalls   []*ufsApi.DeleteMachineLSERequest
 		wantDeleteAssetCalls []*ufsApi.DeleteAssetRequest
 		wantDeleteRackCalls  []*ufsApi.DeleteRackRequest
 	}{
 		{
-			name:     "delete calls ufs for duts passed in",
-			cmd:      &deleteDUT{},
-			dutNames: []string{"dut1", "dut2"},
+			name: "delete calls ufs for duts passed in",
+			cmd:  &DeleteDUT{Names: []string{"dut1", "dut2"}},
 			wantGetCalls: []*ufsApi.GetMachineLSERequest{
 				{Name: "machineLSEs/dut1"},
 				{Name: "machineLSEs/dut2"},
@@ -74,9 +75,8 @@ func Test_innerRunWithClients(t *testing.T) {
 			},
 		},
 		{
-			name:     "deletes called for duts, assets, and racks for -full",
-			cmd:      &deleteDUT{full: true},
-			dutNames: []string{"dut1", "dut2"},
+			name: "deletes called for duts, assets, and racks for -full",
+			cmd:  &DeleteDUT{Full: true, Names: []string{"dut1", "dut2"}},
 			wantGetCalls: []*ufsApi.GetMachineLSERequest{
 				{Name: "machineLSEs/dut1"},
 				{Name: "machineLSEs/dut2"},
@@ -95,12 +95,19 @@ func Test_innerRunWithClients(t *testing.T) {
 			},
 		},
 	}
+
+	fakeCommander := &executor.FakeCommander{
+		FakeFn: func(_ *exec.Cmd) ([]byte, error) {
+			return []byte(""), nil
+		},
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ufs := &mockDeleteClient{}
 
-			if err := innerRunWithClients(context.Background(), tt.cmd, tt.dutNames, ufs); err != nil {
-				t.Errorf("innerRunWithClients() error = %v", err)
+			_, err := tt.cmd.TriggerRun(context.Background(), fakeCommander, ufs)
+			if err != nil {
+				t.Errorf("TriggerRun() error = %v", err)
 			}
 
 			if diff := cmp.Diff(tt.wantGetCalls, ufs.getMachineLSECalls, cmpopts.IgnoreUnexported(ufsApi.GetMachineLSERequest{})); diff != "" {
@@ -117,6 +124,47 @@ func Test_innerRunWithClients(t *testing.T) {
 
 			if diff := cmp.Diff(tt.wantDeleteRackCalls, ufs.deleteRackCalls, cmpopts.IgnoreUnexported(ufsApi.DeleteRackRequest{})); diff != "" {
 				t.Errorf("unexpected diff in delete calls: %s", diff)
+			}
+		})
+	}
+}
+
+func Test_Validate(t *testing.T) {
+	tests := []struct {
+		name string
+		cmd  *DeleteDUT
+		err  bool
+	}{
+		{
+			name: "valid dut names",
+			cmd:  &DeleteDUT{Names: []string{"dut1", "dut2"}},
+			err:  false,
+		},
+		{
+			name: "validate dut names and full",
+			cmd:  &DeleteDUT{Full: true, Names: []string{"dut1", "dut2"}},
+			err:  false,
+		},
+		{
+			name: "dut names are empty",
+			cmd:  &DeleteDUT{Names: []string{}},
+			err:  true,
+		},
+		{
+			name: "no parameters",
+			cmd:  &DeleteDUT{},
+			err:  true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.cmd.Validate()
+			if tt.err && err == nil {
+				t.Errorf("unexpected diff in validation")
+			}
+
+			if !tt.err && err != nil {
+				t.Errorf("unexpected diff in validation")
 			}
 		})
 	}

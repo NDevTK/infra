@@ -15,14 +15,12 @@ import (
 type shivasDeleteDUT struct {
 	subcommands.CommandRunBase
 
-	authFlags   authcli.Flags
-	envFlags    site.EnvFlags
-	commonFlags site.CommonFlags
+	authFlags authcli.Flags
+	envFlags  site.EnvFlags
 }
 
 // RegisterShivasFlags registers the shivas flags.
-func registerShivasFlags(c *deleteDUT) {
+func registerShivasFlags(c *deleteDUTCmd) {
 	c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 	c.envFlags.Register(&c.Flags)
-	c.commonFlags.Register(&c.Flags)
 }
