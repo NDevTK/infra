@@ -6,7 +6,6 @@ package controller
 
 import (
 	"context"
-	"strings"
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
@@ -228,39 +227,6 @@ func deleteInvalidIPs(ctx context.Context, pageSize int) {
 	}
 	logging.Infof(ctx, "Deleting %d invalid ips ", len(toDeleteIP))
 	deleteByPage(ctx, toDeleteIP, pageSize, configuration.DeleteIPs)
-}
-
-func deleteNonExistingVlans(ctx context.Context, vlans []*ufspb.Vlan, pageSize int) (*ufsds.OpResults, error) {
-	resMap := make(map[string]bool)
-	for _, r := range vlans {
-		resMap[r.GetName()] = true
-	}
-	resp, err := configuration.GetAllVlans(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var toDelete []string
-	var toDeleteIP []string
-	for _, sr := range resp.Passed() {
-		s := sr.Data.(*ufspb.Vlan)
-		if util.IsInBrowserZone(s.GetName()) || strings.Contains(s.GetName(), "browser-lab") {
-			if _, ok := resMap[s.GetName()]; !ok {
-				toDelete = append(toDelete, s.GetName())
-				ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"vlan": s.GetName()})
-				if err != nil {
-					return nil, err
-				}
-				for _, ip := range ips {
-					toDeleteIP = append(toDeleteIP, ip.GetId())
-				}
-			}
-		}
-	}
-
-	logging.Infof(ctx, "Deleting %d non-existing ips ", len(toDeleteIP))
-	deleteByPage(ctx, toDeleteIP, pageSize, configuration.DeleteIPs)
-	logging.Infof(ctx, "Deleting %d non-existing vlans ", len(toDelete))
-	return deleteByPage(ctx, toDelete, pageSize, configuration.DeleteVlans), nil
 }
 
 // ImportOSVlans imports the logic of parse and save network infos.
