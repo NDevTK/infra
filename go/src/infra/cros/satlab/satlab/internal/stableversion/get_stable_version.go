@@ -6,7 +6,9 @@ package stableversion
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -17,6 +19,7 @@ import (
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/recovery/models"
 	"infra/cros/satlab/common/site"
 )
 
@@ -63,8 +66,41 @@ func (c *getStableVersionRun) Run(a subcommands.Application, args []string, env 
 	return 0
 }
 
-// InnerRun creates a client, sends a GetStableVersion request, and prints the response.
+// InnerRun calls a getStableVersion function based on whether the user is internal or an external partner.
 func (c *getStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+	if site.IsPartner() {
+		return c.getStableVersionPartner()
+	} else {
+		return c.getStableVersionInternal(ctx, a)
+	}
+}
+
+// GetStableVersionPartner fetches local stable version
+func (c *getStableVersionRun) getStableVersionPartner() error {
+	if c.board == "" {
+		return errors.Reason("Please provide -board").Err()
+	}
+	if c.model == "" {
+		return errors.Reason("Please provide -model").Err()
+	}
+	fname := fmt.Sprintf("%s%s-%s.json", site.RecoveryVersionDirectory, c.board, c.model)
+	f, err := os.ReadFile(fname)
+	if err != nil {
+		return errors.Annotate(err, "get stable version: stable version not found").Err()
+	}
+	recovery_version := &models.RecoveryVersion{}
+	_ = json.Unmarshal([]byte(f), recovery_version)
+
+	rv, err := json.MarshalIndent(recovery_version, "", " ")
+	if err != nil {
+		return errors.Annotate(err, "marshal recovery version").Err()
+	}
+	fmt.Println("Found Local Stable Version: ", string(rv))
+	return nil
+}
+
+// GetStableVersionInternal creates a client, sends a GetStableVersion request, and prints the response.
+func (c *getStableVersionRun) getStableVersionInternal(ctx context.Context, a subcommands.Application) error {
 	newHostname, err := preprocessHostname(ctx, c.commonFlags, c.hostname, nil, nil)
 	if err != nil {
 		return errors.Annotate(err, "get stable version").Err()
