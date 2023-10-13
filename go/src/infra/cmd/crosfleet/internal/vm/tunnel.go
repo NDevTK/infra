@@ -39,6 +39,7 @@ This command's behavior is subject to change without notice.
 Do not build automation around this subcommand.`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &tunnelRun{}
+		c.envFlags.register(&c.Flags)
 		c.tunnelFlags.register(&c.Flags)
 		return c
 	},
@@ -46,6 +47,7 @@ Do not build automation around this subcommand.`,
 
 type tunnelRun struct {
 	subcommands.CommandRunBase
+	envFlags
 	tunnelFlags
 }
 
@@ -64,7 +66,11 @@ func (c *tunnelRun) innerRun(a subcommands.Application, env subcommands.Env) err
 	address := c.tunnelFlags.address
 
 	if address == "" {
-		vmLeaser, err := client.NewClient(ctx, client.LocalConfig())
+		config, err := c.envFlags.getClientConfig()
+		if err != nil {
+			return err
+		}
+		vmLeaser, err := client.NewClient(ctx, config)
 		if err != nil {
 			return err
 		}

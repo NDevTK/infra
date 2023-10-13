@@ -26,12 +26,14 @@ This command's behavior is subject to change without notice.
 Do not build automation around this subcommand.`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &leasesRun{}
+		c.envFlags.register(&c.Flags)
 		return c
 	},
 }
 
 type leasesRun struct {
 	subcommands.CommandRunBase
+	envFlags
 }
 
 func (c *leasesRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
@@ -45,7 +47,11 @@ func (c *leasesRun) Run(a subcommands.Application, _ []string, env subcommands.E
 func (c *leasesRun) innerRun(a subcommands.Application, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
 
-	vmLeaser, err := client.NewClient(ctx, client.LocalConfig())
+	config, err := c.envFlags.getClientConfig()
+	if err != nil {
+		return err
+	}
+	vmLeaser, err := client.NewClient(ctx, config)
 	if err != nil {
 		return err
 	}

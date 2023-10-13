@@ -43,6 +43,7 @@ This command's behavior is subject to change without notice.
 Do not build automation around this subcommand.`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &leaseRun{}
+		c.envFlags.register(&c.Flags)
 		c.leaseFlags.register(&c.Flags)
 		return c
 	},
@@ -50,6 +51,7 @@ Do not build automation around this subcommand.`,
 
 type leaseRun struct {
 	subcommands.CommandRunBase
+	envFlags
 	leaseFlags
 	printer common.CLIPrinter
 }
@@ -68,7 +70,11 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 	}
 	ctx := cli.GetContext(a, c, env)
 
-	vmLeaser, err := client.NewClient(ctx, client.LocalConfig())
+	config, err := c.envFlags.getClientConfig()
+	if err != nil {
+		return err
+	}
+	vmLeaser, err := client.NewClient(ctx, config)
 	if err != nil {
 		return err
 	}

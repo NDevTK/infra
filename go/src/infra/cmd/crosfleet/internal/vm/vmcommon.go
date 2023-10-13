@@ -6,6 +6,7 @@ package vm
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"io"
 	"regexp"
@@ -56,4 +57,27 @@ func printVMList(vms []*api.VM, w io.Writer) {
 		fmt.Fprintf(tw, "%s\t%s\t%s\t%d\t%s\t\n", vm.GetId(), vm.GetGceRegion(), vm.GetAddress().GetHost(), vm.GetAddress().GetPort(), remainTime)
 	}
 	tw.Flush()
+}
+
+// envFlags contains parameters to config environment for "vm" subcommands.
+type envFlags struct {
+	env string
+}
+
+// Registers env flags.
+func (c *envFlags) register(f *flag.FlagSet) {
+	f.StringVar(&c.env, "env", "prod", "Environment of vm_leaser server. Choose from: prod, staging, local")
+}
+
+// getClientConfig returns vm_leaser client config based on flags.
+func (c *envFlags) getClientConfig() (*client.Config, error) {
+	switch c.env {
+	case "prod":
+		return client.ProdConfig(), nil
+	case "staging":
+		return client.StagingConfig(), nil
+	case "local":
+		return client.LocalConfig(), nil
+	}
+	return nil, fmt.Errorf("invalid environment: %s", c.env)
 }
