@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de62858b_e3c9003e",
+        "filename": "go/src/infra/build/siso/build/run_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-10-13T06:49:34Z",
+      "side": 0,
+      "message": "Is this not necessary for Reproxy?",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 12
+      },
+      "revId": "dfe83e68fbcbed927c6e00f461d16f675f19bf35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

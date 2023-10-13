@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f299b64_906b5d37",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-10-13T06:49:34Z",
+      "side": 1,
+      "message": "I think it\u0027s better to explain the flow.\n\ne.g.\n```\n1) Try running a remote execution with deps log.\n2) If it failed, it will retry a remote execution with deps scan.\n3) If it still failed, it will fallback to local execution.\n\n- Before each remote exec, it checks remote cache before running. \n- The fallbacks can be disabled via experiment flags.\n```",
+      "range": {
+        "startLine": 18,
+        "startChar": 18,
+        "endLine": 18,
+        "endChar": 27
+      },
+      "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84276ae5_22f2bb52",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-10-13T06:49:34Z",
+      "side": 1,
+      "message": "execRemote?",
+      "range": {
+        "startLine": 31,
+        "startChar": 10,
+        "endLine": 31,
+        "endChar": 23
+      },
+      "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd2ddbd6_9641ab9c",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-10-13T06:49:34Z",
+      "side": 1,
+      "message": "Initially, I wasn\u0027t sure what the bool flag is.\nInstead of returning bool and error, it can return a custom error type for deps log error. \n\n```\nerr :\u003d tryFastStep(...)\nif !errros.Is(err, ErrDepsLog) {\n  return err\n}\n\n// fallback\n```",
+      "range": {
+        "startLine": 60,
+        "startChar": 74,
+        "endLine": 60,
+        "endChar": 85
+      },
+      "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5dbed49_44429f78",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-10-13T06:49:34Z",
+      "side": 1,
+      "message": "Just curious. How does Ninja/{Goma, Reclient} handle invalid deps cache?",
+      "range": {
+        "startLine": 92,
+        "startChar": 1,
+        "endLine": 95,
+        "endChar": 0
+      },
+      "revId": "7ca8349f4e0dfd5e64883f76f8f58a08a3905acb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
