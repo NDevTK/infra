@@ -22,6 +22,30 @@
       },
       "revId": "668a873d9c36ff15d2c1d66b7fc9194f7a81816b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69edce80_1988d921",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-10-13T08:08:42Z",
+      "side": 1,
+      "message": "```\nif err \u003d\u003d nil; err \u003d b.outputs(ctx, step); err \u003d\u003d nil {\n```\n\nis syntax error?\n\nanyway, move b.outputs to exec* methods.",
+      "parentUuid": "b71cdf4d_2264adf2",
+      "range": {
+        "startLine": 107,
+        "startChar": 2,
+        "endLine": 113,
+        "endChar": 0
+      },
+      "revId": "668a873d9c36ff15d2c1d66b7fc9194f7a81816b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
