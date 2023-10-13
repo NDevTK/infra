@@ -33,7 +33,7 @@ type analyzeCommandRun struct {
 
 func cmdAnalyze(authOpt *auth.Options) *subcommands.Command {
 	return &subcommands.Command{
-		UsageLine: `analyze -rejections <path> -durations <path> -builder <builder name> -testSuite <test suite name> -testIdFile <test id>`,
+		UsageLine: `analyze -rejections <path> -durations <path> -builder <name> -testSuite <name> [-testSuiteFile <path>] [-testIdFile <path>]`,
 		ShortDesc: "Prints the expected recall and savings with the provided test id file/test suite/builder combination removed",
 		LongDesc:  "Prints the expected recall and savings with the provided test id file/test suite/builder combination removed",
 		CommandRun: func() subcommands.CommandRun {
@@ -72,7 +72,7 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 	}
 
 	// Previously removed builder/suites
-	removedBuildSuites, err := loadTestSuiteFile(r.testIdFile)
+	removedBuilderSuites, err := loadTestSuiteFile(r.testSuiteFile)
 	if err != nil {
 		logging.Infof(ctx, err.Error())
 		return 1
@@ -93,7 +93,7 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 		for i, tv := range in.TestVariants {
 			variantBuilderSuite := getBuilderSuiteString(tv.Variant)
 
-			if (r.testSuiteFile != "" && removedBuildSuites[variantBuilderSuite]) ||
+			if (r.testSuiteFile != "" && removedBuilderSuites[variantBuilderSuite]) ||
 				(removedBuilderSuite == variantBuilderSuite && (r.testIdFile == "" || testIds[tv.Id])) {
 				out.TestVariantAffectedness[i] = rts.Affectedness{Distance: math.Inf(1)}
 			} else {

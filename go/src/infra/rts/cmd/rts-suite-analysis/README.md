@@ -47,7 +47,7 @@ You will also need IAM permissions for the chrome-rts project.
      -builder linux_chromium_asan_rel_ng \
      -testSuite browser_tests
    ```
-   Output will look somthing like:
+   Output will look something like:
    ```ChangeRecall | Savings
    ----------------------
     99.78%      |  14.45%
