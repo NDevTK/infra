@@ -629,7 +629,7 @@ func getConnectedDuts(ctx context.Context, executor executor.IExecCommander) ([]
 		return nil, err
 	}
 
-	duts, err := d.TriggerRun(ctx, executor)
+	duts, err := d.TriggerRun(ctx, executor, []string{})
 	if err != nil {
 		return nil, err
 	}

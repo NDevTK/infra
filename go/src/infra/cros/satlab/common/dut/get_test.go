@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os/exec"
 	"reflect"
 	"strings"
 	"testing"
@@ -16,6 +17,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
+	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/executor"
 	ufsModels "infra/unifiedfleet/api/v1/models"
 	ufspb "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -77,31 +79,22 @@ func TestMakeGetShivasFlags(t *testing.T) {
 	}
 }
 
-func TestGetDUTShouldWork(t *testing.T) {
-	t.Parallel()
-
-	// Create a request
-	p := GetDUT{}
-	ctx := context.Background()
-
-	// Create a fake data
-	expected := []*ufsModels.MachineLSE{
-		{
-			Name:     "name",
-			Hostname: "hostname",
-			Machines: []string{"machine"},
-			Lse: &ufsModels.MachineLSE_ChromeosMachineLse{
-				ChromeosMachineLse: &ufsModels.ChromeOSMachineLSE{
-					ChromeosLse: &ufsModels.ChromeOSMachineLSE_Dut{
-						Dut: &ufsModels.ChromeOSDeviceLSE{
-							Device: &ufsModels.ChromeOSDeviceLSE_Dut{
-								Dut: &ufspb.DeviceUnderTest{
-									Hostname: "hostname",
-									Pools:    []string{"pool"},
-									Peripherals: &ufspb.Peripherals{
-										Servo: &ufspb.Servo{
-											ServoFwChannel: ufspb.ServoFwChannel_SERVO_FW_PREV,
-										},
+func newMachineLSE(name string) *ufsModels.MachineLSE {
+	return &ufsModels.MachineLSE{
+		Name:     name,
+		Hostname: name,
+		Machines: []string{"machine"},
+		Lse: &ufsModels.MachineLSE_ChromeosMachineLse{
+			ChromeosMachineLse: &ufsModels.ChromeOSMachineLSE{
+				ChromeosLse: &ufsModels.ChromeOSMachineLSE_Dut{
+					Dut: &ufsModels.ChromeOSDeviceLSE{
+						Device: &ufsModels.ChromeOSDeviceLSE_Dut{
+							Dut: &ufspb.DeviceUnderTest{
+								Hostname: name,
+								Pools:    []string{"pool"},
+								Peripherals: &ufspb.Peripherals{
+									Servo: &ufspb.Servo{
+										ServoFwChannel: ufspb.ServoFwChannel_SERVO_FW_PREV,
 									},
 								},
 							},
@@ -111,18 +104,44 @@ func TestGetDUTShouldWork(t *testing.T) {
 			},
 		},
 	}
+}
 
+func marshallMachineLSESlice(expected []*ufsModels.MachineLSE) []string {
 	m := jsonpb.Marshaler{}
 	s := []string{}
 	for _, elem := range expected {
 		js, _ := m.MarshalToString(elem)
 		s = append(s, js)
 	}
-	in := fmt.Sprintf("[%v]", strings.Join(s, ","))
-	executor := executor.FakeCommander{CmdOutput: in}
+
+	return s
+}
+
+func TestGetDUTShouldWork(t *testing.T) {
+	t.Parallel()
+
+	// Create a request
+	p := GetDUT{}
+	ctx := context.Background()
+
+	// Create a fake data
+	expected := []*ufsModels.MachineLSE{newMachineLSE("name")}
+
+	// Lazy mock command executor which just returns a MachineLSE named after
+	// the last work in the shivas get dut
+	executor := executor.FakeCommander{FakeFn: func(c *exec.Cmd) ([]byte, error) {
+		if c.Args[0] != paths.ShivasCLI {
+			return nil, nil
+		}
+
+		gotMachineLSE := []*ufsModels.MachineLSE{newMachineLSE(c.Args[len(c.Args)-1])}
+		marshalled := marshallMachineLSESlice(gotMachineLSE)
+
+		return []byte(fmt.Sprintf("[%v]", strings.Join(marshalled, ","))), nil
+	}}
 
 	// Act
-	res, err := p.TriggerRun(ctx, &executor)
+	res, err := p.TriggerRun(ctx, &executor, []string{"name"})
 
 	// Asset
 	if err != nil {
@@ -160,7 +179,7 @@ func TestGetDUTShouldFail(t *testing.T) {
 	executor := executor.FakeCommander{Err: errors.New("cmd error")}
 
 	// Act
-	res, err := p.TriggerRun(ctx, &executor)
+	res, err := p.TriggerRun(ctx, &executor, []string{"name"})
 
 	// Asset
 	if err == nil {

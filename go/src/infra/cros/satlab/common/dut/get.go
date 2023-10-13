@@ -22,7 +22,8 @@ import (
 
 // GetDUT contains fields used to control behavior when fetching DUTs
 type GetDUT struct {
-	SatlabId      string
+	// SatlabID will be prepended to DUT names if not already prefixing them.
+	SatlabID      string
 	Namespace     string
 	HostInfoStore bool
 
@@ -95,20 +96,30 @@ func makeGetDUTShivasFlags(f *GetDUT) Flagmap {
 func (g *GetDUT) TriggerRun(
 	ctx context.Context,
 	executor executor.IExecCommander,
+	names []string,
 ) ([]*ufsModels.MachineLSE, error) {
 	var err error
-	if g.SatlabId == "" {
-		g.SatlabId, err = satlabcommands.GetDockerHostBoxIdentifier(ctx, executor)
+	if g.SatlabID == "" {
+		g.SatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(ctx, executor)
 		if err != nil {
 			return nil, errors.Annotate(err, "get dut").Err()
 		}
 	}
 
+	if names == nil {
+		names = []string{}
+	}
+
+	for idx, name := range names {
+		names[idx] = site.MaybePrepend(site.Satlab, g.SatlabID, name)
+	}
+
 	flags := makeGetDUTShivasFlags(g)
 
 	args := (&commands.CommandWithFlags{
-		Commands: []string{paths.ShivasCLI, "get", "dut"},
-		Flags:    flags,
+		Commands:       []string{paths.ShivasCLI, "get", "dut"},
+		Flags:          flags,
+		PositionalArgs: names,
 	}).ToCommand()
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
 	out, err := executor.Exec(command)

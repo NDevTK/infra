@@ -57,7 +57,7 @@ func (c *getDUTCmd) innerRun(
 ) error {
 	ctx := cli.GetContext(a, c, env)
 
-	resp, err := c.GetDUT.TriggerRun(ctx, &executor.ExecCommander{})
+	resp, err := c.GetDUT.TriggerRun(ctx, &executor.ExecCommander{}, args)
 	if err != nil {
 		return err
 	}
