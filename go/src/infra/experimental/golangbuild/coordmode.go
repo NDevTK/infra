@@ -69,6 +69,7 @@ func triggerDownstreamBuilds(ctx context.Context, spec *buildSpec, builders ...s
 	bbArgs := []string{"add"}
 	if spec.invokedSrc.commit != nil {
 		bbArgs = append(bbArgs, "-commit", spec.invokedSrc.asURL())
+		bbArgs = append(bbArgs, "-ref", spec.invokedSrc.commit.Ref)
 	}
 	if spec.invokedSrc.change != nil {
 		bbArgs = append(bbArgs, "-cl", spec.invokedSrc.asURL())
@@ -187,6 +188,7 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 	}
 	if spec.invokedSrc.commit != nil {
 		bbArgs = append(bbArgs, "-commit", spec.invokedSrc.asURL())
+		bbArgs = append(bbArgs, "-ref", spec.invokedSrc.commit.Ref)
 	}
 	if spec.invokedSrc.change != nil {
 		bbArgs = append(bbArgs, "-cl", spec.invokedSrc.asURL())
