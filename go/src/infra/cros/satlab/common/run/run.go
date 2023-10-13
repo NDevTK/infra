@@ -47,16 +47,40 @@ type Run struct {
 	SatlabId      string
 	CFT           bool
 	Local         bool
-	AddedDims     map[string]string
+	// Any configs related to results upload for this test run.
+	AddedDims map[string]string
 }
 
 // TriggerRun triggers the Run with the given information
 // (it could be either single test or a suite or a test_plan in the GCS bucket or test_plan saved locally)
 func (c *Run) TriggerRun(ctx context.Context) (string, error) {
+	bbClient, err := c.createCTPBuilder(ctx)
+	if err != nil {
+		return "", err
+	}
+	// Create default client
+	err = bbClient.AddDefaultBBClient(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
+	if err != nil {
+		return "", errors.Annotate(err, "satlab new moblab api build client").Err()
+	}
+
+	link, err := c.triggerRunWithClients(ctx, moblabClient, bbClient, site.GetGCSImageBucket())
+	if err != nil {
+		return "", errors.Annotate(err, "triggerRunWithClients").Err()
+	}
+	return link, nil
+}
+
+func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error) {
 	// Create TestPlan for suite or test
 	tp, err := c.createTestPlan()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	dims := c.AddedDims
@@ -68,7 +92,7 @@ func (c *Run) TriggerRun(ctx context.Context) (string, error) {
 	// Get drone target based on user input, defaulting to the current box.
 	droneDim, err := c.getDroneTarget(ctx)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if droneDim != "" {
 		dims["drone"] = droneDim
@@ -96,22 +120,8 @@ func (c *Run) TriggerRun(ctx context.Context) (string, error) {
 		AuthOptions: &site.DefaultAuthOptions,
 		// TRV2:        true,
 	}
-	// Create default client
-	err = bbClient.AddDefaultBBClient(ctx)
-	if err != nil {
-		return "", err
-	}
 
-	moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
-	if err != nil {
-		return "", errors.Annotate(err, "satlab new moblab api build client").Err()
-	}
-
-	link, err := c.triggerRunWithClients(ctx, moblabClient, bbClient, site.GetGCSImageBucket())
-	if err != nil {
-		return "", errors.Annotate(err, "triggerRunWithClients").Err()
-	}
-	return link, nil
+	return bbClient, nil
 }
 
 func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClient, bbClient BuildbucketClient, gcsBucket string) (string, error) {
