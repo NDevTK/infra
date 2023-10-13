@@ -245,6 +245,9 @@ service Fleet {
   // Get retrieves the details of the vlan
   rpc GetVlan(GetVlanRequest) returns (models.Vlan);
 
+  // ListIPs retrieves the IPs
+  rpc ListIPs(ListIPsRequest) returns (ListIPsResponse);
+
   // List gets all the vlans
   rpc ListVlans(ListVlansRequest) returns (ListVlansResponse);
 
@@ -1664,6 +1667,28 @@ message GetVlanRequest {
   ];
 }
 
+message ListIPsRequest {
+  // The maximum number of ips to return. The service may return fewer than
+  // this value.
+  // If unspecified, 100 IPs will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 1;
+
+  // A page token, received from a previous `ListIPs` call.
+  // Provide this to retrieve the subsequent page.
+  //
+  // When paginating, all other parameters provided to `ListIPs` must match
+  // the call that provided the page token.
+  string page_token = 2;
+
+  // filter takes the filtering condition
+  string filter = 3;
+
+  // if this is true, only keys will be returned else the entire object
+  // will be returned. By setting this to true, the list call be will faster.
+  bool keysOnly = 4;
+}
+
 message ListVlansRequest {
   // The maximum number of vlans to return. The service may return fewer than
   // this value.
@@ -1684,6 +1709,14 @@ message ListVlansRequest {
   // if this is true, only keys will be returned else the entire object
   // will be returned. By setting this to true, the list call be will faster.
   bool keysOnly = 4;
+}
+
+message ListIPsResponse {
+  repeated models.IP ips = 1;
+
+  // A token, which can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
 }
 
 message ListVlansResponse {

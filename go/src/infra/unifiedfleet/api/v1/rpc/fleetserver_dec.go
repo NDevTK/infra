@@ -1218,6 +1218,23 @@ func (s *DecoratedFleet) GetVlan(ctx context.Context, req *GetVlanRequest) (rsp 
 	return
 }
 
+func (s *DecoratedFleet) ListIPs(ctx context.Context, req *ListIPsRequest) (rsp *ListIPsResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "ListIPs", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.ListIPs(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "ListIPs", rsp, err)
+	}
+	return
+}
+
 func (s *DecoratedFleet) ListVlans(ctx context.Context, req *ListVlansRequest) (rsp *ListVlansResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

@@ -433,6 +433,14 @@ func (fs *FleetServerImpl) GetVlan(ctx context.Context, req *ufsAPI.GetVlanReque
 	return vlan, err
 }
 
+// ListIPs retrieves ips.
+func (fs *FleetServerImpl) ListIPs(ctx context.Context, req *ufsAPI.ListIPsRequest) (rsp *ufsAPI.ListIPsResponse, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	return nil, nil
+}
+
 // BatchGetVlans gets a batch of vlans from database.
 func (fs *FleetServerImpl) BatchGetVlans(ctx context.Context, req *ufsAPI.BatchGetVlansRequest) (rsp *ufsAPI.BatchGetVlansResponse, err error) {
 	defer func() {
