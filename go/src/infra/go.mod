@@ -75,8 +75,8 @@ require (
 	github.com/ulikunitz/xz v0.5.10
 	github.com/waigani/diffparser v0.0.0-20190828052634-7391f219313d
 	go.chromium.org/chromiumos/config/go v0.0.0-20230102123018-be9aaedc3af8
-	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20230321181237-93aaab0cc47c
-	go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20230324193748-f3c317a057be
+	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20230929075858-f9cecbf6e916
+	go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20231007100511-92819ae43f85
 	go.chromium.org/luci v0.0.0-20230103053340-8a57daa72e32
 	go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace v0.45.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.45.0

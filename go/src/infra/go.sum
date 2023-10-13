@@ -1294,8 +1294,8 @@ github.com/zeebo/bencode v1.0.0/go.mod h1:Ct7CkrWIQuLWAy9M3atFHYq4kG9Ao/SsY5cdtC
 github.com/zeebo/xxh3 v1.0.2 h1:xZmwmqxHZA8AI603jOQ0tMqmBr9lPeFwGg6d+xy9DC0=
 github.com/zeebo/xxh3 v1.0.2/go.mod h1:5NWz9Sef7zIDm2JHfFlcQvNekmcEl9ekUZQQKCYaDcA=
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
-go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20230324193748-f3c317a057be h1:sJc42MYCzpiZuxQnFwX7+sJBWzCVwdZb0GOvHOcDLHw=
-go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20230324193748-f3c317a057be/go.mod h1:yBarY0Dw+lvyXCcPocYR6Ka8CEDdGN7n34UqkguoBbc=
+go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20231007100511-92819ae43f85 h1:UqEB3U0Y8TFejuatablJmQcNVUOXwSXAlBSxXO2R5yI=
+go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20231007100511-92819ae43f85/go.mod h1:6sbK5YGgga6+AxDoFXdfEkTTJZLZTMXdxoS1O9fmxWM=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.5/go.mod h1:G5EMThwa9y8QZGBClrRx5EY+Yw9kAhnjy3bSjsnlVTQ=
