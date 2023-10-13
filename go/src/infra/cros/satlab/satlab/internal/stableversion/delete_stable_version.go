@@ -7,6 +7,7 @@ package stableversion
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -62,8 +63,34 @@ func (c *deleteStableVersionRun) Run(a subcommands.Application, args []string, e
 	return 0
 }
 
-// InnerRun creates a client, sends a DeleteStableVersion request, and prints the response.
+// InnerRun calls a deleteStableVersion function based on whether the user is internal or external.
 func (c *deleteStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+	if site.IsPartner() {
+		return c.deleteStableVersionPartner()
+	} else {
+		return c.deleteStableVersionInternal(ctx, a)
+	}
+}
+
+// DeleteStableVersionPartner deletes local stable version.
+func (c *deleteStableVersionRun) deleteStableVersionPartner() error {
+	if c.board == "" {
+		return errors.Reason("Please provide -board").Err()
+	}
+	if c.model == "" {
+		return errors.Reason("Please provide -model").Err()
+	}
+	fname := fmt.Sprintf("%s%s-%s.json", site.RecoveryVersionDirectory, c.board, c.model)
+	err := os.Remove(fname)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Successfully deleted local stable version!")
+	return nil
+}
+
+// DeleteStableVersionInternal creates a client, sends a DeleteStableVersion request, and prints the response.
+func (c *deleteStableVersionRun) deleteStableVersionInternal(ctx context.Context, a subcommands.Application) error {
 	newHostname, err := preprocessHostname(ctx, c.commonFlags, c.hostname, nil, nil)
 	if err != nil {
 		return errors.Annotate(err, "set stable version").Err()
