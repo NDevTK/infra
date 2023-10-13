@@ -46,6 +46,30 @@
       },
       "revId": "668a873d9c36ff15d2c1d66b7fc9194f7a81816b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c189609_1cbd93e7",
+        "filename": "go/src/infra/build/siso/build/run_remote.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-10-13T08:19:35Z",
+      "side": 1,
+      "message": "Ah, seems not possible.",
+      "parentUuid": "69edce80_1988d921",
+      "range": {
+        "startLine": 107,
+        "startChar": 2,
+        "endLine": 113,
+        "endChar": 0
+      },
+      "revId": "668a873d9c36ff15d2c1d66b7fc9194f7a81816b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
