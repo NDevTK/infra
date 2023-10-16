@@ -1297,6 +1297,65 @@ func TestListVlans(t *testing.T) {
 	})
 }
 
+func TestListIPs(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+	Convey("ListIPs", t, func() {
+		Convey("ListIPs - page_size negative - error", func() {
+			req := &ufsAPI.ListIPsRequest{
+				PageSize: -5,
+			}
+			resp, err := tf.Fleet.ListIPs(tf.C, req)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+		})
+
+		Convey("ListIPs - unsupported filter", func() {
+			req := &ufsAPI.ListIPsRequest{
+				Filter: "machine=mac-1",
+			}
+			_, err := tf.Fleet.ListIPs(tf.C, req)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "Invalid field name")
+		})
+
+		Convey("ListIPs - happy path", func() {
+			vlan1 := mockVlan("listip-vlan-1")
+			vlan1.VlanAddress = "192.168.100.0/27"
+			_, err := configuration.CreateVlan(ctx, vlan1)
+			So(err, ShouldBeNil)
+			ips := []*ufspb.IP{
+				{
+					Id:       "listip1",
+					Occupied: true,
+					Ipv4Str:  "192.168.100.1",
+					Vlan:     "listip-vlan-1",
+					Ipv4:     uint32(100),
+				},
+				{
+					Id:      "listip2",
+					Ipv4Str: "192.168.100.2",
+					Vlan:    "listip-vlan-1",
+					Ipv4:    uint32(100),
+				},
+			}
+			_, err = configuration.BatchUpdateIPs(ctx, ips)
+			So(err, ShouldBeNil)
+
+			req := &ufsAPI.ListIPsRequest{
+				Filter: "vlan=listip-vlan-1",
+			}
+			resp, err := tf.Fleet.ListIPs(tf.C, req)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetIps(), ShouldHaveLength, 2)
+			So(err, ShouldBeNil)
+		})
+	})
+}
+
 func TestDeleteVlan(t *testing.T) {
 	t.Parallel()
 	Convey("DeleteVlan", t, func() {

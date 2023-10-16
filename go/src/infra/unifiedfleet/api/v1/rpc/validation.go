@@ -1256,6 +1256,14 @@ func (r *ListVlansRequest) Validate() error {
 	return validatePageSize(r.PageSize)
 }
 
+// Validate validates input requests of ListVlans.
+func (r *ListIPsRequest) Validate() error {
+	if err := ValidateFilter(r.Filter); err != nil {
+		return err
+	}
+	return validatePageSize(r.PageSize)
+}
+
 // Validate validates input requests of DeleteVlan.
 func (r *DeleteVlanRequest) Validate() error {
 	return validateResourceName(vlanRegex, VlanNameFormat, r.Name)

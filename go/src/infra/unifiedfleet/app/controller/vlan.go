@@ -164,6 +164,19 @@ func ListVlans(ctx context.Context, pageSize int32, pageToken, filter string, ke
 	return configuration.ListVlans(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 
+// ListIPs lists the ips
+func ListIPs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.IP, string, error) {
+	var filterMap map[string][]interface{}
+	if filter != "" {
+		var err error
+		filterMap, err = getFilterMap(filter, configuration.GetIPIndexedFieldName)
+		if err != nil {
+			return nil, "", errors.Annotate(err, "Failed to read filter for listing vlans").Err()
+		}
+	}
+	return configuration.ListIPs(ctx, pageSize, pageToken, filterMap, keysOnly)
+}
+
 // DeleteVlan deletes the vlan in datastore
 //
 // For referential data intergrity,

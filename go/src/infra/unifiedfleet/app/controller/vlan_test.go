@@ -564,6 +564,32 @@ func TestListVlans(t *testing.T) {
 	})
 }
 
+func TestListIPs(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	Convey("ListIPs", t, func() {
+		Convey("ListIPs - filter invalid", func() {
+			_, _, err := ListIPs(ctx, 5, "", "machine=mx-1", false)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "Invalid field name")
+		})
+
+		Convey("ListIPs - list by vlan - happy path", func() {
+			vlan1 := mockVlan("listip-vlan-2", "192.168.100.0/27")
+			expectedIPLengh := 32 // the subnet mask is 27, the number of available IPs is 2 ^ (32-27)
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.NetworksCreate, util.BrowserLabAdminRealm)
+			_, err := CreateVlan(ctx, vlan1)
+			So(err, ShouldBeNil)
+
+			resp, _, err := ListIPs(ctx, 100, "", "vlan = listip-vlan-2", false)
+			fmt.Println("listips222")
+			fmt.Println(resp)
+			So(err, ShouldBeNil)
+			So(resp, ShouldHaveLength, expectedIPLengh)
+		})
+	})
+}
+
 func TestDeleteVlan(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")

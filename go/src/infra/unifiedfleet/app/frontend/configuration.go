@@ -438,7 +438,18 @@ func (fs *FleetServerImpl) ListIPs(ctx context.Context, req *ufsAPI.ListIPsReque
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	return nil, nil
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	pageSize := util.GetPageSize(req.PageSize)
+	result, nextPageToken, err := controller.ListIPs(ctx, pageSize, req.PageToken, req.Filter, req.KeysOnly)
+	if err != nil {
+		return nil, err
+	}
+	return &ufsAPI.ListIPsResponse{
+		Ips:           result,
+		NextPageToken: nextPageToken,
+	}, nil
 }
 
 // BatchGetVlans gets a batch of vlans from database.
