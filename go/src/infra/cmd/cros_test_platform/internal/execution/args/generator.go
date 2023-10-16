@@ -744,10 +744,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 	for _, companion := range g.Params.GetSecondaryDevices() {
 		companionProvisionState, err := buildProvisionState(companion.GetSoftwareDependencies())
 		if err != nil {
-			// Error from buildProvisionState represents a non-chromeos type device and
-			// cannot have a provision request built for it. ie prevents android
-			// from requesting a chromeos provision.
-			continue
+			return nil, err
 		}
 		companionDutModel := &labapi.DutModel{
 			BuildTarget: companion.GetSoftwareAttributes().GetBuildTarget().GetName(),

@@ -232,15 +232,10 @@ func TestAndroidProvisionState(t *testing.T) {
 				WorkerConfig:     dummyWorkerConfig,
 				ParentRequestUID: "TestPlanRuns/12345678/foo",
 			}
-			got, err := g.GenerateArgs(ctx)
-			So(err, ShouldBeNil)
-			Convey("provision state should be nil when no android metadata is passed", func() {
-				companionDuts := got.CFTTestRunnerRequest.GetCompanionDuts()
-				for _, companionDut := range companionDuts {
-					So(companionDut.GetProvisionState().GetProvisionMetadata(), ShouldBeNil)
-				}
-			})
+			_, err := g.GenerateArgs(ctx)
+			So(err, ShouldNotBeNil)
 		})
+		params.SecondaryDevices = []*test_platform.Request_Params_SecondaryDevice{}
 		setAndroidSecondaryDeviceWithAndroidProvisionMetadata(&params, "androidBoard", "Pixel6", "11", "latest_stable")
 		Convey("when generating a cft test runner request's args with not nil android provision metadata", func() {
 			g := Generator{
