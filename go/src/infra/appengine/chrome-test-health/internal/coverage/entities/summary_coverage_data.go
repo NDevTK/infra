@@ -6,10 +6,8 @@ package entities
 
 import (
 	"context"
-	"errors"
 	"fmt"
-
-	"cloud.google.com/go/datastore"
+	"infra/appengine/chrome-test-health/datastorage"
 )
 
 type SummaryCoverageData struct {
@@ -25,17 +23,14 @@ type SummaryCoverageData struct {
 	GitilesCommitServerHost string `datastore:"gitiles_commit.server_host"`
 }
 
-// Get the SummaryCoverageData entity by creating key from the given args.
+// Get function fetches the SummaryCoverageData entity by creating key from the given args.
 // See here for more details about SummaryCoverageData's format:
 // https://source.chromium.org/chromium/infra/infra/+/main:appengine/findit/model/code_coverage.py;l=439
-func (s *SummaryCoverageData) Get(ctx context.Context, client *datastore.Client, host string, project string, ref string, revision string, dataType string, path string, bucket string, builder string) error {
+func (s *SummaryCoverageData) Get(ctx context.Context, client datastorage.IDataClient, host string, project string, ref string, revision string, dataType string, path string, bucket string, builder string) error {
 	keyStr := fmt.Sprintf("%s$%s$%s$%s$%s$%s$%s$%s$0", host, project, ref, revision, dataType, path, bucket, builder)
-	keyLiteral := datastore.NameKey("SummaryCoverageData", keyStr, nil)
-	err := client.Get(ctx, keyLiteral, s)
-
+	err := client.Get(ctx, s, "SummaryCoverageData", keyStr)
 	if err != nil {
-		return errors.New("Unable to fetch record with the given arguments")
+		return fmt.Errorf("SummaryCoverageData: %w", err)
 	}
-
 	return nil
 }

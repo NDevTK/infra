@@ -31,24 +31,27 @@ type IDataClient interface {
 		options ...interface{},
 	) error
 
-	// QueryOne function performs a data storage query with the given filters,
-	// order, and options. Returns the first data item from the query result,
-	// or an error if no data items are found.
+	// Query function performs a data storage query with the given filters,
+	// order, limit and options. Returns the matching items from the query result.
 	//
 	// Filters should be tuples of property name, operator, and value.
 	//
 	// The order argument is used to specify the order of the query results.
 	//
+	// The limit argument is used to limit the number of items being read from
+	// the data storage.
+	//
 	// The options argument can be used for specific implementations of this
 	// function.
 	//
 	// The result is reflected in the "result" argument.
-	QueryOne(
+	Query(
 		ctx context.Context,
 		result interface{},
 		dataType string,
 		queryFilters []QueryFilter,
 		order interface{},
+		limit int,
 		options ...interface{},
 	) error
 }

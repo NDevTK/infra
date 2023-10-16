@@ -5,10 +5,16 @@
 package entities
 
 import (
+	"context"
+	"fmt"
+	"infra/appengine/chrome-test-health/datastorage"
 	"time"
+
+	"cloud.google.com/go/datastore"
 )
 
 type FinditConfig struct {
+	Key                       *datastore.Key
 	ActionSettings            string    `datastore:"action_settings"`
 	BuildersToTrybots         string    `datastore:"builders_to_trybots"`
 	CheckFlakeSettings        string    `datastore:"check_flake_settings"`
@@ -24,4 +30,24 @@ type FinditConfig struct {
 	TryJobSettings            string    `datastore:"try_job_settings"`
 	UpdatedBy                 string    `datastore:"updated_by"`
 	UpdatedTs                 time.Time `datastore:"updated_ts"`
+}
+
+// Get function fetches the latest code coverage configuration
+// stored in the datastore.
+func (f *FinditConfig) Get(ctx context.Context, client datastorage.IDataClient) error {
+	finditConfigRoot := &FinditConfigRoot{}
+	if err := finditConfigRoot.Get(ctx, client); err != nil {
+		return err
+	}
+	if err := client.Get(
+		ctx,
+		f,
+		"FinditConfig",
+		int64(finditConfigRoot.Current),
+		"FinditConfigRoot",
+		finditConfigRoot.Key.ID,
+	); err != nil {
+		return fmt.Errorf("FinditConfig: %w", err)
+	}
+	return nil
 }

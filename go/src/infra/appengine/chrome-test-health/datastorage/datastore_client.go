@@ -8,10 +8,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 
 	"cloud.google.com/go/datastore"
-	"go.chromium.org/luci/common/logging"
-	"google.golang.org/api/iterator"
 )
 
 var (
@@ -34,7 +33,6 @@ type DataStoreClient struct {
 func NewDataStoreClient(ctx context.Context, cloudProject string) (*DataStoreClient, error) {
 	datastoreClient, err := datastore.NewClient(ctx, cloudProject)
 	if err != nil {
-		logging.Errorf(ctx, "Datastore connection cannot be established: %s", err)
 		return nil, ErrConnection
 	}
 	c := DataStoreClient{
@@ -53,6 +51,8 @@ func NewDataStoreClient(ctx context.Context, cloudProject string) (*DataStoreCli
 // requires an ancestor to be found or not.
 // 2. The 4th and 6th (if present) arguments can be of type string or number because key
 // can either be a NameKey or an IdKey.
+// 3. If the result interface has a property called Key of type *datastore.Key,
+// it will be autopopulated with the fetched entity's datastore Key.
 //
 // Example usage:
 // str := A{}
@@ -104,36 +104,51 @@ func (c DataStoreClient) Get(ctx context.Context, result interface{}, entityName
 		if err == datastore.ErrNoSuchEntity {
 			return ErrEntityNotFound
 		}
-		logging.Errorf(ctx, "Error fetching %s: %s", entityName, err)
 		return ErrInternal
 	}
+
+	v := reflect.ValueOf(result).Elem()
+	if _, hasKey := v.Type().FieldByName("Key"); hasKey {
+		v.FieldByName("Key").Set(reflect.ValueOf(entityKeyLiteral))
+	}
+
 	return nil
 }
 
-// QueryOne takes in entity name, list of query filters, order and an empty struct
-// reference. Returns an error if the fetch was unsuccessful. Otherwise copies the
-// entity data to the result argument which should be an empty struct reference.
+// Query takes in entity name, list of query filters, order, limit and result
+// in the format *[]S{} where S is struct's name.
+// Returns an error if the fetch was unsuccessful. Otherwise copies the
+// entity data to the result argument.
 //
 // Important Notes:
 // 1. The order attribute must either be a string field or nil. If nil, the query
 // would use the default order to fetch the entity.
 //
-// 2. This function will only return the first entity from the query result.
+// 2. The limit attribute must be present and should be >= 0.
+// If 0 the query will bring in all the records.
+// A positive number will indicate a limit equal to that number.
+// A negative limit will be ignore.
+// *** The running time and number of external API calls
+// made by this function scale linearly with the the query's limit attribute.
+// Unless the result count is expected to be small, it is best to specify a limit;
+// otherwise Query will continue until it finishes collecting results or the
+// provided context expires.
 //
 // Example usage:
-// str := A{}
+// str := []A{}
 //
 //	queryFilters := []QueryFilter{
 //			{Field: "Field name", Operator: "=", Value: "Val"},
 //	}
 //
-// dsclient.QueryOne(ctx, &str, "EntityA", queryFilters, "-attribute")
-func (c DataStoreClient) QueryOne(
+// dsclient.Query(ctx, &str, "EntityA", queryFilters, "-attribute")
+func (c DataStoreClient) Query(
 	ctx context.Context,
 	result interface{},
 	entityName string,
 	filters []QueryFilter,
 	order interface{},
+	limit int,
 	options ...interface{}) error {
 	q := datastore.NewQuery(entityName)
 	for _, filterQuery := range filters {
@@ -149,15 +164,25 @@ func (c DataStoreClient) QueryOne(
 		}
 	}
 
-	run := c.datastoreClient.Run(ctx, q)
-	_, err := run.Next(result)
+	if limit > 0 {
+		q = q.Limit(limit)
+	}
 
+	keys, err := c.datastoreClient.GetAll(ctx, q, result)
 	if err != nil {
-		if err == iterator.Done {
-			return ErrEntityNotFound
+		if errors.Is(err, datastore.ErrInvalidEntityType) {
+			return fmt.Errorf("%w: The result argument is likely an invalid type", ErrInvalidType)
 		}
 
 		return ErrInternal
+	}
+
+	resultSlice := reflect.ValueOf(result)
+	for i, key := range keys {
+		r := resultSlice.Elem().Index(i)
+		if _, hasKey := r.Type().FieldByName("Key"); hasKey {
+			r.FieldByName("Key").Set(reflect.ValueOf(key))
+		}
 	}
 
 	return nil

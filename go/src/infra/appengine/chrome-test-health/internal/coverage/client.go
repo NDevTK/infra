@@ -10,12 +10,11 @@ import (
 	"errors"
 	"fmt"
 
-	"cloud.google.com/go/datastore"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/api/iterator"
 
 	"infra/appengine/chrome-test-health/api"
+	"infra/appengine/chrome-test-health/datastorage"
 	"infra/appengine/chrome-test-health/internal/coverage/entities"
 )
 
@@ -30,21 +29,23 @@ type Client struct {
 	// Refers to chrome-test-health's cloud project
 	ChromeTestHealthCloudProject string
 	// References to findit-for-me's datastore
-	coverageV1DsClient *datastore.Client
+	coverageV1DsClient datastorage.IDataClient
 	// References to chrome-test-health's datastore
-	coverageV2DsClient *datastore.Client
+	coverageV2DsClient datastorage.IDataClient
 }
 
 func (c *Client) Init(ctx context.Context) error {
-	covV1DsClient, err := datastore.NewClient(ctx, c.FinditCloudProject)
+	covV1DsClient, err := datastorage.NewDataStoreClient(ctx, c.FinditCloudProject)
 	if err != nil {
-		return err
+		logging.Errorf(ctx, "Error connecting to %s", c.FinditCloudProject)
+		return ErrInternalServerError
 	}
 	c.coverageV1DsClient = covV1DsClient
 
-	covV2DsClient, err := datastore.NewClient(ctx, c.ChromeTestHealthCloudProject)
+	covV2DsClient, err := datastorage.NewDataStoreClient(ctx, c.ChromeTestHealthCloudProject)
 	if err != nil {
-		return err
+		logging.Errorf(ctx, "Error connecting to %s", c.ChromeTestHealthCloudProject)
+		return ErrInternalServerError
 	}
 	c.coverageV2DsClient = covV2DsClient
 
@@ -90,35 +91,15 @@ func (c *Client) getModifedBuilder(builder string, unitTestsOnly *bool) string {
 }
 
 // GetProjectDefaultConfig fetches the latest version of FinditConfig from the datastore and returns
-// the desired configuration extacted from the entity.
+// the desired configuration extracted from the entity.
 func (c *Client) GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error) {
 	project := req.Project
-
-	// Fetches the FinditConfigRoot which has the latest version
-	// number of the FinditConfig entity.
-	finditConfigRoot := entities.FinditConfigRoot{}
-	query := datastore.NewQuery("FinditConfigRoot")
-	finditConfigRootKey, err := c.coverageV1DsClient.Run(ctx, query).Next(&finditConfigRoot)
-	if err != nil {
-		if err == iterator.Done {
-			logging.Errorf(ctx, "FinditConfigRoot doesn't exist: %s", err)
-			return nil, ErrInternalServerError
-		}
-		logging.Errorf(ctx, "Error fetching FinditConfigRoot: %s", err)
+	finditConfig := &entities.FinditConfig{}
+	if err := finditConfig.Get(ctx, c.coverageV1DsClient); err != nil {
+		logging.Errorf(ctx, "%s", err.Error())
 		return nil, ErrInternalServerError
 	}
-
-	// Fetches the FinditConfig entity corresponding to the version number
-	// fetched above.
-	finditConfigKey := datastore.IDKey("FinditConfig", int64(finditConfigRoot.Current), finditConfigRootKey)
-	finditConfig := entities.FinditConfig{}
-	err = c.coverageV1DsClient.Get(ctx, finditConfigKey, &finditConfig)
-	if err != nil {
-		logging.Errorf(ctx, "Error fetching FinditConfig: %s", err)
-		return nil, ErrInternalServerError
-	}
-
-	return c.getProjectConfig(ctx, &finditConfig, project)
+	return c.getProjectConfig(ctx, finditConfig, project)
 }
 
 // GetCoverageSummary fetches the code coverage metrics/percentages for the specified

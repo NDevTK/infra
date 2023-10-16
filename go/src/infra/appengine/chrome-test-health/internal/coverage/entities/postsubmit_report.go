@@ -6,11 +6,9 @@ package entities
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"infra/appengine/chrome-test-health/datastorage"
 	"time"
-
-	"cloud.google.com/go/datastore"
 )
 
 type DependencyRepository struct {
@@ -36,17 +34,14 @@ type PostsubmitReport struct {
 	Visible                 bool                   `datastore:"visible"`
 }
 
-// Get the PostSubmitReport entity by creating key from the given args.
+// Get function fetches the PostSubmitReport entity by creating key from the given args.
 // See here for more details about PostSubmitReport entity:
 // https://source.chromium.org/chromium/infra/infra/+/main:appengine/findit/model/code_coverage.py;drc=da0f8e0369a013173b31b6744b411c2bd9edd9df;l=331
-func (p *PostsubmitReport) Get(ctx context.Context, client *datastore.Client, host string, project string, ref string, revision string, bucket string, builder string, modifierId string) error {
-	keyStr := fmt.Sprintf("%s$%s$%s$%s$%s$%s$%s", host, project, ref, revision, bucket, builder, modifierId)
-	keyLiteral := datastore.NameKey("PostsubmitReport", keyStr, nil)
-	err := client.Get(ctx, keyLiteral, p)
-
+func (p *PostsubmitReport) Get(ctx context.Context, client datastorage.IDataClient, host string, project string, ref string, revision string, bucket string, builder string, modifierID string) error {
+	keyStr := fmt.Sprintf("%s$%s$%s$%s$%s$%s$%s", host, project, ref, revision, bucket, builder, modifierID)
+	err := client.Get(ctx, p, "PostsubmitReport", keyStr)
 	if err != nil {
-		return errors.New("Unable to fetch record with the given arguments")
+		return fmt.Errorf("PostsubmitReport: %w", err)
 	}
-
 	return nil
 }
