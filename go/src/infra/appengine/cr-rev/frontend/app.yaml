@@ -10,4 +10,4 @@ handlers:
 
 entrypoint: >
   main
-  -config-service-host luci-config.appspot.com
+  -config-service-host config.luci.app
