@@ -10,6 +10,7 @@ import (
 
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
+	"infra/cros/internal/gerrit"
 	bb "infra/cros/lib/buildbucket"
 )
 
@@ -43,6 +44,11 @@ type chromiumOSSDKRunTestConfig struct {
 	cqPolicy              string
 	expectedCQPolicyValue int
 	expectedReviewerEmail string
+	patches               []string
+	// The output for GetRelatedChanges for this path.
+	actualRelatedChanges map[string]map[int][]gerrit.Change
+	// Expected patches after including all ancestors.
+	expectedPatches []string
 }
 
 func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
@@ -54,6 +60,22 @@ func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
 	assert.NilError(t, err)
 
 	// Set up fake commands.
+	expectedAddCmd := []string{
+		"bb",
+		"add",
+		fmt.Sprintf("%s/%s", tc.expectedBucket, tc.expectedBuilder),
+		"-t",
+		"tryjob-launcher:sundar@google.com",
+		"-p",
+		"@" + propsFile.Name(),
+	}
+	if tc.expectedPatches == nil || len(tc.expectedPatches) == 0 {
+		tc.expectedPatches = tc.patches
+	}
+	for _, patch := range tc.expectedPatches {
+		expectedAddCmd = append(expectedAddCmd, "-cl", patch)
+	}
+
 	cmdRunner := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
@@ -62,15 +84,7 @@ func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
 			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			*fakeLEDGetBuilderRunner(tc.expectedBucket, tc.expectedBuilder, true),
 			bb.FakeBBAddRunner(
-				[]string{
-					"bb",
-					"add",
-					fmt.Sprintf("%s/%s", tc.expectedBucket, tc.expectedBuilder),
-					"-t",
-					"tryjob-launcher:sundar@google.com",
-					"-p",
-					"@" + propsFile.Name(),
-				},
+				expectedAddCmd,
 				"12345",
 			),
 		},
@@ -79,10 +93,14 @@ func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
 	// Set up fake chromiumOSSDKRun.
 	run := chromiumOSSDKRun{
 		tryRunBase: tryRunBase{
-			cmdRunner:            cmdRunner,
+			cmdRunner: cmdRunner,
+			gerritClient: &gerrit.MockClient{
+				ExpectedRelatedChanges: tc.actualRelatedChanges,
+			},
 			production:           tc.production,
 			skipProductionPrompt: true,
 			branch:               tc.branch,
+			patches:              tc.patches,
 		},
 		launchPUpr: tc.launchPUpr,
 		cqPolicy:   tc.cqPolicy,
@@ -157,6 +175,32 @@ func TestChromiumOSSDKRun_Staging(t *testing.T) {
 		production:      false,
 		expectedBucket:  "chromeos/staging",
 		expectedBuilder: "staging-build-chromiumos-sdk",
+		patches:         []string{"crrev.com/c/1234567"},
+		actualRelatedChanges: map[string]map[int][]gerrit.Change{
+			"https://chromium-review.googlesource.com": {
+				1234567: {},
+			},
+		},
+		expectedPatches: []string{"crrev.com/c/1234567"},
+	}
+	doChromiumOSSDKRun(t, tc)
+}
+
+// TestChromiumOSSDKRun_Staging_includeAncestors is an end-to-end test of chromiumOSSDKRun.Run() for a staging build.
+// In this test, the passed patch has ancestors that should be included.
+func TestChromiumOSSDKRun_Staging_includeAncestors(t *testing.T) {
+	t.Parallel()
+	tc := chromiumOSSDKRunTestConfig{
+		production:      false,
+		expectedBucket:  "chromeos/staging",
+		expectedBuilder: "staging-build-chromiumos-sdk",
+		patches:         []string{"crrev.com/c/1234567"},
+		actualRelatedChanges: map[string]map[int][]gerrit.Change{
+			"https://chromium-review.googlesource.com": {
+				1234567: {{ChangeNumber: 1234565}, {ChangeNumber: 1234567}, {ChangeNumber: 1234568}, {ChangeNumber: 1234560}},
+			},
+		},
+		expectedPatches: []string{"crrev.com/c/1234560", "crrev.com/c/1234568", "crrev.com/c/1234567"},
 	}
 	doChromiumOSSDKRun(t, tc)
 }

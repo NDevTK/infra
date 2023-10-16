@@ -11,6 +11,7 @@ import (
 
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
+	"infra/cros/internal/gerrit"
 	bb "infra/cros/lib/buildbucket"
 )
 
@@ -112,6 +113,10 @@ func TestValidate_firmwareRun(t *testing.T) {
 type firmwareTestConfig struct {
 	// e.g. ["crrev.com/c/1234567"]
 	patches []string
+	// The output for GetRelatedChanges for this path.
+	actualRelatedChanges map[string]map[int][]gerrit.Change
+	// Expected patches after including all ancestors.
+	expectedPatches []string
 	// e.g. staging-release-R106.15054.B-orchestrator
 	expectedBuilder string
 	production      bool
@@ -153,7 +158,10 @@ func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
 	)
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
-	for _, patch := range tc.patches {
+	if tc.expectedPatches == nil || len(tc.expectedPatches) == 0 {
+		tc.expectedPatches = tc.patches
+	}
+	for _, patch := range tc.expectedPatches {
 		expectedAddCmd = append(expectedAddCmd, "-cl", patch)
 	}
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
@@ -163,7 +171,10 @@ func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
 
 	r := firmwareRun{
 		tryRunBase: tryRunBase{
-			cmdRunner:            f,
+			cmdRunner: f,
+			gerritClient: &gerrit.MockClient{
+				ExpectedRelatedChanges: tc.actualRelatedChanges,
+			},
 			branch:               tc.branch,
 			production:           tc.production,
 			patches:              tc.patches,
@@ -201,6 +212,9 @@ func TestFirmware_staging(t *testing.T) {
 		branch:          "firmware-nissa-15217.B",
 		expectedBuilder: "staging-firmware-nissa-15217.B-branch",
 		production:      false,
+		actualRelatedChanges: map[string]map[int][]gerrit.Change{
+			"https://chromium-review.googlesource.com": {1234567: {}},
+		},
 	})
 }
 
@@ -212,5 +226,21 @@ func TestFirmware_publish(t *testing.T) {
 		production:      false,
 		publish:         true,
 		expectedPublish: true,
+	})
+}
+
+func TestFirmware_patches_withAncestors(t *testing.T) {
+	t.Parallel()
+	doFirmwareTest(t, &firmwareTestConfig{
+		patches:         []string{"crrev.com/c/1234567"},
+		branch:          "firmware-nissa-15217.B",
+		expectedBuilder: "staging-firmware-nissa-15217.B-branch",
+		production:      false,
+		actualRelatedChanges: map[string]map[int][]gerrit.Change{
+			"https://chromium-review.googlesource.com": {
+				1234567: {{ChangeNumber: 1234565}, {ChangeNumber: 1234567}, {ChangeNumber: 1234568}, {ChangeNumber: 1234560}},
+			},
+		},
+		expectedPatches: []string{"crrev.com/c/1234560", "crrev.com/c/1234568", "crrev.com/c/1234567"},
 	})
 }
