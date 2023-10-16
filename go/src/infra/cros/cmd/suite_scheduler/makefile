@@ -5,8 +5,8 @@ STDOUTFILE=zout_log
 STDERRFILE=zerr_log
 BIN=suite_scheduler
 
-FETCHEDSUSCHINI=configparser/fetched/suite_scheduler.ini
-FETCHEDLABINI=configparser/fetched/lab_config.ini
+GENERATEDSUSCHCFG=configparser/generated/suite_scheduler.cfg
+GENERATEDLABCFG=configparser/generated/lab_config.cfg
 
 all: run
 
@@ -14,10 +14,10 @@ run: build
 	./$(BIN) >$(STDOUTFILE) 2>$(STDERRFILE)
 
 build:
-	go build -o $(BIN)	
+	go build -o $(BIN)
 
 clean:
-	rm -rf $(STDERRFILE) $(STDOUTFILE) $(BIN) $(FETCHEDSUSCHINI) $(FETCHEDLABINI)
+	rm -rf $(STDERRFILE) $(STDOUTFILE) $(BIN) $(GENERATEDSUSCHCFG) $(GENERATEDLABCFG)
 
 test:
 	go test ./...

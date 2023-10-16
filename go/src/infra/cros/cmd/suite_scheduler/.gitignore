@@ -5,4 +5,4 @@ suite_scheduler
 zerr_log
 zout_log
 
-configparser/fetched/*
+configparser/generated/*

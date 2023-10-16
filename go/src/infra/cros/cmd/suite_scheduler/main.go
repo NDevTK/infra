@@ -18,21 +18,18 @@ var (
 	stdout = log.New(os.Stdout, "", flags)
 	stderr = log.New(os.Stderr, "", flags)
 
-	suSchIniPath = "configparser/fetched/suite_scheduler.ini"
-	labIniPath   = "configparser/fetched/lab_config.ini"
-
-	suSchCFG = "configparser/cfgs/suite_scheduler.cfg"
-	labCFG   = "configparser/cfgs/lab_config.cfg"
+	suSchCfgPath = "configparser/generated/suite_scheduler.cfg"
+	labCfgPath   = "configparser/generated/lab_config.cfg"
 )
 
 // SetUp fetches the .ini files from the SuSch repo.
 func SetUp() error {
-	err := configparser.FetchAndWriteFile(configparser.SuiteSchedulerCfgURL, suSchIniPath)
+	err := configparser.FetchAndWriteFile(configparser.SuiteSchedulerCfgURL, suSchCfgPath)
 	if err != nil {
 		return err
 	}
 
-	err = configparser.FetchAndWriteFile(configparser.LabCfgURL, labIniPath)
+	err = configparser.FetchAndWriteFile(configparser.LabCfgURL, labCfgPath)
 	if err != nil {
 		return err
 	}
@@ -48,7 +45,7 @@ func innerRun() int {
 		return 1
 	}
 
-	suschCfg, err := configparser.ReadLocalFile(suSchCFG)
+	suschCfg, err := configparser.ReadLocalFile(suSchCfgPath)
 	if err != nil {
 		stderr.Println(err)
 		return 1
@@ -62,7 +59,7 @@ func innerRun() int {
 
 	stdout.Printf("# of configs: %d\n", len(schedulerConfigs.Configs))
 
-	labCfg, err := configparser.ReadLocalFile(labCFG)
+	labCfg, err := configparser.ReadLocalFile(labCfgPath)
 	if err != nil {
 		stderr.Println(err)
 		return 1
