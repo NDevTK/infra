@@ -124,7 +124,7 @@ func (r *RackRegistrationRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, "Rack "+EmptyName)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, "Rack "+InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Rack %q: %s", id, InvalidCharacters)
 	}
 	if !util.ValidateTags(r.Rack.GetTags()) {
 		return status.Errorf(codes.InvalidArgument, InvalidTags)
@@ -140,8 +140,7 @@ func (r *RackRegistrationRequest) Validate() error {
 					return status.Errorf(codes.InvalidArgument, "Switch "+EmptyName)
 				}
 				if !IDRegex.MatchString(id) {
-					errorMsg := fmt.Sprintf("Switch %s has invalid characters in the name.", id)
-					return status.Errorf(codes.InvalidArgument, errorMsg+InvalidCharacters)
+					return status.Errorf(codes.InvalidArgument, "Switch %q: %s", id, InvalidCharacters)
 				}
 			}
 		}
@@ -154,8 +153,7 @@ func (r *RackRegistrationRequest) Validate() error {
 					return status.Errorf(codes.InvalidArgument, "KVM "+EmptyName)
 				}
 				if !IDRegex.MatchString(id) {
-					errorMsg := fmt.Sprintf("KVM %s has invalid characters in the name.", id)
-					return status.Errorf(codes.InvalidArgument, errorMsg+InvalidCharacters)
+					return status.Errorf(codes.InvalidArgument, "KVM %q: %s", id, InvalidCharacters)
 				}
 			}
 		}
@@ -168,8 +166,7 @@ func (r *RackRegistrationRequest) Validate() error {
 					return status.Errorf(codes.InvalidArgument, "RPM "+EmptyName)
 				}
 				if !IDRegex.MatchString(id) {
-					errorMsg := fmt.Sprintf("RPM %s has invalid characters in the name.", id)
-					return status.Errorf(codes.InvalidArgument, errorMsg+InvalidCharacters)
+					return status.Errorf(codes.InvalidArgument, "RPM %q: %s", id, InvalidCharacters)
 				}
 			}
 		}
@@ -187,7 +184,7 @@ func (r *CreateChromePlatformRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Chrome Platform %q: %s", id, InvalidCharacters)
 	}
 	if !util.ValidateTags(r.ChromePlatform.GetTags()) {
 		return status.Errorf(codes.InvalidArgument, InvalidTags)
@@ -243,7 +240,7 @@ func (r *CreateMachineLSEPrototypeRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Host Prototype %q: %s", id, InvalidCharacters)
 	}
 	r.MachineLSEPrototypeId = id
 	return nil
@@ -285,7 +282,7 @@ func (r *CreateRackLSEPrototypeRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Rack prototype %q: %s", id, InvalidCharacters)
 	}
 	r.RackLSEPrototypeId = id
 	return nil
@@ -327,7 +324,7 @@ func (r *MachineRegistrationRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, "Machine "+EmptyName)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, "Machine "+InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Machine %q: %s", id, InvalidCharacters)
 	}
 	if !util.ValidateTags(r.Machine.GetTags()) {
 		return status.Errorf(codes.InvalidArgument, InvalidTags)
@@ -344,8 +341,7 @@ func (r *MachineRegistrationRequest) Validate() error {
 					return status.Errorf(codes.InvalidArgument, "Nic "+EmptyName)
 				}
 				if !IDRegex.MatchString(id) {
-					errorMsg := fmt.Sprintf("Nic %s has invalid characters in the name.", id)
-					return status.Errorf(codes.InvalidArgument, errorMsg+InvalidCharacters)
+					return status.Errorf(codes.InvalidArgument, "Nic %q: %s", id, InvalidCharacters)
 				}
 				if err := validateNic(nic); err != nil {
 					return err
@@ -361,7 +357,7 @@ func (r *MachineRegistrationRequest) Validate() error {
 					return status.Errorf(codes.InvalidArgument, "Drac "+EmptyName)
 				}
 				if !IDRegex.MatchString(id) {
-					return status.Errorf(codes.InvalidArgument, "Drac "+InvalidCharacters)
+					return status.Errorf(codes.InvalidArgument, "Drac %q: %s", id, InvalidCharacters)
 				}
 				if err := validateDrac(drac); err != nil {
 					return err
@@ -617,7 +613,7 @@ func (r *CreateRackLSERequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Rack host %q: %s", id, InvalidCharacters)
 	}
 	r.RackLSEId = id
 	return nil
@@ -659,7 +655,7 @@ func (r *CreateNicRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Nic %q: %s", id, InvalidCharacters)
 	}
 	if err := validateNic(r.GetNic()); err != nil {
 		return err
@@ -738,7 +734,7 @@ func (r *UpdateDutStateRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(dutID) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "DUT ID %q: %s", dutID, InvalidCharacters)
 	}
 
 	dutHostname := strings.TrimSpace(r.GetDutState().GetHostname())
@@ -791,7 +787,7 @@ func (r *UpdateDeviceRecoveryDataRequest) validateDutId() error {
 		return status.Errorf(codes.InvalidArgument, "Empty dut id. %s", EmptyID)
 	}
 	if !IDRegex.MatchString(dutId) {
-		return status.Errorf(codes.InvalidArgument, "Invalid dut id(%q). %s", dutId, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "DUT ID %q: %s", dutId, InvalidCharacters)
 	}
 	if r.GetResourceType() == UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE {
 		if r.GetChromeos().GetDutState() == nil {
@@ -904,7 +900,7 @@ func (r *UpdateTestDataRequest) validateDutId() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(r.GetDeviceId()) {
-		return status.Errorf(codes.InvalidArgument, "Invalid dut id(%q). %s", r.GetDeviceId(), InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "DUT ID %q: %s", r.GetDeviceId(), InvalidCharacters)
 	}
 	return nil
 }
@@ -970,7 +966,7 @@ func (r *CreateKVMRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "KVM %q: %s", id, InvalidCharacters)
 	}
 	if r.GetKVM().GetRack() == "" {
 		return status.Errorf(codes.InvalidArgument, EmptyRackName)
@@ -1035,7 +1031,7 @@ func (r *CreateRPMRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "RPM %q: %s", id, InvalidCharacters)
 	}
 	if r.GetRPM().GetRack() == "" {
 		return status.Errorf(codes.InvalidArgument, EmptyRackName)
@@ -1100,7 +1096,7 @@ func (r *CreateDracRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Drac %q: %s", id, InvalidCharacters)
 	}
 	if err := validateDrac(r.GetDrac()); err != nil {
 		return err
@@ -1173,7 +1169,7 @@ func (r *CreateSwitchRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Switch %q: %s", id, InvalidCharacters)
 	}
 	if r.GetSwitch().GetRack() == "" {
 		return status.Errorf(codes.InvalidArgument, EmptyRackName)
@@ -1224,7 +1220,7 @@ func (r *CreateVlanRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Vlan %q: %s", id, InvalidCharacters)
 	}
 	if r.Vlan.GetVlanAddress() == "" {
 		return status.Errorf(codes.InvalidArgument, "Empty cidr block for vlan")
@@ -1278,7 +1274,7 @@ func (r *CreateAssetRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, "Invalid asset name %s", name)
 	}
 	if !IDRegex.MatchString(util.RemovePrefix(name)) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Asset %q: %s", util.RemovePrefix(name), InvalidCharacters)
 	}
 	if r.GetAsset().GetLocation() == nil {
 		return status.Errorf(codes.InvalidArgument, "Asset location missing")
@@ -1451,7 +1447,7 @@ func (r *CreateSchedulingUnitRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyID)
 	}
 	if !IDRegex.MatchString(id) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "Scheduling Unit %q: %s", id, InvalidCharacters)
 	}
 	if !util.ValidateTags(r.SchedulingUnit.GetTags()) {
 		return status.Errorf(codes.InvalidArgument, InvalidTags)
@@ -1517,10 +1513,10 @@ func validateResourceName(resourceRegex *regexp.Regexp, resourceNameFormat, name
 		return status.Errorf(codes.InvalidArgument, EmptyName)
 	}
 	if !resourceRegex.MatchString(name) {
-		return status.Errorf(codes.InvalidArgument, resourceNameFormat)
+		return status.Errorf(codes.InvalidArgument, "Resource name %q: %s", name, resourceNameFormat)
 	}
 	if !IDRegex.MatchString(util.RemovePrefix(name)) {
-		return status.Errorf(codes.InvalidArgument, InvalidCharacters)
+		return status.Errorf(codes.InvalidArgument, "ID %q: %s", util.RemovePrefix(name), InvalidCharacters)
 	}
 	return nil
 }

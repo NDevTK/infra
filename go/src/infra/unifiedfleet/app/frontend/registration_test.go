@@ -157,7 +157,7 @@ func TestMachineRegistration(t *testing.T) {
 			}
 			_, err := tf.Fleet.MachineRegistration(tf.C, req)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Machine "+ufsAPI.InvalidCharacters)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
 		})
 
 		Convey("Register machine - Invalid input empty nic name", func() {
@@ -193,7 +193,7 @@ func TestMachineRegistration(t *testing.T) {
 			}
 			_, err := tf.Fleet.MachineRegistration(tf.C, req)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Nic a.b)7& has invalid characters in the name."+ufsAPI.InvalidCharacters)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
 		})
 
 		Convey("Register machine - Invalid input empty drac name", func() {
@@ -229,7 +229,7 @@ func TestMachineRegistration(t *testing.T) {
 			}
 			_, err := tf.Fleet.MachineRegistration(tf.C, req)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Drac "+ufsAPI.InvalidCharacters)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
 		})
 	})
 }
@@ -290,7 +290,7 @@ func TestRackRegistration(t *testing.T) {
 			}
 			_, err := tf.Fleet.RackRegistration(tf.C, req)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Rack "+ufsAPI.InvalidCharacters)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
 		})
 
 		Convey("Register rack - Invalid input empty switch name", func() {
@@ -326,7 +326,7 @@ func TestRackRegistration(t *testing.T) {
 			}
 			_, err := tf.Fleet.RackRegistration(tf.C, req)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Switch a.b)7& has invalid characters in the name."+ufsAPI.InvalidCharacters)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
 		})
 
 		Convey("Register rack - Invalid input empty kvm name", func() {
@@ -362,7 +362,7 @@ func TestRackRegistration(t *testing.T) {
 			}
 			_, err := tf.Fleet.RackRegistration(tf.C, req)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "KVM a.b)7& has invalid characters in the name."+ufsAPI.InvalidCharacters)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
 		})
 	})
 }
