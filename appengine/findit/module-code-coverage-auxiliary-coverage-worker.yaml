@@ -10,13 +10,13 @@ manual_scaling:
 
 handlers:
 - url: .*/coverage/task/gerrit-filter-coverage.*
-  script: coverage_main.auxiliary_coverage_worker_application
+  script: auxiliary_main.auxiliary_coverage_worker_application
   secure: always
 - url: .*/coverage/task/incremental-coverage.*
-  script: coverage_main.auxiliary_coverage_worker_application
+  script: auxiliary_main.auxiliary_coverage_worker_application
   secure: always
 - url: .*/coverage/task/low-coverage-blocking.*
-  script: coverage_main.auxiliary_coverage_worker_application
+  script: auxiliary_main.auxiliary_coverage_worker_application
   secure: always
 
 skip_files:

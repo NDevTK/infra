@@ -52,7 +52,7 @@ handlers:
   secure: always
 
 - url: .*/coverage.*
-  script: coverage_main.code_coverage_frontend_web_application
+  script: frontend_main.code_coverage_frontend_web_application
   secure: always
 
 # Keep this one as the last match for redirection of old URLs.
