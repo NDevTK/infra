@@ -7,12 +7,23 @@
 
 package puppet
 
+import (
+	"fmt"
+	"os"
+)
+
 func lastRunFile() (string, error) {
 	return "/var/lib/puppet_last_run_summary.yaml", nil
 }
 
-func isPuppetCanaryFile() (string, error) {
-	return "/var/lib/is_puppet_canary", nil
+func puppetConfFile() ([]string, error) {
+	confPaths := []string{"/etc/puppetlabs/puppet/puppet.conf", "/etc/puppet/puppet.conf"}
+	for _, filePath := range confPaths {
+		if _, err := os.Stat(filePath); err == nil {
+			return []string{filePath}, nil
+		}
+	}
+	return nil, fmt.Errorf("No puppet.conf found in either location: %s", confPaths)
 }
 
 func exitStatusFiles() []string {
