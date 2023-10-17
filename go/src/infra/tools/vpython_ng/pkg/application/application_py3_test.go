@@ -41,7 +41,7 @@ func getPythonEnvironment(ver string) *python.Environment {
 		},
 		"3.11": {
 			Executable: "python3",
-			CPython:    python.CPython3FromCIPD("version:2@3.11.1.chromium.25"),
+			CPython:    python.CPython3FromCIPD("version:2@3.11.5.chromium.30"),
 			Virtualenv: python.VirtualenvFromCIPD("version:2@20.17.1.chromium.8"),
 		},
 	}[ver]

@@ -33,7 +33,7 @@ infra/3pp/tools/cpython/${platform} version:2@2.7.18.chromium.44
 @Subdir ${prefix}3.8
 infra/3pp/tools/cpython3/${platform} version:2@3.8.10.chromium.25
 @Subdir ${prefix}3.11
-infra/3pp/tools/cpython3/${platform} version:2@3.11.1.chromium.25
+infra/3pp/tools/cpython3/${platform} version:2@3.11.5.chromium.30
 `
 	var prefix string
 	if runtime.GOOS == "darwin" {
