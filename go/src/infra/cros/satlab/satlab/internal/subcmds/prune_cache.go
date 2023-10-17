@@ -5,16 +5,15 @@
 package subcmds
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"os"
-	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/maruel/subcommands"
+
+	"infra/cros/satlab/common/utils/misc"
 )
 
 const containerVolume = "default_cache"
@@ -32,24 +31,6 @@ var PruneCmd = &subcommands.Command{
 // prune_base is a placeholder for prune_cache command.
 type prune_base struct {
 	subcommands.CommandRunBase
-}
-
-// Permission to clean cache memory.
-func askConfirmation(s string) (bool, error) {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Printf("%s [y/n]: ", s)
-		response, err := reader.ReadString('\n')
-		if err != nil {
-			return false, err
-		}
-		response = strings.ToLower(strings.TrimSpace(response))
-		if response == "y" || response == "yes" || response == "Y" {
-			return true, nil
-		} else if response == "n" || response == "no" || response == "N" {
-			return false, nil
-		}
-	}
 }
 
 // Cleaning cache memory for Artifact downloader.
@@ -103,7 +84,7 @@ func cleanVolume() error {
 
 // Run runs the command, asks for a confirmation prints the message and returns an exit status.
 func (c *prune_base) Run(a subcommands.Application, args []string, env subcommands.Env) int {
-	r, err := askConfirmation("This will clean up default_cache, do you want to continue?")
+	r, err := misc.AskConfirmation("This will clean up default_cache, do you want to continue?")
 	if err != nil {
 		fmt.Printf("Error occurred while reading input: %s.\n", err)
 		return 1

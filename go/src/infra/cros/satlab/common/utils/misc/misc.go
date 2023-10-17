@@ -4,6 +4,7 @@
 package misc
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -94,4 +95,22 @@ func TrimOutput(output []byte) string {
 		return ""
 	}
 	return strings.TrimRight(string(output), "\n\t")
+}
+
+// AskConfirmation asks users a question for Y/N answer.
+func AskConfirmation(s string) (bool, error) {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Printf("%s [y/n]: ", s)
+		response, err := reader.ReadString('\n')
+		if err != nil {
+			return false, err
+		}
+		response = strings.ToLower(strings.TrimSpace(response))
+		if response == "y" || response == "yes" || response == "Y" {
+			return true, nil
+		} else if response == "n" || response == "no" || response == "N" {
+			return false, nil
+		}
+	}
 }
