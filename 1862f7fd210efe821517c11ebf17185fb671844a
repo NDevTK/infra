@@ -25,6 +25,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "44ea42c9_9ef27506",
+        "filename": "go/src/infra/monitoring/sysmon/puppet/paths_unix.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-17T17:31:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "93acf332_cf8ad366",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 0
+      },
+      "revId": "1862f7fd210efe821517c11ebf17185fb671844a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e13a0c53_49df9d5e",
@@ -66,6 +90,48 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4935eed4_bd608be9",
+        "filename": "go/src/infra/monitoring/sysmon/puppet/puppet.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-17T17:31:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a9b0a67_0d1a0a0c",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 133,
+        "endChar": 0
+      },
+      "revId": "1862f7fd210efe821517c11ebf17185fb671844a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f3f2ce3_41f21dd0",
+        "filename": "go/src/infra/monitoring/sysmon/puppet/puppet.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-17T17:31:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e13a0c53_49df9d5e",
+      "revId": "1862f7fd210efe821517c11ebf17185fb671844a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "34f462e9_ec3f7934",
@@ -90,6 +156,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "faf19f54_aff633ce",
+        "filename": "go/src/infra/monitoring/sysmon/puppet/puppet_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-17T17:31:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "34f462e9_ec3f7934",
+      "range": {
+        "startLine": 152,
+        "startChar": 0,
+        "endLine": 152,
+        "endChar": 0
+      },
+      "revId": "1862f7fd210efe821517c11ebf17185fb671844a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cc30dec1_b9899de8",
@@ -104,6 +194,30 @@
       "side": 1,
       "message": "\u003e Error return value of `file.Sync` is not checked\n\nPlease fix.",
       "parentUuid": "fd2db9ba_26c85f7f",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 153,
+        "endChar": 0
+      },
+      "revId": "1862f7fd210efe821517c11ebf17185fb671844a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "55414ffa_870b084a",
+        "filename": "go/src/infra/monitoring/sysmon/puppet/puppet_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-17T17:31:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc30dec1_b9899de8",
       "range": {
         "startLine": 153,
         "startChar": 0,

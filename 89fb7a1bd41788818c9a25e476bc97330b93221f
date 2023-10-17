@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "106f650b_d527ff23",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-17T17:31:56Z",
+      "side": 1,
+      "message": "How do I fix this?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 0
+      },
+      "revId": "89fb7a1bd41788818c9a25e476bc97330b93221f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
