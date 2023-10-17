@@ -448,17 +448,14 @@ func addPoolsToDUT(ctx context.Context, executor executor.IExecCommander, hostna
 }
 
 func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequest) (*pb.AddPoolResponse, error) {
-	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, in.GetAddresses())
 	if err != nil {
 		return nil, err
 	}
 
-	for _, address := range in.GetAddresses() {
-		hostname, ok := IPHostMap[address]
-		if ok {
-			if err = addPoolsToDUT(ctx, s.commandExecutor, hostname, []string{in.GetPool()}); err != nil {
-				return nil, err
-			}
+	for _, hostname := range IPToHostResult.Hostnames {
+		if err = addPoolsToDUT(ctx, s.commandExecutor, hostname, []string{in.GetPool()}); err != nil {
+			return nil, err
 		}
 	}
 
@@ -499,17 +496,16 @@ func (s *SatlabRpcServiceServer) GetDutDetail(ctx context.Context, in *pb.GetDut
 		return nil, errors.New("need to login before using this")
 	}
 
-	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
 		return nil, err
 	}
 
-	hostname, ok := IPHostMap[in.GetAddress()]
-	if !ok {
-		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%s}", in.GetAddress()))
+	if len(IPToHostResult.InvalidAddresses) != 0 {
+		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses))
 	}
 
-	r, err := s.swarmingService.GetBot(ctx, hostname)
+	r, err := s.swarmingService.GetBot(ctx, IPToHostResult.Hostnames[0])
 	if err != nil {
 		return nil, err
 	}
@@ -546,16 +542,16 @@ func (s *SatlabRpcServiceServer) ListDutTasks(ctx context.Context, in *pb.ListDu
 		return nil, errors.New("need to login before using this")
 	}
 
-	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
 		return nil, err
 	}
-	hostname, ok := IPHostMap[in.GetAddress()]
-	if !ok {
-		return nil, errors.New("can't find the hostname")
+
+	if len(IPToHostResult.InvalidAddresses) != 0 {
+		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses))
 	}
 
-	r, err := s.swarmingService.ListBotTasks(ctx, hostname, in.GetCursor(), int(in.GetPageSize()))
+	r, err := s.swarmingService.ListBotTasks(ctx, IPToHostResult.Hostnames[0], in.GetCursor(), int(in.GetPageSize()))
 	if err != nil {
 		return nil, err
 	}
@@ -584,16 +580,16 @@ func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListD
 		return nil, errors.New("need to login before using this")
 	}
 
-	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
 		return nil, err
 	}
-	hostname, ok := IPHostMap[in.GetAddress()]
-	if !ok {
-		return nil, errors.New("can't find the hostname")
+
+	if len(IPToHostResult.InvalidAddresses) != 0 {
+		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses))
 	}
 
-	r, err := s.swarmingService.ListBotEvents(ctx, hostname, in.GetCursor(), int(in.GetPageSize()))
+	r, err := s.swarmingService.ListBotEvents(ctx, IPToHostResult.Hostnames[0], in.GetCursor(), int(in.GetPageSize()))
 	if err != nil {
 		return nil, err
 	}
@@ -744,35 +740,21 @@ func (s *SatlabRpcServiceServer) DeleteDuts(ctx context.Context, in *pb.DeleteDu
 // This function returns a result of deleting DUTs result that contains pass and fail,
 // and if we can not convert the IP address, we put the IP address to `invalidAddresses`
 func innerDeleteDuts(ctx context.Context, executor executor.IExecCommander, ufs dut.DeleteClient, addresses []string, full bool) (*dut.DeleteDUTResult, []string, error) {
-	// use for storing the IP addresses that can not convert to the hostname
-	invalidAddresses := []string{}
-
-	IPHostMap, err := dns.ReadHostsToIPMap(ctx, executor)
+	IPToHostResult, err := dns.IPToHostname(ctx, executor, addresses)
 	if err != nil {
-		return nil, invalidAddresses, err
-	}
-
-	// Convert IP address to hostname
-	var hostnames = make([]string, 0, len(addresses))
-	for _, address := range addresses {
-		hostname, ok := IPHostMap[address]
-		if ok {
-			hostnames = append(hostnames, hostname)
-		} else {
-			invalidAddresses = append(invalidAddresses, address)
-		}
+		return nil, nil, err
 	}
 
 	d := dut.DeleteDUT{
-		Names: hostnames,
+		Names: IPToHostResult.Hostnames,
 		Full:  full,
 	}
 
 	if err := d.Validate(); err != nil {
-		return nil, invalidAddresses, err
+		return nil, IPToHostResult.InvalidAddresses, err
 	}
 
 	res, err := d.TriggerRun(ctx, executor, ufs)
 
-	return res, invalidAddresses, nil
+	return res, IPToHostResult.InvalidAddresses, nil
 }

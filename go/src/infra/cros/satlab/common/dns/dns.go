@@ -26,6 +26,16 @@ type classifier func(map[string]bool, string) satlabcommands.Decision
 // A replacer takes a line that is selected to be modified and modifies it.
 type replacer func(string) string
 
+type IPToHostnameResult struct {
+	// Hostnames contains the hostname that we can
+	// convert the IP address to hostname
+	Hostnames []string
+
+	// InvalidAddresses contains the invalid IP address
+	// that we can not convert it
+	InvalidAddresses []string
+}
+
 // ReadContents gets the content of a DNS file.
 // If the DNS file does not exist, replace it with an empty container.
 func ReadContents(ctx context.Context, executor executor.IExecCommander) (string, error) {
@@ -93,6 +103,35 @@ func ReadHostsToHostMap(
 	executor executor.IExecCommander,
 ) (map[string]string, error) {
 	return innerReadHostsToMap(ctx, executor, false)
+}
+
+// IPToHostname convert the IP addresses to the hostnames
+// it returns the result that contains two parts.
+// Valid (hostname), if we can convert the IP address to the hostname.
+// Invalid (IP address), if we can not convert the IP address to the hostname
+func IPToHostname(ctx context.Context, executor executor.IExecCommander, addresses []string) (*IPToHostnameResult, error) {
+	IPHostMap, err := ReadHostsToIPMap(ctx, executor)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var hostnames = make([]string, 0, len(addresses))
+	invalidAddresses := []string{}
+
+	for _, address := range addresses {
+		hostname, ok := IPHostMap[address]
+		if ok {
+			hostnames = append(hostnames, hostname)
+		} else {
+			invalidAddresses = append(invalidAddresses, address)
+		}
+	}
+
+	return &IPToHostnameResult{
+		Hostnames:        hostnames,
+		InvalidAddresses: invalidAddresses,
+	}, nil
 }
 
 // SetDNSFileContent set the content of the DNS file.
