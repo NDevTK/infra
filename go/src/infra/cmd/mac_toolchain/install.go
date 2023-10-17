@@ -491,7 +491,14 @@ func shouldReInstallXcode(ctx context.Context, cipdPackagePrefix, xcodeAppPath, 
 		logging.Warningf(ctx, "CFBundleVersion mismatched between local %s and cipd %s, Xcode should be re-installed", cfBundleVersion, cfBundleVersionOnCipd)
 		return true, nil
 	}
-	logging.Warningf(ctx, "CFBundleVersion %s matches between local and cipd, Xcode should not be re-installed", cfBundleVersion)
+	output, err := RunOutput(ctx, "spctl", "--assess", xcodeAppPath)
+	if err != nil {
+		logging.Warningf(ctx, "Failed when checking Xcode app integrity %s %s, Xcode should be re-intalled", output, err.Error())
+		logging.Warningf(ctx, "Removing the hidden cipd files so re-install can be started...")
+		removeCipdFiles(xcodeAppPath)
+		return true, err
+	}
+	logging.Warningf(ctx, "CFBundleVersion %s matches between local and cipd and Xcode passed integrity check. So it should not be re-installed", cfBundleVersion)
 	return false, nil
 }
 
