@@ -3065,7 +3065,7 @@ func crosRepairActions() map[string]*Action {
 				"halt_timeout:120",
 				"custom_command_allowed_to_fail:true",
 				"custom_command_timeout:60",
-				"custom_commands:flash_fp_mcu fw_wp_state:force_off /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin",
+				"custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 1000},
 			RunControl:  RunControl_ALWAYS_RUN,
