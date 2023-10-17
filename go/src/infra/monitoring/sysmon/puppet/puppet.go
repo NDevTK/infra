@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -74,8 +73,8 @@ func Register() {
 			logging.Warningf(c, "Failed to update puppet metrics: %v", err)
 		}
 
-		if path, err := isPuppetCanaryFile(); err != nil {
-			logging.Warningf(c, "Failed to get is_puppet_canary path: %v", err)
+		if path, err := puppetConfFile(); err != nil {
+			logging.Warningf(c, "Failed to get puppet.conf path: %v", err)
 		} else if err = updateIsCanary(c, path); err != nil {
 			logging.Warningf(c, "Failed to update puppet canary metric: %v", err)
 		}
@@ -125,8 +124,15 @@ func updateLastRunStats(c context.Context, path string) error {
 }
 
 func updateIsCanary(c context.Context, path string) error {
-	_, err := os.Stat(path)
-	isCanary.Set(c, err == nil)
+	raw, err := ioutil.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("error reading puppet conf at %s: %w", path, err)
+	}
+
+	if strings.Contains(string(raw), "environment=canary") {
+		isCanary.Set(c, err == nil)
+	}
+
 	return nil
 }
 
