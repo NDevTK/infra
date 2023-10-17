@@ -91,7 +91,7 @@ func deployActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231627918): Flex does not have own firmware for EC/AP
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Device not in MP Signed AP FW pool",
 			},
 			Dependencies: []string{
@@ -111,7 +111,7 @@ func deployActions() map[string]*Action {
 			Conditions: []string{
 				"Is it first deployment task",
 				//TODO(b:231627918): Flex does not have own firmware for EC/AP
-				"Is not Flex device",
+				"Is a Chromebook",
 				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
 				"Collect HWID into inventory",
 				"Device not in MP Signed AP FW pool",
