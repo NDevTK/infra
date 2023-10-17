@@ -148,11 +148,12 @@ func TestMetrics(t *testing.T) {
 			file, err := ioutil.TempFile("", "sysmon-puppet-test")
 			So(err, ShouldBeNil)
 
-			defer file.Close()
-			defer os.Remove(file.Name())
-
-			So(updateIsCanary(c, file.Name()), ShouldBeNil)
-			So(isCanary.Get(c), ShouldBeTrue)
+			Convey("with environment=canary", func() {
+				file.Write([]byte("foo=bar\nenvironment=canary\nblah=blah\n"))
+				file.Sync()
+				So(updateIsCanary(c, file.Name()), ShouldBeNil)
+				So(isCanary.Get(c), ShouldBeTrue)
+			})
 		})
 	})
 
