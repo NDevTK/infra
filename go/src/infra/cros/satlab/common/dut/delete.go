@@ -18,7 +18,7 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
-type deleteClient interface {
+type DeleteClient interface {
 	DeleteAsset(context.Context, *ufsApi.DeleteAssetRequest, ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteMachineLSE(context.Context, *ufsApi.DeleteMachineLSERequest, ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteRack(context.Context, *ufsApi.DeleteRackRequest, ...grpc.CallOption) (*emptypb.Empty, error)
@@ -77,7 +77,7 @@ func (d *DeleteDUT) Validate() error {
 //
 // ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
 // ```
-func (d *DeleteDUT) TriggerRun(ctx context.Context, executor executor.IExecCommander, ufs deleteClient) (*DeleteDUTResult, error) {
+func (d *DeleteDUT) TriggerRun(ctx context.Context, executor executor.IExecCommander, ufs DeleteClient) (*DeleteDUTResult, error) {
 	var err error
 	res := DeleteDUTResult{
 		MachineLSEs:  []*ufsModels.MachineLSE{},
@@ -145,7 +145,7 @@ func (d *DeleteDUT) TriggerRun(ctx context.Context, executor executor.IExecComma
 // Should eventually be replaced with BatchGet or ConcurrentGet methods but
 // since the caller will only be using this with a low # of DUTs is acceptable
 // for now.
-func getAllDuts(ctx context.Context, names []string, ufs deleteClient) []*ufsModels.MachineLSE {
+func getAllDuts(ctx context.Context, names []string, ufs DeleteClient) []*ufsModels.MachineLSE {
 	machineLSEs := []*ufsModels.MachineLSE{}
 	for _, n := range names {
 		m, err := ufs.GetMachineLSE(ctx, &ufsApi.GetMachineLSERequest{
@@ -163,7 +163,7 @@ func getAllDuts(ctx context.Context, names []string, ufs deleteClient) []*ufsMod
 
 // deleteAllDuts deletes all DUTs with certain names. Returns an two arrays
 // with the names that have been deleted successfully and unsuccessfully.
-func deleteAllDuts(ctx context.Context, names []string, ufs deleteClient) ([]string, []string) {
+func deleteAllDuts(ctx context.Context, names []string, ufs DeleteClient) ([]string, []string) {
 	success := []string{}
 	fail := []string{}
 
@@ -183,7 +183,7 @@ func deleteAllDuts(ctx context.Context, names []string, ufs deleteClient) ([]str
 
 // deleteAllAssets deletes all Assets with certain names. Returns an two arrays
 // with the names that have been deleted successfully and unsuccessfully.
-func deleteAllAssets(ctx context.Context, names []string, ufs deleteClient) ([]string, []string) {
+func deleteAllAssets(ctx context.Context, names []string, ufs DeleteClient) ([]string, []string) {
 	success := []string{}
 	fail := []string{}
 
@@ -203,7 +203,7 @@ func deleteAllAssets(ctx context.Context, names []string, ufs deleteClient) ([]s
 
 // deleteAllRacks deletes all Racks with certain names. Returns an two arrays
 // with the names that have been deleted successfully and unsuccessfully.
-func deleteAllRacks(ctx context.Context, names []string, ufs deleteClient) ([]string, []string) {
+func deleteAllRacks(ctx context.Context, names []string, ufs DeleteClient) ([]string, []string) {
 	success := []string{}
 	fail := []string{}
 

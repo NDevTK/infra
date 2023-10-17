@@ -331,7 +331,7 @@ func innerReadHostsToMap(
 	rawData, err := ReadContents(ctx, executor)
 
 	if err != nil {
-		return res, nil
+		return nil, err
 	}
 
 	list := strings.Split(rawData, "\n")

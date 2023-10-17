@@ -14,6 +14,7 @@ import (
 
 	"github.com/hashicorp/go-version"
 
+	"infra/cmd/shivas/utils"
 	"infra/cros/satlab/common/asset"
 	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/dut"
@@ -21,6 +22,7 @@ import (
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/services/build_service"
+	"infra/cros/satlab/common/services/ufs"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/collection"
 	e "infra/cros/satlab/common/utils/errors"
@@ -36,6 +38,8 @@ import (
 // SatlabRpcServiceServer is the gRPC service that provides every function.
 type SatlabRpcServiceServer struct {
 	pb.UnimplementedSatlabRpcServiceServer
+	// dev is a flag indicate which environment we want to run
+	dev bool
 	// buildService the connector to `BuildClient`
 	buildService build_service.IBuildService
 	// bucketService the connector to partner bucket
@@ -51,6 +55,7 @@ type SatlabRpcServiceServer struct {
 }
 
 func New(
+	dev bool,
 	buildService build_service.IBuildService,
 	bucketService bucket_services.IBucketServices,
 	dutService dut_services.IDUTServices,
@@ -58,6 +63,7 @@ func New(
 	swarmingService services.ISwarmingService,
 ) *SatlabRpcServiceServer {
 	return &SatlabRpcServiceServer{
+		dev:                        dev,
 		bucketService:              bucketService,
 		buildService:               buildService,
 		dutService:                 dutService,
@@ -711,4 +717,62 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 	}
 
 	return &pb.ListDutsResponse{Duts: duts}, nil
+}
+
+// DeleteDuts the RPC service for deleting DUTs
+func (s *SatlabRpcServiceServer) DeleteDuts(ctx context.Context, in *pb.DeleteDutsRequest) (*pb.DeleteDutsResponse, error) {
+	ctx = utils.SetupContext(ctx, site.GetNamespace(""))
+	ufs, err := ufs.NewUFSClientWithDefaultOptions(ctx, site.GetUFSService(s.dev))
+	if err != nil {
+		return nil, err
+	}
+
+	res, invalidAddresses, err := innerDeleteDuts(ctx, s.commandExecutor, ufs, in.GetAddresses(), false)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.DeleteDutsResponse{
+		Pass:             res.DutResults.Pass,
+		Fail:             res.DutResults.Fail,
+		InvalidAddresses: invalidAddresses,
+	}, nil
+}
+
+// innerDeleteDuts the main logic of deleting the DUTs by given IP addresses.
+// Create this function for testing easily
+// This function returns a result of deleting DUTs result that contains pass and fail,
+// and if we can not convert the IP address, we put the IP address to `invalidAddresses`
+func innerDeleteDuts(ctx context.Context, executor executor.IExecCommander, ufs dut.DeleteClient, addresses []string, full bool) (*dut.DeleteDUTResult, []string, error) {
+	// use for storing the IP addresses that can not convert to the hostname
+	invalidAddresses := []string{}
+
+	IPHostMap, err := dns.ReadHostsToIPMap(ctx, executor)
+	if err != nil {
+		return nil, invalidAddresses, err
+	}
+
+	// Convert IP address to hostname
+	var hostnames = make([]string, 0, len(addresses))
+	for _, address := range addresses {
+		hostname, ok := IPHostMap[address]
+		if ok {
+			hostnames = append(hostnames, hostname)
+		} else {
+			invalidAddresses = append(invalidAddresses, address)
+		}
+	}
+
+	d := dut.DeleteDUT{
+		Names: hostnames,
+		Full:  full,
+	}
+
+	if err := d.Validate(); err != nil {
+		return nil, invalidAddresses, err
+	}
+
+	res, err := d.TriggerRun(ctx, executor, ufs)
+
+	return res, invalidAddresses, nil
 }
