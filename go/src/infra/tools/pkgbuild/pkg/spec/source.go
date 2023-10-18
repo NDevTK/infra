@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -21,7 +20,7 @@ import (
 // Resolver may include executing non-hermetic host binaries and scripts.
 type SourceResolver interface {
 	ResolveGitSource(git *GitSource) (info GitSourceInfo, err error)
-	ResolveScriptSource(hostCipdPlatform string, dir fs.FS, script *ScriptSource) (info ScriptSourceInfo, err error)
+	ResolveScriptSource(hostCipdPlatform, dir string, script *ScriptSource) (info ScriptSourceInfo, err error)
 }
 
 type GitSourceInfo struct {
@@ -68,9 +67,9 @@ func (r *DefaultSourceResolver) ResolveGitSource(git *GitSource) (info GitSource
 	return
 }
 
-func (r *DefaultSourceResolver) ResolveScriptSource(hostCipdPlatform string, dir fs.FS, script *ScriptSource) (info ScriptSourceInfo, err error) {
+func (r *DefaultSourceResolver) ResolveScriptSource(hostCipdPlatform, dir string, script *ScriptSource) (info ScriptSourceInfo, err error) {
 	scriptName := script.GetName()[0]
-	f, err := dir.Open(scriptName)
+	f, err := os.Open(filepath.Join(dir, scriptName))
 	if err != nil {
 		return
 	}
@@ -95,7 +94,7 @@ func (r *DefaultSourceResolver) ResolveScriptSource(hostCipdPlatform string, dir
 	}
 
 	if script.GetUseFetchCheckoutWorkflow() {
-		// TODO: running checkout inside derivation
+		// TODO(fancl): running checkout inside derivation
 		panic("not implemented")
 	}
 

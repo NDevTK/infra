@@ -1,6 +1,7 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 """Setup script with linux specified hooks."""
 # pylint: disable=global-at-module-level
 # pylint: disable=undefined-variable
@@ -38,7 +39,7 @@ def setup(exe) -> None:
     for dep in dependencies:
       # Exclude dependencies from builtin:import. The path from the host is not
       # valid inside the container.
-      stamp = os.path.join(dep, 'build-support', 'builtin_import.stamp')
+      stamp = os.path.join(dep, 'build-support', 'base_import.stamp')
       if not os.path.exists(stamp):
         volumes.extend(('--volume', f'{dep}:{dep}'))
 

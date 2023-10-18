@@ -6,14 +6,13 @@ package stdenv
 import (
 	"fmt"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
+	"go.chromium.org/luci/cipkg/base/generators"
+	"go.chromium.org/luci/cipkg/base/workflow"
 )
 
 // Return the dockcross image for the platform.
 // TODO(fancl): build the container using pkgbuild.
-func containers(plat cipkg.Platform) string {
+func containers(plat generators.Platform) string {
 	const prefix = "gcr.io/chromium-container-registry/infra-dockerbuild/"
 	const version = ":v1.4.18"
 	if plat.OS() != "linux" {
@@ -31,16 +30,16 @@ func containers(plat cipkg.Platform) string {
 	}
 }
 
-func importLinux(cfg *Config, bins ...string) (gs []cipkg.Generator, err error) {
+func importLinux(cfg *Config, bins ...string) (gs []generators.Generator, err error) {
 	// Import posix utilities
-	g, err := builtins.FromPathBatch("posix_import", cfg.FindBinary, bins...)
+	g, err := generators.FromPathBatch("posix_import", cfg.FindBinary, bins...)
 	if err != nil {
 		return nil, err
 	}
 	gs = append(gs, g)
 
 	// Import docker
-	g, err = builtins.FromPathBatch("docker_import", cfg.FindBinary, "docker")
+	g, err = generators.FromPathBatch("docker_import", cfg.FindBinary, "docker")
 	if err != nil {
 		return nil, err
 	}
@@ -49,14 +48,12 @@ func importLinux(cfg *Config, bins ...string) (gs []cipkg.Generator, err error) 
 	return
 }
 
-func (g *Generator) generateLinux(ctx *cipkg.BuildContext, tmpl *utilities.BaseGenerator) error {
-	containers := containers(ctx.Platforms.Host)
+func (g *Generator) generateLinux(plats generators.Platforms, tmpl *workflow.Generator) error {
+	containers := containers(plats.Host)
 	if containers == "" {
-		return fmt.Errorf("containers not available for %s", ctx.Platforms.Host)
+		return fmt.Errorf("containers not available for %s", plats.Host)
 	}
 
-	tmpl.Env = append(tmpl.Env,
-		fmt.Sprintf("dockerImage=%s", containers),
-	)
+	tmpl.Env.Set("dockerImage", containers)
 	return nil
 }

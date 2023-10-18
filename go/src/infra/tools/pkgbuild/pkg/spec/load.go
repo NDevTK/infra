@@ -1,21 +1,25 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 package spec
 
 import (
 	"fmt"
 	"io"
 	"io/fs"
+	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 
 	"google.golang.org/protobuf/encoding/prototext"
+
+	"go.chromium.org/luci/cipkg/base/generators"
 )
 
 // Run `protoc -I../recipes --go_out=src ../recipes/recipe_modules/support_3pp/spec.proto`
 // from infra/go to generate code from 3pp spec proto.
-
 type PackageDef struct {
 	// package name is the raw package directory name. It shouldn't be used
 	// directly since:
@@ -23,8 +27,9 @@ type PackageDef struct {
 	// 2. We should always use a package's full name for referencing.
 	packageName string
 
-	Spec *Spec
-	Dir  fs.FS
+	Spec      *Spec
+	Dir       string
+	Generator generators.Generator
 }
 
 var validDerivationNameChar = regexp.MustCompile("^([0-9])|[^a-zA-Z0-9_]")
@@ -69,8 +74,8 @@ func (p *PackageDef) CIPDPath(prefix, host string) string {
 	return u
 }
 
-func LoadPackageDef(name string, dir fs.FS) (*PackageDef, error) {
-	f, err := dir.Open("3pp.pb")
+func LoadPackageDef(dir, name string) (*PackageDef, error) {
+	f, err := os.Open(filepath.Join(dir, "3pp.pb"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to open 3pp spec: %w", err)
 	}
@@ -90,9 +95,8 @@ func LoadPackageDef(name string, dir fs.FS) (*PackageDef, error) {
 		Dir:         dir,
 	}, nil
 }
-
-func FindPackageDefs(dir fs.FS) (defs []*PackageDef, err error) {
-	err = fs.WalkDir(dir, ".", func(fpath string, d fs.DirEntry, err error) error {
+func FindPackageDefs(root string) (defs []*PackageDef, err error) {
+	err = filepath.WalkDir(root, func(fpath string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -104,21 +108,17 @@ func FindPackageDefs(dir fs.FS) (defs []*PackageDef, err error) {
 		// There are two common hierarchies:
 		// - /path/to/pkg/3pp.pb
 		// - /path/to/pkg/3pp/3pp.pb
-		pkgPath := path.Dir(fpath)
-		parent, name := path.Split(pkgPath)
+		pkgPath := filepath.Dir(fpath)
+		parent, name := filepath.Split(pkgPath)
 		if name == "3pp" {
-			name = path.Base(parent)
+			name = filepath.Base(parent)
 		}
 
 		if name == "." || name == "/" {
 			return fmt.Errorf("invalid package: %s", fpath)
 		}
 
-		pkgDir, err := fs.Sub(dir, pkgPath)
-		if err != nil {
-			return err
-		}
-		def, err := LoadPackageDef(name, pkgDir)
+		def, err := LoadPackageDef(pkgPath, name)
 		if err != nil {
 			return fmt.Errorf("failed to load %s: %w", fpath, err)
 		}
