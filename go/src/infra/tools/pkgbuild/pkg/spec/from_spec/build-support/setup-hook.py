@@ -1,13 +1,15 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 """Setup script for adapting 3pp spec."""
 # pylint: disable=global-at-module-level
 # pylint: disable=undefined-variable
 
 
+#############################################################################
 # Phases
-
+#############################################################################
 
 global configure_phase
 global build_phase
@@ -43,9 +45,9 @@ def build_phase(exe) -> None:
 def install_phase(_) -> None:
   return
 
-
+#############################################################################
 # Hooks
-
+#############################################################################
 
 def setup(exe):
   """Copy all libraries into a single directory."""

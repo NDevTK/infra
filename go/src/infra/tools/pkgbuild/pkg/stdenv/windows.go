@@ -6,30 +6,34 @@ package stdenv
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
+	"go.chromium.org/luci/cipkg/base/generators"
+	"go.chromium.org/luci/cipkg/base/workflow"
 )
 
-func importWindows(cfg *Config, bins ...string) (gs []cipkg.Generator, err error) {
+func importWindows(cfg *Config, bins ...string) (gs []generators.Generator, err error) {
 	// Import posix utilities from MinGW
 	// We use bash.exe to locate where MinGW is installed.
-	path, err := cfg.FindBinary("bash.exe")
+	p, err := cfg.FindBinary("bash.exe")
 	if err != nil {
 		return nil, fmt.Errorf("failed to find MinGW: %w", err)
 	}
-	path = filepath.Dir(path)
+	p = filepath.Dir(p)
 
-	g := &builtins.Import{Name: "posix_import"}
+	g := &generators.ImportTargets{
+		Name:    "posix_import",
+		Targets: make(map[string]generators.ImportTarget),
+	}
 	for _, bin := range bins {
-		g.Targets = append(g.Targets, builtins.ImportTarget{
-			Source:      filepath.Join(path, bin+".exe"),
-			Destination: "bin",
-			Type:        builtins.ImportExecutable,
-		})
+		bin = bin + ".exe"
+		g.Targets[path.Join("bin", bin)] = generators.ImportTarget{
+			Source: path.Join(p, bin),
+			Mode:   fs.ModeSymlink,
+		}
 	}
 	gs = append(gs, g)
 
@@ -40,8 +44,7 @@ func importWindows(cfg *Config, bins ...string) (gs []cipkg.Generator, err error
 		if vsDir == "" {
 			return nil, fmt.Errorf("failed to find visual studio: VSINSTALLDIR not set")
 		}
-		vsFs := os.DirFS(vsDir)
-		mf, err := vsFs.Open("win_sdk/SDKManifest.xml")
+		mf, err := os.Open(filepath.Join(vsDir, "win_sdk", "SDKManifest.xml"))
 		if err != nil {
 			return nil, fmt.Errorf("failed to open sdk manifest: %w", err)
 		}
@@ -51,16 +54,17 @@ func importWindows(cfg *Config, bins ...string) (gs []cipkg.Generator, err error
 			return nil, fmt.Errorf("failed to read sdk manifest: %w", err)
 		}
 
-		winSDK = &builtins.CopyFiles{
-			Name:    "winsdk_files",
-			Files:   vsFs,
-			Version: string(ver),
+		winSDK = &generators.ImportTargets{
+			Name: "winsdk_files",
+			Targets: map[string]generators.ImportTarget{
+				"/": {Source: vsDir, Version: string(ver), Mode: fs.ModeDir},
+			},
 		}
 	}
 	gs = append(gs, winSDK)
 
 	// Import platform-specific tools
-	g, err = builtins.FromPathBatch("windows_import", cfg.FindBinary,
+	g, err = generators.FromPathBatch("windows_import", cfg.FindBinary,
 		"attrib",
 		"cmd",
 		"where",
@@ -70,25 +74,23 @@ func importWindows(cfg *Config, bins ...string) (gs []cipkg.Generator, err error
 	return
 }
 
-func (g *Generator) generateWindows(ctx *cipkg.BuildContext, tmpl *utilities.BaseGenerator) error {
-	proc_arch := ctx.Platforms.Build.Arch()
-	if proc_arch == "386" {
-		proc_arch = "x86"
+func (g *Generator) generateWindows(plats generators.Platforms, tmpl *workflow.Generator) error {
+	procArch := plats.Build.Arch()
+	if procArch == "386" {
+		procArch = "x86"
 	}
 
 	sdk_arch := map[string]string{
 		"386":   "x86",
 		"amd64": "x64",
 		"arm64": "arm64",
-	}[ctx.Platforms.Host.Arch()]
+	}[plats.Host.Arch()]
 	if sdk_arch == "" {
-		return fmt.Errorf("host architecture not supported yet: %s", ctx.Platforms.Host)
+		return fmt.Errorf("host architecture not supported yet: %s", plats.Host)
 	}
 
-	tmpl.Env = append(tmpl.Env,
-		fmt.Sprintf("PROCESSOR_ARCHITECTURE=%s", proc_arch),
-		"winsdk_root={{.winsdk_files}}",
-		fmt.Sprintf("sdk_arch=%s", sdk_arch),
-	)
+	tmpl.Env.Set("PROCESSOR_ARCHITECTURE", procArch)
+	tmpl.Env.Set("winsdk_root", "{{.winsdk_files}}")
+	tmpl.Env.Set("sdk_arch", sdk_arch)
 	return nil
 }

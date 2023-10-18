@@ -8,14 +8,13 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
+	"go.chromium.org/luci/cipkg/base/generators"
+	"go.chromium.org/luci/cipkg/base/workflow"
 )
 
-func importDarwin(cfg *Config, bins ...string) (gs []cipkg.Generator, err error) {
+func importDarwin(cfg *Config, bins ...string) (gs []generators.Generator, err error) {
 	// Import posix utilities
-	g, err := builtins.FromPathBatch("posix_import", cfg.FindBinary, bins...)
+	g, err := generators.FromPathBatch("posix_import", cfg.FindBinary, bins...)
 	if err != nil {
 		return nil, err
 	}
@@ -38,49 +37,46 @@ func importDarwin(cfg *Config, bins ...string) (gs []cipkg.Generator, err error)
 		}
 		ver := string(bytes.TrimSpace(out))
 
-		xcode = &builtins.Import{
+		xcode = &generators.ImportTargets{
 			Name: "xcode_import",
-			Targets: []builtins.ImportTarget{
-				{Source: path, Destination: "Developer", Version: ver, Type: builtins.ImportDirectory},
+			Targets: map[string]generators.ImportTarget{
+				"Developer": {Source: path, Version: ver},
 			},
 		}
 	}
 	gs = append(gs, xcode)
 
 	// Import platform-specific tools
-	gs = append(gs, &builtins.Import{
+	gs = append(gs, &generators.ImportTargets{
 		Name: "darwin_import",
-		Targets: []builtins.ImportTarget{
-			{Source: "/usr/bin/codesign", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/sw_vers", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/xcode-select", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/xcrun", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/hdiutil", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/pkgbuild", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/productbuild", Destination: "bin", Type: builtins.ImportExecutable},
+		Targets: map[string]generators.ImportTarget{
+			"bin/codesign":     {Source: "/usr/bin/codesign"},
+			"bin/xcode-select": {Source: "/usr/bin/xcode-select"},
+			"bin/xcrun":        {Source: "/usr/bin/xcrun"},
+			"bin/hdiutil":      {Source: "/usr/bin/hdiutil"},
+			"bin/pkgbuild":     {Source: "/usr/bin/pkgbuild"},
+			"bin/productbuild": {Source: "/usr/bin/productbuild"},
 
 			// Using compilers without wrappers require configuring Apple Framework properly, which isn't trivial.
 			// See also: https://github.com/NixOS/nixpkgs/tree/master/pkgs/os-specific/darwin/apple-sdk
-			{Source: "/usr/bin/cc", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/c++", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/clang", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/clang++", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/gcc", Destination: "bin", Type: builtins.ImportExecutable},
-			{Source: "/usr/bin/g++", Destination: "bin", Type: builtins.ImportExecutable},
+			"bin/cc":      {Source: "/usr/bin/cc"},
+			"bin/c++":     {Source: "/usr/bin/c++"},
+			"bin/clang":   {Source: "/usr/bin/clang"},
+			"bin/clang++": {Source: "/usr/bin/clang++"},
+			"bin/gcc":     {Source: "/usr/bin/gcc"},
+			"bin/g++":     {Source: "/usr/bin/g++"},
 		},
 	})
 
 	return
 }
 
-func (g *Generator) generateDarwin(ctx *cipkg.BuildContext, tmpl *utilities.BaseGenerator) error {
-	tmpl.Env = append(tmpl.Env,
-		"osx_developer_root={{.darwin_import}}/Developer",
+func (g *Generator) generateDarwin(plats generators.Platforms, tmpl *workflow.Generator) error {
+	tmpl.Env.Set("osx_developer_root", "{{.darwin_import}}/Developer")
 
-		// Env GREP added here to skip the configure testing them.
-		// TODO(fancl): Update the specs to include gnu grep in the tools if
-		// configure.ac expects gnu tools.
-		"GREP={{.posix_import}}/bin/grep",
-	)
+	// Env GREP added here to skip the configure testing them.
+	// TODO(fancl): Update the specs to include gnu grep in the tools if
+	// configure.ac expects gnu tools.
+	tmpl.Env.Set("GREP", "{{.posix_import}}/bin/grep")
 	return nil
 }
