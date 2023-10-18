@@ -24,5 +24,5 @@ luci_gae_vars:
 entrypoint: >
   main
   -auth-service-host ${AUTH_SERVICE_HOST}
-  -config-service-host luci-config.appspot.com
+  -config-service-host config.luci.app
   -ts-mon-account app-engine-metric-publishers@prodx-mon-chrome-infra.google.com.iam.gserviceaccount.com
