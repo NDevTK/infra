@@ -10,11 +10,13 @@ import (
 	"log"
 	"strings"
 
+	"google.golang.org/api/option"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/genproto/protobuf/field_mask"
 
 	"infra/cros/recovery/models"
 	moblabapi "infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/collection"
 	"infra/cros/satlab/common/utils/parser"
 )
@@ -49,9 +51,8 @@ type BuildServiceImpl struct {
 // New sets up the `BuildClient` and returns a BuildConnector.
 // The service account is set in the global environment.
 func New(ctx context.Context) (IBuildService, error) {
-	// Set your service account: $ export GOOGLE_APPLICATION_CREDENTIALS="service_account.json"
-	// Client need not be created for each request
-	client, err := moblabapi.NewBuildClient(ctx)
+	// create moblab client using service account json file
+	client, err := moblabapi.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
 	if err != nil {
 		return nil, err
 	}
