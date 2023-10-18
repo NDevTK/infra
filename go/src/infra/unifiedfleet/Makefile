@@ -19,6 +19,9 @@ Helpers for managing ufs project in $(PROJECT_PATH):
   up-dev: upload the ufs service to dev appengine service
 endef
 
+.PHONY: default
+default: vet test build
+
 .PHONY: help
 help:
 	$(info $(help_message))
@@ -27,6 +30,10 @@ help:
 .PHONY: gen
 gen:
 	go generate ./...
+
+# Run go vet
+vet:
+	go vet -copylocks=false ./...
 
 # Run unittests
 .PHONY: test
