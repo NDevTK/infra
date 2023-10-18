@@ -8,9 +8,12 @@ import (
 	"context"
 	"fmt"
 	"infra/appengine/chrome-test-health/datastorage"
+
+	"cloud.google.com/go/datastore"
 )
 
 type SummaryCoverageData struct {
+	Key                     *datastore.Key
 	DataType                string `datastore:"data_type"`
 	Path                    string `datastore:"path"`
 	Bucket                  string `datastore:"bucket"`
