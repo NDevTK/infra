@@ -249,9 +249,18 @@ SPECS.update({
         SourceOrPrebuilt(
             'PyYAML',
             '5.4.1',
-            patch_version='chromium.1',
+            patch_version='chromium.2',
             skip_auditwheel=True,
             packaged=(),
+            # Pin build dependencies, newer cython has broken this build.
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools',
+                    'wheel',
+                    'Cython<3.0.0a10',
+                ],
+                local=[],
+            ),
         ),
         SourceOrPrebuilt(
             'SQLAlchemy',
