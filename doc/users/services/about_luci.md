@@ -13,5 +13,5 @@ LUCI is the CI system for the Chromium project. All Chromium developers should
 already be using the LUCI UI ([ci.chromium.org](https://ci.chromium.org)).
 
 For more public information, see [luci-py
-README.md](https://chromium.googlesource.com/infra/luci/luci-py/+/refs/heads/master/README.md).
+README.md](https://chromium.googlesource.com/infra/luci/luci-py/+/refs/heads/main/README.md).
 For Googlers, see go/luci.
