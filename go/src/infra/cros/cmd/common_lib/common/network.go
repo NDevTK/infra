@@ -64,7 +64,7 @@ func GetBotProvider() SwarmingBotProvider {
 		}
 	}
 	if lookup, found := os.LookupEnv(swarmingBotIdEnvName); found {
-		for _, p := range heuristics.HwSwarmingBotIdPrefixes {
+		for _, p := range heuristics.HwSwarmingBotIDPrefixes {
 			if strings.HasPrefix(lookup, p) {
 				return BotProviderDrone
 			}
