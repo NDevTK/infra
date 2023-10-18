@@ -76,15 +76,17 @@ message GetCoverageSummaryRequest {
   string gitiles_ref = 3;
   // The commit hash of the revision
   string gitiles_revision = 4;
-  // Source path relative to the project root or path to the components.
-  // E.g: // or /media/cast/net/rtp/frame_buffer.cc for directories.
-  // >> or Blink>Fonts for components.
+  // Source path relative to the project root.
+  // E.g: // or /media/cast/net/rtp/frame_buffer.cc.
   string path = 5;
+  // List of monorail components to fetch the coverage summary
+  // for.
+  // Note that either path or components must be specified to
+  // fetch the summary.
+  repeated string components = 6;
   // Flag to fetch coverage results for unit tests only.
   // Defaults to False, which returns all coverage results.
-  bool unit_tests_only = 6;
-  // DataType of the path. Valid options are: dirs, files or components
-  string data_type = 7;
+  bool unit_tests_only = 7;
   // Bucket name, e.g. "try". Unique within the project.
   // Regex: ^[a-z0-9\-_.]{1,100}$
   // Together with project, defines an ACL.
@@ -97,7 +99,13 @@ message GetCoverageSummaryRequest {
 }
 
 // GetCoverageSummaryResponse returns the code coverage summary.
+// Note that for this API if a dir path is specified through the path
+// req param then the response will be an array of length one
+// specifying coverage stats for that dir path.
+// However, if a list of monorail components are specified through the
+// components param them the summary will have an array with each entry
+// having the summary stats for each component.
 message GetCoverageSummaryResponse {
   // Code Coverage summary containing lines/percentage of code covered.
-  google.protobuf.Struct summary = 1;
+  repeated google.protobuf.Struct summary = 1;
 }

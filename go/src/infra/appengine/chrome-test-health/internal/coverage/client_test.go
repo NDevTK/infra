@@ -150,6 +150,40 @@ func getMockSummaryData() *entities.SummaryCoverageData {
 	}
 }
 
+func getMockSummaryDataByComponent() []*entities.SummaryCoverageData {
+	res := []*entities.SummaryCoverageData{}
+
+	mockKey := "chromium.googlesource.com$chromium/src$refs/heads/main" +
+		"$03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a$components$C1$ci$linux-code-coverage$0"
+	mockSummaryData, _ := compressString(`
+{
+	"dirs": [],
+	"files": [],
+	"path": "C1",
+	"summaries": []
+}`)
+	res = append(res, &entities.SummaryCoverageData{
+		Key:  datastore.NameKey("SummaryCoverageData", mockKey, nil),
+		Data: mockSummaryData,
+	})
+
+	mockKey = "chromium.googlesource.com$chromium/src$refs/heads/main" +
+		"$03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a$components$C2>C3$ci$linux-code-coverage$0"
+	mockSummaryData, _ = compressString(`
+{
+	"dirs": [],
+	"files": [],
+	"path": "C2>C3",
+	"summaries": []
+}`)
+	res = append(res, &entities.SummaryCoverageData{
+		Key:  datastore.NameKey("SummaryCoverageData", mockKey, nil),
+		Data: mockSummaryData,
+	})
+
+	return res
+}
+
 func TestGetProjectConfig(t *testing.T) {
 	t.Parallel()
 	Convey(`Should have valid "FinditConfig" entity`, t, func() {
@@ -397,7 +431,6 @@ func TestGetCoverageSummary(t *testing.T) {
 			GitilesRevision: "03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a",
 			Path:            "//",
 			UnitTestsOnly:   false,
-			DataType:        "dirs",
 			Bucket:          "ci",
 			Builder:         "linux-code-coverage",
 		}
@@ -441,5 +474,54 @@ func TestGetCoverageSummary(t *testing.T) {
 			So(err, ShouldResemble, ErrInternalServerError)
 			So(res, ShouldBeNil)
 		})
+	})
+}
+
+func TestGetCoverageSummaryForComponents(t *testing.T) {
+	t.Parallel()
+	Convey(`Should get summary data by components`, t, func() {
+		client := Client{}
+		ctx := context.Background()
+
+		summaryData := getMockSummaryDataByComponent()
+
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Get",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"SummaryCoverageData",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+				for _, sum := range summaryData {
+					if key.(string) == sum.Key.Name {
+						res := reflect.ValueOf(result).Elem()
+						res.Set(reflect.ValueOf(sum).Elem())
+						return nil
+					}
+				}
+				return nil
+			},
+		)
+		client.coverageV1DsClient = mockDataClient
+
+		req := api.GetCoverageSummaryRequest{
+			GitilesHost:     "chromium.googlesource.com",
+			GitilesProject:  "chromium/src",
+			GitilesRef:      "refs/heads/main",
+			GitilesRevision: "03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a",
+			Components:      []string{"C1", "C2>C3"},
+			UnitTestsOnly:   false,
+			Bucket:          "ci",
+			Builder:         "linux-code-coverage",
+		}
+
+		res, err := client.GetCoverageSummary(ctx, &req)
+		So(err, ShouldBeNil)
+		So(res, ShouldNotBeNil)
+		So(res.Summary, ShouldHaveLength, 2)
 	})
 }

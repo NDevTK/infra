@@ -218,8 +218,6 @@ func (covServer *coverageServer) GetCoverageSummary(ctx context.Context, req *ap
 		[]string{"Gitiles Project", req.GitilesProject, ""},
 		[]string{"Gitiles Ref", req.GitilesRef, ""},
 		[]string{"Gitiles Revision", req.GitilesRevision, ""},
-		[]string{"Path", req.Path, ""},
-		[]string{"Data Type", req.DataType, `^(dirs|files|components)$`},
 		[]string{"Builder", req.Builder, `^[a-zA-Z0-9\-_.\(\) ]{1,128}$`},
 		[]string{"Bucket", req.Bucket, `^[a-z0-9\-_.]{1,100}$`},
 	}
@@ -234,6 +232,15 @@ func (covServer *coverageServer) GetCoverageSummary(ctx context.Context, req *ap
 		if isValidFormat := validateFormat(fieldValue, fieldRegex); !isValidFormat {
 			return nil, appstatus.Errorf((codes.InvalidArgument), "%s is not provided in required format", fieldName)
 		}
+	}
+
+	isPathPresent := validatePresence(req.Path)
+	isComponentsListPresent := validatePresence(req.Components)
+	if isPathPresent && isComponentsListPresent {
+		return nil, appstatus.Errorf((codes.InvalidArgument), "Either path or components should be specified not both")
+	}
+	if !isPathPresent && !isComponentsListPresent {
+		return nil, appstatus.Errorf((codes.InvalidArgument), "Either path or components should be specified")
 	}
 
 	resp, err := covServer.Client.GetCoverageSummary(ctx, req)
@@ -320,6 +327,9 @@ func validatePresence(value interface{}) bool {
 		return false
 	}
 	if fmt.Sprintf("%T", value) == "string" && len(strings.TrimSpace(value.(string))) == 0 {
+		return false
+	}
+	if fmt.Sprintf("%T", value) == "[]string" && len(value.([]string)) == 0 {
 		return false
 	}
 	return true
