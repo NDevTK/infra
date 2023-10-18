@@ -4,11 +4,11 @@ runtime: go121
 luci_gae_vars:
   cros-lab-inventory-dev:
     AUTH_SERVICE_HOST: chrome-infra-auth-dev.appspot.com
-    CONFIG_SERVICE_HOST: luci-config.appspot.com
+    CONFIG_SERVICE_HOST: config.luci.app
     TS_MON_ACCOUNT: app-engine-metric-publishers@prodx-mon-chrome-infra.google.com.iam.gserviceaccount.com
   cros-lab-inventory:
     AUTH_SERVICE_HOST: chrome-infra-auth.appspot.com
-    CONFIG_SERVICE_HOST: luci-config.appspot.com
+    CONFIG_SERVICE_HOST: config.luci.app 
     TS_MON_ACCOUNT: app-engine-metric-publishers@prodx-mon-chrome-infra.google.com.iam.gserviceaccount.com
 
 entrypoint: >
