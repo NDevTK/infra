@@ -69,6 +69,30 @@
                   "run_control": "ALWAYS_RUN"
                 },
                 {
+                  "name": "Start system services",
+                  "docs": [
+                    "Start system-services on the labstation"
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "This verifier checks whether the host is accessible over ssh."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "30s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:start system-services"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
                   "name": "Remove reboot requests",
                   "docs": [
                     "Remove all requests for reboot on the host.",
@@ -84,6 +108,118 @@
             }
           ],
           "run_control": "ALWAYS_RUN"
+        },
+        {
+          "name": "System services is up",
+          "docs": [
+            "Check whether system-services is up and running"
+          ],
+          "dependencies": [
+            {
+              "name": "Device is SSHable",
+              "docs": [
+                "This verifier checks whether the host is accessible over ssh."
+              ],
+              "exec_name": "cros_ssh",
+              "timeout": "30s",
+              "recoveries": [
+                {
+                  "name": "Power cycle by RPM",
+                  "docs": [
+                    "Action is always runnable."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "has_rpm_info",
+                      "exec_name": "has_rpm_info",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "rpm_power_cycle",
+                      "exec_name": "rpm_power_cycle",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Wait to be SSHable",
+                      "docs": [
+                        "Try to wait device to be sshable during after the device being rebooted."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "10m0s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Start system services",
+                      "docs": [
+                        "Start system-services on the labstation"
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "This verifier checks whether the host is accessible over ssh."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "30s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "cros_run_command",
+                      "exec_args": [
+                        "host:dut",
+                        "command:start system-services"
+                      ],
+                      "allow_fail_after_recovery": true,
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Remove reboot requests",
+                      "docs": [
+                        "Remove all requests for reboot on the host.",
+                        "The action has to be called after reboot of the device."
+                      ],
+                      "exec_name": "cros_remove_all_reboot_request",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
+          "exec_name": "cros_wait_for_system",
+          "recoveries": [
+            {
+              "name": "Start system services",
+              "docs": [
+                "Start system-services on the labstation"
+              ],
+              "dependencies": [
+                {
+                  "name": "Device is SSHable",
+                  "docs": [
+                    "This verifier checks whether the host is accessible over ssh."
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "30s",
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "cros_run_command",
+              "exec_args": [
+                "host:dut",
+                "command:start system-services"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "Clean up logs if necessary",
@@ -281,6 +417,30 @@
                   "run_control": "ALWAYS_RUN"
                 },
                 {
+                  "name": "Start system services",
+                  "docs": [
+                    "Start system-services on the labstation"
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "This verifier checks whether the host is accessible over ssh."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "30s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:start system-services"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
                   "name": "Remove reboot requests",
                   "docs": [
                     "Remove all requests for reboot on the host.",
@@ -320,6 +480,30 @@
                   "exec_name": "cros_ssh",
                   "timeout": "10m0s",
                   "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Start system services",
+                  "docs": [
+                    "Start system-services on the labstation"
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "This verifier checks whether the host is accessible over ssh."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "30s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:start system-services"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Remove reboot requests",
@@ -461,6 +645,30 @@
                   "run_control": "ALWAYS_RUN"
                 },
                 {
+                  "name": "Start system services",
+                  "docs": [
+                    "Start system-services on the labstation"
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "This verifier checks whether the host is accessible over ssh."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "30s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:start system-services"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
                   "name": "Remove reboot requests",
                   "docs": [
                     "Remove all requests for reboot on the host.",
@@ -500,6 +708,30 @@
                   "exec_name": "cros_ssh",
                   "timeout": "10m0s",
                   "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Start system services",
+                  "docs": [
+                    "Start system-services on the labstation"
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "This verifier checks whether the host is accessible over ssh."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "30s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:start system-services"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Remove reboot requests",
@@ -630,6 +862,30 @@
                   "run_control": "ALWAYS_RUN"
                 },
                 {
+                  "name": "Start system services",
+                  "docs": [
+                    "Start system-services on the labstation"
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "This verifier checks whether the host is accessible over ssh."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "30s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:start system-services"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
                   "name": "Remove reboot requests",
                   "docs": [
                     "Remove all requests for reboot on the host.",
@@ -669,6 +925,30 @@
                   "exec_name": "cros_ssh",
                   "timeout": "10m0s",
                   "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Start system services",
+                  "docs": [
+                    "Start system-services on the labstation"
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "docs": [
+                        "This verifier checks whether the host is accessible over ssh."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "30s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_run_command",
+                  "exec_args": [
+                    "host:dut",
+                    "command:start system-services"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Remove reboot requests",
