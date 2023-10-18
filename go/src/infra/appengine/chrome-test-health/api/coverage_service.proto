@@ -23,13 +23,33 @@ service Coverage {
   rpc GetCoverageSummary(GetCoverageSummaryRequest) returns (GetCoverageSummaryResponse);
 }
 
+message BuilderConfig {
+  //  Platform name. For eg: mac, linux, etc.
+  string platform = 1;
+  // Bucket name, e.g. "try". Unique within the project.
+  // Regex: ^[a-z0-9\-_.]{1,100}$
+  // Together with project, defines an ACL.
+  // See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/builder_common.proto for additional details.
+  string bucket = 2;
+  // Builder name, e.g. "linux-rel". Unique within the bucket.
+  // Regex: ^[a-zA-Z0-9\-_.\(\) ]{1,128}$
+  // See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/builder_common.proto for additional details.
+  string builder = 3;
+  // Display name for a platform. For eg: MacOS(C/C++/ObjC)
+  // is the UI name for platform mac.
+  string ui_name = 4;
+  // Latest git commit available for which
+  // a coverage report exists for the platform.
+  string latest_revision = 5;
+}
+
 message GetProjectDefaultConfigRequest {
-  // Project for which the default configuration will be fetched.
-  // For example: chromium. Each Project is unique within a LUCI deployment.
-  // Project is equivalent to Buildbucket's concept of a project
+  // Luci project for which the default configuration will be fetched.
+  // For example: chromium. Each luci project is unique within a LUCI deployment.
+  // Luci project is equivalent to Buildbucket's concept of a project
   // and requires regex match ^[a-z0-9-_]+$
   // See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/builder_common.proto for additional details.
-  string project = 1 [ (google.api.field_behavior) = REQUIRED ];
+  string luci_project = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // Default Configuration values for the specified project
@@ -37,14 +57,14 @@ message GetProjectDefaultConfigRequest {
 message GetProjectDefaultConfigResponse {
   // The website host where the repo resides.
   // E.g: chromium.googlesource.com
-  string host = 1;
-  // Platform over which project is built.
-  // E.g: linux
-  string platform = 2;
-  // Project is the git repository. E.g: chromium/src.
-  string project = 3;
-  // Ref is the git branch within the project. E.g: refs/heads/main:
-  string ref = 4;
+  string gitiles_host = 1;
+  // Gitiles Project is the git repository. E.g: chromium/src.
+  string gitiles_project = 2;
+  // Gitiles Ref is the git branch within the project. E.g: refs/heads/main:
+  string gitiles_ref = 3;
+  // List of builder configs for which a coverage repository
+  // exists.
+  repeated BuilderConfig builder_config = 4;
 }
 
 message GetCoverageSummaryRequest {

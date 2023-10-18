@@ -54,33 +54,83 @@ func (c *Client) Init(ctx context.Context) error {
 
 // getProjectConfig extracts out the code coverage default settings from the
 // fetched FinditConfig entity for the given project.
-func (c *Client) getProjectConfig(ctx context.Context, finditConfig *entities.FinditConfig, project string) (*api.GetProjectDefaultConfigResponse, error) {
+func (c *Client) getProjectConfig(
+	ctx context.Context,
+	finditConfig *entities.FinditConfig,
+	project string,
+	config *api.GetProjectDefaultConfigResponse,
+) error {
 	code_cov_settings := map[string]interface{}{}
 	err := json.Unmarshal(finditConfig.CodeCoverageSettings, &code_cov_settings)
 	if err != nil {
 		logging.Errorf(ctx, "Failed to unmarshall CodeCoverageSettings: %s", err)
-		return nil, ErrInternalServerError
+		return ErrInternalServerError
 	}
 
 	defaultPostSubmitConfig := code_cov_settings["default_postsubmit_report_config"]
 	if defaultPostSubmitConfig == nil {
 		logging.Errorf(ctx, "Missing default_postsubmit_report_config from FinditConfig")
-		return nil, ErrInternalServerError
+		return ErrInternalServerError
 	}
 
 	projectConfig := defaultPostSubmitConfig.(map[string]interface{})[project]
 	if projectConfig == nil {
 		logging.Errorf(ctx, "Missing config for project %s", project)
-		return nil, ErrInternalServerError
+		return ErrInternalServerError
 	}
 	projectConfig = projectConfig.(map[string]interface{})
 
-	return &api.GetProjectDefaultConfigResponse{
-		Host:     projectConfig.(map[string]interface{})["host"].(string),
-		Platform: projectConfig.(map[string]interface{})["platform"].(string),
-		Project:  projectConfig.(map[string]interface{})["project"].(string),
-		Ref:      projectConfig.(map[string]interface{})["ref"].(string),
-	}, nil
+	config.GitilesHost = projectConfig.(map[string]interface{})["host"].(string)
+	config.GitilesProject = projectConfig.(map[string]interface{})["project"].(string)
+	config.GitilesRef = projectConfig.(map[string]interface{})["ref"].(string)
+
+	return nil
+}
+
+func (c *Client) getBuilderOptions(
+	ctx context.Context,
+	luciProject string,
+	host string,
+	project string,
+	finditConfig *entities.FinditConfig,
+	config *api.GetProjectDefaultConfigResponse,
+) error {
+	code_cov_settings := map[string]interface{}{}
+	err := json.Unmarshal(finditConfig.CodeCoverageSettings, &code_cov_settings)
+	if err != nil {
+		logging.Errorf(ctx, "Failed to unmarshall CodeCoverageSettings: %s", err)
+		return ErrInternalServerError
+	}
+
+	postsubmitPlatformInfoMap := code_cov_settings["postsubmit_platform_info_map"]
+	if postsubmitPlatformInfoMap == nil {
+		logging.Errorf(ctx, "Missing postsubmit_platform_info_map from FinditConfig")
+		return ErrInternalServerError
+	}
+
+	platformListForProject := postsubmitPlatformInfoMap.(map[string]interface{})[luciProject]
+
+	var builderConfigDetails []*api.BuilderConfig
+	for platform, builderConfigDetail := range platformListForProject.(map[string]interface{}) {
+		bucket := builderConfigDetail.(map[string]interface{})["bucket"].(string)
+		builder := builderConfigDetail.(map[string]interface{})["builder"].(string)
+		postsubmitReport := entities.PostsubmitReport{}
+		err := postsubmitReport.Filter(ctx, c.coverageV1DsClient, project, host, bucket, builder)
+		if err != nil {
+			continue
+		}
+
+		builderConfigDetails = append(builderConfigDetails, &api.BuilderConfig{
+			Platform:       platform,
+			Bucket:         bucket,
+			Builder:        builder,
+			UiName:         builderConfigDetail.(map[string]interface{})["ui_name"].(string),
+			LatestRevision: postsubmitReport.GitilesCommitRevision,
+		})
+	}
+
+	config.BuilderConfig = builderConfigDetails
+	return nil
 }
 
 func (c *Client) getModifedBuilder(builder string, unitTestsOnly *bool) string {
@@ -90,16 +140,30 @@ func (c *Client) getModifedBuilder(builder string, unitTestsOnly *bool) string {
 	return fmt.Sprintf("%s_unit", builder)
 }
 
-// GetProjectDefaultConfig fetches the latest version of FinditConfig from the datastore and returns
-// the desired configuration extracted from the entity.
-func (c *Client) GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error) {
-	project := req.Project
+// GetProjectDefaultConfig fetches the latest version of FinditConfig from the
+// datastore and returns the desired configuration extracted from the entity.
+func (c *Client) GetProjectDefaultConfig(
+	ctx context.Context,
+	req *api.GetProjectDefaultConfigRequest,
+) (*api.GetProjectDefaultConfigResponse, error) {
+	project := req.LuciProject
 	finditConfig := &entities.FinditConfig{}
 	if err := finditConfig.Get(ctx, c.coverageV1DsClient); err != nil {
 		logging.Errorf(ctx, "%s", err.Error())
 		return nil, ErrInternalServerError
 	}
-	return c.getProjectConfig(ctx, finditConfig, project)
+
+	response := &api.GetProjectDefaultConfigResponse{}
+	if err := c.getProjectConfig(ctx, finditConfig, project, response); err != nil {
+		return nil, err
+	}
+
+	if err := c.getBuilderOptions(ctx, project, response.GitilesHost,
+		response.GitilesProject, finditConfig, response); err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 // GetCoverageSummary fetches the code coverage metrics/percentages for the specified

@@ -447,7 +447,7 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 		}
 		Convey("Valid request", func() {
 			request := &api.GetProjectDefaultConfigRequest{
-				Project: "chromium",
+				LuciProject: "chromium",
 			}
 			resp, err := srv.GetProjectDefaultConfig(ctx, request)
 
@@ -457,7 +457,7 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 		})
 		Convey("Invalid argument Project", func() {
 			request := &api.GetProjectDefaultConfigRequest{
-				Project: "chromium src",
+				LuciProject: "chromium src",
 			}
 			resp, err := srv.GetProjectDefaultConfig(ctx, request)
 

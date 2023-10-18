@@ -37,11 +37,31 @@ type PostsubmitReport struct {
 // Get function fetches the PostSubmitReport entity by creating key from the given args.
 // See here for more details about PostSubmitReport entity:
 // https://source.chromium.org/chromium/infra/infra/+/main:appengine/findit/model/code_coverage.py;drc=da0f8e0369a013173b31b6744b411c2bd9edd9df;l=331
-func (p *PostsubmitReport) Get(ctx context.Context, client datastorage.IDataClient, host string, project string, ref string, revision string, bucket string, builder string, modifierID string) error {
-	keyStr := fmt.Sprintf("%s$%s$%s$%s$%s$%s$%s", host, project, ref, revision, bucket, builder, modifierID)
+func (p *PostsubmitReport) Get(ctx context.Context, client datastorage.IDataClient, host string, project string, ref string, revision string, bucket string, builder string) error {
+	keyStr := fmt.Sprintf("%s$%s$%s$%s$%s$%s$0", host, project, ref, revision, bucket, builder)
 	err := client.Get(ctx, p, "PostsubmitReport", keyStr)
 	if err != nil {
 		return fmt.Errorf("PostsubmitReport: %w", err)
 	}
+	return nil
+}
+
+func (p *PostsubmitReport) Filter(ctx context.Context, client datastorage.IDataClient, project string, host string, bucket string, builder string) error {
+	records := []PostsubmitReport{}
+	queryFilters := []datastorage.QueryFilter{
+		{Field: "gitiles_commit.project", Operator: "=", Value: project},
+		{Field: "gitiles_commit.server_host", Operator: "=", Value: host},
+		{Field: "bucket", Operator: "=", Value: bucket},
+		{Field: "builder", Operator: "=", Value: builder},
+		{Field: "visible", Operator: "=", Value: true},
+		{Field: "modifier_id", Operator: "=", Value: 0},
+	}
+	if err := client.Query(ctx, &records, "PostsubmitReport", queryFilters, "-commit_timestamp", 1); err != nil {
+		return fmt.Errorf("PostsubmitReport: %w", err)
+	}
+	if len(records) == 0 {
+		return ErrNotFound
+	}
+	*p = records[0]
 	return nil
 }

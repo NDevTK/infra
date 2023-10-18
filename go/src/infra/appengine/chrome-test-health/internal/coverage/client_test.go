@@ -84,6 +84,25 @@ func getMockFinditConfigWithoutAnyProject() *entities.FinditConfig {
 	}
 }
 
+func getMockPostsubmitReport() []*entities.PostsubmitReport {
+	return []*entities.PostsubmitReport{
+		{
+			GitilesCommitProject:    "chromium/src",
+			GitilesCommitServerHost: "chromium.googlesource.com",
+			Bucket:                  "ci",
+			Builder:                 "linux-code-coverage",
+			GitilesCommitRevision:   "12345",
+		},
+		{
+			GitilesCommitProject:    "chromium/src",
+			GitilesCommitServerHost: "chromium.googlesource.com",
+			Bucket:                  "ci",
+			Builder:                 "andr-code-coverage",
+			GitilesCommitRevision:   "23456",
+		},
+	}
+}
+
 func getMockSummaryData() *entities.SummaryCoverageData {
 	mockKey := "chromium.googlesource.com$chromium/src$refs/heads/main" +
 		"$03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a$dirs$//$ci$linux-code-coverage$0"
@@ -140,8 +159,9 @@ func TestGetProjectConfig(t *testing.T) {
 			fakeFinditConfig := entities.FinditConfig{
 				CodeCoverageSettings: []byte(""),
 			}
-			config, err := client.getProjectConfig(ctx, &fakeFinditConfig, "chromium")
-			So(config, ShouldBeNil)
+			config := &api.GetProjectDefaultConfigResponse{}
+			err := client.getProjectConfig(ctx, &fakeFinditConfig, "chromium", config)
+			So(config, ShouldResemble, &api.GetProjectDefaultConfigResponse{})
 			So(err, ShouldNotBeNil)
 			So(err, ShouldResemble, ErrInternalServerError)
 		})
@@ -149,31 +169,97 @@ func TestGetProjectConfig(t *testing.T) {
 			fakeFinditConfig := entities.FinditConfig{
 				CodeCoverageSettings: []byte("{}"),
 			}
-			config, err := client.getProjectConfig(ctx, &fakeFinditConfig, "chromium")
-			So(config, ShouldBeNil)
+			config := &api.GetProjectDefaultConfigResponse{}
+			err := client.getProjectConfig(ctx, &fakeFinditConfig, "chromium", config)
+			So(config, ShouldResemble, &api.GetProjectDefaultConfigResponse{})
 			So(err, ShouldNotBeNil)
 			So(err, ShouldResemble, ErrInternalServerError)
 		})
 		Convey(`Missing project from "default_postsubmit_report_config" property`, func() {
 			fakeFinditConfig := getMockFinditConfigWithoutAnyProject()
-			config, err := client.getProjectConfig(ctx, fakeFinditConfig, "chromium")
-			So(config, ShouldBeNil)
+			config := &api.GetProjectDefaultConfigResponse{}
+			err := client.getProjectConfig(ctx, fakeFinditConfig, "chromium", config)
+			So(config, ShouldResemble, &api.GetProjectDefaultConfigResponse{})
 			So(err, ShouldNotBeNil)
 			So(err, ShouldResemble, ErrInternalServerError)
 		})
 		Convey(`Valid "FinditConfig" entity`, func() {
 			fakeFinditConfig := getMockFinditConfig()
-			var config *api.GetProjectDefaultConfigResponse
-			config, err := client.getProjectConfig(ctx, fakeFinditConfig, "chromium")
+			config := &api.GetProjectDefaultConfigResponse{}
+			err := client.getProjectConfig(ctx, fakeFinditConfig, "chromium", config)
 			So(config, ShouldResemble, &api.GetProjectDefaultConfigResponse{
-				Host:     "chromium.googlesource.com",
-				Platform: "linux",
-				Project:  "chromium/src",
-				Ref:      "refs/heads/main",
+				GitilesHost:    "chromium.googlesource.com",
+				GitilesProject: "chromium/src",
+				GitilesRef:     "refs/heads/main",
 			})
 			So(err, ShouldBeNil)
 		})
 	})
+}
+
+func TestGetBuilderOptions(t *testing.T) {
+	Convey(`Should get builder configurations`, t, func() {
+		client := Client{}
+		ctx := context.Background()
+
+		Convey(`Invalid "CodeCoverageSettings" JSON`, func() {
+			mockFinditConfig := &entities.FinditConfig{
+				CodeCoverageSettings: []byte(""),
+			}
+			config := &api.GetProjectDefaultConfigResponse{}
+			err := client.getBuilderOptions(ctx, "chromium", "chromium.googlesource.com",
+				"chromium", mockFinditConfig, config)
+			So(config, ShouldResemble, &api.GetProjectDefaultConfigResponse{})
+			So(err, ShouldNotBeNil)
+			So(err, ShouldResemble, ErrInternalServerError)
+		})
+
+		Convey(`Missing "postsubmit_platform_info_map" property`, func() {
+			mockFinditConfig := &entities.FinditConfig{
+				CodeCoverageSettings: []byte("{}"),
+			}
+			config := &api.GetProjectDefaultConfigResponse{}
+			err := client.getBuilderOptions(ctx, "chromium", "chromium.googlesource.com",
+				"chromium", mockFinditConfig, config)
+			So(config, ShouldResemble, &api.GetProjectDefaultConfigResponse{})
+			So(err, ShouldNotBeNil)
+			So(err, ShouldResemble, ErrInternalServerError)
+		})
+
+		Convey(`FinditConfig has platform options`, func() {
+			postsubmitReports := getMockPostsubmitReport()
+			mockDataClient := mocks.NewIDataClient(t)
+			mockDataClient.On(
+				"Query",
+				mock.AnythingOfType("backgroundCtx"),
+				mock.Anything,
+				"PostsubmitReport",
+				mock.Anything,
+				mock.Anything,
+				mock.Anything,
+			).Return(
+				func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+					for _, rep := range postsubmitReports {
+						if queryFilters[2].Value == rep.Bucket && queryFilters[3].Value == rep.Builder {
+							res := reflect.ValueOf(result).Elem()
+							res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
+							return nil
+						}
+					}
+					return nil
+				},
+			)
+			client.coverageV1DsClient = mockDataClient
+
+			finditConfig := getMockFinditConfig()
+			config := &api.GetProjectDefaultConfigResponse{}
+			err := client.getBuilderOptions(ctx, "chromium", "chromium.googlesource.com",
+				"chromium/src", finditConfig, config)
+			So(err, ShouldBeNil)
+			So(config.BuilderConfig, ShouldHaveLength, 1)
+		})
+	})
+
 }
 
 func TestGetModifiedBuilder(t *testing.T) {
@@ -205,6 +291,7 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 
 		finditConfigRoot := getMockFinditConfigRoot()
 		finditConfig := getMockFinditConfig()
+		postsubmitReports := getMockPostsubmitReport()
 
 		mockDataClient := mocks.NewIDataClient(t)
 		mockDataClient.On(
@@ -238,17 +325,38 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 				return nil
 			},
 		)
+
+		mockDataClient.On(
+			"Query",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"PostsubmitReport",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				for _, rep := range postsubmitReports {
+					if queryFilters[2].Value == rep.Bucket && queryFilters[3].Value == rep.Builder {
+						res := reflect.ValueOf(result).Elem()
+						res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
+						return nil
+					}
+				}
+				return nil
+			},
+		)
 		client.coverageV1DsClient = mockDataClient
 
 		req := api.GetProjectDefaultConfigRequest{
-			Project: "chromium",
+			LuciProject: "chromium",
 		}
 		res, err := client.GetProjectDefaultConfig(ctx, &req)
 		So(err, ShouldBeNil)
-		So(res.Host, ShouldEqual, "chromium.googlesource.com")
-		So(res.Platform, ShouldEqual, "linux")
-		So(res.Project, ShouldEqual, "chromium/src")
-		So(res.Ref, ShouldEqual, "refs/heads/main")
+		So(res.GitilesHost, ShouldEqual, "chromium.googlesource.com")
+		So(res.GitilesProject, ShouldEqual, "chromium/src")
+		So(res.GitilesRef, ShouldEqual, "refs/heads/main")
+		So(res.BuilderConfig, ShouldHaveLength, 1)
 	})
 }
 

@@ -54,7 +54,7 @@ var (
 		"/test_resources.Stats/FetchTestMetrics":           serviceAccessGroup,
 		"/test_resources.Stats/FetchDirectoryMetrics":      serviceAccessGroup,
 		"/test_resources.Coverage/GetProjectDefaultConfig": serviceAccessGroup,
-		"/test_resources.Coverage/GetCoverageSummary":      rpcacl.All,
+		"/test_resources.Coverage/GetCoverageSummary":      serviceAccessGroup,
 	}
 	// Data set to work with
 	dataSet = flag.String(
@@ -199,7 +199,7 @@ func (covServer *coverageServer) GetProjectDefaultConfig(ctx context.Context, re
 		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
 	}
 
-	if isValidProject := validateFormat(req.Project, `^[a-z0-9-_]+$`); !isValidProject {
+	if isValidProject := validateFormat(req.LuciProject, `^[a-z0-9-_]+$`); !isValidProject {
 		logging.Errorf(ctx, "Argument project did not match required format")
 		return nil, appstatus.Errorf(codes.InvalidArgument, "Argument Project is invalid")
 	}
