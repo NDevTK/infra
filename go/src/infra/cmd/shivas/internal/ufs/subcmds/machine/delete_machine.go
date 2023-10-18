@@ -34,6 +34,9 @@ Deletes the given machine and deletes the nics and drac associated with this mac
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
+
+		// This is to overwrite args if this is specified
+		c.Flags.StringVar(&c.machineName, "name", "", "the name of the machine to delete, if this is specified, all other filters will be dropped")
 		return c
 	},
 }
@@ -43,6 +46,8 @@ type deleteMachine struct {
 	authFlags   authcli.Flags
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
+
+	machineName string
 }
 
 func (c *deleteMachine) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -84,6 +89,9 @@ func (c *deleteMachine) innerRun(a subcommands.Application, args []string, env s
 		return nil
 	}
 
+	if c.machineName != "" {
+		args = []string{c.machineName}
+	}
 	_, err = ic.DeleteMachine(ctx, &ufsAPI.DeleteMachineRequest{
 		Name: ufsUtil.AddPrefix(ufsUtil.MachineCollection, args[0]),
 	})
