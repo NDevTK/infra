@@ -60,6 +60,9 @@ Gets the machine and prints the output in the user-specified format.`,
 		c.Flags.Var(flag.StringSlice(&c.buildTargets), "target", "Name(s) of a build target to filter by. Can be specified multiple times.")
 		c.Flags.Var(flag.StringSlice(&c.phases), "phase", "Name(s) of a phase to filter by. Can be specified multiple times.")
 
+		// This is to overwrite args if this is specified
+		c.Flags.StringVar(&c.machineName, "name", "", "the name of the machine to get, if this is specified, all other filters will be dropped")
+
 		return c
 	},
 }
@@ -86,6 +89,8 @@ type getMachine struct {
 
 	pageSize int
 	keysOnly bool
+
+	machineName string
 }
 
 func (c *getMachine) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -97,6 +102,10 @@ func (c *getMachine) Run(a subcommands.Application, args []string, env subcomman
 }
 
 func (c *getMachine) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
+	if err := c.validateArgs(); err != nil {
+		return err
+	}
+
 	ctx := cli.GetContext(a, c, env)
 	ns, err := c.envFlags.Namespace(nil, "")
 	if err != nil {
@@ -119,6 +128,9 @@ func (c *getMachine) innerRun(a subcommands.Application, args []string, env subc
 	emit := !utils.NoEmitMode(c.outputFlags.NoEmit())
 	full := utils.FullMode(c.outputFlags.Full())
 	var res []proto.Message
+	if c.machineName != "" {
+		args = []string{c.machineName}
+	}
 	if len(args) > 0 {
 		res = utils.ConcurrentGet(ctx, ic, args, c.getSingle)
 	} else {
@@ -194,4 +206,8 @@ func listMachines(ctx context.Context, ic ufsAPI.FleetClient, pageSize int32, pa
 		protos[i] = m
 	}
 	return protos, res.GetNextPageToken(), nil
+}
+
+func (c *getMachine) validateArgs() error {
+	return utils.ValidateNameAndPositionalArg(c.Flags, c.machineName)
 }
