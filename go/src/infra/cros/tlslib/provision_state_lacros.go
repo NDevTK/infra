@@ -207,7 +207,7 @@ func (p *provisionLacrosState) installLacrosAsComponent(ctx context.Context) err
 	lacrosHashtreePath := path.Join(p.lacrosComponentPath, "hashtree")
 	p.lacrosTablePath = path.Join(p.lacrosComponentPath, "table")
 	if err := runCmd(p.c,
-		fmt.Sprintf("verity --mode=create --alg=sha256 --payload=%s --payload_blocks=%d --hashtree=%s --salt=random > %s",
+		fmt.Sprintf("verity mode=create alg=sha256 payload=%s payload_blocks=%d hashtree=%s salt=random > %s",
 			p.lacrosImagePath, lacrosBlocks, lacrosHashtreePath, p.lacrosTablePath)); err != nil {
 		return fmt.Errorf("installLacrosAsComponent: failed to generate verity for Lacros image, %s", err)
 	}
