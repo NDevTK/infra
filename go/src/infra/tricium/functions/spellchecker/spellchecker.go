@@ -84,6 +84,7 @@ var (
 		"decomposits",   // valid word, related to compositing
 		"decomposit",    // valid word, related to compositing
 		"dedup",         // variant abbr. of deduplicate
+		"deques",        // plural form of the datastructure deque
 		"didi",          // person name
 		"doesnt",        // contraction, may appear in variable names
 		"doman",         // person name
@@ -100,6 +101,7 @@ var (
 		"longe",         // person name
 		"maks",          // person name
 		"minimise",      // valid UK spelling
+		"missable",      // valid word, related to miss
 		"optin",         // alternative of opt-in
 		"parameterizes", // valid spelling
 		"parameterize",  // valid spelling
