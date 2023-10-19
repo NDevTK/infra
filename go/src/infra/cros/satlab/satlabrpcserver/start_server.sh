@@ -6,5 +6,6 @@
 # this is a temporary hack for testing purpose
 # this environmental variable should be set differently
 # once the folder containing the service_account.json is loaded
-export GOOGLE_APPLICATION_CREDENTIALS="service_account.json"
+export SERVICE_ACCOUNT_KEY_PATH="service_account.json"
+export GCS_IMAGE_BUCKET="chromeos-distributed-fleet-s4p"
 ./satlabrpcserver
