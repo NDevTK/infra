@@ -148,9 +148,9 @@ func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClie
 }
 
 func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {
-
 	var tp *test_platform.Request_TestPlan
 	var err error
+
 	if c.Suite != "" {
 		tp = builder.TestPlanForSuites([]string{c.Suite})
 	} else if c.Tests != nil {
@@ -158,11 +158,11 @@ func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {
 	} else if c.Testplan != "" {
 		fmt.Printf("Fetching testplan...\n")
 		var w bytes.Buffer
-		err = downloadTestPlan(&w, site.GetGCSImageBucket(), c.Testplan)
+		path, err := downloadTestPlan(&w, site.GetGCSImageBucket(), c.Testplan)
 		if err != nil {
 			return nil, err
 		}
-		tp, err = readTestPlan(c.Testplan)
+		tp, err = readTestPlan(path)
 		if err != nil {
 			return nil, err
 		}
@@ -173,6 +173,7 @@ func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {
 		}
 		fmt.Printf("Running local testplan...\n")
 	}
+
 	return tp, nil
 }
 
@@ -255,13 +256,13 @@ type MoblabClient interface {
 }
 
 // Downloads specified testplan from bucket to remote access container
-func downloadTestPlan(w io.Writer, bucket, testplan string) error {
+func downloadTestPlan(w io.Writer, bucket, testplan string) (string, error) {
 	object := "testplans/" + testplan
 	destFileName := "/config/" + testplan
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
 	if err != nil {
-		return fmt.Errorf("storage.NewClient: %w", err)
+		return "", fmt.Errorf("storage.NewClient: %w", err)
 	}
 	defer client.Close()
 
@@ -270,23 +271,23 @@ func downloadTestPlan(w io.Writer, bucket, testplan string) error {
 
 	rc, err := client.Bucket(bucket).Object(object).NewReader(ctx)
 	if err != nil {
-		return fmt.Errorf("%q Error: %w", object, err)
+		return "", fmt.Errorf("%q Error: %w", object, err)
 	}
 	defer rc.Close()
 
 	f, err := os.Create(destFileName)
 	if err != nil {
-		return fmt.Errorf("os.Create: %w", err)
+		return "", fmt.Errorf("os.Create: %w", err)
 	}
 	defer f.Close()
 
 	if _, err := io.Copy(f, rc); err != nil {
-		return fmt.Errorf("io.Copy: %w", err)
+		return "", fmt.Errorf("io.Copy: %w", err)
 	}
 
 	fmt.Fprintf(w, "Blob %v downloaded to local file %v\n", object, destFileName)
 
-	return nil
+	return destFileName, nil
 }
 
 // JSONPBUnmarshaler unmarshals JSON into proto messages.
