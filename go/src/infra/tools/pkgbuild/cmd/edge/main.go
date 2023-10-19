@@ -14,16 +14,25 @@ import (
 
 	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/cipkg/base/actions"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
 func main() {
-	ctx := gologger.StdConfig.Use(context.Background())
-	ctx = logging.SetLevel(ctx, logging.Error)
-
+	ctx := context.Background()
 	actions.NewReexecRegistry().Intercept(ctx)
+
+	if err := Main(ctx); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func Main(ctx context.Context) error {
+	ctx = gologger.StdConfig.Use(ctx)
+	ctx = logging.SetLevel(ctx, logging.Error)
 
 	app := Application{
 		LoggingLevel:   logging.Error,
@@ -31,26 +40,25 @@ func main() {
 		CIPDService:    chromeinfra.CIPDServiceURL,
 		Upload:         false,
 		Experiment:     false,
+		SnoopyService:  "http://localhost:11000",
 	}
 	if err := app.Parse(os.Args[1:]); err != nil {
-		logging.WithError(err).Errorf(ctx, "failed to parse options")
-		os.Exit(1)
+		return errors.Annotate(err, "failed to parse options").Err()
 	}
 	ctx = logging.SetLevel(ctx, app.LoggingLevel)
 
 	if app.Help {
-		os.Exit(0)
+		// TODO: print help message?
+		return nil
 	}
 
 	if err := stdenv.Init(stdenv.DefaultConfig()); err != nil {
-		logging.WithError(err).Errorf(ctx, "failed to init stdenv")
-		os.Exit(1)
+		return errors.Annotate(err, "failed to init stdenv").Err()
 	}
 
 	b, err := app.NewBuilder(ctx)
 	if err != nil {
-		logging.WithError(err).Errorf(ctx, "failed to init builder")
-		os.Exit(1)
+		return errors.Annotate(err, "failed to init builder").Err()
 	}
 
 	// Build all packages by default
@@ -68,21 +76,19 @@ func main() {
 				logging.Infof(ctx, "skip package %s on %s", name, app.TargetPlatform)
 				continue
 			}
-			logging.WithError(err).Errorf(ctx, "failed to add %s", name)
-			os.Exit(1)
+			return errors.Annotate(err, "failed to add %s", name).Err()
 		}
 	}
 
 	pkgs, err := b.BuildAll(ctx)
 	if err != nil {
-		logging.WithError(err).Errorf(ctx, "failed to build packages")
-		os.Exit(1)
+		return errors.Annotate(err, "failed to build packages").Err()
 	}
 
-	for _, pkg := range pkgs {
-		metadata := pkg.Action.Metadata
-		fmt.Println(metadata.Cipd.Name, metadata.Cipd.Version) // TODO(fancl): Upload package here
+	if err := app.TryUpload(ctx, pkgs); err != nil {
+		return err
 	}
 
 	app.PackageManager.Prune(ctx, time.Hour*24, 256)
+	return nil
 }
