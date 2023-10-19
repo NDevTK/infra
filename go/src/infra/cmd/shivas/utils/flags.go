@@ -7,6 +7,8 @@ package utils
 import (
 	"flag"
 	"strings"
+
+	"infra/cmdsupport/cmdlib"
 )
 
 // CSVStringFlag is a flag.Getter implementation representing a []string.
@@ -66,7 +68,18 @@ func (f CSVStringListFlag) Get() interface{} {
 	return [][]string(f)
 }
 
-// CSVString returns a flag.Getter which reads flags into the given []string pointer.
+// CSVStringList returns a flag.Getter which reads flags into the given []string pointer.
 func CSVStringList(s *[][]string) flag.Getter {
 	return (*CSVStringListFlag)(s)
+}
+
+// ValidateNameAndPositionalArg validates that name and positional args cannot exist/miss together
+func ValidateNameAndPositionalArg(flags flag.FlagSet, name string) error {
+	if flags.NArg() == 0 && name == "" {
+		return cmdlib.NewUsageError(flags, "Please provide the name via positional arguments or flag `-name`")
+	}
+	if flags.NArg() > 0 && name != "" {
+		return cmdlib.NewUsageError(flags, "flag `-name` or positional arguments cannot be used simultaneously")
+	}
+	return nil
 }
