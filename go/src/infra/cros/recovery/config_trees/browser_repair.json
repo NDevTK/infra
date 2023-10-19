@@ -935,9 +935,9 @@
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
-                  "name": "Is not Flex device",
+                  "name": "Is a Chromebook",
                   "docs": [
-                    "Check that DUT is not a Flex board"
+                    "Check that DUT is a Chromebook by checking for non-Chromebook boards"
                   ],
                   "exec_name": "dut_check_board",
                   "exec_args": [
@@ -2060,9 +2060,9 @@
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
-                  "name": "Is not Flex device",
+                  "name": "Is a Chromebook",
                   "docs": [
-                    "Check that DUT is not a Flex board"
+                    "Check that DUT is a Chromebook by checking for non-Chromebook boards"
                   ],
                   "exec_name": "dut_check_board",
                   "exec_args": [
@@ -2176,9 +2176,9 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     },
                     {
-                      "name": "Is not Flex device",
+                      "name": "Is a Chromebook",
                       "docs": [
-                        "Check that DUT is not a Flex board"
+                        "Check that DUT is a Chromebook by checking for non-Chromebook boards"
                       ],
                       "exec_name": "dut_check_board",
                       "exec_args": [
@@ -2480,9 +2480,9 @@
               ],
               "conditions": [
                 {
-                  "name": "Is not Flex device",
+                  "name": "Is a Chromebook",
                   "docs": [
-                    "Verify that device is belong Reven models"
+                    "Verify that the device is a Chromebook by checking for non-Chromebook boards"
                   ],
                   "exec_name": "dut_check_board",
                   "exec_args": [

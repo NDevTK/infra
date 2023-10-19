@@ -14,16 +14,18 @@ import (
 	bb "infra/cros/lib/buildbucket"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 )
 
-func GetCmdFirmware() *subcommands.Command {
+func GetCmdFirmware(authOpts auth.Options) *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "firmware --branch BRANCH [flags]",
 		ShortDesc: "Run a firmware branch builder.",
 		CommandRun: func() subcommands.CommandRun {
 			c := &firmwareRun{}
 			c.cmdRunner = cmd.RealCommandRunner{}
+			c.tryRunBase.authOpts = authOpts
 			c.addDryrunFlag()
 			c.addBranchFlag("")
 			c.addProductionFlag()
@@ -46,6 +48,15 @@ func (f *firmwareRun) Run(_ subcommands.Application, _ []string, _ subcommands.E
 	f.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
 
 	ctx := context.Background()
+
+	// Do not create a gerritClient for test structs with a mockClient.
+	if f.gerritClient == nil {
+		if err := f.createGerritClient(f.authOpts); err != nil {
+			f.LogErr(err.Error())
+			return CmdError
+		}
+	}
+
 	// Need to call run first to do LUCI auth / set up other shared constructs.
 	if ret, err := f.run(ctx); err != nil {
 		f.LogErr(err.Error())

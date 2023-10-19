@@ -244,7 +244,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Verify system info": {
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Default boot set as internal storage",
@@ -262,7 +262,7 @@ func crosRepairActions() map[string]*Action {
 				"Using recovery from the host as flashing firmware by servo is very slow.",
 			},
 			Dependencies: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Is HWID known",
 				"Device is SSHable",
 				"Set HWID of the DUT from inventory",
@@ -440,7 +440,7 @@ func crosRepairActions() map[string]*Action {
 		"Check power sources": {
 			Docs: []string{"Check for the AC power, and battery charging capability."},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"cros_is_not_virtual_machine",
 			},
 			Dependencies: []string{
@@ -486,7 +486,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that TPM statuses is ok.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"cros_is_not_virtual_machine",
 				"cros_is_tpm_present",
 			},
@@ -549,7 +549,7 @@ func crosRepairActions() map[string]*Action {
 				"Group action to combine all firmware checks in one place.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				// The firmware validation only applies to dev signed AP firmware
 				// currently. Depending on how widespread MP signed AP firmware
 				// testing is, we could add a parallel validation for MP AP firmware.
@@ -712,7 +712,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that keys: 'should_send_rlz_ping', 'gbind_attribute', 'ubind_attribute' are present in vpd RW_VPD partition.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			ExecName: "cros_are_required_rw_vpd_keys_present",
 			RecoveryActions: []string{
@@ -729,7 +729,7 @@ func crosRepairActions() map[string]*Action {
 				"Check whether the RW VPD keys can be listed without any errors.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			ExecName: "cros_can_list_rw_vpd_keys",
 			RecoveryActions: []string{
@@ -754,7 +754,7 @@ func crosRepairActions() map[string]*Action {
 				"This action is not critical, and only logs any missing RW VPD keys.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			ExecName:               "cros_are_required_rw_vpd_keys_present",
 			AllowFailAfterRecovery: true,
@@ -951,7 +951,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Setup has servo info",
-				"Is not Flex device",
+				"Is a Chromebook",
 				"servod_control_exist_for_mac_address",
 			},
 			ExecName:               "servo_audit_nic_mac_address",
@@ -1111,7 +1111,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231609148: Flex device don't have security chip and gsctool.
-				"Is not Flex device",
+				"Is a Chromebook",
 				"DUT has Cr50 phase label",
 			},
 			Dependencies: []string{
@@ -1140,7 +1140,7 @@ func crosRepairActions() map[string]*Action {
 				"Battery is present on device",
 				"Internal storage is responsive",
 				//TODO(b:234761994, Flex device does not have charge_full file)
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			ExecName:               "cros_audit_battery",
 			AllowFailAfterRecovery: true,
@@ -1366,7 +1366,7 @@ func crosRepairActions() map[string]*Action {
 				"Firmware update on DUTs with incorrect tpm_fwver may fail due to firmware rollback protection.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -1386,7 +1386,7 @@ func crosRepairActions() map[string]*Action {
 				"Firmware update on DUTs with incorrect tpm_kernver may fail due to firmware rollback protection.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -1414,7 +1414,7 @@ func crosRepairActions() map[string]*Action {
 				"Check if the default boot drive is disk.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -1432,7 +1432,7 @@ func crosRepairActions() map[string]*Action {
 				"Mostly devices in the lab required to be in Secure mode, not DEV mode.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Pools required to be in Secure mode",
 			},
 			Dependencies: []string{
@@ -1466,7 +1466,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify if device missing HWID because deployment was missed.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Not Satlab device",
 				"Read OS version",
 				"Is HWID empty",
@@ -1482,7 +1482,7 @@ func crosRepairActions() map[string]*Action {
 				"Allowed to fail if HWID is not matched",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Read OS version",
 				"Is HWID known",
 			},
@@ -1497,7 +1497,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify if device missing serial number because deployment was missed.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Not Satlab device",
 				"Read OS version",
 				"Is serial-number empty",
@@ -1512,7 +1512,7 @@ func crosRepairActions() map[string]*Action {
 				"Match serial number to value in inventory",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Read OS version",
 				"Is serial-number known",
 			},
@@ -1970,7 +1970,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231640496): flex board unpingable after switching to secure-mode.
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Pools required to be in Secure mode",
 				"Is not booted in secure mode (condition)",
 			},
@@ -2015,15 +2015,16 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "dut_check_board",
 		},
-		"Is not Flex device": {
+		"Is a Chromebook": {
 			Docs: []string{
-				"Check that DUT is not a Flex board",
+				"Check that DUT is a Chromebook by checking for non-Chromebook boards",
 			},
 			ExecExtraArgs: []string{
 				"string_values:aurora,reven",
 				"invert_result:true",
 			},
-			ExecName: "dut_check_board",
+			ExecName:      "dut_check_board",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Quick provision OS": {
 			Docs: []string{
@@ -2067,7 +2068,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Trigger kernel panic by servod",
@@ -2298,7 +2299,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"DUT has CrOS EC",
@@ -2330,7 +2331,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -2353,7 +2354,7 @@ func crosRepairActions() map[string]*Action {
 				"Pools allowed to stay in DEV mode",
 				"Recovery version has OS image path",
 				"Is servod running",
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -2494,7 +2495,7 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Recovery version has OS image path",
 				"Is servod running",
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -2513,7 +2514,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Set GBB flags to 0x18 by servo",
@@ -2742,7 +2743,7 @@ func crosRepairActions() map[string]*Action {
 				"Flex device are exampted from this check as they don't run cros firmware",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Has a stable-version service",
 			},
 			ExecName: "has_stable_version_fw_version",
@@ -2754,7 +2755,7 @@ func crosRepairActions() map[string]*Action {
 				"Satlab DUTs are exampted from this check given some early stage device don't have firmware branch GS bucket setup yet.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Not Satlab device",
 				"Has a stable-version service",
 			},
@@ -2811,7 +2812,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231627956): Flex board cannot run crossystem set_default_boot
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Device booted from USB-drive",
 			},
 			RecoveryActions: []string{
@@ -2958,7 +2959,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Flash EC (FW) by servo",
@@ -3049,7 +3050,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is not Flex device",
+				"Is a Chromebook",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -3065,7 +3066,7 @@ func crosRepairActions() map[string]*Action {
 				"halt_timeout:120",
 				"custom_command_allowed_to_fail:true",
 				"custom_command_timeout:60",
-				"custom_commands:flash_fp_mcu fw_wp_state:force_off /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin",
+				"custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 1000},
 			RunControl:  RunControl_ALWAYS_RUN,
@@ -3299,7 +3300,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that dsm_calib is present in RO_VPD, if required.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"RO_VPD dsm_calib is required",
 			},
 			ExecName: "cros_verify_ro_vpd_dsm_calib",
@@ -3326,7 +3327,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that sku_number is present in RO_VPD, if required.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 				"RO_VPD sku_number is required",
 			},
 			ExecName: "cros_verify_ro_vpd_sku_number",
@@ -3452,7 +3453,7 @@ func crosRepairActions() map[string]*Action {
 				"Run rootdev to check rootfs",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -3470,7 +3471,7 @@ func crosRepairActions() map[string]*Action {
 				"Set dev_boot_usb=1 to enable booting from USB drive in DEV mode.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -3888,7 +3889,7 @@ func crosRepairActions() map[string]*Action {
 				"Remove whitelabel_tagfrom vpd as it can cause issue related to crosid readability.",
 			},
 			Dependencies: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
@@ -3905,7 +3906,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is not Flex device",
+				"Is a Chromebook",
 				"is_servo_type_ccd",
 				"DUT is G3/S5 powerstate",
 			},
@@ -4013,7 +4014,7 @@ func crosRepairActions() map[string]*Action {
 				"The action doesn't use recovery boot.",
 			},
 			Conditions: []string{
-				"Is not Flex device",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Flash EC (FW) by servo",

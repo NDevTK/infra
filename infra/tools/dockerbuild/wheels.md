@@ -356,12 +356,12 @@ wheel: <
 
 ## **PyYAML**
 
-### 5.4.1.chromium.1
+### 5.4.1.chromium.2
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/pyyaml/${vpython_platform}"
-  version: "version:5.4.1.chromium.1"
+  version: "version:5.4.1.chromium.2"
 >
 ```
 

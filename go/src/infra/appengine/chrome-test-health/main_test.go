@@ -339,7 +339,6 @@ func TestGetCoverageSummary(t *testing.T) {
 			GitilesRevision: "03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a",
 			UnitTestsOnly:   false,
 			Path:            "//chrome/browser/display_capture/",
-			DataType:        "dirs",
 			Bucket:          "ci",
 			Builder:         "linux-code-coverage",
 		}
@@ -381,26 +380,22 @@ func TestGetCoverageSummary(t *testing.T) {
 			So(err, ShouldErrLike, "Gitiles Revision is a required argument")
 			So(resp, ShouldBeNil)
 		})
-		Convey("Missing gitiles path", func() {
+		Convey("Missing gitiles both path and components", func() {
 			req := request
 			req.Path = ""
+			req.Components = []string{}
 			resp, err := srv.GetCoverageSummary(ctx, request)
 			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Path is a required argument")
+			So(err, ShouldErrLike, "Either path or components should be specified")
 			So(resp, ShouldBeNil)
 		})
-		Convey("Invalid Datatype", func() {
+		Convey("Both path and components specified", func() {
 			req := request
-			req.DataType = ""
+			req.Path = "//"
+			req.Components = []string{"C1", "C2"}
 			resp, err := srv.GetCoverageSummary(ctx, request)
 			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Data Type is a required argument")
-			So(resp, ShouldBeNil)
-
-			req.DataType = "dir"
-			resp, err = srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Data Type is not provided in required format")
+			So(err, ShouldErrLike, "Either path or components should be specified not both")
 			So(resp, ShouldBeNil)
 		})
 		Convey("Invalid Builder", func() {
@@ -447,7 +442,7 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 		}
 		Convey("Valid request", func() {
 			request := &api.GetProjectDefaultConfigRequest{
-				Project: "chromium",
+				LuciProject: "chromium",
 			}
 			resp, err := srv.GetProjectDefaultConfig(ctx, request)
 
@@ -457,7 +452,7 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 		})
 		Convey("Invalid argument Project", func() {
 			request := &api.GetProjectDefaultConfigRequest{
-				Project: "chromium src",
+				LuciProject: "chromium src",
 			}
 			resp, err := srv.GetProjectDefaultConfig(ctx, request)
 

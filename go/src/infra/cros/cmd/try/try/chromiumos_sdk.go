@@ -13,16 +13,18 @@ import (
 	bb "infra/cros/lib/buildbucket"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 )
 
-func GetCmdChromiumOSSDK() *subcommands.Command {
+func GetCmdChromiumOSSDK(authOpts auth.Options) *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "chromiumos_sdk --branch BRANCH [flags]",
 		ShortDesc: "Run a ChromiumOS SDK builder.",
 		CommandRun: func() subcommands.CommandRun {
 			c := &chromiumOSSDKRun{}
 			c.cmdRunner = cmd.RealCommandRunner{}
+			c.tryRunBase.authOpts = authOpts
 			c.addDryrunFlag()
 			c.addBranchFlag("")
 			c.addPatchesFlag()
@@ -70,6 +72,14 @@ func (r *chromiumOSSDKRun) Run(_ subcommands.Application, _ []string, _ subcomma
 	r.stdoutLog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
 	r.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
 	ctx := context.Background()
+
+	// Do not create a gerritClient for test structs with a mockClient.
+	if r.gerritClient == nil {
+		if err := r.createGerritClient(r.authOpts); err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
+	}
 
 	// Need to call run first to do LUCI auth / set up other shared constructs.
 	if ret, err := r.run(ctx); err != nil {

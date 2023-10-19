@@ -21,6 +21,7 @@ func LabstationRepairConfig() *Configuration {
 					"dut_state_repair_failed",
 					"check_host_info",
 					"Device is SSHable",
+					"System services is up",
 					"Clean up logs if necessary",
 					"Filesystem is writable",
 					"cros_is_on_stable_version",
@@ -207,6 +208,7 @@ func LabstationRepairConfig() *Configuration {
 							"Sysrq reboot",
 							// Waiting to tell if success.
 							"Wait to be SSHable",
+							"Start system services",
 							"Remove reboot requests",
 						},
 						ExecName:   "sample_pass",
@@ -223,6 +225,7 @@ func LabstationRepairConfig() *Configuration {
 							"rpm_power_cycle",
 							// Waiting to tell if success.
 							"Wait to be SSHable",
+							"Start system services",
 							"Remove reboot requests",
 						},
 						ExecName:   "sample_pass",
@@ -343,6 +346,32 @@ func LabstationRepairConfig() *Configuration {
 							"Labstation image contains target GenesysLogic firmware",
 						},
 						ExecName:               "cros_update_genesys_logic_firmware",
+						AllowFailAfterRecovery: true,
+					},
+					"System services is up": {
+						Docs: []string{
+							"Check whether system-services is up and running",
+						},
+						Dependencies: []string{
+							"Device is SSHable",
+						},
+						ExecName: "cros_wait_for_system",
+						RecoveryActions: []string{
+							"Start system services",
+						},
+					},
+					"Start system services": {
+						Docs: []string{
+							"Start system-services on the labstation",
+						},
+						Dependencies: []string{
+							"Device is SSHable",
+						},
+						ExecName: "cros_run_command",
+						ExecExtraArgs: []string{
+							"host:dut",
+							"command:start system-services",
+						},
 						AllowFailAfterRecovery: true,
 					},
 				},

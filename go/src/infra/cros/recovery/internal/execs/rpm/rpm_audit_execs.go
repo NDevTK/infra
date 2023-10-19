@@ -29,22 +29,28 @@ func rpmAuditWithoutBatteryExec(ctx context.Context, info *execs.ExecInfo) error
 	log := info.NewLogger()
 	ping := info.DefaultPinger()
 	run := info.DefaultRunner()
+	log.Debugf("Set RPM off ...")
 	if err := rpmPowerOffExec(ctx, info); err != nil {
 		return errors.Annotate(err, "rpm audit").Err()
 	}
 	// RPM service is single thread, perform the action OFF can take up-to 60 seconds.
-	// WaitUntilNotPingable(ctx context.Context, waitTime, waitInterval time.Duration, countPerAttempt int, ping components.Pinger, log logger.Logger)
+	log.Debugf("Start waiting until the device goes down...")
 	if waitDownErr := cros.WaitUntilNotPingable(ctx, downTimeout, waitInterval, 2, ping, log); waitDownErr != nil {
 		info.GetChromeos().GetRpmOutlet().State = tlw.RPMOutlet_WRONG_CONFIG
+		log.Debugf("Failed to power down the host: restoring RPM to ON state.")
+		rpmPowerOnExec(ctx, info)
 		return errors.Annotate(waitDownErr, "rpm audit: resource still pingable").Err()
 	}
+	log.Debugf("Set RPM on ...")
 	if err := rpmPowerOnExec(ctx, info); err != nil {
 		return errors.Annotate(err, "rpm audit").Err()
 	}
+	log.Debugf("Start waiting until the device goes up...")
 	if err := cros.WaitUntilSSHable(ctx, bootTimeout, waitInterval, run, log); err != nil {
 		info.GetChromeos().GetRpmOutlet().State = tlw.RPMOutlet_WRONG_CONFIG
 		return errors.Annotate(err, "rpm audit: resource did not booted").Err()
 	}
+	log.Debugf("Validation finished.")
 	info.GetChromeos().GetRpmOutlet().State = tlw.RPMOutlet_WORKING
 	return nil
 }

@@ -20,10 +20,10 @@ func LabstationDeployConfig() *Configuration {
 					"check_host_info",
 					"Device is SSHable",
 					"Update inventory info",
-					"install_stable_os",
-					"remove_reboot_requests",
+					"Installed OS is stable",
+					"Remove reboot requests from host",
 					"Update provisioned info",
-					"validate_rpm",
+					"Validate RPM info",
 					"dut_state_ready",
 				},
 				Actions: map[string]*Action{
@@ -49,21 +49,33 @@ func LabstationDeployConfig() *Configuration {
 							"cros_update_serial_number_inventory",
 						},
 					},
-					"install_stable_os": {
+					"Installed OS is stable": {
+						Docs: []string{
+							"Verify that OS on the device is stable.",
+							"Labstation will be rebooted to make it ready for use.",
+						},
+						Conditions: []string{
+							"has_stable_version_cros_image",
+						},
+						ExecName: "cros_is_on_stable_version",
+						RecoveryActions: []string{
+							"Install stable OS",
+							"Power cycle by RPM",
+						},
+					},
+					"Install stable OS": {
 						Docs: []string{
 							"Install stable OS on the device.",
 							"Labstation will be rebooted to make it ready for use.",
 						},
-						ExecName: "cros_provision",
 						Conditions: []string{
 							"has_stable_version_cros_image",
 							"cros_not_on_stable_version",
 						},
-						ExecTimeout: &durationpb.Duration{
-							Seconds: 3600,
-						},
+						ExecName:    "cros_provision",
+						ExecTimeout: &durationpb.Duration{Seconds: 3600},
 					},
-					"remove_reboot_requests": {
+					"Remove reboot requests from host": {
 						Docs: []string{
 							"Remove reboot request flag files.",
 						},
@@ -76,17 +88,18 @@ func LabstationDeployConfig() *Configuration {
 						},
 						ExecName: "cros_update_provision_info",
 					},
-					"validate_rpm": {
+					"Validate RPM info": {
 						Docs: []string{
 							"Validate and update rpm_state.",
 							"The execs is not ready yet.",
 						},
-						ExecName: "rpm_audit_without_battery",
-						ExecTimeout: &durationpb.Duration{
-							Seconds: 600,
-						},
 						Conditions: []string{
 							"has_rpm_info",
+						},
+						ExecName:    "rpm_audit_without_battery",
+						ExecTimeout: &durationpb.Duration{Seconds: 900},
+						RecoveryActions: []string{
+							"Power cycle by RPM",
 						},
 					},
 					"Device is SSHable": {
@@ -96,6 +109,19 @@ func LabstationDeployConfig() *Configuration {
 						ExecName:    "cros_ssh",
 						ExecTimeout: &durationpb.Duration{Seconds: 30},
 						RunControl:  RunControl_ALWAYS_RUN,
+						RecoveryActions: []string{
+							"Power cycle by RPM",
+						},
+					},
+					"Power cycle by RPM": {
+						Docs: []string{
+							"Action is always runnable.",
+						},
+						Conditions: []string{
+							"has_rpm_info",
+						},
+						ExecName:   "rpm_power_cycle",
+						RunControl: RunControl_ALWAYS_RUN,
 					},
 				},
 			},

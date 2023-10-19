@@ -28,6 +28,7 @@ service SatlabRpcService {
   // manage DUTs
   rpc add_pool (AddPoolRequest) returns (AddPoolResponse);
   rpc update_pool (UpdatePoolRequest) returns (UpdatePoolResponse);
+  rpc delete_duts (DeleteDutsRequest) returns (DeleteDutsResponse);
 
   // get DUTs information
   rpc get_dut_detail (GetDutDetailRequest) returns (GetDutDetailResponse);
@@ -327,4 +328,19 @@ message ListDutsRequest {}
 // NEXT_TAG = 2
 message ListDutsResponse {
   repeated Dut duts = 1;
+}
+
+// NEXT_TAG = 2
+message DeleteDutsRequest {
+  repeated string addresses = 1;
+}
+
+// NEXT_TAG = 4
+message DeleteDutsResponse {
+  // pass contains the hostnames that we have deleted DUTs successfully
+  repeated string pass = 1;
+  // fail contains the hostnames that we failed to delete DUTs
+  repeated string fail = 2;
+  // invalid_addresses contain the information that we can not convert the IPs to the hostnames.
+  repeated string invalid_addresses = 3;
 }

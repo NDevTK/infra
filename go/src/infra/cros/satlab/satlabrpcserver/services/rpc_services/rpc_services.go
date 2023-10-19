@@ -14,6 +14,7 @@ import (
 
 	"github.com/hashicorp/go-version"
 
+	"infra/cmd/shivas/utils"
 	"infra/cros/satlab/common/asset"
 	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/dut"
@@ -21,6 +22,7 @@ import (
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/services/build_service"
+	"infra/cros/satlab/common/services/ufs"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/collection"
 	e "infra/cros/satlab/common/utils/errors"
@@ -36,6 +38,8 @@ import (
 // SatlabRpcServiceServer is the gRPC service that provides every function.
 type SatlabRpcServiceServer struct {
 	pb.UnimplementedSatlabRpcServiceServer
+	// dev is a flag indicate which environment we want to run
+	dev bool
 	// buildService the connector to `BuildClient`
 	buildService build_service.IBuildService
 	// bucketService the connector to partner bucket
@@ -51,6 +55,7 @@ type SatlabRpcServiceServer struct {
 }
 
 func New(
+	dev bool,
 	buildService build_service.IBuildService,
 	bucketService bucket_services.IBucketServices,
 	dutService dut_services.IDUTServices,
@@ -58,6 +63,7 @@ func New(
 	swarmingService services.ISwarmingService,
 ) *SatlabRpcServiceServer {
 	return &SatlabRpcServiceServer{
+		dev:                        dev,
 		bucketService:              bucketService,
 		buildService:               buildService,
 		dutService:                 dutService,
@@ -442,17 +448,14 @@ func addPoolsToDUT(ctx context.Context, executor executor.IExecCommander, hostna
 }
 
 func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequest) (*pb.AddPoolResponse, error) {
-	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, in.GetAddresses())
 	if err != nil {
 		return nil, err
 	}
 
-	for _, address := range in.GetAddresses() {
-		hostname, ok := IPHostMap[address]
-		if ok {
-			if err = addPoolsToDUT(ctx, s.commandExecutor, hostname, []string{in.GetPool()}); err != nil {
-				return nil, err
-			}
+	for _, hostname := range IPToHostResult.Hostnames {
+		if err = addPoolsToDUT(ctx, s.commandExecutor, hostname, []string{in.GetPool()}); err != nil {
+			return nil, err
 		}
 	}
 
@@ -493,17 +496,16 @@ func (s *SatlabRpcServiceServer) GetDutDetail(ctx context.Context, in *pb.GetDut
 		return nil, errors.New("need to login before using this")
 	}
 
-	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
 		return nil, err
 	}
 
-	hostname, ok := IPHostMap[in.GetAddress()]
-	if !ok {
-		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%s}", in.GetAddress()))
+	if len(IPToHostResult.InvalidAddresses) != 0 {
+		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses))
 	}
 
-	r, err := s.swarmingService.GetBot(ctx, hostname)
+	r, err := s.swarmingService.GetBot(ctx, IPToHostResult.Hostnames[0])
 	if err != nil {
 		return nil, err
 	}
@@ -540,16 +542,16 @@ func (s *SatlabRpcServiceServer) ListDutTasks(ctx context.Context, in *pb.ListDu
 		return nil, errors.New("need to login before using this")
 	}
 
-	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
 		return nil, err
 	}
-	hostname, ok := IPHostMap[in.GetAddress()]
-	if !ok {
-		return nil, errors.New("can't find the hostname")
+
+	if len(IPToHostResult.InvalidAddresses) != 0 {
+		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses))
 	}
 
-	r, err := s.swarmingService.ListBotTasks(ctx, hostname, in.GetCursor(), int(in.GetPageSize()))
+	r, err := s.swarmingService.ListBotTasks(ctx, IPToHostResult.Hostnames[0], in.GetCursor(), int(in.GetPageSize()))
 	if err != nil {
 		return nil, err
 	}
@@ -578,16 +580,16 @@ func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListD
 		return nil, errors.New("need to login before using this")
 	}
 
-	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
 		return nil, err
 	}
-	hostname, ok := IPHostMap[in.GetAddress()]
-	if !ok {
-		return nil, errors.New("can't find the hostname")
+
+	if len(IPToHostResult.InvalidAddresses) != 0 {
+		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses))
 	}
 
-	r, err := s.swarmingService.ListBotEvents(ctx, hostname, in.GetCursor(), int(in.GetPageSize()))
+	r, err := s.swarmingService.ListBotEvents(ctx, IPToHostResult.Hostnames[0], in.GetCursor(), int(in.GetPageSize()))
 	if err != nil {
 		return nil, err
 	}
@@ -711,4 +713,48 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 	}
 
 	return &pb.ListDutsResponse{Duts: duts}, nil
+}
+
+// DeleteDuts the RPC service for deleting DUTs
+func (s *SatlabRpcServiceServer) DeleteDuts(ctx context.Context, in *pb.DeleteDutsRequest) (*pb.DeleteDutsResponse, error) {
+	ctx = utils.SetupContext(ctx, site.GetNamespace(""))
+	ufs, err := ufs.NewUFSClientWithDefaultOptions(ctx, site.GetUFSService(s.dev))
+	if err != nil {
+		return nil, err
+	}
+
+	res, invalidAddresses, err := innerDeleteDuts(ctx, s.commandExecutor, ufs, in.GetAddresses(), false)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.DeleteDutsResponse{
+		Pass:             res.DutResults.Pass,
+		Fail:             res.DutResults.Fail,
+		InvalidAddresses: invalidAddresses,
+	}, nil
+}
+
+// innerDeleteDuts the main logic of deleting the DUTs by given IP addresses.
+// Create this function for testing easily
+// This function returns a result of deleting DUTs result that contains pass and fail,
+// and if we can not convert the IP address, we put the IP address to `invalidAddresses`
+func innerDeleteDuts(ctx context.Context, executor executor.IExecCommander, ufs dut.DeleteClient, addresses []string, full bool) (*dut.DeleteDUTResult, []string, error) {
+	IPToHostResult, err := dns.IPToHostname(ctx, executor, addresses)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	d := dut.DeleteDUT{
+		Names: IPToHostResult.Hostnames,
+		Full:  full,
+	}
+
+	if err := d.Validate(); err != nil {
+		return nil, IPToHostResult.InvalidAddresses, err
+	}
+
+	res, err := d.TriggerRun(ctx, executor, ufs)
+
+	return res, IPToHostResult.InvalidAddresses, nil
 }

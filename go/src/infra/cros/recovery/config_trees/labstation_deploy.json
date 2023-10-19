@@ -40,6 +40,23 @@
           ],
           "exec_name": "cros_ssh",
           "timeout": "30s",
+          "recoveries": [
+            {
+              "name": "Power cycle by RPM",
+              "docs": [
+                "Action is always runnable."
+              ],
+              "conditions": [
+                {
+                  "name": "has_rpm_info",
+                  "exec_name": "has_rpm_info",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "rpm_power_cycle",
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
           "run_control": "ALWAYS_RUN"
         },
         {
@@ -68,9 +85,9 @@
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
-          "name": "install_stable_os",
+          "name": "Installed OS is stable",
           "docs": [
-            "Install stable OS on the device.",
+            "Verify that OS on the device is stable.",
             "Labstation will be rebooted to make it ready for use."
           ],
           "conditions": [
@@ -78,19 +95,52 @@
               "name": "has_stable_version_cros_image",
               "exec_name": "has_stable_version_cros_image",
               "run_control": "RERUN_AFTER_RECOVERY"
-            },
-            {
-              "name": "cros_not_on_stable_version",
-              "exec_name": "cros_not_on_stable_version",
-              "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "cros_provision",
-          "timeout": "1h0m0s",
+          "exec_name": "cros_is_on_stable_version",
+          "recoveries": [
+            {
+              "name": "Install stable OS",
+              "docs": [
+                "Install stable OS on the device.",
+                "Labstation will be rebooted to make it ready for use."
+              ],
+              "conditions": [
+                {
+                  "name": "has_stable_version_cros_image",
+                  "exec_name": "has_stable_version_cros_image",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "cros_not_on_stable_version",
+                  "exec_name": "cros_not_on_stable_version",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "cros_provision",
+              "timeout": "1h0m0s",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Power cycle by RPM",
+              "docs": [
+                "Action is always runnable."
+              ],
+              "conditions": [
+                {
+                  "name": "has_rpm_info",
+                  "exec_name": "has_rpm_info",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "rpm_power_cycle",
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
-          "name": "remove_reboot_requests",
+          "name": "Remove reboot requests from host",
           "docs": [
             "Remove reboot request flag files."
           ],
@@ -107,7 +157,7 @@
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
-          "name": "validate_rpm",
+          "name": "Validate RPM info",
           "docs": [
             "Validate and update rpm_state.",
             "The execs is not ready yet."
@@ -120,7 +170,24 @@
             }
           ],
           "exec_name": "rpm_audit_without_battery",
-          "timeout": "10m0s",
+          "timeout": "15m0s",
+          "recoveries": [
+            {
+              "name": "Power cycle by RPM",
+              "docs": [
+                "Action is always runnable."
+              ],
+              "conditions": [
+                {
+                  "name": "has_rpm_info",
+                  "exec_name": "has_rpm_info",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "rpm_power_cycle",
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {

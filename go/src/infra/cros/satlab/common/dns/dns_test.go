@@ -221,3 +221,35 @@ func TestDeleteRecord(t *testing.T) {
 		t.Errorf("unexpected diff in calls to ensure record. got: %+v, diff: %+v", recordEnsurerCalls[0], expectedRecordEnsurerCalls)
 	}
 }
+
+func Test_IPToHostShouldSuccess(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	// Create a mock data
+	executor := executor.FakeCommander{}
+	executor.CmdOutput = `
+192.168.231.137	satlab-0wgtfqin1846803b-one
+192.168.231.137	satlab-0wgtfqin1846803b-host5
+192.168.231.222	satlab-0wgtfqin1846803b-host11
+192.168.231.222	satlab-0wgtfqin1846803b-host12
+  `
+
+	// Act
+	res, err := IPToHostname(ctx, &executor, []string{"192.168.231.137", "192.168.231.1"})
+
+	if err != nil {
+		t.Errorf("got an error: %v\n", err)
+	}
+
+	// Asset
+	expected := &IPToHostnameResult{
+		Hostnames:        []string{"satlab-0wgtfqin1846803b-host5"},
+		InvalidAddresses: []string{"192.168.231.1"},
+	}
+
+	if diff := cmp.Diff(res, expected); diff != "" {
+		t.Errorf("unexpected diff: %v\n", diff)
+	}
+}

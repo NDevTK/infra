@@ -17,7 +17,11 @@ import (
 	"github.com/stretchr/testify/mock"
 	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 
+	"infra/cros/satlab/common/dut"
+	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/site"
@@ -30,7 +34,42 @@ import (
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 	mon "infra/cros/satlab/satlabrpcserver/utils/monitor"
+	ufsModels "infra/unifiedfleet/api/v1/models"
+	ufsApi "infra/unifiedfleet/api/v1/rpc"
+	ufspb "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
+
+type mockDeleteClient struct {
+	getMachineLSECalls    []*ufspb.GetMachineLSERequest
+	deleteMachineLSECalls []*ufspb.DeleteMachineLSERequest
+	deleteAssetCalls      []*ufspb.DeleteAssetRequest
+	deleteRackCalls       []*ufspb.DeleteRackRequest
+}
+
+func (c *mockDeleteClient) DeleteMachineLSE(ctx context.Context, req *ufsApi.DeleteMachineLSERequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
+	c.deleteMachineLSECalls = append(c.deleteMachineLSECalls, req)
+	return &emptypb.Empty{}, nil
+}
+
+func (c *mockDeleteClient) DeleteRack(ctx context.Context, req *ufsApi.DeleteRackRequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
+	c.deleteRackCalls = append(c.deleteRackCalls, req)
+	return &emptypb.Empty{}, nil
+}
+
+func (c *mockDeleteClient) DeleteAsset(ctx context.Context, req *ufsApi.DeleteAssetRequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
+	c.deleteAssetCalls = append(c.deleteAssetCalls, req)
+	return &emptypb.Empty{}, nil
+}
+
+func (c *mockDeleteClient) GetMachineLSE(ctx context.Context, req *ufsApi.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
+	c.getMachineLSECalls = append(c.getMachineLSECalls, req)
+	return &ufsModels.MachineLSE{
+		Name:     req.Name,
+		Machines: []string{fmt.Sprintf("asset-%s", ufsUtil.RemovePrefix(req.Name))},
+		Rack:     fmt.Sprintf("rack-%s", ufsUtil.RemovePrefix(req.Name)),
+	}, nil
+}
 
 // checkShouldRaiseError it is a helper function to check the response should raise error.
 func checkShouldRaiseError(t *testing.T, err error, expectedErr error) {
@@ -57,7 +96,7 @@ func createMockServer(t *testing.T) *SatlabRpcServiceServer {
 	var swarmingService = new(services.MockSwarmingService)
 
 	// Create a SATLab Server
-	return New(mockBuildService, mockBucketService, mockDUTService, nil, swarmingService)
+	return New(true, mockBuildService, mockBucketService, mockDUTService, nil, swarmingService)
 }
 
 // TestListBuildTargetsShouldSuccess test `ListBuildTargets` function.
@@ -1214,6 +1253,7 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 		t.Errorf("diff: %v\n", diff)
 	}
 }
+
 func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -1272,6 +1312,7 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 		t.Errorf("diff: %v\n", diff)
 	}
 }
+
 func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -1330,6 +1371,7 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 		t.Errorf("diff: %v\n", diff)
 	}
 }
+
 func TestListConnectedDutsShouldFail(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -1353,5 +1395,212 @@ func TestListConnectedDutsShouldFail(t *testing.T) {
 	}
 	if resp != nil {
 		t.Errorf("response should be empty, but got %v", resp)
+	}
+}
+
+func TestDeleteDutsShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock data
+	e := &executor.FakeCommander{
+		FakeFn: func(c *exec.Cmd) ([]byte, error) {
+			// 192.168.231.222	satlab-0wgtfqin1846803b-host12
+			if c.Path == paths.DockerPath {
+				return []byte(`
+192.168.231.222	satlab-0wgtfqin1846803b-host12
+        `), nil
+			} else if c.Path == paths.GetHostIdentifierScript {
+				return []byte("0wgtfqin1846803b"), nil
+			} else {
+				return nil, errors.New(fmt.Sprintf("execute a command %v\n", c.Path))
+			}
+		},
+	}
+
+	addresses := []string{"192.168.231.222"}
+	ufs := mockDeleteClient{}
+
+	resp, invalidAddresses, err := innerDeleteDuts(ctx, e, &ufs, addresses, false)
+	if err != nil {
+		t.Errorf("unexpected error: %v\n", err)
+		return
+	}
+
+	if len(invalidAddresses) != 0 {
+		t.Errorf("invalid addresses should be empty")
+	}
+
+	expected := &dut.DeleteDUTResult{
+		MachineLSEs: []*ufsModels.MachineLSE{
+			{
+				Name:     "machineLSEs/satlab-0wgtfqin1846803b-host12",
+				Machines: []string{"asset-satlab-0wgtfqin1846803b-host12"},
+				Rack:     "rack-satlab-0wgtfqin1846803b-host12",
+			},
+		},
+		DutResults: &dut.Result{
+			Pass: []string{"satlab-0wgtfqin1846803b-host12"},
+			Fail: []string{},
+		},
+		AssetResults: &dut.Result{},
+		RackResults:  &dut.Result{},
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(ufsModels.MachineLSE{})
+
+	if diff := cmp.Diff(resp, expected, ignorePBFieldOpts); diff != "" {
+		t.Errorf("unexpected diff: %v\n", diff)
+	}
+}
+
+func TestDeleteDutsWithInvalidAddressesShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock data
+	e := &executor.FakeCommander{
+		FakeFn: func(c *exec.Cmd) ([]byte, error) {
+			// 192.168.231.222	satlab-0wgtfqin1846803b-host12
+			if c.Path == paths.DockerPath {
+				return []byte(`
+192.168.231.222	satlab-0wgtfqin1846803b-host12
+        `), nil
+			} else if c.Path == paths.GetHostIdentifierScript {
+				return []byte("0wgtfqin1846803b"), nil
+			} else {
+				return nil, errors.New(fmt.Sprintf("execute a command %v\n", c.Path))
+			}
+		},
+	}
+
+	addresses := []string{"192.168.231.222", "192.168.231.221"}
+	ufs := mockDeleteClient{}
+
+	resp, invalidAddresses, err := innerDeleteDuts(ctx, e, &ufs, addresses, false)
+	if err != nil {
+		t.Errorf("unexpected error: %v\n", err)
+		return
+	}
+
+	expectedInvalidAddresses := []string{"192.168.231.221"}
+
+	if diff := cmp.Diff(invalidAddresses, expectedInvalidAddresses); diff != "" {
+		t.Errorf("unexpected invalid addresses: %v", diff)
+	}
+
+	expected := &dut.DeleteDUTResult{
+		MachineLSEs: []*ufsModels.MachineLSE{
+			{
+				Name:     "machineLSEs/satlab-0wgtfqin1846803b-host12",
+				Machines: []string{"asset-satlab-0wgtfqin1846803b-host12"},
+				Rack:     "rack-satlab-0wgtfqin1846803b-host12",
+			},
+		},
+		DutResults: &dut.Result{
+			Pass: []string{"satlab-0wgtfqin1846803b-host12"},
+			Fail: []string{},
+		},
+		AssetResults: &dut.Result{},
+		RackResults:  &dut.Result{},
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(ufsModels.MachineLSE{})
+
+	if diff := cmp.Diff(resp, expected, ignorePBFieldOpts); diff != "" {
+		t.Errorf("unexpected diff: %v\n", diff)
+	}
+}
+
+func TestFullDeleteDutsShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock data
+	e := &executor.FakeCommander{
+		FakeFn: func(c *exec.Cmd) ([]byte, error) {
+			// 192.168.231.222	satlab-0wgtfqin1846803b-host12
+			if c.Path == paths.DockerPath {
+				return []byte(`
+192.168.231.222	satlab-0wgtfqin1846803b-host12
+        `), nil
+			} else if c.Path == paths.GetHostIdentifierScript {
+				return []byte("0wgtfqin1846803b"), nil
+			} else {
+				return nil, errors.New(fmt.Sprintf("execute a command %v\n", c.Path))
+			}
+		},
+	}
+
+	addresses := []string{"192.168.231.222"}
+	ufs := mockDeleteClient{}
+
+	resp, invalidAddresses, err := innerDeleteDuts(ctx, e, &ufs, addresses, true)
+	if err != nil {
+		t.Errorf("unexpected error: %v\n", err)
+		return
+	}
+
+	if len(invalidAddresses) != 0 {
+		t.Errorf("invalid addresses should be empty")
+	}
+
+	expected := &dut.DeleteDUTResult{
+		MachineLSEs: []*ufsModels.MachineLSE{
+			{
+				Name:     "machineLSEs/satlab-0wgtfqin1846803b-host12",
+				Machines: []string{"asset-satlab-0wgtfqin1846803b-host12"},
+				Rack:     "rack-satlab-0wgtfqin1846803b-host12",
+			},
+		},
+		DutResults: &dut.Result{
+			Pass: []string{"satlab-0wgtfqin1846803b-host12"},
+			Fail: []string{},
+		},
+		AssetResults: &dut.Result{
+			Pass: []string{"asset-satlab-0wgtfqin1846803b-host12"},
+			Fail: []string{},
+		},
+		RackResults: &dut.Result{
+			Pass: []string{"rack-satlab-0wgtfqin1846803b-host12"},
+			Fail: []string{},
+		},
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(ufsModels.MachineLSE{})
+
+	if diff := cmp.Diff(resp, expected, ignorePBFieldOpts); diff != "" {
+		t.Errorf("unexpected diff: %v\n", diff)
+	}
+}
+
+func TestDeleteDutsShouldFail(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock data
+	e := &executor.FakeCommander{
+		FakeFn: func(c *exec.Cmd) ([]byte, error) {
+			return nil, errors.New("fail")
+		},
+	}
+
+	addresses := []string{"192.168.231.222"}
+	ufs := mockDeleteClient{}
+
+	resp, invalidAddresses, err := innerDeleteDuts(ctx, e, &ufs, addresses, true)
+	if err == nil {
+		t.Errorf("should get an err")
+	}
+
+	if resp != nil {
+		t.Errorf("result should be empty")
+	}
+
+	if len(invalidAddresses) != 0 {
+		t.Errorf("invalid addresses should be empty: %v", invalidAddresses)
 	}
 }

@@ -325,7 +325,7 @@ func servoRepairPlan() *Plan {
 					"Make sure the servo has the required number of servo components.",
 				},
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 				},
 				Dependencies: []string{
 					"Servo topology min one child",
@@ -546,7 +546,7 @@ func servoRepairPlan() *Plan {
 					"Run basic cr50/ti50 detections checks.",
 				},
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 					"Servo main device is CCD",
 				},
 				Dependencies: []string{
@@ -663,7 +663,7 @@ func servoRepairPlan() *Plan {
 					"This devices should use testlab to open CCD and reset capabilities to factory settings.",
 				},
 				Dependencies: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 				},
 				ExecName: "servo_ccd_expect_have_factory_reset",
 			},
@@ -672,7 +672,7 @@ func servoRepairPlan() *Plan {
 					"Verify that Cr50 console is responsive.",
 				},
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 					"Expected CCD factory settings",
 				},
 				Dependencies: []string{
@@ -705,7 +705,7 @@ func servoRepairPlan() *Plan {
 					"Expect that cr50/GSC will required to set cr50 testlab is enabled.",
 				},
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 					"Is not in cr50 pools",
 					"Expected CCD factory settings",
 				},
@@ -739,7 +739,7 @@ func servoRepairPlan() *Plan {
 					"If servo uses c2d2/cr50/gsc to control the DUT, open testlab will allowed to work (cr50_reboot, cold_reset, warm_reset)",
 				},
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 					"Expected CCD factory settings",
 				},
 				ExecExtraArgs: []string{
@@ -755,7 +755,7 @@ func servoRepairPlan() *Plan {
 					"Reset CCD to the factory settings.",
 				},
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 					"Expected CCD factory settings",
 				},
 				ExecExtraArgs: []string{
@@ -835,7 +835,7 @@ func servoRepairPlan() *Plan {
 					"Verify if servo connected to the DUTand received required voltage from it.",
 				},
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 					"Is servo_v4(p1) with type-a connector",
 					"DUT has CrOS EC",
 				},
@@ -892,7 +892,7 @@ func servoRepairPlan() *Plan {
 			},
 			"Verify EC": {
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 					"DUT has CrOS EC",
 				},
 				Dependencies: []string{
@@ -1146,7 +1146,7 @@ func servoRepairPlan() *Plan {
 					"If pin is not present then issue can be related to incorrect connected servo or issue with connector.",
 				},
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 					"is_servo_micro",
 					"Warm reset control known by servo",
 				},
@@ -1163,7 +1163,7 @@ func servoRepairPlan() *Plan {
 			},
 			"Cold reset pin is detected": {
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 					"Is servo_v4(p1) with type-a connector",
 				},
 				Dependencies: []string{
@@ -1222,7 +1222,7 @@ func servoRepairPlan() *Plan {
 					"Check if servod detected debug header components as expected.",
 				},
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 					"Servo uses debug header components",
 				},
 				Dependencies: []string{
@@ -1245,7 +1245,7 @@ func servoRepairPlan() *Plan {
 					"Check if servod detected all required children components.",
 				},
 				Conditions: []string{
-					"Is not Flex device",
+					"Is a Chromebook",
 				},
 				Dependencies: []string{
 					"Set state:SERVOD_DUT_CONTROLLER_MISSING",
@@ -1837,15 +1837,16 @@ func servoRepairPlan() *Plan {
 				ExecTimeout: &durationpb.Duration{Seconds: 70},
 				RunControl:  RunControl_RUN_ONCE,
 			},
-			"Is not Flex device": {
+			"Is a Chromebook": {
 				Docs: []string{
-					"Verify that device is belong Reven models",
+					"Verify that the device is a Chromebook by checking for non-Chromebook boards",
 				},
 				ExecExtraArgs: []string{
 					"string_values:aurora,reven",
 					"invert_result:true",
 				},
-				ExecName: "dut_check_board",
+				ExecName:      "dut_check_board",
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 		},
 	}

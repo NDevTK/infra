@@ -74,6 +74,7 @@ func main() {
 	}
 
 	server := rpc_services.New(
+		false,
 		buildService,
 		bucketService,
 		dutService,

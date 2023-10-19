@@ -184,7 +184,7 @@ func Contains(arr []string, str string) bool {
 // DefaultAuthOptions is an auth.Options struct prefilled with chrome-infra
 // defaults.
 var DefaultAuthOptions = chromeinfra.SetDefaultAuthOptions(auth.Options{
-	Scopes:     []string{auth.OAuthScopeEmail},
+	Scopes:     []string{auth.OAuthScopeEmail, "https://www.googleapis.com/auth/spreadsheets"},
 	SecretsDir: SecretsDir(),
 })
 

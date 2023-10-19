@@ -197,7 +197,12 @@ func (f *EnvFlags) GetCrosAdmService() string {
 
 // GetUFSService returns the hostname of the UFS service appropriate for an environment
 func (f *EnvFlags) GetUFSService() string {
-	if f.dev {
+	return GetUFSService(f.dev)
+}
+
+// GetUFSService returns the hostname of the UFS service by given a flag
+func GetUFSService(dev bool) string {
+	if dev {
 		return DevUFSService
 	}
 	return ProdUFSService

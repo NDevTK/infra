@@ -6,7 +6,9 @@ package ufs
 
 import (
 	"context"
+	"net/http"
 
+	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
@@ -49,17 +51,33 @@ func (c *clientImpl) UpdateMachineLSE(ctx context.Context, req *ufsApi.UpdateMac
 
 // NewUFSClient creates a new client to access UFS, but only exposing specific methods needed for Satlab CLI
 func NewUFSClient(ctx context.Context, ufsService string, authFlags *authcli.Flags) (ufsApi.FleetClient, error) {
-	if ufsService == "" {
-		return nil, errors.Reason("new ufs client: must provide ufs service hostname").Err()
-	}
-
 	httpClient, err := cmdlib.NewHTTPClient(ctx, authFlags)
 	if err != nil {
 		return nil, err
 	}
 
+	return newUFSClient(ufsService, httpClient)
+}
+
+// NewUFSClientWithDefaultOptions creates a new client to access UFS with default options.
+func NewUFSClientWithDefaultOptions(ctx context.Context, ufsService string) (ufsApi.FleetClient, error) {
+	options := site.DefaultAuthOptions
+	a := auth.NewAuthenticator(ctx, auth.SilentLogin, options)
+	c, err := a.Client()
+	if err != nil {
+		return nil, err
+	}
+
+	return newUFSClient(ufsService, c)
+}
+
+func newUFSClient(ufsService string, c *http.Client) (ufsApi.FleetClient, error) {
+	if ufsService == "" {
+		return nil, errors.Reason("new ufs client: must provide ufs service hostname").Err()
+	}
+
 	return ufsApi.NewFleetPRPCClient(&prpc.Client{
-		C:       httpClient,
+		C:       c,
 		Host:    ufsService,
 		Options: site.DefaultPRPCOptions,
 	}), nil
