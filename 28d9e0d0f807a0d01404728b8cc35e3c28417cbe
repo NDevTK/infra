@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "21977a27_14754457",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/machine/delete_machine.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2023-10-19T01:08:31Z",
+      "side": 1,
+      "message": "I propose returning an error if the user provides the `-name` and positional arguments at the same time.\n\nhttps://chromium-review.googlesource.com/c/infra/infra/+/4953712\n\nIn this situation, the user definitely made a mistake, and we aren\u0027t constrained by backwards compatibility so we can catch it early.",
+      "parentUuid": "e47269bb_c6975af9",
+      "revId": "28d9e0d0f807a0d01404728b8cc35e3c28417cbe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "61fe2103_d24cb106",
         "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/machine/get_machine.go",
         "patchSetId": 1
