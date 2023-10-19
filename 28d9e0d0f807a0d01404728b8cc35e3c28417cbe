@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e47269bb_c6975af9",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/machine/delete_machine.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2023-10-19T00:56:30Z",
+      "side": 1,
+      "message": "We should just fail if `-name` is specified wrongly regardless of how args is set. It\u0027s a feature that as long as `-name` is specified, we don\u0027t care args anymore.",
+      "parentUuid": "7d43d16a_7a2a90ad",
+      "revId": "28d9e0d0f807a0d01404728b8cc35e3c28417cbe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "61fe2103_d24cb106",
         "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/machine/get_machine.go",
         "patchSetId": 1
