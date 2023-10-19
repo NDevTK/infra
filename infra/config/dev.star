@@ -527,6 +527,10 @@ luci.realm(
             roles = "role/swarming.taskTriggerer",
             users = "swarming-bot@luci-backend-dev.iam.gserviceaccount.com",
         ),
+        luci.binding(
+            roles = "role/swarming.poolViewer",
+            projects = "infra",
+        ),
     ],
 )
 
