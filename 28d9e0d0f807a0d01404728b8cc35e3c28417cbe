@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "17ad6d2a_582928e5",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/machine/delete_machine.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2023-10-19T01:21:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21977a27_14754457",
+      "revId": "28d9e0d0f807a0d01404728b8cc35e3c28417cbe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "61fe2103_d24cb106",
@@ -67,6 +85,24 @@
       "writtenOn": "2023-10-18T22:48:33Z",
       "side": 1,
       "message": "Same. Please check if args has nonzero length and fail if it does.",
+      "revId": "28d9e0d0f807a0d01404728b8cc35e3c28417cbe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e6eba5a_9ddf50a9",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/machine/get_machine.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2023-10-19T01:21:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "61fe2103_d24cb106",
       "revId": "28d9e0d0f807a0d01404728b8cc35e3c28417cbe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
