@@ -16,6 +16,23 @@
       "message": "friendly ping~",
       "revId": "5e50ae8fba9c5ebe9959ac6a43ee4fb6a51b2d67",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "84439255_2261ea24",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-20T13:29:19Z",
+      "side": 1,
+      "message": "I don\u0027t feel that I\u0027m a credible reviewer here, sorry.",
+      "revId": "5e50ae8fba9c5ebe9959ac6a43ee4fb6a51b2d67",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
