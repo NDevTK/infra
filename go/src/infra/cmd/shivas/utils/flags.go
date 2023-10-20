@@ -75,9 +75,6 @@ func CSVStringList(s *[][]string) flag.Getter {
 
 // ValidateNameAndPositionalArg validates that name and positional args cannot exist/miss together
 func ValidateNameAndPositionalArg(flags flag.FlagSet, name string) error {
-	if flags.NArg() == 0 && name == "" {
-		return cmdlib.NewUsageError(flags, "Please provide the name via positional arguments or flag `-name`")
-	}
 	if flags.NArg() > 0 && name != "" {
 		return cmdlib.NewUsageError(flags, "flag `-name` or positional arguments cannot be used simultaneously")
 	}

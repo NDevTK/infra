@@ -103,5 +103,8 @@ func (c *deleteMachine) innerRun(a subcommands.Application, args []string, env s
 }
 
 func (c *deleteMachine) validateArgs() error {
+	if c.Flags.NArg() == 0 && c.machineName == "" {
+		return cmdlib.NewUsageError(c.Flags, "Please provide the name via positional arguments or flag `-name`")
+	}
 	return utils.ValidateNameAndPositionalArg(c.Flags, c.machineName)
 }
