@@ -63,6 +63,7 @@ var (
 	MachinelseprototypeTitle   = []string{"Machine Prototype Name", "Occupied Capacity", "PeripheralTypes", "VirtualTypes", "Tags", "UpdateTime"}
 	RacklseprototypeTitle      = []string{"Rack Prototype Name", "PeripheralTypes", "Tags", "UpdateTime"}
 	ChromePlatformTitle        = []string{"Platform Name", "Manufacturer", "Description", "UpdateTime"}
+	IPTitle                    = []string{"IP ID", "IP v4 string", "Allocated", "Reserved", "Vlan"}
 	VlanTitle                  = []string{"Vlan Name", "CIDR Block", "IP Capacity", "DHCP range", "Description", "State", "Zones", "Reserved IPs", "UpdateTime"}
 	VMTitle                    = []string{"VM Name", "OS Version", "OS Image", "MAC Address", "Zone", "Host", "Vlan", "IP", "State", "DeploymentTicket", "Description", "UpdateTime", "CpuCores", "Memory", "Storage"}
 	RackTitle                  = []string{"Rack Name", "Bbnum", "Zone", "Capacity", "State", "Realm", "UpdateTime"}
@@ -1314,6 +1315,37 @@ func vlanOutputStrs(pm proto.Message) []string {
 		strSlicesToStr(zonesToStrSlice(m.GetZones())),
 		strSlicesToStr(m.GetReservedIps()),
 		ts,
+	}
+}
+
+// PrintIPs prints the all ips in table form.
+func PrintIPs(ips []*ufspb.IP, keysOnly bool) {
+	defer tw.Flush()
+	for _, ip := range ips {
+		printIP(ip, keysOnly)
+	}
+}
+
+func printIP(ip *ufspb.IP, keysOnly bool) {
+	if keysOnly {
+		fmt.Fprintln(tw, ufsUtil.RemovePrefix(ip.GetIpv4Str()))
+		return
+	}
+	var out string
+	for _, s := range ipOutputStrs(ip) {
+		out += fmt.Sprintf("%s\t", s)
+	}
+	fmt.Fprintln(tw, out)
+}
+
+func ipOutputStrs(pm proto.Message) []string {
+	m := pm.(*ufspb.IP)
+	return []string{
+		m.GetId(),
+		m.GetIpv4Str(),
+		fmt.Sprintf("%t", m.GetOccupied()),
+		fmt.Sprintf("%t", m.GetReserve()),
+		m.GetVlan(),
 	}
 }
 

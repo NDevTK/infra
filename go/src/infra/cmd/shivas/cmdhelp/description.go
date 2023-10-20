@@ -1610,6 +1610,9 @@ https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/uni
 -keys -json -noemit prints JSON object with only name/id field.
 Operation will be faster as only name/id will be retrieved from the service.`
 
+	// ShowIPsText help text for list all occupied/reserved IPs option
+	ShowIPsText string = `list all occupied/reserved IPs when querying a single Vlan`
+
 	// StateHelp help text for filter '-state'
 	StateHelp string = "the state to assign this entity to. Valid state strings: [" + strings.Join(ufsUtil.ValidStateStr(), ", ") + "]"
 
