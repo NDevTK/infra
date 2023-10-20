@@ -115,6 +115,12 @@ message Vlan {
 
     // Tags user can attach for easy querying/searching
     repeated string tags = 14;
+
+    // Reserved IP number
+    int64 reserved_ip_num = 15;
+
+    // Allocated IP number
+    int64 allocated_ip_num = 16;
 }
 
 message DHCPConfig {
