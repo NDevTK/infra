@@ -68,6 +68,24 @@
       "parentUuid": "a541f9e8_51f28ec7",
       "revId": "5e50ae8fba9c5ebe9959ac6a43ee4fb6a51b2d67",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae7fe5ae_aff6eeb2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2023-10-20T17:16:16Z",
+      "side": 1,
+      "message": "these fields will be shown in json output for a vlan, which is related to b/183614057~",
+      "parentUuid": "84439255_2261ea24",
+      "revId": "5e50ae8fba9c5ebe9959ac6a43ee4fb6a51b2d67",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
