@@ -6,6 +6,7 @@ package dut
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"strings"
@@ -172,12 +173,13 @@ func (c *AddDUT) setupSatlabID(ctx context.Context, executor executor.IExecComma
 func (c *AddDUT) TriggerRun(
 	ctx context.Context,
 	executor executor.IExecCommander,
-) (resp *AddDUTResponse, err error) {
+	writer io.Writer,
+) error {
 	if err := validateHostname(c.Hostname); err != nil {
-		return nil, err
+		return err
 	}
 	if err := validateBoardAndModel(c.Board, c.Model); err != nil {
-		return nil, err
+		return err
 	}
 
 	// setup Satlab ID
@@ -194,7 +196,7 @@ func (c *AddDUT) TriggerRun(
 	// they compose in the correct way.
 	dockerHostBoxIdentifier, err := getDockerHostBoxIdentifier(ctx, executor, c.SatlabID)
 	if err != nil {
-		return nil, errors.Annotate(err, "add dut").Err()
+		return errors.Annotate(err, "add dut").Err()
 	}
 
 	// setup pools
@@ -210,16 +212,16 @@ func (c *AddDUT) TriggerRun(
 		if shouldCreateStableVersion(c.Board, c.Model) {
 			service, err := build_service.New(ctx)
 			if err != nil {
-				return nil, errors.Annotate(err, "new Moblab API").Err()
+				return errors.Annotate(err, "new Moblab API").Err()
 			}
 			recoveryVersion, err := service.FindMostStableBuildByBoardAndModel(ctx, c.Board, c.Model)
 			if err != nil {
-				return nil, errors.Annotate(err, "find most stable build").Err()
+				return errors.Annotate(err, "find most stable build").Err()
 			}
 
 			err = misc.StageAndWriteLocalStableVersion(ctx, service, recoveryVersion)
 			if err != nil {
-				return nil, errors.Annotate(err, "stage and write local stable version").Err()
+				return errors.Annotate(err, "stage and write local stable version").Err()
 			}
 		}
 	}
@@ -234,7 +236,7 @@ func (c *AddDUT) TriggerRun(
 			c.Address,
 		)
 		if updateErr != nil {
-			return nil, errors.Annotate(updateErr, "add dut").Err()
+			return errors.Annotate(updateErr, "add dut").Err()
 		}
 		// Write the content back if we fail at a later step for any reason.
 		defer (func() {
@@ -257,17 +259,17 @@ func (c *AddDUT) TriggerRun(
 		})()
 	}
 
-	rackResp, err := (&shivas.Rack{
+	err = (&shivas.Rack{
 		Name:      c.qualifiedRack,
 		Namespace: c.Namespace,
 		Zone:      c.Zone,
-	}).CheckAndAdd(executor)
+	}).CheckAndAdd(executor, writer)
 
 	if err != nil && !errors.Is(err, e.RackExist) {
-		return nil, err
+		return err
 	}
 
-	assetResp, err := (&shivas.Asset{
+	err = (&shivas.Asset{
 		Asset:     c.Asset,
 		Rack:      c.qualifiedRack,
 		Zone:      c.Zone,
@@ -275,30 +277,26 @@ func (c *AddDUT) TriggerRun(
 		Board:     c.Board,
 		Namespace: c.Namespace,
 		Type:      c.AssetType,
-	}).CheckAndAdd(executor)
+	}).CheckAndAdd(executor, writer)
 
 	if err != nil && !errors.Is(err, e.AssetExist) {
-		return nil, err
+		return err
 	}
 
-	msg, err := (&shivas.DUT{
+	err = (&shivas.DUT{
 		Namespace:  c.Namespace,
 		Zone:       c.Zone,
 		Name:       c.qualifiedHostname,
 		Rack:       c.qualifiedRack,
 		Servo:      c.qualifiedServo,
 		ShivasArgs: makeAddShivasFlags(c),
-	}).CheckAndAdd(executor)
+	}).CheckAndAdd(executor, writer)
 
 	if err != nil && !errors.Is(err, e.DUTExist) {
-		return nil, err
+		return err
 	}
 
-	return &AddDUTResponse{
-		RackMsg:  rackResp,
-		AssetMsg: assetResp,
-		DUTMsg:   msg,
-	}, nil
+	return nil
 }
 
 // MakeShivasFlags takes an add DUT command and serializes its flags in such

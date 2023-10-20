@@ -5,14 +5,14 @@
 package shivas
 
 import (
-	"bytes"
+	"fmt"
+	"io"
 	"os/exec"
 
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
-	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/common/utils/misc"
 )
@@ -29,20 +29,23 @@ type Asset struct {
 }
 
 // CheckAndAdd adds the asset if it does not already exist.
-func (a *Asset) CheckAndAdd(executor executor.IExecCommander) (string, error) {
-	assetMsg, err := a.check(executor)
+func (a *Asset) CheckAndAdd(executor executor.IExecCommander, w io.Writer) error {
+	exists, err := a.exists(executor, w)
 	if err != nil {
-		return "", errors.Annotate(err, "check and update").Err()
+		return errors.Annotate(err, "check and update").Err()
 	}
-	if len(assetMsg) == 0 {
-		return a.add(executor)
+	if !exists {
+		return a.add(executor, w)
 	} else {
-		return "", e.AssetExist
+		fmt.Fprintf(w, "Asset already added\n\n")
 	}
+
+	return nil
 }
 
 // Check checks for the existence of the UFS asset.
-func (a *Asset) check(executor executor.IExecCommander) (string, error) {
+// For now does so based on whether `shivas get asset` errors :(
+func (a *Asset) exists(executor executor.IExecCommander, w io.Writer) (bool, error) {
 	args := (&commands.CommandWithFlags{
 		Commands:       []string{paths.ShivasCLI, "get", "asset"},
 		PositionalArgs: []string{a.Asset},
@@ -55,23 +58,25 @@ func (a *Asset) check(executor executor.IExecCommander) (string, error) {
 			// Type cannot be provided when getting a DUT.
 		},
 	}).ToCommand()
+	fmt.Fprintf(w, "Check asset exists: run %s\n", args)
 
-	var b bytes.Buffer
 	command := exec.Command(args[0], args[1:]...)
-	command.Stderr = &b
-	assetMsgBytes, err := executor.Exec(command)
+	stdout, err := executor.Exec(command)
 
 	if err != nil {
-		return "", errors.Annotate(err, "check asset - %s", b.String()).Err()
+		return false, errors.Annotate(err, "add asset").Err()
 	}
-	assetMsg := misc.TrimOutput(assetMsgBytes)
 
-	return assetMsg, nil
+	// if asset not found, shivas returns output in stderr, stdout is empty.
+	exists := (len(stdout) != 0)
+
+	return exists, nil
 }
 
 // Add adds an asset unconditionally to UFS.
-func (a *Asset) add(executor executor.IExecCommander) (string, error) {
+func (a *Asset) add(executor executor.IExecCommander, w io.Writer) error {
 	// Add the asset.
+	fmt.Fprintf(w, "Adding asset\n")
 	args := (&commands.CommandWithFlags{
 		Commands: []string{paths.ShivasCLI, "add", "asset"},
 		Flags: map[string][]string{
@@ -84,14 +89,11 @@ func (a *Asset) add(executor executor.IExecCommander) (string, error) {
 			"type":      {a.Type},
 		},
 	}).ToCommand()
+	fmt.Fprintf(w, "Add asset: run %s\n", args)
 
-	var b bytes.Buffer
 	command := exec.Command(args[0], args[1:]...)
-	command.Stderr = &b
 	out, err := executor.Exec(command)
-	if err != nil {
-		return "", errors.Annotate(err, "add asset - %s", b.String()).Err()
-	}
+	fmt.Fprintln(w, misc.TrimOutput(out))
 
-	return string(out), nil
+	return err
 }
