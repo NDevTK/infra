@@ -4,8 +4,7 @@ create {
     script { name: "fetch.py" }
     unpack_archive: true
     no_archive_prune: true
-    patch_dir: "patches"
-    patch_version: "chromium.3"
+    patch_version: "chromium.4"
   }
   build {
     no_toolchain: true
