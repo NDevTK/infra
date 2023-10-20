@@ -3429,8 +3429,10 @@ func crosRepairActions() map[string]*Action {
 				"to avoid an unnecessary retry of critical actions that triggered",
 				"this action, e.g. 'Device is pingable' will get retried.",
 			},
-			Dependencies: []string{
+			Conditions: []string{
 				"Check if servo is not connected by hub",
+			},
+			Dependencies: []string{
 				"Create request to reboot labstation",
 			},
 			ExecName: "sample_fail",
