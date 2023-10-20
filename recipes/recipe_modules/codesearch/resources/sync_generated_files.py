@@ -34,12 +34,14 @@ def has_allowed_extension(filename):
   # Since the problems caused by allowlisting are more easily managed than those
   # caused by blocklisting, we allowlist below.
   allowed_extensions = {
+      'build_metadata',
       'c',
       'cc',
       'cpp',
       'css',
       'cxx'
       'desugardeps',
+      'gn',
       'h',
       'hpp ',
       'htm',
@@ -49,11 +51,15 @@ def has_allowed_extension(filename):
       'java',
       'js',
       'json',
+      'ninja',
       'proto',
       'py',
       'rs',
+      'rsp',
+      'runtime_deps',
       'strings',
       'txt',
+      'typemap_config',
       'xml',
   }
   dot_index = filename.rfind('.')
