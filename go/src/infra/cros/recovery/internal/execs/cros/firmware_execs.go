@@ -18,16 +18,12 @@ import (
 )
 
 const (
-	// Read the AP firmware and dump the sections that we're interested in.
-	readAndDumpAPFirmwareCmd = `mkdir /tmp/verify_firmware;` +
-		`cd /tmp/verify_firmware; ` +
-		`for section in VBLOCK_A VBLOCK_B FW_MAIN_A FW_MAIN_B; ` +
-		`do flashrom -p internal -r -i $section:$section; ` +
-		`done`
-	// Verify the firmware blocks A and B.
-	verifyFirmwareCmd = `vbutil_firmware --verify /tmp/verify_firmware/VBLOCK_%s` +
-		` --signpubkey /usr/share/vboot/devkeys/root_key.vbpubk` +
-		` --fv /tmp/verify_firmware/FW_MAIN_%s`
+	// Dump the AP firmware.
+	dumpAPFirmwareCmd = `mkdir /tmp/verify_firmware;` +
+		`flashrom -p internal -r /tmp/verify_firmware/ap.bin`
+	// Verify the firmware image.
+	verifyFirmwareCmd = `futility verify /tmp/verify_firmware/ap.bin` +
+		` --publickey /usr/share/vboot/devkeys/root_key.vbpubk`
 	// Remove the firmware related files we created before.
 	removeFirmwareFileCmd = `rm -rf /tmp/verify_firmware`
 	// Firmware tarball filename in GS.
@@ -42,16 +38,14 @@ const (
 // This verify action checks whether it appears that firmware should be re-flashed using servo.
 func isFirmwareInGoodState(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
-	_, err := r(ctx, time.Minute, readAndDumpAPFirmwareCmd)
+	_, err := r(ctx, 2*time.Minute, dumpAPFirmwareCmd)
 	if err != nil {
 		return errors.Annotate(err, "firmware in good state").Err()
 	}
 	defer func() { r(ctx, time.Minute, removeFirmwareFileCmd) }()
-	for _, val := range []string{"A", "B"} {
-		_, err := r(ctx, time.Minute, fmt.Sprintf(verifyFirmwareCmd, val, val))
-		if err != nil {
-			return errors.Annotate(err, "firmware in good state: firmware %s is in a bad state", val).Err()
-		}
+	_, err = r(ctx, time.Minute, verifyFirmwareCmd)
+	if err != nil {
+		return errors.Annotate(err, "firmware in good state: firmware is in a bad state").Err()
 	}
 	return nil
 }
