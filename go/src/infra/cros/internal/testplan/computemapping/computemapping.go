@@ -104,8 +104,17 @@ func mergeChangeRevs(
 	shallowSinceTime := computeShallowSince(ctx, changeRevs, cloneDepth)
 	logging.Debugf(ctx, "change revs for repo %q, branch %q do affect DIR_METADATA files, cloning with shallow-since %q", remote, branch, shallowSinceTime)
 
+	// If the --shallow-since clone fails, fall back to doing a full clone. If
+	// the clone is done without --shallow-since, the later fetches must also
+	// be done without --shallow-since, so track this case in
+	// shallowSinceFailed.
+	shallowSinceFailed := false
 	if err := git.Clone(remote, dir, git.NoTags(), git.Branch(branch), git.ShallowSince(shallowSinceTime.Format(gitDateLayout))); err != nil {
-		return err
+		logging.Errorf(ctx, "cloning with with shallow-since failed, attempting full clone")
+		shallowSinceFailed = true
+		if fullCloneErr := git.Clone(remote, dir, git.NoTags(), git.Branch(branch)); fullCloneErr != nil {
+			return fullCloneErr
+		}
 	}
 
 	for _, changeRev := range changeRevs {
@@ -114,7 +123,12 @@ func mergeChangeRevs(
 		// be kept consistent with how CQ builders apply changes.
 		logging.Debugf(ctx, "fetching ref %q from repo %q", changeRev.Ref, remote)
 
-		if err := git.Fetch(dir, remote, changeRev.Ref, git.NoTags(), git.ShallowSince(shallowSinceTime.Format(gitDateLayout))); err != nil {
+		if shallowSinceFailed {
+			logging.Warningf(ctx, "shallow-since failed on clone, now a full fetch is required")
+			if err := git.Fetch(dir, remote, changeRev.Ref, git.NoTags()); err != nil {
+				return err
+			}
+		} else if err := git.Fetch(dir, remote, changeRev.Ref, git.NoTags(), git.ShallowSince(shallowSinceTime.Format(gitDateLayout))); err != nil {
 			return err
 		}
 
