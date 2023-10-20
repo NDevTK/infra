@@ -5,10 +5,9 @@
 package shivas
 
 import (
+	"os"
 	"os/exec"
 	"testing"
-
-	"github.com/google/go-cmp/cmp"
 
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
@@ -61,13 +60,9 @@ func TestDUT_add(t *testing.T) {
 				Rack:       "rack",
 				ShivasArgs: map[string][]string{"pools": {"swimming"}},
 			}
-			out, err := d.add(commander)
+			err := d.add(commander, os.Stdout)
 			if err != nil {
 				t.Errorf("unexpected err: %s", err)
-			}
-
-			if diff := cmp.Diff(out, tt.wantCall); diff != "" {
-				t.Errorf("diff: %v\n", diff)
 			}
 		})
 	}

@@ -5,16 +5,15 @@
 package shivas
 
 import (
-	"bytes"
+	"fmt"
+	"io"
 	"os/exec"
-	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/site"
-	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/common/utils/misc"
 )
@@ -30,21 +29,23 @@ type DUT struct {
 	ShivasArgs map[string][]string
 }
 
-// Run adds a DUT if it does not already exist.
-func (d *DUT) CheckAndAdd(executor executor.IExecCommander) (string, error) {
-	dutMsg, err := d.check(executor)
+// CheckAndAdd adds a DUT if it does not already exist.
+func (d *DUT) CheckAndAdd(executor executor.IExecCommander, w io.Writer) error {
+	exists, err := d.check(executor, w)
 	if err != nil {
-		return "", errors.Annotate(err, "check and update").Err()
+		return errors.Annotate(err, "check and update").Err()
 	}
-	if len(dutMsg) == 0 {
-		return d.add(executor)
+	if !exists {
+		return d.add(executor, w)
 	} else {
-		return "", e.DUTExist
+		fmt.Fprintf(w, "DUT already added\n\n")
 	}
+
+	return nil
 }
 
 // Check checks for the existnce of a UFS DUT.
-func (d *DUT) check(executor executor.IExecCommander) (string, error) {
+func (d *DUT) check(executor executor.IExecCommander, w io.Writer) (bool, error) {
 	flags := map[string][]string{
 		"namespace": {d.Namespace},
 		"zone":      {d.Zone},
@@ -55,22 +56,25 @@ func (d *DUT) check(executor executor.IExecCommander) (string, error) {
 		Flags:          flags,
 		PositionalArgs: []string{d.Name},
 	}).ToCommand()
+	fmt.Fprintf(w, "Check dut exists: run %s\n", args)
 
-	var b bytes.Buffer
 	command := exec.Command(args[0], args[1:]...)
-	command.Stderr = &b
-	out, err := executor.Exec(command)
+	stdout, err := executor.Exec(command)
 
-	dutMsg := misc.TrimOutput(out)
 	if err != nil {
-		return "", errors.Annotate(err, "check DUT in UFS: running %s\nreascon: %s", strings.Join(args, " "), b.String()).
-			Err()
+		return false, errors.Annotate(err, "add dut").Err()
 	}
-	return dutMsg, nil
+
+	// if DUT not found, shivas returns output in stderr, and stdout is empty.
+	exists := (len(stdout) != 0)
+
+	return exists, nil
 }
 
 // Add a DUT to UFS.
-func (d *DUT) add(executor executor.IExecCommander) (string, error) {
+func (d *DUT) add(executor executor.IExecCommander, w io.Writer) error {
+	fmt.Fprintf(w, "Adding DUT\n")
+
 	flags := make(map[string][]string)
 	for k, v := range d.ShivasArgs {
 		flags[k] = v
@@ -93,15 +97,12 @@ func (d *DUT) add(executor executor.IExecCommander) (string, error) {
 		Commands: []string{paths.ShivasCLI, "add", "dut"},
 		Flags:    flags,
 	}).ToCommand()
+	fmt.Fprintf(w, "Add dut: run %s\n", args)
 
-	var b bytes.Buffer
 	command := exec.Command(args[0], args[1:]...)
-	command.Stderr = &b
 	out, err := executor.Exec(command)
 
-	if err != nil {
-		return "", errors.Annotate(err, "add dut - %s", b.String()).Err()
-	}
+	fmt.Fprintln(w, misc.TrimOutput(out))
 
-	return string(out), nil
+	return err
 }
