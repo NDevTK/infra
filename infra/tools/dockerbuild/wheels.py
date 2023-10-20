@@ -161,7 +161,7 @@ def select_numpy(_system, wheel):
       },
       skip_plat=[
           'mac-x64-py3.8',
-      ] + build_platform.ALL_PY311,  # TODO: Requires version 1.23.3+
+      ] + build_platform.ALL_PY311,
       patch_version='chromium.1',
       pyversions=['py3'],
   )
@@ -174,7 +174,7 @@ SPECS.update({
             'numpy',
             '1.2x.supported.2',
             select_numpy,
-            skip_plat=build_platform.ALL_PY311,  # TODO: version 1.23.3+
+            skip_plat=build_platform.ALL_PY311,
         ),
     )
 })
@@ -223,6 +223,25 @@ def _GrpcEnv(w):
     override_plat = 'linux-armv6l'
   if override_plat:
     env['GRPC_BUILD_OVERRIDE_BORING_SSL_ASM_PLATFORM'] = override_plat
+  return env
+
+
+def _NumPyTppLibs():
+  # Bring in openblas only on mac.
+  if sys.platform == 'darwin':
+    return [('infra/3pp/static_libs/openblas', 'version:2@0.3.24')]
+  return []
+
+
+def _NumPyEnv(w):
+  env = {}
+  if w.plat.name.startswith('linux-arm'):
+    # This library is x86-64 only, and the cross-compile detection in
+    # the build system does not work correctly for us.
+    env['NPY_DISABLE_SVML'] = '1'
+  if w.plat.name.startswith('windows-x86'):
+    # Disable trying to build 64-bit code.
+    env['NUMPY_CPU_DISPATCH'] = 'none'
   return env
 
 
@@ -457,7 +476,6 @@ SPECS.update({
                 'windows-x86-py3.11',
             ],
         ),
-        # TODO: Update to gevent with greenlet 2 for Python 3.11.
         SourceOrPrebuilt(
             'gevent',
             '1.5.0',
@@ -784,6 +802,16 @@ SPECS.update({
                 'linux-armv6-py3.8',
                 'linux-arm64-py3.8',
             ] + build_platform.ALL_PY311,
+            patch_version='chromium.1',
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
+            'numpy',
+            '1.23.5',
+            packaged=(),
+            tpp_libs=_NumPyTppLibs(),
+            env_cb=_NumPyEnv,
+            patches=('cpu-dispatch',),
             patch_version='chromium.1',
             pyversions=['py3'],
         ),

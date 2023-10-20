@@ -1,0 +1,26 @@
+From fa3f530ca8f76306f4c5db47d74308ceeb589ee3 Mon Sep 17 00:00:00 2001
+From: Brian Ryner <bryner@google.com>
+Date: Thu, 19 Oct 2023 13:14:48 +1100
+Subject: [PATCH] Allow cpu-dispatch to be overridden with an environment
+ variable.
+
+---
+ numpy/distutils/command/build.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/numpy/distutils/command/build.py b/numpy/distutils/command/build.py
+index 80830d559..3d1307845 100644
+--- a/numpy/distutils/command/build.py
++++ b/numpy/distutils/command/build.py
+@@ -36,7 +36,7 @@ def initialize_options(self):
+         self.fcompiler = None
+         self.warn_error = False
+         self.cpu_baseline = "min"
+-        self.cpu_dispatch = "max -xop -fma4" # drop AMD legacy features by default
++        self.cpu_dispatch = os.environ.get("NUMPY_CPU_DISPATCH", "max -xop -fma4") # drop AMD legacy features by default
+         self.disable_optimization = False
+         """
+         the '_simd' module is a very large. Adding more dispatched features
+-- 
+2.42.0.655.g421f12c284-goog
+
