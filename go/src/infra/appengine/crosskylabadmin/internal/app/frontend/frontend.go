@@ -25,12 +25,18 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/appengine/gaeauth/server"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	configpb "go.chromium.org/luci/common/proto/config"
+	"go.chromium.org/luci/config/appengine/gaeconfig"
+	"go.chromium.org/luci/config/server/cfgmodule"
+	"go.chromium.org/luci/config/validation"
 	"go.chromium.org/luci/grpc/discovery"
 	"go.chromium.org/luci/grpc/grpcmon"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/signing"
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -63,6 +69,23 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 	fleet.RegisterInventoryServer(&api, &fleet.DecoratedInventory{
 		Service: &ServerImpl{},
 		Prelude: CheckAccess,
+	})
+	configpb.RegisterConsumerServer(&api, &cfgmodule.ConsumerServer{
+		Rules: &validation.Rules,
+		GetConfigServiceAccountFn: func(ctx context.Context) (string, error) {
+			settings, err := gaeconfig.FetchCachedSettings(ctx)
+			switch {
+			case err != nil:
+				return "", err
+			case settings.ConfigServiceHost == "":
+				return "", errors.New("can not find config service host from settings")
+			}
+			info, err := signing.FetchServiceInfoFromLUCIService(ctx, "https://"+settings.ConfigServiceHost)
+			if err != nil {
+				return "", err
+			}
+			return info.ServiceAccountName, nil
+		},
 	})
 
 	discovery.Enable(&api)
