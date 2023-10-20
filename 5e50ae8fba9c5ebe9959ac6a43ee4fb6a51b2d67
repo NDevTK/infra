@@ -50,6 +50,24 @@
       "message": "I am slightly concerned about the use of int32 here being not big enough (for some future scenario), but it is probably fine in practical use for the next several years.",
       "revId": "5e50ae8fba9c5ebe9959ac6a43ee4fb6a51b2d67",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e459cce_64a58324",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1142534
+      },
+      "writtenOn": "2023-10-20T17:15:24Z",
+      "side": 1,
+      "message": "I see, I can change it to int64",
+      "parentUuid": "a541f9e8_51f28ec7",
+      "revId": "5e50ae8fba9c5ebe9959ac6a43ee4fb6a51b2d67",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
