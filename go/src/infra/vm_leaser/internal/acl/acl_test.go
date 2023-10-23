@@ -37,6 +37,7 @@ func TestRPCAccessInterceptor(t *testing.T) {
 
 		So(check(ctx, "unknown.API", "Something"), ShouldEqual, codes.PermissionDenied)
 		So(check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), ShouldEqual, codes.PermissionDenied)
+		So(check(ctx, "grpc.reflection.v1.ServerReflection", "Something"), ShouldEqual, codes.PermissionDenied)
 		So(check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), ShouldEqual, codes.PermissionDenied)
 	})
 
@@ -48,6 +49,7 @@ func TestRPCAccessInterceptor(t *testing.T) {
 
 		So(check(ctx, "unknown.API", "Something"), ShouldEqual, codes.PermissionDenied)
 		So(check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), ShouldEqual, codes.PermissionDenied)
+		So(check(ctx, "grpc.reflection.v1.ServerReflection", "Something"), ShouldEqual, codes.PermissionDenied)
 		So(check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), ShouldEqual, codes.PermissionDenied)
 	})
 
@@ -59,6 +61,7 @@ func TestRPCAccessInterceptor(t *testing.T) {
 
 		So(check(ctx, "unknown.API", "Something"), ShouldEqual, codes.PermissionDenied)
 		So(check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), ShouldEqual, codes.OK)
+		So(check(ctx, "grpc.reflection.v1.ServerReflection", "Something"), ShouldEqual, codes.OK)
 		So(check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), ShouldEqual, codes.OK)
 	})
 }

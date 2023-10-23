@@ -17,6 +17,7 @@ var RPCAccessInterceptor = rpcacl.Interceptor(rpcacl.Map{
 	// Service metadata accessed through GRPC reflection should be accessible
 	// only to authenticated users.
 	"/grpc.reflection.v1alpha.ServerReflection/*": VMLabGroup,
+	"/grpc.reflection.v1.ServerReflection/*":      VMLabGroup,
 
 	// Using the VM Leaser service requires the user or service to be part of the
 	// VM Lab group.
