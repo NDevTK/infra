@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import DataTableRow from './DataTableRow';
 import { Column, Row } from './DataTable';
 
@@ -104,5 +104,30 @@ describe('when rendering the DataTableRow', () => {
         </table>,
     );
     expect(screen.getAllByTestId('tableCell')).toHaveLength(2);
+  });
+  it('should render footer', async () => {
+    const test: Row<any> = {
+      id: 'testId',
+      isExpandable: true,
+      rows: [
+        {
+          id: 'v1',
+          isExpandable: false,
+          rows: [],
+        },
+      ],
+      footer: <div data-testid="footerTestId">Test</div>,
+    };
+    render(
+        <table>
+          <tbody>
+            <DataTableRow row={test} depth={0} columns={columns}/>
+          </tbody>
+        </table>,
+    );
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('clickButton-testId'));
+    });
+    expect(screen.getByTestId('footerTestId')).toBeInTheDocument();
   });
 });

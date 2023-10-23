@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import { Link } from '@mui/material';
 import { AuthContext } from '../../auth/AuthContext';
 import {
   DirectoryNode,
@@ -24,6 +25,7 @@ import {
   loadDirectoryMetrics,
   loadTestMetrics,
 } from './LoadTestMetrics';
+import { createSearchParams } from './TestMetricsSearchParams';
 
 type TestMetricsContextProviderProps = {
   page: number,
@@ -195,6 +197,30 @@ function snapToPeriod(date: Date) {
   ret.setDate(ret.getDate() - ret.getDay());
   return ret;
 }
+
+function createFooterLink(parentId: string, components: string[], params: Params) {
+  const searchParams = createSearchParams(components, {
+    ...params,
+    filter: parentId,
+    directoryView: false,
+    timelineView: false,
+    date: params.date,
+  });
+  return (
+    <>
+      <Link
+        underline="hover"
+        target="_blank"
+        href={window.location.pathname + '?' + searchParams.toString()}
+        rel="noopener"
+        data-testid="hyperLink"
+      >
+      See all test variants
+      </Link>
+    </>
+  );
+}
+
 export const TestMetricsContextProvider = (props : TestMetricsContextProviderProps) => {
   const { auth } = useContext(AuthContext);
   const { components } = useContext(ComponentContext);
@@ -235,12 +261,21 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
     if (isPath(node) && !node.loaded) {
       loadingDispatch({ type: 'start' });
       if (node.type === DirectoryNodeType.FILENAME) {
-        loadTestMetrics(auth, components, params,
+        // Limit to 25 test variants during expansion in dir view to prevent
+        // over expansion of table height.
+        const dirViewParams = {
+          ...params,
+          page: 0,
+          rowsPerPage: 25,
+        };
+        loadTestMetrics(auth, components, dirViewParams,
             (response: FetchTestMetricsResponse) => {
               dataDispatch({
                 type: 'merge_test',
                 tests: response.tests,
                 parentId: node.id,
+                footer: response.lastPage ?
+                  undefined : createFooterLink(node.name, components, params),
               });
               loadingDispatch({ type: 'end' });
             },

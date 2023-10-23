@@ -9,6 +9,9 @@ import dayjs from 'dayjs';
 // If decimal show up to 2 points of precision.
 // If <0.01 show '<0.01s'
 export function formatTime(seconds: number) {
+  if (Number.isNaN(seconds)) {
+    return '-';
+  }
   let result = '';
 
   const day = Math.floor(seconds / 86400);

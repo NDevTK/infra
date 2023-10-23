@@ -35,6 +35,7 @@ export interface Row<T extends Row<T>> {
   isExpandable?: boolean,
   onExpand?: (row: T) => void,
   rows?: T[],
+  footer?: JSX.Element,
 }
 
 export interface Column {

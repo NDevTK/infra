@@ -20,7 +20,7 @@ export const TIMELINE_VIEW_METRIC = 'tlm';
 export const DIRECTORY_VIEW = 'dir';
 export const SORT_INDEX = 'sidx';
 
-function createSearchParams(components: string[], params: Params) {
+export function createSearchParams(components: string[], params: Params) {
   const search = new URLSearchParams();
   // Unfortunately, having two search params objects in the dom tree seems to
   // create a race condition as they overwrite each other's parameters, even

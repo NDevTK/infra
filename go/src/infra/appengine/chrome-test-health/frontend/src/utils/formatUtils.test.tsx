@@ -21,6 +21,7 @@ test.each([
   ['6.5555', '6.56s'],
   ['.056', '0.06s'],
   ['.0000566', '<0.01s'],
+  [Number.NaN, '-'],
 ])('.formatTime(%p, %p)', (seconds, expected) => {
   expect(formatTime(Number(seconds))).toBe(expected);
 });

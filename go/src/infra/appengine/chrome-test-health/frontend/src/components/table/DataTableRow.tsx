@@ -74,13 +74,25 @@ function DataTableRow(props: DataTableRowProps) {
       </StyledTableRow>
       {
       isOpen && row.rows !== undefined && row.rows.length > 0 ? (
-        row.rows.map((row) => (
-          <DataTableRow
-            key={row.id}
-            row={row}
-            depth={props.depth + 1}
-            columns={props.columns} />
-        ))
+        <>
+          {row.rows.map((row) => (
+            <DataTableRow
+              key={row.id}
+              row={row}
+              depth={props.depth + 1}
+              columns={props.columns} />
+          ))}
+          {row.footer ?
+          <StyledTableRow
+          >
+            <TableCell
+              colSpan={props.columns.length}
+              sx={{ paddingLeft: props.depth * 2 + 2, whiteSpace: 'nowrap' }}
+            >
+              {row.footer}
+            </TableCell>
+          </StyledTableRow> : null}
+        </>
       ) : null
       }
     </>

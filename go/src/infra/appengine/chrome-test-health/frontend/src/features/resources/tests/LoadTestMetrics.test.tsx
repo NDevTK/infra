@@ -234,6 +234,50 @@ describe('merge_test action', () => {
     expect(merged[0].metrics.get('2012-01-03')?.get(MetricType.NUM_FAILURES))
         .toEqual(4);
   });
+
+  it('merge test with footer correctly', () => {
+    const metrics = metricsMap({
+      '2012-01-02': [
+        [MetricType.NUM_RUNS, 1],
+        [MetricType.NUM_FAILURES, 2],
+      ],
+    });
+    const state: Node[] = [pathNode('/', DirectoryNodeType.DIRECTORY, false)];
+    const tests: TestDateMetricData[] = [{
+      testId: '12',
+      testName: 'name',
+      fileName: 'file',
+      metrics: metrics,
+      variants: [],
+    }];
+    const merged = dataReducer(
+        state,
+        { type: 'merge_test', parentId: '/', tests, footer: <div/> },
+    );
+    expect(merged[0].footer).toBeDefined();
+  });
+
+  it('merge test without footer', () => {
+    const metrics = metricsMap({
+      '2012-01-02': [
+        [MetricType.NUM_RUNS, 1],
+        [MetricType.NUM_FAILURES, 2],
+      ],
+    });
+    const state: Node[] = [pathNode('/', DirectoryNodeType.DIRECTORY, false)];
+    const tests: TestDateMetricData[] = [{
+      testId: '12',
+      testName: 'name',
+      fileName: 'file',
+      metrics: metrics,
+      variants: [],
+    }];
+    const merged = dataReducer(
+        state,
+        { type: 'merge_test', parentId: '/', tests },
+    );
+    expect(merged[0].footer).toBeUndefined();
+  });
 });
 
 describe('merge_dir action', () => {

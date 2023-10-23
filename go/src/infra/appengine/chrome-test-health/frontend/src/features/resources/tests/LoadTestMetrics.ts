@@ -71,7 +71,12 @@ export function loadTestMetrics(
 }
 
 type DataAction =
- | { type: 'merge_test', tests: TestDateMetricData[], parentId?: string }
+ | {
+  type: 'merge_test',
+  tests: TestDateMetricData[],
+  parentId?: string,
+  footer?: JSX.Element,
+ }
  | {
   type: 'merge_dir',
   nodes: DirectoryNode[],
@@ -181,6 +186,9 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
     if (parentNode !== undefined) {
       parentNode.rows = nodes;
       (parentNode as Path).loaded = true;
+      if (action.type === 'merge_test') {
+        parentNode.footer = action.footer;
+      }
     }
     // Necessary to return a new object to trigger a re-render.
     return [...state];
