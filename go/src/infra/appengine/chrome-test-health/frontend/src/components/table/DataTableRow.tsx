@@ -41,6 +41,7 @@ function DataTableRow(props: DataTableRowProps) {
             const cell = column.renderer(column, row);
             const contents = Array.isArray(cell) ? cell[0] : cell;
             const colSpan = Array.isArray(cell) ? cell[1] : undefined;
+            const cellSx = (Array.isArray(cell) && cell.length===3) ? cell[2] : {};
             if (contents === undefined) {
               return;
             }
@@ -50,7 +51,7 @@ function DataTableRow(props: DataTableRowProps) {
                 data-testid={'tableCell'}
                 align={column.align}
                 colSpan={colSpan}
-                sx={{ paddingLeft: props.depth * 2 + 2, whiteSpace: 'nowrap' }}
+                sx={{ ...cellSx, paddingLeft: props.depth * 2 + 2, whiteSpace: 'nowrap' }}
               >
                 {
                   index === 0 && props.row.isExpandable ? (

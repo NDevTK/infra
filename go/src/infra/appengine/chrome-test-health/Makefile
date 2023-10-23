@@ -24,7 +24,8 @@ backend-dev:
 	go run main.go \
 	-cloud-project $(CHROME_TEST_HEALTH_CLOUD_PROJECT) \
 	-findit-cloud-project ${FINDIT_CLOUD_PROJECT} \
-	-auth-service-host chrome-infra-auth-dev.appspot.com
+	-auth-service-host chrome-infra-auth-dev.appspot.com \
+	-encrypted-cookies-expose-state-endpoint
 
 frontend-dev:
 	cd frontend && npm start

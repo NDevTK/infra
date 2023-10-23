@@ -27,7 +27,6 @@ import {
   dataReducer,
   loadProjectDefaultConfig,
   loadSummary,
-  loadSummaryByComponents,
 } from './LoadSummary';
 
 export interface Api {
@@ -116,7 +115,6 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
   const { components } = useContext(ComponentContext);
 
   const LUCI_PROJECT = 'chromium';
-  const MODIFIER_ID = '0';
 
   const [host, setHost] = useState('');
   const [project, setProject] = useState('');
@@ -143,10 +141,14 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
     updatePlatform: (updatedPlatform: string) => {
       const filteredPlatform = filterPlatform(platformList, updatedPlatform);
       if (filteredPlatform) {
+        params.bucket = filteredPlatform.bucket
+        params.builder = filteredPlatform.builder
+        params.platform = filteredPlatform.platform;
+        params.revision = filteredPlatform.latestRevision;
         setBucket(filteredPlatform.bucket);
         setBuilder(filteredPlatform.builder);
         setPlatform(filteredPlatform.platform);
-        setRevision(filteredPlatform.availableRevision);
+        setRevision(filteredPlatform.latestRevision);
       }
     },
     updateUnitTestsOnly: (unitTestOnly: boolean) => {
@@ -186,28 +188,23 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
     loadProjectDefaultConfig(
         auth,
         LUCI_PROJECT,
-        revision,
-        MODIFIER_ID,
         (response: GetProjectDefaultConfigResponse) => {
-          setHost(response.host);
-          setProject(response.project);
-          setGitilesRef(response.ref);
+          setHost(response.gitilesHost);
+          setProject(response.gitilesProject);
+          setGitilesRef(response.gitilesRef);
 
           let revision = params.revision;
           let platform = params.platform;
-          let filteredPlatform = filterPlatform(response.platforms, platform);
+          let filteredPlatform = filterPlatform(response.builderConfig, platform);
           if (filterPlatform == null) {
-            filteredPlatform = filterPlatform(
-                response.platforms,
-                response.defaultPlatform,
-            );
-            platform = filteredPlatform?.platform || '';
-            if (filteredPlatform?.availableRevision !== params.revision) {
-              revision = filteredPlatform?.availableRevision || '';
+            filteredPlatform = response.builderConfig[0];
+            platform = filteredPlatform.platform;
+            if (params.revision == '') {
+              revision = filteredPlatform.latestRevision;
             }
           }
 
-          setPlatformList(response.platforms);
+          setPlatformList(response.builderConfig);
           setPlatform(platform);
           setRevision(revision);
           setBuilder(filteredPlatform?.builder || '');
@@ -230,6 +227,7 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
           auth,
           params,
           node.path,
+          [],
           (summaryNodes: SummaryNode[]) => {
             dataDispatch({
               type: DataActionType.MERGE_DIR,
@@ -255,6 +253,7 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
         auth,
         params,
         '//',
+        [],
         (summaryNodes: SummaryNode[]) => {
           dataDispatch({
             type: DataActionType.MERGE_DIR,
@@ -275,9 +274,10 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
     loadingDispatch({ type: 'start' });
     dataDispatch({ type: DataActionType.CLEAR_DIR });
 
-    loadSummaryByComponents(
+    loadSummary(
         auth,
         params,
+        "",
         components,
         (summaryNodes: SummaryNode[]) => {
           dataDispatch({

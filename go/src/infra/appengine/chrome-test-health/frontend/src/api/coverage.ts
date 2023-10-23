@@ -32,26 +32,19 @@ export interface Platform {
   platform: string,
   bucket: string,
   builder: string,
-  coverageTool: string,
   uiName: string,
-  availableRevision: string,
-  avaialbleModifierId: string,
+  latestRevision: string,
 }
 
 export interface GetProjectDefaultConfigRequest {
   luci_project: string,
-  revision: string,
-  modifier_id: string,
 }
 
 export interface GetProjectDefaultConfigResponse {
-  host: string,
-  defaultPlatform: string,
-  project: string,
-  ref: string,
-  platforms: Platform[]
-  revision: string,
-  modifierId: string,
+  gitilesHost: string,
+  gitilesProject: string,
+  gitilesRef: string,
+  builderConfig: Platform[]
 }
 
 export interface GetSummaryCoverageRequest {
@@ -59,30 +52,15 @@ export interface GetSummaryCoverageRequest {
   gitiles_project: string,
   gitiles_ref: string,
   gitiles_revision: string,
-  path: string,
+  path?: string,
+  components?: string[],
   unit_tests_only: boolean,
-  data_type: string,
   bucket: string,
   builder: string
 }
 
 export interface GetSummaryCoverageResponse {
-  summary: Summary
-}
-
-export interface GetSummaryByComponentRequest {
-  gitiles_host: string,
-  gitiles_project: string,
-  gitiles_ref: string,
-  gitiles_revision: string,
-  components: string[],
-  unit_tests_only: boolean,
-  bucket: string,
-  builder: string
-}
-
-export interface GetSummaryByComponentsResponse {
-  summary: Summary[],
+  summary: Summary[]
 }
 
 export interface Team {
@@ -122,23 +100,10 @@ export async function getSummaryCoverage(
       'GetCoverageSummary',
       request,
   );
-  const tree: SummaryNode[] = fixGetSummaryCoverageResponse(resp);
-  return tree;
-}
 
-export async function getSummaryCoverageByComponent(
-    auth: Auth,
-    request: GetSummaryByComponentRequest,
-):
-  Promise<SummaryNode[]> {
-  const resp: GetSummaryByComponentsResponse = await prpcClient.call(
-      auth,
-      'test_resources.Coverage',
-      'GetCoverageSummaryByComponents',
-      request,
-  );
-  const tree: SummaryNode[] = fixGetSummaryCoverageByComponentResponse(resp);
-  return tree;
+  return request.components && request.components.length > 0 ?
+  fixGetSummaryCoverageByComponentResponse(resp) :
+  fixGetSummaryCoverageResponse(resp)
 }
 
 export async function getTeams(auth: Auth): Promise<GetTeamsResponse> {
@@ -243,7 +208,7 @@ function fixGetSummaryCoverageResponse(
     resp: GetSummaryCoverageResponse,
 ): SummaryNode[] {
   const nodes: SummaryNode[] = [];
-  (resp.summary.dirs || []).forEach((dir) => {
+  (resp.summary[0].dirs || []).forEach((dir) => {
     nodes.push({
       name: dir.name,
       path: dir.path,
@@ -252,7 +217,7 @@ function fixGetSummaryCoverageResponse(
       isDir: true,
     } as SummaryNode);
   });
-  (resp.summary.files || []).forEach((file) => {
+  (resp.summary[0].files || []).forEach((file) => {
     nodes.push({
       name: file.name,
       path: file.path,
@@ -265,7 +230,7 @@ function fixGetSummaryCoverageResponse(
 }
 
 function fixGetSummaryCoverageByComponentResponse(
-    resp: GetSummaryByComponentsResponse,
+    resp: GetSummaryCoverageResponse,
 ): SummaryNode[] {
   const rootNodes: SummaryNode[] = [];
   resp.summary.forEach((s) => {

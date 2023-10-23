@@ -5,7 +5,7 @@
 /* eslint-disable */
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
-const target = process.env.PROXY || 'http://localhost:8800'
+const target = process.env.PROXY || 'http://127.0.0.1:8800'
 
 // Proxy all /api methods
 module.exports = function (app) {

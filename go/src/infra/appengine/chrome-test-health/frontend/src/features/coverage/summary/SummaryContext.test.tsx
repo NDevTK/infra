@@ -62,23 +62,18 @@ describe('SummaryContext params', () => {
   beforeEach(() => {
     jest.spyOn(Coverage, 'getProjectDefaultConfig').mockResolvedValue(
         {
-          host: 'chromium.googlesource.com',
-          defaultPlatform: ';inux',
-          project: 'chromium/src',
-          ref: 'refs/heads/main',
-          platforms: [
+          gitilesHost: 'chromium.googlesource.com',
+          gitilesProject: 'chromium/src',
+          gitilesRef: 'refs/heads/main',
+          builderConfig: [
             {
               platform: 'linux',
               bucket: 'test-bucket',
               builder: 'test-builder',
-              coverageTool: 'test-cov-tool',
               uiName: 'Linux',
-              availableRevision: '12345',
-              avaialbleModifierId: '0',
+              latestRevision: '12345',
             },
           ] as Platform[],
-          revision: '12345',
-          modifierId: '0',
         },
     );
 
@@ -98,7 +93,7 @@ describe('SummaryContext params', () => {
       },
     ]);
 
-    jest.spyOn(Coverage, 'getSummaryCoverageByComponent').mockResolvedValue([
+    jest.spyOn(Coverage, 'getSummaryCoverage').mockResolvedValue([
       {
         'name': 'apps/',
         'path': '//apps/',

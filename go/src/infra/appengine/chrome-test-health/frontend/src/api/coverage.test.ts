@@ -5,12 +5,10 @@
 import { Auth } from './auth';
 import { prpcClient } from './client';
 import {
-  GetSummaryByComponentRequest,
   GetSummaryCoverageRequest,
   GetTeamsResponse,
   SummaryNode,
   getSummaryCoverage,
-  getSummaryCoverageByComponent,
   getTeams,
 } from './coverage';
 
@@ -23,14 +21,14 @@ describe('getSummaryCoverage', () => {
     gitiles_ref: 'refs/heads/main',
     gitiles_revision: '03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a',
     path: '//',
-    data_type: 'dirs',
+    components: [],
     unit_tests_only: true,
     bucket: 'ci',
     builder: 'linux-code-coverage',
   };
   it('returns coverage summary', async () => {
     const mockCall = jest.spyOn(prpcClient, 'call').mockResolvedValue({
-      summary: {
+      summary: [{
         dirs: [
           {
             'name': 'apps/',
@@ -63,7 +61,7 @@ describe('getSummaryCoverage', () => {
             'total': 4567235,
           },
         ],
-      },
+      }],
     });
     const expected: SummaryNode[] = [
       {
@@ -95,11 +93,12 @@ describe('getSummaryCoverage', () => {
 });
 
 describe('getSummaryCoverageByComponent', () => {
-  const dummyRequest: GetSummaryByComponentRequest = {
+  const dummyRequest: GetSummaryCoverageRequest = {
     gitiles_host: 'chromium.googlesource.com',
     gitiles_project: 'chromium/src',
     gitiles_ref: 'refs/heads/main',
     gitiles_revision: '03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a',
+    path: "",
     components: [
       'Blink>CSS',
     ],
@@ -336,7 +335,7 @@ describe('getSummaryCoverageByComponent', () => {
         ],
       },
     ];
-    const resp = await getSummaryCoverageByComponent(auth, dummyRequest);
+    const resp = await getSummaryCoverage(auth, dummyRequest);
     expect(mockCall.mock.calls.length).toBe(1);
     expect(mockCall.mock.calls[0].length).toBe(4);
     expect(mockCall.mock.calls[0][3]).toEqual(dummyRequest);

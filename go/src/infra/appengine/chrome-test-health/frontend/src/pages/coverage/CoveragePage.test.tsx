@@ -42,7 +42,7 @@ describe('when rendering the CoveragePage', () => {
       return mockContext(props);
     });
     window.location.search = 'https://localhost/?placeholder'+
-    '=placeholder&revision=abcd124&platform=linux&unit_tests_only=true';
+    '=placeholder&rev=abcd124&plat=linux&isTest=true';
     renderWithBrowserRouter(<CoveragePage/>);
     expect(mockContext).toHaveBeenCalledWith(
         expect.objectContaining({

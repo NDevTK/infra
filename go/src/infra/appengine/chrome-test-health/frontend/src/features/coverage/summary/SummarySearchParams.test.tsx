@@ -25,10 +25,8 @@ describe('when rendering the SummarySearchParams', () => {
         platform: 'linux',
         bucket: 'test-bucket',
         builder: 'test-builder',
-        coverageTool: 'test-cov-tool',
         uiName: 'Linux',
-        availableRevision: '12345',
-        avaialbleModifierId: '0',
+        latestRevision: '12345',
       },
     ],
   };

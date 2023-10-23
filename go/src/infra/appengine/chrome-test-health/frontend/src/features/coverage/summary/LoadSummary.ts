@@ -6,13 +6,11 @@ import {
   CoverageMetric,
   GetProjectDefaultConfigRequest,
   GetProjectDefaultConfigResponse,
-  GetSummaryByComponentRequest,
   GetSummaryCoverageRequest,
   Platform,
   SummaryNode,
   getProjectDefaultConfig,
   getSummaryCoverage,
-  getSummaryCoverageByComponent,
 } from '../../../api/coverage';
 import { Auth } from '../../../api/auth';
 import { Row } from '../../../components/table/DataTable';
@@ -121,8 +119,6 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
 export function loadProjectDefaultConfig(
     auth: Auth,
     LuciProject: string,
-    revision: string,
-    ModifierId: string,
     successCallback: (
     response: GetProjectDefaultConfigResponse
   ) => void,
@@ -130,8 +126,6 @@ export function loadProjectDefaultConfig(
 ) {
   const request: GetProjectDefaultConfigRequest = {
     luci_project: LuciProject,
-    revision: revision,
-    modifier_id: ModifierId,
   };
 
   getProjectDefaultConfig(auth, request).then((response) => {
@@ -143,6 +137,7 @@ export function loadSummary(
     auth: Auth,
     params: Params,
     path: string,
+    components: string[],
     successCallback: (
     response: SummaryNode[],
   ) => void,
@@ -153,9 +148,9 @@ export function loadSummary(
     gitiles_project: params.project,
     gitiles_ref: params.gitilesRef,
     gitiles_revision: params.revision,
-    path: path,
+    path,
+    components,
     unit_tests_only: params.unitTestsOnly,
-    data_type: 'dirs',
     builder: params.builder,
     bucket: params.bucket,
   };
@@ -165,30 +160,6 @@ export function loadSummary(
   }).catch(failureCallback);
 }
 
-export function loadSummaryByComponents(
-    auth: Auth,
-    params: Params,
-    components: string[],
-    successCallback: (
-    response: SummaryNode[]
-  ) => void,
-    failureCallback: (error: any) => void,
-) {
-  const request: GetSummaryByComponentRequest = {
-    gitiles_host: params.host,
-    gitiles_project: params.project,
-    gitiles_ref: params.gitilesRef,
-    gitiles_revision: params.revision,
-    components,
-    unit_tests_only: params.unitTestsOnly,
-    builder: params.builder,
-    bucket: params.bucket,
-  };
-
-  getSummaryCoverageByComponent(auth, request).then((response) => {
-    successCallback(response);
-  }).catch(failureCallback);
-}
 
 // -------------- HELPER FUNCTIONS --------------
 
