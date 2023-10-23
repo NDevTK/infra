@@ -5,7 +5,7 @@
 package dut
 
 import (
-	"fmt"
+	"os"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -63,15 +63,5 @@ func (c *addDUTCmd) Run(a subcommands.Application, args []string, env subcommand
 func (c *addDUTCmd) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
 
-	resp, err := c.TriggerRun(ctx, &executor.ExecCommander{})
-
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(resp.RackMsg)
-	fmt.Println(resp.AssetMsg)
-	fmt.Println(resp.DUTMsg)
-
-	return nil
+	return c.TriggerRun(ctx, &executor.ExecCommander{}, os.Stdout)
 }
