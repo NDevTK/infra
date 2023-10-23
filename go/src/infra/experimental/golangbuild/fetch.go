@@ -329,6 +329,11 @@ func fetchDependencies(ctx context.Context, spec *buildSpec, modules []module) (
 // failure in the build step is a test or infrastructure failure.
 func goModDownload(ctx context.Context, spec *buildSpec, stepName, dir string) (err error) {
 	cmd := spec.goCmd(ctx, dir, "mod", "download", "-json")
+	// Invest reasonable effort to estimate whether the failure was likely due to
+	// an infrastructure problem rather than a problem in the input being tested.
+	//
+	// It's viable to default to non-infra unless a known-infra error is seen, or vice versa,
+	// so use whichever strikes a better balance of low false positives and maintenance costs.
 	var infra bool
 	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
 	defer func() {
@@ -354,8 +359,13 @@ func goModDownload(ctx context.Context, spec *buildSpec, stepName, dir string) (
 				return fmt.Errorf("error decoding JSON object from go mod download -json: %w\n", err)
 			}
 			if strings.Contains(m.Error, "dial tcp") && strings.HasSuffix(m.Error, ": i/o timeout") {
-				// An I/O timeout error to the Go module proxy is deemed to be an infrastructure failure.
+				// An I/O timeout error to a Go module proxy is deemed to be an infrastructure failure.
 				// See https://ci.chromium.org/b/8772399708036918561 for an example.
+				infra = true
+				break
+			} else if strings.HasSuffix(m.Error, ": EOF") {
+				// An EOF error from a Go module proxy is deemed to be an infrastructure failure.
+				// See go.dev/issue/63684 and https://ci.chromium.org/b/8766452547270027457 for an example.
 				infra = true
 				break
 			}
