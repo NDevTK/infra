@@ -111,6 +111,9 @@ func TestAndroidCompanionDutServiceStartCmd_ExtractDepsSuccess(t *testing.T) {
 				},
 			},
 		}
+		primaryDevice := &api.CrosTestRequest_Device{
+			Dut: dutTopo.Duts[0],
+		}
 
 		provisionMetadata, _ := anypb.New(androidProvisionRequestMetadata)
 
@@ -126,7 +129,7 @@ func TestAndroidCompanionDutServiceStartCmd_ExtractDepsSuccess(t *testing.T) {
 				},
 			},
 		}
-		sk := &data.HwTestStateKeeper{DutTopology: dutTopo, CftTestRequest: cftTestReq, CompanionDevices: companionDevices}
+		sk := &data.HwTestStateKeeper{CftTestRequest: cftTestReq, CompanionDevices: companionDevices, PrimaryDevice: primaryDevice}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewAndroidDutTemplatedContainer("container/image/path", ctr)

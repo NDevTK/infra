@@ -89,7 +89,7 @@ func (cmd *TestsExecutionCmd) extractDepsFromHwTestStateKeeper(
 	cmd.TestArgs = sk.TestArgs
 	cmd.TastArgs, _ = getTastExecutionMetadata(sk.CftTestRequest)
 
-	if sk.DutTopology == nil || sk.DutTopology.GetDuts() == nil || len(sk.DutTopology.GetDuts()) == 0 {
+	if sk.PrimaryDevice == nil || sk.PrimaryDevice.Dut == nil {
 		return fmt.Errorf("Cmd %q missing dependency: PrimaryDevice", cmd.GetCommandType())
 	}
 
@@ -97,7 +97,7 @@ func (cmd *TestsExecutionCmd) extractDepsFromHwTestStateKeeper(
 		return fmt.Errorf("Cmd %q missing dependency: DutServerAddress", cmd.GetCommandType())
 	}
 
-	cmd.PrimaryDevice = &testapi.CrosTestRequest_Device{Dut: sk.DutTopology.GetDuts()[0], DutServer: sk.DutServerAddress}
+	cmd.PrimaryDevice = &testapi.CrosTestRequest_Device{Dut: sk.PrimaryDevice.GetDut(), DutServer: sk.DutServerAddress}
 	cmd.CompanionDevices = sk.CompanionDevices
 
 	return nil

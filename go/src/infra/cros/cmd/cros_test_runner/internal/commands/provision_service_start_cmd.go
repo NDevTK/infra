@@ -58,11 +58,11 @@ func (cmd *ProvisionServiceStartCmd) extractDepsFromHwTestStateKeeper(
 
 	cmd.ProvisionState = sk.CftTestRequest.GetPrimaryDut().GetProvisionState()
 
-	if sk.DutTopology == nil || len(sk.DutTopology.GetDuts()) == 0 || sk.DutTopology.GetDuts()[0] == nil {
-		return fmt.Errorf("Cmd %q missing dependency: PrimaryDut", cmd.GetCommandType())
+	if sk.PrimaryDevice == nil || sk.PrimaryDevice.Dut == nil {
+		return fmt.Errorf("Cmd %q missing dependency: PrimaryDevice", cmd.GetCommandType())
 	}
 
-	cmd.PrimaryDut = sk.DutTopology.GetDuts()[0]
+	cmd.PrimaryDut = sk.PrimaryDevice.GetDut()
 
 	if sk.DutServerAddress == nil {
 		return fmt.Errorf("Cmd %q missing dependency: DutServerAddress", cmd.GetCommandType())

@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
@@ -79,7 +80,10 @@ func TestDutServiceStartCmd_ExtractDepsSuccess(t *testing.T) {
 				},
 			},
 		}
-		sk := &data.HwTestStateKeeper{DutTopology: dutTopo}
+		primaryDevice := &api.CrosTestRequest_Device{
+			Dut: dutTopo.Duts[0],
+		}
+		sk := &data.HwTestStateKeeper{PrimaryDevice: primaryDevice}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)

@@ -60,9 +60,9 @@ func (cmd *AndroidProvisionInstallCmd) ExtractDependencies(
 			}
 		}
 		cmd.AndroidDutServerAddress = sk.AndroidDutServerAddress
-		for _, dut := range sk.DutTopology.GetDuts() {
-			if dut.GetAndroid() != nil {
-				cmd.AndroidCompanionDut = dut
+		for _, device := range sk.CompanionDevices {
+			if device.GetDut().GetAndroid() != nil {
+				cmd.AndroidCompanionDut = device.GetDut()
 			}
 		}
 		if cmd.AndroidProvisionState == nil || cmd.AndroidDutServerAddress == nil || cmd.AndroidCompanionDut == nil {

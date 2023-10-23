@@ -76,10 +76,8 @@ func TestTestsExecutionCmd_ExtractDepsSuccess(t *testing.T) {
 					&testapi.TestSuite{},
 				},
 			},
-			DutTopology: &labapi.DutTopology{
-				Duts: []*labapi.Dut{
-					{},
-				},
+			PrimaryDevice: &api.CrosTestRequest_Device{
+				Dut: &labapi.Dut{},
 			},
 			DutServerAddress: &labapi.IpEndpoint{},
 		}

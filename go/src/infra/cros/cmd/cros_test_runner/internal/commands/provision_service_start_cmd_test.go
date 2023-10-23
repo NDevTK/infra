@@ -75,10 +75,8 @@ func TestProvisionStartCmd_ExtractDepsSuccess(t *testing.T) {
 					ProvisionState: &api.ProvisionState{},
 				},
 			},
-			DutTopology: &labapi.DutTopology{
-				Duts: []*labapi.Dut{
-					{},
-				},
+			PrimaryDevice: &api.CrosTestRequest_Device{
+				Dut: &labapi.Dut{},
 			}, DutServerAddress: &labapi.IpEndpoint{}}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
