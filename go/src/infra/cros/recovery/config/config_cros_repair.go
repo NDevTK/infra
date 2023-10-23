@@ -461,11 +461,67 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_battery_chargable_or_good_level",
 			RecoveryActions: []string{
+				"Recover by disabling factory settings",
 				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive",
+			},
+		},
+		"Recover by disabling factory settings": {
+			Docs: []string{
+				"Automated process to disable factory settings.",
+			},
+			Conditions: []string{
+				"Battery is expected on device",
+				"Battery is present on device",
+			},
+			Dependencies: []string{
+				"Disable factory settings on the DUT",
+				"Shutdown DUT by SSH",
+				"Sleep 60 seconds",
+				"Set RPM OFF",
+				"Sleep 10 seconds",
+				"Power ON DUT by servo",
+				"Sleep 60 seconds",
+				"Set RPM ON",
+				// If servo pd used then always recover it last.
+				"Set servo PD to src",
+			},
+			ExecName: "sample_pass",
+		},
+		"Set RPM OFF": {
+			ExecName: "device_rpm_power_off",
+			ExecExtraArgs: []string{
+				"device_type:dut",
+			},
+		},
+		"Set RPM ON": {
+			ExecName: "device_rpm_power_on",
+			ExecExtraArgs: []string{
+				"device_type:dut",
+			},
+		},
+		"Disable factory settings on the DUT": {
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:gsctool -a -F disable",
+			},
+		},
+		"Shutdown DUT by SSH": {
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:shutdown -h now",
+				"background:true",
 			},
 		},
 		"Power is recognized by DUT": {
