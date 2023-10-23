@@ -92,6 +92,29 @@ arbitrary strings, the values given here match the production configuration.
 
 Finally, we specify where the output should be written.
 
+# Adding a new language
+If you're adding a new language, you'll likely want to create a
+language-specific target struct that's used to implement `GnTargetInterface`.
+The struct should contain all information needed to implement the interface,
+which defines `getUnit()` that returns a generated CompilationUnit for a
+target, and `getFiles()` that returns a list of all files required for
+compilation of a target.
+
+Once you're done, populate package_index_testdata which contains the following
+directories:
+  *  `input/src`: Contains inputs to tests.
+  *  `files.expected`: Expected data files which are the output of running
+  package_index with `input/src`. As mentioned in
+  https://kythe.io/docs/kythe-kzip.html, the name of each file is named its
+  SHA256 hash.
+  *  `units.expected`: Expected compilation units which are the output of
+  running package_index with `input/src`.
+  *  `units_win.expected`: Same as units.expected, but for Windows instead of
+  Linux.
+
+You may find https://crrev.com/c/3288987, which adds torque to package_index,
+useful as reference.
+
 # Uploading to CIPD
 
 Release is handled automatically but if you'd like to manually upload to CIPD,
