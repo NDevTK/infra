@@ -17,13 +17,24 @@ package frontend
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"os"
 	"strings"
 
 	"go.chromium.org/luci/appengine/gaeauth/server"
+	gaeserver "go.chromium.org/luci/appengine/gaeauth/server"
+	configpb "go.chromium.org/luci/common/proto/config"
+	"go.chromium.org/luci/config/appengine/gaeconfig"
+	"go.chromium.org/luci/config/server/cfgmodule"
+	"go.chromium.org/luci/config/validation"
 	"go.chromium.org/luci/gae/service/info"
+	"go.chromium.org/luci/grpc/discovery"
+	"go.chromium.org/luci/grpc/grpcmon"
+	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/signing"
 	"go.chromium.org/luci/server/auth/xsrf"
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/templates"
@@ -50,6 +61,34 @@ func InstallHandlers(r *router.Router, bm router.MiddlewareChain) {
 	r.GET("/", m, indexPage)
 	r.GET("/assigner/:AssignerID", m, assignerPage)
 	r.GET("/assigner/:AssignerID/task/:TaskID", m, taskPage)
+
+	api := prpc.Server{
+		UnaryServerInterceptor: grpcutil.ChainUnaryServerInterceptors(
+			grpcmon.UnaryServerInterceptor,
+			auth.AuthenticatingInterceptor([]auth.Method{
+				&gaeserver.OAuth2Method{Scopes: []string{gaeserver.EmailScope}},
+			}).Unary(),
+		),
+	}
+	configpb.RegisterConsumerServer(&api, &cfgmodule.ConsumerServer{
+		Rules: &validation.Rules,
+		GetConfigServiceAccountFn: func(ctx context.Context) (string, error) {
+			settings, err := gaeconfig.FetchCachedSettings(ctx)
+			switch {
+			case err != nil:
+				return "", err
+			case settings.ConfigServiceHost == "":
+				return "", errors.New("can not find config service host from settings")
+			}
+			info, err := signing.FetchServiceInfoFromLUCIService(ctx, "https://"+settings.ConfigServiceHost)
+			if err != nil {
+				return "", err
+			}
+			return info.ServiceAccountName, nil
+		},
+	})
+	discovery.Enable(&api)
+	api.InstallHandlers(r, bm)
 }
 
 // prepareTemplates constructs templates.Bundle for HTML handlers.
