@@ -6,6 +6,7 @@ package satlabcommands
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 	"strings"
 
@@ -14,6 +15,7 @@ import (
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/common/utils/misc"
+	multiCmdExcutor "infra/cros/satlab/satlabrpcserver/utils/executor"
 )
 
 // Decision is a classification of a line in a file.
@@ -110,4 +112,62 @@ func GetOsVersion(ctx context.Context, executor executor.IExecCommander) (*OSVer
 		}
 	}
 	return &resp, nil
+}
+
+// GetHostIP gets the host ip.
+func GetHostIP(ctx context.Context, executor executor.IExecCommander) (string, error) {
+	out, err := executor.Exec(exec.CommandContext(ctx, paths.GetHostIPScript))
+	if err != nil {
+		return "", err
+	}
+	return parseOutput(string(out)), nil
+}
+
+// GetMacAddress gets hostname and mac address of satlab.
+func GetMacAddress(ctx context.Context, executor executor.IExecCommander) (string, error) {
+	hostIP, err := GetHostIP(ctx, executor)
+	if err != nil {
+		return "", err
+	}
+
+	multipleCmdsExecutor := multiCmdExcutor.New(
+		exec.CommandContext(
+			ctx,
+			paths.DockerPath,
+			"exec",
+			"dhcp",
+			"ip",
+			"route",
+			"show",
+		),
+		exec.CommandContext(ctx, "grep", hostIP),
+	)
+	hostIPInfo, err := multipleCmdsExecutor.Exec(executor)
+	if err != nil {
+		return "", err
+	}
+
+	hostIPInfoArr := strings.Split(string(hostIPInfo), " ")
+	if len(hostIPInfoArr) < 3 {
+		return "", errors.New("Can not get network interface control name.")
+	}
+
+	NICIndex := 2
+	NICName := hostIPInfoArr[NICIndex]
+
+	cmd := fmt.Sprintf(paths.NetInfoPathTemplate, NICName)
+	out, err := executor.Exec(
+		exec.CommandContext(
+			ctx,
+			paths.DockerPath,
+			"exec",
+			"dhcp",
+			"cat",
+			cmd,
+		),
+	)
+	if err != nil {
+		return "", err
+	}
+	return parseOutput(string(out)), nil
 }

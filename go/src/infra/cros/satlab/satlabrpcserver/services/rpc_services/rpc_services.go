@@ -758,3 +758,22 @@ func innerDeleteDuts(ctx context.Context, executor executor.IExecCommander, ufs 
 
 	return res, IPToHostResult.InvalidAddresses, nil
 }
+
+// GetNetworkInfo gets newwork information of satlab.
+func (s *SatlabRpcServiceServer) GetNetworkInfo(ctx context.Context, _ *pb.GetNetworkInfoRequest) (*pb.GetNetworkInfoResponse, error) {
+	hostname, err := satlabcommands.GetHostIP(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
+	macAddress, err := satlabcommands.GetMacAddress(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetNetworkInfoResponse{
+		Hostname:    hostname,
+		MacAddress:  macAddress,
+		IsConnected: hostname != "" && hostname != "localhost",
+	}, nil
+}

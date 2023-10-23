@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os/exec"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -1602,5 +1603,45 @@ func TestDeleteDutsShouldFail(t *testing.T) {
 
 	if len(invalidAddresses) != 0 {
 		t.Errorf("invalid addresses should be empty: %v", invalidAddresses)
+	}
+}
+
+func TestGetNetworkInfoShouldSuccess(t *testing.T) {
+	t.Parallel()
+	// Create a mock server
+	s := createMockServer(t)
+
+	expected := &pb.GetNetworkInfoResponse{
+		Hostname:    "127.0.0.1",
+		MacAddress:  "aa:bb:cc:dd:ee:ff",
+		IsConnected: true,
+	}
+
+	s.commandExecutor = &executor.FakeCommander{
+		FakeFn: func(in *exec.Cmd) ([]byte, error) {
+			cmd := strings.Join(in.Args, " ")
+			if cmd == "/usr/local/bin/get_host_ip" {
+				return []byte(expected.Hostname), nil
+			} else if cmd == "/usr/local/bin/docker exec dhcp cat /sys/class/net/eth0/address" {
+				return []byte(expected.MacAddress), nil
+			}
+			return nil, errors.New(fmt.Sprintf("handle command: %v", in.Path))
+		},
+		CmdOutput: fmt.Sprintf("%v/24 dev eth0 scope link  src %v", expected.Hostname, expected.Hostname),
+	}
+
+	ctx := context.Background()
+
+	req := &pb.GetNetworkInfoRequest{}
+
+	res, err := s.GetNetworkInfo(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: %v", err)
+	}
+
+	if diff := cmp.Diff(expected, res, cmpopts.IgnoreUnexported(pb.GetNetworkInfoResponse{})); diff != "" {
+		t.Errorf("Expected %v, got %v", expected, res)
 	}
 }

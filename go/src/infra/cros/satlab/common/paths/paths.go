@@ -25,4 +25,10 @@ const (
 
 	// Fping is the path to the wrapper around fping
 	Fping = "/usr/sbin/fping"
+
+	// GetHostIPScript is the path to get the host ip script.
+	GetHostIPScript = "/usr/local/bin/get_host_ip"
+
+	// NetInfoPathTemplate is the path to get internet info of satlab machine.
+	NetInfoPathTemplate = "/sys/class/net/%v/address"
 )

@@ -18,6 +18,7 @@ service SatlabRpcService {
   rpc list_connected_duts_firmware (ListConnectedDutsFirmwareRequest) returns (ListConnectedDutsFirmwareResponse);
   rpc get_system_info (GetSystemInfoRequest) returns (GetSystemInfoResponse);
   rpc get_version_info (GetVersionInfoRequest) returns (GetVersionInfoResponse);
+  rpc get_network_info (GetNetworkInfoRequest) returns (GetNetworkInfoResponse);
   rpc get_peripheral_information (GetPeripheralInformationRequest) returns (GetPeripheralInformationResponse);
   rpc update_duts_firmware (UpdateDutsFirmwareRequest)  returns (UpdateDutsFirmwareResponse);
 
@@ -343,4 +344,14 @@ message DeleteDutsResponse {
   repeated string fail = 2;
   // invalid_addresses contain the information that we can not convert the IPs to the hostnames.
   repeated string invalid_addresses = 3;
+}
+
+// NEXT_TAG = 1
+message GetNetworkInfoRequest {}
+
+// NEXT_TAG = 4
+message GetNetworkInfoResponse {
+  string hostname = 1;
+  string mac_address = 2;
+  bool is_connected = 3;
 }
