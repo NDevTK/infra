@@ -16,6 +16,23 @@
       "message": "bumping",
       "revId": "08042b8d898551fbebc8da176fee638e1de32a7a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e554908_3b3e8639",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116001
+      },
+      "writtenOn": "2023-10-23T18:18:12Z",
+      "side": 1,
+      "message": "lgtm % does this also impact get/delete dut commands?",
+      "revId": "08042b8d898551fbebc8da176fee638e1de32a7a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
