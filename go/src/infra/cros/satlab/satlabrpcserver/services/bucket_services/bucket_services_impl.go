@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"strings"
 
-	"cloud.google.com/go/storage"
-
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/collection"
+
+	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 )
 
 // BucketConnector is an object for connecting the GCS bucket storage.
@@ -26,9 +28,9 @@ type BucketConnector struct {
 //
 // string bucketName config which bucket we want to connect with in later functions.
 func New(ctx context.Context, bucketName string) (IBucketServices, error) {
-	client, err := storage.NewClient(ctx)
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("storage.NewClient: %w", err)
 	}
 
 	return &BucketConnector{
