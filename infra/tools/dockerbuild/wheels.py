@@ -1020,7 +1020,6 @@ SPECS.update({
             ],
             pyversions=['py3'],
         ),
-        # TODO: No release of pytype yet for python 3.11.
         SourceOrPrebuilt(
             'pytype',
             '2022.12.15',
@@ -1040,6 +1039,20 @@ SPECS.update({
                 'manylinux-x64-py3.8',
                 'mac-x64-py3.8',
                 'mac-arm64-py3.8',
+            ],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
+            'pytype',
+            '2023.10.17',
+            packaged=(),
+            only_plat=[
+                'manylinux-x64-py3.8',
+                'manylinux-x64-py3.11',
+                'mac-x64-py3.8',
+                'mac-x64-py3.11',
+                'mac-arm64-py3.8',
+                'mac-arm64-py3.11',
             ],
             pyversions=['py3'],
         ),
