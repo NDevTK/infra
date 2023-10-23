@@ -50,6 +50,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "85c8981c_2eaac18f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-23T16:34:51Z",
+      "side": 1,
+      "message": "A few hours wrestling with gclient sync and it works... probably destroyed the rest of my branches though.",
+      "parentUuid": "041a1d27_7e2f2628",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 0
+      },
+      "revId": "89fb7a1bd41788818c9a25e476bc97330b93221f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "f6a8b51a_b782c506",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 5
@@ -88,6 +112,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e3de306_4e3b1fc4",
+        "filename": "go/src/infra/monitoring/sysmon/puppet/puppet.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-23T16:34:51Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "20e19391_7ee7d39d",
+      "range": {
+        "startLine": 129,
+        "startChar": 2,
+        "endLine": 129,
+        "endChar": 8
+      },
+      "revId": "89fb7a1bd41788818c9a25e476bc97330b93221f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c49d65dd_2177a547",
@@ -101,6 +149,30 @@
       "writtenOn": "2023-10-20T15:48:13Z",
       "side": 1,
       "message": "I think this would fail, earlier comment. updateIsCanary returns an error string.",
+      "range": {
+        "startLine": 143,
+        "startChar": 3,
+        "endLine": 144,
+        "endChar": 37
+      },
+      "revId": "89fb7a1bd41788818c9a25e476bc97330b93221f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d35de69_af34867c",
+        "filename": "go/src/infra/monitoring/sysmon/puppet/puppet_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-23T16:34:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c49d65dd_2177a547",
       "range": {
         "startLine": 143,
         "startChar": 3,
