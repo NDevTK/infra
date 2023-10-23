@@ -117,7 +117,7 @@ deps = {
     'packages': [
       {
         'package': 'infra/3pp/tools/gcloud/${{os=mac,linux}}-${{arch=amd64}}',
-        'version': 'version:2@427.0.0.chromium.3',
+        'version': 'version:2@451.0.1.chromium.4',
       }
     ],
     'dep_type': 'cipd',
