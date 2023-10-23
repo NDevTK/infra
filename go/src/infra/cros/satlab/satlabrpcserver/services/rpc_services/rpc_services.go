@@ -300,7 +300,10 @@ func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, 
 
 		model := cmdResponse.Model
 		currentFirmware := cmdResponse.FwId
-		updateFirmware := cmdResponse.FwUpdate[model].Host.Versions.RW
+		updateFirmware := "null"
+		if _, ok := cmdResponse.FwUpdate[model]; ok {
+			updateFirmware = cmdResponse.FwUpdate[model].Host.Versions.RW
+		}
 		DUTsResponse = append(DUTsResponse, &pb.ConnectedDutFirmwareInfo{
 			Ip: cmdRes.IP, CurrentFirmware: currentFirmware, UpdateFirmware: updateFirmware,
 		})
