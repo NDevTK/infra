@@ -21,17 +21,6 @@ switch-prod:
 versions-cleanup-prod:
 	gae.py cleanup -A arquebus --app-dir $(projdir)/app
 
-#------------------------------------------------------------
-# Arquebus STAGING
-deploy-staging: gen
-	gae.py upload -A arquebus-staging --app-dir $(projdir)/app
-
-switch-staging:
-	gae.py switch -A arquebus-staging --app-dir $(projdir)/app
-
-versions-cleanup-staging:
-	gae.py cleanup -A arquebus-staging --app-dir $(projdir)/app
-
 test: gen
 	go test ./...
 
