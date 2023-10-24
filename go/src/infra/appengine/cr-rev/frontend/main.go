@@ -31,7 +31,7 @@ func handleIndex(c *router.Context) {
 // handlePublicGerritRedirect redirects user to a CL on chromium-review
 func handlePublicGerritRedirect(c *router.Context) {
 	path := c.Params.ByName("path")
-	url := "https://chromium-review.googlesource.com/q" + path
+	url := "https://chromium-review.googlesource.com/c" + path
 	http.Redirect(
 		c.Writer, c.Request, url, http.StatusPermanentRedirect)
 }
@@ -40,7 +40,7 @@ func handlePublicGerritRedirect(c *router.Context) {
 // chrome-internal-review.
 func handleInternalGerritRedirect(c *router.Context) {
 	path := c.Params.ByName("path")
-	url := "https://chrome-internal-review.googlesource.com/q" + path
+	url := "https://chrome-internal-review.googlesource.com/c" + path
 	http.Redirect(
 		c.Writer, c.Request, url, http.StatusPermanentRedirect)
 }
