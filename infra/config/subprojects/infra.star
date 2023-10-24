@@ -254,7 +254,8 @@ def wheel_tryjob(builder):
 
 wheel_tryjob("infra-internal:try/Universal wheel builder")
 wheel_tryjob("infra-internal:try/Linux x64 wheel builder")
-wheel_tryjob("infra-internal:try/Linux ARM wheel builder")
+wheel_tryjob("infra-internal:try/Linux ARM wheel builder py3.8")
+wheel_tryjob("infra-internal:try/Linux ARM wheel builder py3.11")
 wheel_tryjob("infra-internal:try/Mac wheel builder")
 wheel_tryjob("infra-internal:try/Mac ARM64 wheel builder")
 wheel_tryjob("infra-internal:try/Windows-x64 wheel builder")
