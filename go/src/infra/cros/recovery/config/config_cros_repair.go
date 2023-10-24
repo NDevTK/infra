@@ -474,6 +474,7 @@ func crosRepairActions() map[string]*Action {
 				"Automated process to disable factory settings.",
 			},
 			Conditions: []string{
+				"Device without cros EC",
 				"Battery is expected on device",
 				"Battery is present on device",
 			},
@@ -1200,6 +1201,16 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:               "cros_audit_battery",
 			AllowFailAfterRecovery: true,
+		},
+		"Device without cros EC": {
+			Docs: []string{
+				"Check that is board without chromeOS EC.",
+			},
+			ExecExtraArgs: []string{
+				"string_values:drallion,sarien",
+				"invert_result:false",
+			},
+			ExecName: "dut_check_board",
 		},
 		"Battery is expected on device": {
 			Docs: []string{
