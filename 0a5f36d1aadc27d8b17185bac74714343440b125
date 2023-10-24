@@ -16,6 +16,24 @@
       "message": "FWIW, the functions inside `ioutil` have all been deprecated in favor of functions in other places in the std lib. In this case...\n\n`ioutil.ReadFile -\u003e os.ReadFile`\n\n`ioutil.ReadFile` will still work. It just now directly calls `os.ReadFile`.\n\n```suggestion\n\traw, err :\u003d os.ReadFile(path)\n```\n\nSince ioutil.ReadFile is in other places in this file, I will leave it as a suggestion for you to change all over now vs leaving it for later.",
       "revId": "0a5f36d1aadc27d8b17185bac74714343440b125",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bad3fde8_119db0a8",
+        "filename": "go/src/infra/monitoring/sysmon/puppet/puppet.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1117044
+      },
+      "writtenOn": "2023-10-24T14:26:38Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "9c14aed9_03889a2c",
+      "revId": "0a5f36d1aadc27d8b17185bac74714343440b125",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
