@@ -30,6 +30,13 @@ luci.cq_group(
         refs = ["refs/heads/main"],
     ),
     retry_config = cq.RETRY_TRANSIENT_FAILURES,
+    user_limits = [
+        cq.user_limit(
+            name = "cv-admins-limit",
+            groups = ["service-luci-change-verifier-admins"],
+            run = cq.run_limits(max_active = 5),
+        ),
+    ],
 )
 
 # Presubmit trybots.
