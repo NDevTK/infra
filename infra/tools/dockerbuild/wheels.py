@@ -65,7 +65,7 @@ import sys
 from pkg_resources import parse_version
 
 from . import build_platform
-from .builder import BuildDependencies
+from .builder import BuildDependencies, TppLib, TppTool
 
 # This is the NumPy-ecosystem list of platforms that their mac-x64 wheel
 # supports.
@@ -229,7 +229,16 @@ def _GrpcEnv(w):
 def _NumPyTppLibs():
   # Bring in openblas only on mac.
   if sys.platform == 'darwin':
-    return [('infra/3pp/static_libs/openblas', 'version:2@0.3.24')]
+
+    def _NumPySetup(pkg_dir, extra_env):
+      extra_env['OPENBLAS'] = pkg_dir
+
+    return [
+        TppLib(
+            'infra/3pp/static_libs/openblas',
+            'version:2@0.3.24',
+            setup_cb=_NumPySetup)
+    ]
   return []
 
 
@@ -293,8 +302,10 @@ SPECS.update({
             packaged=(),
             pyversions=['py3'],
             patch_version='chromium.1',
-            tpp_libs=[('infra/3pp/static_libs/openssl',
-                       'version:2@1.1.1t.chromium.2')],
+            tpp_libs=[
+                TppLib('infra/3pp/static_libs/openssl',
+                       'version:2@1.1.1t.chromium.2')
+            ],
         ),
         SourceOrPrebuilt(
             'aioquic',
@@ -302,8 +313,10 @@ SPECS.update({
             packaged=(),
             pyversions=['py3'],
             patch_version='chromium.1',
-            tpp_libs=[('infra/3pp/static_libs/openssl',
-                       'version:2@1.1.1t.chromium.2')],
+            tpp_libs=[
+                TppLib('infra/3pp/static_libs/openssl',
+                       'version:2@1.1.1t.chromium.2')
+            ],
         ),
         SourceOrPrebuilt(
             'bcrypt',
@@ -420,8 +433,10 @@ SPECS.update({
                     ),
                 ],
             ),
-            tpp_libs=[('infra/3pp/static_libs/openssl',
-                       'version:2@1.1.1t.chromium.2')],
+            tpp_libs=[
+                TppLib('infra/3pp/static_libs/openssl',
+                       'version:2@1.1.1t.chromium.2')
+            ],
         ),
         SourceOrPrebuilt(
             'debugpy',
@@ -667,13 +682,13 @@ SPECS.update({
                 'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
             ],
-            tpp_libs=[('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
+            tpp_libs=[TppLib('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
         ),
         SourceOrPrebuilt(
             'ijson',
             '3.2.3',
             pyversions=['py3'],
-            tpp_libs=[('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
+            tpp_libs=[TppLib('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
         ),
         SourceOrPrebuilt(
             'lazy-object-proxy',
@@ -718,9 +733,11 @@ SPECS.update({
             only_plat=[
                 'manylinux-x64-py3.8', 'mac-x64-py3.8', 'mac-arm64-py3.8'
             ],
-            tpp_libs=[('infra/3pp/static_libs/mysqlclient', 'version:2@8.0.26'),
-                      ('infra/3pp/static_libs/openssl',
-                       'version:2@1.1.1j.chromium.2')],
+            tpp_libs=[
+                TppLib('infra/3pp/static_libs/mysqlclient', 'version:2@8.0.26'),
+                TppLib('infra/3pp/static_libs/openssl',
+                       'version:2@1.1.1j.chromium.2')
+            ],
         ),
         SourceOrPrebuilt(
             'ninja',
@@ -757,7 +774,7 @@ SPECS.update({
             # Installing cmake through setup.py is both unreliable and
             # non-hermetic, so supply it from the 3pp package.
             tpp_tools=[
-                ('infra/3pp/tools/cmake', 'version:2@3.26.0.chromium.7'),
+                TppTool('infra/3pp/tools/cmake', 'version:2@3.26.0.chromium.7'),
             ],
         ),
         SourceOrPrebuilt(
@@ -812,7 +829,7 @@ SPECS.update({
             tpp_libs=_NumPyTppLibs(),
             env_cb=_NumPyEnv,
             patches=('cpu-dispatch',),
-            patch_version='chromium.1',
+            patch_version='chromium.2',
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -992,8 +1009,10 @@ SPECS.update({
             packaged=(),
             only_plat=['manylinux-x64-py3.8'],
             pyversions=['py3'],
-            tpp_libs=[('infra/3pp/static_libs/re2',
-                       'version:2@2022-12-01.chromium.1')],
+            tpp_libs=[
+                TppLib('infra/3pp/static_libs/re2',
+                       'version:2@2022-12-01.chromium.1')
+            ],
         ),
         SourceOrPrebuilt(
             'pytype',
@@ -1989,8 +2008,10 @@ SPECS.update({
                         'windows-x86-py3.8',
                         'windows-x64-py3.8',
                     ],
-                    tpp_libs=[('infra/3pp/static_libs/mpich',
-                               'version:2@3.4.1.chromium.6')],
+                    tpp_libs=[
+                        TppLib('infra/3pp/static_libs/mpich',
+                               'version:2@3.4.1.chromium.6')
+                    ],
                     env_cb=lambda w: {
                         'MPICC': 'mpicc',  # provided by mpich package
                     },

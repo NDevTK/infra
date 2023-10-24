@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import collections
+from dataclasses import dataclass
 import glob
 import os
 import platform
@@ -11,6 +12,7 @@ import shutil
 import stat
 import subprocess
 import sys
+from typing import Callable, Dict, List, Optional
 
 from . import build_platform
 from . import concurrency
@@ -471,6 +473,36 @@ class BuildDependencies(
   pass
 
 
+@dataclass
+class TppLib(object):
+  """Represents a reference to a 3pp library in CIPD."""
+  # The package name in CIPD, such as infra/3pp/some_library.
+  # The correct platform suffix is automatically appended.
+  name: str
+  # The CIPD tag to fetch, such as version:2@1.2.3.
+  version: str
+  # An optional callback to invoke once the package has been
+  # installed. The callback is passed the install directory
+  # and a mutable dictionary of environment variables that
+  # will be passed to the wheel build process.
+  setup_cb: Optional[Callable[[str, Dict[str, str]], None]] = None
+
+
+@dataclass
+class TppTool(object):
+  """Represents a reference to a 3pp tool in CIPD."""
+  # The package name in CIPD, such as infra/3pp/some_tool.
+  # The correct platform suffix is automatically appended.
+  name: str
+  # The CIPD tag to fetch, such as version:2@1.2.3.
+  version: str
+  # An optional callback to invoke once the package has been
+  # installed. The callback is passed the install directory
+  # and a mutable dictionary of environment variables that
+  # will be passed to the wheel build process.
+  setup_cb: Optional[Callable[[str, Dict[str, str]], None]] = None
+
+
 def BuildPackageFromSource(system,
                            wheel,
                            src,
@@ -490,11 +522,10 @@ def BuildPackageFromSource(system,
     output_dir (str): The wheel output directory.
     deps (dockerbuild.builder.BuildDependencies|None): Dependencies required
       to build the wheel.
-    tpp_libs (List[(str, str)]|None): 3pp libraries to install in the
-      build environment. The list items are (package name, version).
-    tpp_tools (List[(str, str)]|None): 3pp tools (for the build platform)
-      which are needed to build the wheel. The list items are
-      (package name, version).
+    tpp_libs (List[TppLibrary]|None): 3pp libraries to install in the build
+      environment.
+    tpp_tools (List[TppTool]|None): 3pp tools (for the build platform) which
+      are needed to build the wheel.
     env (Dict[str, str]|None): Additional envvars to set while building the
       wheel.
     skip_auditwheel (bool): See SourceOrPrebuilt documentation.
@@ -521,7 +552,7 @@ def BuildPackageFromSource(system,
       env_prefix = []
 
       # Install the given package and return the path to it.
-      def install_pkg(pkg, plat, build_dir=build_dir):
+      def install_pkg(pkg, version, plat, build_dir=build_dir):
         pkg_name = '%s/%s' % (pkg, plat)
         pkg_dir = os.path.join(build_dir, '%s_%s_cipd' % (pkg, plat))
         system.cipd.init(pkg_dir)
@@ -531,8 +562,10 @@ def BuildPackageFromSource(system,
       if tpp_libs:
         tpp_include_dirs = []
         tpp_lib_dirs = []
-        for pkg, version in tpp_libs:
-          pkg_dir = install_pkg(pkg, wheel.plat.cipd_platform)
+        for l in tpp_libs:
+          pkg_dir = install_pkg(l.name, l.version, wheel.plat.cipd_platform)
+          if l.setup_cb:
+            l.setup_cb(pkg_dir, extra_env)
           tpp_include_dirs.append(os.path.join(pkg_dir, 'include'))
           tpp_lib_dirs.append(os.path.join(pkg_dir, 'lib'))
           # Prepend the bin/ directory of each package to PATH.
@@ -561,8 +594,10 @@ def BuildPackageFromSource(system,
 
       if tpp_tools:
         host_plat = HostCipdPlatform()
-        for pkg, version in tpp_tools:
-          pkg_dir = install_pkg(pkg, host_plat)
+        for t in tpp_tools:
+          pkg_dir = install_pkg(t.name, t.version, host_plat)
+          if t.setup_cb:
+            t.setup_cb(pkg_dir, extra_env)
           # Prepend the bin/ directory of each package to PATH.
           env_prefix.append(('PATH', os.path.join(pkg_dir, 'bin')))
 
