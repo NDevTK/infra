@@ -5,7 +5,9 @@
 package puppet
 
 import (
+	"fmt"
 	"golang.org/x/sys/windows/registry"
+	"os"
 )
 
 var (
@@ -20,12 +22,18 @@ func lastRunFile() (string, error) {
 	return appdata + `\PuppetLabs\puppet\var\state\last_run_summary.yaml`, nil
 }
 
-func isPuppetCanaryFile() (string, error) {
+func puppetConfFile() (string, error) {
 	appdata, err := commonAppdataPath()
 	if err != nil {
 		return "", err
 	}
-	return appdata + `\PuppetLabs\puppet\var\lib\is_puppet_canary`, nil
+
+	filePath := appdata + `\PuppetLabs\puppet\etc\puppet.conf`
+	if _, err := os.Stat(filePath); err == nil {
+		return filePath, nil
+	}
+
+	return "", fmt.Errorf("no conf exists at derived path %s", filePath)
 }
 
 func commonAppdataPath() (string, error) {

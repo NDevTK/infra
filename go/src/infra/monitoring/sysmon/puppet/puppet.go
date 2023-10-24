@@ -7,7 +7,6 @@ package puppet
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -74,8 +73,8 @@ func Register() {
 			logging.Warningf(c, "Failed to update puppet metrics: %v", err)
 		}
 
-		if path, err := isPuppetCanaryFile(); err != nil {
-			logging.Warningf(c, "Failed to get is_puppet_canary path: %v", err)
+		if path, err := puppetConfFile(); err != nil {
+			logging.Warningf(c, "Failed to get puppet.conf path: %v", err)
 		} else if err = updateIsCanary(c, path); err != nil {
 			logging.Warningf(c, "Failed to update puppet canary metric: %v", err)
 		}
@@ -87,7 +86,7 @@ func Register() {
 }
 
 func updateLastRunStats(c context.Context, path string) error {
-	raw, err := ioutil.ReadFile(path)
+	raw, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
@@ -125,14 +124,20 @@ func updateLastRunStats(c context.Context, path string) error {
 }
 
 func updateIsCanary(c context.Context, path string) error {
-	_, err := os.Stat(path)
-	isCanary.Set(c, err == nil)
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		isCanary.Set(c, err == nil)
+		return fmt.Errorf("error reading puppet conf at %s: %w", path, err)
+	}
+
+	isCanary.Set(c, strings.Contains(string(raw), "environment=canary"))
+
 	return nil
 }
 
 func updateExitStatus(c context.Context, paths []string) error {
 	for _, path := range paths {
-		raw, err := ioutil.ReadFile(path)
+		raw, err := os.ReadFile(path)
 		if err != nil {
 			continue // Try other paths in the list
 		}
