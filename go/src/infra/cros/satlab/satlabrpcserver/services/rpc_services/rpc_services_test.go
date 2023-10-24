@@ -95,11 +95,8 @@ func createMockServer(t *testing.T) *SatlabRpcServiceServer {
 	// Create a Mock `IDUTService`
 	var mockDUTService = new(mk.MockDUTServices)
 
-	// Create a Mock `ISwarmingService`
-	var swarmingService = new(services.MockSwarmingService)
-
 	// Create a SATLab Server
-	return New(true, mockBuildService, mockBucketService, mockDUTService, nil, swarmingService)
+	return New(true, mockBuildService, mockBucketService, mockDUTService, nil)
 }
 
 // TestListBuildTargetsShouldSuccess test `ListBuildTargets` function.
@@ -882,9 +879,9 @@ func TestGetDUTDetailShouldSuccess(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
+
 	// Create a mock data
-	s := createMockServer(t)
-	s.commandExecutor = &executor.FakeCommander{
+	executor := &executor.FakeCommander{
 		CmdOutput: `
 192.168.231.137	satlab-0wgtfqin1846803b-one
 192.168.231.137	satlab-0wgtfqin1846803b-host5
@@ -893,14 +890,16 @@ func TestGetDUTDetailShouldSuccess(t *testing.T) {
   `,
 	}
 	mockData := &swarmingapi.BotInfo{BotId: "test bot"}
-	s.swarmingService.(*services.MockSwarmingService).
+	var swarmingService = new(services.MockSwarmingService)
+	swarmingService.
 		On("GetBot", ctx, mock.Anything).
 		Return(mockData, nil)
 
+		// Act
 	req := &pb.GetDutDetailRequest{
 		Address: "192.168.231.222",
 	}
-	resp, err := s.GetDutDetail(ctx, req)
+	resp, err := innerGetDUTDetail(ctx, executor, swarmingService, req.GetAddress())
 
 	// Assert
 	if err != nil {
@@ -922,11 +921,10 @@ func TestGetDUTDetailShouldSuccess(t *testing.T) {
 
 func TestListDutTasksShouldSuccess(t *testing.T) {
 	t.Parallel()
-
 	ctx := context.Background()
-	// Create a mock data
-	s := createMockServer(t)
-	s.commandExecutor = &executor.FakeCommander{
+
+	// Create Mock data
+	executor := &executor.FakeCommander{
 		CmdOutput: `
 192.168.231.222	satlab-0wgtfqin1846803b-host12
   `,
@@ -939,16 +937,18 @@ func TestListDutTasksShouldSuccess(t *testing.T) {
 			},
 		},
 	}
-	s.swarmingService.(*services.MockSwarmingService).
+	var swarmingService = new(services.MockSwarmingService)
+	swarmingService.
 		On("ListBotTasks", ctx, mock.Anything, mock.Anything, mock.Anything).
 		Return(mockData, nil)
 
+		// Act
 	req := &pb.ListDutTasksRequest{
 		Cursor:   "",
 		PageSize: 1,
 		Address:  "192.168.231.222",
 	}
-	resp, err := s.ListDutTasks(ctx, req)
+	resp, err := innerListDUTTasks(ctx, executor, swarmingService, req.GetAddress(), req.GetCursor(), int(req.GetPageSize()))
 
 	// Assert
 	if err != nil {
@@ -977,8 +977,7 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 
 	ctx := context.Background()
 	// Create a mock data
-	s := createMockServer(t)
-	s.commandExecutor = &executor.FakeCommander{
+	executor := &executor.FakeCommander{
 		CmdOutput: `
 192.168.231.222	satlab-0wgtfqin1846803b-host12
   `,
@@ -991,7 +990,8 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 			},
 		},
 	}
-	s.swarmingService.(*services.MockSwarmingService).
+	var swarmingService = new(services.MockSwarmingService)
+	swarmingService.
 		On("ListBotEvents", ctx, mock.Anything, mock.Anything, mock.Anything).
 		Return(mockData, nil)
 
@@ -1000,7 +1000,7 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 		PageSize: 1,
 		Address:  "192.168.231.222",
 	}
-	resp, err := s.ListDutEvents(ctx, req)
+	resp, err := innerListDUTEvents(ctx, executor, swarmingService, req.GetAddress(), req.GetCursor(), int(req.GetPageSize()))
 
 	// Assert
 	if err != nil {
