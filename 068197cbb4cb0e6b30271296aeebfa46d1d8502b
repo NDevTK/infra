@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "353dc549_4846c4b5",
+        "filename": "go/src/infra/monitoring/sysmon/puppet/paths_windows.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1309389
+      },
+      "writtenOn": "2023-10-24T13:07:43Z",
+      "side": 0,
+      "message": "In `paths_unix.go`, `puppetConfFile` is now calling `os.Stat()`. In order to keep behavioral consistency between mac/linux/windows, we should also stat the file here in `paths_windows.go`.\n\nThis way, we establish whether or not the file path exists when `puppetConfFile` returns regardless of OS.",
+      "revId": "068197cbb4cb0e6b30271296aeebfa46d1d8502b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
