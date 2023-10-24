@@ -11,6 +11,12 @@ import (
 	"os/exec"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/cros/satlab/common/utils/executor"
 )
@@ -143,5 +149,68 @@ func TestGetMacAddressShouldFailWhenGetNICNameFailed(t *testing.T) {
 
 	if res != "" {
 		t.Errorf("Expected %v, got %v", "", res)
+	}
+}
+
+// TestGetSatlabStartTimeShouldSuccess test `GetSatlabStartTime` function.
+func TestGetSatlabStartTimeShouldSuccess(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	timeObjForTest := time.Now()
+	commandExecutor := &executor.FakeCommander{CmdOutput: fmt.Sprintf("'%v'", timeObjForTest.Format(time.RFC3339Nano))}
+
+	res, err := GetSatlabStartTime(ctx, commandExecutor)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: %v", err)
+	}
+
+	expectedStartTime := timestamppb.New(timeObjForTest)
+	if diff := cmp.Diff(expectedStartTime, res, cmpopts.IgnoreUnexported(timestamp.Timestamp{})); diff != "" {
+		t.Errorf("Expected %v, got %v", expectedStartTime, res)
+	}
+}
+
+// TestGetSatlabStartTimeShouldFailWhenCommandExecutorFailed test `GetSatlabStartTime` function.
+func TestGetSatlabStartTimeShouldFailWhenCommandExecutorFailed(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	expectedError := errors.New("exec command failed")
+	commandExecutor := &executor.FakeCommander{Err: expectedError}
+
+	res, err := GetSatlabStartTime(ctx, commandExecutor)
+
+	// Assert
+	if err == nil {
+		t.Errorf("Should return error, but got no error")
+	}
+
+	if res != nil {
+		t.Errorf("Expected %v, got %v", nil, res)
+	}
+}
+
+// TestGetSatlabStartTimeShouldFailCommandOutputIsEmpty test `GetSatlabStartTime` function.
+func TestGetSatlabStartTimeShouldFailCommandOutputIsEmpty(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	commandExecutor := &executor.FakeCommander{CmdOutput: ""}
+
+	res, err := GetSatlabStartTime(ctx, commandExecutor)
+
+	// Assert
+	if err == nil {
+		t.Errorf("Expected error")
+	}
+
+	if res != nil {
+		t.Errorf("Expected %v, got %v", nil, res)
 	}
 }

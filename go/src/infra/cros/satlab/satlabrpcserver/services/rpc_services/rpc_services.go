@@ -313,7 +313,7 @@ func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, 
 }
 
 // GetSystemInfo get the system information
-func (s *SatlabRpcServiceServer) GetSystemInfo(_ context.Context, _ *pb.GetSystemInfoRequest) (*pb.GetSystemInfoResponse, error) {
+func (s *SatlabRpcServiceServer) GetSystemInfo(ctx context.Context, _ *pb.GetSystemInfoRequest) (*pb.GetSystemInfoResponse, error) {
 	var averageTemperature float32 = -1.0
 	if s.cpuTemperatureOrchestrator == nil {
 		log.Println("This platform doesn't support getting the temperature")
@@ -321,8 +321,14 @@ func (s *SatlabRpcServiceServer) GetSystemInfo(_ context.Context, _ *pb.GetSyste
 		averageTemperature = s.cpuTemperatureOrchestrator.GetAverageCPUTemperature()
 	}
 
+	startTime, err := satlabcommands.GetSatlabStartTime(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
 	return &pb.GetSystemInfoResponse{
 		CpuTemperature: averageTemperature,
+		StartTime:      startTime,
 	}, nil
 }
 

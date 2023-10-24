@@ -9,8 +9,11 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+	"time"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/executor"
@@ -170,4 +173,27 @@ func GetMacAddress(ctx context.Context, executor executor.IExecCommander) (strin
 		return "", err
 	}
 	return parseOutput(string(out)), nil
+}
+
+// GetSatlabStartTime gets start time and uptime of satlab.
+func GetSatlabStartTime(ctx context.Context, executor executor.IExecCommander) (*timestamp.Timestamp, error) {
+	out, err := executor.Exec(
+		exec.CommandContext(
+			ctx,
+			paths.DockerPath,
+			"inspect",
+			"--format='{{.State.StartedAt}}'",
+			"compose",
+		),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	timeObj, err := time.Parse(time.RFC3339Nano, strings.Trim(string(out), "\n \"'"))
+	if err != nil {
+		return nil, err
+	}
+
+	return timestamppb.New(timeObj), nil
 }

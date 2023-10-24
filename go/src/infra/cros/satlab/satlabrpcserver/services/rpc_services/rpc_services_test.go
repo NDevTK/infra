@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/mock"
@@ -20,6 +21,7 @@ import (
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/cros/satlab/common/dut"
 	"infra/cros/satlab/common/paths"
@@ -657,8 +659,10 @@ func TestGetSystemInfoShouldWork(t *testing.T) {
 	var cpuOrchestrator = cpu.NewOrchestrator(mockCPUTemperature, 5)
 	s.cpuTemperatureOrchestrator = cpuOrchestrator
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
+	timeObjForTest := time.Now()
+	s.commandExecutor = &executor.FakeCommander{CmdOutput: fmt.Sprintf("'%v'", timeObjForTest.Format(time.RFC3339Nano))}
+
+	ctx := context.Background()
 
 	// Make some data
 	m := mon.New()
@@ -674,9 +678,14 @@ func TestGetSystemInfoShouldWork(t *testing.T) {
 		t.Errorf("Should not return error, but got an error: %v", err)
 	}
 
-	expected := 1.0
-	if !utils.NearlyEqual(float64(res.GetCpuTemperature()), expected) {
-		t.Errorf("Expected %v, got %v", expected, res.GetCpuTemperature())
+	expectedCpuTemp := 1.0
+	if !utils.NearlyEqual(float64(res.GetCpuTemperature()), expectedCpuTemp) {
+		t.Errorf("Expected %v, got %v", expectedCpuTemp, res.GetCpuTemperature())
+	}
+
+	expectedStartTime := timestamppb.New(timeObjForTest)
+	if diff := cmp.Diff(expectedStartTime, res.GetStartTime(), cmpopts.IgnoreUnexported(timestamp.Timestamp{})); diff != "" {
+		t.Errorf("Expected %v, got %v", expectedStartTime, res.GetStartTime())
 	}
 }
 
@@ -685,8 +694,10 @@ func TestGetSystemInfoShouldWorkWithoutCPUOrchestrator(t *testing.T) {
 	// Create a mock server
 	s := createMockServer(t)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
+	timeObjForTest := time.Now()
+	s.commandExecutor = &executor.FakeCommander{CmdOutput: fmt.Sprintf("'%v'", timeObjForTest.Format(time.RFC3339Nano))}
+
+	ctx := context.Background()
 
 	req := pb.GetSystemInfoRequest{}
 
@@ -697,9 +708,14 @@ func TestGetSystemInfoShouldWorkWithoutCPUOrchestrator(t *testing.T) {
 		t.Errorf("Should not return error, but got an error: %v", err)
 	}
 
-	expected := -1.0
-	if !utils.NearlyEqual(float64(res.GetCpuTemperature()), expected) {
-		t.Errorf("Expected %v, got %v", expected, res.GetCpuTemperature())
+	expectedCpuTemp := -1.0
+	if !utils.NearlyEqual(float64(res.GetCpuTemperature()), expectedCpuTemp) {
+		t.Errorf("Expected %v, got %v", expectedCpuTemp, res.GetCpuTemperature())
+	}
+
+	expectedStartTime := timestamppb.New(timeObjForTest)
+	if diff := cmp.Diff(expectedStartTime, res.GetStartTime(), cmpopts.IgnoreUnexported(timestamp.Timestamp{})); diff != "" {
+		t.Errorf("Expected %v, got %v", expectedStartTime, res.GetStartTime())
 	}
 }
 

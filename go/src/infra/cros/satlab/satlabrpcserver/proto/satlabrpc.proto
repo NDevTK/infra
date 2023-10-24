@@ -132,9 +132,10 @@ message ListConnectedDutsFirmwareResponse {
 message GetSystemInfoRequest {
 }
 
-// NEXT_TAG = 2
+// NEXT_TAG = 3
 message GetSystemInfoResponse {
   float cpu_temperature = 1;
+  google.protobuf.Timestamp start_time = 2;
 }
 
 // NEXT_TAG = 2
