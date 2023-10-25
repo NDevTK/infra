@@ -10,18 +10,22 @@ import hmac
 import os
 
 from google.appengine.ext import ndb
+import six
 
 from gae_libs.http import auth_util
 from libs import time_util
 
-_DELIMITER = ':'
+_DELIMITER = b':'
 _RANDOM_BYTE_LENGTH = 512
 
 
 def GenerateRandomHexKey(length=_RANDOM_BYTE_LENGTH):
   """Returns a key hexed from random bytes at the given length for crypto."""
   # After encoded in hex, the length doubles.
-  return os.urandom(length).encode('hex')
+  if six.PY2:
+    return os.urandom(length).encode('hex')
+  else:
+    return six.ensure_binary(os.urandom(length).hex())
 
 
 class SecretKey(ndb.Model):
@@ -31,12 +35,13 @@ class SecretKey(ndb.Model):
   @classmethod
   def GetSecretKey(cls, user_id):
     """Returns a secret key for the user and creates it on demand."""
-    uid = hashlib.sha256(str(user_id)).hexdigest()
+    uid = six.ensure_binary(
+        hashlib.sha256(six.ensure_binary(user_id)).hexdigest())
     entity = ndb.Key(cls, uid).get()
     if not entity:
       entity = cls(id=uid, secret_key=GenerateRandomHexKey())
       entity.put()
-    return entity.secret_key
+    return six.ensure_binary(entity.secret_key)
 
 
 def GenerateAuthToken(key_name, user_id, action_id='', when=None):
@@ -55,16 +60,19 @@ def GenerateAuthToken(key_name, user_id, action_id='', when=None):
   key = SecretKey.GetSecretKey(key_name)
   when = when or time_util.GetUTCNow()
   when_timestamp = time_util.ConvertToTimestamp(when)
-  digester = hmac.new(key)
-  digester.update(str(user_id))
+  if six.PY2:
+    digester = hmac.new(key)
+  else:
+    digester = hmac.new(key, msg=None, digestmod='MD5')
+  digester.update(six.ensure_binary(user_id))
   digester.update(_DELIMITER)
-  digester.update(action_id)
+  digester.update(six.ensure_binary(action_id))
   digester.update(_DELIMITER)
-  digester.update(str(when_timestamp))
+  digester.update(six.ensure_binary(str(when_timestamp)))
   digest = digester.digest()
 
-  return base64.urlsafe_b64encode('%s%s%d' % (digest, _DELIMITER,
-                                              when_timestamp))
+  return base64.urlsafe_b64encode(
+      six.ensure_binary('%s%s%d' % (digest, _DELIMITER, when_timestamp)))
 
 
 def ValidateAuthToken(key_name, token, user_id, action_id='', valid_hours=1):

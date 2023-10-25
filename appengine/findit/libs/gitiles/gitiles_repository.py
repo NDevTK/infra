@@ -7,6 +7,7 @@ from datetime import datetime
 import json
 import re
 
+import six
 from six.moves import urllib
 
 from google.appengine.api import app_identity
@@ -85,7 +86,7 @@ class GitilesRepository(GitRepository):
     params['format'] = 'json'
 
     # Gerrit prepends )]}' to json-formatted response.
-    prefix = ')]}\'\n'
+    prefix = b')]}\'\n'
 
     status_code, content, _response_headers = self.http_client.Get(
         url, params, headers=_GetAccessTokenHeader())
@@ -101,7 +102,7 @@ class GitilesRepository(GitRepository):
         url, {'format': 'text'}, headers=_GetAccessTokenHeader())
     if status_code != 200:
       return None, status_code
-    return base64.b64decode(content), 200
+    return six.ensure_str(base64.b64decode(content)), 200
 
   def _GetDateTimeFromString(self,
                              datetime_string,

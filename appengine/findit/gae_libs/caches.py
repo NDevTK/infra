@@ -49,7 +49,7 @@ class CompressedMemCache(Cache):
       if len(all_data) != num:  # Some data is missing.
         return None
 
-      data_output = six.StringIO()
+      data_output = six.BytesIO()
       for sub_key in sub_keys:
         data_output.write(all_data[sub_key])
       data = data_output.getvalue()

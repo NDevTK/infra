@@ -139,9 +139,9 @@ class LoggingInterceptor(HttpInterceptorBase):
   def OnException(self, request, exception, can_retry):
     if can_retry:
       logging.warning('got exception %s("%s") for url %s', type(exception),
-                      exception.message, request.get('url'))
+                      str(exception), request.get('url'))
     else:
       logging.exception('got exception %s("%s") for url %s', type(exception),
-                        exception.message, request.get('url'))
+                        str(exception), request.get('url'))
     return super(LoggingInterceptor, self).OnException(request, exception,
                                                        can_retry)

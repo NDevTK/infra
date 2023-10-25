@@ -6,6 +6,7 @@ import base64
 
 import httplib2
 from googleapiclient import discovery
+import six
 from oauth2client import client as oauth2client
 
 PUBSUB_SCOPES = [
@@ -25,7 +26,10 @@ def CreatePubSubClient():  # pragma: no cover.
 def PublishMessagesToTopic(messages_data, topic):  # pragma: no cover.
   messages = []
   for message_data in messages_data:
-    messages.append({'data': base64.b64encode(message_data)})
+    messages.append({
+        'data':
+            six.ensure_str(base64.b64encode(six.ensure_binary(message_data)))
+    })
   return CreatePubSubClient().projects().topics().publish(
       topic=topic, body={'messages': messages}).execute()
 

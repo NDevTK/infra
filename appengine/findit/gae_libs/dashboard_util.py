@@ -6,6 +6,8 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 
+import six
+
 from google.appengine.datastore.datastore_query import Cursor
 
 from libs import time_util
@@ -96,4 +98,4 @@ def GetPagedResults(query,
     top_cursor = used_cursor
     bottom_cursor = next_cursor if more else ''
 
-  return entities, top_cursor, bottom_cursor
+  return entities, six.ensure_str(top_cursor), six.ensure_str(bottom_cursor)
