@@ -73,7 +73,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		AddedDims:     c.addedDims,
 	}
 	buildLink, err := r.TriggerRun(ctx)
-	fmt.Printf("\n\n-- BUILD LINK --\n%s\n\n", buildLink)
+	fmt.Printf("\n-- BUILD LINK --\n%s\n\n", buildLink)
 	return err
 }
 

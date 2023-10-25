@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -49,6 +50,7 @@ type Run struct {
 	Local         bool
 	// Any configs related to results upload for this test run.
 	AddedDims map[string]string
+	Tags      map[string]string
 }
 
 // TriggerRun triggers the Run with the given information
@@ -82,6 +84,8 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 	if err != nil {
 		return nil, err
 	}
+	// Set tags to pass to ctp and test runner builds
+	c.Tags = c.setTags()
 
 	dims := c.AddedDims
 	// Will be nil if not provided by user.
@@ -108,16 +112,17 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 		c.Image = fmt.Sprintf("%s-release/R%s-%s", c.Board, c.Milestone, c.Build)
 	}
 	bbClient := &builder.CTPBuilder{
-		Image:       c.Image,
-		Board:       c.Board,
-		Model:       c.Model,
-		Pool:        c.Pool,
-		CFT:         c.CFT,
-		TestPlan:    tp,
-		BuilderID:   builderId,
-		Dimensions:  dims,
-		ImageBucket: site.GetGCSImageBucket(),
-		AuthOptions: &site.DefaultAuthOptions,
+		Image:               c.Image,
+		Board:               c.Board,
+		Model:               c.Model,
+		Pool:                c.Pool,
+		CFT:                 c.CFT,
+		TestPlan:            tp,
+		BuilderID:           builderId,
+		Dimensions:          dims,
+		ImageBucket:         site.GetGCSImageBucket(),
+		AuthOptions:         &site.DefaultAuthOptions,
+		TestRunnerBuildTags: c.Tags,
 		// TRV2:        true,
 	}
 
@@ -145,6 +150,18 @@ func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClie
 		return "", errors.Annotate(err, "satlab schedule build").Err()
 	}
 	return link, nil
+}
+
+// SetTags passes testplan name as a tag for associated tests and suites
+func (c *Run) setTags() map[string]string {
+	tags := make(map[string]string)
+
+	if c.Testplan != "" {
+		tags["test-plan-id"] = strings.TrimSuffix(c.Testplan, ".json")
+	} else if c.TestplanLocal != "" {
+		tags["test-plan-id"] = strings.TrimSuffix(c.TestplanLocal, ".json")
+	}
+	return tags
 }
 
 func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {
