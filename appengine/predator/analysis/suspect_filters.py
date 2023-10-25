@@ -6,6 +6,8 @@ import logging
 import math
 import re
 
+import six
+
 from decorators import cached_property
 
 _CHROMIUM_REPO = 'https://chromium.googlesource.com/chromium/src/'
@@ -107,6 +109,7 @@ class FilterIgnoredRevisions(SuspectFilter):
       logging.warning('Failed to download ignore list %s from %s',
                       self._ignore_list_path, self._repository.repo_url)
       return None
+    content = six.ensure_str(content)
 
     # Skip comment lines and empty lines.
     revisions = set()

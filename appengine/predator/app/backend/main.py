@@ -2,9 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from flask import Flask
+import import_utils
 
-import gae_ts_mon
+import_utils.FixImports()
+
+from flask import Flask
+from google.appengine.api import wrap_wsgi_app
+
 import pipeline
 
 from backend.handlers import rerun_analyses
@@ -28,11 +32,9 @@ backend_handler_mappings = [
 ]
 
 backend_app = Flask(__name__)
+backend_app.wsgi_app = wrap_wsgi_app(backend_app.wsgi_app)
+
 pipeline.create_handlers_map(backend_app)
 for url, endpoint, view_func, methods in backend_handler_mappings:
   backend_app.add_url_rule(
       url, endpoint=endpoint, view_func=view_func, methods=methods)
-
-# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
-# service account and change to gae_ts_mon.initialize_prod()
-gae_ts_mon.initialize_adhoc(backend_app)

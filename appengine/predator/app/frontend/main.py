@@ -2,9 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from flask import Flask
+import import_utils
 
-import gae_ts_mon
+import_utils.FixImports()
+
+from flask import Flask
+from google.appengine.api import wrap_wsgi_app
 
 from frontend.handlers import clusterfuzz_dashboard
 from frontend.handlers import clusterfuzz_result_feedback
@@ -62,10 +65,8 @@ frontend_web_pages_handler_mappings += [
 ]
 
 frontend_app = Flask(__name__)
+frontend_app.wsgi_app = wrap_wsgi_app(frontend_app.wsgi_app)
+
 for url, endpoint, view_func, methods in frontend_web_pages_handler_mappings:
   frontend_app.add_url_rule(
       url, endpoint=endpoint, view_func=view_func, methods=methods)
-
-# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
-# service account and change to gae_ts_mon.initialize_prod()
-gae_ts_mon.initialize_adhoc(frontend_app)

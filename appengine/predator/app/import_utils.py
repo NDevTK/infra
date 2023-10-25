@@ -1,7 +1,6 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Adds third_party packages to their respective package namespaces."""
 
 import os
@@ -11,15 +10,22 @@ import sys
 
 def FixImports():
   """Adds third_party packages to their respective package namespaces."""
-  _AddThirdPartyToPath()
+  _AddFirstPartyToPath()
+  _AddPipelinesToPath()
   _ImportProtocolBuffer()
 
 
-def _AddThirdPartyToPath():
-  """Adds third_party/ to sys.path.
+def _AddFirstPartyToPath():
+  """Adds first_party/ to sys.path."""
+  sys.path.append(_FirstPartyDir())
 
-  This lets us find endpoints."""
-  sys.path.append(_ThirdPartyDir())
+
+def _AddPipelinesToPath():
+  """Adds pipelines to sys.path"""
+  sys.path.append(
+      os.path.join(
+          os.path.dirname(__file__), 'third_party', 'pipeline', 'python',
+          'src'))
 
 
 def _ImportProtocolBuffer():
@@ -36,6 +42,9 @@ def _ImportProtocolBuffer():
   google.__path__.append(package_path)
 
 
+def _FirstPartyDir():
+  return os.path.join(os.path.dirname(__file__), 'first_party')
+
+
 def _ThirdPartyDir():
   return os.path.join(os.path.dirname(__file__), 'third_party')
-

@@ -28,6 +28,8 @@ import inspect
 import logging
 import os
 
+from google.appengine.api.modules import modules
+
 try:
   import json
 except ImportError:
@@ -54,16 +56,16 @@ def _get_task_target():
   if pipeline._TEST_MODE:
     return None
 
+  version = modules.get_current_version_name()
+  module = modules.get_current_module_name()
+
   # Further protect against test cases that doesn't set env vars
   # propertly.
-  if ("CURRENT_VERSION_ID" not in os.environ or
-      "CURRENT_MODULE_ID" not in os.environ):
+  if (not version or not module):
     logging.warning("Running Pipeline in non TEST_MODE but important "
                     "env vars are not set.")
     return None
 
-  version = os.environ["CURRENT_VERSION_ID"].split(".")[0]
-  module = os.environ["CURRENT_MODULE_ID"]
   if module == "default":
     return version
   return "%s.%s" % (version, module)

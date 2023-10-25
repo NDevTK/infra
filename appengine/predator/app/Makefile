@@ -5,12 +5,11 @@
 PREDATOR_STAGING = predator-for-me-staging
 PREDATOR_PROD = predator-for-me
 
-MODULES= app/app.yaml \
-	 app/backend-clusterfuzz.yaml \
-	 app/backend-cracas.yaml \
-	 app/backend-fracas.yaml \
-	 app/backend-process.yaml \
-	 app/backend-uma-sampling-profiler.yaml
+MODULES= app.yaml \
+	 backend-clusterfuzz.yaml \
+	 backend-cracas.yaml \
+	 backend-process.yaml \
+	 backend-uma-sampling-profiler.yaml
 
 default: help
 
@@ -19,13 +18,13 @@ help:
 	@sed -n '/^[a-zA-Z0-9_.]*:/s/:.*//p' <Makefile
 
 pydeps:
-	python -m pip install --no-deps  -t app/lib -r requirements.txt
+	python3 -m pip install --no-deps -t lib -r requirements.txt
 
 test:
 	../../test.py test appengine/predator
 
 pytest:
-	vpython3 test.py app
+	vpython3 test.py
 
 deploy_staging:
 	gcloud app deploy --no-cache --project ${PREDATOR_STAGING} ${MODULES}

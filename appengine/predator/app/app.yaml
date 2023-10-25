@@ -1,13 +1,15 @@
-module: default
-runtime: python27
-api_version: 1
-threadsafe: true
+service: default
+runtime: python38
+app_engine_apis: true
 instance_class: B1
 basic_scaling:
   max_instances: 3
 
-builtins:
-  - remote_api: on
+entrypoint: gunicorn -b :$PORT --timeout 60 --workers 2 --threads 1 frontend.main:frontend_app
+
+env_variables:
+  NDB_USE_CROSS_COMPATIBLE_PICKLE_PROTOCOL: "True"
+  MEMCACHE_USE_CROSS_COMPATIBLE_PROTOCOL: "True"
 
 handlers:
 # Static resources and home page.
@@ -26,39 +28,50 @@ handlers:
 
 # PubSub push endpoint.
 - url: /_ah/push-handlers/.*
-  script: frontend.main.frontend_app
+  script: auto
+  secure: always
+  login: admin
+
+- url: /clusterfuzz/dashboard
+  script: auto
+  secure: always
+  login: admin
+
+- url: /cracas/public-dashboard
+  script: auto
+  secure: always
+  login: required
+
+- url: /uma-sampling-profiler/dashboard
+  script: auto
+  secure: always
+  login: required
+
+- url: /cracas/dashboard
+  script: auto
+  secure: always
+  login: required
+
+- url: /clusterfuzz/result-feedback
+  script: auto
+  secure: always
+  login: required
+
+- url: /uma-sampling-profiler/result-feedback
+  script: auto
+  secure: always
+  login: required
+
+- url: /cracas/result-feedback
+  script: auto
+  secure: always
+  login: required
+
+- url: /config
+  script: auto
   secure: always
   login: admin
 
 - url: /.*
-  script: frontend.main.frontend_app
+  script: auto
   secure: always
-
-includes:
-- first_party/gae_ts_mon  # handles /internal/cron/ts_mon/send
-
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*~$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*_test\.py$
-- ^(.*/)?tests\.py$
-- ^(.*/)?\..*$
-- ^(.*/)?.*\.md$
-- __init__.py
-- backend/.*
-- scripts/.*
-
-libraries:
-- name: jinja2
-  version: latest
-- name: numpy
-  version: 1.6.1
-- name: flask
-  version: 0.12
-- name: grpcio
-  version: 1.0.0
-- name: setuptools
-  version: 36.6.0
-- name: ssl
-  version: latest

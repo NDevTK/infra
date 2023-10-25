@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from common.base_handler import Permission
 from frontend.handlers.clusterfuzz_dashboard import ClusterfuzzDashBoard
-from gae_libs.handlers.base_handler import Permission
 
 
 class ClusterfuzzPublicDashBoard(ClusterfuzzDashBoard):

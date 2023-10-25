@@ -5,8 +5,8 @@
 from google.appengine.ext import ndb
 
 from analysis.type_enums import CrashClient
+from common.base_handler import Permission
 from frontend.handlers.result_feedback import ResultFeedback
-from gae_libs.handlers.base_handler import Permission
 
 
 class ClusterfuzzResultFeedback(ResultFeedback):

@@ -1,38 +1,22 @@
-module: backend-clusterfuzz
-runtime: python27
-api_version: 1
-threadsafe: true
+service: backend-clusterfuzz
+runtime: python38
+app_engine_apis: true
 instance_class: B4
 basic_scaling:
   max_instances: 3
 
+entrypoint: gunicorn -b :$PORT --timeout 60 --workers 8 --threads 1 backend.main:backend_app
+
+env_variables:
+  NDB_USE_CROSS_COMPATIBLE_PICKLE_PROTOCOL: "True"
+  MEMCACHE_USE_CROSS_COMPATIBLE_PROTOCOL: "True"
+
 handlers:
 - url: /clusterfuzz/.*
-  script: backend.main.backend_app
+  script: auto
   secure: always
 
 # Pipeline handler.
 - url: /_ah/pipeline(/.*)?
-  script: backend.main.backend_app
+  script: auto
   secure: always
-
-
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*~$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*_test\.py$
-- ^(.*/)?tests\.py$
-- ^(.*/)?\..*$
-- ^(.*/)?.*\.md$
-- __init__.py
-- frontend/.*
-- scripts/.*
-
-libraries:
-- name: jinja2
-  version: latest
-- name: numpy
-  version: 1.6.1
-- name: flask
-  version: 0.12
