@@ -1423,11 +1423,7 @@ func TestDeleteDutsShouldSuccess(t *testing.T) {
 	e := &executor.FakeCommander{
 		FakeFn: func(c *exec.Cmd) ([]byte, error) {
 			// 192.168.231.222	satlab-0wgtfqin1846803b-host12
-			if c.Path == paths.DockerPath {
-				return []byte(`
-192.168.231.222	satlab-0wgtfqin1846803b-host12
-        `), nil
-			} else if c.Path == paths.GetHostIdentifierScript {
+			if c.Path == paths.GetHostIdentifierScript {
 				return []byte("0wgtfqin1846803b"), nil
 			} else {
 				return nil, errors.New(fmt.Sprintf("execute a command %v\n", c.Path))
@@ -1435,76 +1431,13 @@ func TestDeleteDutsShouldSuccess(t *testing.T) {
 		},
 	}
 
-	addresses := []string{"192.168.231.222"}
+	hostnames := []string{"satlab-0wgtfqin1846803b-host12"}
 	ufs := mockDeleteClient{}
 
-	resp, invalidAddresses, err := innerDeleteDuts(ctx, e, &ufs, addresses, false)
+	resp, err := innerDeleteDuts(ctx, e, &ufs, hostnames, false)
 	if err != nil {
 		t.Errorf("unexpected error: %v\n", err)
 		return
-	}
-
-	if len(invalidAddresses) != 0 {
-		t.Errorf("invalid addresses should be empty")
-	}
-
-	expected := &dut.DeleteDUTResult{
-		MachineLSEs: []*ufsModels.MachineLSE{
-			{
-				Name:     "machineLSEs/satlab-0wgtfqin1846803b-host12",
-				Machines: []string{"asset-satlab-0wgtfqin1846803b-host12"},
-				Rack:     "rack-satlab-0wgtfqin1846803b-host12",
-			},
-		},
-		DutResults: &dut.Result{
-			Pass: []string{"satlab-0wgtfqin1846803b-host12"},
-			Fail: []string{},
-		},
-		AssetResults: &dut.Result{},
-		RackResults:  &dut.Result{},
-	}
-
-	// ignore pb fields in `FirmwareUpdateCommandOutput`
-	ignorePBFieldOpts := cmpopts.IgnoreUnexported(ufsModels.MachineLSE{})
-
-	if diff := cmp.Diff(resp, expected, ignorePBFieldOpts); diff != "" {
-		t.Errorf("unexpected diff: %v\n", diff)
-	}
-}
-
-func TestDeleteDutsWithInvalidAddressesShouldSuccess(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-
-	// Create a mock data
-	e := &executor.FakeCommander{
-		FakeFn: func(c *exec.Cmd) ([]byte, error) {
-			// 192.168.231.222	satlab-0wgtfqin1846803b-host12
-			if c.Path == paths.DockerPath {
-				return []byte(`
-192.168.231.222	satlab-0wgtfqin1846803b-host12
-        `), nil
-			} else if c.Path == paths.GetHostIdentifierScript {
-				return []byte("0wgtfqin1846803b"), nil
-			} else {
-				return nil, errors.New(fmt.Sprintf("execute a command %v\n", c.Path))
-			}
-		},
-	}
-
-	addresses := []string{"192.168.231.222", "192.168.231.221"}
-	ufs := mockDeleteClient{}
-
-	resp, invalidAddresses, err := innerDeleteDuts(ctx, e, &ufs, addresses, false)
-	if err != nil {
-		t.Errorf("unexpected error: %v\n", err)
-		return
-	}
-
-	expectedInvalidAddresses := []string{"192.168.231.221"}
-
-	if diff := cmp.Diff(invalidAddresses, expectedInvalidAddresses); diff != "" {
-		t.Errorf("unexpected invalid addresses: %v", diff)
 	}
 
 	expected := &dut.DeleteDUTResult{
@@ -1539,11 +1472,7 @@ func TestFullDeleteDutsShouldSuccess(t *testing.T) {
 	e := &executor.FakeCommander{
 		FakeFn: func(c *exec.Cmd) ([]byte, error) {
 			// 192.168.231.222	satlab-0wgtfqin1846803b-host12
-			if c.Path == paths.DockerPath {
-				return []byte(`
-192.168.231.222	satlab-0wgtfqin1846803b-host12
-        `), nil
-			} else if c.Path == paths.GetHostIdentifierScript {
+			if c.Path == paths.GetHostIdentifierScript {
 				return []byte("0wgtfqin1846803b"), nil
 			} else {
 				return nil, errors.New(fmt.Sprintf("execute a command %v\n", c.Path))
@@ -1551,17 +1480,13 @@ func TestFullDeleteDutsShouldSuccess(t *testing.T) {
 		},
 	}
 
-	addresses := []string{"192.168.231.222"}
+	hostnames := []string{"host12"}
 	ufs := mockDeleteClient{}
 
-	resp, invalidAddresses, err := innerDeleteDuts(ctx, e, &ufs, addresses, true)
+	resp, err := innerDeleteDuts(ctx, e, &ufs, hostnames, true)
 	if err != nil {
 		t.Errorf("unexpected error: %v\n", err)
 		return
-	}
-
-	if len(invalidAddresses) != 0 {
-		t.Errorf("invalid addresses should be empty")
 	}
 
 	expected := &dut.DeleteDUTResult{
@@ -1605,20 +1530,16 @@ func TestDeleteDutsShouldFail(t *testing.T) {
 		},
 	}
 
-	addresses := []string{"192.168.231.222"}
+	hostnames := []string{"hostname"}
 	ufs := mockDeleteClient{}
 
-	resp, invalidAddresses, err := innerDeleteDuts(ctx, e, &ufs, addresses, true)
+	resp, err := innerDeleteDuts(ctx, e, &ufs, hostnames, true)
 	if err == nil {
 		t.Errorf("should get an err")
 	}
 
 	if resp != nil {
 		t.Errorf("result should be empty")
-	}
-
-	if len(invalidAddresses) != 0 {
-		t.Errorf("invalid addresses should be empty: %v", invalidAddresses)
 	}
 }
 

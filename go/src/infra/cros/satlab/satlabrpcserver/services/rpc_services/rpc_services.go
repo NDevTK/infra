@@ -744,40 +744,31 @@ func (s *SatlabRpcServiceServer) DeleteDuts(ctx context.Context, in *pb.DeleteDu
 		return nil, err
 	}
 
-	res, invalidAddresses, err := innerDeleteDuts(ctx, s.commandExecutor, ufs, in.GetAddresses(), false)
+	res, err := innerDeleteDuts(ctx, s.commandExecutor, ufs, in.GetHostnames(), false)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.DeleteDutsResponse{
-		Pass:             res.DutResults.Pass,
-		Fail:             res.DutResults.Fail,
-		InvalidAddresses: invalidAddresses,
+		Pass: res.DutResults.Pass,
+		Fail: res.DutResults.Fail,
 	}, nil
 }
 
 // innerDeleteDuts the main logic of deleting the DUTs by given IP addresses.
 // Create this function for testing easily
-// This function returns a result of deleting DUTs result that contains pass and fail,
-// and if we can not convert the IP address, we put the IP address to `invalidAddresses`
-func innerDeleteDuts(ctx context.Context, executor executor.IExecCommander, ufs dut.DeleteClient, addresses []string, full bool) (*dut.DeleteDUTResult, []string, error) {
-	IPToHostResult, err := dns.IPToHostname(ctx, executor, addresses)
-	if err != nil {
-		return nil, nil, err
-	}
-
+// This function returns a result of deleting DUTs result that contains pass and fail.
+func innerDeleteDuts(ctx context.Context, executor executor.IExecCommander, ufs dut.DeleteClient, hostnames []string, full bool) (*dut.DeleteDUTResult, error) {
 	d := dut.DeleteDUT{
-		Names: IPToHostResult.Hostnames,
+		Names: hostnames,
 		Full:  full,
 	}
 
 	if err := d.Validate(); err != nil {
-		return nil, IPToHostResult.InvalidAddresses, err
+		return nil, err
 	}
 
-	res, err := d.TriggerRun(ctx, executor, ufs)
-
-	return res, IPToHostResult.InvalidAddresses, nil
+	return d.TriggerRun(ctx, executor, ufs)
 }
 
 // GetNetworkInfo gets newwork information of satlab.

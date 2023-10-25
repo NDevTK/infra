@@ -337,7 +337,7 @@ message ListDutsResponse {
 
 // NEXT_TAG = 2
 message DeleteDutsRequest {
-  repeated string addresses = 1;
+  repeated string hostnames = 1;
 }
 
 // NEXT_TAG = 4
@@ -346,8 +346,7 @@ message DeleteDutsResponse {
   repeated string pass = 1;
   // fail contains the hostnames that we failed to delete DUTs
   repeated string fail = 2;
-  // invalid_addresses contain the information that we can not convert the IPs to the hostnames.
-  repeated string invalid_addresses = 3;
+  reserved 3;
 }
 
 // NEXT_TAG = 1
