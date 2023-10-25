@@ -50,17 +50,9 @@ from google.appengine.api import users
 from google.appengine.api import taskqueue
 from google.appengine.ext import blobstore
 from google.appengine.ext import db
+from google.cloud import storage
+from google.cloud.storage.blob import Blob
 from six.moves import urllib
-
-# pylint: disable=g-import-not-at-top
-# TODO(user): Cleanup imports if/when cloudstorage becomes part of runtime.
-try:
-  # Check if the full cloudstorage package exists. The stub part is in runtime.
-  import cloudstorage
-  if hasattr(cloudstorage, "_STUB"):
-    cloudstorage = None
-except ImportError:
-  pass  # CloudStorage library not available
 
 try:
   import json
@@ -1258,10 +1250,11 @@ def _write_json_blob(encoded_value, pipeline_id=None):
   path_components.append(uuid.uuid4().hex)
   # Use posixpath to get a / even if we're running on windows somehow
   file_name = posixpath.join(*path_components)
-  with cloudstorage.open(file_name, 'w', content_type='application/json') as f:
-    for start_index in xrange(0, len(encoded_value), _MAX_JSON_SIZE):
-      end_index = start_index + _MAX_JSON_SIZE
-      f.write(encoded_value[start_index:end_index])
+
+  client = storage.Client()
+  blob = Blob.from_string("gs:/" + file_name)
+  blob.upload_from_string(
+      encoded_value, content_type='application/json', client=client)
 
   key_str = blobstore.create_gs_key("/gs" + file_name)
   logging.debug("Created blob for filename = %s gs_key = %s", file_name, key_str)

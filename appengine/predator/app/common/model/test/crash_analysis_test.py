@@ -6,6 +6,8 @@ import copy
 from datetime import datetime
 import mock
 
+from google.cloud.storage import blob
+
 from analysis.constants import CHROMIUM_REPO_URL
 from analysis.constants import CHROMIUM_ROOT_PATH
 from analysis.crash_report import CrashReport
@@ -173,14 +175,14 @@ class CrashAnalysisTest(AppengineTestCase):
     """Tests ``feedback_url`` property."""
     mock_host = 'https://host'
     mocked_get_default_host.return_value = mock_host
-    mock_key = 'abcde'
+    mock_key = b'abcde'
     mock_urlsafe.return_value = mock_key
 
     mock_analysis = MockCrashAnalysis()
     mock_analysis.put()
-    self.assertEqual(mock_analysis.feedback_url,
-                     crash_analysis._FEEDBACK_URL_TEMPLATE % (
-                         mock_host, mock_analysis.client_id, mock_key))
+    self.assertEqual(
+        mock_analysis.feedback_url, crash_analysis._FEEDBACK_URL_TEMPLATE %
+        (mock_host, mock_analysis.client_id, mock_key.decode('utf-8')))
 
   # pylint: disable=attribute-defined-outside-init
   def testToJson(self):
@@ -229,15 +231,23 @@ class CrashAnalysisTest(AppengineTestCase):
     analysis.ReInitialize(predator)
     self.assertEqual(analysis.signature, crash_data.signature)
 
-  def testStackTraceWriteBigStackTraceToStorage(self):
+  @mock.patch.object(blob.Blob, 'from_string')
+  def testStackTraceWriteBigStackTraceToStorage(self, mock_blob_from_string):
     """Tests ``stack_trace`` setter writes big stacktrace to cloud storage."""
     identifiers = {'signature': 'sig'}
     analysis = CrashAnalysis.Create(identifiers)
     big_stacktrace = 'a'*2048487
+
+    mock_blob = mock.MagicMock()
+    mock_blob_from_string.return_value = mock_blob
     analysis.stack_trace = big_stacktrace
     analysis.put()
+    mock_blob_from_string.assert_called_once()
+    mock_blob.upload_from_string.assert_called_once()
 
+    mock_blob.download_as_string.return_value = big_stacktrace
     self.assertEqual(CrashAnalysis.Get(identifiers).stack_trace, big_stacktrace)
+    mock_blob.download_as_string.assert_called_once()
 
   def testLogProperty(self):
     """Tests ``log`` property."""

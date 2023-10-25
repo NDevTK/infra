@@ -3,12 +3,19 @@
 # found in the LICENSE file.
 
 import os
+import pkg_resources
 
+import site
 import six
 import sys
 
 
 _THIS_DIR = os.path.realpath(os.path.dirname(__file__))
+_LIB = os.path.join(_THIS_DIR, 'lib')
+
+site.addsitedir(_LIB)
+sys.path.append(_LIB)
+pkg_resources.working_set.add_entry(_LIB)
 
 # Add all the first-party and third-party libraries.
 sys.path.append(os.path.realpath(os.path.join(_THIS_DIR, 'first_party')))

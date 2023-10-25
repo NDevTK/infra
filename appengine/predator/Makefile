@@ -18,6 +18,9 @@ help:
 	@echo "Available commands:"
 	@sed -n '/^[a-zA-Z0-9_.]*:/s/:.*//p' <Makefile
 
+pydeps:
+	python -m pip install --no-deps  -t app/lib -r requirements.txt
+
 test:
 	../../test.py test appengine/predator
 
@@ -25,7 +28,7 @@ pytest:
 	vpython3 test.py app
 
 deploy_staging:
-	gcloud app deploy --project ${PREDATOR_STAGING} ${MODULES}
+	gcloud app deploy --no-cache --project ${PREDATOR_STAGING} ${MODULES}
 
 deploy_prod:
 	gcloud app deploy --project ${PREDATOR_PROD} ${MODULES}

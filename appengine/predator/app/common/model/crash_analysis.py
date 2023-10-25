@@ -3,11 +3,13 @@
 # found in the LICENSE file.
 
 import copy
-import cloudstorage as gcs
 import hashlib
 import json
 
+from google.api_core.retry import Retry
 from google.appengine.ext import ndb
+from google.cloud import storage
+from google.cloud.storage.blob import Blob
 
 from analysis.constants import CHROMIUM_REPO_URL
 from analysis.constants import CHROMIUM_ROOT_PATH
@@ -166,8 +168,8 @@ class CrashAnalysis(ndb.Model):
       return self.stacktrace_str
 
     stack_trace_file_path = self.stacktrace_str[len(_CLOUD_STORAGE_MARKER):]
-    with gcs.open(stack_trace_file_path) as f:
-      return f.read()
+    blob = Blob.from_string(stack_trace_file_path)
+    return blob.download_as_string(client=storage.Client())
 
   @stack_trace.setter
   def stack_trace(self, raw_stacktrace):
@@ -177,14 +179,14 @@ class CrashAnalysis(ndb.Model):
 
     # The maximum size of a property to be put to datastore is 1MB, write the
     # big stacktrace to cloud storage instead.
-    file_name = self.key.urlsafe()
-    stack_trace_file_path = '%s/%s' % (_STORAGE_PATH, file_name)
+    file_name = self.key.urlsafe().decode('utf-8')
+    stack_trace_file_path = 'gs:/%s/%s' % (_STORAGE_PATH, file_name)
     self.stacktrace_str = '%s%s' % (_CLOUD_STORAGE_MARKER,
                                     stack_trace_file_path)
-    with gcs.open(
-        stack_trace_file_path, 'w', content_type='text/plain',
-        retry_params=gcs.RetryParams(backoff_factor=_BACKOFF_FACTOR)) as f:
-      f.write(str(raw_stacktrace))
+    client = storage.Client()
+    blob = Blob.from_string(stack_trace_file_path)
+    blob.upload_from_string(
+        str(raw_stacktrace), content_type='text/plain', client=client)
 
   @property
   def log(self):
@@ -192,8 +194,11 @@ class CrashAnalysis(ndb.Model):
 
   @classmethod
   def _CreateKey(cls, crash_identifiers):
-    return ndb.Key(cls.__name__, hashlib.sha1(
-        json.dumps(crash_identifiers, sort_keys=True)).hexdigest())
+    b = hashlib.sha1(
+        json.dumps(crash_identifiers,
+                   sort_keys=True).encode('utf-8')).hexdigest().encode('utf-8')
+    k = ndb.Key(cls.__name__.encode('utf-8'), b)
+    return k
 
   @classmethod
   def Get(cls, crash_identifiers):
@@ -246,9 +251,9 @@ class CrashAnalysis(ndb.Model):
 
   @property
   def feedback_url(self):
-    return _FEEDBACK_URL_TEMPLATE % (
-        appengine_util.GetDefaultVersionHostname(), self.client_id,
-        self.key.urlsafe())
+    return _FEEDBACK_URL_TEMPLATE % (appengine_util.GetDefaultVersionHostname(),
+                                     self.client_id,
+                                     self.key.urlsafe().decode('utf-8'))
 
   @property
   def crash_url(self):

@@ -2,6 +2,7 @@
 include = ./appengine/predator/*
 omit= ./appengine/predator/first_party/*
       ./appengine/predator/third_party/*
+      ./appengine/predator/app/lib/*
 
 [report]
 exclude_lines =

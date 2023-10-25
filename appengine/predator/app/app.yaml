@@ -56,3 +56,9 @@ libraries:
   version: 1.6.1
 - name: flask
   version: 0.12
+- name: grpcio
+  version: 1.0.0
+- name: setuptools
+  version: 36.6.0
+- name: ssl
+  version: latest
