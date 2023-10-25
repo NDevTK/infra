@@ -181,12 +181,25 @@ func Contains(arr []string, str string) bool {
 	return false
 }
 
+// DefaultAuthScopes is the default scopes for shivas login
+var DefaultAuthScopes = []string{auth.OAuthScopeEmail, "https://www.googleapis.com/auth/spreadsheets"}
+
 // DefaultAuthOptions is an auth.Options struct prefilled with chrome-infra
 // defaults.
 var DefaultAuthOptions = chromeinfra.SetDefaultAuthOptions(auth.Options{
-	Scopes:     []string{auth.OAuthScopeEmail, "https://www.googleapis.com/auth/spreadsheets"},
+	Scopes:     GetAuthScopes(DefaultAuthScopes),
 	SecretsDir: SecretsDir(),
 })
+
+// GetAuthScopes get environment scopes if set
+// Otherwise, return default scopes
+func GetAuthScopes(defaultScopes []string) []string {
+	e := os.Getenv("OAUTH_SCOPES")
+	if e != "" {
+		return strings.Split(e, "|")
+	}
+	return defaultScopes
+}
 
 // SecretsDir customizes the location for auth-related secrets.
 func SecretsDir() string {
