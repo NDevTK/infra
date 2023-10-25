@@ -1837,6 +1837,7 @@ func crosRepairActions() map[string]*Action {
 				"Update the device_sku label from the device if not present in inventory data.",
 			},
 			Conditions: []string{
+				"Is a Chromebook",
 				"dut_does_not_have_device_sku",
 			},
 			ExecName:               "cros_update_device_sku",
