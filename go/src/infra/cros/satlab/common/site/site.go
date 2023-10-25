@@ -15,6 +15,8 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	shivassite "infra/cmd/shivas/site"
 )
 
 // AppPrefix is the prefix to use the satlab CLI.
@@ -303,10 +305,13 @@ func GetFullyQualifiedHostname(specifiedSatlabID string, fetchedSatlabID, prefix
 	return MaybePrepend(prefix, satlabIDToUse, content)
 }
 
+// DefaultAuthScopes is the default scopes for shivas login
+var DefaultAuthScopes = []string{auth.OAuthScopeEmail}
+
 // DefaultAuthOptions is an auth.Options struct prefilled with chrome-infra
 // defaults.
 var DefaultAuthOptions = chromeinfra.SetDefaultAuthOptions(auth.Options{
-	Scopes:     []string{auth.OAuthScopeEmail},
+	Scopes:     shivassite.GetAuthScopes(DefaultAuthScopes),
 	SecretsDir: SecretsDir(),
 })
 
