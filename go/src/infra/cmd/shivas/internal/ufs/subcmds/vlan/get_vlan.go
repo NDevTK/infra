@@ -126,7 +126,9 @@ func (c *getVlan) innerRun(a subcommands.Application, args []string, env subcomm
 
 	if len(res) == 1 && c.listIPs {
 		// Only print IP utilization in json mode for 1 vlan
-		printUsedIPs(ctx, ic, res)
+		if err := printUsedIPs(ctx, ic, res); err != nil {
+			cmdlib.PrintError(a, err)
+		}
 	}
 	return nil
 }
@@ -180,25 +182,38 @@ func printVlanNormal(entities []proto.Message, tsv, keysOnly bool) error {
 	return nil
 }
 
-func printUsedIPs(ctx context.Context, ic ufsAPI.FleetClient, res []proto.Message) {
+func printUsedIPs(ctx context.Context, ic ufsAPI.FleetClient, res []proto.Message) error {
 	v := res[0].(*ufspb.Vlan)
-	resIPs, err := ic.ListIPs(ctx, &ufsAPI.ListIPsRequest{
-		Filter: utils.PrefixFilters(ufsUtil.VlanFilterName, []string{ufsUtil.RemovePrefix(v.GetName())})[0],
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
 	toPrint := make([]*ufspb.IP, 0)
-	for _, ip := range resIPs.GetIps() {
-		if ip.GetOccupied() || ip.GetReserve() {
-			toPrint = append(toPrint, ip)
+	curPageToken := ""
+	for {
+		resIPs, err := ic.ListIPs(ctx, &ufsAPI.ListIPsRequest{
+			Filter:    utils.PrefixFilters(ufsUtil.VlanFilterName, []string{ufsUtil.RemovePrefix(v.GetName())})[0],
+			PageSize:  ufsUtil.MaxPageSize,
+			PageToken: curPageToken,
+		})
+		if err != nil {
+			return err
+		}
+		for _, ip := range resIPs.GetIps() {
+			if ip.GetOccupied() || ip.GetReserve() {
+				toPrint = append(toPrint, ip)
+			}
+		}
+		nextPageToken := resIPs.GetNextPageToken()
+		if nextPageToken == "" {
+			break
+		} else {
+			curPageToken = nextPageToken
 		}
 	}
+
 	if len(toPrint) > 0 {
 		fmt.Println()
 		utils.PrintTableTitle(utils.IPTitle, false, false)
 		utils.PrintIPs(toPrint, false)
 	}
+	return nil
 }
 
 func (c *getVlan) validateArgs() error {
