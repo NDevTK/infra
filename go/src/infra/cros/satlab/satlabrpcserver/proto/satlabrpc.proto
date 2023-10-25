@@ -307,7 +307,7 @@ message RunTestResponse {
 // NEXT_TAG = 1
 message ListEnrolledDutsRequest {}
 
-// NEXT_TAG = 9
+// NEXT_TAG = 12
 message Dut {
   string address = 1;
   string name = 2;
@@ -317,6 +317,9 @@ message Dut {
   repeated string pools = 6;
   string mac_address = 7;
   bool is_connected = 8;
+  string servo_serial = 9;
+  string servo_type = 10;
+  int32 servo_port = 11;
 }
 
 // NEXT_TAG = 2

@@ -663,9 +663,12 @@ func getConnectedDuts(ctx context.Context, executor executor.IExecCommander) ([]
 
 	for _, dut := range duts {
 		e := &pb.Dut{
-			Name:     dut.Name,
-			Hostname: dut.Hostname,
-			Pools:    dut.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools,
+			Name:        dut.Name,
+			Hostname:    dut.Hostname,
+			Pools:       dut.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools,
+			ServoSerial: dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoSerial(),
+			ServoType:   dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(),
+			ServoPort:   dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoPort(),
 		}
 
 		address := HostMap[dut.Hostname]
