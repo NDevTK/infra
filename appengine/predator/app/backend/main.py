@@ -6,6 +6,11 @@ import import_utils
 
 import_utils.FixImports()
 
+import google.cloud.logging
+
+client = google.cloud.logging.Client()
+client.setup_logging()
+
 from flask import Flask
 from google.appengine.api import wrap_wsgi_app
 
