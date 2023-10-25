@@ -258,7 +258,7 @@ func TestUpdateVlan(t *testing.T) {
 			vlan1 := mockVlan("update-vlan-4", "6.6.6.0/27")
 			vlan1.Description = "before update"
 			configuration.BatchUpdateVlans(ctx, []*ufspb.Vlan{vlan1})
-			ips, _, _, _, err := util.ParseVlan("update-vlan-4", "6.6.6.0/27", vlan1.GetFreeStartIpv4Str(), vlan1.GetFreeEndIpv4Str())
+			ips, _, _, _, _, err := util.ParseVlan("update-vlan-4", "6.6.6.0/27", vlan1.GetFreeStartIpv4Str(), vlan1.GetFreeEndIpv4Str())
 			So(err, ShouldBeNil)
 			_, err = configuration.BatchUpdateIPs(ctx, ips)
 			So(err, ShouldBeNil)
@@ -284,7 +284,7 @@ func TestUpdateVlan(t *testing.T) {
 			vlan1 := mockVlan("update-vlan-5", "6.6.5.0/27")
 			vlan1.ReservedIps = []string{"6.6.5.13"}
 			configuration.BatchUpdateVlans(ctx, []*ufspb.Vlan{vlan1})
-			ips, _, _, _, err := util.ParseVlan("update-vlan-5", "6.6.5.0/27", vlan1.GetFreeStartIpv4Str(), vlan1.GetFreeEndIpv4Str())
+			ips, _, _, _, _, err := util.ParseVlan("update-vlan-5", "6.6.5.0/27", vlan1.GetFreeStartIpv4Str(), vlan1.GetFreeEndIpv4Str())
 			So(err, ShouldBeNil)
 			_, err = configuration.BatchUpdateIPs(ctx, ips)
 			So(err, ShouldBeNil)

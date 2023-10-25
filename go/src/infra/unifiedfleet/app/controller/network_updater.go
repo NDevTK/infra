@@ -299,7 +299,7 @@ func (nu *networkUpdater) deleteLseHostHelper(ctx context.Context, lse *ufspb.Ma
 }
 
 func (nu *networkUpdater) updateVlan(ctx context.Context, newVlan *ufspb.Vlan) error {
-	_, _, freeStartIP, freeEndIP, err := util.ParseVlan(newVlan.GetName(), newVlan.GetVlanAddress(), newVlan.GetFreeStartIpv4Str(), newVlan.GetFreeEndIpv4Str())
+	_, _, freeStartIP, freeEndIP, _, err := util.ParseVlan(newVlan.GetName(), newVlan.GetVlanAddress(), newVlan.GetFreeStartIpv4Str(), newVlan.GetFreeEndIpv4Str())
 	newVlan.FreeStartIpv4Str = freeStartIP
 	newVlan.FreeEndIpv4Str = freeEndIP
 

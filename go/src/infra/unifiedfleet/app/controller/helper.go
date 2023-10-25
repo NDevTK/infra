@@ -534,7 +534,7 @@ func validateReservedIPs(ctx context.Context, vlan *ufspb.Vlan) error {
 	if len(vlan.GetReservedIps()) == 0 {
 		return nil
 	}
-	ips, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
+	ips, _, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
 	if err != nil {
 		return status.Errorf(codes.InvalidArgument, "Invalid %s: %s", vlan.GetVlanAddress(), err.Error())
 	}

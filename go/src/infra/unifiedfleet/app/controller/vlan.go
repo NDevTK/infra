@@ -30,7 +30,7 @@ import (
 func CreateVlan(ctx context.Context, vlan *ufspb.Vlan) (*ufspb.Vlan, error) {
 	setRealmForVlan(vlan)
 	var ips []*ufspb.IP
-	var length int
+	var length, reservedNum int
 	var err error
 	var freeStartIP, freeEndIP string
 	f := func(ctx context.Context) error {
@@ -39,7 +39,7 @@ func CreateVlan(ctx context.Context, vlan *ufspb.Vlan) (*ufspb.Vlan, error) {
 			return errors.Annotate(err, "CreateVlan - validation failed").Err()
 		}
 
-		ips, length, freeStartIP, freeEndIP, err = util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
+		ips, length, freeStartIP, freeEndIP, reservedNum, err = util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
 		if err != nil {
 			return errors.Annotate(err, "CreateVlan").Err()
 		}
@@ -48,6 +48,7 @@ func CreateVlan(ctx context.Context, vlan *ufspb.Vlan) (*ufspb.Vlan, error) {
 		vlan.VlanNumber = util.GetSuffixAfterSeparator(vlan.GetName(), ":")
 		vlan.FreeStartIpv4Str = freeStartIP
 		vlan.FreeEndIpv4Str = freeEndIP
+		vlan.ReservedIpNum = int64(reservedNum)
 
 		if _, err = configuration.BatchUpdateVlans(ctx, []*ufspb.Vlan{vlan}); err != nil {
 			return err

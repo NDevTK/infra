@@ -12,7 +12,7 @@ import (
 
 func TestParseVlan(t *testing.T) {
 	Convey("ParseVlan - happy path", t, func() {
-		ips, l, freeStartIP, freeEndIP, err := ParseVlan("fake_vlan", "192.168.40.0/22", "", "")
+		ips, l, freeStartIP, freeEndIP, reservedNum, err := ParseVlan("fake_vlan", "192.168.40.0/22", "", "")
 		So(err, ShouldBeNil)
 		So(l, ShouldEqual, 1024)
 		So(ips, ShouldHaveLength, 1024)
@@ -27,15 +27,20 @@ func TestParseVlan(t *testing.T) {
 		}
 		So(freeStartIP, ShouldEqual, "192.168.40.11")
 		So(freeEndIP, ShouldEqual, "192.168.43.254")
+		// 12 = util.reserveFirst (11) + util.reserveLast (1)
+		So(reservedNum, ShouldEqual, 12)
 	})
 
 	Convey("ParseVlan - happy path with free start/end ip", t, func() {
-		ips, l, freeStartIP, freeEndIP, err := ParseVlan("fake_vlan", "192.168.40.0/22", "192.168.40.100", "192.168.40.200")
+		ips, l, freeStartIP, freeEndIP, reservedNum, err := ParseVlan("fake_vlan", "192.168.40.0/22", "192.168.40.100", "192.168.40.200")
 		So(err, ShouldBeNil)
 		So(l, ShouldEqual, 1024)
 		So(ips, ShouldHaveLength, 1024)
 		So(freeStartIP, ShouldEqual, "192.168.40.100")
 		So(freeEndIP, ShouldEqual, "192.168.40.200")
+		// 2 ^ (32-22) - 101 (101 IPs available between 192.168.40.100 & 192.168.40.200 )
+		expectedReservedIPs := 923
+		So(reservedNum, ShouldEqual, expectedReservedIPs)
 		for i, ip := range ips {
 			if i < 100 {
 				So(ip.GetReserve(), ShouldBeTrue)

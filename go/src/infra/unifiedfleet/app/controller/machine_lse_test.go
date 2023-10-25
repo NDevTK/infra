@@ -306,7 +306,7 @@ func TestCreateMachineLSE(t *testing.T) {
 				VlanAddress: "192.168.40.0/22",
 			}
 			configuration.CreateVlan(ctx, vlan)
-			ips, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), "", "")
+			ips, _, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), "", "")
 			So(err, ShouldBeNil)
 			// Only import the first 20 as one single transaction cannot import all.
 			_, err = configuration.ImportIPs(ctx, ips[0:20])
@@ -1099,7 +1099,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 				VlanAddress: "192.168.40.0/22",
 			}
 			configuration.CreateVlan(ctx, vlan)
-			ips, _, startFreeIP, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
+			ips, _, startFreeIP, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
 			var assignedIP *ufspb.IP
 			for _, ip := range ips {
 				if ip.GetIpv4Str() == startFreeIP {
@@ -1194,7 +1194,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 				VlanAddress: "192.168.40.0/22",
 			}
 			configuration.CreateVlan(ctx, vlan)
-			ips, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
+			ips, _, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
 			So(err, ShouldBeNil)
 			// Only import the first 20 as one single transaction cannot import all.
 			_, err = configuration.ImportIPs(ctx, ips[0:20])
@@ -1318,7 +1318,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 				VlanAddress: "192.168.40.0/22",
 			}
 			configuration.CreateVlan(ctx, vlan)
-			ips, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
+			ips, _, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
 			So(err, ShouldBeNil)
 			// Only import the first 20 as one single transaction cannot import all.
 			_, err = configuration.ImportIPs(ctx, ips[0:20])
