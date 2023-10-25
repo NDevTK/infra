@@ -637,6 +637,7 @@ func crosRepairActions() map[string]*Action {
 				"Checks the CBI contents for corruption. go/cbi-auto-recovery-dd",
 			},
 			Conditions: []string{
+				"Is a Chromebook",
 				"CBI is present",
 				"UFS contains CBI contents",
 			},
@@ -709,6 +710,7 @@ func crosRepairActions() map[string]*Action {
 				"Store CBI contents in UFS",
 			},
 			Conditions: []string{
+				"Is a Chromebook",
 				"CBI is present",
 				"UFS does not contain CBI contents",
 			},
