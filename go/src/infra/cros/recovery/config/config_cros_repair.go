@@ -66,7 +66,6 @@ func crosRepairCriticalActions(skipRepairFailState bool) []string {
 		"Disable verbose network logging for cellular DUTs",
 		"Verify bootId and compare",
 		"Validate chromebook X label",
-		"Record type C status",
 		"All repair-requests resolved",
 		"Reset DUT-state reason",
 		"Servo is in WORKING state",
@@ -3354,16 +3353,6 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{
 				UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR,
 			},
-		},
-		"Record type C status": {
-			Docs: []string{
-				"Record the type C status reported by the DUT",
-			},
-			Conditions: []string{
-				"Device is SSHable",
-			},
-			ExecName:               "cros_log_typec_status",
-			AllowFailAfterRecovery: true,
 		},
 		"Verify RO_VPD dsm_calib": {
 			Docs: []string{
