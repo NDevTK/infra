@@ -5427,12 +5427,12 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
-### 1.23.5.chromium.2
+### 1.23.5.chromium.3
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.23.5.chromium.2"
+  version: "version:1.23.5.chromium.3"
 >
 ```
 
