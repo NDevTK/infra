@@ -59,8 +59,11 @@ class CrashHandlerTest(AppengineTestCase):
       mock_predator_app_for_client.return_value = mock_predator_app
       request_json_data = {
           'message': {
-              'data': base64.b64encode(json.dumps(json_crash_data)),
-              'message_id': 'id',
+              'data':
+                  base64.b64encode(json.dumps(json_crash_data).encode('utf-8')
+                                  ).decode('utf-8'),
+              'message_id':
+                  'id',
           },
           'subscription': 'subscription',
       }

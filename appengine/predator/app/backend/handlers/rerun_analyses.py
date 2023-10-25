@@ -9,7 +9,7 @@ import logging
 from google.appengine.ext import ndb
 
 from analysis.type_enums import CrashClient
-from common.base_handler import BaseHandler
+from common.base_handler import BaseHandler, Permission
 from common.crash_pipeline import RerunPipeline
 from common.crash_pipeline import PredatorForClientID
 from common.model.clusterfuzz_analysis import ClusterfuzzAnalysis
@@ -19,7 +19,6 @@ from common.model.crash_config import CrashConfig
 from common.model.fracas_crash_analysis import FracasCrashAnalysis
 from gae_libs import appengine_util
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
-from gae_libs.handlers.base_handler import Permission
 from gae_libs.http.http_client_appengine import HttpClientAppengine
 from gae_libs.iterator import Iterate
 from libs import time_util

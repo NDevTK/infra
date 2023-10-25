@@ -182,7 +182,7 @@ class BaseHandler(object):
         length_value = 1
         if isinstance(value, (list, dict)):
           length_value = 2 + len(value)
-        if isinstance(value, (str, basestring)) and len(value) > 100:
+        if isinstance(value, str) and len(value) > 100:
           length_value = 10 + len(value)
         return (length_value, key)
 

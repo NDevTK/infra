@@ -69,13 +69,14 @@ class DashBoard(BaseHandler):
           'channel': crash.channel,
           'platform': crash.platform,
           'regression_range': crash.regression_range or '',
-          'suspected_cls': (crash.result.get('suspected_cls', [])
-                            if crash.result else []),
-          'suspected_project': (crash.result.get('suspected_project', '')
-                                if crash.result else ''),
+          'suspected_cls':
+              (crash.result.get('suspected_cls', []) if crash.result else []),
+          'suspected_project':
+              (crash.result.get('suspected_project', '') if crash.result else ''
+              ),
           'suspected_components': (crash.result.get('suspected_components', [])
                                    if crash.result else []),
-          'key': crash.key.urlsafe()
+          'key': crash.key.urlsafe().decode('utf-8')
       }
       crashes.append(display_data)
 

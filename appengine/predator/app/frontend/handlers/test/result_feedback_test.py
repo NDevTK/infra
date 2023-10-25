@@ -80,7 +80,7 @@ class ResultFeedbackTest(AppengineTestCase):
 
   def testResultFeedbackHandler(self):
     response = self.test_app.get('/result-feedback?key=%s' %
-                                 self.analysis.key.urlsafe())
+                                 self.analysis.key.urlsafe().decode())
     self.assertEqual(200, response.status_int)
 
   def _GenerateDisplayData(self, analysis):
@@ -121,7 +121,7 @@ class ResultFeedbackTest(AppengineTestCase):
             'suspected_components': analysis.suspected_components_triage_status,
         },
         'note': analysis.note,
-        'key': analysis.key.urlsafe(),
+        'key': analysis.key.urlsafe().decode('utf-8'),
     }
 
   def testDisplayAnanlysisResultWithStactraceString(self):
@@ -129,7 +129,8 @@ class ResultFeedbackTest(AppengineTestCase):
         'https://chromium.googlesource.com/chromium/src/+/346a']
     expected_result = self._GenerateDisplayData(self.analysis)
     response_json = self.test_app.get('/result-feedback?format=json&'
-                                      'key=%s' % self.analysis.key.urlsafe())
+                                      'key=%s' %
+                                      self.analysis.key.urlsafe().decode())
     self.assertEqual(200, response_json.status_int)
     self.assertEqual(expected_result, response_json.json_body)
 
@@ -143,7 +144,8 @@ class ResultFeedbackTest(AppengineTestCase):
 
     expected_result = self._GenerateDisplayData(analysis)
     response_json = self.test_app.get('/result-feedback?format=json&'
-                                      'key=%s' % self.analysis.key.urlsafe())
+                                      'key=%s' %
+                                      self.analysis.key.urlsafe().decode())
     self.assertEqual(200, response_json.status_int)
     self.assertEqual(expected_result, response_json.json_body)
 
@@ -160,6 +162,8 @@ class ResultFeedbackTest(AppengineTestCase):
     self.analysis.put()
     expected_result = self._GenerateDisplayData(self.analysis)
     response_json = self.test_app.get('/result-feedback?format=json&'
-                                      'key=%s' % self.analysis.key.urlsafe())
+                                      'key=%s' %
+                                      self.analysis.key.urlsafe().decode())
     self.assertEqual(200, response_json.status_int)
+    self.maxDiff = None
     self.assertEqual(expected_result, response_json.json_body)

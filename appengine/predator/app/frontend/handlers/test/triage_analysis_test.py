@@ -68,7 +68,7 @@ class TriageAnalysisTest(AppengineTestCase):
 
   def testTriageAnalysisHandler(self):
     response = self.test_app.post('/triage-analysis?key=%s' %
-                                  self.key.urlsafe())
+                                  self.key.urlsafe().decode())
     self.assertEqual(200, response.status_int)
 
   def testUpdateResultProperty(self):
@@ -92,15 +92,16 @@ class TriageAnalysisTest(AppengineTestCase):
     ]
     for update in updates:
 
-      self.test_app.post('/triage-analysis?key=%s' % self.key.urlsafe(),
-                         {'update-data': json.dumps(update)})
+      self.test_app.post(
+          '/triage-analysis?key=%s' % self.key.urlsafe().decode(),
+          {'update-data': json.dumps(update)})
       analysis = self.key.get()
       for key, value in update.items():
         self.assertEqual(getattr(analysis, key), value)
 
   def testUpdateNote(self):
     update = {'note': 'this is a note. +2314>?'}
-    self.test_app.post('/triage-analysis?key=%s' % self.key.urlsafe(),
+    self.test_app.post('/triage-analysis?key=%s' % self.key.urlsafe().decode(),
                        {'update-data': json.dumps(update)})
     analysis = self.key.get()
     self.assertEqual(analysis.note, update['note'])

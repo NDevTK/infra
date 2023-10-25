@@ -75,10 +75,12 @@ class ClusterfuzzDashBoardTest(AppengineTestCase):
         'platform': 'win',
         'commits': 3,
         'log': ['FailedToParseStacktrace'],
-        'suspected_cls': [{'author': 'someone'}],
+        'suspected_cls': [{
+            'author': 'someone'
+        }],
         'suspected_project': 'chromium',
         'suspected_components': ['Blink'],
-        'key': analysis.key.urlsafe(),
+        'key': analysis.key.urlsafe().decode('utf-8'),
     }]
 
     self.assertListEqual(self.dashboard.CrashDataToDisplay([analysis]),
@@ -107,7 +109,7 @@ class ClusterfuzzDashBoardTest(AppengineTestCase):
         'suspected_cls': [],
         'suspected_project': '',
         'suspected_components': [],
-        'key': analysis.key.urlsafe(),
+        'key': analysis.key.urlsafe().decode('utf-8'),
     }]
 
     self.assertListEqual(self.dashboard.CrashDataToDisplay([analysis]),

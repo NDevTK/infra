@@ -20,9 +20,8 @@ if __name__ == '__main__':
 
   import_utils.FixImports()
 
-  args = ['-Wignore',
-          '--ignore',
-          'app/first_party/',
-          '--ignore',
-          'app/third_party/python2']
+  args = [
+      '-Wignore', '--ignore', 'app/first_party/', '--ignore',
+      'app/third_party/python2', '--ignore', 'app/third_party/pipeline'
+  ]
   sys.exit(pytest.main(args + sys.argv[1:]))

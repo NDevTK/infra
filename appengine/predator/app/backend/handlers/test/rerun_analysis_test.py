@@ -47,7 +47,7 @@ class RerunAnalysisTest(AppengineTestCase):
     crash_analysis.put()
 
     self.mock_current_user(user_email='test@chromium.org', is_admin=True)
-    response = self.test_app.get(
-        '/process/rerun-analysis?key=%s' % crash_analysis.key.urlsafe())
+    response = self.test_app.get('/process/rerun-analysis?key=%s' %
+                                 crash_analysis.key.urlsafe().decode('utf-8'))
     self.assertEqual(response.status_int, 200)
     self.assertTrue(mock_run.called)

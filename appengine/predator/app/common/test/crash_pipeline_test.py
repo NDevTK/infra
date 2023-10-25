@@ -183,7 +183,7 @@ class RerunPipelineTest(AppengineTestCase):
                                 mock_reinitialize):
     """Test ``RerunPipeline`` runs as expected."""
     client = CrashClient.FRACAS
-    crash_keys = [self.crash_analyses[0].key.urlsafe()]
+    crash_keys = [self.crash_analyses[0].key.urlsafe().decode('utf-8')]
     self.MockPipeline(crash_pipeline.CrashAnalysisPipeline, None,
                       [client, self.crash_analyses[0].identifiers])
     pipeline = crash_pipeline.RerunPipeline(client, crash_keys,
@@ -197,7 +197,7 @@ class RerunPipelineTest(AppengineTestCase):
   def testPipelineRunPublish(self, mock_reinitialize):
     """Test ``RerunPipeline`` runs as expected."""
     client = CrashClient.FRACAS
-    crash_keys = [self.crash_analyses[0].key.urlsafe()]
+    crash_keys = [self.crash_analyses[0].key.urlsafe().decode('utf-8')]
     self.MockPipeline(crash_pipeline.CrashAnalysisPipeline, None,
                       [client, self.crash_analyses[0].identifiers])
     self.MockPipeline(crash_pipeline.PublishResultPipeline, None,

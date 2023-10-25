@@ -5,9 +5,9 @@
 from collections import OrderedDict
 
 from analysis.type_enums import CrashClient
+from common.base_handler import Permission
 from common.model.clusterfuzz_analysis import ClusterfuzzAnalysis
 from frontend.handlers.dashboard import DashBoard
-from gae_libs.handlers.base_handler import Permission
 
 
 class ClusterfuzzDashBoard(DashBoard):
@@ -57,13 +57,14 @@ class ClusterfuzzDashBoard(DashBoard):
           'commits': crash.commit_count_in_regression_range,
           # Just display names to keep dashboard clean.
           'log': log_names,
-          'suspected_cls': (crash.result.get('suspected_cls', [])
-                            if crash.result else []),
-          'suspected_project': (crash.result.get('suspected_project', '')
-                                if crash.result else ''),
+          'suspected_cls':
+              (crash.result.get('suspected_cls', []) if crash.result else []),
+          'suspected_project':
+              (crash.result.get('suspected_project', '') if crash.result else ''
+              ),
           'suspected_components': (crash.result.get('suspected_components', [])
                                    if crash.result else []),
-          'key': crash.key.urlsafe(),
+          'key': crash.key.urlsafe().decode('utf-8'),
       }
       crashes.append(display_data)
 

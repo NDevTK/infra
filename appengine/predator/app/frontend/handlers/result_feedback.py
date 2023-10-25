@@ -68,40 +68,60 @@ class ResultFeedback(BaseHandler):
     # of commit urls.
     culprit_cls = None
     if analysis.culprit_cls:
-      culprit_cls = [(cl if isinstance(cl, basestring) else cl['url'])
+      culprit_cls = [(cl if isinstance(cl, str) else cl['url'])
                      for cl in analysis.culprit_cls]
 
     data = {
-        'client': self.client,
-        'crash_url': analysis.crash_url,
-        'signature': analysis.signature,
-        'version': analysis.crashed_version,
-        'platform': analysis.platform,
-        'regression_range': analysis.regression_range,
-        'culprit_regression_range': analysis.culprit_regression_range,
-        'stack_trace': stack_trace,
-        'suspected_cls': analysis.result.get(
-            'suspected_cls') if analysis.result else None ,
-        'culprit_cls': culprit_cls,
-        'suspected_project': analysis.result.get(
-            'suspected_project') if analysis.result else None,
-        'culprit_project': analysis.culprit_project,
-        'suspected_components': analysis.result.get(
-            'suspected_components') if analysis.result else None,
-        'culprit_components': analysis.culprit_components,
-        'request_time': time_util.FormatDatetime(analysis.requested_time),
-        'analysis_completed': analysis.completed,
-        'analysis_failed': analysis.failed,
-        'log': analysis.result.get('log') if analysis.result else None,
-        'triage_history': _GetTriageHistory(analysis),
+        'client':
+            self.client,
+        'crash_url':
+            analysis.crash_url,
+        'signature':
+            analysis.signature,
+        'version':
+            analysis.crashed_version,
+        'platform':
+            analysis.platform,
+        'regression_range':
+            analysis.regression_range,
+        'culprit_regression_range':
+            analysis.culprit_regression_range,
+        'stack_trace':
+            stack_trace,
+        'suspected_cls':
+            analysis.result.get('suspected_cls') if analysis.result else None,
+        'culprit_cls':
+            culprit_cls,
+        'suspected_project':
+            analysis.result.get('suspected_project')
+            if analysis.result else None,
+        'culprit_project':
+            analysis.culprit_project,
+        'suspected_components':
+            analysis.result.get('suspected_components')
+            if analysis.result else None,
+        'culprit_components':
+            analysis.culprit_components,
+        'request_time':
+            time_util.FormatDatetime(analysis.requested_time),
+        'analysis_completed':
+            analysis.completed,
+        'analysis_failed':
+            analysis.failed,
+        'log':
+            analysis.result.get('log') if analysis.result else None,
+        'triage_history':
+            _GetTriageHistory(analysis),
         'analysis_correct': {
             'regression_range': analysis.regression_range_triage_status,
             'suspected_cls': analysis.suspected_cls_triage_status,
             'suspected_project': analysis.suspected_project_triage_status,
             'suspected_components': analysis.suspected_components_triage_status,
         },
-        'note': analysis.note,
-        'key': analysis.key.urlsafe(),
+        'note':
+            analysis.note,
+        'key':
+            analysis.key.urlsafe().decode('utf-8'),
     }
 
     data.update(analysis.customized_data)

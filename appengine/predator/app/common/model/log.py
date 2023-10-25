@@ -21,8 +21,11 @@ class Log(ndb.Model):
 
   @classmethod
   def _CreateKey(cls, identifiers):
-    return ndb.Key(cls.__name__, hashlib.sha1(
-        json.dumps(identifiers, sort_keys=True)).hexdigest())
+    return ndb.Key(
+        cls.__name__.encode('utf-8'),
+        hashlib.sha1(json.dumps(
+            identifiers,
+            sort_keys=True).encode('utf-8')).hexdigest().encode('utf-8'))
 
   @classmethod
   def Get(cls, identifiers):

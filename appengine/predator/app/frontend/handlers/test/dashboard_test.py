@@ -167,7 +167,7 @@ class DashBoardTest(testing.AppengineTestCase):
         'suspected_cls': crash.result['suspected_cls'],
         'suspected_project': crash.result['suspected_project'],
         'suspected_components': crash.result['suspected_components'],
-        'key': crash.key.urlsafe()
+        'key': crash.key.urlsafe().decode('utf-8')
     }
 
   def testDisplayAllAnalysisResults(self):

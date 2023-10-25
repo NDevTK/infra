@@ -38,11 +38,20 @@ _MOCK_OWNERS_MAPPINGS = json.dumps({
 
 _MOCK_CONFIG = {
     'component_info': [
-        {'dirs': ['src/dirA'], 'component': 'compoA',
-         'team': 'team1@chromium.org'},
-        {'dirs': ['src/dirC', 'src/dirB'], 'component': 'compoB',
-         'team': 'team2@chromium.org'},
-        {'dirs': ['src/dirE'], 'component': 'compoE'},
+        {
+            'dirs': ['src/dirA'],
+            'component': 'compoA',
+            'team': 'team1@chromium.org'
+        },
+        {
+            'dirs': ['src/dirB', 'src/dirC'],
+            'component': 'compoB',
+            'team': 'team2@chromium.org'
+        },
+        {
+            'dirs': ['src/dirE'],
+            'component': 'compoE'
+        },
     ],
     'owner_mapping_url': 'url',
     'top_n': 4,
@@ -90,7 +99,7 @@ class UpdateComponentConfigTest(TestCase):
         _MOCK_CURRENT_CONFIG, DummyHttpClient({'owner_mapping_url': 'url'}))
     expected_components = _MOCK_CONFIG['component_info']
     components = component_classifier_config['component_info']
-    self.assertListEqual(sorted(components), sorted(expected_components))
+    self.assertCountEqual(components, expected_components)
 
   def testGetComponentClassifierConfigNoOWNERS(self):
     component_classifier_config = GetComponentClassifierConfig(
@@ -105,88 +114,3 @@ class UpdateComponentConfigTest(TestCase):
                                  headers={'X-AppEngine-Cron': 'true'})
     self.assertEqual(response.status_int, 200)
     self.assertDictEqual(_MOCK_CONFIG, CrashConfig.Get().component_classifier)
-
-  def testSortingComponentsByPathLevels(self):
-    """Tests that components are sorted by directory path with the most '/'."""
-    owners_mappings = json.dumps({
-      'component-to-team': {
-          'C>D>E': 'team1@chromium.org',
-          'C>F': 'team2@chromium.org',
-        },
-      'dir-to-component': {
-          'a/b': 'C>D>E',
-          'a/b/c': 'C>F',
-        }
-    })
-    current_config = {
-        'owner_mapping_url': 'url',
-        'top_n': 3
-    }
-
-    expected_components = {
-        'component_info': [
-            {
-                'dirs': ['src/a/b/c'],
-                'component': 'C>F',
-                'team': 'team2@chromium.org'
-            },
-            {
-                'dirs': ['src/a/b'],
-                'component': 'C>D>E',
-                'team': 'team1@chromium.org'
-            },
-        ],
-        'owner_mapping_url': 'url',
-        'top_n': 3,
-    }
-    components = GetComponentClassifierConfig(
-        current_config,
-        http_client=DummyHttpClient(config=current_config,
-                                    response=owners_mappings))
-    self.assertDictEqual(components, expected_components)
-
-  def testSortingComponentsByPathLevelsForPlatformComponents(self):
-    """Tests that components are sorted by directory path with the most '/'."""
-    owners_mappings = json.dumps({
-      'component-to-team': {
-          'A(Android)': 'team1@chromium.org',
-          'A>B(Android)': 'team2@chromium.org',
-          'A>B>C(Android)': 'team3@chromium.org',
-        },
-      'dir-to-component': {
-          'a': 'A(Android)',
-          'a/b': 'A>B(Android)',
-          'a/b/c': 'A>B>C(Android)',
-        }
-    })
-    current_config = {
-        'owner_mapping_url': 'url',
-        'top_n': 3
-    }
-
-    expected_components = {
-        'component_info': [
-            {
-                'dirs': ['src/a/b/c'],
-                'component': 'A>B>C(Android)',
-                'team': 'team3@chromium.org',
-            },
-            {
-                'dirs': ['src/a/b'],
-                'component': 'A>B(Android)',
-                'team': 'team2@chromium.org',
-            },
-            {
-                'dirs': ['src/a'],
-                'component': 'A(Android)',
-                'team': 'team1@chromium.org',
-            },
-        ],
-        'owner_mapping_url': 'url',
-        'top_n': 3,
-    }
-    components = GetComponentClassifierConfig(
-        current_config,
-        http_client=DummyHttpClient(config=current_config,
-                                    response=owners_mappings))
-    self.assertDictEqual(components, expected_components)

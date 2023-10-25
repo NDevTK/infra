@@ -36,8 +36,7 @@ def _SortConfig(config):
 
 def _IsListOfStrings(obj):
   """Determines whether an object is a list of strings."""
-  return isinstance(obj, list) and all(isinstance(entry, basestring)
-                                       for entry in obj)
+  return isinstance(obj, list) and all(isinstance(entry, str) for entry in obj)
 
 
 # TODO(katesonia): Raise exceptions instead of return False if config
@@ -70,7 +69,7 @@ def _ValidateChromeCrashConfig(chrome_crash_config):
 
   analysis_result_pubsub_topic = chrome_crash_config.get(
       'analysis_result_pubsub_topic')
-  if not isinstance(analysis_result_pubsub_topic, basestring):
+  if not isinstance(analysis_result_pubsub_topic, str):
     return False
 
   signature_blacklist_markers = chrome_crash_config.get(
@@ -84,7 +83,7 @@ def _ValidateChromeCrashConfig(chrome_crash_config):
     return False
 
   for channel, platform_list in supported_platform_list_by_channel.items():
-    if not isinstance(channel, basestring):
+    if not isinstance(channel, str):
       return False
     if not _IsListOfStrings(platform_list):
       return False
@@ -115,11 +114,11 @@ def _ValidateClusterfuzzConfig(clusterfuzz_config):
 
   analysis_result_pubsub_topic = clusterfuzz_config.get(
       'analysis_result_pubsub_topic')
-  if not isinstance(analysis_result_pubsub_topic, basestring):
+  if not isinstance(analysis_result_pubsub_topic, str):
     return False
 
   try_bot_topic = clusterfuzz_config.get('try_bot_topic')
-  if not isinstance(try_bot_topic, basestring):
+  if not isinstance(try_bot_topic, str):
     return False
 
   try_bot_supported_platforms = clusterfuzz_config.get(
@@ -163,7 +162,7 @@ def _ValidateUMASamplingProfilerConfig(uma_profiler_config):
 
   analysis_result_pubsub_topic = uma_profiler_config.get(
       'analysis_result_pubsub_topic')
-  if not isinstance(analysis_result_pubsub_topic, basestring):
+  if not isinstance(analysis_result_pubsub_topic, str):
     return False
 
   signature_blacklist_markers = uma_profiler_config.get(
@@ -221,7 +220,7 @@ def _ValidateComponentClassifierConfig(component_classifier_config):
     return False
 
   owner_mapping_url = component_classifier_config.get('owner_mapping_url')
-  if not isinstance(owner_mapping_url, basestring):
+  if not isinstance(owner_mapping_url, str):
     return False
 
   top_n = component_classifier_config.get('top_n')

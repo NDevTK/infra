@@ -131,7 +131,7 @@ class PredatorForFracasTest(AppengineTestCase):
                                      mocked_urlsafe):
     mocked_host = 'http://host'
     mocked_get_default_host.return_value = mocked_host
-    urlsafe_key = 'abcde'
+    urlsafe_key = b'abcde'
     mocked_urlsafe.return_value = urlsafe_key
 
     crash_identifiers = {
@@ -148,9 +148,11 @@ class PredatorForFracasTest(AppengineTestCase):
         'client_id': self._client.client_id,
         'crash_identifiers': crash_identifiers,
         'result': {
-            'feedback_url': crash_analysis._FEEDBACK_URL_TEMPLATE % (
-                mocked_host, CrashClient.FRACAS, urlsafe_key),
-            'other': 'data'
+            'feedback_url':
+                crash_analysis._FEEDBACK_URL_TEMPLATE %
+                (mocked_host, CrashClient.FRACAS, urlsafe_key.decode('utf-8')),
+            'other':
+                'data'
         }
     }
 
