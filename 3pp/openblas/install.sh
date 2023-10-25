@@ -9,6 +9,5 @@ set -o pipefail
 
 PREFIX="$1"
 
-make NO_LAPACKE=1
-make NO_LAPACKE=1 install PREFIX="${PREFIX}"
-
+make NO_LAPACKE=1 NO_SHARED=1
+make NO_LAPACKE=1 NO_SHARED=1 install PREFIX="${PREFIX}"

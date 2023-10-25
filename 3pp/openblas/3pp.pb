@@ -5,6 +5,7 @@ create {
       repo: "https://github.com/OpenMathLib/OpenBLAS.git"
       tag_pattern: "v%s"
     }
+    patch_version: "chromium.1"
   }
   build {}
 }
