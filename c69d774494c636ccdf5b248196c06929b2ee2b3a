@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ff25213_a89d747d",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_audit_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-10-26T21:11:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e3954e12_42845082",
+      "range": {
+        "startLine": 61,
+        "startChar": 56,
+        "endLine": 61,
+        "endChar": 59
+      },
+      "revId": "c69d774494c636ccdf5b248196c06929b2ee2b3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5783f09f_db258e1b",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-10-26T21:09:47Z",
       "side": 1,
       "message": "Same here, assuming you want `src`?",
+      "range": {
+        "startLine": 113,
+        "startChar": 56,
+        "endLine": 113,
+        "endChar": 59
+      },
+      "revId": "c69d774494c636ccdf5b248196c06929b2ee2b3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ad1fff2_793d9ece",
+        "filename": "go/src/infra/cros/recovery/internal/execs/rpm/rpm_audit_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-10-26T21:11:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5783f09f_db258e1b",
       "range": {
         "startLine": 113,
         "startChar": 56,
