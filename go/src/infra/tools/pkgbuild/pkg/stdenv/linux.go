@@ -14,7 +14,7 @@ import (
 // TODO(fancl): build the container using pkgbuild.
 func containers(plat generators.Platform) string {
 	const prefix = "gcr.io/chromium-container-registry/infra-dockerbuild/"
-	const version = ":v1.4.18"
+	const version = ":v1.4.21"
 	if plat.OS() != "linux" {
 		return ""
 	}
