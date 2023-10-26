@@ -75,9 +75,7 @@ class Conductor:
 
     if self.setup.with_build:
       package_names = [p.full_name for p in self.packages]
-      with self.cros_sdk.StartWorkonPackagesSafe(
-          package_names) as workon_handler:
-        self.cros_sdk.BuildPackages(package_names)
+      self.cros_sdk.BuildPackages(package_names)
 
   def DoMagic(self,
               *,

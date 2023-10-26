@@ -41,64 +41,6 @@ class CrosSdk:
   def __init__(self, setup: Setup):
     self.setup = setup
 
-  def StartWorkonPackages(self, package_names: List[str]) -> None:
-    """
-    Runs cros_workon start with given packages.
-
-    Raises:
-      * cros_build_lib.CompletedProcess if command failed.
-    """
-    cmd = ['cros_workon', f"--board={self.setup.board}", "start"
-          ] + package_names
-    self._Exec(cmd)
-
-  def StopWorkonPackages(self, package_names: List[str]) -> None:
-    """
-    Runs cros_workon stop with given packages.
-
-    Raises:
-      * cros_build_lib.CompletedProcess if command failed.
-    """
-    cmd = ['cros_workon', f"--board={self.setup.board}", "stop"] + package_names
-    self._Exec(cmd)
-
-  def StartWorkonPackagesSafe(self, package_names: List[str]):
-    """
-    Safe version of start/stop workon. Preserves state of already workon
-    packages.
-
-    Returns a handler to stop workon with 'with' statement.
-
-    Raises:
-      * cros_build_lib.CompletedProcess if command failed.
-    """
-    check_workon_cmd = ['cros_workon', f"--board={self.setup.board}", "list"]
-
-    output = self._Exec(check_workon_cmd, capture_output=True).stdout
-    workon_packages = set(output.split('\n'))
-    non_workon_packages = [p for p in package_names if not p in workon_packages]
-
-    g_logger.debug('Packages to start workon: %s', non_workon_packages)
-    g_logger.debug('Packages already workon: %s',
-                   [p for p in package_names if p in workon_packages])
-
-    class WorkonRaii:
-
-      def __init__(self, cros_sdk: CrosSdk, packages_to_workon: List[str]):
-        self.cros_sdk = cros_sdk
-        self.packages_to_workon = packages_to_workon
-
-      def __enter__(self) -> 'WorkonRaii':
-        if self.packages_to_workon and len(self.packages_to_workon) != 0:
-          self.cros_sdk.StartWorkonPackages(self.packages_to_workon)
-        return self
-
-      def __exit__(self, type, value, traceback) -> None:
-        if self.packages_to_workon and len(self.packages_to_workon) != 0:
-          self.cros_sdk.StopWorkonPackages(self.packages_to_workon)
-
-    return WorkonRaii(self, non_workon_packages)
-
   def BuildPackages(self, package_names: List[str]) -> None:
     """
     Builds given packages and preserves build artifcats.
