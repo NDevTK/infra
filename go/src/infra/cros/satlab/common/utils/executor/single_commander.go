@@ -60,7 +60,7 @@ func (f *FakeCommander) Wait(c *exec.Cmd) error {
 		}
 	}()
 
-	time.Sleep(time.Millisecond)
+	time.Sleep(time.Second * 2)
 
 	return nil
 }
