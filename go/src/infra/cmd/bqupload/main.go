@@ -45,12 +45,15 @@ import (
 )
 
 const (
-	userAgent = "bqupload v1.5"
+	userAgent = "bqupload v1.6"
 	// The bigquery API imposes a hard limit of 50,000 rows. We use a much lower
 	// default limit to also make it less likely that the total payload size
 	// exceeds the maximum, and to limit the blast radius when a batch fails to
 	// upload.
 	defaultBatchSize = 500
+	// crbug/1491321 - http2 concurrent request limits
+	// While using http2 in Golang, try to keep max concurrent requests to 100.
+	maxConcurrentInserts = 100
 )
 
 func usage() {
@@ -237,6 +240,7 @@ func doInsert(ctx context.Context, stderr io.Writer, opts *uploadOpts, inserter 
 	var mu sync.Mutex
 	var multiErr bigquery.PutMultiError
 	eg, egCtx := errgroup.WithContext(ctx)
+	eg.SetLimit(maxConcurrentInserts)
 	for i := 0; i < len(rows); i += opts.batchSize {
 		i := i
 		eg.Go(func() error {
