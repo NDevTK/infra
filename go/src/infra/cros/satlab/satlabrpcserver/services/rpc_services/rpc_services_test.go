@@ -944,11 +944,11 @@ func TestListDutTasksShouldSuccess(t *testing.T) {
 
 		// Act
 	req := &pb.ListDutTasksRequest{
-		PageToken: "",
-		PageSize:  1,
-		Address:   "192.168.231.222",
+		Cursor:   "",
+		PageSize: 1,
+		Address:  "192.168.231.222",
 	}
-	resp, err := innerListDUTTasks(ctx, executor, swarmingService, req.GetAddress(), req.GetPageToken(), int(req.GetPageSize()))
+	resp, err := innerListDUTTasks(ctx, executor, swarmingService, req.GetAddress(), req.GetCursor(), int(req.GetPageSize()))
 
 	// Assert
 	if err != nil {
@@ -957,7 +957,7 @@ func TestListDutTasksShouldSuccess(t *testing.T) {
 
 	// Create a expected result
 	expected := &pb.ListDutTasksResponse{
-		NextPageToken: "next_cursor",
+		Cursor: "next_cursor",
 		Tasks: []*pb.Task{
 			{
 				Id: "task id",
@@ -996,11 +996,11 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 		Return(mockData, nil)
 
 	req := &pb.ListDutEventsRequest{
-		PageToken: "",
-		PageSize:  1,
-		Address:   "192.168.231.222",
+		Cursor:   "",
+		PageSize: 1,
+		Address:  "192.168.231.222",
 	}
-	resp, err := innerListDUTEvents(ctx, executor, swarmingService, req.GetAddress(), req.GetPageToken(), int(req.GetPageSize()))
+	resp, err := innerListDUTEvents(ctx, executor, swarmingService, req.GetAddress(), req.GetCursor(), int(req.GetPageSize()))
 
 	// Assert
 	if err != nil {
@@ -1009,7 +1009,7 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 
 	// Create a expected result
 	expected := &pb.ListDutEventsResponse{
-		NextPageToken: "next_cursor",
+		Cursor: "next_cursor",
 		Events: []*pb.BotEvent{
 			{
 				TaskId: "task id",
