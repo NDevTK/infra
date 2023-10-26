@@ -117,7 +117,7 @@ func TestTastConversions(t *testing.T) {
 						Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Basic/foo"},
 					},
 					"testhaus_logs": {
-						Body:        &sinkpb.Artifact_Contents{Contents: []byte(fmt.Sprintf("%s/cros-test/artifact/tast/tests/lacros.Basic?test=tast.lacros.Basic", testhausBaseUrl))},
+						Body:        &sinkpb.Artifact_Contents{Contents: []byte(fmt.Sprintf("%s?query=lacros.Basic&test=tast.lacros.Basic", testhausBaseUrl))},
 						ContentType: "text/x-uri",
 					},
 				},

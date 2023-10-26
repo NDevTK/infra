@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -195,7 +196,7 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 		if testhausBaseUrl != "" {
 			tr.Artifacts["testhaus_logs"] = &sinkpb.Artifact{
 				Body: &sinkpb.Artifact_Contents{
-					Contents: []byte(fmt.Sprintf("%s/cros-test/artifact/tast/tests/%s?test=%s", strings.TrimSuffix(testhausBaseUrl, "/"), c.Name, testName)),
+					Contents: []byte(fmt.Sprintf("%s?query=%s&test=%s", strings.TrimSuffix(testhausBaseUrl, "/"), url.QueryEscape(c.Name), url.QueryEscape(testName))),
 				},
 				ContentType: "text/x-uri",
 			}
