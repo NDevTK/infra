@@ -56,14 +56,15 @@ var targetOverrideModels = map[string]string{
 // based on models are not sufficient for them.
 var targetOverridebyHwid = map[string]string{
 	// Nissa board.
-	"JOXER-ZELG B3B-C3A-Q6B-I2C-C9Y-A9N":  "joxer_ufs",
-	"NIRWEN-ZZCR B2B-B2A-B2A-W7H":         "nivviks_ufs",
-	"NEREID-ZZCR A4B-B2C-E3E-F2A-A2B-48T": "nereid_hdmi",
-	"YAVIKS-BVSW B3B-A2C-B2A-Q6W-I3T":     "yaviks_ufs",
-	"YAVIKS-BVSW C4B-C2C-C3B-H4H-66N":     "yaviks_ufs",
-	"YAVIKSO-OFRL C4C-C2F-D3B-W3P-N4E":    "yaviks_ufs",
-	"YAVIKSO-OFRL C4C-B2D-D3B-Q3E-X66":    "yaviks_ufs",
-	"YAVILLY-ITWJ B3B-G2H-C8K-79E-W4S":    "yavilla_ufs",
+	"JOXER-ZELG B3B-C3A-Q6B-I2C-C9Y-A9N":         "joxer_ufs",
+	"NIRWEN-ZZCR B2B-B2A-B2A-W7H":                "nivviks_ufs",
+	"NEREID-ZZCR A4B-B2C-E3E-F2A-A2B-48T":        "nereid_hdmi",
+	"PUJJOTEEN-JQII E5B-D2J-E5D-Q2Q-K4E-I5I-A6I": "pujjo_5g",
+	"YAVIKS-BVSW B3B-A2C-B2A-Q6W-I3T":            "yaviks_ufs",
+	"YAVIKS-BVSW C4B-C2C-C3B-H4H-66N":            "yaviks_ufs",
+	"YAVIKSO-OFRL C4C-C2F-D3B-W3P-N4E":           "yaviks_ufs",
+	"YAVIKSO-OFRL C4C-B2D-D3B-Q3E-X66":           "yaviks_ufs",
+	"YAVILLY-ITWJ B3B-G2H-C8K-79E-W4S":           "yavilla_ufs",
 }
 
 // ecExemptedModels holds a map of models that doesn't have EC firmware.
