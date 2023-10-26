@@ -28,7 +28,7 @@ go_build_environ:
     linux: 0 # to avoid linking to system dynamic libraries
     windows: 0 # we have no cgo toolchain on Windows
 go_packages:
-  - infra/tools/vpython_ng/cmd/vpython3
+  - infra/tools/vpython/cmd/vpython3
 root: ../../go/bin
 data:
   - file: vpython3${exe_suffix}

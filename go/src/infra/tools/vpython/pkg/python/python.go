@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"infra/tools/vpython_ng/pkg/common"
+	"infra/tools/vpython/pkg/common"
 
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipkg/base/generators"

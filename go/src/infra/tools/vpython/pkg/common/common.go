@@ -10,6 +10,7 @@ import (
 	"runtime"
 )
 
+// Python returns the python path in python installation.
 func Python(path, py string) string {
 	if runtime.GOOS == "windows" {
 		return filepath.Join(path, "bin", py+".exe")
@@ -17,6 +18,7 @@ func Python(path, py string) string {
 	return filepath.Join(path, "bin", py)
 }
 
+// PythonVENV returns the python path in venv.
 func PythonVENV(path, py string) string {
 	if runtime.GOOS == "windows" {
 		return filepath.Join(path, "Scripts", py+".exe")
@@ -34,6 +36,8 @@ func DefaultBundleDir(version string) string {
 	return version
 }
 
+// CIPDCommand generates a *exec.Cmd for cipd. It will lookup cipd and its
+// wrappers depending on platforms.
 func CIPDCommand(arg ...string) *exec.Cmd {
 	cipd, err := exec.LookPath("cipd")
 	if err != nil {

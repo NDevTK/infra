@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"infra/tools/vpython_ng/pkg/python"
-	"infra/tools/vpython_ng/pkg/wheels"
+	"infra/tools/vpython/pkg/python"
+	"infra/tools/vpython/pkg/wheels"
 
 	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/cipkg/base/generators"

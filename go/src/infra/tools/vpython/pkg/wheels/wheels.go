@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"infra/tools/vpython_ng/pkg/common"
+	"infra/tools/vpython/pkg/common"
 
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
