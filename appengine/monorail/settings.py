@@ -305,10 +305,6 @@ analytics_id = 'UA-55762617-20'
 
 # Project IDs which have opted into freezing project configs.
 config_freeze_project_ids = set()
-config_freeze_override_users = {
-    'benhenry@google.com', 'zhangtiff@google.com', 'summermcdonald@google.com',
-    'example@example.com'
-}
 
 if unit_test_mode:
   db_cloud_project = ''  # No real database is used during unit testing.
@@ -324,7 +320,15 @@ else:
     branded_domains = branded_domains_staging
     domain_to_default_project = domain_to_default_project_staging
 
+    label_freeze_project_ids = {16}
     config_freeze_project_ids = {16}
+    config_freeze_override_users = {
+        16:
+            {
+                'benhenry@google.com', 'zhangtiff@google.com',
+                'summermcdonald@google.com', 'example@example.com'
+            }
+    }
 
   elif app_id == 'monorail-dev':
     site_name = 'Monorail Dev'
@@ -336,8 +340,16 @@ else:
     # Use replicas created when testing the restore procedures on 2021-02-24
     db_replica_prefix = 'replica-2'
 
-    label_freeze_project_ids = {16}
-    config_freeze_project_ids = {16}
+    label_freeze_project_ids = {16, 36}
+    config_freeze_project_ids = {16, 36}
+    config_freeze_override_users = {
+        16:
+            {
+                'benhenry@google.com', 'zhangtiff@google.com',
+                'summermcdonald@google.com', 'example@example.com'
+            },
+        36: {'viccontreas@google.com', 'nmulcahey@google.com'}
+    }
 
   elif app_id == 'monorail-prod':
     send_all_email_to = None  # Deliver it to the intended users.
@@ -347,8 +359,16 @@ else:
     branded_domains = branded_domains_prod
     domain_to_default_project = domain_to_default_project_prod
 
-    label_freeze_project_ids = {16}
-    config_freeze_project_ids = {16}
+    label_freeze_project_ids = {16, 37}
+    config_freeze_project_ids = {16, 37}
+    config_freeze_override_users = {
+        16:
+            {
+                'benhenry@google.com', 'zhangtiff@google.com',
+                'summermcdonald@google.com', 'example@example.com'
+            },
+        37: {'viccontreas@google.com', 'nmulcahey@google.com'}
+    }
 
 if local_mode:
   site_name = 'Monorail Local'
@@ -525,5 +545,7 @@ label_prefix_allowlist = [
 ]
 
 
-def is_label_allowed(label):
-  return any(label.startswith(prefix) for prefix in label_prefix_allowlist)
+def is_label_allowed(project_id, label):
+  # Only allowlist label prefixes for 'Chromium' project.
+  if project_id == 16:
+    return any(label.startswith(prefix) for prefix in label_prefix_allowlist)

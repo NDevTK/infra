@@ -1149,7 +1149,8 @@ def CanEditProjectConfig(mr, services):
       mr.cnxn, list(mr.auth.effective_ids))
 
   for _, user in effective_users.items():
-    if user.email in settings.config_freeze_override_users:
+    if user.email in settings.config_freeze_override_users.get(
+        mr.project.project_id, {}):
       return True
 
   return False

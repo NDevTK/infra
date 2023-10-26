@@ -1713,7 +1713,7 @@ class IssuePermissionsTest(unittest.TestCase):
     mr.perms = permissions.ADMIN_PERMISSIONSET
     mr.auth.effective_ids = {567}
 
-    settings.config_freeze_override_users = {'allowlisteduser@test.com'}
+    settings.config_freeze_override_users = {789: 'allowlisteduser@test.com'}
     settings.config_freeze_project_ids = {789}
 
     self.assertTrue(permissions.CanEditProjectConfig(mr, self.services))
