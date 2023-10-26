@@ -28,4 +28,10 @@ type IDUTServices interface {
 	// GetConnectedIPs get the connected IPs from `dnsmasq.lease`
 	// and then check the IPs are alive.
 	GetConnectedIPs(ctx context.Context) ([]Device, error)
+
+	// GetBoard get the DUT's board
+	GetBoard(ctx context.Context, address string) (string, error)
+
+	// GetModel get the DUT's model
+	GetModel(ctx context.Context, address string) (string, error)
 }

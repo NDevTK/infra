@@ -47,9 +47,16 @@ const ListFirmwareCommand = "fwid=`timeout 5 crossystem fwid`;" +
 
 const UpdateFirmwareCommand = "/usr/sbin/chromeos-firmwareupdate --mode autoupdate --force"
 
-const CheckDUTIsConnectedCommand = "timeout 2 cat /etc/lsb-release"
+const GrepLSBReleaseCommand = "timeout 2 cat /etc/lsb-release"
 
 const ChromeosTestImageReleaseTrack = "chromeos_release_track=testimage-channel"
+
+const ChromeosReleaseBoard = "CHROMEOS_RELEASE_BOARD="
+
+var GetModelCommands = []string{
+	"cros_config / test-label",
+	"cros_config / name",
+}
 
 var ToResponseBuildStatusMap = map[build_service.BuildStatus]pb.BuildItem_BuildStatus{
 	build_service.AVAILABLE: pb.BuildItem_BUILD_STATUS_PASS,

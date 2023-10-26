@@ -1164,6 +1164,8 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
 	}, nil)
+	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
 	s.commandExecutor = shivasTestHelper(true)
 
 	req := &pb.ListDutsRequest{}
@@ -1194,8 +1196,8 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				Hostname:    "",
 				Address:     "192.168.231.2",
 				Pools:       nil,
-				Model:       "",
-				Board:       "",
+				Model:       "model",
+				Board:       "board",
 				MacAddress:  "e8:9f:80:83:3d:c8",
 				IsConnected: true,
 			},
@@ -1222,6 +1224,8 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
 	}, nil)
+	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
 	s.commandExecutor = shivasTestHelper(true)
 
 	req := &pb.ListDutsRequest{}
@@ -1253,8 +1257,8 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				Hostname:    "",
 				Address:     "192.168.231.2",
 				Pools:       nil,
-				Model:       "",
-				Board:       "",
+				Model:       "model",
+				Board:       "board",
 				MacAddress:  "e8:9f:80:83:3d:c8",
 				IsConnected: false,
 			},
@@ -1281,6 +1285,8 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
 	}, nil)
+	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("board", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("model", nil)
 	s.commandExecutor = shivasTestHelper(false)
 
 	req := &pb.ListDutsRequest{}
@@ -1302,8 +1308,8 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 				Hostname:    "",
 				Address:     "192.168.231.222",
 				Pools:       nil,
-				Model:       "",
-				Board:       "",
+				Model:       "model",
+				Board:       "board",
 				IsConnected: true,
 				MacAddress:  "00:14:3d:14:c4:02",
 			},
@@ -1312,8 +1318,8 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 				Hostname:    "",
 				Address:     "192.168.231.2",
 				Pools:       nil,
-				Model:       "",
-				Board:       "",
+				Model:       "model",
+				Board:       "board",
 				MacAddress:  "e8:9f:80:83:3d:c8",
 				IsConnected: true,
 			},
@@ -1340,6 +1346,8 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
 	}, nil)
+	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("board", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("model", nil)
 	s.commandExecutor = shivasTestHelper(false)
 
 	req := &pb.ListDutsRequest{}
@@ -1361,9 +1369,69 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 				Hostname:    "",
 				Address:     "192.168.231.222",
 				Pools:       nil,
-				Model:       "",
-				Board:       "",
+				Model:       "model",
+				Board:       "board",
 				IsConnected: false,
+				MacAddress:  "00:14:3d:14:c4:02",
+			},
+			{
+				Name:        "",
+				Hostname:    "",
+				Address:     "192.168.231.2",
+				Pools:       nil,
+				Model:       "model",
+				Board:       "board",
+				MacAddress:  "e8:9f:80:83:3d:c8",
+				IsConnected: false,
+			},
+		},
+	}
+
+	sortModelsOpts := cmpopts.SortSlices(
+		func(x, y *pb.Dut) bool {
+			return x.GetAddress() > y.GetAddress()
+		})
+
+	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts, sortModelsOpts); diff != "" {
+		t.Errorf("diff: %v\n", diff)
+	}
+}
+
+func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock data
+	s := createMockServer(t)
+	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
+	}, nil)
+	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("", errors.New("can't get board"))
+	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("", errors.New("can't get model"))
+	s.commandExecutor = shivasTestHelper(true)
+
+	req := &pb.ListDutsRequest{}
+	resp, err := s.ListDuts(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: {%v}", err)
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutsResponse{}, pb.Dut{})
+	// Create a expected result
+	expected := &pb.ListDutsResponse{
+		Duts: []*pb.Dut{
+			{
+				Name:        "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:    "satlab-0wgatfqi21498062-jeff137-c",
+				Address:     "192.168.231.222",
+				Pools:       []string{"jev-satlab"},
+				Model:       "atlas",
+				Board:       "atlas",
+				IsConnected: true,
 				MacAddress:  "00:14:3d:14:c4:02",
 			},
 			{
@@ -1374,7 +1442,7 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 				Model:       "",
 				Board:       "",
 				MacAddress:  "e8:9f:80:83:3d:c8",
-				IsConnected: false,
+				IsConnected: true,
 			},
 		},
 	}
@@ -1399,6 +1467,8 @@ func TestListConnectedDutsShouldFail(t *testing.T) {
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
 	}, nil)
+	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("board", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("model", nil)
 	s.commandExecutor = &executor.FakeCommander{
 		Err: errors.New("execute command failed"),
 	}

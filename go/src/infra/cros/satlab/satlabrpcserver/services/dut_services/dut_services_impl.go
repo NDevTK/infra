@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os/exec"
@@ -262,7 +263,7 @@ func (d *DUTServicesImpl) GetConnectedIPs(ctx context.Context) ([]Device, error)
 
 	// We need to send a command to make sure ssh connection is avaliable.
 	// Some DUTs can be pingable, but they can't establish the ssh connection.
-	res := d.RunCommandOnIPs(ctx, activeIPs, constants.CheckDUTIsConnectedCommand)
+	res := d.RunCommandOnIPs(ctx, activeIPs, constants.GrepLSBReleaseCommand)
 
 	result := []Device{}
 	for _, r := range res {
@@ -283,4 +284,42 @@ func (d *DUTServicesImpl) GetConnectedIPs(ctx context.Context) ([]Device, error)
 	}
 
 	return result, nil
+}
+
+// GetBoard get the DUT's board from `lsb-release`
+func (d *DUTServicesImpl) GetBoard(ctx context.Context, IP string) (string, error) {
+	res, err := d.RunCommandOnIP(ctx, IP, fmt.Sprintf(
+		"%s | grep %s",
+		constants.GrepLSBReleaseCommand,
+		constants.ChromeosReleaseBoard,
+	))
+	if err != nil {
+		return "", err
+	}
+	if res.Error != nil {
+		return "", res.Error
+	}
+
+	if b, ok := strings.CutPrefix(res.Value, constants.ChromeosReleaseBoard); ok {
+		return b, nil
+	}
+
+	return "", errors.New("can not find the board information in lsb release.")
+}
+
+// GetModel get the DUT's model from `cros_config / test-label` / `cros_config / name`
+func (d *DUTServicesImpl) GetModel(ctx context.Context, IP string) (string, error) {
+	for _, cmd := range constants.GetModelCommands {
+		res, err := d.RunCommandOnIP(ctx, IP, cmd)
+		if err != nil || res.Error != nil {
+			// Skip if we run a command failed.
+			continue
+		}
+
+		if res.Value != "" {
+			// If we find the model isn't empty then we return it.
+			return res.Value, nil
+		}
+	}
+	return "", errors.New("can not get the model information")
 }

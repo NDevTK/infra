@@ -726,7 +726,22 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 	})
 
 	for _, device := range unenrolledDevices {
+		// TODO optimize we don't need to wait for
+		// out dut executing command complete to fetch
+		// the next dut board and model.
+		board, err := s.dutService.GetBoard(ctx, device.IP)
+		if err != nil {
+			// Skip when we can't get the board from the CLI.
+			board = ""
+		}
+		model, err := s.dutService.GetModel(ctx, device.IP)
+		if err != nil {
+			// Skip when we can't get the model from the CLI.
+			model = ""
+		}
 		duts = append(duts, &pb.Dut{
+			Board:       board,
+			Model:       model,
 			Address:     device.IP,
 			MacAddress:  device.MACAddress,
 			IsConnected: device.IsConnected,

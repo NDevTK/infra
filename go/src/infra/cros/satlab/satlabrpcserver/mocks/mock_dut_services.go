@@ -35,3 +35,13 @@ func (m *MockDUTServices) GetConnectedIPs(ctx context.Context) ([]dut_services.D
 	args := m.Called(ctx)
 	return args.Get(0).([]dut_services.Device), args.Error(1)
 }
+
+func (m *MockDUTServices) GetBoard(ctx context.Context, IP string) (string, error) {
+	args := m.Called(ctx, IP)
+	return args.String(0), args.Error(1)
+}
+
+func (m *MockDUTServices) GetModel(ctx context.Context, IP string) (string, error) {
+	args := m.Called(ctx, IP)
+	return args.String(0), args.Error(1)
+}

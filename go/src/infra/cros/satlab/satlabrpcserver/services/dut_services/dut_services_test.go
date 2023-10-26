@@ -16,16 +16,43 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/google/go-cmp/cmp"
+	cssh "golang.org/x/crypto/ssh"
 
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/satlabrpcserver/fake"
 	"infra/cros/satlab/satlabrpcserver/models"
 	"infra/cros/satlab/satlabrpcserver/utils/connector"
-	"infra/cros/satlab/satlabrpcserver/utils/constants"
-
-	cssh "golang.org/x/crypto/ssh"
 )
+
+func setupDUTServiceTest(t *testing.T, sshResp string, password string, executor executor.IExecCommander) DUTServicesImpl {
+	server := createFakeSSHServer(t, sshResp)
+	config := createSSHConfig(password)
+	return createDUTService(config, server.GetAddr(), executor)
+}
+
+func createSSHConfig(password string) cssh.ClientConfig {
+	return cssh.ClientConfig{
+		User: "fake_user",
+		Auth: []cssh.AuthMethod{
+			cssh.Password(password),
+		},
+		HostKeyCallback: cssh.InsecureIgnoreHostKey(),
+		Timeout:         time.Second * 20,
+	}
+}
+
+func createDUTService(config cssh.ClientConfig, address string, executor executor.IExecCommander) DUTServicesImpl {
+	return DUTServicesImpl{
+		config: config,
+		// if server is running, it should listen to some tcp
+		// so the pattern should be "xxx.xxx.xxx.xxx:xx".
+		// we can split the string into two part
+		port:            strings.Split(address, ":")[1],
+		clientConnector: connector.New(0, time.Second),
+		commandExecutor: executor,
+	}
+}
 
 func createFakeSSHServer(t *testing.T, cmdResult string) *fake.SSHServer {
 	server, err := fake.NewFakeServer(func(session ssh.Session) {
@@ -65,28 +92,10 @@ func createFakeSSHServer(t *testing.T, cmdResult string) *fake.SSHServer {
 
 func TestRunCommandOnIpShouldWork(t *testing.T) {
 	expectedResponse := "connect success"
-	server := createFakeSSHServer(t, expectedResponse)
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	config := cssh.ClientConfig{
-		User: "fake_user",
-		Auth: []cssh.AuthMethod{
-			cssh.Password(fake.Password),
-		},
-		HostKeyCallback: cssh.InsecureIgnoreHostKey(),
-		Timeout:         constants.SSHConnectionTimeout,
-	}
-
-	dutServices := DUTServicesImpl{
-		config: config,
-		// if server is running, it should listen to some tcp
-		// so the pattern should be "xxx.xxx.xxx.xxx:xx".
-		// we can split the string into two part
-		port:            strings.Split(server.GetAddr(), ":")[1],
-		clientConnector: connector.New(0, time.Second),
-	}
+	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, &executor.FakeCommander{})
 
 	res, err := dutServices.RunCommandOnIP(ctx, "127.0.0.1", "echo")
 	if err != nil {
@@ -101,28 +110,11 @@ func TestRunCommandOnIpShouldWork(t *testing.T) {
 
 func TestRunCommandOnIpsShouldWork(t *testing.T) {
 	expectedResponse := "connect success"
-	server := createFakeSSHServer(t, expectedResponse)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	config := cssh.ClientConfig{
-		User: "fake_user",
-		Auth: []cssh.AuthMethod{
-			cssh.Password(fake.Password),
-		},
-		HostKeyCallback: cssh.InsecureIgnoreHostKey(),
-		Timeout:         constants.SSHConnectionTimeout,
-	}
-
-	dutServices := DUTServicesImpl{
-		config: config,
-		// if server is running, it should listen to some tcp
-		// so the pattern should be "xxx.xxx.xxx.xxx:xx".
-		// we can split the string into two part
-		port:            strings.Split(server.GetAddr(), ":")[1],
-		clientConnector: connector.New(0, time.Second),
-	}
+	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, &executor.FakeCommander{})
 
 	res := dutServices.RunCommandOnIPs(ctx, []string{"127.0.0.1"}, "echo")
 
@@ -139,11 +131,12 @@ func TestPingDUTsShouldSuccess(t *testing.T) {
 	ctx := context.Background()
 
 	// We fake the command executor
-	dutServices := DUTServicesImpl{
-		commandExecutor: &executor.FakeCommander{
-			CmdOutput: "192.168.231.2",
+	e := &executor.FakeCommander{
+		FakeFn: func(c *exec.Cmd) ([]byte, error) {
+			return []byte("192.168.231.2"), nil
 		},
 	}
+	dutServices := createDUTService(cssh.ClientConfig{}, "127.0.0.1:1", e)
 
 	input := []string{"192.168.231.2", "192.168.231.3"}
 	res, err := dutServices.pingDUTs(ctx, input)
@@ -163,16 +156,16 @@ func TestFetchLeasesShouldWork(t *testing.T) {
 	t.Parallel()
 
 	// We fake the command executor
-	dutServices := DUTServicesImpl{
-		commandExecutor: &executor.FakeCommander{
-			CmdOutput: `
+	e := &executor.FakeCommander{
+		FakeFn: func(c *exec.Cmd) ([]byte, error) {
+			return []byte(`
 1694651422 00:14:3d:14:c4:02 192.168.231.221 * 01:00:14:3d:14:c4:02
 1694634664 e8:9f:80:83:3d:c8 192.168.231.213 * 01:e8:9f:80:83:3d:c8
 1694301051 88:54:1f:0f:5f:dd 192.168.231.163 * 01:88:54:1f:0f:5f:dd
-1694283411 e8:9f:80:83:74:fe 192.168.231.201 * 01:e8:9f:80:83:74:fe
-      `,
+1694283411 e8:9f:80:83:74:fe 192.168.231.201 * 01:e8:9f:80:83:74:fe`), nil
 		},
 	}
+	dutServices := createDUTService(cssh.ClientConfig{}, "127.0.0.1:1", e)
 
 	res, err := dutServices.fetchLeasesFile()
 	if err != nil {
@@ -208,42 +201,11 @@ func getConnectIPsHelper() executor.IExecCommander {
 
 func TestGetConnectedIPsShouldWork(t *testing.T) {
 	expectedResponse := "connect success"
-	server := createFakeSSHServer(t, expectedResponse)
-
-	t.Cleanup(func() {
-		if server != nil {
-			err := server.Close()
-			// We can't do anything here
-			// when closing the fake ssh server error.
-			// Instead, we can log the error message.
-			if err != nil {
-				log.Printf("Can't close the fake server")
-				return
-			}
-		}
-	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	config := cssh.ClientConfig{
-		User: "fake_user",
-		Auth: []cssh.AuthMethod{
-			cssh.Password(fake.Password),
-		},
-		HostKeyCallback: cssh.InsecureIgnoreHostKey(),
-		Timeout:         constants.SSHConnectionTimeout,
-	}
-
-	dutServices := DUTServicesImpl{
-		config: config,
-		// if server is running, it should listen to some tcp
-		// so the pattern should be "xxx.xxx.xxx.xxx:xx".
-		// we can split the string into two part
-		port:            strings.Split(server.GetAddr(), ":")[1],
-		clientConnector: connector.New(0, time.Second),
-		commandExecutor: getConnectIPsHelper(),
-	}
+	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, getConnectIPsHelper())
 
 	res, err := dutServices.GetConnectedIPs(ctx)
 	if err != nil {
@@ -270,29 +232,11 @@ func TestGetConnectedIPsShouldWork(t *testing.T) {
 
 func TestGetConnectedIPsShouldFail(t *testing.T) {
 	expectedResponse := "connect success"
-	server := createFakeSSHServer(t, expectedResponse)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	config := cssh.ClientConfig{
-		User: "fake_user",
-		Auth: []cssh.AuthMethod{
-			cssh.Password(fake.Password),
-		},
-		HostKeyCallback: cssh.InsecureIgnoreHostKey(),
-		Timeout:         constants.SSHConnectionTimeout,
-	}
-
-	dutServices := DUTServicesImpl{
-		config: config,
-		// if server is running, it should listen to some tcp
-		// so the pattern should be "xxx.xxx.xxx.xxx:xx".
-		// we can split the string into two part
-		port:            strings.Split(server.GetAddr(), ":")[1],
-		clientConnector: connector.New(0, time.Second),
-		commandExecutor: &executor.FakeCommander{Err: errors.New("execute command failed")},
-	}
+	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, &executor.FakeCommander{Err: errors.New("execute command failed")})
 
 	res, err := dutServices.GetConnectedIPs(ctx)
 	if err == nil {
@@ -301,5 +245,43 @@ func TestGetConnectedIPsShouldFail(t *testing.T) {
 
 	if len(res) > 0 {
 		t.Errorf("Expected empty result, but got: %v", res)
+	}
+}
+
+func Test_GetBoard(t *testing.T) {
+	expectedResponse := "CHROMEOS_RELEASE_BOARD=brya"
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, getConnectIPsHelper())
+
+	res, err := dutServices.GetBoard(ctx, "127.0.0.1")
+	if err != nil {
+		t.Errorf("Expected should succes, but got an error: %v\n", err)
+	}
+	expected := "brya"
+
+	if res != expected {
+		t.Errorf("expected: %v, got: %v\n", expected, res)
+	}
+}
+
+func Test_GetModel(t *testing.T) {
+	expectedResponse := "model"
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, getConnectIPsHelper())
+
+	res, err := dutServices.GetModel(ctx, "127.0.0.1")
+	if err != nil {
+		t.Errorf("Expected should succes, but got an error: %v\n", err)
+	}
+	expected := "model"
+
+	if res != expected {
+		t.Errorf("expected: %v, got: %v\n", expected, res)
 	}
 }
