@@ -10,6 +10,7 @@ DEPS = [
     'recipe_engine/bcid_reporter',
     'recipe_engine/cipd',
     'recipe_engine/context',
+    'recipe_engine/defer',
     'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',

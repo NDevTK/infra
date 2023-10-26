@@ -2802,9 +2802,17 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "collect",
+    "~followup_annotations": [
+      "@@@STEP_SUMMARY_TEXT@deferred failures:\n1 step failure@@@",
+      "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
     "failure": {
       "failure": {},
-      "humanReason": "1 out of 3 aggregated steps failed: Step('building pkg/dep.run installation.install.sh [START_DIR]/3pp/wd/pkg/dep/linux-amd64/1.5.0-rc1/out [START_DIR]/3pp/wd/pkg/dep/linux-amd64/1.5.0-rc1/deps_prefix') (retcode: 1)"
+      "humanReason": "Step('building pkg/dep.run installation.install.sh [START_DIR]/3pp/wd/pkg/dep/linux-amd64/1.5.0-rc1/out [START_DIR]/3pp/wd/pkg/dep/linux-amd64/1.5.0-rc1/deps_prefix') (retcode: 1)"
     },
     "name": "$result"
   }
