@@ -106,12 +106,6 @@ var Jobs = []*cron.CronTab{
 		Job:      syncDeviceConfigs,
 	},
 	{
-		Name:     util.CronJobNames["dutDlmBqSyncCron"],
-		Time:     1 * time.Hour,
-		TrigType: cron.EVERY,
-		Job:      SyncDutInfoFromDlmBq,
-	},
-	{
 		// This job is not meant to be run by the cron. This will
 		// be triggered by shivas at whatever time oncall deems
 		// appropriate. There is a potential for this to block

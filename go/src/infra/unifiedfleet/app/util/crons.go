@@ -17,7 +17,6 @@ var CronJobNames = map[string]string{
 	"SwarmingLabelsDiffCron":     "ufs.swarming_labels_diff",
 	"botConfigSyncCron":          "ufs.sync_bot_config.sync",
 	"deviceConfigSyncCron":       "ufs.device_config.sync",
-	"dutDlmBqSyncCron":           "ufs.dut_dlm_bq.sync",
 	"indexAssets":                "ufs.indexer.asset",
 	"indexMachines":              "ufs.indexer.machine",
 	"indexRacks":                 "ufs.indexer.rack",
