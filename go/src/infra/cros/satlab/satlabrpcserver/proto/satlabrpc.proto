@@ -245,8 +245,15 @@ message GetDutDetailResponse {
 
 // NEXT_TAG = 4
 message ListDutTasksRequest {
+  // the IP address of DUT
   string address = 1;
-  string cursor = 2;
+
+  // A page token, received from the previous `ListDUTEvents` call.
+  // Provide this, to retrieve the subsequent page.
+  string page_token = 2;
+
+  // The maximum number of events to return
+  // if unspecified, at most 30 events will be returned
   int32 page_size = 3;
 }
 
@@ -262,14 +269,25 @@ message Task {
 
 // NEXT_TAG = 4
 message ListDutTasksResponse {
-  string cursor = 1;
+  // A page token, the next token for retrieving the subsequent page.
+  // if it is empty, means it is at the end, no more plans
+  // that we can read from the bucket
+  string next_page_token = 1;
+
   repeated Task tasks = 2;
 }
 
 // NEXT_TAG = 4
 message ListDutEventsRequest {
+  // the IP address of DUT
   string address = 1;
-  string cursor = 2;
+
+  // A page token, received from the previous `ListDUTEvents` call.
+  // Provide this, to retrieve the subsequent page.
+  string page_token = 2;
+
+  // The maximum number of events to return
+  // if unspecified, at most 30 events will be returned
   int32 page_size = 3;
 }
 
@@ -285,7 +303,11 @@ message BotEvent {
 
 // NEXT_TAG = 3
 message ListDutEventsResponse {
-  string cursor = 1;
+  // A page token, the next token for retrieving the subsequent page.
+  // if it is empty, means it is at the end, no more plans
+  // that we can read from the bucket
+  string next_page_token = 1;
+
   repeated BotEvent events = 2;
 }
 
