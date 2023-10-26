@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package schedulingunit provides utilities related to scheduling units,
+// including label generation.
 package schedulingunit
 
 import (
 	"context"
 	"fmt"
 	"sort"
+	"strconv"
 
+	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -179,6 +183,10 @@ func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dime
 			}
 		}
 	}
+	// Add peripheral dims from all duts.
+	for dim, value := range collectPeripheralDimensions(dutsDims) {
+		suDims[dim] = value
+	}
 	return suDims
 }
 
@@ -202,7 +210,152 @@ func CheckIfLSEBelongsToSU(ctx context.Context, ic ufsAPI.FleetClient, lseName s
 		return err
 	}
 	if len(res.GetSchedulingUnits()) > 0 {
-		return fmt.Errorf("DUT/Labstation is associated with SchedulingUnit. Run `shivas update schedulingunit -name %s -removeduts %s` to remove association before updating the DUT/Labstation.", ufsUtil.RemovePrefix(res.GetSchedulingUnits()[0].GetName()), lseName)
+		return fmt.Errorf("DUT/Labstation is associated with SchedulingUnit. Run `shivas update schedulingunit -name %s -removeduts %s` to remove association before updating the DUT/Labstation", ufsUtil.RemovePrefix(res.GetSchedulingUnits()[0].GetName()), lseName)
 	}
 	return nil
+}
+
+// collectPeripheralDimensions collects all the dimensions specific to peripherals
+// from all the individual dut dimensions. Values are combined as needed to reflect
+// state of the whole unit.
+//
+// The dut converter functions are used to create the dims the same way it's done
+// for duts once the values are finalized. Then, only the related peripheral
+// labels are returned.
+func collectPeripheralDimensions(dutsDims []swarming.Dimensions) swarming.Dimensions {
+	// Initialize defaults.
+	peripheralWifiState := inventory.PeripheralState_NOT_APPLICABLE
+	peripheralBtpeerState := inventory.PeripheralState_NOT_APPLICABLE
+	workingBtpeers := int32(0)
+	var wifiRouterModels []string
+
+	// Set values based on dims from all duts.
+	commonWifiRouterFeatures := make(map[inventory.Peripherals_WifiRouterFeature]bool)
+	for _, dutDims := range dutsDims {
+		// Unmarshall peripheral dimensions.
+		dLabels := swarming.Revert(dutDims)
+		dPeripherals := dLabels.GetPeripherals()
+		if dPeripherals == nil {
+			continue
+		}
+
+		// Simple collection labels, adding values across all duts.
+		workingBtpeers += dPeripherals.GetWorkingBluetoothBtpeer()
+		if len(dPeripherals.GetWifiRouterModels()) > 0 {
+			wifiRouterModels = append(wifiRouterModels, dPeripherals.GetWifiRouterModels()...)
+		}
+
+		// States should be WORKING only if all duts with applicable states are WORKING.
+		peripheralWifiState = combinePeripheralState(peripheralWifiState, dPeripherals.GetPeripheralWifiState())
+		peripheralBtpeerState = combinePeripheralState(peripheralBtpeerState, dPeripherals.GetPeripheralBtpeerState())
+
+		// Router features should only be included if they are in every non-empty set.
+		if len(dPeripherals.GetWifiRouterFeatures()) > 0 {
+			dutWifiRouterFeatures := make(map[inventory.Peripherals_WifiRouterFeature]bool)
+			for _, feature := range dPeripherals.GetWifiRouterFeatures() {
+				dutWifiRouterFeatures[feature] = true
+			}
+			if len(commonWifiRouterFeatures) == 0 {
+				// First set of features so include them all.
+				commonWifiRouterFeatures = dutWifiRouterFeatures
+			} else {
+				// Mark common features as uncommon if they are not in dut's features.
+				for feature, isCommon := range commonWifiRouterFeatures {
+					if isCommon {
+						commonWifiRouterFeatures[feature] = dutWifiRouterFeatures[feature]
+					}
+				}
+			}
+		}
+	}
+	// Add only common router features to unit's router features.
+	var wifiRouterFeatures []inventory.Peripherals_WifiRouterFeature
+	for feature, isCommon := range commonWifiRouterFeatures {
+		if isCommon {
+			wifiRouterFeatures = append(wifiRouterFeatures, feature)
+		}
+	}
+	// Sort features to keep order consistent and make it easier to read.
+	if len(wifiRouterFeatures) > 0 {
+		sortWifiRouterFeaturesByName(wifiRouterFeatures)
+	}
+
+	// Create dimensions map based on aggregate schedule labels data.
+	pLabels := &inventory.SchedulableLabels{}
+	pLabels.Peripherals = &inventory.Peripherals{}
+	pLabels.Peripherals.PeripheralWifiState = &peripheralWifiState
+	pLabels.Peripherals.PeripheralBtpeerState = &peripheralBtpeerState
+	pLabels.Peripherals.WorkingBluetoothBtpeer = &workingBtpeers
+	pLabels.Peripherals.WifiRouterFeatures = wifiRouterFeatures
+	pLabels.Peripherals.WifiRouterModels = wifiRouterModels
+	pDims := swarming.Convert(pLabels)
+
+	// Filter for only the dims we are interested in for peripherals.
+	pDimsFiltered := make(map[string][]string)
+	peripheralDims := []string{
+		"label-peripheral_wifi_state",
+		"label-peripheral_btpeer_state",
+		"label-working_bluetooth_btpeer",
+		"label-wifi_router_features",
+		"label-wifi_router_models",
+	}
+	for _, dim := range peripheralDims {
+		if value, ok := pDims[dim]; ok {
+			pDimsFiltered[dim] = value
+		}
+	}
+
+	return pDimsFiltered
+}
+
+// combinePeripheralState will return a state which returns an updated suState
+// that reflects the overall combined state of the unit with dutState included.
+func combinePeripheralState(suState, dutState inventory.PeripheralState) inventory.PeripheralState {
+	if suState == inventory.PeripheralState_BROKEN {
+		// Unit state already broken by another peripheral, the additional dutState
+		// will have no effect.
+		return suState
+	}
+	switch dutState {
+	case inventory.PeripheralState_UNKNOWN,
+		inventory.PeripheralState_NOT_APPLICABLE:
+		// No relevant dutState, so no change.
+		return suState
+	case inventory.PeripheralState_WORKING:
+		return inventory.PeripheralState_WORKING
+	default:
+		// All states other than WORKING are treated as BROKEN for suState.
+		return inventory.PeripheralState_BROKEN
+	}
+}
+
+// sortWifiRouterFeaturesByName sorts the list of features first by known names
+// and then unknown names (would be integers).
+// Has the same effect as the sorting method used when setting the dut-level
+// dimensions.
+func sortWifiRouterFeaturesByName(features []inventory.Peripherals_WifiRouterFeature) {
+	sort.SliceStable(features, func(i, j int) bool {
+		aName := features[i].String()
+		bName := features[j].String()
+		// Determine if these are known enum names or just int strings.
+		aKnown := false
+		bKnown := false
+		aInt, err := strconv.Atoi(aName)
+		if err != nil {
+			aKnown = true
+		}
+		bInt, err := strconv.Atoi(bName)
+		if err != nil {
+			bKnown = true
+		}
+		// Compare known names by string and unknown names by their int value,
+		// with known names coming before all unknown names.
+		if aKnown && bKnown {
+			return aName < bName
+		}
+		if !aKnown && !bKnown {
+			return aInt < bInt
+		}
+		return aKnown && !bKnown
+	})
 }
