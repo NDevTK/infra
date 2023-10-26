@@ -6,6 +6,7 @@ package rpm
 
 import (
 	"context"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -116,6 +117,26 @@ func rpmPowerOnDeviceExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// rpmPowerOffExec performs power on the device by RPM.
+func rpmSetStateExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	deviceType := argsMap.AsString(ctx, "device_type", "")
+	newStateString := strings.ToUpper(argsMap.AsString(ctx, "state", ""))
+	var newState tlw.RPMOutlet_State
+	if s, ok := tlw.RPMOutlet_State_value[newStateString]; ok && tlw.RPMOutlet_State(s) != tlw.RPMOutlet_UNSPECIFIED {
+		newState = tlw.RPMOutlet_State(s)
+	} else {
+		return errors.Reason("set rpm state: not provided or incorrect %q", newStateString).Err()
+	}
+	hostname, r, err := deviceHostnameAndRPMOutlet(info, deviceType)
+	if err != nil {
+		return errors.Annotate(err, "set rpm state").Err()
+	}
+	r.State = newState
+	log.Debugf(ctx, "RPM of %q now have state %q.", hostname, r.State.String())
+	return nil
+}
+
 // activeChameleon finds active chameleon related to the executed plan.
 func activeChameleon(info *execs.ExecInfo) (*tlw.Chameleon, error) {
 	if c := info.GetChromeos().GetChameleon(); c != nil {
@@ -161,4 +182,5 @@ func init() {
 	execs.Register("device_rpm_power_cycle", rpmPowerCycleDeviceExec)
 	execs.Register("device_rpm_power_off", rpmPowerOffDeviceExec)
 	execs.Register("device_rpm_power_on", rpmPowerOnDeviceExec)
+	execs.Register("set_rpm_state", rpmSetStateExec)
 }
