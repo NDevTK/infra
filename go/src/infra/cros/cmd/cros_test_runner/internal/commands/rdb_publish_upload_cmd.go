@@ -409,6 +409,7 @@ func populateTestRunsInfo(
 	branch := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "branch")
 	mainBuilderName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "master_build_config")
 	displayName := getSingleTagValue(build.Tags, "display_name")
+	testplanId := getSingleTagValue(build.Tags, "test-plan-id")
 	for _, testCaseResult := range sk.TestResponses.GetTestCaseResults() {
 		// - TestRun
 		testRun := &artifactpb.TestRun{}
@@ -422,7 +423,9 @@ func populateTestRunsInfo(
 		if displayName != "" {
 			testCaseInfo.DisplayName = displayName
 		}
-
+		if testplanId != "" {
+			testCaseInfo.TestPlanId = testplanId
+		}
 		if suite != "" {
 			testCaseInfo.Suite = suite
 		}
