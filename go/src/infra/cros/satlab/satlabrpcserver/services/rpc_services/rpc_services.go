@@ -552,7 +552,7 @@ func (s *SatlabRpcServiceServer) ListDutTasks(ctx context.Context, in *pb.ListDu
 		return nil, err
 	}
 
-	return innerListDUTTasks(ctx, s.commandExecutor, swarmingService, in.GetAddress(), in.GetCursor(), int(in.GetPageSize()))
+	return innerListDUTTasks(ctx, s.commandExecutor, swarmingService, in.GetAddress(), in.GetPageToken(), int(in.GetPageSize()))
 }
 
 func innerListDUTTasks(ctx context.Context, executor executor.IExecCommander, swarmingService services.ISwarmingService, address, cursor string, pageSize int) (*pb.ListDutTasksResponse, error) {
@@ -584,8 +584,8 @@ func innerListDUTTasks(ctx context.Context, executor executor.IExecCommander, sw
 	}
 
 	return &pb.ListDutTasksResponse{
-		Cursor: r.Cursor,
-		Tasks:  tasks,
+		NextPageToken: r.Cursor,
+		Tasks:         tasks,
 	}, nil
 }
 
@@ -594,7 +594,7 @@ func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListD
 	if err != nil {
 		return nil, err
 	}
-	return innerListDUTEvents(ctx, s.commandExecutor, swarmingService, in.GetAddress(), in.GetCursor(), int(in.GetPageSize()))
+	return innerListDUTEvents(ctx, s.commandExecutor, swarmingService, in.GetAddress(), in.GetPageToken(), int(in.GetPageSize()))
 }
 
 func innerListDUTEvents(ctx context.Context, executor executor.IExecCommander, swarmingService services.ISwarmingService, address, cursor string, pageSize int) (*pb.ListDutEventsResponse, error) {
@@ -625,8 +625,8 @@ func innerListDUTEvents(ctx context.Context, executor executor.IExecCommander, s
 	}
 
 	return &pb.ListDutEventsResponse{
-		Cursor: r.Cursor,
-		Events: events,
+		NextPageToken: r.Cursor,
+		Events:        events,
 	}, nil
 }
 
