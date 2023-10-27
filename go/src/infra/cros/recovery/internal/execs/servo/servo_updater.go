@@ -24,7 +24,7 @@ import (
 const (
 	// This is the command to get servo firmware version for requested
 	// board and channel.
-	latestVersionCMD = "servo_updater -p -b %s -c %s | grep firmware:"
+	latestVersionCMD = "servo_updater -p -b %s -c %s | grep ^firmware:"
 
 	// This character separates out the fields from the output of
 	// servo updater command line utility. For example, an output is
