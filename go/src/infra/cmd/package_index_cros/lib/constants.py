@@ -8,6 +8,11 @@ PACKAGE_ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 PACKAGE_LIB_DIR = os.path.dirname(__file__)
 PACKAGE_SCRIPTS_DIR = os.path.join(PACKAGE_ROOT_DIR, 'scripts')
 
+# |PACKAGE_ROOT_DIR| location relative to the repo's root.
+_PACKAGE_DIR_DEPTH = 7
+INFRA_ROOT_DIR = os.path.abspath(
+    os.path.join(PACKAGE_ROOT_DIR, _PACKAGE_DIR_DEPTH * (os.pardir + os.sep)))
+
 PRINT_DEPS_SCRIPT_PATH = os.path.join(PACKAGE_SCRIPTS_DIR, 'print_deps.py')
 
 # Set of packages that should be fine to work with but are not handled properly
