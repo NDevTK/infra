@@ -132,11 +132,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -181,11 +181,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -193,7 +193,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "original/Xcode.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "original/Xcode.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
@@ -234,11 +234,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -246,7 +246,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "original/Xcode.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "original/Xcode.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
@@ -299,11 +299,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -360,15 +360,15 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "old/xcode/path"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "old/xcode/path"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -376,11 +376,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -388,7 +388,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "old/xcode/path"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "old/xcode/path"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
@@ -464,11 +464,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -556,11 +556,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-with-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-with-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -619,11 +619,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -687,11 +687,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -699,11 +699,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -711,7 +711,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
@@ -772,11 +772,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -784,11 +784,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -796,7 +796,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
@@ -896,11 +896,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -908,11 +908,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -920,7 +920,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -928,7 +928,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -944,7 +944,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
@@ -970,7 +970,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -978,7 +978,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 		})
 
 		Convey("install Xcode with runtime dmg when already exists", func() {
@@ -1033,11 +1033,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -1045,11 +1045,11 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -1057,7 +1057,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -1065,7 +1065,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -1077,7 +1077,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
@@ -1097,7 +1097,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -1105,7 +1105,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
@@ -1601,7 +1601,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -1621,7 +1621,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 		})
 
 		Convey("addRuntimeDMG runtime id not found", func() {
@@ -1642,7 +1642,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
@@ -1654,7 +1654,7 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 		})
 	})
 
