@@ -93,3 +93,18 @@ func TestFormatMac(t *testing.T) {
 		So(formatMac("1234567890abcde"), ShouldEqual, "12:34:56:78:90:ab:cd:e")
 	})
 }
+
+// TestUint32Iter tests that we, by iterating, add the correct number of things to an array.
+func TestUint32Iter(t *testing.T) {
+	Convey("test uint32 iteration", t, func() {
+		var data []uint32
+
+		err := Uint32Iter(0, 1000, func(x uint32) error {
+			data = append(data, x)
+			return nil
+		})
+
+		So(err, ShouldBeNil)
+		So(len(data), ShouldEqual, 1001)
+	})
+}

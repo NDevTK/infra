@@ -102,6 +102,16 @@ func FormatIP(vlanName, ipAddress string, reserve, occupied bool) *ufspb.IP {
 	}
 }
 
+// Uint32Iter runs a command over a range of Uint32's. Useful for iterating over IP addresses.
+func Uint32Iter(start uint32, end uint32, f func(uint32) error) error {
+	for num := start; num <= end; num++ {
+		if err := f(num); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // IPv4StrToInt returns an uint32 address from the given ip address string.
 func IPv4StrToInt(ipAddress string) (uint32, error) {
 	ip := net.ParseIP(ipAddress)
