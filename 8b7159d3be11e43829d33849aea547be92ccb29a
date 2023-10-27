@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ec0886cc_86e764bf",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/ninjalog.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-10-27T03:22:41Z",
+      "side": 1,
+      "message": "It is better to compare like\n```\nstep.End + 1000 \u003c laststep.End\n```\nOtherwise, this condition still becomes true around the border of n and n+1 second?",
+      "range": {
+        "startLine": 215,
+        "startChar": 21,
+        "endLine": 215,
+        "endChar": 29
+      },
+      "revId": "8b7159d3be11e43829d33849aea547be92ccb29a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
