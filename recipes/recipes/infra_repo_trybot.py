@@ -15,6 +15,7 @@ DEPS = [
     'infra_system',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
+    'recipe_engine/defer',
     'recipe_engine/file',
     'recipe_engine/path',
     'recipe_engine/platform',
@@ -77,39 +78,67 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
 
   # Don't run Python or recipes tests if only "go/..." was touched.
   if not is_pure_go_change:
-    with api.step.defer_results():
-      if api.platform.arch != 'arm':
-        with api.context(cwd=co.path.join(patch_root)):
-          api.step('python tests', ['python3', 'test.py', 'test', '--verbose'])
+    deferred = []
+    if api.platform.arch != 'arm':
+      with api.context(cwd=co.path.join(patch_root)):
+        deferred.append(
+            api.defer(api.step, 'python tests',
+                      ['python3', 'test.py', 'test', '--verbose']))
 
-        if internal and (api.platform.is_linux or api.platform.is_mac) and any(
-            f.startswith('appengine/chromiumdash') for f in files):
-          cwd = api.path['checkout'].join('appengine', 'chromiumdash')
-          gae_env = {
-              'GAE_RUNTIME': 'python3',
-              'GAE_APPLICATION': 'testbed-test',
-          }
-          with api.context(cwd=cwd, env=gae_env):
-            api.step('chromiumdash python3 tests', [
-                'vpython3', '-m', 'pytest', '--ignore=gae_ts_mon/',
-                '--ignore=go/'
-            ])
+      if internal and (api.platform.is_linux or api.platform.is_mac) and any(
+          f.startswith('appengine/chromiumdash') for f in files):
+        cwd = api.path['checkout'].join('appengine', 'chromiumdash')
+        gae_env = {
+            'GAE_RUNTIME': 'python3',
+            'GAE_APPLICATION': 'testbed-test',
+        }
+        with api.context(cwd=cwd, env=gae_env):
+          deferred.append(
+              api.defer(
+                  api.step,
+                  'chromiumdash python3 tests',
+                  [
+                      'vpython3', '-m', 'pytest', '--ignore=gae_ts_mon/',
+                      '--ignore=go/'
+                  ]
+              )
+          )
 
-        if (api.platform.is_linux or api.platform.is_mac) and any(
-            f.startswith('appengine/monorail') for f in files):
-          cwd = api.path['checkout'].join('appengine', 'monorail')
-          with api.context(cwd=cwd):
-            api.step('monorail python3 tests', ['vpython3', 'test.py'])
+      if (api.platform.is_linux or api.platform.is_mac) and any(
+          f.startswith('appengine/monorail') for f in files):
+        cwd = api.path['checkout'].join('appengine', 'monorail')
+        with api.context(cwd=cwd):
+          deferred.append(
+              api.defer(api.step, 'monorail python3 tests',
+                        ['vpython3', 'test.py']))
 
-      if not internal and api.platform.is_linux and api.platform.bits == 64:
-        api.step('recipe test', [
-            'python3',
-            co.path.join('infra', 'recipes', 'recipes.py'), 'test', 'run'
-        ])
-        api.step(
-            'recipe lint',
-            ['python3',
-             co.path.join('infra', 'recipes', 'recipes.py'), 'lint'])
+    if not internal and api.platform.is_linux and api.platform.bits == 64:
+      deferred.append(
+          api.defer(
+              api.step,
+              'recipe test',
+              [
+                  'python3',
+                  co.path.join('infra', 'recipes', 'recipes.py'),
+                  'test',
+                  'run',
+              ]
+          )
+      )
+      deferred.append(
+          api.defer(
+              api.step,
+              'recipe lint',
+              [
+                  'python3',
+                  co.path.join('infra', 'recipes', 'recipes.py'),
+                  'lint',
+              ],
+          )
+      )
+
+    api.defer.collect(deferred)
+
   else:
     api.step('skipping Python tests for pure Go change', cmd=None)
 

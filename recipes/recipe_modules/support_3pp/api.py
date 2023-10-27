@@ -852,15 +852,15 @@ class Support3ppApi(recipe_api.RecipeApi):
         for sub_spec in spec.all_possible_deps_and_tools:
           expanded_build_plan.add((sub_spec, 'latest'))
 
-    ret = []
-    with self.m.step.defer_results():
-      for spec, version in sorted(expanded_build_plan):
-        # Never upload packages for the build platform which are incidentally
-        # built when cross-compiling. These end up racing with the native
-        # builders and leading to multiple CIPD instances being tagged with
-        # the same version.
-        skip_upload = force_build or (spec.platform != platform)
-        ret.append(
-            self._build_resolved_spec(spec, version, force_build_packages,
-                                      skip_upload))
-    return ret, unsupported
+    deferred = []
+    for spec, version in sorted(expanded_build_plan):
+      # Never upload packages for the build platform which are incidentally
+      # built when cross-compiling. These end up racing with the native
+      # builders and leading to multiple CIPD instances being tagged with
+      # the same version.
+      skip_upload = force_build or (spec.platform != platform)
+      deferred.append(
+          self.m.defer(
+              self._build_resolved_spec, spec, version, force_build_packages,
+              skip_upload))
+    return self.m.defer.collect(deferred), unsupported
