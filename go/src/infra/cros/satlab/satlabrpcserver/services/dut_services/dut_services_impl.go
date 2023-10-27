@@ -20,6 +20,7 @@ import (
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/collection"
 	"infra/cros/satlab/common/utils/executor"
+	"infra/cros/satlab/common/utils/misc"
 	"infra/cros/satlab/satlabrpcserver/models"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/connector"
@@ -301,7 +302,7 @@ func (d *DUTServicesImpl) GetBoard(ctx context.Context, IP string) (string, erro
 	}
 
 	if b, ok := strings.CutPrefix(res.Value, constants.ChromeosReleaseBoard); ok {
-		return b, nil
+		return misc.TrimOutput([]byte(b)), nil
 	}
 
 	return "", errors.New("can not find the board information in lsb release.")
@@ -318,7 +319,7 @@ func (d *DUTServicesImpl) GetModel(ctx context.Context, IP string) (string, erro
 
 		if res.Value != "" {
 			// If we find the model isn't empty then we return it.
-			return res.Value, nil
+			return misc.TrimOutput([]byte(res.Value)), nil
 		}
 	}
 	return "", errors.New("can not get the model information")
