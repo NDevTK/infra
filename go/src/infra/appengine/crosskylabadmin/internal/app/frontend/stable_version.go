@@ -1,16 +1,6 @@
-// Copyright 2019 The LUCI Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package frontend
 
@@ -232,12 +222,6 @@ func getStableVersionImplNoHostname(ctx context.Context, buildTarget string, mod
 func getStableVersionImplWithHostname(ctx context.Context, hostname string) (*fleet.GetStableVersionResponse, error) {
 	var err error
 
-	// If the DUT in question is a labstation or a servo (i.e. is a servo host), then it does not have
-	// its own servo host.
-	if looksLikeServo(hostname) {
-		return getStableVersionImplNoHostname(ctx, beagleboneServo, "")
-	}
-
 	dut, err := getDUT(ctx, hostname)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get DUT %q", dut).Err()
@@ -250,48 +234,7 @@ func getStableVersionImplWithHostname(ctx context.Context, hostname string) (*fl
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get stable version info").Err()
 	}
-
-	if heuristics.LooksLikeLabstation(hostname) {
-		return out, nil
-	}
-	servoHostHostname, err := getServoHostHostname(dut)
-	if err != nil {
-		// Some DUTs, particularly High Touch Lab DUTs legitimately do not have servos.
-		// See b/162030132 for context.
-		logging.Infof(ctx, "failed to get servo host for %q", hostname)
-		return out, nil
-	}
-	if looksLikeFakeServo(servoHostHostname) {
-		logging.Infof(ctx, "concluded servo hostname is fake %q", servoHostHostname)
-		return out, nil
-	}
-	servoStableVersion, err := getCrosVersionFromServoHost(ctx, servoHostHostname)
-	if err != nil {
-		return nil, errors.Annotate(err, "getting cros version from servo host %q", servoHostHostname).Err()
-	}
-	out.ServoCrosVersion = servoStableVersion
-
 	return out, nil
-}
-
-// getServoHostHostname gets the servo host hostname associated with a dut
-// for instance, a labstation is a servo host.
-func getServoHostHostname(dut *inventory.DeviceUnderTest) (string, error) {
-	attrs := dut.GetCommon().GetAttributes()
-	if len(attrs) == 0 {
-		return "", errors.Reason("attributes for dut with hostname %q is unexpectedly empty", dut.GetCommon().GetHostname()).Err()
-	}
-	for _, item := range attrs {
-		key := item.GetKey()
-		value := item.GetValue()
-		if key == "servo_host" {
-			if value == "" {
-				return "", errors.Reason("\"servo_host\" attribute unexpectedly has value \"\" for hostname %q", dut.GetCommon().GetHostname()).Err()
-			}
-			return value, nil
-		}
-	}
-	return "", errors.Reason("no \"servo_host\" attribute for hostname %q", dut.GetCommon().GetHostname()).Err()
 }
 
 // getDUTOverrideForTests is an override for tests only.
@@ -312,18 +255,6 @@ func getDUT(ctx context.Context, hostname string) (*inventory.DeviceUnderTest, e
 		return nil, err
 	}
 	return dutV1, err
-}
-
-// This is a heuristic to check if something is a servo and might be wrong.
-func looksLikeServo(hostname string) bool {
-	return strings.Contains(hostname, "servo")
-}
-
-// looksLikeFakeServo is a heuristic to check if a given hostname is an obviously
-// fake entry such as an empty string or dummy_host or FAKE_SERVO_HOST or similar
-func looksLikeFakeServo(hostname string) bool {
-	h := strings.ToLower(hostname)
-	return h == "" || strings.Contains(h, "dummy") || strings.Contains(h, "fake")
 }
 
 // looksLikeServod is a heuristic to detect whether a servod entry.
@@ -355,48 +286,6 @@ func validateServod(hostname string) error {
 
 // validateServodFallbackError indicates that we should fallback.
 var validateServodFallbackError = errors.New("validate servod: should fall back")
-
-// getCrosVersionFromServoHost returns the cros version associated with a particular servo host
-// hostname : hostname of the servo host (e.g. labstation)
-// NOTE: If hostname is "localhost", task is for Satlab Containerized servod.
-// NOTE: If hostname is "", this indicates the absence of a relevant servo host. This can happen if the DUT in question is already a labstation, for instance.
-// NOTE: The cros version will be empty "" if the labstation does not exist. Because we don't re-image labstations as part of repair, the absence of a stable CrOS version for a labstation is not an error.
-func getCrosVersionFromServoHost(ctx context.Context, hostname string) (string, error) {
-	err := validateServod(hostname)
-	if err == nil {
-		logging.Infof(ctx, "Skipping getting cros version. Servo host hostname is %q", hostname)
-		return "", nil
-	}
-
-	if ok := errors.Is(err, validateServodFallbackError); !ok {
-		logging.Errorf(ctx, "Encountered non-recoverable error %s", err)
-		return "", errors.Annotate(err, "get cros version form servohost for hostname %q", hostname).Err()
-	}
-
-	if heuristics.LooksLikeLabstation(hostname) {
-		dut, err := getDUT(ctx, hostname)
-		if err != nil {
-			logging.Infof(ctx, "get labstation dut info; %s", err)
-			return "", nil
-		}
-		buildTarget := dut.GetCommon().GetLabels().GetBoard()
-		model := dut.GetCommon().GetLabels().GetModel()
-		if buildTarget == "" {
-			return "", errors.Reason("no buildTarget for hostname %q", hostname).Err()
-		}
-		out, err := dssv.GetCrosStableVersion(ctx, buildTarget, model)
-		if err != nil {
-			return "", errors.Annotate(err, "getting labstation stable version").Err()
-		}
-		return out, nil
-	}
-	if looksLikeServo(hostname) {
-		// We do not need versions for servos.
-		// See b/249370593 for details.
-		return "", nil
-	}
-	return "", errors.Reason("unrecognized hostname %q is not a labstation or beaglebone servo", hostname).Err()
-}
 
 // maybeSetReason sets the reason on a stable version response if the response is non-nil and the reason is "".
 func maybeSetReason(resp *fleet.GetStableVersionResponse, msg string) {
