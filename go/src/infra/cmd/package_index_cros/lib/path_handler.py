@@ -409,7 +409,8 @@ class PathHandler:
   # Matches:
   # --i_am_argument=
   # -another-argument=
-  g_explicit_arg_prefix_regex = rf'(?:--?{g_common_name_regex}=)'
+  # argument-without-dashes=
+  g_explicit_arg_prefix_regex = rf'(?:-?-?{g_common_name_regex}=)'
   # Matches:
   # * --argument=another-argument=
   # * --argument=-L
