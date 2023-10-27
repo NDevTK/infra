@@ -418,7 +418,7 @@ chromium_genfiles(
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "mac",
     },
-    os = "Mac-11",
+    os = "Mac-13",
     cpu_cores = "4",
     machine_type = "n1-standard-4",
 )
