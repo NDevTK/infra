@@ -70,6 +70,7 @@
         'V8 Android Arm - builder',
         # crbug.com/586088
         # 'V8 Arm',
+        'V8 Arm64 - builder',
         'V8 Linux - arm - sim - builder',
         'V8 Linux - arm - sim',
         'V8 Linux - arm - sim - debug builder',
