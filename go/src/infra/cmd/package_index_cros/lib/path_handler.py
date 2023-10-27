@@ -347,14 +347,14 @@ class PathHandler:
           conflicting_paths=conflicting_paths,
           ignorable_dir=ignorable_parent_dir)
 
-  g_common_name_regex = '(?:\w[\w\d\-_\.]*)'
+  g_common_name_regex = r'(?:\w[\w\d\-_\.]*)'
   # Matches:
   # * $ENV_VAR
   # * ${env_var}
   g_common_env_var_name_regex = (
-      "(?:"
-      f"\${g_common_name_regex}|(?:{{{g_common_name_regex}}})"
-      ")")
+      r'(?:'
+      rf'\$(?:{g_common_name_regex}|{{{g_common_name_regex}}})'
+      r')')
   # Matches:
   # * some-name
   # * some_other.name
@@ -365,26 +365,26 @@ class PathHandler:
   # Matches:
   # * {{place_holder}}
   g_path_placeholder_name_regex = (
-      "(?:"
+      r'(?:'
       # {{ is encoded into a single {
-      f"{{{{{g_path_simple_name_regex}}}}}"
-      f"{g_path_simple_name_regex}?"
-      ")")
+      rf'{{{{{g_path_simple_name_regex}}}}}'
+      rf'{g_path_simple_name_regex}?'
+      r')')
   # Matches:
   # * .
   # * ..
-  g_path_special_name_regex = '(?:\.\.?)'
+  g_path_special_name_regex = r'(?:\.\.?)'
   # Matches any path name above.
-  g_path_name_regex = ("(?:"
-                       f"{g_path_simple_name_regex}|"
-                       f"{g_path_special_name_regex}|"
-                       f"{g_path_placeholder_name_regex}|"
-                       f"{g_common_env_var_name_regex}"
-                       ")")
+  g_path_name_regex = (r'(?:'
+                       rf'{g_path_simple_name_regex}|'
+                       rf'{g_path_special_name_regex}|'
+                       rf'{g_path_placeholder_name_regex}|'
+                       rf'{g_common_env_var_name_regex}'
+                       r')')
   # Matches:
   # * /
   # * //
-  g_abs_path_prefix_regex = '(?:\/\/?)'
+  g_abs_path_prefix_regex = r'(?:\/\/?)'
   # Matches:
   # * some/path/
   # * /some/abs/path
@@ -395,64 +395,64 @@ class PathHandler:
   # Does not match:
   # * some_path: needs at least one slash
   g_path_regex = (
-      f"(?:"
+      rf'(?:'
       # Abs path or nothing
-      f"{g_abs_path_prefix_regex}?"
+      rf'{g_abs_path_prefix_regex}?'
       # First name ending with /
-      f"{g_path_name_regex}\/"
+      rf'{g_path_name_regex}\/'
       # Any number of names possibly ending with /
-      f"(?:{g_path_name_regex}\/?)*"
-      ")")
+      rf'(?:{g_path_name_regex}\/?)*'
+      r')')
 
-  g_include_path_arg_prefix_regex = '(?:-I)'
-  g_colon_arg_prefix_regex = '(?::)'
+  g_include_path_arg_prefix_regex = r'(?:-I)'
+  g_colon_arg_prefix_regex = r'(?::)'
   # Matches:
   # --i_am_argument=
   # -another-argument=
-  g_explicit_arg_prefix_regex = f"(?:--?{g_common_name_regex}=)"
+  g_explicit_arg_prefix_regex = rf'(?:--?{g_common_name_regex}=)'
   # Matches:
   # * --argument=another-argument=
   # * --argument=-L
   g_explicit_repeating_arg_prefix_regex = (
-      f"(?:"
-      f"{g_explicit_arg_prefix_regex}"
-      f"(?:(?:{g_common_name_regex}=)|(?:-\w))"
-      ")")
+      rf'(?:'
+      rf'{g_explicit_arg_prefix_regex}'
+      rf'(?:(?:{g_common_name_regex}=)|(?:-\w))'
+      r')')
   # Matches:
-  #
-  g_explicit_proto_arg_prefix_regex = '(?:M[\w_]+\.proto=)'
+  # Msome_proto_name.proto=
+  g_explicit_proto_arg_prefix_regex = r'(?:M[\w_]+\.proto=)'
 
   # Matches any prefix above.
-  g_argument_prefix_regex = (f"(?:"
-                             f"{g_include_path_arg_prefix_regex}|"
-                             f"{g_colon_arg_prefix_regex}|"
-                             f"{g_explicit_arg_prefix_regex}|"
-                             f"{g_explicit_repeating_arg_prefix_regex}|"
-                             f"{g_explicit_proto_arg_prefix_regex}"
-                             ")")
+  g_argument_prefix_regex = (rf'(?:'
+                             rf'{g_include_path_arg_prefix_regex}|'
+                             rf'{g_colon_arg_prefix_regex}|'
+                             rf'{g_explicit_arg_prefix_regex}|'
+                             rf'{g_explicit_repeating_arg_prefix_regex}|'
+                             rf'{g_explicit_proto_arg_prefix_regex}'
+                             r')')
 
   # Matches:
   # 1. "
   # 2. \"
-  g_quote_with_escape = '(?:\\\\?")?'
+  g_quote_with_escape = r'(?:\\?")?'
 
   # Captures:
   # 1. Group 1: arg prefix
   # 2. Group 2: path
   g_argument_regexes = (
-      "^"
-      f"({g_argument_prefix_regex}?)"
-      # Path may be inside quote marks.
-      f"(?:{g_quote_with_escape})({g_path_regex})(?:{g_quote_with_escape})"
-      "$")
+      r'^'
+      rf'({g_argument_prefix_regex}?)'
+      # Path may be inside quote marks. Do not capture them.
+      rf'(?:{g_quote_with_escape})({g_path_regex})(?:{g_quote_with_escape})'
+      r'$')
 
   # Matches:
   # //some_target
   # //some_target:subtarget
-  g_gn_target_regex = ("^(?:"
-                       f"(?:\/\/{g_common_name_regex})"
-                       f"(?:\:{g_common_name_regex})?"
-                       ")$")
+  g_gn_target_regex = (r'^(?:'
+                       rf'(?:\/\/{g_common_name_regex})'
+                       rf'(?:\:{g_common_name_regex})?'
+                       r')$')
 
   @staticmethod
   def FixPathInArgument(
