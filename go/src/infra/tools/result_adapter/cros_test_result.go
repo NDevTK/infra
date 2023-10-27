@@ -163,6 +163,15 @@ func PopulateProperties(testResult *sinkpb.TestResult, testRun *artifactpb.TestR
 		return errors.Reason("the input test result is nil").Err()
 	}
 
+	// Truncates the reason field in advance to reduce the amount of bytes
+	// stored in the properties field of test result.
+	testCaseInfo := testRun.GetTestCaseInfo()
+	testCaseResult := testCaseInfo.GetTestCaseResult()
+	if testCaseResult.GetReason() != "" {
+		testCaseResult.Reason = truncateString(
+			testCaseResult.GetReason(), maxErrorMessageBytes)
+	}
+
 	data, err := protojson.Marshal(testRun)
 	if err != nil {
 		return err

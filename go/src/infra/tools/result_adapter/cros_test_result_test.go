@@ -43,6 +43,9 @@ const (
 
 	// Test result JSON file with missing test id.
 	missingTestIdFile = "test_data/cros_test_result/missing_test_id.json"
+
+	// Test result JSON file with warning test results and a long reason.
+	warnTestResultWithLongReasonFile = "test_data/cros_test_result/warn_test_result_with_long_reason.json"
 )
 
 func TestCrosTestResultConversions(t *testing.T) {
@@ -445,6 +448,42 @@ func TestCrosTestResultConversions(t *testing.T) {
 			So(err, ShouldBeNil)
 			_, err = results.ToProtos(ctx)
 			So(err, ShouldErrLike, "testId is unspecified due to the missing id in test case")
+		})
+
+		Convey(`Truncate reason field when stored in the properties of test result`, func() {
+			testResultsJSON := ReadJSONFileToString(warnTestResultWithLongReasonFile)
+			results := &CrosTestResult{}
+			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			So(err, ShouldBeNil)
+			testResults, err := results.ToProtos(ctx)
+			So(err, ShouldBeNil)
+
+			expected := []*sinkpb.TestResult{
+				{
+					TestId:   "rlz_CheckPing",
+					Expected: true,
+					// Warning results are reported as pass, and without
+					// the failure reason set. Warning messages are included
+					// in the test result properties.
+					Status:    pb.TestStatus_PASS,
+					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 60},
+				},
+			}
+
+			for i, tr := range expected {
+				err := PopulateProperties(tr, results.TestResult.TestRuns[i])
+				So(err, ShouldBeNil)
+			}
+
+			So(testResults, ShouldResembleProto, expected)
+			for _, tr := range testResults {
+				So(tr.GetProperties().
+					GetFields()["testCaseInfo"].GetStructValue().
+					GetFields()["testCaseResult"].GetStructValue().
+					GetFields()["reason"].GetStringValue(),
+					ShouldHaveLength, 1024)
+			}
 		})
 	})
 }

@@ -1,0 +1,25 @@
+{
+    "test_runs":[
+        {
+            "test_case_info":{
+                "test_case_metadata":{
+                    "test_case":{
+                        "id":{
+                            "value":"rlz_CheckPing"
+                        },
+                        "name":"rlz_CheckPing"
+                    }
+                },
+                "test_case_result":{
+                    "test_case_id": {
+                        "value": "rlz_CheckPing"
+                    },
+                    "pass":{},
+                    "reason": "Alphanumeric with Japanese keyboard-こんにちは: Failed to validate handwriting input: Uncaught (in promise): context deadline exceeded during a poll with timeout 15s; \"failed to find node with properties: {role: canvas, state: map[invisible:false offscreen:false], ancestor: {name: /^Chrome OS Virtual Keyboard$/, role: rootWebArea}}\"\nChinese Pinyin-你好: Failed to validate handwriting input: Uncaught (in promise): context deadline exceeded during a poll with timeout 15s; \"failed to find node with properties: {role: canvas, state: map[invisible:false offscreen:false], ancestor: {name: /^Chrome OS Virtual Keyboard$/, role: rootWebArea}}\"\nEnglish (South Africa)-hello: Failed to validate handwriting input: Uncaught (in promise): context deadline exceeded during a poll with timeout 15s; \"failed to find node with properties: {role: canvas, state: map[invisible:false offscreen:false], ancestor: {name: /^Chrome OS Virtual Keyboard$/, role: rootWebArea}}\"\nEnglish (UK)-hello: Failed to validate handwriting input: Uncaught (in promise): context deadline exceeded during a poll with timeout 15s; \"failed to find node with properties: {role: canvas, state: map[invisible:false offscreen:false], ancestor: {name: /^Chrome OS Virtual Keyboard$/, role: rootWebArea}}\"\nEnglish (US)-hello: Failed to validate handwriting input: Uncaught (in promise): context deadline exceeded during a poll with timeout 15s; \"failed to find node with properties: {role: canvas, state: map[invisible:false offscreen:false], ancestor: {name: /^Chrome OS Virtual Keyboard$/, role: rootWebArea}}\"\nEnglish (US) with International keyboard-hello: Failed to validate handwriting input: Uncaught (in promise): context deadline exceeded during a poll with timeout 15s; \"failed to find node with properties: {role: canvas, state: map[invisible:false offscreen:false], ancestor: {name: /^Chrome OS Virtual Keyboard$/, role: rootWebArea}}\"\nJapanese-こんにちは: Failed to validate handwriting input: Uncaught (in promise): context deadline exceeded during a poll with timeout 15s; \"failed to find node with properties: {role: canvas, state: map[invisible:false offscreen:false], ancestor: {name: /^Chrome OS Virtual Keyboard$/, role: rootWebArea}}\"\nKorean-안녕: Failed to validate handwriting input: Uncaught (in promise): context deadline exceeded during a poll with timeout 15s; \"failed to find node with properties: {role: canvas, state: map[invisible:false offscreen:false], ancestor: {name: /^Chrome OS Virtual Keyboard$/, role: rootWebArea}}\"",
+                    "start_time":"2022-09-07T18:53:33.983328614Z",
+                    "duration": "60s"
+                }
+            }
+        }
+    ]
+}
