@@ -3,9 +3,8 @@ create {
   source {
     git {
       repo: "https://github.com/ipxe/ipxe.git"
-      tag_pattern: "v%s"
+      fixed_commit: "115707c0edebad65f87525fed583fef73880016d"
     }
-    patch_version: "chromium.2"
   }
   build {
     tool: "tools/sed"

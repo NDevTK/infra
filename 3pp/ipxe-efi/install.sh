@@ -11,10 +11,6 @@ PREFIX="$1"
 
 . $(dirname $0)/cross_util.sh
 
-make --version
-gcc --version
-python3 --version
-
 if [[ "$_3PP_PLATFORM" == 'linux-amd64' ]]; then
   binary='ipxe.efi'
   build_path="bin-x86_64-efi"
@@ -61,12 +57,11 @@ fi
 # The build system tries to get the version from .git, but this won't
 # exist when building from a cached source.
 rm -rf .git
-IFS='.' read -ra VERSION_PARTS <<< "$_3PP_VERSION"
 MAKE_ARGS+="\
-  VERSION_MAJOR=${VERSION_PARTS[0]} \
-  VERSION_MINOR=${VERSION_PARTS[1]} \
-  VERSION_PATCH=${VERSION_PARTS[2]} \
-  EXTRAVERSION=
+  VERSION_MAJOR=1 \
+  VERSION_MINOR=21 \
+  VERSION_PATCH=1 \
+  EXTRAVERSION=${_3PP_VERSION} \
 "
 
 cd src
