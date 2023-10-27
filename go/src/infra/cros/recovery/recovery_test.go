@@ -157,14 +157,21 @@ var dutPlansCases = []struct {
 		"chromeos audit RPM",
 		tlw.DUTSetupTypeCros,
 		buildbucket.AuditRPM,
-		[]string{config.PlanServo, config.PlanCrOS, config.PlanClosing},
+		[]string{config.PlanServo, config.PlanCrOSAudit, config.PlanClosing},
 		true,
 	},
 	{
 		"chromeos audit USB-key",
 		tlw.DUTSetupTypeCros,
 		buildbucket.AuditUSB,
-		[]string{config.PlanServo, config.PlanCrOS, config.PlanClosing},
+		[]string{config.PlanServo, config.PlanCrOSAudit, config.PlanClosing},
+		true,
+	},
+	{
+		"chromeos audit storage",
+		tlw.DUTSetupTypeCros,
+		buildbucket.AuditStorage,
+		[]string{config.PlanCrOSAudit},
 		true,
 	},
 	{

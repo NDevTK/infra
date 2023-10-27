@@ -11963,16 +11963,16 @@
       "allow_fail": true
     },
     {
-      "name": "cros",
+      "name": "cros_audit",
       "critical_actions": [
         {
-          "name": "Set state: repair_failed",
+          "name": "Set state: needs_repair",
           "docs": [
             "The action set devices with state means that repair tsk did not success to recover the devices."
           ],
           "exec_name": "dut_set_state",
           "exec_args": [
-            "state:repair_failed"
+            "state:needs_repair"
           ],
           "run_control": "RUN_ONCE"
         },
@@ -14164,13 +14164,41 @@
           "run_control": "ALWAYS_RUN"
         },
         {
-          "name": "Audit RPM config (without battery)",
+          "name": "Verify RPM config",
           "docs": [
-            "Verify RPM configs and set RPM state"
+            "Verify RPM config of DUT.",
+            "Not applicable for cr50 servos based on b/205728276",
+            "Action is not critical as it updates own state."
           ],
           "conditions": [
             {
-              "name": "No Battery is present on device",
+              "name": "RPM set state: MISSING_CONFIG",
+              "exec_name": "set_rpm_state",
+              "exec_args": [
+                "device_type:dut",
+                "state:MISSING_CONFIG"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "RPM config present",
+              "docs": [
+                "Verifies that the RPM configuration provides some data for the hostname and outlet.",
+                "This action does not verify the correctness of the data."
+              ],
+              "exec_name": "device_has_rpm_info",
+              "exec_args": [
+                "device_type:dut"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "dependencies": [
+            {
+              "name": "Audit RPM config (with battery)",
+              "docs": [
+                "Verify RPM when battery is present on the DUT."
+              ],
               "conditions": [
                 {
                   "name": "Battery is present on device",
@@ -14181,128 +14209,60 @@
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_fail",
-              "run_control": "RERUN_AFTER_RECOVERY"
-            }
-          ],
-          "dependencies": [
-            {
-              "name": "Perform RPM config verification for audit tasks",
-              "docs": [
-                "Verify when the RPM verification is required for setup"
-              ],
               "dependencies": [
                 {
-                  "name": "has_rpm_info",
-                  "exec_name": "has_rpm_info",
+                  "name": "RPM set state: WRONG_CONFIG",
+                  "exec_name": "set_rpm_state",
+                  "exec_args": [
+                    "device_type:dut",
+                    "state:WRONG_CONFIG"
+                  ],
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "sample_pass",
+              "exec_name": "rpm_audit_with_battery",
+              "timeout": "10m0s",
               "run_control": "RERUN_AFTER_RECOVERY"
-            }
-          ],
-          "exec_name": "rpm_audit_without_battery",
-          "timeout": "10m0s",
-          "run_control": "RERUN_AFTER_RECOVERY"
-        },
-        {
-          "name": "Verify RPM config with battery",
-          "docs": [
-            "Verify RPM when battery is present",
-            "Not applicable for cr50 servos based on b/205728276",
-            "Action is not critical as it updates own state."
-          ],
-          "conditions": [
+            },
             {
-              "name": "Perform RPM config verification",
+              "name": "Audit RPM config (without battery)",
               "docs": [
-                "Verify if RPM verification is required fo setup",
-                "Setup with PD control temprarely excluded from testing."
+                "Verify RPM configs and set RPM state for DUT without battery"
               ],
-              "dependencies": [
+              "conditions": [
                 {
-                  "name": "Setup has servo info",
-                  "exec_name": "dut_servo_host_present",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                },
-                {
-                  "name": "has_rpm_info",
-                  "exec_name": "has_rpm_info",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                },
-                {
-                  "name": "Verify servod is responsive",
+                  "name": "No Battery is present on device",
                   "conditions": [
                     {
-                      "name": "Setup has servo info",
-                      "exec_name": "dut_servo_host_present",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
-                  ],
-                  "exec_name": "servod_echo",
-                  "exec_args": [
-                    "ssh_check:false"
-                  ],
-                  "timeout": "10s",
-                  "run_control": "ALWAYS_RUN"
-                },
-                {
-                  "name": "Setup does't have Servo PD control",
-                  "docs": [
-                    "Verify that servo does not have build in PD control."
-                  ],
-                  "conditions": [
-                    {
-                      "name": "Setup has Servo PD control",
+                      "name": "Battery is present on device",
                       "docs": [
-                        "Verify that servo has build in PD control."
+                        "Verifies if battery present is reported as present in power supply info."
                       ],
-                      "conditions": [
-                        {
-                          "name": "Setup has servo info",
-                          "exec_name": "dut_servo_host_present",
-                          "run_control": "RERUN_AFTER_RECOVERY"
-                        }
-                      ],
-                      "exec_name": "servo_build_in_pd_present",
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "exec_name": "cros_is_battery_present",
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_name": "sample_fail",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "sample_pass",
+              "dependencies": [
+                {
+                  "name": "RPM set state: WRONG_CONFIG",
+                  "exec_name": "set_rpm_state",
+                  "exec_args": [
+                    "device_type:dut",
+                    "state:WRONG_CONFIG"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "rpm_audit_without_battery",
+              "timeout": "10m0s",
               "run_control": "RERUN_AFTER_RECOVERY"
-            },
-            {
-              "name": "Battery is present on device",
-              "docs": [
-                "Verifies if battery present is reported as present in power supply info."
-              ],
-              "exec_name": "cros_is_battery_present",
-              "run_control": "ALWAYS_RUN"
             }
           ],
-          "dependencies": [
-            {
-              "name": "Wait to be SSHable (normal boot)",
-              "docs": [
-                "Try to wait device to be sshable after the device being rebooted.",
-                "Waiting time 150 seconds."
-              ],
-              "exec_name": "cros_ssh",
-              "timeout": "2m30s",
-              "run_control": "ALWAYS_RUN"
-            }
-          ],
-          "exec_name": "rpm_audit_with_battery",
-          "exec_args": [
-            "timeout:120",
-            "wait_interval:5"
-          ],
-          "timeout": "10m0s",
+          "exec_name": "sample_pass",
           "run_control": "RERUN_AFTER_RECOVERY"
         }
       ]
@@ -14310,258 +14270,6 @@
     {
       "name": "close",
       "critical_actions": [
-        {
-          "name": "Update peripheral wifi state",
-          "docs": [
-            "Update peripheral wifi state based on wifi router states"
-          ],
-          "exec_name": "update_peripheral_wifi_state",
-          "allow_fail_after_recovery": true,
-          "run_control": "RERUN_AFTER_RECOVERY"
-        },
-        {
-          "name": "Update wifi router features",
-          "docs": [
-            "Update wifi router features based on the features of all wifi routers"
-          ],
-          "exec_name": "update_wifi_router_features",
-          "allow_fail_after_recovery": true,
-          "run_control": "RERUN_AFTER_RECOVERY"
-        },
-        {
-          "name": "Update chameleon state for chameleonless dut",
-          "docs": [
-            "Update chameleon state to not applicable for chameleonless dut"
-          ],
-          "conditions": [
-            {
-              "name": "chameleon_not_present",
-              "exec_name": "chameleon_not_present",
-              "run_control": "RERUN_AFTER_RECOVERY"
-            }
-          ],
-          "exec_name": "chameleon_state_not_applicable",
-          "allow_fail_after_recovery": true,
-          "run_control": "RERUN_AFTER_RECOVERY"
-        },
-        {
-          "name": "Update DUT state based on servo state",
-          "docs": [
-            "Set the DUT state based on the state of servo. ",
-            "This applies only if the count of failures is ",
-            "not above a threshold amount"
-          ],
-          "conditions": [
-            {
-              "name": "DUT state is repair_failed",
-              "docs": [
-                "Check if the DUT's state is in repair_failed state, if not then fail."
-              ],
-              "exec_name": "dut_state_match",
-              "exec_args": [
-                "state:repair_failed"
-              ],
-              "run_control": "RERUN_AFTER_RECOVERY"
-            },
-            {
-              "name": "Failure count are not above threshold",
-              "docs": [
-                "Check if the number of times the recovery task ",
-                "has failed is not greater than a threshold value"
-              ],
-              "dependencies": [
-                {
-                  "name": "Failure count above threshold",
-                  "docs": [
-                    "Check if the number of times the recovery task ",
-                    "has failed is greater than a threshold value or ",
-                    "not."
-                  ],
-                  "conditions": [
-                    {
-                      "name": "Is a Chromebook",
-                      "docs": [
-                        "Verify that the device is a Chromebook by checking for non-Chromebook boards"
-                      ],
-                      "exec_name": "dut_check_board",
-                      "exec_args": [
-                        "string_values:aurora,reven",
-                        "invert_result:true"
-                      ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
-                  ],
-                  "exec_name": "metrics_check_task_failures",
-                  "exec_args": [
-                    "task_name:recovery",
-                    "repair_failed_count:6"
-                  ],
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                }
-              ],
-              "exec_name": "sample_fail",
-              "run_control": "RERUN_AFTER_RECOVERY"
-            },
-            {
-              "name": "Servo-host known",
-              "exec_name": "dut_servo_host_present",
-              "run_control": "RERUN_AFTER_RECOVERY"
-            },
-            {
-              "name": "Servo state demands manual repair",
-              "docs": [
-                "Check whether the state of servo mandates a ",
-                "manual repair on the DUT."
-              ],
-              "exec_name": "dut_servo_state_required_manual_attention",
-              "exec_args": [
-                "servo_states:NEED_REPLACEMENT,DUT_NOT_CONNECTED"
-              ],
-              "run_control": "RERUN_AFTER_RECOVERY"
-            },
-            {
-              "name": "Set state: needs_manual_repair",
-              "docs": [
-                "Set DUT state as needs_manual_repair."
-              ],
-              "exec_name": "dut_set_state",
-              "exec_args": [
-                "state:needs_manual_repair"
-              ],
-              "allow_fail_after_recovery": true,
-              "run_control": "ALWAYS_RUN"
-            }
-          ],
-          "exec_name": "dut_set_state_reason",
-          "exec_args": [
-            "allow_override:false",
-            "reason:CRITICAL_SERVO_ISSUE"
-          ],
-          "run_control": "RERUN_AFTER_RECOVERY"
-        },
-        {
-          "name": "Update DUT state for failures more than threshold",
-          "docs": [
-            "Set the DUT state to the value passed in the ",
-            "extra args."
-          ],
-          "conditions": [
-            {
-              "name": "DUT state is repair_failed",
-              "docs": [
-                "Check if the DUT's state is in repair_failed state, if not then fail."
-              ],
-              "exec_name": "dut_state_match",
-              "exec_args": [
-                "state:repair_failed"
-              ],
-              "run_control": "RERUN_AFTER_RECOVERY"
-            },
-            {
-              "name": "Failure count above threshold",
-              "docs": [
-                "Check if the number of times the recovery task ",
-                "has failed is greater than a threshold value or ",
-                "not."
-              ],
-              "conditions": [
-                {
-                  "name": "Is a Chromebook",
-                  "docs": [
-                    "Verify that the device is a Chromebook by checking for non-Chromebook boards"
-                  ],
-                  "exec_name": "dut_check_board",
-                  "exec_args": [
-                    "string_values:aurora,reven",
-                    "invert_result:true"
-                  ],
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                }
-              ],
-              "exec_name": "metrics_check_task_failures",
-              "exec_args": [
-                "task_name:recovery",
-                "repair_failed_count:6"
-              ],
-              "run_control": "RERUN_AFTER_RECOVERY"
-            },
-            {
-              "name": "Failure count above threshold (Flex)",
-              "docs": [
-                "Check if the number of times the recovery task ",
-                "has failed is greater than a threshold value or ",
-                "not."
-              ],
-              "conditions": [
-                {
-                  "name": "Is Flex device",
-                  "docs": [
-                    "Verify that device is belong Reven models"
-                  ],
-                  "exec_name": "dut_check_board",
-                  "exec_args": [
-                    "string_values:aurora,reven"
-                  ],
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                }
-              ],
-              "exec_name": "metrics_check_task_failures",
-              "exec_args": [
-                "task_name:recovery",
-                "repair_failed_count:3"
-              ],
-              "run_control": "RERUN_AFTER_RECOVERY"
-            },
-            {
-              "name": "Set state: needs_manual_repair",
-              "docs": [
-                "Set DUT state as needs_manual_repair."
-              ],
-              "exec_name": "dut_set_state",
-              "exec_args": [
-                "state:needs_manual_repair"
-              ],
-              "allow_fail_after_recovery": true,
-              "run_control": "ALWAYS_RUN"
-            }
-          ],
-          "exec_name": "dut_set_state_reason",
-          "exec_args": [
-            "allow_override:false",
-            "reason:REPAIR_RETRY_REACHED_THRESHOLD"
-          ],
-          "run_control": "RERUN_AFTER_RECOVERY"
-        },
-        {
-          "name": "Update cellular modem state for non-cellular pools",
-          "docs": [
-            "Set cellular modem state for DUTs in non-cellular pools."
-          ],
-          "conditions": [
-            {
-              "name": "Is not in cellular pool",
-              "docs": [
-                "Verify that DUT is not in a cellular pool."
-              ],
-              "exec_name": "dut_not_in_pool_regex",
-              "exec_args": [
-                "regex:(?i)^cellular"
-              ],
-              "run_control": "RERUN_AFTER_RECOVERY"
-            },
-            {
-              "name": "has_cellular_info",
-              "exec_name": "has_cellular_info",
-              "run_control": "RERUN_AFTER_RECOVERY"
-            }
-          ],
-          "exec_name": "set_cellular_modem_state",
-          "exec_args": [
-            "state:hardware_not_detected"
-          ],
-          "allow_fail_after_recovery": true,
-          "run_control": "RERUN_AFTER_RECOVERY"
-        },
         {
           "name": "Close Servo-host",
           "conditions": [

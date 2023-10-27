@@ -1223,14 +1223,16 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Verifies if battery present is reported as present in power supply info.",
 			},
-			ExecName:   "cros_is_battery_present",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:      "cros_is_battery_present",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"No Battery is present on device": {
 			Conditions: []string{
 				"Battery is present on device",
 			},
-			ExecName: "sample_fail",
+			ExecName:      "sample_fail",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Audit USB-drive from DUT": {
 			Docs: []string{
@@ -1639,7 +1641,8 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is Satlab device",
 			},
-			ExecName: "sample_fail",
+			ExecName:      "sample_fail",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Is Satlab device": {
 			Docs: []string{
@@ -1649,6 +1652,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"regex:^satlab",
 			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Read DUT serial-number from DUT": {
 			Conditions: []string{
@@ -2277,7 +2281,7 @@ func crosRepairActions() map[string]*Action {
 				"Perform RPM cycle and wait to device to boot back.",
 			},
 			Conditions: []string{
-				"has_rpm_info",
+				"RPM config present",
 			},
 			Dependencies: []string{
 				"rpm_power_cycle",
@@ -3185,43 +3189,21 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_not_on_stable_version",
 		},
-		"Perform RPM config verification": {
-			Docs: []string{
-				"Verify if RPM verification is required fo setup",
-				"Setup with PD control temprarely excluded from testing.",
+		"RPM set state: MISSING_CONFIG": {
+			ExecName: "set_rpm_state",
+			ExecExtraArgs: []string{
+				"device_type:dut",
+				"state:MISSING_CONFIG",
 			},
-			Dependencies: []string{
-				"Setup has servo info",
-				"has_rpm_info",
-				"Verify servod is responsive",
-				// The servo setup has PD control if and only if
-				// it supports GSC (Google Security Chip) firmware (e.g. cr50, ti50).
-				"Setup does't have Servo PD control",
-			},
-			ExecName: "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Perform RPM config verification for audit tasks": {
-			Docs: []string{
-				"Verify when the RPM verification is required for setup",
+		"RPM set state: WRONG_CONFIG": {
+			ExecName: "set_rpm_state",
+			ExecExtraArgs: []string{
+				"device_type:dut",
+				"state:WRONG_CONFIG",
 			},
-			Dependencies: []string{
-				// For audit tasks, we should consider making RPM info
-				// a necessary condition for running this check.
-				// For right now, let's let the audit task fail if the RPM info is absent.
-				"has_rpm_info",
-
-				// For audit, we don't need a servo host.
-				// - "dut_servo_host_present"
-				// - "servod_echo"
-				//
-				// For audit tests, we do not require the servo to have PD control.
-				// For that reason, the dependency below is excluded.
-				// - "Setup doesn't have Servo PD control"
-			},
-			Conditions: []string{
-				// Since we're performing an audit task, this action is always applicable.
-			},
-			ExecName: "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Setup has Servo PD control": {
 			Docs: []string{
@@ -3232,97 +3214,48 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "servo_build_in_pd_present",
 		},
-		"Setup does't have Servo PD control": {
-			Docs: []string{
-				"Verify that servo does not have build in PD control.",
-			},
-			Conditions: []string{
-				"Setup has Servo PD control",
-			},
-			ExecName: "sample_fail",
-		},
 		"Audit RPM config (without battery)": {
 			Docs: []string{
-				"Verify RPM configs and set RPM state",
-				// For audit tasks, run the RPM config check regardless of whether
-				// the servo uses a cr50 or not.
-				//
-				// This matches the behavior of '_check_rpm_power_delivery_without_battery' in
-				// python labpack.
-				//
-				// https://chromium.googlesource.com/chromiumos/third_party/labpack/+/refs/heads/main/site_utils/admin_audit/rpm_validator.py#69
-				//
-				// "Not applicable for cr50 servos based on b/205728276",
-			},
-			Dependencies: []string{
-				"Perform RPM config verification for audit tasks",
+				"Verify RPM configs and set RPM state for DUT without battery",
 			},
 			Conditions: []string{
 				"No Battery is present on device",
 			},
-			ExecName:    "rpm_audit_without_battery",
-			ExecTimeout: &durationpb.Duration{Seconds: 600},
-		},
-		"Verify RPM config (without battery)": {
-			Docs: []string{
-				"Verify RPM configs and set RPM state",
-				"Not applicable for cr50 servos based on b/205728276",
-				"Action is not critical as it updates own state.",
-			},
-			Conditions: []string{
-				"Perform RPM config verification",
-				"No Battery is present on device",
-			},
 			Dependencies: []string{
-				"Wait to be SSHable (normal boot)",
+				"RPM set state: WRONG_CONFIG",
 			},
 			ExecName:    "rpm_audit_without_battery",
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 		},
-		"Audit RPM config with battery": {
+		"Audit RPM config (with battery)": {
 			Docs: []string{
-				"Verify RPM when battery is present",
-				// For audit tasks, run the RPM config check regardless of whether
-				// the servo uses a cr50 or not.
-				//
-				// This matches the behavior of '_check_rpm_power_delivery_with_battery' in
-				// python labpack.
-				//
-				// https://chromium.googlesource.com/chromiumos/third_party/labpack/+/refs/heads/main/site_utils/admin_audit/rpm_validator.py#110
-				//
-				// "Not applicable for cr50 servos based on b/205728276",
-				"Action is not critical as it updates own state.",
+				"Verify RPM when battery is present on the DUT.",
 			},
 			Conditions: []string{
-				"Perform RPM config verification",
 				"Battery is present on device",
+			},
+			Dependencies: []string{
+				"RPM set state: WRONG_CONFIG",
 			},
 			ExecName:    "rpm_audit_with_battery",
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
-			ExecExtraArgs: []string{
-				"timeout:120",
-				"wait_interval:5",
-			},
 		},
-		"Verify RPM config with battery": {
+		"Verify RPM config": {
 			Docs: []string{
-				"Verify RPM when battery is present",
+				"Verify RPM config of DUT.",
 				"Not applicable for cr50 servos based on b/205728276",
 				"Action is not critical as it updates own state.",
 			},
 			Conditions: []string{
-				"Perform RPM config verification",
-				"Battery is present on device",
+				// If rpm info is not provided then we just want to set a state and skip verification.
+				"RPM set state: MISSING_CONFIG",
+				"RPM config present",
 			},
 			Dependencies: []string{
-				"Wait to be SSHable (normal boot)",
+				"Audit RPM config (with battery)",
+				"Audit RPM config (without battery)",
 			},
-			ExecName:    "rpm_audit_with_battery",
-			ExecTimeout: &durationpb.Duration{Seconds: 600},
-			ExecExtraArgs: []string{
-				"timeout:120",
-				"wait_interval:5",
-			},
+			ExecName: "sample_pass",
 		},
 		"Is servod running": {
 			Docs: []string{
@@ -4098,6 +4031,17 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 			},
 			ExecName: "sample_pass",
+		},
+		"RPM config present": {
+			Docs: []string{
+				"Verifies that the RPM configuration provides some data for the hostname and outlet.",
+				"This action does not verify the correctness of the data.",
+			},
+			ExecName: "device_has_rpm_info",
+			ExecExtraArgs: []string{
+				"device_type:dut",
+			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 	}
 }

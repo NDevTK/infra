@@ -5,40 +5,32 @@
 package config
 
 // CrosAuditRPMConfig audits the RPM information for ChromeOS DUTs only.
-//
-// This is a port of VerifyRPMConfig.
-//
-// https://chromium.googlesource.com/chromiumos/third_party/labpack/+/refs/heads/main/site_utils/admin_audit/verifiers.py#245 .
 func CrosAuditRPMConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
 			PlanServo,
-			PlanCrOS,
+			PlanCrOSAudit,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
-			// First, ensure that the servo is in a good state.
 			PlanServo: setAllowFail(servoRepairPlan(), true),
-			// First thing: set the DUT state to needs_repair
-			PlanCrOS: {
+			PlanCrOSAudit: {
 				CriticalActions: []string{
-					// We defensively set the state to repair failed before every task so that we force
-					// a repair once the audit task is complete.
-					"Set state: repair_failed",
+					// Set a repair failed state to call auto-repair after that task is completed.
+					"Set state: needs_repair",
 					"Device is SSHable",
-					// See the link below for the python labpack equivalent.
-					//   _check_rpm_power_delivery_without_battery
-					//   https://chromium.googlesource.com/chromiumos/third_party/labpack/+/refs/heads/main/site_utils/admin_audit/rpm_validator.py#110
-					"Audit RPM config (without battery)",
-					// See the link below for the python labpack equivalent.
-					//   _check_rpm_power_delivery_with_battery
-					//   https://chromium.googlesource.com/chromiumos/third_party/labpack/+/refs/heads/main/site_utils/admin_audit/rpm_validator.py#69
-					"Verify RPM config with battery",
+					"Verify RPM config",
 				},
 				Actions:   crosRepairActions(),
 				AllowFail: false,
 			},
-			PlanClosing: setAllowFail(crosClosePlan(), true),
+			PlanClosing: {
+				CriticalActions: []string{
+					"Close Servo-host",
+				},
+				Actions:   crosRepairClosingActions(),
+				AllowFail: true,
+			},
 		},
 	}
 }

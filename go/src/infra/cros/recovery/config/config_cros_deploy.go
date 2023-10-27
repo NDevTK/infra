@@ -256,8 +256,8 @@ func deployActions() map[string]*Action {
 			Dependencies: []string{
 				"Verify battery charging level",
 				"Verify boot in recovery mode",
-				"Verify RPM config (without battery)",
-				"Verify RPM config with battery",
+				"Wait to be SSHable (normal boot)",
+				"Verify RPM config",
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "sample_pass",

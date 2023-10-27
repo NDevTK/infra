@@ -13,12 +13,12 @@ func CrosAuditUSBConfig() *Configuration {
 			// Make sure that the servo is in a good state and servod is up.
 			PlanServo,
 			// Core plan to validate access and check USB-drive.
-			PlanCrOS,
+			PlanCrOSAudit,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
 			PlanServo: setAllowFail(servoRepairPlan(), false),
-			PlanCrOS: {
+			PlanCrOSAudit: {
 				CriticalActions: []string{
 					// We defensively set the state to needs repair before every task so that we force
 					// a repair once the audit task is complete.
@@ -32,7 +32,13 @@ func CrosAuditUSBConfig() *Configuration {
 				Actions:   crosRepairActions(),
 				AllowFail: false,
 			},
-			PlanClosing: setAllowFail(crosClosePlan(), true),
+			PlanClosing: {
+				CriticalActions: []string{
+					"Close Servo-host",
+				},
+				Actions:   crosRepairClosingActions(),
+				AllowFail: true,
+			},
 		},
 	}
 }
