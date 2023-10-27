@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7d39b97_78907889",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/dut_services/dut_services_impl.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 305,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-10-27T14:00:35Z",
+      "side": 1,
+      "message": "this is a bit weird- we convert stdout from `[]byte` -\u003e `string` -\u003e `[]byte` -\u003e `string` now\n\ni think we can just use `strings.TrimRight(b, \"\\n\\t\")` directly - the logic in `TrimRight` isn\u0027t complex enough to justify trying to reuse code",
+      "revId": "86180eb3a76bc29bd02a55dca8481fdb34e5cb4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "acfea4f5_1b391a77",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/dut_services/dut_services_impl.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-10-27T14:00:35Z",
+      "side": 1,
+      "message": "same here",
+      "revId": "86180eb3a76bc29bd02a55dca8481fdb34e5cb4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "67f02d90_917cd8e2",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/dut_services/dut_services_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-10-27T14:00:35Z",
+      "side": 1,
+      "message": "while we\u0027re making changes... lets rename to `sshResponse`. `expectedResponse`, in a test, makes me think that is the result we *want* to get from some test case, and not that it\u0027s what a fake object will return",
+      "revId": "86180eb3a76bc29bd02a55dca8481fdb34e5cb4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "25ba8314_7b683815",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/dut_services/dut_services_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-10-27T14:00:35Z",
+      "side": 1,
+      "message": "same `sshResponse` comment",
+      "revId": "86180eb3a76bc29bd02a55dca8481fdb34e5cb4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
