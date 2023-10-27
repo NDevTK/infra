@@ -73,6 +73,21 @@ var (
 		},
 	}
 
+	stepsTestCaseLast = append(stepsTestCase, []Step{
+		{
+			Start:   900 * time.Millisecond,
+			End:     1000 * time.Millisecond,
+			Out:     "out/Release/obj/chrome/installer/mini_installer/previous_version_mini_installer.stamp",
+			CmdHash: "647407ef506035a9",
+		},
+		{
+			Start:   800 * time.Millisecond,
+			End:     999 * time.Millisecond,
+			Out:     "out/Release/obj/chrome/test/mini_installer/mini_installer_tests.stamp",
+			CmdHash: "b40242acfdb206f6",
+		},
+	}...)
+
 	stepsSorted = []Step{
 		{
 			Start:   76 * time.Millisecond,
@@ -220,6 +235,8 @@ func TestParseLast(t *testing.T) {
 141	287	0	PepperFlash/manifest.json	324f0a0b77c37ef
 142	288	0	PepperFlash/libpepflashplayer.so	1e2c2b7845a4d4fe
 287	290	0	obj/third_party/angle/src/copy_scripts.actions_rules_copies.stamp	b211d373de72f455
+900	1000	0	out/Release/obj/chrome/installer/mini_installer/previous_version_mini_installer.stamp	647407ef506035a9
+800	999	0	out/Release/obj/chrome/test/mini_installer/mini_installer_tests.stamp	b40242acfdb206f6
 `))
 	if err != nil {
 		t.Errorf(`Parse()=_, %v; want=_, <nil>`, err)
@@ -228,10 +245,10 @@ func TestParseLast(t *testing.T) {
 	want := &NinjaLog{
 		Filename: ".ninja_log",
 		Start:    4,
-		Steps:    stepsTestCase,
+		Steps:    stepsTestCaseLast,
 	}
-	if !reflect.DeepEqual(njl, want) {
-		t.Errorf("Parse()=%v; want=%v", njl, want)
+	if diff := cmp.Diff(want, njl); diff != "" {
+		t.Errorf("Parse() got diff; (-want +got):\n%s, ", diff)
 	}
 }
 
