@@ -249,7 +249,7 @@ func TestGetConnectedIPsShouldFail(t *testing.T) {
 }
 
 func Test_GetBoard(t *testing.T) {
-	expectedResponse := "CHROMEOS_RELEASE_BOARD=brya"
+	expectedResponse := "CHROMEOS_RELEASE_BOARD=brya\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -268,7 +268,7 @@ func Test_GetBoard(t *testing.T) {
 }
 
 func Test_GetModel(t *testing.T) {
-	expectedResponse := "model"
+	expectedResponse := "model\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
