@@ -284,7 +284,7 @@ func (c *tlwClient) RunRPMAction(ctx context.Context, req *tlw.RunRPMActionReque
 
 // GetCacheUrl provides URL to download requested path to file.
 // URL will use to download image to USB-drive and provisioning.
-func (c *tlwClient) GetCacheUrl(ctx context.Context, resourceName, filePath string) (string, error) {
+func (c *tlwClient) GetCacheUrl(ctx context.Context, dutName, filePath string) (string, error) {
 	// TODO(otabek@): Add logic to understand local file and just return it back.
 	addr := fmt.Sprintf("0.0.0.0:%d", tlwPort)
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
@@ -292,7 +292,7 @@ func (c *tlwClient) GetCacheUrl(ctx context.Context, resourceName, filePath stri
 		return "", errors.Annotate(err, "connect to background TLW").Err()
 	}
 	defer func() { conn.Close() }()
-	return CacheForDut(ctx, conn, filePath, resourceName)
+	return CacheForDut(ctx, conn, filePath, dutName)
 }
 
 // Provision triggers provisioning of the device.

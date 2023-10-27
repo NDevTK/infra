@@ -100,15 +100,15 @@ type RouterController interface {
 // NewRouterDeviceController creates a new router controller instance for the
 // specified router host. The controller implementation used is dependent upon
 // the wifiRouter.DeviceType, so this must be populated.
-func NewRouterDeviceController(ctx context.Context, sshAccess ssh.Access, cacheAccess CacheAccess, resource string, wifiRouter *tlw.WifiRouterHost) (RouterController, error) {
+func NewRouterDeviceController(ctx context.Context, sshAccess ssh.Access, cacheAccess CacheAccess, hostResource, dutName string, wifiRouter *tlw.WifiRouterHost) (RouterController, error) {
 	if sshAccess == nil {
 		return nil, errors.Reason("sshAccess must not be nil").Err()
 	}
 	if wifiRouter == nil {
 		return nil, errors.Reason("wifiRouter must not be nil").Err()
 	}
-	sshRunner := newRouterSshRunner(sshAccess, resource, wifiRouter.DeviceType)
-	routerControllerStateKey := "wifirouter_controller_state/" + resource
+	sshRunner := newRouterSshRunner(sshAccess, hostResource, wifiRouter.DeviceType)
+	routerControllerStateKey := "wifirouter_controller_state/" + hostResource
 	switch wifiRouter.DeviceType {
 	case labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_UNKNOWN:
 		return nil, errors.Reason("cannot control unknown router; it must be analyzed first").Err()
@@ -127,7 +127,7 @@ func NewRouterDeviceController(ctx context.Context, sshAccess ssh.Access, cacheA
 				return nil, errors.Reason("stored controller state does not match device type %q: %v", wifiRouter.DeviceType.String(), state).Err()
 			}
 		}
-		return newOpenWrtRouterController(sshRunner, wifiRouter, controllerState, cacheAccess, resource), nil
+		return newOpenWrtRouterController(sshRunner, wifiRouter, controllerState, cacheAccess, dutName), nil
 	case labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_ASUSWRT:
 		var controllerState *tlw.AsusWrtRouterControllerState
 		if state, ok := scopes.ReadConfigParam(ctx, routerControllerStateKey); !ok {

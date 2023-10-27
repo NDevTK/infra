@@ -254,7 +254,7 @@ func RemoteFileContentsMatch(ctx context.Context, sshRunner ssh.Runner, remoteFi
 type CacheAccess interface {
 	// GetCacheUrl provides URL to download requested path to file.
 	// URL will use to download image to USB-drive and provisioning.
-	GetCacheUrl(ctx context.Context, resourceName, filePath string) (string, error)
+	GetCacheUrl(ctx context.Context, dutName, filePath string) (string, error)
 }
 
 // ReadFileFromCacheServer downloads a file from the cache server through
@@ -266,9 +266,9 @@ type CacheAccess interface {
 //
 // If the download from the cache server fails, it will be reattempted every
 // 1 second up until the downloadTimeout is reached.
-func ReadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string, downloadTimeout time.Duration, srcFilePath string) (string, error) {
+func ReadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string, downloadTimeout time.Duration, srcFilePath string) (string, error) {
 	// Prepare file for download from cache server.
-	downloadURL, err := cacheAccess.GetCacheUrl(ctx, hostResource, srcFilePath)
+	downloadURL, err := cacheAccess.GetCacheUrl(ctx, dutName, srcFilePath)
 	if err != nil {
 		return "", errors.Annotate(err, "failed to get download URL from cache server for file path %q", srcFilePath).Err()
 	}
@@ -300,9 +300,9 @@ func ReadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAcc
 //
 // If the download from the cache server fails, it will be reattempted every
 // 1 second up until the downloadTimeout is reached.
-func DownloadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string, downloadTimeout time.Duration, srcFilePath, dstFilePath string) error {
+func DownloadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string, downloadTimeout time.Duration, srcFilePath, dstFilePath string) error {
 	// Prepare file for download from cache server.
-	downloadURL, err := cacheAccess.GetCacheUrl(ctx, hostResource, srcFilePath)
+	downloadURL, err := cacheAccess.GetCacheUrl(ctx, dutName, srcFilePath)
 	if err != nil {
 		return errors.Annotate(err, "failed to get download URL from cache server for file path %q", srcFilePath).Err()
 	}
@@ -344,9 +344,9 @@ func reportCacheFailedMetric(ctx context.Context, sourcePath string, httpRespons
 // fetchWifiRouterConfig downloads the production WifiRouterConfig JSON file
 // from GCS via the cache server through the router and returns its unmarshalled
 // contents.
-func fetchWifiRouterConfig(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string) (*labapi.WifiRouterConfig, error) {
+func fetchWifiRouterConfig(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string) (*labapi.WifiRouterConfig, error) {
 	const wifiRouterConfigFileGCSPath = wifiRouterArtifactsGCSBasePath + "/wifi_router_config_prod.json"
-	wifiRouterConfigJSON, err := ReadFileFromCacheServer(ctx, sshRunner, cacheAccess, hostResource, 30*time.Second, wifiRouterConfigFileGCSPath)
+	wifiRouterConfigJSON, err := ReadFileFromCacheServer(ctx, sshRunner, cacheAccess, dutName, 30*time.Second, wifiRouterConfigFileGCSPath)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read %q on the router through the cache server", wifiRouterConfigFileGCSPath).Err()
 	}

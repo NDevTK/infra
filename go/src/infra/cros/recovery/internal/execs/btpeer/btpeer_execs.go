@@ -62,12 +62,15 @@ func fetchInstalledChameleondBundleCommitExec(ctx context.Context, info *execs.E
 // fetchBtpeerChameleondReleaseConfigExec retrieves the production btpeer
 // chameleond config from GCS and stores it in the scope state for later reference.
 func fetchBtpeerChameleondReleaseConfigExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetDut() == nil {
+		return errors.Reason("dut is nil").Err()
+	}
 	btpeerScopeState, err := getBtpeerScopeState(ctx, info)
 	if err != nil {
 		return errors.Annotate(err, "failed to get btpeer scope state").Err()
 	}
 	sshRunner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
-	config, err := chameleond.FetchBtpeerChameleondReleaseConfig(ctx, sshRunner, info.GetAccess(), info.GetActiveResource())
+	config, err := chameleond.FetchBtpeerChameleondReleaseConfig(ctx, sshRunner, info.GetAccess(), info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "failed to fetch btpeer chameleond release config").Err()
 	}
@@ -148,6 +151,9 @@ func assertBtpeerHasExpectedChameleondReleaseBundleInstalledExec(ctx context.Con
 // The expected bundle archive is downloaded from GCS to the btpeer through the
 // cache, extracted, and installed via make.
 func installExpectedChameleondReleaseBundleExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetDut() == nil {
+		return errors.Reason("dut is nil").Err()
+	}
 	btpeerScopeState, err := getBtpeerScopeState(ctx, info)
 	if err != nil {
 		return errors.Annotate(err, "failed to get btpeer scope state").Err()
@@ -163,7 +169,7 @@ func installExpectedChameleondReleaseBundleExec(ctx context.Context, info *execs
 		return errors.Annotate(err, "failed to prepare empty install dir on btpeer").Err()
 	}
 	// Download bundle to btpeer.
-	localBundleLocation, err := chameleond.DownloadChameleondBundle(ctx, sshRunner, info.GetAccess(), info.GetActiveResource(), expectedBundleConfig)
+	localBundleLocation, err := chameleond.DownloadChameleondBundle(ctx, sshRunner, info.GetAccess(), info.GetDut().Name, expectedBundleConfig)
 	if err != nil {
 		return errors.Annotate(err, "failed to download expected chameleond bundle (commit %q) to btpeer", expectedCommit).Err()
 	}

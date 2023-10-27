@@ -55,7 +55,7 @@ type Access interface {
 	Version(ctx context.Context, req *VersionRequest) (*VersionResponse, error)
 	// GetCacheUrl provides URL to download requested path to file.
 	// URL will use to download image to USB-drive and provisioning.
-	GetCacheUrl(ctx context.Context, resourceName, filePath string) (string, error)
+	GetCacheUrl(ctx context.Context, dutName, filePath string) (string, error)
 	// Provision triggers provisioning of the device.
 	Provision(ctx context.Context, req *ProvisionRequest) error
 	// Close closes all used resources.

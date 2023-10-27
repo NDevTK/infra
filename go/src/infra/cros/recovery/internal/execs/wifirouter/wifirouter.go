@@ -29,11 +29,14 @@ func activeHost(info *execs.ExecInfo) (*tlw.WifiRouterHost, error) {
 }
 
 func activeHostRouterController(ctx context.Context, info *execs.ExecInfo) (controller.RouterController, error) {
+	if info.GetDut() == nil {
+		return nil, errors.Reason("dut is nil").Err()
+	}
 	wifiRouterHost, err := activeHost(info)
 	if err != nil {
 		return nil, err
 	}
-	return controller.NewRouterDeviceController(ctx, info.GetAccess(), info.GetAccess(), info.GetActiveResource(), wifiRouterHost)
+	return controller.NewRouterDeviceController(ctx, info.GetAccess(), info.GetAccess(), info.GetActiveResource(), info.GetDut().Name, wifiRouterHost)
 }
 
 func activeHostAsusWrtRouterController(ctx context.Context, info *execs.ExecInfo) (*controller.AsusWrtRouterController, error) {

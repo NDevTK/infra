@@ -38,20 +38,20 @@ const (
 type CacheAccess interface {
 	// GetCacheUrl provides URL to download requested path to file.
 	// URL will use to download image to USB-drive and provisioning.
-	GetCacheUrl(ctx context.Context, resourceName, filePath string) (string, error)
+	GetCacheUrl(ctx context.Context, dutName, filePath string) (string, error)
 }
 
 // DownloadChameleondBundle downloads the bundle archive for the bundleConfig to
 // the btpeer from GCS via the cache server. Returns the path of the bundle on
 // the btpeer.
-func DownloadChameleondBundle(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string, bundleConfig *labapi.BluetoothPeerChameleondConfig_ChameleondBundle) (string, error) {
+func DownloadChameleondBundle(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string, bundleConfig *labapi.BluetoothPeerChameleondConfig_ChameleondBundle) (string, error) {
 	bundleArchivePath := bundleConfig.GetArchivePath()
 	if !strings.HasPrefix(bundleArchivePath, btpeerArtifactsGCSBasePath) {
 		return "", errors.Reason("invalid bundle archive path %q", bundleArchivePath).Err()
 	}
 	bundleFilename := filepath.Base(bundleArchivePath)
 	dstPath := filepath.Join(installDir, bundleFilename)
-	downloadURL, err := cacheAccess.GetCacheUrl(ctx, hostResource, bundleArchivePath)
+	downloadURL, err := cacheAccess.GetCacheUrl(ctx, dutName, bundleArchivePath)
 	if err != nil {
 		return "", errors.Annotate(err, "failed to get download URL from cache server for file path %q", bundleArchivePath).Err()
 	}
@@ -64,8 +64,8 @@ func DownloadChameleondBundle(ctx context.Context, sshRunner ssh.Runner, cacheAc
 // FetchBtpeerChameleondReleaseConfig downloads the production
 // BluetoothPeerChameleondConfig JSON file from GCS via the cache server through
 // the host and returns its unmarshalled contents.
-func FetchBtpeerChameleondReleaseConfig(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string) (*labapi.BluetoothPeerChameleondConfig, error) {
-	downloadURL, err := cacheAccess.GetCacheUrl(ctx, hostResource, btpeerChameleondConfigProdGCSPath)
+func FetchBtpeerChameleondReleaseConfig(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string) (*labapi.BluetoothPeerChameleondConfig, error) {
+	downloadURL, err := cacheAccess.GetCacheUrl(ctx, dutName, btpeerChameleondConfigProdGCSPath)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get download URL from cache server for file path %q", btpeerChameleondConfigProdGCSPath).Err()
 	}

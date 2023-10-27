@@ -72,16 +72,16 @@ type OpenWrtRouterController struct {
 	wifiRouterHost *tlw.WifiRouterHost
 	state          *tlw.OpenWrtRouterControllerState
 	cacheAccess    CacheAccess
-	resource       string
+	dutName        string
 }
 
-func newOpenWrtRouterController(sshRunner ssh.Runner, wifiRouterHost *tlw.WifiRouterHost, state *tlw.OpenWrtRouterControllerState, cacheAccess CacheAccess, resource string) *OpenWrtRouterController {
+func newOpenWrtRouterController(sshRunner ssh.Runner, wifiRouterHost *tlw.WifiRouterHost, state *tlw.OpenWrtRouterControllerState, cacheAccess CacheAccess, dutName string) *OpenWrtRouterController {
 	return &OpenWrtRouterController{
 		wifiRouterHost: wifiRouterHost,
 		sshRunner:      sshRunner,
 		state:          state,
 		cacheAccess:    cacheAccess,
-		resource:       resource,
+		dutName:        dutName,
 	}
 }
 
@@ -174,7 +174,7 @@ func (c *OpenWrtRouterController) FetchGlobalImageConfig(ctx context.Context) er
 	deviceName := c.state.GetDeviceBuildInfo().GetStandardBuildConfig().GetDeviceName()
 
 	// Fetch and unmarshal config from GCS.
-	wifiRouterConfig, err := fetchWifiRouterConfig(ctx, c.sshRunner, c.cacheAccess, c.resource)
+	wifiRouterConfig, err := fetchWifiRouterConfig(ctx, c.sshRunner, c.cacheAccess, c.dutName)
 	if err != nil {
 		return err
 	}
@@ -507,7 +507,7 @@ func (c *OpenWrtRouterController) downloadImageToDevice(ctx context.Context, ima
 		return "", errors.Annotate(err, "failed to create tmp image dir %q on router", tmpDir).Err()
 	}
 	archiveRouterPath := filepath.Join(tmpDir, filepath.Base(imageArchiveGCSPath))
-	if err := DownloadFileFromCacheServer(ctx, c.sshRunner, c.cacheAccess, c.resource, 5*time.Minute, imageArchiveGCSPath, archiveRouterPath); err != nil {
+	if err := DownloadFileFromCacheServer(ctx, c.sshRunner, c.cacheAccess, c.dutName, 5*time.Minute, imageArchiveGCSPath, archiveRouterPath); err != nil {
 		return "", err
 	}
 
