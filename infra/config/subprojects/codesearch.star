@@ -419,8 +419,9 @@ chromium_genfiles(
         "build_config": "mac",
     },
     os = "Mac-13",
-    cpu_cores = "4",
-    machine_type = "n1-standard-4",
+    cpu_cores = "8",
+    cpu = "arm64",
+    machine_type = "n1-highcpu-8",
 )
 
 chromium_genfiles(
