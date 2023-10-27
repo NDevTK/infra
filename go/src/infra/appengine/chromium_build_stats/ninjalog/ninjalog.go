@@ -208,7 +208,11 @@ func Parse(fname string, r io.Reader) (*NinjaLog, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error at %d: %v", lineno, err)
 		}
-		if step.End < lastStep.End {
+		// If the last step end is larger than the current step end,
+		// It indicates starting a new build.
+		// Note that it converts to seconds because Siso's ninja_log
+		// doesn't guarantee the order of end time due to multi threads.
+		if step.End/1000 < lastStep.End/1000 {
 			nlog.Start = lineno
 			nlog.Steps = nil
 		}
