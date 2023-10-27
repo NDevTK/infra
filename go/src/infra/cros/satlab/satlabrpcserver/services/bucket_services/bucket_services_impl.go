@@ -6,14 +6,18 @@ package bucket_services
 import (
 	"context"
 	"fmt"
+	"io"
 	"strings"
+
+	"cloud.google.com/go/storage"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/collection"
-
-	"cloud.google.com/go/storage"
-	"google.golang.org/api/option"
 )
+
+type getDataFromObject = func(obj *storage.ObjectAttrs) (string, error)
 
 // BucketConnector is an object for connecting the GCS bucket storage.
 type BucketConnector struct {
@@ -39,24 +43,24 @@ func New(ctx context.Context, bucketName string) (IBucketServices, error) {
 	}, nil
 }
 
-// getPartialObjectPath returns the partial blobs for given prefix and delimiter.
-//
-// string prefix is the prefix filter to query objects.
-// string delimiter Objects whose names, aside from the prefix, contain delimiter will have their name,
-// truncated after the delimiter.
-func (b *BucketConnector) getPartialObjectPath(ctx context.Context, prefix string, delimiter string) ([]string, error) {
-	bucket := b.client.Bucket(b.bucketName)
-	iter := bucket.Objects(ctx, &storage.Query{Prefix: prefix, Delimiter: delimiter})
+func getPartialObjectPath(obj *storage.ObjectAttrs) (string, error) {
+	return obj.Prefix, nil
+}
 
-	return collection.Collect(iter.Next, func(obj *storage.ObjectAttrs) (string, error) {
-		return obj.Prefix, nil
-	})
+// QueryObjects query objects from the bucket
+func (b *BucketConnector) QueryObjects(ctx context.Context, q *storage.Query) iObjectIterator {
+	iter := b.client.Bucket(b.bucketName).Objects(ctx, q)
+	return iter
+}
+
+// ReadObject read the object content by the given name
+func (b *BucketConnector) ReadObject(ctx context.Context, name string) (io.ReadCloser, error) {
+	return b.client.Bucket(b.bucketName).Object(name).NewReader(ctx)
 }
 
 // IsBucketInAsia returns boolean. Check the given bucket is in asia.
 func (b *BucketConnector) IsBucketInAsia(ctx context.Context) (bool, error) {
-	bucket := b.client.Bucket(b.bucketName)
-	attrs, err := bucket.Attrs(ctx)
+	attrs, err := b.client.Bucket(b.bucketName).Attrs(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -69,14 +73,19 @@ func (b *BucketConnector) IsBucketInAsia(ctx context.Context) (bool, error) {
 // string board the board name we want to use as a filter.
 func (b *BucketConnector) GetMilestones(ctx context.Context, board string) ([]string, error) {
 	prefix := fmt.Sprintf("%s-release/R", board)
-	rawData, err := b.getPartialObjectPath(ctx, prefix, "-")
+	q := &storage.Query{Prefix: prefix, Delimiter: "-"}
+	// We don't need other fields here because
+	// the field `Prefix` we need already included.
+	q.SetAttrSelection([]string{"Name"})
+	rawData := b.QueryObjects(ctx, q)
+	data, err := collection.Collect(rawData.Next, getPartialObjectPath)
 	if err != nil {
 		return nil, err
 	}
 
-	res := make([]string, len(rawData))
-	for idx, item := range rawData {
-		res[idx] = item[len(prefix) : len(item)-1]
+	res := make([]string, 0, len(data))
+	for _, item := range data {
+		res = append(res, item[len(prefix):len(item)-1])
 	}
 
 	return res, nil
@@ -88,22 +97,66 @@ func (b *BucketConnector) GetMilestones(ctx context.Context, board string) ([]st
 // string milestone the milestone we want to use as a filter.
 func (b *BucketConnector) GetBuilds(ctx context.Context, board string, milestone int32) ([]string, error) {
 	releasePrefix := fmt.Sprintf("%s-release/R%d-", board, milestone)
-	releaseRawData, err := b.getPartialObjectPath(ctx, releasePrefix, "/")
+	q := &storage.Query{Prefix: releasePrefix, Delimiter: "/"}
+	// We don't need other fields here because
+	// the field `Prefix` we need already included.
+	q.SetAttrSelection([]string{"Name"})
+	releaseRawData := b.QueryObjects(ctx, q)
+	releaseData, err := collection.Collect(releaseRawData.Next, getPartialObjectPath)
 	if err != nil {
 		return nil, err
 	}
 
 	localPrefix := fmt.Sprintf("%s-local/R%d-", board, milestone)
-	localRawData, err := b.getPartialObjectPath(ctx, localPrefix, "/")
+	q = &storage.Query{Prefix: localPrefix, Delimiter: "/"}
+	// We don't need other fields here because
+	// the field `Prefix` we need already included.
+	q.SetAttrSelection([]string{"Name"})
+	localRawData := b.QueryObjects(ctx, q)
+	localData, err := collection.Collect(localRawData.Next, getPartialObjectPath)
+	if err != nil {
+		return nil, err
+	}
 
 	var res []string
 
-	for _, item := range releaseRawData {
+	for _, item := range releaseData {
 		res = append(res, item[len(releasePrefix):len(item)-1])
 	}
 
-	for _, item := range localRawData {
+	for _, item := range localData {
 		res = append(res, item[len(localPrefix):len(item)-1])
+	}
+
+	return res, nil
+}
+
+var DefaultPageSize = 10
+
+// ListTestplans list all testplan json in partner bucket under a `testplans` folder
+func (b *BucketConnector) ListTestplans(ctx context.Context) ([]string, error) {
+	return innerListTestplans(ctx, b)
+}
+
+func innerListTestplans(ctx context.Context, c IBucketServices) ([]string, error) {
+	d := "testplans/"
+	q := &storage.Query{Prefix: d, Delimiter: "*.json"}
+	q.SetAttrSelection([]string{"Name"})
+	rawData := c.QueryObjects(ctx, q)
+
+	res := []string{}
+	for {
+		item, err := rawData.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		if name, ok := strings.CutPrefix(item.Name, d); ok && strings.HasSuffix(name, ".json") {
+			res = append(res, name)
+		}
 	}
 
 	return res, nil

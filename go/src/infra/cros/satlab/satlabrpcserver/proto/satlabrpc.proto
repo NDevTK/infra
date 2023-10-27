@@ -10,8 +10,6 @@ option go_package = "infra/cros/satlab/satlabrpcserver"; // figure out what this
 import "google/protobuf/timestamp.proto";
 
 service SatlabRpcService {
-  rpc list_build_targets (ListBuildTargetsRequest) returns (ListBuildTargetsResponse);
-  rpc list_milestones (ListMilestonesRequest) returns (ListMilestonesResponse);
   rpc list_accessible_models (ListAccessibleModelsRequest) returns (ListAccessibleModelsResponse);
   rpc list_build_versions (ListBuildVersionsRequest) returns (ListBuildVersionsResponse);
   rpc stage_build (StageBuildRequest) returns (StageBuildResponse);
@@ -21,6 +19,11 @@ service SatlabRpcService {
   rpc get_network_info (GetNetworkInfoRequest) returns (GetNetworkInfoResponse);
   rpc get_peripheral_information (GetPeripheralInformationRequest) returns (GetPeripheralInformationResponse);
   rpc update_duts_firmware (UpdateDutsFirmwareRequest)  returns (UpdateDutsFirmwareResponse);
+
+  // Run Suite
+  rpc list_build_targets (ListBuildTargetsRequest) returns (ListBuildTargetsResponse);
+  rpc list_milestones (ListMilestonesRequest) returns (ListMilestonesResponse);
+  rpc list_test_plans (ListTestPlansRequest) returns (ListTestPlansResponse);
 
   // services to run different types of test suites
   rpc run_suite (RunSuiteRequest) returns (RunSuiteResponse) {}
@@ -420,4 +423,13 @@ message AddDutsResponse {
   }
 
   repeated FailedData fail = 2;
+}
+
+// NEXT_TAG = 1
+message ListTestPlansRequest {}
+
+// NEXT_TAG = 2
+message ListTestPlansResponse {
+  // the name of test plan
+  repeated string names = 1;
 }

@@ -23,8 +23,6 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	SatlabRpcService_ListBuildTargets_FullMethodName          = "/satlabrpcserver.SatlabRpcService/list_build_targets"
-	SatlabRpcService_ListMilestones_FullMethodName            = "/satlabrpcserver.SatlabRpcService/list_milestones"
 	SatlabRpcService_ListAccessibleModels_FullMethodName      = "/satlabrpcserver.SatlabRpcService/list_accessible_models"
 	SatlabRpcService_ListBuildVersions_FullMethodName         = "/satlabrpcserver.SatlabRpcService/list_build_versions"
 	SatlabRpcService_StageBuild_FullMethodName                = "/satlabrpcserver.SatlabRpcService/stage_build"
@@ -34,6 +32,9 @@ const (
 	SatlabRpcService_GetNetworkInfo_FullMethodName            = "/satlabrpcserver.SatlabRpcService/get_network_info"
 	SatlabRpcService_GetPeripheralInformation_FullMethodName  = "/satlabrpcserver.SatlabRpcService/get_peripheral_information"
 	SatlabRpcService_UpdateDutsFirmware_FullMethodName        = "/satlabrpcserver.SatlabRpcService/update_duts_firmware"
+	SatlabRpcService_ListBuildTargets_FullMethodName          = "/satlabrpcserver.SatlabRpcService/list_build_targets"
+	SatlabRpcService_ListMilestones_FullMethodName            = "/satlabrpcserver.SatlabRpcService/list_milestones"
+	SatlabRpcService_ListTestPlans_FullMethodName             = "/satlabrpcserver.SatlabRpcService/list_test_plans"
 	SatlabRpcService_RunSuite_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/run_suite"
 	SatlabRpcService_RunTest_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/run_test"
 	SatlabRpcService_AddPool_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/add_pool"
@@ -51,8 +52,6 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SatlabRpcServiceClient interface {
-	ListBuildTargets(ctx context.Context, in *ListBuildTargetsRequest, opts ...grpc.CallOption) (*ListBuildTargetsResponse, error)
-	ListMilestones(ctx context.Context, in *ListMilestonesRequest, opts ...grpc.CallOption) (*ListMilestonesResponse, error)
 	ListAccessibleModels(ctx context.Context, in *ListAccessibleModelsRequest, opts ...grpc.CallOption) (*ListAccessibleModelsResponse, error)
 	ListBuildVersions(ctx context.Context, in *ListBuildVersionsRequest, opts ...grpc.CallOption) (*ListBuildVersionsResponse, error)
 	StageBuild(ctx context.Context, in *StageBuildRequest, opts ...grpc.CallOption) (*StageBuildResponse, error)
@@ -62,6 +61,10 @@ type SatlabRpcServiceClient interface {
 	GetNetworkInfo(ctx context.Context, in *GetNetworkInfoRequest, opts ...grpc.CallOption) (*GetNetworkInfoResponse, error)
 	GetPeripheralInformation(ctx context.Context, in *GetPeripheralInformationRequest, opts ...grpc.CallOption) (*GetPeripheralInformationResponse, error)
 	UpdateDutsFirmware(ctx context.Context, in *UpdateDutsFirmwareRequest, opts ...grpc.CallOption) (*UpdateDutsFirmwareResponse, error)
+	// Run Suite
+	ListBuildTargets(ctx context.Context, in *ListBuildTargetsRequest, opts ...grpc.CallOption) (*ListBuildTargetsResponse, error)
+	ListMilestones(ctx context.Context, in *ListMilestonesRequest, opts ...grpc.CallOption) (*ListMilestonesResponse, error)
+	ListTestPlans(ctx context.Context, in *ListTestPlansRequest, opts ...grpc.CallOption) (*ListTestPlansResponse, error)
 	// services to run different types of test suites
 	RunSuite(ctx context.Context, in *RunSuiteRequest, opts ...grpc.CallOption) (*RunSuiteResponse, error)
 	RunTest(ctx context.Context, in *RunTestRequest, opts ...grpc.CallOption) (*RunTestResponse, error)
@@ -84,24 +87,6 @@ type satlabRpcServiceClient struct {
 
 func NewSatlabRpcServiceClient(cc grpc.ClientConnInterface) SatlabRpcServiceClient {
 	return &satlabRpcServiceClient{cc}
-}
-
-func (c *satlabRpcServiceClient) ListBuildTargets(ctx context.Context, in *ListBuildTargetsRequest, opts ...grpc.CallOption) (*ListBuildTargetsResponse, error) {
-	out := new(ListBuildTargetsResponse)
-	err := c.cc.Invoke(ctx, SatlabRpcService_ListBuildTargets_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *satlabRpcServiceClient) ListMilestones(ctx context.Context, in *ListMilestonesRequest, opts ...grpc.CallOption) (*ListMilestonesResponse, error) {
-	out := new(ListMilestonesResponse)
-	err := c.cc.Invoke(ctx, SatlabRpcService_ListMilestones_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *satlabRpcServiceClient) ListAccessibleModels(ctx context.Context, in *ListAccessibleModelsRequest, opts ...grpc.CallOption) (*ListAccessibleModelsResponse, error) {
@@ -179,6 +164,33 @@ func (c *satlabRpcServiceClient) GetPeripheralInformation(ctx context.Context, i
 func (c *satlabRpcServiceClient) UpdateDutsFirmware(ctx context.Context, in *UpdateDutsFirmwareRequest, opts ...grpc.CallOption) (*UpdateDutsFirmwareResponse, error) {
 	out := new(UpdateDutsFirmwareResponse)
 	err := c.cc.Invoke(ctx, SatlabRpcService_UpdateDutsFirmware_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *satlabRpcServiceClient) ListBuildTargets(ctx context.Context, in *ListBuildTargetsRequest, opts ...grpc.CallOption) (*ListBuildTargetsResponse, error) {
+	out := new(ListBuildTargetsResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_ListBuildTargets_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *satlabRpcServiceClient) ListMilestones(ctx context.Context, in *ListMilestonesRequest, opts ...grpc.CallOption) (*ListMilestonesResponse, error) {
+	out := new(ListMilestonesResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_ListMilestones_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *satlabRpcServiceClient) ListTestPlans(ctx context.Context, in *ListTestPlansRequest, opts ...grpc.CallOption) (*ListTestPlansResponse, error) {
+	out := new(ListTestPlansResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_ListTestPlans_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -288,8 +300,6 @@ func (c *satlabRpcServiceClient) ListDuts(ctx context.Context, in *ListDutsReque
 // All implementations must embed UnimplementedSatlabRpcServiceServer
 // for forward compatibility
 type SatlabRpcServiceServer interface {
-	ListBuildTargets(context.Context, *ListBuildTargetsRequest) (*ListBuildTargetsResponse, error)
-	ListMilestones(context.Context, *ListMilestonesRequest) (*ListMilestonesResponse, error)
 	ListAccessibleModels(context.Context, *ListAccessibleModelsRequest) (*ListAccessibleModelsResponse, error)
 	ListBuildVersions(context.Context, *ListBuildVersionsRequest) (*ListBuildVersionsResponse, error)
 	StageBuild(context.Context, *StageBuildRequest) (*StageBuildResponse, error)
@@ -299,6 +309,10 @@ type SatlabRpcServiceServer interface {
 	GetNetworkInfo(context.Context, *GetNetworkInfoRequest) (*GetNetworkInfoResponse, error)
 	GetPeripheralInformation(context.Context, *GetPeripheralInformationRequest) (*GetPeripheralInformationResponse, error)
 	UpdateDutsFirmware(context.Context, *UpdateDutsFirmwareRequest) (*UpdateDutsFirmwareResponse, error)
+	// Run Suite
+	ListBuildTargets(context.Context, *ListBuildTargetsRequest) (*ListBuildTargetsResponse, error)
+	ListMilestones(context.Context, *ListMilestonesRequest) (*ListMilestonesResponse, error)
+	ListTestPlans(context.Context, *ListTestPlansRequest) (*ListTestPlansResponse, error)
 	// services to run different types of test suites
 	RunSuite(context.Context, *RunSuiteRequest) (*RunSuiteResponse, error)
 	RunTest(context.Context, *RunTestRequest) (*RunTestResponse, error)
@@ -320,12 +334,6 @@ type SatlabRpcServiceServer interface {
 type UnimplementedSatlabRpcServiceServer struct {
 }
 
-func (UnimplementedSatlabRpcServiceServer) ListBuildTargets(context.Context, *ListBuildTargetsRequest) (*ListBuildTargetsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListBuildTargets not implemented")
-}
-func (UnimplementedSatlabRpcServiceServer) ListMilestones(context.Context, *ListMilestonesRequest) (*ListMilestonesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListMilestones not implemented")
-}
 func (UnimplementedSatlabRpcServiceServer) ListAccessibleModels(context.Context, *ListAccessibleModelsRequest) (*ListAccessibleModelsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAccessibleModels not implemented")
 }
@@ -352,6 +360,15 @@ func (UnimplementedSatlabRpcServiceServer) GetPeripheralInformation(context.Cont
 }
 func (UnimplementedSatlabRpcServiceServer) UpdateDutsFirmware(context.Context, *UpdateDutsFirmwareRequest) (*UpdateDutsFirmwareResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDutsFirmware not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) ListBuildTargets(context.Context, *ListBuildTargetsRequest) (*ListBuildTargetsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListBuildTargets not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) ListMilestones(context.Context, *ListMilestonesRequest) (*ListMilestonesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMilestones not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) ListTestPlans(context.Context, *ListTestPlansRequest) (*ListTestPlansResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTestPlans not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) RunSuite(context.Context, *RunSuiteRequest) (*RunSuiteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunSuite not implemented")
@@ -397,42 +414,6 @@ type UnsafeSatlabRpcServiceServer interface {
 
 func RegisterSatlabRpcServiceServer(s grpc.ServiceRegistrar, srv SatlabRpcServiceServer) {
 	s.RegisterService(&SatlabRpcService_ServiceDesc, srv)
-}
-
-func _SatlabRpcService_ListBuildTargets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListBuildTargetsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SatlabRpcServiceServer).ListBuildTargets(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: SatlabRpcService_ListBuildTargets_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SatlabRpcServiceServer).ListBuildTargets(ctx, req.(*ListBuildTargetsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _SatlabRpcService_ListMilestones_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListMilestonesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SatlabRpcServiceServer).ListMilestones(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: SatlabRpcService_ListMilestones_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SatlabRpcServiceServer).ListMilestones(ctx, req.(*ListMilestonesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _SatlabRpcService_ListAccessibleModels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -593,6 +574,60 @@ func _SatlabRpcService_UpdateDutsFirmware_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SatlabRpcServiceServer).UpdateDutsFirmware(ctx, req.(*UpdateDutsFirmwareRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SatlabRpcService_ListBuildTargets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBuildTargetsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).ListBuildTargets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_ListBuildTargets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).ListBuildTargets(ctx, req.(*ListBuildTargetsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SatlabRpcService_ListMilestones_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMilestonesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).ListMilestones(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_ListMilestones_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).ListMilestones(ctx, req.(*ListMilestonesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SatlabRpcService_ListTestPlans_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTestPlansRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).ListTestPlans(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_ListTestPlans_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).ListTestPlans(ctx, req.(*ListTestPlansRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -803,14 +838,6 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*SatlabRpcServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "list_build_targets",
-			Handler:    _SatlabRpcService_ListBuildTargets_Handler,
-		},
-		{
-			MethodName: "list_milestones",
-			Handler:    _SatlabRpcService_ListMilestones_Handler,
-		},
-		{
 			MethodName: "list_accessible_models",
 			Handler:    _SatlabRpcService_ListAccessibleModels_Handler,
 		},
@@ -845,6 +872,18 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "update_duts_firmware",
 			Handler:    _SatlabRpcService_UpdateDutsFirmware_Handler,
+		},
+		{
+			MethodName: "list_build_targets",
+			Handler:    _SatlabRpcService_ListBuildTargets_Handler,
+		},
+		{
+			MethodName: "list_milestones",
+			Handler:    _SatlabRpcService_ListMilestones_Handler,
+		},
+		{
+			MethodName: "list_test_plans",
+			Handler:    _SatlabRpcService_ListTestPlans_Handler,
 		},
 		{
 			MethodName: "run_suite",

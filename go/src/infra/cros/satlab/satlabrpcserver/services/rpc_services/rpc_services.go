@@ -794,7 +794,6 @@ func (s *SatlabRpcServiceServer) GetNetworkInfo(ctx context.Context, _ *pb.GetNe
 	if err != nil {
 		return nil, err
 	}
-
 	macAddress, err := satlabcommands.GetMacAddress(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
@@ -804,6 +803,18 @@ func (s *SatlabRpcServiceServer) GetNetworkInfo(ctx context.Context, _ *pb.GetNe
 		Hostname:    hostname,
 		MacAddress:  macAddress,
 		IsConnected: hostname != "" && hostname != "localhost",
+	}, nil
+
+}
+
+func (s *SatlabRpcServiceServer) ListTestPlans(ctx context.Context, _ *pb.ListTestPlansRequest) (*pb.ListTestPlansResponse, error) {
+	res, err := s.bucketService.ListTestplans(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ListTestPlansResponse{
+		Names: res,
 	}, nil
 }
 

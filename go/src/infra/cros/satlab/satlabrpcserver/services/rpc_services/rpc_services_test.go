@@ -33,6 +33,7 @@ import (
 	"infra/cros/satlab/satlabrpcserver/models"
 	cpu "infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
+	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
@@ -90,7 +91,7 @@ func createMockServer(t *testing.T) *SatlabRpcServiceServer {
 	var mockBuildService = new(build_service.MockBuildService)
 
 	// Create a Mock `IBucketService`
-	var mockBucketService = new(mk.MockBucketServices)
+	var mockBucketService = new(bucket_services.MockBucketServices)
 
 	// Create a Mock `IDUTService`
 	var mockDUTService = new(mk.MockDUTServices)
@@ -173,9 +174,9 @@ func TestListMilestonesShouldSuccess(t *testing.T) {
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
-	s.bucketService.(*mk.MockBucketServices).On("GetMilestones", ctx, board).Return(
+	s.bucketService.(*bucket_services.MockBucketServices).On("GetMilestones", ctx, board).Return(
 		localBucketMilestones, nil)
-	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
+	s.bucketService.(*bucket_services.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		false, nil)
 
 	req := &pb.ListMilestonesRequest{
@@ -228,9 +229,9 @@ func TestListMilestonesShouldSuccessWhenBucketInAsia(t *testing.T) {
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
-	s.bucketService.(*mk.MockBucketServices).On("GetMilestones", ctx, board).Return(
+	s.bucketService.(*bucket_services.MockBucketServices).On("GetMilestones", ctx, board).Return(
 		localBucketMilestones, nil)
-	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
+	s.bucketService.(*bucket_services.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		true, nil)
 
 	req := &pb.ListMilestonesRequest{
@@ -280,9 +281,9 @@ func TestListMilestonesShouldFailWhenMakeARequestToBucketFailed(t *testing.T) {
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
-	s.bucketService.(*mk.MockBucketServices).On("GetMilestones", ctx, board).Return(
+	s.bucketService.(*bucket_services.MockBucketServices).On("GetMilestones", ctx, board).Return(
 		localBucketMilestones, nil)
-	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
+	s.bucketService.(*bucket_services.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		false, expectedErr)
 
 	req := &pb.ListMilestonesRequest{
@@ -396,7 +397,7 @@ func TestListBuildVersionsShouldSuccess(t *testing.T) {
 	board := "zork1"
 	model := "dirinboz1"
 	var milestone int32 = 105
-	s.bucketService.(*mk.MockBucketServices).
+	s.bucketService.(*bucket_services.MockBucketServices).
 		On("GetBuilds", ctx, board, milestone).
 		Return([]string{"14820.8.0"}, nil)
 
@@ -417,7 +418,7 @@ func TestListBuildVersionsShouldSuccess(t *testing.T) {
 			},
 		}, nil)
 
-	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
+	s.bucketService.(*bucket_services.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		false, nil)
 
 	req := &pb.ListBuildVersionsRequest{Board: board, Model: model, Milestone: milestone}
@@ -471,11 +472,11 @@ func TestListBuildVersionsShouldFailWhenMakeARequestToBuildClientFailed(t *testi
 	model := "dirinboz"
 	var milestone int32 = 105
 	expectedErr := errors.New("can't make a request to bucket")
-	s.bucketService.(*mk.MockBucketServices).
+	s.bucketService.(*bucket_services.MockBucketServices).
 		On("GetBuilds", ctx, board, milestone).
 		Return([]string{"14826.0.0"}, nil)
 
-	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
+	s.bucketService.(*bucket_services.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		false, nil)
 
 	s.buildService.(*build_service.MockBuildService).
@@ -1650,5 +1651,37 @@ func TestGetNetworkInfoShouldSuccess(t *testing.T) {
 
 	if diff := cmp.Diff(expected, res, cmpopts.IgnoreUnexported(pb.GetNetworkInfoResponse{})); diff != "" {
 		t.Errorf("Expected %v, got %v", expected, res)
+	}
+}
+
+func Test_ListTestPlansShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock server and mock services
+	s := createMockServer(t)
+
+	expected := &pb.ListTestPlansResponse{Names: []string{"testplan1.json"}}
+
+	s.bucketService.(*bucket_services.MockBucketServices).
+		On("ListTestplans", ctx).
+		Return([]string{"testplan1.json"}, nil)
+
+	// Act
+	req := &pb.ListTestPlansRequest{}
+	resp, err := s.ListTestPlans(ctx, req)
+
+	// Asset
+	if err != nil {
+		t.Errorf("unexpected error: %v\n", err)
+	}
+
+	// ignore generated pb code
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(
+		pb.ListTestPlansResponse{},
+	)
+
+	if diff := cmp.Diff(resp, expected, ignorePBFieldOpts); diff != "" {
+		t.Errorf("unexpected diff: %v\n", diff)
 	}
 }
