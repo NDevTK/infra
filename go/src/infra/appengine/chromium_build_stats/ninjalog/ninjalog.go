@@ -211,8 +211,8 @@ func Parse(fname string, r io.Reader) (*NinjaLog, error) {
 		// If the last step end is larger than the current step end,
 		// It indicates starting a new build.
 		// Note that Siso's ninja_log doesn't guarantee the order of end time due to
-		// multi threads. So, it adds 1 sec buffer.
-		if step.End+1*time.Second < lastStep.End {
+		// multi threads. So, it adds 1 minute buffer.
+		if step.End+1*time.Minute < lastStep.End {
 			nlog.Start = lineno
 			nlog.Steps = nil
 		}
