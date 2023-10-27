@@ -858,3 +858,20 @@ func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequ
 
 	return &pb.AddDutsResponse{Pass: pass, Fail: fail}, nil
 }
+
+func (s *SatlabRpcServiceServer) RunTestPlan(ctx context.Context, in *pb.RunTestPlanRequest) (*pb.RunTestPlanResponse, error) {
+	r := &run.Run{
+		Board:     in.GetBoard(),
+		Model:     in.GetModel(),
+		Milestone: in.GetMilestone(),
+		Build:     in.GetBuild(),
+		Pool:      in.GetPool(),
+		Testplan:  in.GetTestPlanName(),
+	}
+
+	buildLink, err := r.TriggerRun(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.RunTestPlanResponse{BuildLink: buildLink}, nil
+}

@@ -37,6 +37,7 @@ const (
 	SatlabRpcService_ListTestPlans_FullMethodName             = "/satlabrpcserver.SatlabRpcService/list_test_plans"
 	SatlabRpcService_RunSuite_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/run_suite"
 	SatlabRpcService_RunTest_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/run_test"
+	SatlabRpcService_RunTestPlan_FullMethodName               = "/satlabrpcserver.SatlabRpcService/run_test_plan"
 	SatlabRpcService_AddPool_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/add_pool"
 	SatlabRpcService_UpdatePool_FullMethodName                = "/satlabrpcserver.SatlabRpcService/update_pool"
 	SatlabRpcService_DeleteDuts_FullMethodName                = "/satlabrpcserver.SatlabRpcService/delete_duts"
@@ -68,6 +69,7 @@ type SatlabRpcServiceClient interface {
 	// services to run different types of test suites
 	RunSuite(ctx context.Context, in *RunSuiteRequest, opts ...grpc.CallOption) (*RunSuiteResponse, error)
 	RunTest(ctx context.Context, in *RunTestRequest, opts ...grpc.CallOption) (*RunTestResponse, error)
+	RunTestPlan(ctx context.Context, in *RunTestPlanRequest, opts ...grpc.CallOption) (*RunTestPlanResponse, error)
 	// manage DUTs
 	AddPool(ctx context.Context, in *AddPoolRequest, opts ...grpc.CallOption) (*AddPoolResponse, error)
 	UpdatePool(ctx context.Context, in *UpdatePoolRequest, opts ...grpc.CallOption) (*UpdatePoolResponse, error)
@@ -215,6 +217,15 @@ func (c *satlabRpcServiceClient) RunTest(ctx context.Context, in *RunTestRequest
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) RunTestPlan(ctx context.Context, in *RunTestPlanRequest, opts ...grpc.CallOption) (*RunTestPlanResponse, error) {
+	out := new(RunTestPlanResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_RunTestPlan_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *satlabRpcServiceClient) AddPool(ctx context.Context, in *AddPoolRequest, opts ...grpc.CallOption) (*AddPoolResponse, error) {
 	out := new(AddPoolResponse)
 	err := c.cc.Invoke(ctx, SatlabRpcService_AddPool_FullMethodName, in, out, opts...)
@@ -316,6 +327,7 @@ type SatlabRpcServiceServer interface {
 	// services to run different types of test suites
 	RunSuite(context.Context, *RunSuiteRequest) (*RunSuiteResponse, error)
 	RunTest(context.Context, *RunTestRequest) (*RunTestResponse, error)
+	RunTestPlan(context.Context, *RunTestPlanRequest) (*RunTestPlanResponse, error)
 	// manage DUTs
 	AddPool(context.Context, *AddPoolRequest) (*AddPoolResponse, error)
 	UpdatePool(context.Context, *UpdatePoolRequest) (*UpdatePoolResponse, error)
@@ -375,6 +387,9 @@ func (UnimplementedSatlabRpcServiceServer) RunSuite(context.Context, *RunSuiteRe
 }
 func (UnimplementedSatlabRpcServiceServer) RunTest(context.Context, *RunTestRequest) (*RunTestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunTest not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) RunTestPlan(context.Context, *RunTestPlanRequest) (*RunTestPlanResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunTestPlan not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) AddPool(context.Context, *AddPoolRequest) (*AddPoolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddPool not implemented")
@@ -668,6 +683,24 @@ func _SatlabRpcService_RunTest_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_RunTestPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunTestPlanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).RunTestPlan(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_RunTestPlan_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).RunTestPlan(ctx, req.(*RunTestPlanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SatlabRpcService_AddPool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AddPoolRequest)
 	if err := dec(in); err != nil {
@@ -892,6 +925,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "run_test",
 			Handler:    _SatlabRpcService_RunTest_Handler,
+		},
+		{
+			MethodName: "run_test_plan",
+			Handler:    _SatlabRpcService_RunTestPlan_Handler,
 		},
 		{
 			MethodName: "add_pool",

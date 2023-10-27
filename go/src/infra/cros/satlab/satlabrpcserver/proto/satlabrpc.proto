@@ -26,8 +26,9 @@ service SatlabRpcService {
   rpc list_test_plans (ListTestPlansRequest) returns (ListTestPlansResponse);
 
   // services to run different types of test suites
-  rpc run_suite (RunSuiteRequest) returns (RunSuiteResponse) {}
+  rpc run_suite (RunSuiteRequest) returns (RunSuiteResponse);
   rpc run_test (RunTestRequest) returns (RunTestResponse);
+  rpc run_test_plan (RunTestPlanRequest) returns (RunTestPlanResponse);
 
   // manage DUTs
   rpc add_pool (AddPoolRequest) returns (AddPoolResponse);
@@ -432,4 +433,19 @@ message ListTestPlansRequest {}
 message ListTestPlansResponse {
   // the name of test plan
   repeated string names = 1;
+}
+
+// NEXT_TAG = 7
+message RunTestPlanRequest {
+  // the name of the test plan in the bucket that a user wants to run
+  string test_plan_name = 1;
+  string board = 2;
+  string model = 3;
+  string milestone = 4;
+  string build = 5;
+  string pool = 6;
+}
+// NEXT_TAG = 2
+message RunTestPlanResponse {
+  string build_link = 1;
 }
