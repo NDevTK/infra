@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "202ea9e5_6783443e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-10-27T04:12:45Z",
+      "side": 1,
+      "message": "flushed?",
+      "range": {
+        "startLine": 15,
+        "startChar": 13,
+        "endLine": 15,
+        "endChar": 18
+      },
+      "revId": "d56b9a0f547cd24fcc890eb281c34412ee572c96",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a967577e_383194e0",
+        "filename": "go/src/infra/build/siso/build/run_cmd.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-10-27T04:12:45Z",
+      "side": 1,
+      "message": "inputs there?",
+      "range": {
+        "startLine": 57,
+        "startChar": 17,
+        "endLine": 57,
+        "endChar": 29
+      },
+      "revId": "d56b9a0f547cd24fcc890eb281c34412ee572c96",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82f7e852_00d27ad3",
+        "filename": "go/src/infra/build/siso/build/run_cmd.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-10-27T04:12:45Z",
+      "side": 1,
+      "message": "flushed?",
+      "range": {
+        "startLine": 58,
+        "startChar": 19,
+        "endLine": 58,
+        "endChar": 24
+      },
+      "revId": "d56b9a0f547cd24fcc890eb281c34412ee572c96",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
