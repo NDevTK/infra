@@ -6,6 +6,7 @@ import json
 from typing import Dict, List, NamedTuple, Set
 
 from chromite.lib import portage_util
+from chromite.lib.parser import package_info
 
 import lib.package as pkg
 from .cros_sdk import CrosSdk
@@ -146,10 +147,11 @@ class PackageSleuth:
     package_to_deps = {}
     for package in deps_tree:
       deps = deps_tree[package]['deps']
-      package_name = PackageSleuth._TrimPackageVersion(package)
+      package_name = PackageSleuth._ExtractPackageName(package)
       package_to_deps[package_name] = [
-          pkg.PackageDependency(PackageSleuth._TrimPackageVersion(d),
-                                deps[d]['deptypes']) for d in deps
+          pkg.PackageDependency(
+              PackageSleuth._ExtractPackageName(d), deps[d]['deptypes'])
+          for d in deps
       ]
 
     # Check that all given packages have their deps fetched.
@@ -190,17 +192,18 @@ class PackageSleuth:
     return [dep for dep in package.dependencies if IsSupportedDependency(dep)]
 
   @staticmethod
-  def _TrimPackageVersion(package_name: str) -> str:
-    last_dash_pos = package_name.rfind('-')
+  def _ExtractPackageName(full_package_name: str) -> str:
+    """
+    Returns package's name in the format of category/name.
 
-    if last_dash_pos == -1:
-      # No dashes. Assuming pure package name.
-      return package_name
+    Parses |full_package_name| which can be a fully qualified package name with
+    or without a version, e.g. chromeos-base/some_package-0.0.1-r100. Extracts
+    just the package's category and name, e.g. chromeos-base/some_package.
 
-    if package_name[last_dash_pos + 1] != 'r':
-      # Only version after dash. Trimming it.
-      assert package_name[last_dash_pos + 1].isdigit()
-      return package_name[:last_dash_pos]
+    Arguments:
+      * full_package_name: simple of fully qualified package name.
 
-    # Re-spin after dash. Trimming it as well.
-    return PackageSleuth._TrimPackageVersion(package_name[:last_dash_pos])
+    Returns:
+      Package name as category/name.
+    """
+    return package_info.parse(full_package_name).atom
