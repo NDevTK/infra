@@ -39,6 +39,7 @@ const (
 	SatlabRpcService_AddPool_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/add_pool"
 	SatlabRpcService_UpdatePool_FullMethodName                = "/satlabrpcserver.SatlabRpcService/update_pool"
 	SatlabRpcService_DeleteDuts_FullMethodName                = "/satlabrpcserver.SatlabRpcService/delete_duts"
+	SatlabRpcService_AddDuts_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/add_duts"
 	SatlabRpcService_GetDutDetail_FullMethodName              = "/satlabrpcserver.SatlabRpcService/get_dut_detail"
 	SatlabRpcService_ListDutTasks_FullMethodName              = "/satlabrpcserver.SatlabRpcService/list_dut_tasks"
 	SatlabRpcService_ListDutEvents_FullMethodName             = "/satlabrpcserver.SatlabRpcService/list_dut_events"
@@ -68,6 +69,7 @@ type SatlabRpcServiceClient interface {
 	AddPool(ctx context.Context, in *AddPoolRequest, opts ...grpc.CallOption) (*AddPoolResponse, error)
 	UpdatePool(ctx context.Context, in *UpdatePoolRequest, opts ...grpc.CallOption) (*UpdatePoolResponse, error)
 	DeleteDuts(ctx context.Context, in *DeleteDutsRequest, opts ...grpc.CallOption) (*DeleteDutsResponse, error)
+	AddDuts(ctx context.Context, in *AddDutsRequest, opts ...grpc.CallOption) (*AddDutsResponse, error)
 	// get DUTs information
 	GetDutDetail(ctx context.Context, in *GetDutDetailRequest, opts ...grpc.CallOption) (*GetDutDetailResponse, error)
 	ListDutTasks(ctx context.Context, in *ListDutTasksRequest, opts ...grpc.CallOption) (*ListDutTasksResponse, error)
@@ -228,6 +230,15 @@ func (c *satlabRpcServiceClient) DeleteDuts(ctx context.Context, in *DeleteDutsR
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) AddDuts(ctx context.Context, in *AddDutsRequest, opts ...grpc.CallOption) (*AddDutsResponse, error) {
+	out := new(AddDutsResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_AddDuts_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *satlabRpcServiceClient) GetDutDetail(ctx context.Context, in *GetDutDetailRequest, opts ...grpc.CallOption) (*GetDutDetailResponse, error) {
 	out := new(GetDutDetailResponse)
 	err := c.cc.Invoke(ctx, SatlabRpcService_GetDutDetail_FullMethodName, in, out, opts...)
@@ -295,6 +306,7 @@ type SatlabRpcServiceServer interface {
 	AddPool(context.Context, *AddPoolRequest) (*AddPoolResponse, error)
 	UpdatePool(context.Context, *UpdatePoolRequest) (*UpdatePoolResponse, error)
 	DeleteDuts(context.Context, *DeleteDutsRequest) (*DeleteDutsResponse, error)
+	AddDuts(context.Context, *AddDutsRequest) (*AddDutsResponse, error)
 	// get DUTs information
 	GetDutDetail(context.Context, *GetDutDetailRequest) (*GetDutDetailResponse, error)
 	ListDutTasks(context.Context, *ListDutTasksRequest) (*ListDutTasksResponse, error)
@@ -355,6 +367,9 @@ func (UnimplementedSatlabRpcServiceServer) UpdatePool(context.Context, *UpdatePo
 }
 func (UnimplementedSatlabRpcServiceServer) DeleteDuts(context.Context, *DeleteDutsRequest) (*DeleteDutsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDuts not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) AddDuts(context.Context, *AddDutsRequest) (*AddDutsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddDuts not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) GetDutDetail(context.Context, *GetDutDetailRequest) (*GetDutDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDutDetail not implemented")
@@ -672,6 +687,24 @@ func _SatlabRpcService_DeleteDuts_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_AddDuts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddDutsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).AddDuts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_AddDuts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).AddDuts(ctx, req.(*AddDutsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SatlabRpcService_GetDutDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDutDetailRequest)
 	if err := dec(in); err != nil {
@@ -832,6 +865,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "delete_duts",
 			Handler:    _SatlabRpcService_DeleteDuts_Handler,
+		},
+		{
+			MethodName: "add_duts",
+			Handler:    _SatlabRpcService_AddDuts_Handler,
 		},
 		{
 			MethodName: "get_dut_detail",

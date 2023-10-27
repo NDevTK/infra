@@ -4,6 +4,7 @@
 package rpc_services
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -12,6 +13,7 @@ import (
 	"sort"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/hashicorp/go-version"
 
 	"infra/cmd/shivas/utils"
@@ -803,4 +805,45 @@ func (s *SatlabRpcServiceServer) GetNetworkInfo(ctx context.Context, _ *pb.GetNe
 		MacAddress:  macAddress,
 		IsConnected: hostname != "" && hostname != "localhost",
 	}, nil
+}
+
+func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequest) (*pb.AddDutsResponse, error) {
+	var fail = make([]*pb.AddDutsResponse_FailedData, 0, len(in.GetDuts()))
+	var pass = make([]*pb.AddDutsResponse_PassedData, 0, len(in.GetDuts()))
+
+	for _, d := range in.GetDuts() {
+		// The buffer we want to get the command output
+		// we use this buffer to parse the deploy URL.
+		var buf bytes.Buffer
+		err := (&dut.AddDUT{
+			Hostname:   d.GetHostname(),
+			Address:    d.GetAddress(),
+			Board:      d.GetBoard(),
+			Model:      d.GetModel(),
+			AssetType:  "dut",
+			Asset:      uuid.New().String(),
+			DeployTags: []string{"satlab:true"},
+		}).TriggerRun(ctx, s.commandExecutor, &buf)
+
+		if err != nil {
+			fail = append(fail, &pb.AddDutsResponse_FailedData{
+				Hostname: d.GetHostname(),
+				Reason:   err.Error(),
+			})
+		} else {
+			url, err := parser.ParseDeployURL(buf.String())
+			if err != nil {
+				// Skip parsing error here, we don't want to
+				// block user if any dut has been deployed successfully,
+				// but we can't parse the url from the command output.
+				url = ""
+			}
+			pass = append(pass, &pb.AddDutsResponse_PassedData{
+				Hostname: d.GetHostname(),
+				Url:      url,
+			})
+		}
+	}
+
+	return &pb.AddDutsResponse{Pass: pass, Fail: fail}, nil
 }

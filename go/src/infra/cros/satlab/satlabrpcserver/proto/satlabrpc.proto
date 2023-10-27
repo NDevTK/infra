@@ -30,6 +30,7 @@ service SatlabRpcService {
   rpc add_pool (AddPoolRequest) returns (AddPoolResponse);
   rpc update_pool (UpdatePoolRequest) returns (UpdatePoolResponse);
   rpc delete_duts (DeleteDutsRequest) returns (DeleteDutsResponse);
+  rpc add_duts (AddDutsRequest) returns (AddDutsResponse);
 
   // get DUTs information
   rpc get_dut_detail (GetDutDetailRequest) returns (GetDutDetailResponse);
@@ -379,4 +380,44 @@ message GetNetworkInfoResponse {
   string hostname = 1;
   string mac_address = 2;
   bool is_connected = 3;
+}
+
+// NEXT_TAG = 2
+message AddDutsRequest {
+  // NEXT_TAG = 5
+  message Param {
+    // The IP address that connected to Satlab
+    string address = 1;
+    // The hostname that a user wants to name the DUT
+    string hostname = 2;
+    // The board of the DUT
+    string board = 3;
+    // The model of the DUT
+    string model = 4;
+    // The label pool that user wants to add
+    repeated string pools = 5;
+  }
+
+  repeated Param duts = 1;
+}
+
+// NEXT_TAG = 3
+message AddDutsResponse {
+  // NEXT_TAG = 3
+  message PassedData {
+    string hostname = 1;
+    // the url of of deploying job
+    string url = 2;
+  }
+
+  repeated PassedData pass = 1;
+
+  // NEXT_TAG = 3
+  message FailedData {
+    string hostname = 1;
+    // the reason that why we can not add the DUT.
+    string reason = 2;
+  }
+
+  repeated FailedData fail = 2;
 }
