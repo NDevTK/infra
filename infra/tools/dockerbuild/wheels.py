@@ -1757,6 +1757,7 @@ SPECS.update({
         Universal('opentelemetry-semantic-conventions', '0.39b0',
                   pyversions=['py3']),
         Universal('opt-einsum', '3.3.0', pyversions=['py3']),
+        Universal('ordered-set', '4.1.0', pyversions=['py3']),
         Universal('outcome', '1.1.0', pyversions=['py3']),
         Universal('outcome', '1.2.0', pyversions=['py3']),
         Universal('packaging', '16.8'),

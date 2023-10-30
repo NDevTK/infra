@@ -5747,6 +5747,20 @@ wheel: <
 
 * *universal*
 
+## **ordered-set-py3**
+
+### 4.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/ordered-set-py3"
+  version: "version:4.1.0"
+>
+```
+
+
+* *universal*
+
 ## **outcome-py3**
 
 ### 1.1.0
