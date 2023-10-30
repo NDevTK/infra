@@ -249,12 +249,12 @@ func TestGetConnectedIPsShouldFail(t *testing.T) {
 }
 
 func Test_GetBoard(t *testing.T) {
-	expectedResponse := "CHROMEOS_RELEASE_BOARD=brya"
+	sshResponse := "CHROMEOS_RELEASE_BOARD=brya\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, getConnectIPsHelper())
+	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
 
 	res, err := dutServices.GetBoard(ctx, "127.0.0.1")
 	if err != nil {
@@ -268,12 +268,12 @@ func Test_GetBoard(t *testing.T) {
 }
 
 func Test_GetModel(t *testing.T) {
-	expectedResponse := "model"
+	sshResponse := "model\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, getConnectIPsHelper())
+	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
 
 	res, err := dutServices.GetModel(ctx, "127.0.0.1")
 	if err != nil {

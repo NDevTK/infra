@@ -301,7 +301,7 @@ func (d *DUTServicesImpl) GetBoard(ctx context.Context, IP string) (string, erro
 	}
 
 	if b, ok := strings.CutPrefix(res.Value, constants.ChromeosReleaseBoard); ok {
-		return b, nil
+		return strings.TrimRight(b, "\n\t"), nil
 	}
 
 	return "", errors.New("can not find the board information in lsb release.")
@@ -318,7 +318,7 @@ func (d *DUTServicesImpl) GetModel(ctx context.Context, IP string) (string, erro
 
 		if res.Value != "" {
 			// If we find the model isn't empty then we return it.
-			return res.Value, nil
+			return strings.TrimRight(res.Value, "\n\t"), nil
 		}
 	}
 	return "", errors.New("can not get the model information")
