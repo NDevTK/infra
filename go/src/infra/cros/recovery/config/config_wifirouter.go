@@ -178,7 +178,6 @@ func wifiRouterRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Clean up tmp space",
-					"Provision Gale device to stable version",
 				},
 			},
 			"Clean up tmp space": {
@@ -201,7 +200,6 @@ func wifiRouterRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Clean up stateful sub space",
-					"Provision Gale device to stable version",
 				},
 			},
 			"Clean up stateful sub space": {
