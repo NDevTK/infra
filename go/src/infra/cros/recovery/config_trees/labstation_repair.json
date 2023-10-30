@@ -253,7 +253,7 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
-              "name": "not_exempted_pool",
+              "name": "Labstation not in auto-update exempted pool",
               "docs": [
                 "There are some labstations we don't want they receive auto-update, e.g. labstations that used for image qualification purpose"
               ],
@@ -271,9 +271,9 @@
           "exec_name": "cros_is_on_stable_version",
           "recoveries": [
             {
-              "name": "install_stable_os",
+              "name": "Install stable labstation image without reboot",
               "docs": [
-                "Install stable OS on the device."
+                "Install stable labstation image but do not reboot."
               ],
               "conditions": [
                 {

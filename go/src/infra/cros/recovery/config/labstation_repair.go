@@ -51,15 +51,17 @@ func LabstationRepairConfig() *Configuration {
 						Conditions: []string{
 							"has_stable_version_cros_image",
 							"cros_kernel_priority_has_not_changed",
-							"not_exempted_pool",
+							"Labstation not in auto-update exempted pool",
 						},
 						RecoveryActions: []string{
-							"install_stable_os",
+							"Install stable labstation image without reboot",
 						},
 						AllowFailAfterRecovery: true,
 					},
-					"install_stable_os": {
-						Docs: []string{"Install stable OS on the device."},
+					"Install stable labstation image without reboot": {
+						Docs: []string{
+							"Install stable labstation image but do not reboot.",
+						},
 						Conditions: []string{
 							"has_stable_version_cros_image",
 							"cros_kernel_priority_has_not_changed",
@@ -70,7 +72,7 @@ func LabstationRepairConfig() *Configuration {
 						},
 						ExecTimeout: &durationpb.Duration{Seconds: 3600},
 					},
-					"not_exempted_pool": {
+					"Labstation not in auto-update exempted pool": {
 						Docs: []string{
 							"There are some labstations we don't want they receive auto-update, e.g. labstations that used for image qualification purpose",
 						},
@@ -373,6 +375,55 @@ func LabstationRepairConfig() *Configuration {
 							"command:start system-services",
 						},
 						AllowFailAfterRecovery: true,
+					},
+					"Write factory-install-reset to file system": {
+						ExecName: "cros_run_shell_command",
+						ExecExtraArgs: []string{
+							"echo \"fast safe\" > /mnt/stateful_partition/factory_install_reset",
+						},
+						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+					"Install stable labstation image with reboot": {
+						Docs: []string{
+							"Install stable labstation image with reboot during provision process.",
+						},
+						Conditions: []string{
+							"has_stable_version_cros_image",
+						},
+						ExecName:      "cros_provision",
+						ExecTimeout:   &durationpb.Duration{Seconds: 3600},
+						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+					"Powerwash repair labstation": {
+						Docs: []string{
+							"Powerwash and then install stable_version image on the labstation.",
+						},
+						Conditions: []string{
+							"Device is SSHable",
+						},
+						Dependencies: []string{
+							"Write factory-install-reset to file system",
+							"Labstation reboot",
+							"Install stable labstation image with reboot",
+							"Wait to be SSHable",
+							"Start system services",
+						},
+						ExecName:      "sample_pass",
+						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+					"Check python and dependecies": {
+						Docs: []string{
+							"Ensure python and critical dependencies is there, this check may fail if labstation had a incomplete provision.",
+						},
+						Dependencies: []string{
+							"Device is SSHable",
+						},
+						ExecName: "cros_run_command",
+						ExecExtraArgs: []string{
+							"host:dut",
+							"command:python3 -c \"import six\"",
+						},
+						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 					},
 				},
 			},
