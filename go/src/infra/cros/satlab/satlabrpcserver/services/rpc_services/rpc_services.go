@@ -823,13 +823,14 @@ func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequ
 		// we use this buffer to parse the deploy URL.
 		var buf bytes.Buffer
 		err := (&dut.AddDUT{
-			Hostname:   d.GetHostname(),
-			Address:    d.GetAddress(),
-			Board:      d.GetBoard(),
-			Model:      d.GetModel(),
-			AssetType:  "dut",
-			Asset:      uuid.New().String(),
-			DeployTags: []string{"satlab:true"},
+			Hostname:    d.GetHostname(),
+			Address:     d.GetAddress(),
+			Board:       d.GetBoard(),
+			Model:       d.GetModel(),
+			AssetType:   "dut",
+			Asset:       uuid.New().String(),
+			DeployTags:  []string{"satlab:true"},
+			ServoSerial: d.GetServoSerial(),
 		}).TriggerRun(ctx, s.commandExecutor, &buf)
 
 		if err != nil {

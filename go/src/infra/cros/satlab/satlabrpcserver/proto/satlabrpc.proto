@@ -400,6 +400,8 @@ message AddDutsRequest {
     string model = 4;
     // The label pool that user wants to add
     repeated string pools = 5;
+    // The servo serial number that connected with DUT
+    string servo_serial = 6;
   }
 
   repeated Param duts = 1;
