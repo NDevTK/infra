@@ -107,8 +107,13 @@ class CrosSdk:
     Raises:
       * cros_build_lib.CompletedProcess if command failed.
     """
-    cmd = [
+
+    features = []
+    if self.setup.with_tests:
+      features.append('test')
+    cmd = ' '.join([
+        f'FEATURES="{" ".join(features)}"',
         PathHandler(self.setup).ToChroot(PRINT_DEPS_SCRIPT_PATH),
         self.setup.board
-    ] + package_names
+    ] + package_names)
     return self._Exec(cmd, capture_output=True, with_sudo=True).stdout
