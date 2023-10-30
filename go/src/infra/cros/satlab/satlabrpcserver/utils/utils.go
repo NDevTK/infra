@@ -4,12 +4,15 @@
 package utils
 
 import (
+	"context"
 	"log"
 	"math"
 	"os"
 
 	"golang.org/x/crypto/ssh"
 
+	cmd_common "infra/cros/cmd/common_lib/common"
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
@@ -31,4 +34,24 @@ func ReadSSHKey(path string) (ssh.Signer, error) {
 // NearlyEqual check two float points are nearly equal.
 func NearlyEqual(a, b float64) bool {
 	return math.Abs(a-b) <= constants.F64Epsilon*(math.Abs(a)+math.Abs(b))
+}
+
+func AddLoggingContext(ctx context.Context) context.Context {
+	// source log file from env-var
+	logfilename := site.GetRPCServerLogFile()
+	// append logs to the existing logfile
+	logFile, err := os.OpenFile(logfilename, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+	if err != nil {
+		log.Fatalf("Unable to open log file %v", err)
+	}
+	// format:
+	// 1. time
+	// 2. logging_level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+	// 3. process_id
+	// 4. filename
+	// Last: message to output
+	format := `[%{time:2006-01-02T15:04:05.00Z07:00} | %{level:-8s} | pid:%{pid} | %{shortfile}] ` +
+		`%{message}`
+	logCfg := cmd_common.LoggerConfig{Out: logFile, Format: format}
+	return logCfg.Use(ctx)
 }

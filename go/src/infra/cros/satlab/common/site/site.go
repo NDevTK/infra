@@ -74,6 +74,9 @@ const (
 	// moblab api.
 	ServiceAccountKeyPathEnv = "SERVICE_ACCOUNT_KEY_PATH"
 
+	// Log file used for satlab-rpcserver
+	RPCServerLogFileEnv = "SATALB_RPCSERVER_LOGFILE"
+
 	// DefaultLUCIProject is the LUCI project to specify if `LUCIProjectEnv` is
 	// not present.
 	DefaultLUCIProject = "chromeos"
@@ -97,6 +100,8 @@ const (
 	DefaultServiceAccountKeyPathEnv = "/home/satlab/keys/pubsub-key-do-not-delete.json"
 	// SwarmingServiceHost is the host of swarming service address
 	SwarmingServiceHost = "chromeos-swarming.appspot.com"
+
+	DefaultRPCServerLogFile = "/var/log/satlab/satlab_rpcserver.log"
 )
 
 // CommonFlags controls some commonly-used CLI flags.
@@ -363,4 +368,14 @@ func prpcOptionWithUserAgent(userAgent string) *prpc.Options {
 
 func GetBotPrefix() string {
 	return os.Getenv(BotPrefix)
+}
+
+// GetRPCServerLogFile determines which Google storage image bucket
+// to use, based on the environment.
+func GetRPCServerLogFile() string {
+	logfilename := os.Getenv(RPCServerLogFileEnv)
+	if logfilename == "" {
+		return DefaultRPCServerLogFile
+	}
+	return logfilename
 }
