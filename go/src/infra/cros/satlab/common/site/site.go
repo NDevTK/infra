@@ -6,6 +6,7 @@
 package site
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/system/terminal"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
@@ -378,4 +380,25 @@ func GetRPCServerLogFile() string {
 		return DefaultRPCServerLogFile
 	}
 	return logfilename
+}
+
+// GetAuthOption returns the correct auth option for CLI and RPC calls
+//
+// If the call is already authenticated with user scope, the login credential is reused.
+// If no existing credential found and the call is from a non-terminal env,
+// the service account key is used as authentication method.
+// If the call is from a terminal such as CLI; interactive user login flow must be used.
+func GetAuthOption(ctx context.Context) auth.Options {
+	a := auth.NewAuthenticator(ctx, auth.SilentLogin, DefaultAuthOptions)
+	if err := a.CheckLoginRequired(); err != nil {
+		if terminal.IsTerminal(int(os.Stdout.Fd())) {
+			return DefaultAuthOptions
+		} else {
+			return auth.Options{
+				Method:                 auth.ServiceAccountMethod,
+				ServiceAccountJSONPath: GetServiceAccountPath(),
+			}
+		}
+	}
+	return DefaultAuthOptions
 }
