@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8de3c6de_9d22585c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-10-30T23:16:22Z",
+      "side": 1,
+      "message": "Any unit test could cover the change?",
+      "revId": "ccf76ef924f550c92b5e37a0b0a83ef52ab58948",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f467d792_d93339e1",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 412,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-10-30T23:16:22Z",
+      "side": 1,
+      "message": "nit: `testPlanID`?\n\nInitialisms should use the same case in Golang: go/go-style/decisions#initialisms",
+      "range": {
+        "startLine": 412,
+        "startChar": 1,
+        "endLine": 412,
+        "endChar": 11
+      },
+      "revId": "ccf76ef924f550c92b5e37a0b0a83ef52ab58948",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2963eb67_4edf0a8d",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 412,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-10-30T23:16:22Z",
+      "side": 1,
+      "message": "Change it to `test_plan_id`.",
+      "range": {
+        "startLine": 412,
+        "startChar": 46,
+        "endLine": 412,
+        "endChar": 58
+      },
+      "revId": "ccf76ef924f550c92b5e37a0b0a83ef52ab58948",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
