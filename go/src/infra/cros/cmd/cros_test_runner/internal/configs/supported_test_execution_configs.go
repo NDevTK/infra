@@ -146,6 +146,7 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 				DutVmGetImage_CrosDutVmExecutor,
 				VMProvisionServerStart_CrosVMProvisionExecutor,
 				VMProvisionLease_CrosVMProvisionExecutor,
+				ParseDutTopology_NoExecutor,
 				DutVmCacheServerStart_CacheServerExecutor,
 				DutServiceStart_CrosDutVmExecutor)
 		} else {

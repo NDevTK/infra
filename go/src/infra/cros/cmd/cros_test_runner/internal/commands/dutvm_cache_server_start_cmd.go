@@ -51,13 +51,10 @@ func (cmd *DutVmCacheServerStartCmd) extractDepsFromHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
-	if sk.DutTopology == nil {
-		return fmt.Errorf("cmd %q missing dependency: DutTopology", cmd.GetCommandType())
+	if sk.PrimaryDevice == nil || sk.PrimaryDevice.Dut == nil {
+		return fmt.Errorf("Cmd %q missing dependency: PrimaryDevice", cmd.GetCommandType())
 	}
-	if len(sk.DutTopology.GetDuts()) == 0 {
-		return fmt.Errorf("cmd %q missing dependency: PrimaryDut", cmd.GetCommandType())
-	}
-	primaryDut := sk.DutTopology.GetDuts()[0]
+	primaryDut := sk.PrimaryDevice.GetDut()
 
 	if primaryDut.GetChromeos().GetSsh() == nil {
 		return fmt.Errorf("cmd %q missing dependency: DutSshAddress", cmd.GetCommandType())

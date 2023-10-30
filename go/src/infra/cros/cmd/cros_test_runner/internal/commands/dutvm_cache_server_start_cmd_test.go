@@ -14,6 +14,7 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
@@ -59,6 +60,9 @@ func TestDutVmCacheServerStartCmd_MissingDepsSsh(t *testing.T) {
 				Chromeos: &labapi.Dut_ChromeOS{},
 			}}}
 		sk := &data.HwTestStateKeeper{
+			PrimaryDevice: &api.CrosTestRequest_Device{
+				Dut: duts[0],
+			},
 			DutTopology: &labapi.DutTopology{
 				Duts: duts,
 			},
@@ -84,6 +88,9 @@ func TestDutVmCacheServerStartCmd_ExtractDepsSuccess(t *testing.T) {
 				},
 			}}}
 		sk := &data.HwTestStateKeeper{
+			PrimaryDevice: &api.CrosTestRequest_Device{
+				Dut: duts[0],
+			},
 			DutTopology: &labapi.DutTopology{
 				Duts: duts,
 			},
@@ -110,6 +117,9 @@ func TestDutVmCacheServerStartCmd_UpdateSK(t *testing.T) {
 				},
 			}}}
 		sk := &data.HwTestStateKeeper{
+			PrimaryDevice: &api.CrosTestRequest_Device{
+				Dut: duts[0],
+			},
 			DutTopology: &labapi.DutTopology{
 				Duts: duts,
 			},
