@@ -26,6 +26,9 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
     # It's a go package that pretends to be an actual package. Should be
     # properly ignored.
     'dev-go/perfetto-protos',
+
+    # TODO(b/308121733): Remove once symlinks are handled correctly.
+    "chromeos-base/debugd",
 }
 
 # Set of packages that are not currently supported when building.
