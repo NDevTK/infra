@@ -123,6 +123,8 @@ github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapp
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.43.1/go.mod h1:lv7cjEH/BKG+7xh3vR4T8//UkWZ9eIkgAk6HpN/T6rk=
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.43.1 h1:Ej/1TqY9R59OOhRyukLgW97yy/xo3d2M7Lb2ao2O+Gs=
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.43.1/go.mod h1:ML9pY4SjdBE/fTBnIwTaJu+5ZahLW3e/snaUPuOdcck=
+github.com/GoogleCloudPlatform/protoc-gen-bq-schema v0.0.0-20190119112626-026f9fcdf705 h1:jVwOUIhgsS+U4xXLETdpIrr8WIP9tSoqDxpuFAXRvUk=
+github.com/GoogleCloudPlatform/protoc-gen-bq-schema v0.0.0-20190119112626-026f9fcdf705/go.mod h1:+BxrME0giHzMqsTGNhfrNgxtzMwWYw6pqtXiGrNu5Xo=
 github.com/JohnCGriffin/overflow v0.0.0-20211019200055-46fa312c352c h1:RGWPOewvKIROun94nF7v2cua9qP+thov/7M50KEoeSU=
 github.com/JohnCGriffin/overflow v0.0.0-20211019200055-46fa312c352c/go.mod h1:X0CRv0ky0k6m906ixxpzmDRLvX58TFUKS2eePweuyxk=
 github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible/go.mod h1:r7JcOSlj0wfOMncg0iLm8Leh48TZaKVeNIfJntJ2wa0=
@@ -213,10 +215,12 @@ github.com/aws/aws-sdk-go v1.23.20/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpi
 github.com/aws/aws-sdk-go v1.27.0/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.30.15/go.mod h1:5zCpMtNQVjRREroY7sYe8lOMRSxkhG6MZveU8YkpAk0=
 github.com/aws/aws-sdk-go-v2 v0.18.0/go.mod h1:JWVYvqSMppoMJC0x5wdwiImzgXTI9FuZwxzkQq9wy+g=
+github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1 h1:vi3GIvERCScL5YaOGY6Vsf/KWh7/XB9iIJebXkAEGqM=
+github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1/go.mod h1:k9FlPXDUqPDWgAALgLoRbx+8gKcZ9/NXGfee4xJKe6c=
 github.com/bazelbuild/remote-apis v0.0.0-20230719205137-cb8058798964 h1:m1T9GuTAN/StD9KsAqLUmo17uyLbzZv/9GSkBMuIZV8=
 github.com/bazelbuild/remote-apis v0.0.0-20230719205137-cb8058798964/go.mod h1:ry8Y6CkQqCVcYsjPOlLXDX2iRVjOnjogdNwhvHmRcz8=
-github.com/bazelbuild/remote-apis-sdks v0.0.0-20230809203756-67f2ffbec0ef h1:H3VH2LBOyhrzU7nRvlzE4UxidMlLVZtIXPZdu2/sQ/A=
-github.com/bazelbuild/remote-apis-sdks v0.0.0-20230809203756-67f2ffbec0ef/go.mod h1:3XB8PXyJ5pEYETo48wwJm6ZLBnBNeDi/LdKVGbHTITg=
+github.com/bazelbuild/remote-apis-sdks v0.0.0-20231013183727-8e8b43c05b97 h1:Xyt2RU2GW9TBK1yMjRrwQsPeC+rbCoA1FMCJVnJboFU=
+github.com/bazelbuild/remote-apis-sdks v0.0.0-20231013183727-8e8b43c05b97/go.mod h1:E6OuuTP51pswhFFf0TwNQeYQjJ6+xt3nnx4QSzYpvbg=
 github.com/beorn7/perks v0.0.0-20160804104726-4c0e84591b9a/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=

@@ -24,8 +24,9 @@ require (
 	github.com/VividCortex/godaemon v1.0.0
 	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
+	github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1
 	github.com/bazelbuild/remote-apis v0.0.0-20230719205137-cb8058798964
-	github.com/bazelbuild/remote-apis-sdks v0.0.0-20230809203756-67f2ffbec0ef
+	github.com/bazelbuild/remote-apis-sdks v0.0.0-20231013183727-8e8b43c05b97
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/containerd/cgroups v1.0.4
 	github.com/danjacques/gofslock v0.0.0-20230728142113-ae8f59f9e88b
@@ -128,6 +129,7 @@ require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.19.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.43.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.43.1 // indirect
+	github.com/GoogleCloudPlatform/protoc-gen-bq-schema v0.0.0-20190119112626-026f9fcdf705 // indirect
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
