@@ -5,9 +5,7 @@ package bucket_services
 
 import (
 	"context"
-	"io"
 
-	"cloud.google.com/go/storage"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -41,21 +39,4 @@ func (m *MockBucketServices) GetBuilds(ctx context.Context, board string, milest
 func (m *MockBucketServices) ListTestplans(ctx context.Context) ([]string, error) {
 	args := m.Called(ctx)
 	return args.Get(0).([]string), args.Error(1)
-}
-
-// QueryObjects query objects from the bucket
-func (m *MockBucketServices) QueryObjects(ctx context.Context, q *storage.Query) iObjectIterator {
-	args := m.Called(ctx, q)
-	return args.Get(0).(iObjectIterator)
-}
-
-// ReadObject read the object content by the given name
-func (m *MockBucketServices) ReadObject(ctx context.Context, name string) (io.ReadCloser, error) {
-	args := m.Called(ctx, name)
-	return args.Get(0).(io.ReadCloser), args.Error(1)
-}
-
-// Close do clean up
-func (m *MockBucketServices) Close() error {
-	return nil
 }

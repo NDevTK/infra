@@ -19,12 +19,39 @@ import (
 
 type getDataFromObject = func(obj *storage.ObjectAttrs) (string, error)
 
-// BucketConnector is an object for connecting the GCS bucket storage.
-type BucketConnector struct {
+// bucketClient is the client that control how to deal with the
+// `storage.client`
+type bucketClient struct {
 	// a client for interacting with Google Cloud Storage
 	client *storage.Client
 	// a bucketName which bucket we want to get the information
 	bucketName string
+}
+
+// BucketConnector is an object for connecting the GCS bucket storage.
+type BucketConnector struct {
+	client IBucketClient
+}
+
+// QueryObjects query objects from the bucket
+func (b *bucketClient) QueryObjects(ctx context.Context, q *storage.Query) iObjectIterator {
+	iter := b.client.Bucket(b.bucketName).Objects(ctx, q)
+	return iter
+}
+
+// ReadObject read the object content by the given name
+func (b *bucketClient) ReadObject(ctx context.Context, name string) (io.ReadCloser, error) {
+	return b.client.Bucket(b.bucketName).Object(name).NewReader(ctx)
+}
+
+// GetAttrs get the bucket attributes
+func (b *bucketClient) GetAttrs(ctx context.Context) (*storage.BucketAttrs, error) {
+	return b.client.Bucket(b.bucketName).Attrs(ctx)
+}
+
+// Close to close the client connection.
+func (b *bucketClient) Close() error {
+	return b.client.Close()
 }
 
 // New sets up the storage client and returns a BucketConnector.
@@ -37,9 +64,13 @@ func New(ctx context.Context, bucketName string) (IBucketServices, error) {
 		return nil, fmt.Errorf("storage.NewClient: %w", err)
 	}
 
-	return &BucketConnector{
+	c := &bucketClient{
 		client:     client,
 		bucketName: bucketName,
+	}
+
+	return &BucketConnector{
+		client: c,
 	}, nil
 }
 
@@ -47,20 +78,9 @@ func getPartialObjectPath(obj *storage.ObjectAttrs) (string, error) {
 	return obj.Prefix, nil
 }
 
-// QueryObjects query objects from the bucket
-func (b *BucketConnector) QueryObjects(ctx context.Context, q *storage.Query) iObjectIterator {
-	iter := b.client.Bucket(b.bucketName).Objects(ctx, q)
-	return iter
-}
-
-// ReadObject read the object content by the given name
-func (b *BucketConnector) ReadObject(ctx context.Context, name string) (io.ReadCloser, error) {
-	return b.client.Bucket(b.bucketName).Object(name).NewReader(ctx)
-}
-
 // IsBucketInAsia returns boolean. Check the given bucket is in asia.
 func (b *BucketConnector) IsBucketInAsia(ctx context.Context) (bool, error) {
-	attrs, err := b.client.Bucket(b.bucketName).Attrs(ctx)
+	attrs, err := b.client.GetAttrs(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -77,7 +97,7 @@ func (b *BucketConnector) GetMilestones(ctx context.Context, board string) ([]st
 	// We don't need other fields here because
 	// the field `Prefix` we need already included.
 	q.SetAttrSelection([]string{"Name"})
-	rawData := b.QueryObjects(ctx, q)
+	rawData := b.client.QueryObjects(ctx, q)
 	data, err := collection.Collect(rawData.Next, getPartialObjectPath)
 	if err != nil {
 		return nil, err
@@ -101,7 +121,7 @@ func (b *BucketConnector) GetBuilds(ctx context.Context, board string, milestone
 	// We don't need other fields here because
 	// the field `Prefix` we need already included.
 	q.SetAttrSelection([]string{"Name"})
-	releaseRawData := b.QueryObjects(ctx, q)
+	releaseRawData := b.client.QueryObjects(ctx, q)
 	releaseData, err := collection.Collect(releaseRawData.Next, getPartialObjectPath)
 	if err != nil {
 		return nil, err
@@ -112,7 +132,7 @@ func (b *BucketConnector) GetBuilds(ctx context.Context, board string, milestone
 	// We don't need other fields here because
 	// the field `Prefix` we need already included.
 	q.SetAttrSelection([]string{"Name"})
-	localRawData := b.QueryObjects(ctx, q)
+	localRawData := b.client.QueryObjects(ctx, q)
 	localData, err := collection.Collect(localRawData.Next, getPartialObjectPath)
 	if err != nil {
 		return nil, err
@@ -135,14 +155,10 @@ var DefaultPageSize = 10
 
 // ListTestplans list all testplan json in partner bucket under a `testplans` folder
 func (b *BucketConnector) ListTestplans(ctx context.Context) ([]string, error) {
-	return innerListTestplans(ctx, b)
-}
-
-func innerListTestplans(ctx context.Context, c IBucketServices) ([]string, error) {
 	d := "testplans/"
 	q := &storage.Query{Prefix: d, Delimiter: "*.json"}
 	q.SetAttrSelection([]string{"Name"})
-	rawData := c.QueryObjects(ctx, q)
+	rawData := b.client.QueryObjects(ctx, q)
 
 	res := []string{}
 	for {
@@ -160,9 +176,4 @@ func innerListTestplans(ctx context.Context, c IBucketServices) ([]string, error
 	}
 
 	return res, nil
-}
-
-// Close to close the client connection.
-func (b *BucketConnector) Close() error {
-	return b.client.Close()
 }

@@ -58,6 +58,32 @@ func createFakeObject() (io.ReadCloser, error) {
 	}, nil
 }
 
+type mockBucketClient struct {
+	mock.Mock
+}
+
+func (m *mockBucketClient) GetAttrs(ctx context.Context) (*storage.BucketAttrs, error) {
+	args := m.Called(ctx)
+	return args.Get(0).(*storage.BucketAttrs), args.Error(1)
+}
+
+// QueryObjects query objects from the bucket
+func (m *mockBucketClient) QueryObjects(ctx context.Context, q *storage.Query) iObjectIterator {
+	args := m.Called(ctx, q)
+	return args.Get(0).(iObjectIterator)
+}
+
+// ReadObject read the object content by the given name
+func (m *mockBucketClient) ReadObject(ctx context.Context, name string) (io.ReadCloser, error) {
+	args := m.Called(ctx, name)
+	return args.Get(0).(io.ReadCloser), args.Error(1)
+}
+
+// Close do clean up
+func (m *mockBucketClient) Close() error {
+	return nil
+}
+
 func Test_ListTestPlans(t *testing.T) {
 	ctx := context.Background()
 
@@ -67,8 +93,8 @@ func Test_ListTestPlans(t *testing.T) {
 	}
 
 	// Create a Mock `IBucketService`
-	var mockBucketService = new(MockBucketServices)
-	mockBucketService.
+	var mockBucketClient = new(mockBucketClient)
+	mockBucketClient.
 		On("QueryObjects", ctx, mock.Anything).
 		Return(&fakeObjectIter{
 			data: []string{
@@ -78,7 +104,11 @@ func Test_ListTestPlans(t *testing.T) {
 			i: 0,
 		}, nil)
 
-	resp, err := innerListTestplans(ctx, mockBucketService)
+	b := BucketConnector{
+		client: mockBucketClient,
+	}
+
+	resp, err := b.ListTestplans(ctx)
 
 	if err != nil {
 		t.Errorf("unexpected error: %v\n", err)

@@ -379,10 +379,6 @@ func (s *SatlabRpcServiceServer) UpdateDutsFirmware(ctx context.Context, in *pb.
 // Close clean up
 func (s *SatlabRpcServiceServer) Close() {
 	var err error
-	err = s.bucketService.Close()
-	if err != nil {
-		log.Println(err)
-	}
 	err = s.buildService.Close()
 	if err != nil {
 		log.Println(err)

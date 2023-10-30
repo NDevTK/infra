@@ -29,6 +29,11 @@ type IBucketServices interface {
 
 	// ListTestplans list all testplan json in partner bucket under a `testplans` folder
 	ListTestplans(ctx context.Context) ([]string, error)
+}
+
+type IBucketClient interface {
+	// GetAttrs get the bucket attributes
+	GetAttrs(ctx context.Context) (*storage.BucketAttrs, error)
 
 	// QueryObjects query objects from the bucket
 	QueryObjects(ctx context.Context, q *storage.Query) iObjectIterator
