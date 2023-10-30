@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6cdffadb_cae4655b",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/dut_services/dut_services_impl.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 305,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-10-30T00:31:19Z",
+      "side": 1,
+      "message": "Okay, Thank you. It is a good idea. I converted it too many times.",
+      "parentUuid": "a7d39b97_78907889",
+      "revId": "86180eb3a76bc29bd02a55dca8481fdb34e5cb4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "acfea4f5_1b391a77",
         "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/dut_services/dut_services_impl.go",
         "patchSetId": 2
@@ -31,6 +49,24 @@
       "writtenOn": "2023-10-27T14:00:35Z",
       "side": 1,
       "message": "same here",
+      "revId": "86180eb3a76bc29bd02a55dca8481fdb34e5cb4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf255a18_96bd162b",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/dut_services/dut_services_impl.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-10-30T00:31:19Z",
+      "side": 1,
+      "message": "Thank you.",
+      "parentUuid": "acfea4f5_1b391a77",
       "revId": "86180eb3a76bc29bd02a55dca8481fdb34e5cb4f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -54,6 +90,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d6610384_29b63ef3",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/dut_services/dut_services_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-10-30T00:31:19Z",
+      "side": 1,
+      "message": "Okay. I will rename it.",
+      "parentUuid": "67f02d90_917cd8e2",
+      "revId": "86180eb3a76bc29bd02a55dca8481fdb34e5cb4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "25ba8314_7b683815",
         "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/dut_services/dut_services_test.go",
         "patchSetId": 2
@@ -65,6 +119,24 @@
       "writtenOn": "2023-10-27T14:00:35Z",
       "side": 1,
       "message": "same `sshResponse` comment",
+      "revId": "86180eb3a76bc29bd02a55dca8481fdb34e5cb4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb01122d_d1bd33f8",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/dut_services/dut_services_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-10-30T00:31:19Z",
+      "side": 1,
+      "message": "Okay, I will make a change. Thank you.",
+      "parentUuid": "25ba8314_7b683815",
       "revId": "86180eb3a76bc29bd02a55dca8481fdb34e5cb4f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
