@@ -206,11 +206,15 @@ func wifiRouterRepairPlan() *Plan {
 			},
 			"Clean up stateful sub space": {
 				Docs: []string{
-					"Clean up  /mnt/stateful_partition/home/.shadow ,/mnt/stateful_partition/dev_image/telemetry space",
+					"Remove unneeded files in /mnt/stateful_partition that grow over time.",
+					"Specifically './home/.shadow', './dev_image/telemetry', and './var/log/metrics/*'.",
 				},
 				ExecName: "cros_run_shell_command",
 				ExecExtraArgs: []string{
-					"rm -Rf /mnt/stateful_partition/home/.shadow /mnt/stateful_partition/dev_image/telemetry",
+					"rm -Rf " +
+						"/mnt/stateful_partition/home/.shadow " +
+						"/mnt/stateful_partition/dev_image/telemetry " +
+						"/mnt/stateful_partition/var/log/metrics/*", // Every reboot adds a metric.
 				},
 			},
 
