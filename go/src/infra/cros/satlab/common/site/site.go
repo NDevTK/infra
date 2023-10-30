@@ -75,7 +75,7 @@ const (
 	ServiceAccountKeyPathEnv = "SERVICE_ACCOUNT_KEY_PATH"
 
 	// Log file used for satlab-rpcserver
-	RPCServerLogFileEnv = "SATALB_RPCSERVER_LOGFILE"
+	RPCServerLogFileEnv = "SATLAB_RPCSERVER_LOGFILE"
 
 	// DefaultLUCIProject is the LUCI project to specify if `LUCIProjectEnv` is
 	// not present.
@@ -370,8 +370,8 @@ func GetBotPrefix() string {
 	return os.Getenv(BotPrefix)
 }
 
-// GetRPCServerLogFile determines which Google storage image bucket
-// to use, based on the environment.
+// GetRPCServerLogFile determines the log file to
+// use for logging
 func GetRPCServerLogFile() string {
 	logfilename := os.Getenv(RPCServerLogFileEnv)
 	if logfilename == "" {
