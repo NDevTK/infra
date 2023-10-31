@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9b7a7bd_845397b4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-10-31T02:30:31Z",
+      "side": 1,
+      "message": "Could you please split the nsjail fixes and the snoopy support into two separate CLs so that it\u0027s clearer what\u0027s going on?",
+      "revId": "353f7f52c6bac15eabc2572512e4203b57fd077b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
