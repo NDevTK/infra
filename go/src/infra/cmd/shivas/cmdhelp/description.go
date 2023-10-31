@@ -10,6 +10,7 @@ import (
 
 	"infra/cmd/shivas/utils"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsDumper "infra/unifiedfleet/app/dumper"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -2330,8 +2331,8 @@ For now, only used on Satlab.
 
 func CronTriggerAvailableJobsString() string {
 	cronJobs := []string{}
-	for _, v := range ufsUtil.CronJobNames {
-		cronJobs = append(cronJobs, v)
+	for _, v := range ufsDumper.Jobs {
+		cronJobs = append(cronJobs, v.Name)
 	}
 	return fmt.Sprintf("\n********\n%s\n********", strings.Join(cronJobs, "\n"))
 }
