@@ -155,8 +155,10 @@ def _build_impl(api, cipd_spec, is_latest, spec_lookup, skip_upload, recurse_fn,
         extra_tags = {'3pp_ecosystem_hash': ecosystem_hash}
         if spec.create_pb.package.alter_version_re:
           extra_tags['real_version'] = version
-        cipd_spec.ensure_uploaded(is_latest and not spec.disable_latest_ref,
-                                  extra_tags)
+        cipd_spec.ensure_uploaded(
+            latest=is_latest and not spec.disable_latest_ref,
+            extra_tags=extra_tags,
+            extra_refs=spec.additional_refs if is_latest else None)
 
         # the active_result could be from cipd.describe or cipd.register
         upload_step_result = api.step.active_result

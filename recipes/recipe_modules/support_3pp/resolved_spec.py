@@ -248,6 +248,10 @@ class ResolvedSpec(object):
   def disable_latest_ref(self):
     return self.create_pb.package.disable_latest_ref
 
+  @property
+  def additional_refs(self):
+    return self.create_pb.package.additional_ref
+
   def cipd_spec(self, version):
     """Returns a CIPDSpec object for the result of building this ResolvedSpec's
     package/platform/version.

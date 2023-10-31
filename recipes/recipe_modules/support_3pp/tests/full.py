@@ -1201,15 +1201,45 @@ def GenTests(api):
   upload { pkg_prefix: "tools" }
   '''
   yield (api.test('fixed-commit-invalid-commit') + api.platform('linux', 64) +
-         api.properties(GOOS='linux', GOARCH='amd64')
-         + api.properties(key_path=KEY_PATH)
-         + api.step_data(
-             'find package specs',
-             api.file.glob_paths(['dir_tools/tool/3pp.pb']))
-         + api.step_data(
-             mk_name("load package specs",
-                     "read 'dir_tools/tool/3pp.pb'"),
-             api.file.read_text(spec))
-         + api.expect_exception('AssertionError')
-         + api.post_process(post_process.ResultReasonRE,
-                            'Non git-rev commit specified: refs/heads/main'))
+         api.properties(GOOS='linux', GOARCH='amd64') +
+         api.properties(key_path=KEY_PATH) +
+         api.step_data('find package specs',
+                       api.file.glob_paths(['dir_tools/tool/3pp.pb'])) +
+         api.step_data(
+             mk_name("load package specs", "read 'dir_tools/tool/3pp.pb'"),
+             api.file.read_text(spec)) +
+         api.expect_exception('AssertionError') +
+         api.post_process(post_process.ResultReasonRE,
+                          'Non git-rev commit specified: refs/heads/main'))
+
+  spec = '''
+  create {
+    source { url {
+        download_url: "https://some.internet.example.com"
+        version: "1.2.3"
+    } }
+    package { additional_ref: ['v1', 'v1.2'] }
+    build {}
+  }
+  upload { pkg_prefix: "deps" }
+  '''
+  yield (api.test('additional-refs') + api.platform('linux', 64) +
+         api.properties(GOOS='linux', GOARCH='amd64') +
+         api.properties(key_path=KEY_PATH) +
+         api.step_data('find package specs',
+                       api.file.glob_paths(['dir_tools/tool/3pp.pb'])) +
+         api.step_data(
+             mk_name("load package specs", "read 'dir_tools/tool/3pp.pb'"),
+             api.file.read_text(spec)) + api.post_process(
+                 post_process.StepCommandContains,
+                 mk_name("building deps/tool", "do upload",
+                         "register 3pp/deps/tool/linux-amd64"),
+                 ['-ref', 'latest']) +
+         api.post_process(
+             post_process.StepCommandContains,
+             mk_name("building deps/tool", "do upload",
+                     "register 3pp/deps/tool/linux-amd64"), ['-ref', 'v1']) +
+         api.post_process(
+             post_process.StepCommandContains,
+             mk_name("building deps/tool", "do upload",
+                     "register 3pp/deps/tool/linux-amd64"), ['-ref', 'v1.2']))

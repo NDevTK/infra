@@ -259,6 +259,11 @@ message Spec {
       // packages using this spec. This may be useful if a spec is maintained
       // to continue building an older release track for a package.
       bool disable_latest_ref = 5;
+
+      // Update the supplied CIPD refs whenever a new version of the package
+      // is built. Note that 'latest' is always implicitly updated, unless
+      // 'disable_latest_ref' is set to false.
+      repeated string additional_ref = 6;
     }
 
     message Verify {

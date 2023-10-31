@@ -252,6 +252,7 @@ class CIPDSpec(object):
   def ensure_uploaded(self,
                       latest=False,
                       extra_tags=None,
+                      extra_refs=None,
                       metadata=None,
                       verification_timeout=None):
     """Uploads, registers and tags the copy of this package we have on the
@@ -261,6 +262,8 @@ class CIPDSpec(object):
       * latest (bool) - If True, will also set the `latest` ref for the package
         we upload.
       * extra_tags (dict) - Extra tags to attach to the package.
+      * extra_refs (List[str]) - Extra refs (besides `latest`) to set for
+        the package we upload.
       * metadata (List[Metadata]) - Metadata to attach to the package.
       * verification_timeout (str) - duration string, passed to cipd client
     """
@@ -270,11 +273,17 @@ class CIPDSpec(object):
     if self._api.buildbucket.build.id:
       tags['build_id'] = str(self._api.buildbucket.build.id)
     tags.update(extra_tags or {})
-    refs = ['latest'] if latest else []
+    refs = set(extra_refs or [])
+    if latest:
+      refs.add('latest')
 
     # Double check to see that we didn't get scooped by a concurrent recipe.
     if not self.exists_in_cipd():
-      self._api.cipd.register(self._pkg, pkg_path, tags=tags,
-                              refs=refs, metadata=metadata,
-                              verification_timeout=verification_timeout)
+      self._api.cipd.register(
+          self._pkg,
+          pkg_path,
+          tags=tags,
+          refs=sorted(refs),
+          metadata=metadata,
+          verification_timeout=verification_timeout)
       self._remote_tags = tags
