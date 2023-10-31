@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"path"
+	"strings"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -102,6 +103,19 @@ func executeLocalTests(
 	containerCfg := configs.NewContainerConfig(ctr, containerImagesMap, false)
 	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
+
+	if sk.CftTestRequest.AutotestKeyvals == nil {
+		sk.CftTestRequest.AutotestKeyvals = map[string]string{}
+	}
+
+	if sk.CftTestRequest.GetPrimaryDut() != nil {
+		sk.CftTestRequest.AutotestKeyvals["primary-board"] = sk.CftTestRequest.GetPrimaryDut().GetDutModel().GetBuildTarget()
+	}
+	companionBoards := []string{}
+	for _, companion := range sk.CftTestRequest.GetCompanionDuts() {
+		companionBoards = append(companionBoards, companion.GetDutModel().GetBuildTarget())
+	}
+	sk.CftTestRequest.AutotestKeyvals["companion-boards"] = strings.Join(companionBoards, ",")
 
 	// Generate config
 	localTestConfig := configs.NewTrv2ExecutionConfig(configs.LocalTestExecutionConfigType, cmdCfg, sk, nil)
