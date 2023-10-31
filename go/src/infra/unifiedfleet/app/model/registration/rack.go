@@ -93,7 +93,9 @@ func newRackRealmEntity(ctx context.Context, pm proto.Message) (ufsds.RealmEntit
 
 // QueryRackByPropertyName queries Rack Entity in the datastore
 //
-// If keysOnly is true, then only key field is populated in returned racks
+// If keysOnly is true, then only key field is populated in returned racks.
+// Note that this is not ACLed and should not be used to return results
+// directly to users without ACLs being checked somewhere upstream.
 func QueryRackByPropertyName(ctx context.Context, propertyName string, id interface{}, keysOnly bool) ([]*ufspb.Rack, error) {
 	q := datastore.NewQuery(RackKind).KeysOnly(keysOnly).FirestoreMode(true)
 	var entities []*RackEntity

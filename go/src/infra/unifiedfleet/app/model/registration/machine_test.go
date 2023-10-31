@@ -12,8 +12,6 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
-	"go.chromium.org/luci/server/auth"
-	"go.chromium.org/luci/server/auth/authtest"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/config"
@@ -331,36 +329,16 @@ func TestGetMachineACL(t *testing.T) {
 	}
 
 	// superuser has permissions in two realms.
-	ctxSuperuser := auth.WithState(ctx, &authtest.FakeState{
-		Identity: "user:root@lab.com",
-		IdentityPermissions: []authtest.RealmPermission{
-			{
-				Realm:      ufsutil.AtlLabAdminRealm,
-				Permission: ufsutil.RegistrationsGet,
-			},
-			{
-				Realm:      ufsutil.AcsLabAdminRealm,
-				Permission: ufsutil.RegistrationsGet,
-			},
-		},
-	})
+	ctxSuperuser := mockUser(ctx, "root@lab.com")
+	mockRealmPerms(ctxSuperuser, ufsutil.AtlLabAdminRealm, ufsutil.RegistrationsGet)
+	mockRealmPerms(ctxSuperuser, ufsutil.AcsLabAdminRealm, ufsutil.RegistrationsGet)
 
-	// atl lab permissions only
-	ctxATLLab := auth.WithState(ctx, &authtest.FakeState{
-		Identity: "user:atl@lab.com",
-		IdentityPermissions: []authtest.RealmPermission{
-			{
-				Realm:      ufsutil.AcsLabAdminRealm,
-				Permission: ufsutil.RegistrationsGet,
-			},
-		},
-	})
+	// permission in one realm.
+	ctxACSLab := mockUser(ctx, "acs@lab.com")
+	mockRealmPerms(ctxACSLab, ufsutil.AcsLabAdminRealm, ufsutil.RegistrationsGet)
 
-	// no perms
-	ctxNoPerms := auth.WithState(ctx, &authtest.FakeState{
-		Identity:            "user:bad@lab.com",
-		IdentityPermissions: []authtest.RealmPermission{},
-	})
+	// permission in no realms.
+	ctxNoPerms := mockUser(ctx, "bad@lab.com")
 
 	Convey("GetMachine", t, func() {
 		Convey("User with correct perms sees both", func() {
@@ -374,10 +352,10 @@ func TestGetMachineACL(t *testing.T) {
 			So(resp, ShouldResembleProto, chromeOSMachineZone5)
 		})
 		Convey("User only sees realm they should access", func() {
-			resp, err := GetMachineACL(ctxATLLab, "chromeos-asset-zone4")
+			resp, err := GetMachineACL(ctxACSLab, "chromeos-asset-zone4")
 			So(err, ShouldNotBeNil)
 			So(resp, ShouldBeNil)
-			resp, err = GetMachineACL(ctxATLLab, "chromeos-asset-zone5")
+			resp, err = GetMachineACL(ctxACSLab, "chromeos-asset-zone5")
 			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp, ShouldResembleProto, chromeOSMachineZone5)
@@ -423,36 +401,16 @@ func TestBatchGetMachineACL(t *testing.T) {
 	}
 
 	// superuser has permissions in two realms.
-	ctxSuperuser := auth.WithState(ctx, &authtest.FakeState{
-		Identity: "user:root@lab.com",
-		IdentityPermissions: []authtest.RealmPermission{
-			{
-				Realm:      ufsutil.AtlLabAdminRealm,
-				Permission: ufsutil.RegistrationsGet,
-			},
-			{
-				Realm:      ufsutil.AcsLabAdminRealm,
-				Permission: ufsutil.RegistrationsGet,
-			},
-		},
-	})
+	ctxSuperuser := mockUser(ctx, "root@lab.com")
+	mockRealmPerms(ctxSuperuser, ufsutil.AtlLabAdminRealm, ufsutil.RegistrationsGet)
+	mockRealmPerms(ctxSuperuser, ufsutil.AcsLabAdminRealm, ufsutil.RegistrationsGet)
 
-	// atl lab permissions only
-	ctxATLLab := auth.WithState(ctx, &authtest.FakeState{
-		Identity: "user:atl@lab.com",
-		IdentityPermissions: []authtest.RealmPermission{
-			{
-				Realm:      ufsutil.AcsLabAdminRealm,
-				Permission: ufsutil.RegistrationsGet,
-			},
-		},
-	})
+	// permission in one realm.
+	ctxACSLab := mockUser(ctx, "acs@lab.com")
+	mockRealmPerms(ctxACSLab, ufsutil.AcsLabAdminRealm, ufsutil.RegistrationsGet)
 
-	// no perms
-	ctxNoPerms := auth.WithState(ctx, &authtest.FakeState{
-		Identity:            "user:bad@lab.com",
-		IdentityPermissions: []authtest.RealmPermission{},
-	})
+	// permission in no realms.
+	ctxNoPerms := mockUser(ctx, "bad@lab.com")
 
 	Convey("GetMachine", t, func() {
 		Convey("User with correct perms sees both", func() {
@@ -462,10 +420,10 @@ func TestBatchGetMachineACL(t *testing.T) {
 			So(resp, ShouldResembleProto, []*ufspb.Machine{chromeOSMachineZone4, chromeOSMachineZone5})
 		})
 		Convey("User only sees realm they should access", func() {
-			resp, err := BatchGetMachinesACL(ctxATLLab, []string{"chromeos-asset-zone4", "chromeos-asset-zone5"})
+			resp, err := BatchGetMachinesACL(ctxACSLab, []string{"chromeos-asset-zone4", "chromeos-asset-zone5"})
 			So(err, ShouldNotBeNil)
 			So(resp, ShouldBeNil)
-			resp, err = BatchGetMachinesACL(ctxATLLab, []string{"chromeos-asset-zone5"})
+			resp, err = BatchGetMachinesACL(ctxACSLab, []string{"chromeos-asset-zone5"})
 			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp, ShouldResembleProto, []*ufspb.Machine{chromeOSMachineZone5})
@@ -537,36 +495,16 @@ func TestListMachinesACL(t *testing.T) {
 	}
 
 	// superuser has permissions in two realms.
-	ctxSuperuser := auth.WithState(ctx, &authtest.FakeState{
-		Identity: "user:root@lab.com",
-		IdentityPermissions: []authtest.RealmPermission{
-			{
-				Realm:      ufsutil.AtlLabAdminRealm,
-				Permission: ufsutil.RegistrationsList,
-			},
-			{
-				Realm:      ufsutil.AcsLabAdminRealm,
-				Permission: ufsutil.RegistrationsList,
-			},
-		},
-	})
+	ctxSuperuser := mockUser(ctx, "root@lab.com")
+	mockRealmPerms(ctxSuperuser, ufsutil.AtlLabAdminRealm, ufsutil.RegistrationsList)
+	mockRealmPerms(ctxSuperuser, ufsutil.AcsLabAdminRealm, ufsutil.RegistrationsList)
 
-	// atl lab permissions only
-	ctxATLLab := auth.WithState(ctx, &authtest.FakeState{
-		Identity: "user:atl@lab.com",
-		IdentityPermissions: []authtest.RealmPermission{
-			{
-				Realm:      ufsutil.AcsLabAdminRealm,
-				Permission: ufsutil.RegistrationsList,
-			},
-		},
-	})
+	// permission in one realm.
+	ctxACSLab := mockUser(ctx, "acs@lab.com")
+	mockRealmPerms(ctxACSLab, ufsutil.AcsLabAdminRealm, ufsutil.RegistrationsList)
 
-	// no perms
-	ctxNoPerms := auth.WithState(ctx, &authtest.FakeState{
-		Identity:            "user:bad@lab.com",
-		IdentityPermissions: []authtest.RealmPermission{},
-	})
+	// permission in no realms.
+	ctxNoPerms := mockUser(ctx, "bad@lab.com")
 
 	Convey("ListMachinesACL", t, func() {
 		Convey("List machines - anonymous", func() {
@@ -593,12 +531,12 @@ func TestListMachinesACL(t *testing.T) {
 		})
 		Convey("List machines - happy path, one realm", func() {
 			// test pagination
-			resp, nextPageToken, err := ListMachinesACL(ctxATLLab, 3, "", nil, false)
+			resp, nextPageToken, err := ListMachinesACL(ctxACSLab, 3, "", nil, false)
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, machines[0:3])
 			So(nextPageToken, ShouldNotBeEmpty)
 
-			resp, nextPageToken, err = ListMachinesACL(ctxATLLab, 100, nextPageToken, nil, false)
+			resp, nextPageToken, err = ListMachinesACL(ctxACSLab, 100, nextPageToken, nil, false)
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, machines[3:10])
 			So(nextPageToken, ShouldBeEmpty)

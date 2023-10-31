@@ -147,7 +147,9 @@ func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity,
 }
 
 // QueryMachineByPropertyName queries Machine Entity in the datastore
-// If keysOnly is true, then only key field is populated in returned machines
+// If keysOnly is true, then only key field is populated in returned machines.
+// Note that read realm ACLs are not enforced so this is not appropriate for
+// use without some other ACL being enforced beforehand.
 func QueryMachineByPropertyName(ctx context.Context, propertyName, id string, keysOnly bool) ([]*ufspb.Machine, error) {
 	q := datastore.NewQuery(MachineKind).KeysOnly(keysOnly).FirestoreMode(true)
 	var entities []*MachineEntity
@@ -299,7 +301,8 @@ func ListMachines(ctx context.Context, pageSize int32, pageToken string, filterM
 	return runListQuery(ctx, q, pageSize, pageToken, keysOnly)
 }
 
-// ListMachinesACL lists the machine ACLs.
+// ListMachinesACL lists the machines in a realm the user has permission to view.
+//
 // Does a query over Machine entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
 func ListMachinesACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
@@ -327,6 +330,8 @@ func ListMachinesACL(ctx context.Context, pageSize int32, pageToken string, filt
 // ListMachinesByIdPrefixSearch lists the machines
 // Does a query over Machine entities using ID prefix. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). PageSize must be positive.
+// Note- currently not ACLed, so should not be used for user-facing tasks
+// without other ACLs upstream.
 func ListMachinesByIdPrefixSearch(ctx context.Context, pageSize int32, pageToken string, prefix string, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
 	q, err := ufsds.ListQueryIdPrefixSearch(ctx, MachineKind, pageSize, pageToken, prefix, keysOnly)
 	if err != nil {
