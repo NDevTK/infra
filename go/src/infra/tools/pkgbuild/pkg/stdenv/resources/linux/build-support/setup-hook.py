@@ -70,7 +70,6 @@ def setup(exe) -> None:
   def activate_pkg(exe) -> bool:
     ctx = exe.current_context
     dependencies.append(str(ctx.pkg))
-    return True
 
   exe.add_hook('preUnpack', pre_unpack)
   exe.add_hook('executeCmd', execute_cmd)
