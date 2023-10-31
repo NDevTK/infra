@@ -63,8 +63,14 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 	} else {
 		freeEndIP = IPv4IntToStr(startIP + uint32(length-reserveLast-1))
 	}
-	ips := make([]*ufspb.IP, 0, length)
+	ips := makeIPv4sInVlan(vlanName, startIP, length, freeStartIPInt, freeEndIPInt)
+	return ips, length, freeStartIP, freeEndIP, reservedNum, nil
+}
+
+// makeIPv4sInVlan creates the IP objects in a Vlan that are intended to be created in datastore later.
+func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIPInt uint32, freeEndIPInt uint32) []*ufspb.IP {
 	endIP := startIP + uint32(length)
+	ips := make([]*ufspb.IP, 0, length)
 	for ; startIP < endIP; startIP++ {
 		if startIP < freeStartIPInt || startIP > freeEndIPInt {
 			ips = append(ips, &ufspb.IP{
@@ -83,7 +89,14 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 			})
 		}
 	}
-	return ips, length, freeStartIP, freeEndIP, reservedNum, nil
+	return ips
+}
+
+// makeIPv4Uint32 makes an IPv4 as a uint32 using notation that looks conventional.
+//
+// makeIPv4Uint32(127, 0, 0, 1) === 127.0.0.1
+func makeIPv4Uint32(a, b, c, d int) uint32 {
+	return uint32(a)*256*256*256 + uint32(b)*256*256 + uint32(c)*256 + uint32(d)
 }
 
 // FormatIP initialize an IP object

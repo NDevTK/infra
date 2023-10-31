@@ -7,7 +7,11 @@ package util
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/testing/protocmp"
+
+	ufspb "infra/unifiedfleet/api/v1/models"
 )
 
 func TestParseVlan(t *testing.T) {
@@ -107,4 +111,45 @@ func TestUint32Iter(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(len(data), ShouldEqual, 1001)
 	})
+}
+
+// TestMakeIPv4sInVlan tests the helper function makeIPv4sInVlan.
+func TestMakeIPv4sInVlan(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name        string
+		vlanName    string
+		startIP     uint32
+		length      int
+		freeStartIP uint32
+		freeEndIP   uint32
+		want        []*ufspb.IP
+	}{
+		{
+			name:        "one real ip",
+			vlanName:    "fake-vlan",
+			startIP:     makeIPv4Uint32(127, 0, 0, 0),
+			length:      2,
+			freeStartIP: makeIPv4Uint32(127, 0, 0, 1),
+			freeEndIP:   makeIPv4Uint32(127, 0, 0, 2),
+			want: []*ufspb.IP{
+				FormatIP("fake-vlan", "127.0.0.0", true, false),
+				FormatIP("fake-vlan", "127.0.0.1", false, false),
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := makeIPv4sInVlan(tt.vlanName, tt.startIP, tt.length, tt.freeStartIP, tt.freeEndIP)
+
+			if diff := cmp.Diff(got, tt.want, protocmp.Transform()); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
 }
