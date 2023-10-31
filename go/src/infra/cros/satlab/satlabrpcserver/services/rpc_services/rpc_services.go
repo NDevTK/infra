@@ -872,3 +872,12 @@ func (s *SatlabRpcServiceServer) RunTestPlan(ctx context.Context, in *pb.RunTest
 	}
 	return &pb.RunTestPlanResponse{BuildLink: buildLink}, nil
 }
+
+func (s *SatlabRpcServiceServer) GetTestPlan(ctx context.Context, in *pb.GetTestPlanRequest) (*pb.GetTestPlanResponse, error) {
+	tp, err := s.bucketService.GetTestPlan(ctx, in.GetName())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetTestPlanResponse{Plan: tp}, nil
+}

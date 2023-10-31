@@ -35,6 +35,7 @@ const (
 	SatlabRpcService_ListBuildTargets_FullMethodName          = "/satlabrpcserver.SatlabRpcService/list_build_targets"
 	SatlabRpcService_ListMilestones_FullMethodName            = "/satlabrpcserver.SatlabRpcService/list_milestones"
 	SatlabRpcService_ListTestPlans_FullMethodName             = "/satlabrpcserver.SatlabRpcService/list_test_plans"
+	SatlabRpcService_GetTestPlan_FullMethodName               = "/satlabrpcserver.SatlabRpcService/get_test_plan"
 	SatlabRpcService_RunSuite_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/run_suite"
 	SatlabRpcService_RunTest_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/run_test"
 	SatlabRpcService_RunTestPlan_FullMethodName               = "/satlabrpcserver.SatlabRpcService/run_test_plan"
@@ -66,6 +67,7 @@ type SatlabRpcServiceClient interface {
 	ListBuildTargets(ctx context.Context, in *ListBuildTargetsRequest, opts ...grpc.CallOption) (*ListBuildTargetsResponse, error)
 	ListMilestones(ctx context.Context, in *ListMilestonesRequest, opts ...grpc.CallOption) (*ListMilestonesResponse, error)
 	ListTestPlans(ctx context.Context, in *ListTestPlansRequest, opts ...grpc.CallOption) (*ListTestPlansResponse, error)
+	GetTestPlan(ctx context.Context, in *GetTestPlanRequest, opts ...grpc.CallOption) (*GetTestPlanResponse, error)
 	// services to run different types of test suites
 	RunSuite(ctx context.Context, in *RunSuiteRequest, opts ...grpc.CallOption) (*RunSuiteResponse, error)
 	RunTest(ctx context.Context, in *RunTestRequest, opts ...grpc.CallOption) (*RunTestResponse, error)
@@ -199,6 +201,15 @@ func (c *satlabRpcServiceClient) ListTestPlans(ctx context.Context, in *ListTest
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) GetTestPlan(ctx context.Context, in *GetTestPlanRequest, opts ...grpc.CallOption) (*GetTestPlanResponse, error) {
+	out := new(GetTestPlanResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_GetTestPlan_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *satlabRpcServiceClient) RunSuite(ctx context.Context, in *RunSuiteRequest, opts ...grpc.CallOption) (*RunSuiteResponse, error) {
 	out := new(RunSuiteResponse)
 	err := c.cc.Invoke(ctx, SatlabRpcService_RunSuite_FullMethodName, in, out, opts...)
@@ -324,6 +335,7 @@ type SatlabRpcServiceServer interface {
 	ListBuildTargets(context.Context, *ListBuildTargetsRequest) (*ListBuildTargetsResponse, error)
 	ListMilestones(context.Context, *ListMilestonesRequest) (*ListMilestonesResponse, error)
 	ListTestPlans(context.Context, *ListTestPlansRequest) (*ListTestPlansResponse, error)
+	GetTestPlan(context.Context, *GetTestPlanRequest) (*GetTestPlanResponse, error)
 	// services to run different types of test suites
 	RunSuite(context.Context, *RunSuiteRequest) (*RunSuiteResponse, error)
 	RunTest(context.Context, *RunTestRequest) (*RunTestResponse, error)
@@ -381,6 +393,9 @@ func (UnimplementedSatlabRpcServiceServer) ListMilestones(context.Context, *List
 }
 func (UnimplementedSatlabRpcServiceServer) ListTestPlans(context.Context, *ListTestPlansRequest) (*ListTestPlansResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTestPlans not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) GetTestPlan(context.Context, *GetTestPlanRequest) (*GetTestPlanResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTestPlan not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) RunSuite(context.Context, *RunSuiteRequest) (*RunSuiteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunSuite not implemented")
@@ -643,6 +658,24 @@ func _SatlabRpcService_ListTestPlans_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SatlabRpcServiceServer).ListTestPlans(ctx, req.(*ListTestPlansRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SatlabRpcService_GetTestPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTestPlanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).GetTestPlan(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_GetTestPlan_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).GetTestPlan(ctx, req.(*GetTestPlanRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -917,6 +950,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "list_test_plans",
 			Handler:    _SatlabRpcService_ListTestPlans_Handler,
+		},
+		{
+			MethodName: "get_test_plan",
+			Handler:    _SatlabRpcService_GetTestPlan_Handler,
 		},
 		{
 			MethodName: "run_suite",

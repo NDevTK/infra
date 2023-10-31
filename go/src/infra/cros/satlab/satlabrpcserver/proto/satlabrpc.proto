@@ -8,6 +8,7 @@ package satlabrpcserver;
 option go_package = "infra/cros/satlab/satlabrpcserver"; // figure out what this should be
 
 import "google/protobuf/timestamp.proto";
+import "test_platform/request.proto";
 
 service SatlabRpcService {
   rpc list_accessible_models (ListAccessibleModelsRequest) returns (ListAccessibleModelsResponse);
@@ -24,6 +25,7 @@ service SatlabRpcService {
   rpc list_build_targets (ListBuildTargetsRequest) returns (ListBuildTargetsResponse);
   rpc list_milestones (ListMilestonesRequest) returns (ListMilestonesResponse);
   rpc list_test_plans (ListTestPlansRequest) returns (ListTestPlansResponse);
+  rpc get_test_plan (GetTestPlanRequest) returns (GetTestPlanResponse);
 
   // services to run different types of test suites
   rpc run_suite (RunSuiteRequest) returns (RunSuiteResponse);
@@ -447,7 +449,20 @@ message RunTestPlanRequest {
   string build = 5;
   string pool = 6;
 }
+
 // NEXT_TAG = 2
 message RunTestPlanResponse {
   string build_link = 1;
+}
+
+// NEXT_TAG = 2
+message GetTestPlanRequest {
+  // the name of test plan we want to fetch the content
+  string name = 1;
+}
+
+// NEXT_TAG = 2
+message GetTestPlanResponse {
+  // plan is the content of the test plan
+  test_platform.Request.TestPlan plan = 1;
 }

@@ -8,6 +8,7 @@ import (
 	"io"
 
 	"cloud.google.com/go/storage"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 )
 
 type iObjectIterator interface {
@@ -29,6 +30,9 @@ type IBucketServices interface {
 
 	// ListTestplans list all testplan json in partner bucket under a `testplans` folder
 	ListTestplans(ctx context.Context) ([]string, error)
+
+	// GetTestPlan get the test plan's content from the given filename.
+	GetTestPlan(context.Context, string) (*test_platform.Request_TestPlan, error)
 }
 
 type IBucketClient interface {

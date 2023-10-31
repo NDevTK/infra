@@ -5,12 +5,15 @@ package bucket_services
 
 import (
 	"context"
+	"errors"
 	"io"
 	"testing"
 
 	"cloud.google.com/go/storage"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/mock"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"google.golang.org/api/iterator"
 )
 
@@ -58,6 +61,24 @@ func createFakeObject() (io.ReadCloser, error) {
 	}, nil
 }
 
+func createErrorResponse() (io.ReadCloser, error) {
+	return &fakeData{
+		s:        []byte(""),
+		i:        0,
+		prevRune: -1,
+	}, errors.New("fetch from bucket fails")
+
+}
+
+func createInvalidContent() (io.ReadCloser, error) {
+	return &fakeData{
+		s:        []byte(`{{"suite": [{"name": "audio"}], "test": [{"autotest": {"name": "t1", "test_args": "args"}}]}`),
+		i:        0,
+		prevRune: -1,
+	}, nil
+
+}
+
 type mockBucketClient struct {
 	mock.Mock
 }
@@ -85,6 +106,7 @@ func (m *mockBucketClient) Close() error {
 }
 
 func Test_ListTestPlans(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	expected := []string{
@@ -117,4 +139,105 @@ func Test_ListTestPlans(t *testing.T) {
 	if diff := cmp.Diff(resp, expected); diff != "" {
 		t.Errorf("unexpected diff: %v\n", diff)
 	}
+}
+
+// Test_GetTestPlan test a normal situation by given the test plan name.
+// it should read the content by the given file name on bucket, and returns
+// the content.
+func Test_GetTestPlan(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a Mock `IBucketService`
+	var mockBucketClient = new(mockBucketClient)
+	mockBucketClient.
+		On("ReadObject", ctx, mock.Anything).
+		Return(createFakeObject())
+
+	b := BucketConnector{client: mockBucketClient}
+	tp, err := b.GetTestPlan(ctx, "name1")
+
+	if err != nil {
+		t.Errorf("unexpected error: %v\n", err)
+	}
+
+	expected := &test_platform.Request_TestPlan{
+		Suite: []*test_platform.Request_Suite{
+			{
+				Name: "audio",
+			},
+		},
+		Test: []*test_platform.Request_Test{
+			{
+				Harness: &test_platform.Request_Test_Autotest_{
+					Autotest: &test_platform.Request_Test_Autotest{
+						Name:     "t1",
+						TestArgs: "args",
+					},
+				},
+			},
+		},
+	}
+
+	// ignore generated pb code
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(
+		test_platform.Request_TestPlan{},
+		test_platform.Request_Suite{},
+		test_platform.Request_Test{},
+		test_platform.Request_Test_Autotest{},
+		test_platform.Request_Enumeration{},
+	)
+
+	if diff := cmp.Diff(tp, expected, ignorePBFieldOpts); diff != "" {
+		t.Errorf("unexpected result: %v\n", diff)
+	}
+}
+
+// Test_GetTestPlanWhenFetchingFromBucketFails test a situation when a user
+// call an API failed, we return an error.
+func Test_GetTestPlanWhenFetchingFromBucketFails(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a Mock `IBucketService`
+	var mockBucketClient = new(mockBucketClient)
+	mockBucketClient.
+		On("ReadObject", ctx, mock.Anything).
+		Return(createErrorResponse())
+
+	b := BucketConnector{client: mockBucketClient}
+	tp, err := b.GetTestPlan(ctx, "name1")
+
+	if err == nil {
+		t.Errorf("error should not be nil")
+	}
+
+	if tp != nil {
+		t.Errorf("unexpected result, reuslt should be empty, but got %v\n", tp)
+	}
+}
+
+// Test_GetTestPlanWhenInvalidProtoFromBucket test a situation when a user
+// wants to read a invalid json file and we return an parsing error.
+func Test_GetTestPlanWhenInvalidProtoFromBucket(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a Mock `IBucketService`
+	var mockBucketClient = new(mockBucketClient)
+	mockBucketClient.
+		On("ReadObject", ctx, mock.Anything).
+		Return(createInvalidContent())
+
+	b := BucketConnector{client: mockBucketClient}
+	tp, err := b.GetTestPlan(ctx, "name1")
+
+	if err == nil {
+		t.Errorf("error should not be nil")
+	}
+
+	if tp != nil {
+		t.Errorf("unexpected result, reuslt should be empty, but got %v\n", tp)
+	}
+
 }

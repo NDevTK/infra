@@ -10,8 +10,10 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/collection"
@@ -176,4 +178,28 @@ func (b *BucketConnector) ListTestplans(ctx context.Context) ([]string, error) {
 	}
 
 	return res, nil
+}
+
+// GetTestPlan get the test plan's content from the given filename.
+func (b *BucketConnector) GetTestPlan(ctx context.Context, name string) (*test_platform.Request_TestPlan, error) {
+	// read the object from the bucket by given name
+	rc, err := b.client.ReadObject(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+
+	// read the bytes
+	buf, err := io.ReadAll(rc)
+	if err != nil {
+		return nil, err
+	}
+
+	// decode the json
+	tp := &test_platform.Request_TestPlan{}
+	err = protojson.Unmarshal(buf, tp)
+	if err != nil {
+		return nil, err
+	}
+
+	return tp, nil
 }

@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/stretchr/testify/mock"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 )
 
 // MockBucketServices This object is only for testing
@@ -39,4 +40,10 @@ func (m *MockBucketServices) GetBuilds(ctx context.Context, board string, milest
 func (m *MockBucketServices) ListTestplans(ctx context.Context) ([]string, error) {
 	args := m.Called(ctx)
 	return args.Get(0).([]string), args.Error(1)
+}
+
+// GetTestPlan get the test plan's content from the given filename.
+func (m *MockBucketServices) GetTestPlan(ctx context.Context, name string) (*test_platform.Request_TestPlan, error) {
+	args := m.Called(ctx, name)
+	return args.Get(0).(*test_platform.Request_TestPlan), args.Error(1)
 }
