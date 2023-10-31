@@ -1977,8 +1977,17 @@ func updateCellularModemInfo(ctx context.Context, m *chromeosLab.ModemInfo, labD
 		return
 	}
 
-	if mv := labData.GetModemInfo().GetModelVariant(); mv != "" {
+	mi := labData.GetModemInfo()
+	if mv := mi.GetModelVariant(); mv != "" {
 		m.ModelVariant = mv
+	}
+
+	if imei := mi.GetImei(); imei != "" {
+		m.Imei = imei
+	}
+
+	if modemType := mi.GetType(); modemType != chromeosLab.ModemType_MODEM_TYPE_UNSPECIFIED {
+		m.Type = modemType
 	}
 }
 

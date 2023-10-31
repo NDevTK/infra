@@ -1871,6 +1871,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 				},
 				ModemInfo: &ufsAPI.ChromeOsRecoveryData_ModemInfo{
 					ModelVariant: "some_cellular_variant",
+					Imei:         "654321",
+					Type:         chromeosLab.ModemType_MODEM_TYPE_NL668,
 				},
 				ServoUsbDrive: &labApi.UsbDrive{
 					Serial:        "usb-drive serial",
@@ -1933,8 +1935,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(peri.Chameleon.GetAudioboxJackplugger(), ShouldEqual, chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING)
 
 			modem := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetModeminfo()
-			So(modem.GetType(), ShouldEqual, chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180)
-			So(modem.GetImei(), ShouldEqual, "123456")
+			So(modem.GetType(), ShouldEqual, chromeosLab.ModemType_MODEM_TYPE_NL668)
+			So(modem.GetImei(), ShouldEqual, "654321")
 			So(modem.GetSupportedBands(), ShouldEqual, "1,2,3,4")
 			So(modem.GetSimCount(), ShouldEqual, 3)
 			So(modem.GetModelVariant(), ShouldEqual, "some_cellular_variant")
@@ -2216,6 +2218,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			labData := &ufsAPI.ChromeOsRecoveryData_LabData{
 				ModemInfo: &ufsAPI.ChromeOsRecoveryData_ModemInfo{
 					ModelVariant: "",
+					Imei:         "",
+					Type:         chromeosLab.ModemType_MODEM_TYPE_UNSPECIFIED,
 				},
 			}
 			machineLSE := mockDutMachineLSE(machineName)
