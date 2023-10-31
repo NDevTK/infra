@@ -38,7 +38,6 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 	}
 	ones, _ := subnet.Mask.Size()
 	length := 1 << uint32(32-ones)
-	ips := make([]*ufspb.IP, length)
 	startIP := binary.BigEndian.Uint32(ipv4)
 	freeStartIPInt := startIP + reserveFirst
 	freeEndIPInt := startIP + uint32(length-reserveLast-1)
@@ -64,24 +63,25 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 	} else {
 		freeEndIP = IPv4IntToStr(startIP + uint32(length-reserveLast-1))
 	}
-	for i := 0; i < length; i++ {
+	ips := make([]*ufspb.IP, 0, length)
+	endIP := startIP + uint32(length)
+	for ; startIP < endIP; startIP++ {
 		if startIP < freeStartIPInt || startIP > freeEndIPInt {
-			ips[i] = &ufspb.IP{
+			ips = append(ips, &ufspb.IP{
 				Id:      GetIPName(vlanName, Int64ToStr(int64(startIP))),
 				Ipv4:    startIP,
 				Ipv4Str: IPv4IntToStr(startIP),
 				Vlan:    vlanName,
 				Reserve: true,
-			}
+			})
 		} else {
-			ips[i] = &ufspb.IP{
+			ips = append(ips, &ufspb.IP{
 				Id:      GetIPName(vlanName, Int64ToStr(int64(startIP))),
 				Ipv4:    startIP,
 				Ipv4Str: IPv4IntToStr(startIP),
 				Vlan:    vlanName,
-			}
+			})
 		}
-		startIP++
 	}
 	return ips, length, freeStartIP, freeEndIP, reservedNum, nil
 }
