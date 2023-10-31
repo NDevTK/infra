@@ -44,6 +44,7 @@ func getApplication() *cli.Application {
 			subcmds.GetCmd,
 			subcmds.UpdateCmd,
 			subcmds.RepairCmd,
+			subcmds.SetupCmd,
 			subcommands.Section("Run"),
 			run.RunCmd,
 			subcommands.Section("Stable Version"),

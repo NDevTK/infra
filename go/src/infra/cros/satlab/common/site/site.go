@@ -40,6 +40,17 @@ const ProdUFSService = "ufs.api.cr.dev"
 // places to create resource names.
 const Satlab = "satlab"
 
+const (
+	// SatlabSAFilename is service account filename on user GCS bucket.
+	SatlabSAFilename = "pubsub-key-do-not-delete.json"
+	// SkylabDroneKeyFilename is filename of service account key to use by drone container
+	SkylabDroneKeyFilename = "skylab-drone.json"
+	// KeyFolder is where keys and config lives.
+	KeyFolder = "/home/satlab/keys"
+	// SatlabConfigFilename to be downloaed from GCS.
+	SatlabConfigFilename = "satlab-config.json"
+)
+
 const RecoveryVersionDirectory = "/home/satlab/keys/recovery_versions/"
 
 // RepairBuilderName is the var used to determine what Repair builder
@@ -105,6 +116,30 @@ const (
 
 	DefaultRPCServerLogFile = "/var/log/satlab/satlab_rpcserver.log"
 )
+
+const SatlabSetupInstruction = `
+--------------------------------------------------------------------------------
+IMPORTANT: Please read below information
+--------------------------------------------------------------------------------
+Setting up Satlab requires special privileges, you need access to
+the Google Storage Bucket and to download artifacts.
+This script will authenticate the user to access the required artifacts.
+
+The following the are steps this script executes:
+
+1. Asks for Google Storage Bucket name
+
+  *  Google Partners have to provide the GS bucket information assigned to them.
+
+  *  Satlab internal users(googlers), please use "chromeos-satlab-internal-users"
+     as your GS bucket
+
+2. Follow prompt to autheticate user.
+3. Pulls in required artifacts once the user is verified.
+4. Finally reboots the chromebox. (You must restart the chromebox inorder to
+   finish the satlab setup)
+--------------------------------------------------------------------------------
+`
 
 // CommonFlags controls some commonly-used CLI flags.
 type CommonFlags struct {
