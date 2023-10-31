@@ -38,7 +38,7 @@ func PrepareEmptyInstallDir(ctx context.Context, sshRunner ssh.Runner) error {
 // RemoveInstallDir deletes the temporary install directory on the host that is
 // used for chameleond installation.
 func RemoveInstallDir(ctx context.Context, sshRunner ssh.Runner) error {
-	_, err := sshRunner.Run(ctx, 5*time.Second, "rm", "-r", installDir)
+	_, err := sshRunner.Run(ctx, 30*time.Second, "rm", "-r", installDir)
 	return err
 }
 
