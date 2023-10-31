@@ -359,12 +359,22 @@ func setModemInfo(l *inventory.SchedulableLabels, m *chromeosLab.ModemInfo) {
 	var t inventory.ModemType
 	mtype := m.GetType()
 	switch mtype {
+	case chromeosLab.ModemType_MODEM_TYPE_UNSUPPORTED:
+		t = inventory.ModemType_MODEM_TYPE_UNSUPPORTED
 	case chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180:
 		t = inventory.ModemType_MODEM_TYPE_QUALCOMM_SC7180
 	case chromeosLab.ModemType_MODEM_TYPE_FIBOCOMM_L850GL:
 		t = inventory.ModemType_MODEM_TYPE_FIBOCOMM_L850GL
 	case chromeosLab.ModemType_MODEM_TYPE_NL668:
 		t = inventory.ModemType_MODEM_TYPE_NL668
+	case chromeosLab.ModemType_MODEM_TYPE_FM350:
+		t = inventory.ModemType_MODEM_TYPE_FM350
+	case chromeosLab.ModemType_MODEM_TYPE_FM101:
+		t = inventory.ModemType_MODEM_TYPE_FM101
+	case chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7280:
+		t = inventory.ModemType_MODEM_TYPE_QUALCOMM_SC7280
+	case chromeosLab.ModemType_MODEM_TYPE_EM060:
+		t = inventory.ModemType_MODEM_TYPE_EM060
 	default:
 		t = inventory.ModemType_MODEM_TYPE_UNSPECIFIED
 	}
