@@ -41,13 +41,11 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 	startIP := binary.BigEndian.Uint32(ipv4)
 	freeStartIPInt := startIP + reserveFirst
 	freeEndIPInt := startIP + uint32(length-reserveLast-1)
-	reservedNum := reserveFirst + reserveLast
 	if freeStartIP != "" {
 		ipInt, err := IPv4StrToInt(freeStartIP)
 		if err != nil {
 			return nil, 0, "", "", 0, errors.Reason("invalid free start IP %q for vlan %s", freeStartIP, vlanName).Err()
 		}
-		reservedNum = reservedNum + int(ipInt) - int(freeStartIPInt)
 		freeStartIPInt = ipInt
 
 	} else {
@@ -58,11 +56,15 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 		if err != nil {
 			return nil, 0, "", "", 0, errors.Reason("invalid free end IP %q for vlan %s", freeEndIP, vlanName).Err()
 		}
-		reservedNum = reservedNum + int(freeEndIPInt) - int(ipInt)
 		freeEndIPInt = ipInt
 	} else {
 		freeEndIP = IPv4IntToStr(startIP + uint32(length-reserveLast-1))
 	}
+	used, err := IPv4Diff(freeStartIP, freeEndIP)
+	if err != nil {
+		return nil, 0, "", "", 0, err
+	}
+	reservedNum := length - int(used) - 1
 	ips := makeIPv4sInVlan(vlanName, startIP, length, freeStartIPInt, freeEndIPInt)
 	return ips, length, freeStartIP, freeEndIP, reservedNum, nil
 }
