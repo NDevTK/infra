@@ -75,18 +75,17 @@ func GetSatlabVersion(ctx context.Context, executor executor.IExecCommander) (st
 			ctx,
 			paths.DockerPath,
 			"inspect",
-			"--format='{{range .Config.Env}}{{println .}}{{end}}'",
+			"--format={{range .Config.Env}}{{println .}}{{end}}",
 			"compose",
 		),
 	)
 	if err != nil {
 		return "", nil
 	}
-	rawData := strings.Split(string(out), "\n")
+	rawData := strings.Fields(string(out))
 	for _, row := range rawData {
-		if strings.HasPrefix(row, "LABEL=") {
-			r := strings.Split(row, "=")
-			return r[1], nil
+		if r, ok := strings.CutPrefix(row, "LABEL="); ok {
+			return r, nil
 		}
 	}
 	return "", errors.New("can't find the version")

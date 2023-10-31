@@ -214,3 +214,31 @@ func TestGetSatlabStartTimeShouldFailCommandOutputIsEmpty(t *testing.T) {
 		t.Errorf("Expected %v, got %v", nil, res)
 	}
 }
+
+func Test_GetSatlabVersion(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	// fake some data
+	f := &executor.FakeCommander{
+		FakeFn: func(_ *exec.Cmd) ([]byte, error) {
+			return []byte(`LABEL=beta
+SSH_PORT=22
+COMMON_CORE_LABEL=R-2.24.0
+BUILD_VERSION=R-4.2.3`), nil
+		},
+	}
+
+	res, err := GetSatlabVersion(ctx, f)
+
+	if err != nil {
+		t.Errorf("unexpected error: %v\n", err)
+	}
+
+	expected := "beta"
+
+	if res != expected {
+		t.Errorf("unexpected result, expected: %v, got %v\n", expected, res)
+	}
+}
