@@ -314,6 +314,9 @@ func GenerateLocalConfigs(ctx context.Context, sk *data.LocalTestStateKeeper) *c
 			BuildDutTopology_InvExecutor)
 	}
 
+	mainConfigs = append(mainConfigs,
+		ParseDutTopology_NoExecutor)
+
 	if !sk.Args.SkipDutServer {
 		mainConfigs = append(mainConfigs,
 			DutServerStart_CrosDutExecutor)
