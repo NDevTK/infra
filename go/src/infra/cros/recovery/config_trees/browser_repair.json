@@ -447,7 +447,7 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     },
                     {
-                      "name": "Disable software-controlled write-protect for 'host'",
+                      "name": "Disable software-controlled write-protect for 'internal'",
                       "docs": [
                         "Disable write-protect fprom 'internal'."
                       ],
@@ -698,7 +698,7 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     },
                     {
-                      "name": "Disable software-controlled write-protect for 'host'",
+                      "name": "Disable software-controlled write-protect for 'internal'",
                       "docs": [
                         "Disable write-protect fprom 'internal'."
                       ],

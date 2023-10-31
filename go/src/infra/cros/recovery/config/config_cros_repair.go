@@ -277,7 +277,7 @@ func crosRepairActions() map[string]*Action {
 				"The logic used update FW by futility can take time.",
 			},
 			Dependencies: []string{
-				"Disable software-controlled write-protect for 'host'",
+				"Disable software-controlled write-protect for 'internal'",
 				"Disable software-controlled write-protect for 'ec'",
 			},
 			ExecName:    "cros_update_hwid_from_inventory_to_host",
@@ -1123,7 +1123,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Provision OS if needed",
-				"Disable software-controlled write-protect for 'host'",
+				"Disable software-controlled write-protect for 'internal'",
 				"Disable software-controlled write-protect for 'ec'",
 			},
 			ExecName:    "cros_update_firmware_from_firmware_image",
@@ -2061,7 +2061,7 @@ func crosRepairActions() map[string]*Action {
 				"This action sets the GBB flags to 0x0.",
 			},
 			Dependencies: []string{
-				"Disable software-controlled write-protect for 'host'",
+				"Disable software-controlled write-protect for 'internal'",
 				"Disable software-controlled write-protect for 'ec'",
 			},
 			ExecName: "cros_set_gbb_flags",
@@ -2334,7 +2334,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"Disable software-controlled write-protect for 'host'": {
+		"Disable software-controlled write-protect for 'internal'": {
 			Docs: []string{
 				"Disable write-protect fprom 'internal'.",
 			},

@@ -263,7 +263,7 @@
                   "run_control": "RUN_ONCE"
                 },
                 {
-                  "name": "Disable software-controlled write-protect for 'host'",
+                  "name": "Disable software-controlled write-protect for 'internal'",
                   "docs": [
                     "Disable write-protect fprom 'internal'."
                   ],

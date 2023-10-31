@@ -161,7 +161,7 @@ func deployActions() map[string]*Action {
 				"Device is SSHable",
 				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
 				"Collect HWID into inventory",
-				"Disable software-controlled write-protect for 'host'",
+				"Disable software-controlled write-protect for 'internal'",
 				"Disable software-controlled write-protect for 'ec'",
 				"Try to update FW from firmware image with factory mode",
 				"Try to update FW from OS image with factory mode",
@@ -180,7 +180,7 @@ func deployActions() map[string]*Action {
 				"Device is SSHable",
 				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
 				"Collect HWID into inventory",
-				"Disable software-controlled write-protect for 'host'",
+				"Disable software-controlled write-protect for 'internal'",
 				"Disable software-controlled write-protect for 'ec'",
 				"Try to update FW from firmware image with factory mode",
 				"Try to update FW from OS image with factory mode",
