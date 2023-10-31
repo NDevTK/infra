@@ -77,6 +77,8 @@ message Swarming {
     string bot_prefix = 3;
     //UfsNamespace specifies the namespace to be used to fetch DUT information.
     string ufs_namespace = 4;
+    // AuditEnabled specified is audit tasks is enabled to be scheduled.
+    bool audit_enabled = 5;
   }
 }
 
