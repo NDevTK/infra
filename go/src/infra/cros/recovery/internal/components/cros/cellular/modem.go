@@ -1,7 +1,8 @@
-// Copyright 2023 The ChromiumOS Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package cellular contains utilities for repairing cellular DUTs.
 package cellular
 
 import (
@@ -166,6 +167,9 @@ func WaitForModemState(ctx context.Context, runner components.Runner, timeout ti
 // ModemInfo is a simplified version of the JSON output from ModemManager to get the modem connection state information.
 type ModemInfo struct {
 	Modem *struct {
+		G3PP *struct {
+			Imei string `json:"imei,omitempty"`
+		} `json:"3gpp,omitempty"`
 		Generic *struct {
 			State string `json:"state,omitempty"`
 		} `json:"generic,omitempty"`
@@ -188,6 +192,14 @@ func (m *ModemInfo) GetState() string {
 		return ""
 	}
 	return m.Modem.Generic.State
+}
+
+func (m *ModemInfo) GetImei() string {
+	// ModemManager may replace missing fields with "--"
+	if m == nil || m.Modem == nil || m.Modem.G3PP == nil || strings.EqualFold(m.Modem.G3PP.Imei, "--") {
+		return ""
+	}
+	return m.Modem.G3PP.Imei
 }
 
 // WaitForModemInfo polls for a modem to appear on the DUT, which can take up to two minutes on reboot.

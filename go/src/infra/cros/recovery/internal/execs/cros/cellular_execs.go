@@ -1,4 +1,4 @@
-// Copyright 2023 The ChromiumOS Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -230,11 +230,38 @@ func updateCellularModemLabelsExec(ctx context.Context, info *execs.ExecInfo) er
 		return errors.Reason("audit cellular modem labels: cellular data is not present in dut info").Err()
 	}
 
+	// Get labels directly from modem hardware.
+	argsMap := info.GetActionArgs(ctx)
+	timeout := argsMap.AsDuration(ctx, "wait_modem_timeout", 15, time.Second)
+	modemInfo, err := cellular.WaitForModemInfo(ctx, info.DefaultRunner(), timeout)
+	if err != nil {
+		return errors.Reason("audit cellular modem labels: no modem exported by ModemManager").Err()
+	}
+
+	if modemInfo.GetImei() == "" {
+		return errors.Reason("audit cellular modem labels: failed to get modem imei").Err()
+	}
+
+	// Get labels from cros_config.
 	variant := cellular.GetModelVariant(ctx, info.DefaultRunner())
 	if variant == "" {
 		return errors.Reason("audit cellular modem labels: cellular variant not present on device").Err()
 	}
+
+	modemType := cellular.GetModemTypeFromVariant(variant)
+	if modemType == tlw.Cellular_MODEM_TYPE_UNSUPPORTED && (c.ModemInfo.Type == tlw.Cellular_MODEM_TYPE_UNSPECIFIED || c.ModemInfo.Type == tlw.Cellular_MODEM_TYPE_UNSUPPORTED) {
+		// If unknown modem type and no modem was previously specified then just log as its a new device.
+		log.Errorf(ctx, "audit cellular modem labels: unknown modem type for variant: %q", variant)
+	} else if modemType == tlw.Cellular_MODEM_TYPE_UNSUPPORTED {
+		// If unknown modem type and modem was previously specified, then we should error out
+		// without updating anything as something has gone wrong and the device can't be trusted.
+		return errors.Reason("audit cellular modem labels: unknown modem type for variant: %q", variant).Err()
+	}
+
+	// Update properties at end once everything has been verified.
+	c.ModemInfo.Type = modemType
 	c.ModelVariant = variant
+	c.ModemInfo.Imei = modemInfo.GetImei()
 	return nil
 }
 
