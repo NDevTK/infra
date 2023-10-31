@@ -523,6 +523,33 @@ message Cellular {
   string carrier = 2;
   // Model variant.
   string model_variant = 3;
+  
+  // Type of modem hardware.
+  enum ModemType {
+    MODEM_TYPE_UNSPECIFIED = 0;
+    MODEM_TYPE_UNSUPPORTED = 8;
+    // Qualcomm modem
+    MODEM_TYPE_QUALCOMM_SC7180 = 1;
+    // Fibocomm modem
+    MODEM_TYPE_FIBOCOMM_L850GL = 2;
+    // NL668
+    MODEM_TYPE_NL668 = 3;
+    // FM350
+    MODEM_TYPE_FM350 = 4;
+    // FM101
+    MODEM_TYPE_FM101 = 5;
+    // SC7280
+    MODEM_TYPE_QUALCOMM_SC7280 = 6;
+    // EM060
+    MODEM_TYPE_EM060 = 7;
+  }
+  message ModemInfo {
+    ModemType type = 1;
+    // Equipment Identifier
+    string imei = 2;
+  }
+  // Modem-specific label info.
+  ModemInfo modem_info = 4;
 }
 
 // Battery holds info about battery of the DUT.

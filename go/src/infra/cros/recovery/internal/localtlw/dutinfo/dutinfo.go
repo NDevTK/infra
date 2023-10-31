@@ -450,6 +450,10 @@ func createDUTCellular(ds *ufslab.DutState, p *ufslab.Peripherals, m *ufslab.Mod
 		ModemState:   convertHardwareState(ds.GetCellularModemState()),
 		Carrier:      p.GetCarrier(),
 		ModelVariant: m.GetModelVariant(),
+		ModemInfo: &tlw.Cellular_ModemInfo{
+			Imei: m.GetImei(),
+			Type: convertModemTypes(m.GetType()),
+		},
 	}
 }
 

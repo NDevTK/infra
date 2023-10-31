@@ -386,3 +386,33 @@ func convertRepairRequestsToUFS(requests []tlw.RepairRequest) []ufslab.DutState_
 	}
 	return r
 }
+
+// modemTypes maps the ufs modem types to TLW modem types
+var modemTypes = map[ufslab.ModemType]tlw.Cellular_ModemType{
+	ufslab.ModemType_MODEM_TYPE_UNSUPPORTED:     tlw.Cellular_MODEM_TYPE_UNSUPPORTED,
+	ufslab.ModemType_MODEM_TYPE_QUALCOMM_SC7180: tlw.Cellular_MODEM_TYPE_QUALCOMM_SC7180,
+	ufslab.ModemType_MODEM_TYPE_FIBOCOMM_L850GL: tlw.Cellular_MODEM_TYPE_FIBOCOMM_L850GL,
+	ufslab.ModemType_MODEM_TYPE_NL668:           tlw.Cellular_MODEM_TYPE_NL668,
+	ufslab.ModemType_MODEM_TYPE_FM350:           tlw.Cellular_MODEM_TYPE_FM350,
+	ufslab.ModemType_MODEM_TYPE_FM101:           tlw.Cellular_MODEM_TYPE_FM101,
+	ufslab.ModemType_MODEM_TYPE_QUALCOMM_SC7280: tlw.Cellular_MODEM_TYPE_QUALCOMM_SC7280,
+	ufslab.ModemType_MODEM_TYPE_EM060:           tlw.Cellular_MODEM_TYPE_EM060,
+}
+
+// convertModemTypes converts UFS state to TLW modem types
+func convertModemTypes(s ufslab.ModemType) tlw.Cellular_ModemType {
+	if ns, ok := modemTypes[s]; ok {
+		return ns
+	}
+	return tlw.Cellular_MODEM_TYPE_UNSPECIFIED
+}
+
+// convertModemTypeToUFS TLW modem types to UFS modem types
+func convertModemTypeToUFS(s tlw.Cellular_ModemType) ufslab.ModemType {
+	for us, ls := range modemTypes {
+		if ls == s {
+			return us
+		}
+	}
+	return ufslab.ModemType_MODEM_TYPE_UNSPECIFIED
+}
