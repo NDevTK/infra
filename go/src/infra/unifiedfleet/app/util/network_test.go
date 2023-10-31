@@ -144,10 +144,61 @@ func TestMakeIPv4sInVlan(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-
 			got := makeIPv4sInVlan(tt.vlanName, tt.startIP, tt.length, tt.freeStartIP, tt.freeEndIP)
 
 			if diff := cmp.Diff(got, tt.want, protocmp.Transform()); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
+
+// TestIPv4Diff tests diffing two IPv4 addresses.
+func TestIPv4Diff(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name      string
+		startIPv4 string
+		endIPv4   string
+		result    uint64
+		ok        bool
+	}{
+		{
+			name:      "smoke test",
+			startIPv4: "",
+			endIPv4:   "",
+			result:    0,
+			ok:        false,
+		},
+		{
+			name:      "start > end",
+			startIPv4: "127.0.0.2",
+			endIPv4:   "127.0.0.1",
+			result:    0,
+			ok:        false,
+		},
+		{
+			name:      "happy path",
+			startIPv4: "127.0.0.1",
+			endIPv4:   "127.0.0.2",
+			result:    1,
+			ok:        true,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			dist, err := IPv4Diff(tt.startIPv4, tt.endIPv4)
+			switch {
+			case err == nil && !tt.ok:
+				t.Error("err unexpectly nil")
+			case err != nil && tt.ok:
+				t.Errorf("unexpected error: %s", err)
+			}
+			if diff := cmp.Diff(dist, tt.result); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
 		})
