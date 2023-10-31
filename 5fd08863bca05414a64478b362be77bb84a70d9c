@@ -1,0 +1,62 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8bc3556_670e6efa",
+        "filename": "go/src/infra/tools/pkgbuild/cmd/edge/application.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-10-31T04:48:29Z",
+      "side": 1,
+      "message": "\u003e File is not `gci`-ed with --skip-generated -s standard -s default -s prefix(go.chromium.org) -s prefix(infra) --custom-order\n\nThis warning is not self explanatory at all, but if it means anything to you, please fix :-)",
+      "parentUuid": "7135dae8_b033f264",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 0
+      },
+      "revId": "5fd08863bca05414a64478b362be77bb84a70d9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a068634f_0194f751",
+        "filename": "go/src/infra/tools/pkgbuild/cmd/edge/application.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-10-31T04:48:29Z",
+      "side": 1,
+      "message": "\"Parse parses\"",
+      "revId": "5fd08863bca05414a64478b362be77bb84a70d9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1101be4d_deca93d4",
+        "filename": "go/src/infra/tools/pkgbuild/pkg/stdenv/linux.go",
+        "patchSetId": 13
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-10-31T04:48:29Z",
+      "side": 1,
+      "message": "I think this is meant to go with the nsjail fixes, isn\u0027t it? Or is it independent of either thing?",
+      "revId": "5fd08863bca05414a64478b362be77bb84a70d9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
