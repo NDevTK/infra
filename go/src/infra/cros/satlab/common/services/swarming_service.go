@@ -73,7 +73,8 @@ type SwarmingService struct {
 
 // NewSwarmingService create a new swarming service
 func NewSwarmingService(ctx context.Context) (ISwarmingService, error) {
-	options := site.DefaultAuthOptions
+	options := site.GetAuthOption(ctx)
+
 	a := auth.NewAuthenticator(ctx, auth.SilentLogin, options)
 	c, err := a.Client()
 	if err != nil {
