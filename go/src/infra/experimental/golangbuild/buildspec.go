@@ -438,14 +438,12 @@ func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
 		rdbArgs = append(rdbArgs, "-tag", "node_version:"+b.inputs.NodeVersion)
 	}
 
-	// Assemble args.
+	// Assemble args and update the command.
+	cmd.Path = b.toolPath("rdb")
 	args := []string{cmd.Path, "stream"}
 	args = append(args, rdbArgs...)
 	args = append(args, "--", b.toolPath("result_adapter"), "go", "--")
 	args = append(args, cmd.Args...)
-
-	// Update the command.
-	cmd.Path = b.toolPath("rdb")
 	cmd.Args = args
 	return cmd
 }
