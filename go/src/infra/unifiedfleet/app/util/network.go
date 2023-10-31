@@ -69,27 +69,24 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 	return ips, length, freeStartIP, freeEndIP, reservedNum, nil
 }
 
+// makeIPv4 makes a ufs IP object.
+func makeIPv4(vlanName string, ipv4 uint32, reserved bool) *ufspb.IP {
+	return &ufspb.IP{
+		Id:      GetIPName(vlanName, Int64ToStr(int64(ipv4))),
+		Ipv4:    ipv4,
+		Ipv4Str: IPv4IntToStr(ipv4),
+		Reserve: reserved,
+		Vlan:    vlanName,
+	}
+}
+
 // makeIPv4sInVlan creates the IP objects in a Vlan that are intended to be created in datastore later.
 func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIPInt uint32, freeEndIPInt uint32) []*ufspb.IP {
 	endIP := startIP + uint32(length)
 	ips := make([]*ufspb.IP, 0, length)
 	for ; startIP < endIP; startIP++ {
-		if startIP < freeStartIPInt || startIP > freeEndIPInt {
-			ips = append(ips, &ufspb.IP{
-				Id:      GetIPName(vlanName, Int64ToStr(int64(startIP))),
-				Ipv4:    startIP,
-				Ipv4Str: IPv4IntToStr(startIP),
-				Vlan:    vlanName,
-				Reserve: true,
-			})
-		} else {
-			ips = append(ips, &ufspb.IP{
-				Id:      GetIPName(vlanName, Int64ToStr(int64(startIP))),
-				Ipv4:    startIP,
-				Ipv4Str: IPv4IntToStr(startIP),
-				Vlan:    vlanName,
-			})
-		}
+		reserved := startIP < freeStartIPInt || startIP > freeEndIPInt
+		ips = append(ips, makeIPv4(vlanName, startIP, reserved))
 	}
 	return ips
 }
