@@ -956,6 +956,12 @@ func getStability(ctx context.Context, model string) (bool, error) {
 }
 
 func updateDeviceConfigWithAssetInfo(ctx context.Context, id string, devConfig *ufsdevice.Config) {
+	// TODO(b/308477445): currently AssetInfo does not work for partners as it
+	// is based off of HaRT data tied to an Asset ID not relevant for partner
+	// DUTs. As a result, we want to fallback to device configs data.
+	if util.GetDatastoreNamespace(ctx) == util.OSPartnerNamespace {
+		return
+	}
 	// Device config can be nil, do a check here to avoid nil pointer panic later.
 	if devConfig == nil {
 		return
