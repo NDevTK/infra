@@ -6,11 +6,14 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
+	"time"
 
 	"infra/tools/pkgbuild/pkg/spec"
 
@@ -22,6 +25,10 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
+	"go.chromium.org/luci/provenance/api/snooperpb/v1"
+	"go.chromium.org/luci/provenance/client"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Application struct {
@@ -48,6 +55,9 @@ type Application struct {
 	// If true, prepend additional experimental/ to upload path.
 	Experiment bool
 
+	// Snoopy service URL for reporting artifact hash.
+	SnoopyService string
+
 	// Display help message
 	Help bool
 
@@ -58,6 +68,7 @@ type Application struct {
 	PackageManager *workflow.LocalPackageManager
 }
 
+// Parse parsed input arguments.
 func (a *Application) Parse(args []string) error {
 	fs := flag.NewFlagSet("pkgbuild", flag.ContinueOnError)
 
@@ -75,6 +86,8 @@ func (a *Application) Parse(args []string) error {
 	fs.StringVar(&a.CIPDPackagePrefix, "cipd-package-prefix", a.CIPDPackagePrefix, "Required; The prefix to use for uploading built packages.")
 
 	fs.BoolVar(&a.Experiment, "experiment", a.Experiment, "If experiment is true, packages will be uploaded to experimental/.")
+
+	fs.StringVar(&a.SnoopyService, "snoopy-service", a.SnoopyService, "Snoopy service URL for reporting artifact hash.")
 
 	fs.BoolVar(&a.Help, "help", false, "Display help message.")
 
@@ -103,10 +116,6 @@ func (a *Application) Parse(args []string) error {
 		return fmt.Errorf("cipd-package-prefix is required")
 	}
 
-	if a.Experiment {
-		a.CIPDPackagePrefix = path.Join("experimental", a.CIPDPackagePrefix)
-	}
-
 	a.Packages = fs.Args()
 
 	pm, err := workflow.NewLocalPackageManager(a.StorageDir)
@@ -118,6 +127,8 @@ func (a *Application) Parse(args []string) error {
 	return nil
 }
 
+// NewBuilder creates the PackageBuilder used for building packages based on
+// the configuration and platform.
 func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 	vpythonSpecPath := filepath.Join(a.SpecPoolDir, ".vpython3")
 	if _, err := os.Stat(vpythonSpecPath); err != nil {
@@ -162,6 +173,103 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 	}, nil
 }
 
+// TryUpload build and register the cipd if Application.Upload set to true.
+func (a *Application) TryUpload(ctx context.Context, pkgs []actions.Package) error {
+	if !a.Upload {
+		return nil
+	}
+
+	clt, err := client.MakeProvenanceClient(ctx, a.SnoopyService)
+	if err != nil {
+		return errors.Annotate(err, "failed to create provenance client").Err()
+	}
+
+	tmp, err := os.MkdirTemp("", "pkgbuild-")
+	if err != nil {
+		return errors.Annotate(err, "failed to create tmp dir").Err()
+	}
+	defer filesystem.RemoveAll(tmp)
+
+	for _, pkg := range pkgs {
+		metadata := pkg.Action.Metadata
+		logging.Infof(ctx, "creating cipd package %s:%s", metadata.Cipd.Name, metadata.Cipd.Version)
+
+		name := metadata.Cipd.Name
+		if a.Experiment {
+			name = path.Join("experimental", name)
+		}
+
+		out := filepath.Join(tmp, pkg.DerivationID+".cipd")
+		Iid, err := buildCIPD(name, pkg.Handler.OutputDirectory(), out)
+		if err != nil {
+			return errors.Annotate(err, "failed to build cipd package").Err()
+		}
+
+		if err := registerCIPD(a.CIPDService, out); err != nil {
+			return errors.Annotate(err, "failed to register cipd package").Err()
+		}
+
+		// Report package info to server to trigger provenance generation.
+		if _, err := clt.ReportCipd(ctx, &snooperpb.ReportCipdRequest{
+			CipdReport: &snooperpb.CipdReport{
+				PackageName: name,
+				Iid:         Iid,
+				EventTs:     timestamppb.New(time.Now()),
+			},
+		}); err != nil {
+			// Error during reporting won't block the package build.
+			logging.Warningf(ctx, "report cipd package to snoopy failed: %s: %s", pkg.Action.Metadata.Cipd.Name, err)
+		}
+	}
+
+	return nil
+}
+
+func buildCIPD(name, src, dst string) (Iid string, err error) {
+	resultFile := dst + ".json"
+	cmd := cipdCommand("pkg-build",
+		"-name", name,
+		"-in", src,
+		"-out", dst,
+		"-json-output", resultFile,
+	)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		return "", err
+	}
+
+	f, err := os.Open(resultFile)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	var result struct {
+		Result struct {
+			Package    string
+			InstanceID string `json:"instance_id"`
+		}
+	}
+	if err := json.NewDecoder(f).Decode(&result); err != nil {
+		return "", err
+	}
+
+	return result.Result.InstanceID, nil
+}
+
+func registerCIPD(cipdService, pkg string) error {
+	// TODO(fancl): add tags and refs
+	cmd := cipdCommand("pkg-register", pkg,
+		"-service-url", cipdService,
+	)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd.Run()
+}
+
 type PackageBuilder struct {
 	Packages  core.PackageManager
 	Platforms generators.Platforms
@@ -200,4 +308,18 @@ func (b *PackageBuilder) BuildAll(ctx context.Context) ([]actions.Package, error
 	}
 
 	return b.Builder.BuildAll(ctx, b.BuildTempDir, b.loaded)
+}
+
+func cipdCommand(arg ...string) *exec.Cmd {
+	cipd, err := exec.LookPath("cipd")
+	if err != nil {
+		cipd = "cipd"
+	}
+
+	// Use cmd to execute batch file on windows.
+	if filepath.Ext(cipd) == ".bat" {
+		return exec.Command("cmd.exe", append([]string{"/C", cipd}, arg...)...)
+	}
+
+	return exec.Command(cipd, arg...)
 }
