@@ -515,6 +515,10 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 			labData.ModemInfo = &ufsAPI.ChromeOsRecoveryData_ModemInfo{
 				ModelVariant: c.GetModelVariant(),
 			}
+			if m := c.GetModemInfo(); m != nil {
+				labData.ModemInfo.Imei = m.Imei
+				labData.ModemInfo.Type = convertModemTypeToUFS(m.Type)
+			}
 		}
 		labData.RoVpdMap = ch.GetRoVpdMap()
 		labData.Cbi = ch.GetCbi()
