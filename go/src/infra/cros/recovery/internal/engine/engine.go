@@ -319,8 +319,6 @@ func (r *recoveryEngine) runActionExec(ctx context.Context, actionName string, m
 	log.Debugf(ctx, "Action %q exec execution time: %v", actionName, durationExec)
 	if metric != nil {
 		metric.Observations = append(metric.Observations,
-			// TODO: remove after Mar 2023 as replaced with exec_execution_sec.
-			metrics.NewInt64Observation("exec_execution", int64(durationExec)),
 			metrics.NewInt64Observation("exec_execution_sec", int64(durationExec.Seconds())),
 			metrics.NewInt64Observation("plan_run_tally", int64(r.planRunTally)),
 		)
@@ -387,6 +385,13 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionNam
 		ctx = metrics.WithAction(ctx, metric)
 		err := execs.Run(ctx, execInfo)
 		cw <- err
+	}()
+	defer func() {
+		if rErr != nil {
+			log.Debugf(ctx, "Action %q: finished with error %s.", actionName, rErr)
+		} else {
+			log.Debugf(ctx, "Action %q: finished.", actionName)
+		}
 	}()
 	select {
 	case err := <-cw:
