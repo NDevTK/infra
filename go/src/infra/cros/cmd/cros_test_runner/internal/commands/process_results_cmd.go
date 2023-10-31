@@ -29,7 +29,7 @@ type ProcessResultsCmd struct {
 	CftTestRequest  *skylab_test_runner.CFTTestRequest
 	GcsUrl          string
 	TesthausUrl     string
-	ProvisionResp   *api.InstallResponse
+	ProvisionResps  map[string][]*api.InstallResponse
 	TestResponses   *api.CrosTestResponse
 	CurrentDutState dutstate.State // optional
 
@@ -96,13 +96,25 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 
 	// Parse provision info
 	var prejob *skylab_test_runner.Result_Prejob = nil
-	if cmd.ProvisionResp != nil {
-		if cmd.ProvisionResp.GetStatus() == api.InstallResponse_STATUS_SUCCESS {
-			prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_PASS
-		} else {
-			prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL
+	if cmd.ProvisionResps != nil && len(cmd.ProvisionResps) > 0 {
+		for dutName, provisionResps := range cmd.ProvisionResps {
+			for _, provisionResp := range provisionResps {
+				if provisionResp.GetStatus() == api.InstallResponse_STATUS_SUCCESS && prejobVerdict != skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL {
+					prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_PASS
+				} else {
+					prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL
+				}
+				if prejobReason == "" {
+					prejobReason = provisionResp.GetStatus().String()
+				}
+				stepName := fmt.Sprintf("Provision of %s", dutName)
+				provErr := common.CreateStepWithStatus(ctx, stepName, provisionResp.GetStatus().String(), provisionResp.GetStatus() != api.InstallResponse_STATUS_SUCCESS, true)
+				// Propogate error status to parent step
+				if err == nil {
+					err = provErr
+				}
+			}
 		}
-		prejobReason = cmd.ProvisionResp.GetStatus().String()
 		prejob = &skylab_test_runner.Result_Prejob{
 			Step: []*skylab_test_runner.Result_Prejob_Step{
 				{
@@ -112,7 +124,6 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 				},
 			},
 		}
-		err = common.CreateStepWithStatus(ctx, "Provision", cmd.ProvisionResp.GetStatus().String(), cmd.ProvisionResp.GetStatus() != api.InstallResponse_STATUS_SUCCESS, true)
 	}
 
 	// Parse test results
@@ -189,11 +200,15 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: CurrentDutState", cmd.GetCommandType())
 	}
 
-	cmd.CftTestRequest = sk.CftTestRequest
-	responses, ok := sk.ProvisionResponses["primaryDevice"]
-	if ok && len(responses) > 0 {
-		cmd.ProvisionResp = responses[0]
+	for _, id := range sk.DeviceIdentifiers {
+		responses, ok := sk.ProvisionResponses[id]
+		if ok && len(responses) > 0 {
+			if device, ok := sk.Devices[id]; ok {
+				cmd.ProvisionResps[device.GetDut().GetId().GetValue()] = responses
+			}
+		}
 	}
+	cmd.CftTestRequest = sk.CftTestRequest
 	cmd.TestResponses = sk.TestResponses
 	cmd.GcsUrl = sk.GcsUrl
 	cmd.TesthausUrl = sk.TesthausUrl
@@ -276,5 +291,5 @@ func getLogData(testhausUrl string, gcsUrl string) *commonpb.TaskLogData {
 func NewProcessResultsCmd() *ProcessResultsCmd {
 	abstractCmd := interfaces.NewAbstractCmd(ProcessResultsCmdType)
 	abstractSingleCmdByNoExecutor := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: abstractCmd}
-	return &ProcessResultsCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
+	return &ProcessResultsCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor, ProvisionResps: map[string][]*api.InstallResponse{}}
 }

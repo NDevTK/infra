@@ -17,6 +17,7 @@ import (
 	api_common "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -76,6 +77,11 @@ func HwExecution() {
 				resp.CompressedResult = base64.StdEncoding.EncodeToString(b.Bytes())
 			}
 			if err != nil {
+				if common.GlobalNonInfraError != nil {
+					err = common.GlobalNonInfraError
+				} else {
+					err = build.AttachStatus(err, buildbucketpb.Status_INFRA_FAILURE, nil)
+				}
 				logging.Infof(ctx, "error found: %s", err)
 				st.SetSummaryMarkdown(err.Error())
 				resp.ErrorSummaryMarkdown = err.Error()

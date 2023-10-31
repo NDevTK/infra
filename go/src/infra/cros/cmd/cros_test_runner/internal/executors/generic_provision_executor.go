@@ -74,7 +74,7 @@ func (ex *GenericProvisionExecutor) genericProvisionHandler(
 
 	resp, err := ex.Install(ctx, client, cmd.ProvisionRequest.GetInstallRequest())
 	if err != nil {
-		logging.Infof(ctx, err.Error())
+		return
 	}
 
 	step.SetSummaryMarkdown(fmt.Sprintf("provision status: %s", resp.GetStatus().String()))
@@ -84,7 +84,7 @@ func (ex *GenericProvisionExecutor) genericProvisionHandler(
 
 	if resp.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
 		err = fmt.Errorf("Provision failure: %s", resp.GetStatus().String())
-		return
+		common.GlobalNonInfraError = err
 	}
 
 	return

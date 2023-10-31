@@ -109,6 +109,7 @@ func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(
 	wg.Wait() // Wait for the logging to complete
 	if err != nil {
 		err = errors.Annotate(err, "Provision install cmd err: ").Err()
+		return err
 	}
 
 	step.SetSummaryMarkdown(fmt.Sprintf("provision status: %s", resp.GetStatus().String()))
@@ -118,6 +119,7 @@ func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(
 
 	if resp.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
 		err = fmt.Errorf("Provision failure: %s", resp.GetStatus().String())
+		common.GlobalNonInfraError = err
 	}
 
 	return err
