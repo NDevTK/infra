@@ -427,10 +427,7 @@ func labAvalability(*api.HWRequirements) int {
 func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 	// toComplete will track what hwInfo will need labAvailibility info to be populated.
 	toComplete := []*hwInfo{}
-	swarmingServ, err := common.CreateNewSwarmingService(context.Background())
-	if err != nil {
-		logging.Infof(ctx, fmt.Sprintf("error found while creating new swarming service: %s", err))
-	}
+
 	hwFound := make(map[uint64]*loading)
 	for _, value := range solverData.flatHWUUIDMap {
 		hash, _ := hashstructure.Hash(value.req.HwDefinition[0].DutInfo, hashstructure.FormatV2, nil)
@@ -449,22 +446,29 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 		value.labLoading = hwFound[hash]
 	}
 
-	// Query swarming asynchronously for device availability.
-	wg := sync.WaitGroup{}
-	for _, hwInfoObj := range toComplete {
-		wg.Add(1)
-		go func(hwInfoInput *hwInfo) {
-			defer wg.Done()
-			// ex: dims := []string{"label-board:zork", "label-model:morphius", "dut_state:ready"}
-			dims := CreateDims(hwInfoInput)
-			botCount, err := common.GetBotCount(ctx, dims, swarmingServ)
-			if err != nil {
-				logging.Infof(ctx, fmt.Sprintf("error found in GetBOTcount: %s", err))
-			}
-			hwInfoInput.labLoading = &loading{value: int(botCount)}
-		}(hwInfoObj)
+	if solverData.cfg.unitTestDevices == 0 {
+		swarmingServ, err := common.CreateNewSwarmingService(context.Background())
+		if err != nil {
+			logging.Infof(ctx, fmt.Sprintf("error found while creating new swarming service: %s", err))
+		}
+		// Query swarming asynchronously for device availability.
+		wg := sync.WaitGroup{}
+		for _, hwInfoObj := range toComplete {
+			wg.Add(1)
+			go func(hwInfoInput *hwInfo) {
+				defer wg.Done()
+				// TODO (dbeckett/azrahman): pass real dims instead of mocked dims.
+				dims := []string{"label-board:zork", "label-model:morphius", "dut_state:ready"}
+				botCount, err := common.GetBotCount(ctx, dims, swarmingServ)
+				if err != nil {
+					logging.Infof(ctx, fmt.Sprintf("error found in GetBOTcount: %s", err))
+				}
+				logging.Infof(ctx, fmt.Sprintf("botcount found for dims %v: %d", dims, botCount))
+				hwInfoInput.labLoading = &loading{value: int(botCount)}
+			}(hwInfoObj)
+		}
+		wg.Wait()
 	}
-	wg.Wait()
 }
 
 // CreateDims creates dims list from hwInfo object.
@@ -513,34 +517,33 @@ func ConvertSwarmingLabelsToDims(defaultDims []string, swarmingLabels []string) 
 	return dims
 }
 
-// TODO (dbeckett): figure this out
 // translate the given hwEquivalenceMap into a 2d map:
 // EG [id1=[1 || 2] || id2=[3 || 4]] needs to be [[1, 2, 3, 4]]
 // hwEquivalenceMap is like id1 = [id1, id2]
 // now needs to be like id1 = [newid1, newid2, newid3, newid4]
-// func flattenEqMap(hwEquivalenceMap map[uint64][]uint64, hwUUIDMap map[uint64]*api.HWRequirements) (map[uint64][]uint64, map[uint64]*hwInfo) {
-// 	newHWUUIDMap := make(map[uint64]*hwInfo)
-// 	newHwEquivalenceMap := make(map[uint64][]uint64)
+func flattenEqMap(hwEquivalenceMap map[uint64][]uint64, hwUUIDMap map[uint64]*api.HWRequirements) (map[uint64][]uint64, map[uint64]*hwInfo) {
+	newHWUUIDMap := make(map[uint64]*hwInfo)
+	newHwEquivalenceMap := make(map[uint64][]uint64)
 
-// 	for hw, results := range hwEquivalenceMap {
-// 		var allHw []*api.HWRequirements
-// 		newHwEquivalenceMap[hw] = []uint64{}
+	for hw, results := range hwEquivalenceMap {
+		var allHw []*api.HWRequirements
+		newHwEquivalenceMap[hw] = []uint64{}
 
-// 		allHw = append(allHw, hwUUIDMap[hw])
-// 		for _, hash := range results {
-// 			allHw = append(allHw, hwUUIDMap[hash])
-// 		}
+		allHw = append(allHw, hwUUIDMap[hw])
+		for _, hash := range results {
+			allHw = append(allHw, hwUUIDMap[hash])
+		}
 
-// 		// flattened is now the uuid for [newid1: obj, etc]
-// 		flattened := flattenList(allHw)
+		// flattened is now the uuid for [newid1: obj, etc]
+		flattened := flattenList(context.Background(), allHw)
 
-// 		for k, v := range flattened {
-// 			newHWUUIDMap[k] = &hwInfo{req: v}
-// 			newHwEquivalenceMap[hw] = append(newHwEquivalenceMap[hw], k)
-// 		}
-// 	}
-// 	return newHwEquivalenceMap, newHWUUIDMap
-// }
+		for k, v := range flattened {
+			newHWUUIDMap[k] = v
+			newHwEquivalenceMap[hw] = append(newHwEquivalenceMap[hw], k)
+		}
+	}
+	return newHwEquivalenceMap, newHWUUIDMap
+}
 
 // flattenList translates [hw.requirements=[1||2], hw.requirements=[3||4]] into [[1],[2],[3],[4]]
 func flattenList(ctx context.Context, allHw []*api.HWRequirements) map[uint64]*hwInfo {
