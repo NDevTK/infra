@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/grpcutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -35,13 +36,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed connection: %v", err)
 	}
-
-	s := grpc.NewServer()
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*20)
-	defer cancel()
+	ctx := context.Background()
 	ctx = utils.AddLoggingContext(ctx)
 	logging.Infof(ctx, "\n\n\n===== STARTING THE SATLAB_RPCSERVER =====\n\n\n")
+
+	injectCtx := contextInjector(ctx)
+	s := grpc.NewServer(grpc.UnaryInterceptor(injectCtx.Unary()), grpc.StreamInterceptor(injectCtx.Stream()))
 
 	monitor := m.New()
 	defer monitor.Stop()
@@ -90,4 +90,26 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to server: %v", err)
 	}
+}
+
+// //////////////////////////////////////////////////////////////////////////////
+// contextInjector is an interceptor that replaces a context with the one that
+// takes values from the request context **and** baseCtx(), but keeps
+// cancellation of the request context.
+func contextInjector(baseCtx context.Context) grpcutil.UnifiedServerInterceptor {
+	return func(ctx context.Context, fullMethod string, handler func(ctx context.Context) error) error {
+		return handler(&mergedCtx{ctx, baseCtx})
+	}
+}
+
+type mergedCtx struct {
+	context.Context
+	values context.Context
+}
+
+func (m mergedCtx) Value(key any) any {
+	if v := m.Context.Value(key); v != nil {
+		return v
+	}
+	return m.values.Value(key)
 }

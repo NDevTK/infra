@@ -15,6 +15,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/go-version"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cmd/shivas/utils"
 	"infra/cros/satlab/common/asset"
@@ -77,6 +78,8 @@ func New(
 // define it as a parameter to satisfy the compiler.
 // To see more, we can look at the `src/satlab_rpcserver/satlabrpc.proto`
 func (s *SatlabRpcServiceServer) ListBuildTargets(ctx context.Context, _ *pb.ListBuildTargetsRequest) (*pb.ListBuildTargetsResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: list_build_targets")
+
 	res, err := s.buildService.ListBuildTargets(ctx)
 	if err != nil {
 		return nil, err
@@ -92,6 +95,7 @@ func (s *SatlabRpcServiceServer) ListBuildTargets(ctx context.Context, _ *pb.Lis
 //
 // pb.ListMilestonesRequest in the request from the client we use it as a filter to list the milestones.
 func (s *SatlabRpcServiceServer) ListMilestones(ctx context.Context, in *pb.ListMilestonesRequest) (*pb.ListMilestonesResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: list_milestones")
 	// Get the milestones from the partner bucket
 	// If the milestones are in the partner bucket. they are staged.
 	bucketMilestones, err := s.bucketService.GetMilestones(ctx, in.GetBoard())
