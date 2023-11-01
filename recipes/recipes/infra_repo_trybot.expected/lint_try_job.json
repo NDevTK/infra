@@ -495,6 +495,16 @@
       "@@@STEP_LOG_LINE@json.output@        \"func foo() {}\"@@@",
       "@@@STEP_LOG_LINE@json.output@      ],@@@",
       "@@@STEP_LOG_LINE@json.output@      \"Text\": \"`foo` is unused\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    },@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"FromLinter\": \"gci\",@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"Pos\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Column\": 0,@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Filename\": \"auth_service/impl/model/init.go\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Line\": 20,@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Offset\": 0@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"Text\": \"File is not `gci`-ed with --skip-generated -s standard -s default -s prefix(go.chromium.org) --custom-order\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  ]@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
@@ -505,7 +515,7 @@
     "cmd": [],
     "name": "write results",
     "~followup_annotations": [
-      "@@@SET_BUILD_PROPERTY@tricium@\"{\\n\\\"comments\\\": [\\n{\\n\\\"category\\\": \\\"golangci-lint (deadcode)\\\",\\n\\\"endLine\\\": 250,\\n\\\"message\\\": \\\"`foo` is unused\\\",\\n\\\"path\\\": \\\"go/src/infra/client/cmd/isolate/lib/batch_archive.go\\\",\\n\\\"startLine\\\": 250\\n}\\n]\\n}\"@@@"
+      "@@@SET_BUILD_PROPERTY@tricium@\"{\\n\\\"comments\\\": [\\n{\\n\\\"category\\\": \\\"golangci-lint (deadcode)\\\",\\n\\\"endLine\\\": 250,\\n\\\"message\\\": \\\"`foo` is unused\\\",\\n\\\"path\\\": \\\"go/src/infra/client/cmd/isolate/lib/batch_archive.go\\\",\\n\\\"startLine\\\": 250\\n},\\n{\\n\\\"category\\\": \\\"golangci-lint (gci)\\\",\\n\\\"endLine\\\": 20,\\n\\\"message\\\": \\\"\\\\nImport order is not sorted.\\\\nRun `golangci-lint run --fix auth_service/impl/model` to fix this.\\\",\\n\\\"path\\\": \\\"go/src/infra/auth_service/impl/model/init.go\\\",\\n\\\"startLine\\\": 20\\n}\\n]\\n}\"@@@"
     ]
   },
   {

@@ -5,6 +5,7 @@
 import collections
 import contextlib
 import re
+import textwrap
 
 from recipe_engine import recipe_api
 
@@ -276,29 +277,49 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
             '--timeout=5m',
         ] + go_files,
         step_test_data=lambda: self.m.json.test_api.output_stream({
-            'Issues': [{
-                'FromLinter': 'deadcode',
-                'Text': '`foo` is unused',
-                'Severity': '',
-                'SourceLines': ['func foo() {}'],
-                'Pos': {
-                    'Filename': 'client/cmd/isolate/lib/batch_archive.go',
-                    'Offset': 7960,
-                    'Line': 250,
-                    'Column': 6
+            'Issues': [
+                {
+                    'FromLinter': 'deadcode',
+                    'Text': '`foo` is unused',
+                    'Severity': '',
+                    'SourceLines': ['func foo() {}'],
+                    'Pos': {
+                        'Filename': 'client/cmd/isolate/lib/batch_archive.go',
+                        'Offset': 7960,
+                        'Line': 250,
+                        'Column': 6
+                    },
+                    'HunkPos': 4,
+                    'ExpectedNoLintLinter': ''
                 },
-                'HunkPos': 4,
-                'ExpectedNoLintLinter': ''
-            }],
+                {
+                    "FromLinter":
+                        "gci",
+                    "Text":
+                        "File is not `gci`-ed with --skip-generated -s standard -s default -s prefix(go.chromium.org) --custom-order",
+                    "Pos": {
+                        "Filename": "auth_service/impl/model/init.go",
+                        "Offset": 0,
+                        "Line": 20,
+                        "Column": 0
+                    },
+                },
+            ],
         }),
         stdout=self.m.json.output())
 
     for issue in result.stdout.get('Issues') or ():
       pos = issue['Pos']
       line = pos['Line']
+      text = issue['Text']
+      if issue['FromLinter'] == 'gci':
+        text = textwrap.dedent('''
+        Import order is not sorted.
+        Run `golangci-lint run --fix %s` to fix this.''' %
+                               self.m.path.dirname(pos['Filename']))
       self.m.tricium.add_comment(
           'golangci-lint (%s)' % issue['FromLinter'],
-          issue['Text'],
+          text,
           self.m.path.join(path_to_go_modules, pos['Filename']),
           start_line=line,
           end_line=line,
