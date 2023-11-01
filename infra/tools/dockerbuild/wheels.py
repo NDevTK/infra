@@ -579,6 +579,38 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
+            'gevent',
+            '23.9.1',
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools',
+                    'wheel',
+                    'Cython',
+                ],
+                local=[
+                    _CFFI_DEPENDENCY,
+                    SourceOrPrebuilt(
+                        'greenlet',
+                        '3.0.1',
+                        packaged=[
+                            # NOTE: This version of greenlet is statically
+                            # linked against the MSVC runtime in order to avoid
+                            # runtime DLL import issues.
+                            #
+                            # Per https://github.com/python-greenlet/greenlet/issues/346
+                            # this could make the situation better or worse
+                            # (presumably this could land us in trouble if we
+                            # have a mismatched MSVC runtime in the interpreter
+                            # itself.)
+                            'windows-x64-py3.11',
+                        ],
+                    ),
+                ],
+            ),
+            packaged=[],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'google-crc32c',
             '1.1.2',
             packaged=[],
@@ -626,6 +658,21 @@ SPECS.update({
             'greenlet',
             '2.0.2',
             packaged=[
+                'windows-x64-py3.11',
+            ],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
+            'greenlet',
+            '3.0.1',
+            packaged=[
+                # NOTE: This version of greenlet is statically linked against
+                # the MSVC runtime in order to avoid runtime DLL import issues.
+                #
+                # Per https://github.com/python-greenlet/greenlet/issues/346
+                # this could make the situation better or worse (presumably this
+                # could land us in trouble if we have a mismatched MSVC runtime
+                # in the interpreter itself.)
                 'windows-x64-py3.11',
             ],
             pyversions=['py3'],
