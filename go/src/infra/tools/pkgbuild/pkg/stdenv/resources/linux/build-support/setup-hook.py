@@ -12,7 +12,7 @@ def setup(exe) -> None:
   import subprocess
 
   dependencies = []
-  appending_envs = {}
+  native_envs = {}
 
   def pre_unpack(exe) -> bool:
     envs = subprocess.check_output([
@@ -20,10 +20,7 @@ def setup(exe) -> None:
         exe.env['dockerImage'],
         '/usr/bin/env',
     ])
-    for e in envs.splitlines():
-      k, v = e.decode().split('=', 1)
-      if k in {'PATH'}:
-        appending_envs[k] = v
+    native_envs.update(e.decode().split('=', 1) for e in envs.splitlines())
     return True
 
   def execute_cmd(exe) -> bool:
@@ -51,8 +48,10 @@ def setup(exe) -> None:
 
     env = []
     for k, v in exe.env.items():
-      if k in appending_envs:
-        v = os.path.pathsep.join([v, appending_envs[k]])
+      # These environment variables should have the new paths appended in the
+      # container.
+      if k in {'PATH'} and k in native_envs:
+        v = os.path.pathsep.join([v, native_envs[k]])
       env.extend(('--env', f'{k}={v}'))
     # Force override LDFLAGS even it's not set. This is because dockcross by
     # default set it to '-L/usr/cross/lib', which may override the library
@@ -64,7 +63,8 @@ def setup(exe) -> None:
         exe.env['dockerImage'],
     ]
 
-    subprocess.check_call(docker + volumes + env + impage + ctx.args)
+    subprocess.check_call(
+        docker + volumes + env + impage + ['/start.sh'] + ctx.args)
     return True
 
   def activate_pkg(exe) -> bool:
