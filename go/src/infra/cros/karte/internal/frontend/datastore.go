@@ -68,6 +68,7 @@ const maxStringFieldLength = 1400
 // Normalize normalizes an action entity for writing.
 func (e *ActionEntity) Normalize() {
 	e.ErrorReason = heuristics.TruncateErrorString(e.ErrorReason)
+	e.FailReason = heuristics.TruncateErrorString(e.FailReason)
 }
 
 // Validate validates an action entity for writing.
