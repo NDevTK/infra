@@ -107,8 +107,8 @@ func generateAuthFile(dir string) error {
 func authCopier(name string, source string, destination string) {
 
 	// The first auth token is generated and mounted at the container startup. The goroutine only generates
-	// consequent tokens after 45 mins delay.
-	interval := 45 * time.Minute
+	// consequent tokens after 1 minute.
+	interval := 1 * time.Minute
 
 	for {
 		time.Sleep(interval)
