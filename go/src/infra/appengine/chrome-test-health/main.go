@@ -164,7 +164,7 @@ func setupClient(srv *server.Server) (*testmetrics.Client, error) {
 	}
 	var client = &testmetrics.Client{
 		BqClient:  bqClient,
-		ProjectId: srv.Options.CloudProject,
+		ProjectId: "`" + srv.Options.CloudProject + "`",
 		DataSet:   *dataSet,
 	}
 	err = client.Init("")
