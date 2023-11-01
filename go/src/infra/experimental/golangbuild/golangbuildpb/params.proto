@@ -85,6 +85,10 @@ message Inputs {
 
   // A Node.js version to add to PATH, if any. Supported on Linux hosts only.
   string node_version = 20;
+  // A WasmTime version to add to PATH, if any. Supported on Linux hosts only.
+  string wasmtime_version = 21;
+  // A wazero version to add to PATH, if any. Supported on Linux hosts only.
+  string wazero_version = 22;
 
   // Which mode to run golangbuild in. See the Mode enum for details.
   Mode mode = 10;

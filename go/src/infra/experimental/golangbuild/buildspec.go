@@ -233,10 +233,16 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 		}
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, ccPath))
 	}
-	if env.Get("GOOS") == "js" && env.Get("GOARCH") == "wasm" {
-		// Add go_js_wasm_exec and node to PATH.
+	if env.Get("GOARCH") == "wasm" {
+		// Add go_*_wasm_exec and the appropriate Wasm runtime to PATH.
 		env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.goroot, "misc/wasm"), os.PathListSeparator, env.Get("PATH")))
-		env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "nodejs/bin"), os.PathListSeparator, env.Get("PATH")))
+		switch {
+		case env.Get("GOOS") == "js":
+			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "nodejs/bin"), os.PathListSeparator, env.Get("PATH")))
+		case env.Get("GOOS") == "wasip1" && env.Get("GOWASIRUNTIME") == "wasmtime",
+			env.Get("GOOS") == "wasip1" && env.Get("GOWASIRUNTIME") == "wazero":
+			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, env.Get("GOWASIRUNTIME")), os.PathListSeparator, env.Get("PATH")))
+		}
 	}
 
 	return env.SetInCtx(ctx)

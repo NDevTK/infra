@@ -74,11 +74,22 @@ golang/bootstrap-go/${platform} %v
 	// Append test-only dependencies.
 	switch inputs.GetMode() {
 	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_TEST:
-		if inputs.NodeVersion != "" {
-			cipdDeps += fmt.Sprintf(`
-@Subdir nodejs
-infra/3pp/tools/nodejs/${platform} version:%v
-`, inputs.NodeVersion)
+		const wasmRuntimeDep = `
+@Subdir %[1]s
+infra/3pp/tools/%[1]s/${platform} version:%[2]s
+`
+		if v := inputs.NodeVersion; v != "" {
+			cipdDeps += fmt.Sprintf(wasmRuntimeDep, "nodejs", v)
+		}
+		if v := inputs.WasmtimeVersion; v != "" {
+			// TODO(dmitshur): Delete next line to use the common 3pp package after crrev.com/c/4995549 lands.
+			wasmRuntimeDep := strings.Replace(wasmRuntimeDep, "infra/3pp/tools/", "golang/third_party/", 1)
+			cipdDeps += fmt.Sprintf(wasmRuntimeDep, "wasmtime", v)
+		}
+		if v := inputs.WazeroVersion; v != "" {
+			// TODO(dmitshur): Delete next line to use the common 3pp package after crrev.com/c/4995549 lands.
+			wasmRuntimeDep := strings.Replace(wasmRuntimeDep, "infra/3pp/tools/", "golang/third_party/", 1)
+			cipdDeps += fmt.Sprintf(wasmRuntimeDep, "wazero", v)
 		}
 	}
 
