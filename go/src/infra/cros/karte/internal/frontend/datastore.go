@@ -46,7 +46,7 @@ type ActionEntity struct {
 	StopTime       time.Time `gae:"stop_time"`
 	CreateTime     time.Time `gae:"receive_time"`
 	Status         int32     `gae:"status"`
-	FailReason     string    `gae:"fail_reason"`
+	FailReason     string    `gae:"fail_reason,noindex"`
 	SealTime       time.Time `gae:"seal_time"` // After the seal time has passed, no further modifications may be made.
 	Hostname       string    `gae:"hostname"`
 	Model          string    `gae:"model"`
@@ -59,7 +59,7 @@ type ActionEntity struct {
 	// Count the number of times that an action entity was modified by a request.
 	ModificationCount int32 `gae:"modification_count"`
 	// Deprecated fields!
-	ErrorReason string `gae:"error_reason"` // succeeded by "fail_reason'.
+	ErrorReason string `gae:"error_reason,noindex"` // succeeded by "fail_reason'.
 }
 
 // maxStringFieldLength b:267100941
