@@ -6,6 +6,7 @@ package dut_services
 import (
 	"context"
 
+	"infra/cros/satlab/common/enumeration"
 	"infra/cros/satlab/satlabrpcserver/models"
 )
 
@@ -15,6 +16,7 @@ type Device struct {
 	IP          string
 	MACAddress  string
 	IsConnected bool
+	ServoSerial string
 }
 
 // IDUTServices provides the services that regulate the DUTs.
@@ -32,6 +34,15 @@ type IDUTServices interface {
 	// GetBoard get the DUT's board
 	GetBoard(ctx context.Context, address string) (string, error)
 
-	// GetModel get the DUT's model
+	// GetModel gets the DUT's model
 	GetModel(ctx context.Context, address string) (string, error)
+
+	// GetGSCSerialAndServoUSBCount gets the Cr50 or Ti50 port serial number on the DUT
+	GetGSCSerialAndServoUSBCount(ctx context.Context, address string) (*GSCInfo, error)
+
+	// GetServoSerial gets the Servo serial number for given DUT IP address.
+	GetServoSerial(ctx context.Context, IP string, usbDevices []enumeration.USBDevice) (bool, string, error)
+
+	// GetUSBDevicePaths returns all the USBDevices instance of plugged devices
+	GetUSBDevicePaths(ctx context.Context) ([]enumeration.USBDevice, error)
 }

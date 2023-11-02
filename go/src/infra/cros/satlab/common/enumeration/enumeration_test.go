@@ -65,7 +65,7 @@ func TestNewUSBDevice(t *testing.T) {
 				Serial:     "servo-serial-1234",
 				DevicePath: dirPath,
 				HubPath:    hubPath,
-				DeviceType: "servo",
+				DeviceType: "servo4.1",
 			},
 			nil,
 		},
@@ -156,7 +156,7 @@ func TestGetDevicesFromPaths(t *testing.T) {
 					Serial:     "servo-serial-1234",
 					DevicePath: dirPath,
 					HubPath:    hubPath,
-					DeviceType: "servo",
+					DeviceType: "servo4.1",
 				},
 			},
 			nil,
@@ -197,14 +197,14 @@ func TestFindServoFromDUT(t *testing.T) {
 					Serial:     "servo-serial-1234",
 					DevicePath: "/sys/bus/usb/devices/1-2.3.3/",
 					HubPath:    "/sys/bus/usb/devices/1-2.3",
-					DeviceType: "servo",
+					DeviceType: "servo4.1",
 				},
 			},
 			USBDevice{
 				Serial:     "servo-serial-1234",
 				DevicePath: "/sys/bus/usb/devices/1-2.3.3/",
 				HubPath:    "/sys/bus/usb/devices/1-2.3",
-				DeviceType: "servo",
+				DeviceType: "servo4.1",
 			},
 			nil,
 		},
@@ -212,7 +212,7 @@ func TestFindServoFromDUT(t *testing.T) {
 
 	for _, tt := range cases {
 		expected := tt.output
-		actual, err := findServoFromDUT(tt.inputSerial, tt.inputDeviceList)
+		actual, err := FindServoFromDUT(tt.inputSerial, tt.inputDeviceList)
 
 		if diff := cmp.Diff(expected, actual); diff != "" {
 			t.Errorf("expected: %v, unexpected diff: %s", expected, diff)

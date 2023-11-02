@@ -714,6 +714,12 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 		return nil, err
 	}
 
+	// Get the USB device connected to extract Cr50/Ti50 and Servo serials serial numbers
+	usbDevices, err := s.dutService.GetUSBDevicePaths(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	enrolledIPs := []string{}
 
 	for _, dut := range duts {
@@ -721,6 +727,7 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 			if dut.Address == device.IP {
 				dut.IsConnected = device.IsConnected
 				dut.MacAddress = device.MACAddress
+				dut.ServoSerial = device.ServoSerial
 				enrolledIPs = append(enrolledIPs, dut.Address)
 			}
 		}
@@ -731,18 +738,33 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 	})
 
 	for _, device := range unenrolledDevices {
+
 		// TODO optimize we don't need to wait for
 		// out dut executing command complete to fetch
 		// the next dut board and model.
-		board, err := s.dutService.GetBoard(ctx, device.IP)
-		if err != nil {
-			// Skip when we can't get the board from the CLI.
-			board = ""
-		}
-		model, err := s.dutService.GetModel(ctx, device.IP)
-		if err != nil {
-			// Skip when we can't get the model from the CLI.
-			model = ""
+		var servoSerial = ""
+		var board = ""
+		var model = ""
+		if device.IsConnected {
+			board, err = s.dutService.GetBoard(ctx, device.IP)
+			if err != nil {
+				// Skip when we can't get the board from the CLI.
+				board = ""
+			}
+			model, err = s.dutService.GetModel(ctx, device.IP)
+			if err != nil {
+				// Skip when we can't get the model from the CLI.
+				model = ""
+			}
+			var isServoConnected = false
+			isServoConnected, servoSerial, err = s.dutService.GetServoSerial(ctx, device.IP, usbDevices)
+			if err != nil {
+				log.Printf("failed to find servo serial for %s: %v", device.IP, err)
+			}
+			// TODO Make UI handle this to display appropriate thing instead of setting it here.
+			if isServoConnected && servoSerial == "" {
+				servoSerial = "NOT DETECTED"
+			}
 		}
 		duts = append(duts, &pb.Dut{
 			Board:       board,
@@ -750,6 +772,7 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 			Address:     device.IP,
 			MacAddress:  device.MACAddress,
 			IsConnected: device.IsConnected,
+			ServoSerial: servoSerial,
 		})
 	}
 

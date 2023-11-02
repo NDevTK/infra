@@ -6,6 +6,7 @@ package dut_services
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -17,6 +18,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
+	"infra/cros/satlab/common/enumeration"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/collection"
 	"infra/cros/satlab/common/utils/executor"
@@ -45,6 +47,11 @@ type Host struct {
 type HostVersions struct {
 	RO string `json:"ro"`
 	RW string `json:"rw"`
+}
+
+type GSCInfo struct {
+	GSCSerial     string `json:"gsc_serial"`
+	ServoUSBCount int    `json:"servo_usb_count"`
 }
 
 // DUTServicesImpl implement details of IDUTServices
@@ -322,4 +329,60 @@ func (d *DUTServicesImpl) GetModel(ctx context.Context, IP string) (string, erro
 		}
 	}
 	return "", errors.New("can not get the model information")
+}
+
+// GetGSCSerialAndServoUSBCount returns the cr50/ti50 usb connector serial number for the given IP
+func (d *DUTServicesImpl) GetGSCSerialAndServoUSBCount(ctx context.Context, IP string) (*GSCInfo, error) {
+	res, err := d.RunCommandOnIP(ctx, IP, constants.GetGSCSerialAndServoUSB)
+	if err != nil {
+		log.Printf("command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, err)
+		return nil, err
+	}
+
+	if res.Error != nil {
+		log.Printf("command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, res.Error)
+		return nil, res.Error
+	}
+
+	var gscInfo GSCInfo
+	err = json.Unmarshal([]byte(res.Value), &gscInfo)
+	if err != nil {
+		log.Printf("Json decode error while processing gsc serial: %v", err)
+		return nil, err
+	}
+	return &gscInfo, nil
+}
+
+// GetServoSerial returns the Servo serial number for the given IP
+func (d *DUTServicesImpl) GetServoSerial(ctx context.Context, IP string, usbDevices []enumeration.USBDevice) (bool, string, error) {
+
+	gscServoInfo, err := d.GetGSCSerialAndServoUSBCount(ctx, IP)
+	if err != nil {
+		log.Printf("unable to get gsc serial and servo usb count: %v", err)
+		return false, "", err
+	}
+
+	if gscServoInfo.GSCSerial == "" {
+		log.Printf("gsc serial is empty, cannot determine servo serial: %v", err)
+		return false, "", nil
+	}
+
+	// Check if there are any servo connections found
+	if gscServoInfo.ServoUSBCount > 0 {
+		device, err := enumeration.FindServoFromDUT(gscServoInfo.GSCSerial, usbDevices)
+		if err != nil {
+			log.Printf("found servo connection but not detected on cr50/ti50 (serial:%s) port for %s : %v", gscServoInfo.GSCSerial, IP, err)
+			return true, "", nil
+		}
+		log.Printf("detected servo connection with serial %s: cr50/ti50 (serial:%s) port for %s ", device.Serial, gscServoInfo.GSCSerial, IP)
+		return true, device.Serial, nil
+	}
+
+	log.Printf("No Servo connected or detected for %s", IP)
+	return false, "", nil
+}
+
+// GetUSBDevicePaths returns all the USBDevices instance of plugged devices
+func (d *DUTServicesImpl) GetUSBDevicePaths(ctx context.Context) ([]enumeration.USBDevice, error) {
+	return enumeration.GetAllServoUSBDevices()
 }

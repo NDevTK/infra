@@ -18,6 +18,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	cssh "golang.org/x/crypto/ssh"
 
+	"infra/cros/satlab/common/enumeration"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/satlabrpcserver/fake"
@@ -284,4 +285,211 @@ func Test_GetModel(t *testing.T) {
 	if res != expected {
 		t.Errorf("expected: %v, got: %v\n", expected, res)
 	}
+}
+
+func Test_GetGSCSerialAndServoUSBCountSuccess(t *testing.T) {
+	sshResponse := "{\n  \"gsc_serial\": \"0880402c-4c1b4b03\",\n  \"servo_usb_count\": 1\n}\n"
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
+
+	res, err := dutServices.GetGSCSerialAndServoUSBCount(ctx, "127.0.0.1")
+	if err != nil {
+		t.Errorf("Expected should succes, but got an error: %v\n", err)
+	}
+	expectedGsc := "0880402c-4c1b4b03"
+	expectedServoCnt := 1
+	if res.GSCSerial != expectedGsc {
+		t.Errorf("expected: %v, got: %v\n", expectedGsc, res.GSCSerial)
+	}
+	if res.ServoUSBCount != expectedServoCnt {
+		t.Errorf("expected: %v, got: %v\n", expectedServoCnt, res.ServoUSBCount)
+	}
+}
+
+func Test_GetGSCSerialAndServoUSBCountCmdError(t *testing.T) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	// We fake the command executor
+	e := &executor.FakeCommander{
+		FakeFn: func(c *exec.Cmd) ([]byte, error) {
+			return nil, errors.New("Command run error")
+		},
+	}
+	dutServices := createDUTService(cssh.ClientConfig{}, "127.0.0.1:1", e)
+
+	res, err := dutServices.GetGSCSerialAndServoUSBCount(ctx, "127.0.0.1")
+
+	if err == nil {
+		t.Errorf("Expected an error, but got nil")
+	}
+
+	if res != nil {
+		t.Errorf("expected: nil, got: %#v\n", res)
+	}
+
+}
+
+func Test_GetServoSerialErrorOnGscSerialAndServoCtn(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	// We fake the command executor
+	e := &executor.FakeCommander{
+		FakeFn: func(c *exec.Cmd) ([]byte, error) {
+			return nil, errors.New("Command run error")
+		},
+	}
+	dutServices := createDUTService(cssh.ClientConfig{}, "127.0.0.1:1", e)
+
+	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1:1", []enumeration.USBDevice{})
+	if err == nil {
+		t.Errorf("Expected an error, but got nil")
+	}
+
+	if isServoConnected {
+		t.Errorf("Expected Servo Connection false, but got true")
+	}
+
+	if res != "" {
+		t.Errorf("expected: ServoSerial empty, got: %#v\n", res)
+	}
+
+}
+
+func Test_GetServoSerialGscSerialNotFound(t *testing.T) {
+	sshResponse := "{\n  \"gsc_serial\": \"\",\n  \"servo_usb_count\": 1\n}\n"
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
+
+	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", []enumeration.USBDevice{})
+
+	if err != nil {
+		t.Errorf("Expected should success, but got an error: %v\n", err)
+	}
+
+	if isServoConnected {
+		t.Errorf("Expected Servo Connection false, but got true")
+	}
+
+	if res != "" {
+		t.Errorf("expected: ServoSerial empty, got: %#v\n", res)
+	}
+
+}
+
+func Test_GetServoSerialNoServoConnected(t *testing.T) {
+	sshResponse := "{\n  \"gsc_serial\": \"dut-serial-1234\",\n  \"servo_usb_count\": 0\n}\n"
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
+
+	usbdevices := []enumeration.USBDevice{
+		{
+			Serial:     "dut-serial-1234",
+			DevicePath: "/sys/bus/usb/devices/1-2.3.4/",
+			HubPath:    "/sys/bus/usb/devices/1-2.3",
+			DeviceType: "cr50",
+		},
+	}
+	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", usbdevices)
+	expectedServo := ""
+
+	if err != nil {
+		t.Errorf("Expected should success, but got an error: %v\n", err)
+	}
+
+	if isServoConnected {
+		t.Errorf("Expected Servo Connection false, but got true")
+	}
+
+	if res != expectedServo {
+		t.Errorf("expected: ServoSerial %s, got: %s\n", expectedServo, res)
+	}
+
+}
+
+func Test_GetServoSerialServoConnectedButNotDetected(t *testing.T) {
+	sshResponse := "{\n  \"gsc_serial\": \"dut-serial-1234\",\n  \"servo_usb_count\": 1\n}\n"
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
+
+	usbdevices := []enumeration.USBDevice{
+		{
+			Serial:     "dut-serial-1234",
+			DevicePath: "/sys/bus/usb/devices/1-2.3.4/",
+			HubPath:    "/sys/bus/usb/devices/1-2.3",
+			DeviceType: "cr50",
+		},
+		{
+			Serial:     "servo-serial-1234",
+			DevicePath: "/sys/bus/usb/devices/1-3.3.3/",
+			HubPath:    "/sys/bus/usb/devices/1-3.3",
+			DeviceType: "servo4",
+		},
+	}
+	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", usbdevices)
+	expectedServo := ""
+
+	if err != nil {
+		t.Errorf("Expected should success, but got an error: %v\n", err)
+	}
+
+	if !isServoConnected {
+		t.Errorf("Expected Servo Connection true, but got false")
+	}
+
+	if res != expectedServo {
+		t.Errorf("expected: ServoSerial %s, got: %s\n", expectedServo, res)
+	}
+
+}
+
+func Test_GetServoSerialServoConnectedAndDetected(t *testing.T) {
+	sshResponse := "{\n  \"gsc_serial\": \"dut-serial-1234\",\n  \"servo_usb_count\": 1\n}\n"
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
+
+	usbdevices := []enumeration.USBDevice{
+		{
+			Serial:     "dut-serial-1234",
+			DevicePath: "/sys/bus/usb/devices/1-2.3.4/",
+			HubPath:    "/sys/bus/usb/devices/1-2.3",
+			DeviceType: "cr50",
+		},
+		{
+			Serial:     "servo-serial-1234",
+			DevicePath: "/sys/bus/usb/devices/1-2.3.3/",
+			HubPath:    "/sys/bus/usb/devices/1-2.3",
+			DeviceType: "servo4",
+		},
+	}
+	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", usbdevices)
+	expectedServo := "servo-serial-1234"
+
+	if err != nil {
+		t.Errorf("Expected should success, but got an error: %v\n", err)
+	}
+	if !isServoConnected {
+		t.Errorf("Expected Servo Connection true, but got false")
+	}
+	if res != expectedServo {
+		t.Errorf("expected: ServoSerial %s, got: %s\n", expectedServo, res)
+	}
+
 }

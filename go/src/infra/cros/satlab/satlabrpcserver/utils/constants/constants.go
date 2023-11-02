@@ -58,6 +58,12 @@ var GetModelCommands = []string{
 	"cros_config / name",
 }
 
+const GSCSerialNumberCommand = "timeout 2 trunks_send --sysinfo | grep DEV_ | sed 's/.*://g' | sed 's/0x//g' | tr ' ' '-' | tr 'a-z' 'A-Z' | sed -e 's/^[-]*//'"
+const ServoUSBConnectorCommand = "timeout 2 cat /sys/bus/usb/devices/*/idVendor | grep -cx 04b4"
+const GetGSCSerialAndServoUSB = "gsc_serial=`" + GSCSerialNumberCommand + "`;" +
+	"servo_usb_count=`" + ServoUSBConnectorCommand + "`;" +
+	"printf \"{\\\"gsc_serial\\\": \\\"%s\\\",\\\"servo_usb_count\\\": %s}\" $gsc_serial $servo_usb_count"
+
 var ToResponseBuildStatusMap = map[build_service.BuildStatus]pb.BuildItem_BuildStatus{
 	build_service.AVAILABLE: pb.BuildItem_BUILD_STATUS_PASS,
 	build_service.FAILED:    pb.BuildItem_BUILD_STATUS_FAIL,

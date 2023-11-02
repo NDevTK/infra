@@ -24,6 +24,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/cros/satlab/common/dut"
+	"infra/cros/satlab/common/enumeration"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/services/build_service"
@@ -1161,12 +1162,15 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 
 	// Create a mock data
 	s := createMockServer(t)
+
+	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.commandExecutor = shivasTestHelper(true)
 
 	req := &pb.ListDutsRequest{}
@@ -1200,6 +1204,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				Model:       "model",
 				Board:       "board",
 				MacAddress:  "e8:9f:80:83:3d:c8",
+				ServoSerial: "SERVOSERIAL",
 				IsConnected: true,
 			},
 		},
@@ -1221,12 +1226,15 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	// Create a mock data
 
 	s := createMockServer(t)
+
+	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
 	}, nil)
-	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("", nil)
+
 	s.commandExecutor = shivasTestHelper(true)
 
 	req := &pb.ListDutsRequest{}
@@ -1258,8 +1266,8 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				Hostname:    "",
 				Address:     "192.168.231.2",
 				Pools:       nil,
-				Model:       "model",
-				Board:       "board",
+				Model:       "",
+				Board:       "",
 				MacAddress:  "e8:9f:80:83:3d:c8",
 				IsConnected: false,
 			},
@@ -1282,14 +1290,17 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 
 	// Create a mock data
 	s := createMockServer(t)
+
+	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("model", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.222", mock.Anything).Return(false, "", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.commandExecutor = shivasTestHelper(false)
-
 	req := &pb.ListDutsRequest{}
 	resp, err := s.ListDuts(ctx, req)
 
@@ -1323,6 +1334,7 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 				Board:       "board",
 				MacAddress:  "e8:9f:80:83:3d:c8",
 				IsConnected: true,
+				ServoSerial: "SERVOSERIAL",
 			},
 		},
 	}
@@ -1343,12 +1355,15 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 
 	// Create a mock data
 	s := createMockServer(t)
+
+	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
 	}, nil)
-	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("board", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("model", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("", nil)
+
 	s.commandExecutor = shivasTestHelper(false)
 
 	req := &pb.ListDutsRequest{}
@@ -1370,8 +1385,8 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 				Hostname:    "",
 				Address:     "192.168.231.222",
 				Pools:       nil,
-				Model:       "model",
-				Board:       "board",
+				Model:       "",
+				Board:       "",
 				IsConnected: false,
 				MacAddress:  "00:14:3d:14:c4:02",
 			},
@@ -1380,8 +1395,8 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 				Hostname:    "",
 				Address:     "192.168.231.2",
 				Pools:       nil,
-				Model:       "model",
-				Board:       "board",
+				Model:       "",
+				Board:       "",
 				MacAddress:  "e8:9f:80:83:3d:c8",
 				IsConnected: false,
 			},
@@ -1404,12 +1419,15 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 
 	// Create a mock data
 	s := createMockServer(t)
+
+	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("", errors.New("can't get board"))
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("", errors.New("can't get model"))
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.commandExecutor = shivasTestHelper(true)
 
 	req := &pb.ListDutsRequest{}
@@ -1444,6 +1462,7 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 				Board:       "",
 				MacAddress:  "e8:9f:80:83:3d:c8",
 				IsConnected: true,
+				ServoSerial: "SERVOSERIAL",
 			},
 		},
 	}
@@ -1464,12 +1483,15 @@ func TestListConnectedDutsShouldFail(t *testing.T) {
 
 	// Create a mock data
 	s := createMockServer(t)
+
+	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
 		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("model", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.commandExecutor = &executor.FakeCommander{
 		Err: errors.New("execute command failed"),
 	}

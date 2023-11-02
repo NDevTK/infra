@@ -6,6 +6,7 @@ package enumeration
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,8 +16,16 @@ import (
 const GoogleVID = "18d1"
 
 var GooglePIDs = map[string]string{
-	"520d": "servo",
+	// Debugger USB connection
+	// For Servo V4.1
+	"520d": "servo4.1",
+	// For Servo V4
+	"501b": "servo4",
+	// For Servo SuzyQ
+	"501f": "suzyq",
+	// For H1 chip
 	"5014": "cr50",
+	// For D2 chip
 	"504a": "ti50",
 }
 
@@ -108,39 +117,52 @@ func getDevicesFromPaths(paths []string) ([]USBDevice, error) {
 		device, err := NewUSBDevice(dPath)
 
 		if err != nil {
-			return nil, err
+			continue
 		}
-
-		devices = append(devices, *device)
+		if device != nil {
+			devices = append(devices, *device)
+		}
 	}
 
 	return devices, nil
 }
 
-// findServoFromDUT finds the Servo associated a given serial number from a DUTs cr50/ti50 by comparing
+// FindServoFromDUT finds the Servo associated a given serial number from a DUTs cr50/ti50 by comparing
 // the USB hub path. Both a Servo and a device plugged into a Servo will be enumerated under the Servos
 // built-in hub in the USB device tree.
-func findServoFromDUT(dutSerial string, devices []USBDevice) (USBDevice, error) {
+func FindServoFromDUT(dutSerial string, devices []USBDevice) (USBDevice, error) {
 	var dut *USBDevice
 
 	for _, device := range devices {
-		if device.Serial == dutSerial {
+		// Dut serial found in USB hub path on Satlab is always capitalized, but when we on the DUT it is mix
+		// of both lower and capital for different DUTs. Therefore compare these values case-insensitively.
+		if strings.EqualFold(device.Serial, dutSerial) {
 			dut = &device
 			break
 		}
 	}
 
 	if dut == nil {
-		err := fmt.Errorf("no DUT was found with the specified serial: %s", dutSerial)
+		err := fmt.Errorf("no DUT found with serial: %s", dutSerial)
 		return USBDevice{}, err
 	}
 
 	for _, device := range devices {
-		if device.DeviceType == "servo" && device.HubPath == dut.HubPath {
+		if (device.DeviceType == "servo4" || device.DeviceType == "servo4.1") && device.HubPath == dut.HubPath {
 			return device, nil
 		}
 	}
 
 	err := fmt.Errorf("no servo was found that is associated with DUT serial: %s", dutSerial)
 	return USBDevice{}, err
+}
+
+// GetAllServoUSBDevices returns all the USBDevices instance of plugged devices
+func GetAllServoUSBDevices() ([]USBDevice, error) {
+	devPaths, err := getGoogleDevicePaths()
+	if err != nil {
+		log.Printf("error process Google Devices Paths %v", err)
+		return nil, err
+	}
+	return getDevicesFromPaths(devPaths)
 }
