@@ -49,6 +49,7 @@ const (
 	SatlabRpcService_ListEnrolledDuts_FullMethodName          = "/satlabrpcserver.SatlabRpcService/list_enrolled_duts"
 	SatlabRpcService_ListDuts_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/list_duts"
 	SatlabRpcService_SetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/set_cloud_configuration"
+	SatlabRpcService_GetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/get_cloud_configuration"
 )
 
 // SatlabRpcServiceClient is the client API for SatlabRpcService service.
@@ -86,6 +87,7 @@ type SatlabRpcServiceClient interface {
 	ListDuts(ctx context.Context, in *ListDutsRequest, opts ...grpc.CallOption) (*ListDutsResponse, error)
 	// setup
 	SetCloudConfiguration(ctx context.Context, in *SetCloudConfigurationRequest, opts ...grpc.CallOption) (*SetCloudConfigurationResponse, error)
+	GetCloudConfiguration(ctx context.Context, in *GetCloudConfigurationRequest, opts ...grpc.CallOption) (*GetCloudConfigurationResponse, error)
 }
 
 type satlabRpcServiceClient struct {
@@ -330,6 +332,15 @@ func (c *satlabRpcServiceClient) SetCloudConfiguration(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) GetCloudConfiguration(ctx context.Context, in *GetCloudConfigurationRequest, opts ...grpc.CallOption) (*GetCloudConfigurationResponse, error) {
+	out := new(GetCloudConfigurationResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_GetCloudConfiguration_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SatlabRpcServiceServer is the server API for SatlabRpcService service.
 // All implementations must embed UnimplementedSatlabRpcServiceServer
 // for forward compatibility
@@ -365,6 +376,7 @@ type SatlabRpcServiceServer interface {
 	ListDuts(context.Context, *ListDutsRequest) (*ListDutsResponse, error)
 	// setup
 	SetCloudConfiguration(context.Context, *SetCloudConfigurationRequest) (*SetCloudConfigurationResponse, error)
+	GetCloudConfiguration(context.Context, *GetCloudConfigurationRequest) (*GetCloudConfigurationResponse, error)
 	mustEmbedUnimplementedSatlabRpcServiceServer()
 }
 
@@ -449,6 +461,9 @@ func (UnimplementedSatlabRpcServiceServer) ListDuts(context.Context, *ListDutsRe
 }
 func (UnimplementedSatlabRpcServiceServer) SetCloudConfiguration(context.Context, *SetCloudConfigurationRequest) (*SetCloudConfigurationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetCloudConfiguration not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) GetCloudConfiguration(context.Context, *GetCloudConfigurationRequest) (*GetCloudConfigurationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCloudConfiguration not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) mustEmbedUnimplementedSatlabRpcServiceServer() {}
 
@@ -931,6 +946,24 @@ func _SatlabRpcService_SetCloudConfiguration_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_GetCloudConfiguration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCloudConfigurationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).GetCloudConfiguration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_GetCloudConfiguration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).GetCloudConfiguration(ctx, req.(*GetCloudConfigurationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SatlabRpcService_ServiceDesc is the grpc.ServiceDesc for SatlabRpcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1041,6 +1074,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "set_cloud_configuration",
 			Handler:    _SatlabRpcService_SetCloudConfiguration_Handler,
+		},
+		{
+			MethodName: "get_cloud_configuration",
+			Handler:    _SatlabRpcService_GetCloudConfiguration_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

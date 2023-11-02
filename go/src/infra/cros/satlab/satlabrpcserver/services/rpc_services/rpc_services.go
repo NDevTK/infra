@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -936,4 +937,26 @@ func validateCloudConfiguration(in *pb.SetCloudConfigurationRequest) error {
 	}
 
 	return nil
+}
+
+// GetCloudConfiguration get the cloud configuration from env and boto file.
+func (s *SatlabRpcServiceServer) GetCloudConfiguration(ctx context.Context, in *pb.GetCloudConfigurationRequest) (*pb.GetCloudConfigurationResponse, error) {
+	bucket := site.GetGCSImageBucket()
+	p, err := site.GetBotoPath()
+	if err != nil {
+		return nil, err
+	}
+
+	f, err := os.Open(p)
+	if err != nil {
+		// If `boto` file doesn't exist, it means the user
+		// doesn't login. we return empty information
+		return &pb.GetCloudConfigurationResponse{}, nil
+	}
+	key := setup.ReadBotoKey(f)
+
+	return &pb.GetCloudConfigurationResponse{
+		GcsBucketUrl: bucket,
+		BotoKeyId:    key,
+	}, nil
 }

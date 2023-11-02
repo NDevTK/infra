@@ -115,6 +115,10 @@ const (
 	SwarmingServiceHost = "chromeos-swarming.appspot.com"
 
 	DefaultRPCServerLogFile = "/var/log/satlab/satlab_rpcserver.log"
+	// BotoAccessKeyId is the boto key of the boto config
+	BotoAccessKeyId = "gs_access_key_id"
+	// BotoSecretAccessKey is the boto secret key of the boto config
+	BotoSecretAccessKey = "gs_secret_access_key"
 )
 
 const SatlabSetupInstruction = `
@@ -436,4 +440,13 @@ func GetAuthOption(ctx context.Context) auth.Options {
 		}
 	}
 	return DefaultAuthOptions
+}
+
+// GetBotoPath get the boto file path
+func GetBotoPath() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(homeDir, ".boto"), nil
 }

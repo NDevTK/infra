@@ -47,6 +47,7 @@ service SatlabRpcService {
 
   // setup
   rpc set_cloud_configuration (SetCloudConfigurationRequest) returns (SetCloudConfigurationResponse);
+  rpc get_cloud_configuration (GetCloudConfigurationRequest) returns (GetCloudConfigurationResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -479,3 +480,12 @@ message SetCloudConfigurationRequest {
 
 // NEXT_TAG = 1
 message SetCloudConfigurationResponse {}
+
+// NEXT_TAG = 1
+message GetCloudConfigurationRequest {}
+
+// NEXT_TAG = 3
+message GetCloudConfigurationResponse {
+  string boto_key_id = 1;
+  string gcs_bucket_url = 2;
+}
