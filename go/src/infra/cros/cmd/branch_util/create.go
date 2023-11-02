@@ -280,9 +280,11 @@ func (c *createBranch) innerRun(ctx context.Context, bc *branch.Client, authedCl
 		return 1
 	}
 
-	if err = bc.CheckIfAlreadyBranched(vinfo, *manifestInternal, c.Force, branchType, branchName); err != nil {
+	if alreadyBranched, err := bc.CheckIfAlreadyBranched(vinfo, *manifestInternal, c.Force, branchType, branchName); err != nil {
 		bc.LogErr("%v", err)
 		return 1
+	} else if alreadyBranched {
+		return 0
 	}
 
 	// Generate git branch names.

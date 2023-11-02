@@ -545,7 +545,7 @@ func NewBranchName(vinfo mv.VersionInfo, custom, descriptor string, release, fac
 
 // CheckIfAlreadyBranched checks if there's already a branch for the desired new
 // branch to create on the manifest-internal repo.
-func (c *Client) CheckIfAlreadyBranched(vinfo mv.VersionInfo, manifestInternal repo.Project, force bool, branchType, branchName string) error {
+func (c *Client) CheckIfAlreadyBranched(vinfo mv.VersionInfo, manifestInternal repo.Project, force bool, branchType, branchName string) (bool, error) {
 	// Check that we did not already branch from this version.
 	// manifest-internal serves as the sentinel project.
 	pattern := regexp.MustCompile(fmt.Sprintf(`.*-%s.B$`, vinfo.StrippedVersionString()))
@@ -566,7 +566,7 @@ func (c *Client) CheckIfAlreadyBranched(vinfo mv.VersionInfo, manifestInternal r
 	}
 	branchForVersionExists, err := BranchExists(pattern, majorMinor, branchType, remoteBranches)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	// Don't allow multiple release branches for the same milestone.
@@ -574,8 +574,8 @@ func (c *Client) CheckIfAlreadyBranched(vinfo mv.VersionInfo, manifestInternal r
 		releasePrefix := fmt.Sprintf("release-R%d-", vinfo.ChromeBranch)
 		for _, branch := range remoteBranches {
 			if strings.HasPrefix(branch, releasePrefix) {
-				return fmt.Errorf("already have release branch for milestone %d (%v). "+
-					"Please rerun with --force if you would like to proceed (this is not advised).",
+				return false, fmt.Errorf("already have release branch for milestone %d (%v); "+
+					"please rerun with --force if you would like to proceed (this is not advised)",
 					vinfo.ChromeBranch, branch)
 			}
 		}
@@ -583,8 +583,8 @@ func (c *Client) CheckIfAlreadyBranched(vinfo mv.VersionInfo, manifestInternal r
 
 	if branchForVersionExists {
 		if !force {
-			return fmt.Errorf("already branched %s. Please rerun with --force if you "+
-				"would like to proceed", vinfo.VersionString())
+			c.LogErr("Already branched %s. Please rerun with --force if you would like to overwrite it", vinfo.VersionString())
+			return true, nil
 		}
 		c.LogOut("Overwriting branch with version %s (--force was set).\n", vinfo.VersionString())
 	} else {
@@ -594,16 +594,16 @@ func (c *Client) CheckIfAlreadyBranched(vinfo mv.VersionInfo, manifestInternal r
 		if branchType == "custom" {
 			customPattern, err := regexp.Compile(regexp.QuoteMeta(branchName))
 			if err != nil {
-				return errors.Annotate(err, "bad branch name %s", branchName).Err()
+				return false, errors.Annotate(err, "bad branch name %s", branchName).Err()
 			}
 			branchNameExists, err = BranchExists(customPattern, "", branchType, remoteBranches)
 			if err != nil {
-				return err
+				return false, err
 			}
 		}
 		if branchNameExists {
 			if !force {
-				return fmt.Errorf("already have branch %s. Please rerun with --force if you "+
+				return false, fmt.Errorf("already have branch %s. Please rerun with --force if you "+
 					"would like to proceed", branchName)
 			}
 			c.LogOut("Overwriting branch with version %s (--force was set).\n", vinfo.VersionString())
@@ -611,5 +611,5 @@ func (c *Client) CheckIfAlreadyBranched(vinfo mv.VersionInfo, manifestInternal r
 			c.LogOut("No branch exists for version %s. Continuing...\n", vinfo.VersionString())
 		}
 	}
-	return nil
+	return false, nil
 }

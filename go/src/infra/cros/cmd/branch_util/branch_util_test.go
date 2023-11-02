@@ -797,8 +797,8 @@ func TestCreateOverwriteMissingForceReleaseBranch(t *testing.T) {
 	}
 }
 
-// Test create dies when given a version that was already branched.
-func TestCreatExistingVersion(t *testing.T) {
+// Test create succeeds when given a version that was already branched.
+func TestCreateExistingVersion(t *testing.T) {
 	t.Parallel()
 	r, bc, gc, gsc, err := setUpCreate(t, false, false, false)
 	defer r.Teardown()
@@ -828,8 +828,8 @@ func TestCreatExistingVersion(t *testing.T) {
 		buildSpecManifest: "12/3.0.0.xml",
 	}
 	ret := c.innerRun(context.Background(), bc, nil, gc, gsc)
-	assert.Assert(t, ret != 0)
-	assert.Assert(t, strings.Contains(stderrBuf.String(), "already branched 3.0.0"))
+	assert.Assert(t, ret == 0)
+	assert.Assert(t, strings.Contains(stderrBuf.String(), "Already branched 3.0.0"))
 	assertNoRemoteDiff(t, r)
 }
 
