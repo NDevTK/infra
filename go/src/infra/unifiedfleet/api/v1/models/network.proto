@@ -96,9 +96,14 @@ message Vlan {
     // If they're empty, it means no ips in this vlan can be used as dhcp configs.
     // The format of the ip ranges are ipv4 string format, e.g. 192.168.1.23.
     // User can update reserved_ips to remove some of the available ips in the free range.
-    string free_start_ipv4Str = 11;
-    string free_end_ipv4Str = 12;
+    string free_start_ipv4Str = 11 [deprecated=true];
+    string free_end_ipv4Str = 12 [deprecated=true];
 
+    // The start of the free IP range, in IPv4 or IPv6.
+    string free_start_ip = 17;
+
+    // The end of the free IP range (inclusive), in IPv4 or IPv6.
+    string free_end_ip = 18;
 
     // State of the vlan
     State resource_state = 8;
@@ -144,10 +149,15 @@ message IP {
     string id = 1;
     // can be converted to and from the string ip address
     uint32 ipv4 = 2;
+    // ipv6 is the ipv6 address. It must contain exactly eight bytes.
+    bytes ipv6 = 7;
     string vlan = 3;
-    bool occupied = 4;
-    // store the string ip address
+    // store the string ip address for ipv4.
     string ipv4_str = 5;
+    // store the string address for ipv6.
+    string ipv6_str = 8;
+    // Indicate whether this IP is occupied.
+    bool occupied = 4;
     // Indicate if this IP is reserved (cannot be auto-assigned to any host)
     bool reserve = 6;
 }
