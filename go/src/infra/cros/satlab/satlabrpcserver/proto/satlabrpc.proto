@@ -44,6 +44,9 @@ service SatlabRpcService {
   rpc list_dut_events (ListDutEventsRequest) returns (ListDutEventsResponse);
   rpc list_enrolled_duts (ListEnrolledDutsRequest) returns (ListEnrolledDutsResponse);
   rpc list_duts (ListDutsRequest) returns (ListDutsResponse);
+
+  // setup
+  rpc set_cloud_configuration (SetCloudConfigurationRequest) returns (SetCloudConfigurationResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -466,3 +469,13 @@ message GetTestPlanResponse {
   // plan is the content of the test plan
   test_platform.Request.TestPlan plan = 1;
 }
+
+// NEXT_TAG = 4
+message SetCloudConfigurationRequest {
+  string boto_key_id = 1;
+  string boto_key_secret = 2;
+  string gcs_bucket_url = 3;
+}
+
+// NEXT_TAG = 1
+message SetCloudConfigurationResponse {}

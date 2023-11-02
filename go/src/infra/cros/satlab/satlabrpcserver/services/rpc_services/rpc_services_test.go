@@ -1685,3 +1685,105 @@ func Test_ListTestPlansShouldSuccess(t *testing.T) {
 		t.Errorf("unexpected diff: %v\n", diff)
 	}
 }
+
+// Test_ValidateCloudConfiguration test the user input the
+// configuration is correct or not.
+func Test_ValidateCloudConfiguration(t *testing.T) {
+	cases := []struct {
+		name  string
+		req   *pb.SetCloudConfigurationRequest
+		valid bool
+	}{
+		{
+			name: "empty boto key",
+			req: &pb.SetCloudConfigurationRequest{
+				BotoKeyId:     "  ",
+				BotoKeySecret: "secret",
+				GcsBucketUrl:  "bucket",
+			},
+			valid: false,
+		},
+		{
+			name: "empty secret id",
+			req: &pb.SetCloudConfigurationRequest{
+				BotoKeyId:     "boto key",
+				BotoKeySecret: "",
+				GcsBucketUrl:  "bucket",
+			},
+			valid: false,
+		},
+		{
+			name: "empty bucket",
+			req: &pb.SetCloudConfigurationRequest{
+				BotoKeyId:     "boto key",
+				BotoKeySecret: "secret",
+				GcsBucketUrl:  "",
+			},
+			valid: false,
+		},
+		{
+			name: "correct input",
+			req: &pb.SetCloudConfigurationRequest{
+				BotoKeyId:     "boto key",
+				BotoKeySecret: "secret",
+				GcsBucketUrl:  "bucket",
+			},
+			valid: true,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateCloudConfiguration(tt.req)
+			valid := err == nil
+			if valid != tt.valid {
+				t.Errorf("unexpected error.")
+			}
+		})
+	}
+
+}
+
+func Test_RemoveBucketPrefixAndSuffix(t *testing.T) {
+	cases := []struct {
+		name       string
+		bucket_url string
+		expected   string
+	}{
+		{
+			name:       "full url",
+			expected:   "bucket",
+			bucket_url: "gs://bucket/",
+		},
+		{
+			name:       "without suffix",
+			expected:   "bucket",
+			bucket_url: "gs://bucket",
+		},
+		{
+			name:       "without prefix",
+			expected:   "bucket",
+			bucket_url: "bucket/",
+		},
+		{
+			name:       "correct input",
+			expected:   "bucket",
+			bucket_url: "bucket",
+		},
+		{
+			name:       "with many suffix",
+			expected:   "bucket",
+			bucket_url: "bucket///////",
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			out := removeGCSBucketPrefixAndSuffix(tt.bucket_url)
+			if out != tt.expected {
+				t.Errorf("unexpected error.")
+			}
+		})
+	}
+
+}

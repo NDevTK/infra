@@ -12,6 +12,7 @@ import (
 	"log"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/go-version"
@@ -26,6 +27,7 @@ import (
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/services/ufs"
+	"infra/cros/satlab/common/setup"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/collection"
 	e "infra/cros/satlab/common/utils/errors"
@@ -884,4 +886,54 @@ func (s *SatlabRpcServiceServer) GetTestPlan(ctx context.Context, in *pb.GetTest
 	}
 
 	return &pb.GetTestPlanResponse{Plan: tp}, nil
+}
+
+func (s *SatlabRpcServiceServer) SetCloudConfiguration(ctx context.Context, in *pb.SetCloudConfigurationRequest) (*pb.SetCloudConfigurationResponse, error) {
+	if err := validateCloudConfiguration(in); err != nil {
+		return nil, err
+	}
+
+	bucket := removeGCSBucketPrefixAndSuffix(in.GetGcsBucketUrl())
+
+	r := setup.Setup{
+		Bucket:            bucket,
+		GSAccessKeyId:     in.GetBotoKeyId(),
+		GSSecretAccessKey: in.GetBotoKeySecret(),
+	}
+
+	err := r.StartSetup(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.SetCloudConfigurationResponse{}, nil
+}
+
+// removeGCSBucketPrefixAndSuffix remove the gcs bucket url
+// e.g.
+// gs://bucket/ -> bucket
+// gs://bucket  -> bucket
+// bucket/      -> bucket
+// bucket////   -> bucket
+func removeGCSBucketPrefixAndSuffix(bucket string) string {
+	s := strings.TrimPrefix(bucket, "gs://")
+	s = strings.TrimRight(s, "/")
+	return s
+}
+
+// validateCloudConfiguration validate the config form the GRPC call.
+func validateCloudConfiguration(in *pb.SetCloudConfigurationRequest) error {
+	if strings.TrimSpace(in.GetGcsBucketUrl()) == "" {
+		return errors.New("bucket is empty")
+	}
+
+	if strings.TrimSpace(in.GetBotoKeyId()) == "" {
+		return errors.New("boto key is empty")
+	}
+
+	if strings.TrimSpace(in.GetBotoKeySecret()) == "" {
+		return errors.New("secret key is empty")
+	}
+
+	return nil
 }
