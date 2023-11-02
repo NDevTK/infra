@@ -23,13 +23,13 @@ const SSHUser = "root"
 const SSHPort = "22"
 
 // SSHConnectionTimeout timeout of ssh connection
-const SSHConnectionTimeout = time.Second * 20
+const SSHConnectionTimeout = time.Second * 3
 
 // SSHRetryDelay retry delay of ssh
 const SSHRetryDelay = time.Millisecond * 300
 
 // SSHMaxRetry the retry time
-const SSHMaxRetry = 2
+const SSHMaxRetry = 1
 
 // VPDKeySerialNumber VPD key for serial number
 const VPDKeySerialNumber = "serial_number"
