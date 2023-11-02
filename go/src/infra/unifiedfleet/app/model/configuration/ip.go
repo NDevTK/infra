@@ -6,6 +6,7 @@ package configuration
 
 import (
 	"context"
+	"net"
 	"strconv"
 	"strings"
 
@@ -25,24 +26,34 @@ import (
 const IPKind string = "IP"
 
 // IPEntity is a datastore entity that tracks IP.
+//
+// Note that IPv4 and IPv6 are alternatives. Exactly one of them should be non-nil.
 type IPEntity struct {
 	_kind string                `gae:"$kind,IP"`
 	Extra datastore.PropertyMap `gae:",extra"`
 	// To avoid duplication, the internal reference ID for IP: vlanName/IPv4, e.g. browser:120/20123455612
-	ID       string `gae:"$id"`
-	IPv4     uint32 `gae:"ipv4"`
-	IPv4Str  string `gae:"ipv4_str"`
+	// For an IPv6 address, use the textual representation of IPv6.
+	ID string `gae:"$id"`
+	// IPv4 addresses, for historical UFS reasons, store both the numerical address and the string representation.
+	IPv4    uint32 `gae:"ipv4"`
+	IPv4Str string `gae:"ipv4_str"`
+	// For IPv6, we don't bother storing the human-readable form of the IP address. This can be reconstructed on demand.
+	IPv6     []byte `gae:"ipv6"`
 	Vlan     string `gae:"vlan"`
 	Occupied bool   `gae:"occupied"`
 	Reserve  bool   `gae:"reserve"`
 }
 
 // GetProto returns the unmarshaled IP.
+//
+// Note: we do NOT enforce invariants such as an IPv6 containing exactly 16 bytes.
 func (e *IPEntity) GetProto() (proto.Message, error) {
 	return &ufspb.IP{
 		Id:       e.ID,
 		Ipv4:     e.IPv4,
 		Ipv4Str:  e.IPv4Str,
+		Ipv6:     e.IPv6,
+		Ipv6Str:  util.StringifyIP(net.IP(e.IPv6)),
 		Vlan:     e.Vlan,
 		Occupied: e.Occupied,
 		Reserve:  e.Reserve,

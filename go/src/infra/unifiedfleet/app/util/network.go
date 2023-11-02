@@ -22,6 +22,20 @@ const reserveFirst = 11
 // The last ip is broadcast address.
 const reserveLast = 1
 
+// MaxPreallocatedVlanSize is the maximum number of preallocated vlan addresses.
+const MaxPreallocatedVlanSize = 2000
+
+// StringifyIP stringifies an IP. The standard library makes the interesting
+// choice of mapping an empty IP address object to "<nil>" rather than "".
+//
+// Here we just return an empty string given an empty IP.
+func StringifyIP(ip net.IP) string {
+	if len(ip) == 0 {
+		return ""
+	}
+	return ip.String()
+}
+
 // ParseVlan parses vlan to a list of IPs
 //
 // vlanName here is a full vlan name, e.g. browser:123
