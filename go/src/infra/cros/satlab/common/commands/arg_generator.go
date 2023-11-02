@@ -5,8 +5,15 @@
 package commands
 
 import (
+	"context"
 	"fmt"
+	"os"
 	"sort"
+
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/system/terminal"
+
+	"infra/cros/satlab/common/site"
 )
 
 // CommandWithFlags is a representation of a command with subcommands that takes a combination
@@ -16,6 +23,7 @@ type CommandWithFlags struct {
 	Commands       []string
 	Flags          map[string][]string
 	PositionalArgs []string
+	AuthRequired   bool
 }
 
 // ToCommand produces a list of arguments given a representation of a command with flags.
@@ -26,6 +34,14 @@ func (c *CommandWithFlags) ToCommand() []string {
 	var out []string
 	for _, s := range c.Commands {
 		out = append(out, s)
+	}
+	if c.AuthRequired {
+		a := auth.NewAuthenticator(context.Background(), auth.SilentLogin, site.DefaultAuthOptions)
+		if err := a.CheckLoginRequired(); err != nil {
+			if !terminal.IsTerminal(int(os.Stdout.Fd())) {
+				c.Flags["service-account-json"] = []string{site.GetServiceAccountPath()}
+			}
+		}
 	}
 	// ToCommand must be deterministic, sort the keys before iterating.
 	var keys []string

@@ -72,8 +72,9 @@ func (g *GetAsset) TriggerRun(
 	var err error
 	flags := makeGetAssetShivasFlags(g)
 	args := (&commands.CommandWithFlags{
-		Commands: []string{paths.ShivasCLI, "get", "asset"},
-		Flags:    flags,
+		Commands:     []string{paths.ShivasCLI, "get", "asset"},
+		Flags:        flags,
+		AuthRequired: true,
 	}).ToCommand()
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
 	out, err := executor.Exec(command)
