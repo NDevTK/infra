@@ -70,6 +70,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		SatlabId:      c.satlabId,
 		CFT:           c.cft,
 		Local:         c.local,
+		MaxTimeout:    c.maxTimeout,
 		AddedDims:     c.addedDims,
 	}
 	buildLink, err := r.TriggerRun(ctx)

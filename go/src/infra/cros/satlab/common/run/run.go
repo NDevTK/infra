@@ -48,6 +48,7 @@ type Run struct {
 	SatlabId      string
 	CFT           bool
 	Local         bool
+	MaxTimeout    bool
 	// Any configs related to results upload for this test run.
 	AddedDims map[string]string
 	Tags      map[string]string
@@ -123,6 +124,7 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 		ImageBucket:         site.GetGCSImageBucket(),
 		AuthOptions:         &site.DefaultAuthOptions,
 		TestRunnerBuildTags: c.Tags,
+		TimeoutMins:         c.setTimeout(),
 		// TRV2:        true,
 	}
 
@@ -162,6 +164,14 @@ func (c *Run) setTags() map[string]string {
 		tags["test-plan-id"] = strings.TrimSuffix(c.TestplanLocal, ".json")
 	}
 	return tags
+}
+
+// Determine CTP timeout based on user input
+func (c *Run) setTimeout() int {
+	if c.MaxTimeout {
+		return 2370
+	}
+	return 360
 }
 
 func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {

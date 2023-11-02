@@ -111,6 +111,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Model:               "gumboz",
 				TestPlan:            builder.TestPlanForSuites([]string{"rlz"}),
 				TestRunnerBuildTags: map[string]string{},
+				TimeoutMins:         360,
 			},
 		},
 		{
@@ -136,6 +137,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Model:               "gumboz",
 				TestPlan:            builder.TestPlanForTests("", "tauto", []string{"rlz_CheckPing.should_send_rlz_ping_missing"}),
 				TestRunnerBuildTags: map[string]string{},
+				TimeoutMins:         360,
 			},
 		},
 		{
@@ -162,6 +164,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Model:               "gumboz",
 				TestPlan:            builder.TestPlanForTests("", "tauto", []string{"rlz_CheckPing.should_send_rlz_ping_missing"}),
 				TestRunnerBuildTags: map[string]string{},
+				TimeoutMins:         360,
 			},
 		},
 		{
@@ -187,6 +190,34 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Model:               "gumboz",
 				TestPlan:            builder.TestPlanForSuites([]string{"rlz"}),
 				TestRunnerBuildTags: map[string]string{},
+				TimeoutMins:         360,
+			},
+		},
+		{
+			&Run{ // suite run with max timeout
+				Suite:      "rlz",
+				Board:      "zork",
+				Model:      "gumboz",
+				Milestone:  "111",
+				Build:      "15329.6.0",
+				AddedDims:  map[string]string{"label-dut": "123"},
+				MaxTimeout: true,
+			},
+			&builder.CTPBuilder{
+				AuthOptions: &site.DefaultAuthOptions,
+				Board:       "zork",
+				BuilderID: &buildbucketpb.BuilderID{
+					Project: "chromeos",
+					Bucket:  "cros_test_platform",
+					Builder: "cros_test_platform",
+				},
+				Dimensions:          map[string]string{"label-dut": "123"},
+				Image:               "zork-release/R111-15329.6.0",
+				ImageBucket:         "chromeos-image-archive",
+				Model:               "gumboz",
+				TestPlan:            builder.TestPlanForSuites([]string{"rlz"}),
+				TestRunnerBuildTags: map[string]string{},
+				TimeoutMins:         2370,
 			},
 		},
 		{
@@ -218,6 +249,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 					},
 				},
 				TestRunnerBuildTags: map[string]string{"test-plan-id": "testplan"},
+				TimeoutMins:         360,
 			},
 		},
 	}
