@@ -79,7 +79,7 @@ func main() {
 		cpuTemperatureOrchestrator,
 	)
 
-	defer server.Close()
+	defer server.Close(ctx)
 	pb.RegisterSatlabRpcServiceServer(s, server)
 
 	// Register reflection service on gRPC server.

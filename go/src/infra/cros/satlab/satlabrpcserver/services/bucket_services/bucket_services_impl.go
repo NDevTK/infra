@@ -11,6 +11,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -61,6 +62,7 @@ func (b *bucketClient) Close() error {
 //
 // string bucketName config which bucket we want to connect with in later functions.
 func New(ctx context.Context, bucketName string) (IBucketServices, error) {
+	logging.Infof(ctx, "Creating BucketService for bucket: %s", bucketName)
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
 	if err != nil {
 		return nil, fmt.Errorf("storage.NewClient: %w", err)
@@ -87,7 +89,7 @@ func (b *BucketConnector) IsBucketInAsia(ctx context.Context) (bool, error) {
 		return false, err
 	}
 
-	return strings.Index(strings.ToLower(attrs.Location), "asia") != -1, nil
+	return strings.Contains(strings.ToLower(attrs.Location), "asia"), nil
 }
 
 // GetMilestones returns all milestones from the bucket by given board.
@@ -95,6 +97,8 @@ func (b *BucketConnector) IsBucketInAsia(ctx context.Context) (bool, error) {
 // string board the board name we want to use as a filter.
 func (b *BucketConnector) GetMilestones(ctx context.Context, board string) ([]string, error) {
 	prefix := fmt.Sprintf("%s-release/R", board)
+	logging.Infof(ctx, "Searching for milestones with prefix %s in the partner bucket", prefix)
+
 	q := &storage.Query{Prefix: prefix, Delimiter: "-"}
 	// We don't need other fields here because
 	// the field `Prefix` we need already included.
@@ -119,6 +123,8 @@ func (b *BucketConnector) GetMilestones(ctx context.Context, board string) ([]st
 // string milestone the milestone we want to use as a filter.
 func (b *BucketConnector) GetBuilds(ctx context.Context, board string, milestone int32) ([]string, error) {
 	releasePrefix := fmt.Sprintf("%s-release/R%d-", board, milestone)
+	logging.Infof(ctx, "Searching for builds with prefix %s in the partner bucket", releasePrefix)
+
 	q := &storage.Query{Prefix: releasePrefix, Delimiter: "/"}
 	// We don't need other fields here because
 	// the field `Prefix` we need already included.

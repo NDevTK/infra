@@ -162,6 +162,8 @@ func (s *SatlabRpcServiceServer) ListMilestones(ctx context.Context, in *pb.List
 //
 // pb.ListAccessibleModelsRequest in the request from the client we use it as a filter to list the models.
 func (s *SatlabRpcServiceServer) ListAccessibleModels(ctx context.Context, in *pb.ListAccessibleModelsRequest) (*pb.ListAccessibleModelsResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: list_accessible_models")
+
 	rawData, err := s.buildService.ListModels(ctx, in.GetBoard())
 	if err != nil {
 		return nil, err
@@ -172,7 +174,7 @@ func (s *SatlabRpcServiceServer) ListAccessibleModels(ctx context.Context, in *p
 	for _, item := range rawData {
 		boardAndModelPair, err := parser.ExtractBoardAndModelFrom(item)
 		if errors.Is(err, e.NotMatch) {
-			log.Printf("The model name (%s) doesn't match `buildTargets/{board}/models/{model}`", item)
+			logging.Warningf(ctx, "The model name (%s) doesn't match `buildTargets/{board}/models/{model}`", item)
 		} else {
 			data[boardAndModelPair.Model] = append(data[boardAndModelPair.Model], boardAndModelPair.Board)
 		}
@@ -197,6 +199,8 @@ func (s *SatlabRpcServiceServer) ListAccessibleModels(ctx context.Context, in *p
 //
 // pb.ListBuildVersionsRequest in the request from the client we use to it as a filter to list the build versions.
 func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.ListBuildVersionsRequest) (*pb.ListBuildVersionsResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: list_build_versions")
+
 	// Get the builds from the partner bucket
 	// If the builds are in the partner bucket. they are staged.
 	bucketBuilds, err := s.bucketService.GetBuilds(ctx, in.GetBoard(), in.GetMilestone())
@@ -260,6 +264,8 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 //
 // pb.StageBuildRequest in the request from client which we want to stage the artifact in the partner bucket.
 func (s *SatlabRpcServiceServer) StageBuild(ctx context.Context, in *pb.StageBuildRequest) (*pb.StageBuildResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: stage_build")
+
 	res, err := s.buildService.StageBuild(ctx, in.GetBoard(), in.GetModel(), in.GetBuildVersion(), site.GetGCSImageBucket())
 	if err != nil {
 		return nil, err
@@ -273,6 +279,8 @@ func (s *SatlabRpcServiceServer) StageBuild(ctx context.Context, in *pb.StageBui
 
 // ListConnectedDutsFirmware get current and firmware update on each DUT
 func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, _ *pb.ListConnectedDutsFirmwareRequest) (*pb.ListConnectedDutsFirmwareResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: list_connected_duts_firmware")
+
 	devices, err := s.dutService.GetConnectedIPs(ctx)
 	if err != nil {
 		return nil, err
@@ -292,14 +300,14 @@ func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, 
 	for _, cmdRes := range res {
 		if cmdRes.Error != nil {
 			// If we execute the command failed, we can just continue others. Don't block.
-			log.Printf("Got an error when execute command: %v", cmdRes.Error)
+			logging.Errorf(ctx, "Got an error when execute command: %v", cmdRes.Error)
 			continue
 		}
 		var cmdResponse dut_services.ListFirmwareCommandResponse
 		err = json.Unmarshal([]byte(cmdRes.Value), &cmdResponse)
 		if err != nil {
 			// If something wrong, we can continue to decode another ip result.
-			log.Printf("Json decode error: %v", err)
+			logging.Errorf(ctx, "Json decode error: %v", err)
 			continue
 		}
 
@@ -319,9 +327,11 @@ func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, 
 
 // GetSystemInfo get the system information
 func (s *SatlabRpcServiceServer) GetSystemInfo(ctx context.Context, _ *pb.GetSystemInfoRequest) (*pb.GetSystemInfoResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: get_system_info")
+
 	var averageTemperature float32 = -1.0
 	if s.cpuTemperatureOrchestrator == nil {
-		log.Println("This platform doesn't support getting the temperature")
+		logging.Errorf(ctx, "This platform doesn't support getting the temperature")
 	} else {
 		averageTemperature = s.cpuTemperatureOrchestrator.GetAverageCPUTemperature()
 	}
@@ -339,6 +349,8 @@ func (s *SatlabRpcServiceServer) GetSystemInfo(ctx context.Context, _ *pb.GetSys
 
 // GetPeripheralInformation get peripheral inforamtion by given DUT IP.
 func (s *SatlabRpcServiceServer) GetPeripheralInformation(ctx context.Context, in *pb.GetPeripheralInformationRequest) (*pb.GetPeripheralInformationResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: get_peripheral_information")
+
 	res, err := s.dutService.RunCommandOnIP(ctx, in.GetDutHostname(), constants.GetPeripheralInfoCommand)
 	if err != nil {
 		return nil, err
@@ -355,6 +367,8 @@ func (s *SatlabRpcServiceServer) GetPeripheralInformation(ctx context.Context, i
 
 // UpdateDutsFirmware update Duts by given IPs
 func (s *SatlabRpcServiceServer) UpdateDutsFirmware(ctx context.Context, in *pb.UpdateDutsFirmwareRequest) (*pb.UpdateDutsFirmwareResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: update_duts_firmware")
+
 	// Run command on given IPs
 	rawData := s.dutService.RunCommandOnIPs(ctx, in.GetIps(), constants.UpdateFirmwareCommand)
 
@@ -384,23 +398,23 @@ func (s *SatlabRpcServiceServer) UpdateDutsFirmware(ctx context.Context, in *pb.
 }
 
 // Close clean up
-func (s *SatlabRpcServiceServer) Close() {
-	var err error
-	err = s.buildService.Close()
-	if err != nil {
-		log.Println(err)
+func (s *SatlabRpcServiceServer) Close(ctx context.Context) {
+	if err := s.buildService.Close(); err != nil {
+		logging.Errorf(ctx, "Error while closing buildservice %v", err)
 	}
 }
 
 // Run suite triggers the test suite on the satlab. Right now, this is implemented using CTPBuildRequest
 func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRequest) (*pb.RunSuiteResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: run_suite")
+
 	r := &run.Run{
-		Suite:     in.Suite,
-		Model:     in.Model,
-		Board:     in.BuildTarget,
-		Milestone: in.Milestone,
-		Build:     in.BuildVersion,
-		Pool:      in.Pool,
+		Suite:     in.GetSuite(),
+		Model:     in.GetModel(),
+		Board:     in.GetBuildTarget(),
+		Milestone: in.GetMilestone(),
+		Build:     in.GetBuildVersion(),
+		Pool:      in.GetPool(),
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
@@ -410,6 +424,8 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 }
 
 func (s *SatlabRpcServiceServer) RunTest(ctx context.Context, in *pb.RunTestRequest) (*pb.RunTestResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: run_test")
+
 	r := &run.Run{
 		Tests:     in.GetTests(),
 		TestArgs:  in.GetTestArgs(),
@@ -427,6 +443,8 @@ func (s *SatlabRpcServiceServer) RunTest(ctx context.Context, in *pb.RunTestRequ
 }
 
 func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVersionInfoRequest) (*pb.GetVersionInfoResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: get_version_info")
+
 	resp := pb.GetVersionInfoResponse{}
 	hostId, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, s.commandExecutor)
 	if err != nil {
@@ -458,6 +476,8 @@ func addPoolsToDUT(ctx context.Context, executor executor.IExecCommander, hostna
 }
 
 func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequest) (*pb.AddPoolResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: add_pool")
+
 	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, in.GetAddresses())
 	if err != nil {
 		return nil, err
@@ -477,6 +497,8 @@ func removeAllPoolsFromDUT(ctx context.Context, executor executor.IExecCommander
 }
 
 func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePoolRequest) (*pb.UpdatePoolResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: update_pool")
+
 	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
@@ -502,6 +524,8 @@ func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePo
 }
 
 func (s *SatlabRpcServiceServer) GetDutDetail(ctx context.Context, in *pb.GetDutDetailRequest) (*pb.GetDutDetailResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: get_dut_detail")
+
 	swarmingService, err := services.NewSwarmingService(ctx)
 	if err != nil {
 		return nil, err
@@ -516,7 +540,7 @@ func innerGetDUTDetail(ctx context.Context, executor executor.IExecCommander, sw
 	}
 
 	if len(IPToHostResult.InvalidAddresses) != 0 {
-		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses))
+		return nil, fmt.Errorf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 	}
 
 	r, err := swarmingService.GetBot(ctx, IPToHostResult.Hostnames[0])
@@ -552,6 +576,8 @@ func innerGetDUTDetail(ctx context.Context, executor executor.IExecCommander, sw
 }
 
 func (s *SatlabRpcServiceServer) ListDutTasks(ctx context.Context, in *pb.ListDutTasksRequest) (*pb.ListDutTasksResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: list_dut_tasks")
+
 	swarmingService, err := services.NewSwarmingService(ctx)
 	if err != nil {
 		return nil, err
@@ -567,7 +593,7 @@ func innerListDUTTasks(ctx context.Context, executor executor.IExecCommander, sw
 	}
 
 	if len(IPToHostResult.InvalidAddresses) != 0 {
-		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses))
+		return nil, fmt.Errorf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 	}
 
 	r, err := swarmingService.ListBotTasks(ctx, IPToHostResult.Hostnames[0], cursor, pageSize)
@@ -595,6 +621,8 @@ func innerListDUTTasks(ctx context.Context, executor executor.IExecCommander, sw
 }
 
 func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListDutEventsRequest) (*pb.ListDutEventsResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: list_dut_events")
+
 	swarmingService, err := services.NewSwarmingService(ctx)
 	if err != nil {
 		return nil, err
@@ -609,7 +637,7 @@ func innerListDUTEvents(ctx context.Context, executor executor.IExecCommander, s
 	}
 
 	if len(IPToHostResult.InvalidAddresses) != 0 {
-		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses))
+		return nil, fmt.Errorf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 	}
 
 	r, err := swarmingService.ListBotEvents(ctx, IPToHostResult.Hostnames[0], cursor, pageSize)
@@ -695,6 +723,8 @@ func getConnectedDuts(ctx context.Context, executor executor.IExecCommander) ([]
 }
 
 func (s *SatlabRpcServiceServer) ListEnrolledDuts(ctx context.Context, in *pb.ListEnrolledDutsRequest) (*pb.ListEnrolledDutsResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: list_enrolled_duts")
+
 	duts, err := getConnectedDuts(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
@@ -704,6 +734,8 @@ func (s *SatlabRpcServiceServer) ListEnrolledDuts(ctx context.Context, in *pb.Li
 }
 
 func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRequest) (*pb.ListDutsResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: list_duts")
+
 	connectedDevices, err := s.dutService.GetConnectedIPs(ctx)
 	if err != nil {
 		return nil, err
@@ -781,6 +813,8 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 
 // DeleteDuts the RPC service for deleting DUTs
 func (s *SatlabRpcServiceServer) DeleteDuts(ctx context.Context, in *pb.DeleteDutsRequest) (*pb.DeleteDutsResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: delete_duts")
+
 	ctx = utils.SetupContext(ctx, site.GetNamespace(""))
 	ufs, err := ufs.NewUFSClientWithDefaultOptions(ctx, site.GetUFSService(s.dev))
 	if err != nil {
@@ -816,6 +850,8 @@ func innerDeleteDuts(ctx context.Context, executor executor.IExecCommander, ufs 
 
 // GetNetworkInfo gets newwork information of satlab.
 func (s *SatlabRpcServiceServer) GetNetworkInfo(ctx context.Context, _ *pb.GetNetworkInfoRequest) (*pb.GetNetworkInfoResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: get_network_info")
+
 	hostname, err := satlabcommands.GetHostIP(ctx, s.commandExecutor)
 	if err != nil {
 		return nil, err
@@ -834,6 +870,8 @@ func (s *SatlabRpcServiceServer) GetNetworkInfo(ctx context.Context, _ *pb.GetNe
 }
 
 func (s *SatlabRpcServiceServer) ListTestPlans(ctx context.Context, _ *pb.ListTestPlansRequest) (*pb.ListTestPlansResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: list_test_plans")
+
 	res, err := s.bucketService.ListTestplans(ctx)
 	if err != nil {
 		return nil, err
@@ -845,6 +883,8 @@ func (s *SatlabRpcServiceServer) ListTestPlans(ctx context.Context, _ *pb.ListTe
 }
 
 func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequest) (*pb.AddDutsResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: add_duts")
+
 	var fail = make([]*pb.AddDutsResponse_FailedData, 0, len(in.GetDuts()))
 	var pass = make([]*pb.AddDutsResponse_PassedData, 0, len(in.GetDuts()))
 
@@ -887,6 +927,8 @@ func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequ
 }
 
 func (s *SatlabRpcServiceServer) RunTestPlan(ctx context.Context, in *pb.RunTestPlanRequest) (*pb.RunTestPlanResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: run_test_plan")
+
 	r := &run.Run{
 		Board:     in.GetBoard(),
 		Model:     in.GetModel(),
@@ -904,6 +946,8 @@ func (s *SatlabRpcServiceServer) RunTestPlan(ctx context.Context, in *pb.RunTest
 }
 
 func (s *SatlabRpcServiceServer) GetTestPlan(ctx context.Context, in *pb.GetTestPlanRequest) (*pb.GetTestPlanResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: get_test_plan")
+
 	tp, err := s.bucketService.GetTestPlan(ctx, in.GetName())
 	if err != nil {
 		return nil, err
