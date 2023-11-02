@@ -18,6 +18,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/executor"
 )
 
@@ -63,27 +64,42 @@ func TestGetHostIPShouldFail(t *testing.T) {
 	}
 }
 
+func macAddressCommandHelper(hostname, macAddress, cmdOutput string) *executor.FakeCommander {
+	return &executor.FakeCommander{
+		FakeFn: func(in *exec.Cmd) ([]byte, error) {
+			cmd := strings.Join(in.Args, " ")
+			if in.Path == paths.GetHostIPScript {
+				return []byte(hostname), nil
+			} else if cmd == fmt.Sprintf("%s exec dhcp cat %s", paths.DockerPath, fmt.Sprintf(paths.NetInfoPathTemplate, "eth0")) {
+				return []byte(macAddress), nil
+			} else if cmd == fmt.Sprintf(fmt.Sprintf("%s exec dhcp ip route show", paths.DockerPath)) {
+				return []byte(
+					fmt.Sprintf("%v/24 dev eth0 scope link  src %v", hostname, hostname),
+				), nil
+			} else if in.Path == paths.Grep {
+				return []byte(hostname), nil
+			}
+			return nil, errors.New(fmt.Sprintf("handle command: %v", in.Path))
+		},
+		CmdOutput: cmdOutput,
+	}
+
+}
+
 // TestGetMacAddressShouldSuccess test `GetMacAddress` function.
 func TestGetMacAddressShouldSuccess(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
 
+	// fake data
 	hostname := "127.0.0.1"
 	expectedMacAddress := "aa:bb:cc:dd:ee:ff"
-
-	commandExecutor := &executor.FakeCommander{
-		FakeFn: func(in *exec.Cmd) ([]byte, error) {
-			cmd := strings.Join(in.Args, " ")
-			if cmd == "/usr/local/bin/get_host_ip" {
-				return []byte(hostname), nil
-			} else if cmd == "/usr/local/bin/docker exec dhcp cat /sys/class/net/eth0/address" {
-				return []byte(expectedMacAddress), nil
-			}
-			return nil, errors.New(fmt.Sprintf("handle command: %v", in.Path))
-		},
-		CmdOutput: fmt.Sprintf("%v/24 dev eth0 scope link  src %v", hostname, hostname),
-	}
+	commandExecutor := macAddressCommandHelper(
+		hostname,
+		expectedMacAddress,
+		fmt.Sprintf("%v/24 dev eth0 scope link  src %v", hostname, hostname),
+	)
 
 	res, err := GetMacAddress(ctx, commandExecutor)
 
@@ -124,21 +140,10 @@ func TestGetMacAddressShouldFailWhenGetNICNameFailed(t *testing.T) {
 
 	ctx := context.Background()
 
+	// fake data
 	hostname := "127.0.0.1"
 	macAddress := "aa:bb:cc:dd:ee:ff"
-
-	commandExecutor := &executor.FakeCommander{
-		FakeFn: func(in *exec.Cmd) ([]byte, error) {
-			cmd := strings.Join(in.Args, " ")
-			if cmd == "/usr/local/bin/get_host_ip" {
-				return []byte(hostname), nil
-			} else if cmd == "/usr/local/bin/docker exec dhcp cat /sys/class/net/eth0/address" {
-				return []byte(macAddress), nil
-			}
-			return nil, errors.New(fmt.Sprintf("handle command: %v", in.Path))
-		},
-		CmdOutput: "",
-	}
+	commandExecutor := macAddressCommandHelper(hostname, macAddress, "")
 
 	res, err := GetMacAddress(ctx, commandExecutor)
 

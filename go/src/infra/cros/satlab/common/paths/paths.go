@@ -31,4 +31,7 @@ const (
 
 	// NetInfoPathTemplate is the path to get internet info of satlab machine.
 	NetInfoPathTemplate = "/sys/class/net/%v/address"
+
+	// Grep the path of grep command
+	Grep = "/bin/grep"
 )

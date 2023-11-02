@@ -142,7 +142,7 @@ func GetMacAddress(ctx context.Context, executor executor.IExecCommander) (strin
 			"route",
 			"show",
 		),
-		exec.CommandContext(ctx, "grep", hostIP),
+		exec.CommandContext(ctx, paths.Grep, hostIP),
 	)
 	hostIPInfo, err := multipleCmdsExecutor.Exec(executor)
 	if err != nil {

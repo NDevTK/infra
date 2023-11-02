@@ -49,8 +49,13 @@ func (f *FakeCommander) Exec(in *exec.Cmd) ([]byte, error) {
 	return []byte(f.CmdOutput), f.Err
 }
 
-func (f *FakeCommander) Start(c *exec.Cmd) error {
-	return nil
+func (f *FakeCommander) Start(in *exec.Cmd) error {
+	if f.FakeFn != nil {
+		_, err := f.FakeFn(in)
+		return err
+	}
+
+	return f.Err
 }
 
 func (f *FakeCommander) Wait(c *exec.Cmd) error {

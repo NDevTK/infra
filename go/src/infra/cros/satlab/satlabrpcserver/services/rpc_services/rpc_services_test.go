@@ -1628,10 +1628,16 @@ func TestGetNetworkInfoShouldSuccess(t *testing.T) {
 	s.commandExecutor = &executor.FakeCommander{
 		FakeFn: func(in *exec.Cmd) ([]byte, error) {
 			cmd := strings.Join(in.Args, " ")
-			if cmd == "/usr/local/bin/get_host_ip" {
+			if in.Path == paths.GetHostIPScript {
 				return []byte(expected.Hostname), nil
-			} else if cmd == "/usr/local/bin/docker exec dhcp cat /sys/class/net/eth0/address" {
+			} else if cmd == fmt.Sprintf("%s exec dhcp cat %s", paths.DockerPath, fmt.Sprintf(paths.NetInfoPathTemplate, "eth0")) {
 				return []byte(expected.MacAddress), nil
+			} else if cmd == fmt.Sprintf(fmt.Sprintf("%s exec dhcp ip route show", paths.DockerPath)) {
+				return []byte(
+					fmt.Sprintf("%v/24 dev eth0 scope link  src %v", expected.Hostname, expected.Hostname),
+				), nil
+			} else if in.Path == paths.Grep {
+				return []byte(expected.Hostname), nil
 			}
 			return nil, errors.New(fmt.Sprintf("handle command: %v", in.Path))
 		},
