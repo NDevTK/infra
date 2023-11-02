@@ -16,10 +16,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/tools/pkgbuild/pkg/spec"
-	"infra/tools/pkgbuild/pkg/stdenv"
-
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/cipkg/base/generators"
@@ -29,6 +27,9 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/testing/assertions"
+
+	"infra/tools/pkgbuild/pkg/spec"
+	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
 func initStdenv(build generators.Platform) {

@@ -9,15 +9,15 @@ import (
 	"os"
 	"time"
 
-	"infra/tools/pkgbuild/pkg/spec"
-	"infra/tools/pkgbuild/pkg/stdenv"
-
 	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	"infra/tools/pkgbuild/pkg/spec"
+	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
 func main() {

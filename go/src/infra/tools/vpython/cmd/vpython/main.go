@@ -13,13 +13,13 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/luci/cipkg/base/actions"
+	"go.chromium.org/luci/common/errors"
+
 	"infra/tools/vpython/pkg/application"
 	"infra/tools/vpython/pkg/common"
 	"infra/tools/vpython/pkg/python"
 	"infra/tools/vpython/pkg/wheels"
-
-	"go.chromium.org/luci/cipkg/base/actions"
-	"go.chromium.org/luci/common/errors"
 )
 
 type PythonRuntime struct {

@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/logging"
 )

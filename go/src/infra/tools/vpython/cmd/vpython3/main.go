@@ -11,13 +11,13 @@ import (
 	"os/exec"
 	"time"
 
+	"go.chromium.org/luci/cipkg/base/actions"
+	"go.chromium.org/luci/common/errors"
+
 	"infra/tools/vpython/pkg/application"
 	"infra/tools/vpython/pkg/common"
 	"infra/tools/vpython/pkg/python"
 	"infra/tools/vpython/pkg/wheels"
-
-	"go.chromium.org/luci/cipkg/base/actions"
-	"go.chromium.org/luci/common/errors"
 )
 
 const DefaultPythonVersion = "3.8"

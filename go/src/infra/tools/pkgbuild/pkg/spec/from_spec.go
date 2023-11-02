@@ -16,11 +16,11 @@ import (
 	"sort"
 	"strings"
 
-	"infra/tools/pkgbuild/pkg/stdenv"
-
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/common/system/environ"
+
+	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
 // TODO(fancl): Use all:from_spec/build-support after go 1.18.

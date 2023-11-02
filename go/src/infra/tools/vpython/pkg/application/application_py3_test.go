@@ -12,8 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"infra/tools/vpython/pkg/python"
-	"infra/tools/vpython/pkg/wheels"
+	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/cipkg/base/generators"
@@ -21,7 +20,8 @@ import (
 	"go.chromium.org/luci/common/system/exitcode"
 	"go.chromium.org/luci/common/system/filesystem"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/tools/vpython/pkg/python"
+	"infra/tools/vpython/pkg/wheels"
 )
 
 const defaultPythonVersion = "3.8"

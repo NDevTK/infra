@@ -16,12 +16,12 @@ import (
 	"strings"
 	"testing"
 
-	"infra/tools/vpython/pkg/common"
+	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/tools/vpython/pkg/common"
 )
 
 const vpythonTestReexec = "_VPYTHON_TEST_REEXEC"

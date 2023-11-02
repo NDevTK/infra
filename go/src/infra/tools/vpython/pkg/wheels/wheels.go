@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"infra/tools/vpython/pkg/common"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
@@ -25,7 +25,7 @@ import (
 	"go.chromium.org/luci/vpython/spec"
 	"go.chromium.org/luci/vpython/wheel"
 
-	"google.golang.org/protobuf/types/known/anypb"
+	"infra/tools/vpython/pkg/common"
 )
 
 type vpythonSpecGenerator struct {

@@ -13,14 +13,14 @@ import (
 	"testing"
 	"time"
 
-	"infra/tools/pkgbuild/pkg/stdenv"
+	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/system/filesystem"
 	"go.chromium.org/luci/common/testing/assertions"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
 func TestCreateParser(t *testing.T) {

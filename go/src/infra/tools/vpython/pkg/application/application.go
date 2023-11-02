@@ -14,8 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"infra/tools/vpython/pkg/common"
-
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/cipkg/base/generators"
@@ -29,6 +27,8 @@ import (
 	vpythonAPI "go.chromium.org/luci/vpython/api/vpython"
 	"go.chromium.org/luci/vpython/python"
 	"go.chromium.org/luci/vpython/spec"
+
+	"infra/tools/vpython/pkg/common"
 )
 
 const (

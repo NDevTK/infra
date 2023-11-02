@@ -15,7 +15,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"infra/tools/pkgbuild/pkg/spec"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/cipkg/base/actions"
@@ -28,7 +28,7 @@ import (
 	"go.chromium.org/luci/provenance/api/snooperpb/v1"
 	"go.chromium.org/luci/provenance/client"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"infra/tools/pkgbuild/pkg/spec"
 )
 
 type Application struct {
