@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -45,22 +46,38 @@ func (s *Setup) StartSetup(ctx context.Context) error {
 	if err := s.createKeyFolder(ctx); err != nil {
 		return err
 	}
+
+	var err error
+	defer func() {
+		// We decided to clean up the boto file when we
+		// encountered an error because it uses boto to check
+		// if the user has been logged in or not
+		//
+		// remove boto file if exist.
+		// if there is any error, we can not do anything here.
+		// just `log` the error message
+		if err != nil {
+			e := s.removeBotoIfExist()
+			log.Printf("remove boto file failed. got an error: %v\n", e)
+		}
+	}()
+
 	// Download service account key
 	if s.GSAccessKeyId != "" && s.GSSecretAccessKey != "" {
-		if err := s.setupWithBoto(ctx); err != nil {
+		if err = s.setupWithBoto(ctx); err != nil {
 			return fmt.Errorf("failed to download key with boto key: %w", err)
 		}
 	} else {
-		if err := s.setupWithUser(ctx); err != nil {
+		if err = s.setupWithUser(ctx); err != nil {
 			return fmt.Errorf("failed to download key with user credential: %w", err)
 		}
 	}
 	// Create symlink to skylab_drone.json.
-	if err := runCmd(fmt.Sprintf("sudo ln -f %s %s", sa, droneSA)); err != nil {
+	if err = runCmd(fmt.Sprintf("sudo ln -f %s %s", sa, droneSA)); err != nil {
 		return fmt.Errorf("create skylab drone symlink: %w", err)
 	}
 
-	return nil
+	return err
 }
 
 func (s *Setup) createKeyFolder(ctx context.Context) error {
@@ -198,6 +215,13 @@ func (s *Setup) downloadKeyGsutil() error {
 func (s *Setup) downloadConfigGsutil() error {
 	cmd := fmt.Sprintf("sudo gsutil cp gs://%s/%s %s", s.Bucket, site.SatlabConfigFilename, cf)
 	return runCmd(cmd)
+}
+
+// removeBotoIfExist remove the boto file
+func (s *Setup) removeBotoIfExist() error {
+	homeDir, _ := os.UserHomeDir()
+	botoCfg := filepath.Join(homeDir, ".boto")
+	return os.Remove(botoCfg)
 }
 
 // runCmd is a wrapper to run a cmd with/without sudo.
