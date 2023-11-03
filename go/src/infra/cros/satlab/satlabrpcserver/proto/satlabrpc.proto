@@ -340,7 +340,7 @@ message RunTestResponse {
 // NEXT_TAG = 1
 message ListEnrolledDutsRequest {}
 
-// NEXT_TAG = 12
+// NEXT_TAG = 13
 message Dut {
   string address = 1;
   string name = 2;
@@ -353,6 +353,7 @@ message Dut {
   string servo_serial = 9;
   string servo_type = 10;
   int32 servo_port = 11;
+  string state = 12;
 }
 
 // NEXT_TAG = 2

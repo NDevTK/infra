@@ -1124,6 +1124,7 @@ func TestListEnrolledDutsShouldSuccess(t *testing.T) {
 				Pools:    []string{"jev-satlab"},
 				Model:    "atlas",
 				Board:    "atlas",
+				State:    "unknown",
 			},
 		},
 	}
@@ -1195,6 +1196,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				Board:       "atlas",
 				IsConnected: true,
 				MacAddress:  "00:14:3d:14:c4:02",
+				State:       "unknown",
 			},
 			{
 				Name:        "",
@@ -1206,6 +1208,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				MacAddress:  "e8:9f:80:83:3d:c8",
 				ServoSerial: "SERVOSERIAL",
 				IsConnected: true,
+				State:       "",
 			},
 		},
 	}
@@ -1260,6 +1263,7 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				Board:       "atlas",
 				IsConnected: false,
 				MacAddress:  "00:14:3d:14:c4:02",
+				State:       "unknown",
 			},
 			{
 				Name:        "",
@@ -1270,6 +1274,7 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				Board:       "",
 				MacAddress:  "e8:9f:80:83:3d:c8",
 				IsConnected: false,
+				State:       "",
 			},
 		},
 	}
@@ -1452,6 +1457,7 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 				Board:       "atlas",
 				IsConnected: true,
 				MacAddress:  "00:14:3d:14:c4:02",
+				State:       "unknown",
 			},
 			{
 				Name:        "",
@@ -1463,6 +1469,7 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 				MacAddress:  "e8:9f:80:83:3d:c8",
 				IsConnected: true,
 				ServoSerial: "SERVOSERIAL",
+				State:       "",
 			},
 		},
 	}

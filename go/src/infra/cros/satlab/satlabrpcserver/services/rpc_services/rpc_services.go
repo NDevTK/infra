@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cmd/shivas/utils"
+	"infra/cros/dutstate"
 	"infra/cros/satlab/common/asset"
 	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/dut"
@@ -702,6 +703,7 @@ func getConnectedDuts(ctx context.Context, executor executor.IExecCommander) ([]
 			ServoSerial: dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoSerial(),
 			ServoType:   dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(),
 			ServoPort:   dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoPort(),
+			State:       dutstate.ConvertFromUFSState(dut.GetResourceState()).String(),
 		}
 
 		address := HostMap[dut.Hostname]
