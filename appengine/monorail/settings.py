@@ -348,7 +348,7 @@ else:
                 'benhenry@google.com', 'zhangtiff@google.com',
                 'summermcdonald@google.com', 'example@example.com'
             },
-        36: {'viccontreas@google.com', 'nmulcahey@google.com'}
+        36: {'viccontreras@google.com', 'nmulcahey@google.com'}
     }
 
   elif app_id == 'monorail-prod':
@@ -367,7 +367,7 @@ else:
                 'benhenry@google.com', 'zhangtiff@google.com',
                 'summermcdonald@google.com', 'example@example.com'
             },
-        37: {'viccontreas@google.com', 'nmulcahey@google.com'}
+        37: {'viccontreras@google.com', 'nmulcahey@google.com'}
     }
 
 if local_mode:
@@ -542,6 +542,7 @@ label_prefix_allowlist = [
     'version-',
     'copybara-migrate-c-',
     'reward-',
+    'b-',
 ]
 
 
