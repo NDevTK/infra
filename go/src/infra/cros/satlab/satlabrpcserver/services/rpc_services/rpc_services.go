@@ -885,6 +885,11 @@ func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequ
 	var fail = make([]*pb.AddDutsResponse_FailedData, 0, len(in.GetDuts()))
 	var pass = make([]*pb.AddDutsResponse_PassedData, 0, len(in.GetDuts()))
 
+	hostId, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, d := range in.GetDuts() {
 		// The buffer we want to get the command output
 		// we use this buffer to parse the deploy URL.
@@ -895,7 +900,7 @@ func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequ
 			Board:       d.GetBoard(),
 			Model:       d.GetModel(),
 			AssetType:   "dut",
-			Asset:       uuid.New().String(),
+			Asset:       site.MaybePrepend(site.Satlab, hostId, uuid.NewString()),
 			DeployTags:  []string{"satlab:true"},
 			ServoSerial: d.GetServoSerial(),
 		}).TriggerRun(ctx, s.commandExecutor, &buf)
