@@ -62,8 +62,7 @@ func CheckIdempotencyKey(ctx context.Context, client computeInstancesClient, pro
 
 // CreateInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
 func CreateInstance(parentCtx context.Context, client computeInstancesClient, env, leaseID string, r *api.LeaseVMRequest) error {
-	// Implement a 180 second deadline for creating the instance
-	ctx, cancel := context.WithTimeout(parentCtx, 180*time.Second)
+	ctx, cancel := context.WithTimeout(parentCtx, 600*time.Second)
 	defer cancel()
 
 	hostReqs := r.GetHostReqs()
