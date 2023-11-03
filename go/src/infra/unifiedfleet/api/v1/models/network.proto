@@ -149,7 +149,7 @@ message IP {
     string id = 1;
     // can be converted to and from the string ip address
     uint32 ipv4 = 2;
-    // ipv6 is the ipv6 address. It must contain exactly eight bytes.
+    // ipv6 is the ipv6 address. It must contain exactly sixteen bytes.
     bytes ipv6 = 7;
     string vlan = 3;
     // store the string ip address for ipv4.

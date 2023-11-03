@@ -27,7 +27,10 @@ const IPKind string = "IP"
 
 // IPEntity is a datastore entity that tracks IP.
 //
-// Note that IPv4 and IPv6 are alternatives. Exactly one of them should be non-nil.
+// IPv4-related fields should ONLY be set if the address is an IPv4 address.
+//
+// The IPv6 field should always be set, even for IPv4 addresses. The Go standard library
+// reserves a prefix to designate IPv4 in IPv6 addresses, so we do the same.
 type IPEntity struct {
 	_kind string                `gae:"$kind,IP"`
 	Extra datastore.PropertyMap `gae:",extra"`

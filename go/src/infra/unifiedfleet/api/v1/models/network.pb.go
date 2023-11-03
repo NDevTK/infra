@@ -485,7 +485,7 @@ type IP struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// can be converted to and from the string ip address
 	Ipv4 uint32 `protobuf:"varint,2,opt,name=ipv4,proto3" json:"ipv4,omitempty"`
-	// ipv6 is the ipv6 address. It must contain exactly eight bytes.
+	// ipv6 is the ipv6 address. It must contain exactly sixteen bytes.
 	Ipv6 []byte `protobuf:"bytes,7,opt,name=ipv6,proto3" json:"ipv6,omitempty"`
 	Vlan string `protobuf:"bytes,3,opt,name=vlan,proto3" json:"vlan,omitempty"`
 	// store the string ip address for ipv4.
