@@ -59,6 +59,8 @@ type SatlabRpcServiceServer struct {
 	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator
 	// commandExecutor provides an interface to run a command. It is good for testing
 	commandExecutor executor.IExecCommander
+	// swarmingService provides the swarming API services
+	swarmingService services.ISwarmingService
 }
 
 func New(
@@ -67,6 +69,7 @@ func New(
 	bucketService bucket_services.IBucketServices,
 	dutService dut_services.IDUTServices,
 	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator,
+	swarmingService services.ISwarmingService,
 ) *SatlabRpcServiceServer {
 	return &SatlabRpcServiceServer{
 		dev:                        dev,
@@ -75,6 +78,7 @@ func New(
 		dutService:                 dutService,
 		cpuTemperatureOrchestrator: cpuTemperatureOrchestrator,
 		commandExecutor:            &executor.ExecCommander{},
+		swarmingService:            swarmingService,
 	}
 }
 
@@ -529,15 +533,11 @@ func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePo
 func (s *SatlabRpcServiceServer) GetDutDetail(ctx context.Context, in *pb.GetDutDetailRequest) (*pb.GetDutDetailResponse, error) {
 	logging.Infof(ctx, "gRPC Service triggered: get_dut_detail")
 
-	swarmingService, err := services.NewSwarmingService(ctx)
-	if err != nil {
-		return nil, err
+	if s.swarmingService == nil {
+		return nil, errors.New("need to login before using this")
 	}
-	return innerGetDUTDetail(ctx, s.commandExecutor, swarmingService, in.GetAddress())
-}
 
-func innerGetDUTDetail(ctx context.Context, executor executor.IExecCommander, swarmingService services.ISwarmingService, address string) (*pb.GetDutDetailResponse, error) {
-	IPToHostResult, err := dns.IPToHostname(ctx, executor, []string{address})
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
 		return nil, err
 	}
@@ -546,7 +546,7 @@ func innerGetDUTDetail(ctx context.Context, executor executor.IExecCommander, sw
 		return nil, fmt.Errorf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 	}
 
-	r, err := swarmingService.GetBot(ctx, IPToHostResult.Hostnames[0])
+	r, err := s.swarmingService.GetBot(ctx, IPToHostResult.Hostnames[0])
 	if err != nil {
 		return nil, err
 	}
@@ -581,16 +581,11 @@ func innerGetDUTDetail(ctx context.Context, executor executor.IExecCommander, sw
 func (s *SatlabRpcServiceServer) ListDutTasks(ctx context.Context, in *pb.ListDutTasksRequest) (*pb.ListDutTasksResponse, error) {
 	logging.Infof(ctx, "gRPC Service triggered: list_dut_tasks")
 
-	swarmingService, err := services.NewSwarmingService(ctx)
-	if err != nil {
-		return nil, err
+	if s.swarmingService == nil {
+		return nil, errors.New("need to login before using this")
 	}
 
-	return innerListDUTTasks(ctx, s.commandExecutor, swarmingService, in.GetAddress(), in.GetPageToken(), int(in.GetPageSize()))
-}
-
-func innerListDUTTasks(ctx context.Context, executor executor.IExecCommander, swarmingService services.ISwarmingService, address, cursor string, pageSize int) (*pb.ListDutTasksResponse, error) {
-	IPToHostResult, err := dns.IPToHostname(ctx, executor, []string{address})
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
 		return nil, err
 	}
@@ -599,7 +594,7 @@ func innerListDUTTasks(ctx context.Context, executor executor.IExecCommander, sw
 		return nil, fmt.Errorf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 	}
 
-	r, err := swarmingService.ListBotTasks(ctx, IPToHostResult.Hostnames[0], cursor, pageSize)
+	r, err := s.swarmingService.ListBotTasks(ctx, IPToHostResult.Hostnames[0], in.GetPageToken(), int(in.GetPageSize()))
 	if err != nil {
 		return nil, err
 	}
@@ -626,15 +621,11 @@ func innerListDUTTasks(ctx context.Context, executor executor.IExecCommander, sw
 func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListDutEventsRequest) (*pb.ListDutEventsResponse, error) {
 	logging.Infof(ctx, "gRPC Service triggered: list_dut_events")
 
-	swarmingService, err := services.NewSwarmingService(ctx)
-	if err != nil {
-		return nil, err
+	if s.swarmingService == nil {
+		return nil, errors.New("need to login before using this")
 	}
-	return innerListDUTEvents(ctx, s.commandExecutor, swarmingService, in.GetAddress(), in.GetPageToken(), int(in.GetPageSize()))
-}
 
-func innerListDUTEvents(ctx context.Context, executor executor.IExecCommander, swarmingService services.ISwarmingService, address, cursor string, pageSize int) (*pb.ListDutEventsResponse, error) {
-	IPToHostResult, err := dns.IPToHostname(ctx, executor, []string{address})
+	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
 		return nil, err
 	}
@@ -643,7 +634,7 @@ func innerListDUTEvents(ctx context.Context, executor executor.IExecCommander, s
 		return nil, fmt.Errorf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 	}
 
-	r, err := swarmingService.ListBotEvents(ctx, IPToHostResult.Hostnames[0], cursor, pageSize)
+	r, err := s.swarmingService.ListBotEvents(ctx, IPToHostResult.Hostnames[0], in.GetPageToken(), int(in.GetPageSize()))
 	if err != nil {
 		return nil, err
 	}
