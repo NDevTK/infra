@@ -50,6 +50,7 @@ const (
 	SatlabRpcService_ListDuts_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/list_duts"
 	SatlabRpcService_SetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/set_cloud_configuration"
 	SatlabRpcService_GetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/get_cloud_configuration"
+	SatlabRpcService_Reboot_FullMethodName                    = "/satlabrpcserver.SatlabRpcService/reboot"
 )
 
 // SatlabRpcServiceClient is the client API for SatlabRpcService service.
@@ -88,6 +89,8 @@ type SatlabRpcServiceClient interface {
 	// setup
 	SetCloudConfiguration(ctx context.Context, in *SetCloudConfigurationRequest, opts ...grpc.CallOption) (*SetCloudConfigurationResponse, error)
 	GetCloudConfiguration(ctx context.Context, in *GetCloudConfigurationRequest, opts ...grpc.CallOption) (*GetCloudConfigurationResponse, error)
+	// system
+	Reboot(ctx context.Context, in *RebootRequest, opts ...grpc.CallOption) (*RebootResponse, error)
 }
 
 type satlabRpcServiceClient struct {
@@ -341,6 +344,15 @@ func (c *satlabRpcServiceClient) GetCloudConfiguration(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) Reboot(ctx context.Context, in *RebootRequest, opts ...grpc.CallOption) (*RebootResponse, error) {
+	out := new(RebootResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_Reboot_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SatlabRpcServiceServer is the server API for SatlabRpcService service.
 // All implementations must embed UnimplementedSatlabRpcServiceServer
 // for forward compatibility
@@ -377,6 +389,8 @@ type SatlabRpcServiceServer interface {
 	// setup
 	SetCloudConfiguration(context.Context, *SetCloudConfigurationRequest) (*SetCloudConfigurationResponse, error)
 	GetCloudConfiguration(context.Context, *GetCloudConfigurationRequest) (*GetCloudConfigurationResponse, error)
+	// system
+	Reboot(context.Context, *RebootRequest) (*RebootResponse, error)
 	mustEmbedUnimplementedSatlabRpcServiceServer()
 }
 
@@ -464,6 +478,9 @@ func (UnimplementedSatlabRpcServiceServer) SetCloudConfiguration(context.Context
 }
 func (UnimplementedSatlabRpcServiceServer) GetCloudConfiguration(context.Context, *GetCloudConfigurationRequest) (*GetCloudConfigurationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCloudConfiguration not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) Reboot(context.Context, *RebootRequest) (*RebootResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Reboot not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) mustEmbedUnimplementedSatlabRpcServiceServer() {}
 
@@ -964,6 +981,24 @@ func _SatlabRpcService_GetCloudConfiguration_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_Reboot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RebootRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).Reboot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_Reboot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).Reboot(ctx, req.(*RebootRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SatlabRpcService_ServiceDesc is the grpc.ServiceDesc for SatlabRpcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1078,6 +1113,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "get_cloud_configuration",
 			Handler:    _SatlabRpcService_GetCloudConfiguration_Handler,
+		},
+		{
+			MethodName: "reboot",
+			Handler:    _SatlabRpcService_Reboot_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

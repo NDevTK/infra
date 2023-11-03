@@ -1820,5 +1820,28 @@ func Test_RemoveBucketPrefixAndSuffix(t *testing.T) {
 			}
 		})
 	}
+}
 
+func Test_Reboot(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	// Create a mock server and mock services
+	s := createMockServer(t)
+	s.commandExecutor = &executor.FakeCommander{
+		FakeFn: func(c *exec.Cmd) ([]byte, error) {
+			if c.Path == paths.Reboot {
+				return []byte(""), nil
+			}
+			return nil, errors.New(fmt.Sprintf("unknow command %v", c))
+		},
+	}
+
+	req := &pb.RebootRequest{}
+
+	_, err := s.Reboot(ctx, req)
+
+	if err != nil {
+		t.Errorf("unexpected error, got an error: %v", err)
+	}
 }

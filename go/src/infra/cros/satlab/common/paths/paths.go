@@ -34,4 +34,7 @@ const (
 
 	// Grep the path of grep command
 	Grep = "/bin/grep"
+
+	// Reboot the path of reboot command.
+	Reboot = "/usr/local/bin/reboot"
 )

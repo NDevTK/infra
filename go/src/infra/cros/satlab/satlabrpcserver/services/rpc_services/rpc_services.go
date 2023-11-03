@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"sort"
 	"strconv"
 	"strings"
@@ -24,6 +25,7 @@ import (
 	"infra/cros/satlab/common/asset"
 	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/dut"
+	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/services"
@@ -1028,4 +1030,16 @@ func (s *SatlabRpcServiceServer) GetCloudConfiguration(ctx context.Context, in *
 		GcsBucketUrl: bucket,
 		BotoKeyId:    key,
 	}, nil
+}
+
+// Reboot call a reboot command on RPC container
+func (s *SatlabRpcServiceServer) Reboot(ctx context.Context, _ *pb.RebootRequest) (*pb.RebootResponse, error) {
+	err := s.commandExecutor.Start(
+		exec.CommandContext(ctx, paths.Reboot),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.RebootResponse{}, nil
 }
