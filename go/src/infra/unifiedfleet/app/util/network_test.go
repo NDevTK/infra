@@ -230,7 +230,7 @@ func TestIPv4Diff(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			dist, err := IPv4Diff(tt.startIPv4, tt.endIPv4)
+			dist, err := ipv4Diff(tt.startIPv4, tt.endIPv4)
 			switch {
 			case err == nil && !tt.ok:
 				t.Error("err unexpectly nil")

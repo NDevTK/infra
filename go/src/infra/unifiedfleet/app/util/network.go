@@ -22,9 +22,6 @@ const reserveFirst = 11
 // The last ip is broadcast address.
 const reserveLast = 1
 
-// MaxPreallocatedVlanSize is the maximum number of preallocated vlan addresses.
-const MaxPreallocatedVlanSize = 2000
-
 // StringifyIP stringifies an IP. The standard library makes the interesting
 // choice of mapping an empty IP address object to "<nil>" rather than "".
 //
@@ -74,7 +71,7 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 	} else {
 		freeEndIP = IPv4IntToStr(startIP + uint32(length-reserveLast-1))
 	}
-	used, err := IPv4Diff(freeStartIP, freeEndIP)
+	used, err := ipv4Diff(freeStartIP, freeEndIP)
 	if err != nil {
 		return nil, 0, "", "", 0, err
 	}
@@ -128,10 +125,10 @@ func FormatIP(vlanName, ipAddress string, reserve, occupied bool) *ufspb.IP {
 	}
 }
 
-// IPv4Diff takes the difference between a startIPv4 and an endIPv4.
+// ipv4Diff takes the difference between a startIPv4 and an endIPv4.
 //
 // It returns an error if and only if A) at least one argument is an invalid IP address or B) the end strictly precedes the start
-func IPv4Diff(startIPv4 string, endIPv4 string) (uint64, error) {
+func ipv4Diff(startIPv4 string, endIPv4 string) (uint64, error) {
 	start, err := IPv4StrToInt(startIPv4)
 	if err != nil {
 		return 0, errors.Annotate(err, "diffing IPs %q and %q", startIPv4, endIPv4).Err()
@@ -214,6 +211,8 @@ func formatMac(userMac string) string {
 }
 
 // IsMacFormatValid check if the given mac address is in valid format
+//
+// TODO(gregorynisbet): only shivas uses this function, move it.
 func IsMacFormatValid(userMac string) error {
 	newUserMac := formatMac(userMac)
 	m, err := net.ParseMAC(newUserMac)
