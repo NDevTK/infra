@@ -959,6 +959,8 @@ func (s *SatlabRpcServiceServer) GetTestPlan(ctx context.Context, in *pb.GetTest
 }
 
 func (s *SatlabRpcServiceServer) SetCloudConfiguration(ctx context.Context, in *pb.SetCloudConfigurationRequest) (*pb.SetCloudConfigurationResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: set_cloud_configuration")
+
 	if err := validateCloudConfiguration(in); err != nil {
 		return nil, err
 	}
@@ -973,6 +975,7 @@ func (s *SatlabRpcServiceServer) SetCloudConfiguration(ctx context.Context, in *
 
 	err := r.StartSetup(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "StartSetup failed. got an error: %v\n", err)
 		return nil, err
 	}
 
@@ -984,7 +987,6 @@ func (s *SatlabRpcServiceServer) SetCloudConfiguration(ctx context.Context, in *
 // gs://bucket/ -> bucket
 // gs://bucket  -> bucket
 // bucket/      -> bucket
-// bucket////   -> bucket
 func removeGCSBucketPrefixAndSuffix(bucket string) string {
 	s := strings.TrimPrefix(bucket, "gs://")
 	s = strings.TrimRight(s, "/")
@@ -1010,6 +1012,8 @@ func validateCloudConfiguration(in *pb.SetCloudConfigurationRequest) error {
 
 // GetCloudConfiguration get the cloud configuration from env and boto file.
 func (s *SatlabRpcServiceServer) GetCloudConfiguration(ctx context.Context, in *pb.GetCloudConfigurationRequest) (*pb.GetCloudConfigurationResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: get_cloud_configuration")
+
 	bucket := site.GetGCSImageBucket()
 	p, err := site.GetBotoPath()
 	if err != nil {

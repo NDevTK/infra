@@ -11,7 +11,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -19,6 +18,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/option"
 
 	"infra/cros/satlab/common/site"
@@ -43,6 +43,7 @@ var cf = fmt.Sprintf("%s/%s", site.KeyFolder, site.SatlabConfigFilename)
 // StartSetup trigger the setup process for Satlab box
 func (s *Setup) StartSetup(ctx context.Context) error {
 	if err := s.createKeyFolder(ctx); err != nil {
+		logging.Errorf(ctx, "createKeyFolder failed: %v", err)
 		return err
 	}
 
@@ -56,8 +57,11 @@ func (s *Setup) StartSetup(ctx context.Context) error {
 		// if there is any error, we can not do anything here.
 		// just `log` the error message
 		if err != nil {
+			logging.Errorf(ctx, "logging with boto file failed. got an error: %v", err)
 			e := s.removeBotoIfExist()
-			log.Printf("remove boto file failed. got an error: %v\n", e)
+			if e != nil {
+				logging.Errorf(ctx, "Tried to delete the boto file and that failed too with error: %v", e)
+			}
 		}
 	}()
 
@@ -96,10 +100,10 @@ func (s *Setup) setupWithBoto(ctx context.Context) error {
 		return fmt.Errorf("fail to create .boto config: %w", err)
 	}
 	if err := s.downloadKeyGsutil(); err != nil {
-		return err
+		return fmt.Errorf("fail to download Service Account key: %w", err)
 	}
 	if err := s.downloadConfigGsutil(); err != nil {
-		return err
+		return fmt.Errorf("fail to download satlab-config: %w", err)
 	}
 	return nil
 }
