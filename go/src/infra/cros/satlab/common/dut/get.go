@@ -49,6 +49,8 @@ type GetDUT struct {
 	Rpms []string
 	// Pools Name(s) of a pool to filter by.
 	Pools []string
+	// ServiceAccountPath the path of service account
+	ServiceAccountPath string
 }
 
 func makeGetDUTShivasFlags(f *GetDUT) Flagmap {
@@ -83,6 +85,10 @@ func makeGetDUTShivasFlags(f *GetDUT) Flagmap {
 	}
 	if f.HostInfoStore {
 		out["host-info-store"] = []string{}
+	}
+
+	if f.ServiceAccountPath != "" {
+		out["service-account-json"] = []string{f.ServiceAccountPath}
 	}
 
 	// Default flags

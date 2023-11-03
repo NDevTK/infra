@@ -665,10 +665,12 @@ func getConnectedDuts(ctx context.Context, executor executor.IExecCommander) ([]
 	// Use rack and satlab id to filter
 	satlabRackFilter := []string{site.MaybePrepend(site.Satlab, satlabID, "rack")}
 	d := dut.GetDUT{
-		Racks: satlabRackFilter,
+		Racks:              satlabRackFilter,
+		ServiceAccountPath: site.GetServiceAccountPath(),
 	}
 	a := asset.GetAsset{
-		Racks: satlabRackFilter,
+		Racks:              satlabRackFilter,
+		ServiceAccountPath: site.GetServiceAccountPath(),
 	}
 
 	HostMap, err := dns.ReadHostsToHostMap(ctx, executor)

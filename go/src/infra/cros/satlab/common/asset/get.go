@@ -36,6 +36,8 @@ type GetAsset struct {
 	Models []string
 	// AssetTypes Name(s) of a assettype to filter by.
 	AssetTypes []string
+	// ServiceAccountPath the path of service account
+	ServiceAccountPath string
 }
 
 func makeGetAssetShivasFlags(in *GetAsset) Flagmap {
@@ -57,6 +59,9 @@ func makeGetAssetShivasFlags(in *GetAsset) Flagmap {
 	}
 	if len(in.AssetTypes) != 0 {
 		out["assettype"] = in.AssetTypes
+	}
+	if in.ServiceAccountPath != "" {
+		out["service-account-json"] = []string{in.ServiceAccountPath}
 	}
 	// Default flags
 	out["namespace"] = []string{site.GetNamespace(in.Namespace)}
