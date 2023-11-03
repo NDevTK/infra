@@ -467,8 +467,9 @@ func servoRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"command:ppchg5_mv",
 				},
-				// TODO(b/278690937): Remove when fixed.
-				AllowFailAfterRecovery: true,
+				RecoveryActions: []string{
+					"Stop servod",
+				},
 			},
 			"Has ppchg5_mv control": {
 				Docs: []string{

@@ -3338,7 +3338,34 @@
               "exec_args": [
                 "command:ppchg5_mv"
               ],
-              "allow_fail_after_recovery": true,
+              "recoveries": [
+                {
+                  "name": "Stop servod",
+                  "docs": [
+                    "Stop the servod daemon.",
+                    "Allowed to fail as can be run when servod is not running."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Save UART capture",
+                      "dependencies": [
+                        {
+                          "name": "Stop UART capture",
+                          "exec_name": "servod_stop_uart_capture",
+                          "allow_fail_after_recovery": true,
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servod_save_uart_capture",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_host_servod_stop",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
@@ -3435,7 +3462,34 @@
               "exec_args": [
                 "command:ppchg5_mv"
               ],
-              "allow_fail_after_recovery": true,
+              "recoveries": [
+                {
+                  "name": "Stop servod",
+                  "docs": [
+                    "Stop the servod daemon.",
+                    "Allowed to fail as can be run when servod is not running."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Save UART capture",
+                      "dependencies": [
+                        {
+                          "name": "Stop UART capture",
+                          "exec_name": "servod_stop_uart_capture",
+                          "allow_fail_after_recovery": true,
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servod_save_uart_capture",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_host_servod_stop",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
@@ -3490,7 +3544,34 @@
                   "exec_args": [
                     "command:ppchg5_mv"
                   ],
-                  "allow_fail_after_recovery": true,
+                  "recoveries": [
+                    {
+                      "name": "Stop servod",
+                      "docs": [
+                        "Stop the servod daemon.",
+                        "Allowed to fail as can be run when servod is not running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Save UART capture",
+                          "dependencies": [
+                            {
+                              "name": "Stop UART capture",
+                              "exec_name": "servod_stop_uart_capture",
+                              "allow_fail_after_recovery": true,
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_save_uart_capture",
+                          "allow_fail_after_recovery": true,
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servo_host_servod_stop",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
