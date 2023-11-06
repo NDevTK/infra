@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"google.golang.org/api/option"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
@@ -310,21 +311,42 @@ func (b *BuildServiceImpl) StageBuild(ctx context.Context,
 	buildVersion string,
 	bucketName string,
 ) (*moblabapipb.BuildArtifact, error) {
+	artifactName := ParseBuildArtifactPath(board, model, buildVersion, bucketName)
 	req := &moblabapipb.StageBuildRequest{
-		Name: ParseBuildArtifactPath(board, model, buildVersion, bucketName),
+		Name: artifactName,
 	}
 
-	operation, err := b.client.StageBuild(ctx, req)
+	_, err := b.client.StageBuild(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := operation.Wait(ctx)
-	if err != nil {
-		return nil, err
+	// Use polling here because we encountered
+	// The GRPC target is not implemented on the server, host: chromeosmoblab.googleapis.com, method: /google.longrunning.Operations/GetOperation.
+	var stageStatus *moblabapipb.CheckBuildStageStatusResponse
+	c := 10
+	for {
+		c--
+		req := &moblabapipb.CheckBuildStageStatusRequest{
+			Name: artifactName,
+		}
+
+		stageStatus, err = b.client.CheckBuildStageStatus(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+
+		if stageStatus.IsBuildStaged {
+			break
+		}
+		if c == 0 {
+			return nil, errors.New("stage not completed within 10 retries")
+		}
+
+		time.Sleep(time.Second * time.Duration(10-c))
 	}
 
-	return res.GetStagedBuildArtifact(), nil
+	return stageStatus.StagedBuildArtifact, nil
 }
 
 // Close to close the client connection.
