@@ -7,6 +7,7 @@ import (
 	"context"
 	"log"
 	"net"
+	"os/exec"
 	"time"
 
 	"go.chromium.org/luci/common/logging"
@@ -40,6 +41,13 @@ func main() {
 	ctx := context.Background()
 	ctx = utils.AddLoggingContext(ctx)
 	logging.Infof(ctx, "\n\n\n===== STARTING THE SATLAB_RPCSERVER =====\n\n\n")
+
+	envVar, err := exec.Command("/bin/sh", "-c", "printenv").CombinedOutput()
+	if err != nil {
+		logging.Errorf(ctx, "Not able to log the environmental variables")
+	} else {
+		logging.Infof(ctx, "ENV variables picked up by the RPC Server: %v", string(envVar))
+	}
 
 	injectCtx := contextInjector(ctx)
 	s := grpc.NewServer(grpc.UnaryInterceptor(injectCtx.Unary()), grpc.StreamInterceptor(injectCtx.Stream()))
