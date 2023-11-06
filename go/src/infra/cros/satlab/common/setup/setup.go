@@ -214,13 +214,13 @@ func (s *Setup) createBotoConfigFile() error {
 
 // downloadKeyGsutil download the Satlab service account using gsutil
 func (s *Setup) downloadKeyGsutil() error {
-	cmd := fmt.Sprintf("sudo gsutil cp gs://%s/%s %s", s.Bucket, site.SatlabSAFilename, sa)
+	cmd := fmt.Sprintf("sudo /gcloud/google-cloud-sdk/bin/gsutil cp gs://%s/%s %s", s.Bucket, site.SatlabSAFilename, sa)
 	return runCmd(cmd)
 }
 
 // downloadConfigGsutil download the Satlab config file using gsutil
 func (s *Setup) downloadConfigGsutil() error {
-	cmd := fmt.Sprintf("sudo gsutil cp gs://%s/%s %s", s.Bucket, site.SatlabConfigFilename, cf)
+	cmd := fmt.Sprintf("sudo /gcloud/google-cloud-sdk/bin/gsutil cp gs://%s/%s %s", s.Bucket, site.SatlabConfigFilename, cf)
 	return runCmd(cmd)
 }
 
