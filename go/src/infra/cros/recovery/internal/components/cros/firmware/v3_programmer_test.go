@@ -29,6 +29,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("stm32"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(95).Times(1)
 
 		p := &v3Programmer{
@@ -49,6 +50,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("some_chip"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(96).Times(1)
 
 		p := &v3Programmer{
@@ -69,6 +71,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8XXXX"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(95).Times(0)
 
 		p := &v3Programmer{
@@ -89,6 +92,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8yyyyy"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(95).Times(0)
 
 		p := &v3Programmer{
@@ -99,6 +103,28 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 
 		err := p.programEC(ctx, imagePath)
 		So(err, ShouldNotBeNil)
+	})
+	Convey("allowed for ite chips if uses servo_micro", t, func() {
+		// TODO(b:270170790): remove when we can recover functionality fo flash EC for ite chips.
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		runRequest := map[string]string{
+			"which flash_ec": "",
+			"flash_ec --chip=it8yyyyy --image=ec_image.bin --port=96 --verify --verbose": "",
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8yyyyy"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
+		servod.EXPECT().Port().Return(96).Times(1)
+
+		p := &v3Programmer{
+			run:    mockRunner(runRequest),
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programEC(ctx, imagePath)
+		So(err, ShouldBeNil)
 	})
 }
 

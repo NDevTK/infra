@@ -68,10 +68,14 @@ func (p *v3Programmer) programEC(ctx context.Context, imagePath string) error {
 	if err != nil {
 		return errors.Annotate(err, "program ec").Err()
 	}
+	servoType, err := p.servoType(ctx)
+	if err != nil {
+		return errors.Annotate(err, "program ec").Err()
+	}
 	var cmd string
 	if ecChip == "stm32" {
 		cmd = fmt.Sprintf(ecProgrammerStm32CmdGlob, ecChip, imagePath, p.servod.Port())
-	} else if strings.HasPrefix(ecChip, "it8") {
+	} else if strings.HasPrefix(ecChip, "it8") && !servoType.IsMicro() {
 		// TODO(b:270170790): Flashing blocked by b/268108518
 		return errors.Reason("program ec: flash for `ite` chips is blocked by b/268108518").Err()
 	} else {
@@ -183,6 +187,15 @@ func (p *v3Programmer) ecChip(ctx context.Context) (string, error) {
 		return "", errors.Annotate(err, "get ec_chip").Err()
 	} else {
 		return ecChipI.GetString_(), nil
+	}
+}
+
+// servoType reads servo_type from servod.
+func (p *v3Programmer) servoType(ctx context.Context) (*servo.ServoType, error) {
+	if ecChipI, err := p.servod.Get(ctx, "servo_type"); err != nil {
+		return nil, errors.Annotate(err, "get servo_type").Err()
+	} else {
+		return servo.NewServoType(ecChipI.GetString_()), nil
 	}
 }
 
