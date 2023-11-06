@@ -2012,6 +2012,16 @@ SPECS.update({
         Universal('trio', '0.22.1', pyversions=['py3']),
         Universal('trio-websocket', '0.9.2', pyversions=['py3']),
         Universal('trio-websocket', '0.10.3', pyversions=['py3']),
+        Universal('types-PyOpenSSL', '23.3.0.0', pyversions=['py3']),
+        Universal('types-PyYAML', '6.0.12.12', pyversions=['py3']),
+        Universal(
+            'types-backports.ssl-match-hostname', '3.7.4.4', pyversions=['py3']
+        ),
+        Universal('types-protobuf', '4.21.0.7', pyversions=['py3']),
+        Universal('types-psutil', '5.8.23', pyversions=['py3']),
+        Universal('types-pywin32', '306.0.0.6', pyversions=['py3']),
+        Universal('types-simplejson', '3.19.0.2', pyversions=['py3']),
+        Universal('types-urllib3', '1.26.25.14', pyversions=['py3']),
         Universal('typing-extensions', '3.7.4.3', pyversions=['py3']),
         Universal('typing-extensions', '3.10.0.2', pyversions=['py3']),
         Universal('typing-extensions', '4.0.1', pyversions=['py3']),
