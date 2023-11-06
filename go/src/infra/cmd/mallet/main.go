@@ -37,7 +37,6 @@ func getApplication() *cli.Application {
 			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
 			subcommands.Section("Experiments"),
 			tasks.Recovery,
-			tasks.Audit,
 			tasks.LocalRecovery,
 			tasks.RecoveryConfig,
 			tasks.CustomProvision,

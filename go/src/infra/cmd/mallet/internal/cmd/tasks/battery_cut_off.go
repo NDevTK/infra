@@ -96,7 +96,7 @@ func (c *BatteryCutOffRun) innerRun(a subcommands.Application, args []string, en
 				Configuration:    configuration,
 				UpdateInventory:  true,
 				ExtraTags: []string{
-					"task:erase_mrc_cache",
+					"task:batery-cut-off",
 					site.ClientTag,
 					fmt.Sprintf("version:%s", v),
 					sessionTag,
