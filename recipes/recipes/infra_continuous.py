@@ -297,6 +297,12 @@ def run_python_tests(api, checkout, project_name):
             api.defer(api.step, 'monorail python tests',
                       ['vpython3', 'test.py']))
 
+      if ((api.platform.is_linux or api.platform.is_mac) and
+          project_name == 'infra'):
+        cwd = checkout.path.join(project_name, 'appengine', 'predator')
+        with api.context(cwd=cwd):
+          api.step('predator python tests', ['vpython3', 'test.py'])
+
     # Validate ccompute configs.
     if api.platform.is_linux and project_name == 'infra_internal':
       ccompute_config = checkout.path.join(project_name, 'ccompute',
