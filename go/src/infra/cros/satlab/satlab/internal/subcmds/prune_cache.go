@@ -17,7 +17,7 @@ import (
 )
 
 const containerVolume = "default_cache"
-const name = "us-docker.pkg.dev/chromeos-partner-moblab/satlab-for-partners/nginx:stable"
+const name = "us-docker.pkg.dev/chromeos-partner-moblab/satlab/nginx:stable"
 
 var PruneCmd = &subcommands.Command{
 	UsageLine: `prune_cache`,
