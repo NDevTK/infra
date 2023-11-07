@@ -13,6 +13,9 @@ DEPS_PREFIX=$2
 # generate configure, using libtool from DEPS_PREFIX
 PATH=$DEPS_PREFIX/bin:$PATH ./autogen.sh
 
+# For compiling into Python C extensions.
+export CFLAGS="${CFLAGS} -fPIC"
+
 ./configure --enable-static --disable-shared \
   --disable-docs \
   --host "$CROSS_TRIPLE" \

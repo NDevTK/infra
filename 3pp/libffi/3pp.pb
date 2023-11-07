@@ -5,7 +5,7 @@ create {
       download_url: "https://github.com/libffi/libffi/archive/v3.2.1.tar.gz"
       version: "3.2.1"
     }
-    patch_version: "chromium.3"
+    patch_version: "chromium.4"
     unpack_archive: true
     cpe_base_address: "cpe:/a:libffi_project:libffi"
   }
