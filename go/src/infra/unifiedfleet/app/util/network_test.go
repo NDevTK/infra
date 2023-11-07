@@ -6,6 +6,7 @@ package util
 
 import (
 	"testing"
+	"testing/quick"
 
 	"go.chromium.org/luci/common/testing/typed"
 
@@ -286,7 +287,7 @@ func TestMakeReservedIPv4sInVlan(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := makeReservedIPv4sInVlan(tt.vlanName, tt.begin, tt.end, tt.maximum)
+			got, err := makeReservedIPv4sInVlan(tt.vlanName, uint32ToIP(tt.begin), uint32ToIP(tt.end), tt.maximum)
 
 			if diff := typed.Diff(got, tt.want); diff != "" {
 				t.Errorf("unexpected error (-want +got): %s", diff)
@@ -347,5 +348,23 @@ func TestIPv4Diff(t *testing.T) {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
 		})
+	}
+}
+
+// TestUint32ToIPRoundTrip checks that Uint32ToIP and IPv4ToUint32 are inveses of each other.
+func TestUint32ToIPRoundTrip(t *testing.T) {
+	t.Parallel()
+
+	checker := func(addr uint32) bool {
+		ipv4 := uint32ToIP(addr)
+		roundTripped, err := IPv4ToUint32(ipv4)
+		if err != nil {
+			panic(err)
+		}
+		return roundTripped == addr
+	}
+
+	if err := quick.Check(checker, nil); err != nil {
+		t.Error(err)
 	}
 }

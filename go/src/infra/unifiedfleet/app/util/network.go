@@ -36,8 +36,29 @@ func StringifyIP(ip net.IP) string {
 	return ip.String()
 }
 
+// uint32ToIP converts a uint32 to an IP address
+func uint32ToIP(addr uint32) net.IP {
+	return net.ParseIP(IPv4IntToStr(addr))
+}
+
+// IPv4ToUInt32 converts an IP to a uint32
+func IPv4ToUint32(ip net.IP) (uint32, error) {
+	if ip := ip.To4(); ip != nil {
+		return uint32(ip[0])*256*256*256 + uint32(ip[1])*256*256 + uint32(ip[2])*256 + uint32(ip[3]), nil
+	}
+	return 0, fmt.Errorf("ip %s is not ipv4", ip.String())
+}
+
 // makeReservedIPv4sInVlan takes an inclusive range of ipv4s and produces reserved ipv4s for use in a vlan.
-func makeReservedIPv4sInVlan(vlanName string, begin uint32, end uint32, maximum int) ([]*ufspb.IP, error) {
+func makeReservedIPv4sInVlan(vlanName string, beginIP net.IP, endIP net.IP, maximum int) ([]*ufspb.IP, error) {
+	begin, err := IPv4ToUint32(beginIP)
+	if err != nil {
+		return nil, err
+	}
+	end, err := IPv4ToUint32(endIP)
+	if err != nil {
+		return nil, err
+	}
 	if maximum <= 0 {
 		return nil, errors.New("maximum must be positive")
 	}
@@ -131,14 +152,14 @@ var errStopEarly = errors.New("stop early")
 // makeIPv4sInVlan creates the IP objects in a Vlan that are intended to be created in datastore later.
 func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIPInt uint32, freeEndIPInt uint32) ([]*ufspb.IP, error) {
 	endIP := startIP + uint32(length) - 1
-	reservedInitialIPs, err := makeReservedIPv4sInVlan(vlanName, startIP, freeStartIPInt-1, maxPreallocatedVlanSize)
+	reservedInitialIPs, err := makeReservedIPv4sInVlan(vlanName, uint32ToIP(startIP), uint32ToIP(freeStartIPInt-1), maxPreallocatedVlanSize)
 	if err != nil {
 		return nil, errors.Annotate(err, "reserving initial IPs").Err()
 	}
 	var reservedFinalIPs []*ufspb.IP
 	if freeEndIPInt+1 <= endIP {
 		var err error
-		reservedFinalIPs, err = makeReservedIPv4sInVlan(vlanName, freeEndIPInt+1, endIP, maxPreallocatedVlanSize)
+		reservedFinalIPs, err = makeReservedIPv4sInVlan(vlanName, uint32ToIP(freeEndIPInt+1), uint32ToIP(endIP), maxPreallocatedVlanSize)
 		if err != nil {
 			return nil, errors.Annotate(err, "reserving final IPs").Err()
 		}
