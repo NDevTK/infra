@@ -6,7 +6,6 @@ package ufs
 
 import (
 	"context"
-	"net/http"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -16,6 +15,7 @@ import (
 
 	"infra/cmd/shivas/site"
 	"infra/cmdsupport/cmdlib"
+	s "infra/cros/satlab/common/site"
 	ufsModels "infra/unifiedfleet/api/v1/models"
 	ufsApi "infra/unifiedfleet/api/v1/rpc"
 )
@@ -56,29 +56,34 @@ func NewUFSClient(ctx context.Context, ufsService string, authFlags *authcli.Fla
 		return nil, err
 	}
 
-	return newUFSClient(ufsService, httpClient)
-}
-
-// NewUFSClientWithDefaultOptions creates a new client to access UFS with default options.
-func NewUFSClientWithDefaultOptions(ctx context.Context, ufsService string) (ufsApi.FleetClient, error) {
-	options := site.DefaultAuthOptions
-	a := auth.NewAuthenticator(ctx, auth.SilentLogin, options)
-	c, err := a.Client()
-	if err != nil {
-		return nil, err
-	}
-
-	return newUFSClient(ufsService, c)
-}
-
-func newUFSClient(ufsService string, c *http.Client) (ufsApi.FleetClient, error) {
 	if ufsService == "" {
 		return nil, errors.Reason("new ufs client: must provide ufs service hostname").Err()
 	}
 
 	return ufsApi.NewFleetPRPCClient(&prpc.Client{
+		C:       httpClient,
+		Host:    ufsService,
+		Options: site.DefaultPRPCOptions,
+	}), nil
+
+}
+
+// NewUFSClientWithDefaultOptions creates a new client to access UFS with default options.
+func NewUFSClientWithDefaultOptions(ctx context.Context, ufsService string) (ufsApi.FleetClient, error) {
+	if ufsService == "" {
+		return nil, errors.Reason("new ufs client: must provide ufs service hostname").Err()
+	}
+
+	opts := s.GetAuthOption(ctx)
+	a := auth.NewAuthenticator(ctx, auth.SilentLogin, opts)
+	c, err := a.Client()
+	if err != nil {
+		return nil, err
+	}
+	return ufsApi.NewFleetPRPCClient(&prpc.Client{
 		C:       c,
 		Host:    ufsService,
 		Options: site.DefaultPRPCOptions,
 	}), nil
+
 }
