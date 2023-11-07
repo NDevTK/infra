@@ -195,26 +195,6 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "test.py"
-    ],
-    "cwd": "[CACHE]/builder/infra/appengine/predator",
-    "luci_context": {
-      "realm": {
-        "name": "infra:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "predator python tests"
-  },
-  {
-    "cmd": [
       "python3",
       "[CACHE]/builder/infra/go/bootstrap.py",
       "/path/to/tmp/json"
