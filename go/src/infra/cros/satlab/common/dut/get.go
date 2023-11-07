@@ -49,8 +49,6 @@ type GetDUT struct {
 	Rpms []string
 	// Pools Name(s) of a pool to filter by.
 	Pools []string
-	// ServiceAccountPath the path of service account
-	ServiceAccountPath string
 }
 
 func makeGetDUTShivasFlags(f *GetDUT) Flagmap {
@@ -85,10 +83,6 @@ func makeGetDUTShivasFlags(f *GetDUT) Flagmap {
 	}
 	if f.HostInfoStore {
 		out["host-info-store"] = []string{}
-	}
-
-	if f.ServiceAccountPath != "" {
-		out["service-account-json"] = []string{f.ServiceAccountPath}
 	}
 
 	// Default flags
@@ -126,6 +120,7 @@ func (g *GetDUT) TriggerRun(
 		Commands:       []string{paths.ShivasCLI, "get", "dut"},
 		Flags:          flags,
 		PositionalArgs: names,
+		AuthRequired:   true,
 	}).ToCommand()
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
 	out, err := executor.Exec(command)
