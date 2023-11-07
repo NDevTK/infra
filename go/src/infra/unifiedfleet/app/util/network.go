@@ -36,8 +36,6 @@ func StringifyIP(ip net.IP) string {
 	return ip.String()
 }
 
-var tooManyIPs error = errors.New("too many IPs")
-
 // makeReservedIPv4sInVlan takes an inclusive range of ipv4s and produces reserved ipv4s for use in a vlan.
 func makeReservedIPv4sInVlan(vlanName string, begin uint32, end uint32, maximum int) ([]*ufspb.IP, error) {
 	if maximum <= 0 {
@@ -110,7 +108,10 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 		return nil, 0, "", "", 0, err
 	}
 	reservedNum := length - int(used) - 1
-	ips := makeIPv4sInVlan(vlanName, startIP, length, freeStartIPInt, freeEndIPInt)
+	ips, err := makeIPv4sInVlan(vlanName, startIP, length, freeStartIPInt, freeEndIPInt)
+	if err != nil {
+		return nil, 0, "", "", 0, err
+	}
 	return ips, length, freeStartIP, freeEndIP, reservedNum, nil
 }
 
@@ -125,15 +126,36 @@ func makeIPv4(vlanName string, ipv4 uint32, reserved bool) *ufspb.IP {
 	}
 }
 
+var errStopEarly = errors.New("stop early")
+
 // makeIPv4sInVlan creates the IP objects in a Vlan that are intended to be created in datastore later.
-func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIPInt uint32, freeEndIPInt uint32) []*ufspb.IP {
-	endIP := startIP + uint32(length)
-	ips := make([]*ufspb.IP, 0, length)
-	for ; startIP < endIP; startIP++ {
-		reserved := startIP < freeStartIPInt || startIP > freeEndIPInt
-		ips = append(ips, makeIPv4(vlanName, startIP, reserved))
+func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIPInt uint32, freeEndIPInt uint32) ([]*ufspb.IP, error) {
+	endIP := startIP + uint32(length) - 1
+	reservedInitialIPs, err := makeReservedIPv4sInVlan(vlanName, startIP, freeStartIPInt-1, maxPreallocatedVlanSize)
+	if err != nil {
+		return nil, errors.Annotate(err, "reserving initial IPs").Err()
 	}
-	return ips
+	var reservedFinalIPs []*ufspb.IP
+	if freeEndIPInt+1 <= endIP {
+		var err error
+		reservedFinalIPs, err = makeReservedIPv4sInVlan(vlanName, freeEndIPInt+1, endIP, maxPreallocatedVlanSize)
+		if err != nil {
+			return nil, errors.Annotate(err, "reserving final IPs").Err()
+		}
+	}
+	ips := make([]*ufspb.IP, 0, maxPreallocatedVlanSize)
+	Uint32Iter(freeStartIPInt, freeEndIPInt, func(ip uint32) error {
+		if len(ips) > maxPreallocatedVlanSize {
+			return errStopEarly
+		}
+		ips = append(ips, FormatIP(vlanName, IPv4IntToStr(ip), false, false))
+		return nil
+	})
+	out := []*ufspb.IP{}
+	out = append(out, reservedInitialIPs...)
+	out = append(out, ips...)
+	out = append(out, reservedFinalIPs...)
+	return out, nil
 }
 
 // makeIPv4Uint32 makes an IPv4 as a uint32 using notation that looks conventional.
