@@ -33,8 +33,9 @@ func (u *DUTUpdater) Update(ctx context.Context, args map[string][]string) error
 	flags["name"] = []string{u.Name}
 
 	command_args := (&commands.CommandWithFlags{
-		Commands: []string{paths.ShivasCLI, "update", "dut"},
-		Flags:    flags,
+		Commands:     []string{paths.ShivasCLI, "update", "dut"},
+		Flags:        flags,
+		AuthRequired: true,
 	}).ToCommand()
 	// We ignore the output here because we don't need any information from
 	// the output now.
