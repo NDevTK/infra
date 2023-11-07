@@ -55,6 +55,7 @@ func (d *DUT) check(executor executor.IExecCommander, w io.Writer) (bool, error)
 		Commands:       []string{paths.ShivasCLI, "get", "dut"},
 		Flags:          flags,
 		PositionalArgs: []string{d.Name},
+		AuthRequired:   true,
 	}).ToCommand()
 	fmt.Fprintf(w, "Check dut exists: run %s\n", args)
 
@@ -94,8 +95,9 @@ func (d *DUT) add(executor executor.IExecCommander, w io.Writer) error {
 	// TODO(gregorynisbet): Consider a different strategy for tracking flags
 	// that cannot be passed to shivas add dut.
 	args := (&commands.CommandWithFlags{
-		Commands: []string{paths.ShivasCLI, "add", "dut"},
-		Flags:    flags,
+		Commands:     []string{paths.ShivasCLI, "add", "dut"},
+		Flags:        flags,
+		AuthRequired: true,
 	}).ToCommand()
 	fmt.Fprintf(w, "Add dut: run %s\n", args)
 

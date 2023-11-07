@@ -46,17 +46,20 @@ func (a *Asset) CheckAndAdd(executor executor.IExecCommander, w io.Writer) error
 // exists checks for the existence of the UFS asset.
 // For now does so based on whether `shivas get asset` has stdout :(
 func (a *Asset) exists(executor executor.IExecCommander, w io.Writer) (bool, error) {
+	flags := map[string][]string{
+		"rack":      {a.Rack},
+		"zone":      {a.Zone},
+		"model":     {a.Model},
+		"board":     {a.Board},
+		"namespace": {a.Namespace},
+		// Type cannot be provided when getting a DUT.
+	}
+
 	args := (&commands.CommandWithFlags{
 		Commands:       []string{paths.ShivasCLI, "get", "asset"},
 		PositionalArgs: []string{a.Asset},
-		Flags: map[string][]string{
-			"rack":      {a.Rack},
-			"zone":      {a.Zone},
-			"model":     {a.Model},
-			"board":     {a.Board},
-			"namespace": {a.Namespace},
-			// Type cannot be provided when getting a DUT.
-		},
+		Flags:          flags,
+		AuthRequired:   true,
 	}).ToCommand()
 	fmt.Fprintf(w, "Check asset exists: run %s\n", args)
 
@@ -77,17 +80,20 @@ func (a *Asset) exists(executor executor.IExecCommander, w io.Writer) (bool, err
 func (a *Asset) add(executor executor.IExecCommander, w io.Writer) error {
 	// Add the asset.
 	fmt.Fprintf(w, "Adding asset\n")
+	flags := map[string][]string{
+		"model":     {a.Model},
+		"board":     {a.Board},
+		"rack":      {a.Rack},
+		"zone":      {a.Zone},
+		"name":      {a.Asset},
+		"namespace": {a.Namespace},
+		"type":      {a.Type},
+	}
+
 	args := (&commands.CommandWithFlags{
-		Commands: []string{paths.ShivasCLI, "add", "asset"},
-		Flags: map[string][]string{
-			"model":     {a.Model},
-			"board":     {a.Board},
-			"rack":      {a.Rack},
-			"zone":      {a.Zone},
-			"name":      {a.Asset},
-			"namespace": {a.Namespace},
-			"type":      {a.Type},
-		},
+		Commands:     []string{paths.ShivasCLI, "add", "asset"},
+		Flags:        flags,
+		AuthRequired: true,
 	}).ToCommand()
 	fmt.Fprintf(w, "Add asset: run %s\n", args)
 

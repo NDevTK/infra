@@ -41,12 +41,14 @@ func (r *Rack) CheckAndAdd(executor executor.IExecCommander, w io.Writer) error 
 // check checks if a rack exists.
 // For now does so based on whether `shivas get rack` errors :(
 func (r *Rack) exists(executor executor.IExecCommander, w io.Writer) (exists bool, err error) {
+	flags := map[string][]string{
+		"namespace": {r.Namespace},
+	}
 	args := (&commands.CommandWithFlags{
 		Commands:       []string{paths.ShivasCLI, "get", "rack"},
 		PositionalArgs: []string{r.Name},
-		Flags: map[string][]string{
-			"namespace": {r.Namespace},
-		},
+		Flags:          flags,
+		AuthRequired:   true,
 	}).ToCommand()
 	fmt.Fprintf(w, "Check rack exists: run %s\n", args)
 
@@ -65,15 +67,18 @@ func (r *Rack) exists(executor executor.IExecCommander, w io.Writer) (exists boo
 
 // add adds a rack unconditionally to UFS.
 func (r *Rack) add(executor executor.IExecCommander, w io.Writer) error {
+	flags := map[string][]string{
+		// TODO(gregorynisbet): Default to OS for everything.
+		"namespace": {r.Namespace},
+		"name":      {r.Name},
+		"zone":      {r.Zone},
+	}
+
 	fmt.Fprintf(w, "Adding rack\n")
 	args := (&commands.CommandWithFlags{
-		Commands: []string{paths.ShivasCLI, "add", "rack"},
-		Flags: map[string][]string{
-			// TODO(gregorynisbet): Default to OS for everything.
-			"namespace": {r.Namespace},
-			"name":      {r.Name},
-			"zone":      {r.Zone},
-		},
+		Commands:     []string{paths.ShivasCLI, "add", "rack"},
+		Flags:        flags,
+		AuthRequired: true,
 	}).ToCommand()
 	fmt.Fprintf(w, "Add rack: run %s\n", args)
 
