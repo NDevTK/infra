@@ -754,7 +754,6 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 			if dut.Address == device.IP {
 				dut.IsConnected = device.IsConnected
 				dut.MacAddress = device.MACAddress
-				dut.ServoSerial = device.ServoSerial
 				enrolledIPs = append(enrolledIPs, dut.Address)
 			}
 		}
