@@ -911,17 +911,38 @@ func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequ
 				Reason:   err.Error(),
 			})
 		} else {
-			url, err := parser.ParseDeployURL(buf.String())
-			if err != nil {
-				// Skip parsing error here, we don't want to
-				// block user if any dut has been deployed successfully,
-				// but we can't parse the url from the command output.
-				url = ""
+			// There are two results in the command output.
+			// The first one is a success. Another one has failed.
+			out := buf.String()
+			rows := strings.Split(out, "\n")
+			// If it deployed failed, The output
+			// will contain the message `Failed to add DUT...`
+			failed := ""
+			for i := len(rows) - 1; i >= 0; i-- {
+				if strings.HasPrefix(rows[i], "Failed to add DUT") {
+					failed = rows[i]
+					break
+				}
 			}
-			pass = append(pass, &pb.AddDutsResponse_PassedData{
-				Hostname: d.GetHostname(),
-				Url:      url,
-			})
+
+			if failed != "" {
+				fail = append(fail, &pb.AddDutsResponse_FailedData{
+					Hostname: d.GetHostname(),
+					Reason:   failed,
+				})
+			} else {
+				url, err := parser.ParseDeployURL(out)
+				if err != nil {
+					// Skip parsing error here, we don't want to
+					// block user if any dut has been deployed successfully,
+					// but we can't parse the url from the command output.
+					url = ""
+				}
+				pass = append(pass, &pb.AddDutsResponse_PassedData{
+					Hostname: d.GetHostname(),
+					Url:      url,
+				})
+			}
 		}
 	}
 
