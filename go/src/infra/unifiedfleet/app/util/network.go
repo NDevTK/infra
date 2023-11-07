@@ -22,6 +22,9 @@ const reserveFirst = 11
 // The last ip is broadcast address.
 const reserveLast = 1
 
+// maxPreallocatedVlanSize is the maximum number of preallocated vlan addresses.
+const maxPreallocatedVlanSize = 2000
+
 // StringifyIP stringifies an IP. The standard library makes the interesting
 // choice of mapping an empty IP address object to "<nil>" rather than "".
 //
@@ -31,6 +34,37 @@ func StringifyIP(ip net.IP) string {
 		return ""
 	}
 	return ip.String()
+}
+
+var tooManyIPs error = errors.New("too many IPs")
+
+// makeReservedIPv4sInVlan takes an inclusive range of ipv4s and produces reserved ipv4s for use in a vlan.
+func makeReservedIPv4sInVlan(vlanName string, begin uint32, end uint32, maximum int) ([]*ufspb.IP, error) {
+	if maximum <= 0 {
+		return nil, errors.New("maximum must be positive")
+	}
+	if maximum > maxPreallocatedVlanSize {
+		return nil, errors.New("maximum cannot exceed MaxPreallocatedVlanSize")
+	}
+	if begin > end {
+		return nil, errors.New("begin cannot be greater than end")
+	}
+	proposedLen := 1 + int(end-begin)
+	if proposedLen > maximum {
+		return nil, errors.New("IP range exceeds maximum")
+	}
+	ips := make([]*ufspb.IP, 0, maximum)
+	if err := Uint32Iter(begin, end, func(ip uint32) error {
+		ipItem := FormatIP(vlanName, IPv4IntToStr(ip), true, false)
+		if ipItem == nil {
+			return fmt.Errorf("%q %d failed to produce an IP address", vlanName, ip)
+		}
+		ips = append(ips, ipItem)
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return ips, nil
 }
 
 // ParseVlan parses vlan to a list of IPs

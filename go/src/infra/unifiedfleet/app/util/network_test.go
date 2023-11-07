@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/typed"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -187,6 +188,88 @@ func TestMakeIPv4(t *testing.T) {
 			got := makeIPv4(tt.vlanName, tt.ipv4, tt.reserved)
 			if diff := cmp.Diff(got, tt.want, protocmp.Transform()); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
+
+// TestMakeReservedIPv4sInVlan tests making a range of IPv4s.
+func TestMakeReservedIPv4sInVlan(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name     string
+		vlanName string
+		begin    uint32
+		end      uint32
+		maximum  int
+		want     []*ufspb.IP
+		ok       bool
+	}{
+		{
+			name:     "singleton",
+			vlanName: "fake-vlan",
+			begin:    0,
+			end:      0,
+			maximum:  1,
+			want:     []*ufspb.IP{FormatIP("fake-vlan", "0.0.0.0", true, false)},
+			ok:       true,
+		},
+		{
+			name:     "too short",
+			vlanName: "fake-vlan",
+			begin:    0,
+			end:      0,
+			maximum:  0,
+			want:     nil,
+			ok:       false,
+		},
+		{
+			name:     "beginning too big",
+			vlanName: "fake-vlan",
+			begin:    10,
+			end:      0,
+			maximum:  100,
+			want:     nil,
+			ok:       false,
+		},
+		{
+			name:     "array too long",
+			vlanName: "fake-vlan",
+			begin:    0,
+			end:      10000,
+			maximum:  100000,
+			want:     nil,
+			ok:       false,
+		},
+		{
+			name:     "1 2 3 4",
+			vlanName: "fake-vlan",
+			begin:    1,
+			end:      4,
+			maximum:  4,
+			want: []*ufspb.IP{
+				FormatIP("fake-vlan", "0.0.0.1", true, false),
+				FormatIP("fake-vlan", "0.0.0.2", true, false),
+				FormatIP("fake-vlan", "0.0.0.3", true, false),
+				FormatIP("fake-vlan", "0.0.0.4", true, false),
+			},
+			ok: true,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := makeReservedIPv4sInVlan(tt.vlanName, tt.begin, tt.end, tt.maximum)
+
+			if diff := typed.Diff(got, tt.want); diff != "" {
+				t.Errorf("unexpected error (-want +got): %s", diff)
+			}
+			if diff := typed.Diff(err == nil, tt.ok); diff != "" {
+				t.Errorf("unexpected error (-want +got): %s", diff)
 			}
 		})
 	}
