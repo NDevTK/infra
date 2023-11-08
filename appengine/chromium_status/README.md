@@ -4,7 +4,7 @@ Base framework for:
 
 * https://chromium-status.appspot.com/
 * https://chromiumos-status.appspot.com/
-* See [tools/update.py] for the complete list.
+* See [tools/update.py](./tools/update.py) for the complete list.
 
 ## Developing
 
