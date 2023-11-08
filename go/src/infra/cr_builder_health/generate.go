@@ -33,6 +33,7 @@ type Row struct {
 	Bucket           string     `bigquery:"bucket"`
 	Builder          string     `bigquery:"builder"`
 	Rotation         string     `bigquery:"rotation"`
+	ContactTeamEmail string     `bigquery:"contact_team_email"`
 	N                int        `bigquery:"n"`
 	Metrics          []*Metric  `bigquery:"metrics"`
 }
@@ -55,9 +56,9 @@ func generate(ctx context.Context, input *healthpb.InputParams) error {
 	}
 	defer bqClient.Close()
 
-	thresholds, err := getThresholds(ctx)
+	srcConfig, err := getSrcConfig(ctx)
 	if err != nil {
-		return errors.Annotate(err, "Get Thresholds").Err()
+		return errors.Annotate(err, "Get Src Config").Err()
 	}
 
 	rows, err := getMetrics(ctx, bqClient, input)
@@ -65,7 +66,7 @@ func generate(ctx context.Context, input *healthpb.InputParams) error {
 		return errors.Annotate(err, "Get metrics").Err()
 	}
 
-	rowsWithIndicators, err := calculateIndicators(ctx, rows, *thresholds)
+	rowsWithIndicators, err := calculateIndicators(ctx, rows, *srcConfig)
 	if err != nil {
 		return errors.Annotate(err, "Calculate indicators").Err()
 	}
@@ -181,42 +182,43 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
 	return rows, nil
 }
 
-func calculateIndicators(buildCtx context.Context, rows []Row, thresholds Thresholds) ([]Row, error) {
+func calculateIndicators(buildCtx context.Context, rows []Row, srcConfig SrcConfig) ([]Row, error) {
 	var stepErr error
 	step, ctx := build.StartStep(buildCtx, "Calculate indicators")
 	defer func() { step.End(stepErr) }()
 
 	failedBuilders := 0
 	for i, row := range rows {
-		if bucketThresholds, ok := thresholds.Thresholds[row.Bucket]; !ok {
+		if bucketSpecs, ok := srcConfig.Specs[row.Bucket]; !ok {
 			rows[i].HealthScore = 0
 			continue
-		} else if builderThresholds, ok := bucketThresholds[row.Builder]; !ok {
+		} else if builderSpec, ok := bucketSpecs[row.Builder]; !ok {
 			rows[i].HealthScore = 0
 			continue
 		} else {
-			if builderThresholds.Default == "_default" {
-				if (builderThresholds.BuildTime != PercentileThresholds{} ||
-					builderThresholds.TestPendingTime != PercentileThresholds{} ||
-					builderThresholds.PendingTime != PercentileThresholds{} ||
-					builderThresholds.FailRate != AverageThresholds{} ||
-					builderThresholds.InfraFailRate != AverageThresholds{}) {
+			if builderSpec.Thresholds.Default == "_default" {
+				if (builderSpec.Thresholds.BuildTime != PercentileThresholds{} ||
+					builderSpec.Thresholds.TestPendingTime != PercentileThresholds{} ||
+					builderSpec.Thresholds.PendingTime != PercentileThresholds{} ||
+					builderSpec.Thresholds.FailRate != AverageThresholds{} ||
+					builderSpec.Thresholds.InfraFailRate != AverageThresholds{}) {
 					rows[i].HealthScore = 0
 					rows[i].ScoreExplanation = "Threshold config error: default sentinel and custom thresholds cannot both be set."
 					logging.Errorf(ctx, "%s Bucket: %s. Builder: %s.", rows[i].ScoreExplanation, row.Bucket, row.Builder)
 					failedBuilders += 1
 					continue
 				}
-				builderThresholds = thresholds.Default
-			} else if builderThresholds.Default != "" {
+				builderSpec = srcConfig.Default
+			} else if builderSpec.Thresholds.Default != "" {
 				rows[i].HealthScore = 0
-				rows[i].ScoreExplanation = fmt.Sprintf("Threshold config error: Default set to unknown sentinel value: %s.", builderThresholds.Default)
+				rows[i].ScoreExplanation = fmt.Sprintf("Threshold config error: Default set to unknown sentinel value: %s.", builderSpec.Thresholds.Default)
 				logging.Errorf(ctx, "%s Bucket: %s. Builder %s.", rows[i].ScoreExplanation, row.Bucket, row.Builder)
 				failedBuilders += 1
 				continue
 			}
 
-			stepErr = errors.Join(stepErr, compareThresholds(ctx, &row, &builderThresholds))
+			stepErr = errors.Join(stepErr, compareThresholds(ctx, &row, &builderSpec))
+			row.ContactTeamEmail = builderSpec.ContactTeamEmail
 			rows[i] = row
 		}
 	}

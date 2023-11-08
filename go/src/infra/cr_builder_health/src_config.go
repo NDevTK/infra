@@ -19,12 +19,16 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 )
 
-type Thresholds struct {
-	Default    BuilderThresholds           `json:"_default"`
-	Thresholds map[string]BucketThresholds `json:"thresholds"`
+type SrcConfig struct {
+	Default BuilderSpec           `json:"_default"`
+	Specs   map[string]BucketSpec `json:"specs"`
 }
-type BucketThresholds map[string]BuilderThresholds
-type BuilderThresholds struct {
+type BucketSpec map[string]BuilderSpec
+type BuilderSpec struct {
+	Thresholds       Thresholds `json:"thresholds"`
+	ContactTeamEmail string     `json:"contact_team_email"`
+}
+type Thresholds struct {
 	Default         string               `json:"_default"` // if set to the sentinel value "_default", then use the defaults
 	BuildTime       PercentileThresholds `json:"build_time"`
 	FailRate        AverageThresholds    `json:"fail_rate"`
@@ -46,12 +50,12 @@ type AverageThresholds struct {
 const explanationPrefix = "Builder was above the"
 const explanationSuffix = "threshold for the last 7 days of builds."
 
-func getThresholds(buildCtx context.Context) (*Thresholds, error) {
+func getSrcConfig(buildCtx context.Context) (*SrcConfig, error) {
 	var err error
-	step, ctx := build.StartStep(buildCtx, "Get thresholds")
+	step, ctx := build.StartStep(buildCtx, "Get Src Config")
 	defer func() { step.End(err) }()
 
-	step.SetSummaryMarkdown("Reading thresholds from https://chromium.googlesource.com/chromium/src/+/refs/heads/main/infra/config/generated/health-specs/health-specs.json")
+	step.SetSummaryMarkdown("Reading src config from https://chromium.googlesource.com/chromium/src/+/refs/heads/main/infra/config/generated/health-specs/health-specs.json")
 
 	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, auth.Options{Scopes: []string{gitiles.OAuthScope}})
 	httpClient, err := authenticator.Client()
@@ -64,37 +68,37 @@ func getThresholds(buildCtx context.Context) (*Thresholds, error) {
 		return nil, errors.Annotate(err, "Initializing Gitiles client").Err()
 	}
 
-	thresholdsString, err := client.GetFile(ctx, "infra/config/generated/health-specs/health-specs.json")
+	srcConfigString, err := client.GetFile(ctx, "infra/config/generated/health-specs/health-specs.json")
 	if err != nil {
-		return nil, errors.Annotate(err, "Downloading thresholds").Err()
+		return nil, errors.Annotate(err, "Downloading src config").Err()
 	}
 
-	var thresholds Thresholds
-	err = json.Unmarshal([]byte(thresholdsString), &thresholds)
+	var srcConfig SrcConfig
+	err = json.Unmarshal([]byte(srcConfigString), &srcConfig)
 	if err != nil {
-		return nil, errors.Annotate(err, "Unmarshalling thresholds").Err()
+		return nil, errors.Annotate(err, "Unmarshalling src config").Err()
 	}
 
-	return &thresholds, nil
+	return &srcConfig, nil
 }
 
-func compareThresholds(ctx context.Context, row *Row, thresholds *BuilderThresholds) error {
+func compareThresholds(ctx context.Context, row *Row, builderConfig *BuilderSpec) error {
 	row.HealthScore = 10
 	var stepErr error
 	for _, metric := range row.Metrics {
 		switch metric.Type {
 		case "build_mins_p50":
-			metric.Threshold = thresholds.BuildTime.P50Mins
+			metric.Threshold = builderConfig.Thresholds.BuildTime.P50Mins
 		case "build_mins_p95":
-			metric.Threshold = thresholds.BuildTime.P95Mins
+			metric.Threshold = builderConfig.Thresholds.BuildTime.P95Mins
 		case "fail_rate":
-			metric.Threshold = thresholds.FailRate.Average
+			metric.Threshold = builderConfig.Thresholds.FailRate.Average
 		case "infra_fail_rate":
-			metric.Threshold = thresholds.InfraFailRate.Average
+			metric.Threshold = builderConfig.Thresholds.InfraFailRate.Average
 		case "pending_mins_p50":
-			metric.Threshold = thresholds.PendingTime.P50Mins
+			metric.Threshold = builderConfig.Thresholds.PendingTime.P50Mins
 		case "pending_mins_p95":
-			metric.Threshold = thresholds.PendingTime.P95Mins
+			metric.Threshold = builderConfig.Thresholds.PendingTime.P95Mins
 		// TODO: add checks for Test Pending Time once the data is added to the DB query
 		default:
 			metric.HealthScore = 0
