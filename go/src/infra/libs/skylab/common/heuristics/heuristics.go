@@ -5,12 +5,14 @@
 package heuristics
 
 import (
+	"flag"
 	"fmt"
 	"io/fs"
 	"os"
 	"regexp"
 	"strings"
 
+	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
 )
 
@@ -113,4 +115,17 @@ func TruncateErrorString(msg string) string {
 	prefix := msg[0:prefixLen]
 	suffix := msg[(len(msg) - suffixLen):]
 	return strings.ToValidUTF8(fmt.Sprintf("%s...%s", prefix, suffix), "")
+}
+
+// ParseUsingCommand is a test helper for subcommands.
+func ParseUsingCommand(c *subcommands.Command, args []string, validate func(subcommands.CommandRun) error) (*flag.FlagSet, error) {
+	runner := c.CommandRun()
+	flagSet := runner.GetFlags()
+	if err := flagSet.Parse(args); err != nil {
+		return nil, err
+	}
+	if err := validate(runner); err != nil {
+		return nil, err
+	}
+	return flagSet, nil
 }
