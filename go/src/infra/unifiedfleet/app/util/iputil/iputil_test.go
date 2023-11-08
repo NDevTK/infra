@@ -151,3 +151,33 @@ func TestAddIP(t *testing.T) {
 		})
 	}
 }
+
+// TestIPDiff tests taking differences of IPs.
+func TestIPDiff(t *testing.T) {
+	t.Parallel()
+	cases := []struct {
+		name       string
+		x          net.IP
+		y          net.IP
+		difference string
+	}{
+		{
+			name:       "simple diff",
+			x:          MustParseIP("127.0.0.2"),
+			y:          MustParseIP("127.0.0.1"),
+			difference: "1",
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := IPDiff(tt.x, tt.y).String()
+			if diff := typed.Diff(got, tt.difference); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
