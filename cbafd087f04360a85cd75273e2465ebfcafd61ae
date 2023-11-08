@@ -54,6 +54,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc27edd0_4f18c997",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1528167
+      },
+      "writtenOn": "2023-11-08T21:34:10Z",
+      "side": 1,
+      "message": "Agree with Derek\u0027s question here, it\u0027s still not clear why GCE image import takes longer occasionally. Side note, found an old dashboard I created for VM image and instance creation metrics: https://dashboards.corp.google.com/edit/_7e5e7d44_df5a_4a89_ba4a_5e4cb2f7c62a. It kinda aligns with Varun\u0027s findings, the max value is close to 20 minutes and the average being close to 4 minutes. I believe 3-4 minute was expected but 20 minutes is too long. Can we create a separate bug to investigate this further?",
+      "revId": "cbafd087f04360a85cd75273e2465ebfcafd61ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "08f5add5_c126cd8f",
