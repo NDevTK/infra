@@ -187,8 +187,9 @@ func GetDatastoreNamespace(ctx context.Context) string {
 
 // GetIncomingCtxNamespace parses namespace in incoming context passed to UFS
 //
-// Only when user specify namespace as OSNamespace, the returned namespace
-// is OSNamespace. Any other case will cause namespace=BrowserNamespace.
+// The user must explicitly specify a recognized namespace string
+// for the corresponding namespace to be returned.
+// An empty or unrecognized string will cause namespace=BrowserNamespace.
 func GetIncomingCtxNamespace(ctx context.Context) string {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
@@ -206,10 +207,14 @@ func GetIncomingCtxNamespace(ctx context.Context) string {
 func GetNamespaceFromCtx(ctx context.Context) string {
 	outNs := GetIncomingCtxNamespace(ctx)
 	datastoreNs := GetDatastoreNamespace(ctx)
-	if outNs == OSNamespace || datastoreNs == OSNamespace {
+	switch {
+	case outNs == OSNamespace || datastoreNs == OSNamespace:
 		return OSNamespace
+	case outNs == OSPartnerNamespace || datastoreNs == OSPartnerNamespace:
+		return OSPartnerNamespace
+	default:
+		return BrowserNamespace
 	}
-	return BrowserNamespace
 }
 
 // GetPageSize gets the correct page size for List pagination
