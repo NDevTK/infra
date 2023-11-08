@@ -5,6 +5,8 @@
 package iputil
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"math/big"
 	"net"
@@ -85,6 +87,26 @@ func IPDiff(x net.IP, y net.IP) *big.Int {
 	ret := big.NewInt(0)
 	ret.Sub(bytesToBigInt(x), bytesToBigInt(y))
 	return ret
+}
+
+// IPIter iterates over a range of ip addresses. Both the start and end are inclusive.
+func IPIter(start net.IP, end net.IP, callback func(net.IP) error) error {
+	if bytes.Compare(start, end) == 1 {
+		return fmt.Errorf("IPIter start %q comes before end %q", start.String(), end.String())
+	}
+	currentIP := start[:]
+	for {
+		if currentIP == nil {
+			return errors.New("IP should not be nil")
+		}
+		if bytes.Compare(currentIP, end) > 0 {
+			return nil
+		}
+		if err := callback(currentIP); err != nil {
+			return err
+		}
+		currentIP = AddToIP(currentIP, big.NewInt(1))
+	}
 }
 
 func pad(x []byte, n int) []byte {
