@@ -71,6 +71,7 @@ Full documentation http://go/shivas-cli`,
 			experimental_cmds.DUTAvailabilityDiffCmd,
 			experimental_cmds.GetDutsForLabstationCmd,
 			experimental_cmds.ImportOSNicsCmd,
+			experimental_cmds.ChangelogCmd,
 		},
 	}
 }

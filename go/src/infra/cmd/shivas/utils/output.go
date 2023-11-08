@@ -2151,3 +2151,27 @@ func GetSingleMachineLSE(ctx context.Context, ic ufsAPI.FleetClient, name string
 		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, name),
 	})
 }
+
+// PrettyPrintListOfStruct takes a list of pointers to the struct and prints them in a tabular
+// format. It is best for flat structs. It does sprintf to all the fields in the struct.
+func PrettyPrintListOfStruct[X any](xs []*X) {
+	var x X
+	xtype := reflect.TypeOf(x)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
+	// Print struct fields as header for the table
+	typeStr := ""
+	for i := 0; i < xtype.NumField(); i++ {
+		typeStr = typeStr + xtype.Field(i).Name + "\t"
+	}
+	fmt.Fprintln(w, typeStr)
+	// Print the values for each of the field
+	for _, y := range xs {
+		valStr := ""
+		vy := reflect.Indirect(reflect.ValueOf(y))
+		for i := 0; i < xtype.NumField(); i++ {
+			valStr = valStr + fmt.Sprintf("%v", vy.Field(i)) + "\t"
+		}
+		fmt.Fprintln(w, valStr)
+	}
+	w.Flush()
+}
