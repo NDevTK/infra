@@ -5,6 +5,7 @@
 package iputil
 
 import (
+	"fmt"
 	"math/big"
 	"net"
 	"testing"
@@ -179,5 +180,23 @@ func TestIPDiff(t *testing.T) {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
 		})
+	}
+}
+
+func TestIPIterSmokeTest(t *testing.T) {
+	t.Parallel()
+
+	tally := 0
+	err := IPIter(MustParseIP("::1"), MustParseIP("::3"), func(ip net.IP) error {
+		tally++
+		fmt.Printf("%s\n", ip.String())
+		return nil
+	})
+
+	if diff := typed.Diff(3, tally); diff != "" {
+		t.Errorf("unexpected diff (-want +got): %s", diff)
+	}
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
 	}
 }
