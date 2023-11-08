@@ -90,7 +90,7 @@
                     "command:start system-services"
                   ],
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove reboot requests",
@@ -172,7 +172,7 @@
                         "command:start system-services"
                       ],
                       "allow_fail_after_recovery": true,
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     },
                     {
                       "name": "Remove reboot requests",
@@ -216,7 +216,7 @@
                 "command:start system-services"
               ],
               "allow_fail_after_recovery": true,
-              "run_control": "RERUN_AFTER_RECOVERY"
+              "run_control": "ALWAYS_RUN"
             }
           ],
           "run_control": "RERUN_AFTER_RECOVERY"
@@ -236,6 +236,97 @@
             "This verifier checks whether the host filesystem is writable."
           ],
           "exec_name": "cros_is_file_system_writable",
+          "allow_fail_after_recovery": true,
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "Check servod dependencies",
+          "docs": [
+            "Ensure critical dependencies for servod is there, this check may fail if labstation had a incomplete provision."
+          ],
+          "dependencies": [
+            {
+              "name": "Device is SSHable",
+              "docs": [
+                "This verifier checks whether the host is accessible over ssh."
+              ],
+              "exec_name": "cros_ssh",
+              "timeout": "30s",
+              "recoveries": [
+                {
+                  "name": "Power cycle by RPM",
+                  "docs": [
+                    "Action is always runnable."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "has_rpm_info",
+                      "exec_name": "has_rpm_info",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "rpm_power_cycle",
+                      "exec_name": "rpm_power_cycle",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Wait to be SSHable",
+                      "docs": [
+                        "Try to wait device to be sshable during after the device being rebooted."
+                      ],
+                      "exec_name": "cros_ssh",
+                      "timeout": "10m0s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Start system services",
+                      "docs": [
+                        "Start system-services on the labstation"
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Device is SSHable",
+                          "docs": [
+                            "This verifier checks whether the host is accessible over ssh."
+                          ],
+                          "exec_name": "cros_ssh",
+                          "timeout": "30s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "cros_run_command",
+                      "exec_args": [
+                        "host:dut",
+                        "command:start system-services"
+                      ],
+                      "allow_fail_after_recovery": true,
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Remove reboot requests",
+                      "docs": [
+                        "Remove all requests for reboot on the host.",
+                        "The action has to be called after reboot of the device."
+                      ],
+                      "exec_name": "cros_remove_all_reboot_request",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
+          "exec_name": "cros_run_command",
+          "exec_args": [
+            "host:dut",
+            "command:servod --sversion"
+          ],
           "allow_fail_after_recovery": true,
           "run_control": "RERUN_AFTER_RECOVERY"
         },
@@ -337,7 +428,7 @@
                     "powerd"
                   ],
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "cros_clean_tmp_owner_request",
@@ -349,7 +440,7 @@
                   ],
                   "exec_name": "cros_clean_tmp_owner_request",
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "cros_allowed_reboot",
@@ -397,12 +488,21 @@
                         }
                       ],
                       "exec_name": "sample_fail",
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_name": "cros_run_shell_command",
                   "exec_args": [
                     "echo b \u003e /proc/sysrq-trigger"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Sleep 10s",
+                  "exec_name": "sample_sleep",
+                  "exec_args": [
+                    "sleep:10"
                   ],
                   "allow_fail_after_recovery": true,
                   "run_control": "ALWAYS_RUN"
@@ -438,7 +538,7 @@
                     "command:start system-services"
                   ],
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove reboot requests",
@@ -503,7 +603,7 @@
                     "command:start system-services"
                   ],
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove reboot requests",
@@ -565,7 +665,7 @@
                     "powerd"
                   ],
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "cros_clean_tmp_owner_request",
@@ -577,7 +677,7 @@
                   ],
                   "exec_name": "cros_clean_tmp_owner_request",
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "cros_allowed_reboot",
@@ -625,12 +725,21 @@
                         }
                       ],
                       "exec_name": "sample_fail",
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_name": "cros_run_shell_command",
                   "exec_args": [
                     "echo b \u003e /proc/sysrq-trigger"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Sleep 10s",
+                  "exec_name": "sample_sleep",
+                  "exec_args": [
+                    "sleep:10"
                   ],
                   "allow_fail_after_recovery": true,
                   "run_control": "ALWAYS_RUN"
@@ -666,7 +775,7 @@
                     "command:start system-services"
                   ],
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove reboot requests",
@@ -731,7 +840,7 @@
                     "command:start system-services"
                   ],
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove reboot requests",
@@ -782,7 +891,7 @@
                     "powerd"
                   ],
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "cros_clean_tmp_owner_request",
@@ -794,7 +903,7 @@
                   ],
                   "exec_name": "cros_clean_tmp_owner_request",
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "cros_allowed_reboot",
@@ -842,12 +951,21 @@
                         }
                       ],
                       "exec_name": "sample_fail",
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_name": "cros_run_shell_command",
                   "exec_args": [
                     "echo b \u003e /proc/sysrq-trigger"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Sleep 10s",
+                  "exec_name": "sample_sleep",
+                  "exec_args": [
+                    "sleep:10"
                   ],
                   "allow_fail_after_recovery": true,
                   "run_control": "ALWAYS_RUN"
@@ -883,7 +1001,7 @@
                     "command:start system-services"
                   ],
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove reboot requests",
@@ -948,7 +1066,7 @@
                     "command:start system-services"
                   ],
                   "allow_fail_after_recovery": true,
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove reboot requests",

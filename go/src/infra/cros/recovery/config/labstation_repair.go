@@ -24,6 +24,7 @@ func LabstationRepairConfig() *Configuration {
 					"System services is up",
 					"Clean up logs if necessary",
 					"Filesystem is writable",
+					"Check servod dependencies",
 					"cros_is_on_stable_version",
 					"Update provisioned info",
 					"booted_from_right_kernel",
@@ -107,6 +108,7 @@ func LabstationRepairConfig() *Configuration {
 							"powerd",
 						},
 						AllowFailAfterRecovery: true,
+						RunControl:             RunControl_ALWAYS_RUN,
 					},
 					"cros_clean_tmp_owner_request": {
 						Docs: []string{
@@ -116,6 +118,7 @@ func LabstationRepairConfig() *Configuration {
 							"Although failure here is unexpected, and could signal a bug, the point of the exercise is to paper over problems.",
 						},
 						AllowFailAfterRecovery: true,
+						RunControl:             RunControl_ALWAYS_RUN,
 					},
 					"labstation_uptime_6_hours": {
 						ExecName: "cros_validate_uptime",
@@ -208,6 +211,7 @@ func LabstationRepairConfig() *Configuration {
 							"cros_allowed_reboot",
 							"Simple reboot",
 							"Sysrq reboot",
+							"Sleep 10s",
 							// Waiting to tell if success.
 							"Wait to be SSHable",
 							"Start system services",
@@ -291,7 +295,8 @@ func LabstationRepairConfig() *Configuration {
 						Conditions: []string{
 							"cros_filesystem_io_not_blocked",
 						},
-						ExecName: "sample_fail",
+						ExecName:   "sample_fail",
+						RunControl: RunControl_ALWAYS_RUN,
 					},
 					"Read serial number from labstation": {
 						ExecName:               "cros_update_serial_number_inventory",
@@ -375,6 +380,7 @@ func LabstationRepairConfig() *Configuration {
 							"command:start system-services",
 						},
 						AllowFailAfterRecovery: true,
+						RunControl:             RunControl_ALWAYS_RUN,
 					},
 					"Write factory-install-reset to file system": {
 						ExecName: "cros_run_shell_command",
@@ -404,16 +410,14 @@ func LabstationRepairConfig() *Configuration {
 						Dependencies: []string{
 							"Write factory-install-reset to file system",
 							"Labstation reboot",
-							"Install stable labstation image with reboot",
-							"Wait to be SSHable",
-							"Start system services",
+							"Install stable labstation image without reboot",
+							"Labstation reboot",
 						},
-						ExecName:      "sample_pass",
-						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+						ExecName: "sample_pass",
 					},
-					"Check python and dependecies": {
+					"Check servod dependencies": {
 						Docs: []string{
-							"Ensure python and critical dependencies is there, this check may fail if labstation had a incomplete provision.",
+							"Ensure critical dependencies for servod is there, this check may fail if labstation had a incomplete provision.",
 						},
 						Dependencies: []string{
 							"Device is SSHable",
@@ -421,9 +425,18 @@ func LabstationRepairConfig() *Configuration {
 						ExecName: "cros_run_command",
 						ExecExtraArgs: []string{
 							"host:dut",
-							"command:python3 -c \"import six\"",
+							"command:servod --sversion",
 						},
-						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+						AllowFailAfterRecovery: true,
+					},
+					"Sleep 10s": {
+						ExecName: "sample_sleep",
+						ExecExtraArgs: []string{
+							"sleep:10",
+						},
+						RunControl:             RunControl_ALWAYS_RUN,
+						AllowFailAfterRecovery: true,
+						MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 					},
 				},
 			},
