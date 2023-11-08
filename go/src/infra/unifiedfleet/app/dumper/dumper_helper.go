@@ -25,11 +25,12 @@ import (
 	"infra/unifiedfleet/app/util"
 )
 
-const ufsDatasetName = "ufs"
 const pageSize = 500
 
 func dumpChangeEventHelper(ctx context.Context, bqClient *bigquery.Client) error {
-	uploader := bqlib.InitBQUploaderWithClient(ctx, bqClient, ufsDatasetName, "change_events")
+	ns := util.GetNamespaceFromCtx(ctx)
+	dataset := DatastoreNamespaceToBigQueryDataset[ns]
+	uploader := bqlib.InitBQUploaderWithClient(ctx, bqClient, dataset, "change_events")
 	changes, err := history.GetAllChangeEventEntities(ctx)
 	if err != nil {
 		return errors.Annotate(err, "get all change events' entities").Err()
@@ -209,7 +210,7 @@ func dumpChangeSnapshotHelper(ctx context.Context, bqClient *bigquery.Client) er
 	logging.Debugf(ctx, "Uploading all %d snapshots...", len(snapshots))
 	for tableName, ms := range msgs {
 		table := fmt.Sprintf("%s$%s", tableName, curTimeStr)
-		if err := dumpHelper(ctx, bqClient, ms, table); err != nil {
+		if err := uploadDumpToBQ(ctx, bqClient, ms, table); err != nil {
 			return err
 		}
 	}
@@ -224,79 +225,39 @@ func dumpChangeSnapshotHelper(ctx context.Context, bqClient *bigquery.Client) er
 }
 
 func dumpConfigurations(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
-	for k, f := range configurationDumpToolkit {
-		logging.Infof(ctx, "dumping %s", k)
-		msgs, err := f(ctx)
-		if err != nil {
-			return err
-		}
-		name := k
-		if hourly {
-			name = fmt.Sprintf("%s_hourly", k)
-		} else {
-			name = fmt.Sprintf("%s$%s", k, curTimeStr)
-		}
-		if err := dumpHelper(ctx, bqClient, msgs, name); err != nil {
-			return err
-		}
-	}
-	return nil
+	return dumpEntitiesHelper(ctx, bqClient, curTimeStr, hourly, configurationDumpToolkit)
 }
 
 func dumpRegistration(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
-	for k, f := range registrationDumpToolkit {
-		logging.Infof(ctx, "dumping %s", k)
-		msgs, err := f(ctx)
-		if err != nil {
-			return err
-		}
-		name := k
-		if hourly {
-			name = fmt.Sprintf("%s_hourly", k)
-		} else {
-			name = fmt.Sprintf("%s$%s", k, curTimeStr)
-		}
-		if err := dumpHelper(ctx, bqClient, msgs, name); err != nil {
-			return err
-		}
-	}
-	return nil
+	return dumpEntitiesHelper(ctx, bqClient, curTimeStr, hourly, registrationDumpToolkit)
 }
 
 func dumpInventory(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
-	for k, f := range inventoryDumpToolkit {
-		logging.Infof(ctx, "dumping %s", k)
-		msgs, err := f(ctx)
-		if err != nil {
-			return err
-		}
-		name := k
-		if hourly {
-			name = fmt.Sprintf("%s_hourly", k)
-		} else {
-			name = fmt.Sprintf("%s$%s", k, curTimeStr)
-		}
-		if err := dumpHelper(ctx, bqClient, msgs, name); err != nil {
-			return err
-		}
-	}
-	return nil
+	return dumpEntitiesHelper(ctx, bqClient, curTimeStr, hourly, inventoryDumpToolkit)
 }
 
 func dumpState(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
-	for k, f := range stateDumpToolkit {
+	return dumpEntitiesHelper(ctx, bqClient, curTimeStr, hourly, stateDumpToolkit)
+}
+
+func dumpEntitiesHelper(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool, dumpToolkit map[string]getAllFunc) (err error) {
+	for k, f := range dumpToolkit {
 		logging.Infof(ctx, "dumping %s", k)
 		msgs, err := f(ctx)
 		if err != nil {
 			return err
 		}
 		name := k
+		if len(msgs) == 0 {
+			logging.Infof(ctx, "0 records found for %s table", name)
+			continue
+		}
 		if hourly {
 			name = fmt.Sprintf("%s_hourly", k)
 		} else {
 			name = fmt.Sprintf("%s$%s", k, curTimeStr)
 		}
-		if err := dumpHelper(ctx, bqClient, msgs, name); err != nil {
+		if err := uploadDumpToBQ(ctx, bqClient, msgs, name); err != nil {
 			return err
 		}
 	}

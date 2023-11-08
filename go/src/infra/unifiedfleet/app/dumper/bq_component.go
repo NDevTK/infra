@@ -27,6 +27,16 @@ import (
 
 type getAllFunc func(ctx context.Context) ([]proto.Message, error)
 
+const ufsDatasetName = "ufs"
+const sfpDatasetName = "sfp" // satlab for partners
+
+// DatastoreNamespaceToBigQueryDataset refers a map between client namespace(set in context metadata) to BigQuery dataset
+var DatastoreNamespaceToBigQueryDataset = map[string]string{
+	util.BrowserNamespace:   ufsDatasetName, // browser data is stored in ufs dataset
+	util.OSNamespace:        ufsDatasetName, // os data in ufs dataset
+	util.OSPartnerNamespace: sfpDatasetName, // os partner data is in separate os partner namespace
+}
+
 var registrationDumpToolkit = map[string]getAllFunc{
 	"assets":   getAllAssetMsgs,
 	"machines": getAllMachineMsgs,
@@ -62,8 +72,10 @@ var configurationDumpToolkit = map[string]getAllFunc{
 	"hwid_data":              getAllHwidData,
 }
 
-func dumpHelper(ctx context.Context, bqClient *bigquery.Client, msgs []proto.Message, tableName string) error {
-	uploader := bqlib.InitBQUploaderWithClient(ctx, bqClient, ufsDatasetName, tableName)
+func uploadDumpToBQ(ctx context.Context, bqClient *bigquery.Client, msgs []proto.Message, tableName string) error {
+	ns := util.GetNamespaceFromCtx(ctx)
+	dataset := DatastoreNamespaceToBigQueryDataset[ns]
+	uploader := bqlib.InitBQUploaderWithClient(ctx, bqClient, dataset, tableName)
 	logging.Infof(ctx, "Dumping %d %s records to BigQuery", len(msgs), tableName)
 	f := func() error {
 		if err := uploader.Put(ctx, msgs...); err != nil {
