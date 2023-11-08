@@ -94,8 +94,11 @@ func filesystemIoNotBlockedExec(ctx context.Context, info *execs.ExecInfo) error
 func logCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 
-	// Clean up stale(> 7 days) servod logs.
-	run(ctx, info.GetExecTimeout(), "find /var/log/servo* -type f -mtime +7 | xargs rm")
+	// Clean up stale(> 3 days) servod logs.
+	run(ctx, info.GetExecTimeout(), "find /var/log/servo* -type f -mtime +3 | xargs rm")
+
+	// Clean up stale logs that preserved during provision.
+	run(ctx, info.GetExecTimeout(), "rm -rf /mnt/stateful_partition/unencrypted/preserve/log")
 
 	// First we want to check if the current messages log larger than the threshold, and if it is
 	// we need rotate logs before we can safely remove it as other process may still writing logs into it.
