@@ -87,6 +87,8 @@ func TestCreateCTPBuilder(t *testing.T) {
 		inputCommand     *Run
 		expectedBBClient *builder.CTPBuilder
 	}
+	ctx := context.Background()
+	opt := site.GetAuthOption(ctx)
 
 	tests := []*test{
 		{
@@ -98,7 +100,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Build:     "15329.6.0",
 			},
 			&builder.CTPBuilder{
-				AuthOptions: &site.DefaultAuthOptions,
+				AuthOptions: &opt,
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
@@ -124,7 +126,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Build:     "15329.6.0",
 			},
 			&builder.CTPBuilder{
-				AuthOptions: &site.DefaultAuthOptions,
+				AuthOptions: &opt,
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
@@ -151,7 +153,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				SatlabId:  "satlab-0wgatfqi21118003",
 			},
 			&builder.CTPBuilder{
-				AuthOptions: &site.DefaultAuthOptions,
+				AuthOptions: &opt,
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
@@ -177,7 +179,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				AddedDims: map[string]string{"label-dut": "123"},
 			},
 			&builder.CTPBuilder{
-				AuthOptions: &site.DefaultAuthOptions,
+				AuthOptions: &opt,
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
@@ -204,7 +206,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				MaxTimeout: true,
 			},
 			&builder.CTPBuilder{
-				AuthOptions: &site.DefaultAuthOptions,
+				AuthOptions: &opt,
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
@@ -230,7 +232,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				AddedDims:     map[string]string{"label-dut": "123"},
 			},
 			&builder.CTPBuilder{
-				AuthOptions: &site.DefaultAuthOptions,
+				AuthOptions: &opt,
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",

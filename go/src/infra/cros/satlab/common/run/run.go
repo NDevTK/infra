@@ -112,6 +112,7 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 	if c.Image == "" {
 		c.Image = fmt.Sprintf("%s-release/R%s-%s", c.Board, c.Milestone, c.Build)
 	}
+	opt := site.GetAuthOption(ctx)
 	bbClient := &builder.CTPBuilder{
 		Image:               c.Image,
 		Board:               c.Board,
@@ -122,7 +123,7 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 		BuilderID:           builderId,
 		Dimensions:          dims,
 		ImageBucket:         site.GetGCSImageBucket(),
-		AuthOptions:         &site.DefaultAuthOptions,
+		AuthOptions:         &opt,
 		TestRunnerBuildTags: c.Tags,
 		TimeoutMins:         c.setTimeout(),
 		// TRV2:        true,
