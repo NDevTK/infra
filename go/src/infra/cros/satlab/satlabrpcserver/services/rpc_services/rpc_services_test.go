@@ -1847,3 +1847,32 @@ func Test_Reboot(t *testing.T) {
 		t.Errorf("unexpected error, got an error: %v", err)
 	}
 }
+
+func Test_validateUpdatePools(t *testing.T) {
+	cases := []struct {
+		name     string
+		in       []string
+		expected bool
+	}{
+		{
+			name:     "remove pool1 from [pool1, pool2]",
+			expected: true,
+			in:       []string{"pool2"},
+		},
+		{
+			name:     "remove all pools",
+			expected: false,
+			in:       []string{},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			out := validateUpdatePools(tt.in)
+			if out != tt.expected {
+				t.Errorf("unexpected error.")
+			}
+		})
+	}
+
+}

@@ -503,6 +503,12 @@ func removeAllPoolsFromDUT(ctx context.Context, executor executor.IExecCommander
 	return addPoolsToDUT(ctx, executor, hostname, []string{"-"})
 }
 
+// validateUpdatePools validate remove pools from UI
+// that shouldn't be remove all pools from a DUT
+func validateUpdatePools(pools []string) bool {
+	return len(pools) >= 1
+}
+
 func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePoolRequest) (*pb.UpdatePoolResponse, error) {
 	logging.Infof(ctx, "gRPC Service triggered: update_pool")
 
@@ -513,7 +519,7 @@ func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePo
 
 	for _, item := range in.GetItems() {
 		hostname, ok := IPHostMap[item.GetAddress()]
-		if ok {
+		if ok && validateUpdatePools(item.GetPools()) {
 			// According to `shivas` CLI. If we add a pool ("-"). It will remove all pools from the
 			// host.
 			if err = removeAllPoolsFromDUT(ctx, s.commandExecutor, hostname); err != nil {
@@ -901,7 +907,6 @@ func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequ
 			DeployTags:  []string{"satlab:true"},
 			ServoSerial: d.GetServoSerial(),
 		}).TriggerRun(ctx, s.commandExecutor, &buf)
-
 		if err != nil {
 			fail = append(fail, &pb.AddDutsResponse_FailedData{
 				Hostname: d.GetHostname(),
