@@ -1038,10 +1038,7 @@ func (s *SatlabRpcServiceServer) GetCloudConfiguration(ctx context.Context, in *
 	logging.Infof(ctx, "gRPC Service triggered: get_cloud_configuration")
 
 	bucket := site.GetGCSImageBucket()
-	p, err := site.GetBotoPath()
-	if err != nil {
-		return nil, err
-	}
+	p := site.GetBotoPath()
 
 	f, err := os.Open(p)
 	if err != nil {

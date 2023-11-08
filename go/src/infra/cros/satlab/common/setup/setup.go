@@ -204,11 +204,7 @@ func (s *Setup) createBotoConfigFile() error {
 	opts(site.BotoAccessKeyId, s.GSAccessKeyId)
 	opts(site.BotoSecretAccessKey, s.GSSecretAccessKey)
 
-	p, err := site.GetBotoPath()
-	if err != nil {
-		return err
-	}
-
+	p := site.GetBotoPath()
 	return os.WriteFile(p, buf.Bytes(), 0600)
 }
 
@@ -226,10 +222,7 @@ func (s *Setup) downloadConfigGsutil() error {
 
 // removeBotoIfExist remove the boto file
 func (s *Setup) removeBotoIfExist() error {
-	botoCfg, err := site.GetBotoPath()
-	if err != nil {
-		return err
-	}
+	botoCfg := site.GetBotoPath()
 	return os.Remove(botoCfg)
 }
 

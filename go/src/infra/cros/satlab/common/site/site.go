@@ -49,6 +49,7 @@ const (
 	KeyFolder = "/home/satlab/keys"
 	// SatlabConfigFilename to be downloaed from GCS.
 	SatlabConfigFilename = "satlab-config.json"
+	BotoConfigFilename   = ".boto"
 )
 
 const RecoveryVersionDirectory = "/home/satlab/keys/recovery_versions/"
@@ -82,6 +83,8 @@ const (
 	UFSZoneEnv = "UFS_ZONE"
 	// BotPrefix is the env var used to get bot information
 	BotPrefix = "BOT_PREFIX"
+	// BotoPath is the env var to get boto config file path
+	BotoPath = "BOTO_PATH"
 
 	// ServiceAccountKeyPathEnv defines the Service account key path to be used by
 	// moblab api.
@@ -443,10 +446,10 @@ func GetAuthOption(ctx context.Context) auth.Options {
 }
 
 // GetBotoPath get the boto file path
-func GetBotoPath() (string, error) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
+func GetBotoPath() string {
+	botoFilePath := os.Getenv(BotoPath)
+	if botoFilePath == "" {
+		return filepath.Join(KeyFolder, BotoConfigFilename)
 	}
-	return filepath.Join(homeDir, ".boto"), nil
+	return botoFilePath
 }
