@@ -71,6 +71,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "312bc747_bd86155c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1557583
+      },
+      "writtenOn": "2023-11-08T23:17:30Z",
+      "side": 1,
+      "message": "Well this change is to unblock. I think Yi has a separate bug for this to investigate image sync delay. If not can create one for him.",
+      "parentUuid": "bc27edd0_4f18c997",
+      "revId": "cbafd087f04360a85cd75273e2465ebfcafd61ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "08f5add5_c126cd8f",
