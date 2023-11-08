@@ -1,7 +1,7 @@
 #!/bin/sh
-# Copyright 2020 The LUCI Authors. All rights reserved.
-# Use of this source code is governed under the Apache License, Version 2.0
-# that can be found in the LICENSE file.
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 # Reference: http://google3/third_party/luci_py/latest/appengine/swarming/setup_bigquery.sh
 
