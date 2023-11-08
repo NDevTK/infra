@@ -88,7 +88,6 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 	}
 
 	// Connect to the DUT.
-
 	initialSSHCtx, cancel := context.WithTimeout(ctx, 120*time.Second)
 	defer cancel()
 
@@ -104,6 +103,23 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 
 	// Create a marker so the lab knows to repair the device on failure.
 	createProvisionFailedMarker()
+
+	// Check if the DUT has KVM enabled.
+	kvmEnabled, err := checkKvmEnabled(p.c)
+	if err != nil {
+		setError(newOperationError(
+			codes.FailedPrecondition,
+			"provision: failed to check if KVM enabled on this device",
+			tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
+		return
+	}
+	if !kvmEnabled {
+		setError(newOperationError(
+			codes.FailedPrecondition,
+			"provision: KVM is not enabled on this device, provisioning it again will not help (repair needs to cold reboot this device)",
+			tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
+		return
+	}
 
 	// Provision the OS.
 	select {
@@ -654,4 +670,8 @@ func getBootID(c *ssh.Client) (string, error) {
 		fmt.Sprintf(
 			"if [ -f '%[1]s' ]; then cat '%[1]s'; else echo 'no boot_id available'; fi",
 			"/proc/sys/kernel/random/boot_id"))
+}
+
+func checkKvmEnabled(c *ssh.Client) (bool, error) {
+	return pathExists(c, "/dev/kvm")
 }
