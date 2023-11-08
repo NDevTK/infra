@@ -52,6 +52,29 @@
       "parentUuid": "1a7a372c_a858cfb2",
       "revId": "cbafd087f04360a85cd75273e2465ebfcafd61ae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08f5add5_c126cd8f",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2023-11-08T18:29:17Z",
+      "side": 1,
+      "message": "is this really expected/acceptable to take this long? why do we need so much time to image sync for a VM vs a real device?",
+      "range": {
+        "startLine": 36,
+        "startChar": 16,
+        "endLine": 36,
+        "endChar": 17
+      },
+      "revId": "cbafd087f04360a85cd75273e2465ebfcafd61ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
