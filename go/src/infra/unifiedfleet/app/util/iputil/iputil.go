@@ -6,6 +6,7 @@ package iputil
 
 import (
 	"fmt"
+	"math/big"
 	"net"
 )
 
@@ -48,4 +49,40 @@ func RawIncr(ip net.IP) (res net.IP, overflow bool) {
 		res[i], overflow = incrByte(ip[i])
 	}
 	return
+}
+
+// AddToIP adds an arbitrary integer to an IP and returns the empty IP if the result would be negative.
+func AddToIP(ip net.IP, offset *big.Int) net.IP {
+	ipAsInt := big.NewInt(0)
+	ipAsInt.SetBytes(ip)
+	ipAsInt.Add(ipAsInt, offset)
+	if isNegative(ipAsInt) {
+		return nil
+	}
+	return pad(ipAsInt.Bytes(), len(ip))
+}
+
+func pad(x []byte, n int) []byte {
+	if len(x) == n {
+		return x
+	}
+	if n <= 0 {
+		return nil
+	}
+	out := make([]byte, n)
+
+	for i := 0; i < n; i++ {
+		j := n - i - 1
+		k := len(x) - i - 1
+		if k < 0 {
+			return out
+		}
+		out[j] = x[k]
+	}
+
+	return out
+}
+
+func isNegative(item *big.Int) bool {
+	return item.Cmp(big.NewInt(0)) == -1
 }
