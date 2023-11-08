@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"sort"
@@ -92,6 +91,7 @@ func (s *SatlabRpcServiceServer) ListBuildTargets(ctx context.Context, _ *pb.Lis
 
 	res, err := s.buildService.ListBuildTargets(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_build_targets: %w", err)
 		return nil, err
 	}
 
@@ -110,6 +110,7 @@ func (s *SatlabRpcServiceServer) ListMilestones(ctx context.Context, in *pb.List
 	// If the milestones are in the partner bucket. they are staged.
 	bucketMilestones, err := s.bucketService.GetMilestones(ctx, in.GetBoard())
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_milestones: %w", err)
 		return nil, err
 	}
 
@@ -117,12 +118,14 @@ func (s *SatlabRpcServiceServer) ListMilestones(ctx context.Context, in *pb.List
 	// Check the bucket is in asia, if it isn't in asia, we can fetch the milestones from `BuildClient`
 	isBucketInAsia, err := s.bucketService.IsBucketInAsia(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_milestones: %w", err)
 		return nil, err
 	}
 
 	if !isBucketInAsia {
 		remoteMilestones, err = s.buildService.ListAvailableMilestones(ctx, in.GetBoard(), in.GetModel())
 		if err != nil {
+			logging.Errorf(ctx, "gRPC Service error: list_milestones: %w", err)
 			return nil, err
 		}
 	}
@@ -173,6 +176,7 @@ func (s *SatlabRpcServiceServer) ListAccessibleModels(ctx context.Context, in *p
 
 	rawData, err := s.buildService.ListModels(ctx, in.GetBoard())
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_accessible_models: %w", err)
 		return nil, err
 	}
 
@@ -212,6 +216,7 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 	// If the builds are in the partner bucket. they are staged.
 	bucketBuilds, err := s.bucketService.GetBuilds(ctx, in.GetBoard(), in.GetMilestone())
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_build_versions: %w", err)
 		return nil, err
 	}
 
@@ -219,12 +224,14 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 	// Check the bucket is in asia, if it isn't in asia, we can fetch the builds from `BuildClient`
 	isBucketInAsia, err := s.bucketService.IsBucketInAsia(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_build_versions: %w", err)
 		return nil, err
 	}
 
 	if !isBucketInAsia {
 		remoteBuilds, err = s.buildService.ListBuildsForMilestone(ctx, in.GetBoard(), in.GetModel(), in.GetMilestone())
 		if err != nil {
+			logging.Errorf(ctx, "gRPC Service error: list_build_versions: %w", err)
 			return nil, err
 		}
 	}
@@ -275,6 +282,7 @@ func (s *SatlabRpcServiceServer) StageBuild(ctx context.Context, in *pb.StageBui
 
 	res, err := s.buildService.StageBuild(ctx, in.GetBoard(), in.GetModel(), in.GetBuildVersion(), site.GetGCSImageBucket())
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: stage_build: %w", err)
 		return nil, err
 	}
 
@@ -290,6 +298,7 @@ func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, 
 
 	devices, err := s.dutService.GetConnectedIPs(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_connected_duts_firmware: %w", err)
 		return nil, err
 	}
 
@@ -345,6 +354,7 @@ func (s *SatlabRpcServiceServer) GetSystemInfo(ctx context.Context, _ *pb.GetSys
 
 	startTime, err := satlabcommands.GetSatlabStartTime(ctx, s.commandExecutor)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: get_system_info: %w", err)
 		return nil, err
 	}
 
@@ -360,10 +370,12 @@ func (s *SatlabRpcServiceServer) GetPeripheralInformation(ctx context.Context, i
 
 	res, err := s.dutService.RunCommandOnIP(ctx, in.GetDutHostname(), constants.GetPeripheralInfoCommand)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: get_peripheral_information: %w", err)
 		return nil, err
 	}
 
 	if res.Error != nil {
+		logging.Errorf(ctx, "gRPC Service error: get_peripheral_information: %w", res.Error)
 		return nil, res.Error
 	}
 
@@ -425,6 +437,7 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: run_suite: %w", err)
 		return nil, err
 	}
 	return &pb.RunSuiteResponse{BuildLink: buildLink}, nil
@@ -444,6 +457,7 @@ func (s *SatlabRpcServiceServer) RunTest(ctx context.Context, in *pb.RunTestRequ
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: run_test: %w", err)
 		return nil, err
 	}
 	return &pb.RunTestResponse{BuildLink: buildLink}, nil
@@ -455,11 +469,13 @@ func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVe
 	resp := pb.GetVersionInfoResponse{}
 	hostId, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, s.commandExecutor)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: get_version_info: %w", err)
 		return nil, err
 	}
 	resp.HostId = hostId
 	osVersion, err := satlabcommands.GetOsVersion(ctx, s.commandExecutor)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: get_version_info: %w", err)
 		return nil, err
 	}
 	resp.Description = osVersion.Description
@@ -467,6 +483,7 @@ func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVe
 	resp.Track = osVersion.Track
 	version, err := satlabcommands.GetSatlabVersion(ctx, s.commandExecutor)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: get_version_info: %w", err)
 		return nil, err
 	}
 	resp.Version = version
@@ -478,7 +495,6 @@ func addPoolsToDUT(ctx context.Context, executor executor.IExecCommander, hostna
 		Pools:    pools,
 		Hostname: hostname,
 	}
-
 	return req.TriggerRun(ctx, executor)
 }
 
@@ -487,11 +503,13 @@ func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequ
 
 	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, in.GetAddresses())
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: add_pool: %w", err)
 		return nil, err
 	}
 
 	for _, hostname := range IPToHostResult.Hostnames {
 		if err = addPoolsToDUT(ctx, s.commandExecutor, hostname, []string{in.GetPool()}); err != nil {
+			logging.Errorf(ctx, "gRPC Service error: add_pool: %w", err)
 			return nil, err
 		}
 	}
@@ -514,6 +532,7 @@ func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePo
 
 	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: update_pool: %w", err)
 		return nil, err
 	}
 
@@ -523,11 +542,13 @@ func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePo
 			// According to `shivas` CLI. If we add a pool ("-"). It will remove all pools from the
 			// host.
 			if err = removeAllPoolsFromDUT(ctx, s.commandExecutor, hostname); err != nil {
+				logging.Errorf(ctx, "gRPC Service error: update_pool: %w", err)
 				return nil, err
 			}
 
 			// After removing the pools, we can add it the pools that we want to keep
 			if err = addPoolsToDUT(ctx, s.commandExecutor, hostname, item.GetPools()); err != nil {
+				logging.Errorf(ctx, "gRPC Service error: update_pool: %w", err)
 				return nil, err
 			}
 		}
@@ -540,15 +561,18 @@ func (s *SatlabRpcServiceServer) GetDutDetail(ctx context.Context, in *pb.GetDut
 	logging.Infof(ctx, "gRPC Service triggered: get_dut_detail")
 
 	if s.swarmingService == nil {
+		logging.Errorf(ctx, "gRPC Service error: get_dut_detail: need to login before using this")
 		return nil, errors.New("need to login before using this")
 	}
 
 	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: get_dut_detail: %w", err)
 		return nil, err
 	}
 
 	if len(IPToHostResult.InvalidAddresses) != 0 {
+		logging.Errorf(ctx, "gRPC Service error: get_dut_detail: can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 		return nil, fmt.Errorf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 	}
 
@@ -588,20 +612,24 @@ func (s *SatlabRpcServiceServer) ListDutTasks(ctx context.Context, in *pb.ListDu
 	logging.Infof(ctx, "gRPC Service triggered: list_dut_tasks")
 
 	if s.swarmingService == nil {
+		logging.Errorf(ctx, "gRPC Service error: list_dut_tasks: need to login before using this")
 		return nil, errors.New("need to login before using this")
 	}
 
 	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_dut_tasks: %w", err)
 		return nil, err
 	}
 
 	if len(IPToHostResult.InvalidAddresses) != 0 {
+		logging.Errorf(ctx, "gRPC Service error: list_dut_tasks: can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 		return nil, fmt.Errorf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 	}
 
 	r, err := s.swarmingService.ListBotTasks(ctx, IPToHostResult.Hostnames[0], in.GetPageToken(), int(in.GetPageSize()))
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_dut_tasks: %w", err)
 		return nil, err
 	}
 
@@ -628,20 +656,24 @@ func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListD
 	logging.Infof(ctx, "gRPC Service triggered: list_dut_events")
 
 	if s.swarmingService == nil {
+		logging.Errorf(ctx, "gRPC Service error: list_dut_events: need to login before using this")
 		return nil, errors.New("need to login before using this")
 	}
 
 	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, []string{in.GetAddress()})
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_dut_events: %w", err)
 		return nil, err
 	}
 
 	if len(IPToHostResult.InvalidAddresses) != 0 {
+		logging.Errorf(ctx, "gRPC Service error: list_dut_events: can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 		return nil, fmt.Errorf("can't find the host by ip address {%v}", IPToHostResult.InvalidAddresses)
 	}
 
 	r, err := s.swarmingService.ListBotEvents(ctx, IPToHostResult.Hostnames[0], in.GetPageToken(), int(in.GetPageSize()))
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_dut_events: %w", err)
 		return nil, err
 	}
 
@@ -728,6 +760,7 @@ func (s *SatlabRpcServiceServer) ListEnrolledDuts(ctx context.Context, in *pb.Li
 
 	duts, err := getConnectedDuts(ctx, s.commandExecutor)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_enrolled_duts: %w", err)
 		return nil, err
 	}
 
@@ -739,17 +772,20 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 
 	connectedDevices, err := s.dutService.GetConnectedIPs(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_duts: %w", err)
 		return nil, err
 	}
 
 	duts, err := getConnectedDuts(ctx, s.commandExecutor)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_duts: %w", err)
 		return nil, err
 	}
 
 	// Get the USB device connected to extract Cr50/Ti50 and Servo serials serial numbers
 	usbDevices, err := s.dutService.GetUSBDevicePaths(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_duts: %w", err)
 		return nil, err
 	}
 
@@ -791,7 +827,7 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 			var isServoConnected = false
 			isServoConnected, servoSerial, err = s.dutService.GetServoSerial(ctx, device.IP, usbDevices)
 			if err != nil {
-				log.Printf("failed to find servo serial for %s: %v", device.IP, err)
+				logging.Errorf(ctx, "gRPC Service error: list_duts: failed to find servo serial for %s: %v", device.IP, err)
 			}
 			// TODO Make UI handle this to display appropriate thing instead of setting it here.
 			if isServoConnected && servoSerial == "" {
@@ -818,11 +854,13 @@ func (s *SatlabRpcServiceServer) DeleteDuts(ctx context.Context, in *pb.DeleteDu
 	ctx = utils.SetupContext(ctx, site.GetNamespace(""))
 	ufs, err := ufs.NewUFSClientWithDefaultOptions(ctx, site.GetUFSService(s.dev))
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: delete_duts: %w", err)
 		return nil, err
 	}
 
 	res, err := innerDeleteDuts(ctx, s.commandExecutor, ufs, in.GetHostnames(), false)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: delete_duts: %w", err)
 		return nil, err
 	}
 
@@ -854,10 +892,12 @@ func (s *SatlabRpcServiceServer) GetNetworkInfo(ctx context.Context, _ *pb.GetNe
 
 	hostname, err := satlabcommands.GetHostIP(ctx, s.commandExecutor)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: get_network_info: %w", err)
 		return nil, err
 	}
 	macAddress, err := satlabcommands.GetMacAddress(ctx, s.commandExecutor)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: get_network_info: %w", err)
 		return nil, err
 	}
 
@@ -874,6 +914,7 @@ func (s *SatlabRpcServiceServer) ListTestPlans(ctx context.Context, _ *pb.ListTe
 
 	res, err := s.bucketService.ListTestplans(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: list_test_plans: %w", err)
 		return nil, err
 	}
 
@@ -890,6 +931,7 @@ func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequ
 
 	hostId, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, s.commandExecutor)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: add_duts: %w", err)
 		return nil, err
 	}
 
@@ -965,6 +1007,7 @@ func (s *SatlabRpcServiceServer) RunTestPlan(ctx context.Context, in *pb.RunTest
 
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: run_test_plan: %w", err)
 		return nil, err
 	}
 	return &pb.RunTestPlanResponse{BuildLink: buildLink}, nil
@@ -975,6 +1018,7 @@ func (s *SatlabRpcServiceServer) GetTestPlan(ctx context.Context, in *pb.GetTest
 
 	tp, err := s.bucketService.GetTestPlan(ctx, in.GetName())
 	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: get_test_plan: %w", err)
 		return nil, err
 	}
 
@@ -985,6 +1029,7 @@ func (s *SatlabRpcServiceServer) SetCloudConfiguration(ctx context.Context, in *
 	logging.Infof(ctx, "gRPC Service triggered: set_cloud_configuration")
 
 	if err := validateCloudConfiguration(in); err != nil {
+		logging.Errorf(ctx, "gRPC Service error: set_cloud_configuration: %w", err)
 		return nil, err
 	}
 
