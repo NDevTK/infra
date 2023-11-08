@@ -56,6 +56,82 @@ echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
     -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.ChromePlatformRow  \
+    -table "${APPID}"."${DATASET}".chrome_platforms); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.chrome_platforms"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.ChromePlatformRow  \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
+    -table "${APPID}"."${DATASET}".chrome_platforms_hourly); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.chrome_platforms_hourly"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.VlanRow  \
+    -table "${APPID}"."${DATASET}".vlans); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.vlans"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.VlanRow  \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
+    -table "${APPID}"."${DATASET}".vlans_hourly); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.vlans"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.MachineRow  \
     -table "${APPID}"."${DATASET}".machines); then
   echo ""
@@ -132,6 +208,44 @@ echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
     -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.MachineLSEPrototypeRow  \
+    -table "${APPID}"."${DATASET}".machine_lse_prototypes); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.machine_lse_prototypes"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.MachineLSEPrototypeRow  \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
+    -table "${APPID}"."${DATASET}".machine_lse_prototypes_hourly); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.machine_lse_prototypes_hourly"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.MachineLSERow  \
     -table "${APPID}"."${DATASET}".machine_lses); then
   echo ""
@@ -170,13 +284,13 @@ echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
     -I ../../../../../../ \
-    -message unifiedfleet.api.v1.models.bigquery.RackLSERow  \
-    -table "${APPID}"."${DATASET}".rack_lses); then
+    -message unifiedfleet.api.v1.models.bigquery.RPMRow  \
+    -table "${APPID}"."${DATASET}".rpms); then
   echo ""
   echo ""
   echo "Oh no! You may need to restart from scratch. You can do so with:"
   echo ""
-  echo "  bq rm ${APPID}:${DATASET}.rack_lses"
+  echo "  bq rm ${APPID}:${DATASET}.rpms"
   echo ""
   echo "and run this script again."
   exit 1
@@ -188,15 +302,15 @@ echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
     -I ../../../../../../ \
-    -message unifiedfleet.api.v1.models.bigquery.RackLSERow  \
+    -message unifiedfleet.api.v1.models.bigquery.RPMRow  \
     -partitioning-type HOUR \
     -partitioning-expiration 3999h \
-    -table "${APPID}"."${DATASET}".rack_lses_hourly); then
+    -table "${APPID}"."${DATASET}".rpms_hourly); then
   echo ""
   echo ""
   echo "Oh no! You may need to restart from scratch. You can do so with:"
   echo ""
-  echo "  bq rm ${APPID}:${DATASET}.rack_lses_hourly"
+  echo "  bq rm ${APPID}:${DATASET}.rpms_hourly"
   echo ""
   echo "and run this script again."
   exit 1
@@ -214,7 +328,7 @@ if ! (bqschemaupdater -force \
   echo ""
   echo "Oh no! You may need to restart from scratch. You can do so with:"
   echo ""
-  echo "  bq rm ${APPID}:ufs.switches"
+  echo "  bq rm ${APPID}:${DATASET}.switches"
   echo ""
   echo "and run this script again."
   exit 1
@@ -234,7 +348,121 @@ if ! (bqschemaupdater -force \
   echo ""
   echo "Oh no! You may need to restart from scratch. You can do so with:"
   echo ""
-  echo "  bq rm ${APPID}:ufs.switches_hourly"
+  echo "  bq rm ${APPID}:${DATASET}.switches_hourly"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.NicRow  \
+    -table "${APPID}"."${DATASET}".nics); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.nics"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.NicRow  \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
+    -table "${APPID}"."${DATASET}".nics_hourly); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.nics_hourly"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.DHCPConfigRow  \
+    -table "${APPID}"."${DATASET}".dhcps); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.dhcps"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.DHCPConfigRow  \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
+    -table "${APPID}"."${DATASET}".dhcps_hourly); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.dhcps_hourly"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.IPRow  \
+    -table "${APPID}"."${DATASET}".ips); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.ips"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.IPRow  \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
+    -table "${APPID}"."${DATASET}".ips_hourly); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.ips_hourly"
   echo ""
   echo "and run this script again."
   exit 1
@@ -308,7 +536,7 @@ if ! (bqschemaupdater -force \
   echo ""
   echo "Oh no! You may need to restart from scratch. You can do so with:"
   echo ""
-  echo "  bq rm ${APPID}:ufs.vms"
+  echo "  bq rm ${APPID}:${DATASET}.vms"
   echo ""
   echo "and run this script again."
   exit 1
@@ -328,7 +556,7 @@ if ! (bqschemaupdater -force \
   echo ""
   echo "Oh no! You may need to restart from scratch. You can do so with:"
   echo ""
-  echo "  bq rm ${APPID}:ufs.vms_hourly"
+  echo "  bq rm ${APPID}:${DATASET}.vms_hourly"
   echo ""
   echo "and run this script again."
   exit 1
@@ -416,6 +644,44 @@ echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
     -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.CachingServiceRow  \
+    -table "${APPID}"."${DATASET}".caching_services); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.caching_services"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.CachingServiceRow  \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
+    -table "${APPID}"."${DATASET}".caching_services_hourly); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.caching_services_hourly"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.MachineLSEDeploymentRow  \
     -table "${APPID}"."${DATASET}".machine_lse_deployments); then
   echo ""
@@ -443,6 +709,44 @@ if ! (bqschemaupdater -force \
   echo "Oh no! You may need to restart from scratch. You can do so with:"
   echo ""
   echo "  bq rm ${APPID}:${DATASET}.machine_lse_deployments_hourly"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.SchedulingUnitRow  \
+    -table "${APPID}"."${DATASET}".scheduling_units); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.scheduling_units"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.SchedulingUnitRow  \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
+    -table "${APPID}"."${DATASET}".scheduling_units_hourly); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:${DATASET}.scheduling_units_hourly"
   echo ""
   echo "and run this script again."
   exit 1
