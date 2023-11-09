@@ -487,8 +487,8 @@ SPECS.update({
             # a 64-bit Windows library, so use prebuilt for now.
             packaged=['windows-x64-py3.8', 'windows-x64-py3.11'],
             pyversions=['py3'],
-            patches=('mac-arm64',),
-            patch_version='chromium.4',
+            patches=('mac-arm64', 'mirror'),
+            patch_version='chromium.5',
             env_cb=lambda w: {
                 'CMAKE_BUILD_TYPE': 'Release',
                 'FREETYPEPY_BUNDLE_FT': '1',

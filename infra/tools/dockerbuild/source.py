@@ -130,39 +130,43 @@ class Repository(object):
       self._archive_suffixes[suffix] = self._unpack_zip_generic
 
     self.lock = concurrency.KeyedLock()
+    self._deployed_packages = set()
 
   @property
   def missing_sources(self):
     return self._missing_sources
 
-  def ensure(self, src, dest_dir, unpack=True, unpack_file_filter=None):
-    util.LOGGER.debug('Ensuring source %r', src.tag)
-
-    # Check if the CIPD package exists.
-    package = cipd.Package(
-        name=cipd.normalize_package_name(
-          'infra/third_party/source/%s' % (src.name,)),
-        tags=(
-          'version:%s' % (src.version,),
-        ),
-        install_mode=cipd.INSTALL_SYMLINK,
-        compress_level=cipd.COMPRESS_NONE,
-    )
-    package_path = os.path.join(self._root, '%s.pkg' % (src.tag,))
-
+  def _ensure_package_deployed(self, src):
+    # TODO: rewrite this to use cipd ensure
+    #
     # Lock around accesses to the shared self._root directory, which is a
     # central cache for source packages which may be used between different
     # wheel builds.
     with self.lock.get(src.tag):
-      package_dest = util.ensure_directory(self._root, src.tag)
+      package_dest = os.path.join(self._root, src.tag)
+      if src.tag in self._deployed_packages:
+        return package_dest
+      if os.path.exists(package_dest):
+        util.removeall(package_dest)  # Clean up any old state.
+      os.makedirs(package_dest)
 
       # If the package doesn't exist, or if we are forcing a download, create a
       # local package.
+      package_path = os.path.join(self._root, '%s.pkg' % (src.tag,))
       have_package = False
       if os.path.isfile(package_path):
         # Package file is on disk, reuse unless we're forcing a download.
         if not self._force_download:
           have_package = True
+
+      # Check if the CIPD package exists.
+      package = cipd.Package(
+          name=cipd.normalize_package_name('infra/third_party/source/%s' %
+                                           (src.name,)),
+          tags=('version:%s' % (src.version,),),
+          install_mode=cipd.INSTALL_SYMLINK,
+          compress_level=cipd.COMPRESS_NONE,
+      )
 
       # By default, assume the cached source package exists and try to download
       # it. If this produces an error we infer that it doesn't exist and go
@@ -206,19 +210,26 @@ class Repository(object):
       # Install the CIPD package into our source directory. This is a no-op if
       # it is already installed.
       self._system.cipd.deploy_package(package_path, package_dest)
+      self._deployed_packages.add(src.tag)
+      return package_dest
 
-      # The package directory should contain exactly one file.
-      package_files = [
-          f for f in os.listdir(package_dest) if not f.startswith('.')
-      ]
-      if len(package_files) != 1:
-        raise ValueError('Package contains %d (!= 1) files: %s' %
-                         (len(package_files), package_dest))
-      package_file = package_files[0]
-      package_file_path = os.path.join(package_dest, package_file)
+  def ensure(self, src, dest_dir, unpack=True, unpack_file_filter=None):
+    util.LOGGER.debug('Ensuring source %r', src.tag)
 
-    # The same destination path must not be accessed concurrently, so we can
-    # safely release the lock before copying.
+    package_dest = self._ensure_package_deployed(src)
+
+    # The package directory should contain exactly one file.
+    package_files = [
+        f for f in os.listdir(package_dest) if not f.startswith('.')
+    ]
+    if len(package_files) != 1:
+      raise ValueError('Package contains %d (!= 1) files: %s' %
+                       (len(package_files), package_dest))
+    package_file = package_files[0]
+    package_file_path = os.path.join(package_dest, package_file)
+
+    # The same destination path must not be accessed concurrently, so we
+    # do not need to lock around the unpack step.
 
     # Unpack or copy the source file into the destination path.
     if unpack:

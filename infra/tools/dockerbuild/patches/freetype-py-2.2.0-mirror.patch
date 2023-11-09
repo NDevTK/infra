@@ -1,0 +1,26 @@
+From 275800b68350542f814d176e2bc4652692998a3b Mon Sep 17 00:00:00 2001
+From: Brian Ryner <bryner@google.com>
+Date: Wed, 8 Nov 2023 13:34:30 +1100
+Subject: [PATCH] Use current mirror for freetype.
+
+This was grabbed from https://github.com/rougier/freetype-py/blob/master/setup-build-freetype.py
+---
+ setup-build-freetype.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/setup-build-freetype.py b/setup-build-freetype.py
+index a4c4ab6..a056405 100644
+--- a/setup-build-freetype.py
++++ b/setup-build-freetype.py
+@@ -25,7 +25,7 @@ from urllib.request import urlopen
+ # Needed for the GitHub Actions macOS CI runner, which appears to come without CAs.
+ import certifi
+ 
+-FREETYPE_HOST = "https://download.savannah.gnu.org/releases/freetype/"
++FREETYPE_HOST = "https://mirrors.sarata.com/non-gnu/freetype/"
+ FREETYPE_TARBALL = "freetype-2.10.2.tar.xz"
+ FREETYPE_URL = FREETYPE_HOST + FREETYPE_TARBALL
+ FREETYPE_SHA256 = "1543d61025d2e6312e0a1c563652555f17378a204a61e99928c9fcef030a2d8b"
+-- 
+2.42.0.869.gea05f2083d-goog
+
