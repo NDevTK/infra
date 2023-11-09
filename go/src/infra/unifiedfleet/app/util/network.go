@@ -6,6 +6,7 @@ package util
 
 import (
 	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"net"
 	"strings"
@@ -188,14 +189,27 @@ func makeIPv4Uint32(a, b, c, d int) uint32 {
 
 // FormatIP initialize an IP object
 func FormatIP(vlanName, ipAddress string, reserve, occupied bool) *ufspb.IP {
-	ipv4, err := IPv4StrToInt(ipAddress)
-	if err != nil {
+	ip := net.ParseIP(ipAddress)
+	var ipv4 uint32
+	ipv4Str := ""
+	idForName := fmt.Sprintf("0x%s", hex.EncodeToString(ip))
+	switch {
+	case len(ip) == 0:
 		return nil
+	case ip.To4() != nil:
+		var err error
+		ipv4, err = IPv4StrToInt(ipAddress)
+		if err != nil {
+			return nil
+		}
+		ipv4Str = ipAddress
+		idForName = Int64ToStr(int64(ipv4))
 	}
 	return &ufspb.IP{
-		Id:       GetIPName(vlanName, Int64ToStr(int64(ipv4))),
+		Id:       GetIPName(vlanName, idForName),
 		Ipv4:     ipv4,
-		Ipv4Str:  ipAddress,
+		Ipv4Str:  ipv4Str,
+		Ipv6:     ip,
 		Vlan:     vlanName,
 		Occupied: occupied,
 		Reserve:  reserve,
