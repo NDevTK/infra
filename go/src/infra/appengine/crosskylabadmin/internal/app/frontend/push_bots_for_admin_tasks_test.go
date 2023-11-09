@@ -42,7 +42,12 @@ func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
 	)
 	ctx = config.Use(ctx, &config.Config{
 		Swarming: &config.Swarming{
-			BotPool: "fake-bot-pool",
+			BotPool: "fake-unused-pool",
+			PoolCfgs: []*config.Swarming_PoolCfg{
+				{
+					PoolName: "fake-bot-pool",
+				},
+			},
 		},
 	})
 	req := &fleet.PushBotsForAdminTasksRequest{
@@ -110,7 +115,12 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 	}, nil)
 	ctx = config.Use(ctx, &config.Config{
 		Swarming: &config.Swarming{
-			BotPool: "fake-bot-pool",
+			BotPool: "fake-unused-pool",
+			PoolCfgs: []*config.Swarming_PoolCfg{
+				{
+					PoolName: "fake-bot-pool",
+				},
+			},
 		},
 	})
 	req := &fleet.PushBotsForAdminTasksRequest{
@@ -262,7 +272,6 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 				},
 			},
 		}), nil)
-
 		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-b", gomock.Any()).Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{
 			{
 				BotId: "pool-cfg-bot-b",
@@ -285,8 +294,11 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 
 		ctx = config.Use(ctx, &config.Config{
 			Swarming: &config.Swarming{
-				BotPool: "fake-bot-pool",
+				BotPool: "fake-unused-pool",
 				PoolCfgs: []*config.Swarming_PoolCfg{
+					{
+						PoolName: "fake-bot-pool",
+					},
 					{
 						PoolName: "pool-cfg-a",
 					},
@@ -401,8 +413,11 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 
 		ctx = config.Use(ctx, &config.Config{
 			Swarming: &config.Swarming{
-				BotPool: "fake-bot-pool",
+				BotPool: "fake-unused-pool",
 				PoolCfgs: []*config.Swarming_PoolCfg{
+					{
+						PoolName: "fake-bot-pool",
+					},
 					{
 						PoolName: "pool-cfg-a",
 					},

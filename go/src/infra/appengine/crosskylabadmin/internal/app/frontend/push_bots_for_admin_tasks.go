@@ -179,25 +179,14 @@ func (p *adminTaskBotPusher) pushBotsForAdminTasksImpl(ctx context.Context, req 
 		}
 	}
 
-	//TODO (prasadv): Create PoolCfg for ChromeOSSkylab and push admin tasks similar to other pool configs.
-	// Once the Config is updated, remove the below code to push repair DUTs for admin task for Swarming.BotPool
-	if cfg.Swarming.BotPool != "" {
-		if err := p.pushRepairDUTsForGivenPool(ctx, cfg.Swarming.BotPool, dutState, dims, holdouts); err != nil {
-			merr = append(merr, errors.Annotate(err, "Failed to push repair duts in pool %q", cfg.Swarming.BotPool).Err())
-		} else {
-			logging.Infof(ctx, "Successfully pushed repair duts with dut_state %q in pool %q.", dutState, cfg.Swarming.BotPool)
-		}
-	}
-
 	// Loop through all the Swarming Pool configs and push duts for repair.
-	for _, c := range cfg.Swarming.PoolCfgs {
-		//TODO (prasadv): Remove this condition once BotPool is added to PoolCfg.
-		if cfg.Swarming.BotPool != c.PoolName {
-			if err := p.pushRepairDUTsForGivenPool(ctx, c.PoolName, dutState, dims, holdouts); err != nil {
-				merr = append(merr, errors.Annotate(err, "Failed to push repair duts in pool %q", c.PoolName).Err())
-			} else {
-				logging.Infof(ctx, "Successfully pushed repair duts with dut_state %q in pool %q.", dutState, c.PoolName)
-			}
+	for _, pool := range cfg.GetSwarming().GetPoolCfgs() {
+		if err := p.pushRepairDUTsForGivenPool(ctx, pool.GetPoolName(), dutState, dims, holdouts); err != nil {
+			e := errors.Annotate(err, "Failed to push repair duts in pool %q", pool.GetPoolName()).Err()
+			logging.Infof(ctx, "Fail to pushed repair duts with dut_state %q in pool %q: %s", dutState, pool.GetPoolName(), e)
+			merr = append(merr, e)
+		} else {
+			logging.Infof(ctx, "Successfully pushed repair duts with dut_state %q in pool %q.", dutState, pool.GetPoolName())
 		}
 	}
 	if len(merr) > 0 {

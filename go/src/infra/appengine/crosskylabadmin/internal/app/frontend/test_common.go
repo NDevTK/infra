@@ -87,6 +87,12 @@ func testingContext() context.Context {
 			BotPool:           "ChromeOSSkylab",
 			FleetAdminTaskTag: "fake-tag",
 			LuciProjectTag:    "fake-project",
+			PoolCfgs: []*config.Swarming_PoolCfg{
+				{
+					PoolName:     "ChromeOSSkylab",
+					AuditEnabled: true,
+				},
+			},
 		},
 		Tasker: &config.Tasker{
 			BackgroundTaskExecutionTimeoutSecs: 3600,

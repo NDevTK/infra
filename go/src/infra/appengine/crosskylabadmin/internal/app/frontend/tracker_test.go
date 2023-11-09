@@ -121,7 +121,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 				PageToken: "",
 			}, nil)
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
-				gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool),
+				gomock.Any(), gomock.Eq("ChromeOSSkylab"),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"needs_repair"}}),
 			).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{bot1, bot3, bot1LabStation, bot1SchedulingUnit}), nil)
 			expectDefaultPerBotRefresh(tf)
@@ -139,7 +139,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 		Convey("run only for repair_failed status", func() {
 			tqt.ResetTasks()
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
-				gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool),
+				gomock.Any(), gomock.Eq("ChromeOSSkylab"),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"repair_failed"}}),
 			).AnyTimes().Return([]*swarmingv2.BotInfo{swarmingconverter.ConvertSwarmingRpcsBotInfo(bot2)}, nil)
 			expectDefaultPerBotRefresh(tf)
@@ -158,7 +158,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 			tqt.ResetTasks()
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 				gomock.Any(),
-				gomock.Eq(config.Get(tf.C).Swarming.BotPool),
+				gomock.Eq("ChromeOSSkylab"),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"needs_manual_repair"}}),
 			).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{bot3, bot4}), nil)
 			expectDefaultPerBotRefresh(tf)
@@ -176,7 +176,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 			tqt.ResetTasks()
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 				gomock.Any(),
-				gomock.Eq(config.Get(tf.C).Swarming.BotPool),
+				gomock.Eq("ChromeOSSkylab"),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"needs_replacement"}}),
 			).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{bot3, bot5}), nil)
 			expectDefaultPerBotRefresh(tf)
@@ -237,7 +237,7 @@ func TestPushBotsForAdminAuditTasks(t *testing.T) {
 		Convey("run only Servo USB-key check for all DUTs", func() {
 			tqt.ResetTasks()
 			tf.MockSwarming.EXPECT().ListAliveBotsInPool(
-				gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool),
+				gomock.Any(), gomock.Eq("ChromeOSSkylab"),
 				gomock.Eq(strpair.Map{}),
 			).AnyTimes().Return([]*swarming.SwarmingRpcsBotInfo{bot3, bot4, bot5, bot6, bot7, bot2LabStation, bot1SchedulingUnit}, nil)
 			expectDefaultPerBotRefresh(tf)
