@@ -90,8 +90,9 @@ function TestMetricsToolbar() {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <Tooltip title="Filter by test name, file name, builder, or test
-                  suite. Regexes are supported">
+                <Tooltip title="Filter by id, name, file, bucket, builder, or
+                  test_suite. These can also be specified as colon separated
+                  pairs (e.g. builder:linux-rel). Regexes are supported.">
                   <HelpOutlineIcon />
                 </Tooltip>
               </InputAdornment>
