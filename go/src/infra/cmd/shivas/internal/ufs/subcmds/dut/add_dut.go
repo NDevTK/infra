@@ -277,7 +277,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 				fmt.Printf("Failed to add DUT %s to UFS. It is not linked to any Asset(Machine).\n", param.DUT.GetName())
 				continue
 			} else if err := validateDutAndAssetLocation(ctx, ic, param); err != nil {
-				fmt.Printf("Error, skipping UFS update and deployment: %s", err.Error())
+				fmt.Printf("Error, skipping UFS update and deployment: %s\n", err.Error())
 				continue
 			}
 			if err := c.addDutToUFS(ctx, ic, param); err != nil {
@@ -450,16 +450,19 @@ func (c *addDUT) parseMCSV() ([]*dutDeployUFSParams, error) {
 }
 
 var shortZoneStringToZone = map[string]ufspb.Zone{
-	"chromeos1":          ufspb.Zone_ZONE_CHROMEOS1,
-	"chromeos3":          ufspb.Zone_ZONE_CHROMEOS3,
-	"chromeos5":          ufspb.Zone_ZONE_CHROMEOS5,
-	"chromeos6":          ufspb.Zone_ZONE_CHROMEOS6,
-	"chromeos7":          ufspb.Zone_ZONE_CHROMEOS7,
-	"chromeos15":         ufspb.Zone_ZONE_CHROMEOS15,
-	"chromeos8":          ufspb.Zone_ZONE_SFO36_OS,
-	"chromium-chromeos8": ufspb.Zone_ZONE_SFO36_OS_CHROMIUM,
+	"chromeos1":                       ufspb.Zone_ZONE_CHROMEOS1,
+	"chromeos3":                       ufspb.Zone_ZONE_CHROMEOS3,
+	"chromeos5":                       ufspb.Zone_ZONE_CHROMEOS5,
+	"chromeos6":                       ufspb.Zone_ZONE_CHROMEOS6,
+	"chromeos7":                       ufspb.Zone_ZONE_CHROMEOS7,
+	"chromeos15":                      ufspb.Zone_ZONE_CHROMEOS15,
+	"chromeos8":                       ufspb.Zone_ZONE_SFO36_OS,
+	"chromium-chromeos8":              ufspb.Zone_ZONE_SFO36_OS_CHROMIUM,
+	"chrome-chromeos8":                ufspb.Zone_ZONE_SFO36_OS,
+	"chrome-perf-pinpoint-chromeos8":  ufspb.Zone_ZONE_SFO36_OS,
+	"chrome-perf-waterfall-chromeos8": ufspb.Zone_ZONE_SFO36_OS,
 }
-var dutZoneRegex = regexp.MustCompile(`^(chromium-)?(chromeos[0-9]{1,2})-.*$`)
+var dutZoneRegex = regexp.MustCompile(`^(chromium-|chrome-|chrome-perf-waterfall-|chrome-perf-pinpoint-)?(chromeos[0-9]{1,2})-.*$`)
 
 func validateDutAndAssetLocation(ctx context.Context, ic ufsAPI.FleetClient, dutParam *dutDeployUFSParams) error {
 	dutName := dutParam.DUT.GetName()
@@ -476,7 +479,7 @@ func validateDutAndAssetLocation(ctx context.Context, ic ufsAPI.FleetClient, dut
 		return err
 	}
 	if assetZone != dutZone {
-		return fmt.Errorf("DUT prefix %q and asset zone %q do not match. Please update the asset.\n", dutZonePrefix, assetZone)
+		return fmt.Errorf("the DUT prefix %q and asset zone %q do not match. Please update the asset", dutZonePrefix, assetZone)
 	}
 	return nil
 }

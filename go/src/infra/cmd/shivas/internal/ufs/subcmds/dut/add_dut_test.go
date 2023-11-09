@@ -105,6 +105,36 @@ func TestValidateDutAndAssetLocation(t *testing.T) {
 			expectedErr: false,
 		},
 		{
+			name: "DUT name with chrome-chromeos8 prefix and asset matching zone returns no error",
+			ctx:  context.Background(),
+			ic:   nil,
+			dutParam: &dutDeployUFSParams{
+				DUT:   &ufspb.MachineLSE{Name: "chrome-chromeos8-row1-rack1-host1"},
+				Asset: &ufspb.Asset{Location: &ufspb.Location{Zone: ufspb.Zone_ZONE_SFO36_OS}},
+			},
+			expectedErr: false,
+		},
+		{
+			name: "DUT name with chrome-perf-waterfall-chromeos8 prefix and asset matching zone returns no error",
+			ctx:  context.Background(),
+			ic:   nil,
+			dutParam: &dutDeployUFSParams{
+				DUT:   &ufspb.MachineLSE{Name: "chrome-perf-waterfall-chromeos8-row1-rack1-host1"},
+				Asset: &ufspb.Asset{Location: &ufspb.Location{Zone: ufspb.Zone_ZONE_SFO36_OS}},
+			},
+			expectedErr: false,
+		},
+		{
+			name: "DUT name with chrome-perf-pinpoint-chromeos8 prefix and asset matching zone returns no error",
+			ctx:  context.Background(),
+			ic:   nil,
+			dutParam: &dutDeployUFSParams{
+				DUT:   &ufspb.MachineLSE{Name: "chrome-perf-pinpoint-chromeos8-row1-rack1-host1"},
+				Asset: &ufspb.Asset{Location: &ufspb.Location{Zone: ufspb.Zone_ZONE_SFO36_OS}},
+			},
+			expectedErr: false,
+		},
+		{
 			name: "DUT name with zone prefix and asset not matching zone returns error",
 			ctx:  context.Background(),
 			ic:   nil,
