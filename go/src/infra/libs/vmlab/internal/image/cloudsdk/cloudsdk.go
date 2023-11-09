@@ -33,7 +33,7 @@ const (
 	// benefit making it configurable here.
 	project      = "chromeos-gce-tests"
 	license      = "https://www.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx"
-	timeout      = 10 * time.Minute
+	timeout      = 20 * time.Minute
 	pollInterval = 30 * time.Second
 )
 
