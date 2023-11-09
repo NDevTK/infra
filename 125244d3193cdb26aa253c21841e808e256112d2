@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72db5627_9e237cb8",
+        "filename": "go/src/infra/unifiedfleet/app/util/iputil/iputil.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2023-11-09T22:35:04Z",
+      "side": 1,
+      "message": "Use `\u003e 0` Like the example https://pkg.go.dev/bytes#Compare",
+      "range": {
+        "startLine": 76,
+        "startChar": 1,
+        "endLine": 76,
+        "endChar": 36
+      },
+      "revId": "125244d3193cdb26aa253c21841e808e256112d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9a9f429b_7dd4c6f0",
+        "filename": "go/src/infra/unifiedfleet/app/util/iputil/iputil.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2023-11-09T22:35:04Z",
+      "side": 1,
+      "message": "What happens if currentIP is ipv4 and end is ipv6?",
+      "range": {
+        "startLine": 84,
+        "startChar": 1,
+        "endLine": 84,
+        "endChar": 40
+      },
+      "revId": "125244d3193cdb26aa253c21841e808e256112d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
