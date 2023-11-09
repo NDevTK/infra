@@ -226,9 +226,9 @@ def _GrpcEnv(w):
   return env
 
 
-def _NumPyTppLibs():
+def _NumPyTppLibs(w):
   # Bring in openblas only on mac.
-  if sys.platform == 'darwin':
+  if w.plat.name.startswith('mac'):
 
     def _NumPySetup(pkg_dir, extra_env):
       extra_env['OPENBLAS'] = pkg_dir
@@ -252,6 +252,14 @@ def _NumPyEnv(w):
     # Disable trying to build 64-bit code.
     env['NUMPY_CPU_DISPATCH'] = 'none'
   return env
+
+
+def _CffiTppLibs(w):
+  if w.plat.name.startswith('linux-arm'):
+    return [
+        TppLib('infra/3pp/static_libs/libffi', 'version:2@3.2.1.chromium.4'),
+    ]
+  return []
 
 
 SPECS.update({
@@ -302,7 +310,7 @@ SPECS.update({
             packaged=(),
             pyversions=['py3'],
             patch_version='chromium.1',
-            tpp_libs=[
+            tpp_libs_cb=lambda w: [
                 TppLib('infra/3pp/static_libs/openssl',
                        'version:2@1.1.1t.chromium.2')
             ],
@@ -313,7 +321,7 @@ SPECS.update({
             packaged=(),
             pyversions=['py3'],
             patch_version='chromium.1',
-            tpp_libs=[
+            tpp_libs_cb=lambda w: [
                 TppLib('infra/3pp/static_libs/openssl',
                        'version:2@1.1.1t.chromium.2')
             ],
@@ -364,6 +372,8 @@ SPECS.update({
             '1.15.1',
             packaged=(),
             pyversions=['py2', 'py3'],
+            tpp_libs_cb=_CffiTppLibs,
+            patch_version='chromium.2',
         ),
         SourceOrPrebuilt(
             'coverage',
@@ -430,10 +440,13 @@ SPECS.update({
                         'cffi',
                         '1.15.1',
                         packaged=(),
-                    ),
+                        pyversions=['py2', 'py3'],
+                        tpp_libs_cb=_CffiTppLibs,
+                        patch_version='chromium.2',
+                    )
                 ],
             ),
-            tpp_libs=[
+            tpp_libs_cb=lambda w: [
                 TppLib('infra/3pp/static_libs/openssl',
                        'version:2@1.1.1t.chromium.2')
             ],
@@ -743,13 +756,15 @@ SPECS.update({
                 'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
             ],
-            tpp_libs=[TppLib('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
+            tpp_libs_cb=lambda w:
+            [TppLib('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
         ),
         SourceOrPrebuilt(
             'ijson',
             '3.2.3',
             pyversions=['py3'],
-            tpp_libs=[TppLib('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
+            tpp_libs_cb=lambda w:
+            [TppLib('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
         ),
         SourceOrPrebuilt(
             'lazy-object-proxy',
@@ -794,7 +809,7 @@ SPECS.update({
             only_plat=[
                 'manylinux-x64-py3.8', 'mac-x64-py3.8', 'mac-arm64-py3.8'
             ],
-            tpp_libs=[
+            tpp_libs_cb=lambda w: [
                 TppLib('infra/3pp/static_libs/mysqlclient', 'version:2@8.0.26'),
                 TppLib('infra/3pp/static_libs/openssl',
                        'version:2@1.1.1j.chromium.2')
@@ -887,7 +902,7 @@ SPECS.update({
             'numpy',
             '1.23.5',
             packaged=(),
-            tpp_libs=_NumPyTppLibs(),
+            tpp_libs_cb=_NumPyTppLibs,
             env_cb=_NumPyEnv,
             patches=('cpu-dispatch',),
             patch_version='chromium.3',
@@ -1070,7 +1085,7 @@ SPECS.update({
             packaged=(),
             only_plat=['manylinux-x64-py3.8'],
             pyversions=['py3'],
-            tpp_libs=[
+            tpp_libs_cb=lambda w: [
                 TppLib('infra/3pp/static_libs/re2',
                        'version:2@2022-12-01.chromium.1')
             ],
@@ -2096,7 +2111,7 @@ SPECS.update({
                         'windows-x86-py3.8',
                         'windows-x64-py3.8',
                     ],
-                    tpp_libs=[
+                    tpp_libs_cb=lambda w: [
                         TppLib('infra/3pp/static_libs/mpich',
                                'version:2@3.4.1.chromium.6')
                     ],

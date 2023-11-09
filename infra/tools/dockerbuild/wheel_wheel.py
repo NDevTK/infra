@@ -69,7 +69,7 @@ class SourceOrPrebuilt(Builder):
                patch_base=None,
                patch_version=None,
                build_deps=None,
-               tpp_libs=None,
+               tpp_libs_cb=None,
                tpp_tools=None,
                src_filter=None,
                skip_auditwheel=False,
@@ -94,11 +94,10 @@ class SourceOrPrebuilt(Builder):
           for version 1.2.3 of the wheel would be 'version:1.2.3.chromium.1'.
       build_deps (dockerbuild.builder.BuildDependencies|None): Dependencies
           required to build the wheel.
-      tpp_libs (List[(str, str)]|None): 3pp libraries to install in the
-          build environment. The list items are (package name, version).
-      tpp_tools (List[(str, str)]|None): 3pp tools (for the build platform)
-          which are needed to build the wheel. The list items are
-          (package name, version).
+      tpp_libs_cb (Callable[[Wheel], List[builder.TppLib]]|None): Callback that
+          returns 3pp libraries to install in the build environment.
+      tpp_tools (List[builder.TppTool]|None): 3pp tools (for the build platform)
+          which are needed to build the wheel.
       src_filter (Callable[[str], bool]): Filtering files from the source. This
           is a workaround for python < 3.6 on Windows to prevent failure caused
           by 260 path length limit.
@@ -120,7 +119,7 @@ class SourceOrPrebuilt(Builder):
     self._packaged = set(
         kwargs.pop('packaged', (p.name for p in build_platform.PACKAGED)))
     self._build_deps = build_deps
-    self._tpp_libs = tpp_libs
+    self._tpp_libs_cb = tpp_libs_cb
     self._tpp_tools = tpp_tools
     self._src_filter = src_filter
     self._skip_auditwheel = skip_auditwheel
@@ -144,9 +143,10 @@ class SourceOrPrebuilt(Builder):
     if wheel.plat.name in self._packaged:
       return BuildPackageFromPyPiWheel(system, wheel, output_dir)
     wheel_env = self._env_cb(wheel) if self._env_cb else None
+    tpp_libs = self._tpp_libs_cb(wheel) if self._tpp_libs_cb else None
     return BuildPackageFromSource(system, wheel, self._pypi_src, output_dir,
-                                  self._src_filter, self._build_deps,
-                                  self._tpp_libs, self._tpp_tools, wheel_env,
+                                  self._src_filter, self._build_deps, tpp_libs,
+                                  self._tpp_tools, wheel_env,
                                   self._skip_auditwheel)
 
 

@@ -1566,12 +1566,12 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
-### 1.15.1
+### 1.15.1.chromium.2
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/cffi/${vpython_platform}"
-  version: "version:1.15.1"
+  version: "version:1.15.1.chromium.2"
 >
 ```
 
