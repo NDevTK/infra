@@ -104,21 +104,23 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 	// Create a marker so the lab knows to repair the device on failure.
 	createProvisionFailedMarker()
 
-	// Check if the DUT has KVM enabled.
-	kvmEnabled, err := checkKvmEnabled(p.c)
-	if err != nil {
-		setError(newOperationError(
-			codes.FailedPrecondition,
-			"provision: failed to check if KVM enabled on this device",
-			tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
-		return
-	}
-	if !kvmEnabled {
-		setError(newOperationError(
-			codes.FailedPrecondition,
-			"provision: KVM is not enabled on this device, provisioning it again will not help (repair needs to cold reboot this device)",
-			tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
-		return
+	if !checkIfLabstationDevice(p.c) {
+		// Check if the DUT has KVM enabled.
+		kvmEnabled, err := checkKvmEnabled(p.c)
+		if err != nil {
+			setError(newOperationError(
+				codes.FailedPrecondition,
+				"provision: failed to check if KVM enabled on this device",
+				tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
+			return
+		}
+		if !kvmEnabled {
+			setError(newOperationError(
+				codes.FailedPrecondition,
+				"provision: KVM is not enabled on this device, provisioning it again will not help (repair needs to cold reboot this device)",
+				tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
+			return
+		}
 	}
 
 	// Provision the OS.
@@ -674,4 +676,10 @@ func getBootID(c *ssh.Client) (string, error) {
 
 func checkKvmEnabled(c *ssh.Client) (bool, error) {
 	return pathExists(c, "/dev/kvm")
+}
+
+func checkIfLabstationDevice(c *ssh.Client) bool {
+	board, err := getBoard(c)
+	// Treat failure as non-labstation device.
+	return err != nil && strings.Contains(board, "labstation")
 }
