@@ -140,30 +140,48 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		return nil, errors.New("failed to push audit bots")
 	}
 
+	scheduleTasks := func(swarmingHost, swarmingPool string) error {
+		sc, err := tsi.newSwarmingClient(ctx, swarmingHost)
+		if err != nil {
+			return errors.Annotate(err, "failed to obtain Swarming client").Err()
+		}
+		// Schedule audit tasks to ready|needs_repair|needs_reset|repair_failed DUTs.
+		var bots []*swarming.SwarmingRpcsBotInfo
+		f := func() (err error) {
+			dims := make(strpair.Map)
+			bots, err = sc.ListAliveBotsInPool(ctx, swarmingPool, dims)
+			return err
+		}
+		err = retry.Retry(ctx, simple3TimesRetry(), f, retry.LogCallback(ctx, "Try get list of the BOTs"))
+		if err != nil {
+			return errors.Annotate(err, "failed to list alive cros bots").Err()
+		}
+		logging.Infof(ctx, "successfully get %d alive cros bots", len(bots))
+		botIDs := identifyBotsForAudit(ctx, bots, dutStates, req.Task)
+
+		err = clients.PushAuditDUTs(ctx, botIDs, actions, taskname)
+		if err != nil {
+			logging.Infof(ctx, "failed push audit bots: %v", err)
+			return errors.Reason("failed to push audit bots").Err()
+		}
+		return nil
+	}
 	cfg := config.Get(ctx)
-	sc, err := tsi.newSwarmingClient(ctx, cfg.Swarming.Host)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to obtain Swarming client").Err()
+	var errs []error
+	for _, pool := range cfg.GetSwarming().GetPoolCfgs() {
+		if !pool.GetAuditEnabled() {
+			logging.Infof(ctx, "Audit is not enabled for %q.", pool.GetPoolName())
+			continue
+		}
+		if err := scheduleTasks(cfg.GetSwarming().GetBotPool(), pool.GetPoolName()); err != nil {
+			logging.Errorf(ctx, "Audit for %q failed: %s.", pool.GetPoolName(), err)
+			errs = append(errs, errors.Annotate(err, "schedule tasks for %q", pool.GetPoolName()).Err())
+		} else {
+			logging.Infof(ctx, "Audit for %q succesful scheduled.", pool.GetPoolName())
+		}
 	}
-
-	// Schedule audit tasks to ready|needs_repair|needs_reset|repair_failed DUTs.
-	var bots []*swarming.SwarmingRpcsBotInfo
-	f := func() (err error) {
-		dims := make(strpair.Map)
-		bots, err = sc.ListAliveBotsInPool(ctx, cfg.Swarming.BotPool, dims)
-		return err
-	}
-	err = retry.Retry(ctx, simple3TimesRetry(), f, retry.LogCallback(ctx, "Try get list of the BOTs"))
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to list alive cros bots").Err()
-	}
-	logging.Infof(ctx, "successfully get %d alive cros bots", len(bots))
-	botIDs := identifyBotsForAudit(ctx, bots, dutStates, req.Task)
-
-	err = clients.PushAuditDUTs(ctx, botIDs, actions, taskname)
-	if err != nil {
-		logging.Infof(ctx, "failed push audit bots: %v", err)
-		return nil, errors.New("failed to push audit bots")
+	if len(errs) > 0 {
+		return nil, errors.NewMultiError(errs...).AsError()
 	}
 	return &fleet.PushBotsForAdminAuditTasksResponse{}, nil
 }

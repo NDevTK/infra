@@ -227,6 +227,7 @@ func TestPushBotsForAdminAuditTasks(t *testing.T) {
 		defer validate()
 		tqt := tq.GetTestable(tf.C)
 		tqt.CreateQueue(auditQ)
+		config.Get(tf.C).GetSwarming().BotPool = ""
 
 		Convey("fail to run when actions is not specified", func() {
 			request := fleet.PushBotsForAdminAuditTasksRequest{}
