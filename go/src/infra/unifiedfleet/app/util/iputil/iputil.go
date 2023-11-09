@@ -80,6 +80,13 @@ func ValidateSameFamily(ips ...net.IP) error {
 	return nil
 }
 
+// IPDiff takes the difference between two IPs, construed as integers.
+func IPDiff(x net.IP, y net.IP) *big.Int {
+	ret := big.NewInt(0)
+	ret.Sub(bytesToBigInt(x), bytesToBigInt(y))
+	return ret
+}
+
 func pad(x []byte, n int) []byte {
 	if len(x) == n {
 		return x
@@ -103,4 +110,10 @@ func pad(x []byte, n int) []byte {
 
 func isNegative(item *big.Int) bool {
 	return item.Sign() == -1
+}
+
+func bytesToBigInt(x []byte) *big.Int {
+	out := big.NewInt(0)
+	out.SetBytes(x)
+	return out
 }
