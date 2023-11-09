@@ -62,38 +62,38 @@ const (
 func (c *cleanImagesRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	imageApi, err := vmlab.NewImageApi(api.ProviderId_CLOUDSDK)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Cannot get image api provider: %v\n", err)
+		fmt.Fprintf(os.Stderr, "cannot get image api provider: %v\n", err)
 	}
 
 	result, err := cleanUpImages(imageApi, c.cleanImagesFlags.rate, c.cleanImagesFlags.dryRun)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to clean up images: %v\n", err)
+		fmt.Fprintf(os.Stderr, "failed to clean up images: %v\n", err)
 		return 1
 	}
 
 	if c.cleanImagesFlags.json {
 		if jsonResult, err := json.Marshal(result); err != nil {
-			fmt.Fprintf(os.Stderr, "BUG! Cannot convert output to json: %v\n", err)
+			fmt.Fprintf(os.Stderr, "cannot convert output to json: %v\n", err)
 		} else {
 			fmt.Println(string(jsonResult))
 		}
 	} else {
-		fmt.Printf("Total images: %d\n", result.Total)
-		fmt.Println("Deleted images:")
+		fmt.Fprintf(os.Stdout, "total images: %d\n", result.Total)
+		fmt.Fprintf(os.Stdout, "deleted images:\n")
 		for _, imageName := range result.Deleted {
-			fmt.Println(imageName)
+			fmt.Fprintf(os.Stdout, "\t%s\n", imageName)
 		}
-		fmt.Println("Failed to delete images:")
+		fmt.Fprintf(os.Stdout, "failed to delete images:\n")
 		for _, imageName := range result.Failed {
-			fmt.Println(imageName)
+			fmt.Fprintf(os.Stdout, "\t%s\n", imageName)
 		}
-		fmt.Println("Unknown images:")
+		fmt.Fprintf(os.Stdout, "unknown images:\n")
 		for _, imageName := range result.Unknown {
-			fmt.Println(imageName)
+			fmt.Fprintf(os.Stdout, "\t%s\n", imageName)
 		}
 	}
 
-	if len(result.Failed) > 0 || len(result.Unknown) > 0 {
+	if len(result.Failed) > 0 {
 		return 1
 	}
 
@@ -115,7 +115,7 @@ func cleanUpImages(imageApi api.ImageApi, rate int, dryRun bool) (cleanImagesRes
 	// Filter images created by vmlab CLI
 	gceImages, err := imageApi.ListImages("labels.created-by:vmlab")
 	if err != nil {
-		return result, fmt.Errorf("Failed to list image: %v", err)
+		return result, fmt.Errorf("failed to list image: %w", err)
 	}
 	result.Total = len(gceImages)
 
@@ -128,12 +128,12 @@ func cleanUpImages(imageApi api.ImageApi, rate int, dryRun bool) (cleanImagesRes
 		// they won't waste quota if they aren't investigated soon enough.
 		buildType, ok := gceImage.Labels["build-type"]
 		if !ok {
-			fmt.Fprintf(os.Stderr, "Failed to get build-type of image %s\n", gceImage.Name)
+			fmt.Fprintf(os.Stderr, "failed to get build-type of image %s\n", gceImage.Name)
 		}
 
 		retention, err := getImageRetention(buildType)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to get retention period for %s: %v\n", gceImage.Name, err)
+			fmt.Fprintf(os.Stderr, "failed to get retention period for %s: %v\n", gceImage.Name, err)
 			result.Unknown = append(result.Unknown, gceImage.GetName())
 		}
 
@@ -151,13 +151,14 @@ func cleanUpImages(imageApi api.ImageApi, rate int, dryRun bool) (cleanImagesRes
 		go func(imageName string) {
 			defer wg.Done()
 			if err := imageApi.DeleteImage(imageName, true); err != nil {
-				fmt.Fprintf(os.Stderr, "Failed to delete image %s: %v\n", imageName, err)
+				fmt.Fprintf(os.Stderr, "failed to delete image %s: %v\n", imageName, err)
 				mu.Lock()
 				result.Failed = append(result.Failed, imageName)
 				mu.Unlock()
 				return
 			}
 			mu.Lock()
+			fmt.Fprintf(os.Stdout, "deleted image: %s\n", imageName)
 			result.Deleted = append(result.Deleted, imageName)
 			mu.Unlock()
 		}(gceImage.Name)
