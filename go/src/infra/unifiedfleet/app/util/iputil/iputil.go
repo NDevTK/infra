@@ -62,6 +62,24 @@ func AddToIP(ip net.IP, offset *big.Int) net.IP {
 	return pad(ipAsInt.Bytes(), len(ip))
 }
 
+// ValidateSameFamily verifies that a series of IP addresses.
+func ValidateSameFamily(ips ...net.IP) error {
+	if len(ips) == 0 {
+		return nil
+	}
+	wantIPv4 := (ips[0].To4() != nil)
+	for i := 1; i < len(ips); i++ {
+		isIPv4 := (ips[i].To4() != nil)
+		switch {
+		case wantIPv4 && !isIPv4:
+			return fmt.Errorf("IP address %s is not IPv4", ips[i])
+		case !wantIPv4 && isIPv4:
+			return fmt.Errorf("IP address %s is not IPv6", ips[i])
+		}
+	}
+	return nil
+}
+
 func pad(x []byte, n int) []byte {
 	if len(x) == n {
 		return x

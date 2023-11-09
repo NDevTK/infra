@@ -151,3 +151,46 @@ func TestAddIP(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateSameFamily(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name string
+		ips  []net.IP
+		ok   bool
+	}{
+		{
+			name: "empty",
+			ips:  nil,
+			ok:   true,
+		},
+		{
+			name: "singleton",
+			ips:  []net.IP{MustParseIP("127.0.0.1")},
+			ok:   true,
+		},
+		{
+			name: "mismatch",
+			ips: []net.IP{
+				MustParseIP("127.0.0.1"),
+				MustParseIP("aaaa::7"),
+			},
+			ok: false,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			err := ValidateSameFamily(tt.ips...)
+			switch {
+			case err == nil && !tt.ok:
+				t.Error("error is unexpectedly nil")
+			case err != nil && tt.ok:
+				t.Errorf("unexpected error: %s", err)
+			}
+		})
+	}
+}
