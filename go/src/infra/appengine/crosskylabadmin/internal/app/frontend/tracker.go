@@ -173,7 +173,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 			logging.Infof(ctx, "Audit is not enabled for %q.", pool.GetPoolName())
 			continue
 		}
-		if err := scheduleTasks(cfg.GetSwarming().GetBotPool(), pool.GetPoolName()); err != nil {
+		if err := scheduleTasks(cfg.GetSwarming().GetHost(), pool.GetPoolName()); err != nil {
 			logging.Errorf(ctx, "Audit for %q failed: %s.", pool.GetPoolName(), err)
 			errs = append(errs, errors.Annotate(err, "schedule tasks for %q", pool.GetPoolName()).Err())
 		} else {
