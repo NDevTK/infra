@@ -60,7 +60,7 @@ func (s *Setup) StartSetup(ctx context.Context) error {
 			logging.Errorf(ctx, "logging with boto file failed. got an error: %v", err)
 			e := s.removeBotoIfExist()
 			if e != nil {
-				logging.Errorf(ctx, "Tried to delete the boto file and that failed too with error: %v", e)
+				logging.Errorf(ctx, "tried to delete the boto file and that failed too with error: %v", e)
 			}
 		}
 	}()
@@ -205,7 +205,13 @@ func (s *Setup) createBotoConfigFile() error {
 	opts(site.BotoSecretAccessKey, s.GSSecretAccessKey)
 
 	p := site.GetBotoPath()
-	return os.WriteFile(p, buf.Bytes(), 0600)
+	if err := os.WriteFile(p, buf.Bytes(), 0600); err != nil {
+		return err
+	}
+	if err := runCmd(fmt.Sprintf("sudo ln -s -f %s %s", site.GetBotoPath(), "/root/.boto")); err != nil {
+		return fmt.Errorf("fail to create boto config symlink: %w", err)
+	}
+	return nil
 }
 
 // downloadKeyGsutil download the Satlab service account using gsutil
@@ -229,7 +235,11 @@ func (s *Setup) removeBotoIfExist() error {
 // runCmd is a wrapper to run a cmd with/without sudo.
 func runCmd(c string) error {
 	cmd := exec.Command("/bin/sh", "-c", c)
-	return cmd.Run()
+	stdoutStderr, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("fail to run `%s`: %s", c, stdoutStderr)
+	}
+	return nil
 }
 
 // readBotoKey read a boto key from a reader (e.g. boto file)
