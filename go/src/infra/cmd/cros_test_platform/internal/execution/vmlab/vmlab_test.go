@@ -43,16 +43,18 @@ func TestConvertBuilderName(t *testing.T) {
 }
 
 func TestEligible(t *testing.T) {
-	Convey("experiment not enabled", t, func() {
-		got := eligible("betty", []string{"exp1", "exp2"})
-		So(got, ShouldBeFalse)
-	})
+	var boards = []string{"betty", "reven-vmtest", "amd64-generic"}
+	for _, board := range boards {
+		Convey("experiment not enabled", t, func() {
+			got := eligible(board, []string{"exp1", "exp2"})
+			So(got, ShouldBeFalse)
+		})
 
-	Convey("experiment enabled", t, func() {
-		got := eligible("betty", []string{"exp1", "chromeos.cros_infra_config.vmlab.launch", "exp2"})
-		So(got, ShouldBeTrue)
-	})
-
+		Convey("experiment enabled", t, func() {
+			got := eligible(board, []string{"exp1", "chromeos.cros_infra_config.vmlab.launch", "exp2"})
+			So(got, ShouldBeTrue)
+		})
+	}
 	Convey("unsupported board", t, func() {
 		got := eligible("anotherboard", []string{"chromeos.cros_infra_config.vmlab.launch"})
 		So(got, ShouldBeFalse)

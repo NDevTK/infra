@@ -20,7 +20,7 @@ const (
 // For MVP, we only check boards as tests are manually mapped to boards.
 // http://shortn/_f7B59IyUau We assume a suite sent to a supported board can be
 // fully or partially executed on VM.
-var supportedBoards = []string{"betty"}
+var supportedBoards = []string{"betty", "reven-vmtest", "amd64-generic"}
 
 // ShouldRun decides if VM test flow should be triggered based on eligibility
 // and required data from the original Skylab request.
