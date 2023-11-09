@@ -53,8 +53,8 @@ type cleanImagesResult struct {
 }
 
 const (
-	imageRetentionCQ         = time.Hour * 24 * 7
-	imageRetentionPostsubmit = time.Hour * 24 * 14
+	imageRetentionCQ         = time.Hour * 24 * 5
+	imageRetentionPostsubmit = time.Hour * 24 * 5
 	imageRetentionRelease    = time.Hour * 24 * 30
 	imageRetentionDefault    = time.Hour * 24 * 3
 )
