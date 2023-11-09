@@ -368,3 +368,52 @@ func TestUint32ToIPRoundTrip(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// TestFormatIP tests that format IP stuff.
+func TestFormatIP(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name      string
+		vlanName  string
+		ipAddress string
+		reserve   bool
+		occupied  bool
+		want      *ufspb.IP
+	}{
+		{
+			name:      "invalid IP",
+			vlanName:  "fake-vlan",
+			ipAddress: "not a valid IP address",
+			reserve:   false,
+			occupied:  false,
+			want:      nil,
+		},
+		{
+			name:      "happy path IPv4",
+			vlanName:  "fake-vlan",
+			ipAddress: "127.0.0.1",
+			reserve:   false,
+			occupied:  false,
+			want: &ufspb.IP{
+				Vlan:    "fake-vlan",
+				Id:      "fake-vlan/2130706433",
+				Ipv4:    makeIPv4Uint32(127, 0, 0, 1),
+				Ipv4Str: "127.0.0.1",
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := FormatIP(tt.vlanName, tt.ipAddress, tt.reserve, tt.occupied)
+
+			if diff := typed.Diff(got, tt.want); diff != "" {
+				t.Errorf("unexpected diff (-want+got): %s", diff)
+			}
+		})
+	}
+}
