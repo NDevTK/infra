@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20011d9c_2233d793",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-09T16:13:59Z",
+      "side": 1,
+      "message": "LGTM % comment",
+      "revId": "3713ad679df155a05079cc05fb57a324099a4ce9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ffb33c6f_cd1ef1fe",
+        "filename": "go/src/infra/unifiedfleet/app/util/iputil/iputil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-09T16:13:59Z",
+      "side": 1,
+      "message": "i think `return item.Sign() \u003d\u003d-1` shorter and faster",
+      "range": {
+        "startLine": 87,
+        "startChar": 1,
+        "endLine": 87,
+        "endChar": 37
+      },
+      "revId": "3713ad679df155a05079cc05fb57a324099a4ce9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
