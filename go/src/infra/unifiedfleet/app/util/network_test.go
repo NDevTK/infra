@@ -15,6 +15,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/util/iputil"
 )
 
 func TestParseVlan(t *testing.T) {
@@ -400,6 +401,21 @@ func TestFormatIP(t *testing.T) {
 				Id:      "fake-vlan/2130706433",
 				Ipv4:    makeIPv4Uint32(127, 0, 0, 1),
 				Ipv4Str: "127.0.0.1",
+				Ipv6:    iputil.MustParseIP("127.0.0.1"),
+			},
+		},
+		{
+			name:      "happy path IPv6",
+			vlanName:  "fake-vlan",
+			ipAddress: "1234:1234:1234:1234:aaaa:aaaa:aaaa:aaaa",
+			reserve:   false,
+			occupied:  false,
+			want: &ufspb.IP{
+				Vlan:    "fake-vlan",
+				Id:      "fake-vlan/0x1234123412341234aaaaaaaaaaaaaaaa",
+				Ipv4:    0,
+				Ipv4Str: "",
+				Ipv6:    iputil.MustParseIP("1234:1234:1234:1234:aaaa:aaaa:aaaa:aaaa"),
 			},
 		},
 	}
