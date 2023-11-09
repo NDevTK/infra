@@ -232,12 +232,13 @@ class IssueStarService(AbstractStarService):
 
     super(IssueStarService, self).ExpungeStarsByUsers(
         cnxn, user_ids, limit=limit)
-
-    self.issue_tbl.Update(
-        cnxn, {'migration_modified': timestamp},
-        id=[row[0] for row in issue_id_rows],
-        commit=False,
-        limit=limit)
+    issue_ids = [row[0] for row in issue_id_rows]
+    if issue_ids:
+      self.issue_tbl.Update(
+          cnxn, {'migration_modified': timestamp},
+          id=issue_ids,
+          commit=False,
+          limit=limit)
 
   # pylint: disable=arguments-differ
   def SetStar(
