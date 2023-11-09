@@ -30,6 +30,18 @@ luci.cq_group(
         )
         for plugin in PLUGINS
     ],
+    user_limits = [
+        cq.user_limit(
+            name = "chromium-infra-emergency-quota",
+            groups = ["chromium-infra-emergency-quota"],
+            run = cq.run_limits(max_active = None),
+        ),
+        cq.user_limit(
+            name = "luci-cv-quota-dogfooders",
+            groups = ["luci-cv-quota-dogfooders"],
+            run = cq.run_limits(max_active = 3),
+        ),
+    ],
 )
 
 luci.builder(

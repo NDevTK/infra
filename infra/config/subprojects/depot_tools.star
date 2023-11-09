@@ -32,9 +32,14 @@ luci.cq_group(
     retry_config = cq.RETRY_TRANSIENT_FAILURES,
     user_limits = [
         cq.user_limit(
-            name = "cv-admins-limit",
-            groups = ["service-luci-change-verifier-admins"],
-            run = cq.run_limits(max_active = 5),
+            name = "chromium-infra-emergency-quota",
+            groups = ["chromium-infra-emergency-quota"],
+            run = cq.run_limits(max_active = None),
+        ),
+        cq.user_limit(
+            name = "luci-cv-quota-dogfooders",
+            groups = ["luci-cv-quota-dogfooders"],
+            run = cq.run_limits(max_active = 3),
         ),
     ],
 )
