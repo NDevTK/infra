@@ -1093,14 +1093,21 @@ func (s *SatlabRpcServiceServer) GetCloudConfiguration(ctx context.Context, in *
 	}, nil
 }
 
+func innerReboot(executor executor.IExecCommander) {
+	// Start the proccess immediately
+	// because `reboot` won't return anything.
+	// we don't want to wait for the stdout
+	cmd := exec.Command(paths.Reboot, "-h", "now")
+	executor.Exec(cmd)
+}
+
 // Reboot call a reboot command on RPC container
-func (s *SatlabRpcServiceServer) Reboot(ctx context.Context, _ *pb.RebootRequest) (*pb.RebootResponse, error) {
-	err := s.commandExecutor.Start(
-		exec.CommandContext(ctx, paths.Reboot),
-	)
-	if err != nil {
-		return nil, err
-	}
+func (s *SatlabRpcServiceServer) Reboot(context.Context, *pb.RebootRequest) (*pb.RebootResponse, error) {
+	// use defer and go rountine to make sure
+	// UI receive the response first, and reboot after.
+	defer func() {
+		go innerReboot(s.commandExecutor)
+	}()
 
 	return &pb.RebootResponse{}, nil
 }
