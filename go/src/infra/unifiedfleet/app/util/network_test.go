@@ -226,8 +226,8 @@ func TestMakeReservedIPv4sInVlan(t *testing.T) {
 	cases := []struct {
 		name     string
 		vlanName string
-		begin    uint32
-		end      uint32
+		begin    net.IP
+		end      net.IP
 		maximum  int
 		want     []*ufspb.IP
 		ok       bool
@@ -235,8 +235,8 @@ func TestMakeReservedIPv4sInVlan(t *testing.T) {
 		{
 			name:     "singleton",
 			vlanName: "fake-vlan",
-			begin:    0,
-			end:      0,
+			begin:    iputil.MustParseIP("0.0.0.0"),
+			end:      iputil.MustParseIP("0.0.0.0"),
 			maximum:  1,
 			want:     []*ufspb.IP{FormatIP("fake-vlan", "0.0.0.0", true, false)},
 			ok:       true,
@@ -244,8 +244,8 @@ func TestMakeReservedIPv4sInVlan(t *testing.T) {
 		{
 			name:     "too short",
 			vlanName: "fake-vlan",
-			begin:    0,
-			end:      0,
+			begin:    iputil.MustParseIP("0.0.0.0"),
+			end:      iputil.MustParseIP("0.0.0.0"),
 			maximum:  0,
 			want:     nil,
 			ok:       false,
@@ -253,8 +253,8 @@ func TestMakeReservedIPv4sInVlan(t *testing.T) {
 		{
 			name:     "beginning too big",
 			vlanName: "fake-vlan",
-			begin:    10,
-			end:      0,
+			begin:    iputil.MustParseIP("0.0.0.10"),
+			end:      iputil.MustParseIP("0.0.0.0"),
 			maximum:  100,
 			want:     nil,
 			ok:       false,
@@ -262,8 +262,8 @@ func TestMakeReservedIPv4sInVlan(t *testing.T) {
 		{
 			name:     "array too long",
 			vlanName: "fake-vlan",
-			begin:    0,
-			end:      10000,
+			begin:    iputil.MustParseIP("0.0.0.0"),
+			end:      iputil.MustParseIP("0.0.255.255"),
 			maximum:  100000,
 			want:     nil,
 			ok:       false,
@@ -271,14 +271,28 @@ func TestMakeReservedIPv4sInVlan(t *testing.T) {
 		{
 			name:     "1 2 3 4",
 			vlanName: "fake-vlan",
-			begin:    1,
-			end:      4,
+			begin:    iputil.MustParseIP("0.0.0.1"),
+			end:      iputil.MustParseIP("0.0.0.4"),
 			maximum:  4,
 			want: []*ufspb.IP{
 				FormatIP("fake-vlan", "0.0.0.1", true, false),
 				FormatIP("fake-vlan", "0.0.0.2", true, false),
 				FormatIP("fake-vlan", "0.0.0.3", true, false),
 				FormatIP("fake-vlan", "0.0.0.4", true, false),
+			},
+			ok: true,
+		},
+		{
+			name:     "1 2 3 4 ipv6",
+			vlanName: "fake-vlan",
+			begin:    iputil.MustParseIP("aaaa::1"),
+			end:      iputil.MustParseIP("aaaa::4"),
+			maximum:  4,
+			want: []*ufspb.IP{
+				FormatIP("fake-vlan", "aaaa::1", true, false),
+				FormatIP("fake-vlan", "aaaa::2", true, false),
+				FormatIP("fake-vlan", "aaaa::3", true, false),
+				FormatIP("fake-vlan", "aaaa::4", true, false),
 			},
 			ok: true,
 		},
@@ -289,13 +303,16 @@ func TestMakeReservedIPv4sInVlan(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := makeReservedIPv4sInVlan(tt.vlanName, uint32ToIP(tt.begin), uint32ToIP(tt.end), tt.maximum)
+			got, err := makeReservedIPsInVlan(tt.vlanName, tt.begin, tt.end, tt.maximum)
 
 			if diff := typed.Diff(got, tt.want); diff != "" {
 				t.Errorf("unexpected error (-want +got): %s", diff)
 			}
-			if diff := typed.Diff(err == nil, tt.ok); diff != "" {
-				t.Errorf("unexpected error (-want +got): %s", diff)
+			switch {
+			case err == nil && !tt.ok:
+				t.Error("error unexpectedly nil")
+			case err != nil && tt.ok:
+				t.Errorf("unexpected error: %s", err)
 			}
 		})
 	}

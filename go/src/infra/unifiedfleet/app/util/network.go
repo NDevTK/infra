@@ -52,32 +52,25 @@ func IPv4ToUint32(ip net.IP) (uint32, error) {
 	return 0, fmt.Errorf("ip %s is not ipv4", ip.String())
 }
 
-// makeReservedIPv4sInVlan takes an inclusive range of ipv4s and produces reserved ipv4s for use in a vlan.
-func makeReservedIPv4sInVlan(vlanName string, beginIP net.IP, endIP net.IP, maximum int) ([]*ufspb.IP, error) {
-	begin, err := IPv4ToUint32(beginIP)
-	if err != nil {
-		return nil, err
-	}
-	end, err := IPv4ToUint32(endIP)
-	if err != nil {
-		return nil, err
-	}
+// makeReservedIPsInVlan takes an inclusive range of ipv4s and produces reserved ipv4s for use in a vlan.
+func makeReservedIPsInVlan(vlanName string, beginIP net.IP, endIP net.IP, maximum int) ([]*ufspb.IP, error) {
 	if maximum <= 0 {
 		return nil, errors.New("maximum must be positive")
 	}
 	if maximum > maxPreallocatedVlanSize {
 		return nil, errors.New("maximum cannot exceed MaxPreallocatedVlanSize")
 	}
-	if begin > end {
+	if iputil.IPDiff(beginIP, endIP).Sign() == 1 {
 		return nil, errors.New("begin cannot be greater than end")
 	}
-	proposedLen := 1 + int(end-begin)
-	if proposedLen > maximum {
+	proposedLen := iputil.IPDiff(endIP, beginIP)
+	proposedLen.Add(proposedLen, big.NewInt(1))
+	if proposedLen.Cmp(big.NewInt(int64(maximum))) == 1 {
 		return nil, errors.New("IP range exceeds maximum")
 	}
 	ips := make([]*ufspb.IP, 0, maximum)
-	if err := Uint32Iter(begin, end, func(ip uint32) error {
-		ipItem := FormatIP(vlanName, IPv4IntToStr(ip), true, false)
+	if err := iputil.IPIter(beginIP, endIP, func(ip net.IP) error {
+		ipItem := FormatIP(vlanName, StringifyIP(ip), true, false)
 		if ipItem == nil {
 			return fmt.Errorf("%q %d failed to produce an IP address", vlanName, ip)
 		}
@@ -174,7 +167,7 @@ var errStopEarly = errors.New("stop early")
 // makeIPv4sInVlan creates the IP objects in a Vlan that are intended to be created in datastore later.
 func makeIPv4sInVlan(vlanName string, startIP net.IP, length int, freeStartIP net.IP, freeEndIP net.IP) ([]*ufspb.IP, error) {
 	endIP := iputil.AddToIP(startIP, big.NewInt(int64(length)-1))
-	reservedInitialIPs, err := makeReservedIPv4sInVlan(vlanName, startIP, iputil.AddToIP(freeStartIP, big.NewInt(-1)), maxPreallocatedVlanSize)
+	reservedInitialIPs, err := makeReservedIPsInVlan(vlanName, startIP, iputil.AddToIP(freeStartIP, big.NewInt(-1)), maxPreallocatedVlanSize)
 	if err != nil {
 		return nil, errors.Annotate(err, "reserving initial IPs").Err()
 	}
@@ -183,7 +176,7 @@ func makeIPv4sInVlan(vlanName string, startIP net.IP, length int, freeStartIP ne
 	le := !iputil.IsNegative(iputil.IPDiff(endIP, afterFreeEndIP))
 	if le {
 		var err error
-		reservedFinalIPs, err = makeReservedIPv4sInVlan(vlanName, afterFreeEndIP, endIP, maxPreallocatedVlanSize)
+		reservedFinalIPs, err = makeReservedIPsInVlan(vlanName, afterFreeEndIP, endIP, maxPreallocatedVlanSize)
 		if err != nil {
 			return nil, errors.Annotate(err, "reserving final IPs").Err()
 		}
