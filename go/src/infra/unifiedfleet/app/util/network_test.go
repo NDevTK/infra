@@ -125,7 +125,7 @@ func TestMakeIPv4sInVlan(t *testing.T) {
 	cases := []struct {
 		name        string
 		vlanName    string
-		startIP     uint32
+		startIP     net.IP
 		length      int
 		freeStartIP net.IP
 		freeEndIP   net.IP
@@ -135,7 +135,7 @@ func TestMakeIPv4sInVlan(t *testing.T) {
 		{
 			name:        "one real ip",
 			vlanName:    "fake-vlan",
-			startIP:     makeIPv4Uint32(127, 0, 0, 0),
+			startIP:     iputil.MustParseIP("127.0.0.0"),
 			length:      2,
 			freeStartIP: iputil.MustParseIP("127.0.0.1"),
 			freeEndIP:   iputil.MustParseIP("127.0.0.1"),
@@ -148,7 +148,7 @@ func TestMakeIPv4sInVlan(t *testing.T) {
 		{
 			name:        "two real ips",
 			vlanName:    "fake-vlan",
-			startIP:     makeIPv4Uint32(127, 0, 0, 0),
+			startIP:     iputil.MustParseIP("127.0.0.0"),
 			length:      2,
 			freeStartIP: iputil.MustParseIP("127.0.0.1"),
 			freeEndIP:   iputil.MustParseIP("127.0.0.2"),

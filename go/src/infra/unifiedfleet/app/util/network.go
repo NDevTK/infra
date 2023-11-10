@@ -151,7 +151,7 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 		return nil, 0, "", "", 0, err
 	}
 	reservedNum := length - int(used) - 1
-	ips, err := makeIPv4sInVlan(vlanName, startIP, length, uint32ToIP(freeStartIPInt), uint32ToIP(freeEndIPInt))
+	ips, err := makeIPv4sInVlan(vlanName, uint32ToIP(startIP), length, uint32ToIP(freeStartIPInt), uint32ToIP(freeEndIPInt))
 	if err != nil {
 		return nil, 0, "", "", 0, err
 	}
@@ -172,9 +172,9 @@ func makeIPv4(vlanName string, ipv4 uint32, reserved bool) *ufspb.IP {
 var errStopEarly = errors.New("stop early")
 
 // makeIPv4sInVlan creates the IP objects in a Vlan that are intended to be created in datastore later.
-func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIP net.IP, freeEndIP net.IP) ([]*ufspb.IP, error) {
-	endIP := uint32ToIP(startIP + uint32(length) - 1)
-	reservedInitialIPs, err := makeReservedIPv4sInVlan(vlanName, uint32ToIP(startIP), iputil.AddToIP(freeStartIP, big.NewInt(-1)), maxPreallocatedVlanSize)
+func makeIPv4sInVlan(vlanName string, startIP net.IP, length int, freeStartIP net.IP, freeEndIP net.IP) ([]*ufspb.IP, error) {
+	endIP := iputil.AddToIP(startIP, big.NewInt(int64(length)-1))
+	reservedInitialIPs, err := makeReservedIPv4sInVlan(vlanName, startIP, iputil.AddToIP(freeStartIP, big.NewInt(-1)), maxPreallocatedVlanSize)
 	if err != nil {
 		return nil, errors.Annotate(err, "reserving initial IPs").Err()
 	}
