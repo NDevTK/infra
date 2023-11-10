@@ -34,6 +34,25 @@ func TestConfigTemplate(t *testing.T) {
 				"max_size=100g",
 			},
 		},
+		{
+			name:     "keepalived",
+			template: keepalivedTempalte,
+			data: &keepalivedConf{
+				ServiceIP:   "8.8.8.8",
+				ServicePort: 9999,
+				RealServers: []string{"1.1.1.1", "2.2.2.2"},
+				Interface:   "eth0",
+				LBAlgo:      "wlc",
+			},
+			wantLines: []string{
+				"interface eth0",
+				"8.8.8.8",
+				"virtual_server 8.8.8.8 9999{",
+				"real_server 1.1.1.1 9999{",
+				"connect_port 9999",
+				"real_server 2.2.2.2 9999{",
+			},
+		},
 	}
 	for _, tc := range tests {
 		tc := tc
