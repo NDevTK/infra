@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -26,7 +27,8 @@ func TestWriteLocalStableVersion(t *testing.T) {
 		FwImage:   "zork-firmware/R87-13434.819.0",
 	}
 
-	path := "./tmp/recovery_versions/"
+	// Perform our test in a temporary file managed by the test framework.
+	path := filepath.Join(t.TempDir(), "tmp", "recovery_versions")
 
 	os.RemoveAll(path)
 	err := os.MkdirAll(path, 0777)
