@@ -39,6 +39,8 @@ var (
 	serviceIP   = flag.String("service-ip", "", "the caching service service IP")
 	servicePort = flag.Uint("service-port", 8082, "the caching service service port")
 
+	serviceInterface = flag.String("service-interface", "bond0", "The NIC name to bring up the service IP.")
+
 	cacheSizeInGB     = flag.Uint("cache-size", 750, "The size of cache space in GB.")
 	l7Port            = flag.Uint("l7-port", 8083, "the port for caching service L7 balancing")
 	otelTraceEndpoint = flag.String("otel-trace-endpoint", "", "The OTel collector endpoint for backend service tracing. e.g. http://127.0.0.1:4317")
@@ -66,6 +68,11 @@ func innerMain() error {
 			Port:              int(*servicePort),
 			L7Port:            int(*l7Port),
 			OtelTraceEndpoint: *otelTraceEndpoint,
+		},
+		frontendConf: &keepalivedConf{
+			ServiceIP:   *serviceIP,
+			ServicePort: int(*servicePort),
+			Interface:   *serviceInterface,
 		},
 	}
 	mux := http.NewServeMux()
@@ -97,7 +104,8 @@ type backendScanner struct {
 	serviceIP   string
 	servicePort uint
 
-	backendConf *nginxConf
+	backendConf  *nginxConf
+	frontendConf *keepalivedConf
 }
 
 func (s *backendScanner) updateHandler(w http.ResponseWriter, r *http.Request) {
@@ -128,10 +136,16 @@ func (s *backendScanner) scanOnce() error {
 		return fmt.Errorf("scan once: %w", err)
 	}
 
+	s.frontendConf.RealServers = ips
+	keepalived, err := genConfig("keepalived", keepalivedTempalte, s.frontendConf)
+	if err != nil {
+		return fmt.Errorf("scan once: %w", err)
+	}
 	d := map[string]string{
-		"service-ip":   s.serviceIP,
-		"service-port": fmt.Sprintf("%d", s.servicePort),
-		"nginx.conf":   nginx,
+		"service-ip":      s.serviceIP,
+		"service-port":    fmt.Sprintf("%d", s.servicePort),
+		"nginx.conf":      nginx,
+		"keepalived.conf": keepalived,
 	}
 	if err := updateConfigMap(clientset.CoreV1().ConfigMaps(s.namespace), s.cmName, s.namespace, d); err != nil {
 		return fmt.Errorf("scan once: %w", err)
@@ -186,6 +200,13 @@ type nginxConf struct {
 	L7Servers         []string
 	L7Port            int
 	OtelTraceEndpoint string
+}
+
+type keepalivedConf struct {
+	ServiceIP   string
+	ServicePort int
+	RealServers []string
+	Interface   string
 }
 
 // getPodIPs gets IP list of selected pods with the specified label.

@@ -21,6 +21,11 @@ func TestConfigTemplate(t *testing.T) {
 			template: nginxTemplate,
 			data:     &nginxConf{},
 		},
+		{
+			name:     "keepalived",
+			template: keepalivedTempalte,
+			data:     &keepalivedConf{},
+		},
 	}
 	for _, tc := range tests {
 		tc := tc
