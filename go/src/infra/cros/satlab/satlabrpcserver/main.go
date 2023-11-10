@@ -58,20 +58,20 @@ func main() {
 	bucketService, err := bucket_services.New(ctx, site.GetGCSImageBucket())
 
 	if err != nil {
-		log.Fatalf("Failed to create a bucket connector %v", err)
+		logging.Errorf(ctx, "Failed to create a bucket connector %v\n", err)
 	}
 	buildService, err := build_service.New(ctx)
 	if err != nil {
-		log.Fatalf("Failed to create a build connector %v", err)
+		logging.Errorf(ctx, "Failed to create a build connector %v\n", err)
 	}
 	dutService, err := dut_services.New()
 	if err != nil {
-		log.Fatalf("Failed to create a DUT service")
+		logging.Errorf(ctx, "Failed to create a dut service %v\n", err)
 	}
 	swarmingService, err := services.NewSwarmingService(ctx)
 	if err != nil {
 		// We don't want to fatal if user doesn't login
-		log.Printf("Failed to create a swarming service")
+		logging.Errorf(ctx, "Failed to create a swarming service %v\n", err)
 	}
 
 	// Register a CPU temperature orchestrator if we can find the temperature
