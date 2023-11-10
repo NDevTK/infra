@@ -24,6 +24,7 @@ var (
 	fakeChromiumTryRdb = "fake_chromium_try_rdb"
 	fakeChromiumCiRdb  = "fake_chromium_ci_rdb"
 	fakeAttempts       = "fake_attempts"
+	fakeTasks          = "fake_tasks"
 	testDataset        = "test"
 
 	sqlDir = "../../"
@@ -34,6 +35,7 @@ var (
 		"sql/create_raw_table.sql",
 		"sql/create_weekly_file_summary_table.sql",
 		"sql/create_weekly_summary_table.sql",
+		"sql/create_rdb_swarming_corrections.sql",
 	}
 
 	defaultTestId = "ninja://test_id"
@@ -47,14 +49,15 @@ type fakeRdbResult struct {
 	exonerated    bool
 	partitionTime time.Time
 
-	duration  float64
-	filename  string
-	repo      string
-	name      string
-	builder   string
-	testSuite string
-	platform  string
-	component string
+	duration    float64
+	filename    string
+	repo        string
+	name        string
+	builder     string
+	testSuite   string
+	platform    string
+	component   string
+	parentBuild string
 
 	offsetTime time.Duration
 }
@@ -92,6 +95,11 @@ func (f *resultFactory) createResult() *fakeRdbResult {
 
 func (f *fakeRdbResult) ResultTime() time.Time {
 	return f.partitionTime.Add(f.offsetTime)
+}
+
+func (f *fakeRdbResult) InBuild(parentId string) *fakeRdbResult {
+	f.parentBuild = parentId
+	return f
 }
 
 func (f *fakeRdbResult) WithTestSuite(testSuite string) *fakeRdbResult {
@@ -142,7 +150,7 @@ func (f *fakeRdbResult) Save() (row map[string]bigquery.Value, insertID string, 
 			"realm": "project:bucket",
 		},
 		"parent": map[string]bigquery.Value{
-			"id": "123",
+			"id": f.parentBuild + "1",
 		},
 		"test_id":        f.testId,
 		"result_id":      "fake_result_id",
@@ -185,6 +193,73 @@ func (f *fakeRdbResult) Save() (row map[string]bigquery.Value, insertID string, 
 	}, "", nil
 }
 
+type fakeTask struct {
+	duration float64
+	cores    int
+	id       string
+	endTime  civil.Date
+}
+
+func (f *fakeTask) OnDay(date civil.Date) *fakeTask {
+	f.endTime = date
+	return f
+}
+
+func (f *fakeTask) WithCores(coreCount int) *fakeTask {
+	f.cores = coreCount
+	return f
+}
+
+func (f *fakeTask) WithId(id string) *fakeTask {
+	f.id = id
+	return f
+}
+
+func (f *fakeTask) WithDuration(duration time.Duration) *fakeTask {
+	f.duration = duration.Seconds()
+	return f
+}
+
+type taskFactory struct {
+	defaultDuration float64
+	defaultCores    int
+	defaultEndTime  civil.Date
+}
+
+func (f *taskFactory) createTask() *fakeTask {
+	return &fakeTask{
+		endTime:  f.defaultEndTime,
+		duration: f.defaultDuration,
+		cores:    f.defaultCores,
+	}
+}
+
+func (f *fakeTask) Save() (row map[string]bigquery.Value, insertID string, err error) {
+	tz, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		return nil, "", err
+	}
+
+	endTime := f.endTime.In(tz)
+	return map[string]bigquery.Value{
+		// Required by the schema
+		"bot": map[string]bigquery.Value{
+			"dimensions": []bigquery.Value{
+				map[string]bigquery.Value{
+					"key":    "cores",
+					"values": []bigquery.Value{f.cores},
+				},
+			},
+		},
+		"duration": f.duration,
+		"request": map[string]bigquery.Value{
+			"task_id": f.id + "0",
+		},
+		"end_time":   endTime,
+		"try_number": 1,
+	}, "", nil
+}
+
 func setupClient(ctx context.Context, bqClient *bigquery.Client, dataSet string, project string) (*Client, error) {
 	var client = &Client{
 		BqClient:            bqClient,
@@ -193,6 +268,7 @@ func setupClient(ctx context.Context, bqClient *bigquery.Client, dataSet string,
 		ChromiumTryRdbTable: testProject + "." + testDataset + "." + fakeChromiumTryRdb,
 		ChromiumCiRdbTable:  testProject + "." + testDataset + "." + fakeChromiumCiRdb,
 		AttemptsTable:       testProject + "." + testDataset + "." + fakeAttempts,
+		SwarmingTable:       testProject + "." + testDataset + "." + fakeTasks,
 	}
 	err := client.Init(sqlDir)
 	if err != nil {
@@ -201,22 +277,18 @@ func setupClient(ctx context.Context, bqClient *bigquery.Client, dataSet string,
 	return client, nil
 }
 
-func createRollupFromResults(ctx context.Context, client *Client, project string, dataSet string, rdbTable string, date string, results []*fakeRdbResult) error {
-	if date != "" {
-		tz, err := time.LoadLocation("America/Los_Angeles")
+func createRollupFromResults(ctx context.Context, client *Client, dataSet string, results []*fakeRdbResult, tasks []*fakeTask) error {
+	if tasks != nil {
+		err := createFakeTasks(ctx, client.BqClient, dataSet, fakeTasks, tasks)
 		if err != nil {
 			return err
 		}
-		for _, result := range results {
-			date, err := civil.ParseDate(date)
-			if err != nil {
-				return err
-			}
-			result.partitionTime = date.In(tz)
-		}
 	}
 
-	createFakeRdb(ctx, client.BqClient, project, dataSet, rdbTable, results)
+	err := createFakeRdb(ctx, client.BqClient, dataSet, fakeChromiumTryRdb, results)
+	if err != nil {
+		return err
+	}
 
 	if len(results) == 0 {
 		return nil
@@ -226,7 +298,7 @@ func createRollupFromResults(ctx context.Context, client *Client, project string
 	minTime := results[0].ResultTime()
 	for _, result := range results {
 		if result == nil {
-			return errors.New("Received a nul result")
+			return errors.New("Received a null result")
 		}
 		resultTime := result.ResultTime()
 		if resultTime.Compare(maxTime) > 0 {
@@ -239,7 +311,7 @@ func createRollupFromResults(ctx context.Context, client *Client, project string
 	return client.UpdateSummary(ctx, civil.DateOf(minTime), civil.DateOf(maxTime))
 }
 
-func createFakeRdb(ctx context.Context, client *bigquery.Client, project string, dataSet string, rdbTable string, results []*fakeRdbResult) error {
+func createFakeRdb(ctx context.Context, client *bigquery.Client, dataSet string, rdbTable string, results []*fakeRdbResult) error {
 	inserter := client.Dataset(dataSet).Table(rdbTable).Inserter()
 
 	// The table should be create
@@ -368,6 +440,9 @@ func ensureTables(ctx context.Context, client *bigquery.Client) error {
 	if err := ensureTable(ctx, client, "commit-queue", "chromium", "attempts", testSet, fakeAttempts); err != nil {
 		return err
 	}
+	if err := ensureTable(ctx, client, "chromium-swarm", "swarming", "task_results_summary", testSet, fakeTasks); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -489,4 +564,22 @@ func getMetric(data *api.TestMetricsArray, metric api.MetricType) (float64, erro
 		}
 	}
 	return 0, errors.New("Requested metric type not in provided values")
+}
+
+func createFakeTasks(ctx context.Context, client *bigquery.Client, dataSet string, taskTable string, tasks []*fakeTask) error {
+	inserter := client.Dataset(dataSet).Table(taskTable).Inserter()
+
+	// The table should be create
+	var err error
+	attempt := 0
+	for attempt < 10 {
+		err = inserter.Put(ctx, tasks)
+		if err == nil {
+			break
+		}
+		time.Sleep(time.Second)
+		attempt += 1
+	}
+
+	return err
 }

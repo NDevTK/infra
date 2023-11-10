@@ -241,6 +241,7 @@ var (
 	}
 	// Queries run in order to update the db
 	updateQueries = []string{
+		"sql/update_rdb_swarming_corrections.sql",
 		"sql/update_raw_metrics.sql",
 		"sql/update_daily_test_metrics.sql",
 		"sql/update_weekly_test_metrics.sql",
@@ -260,6 +261,7 @@ type Client struct {
 	ChromiumTryRdbTable string
 	ChromiumCiRdbTable  string
 	AttemptsTable       string
+	SwarmingTable       string
 }
 
 func bqToDateArray(dates []string) ([]civil.Date, error) {
@@ -299,6 +301,9 @@ func (c *Client) Init(sqlDir string) error {
 	if c.AttemptsTable == "" {
 		c.AttemptsTable = "commit-queue.chromium.attempts"
 	}
+	if c.SwarmingTable == "" {
+		c.SwarmingTable = "chromium-swarm.swarming.task_results_summary"
+	}
 
 	r := strings.NewReplacer(
 		"{project}", c.ProjectId,
@@ -306,6 +311,7 @@ func (c *Client) Init(sqlDir string) error {
 		"{chromium_try_rdb_table}", c.ChromiumTryRdbTable,
 		"{chromium_ci_rdb_table}", c.ChromiumCiRdbTable,
 		"{attempts_table}", c.AttemptsTable,
+		"{swarming_tasks_table}", c.SwarmingTable,
 	)
 
 	for _, filename := range updateQueries {
