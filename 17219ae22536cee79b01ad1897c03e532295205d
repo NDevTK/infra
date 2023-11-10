@@ -52,6 +52,24 @@
       "parentUuid": "b013b791_be44d14c",
       "revId": "17219ae22536cee79b01ad1897c03e532295205d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a86ca3e4_76ee0d95",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2023-11-10T22:29:21Z",
+      "side": 1,
+      "message": "From chromiumos/infra/recipes I ran: `led get-build 8768665803714395249 | led edit-recipe-bundle -O infra\u003d/path/to/modified/infra/infra | led launch`\n\nbased on http://ci.chromium.org/b/8768665803714395249 to get https://ci.chromium.org/raw/build/logs.chromium.org/chromeos/led/gavinmak_google.com/c7967bdecdd5b70339ca8d9f27fbaae770a11d9a5c30605cd1a859c62b649b07/+/build.proto?server\u003dchromeos-swarming.appspot.com",
+      "parentUuid": "d76ccd18_8ff073a4",
+      "revId": "17219ae22536cee79b01ad1897c03e532295205d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
