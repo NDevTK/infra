@@ -61,6 +61,92 @@ func TestParseVlan(t *testing.T) {
 	})
 }
 
+type parseVlanOutput = struct {
+	ips         []*ufspb.IP
+	length      int
+	freeStartIP string
+	freeEndIP   string
+	reservedNum int
+}
+
+// TestParseVlanTableTest tests the edge cases of parsing vlans.
+func TestParseVlanTableTest(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name        string
+		vlanName    string
+		cidr        string
+		freeStartIP string
+		freeEndIP   string
+		want        parseVlanOutput
+		ok          bool
+	}{
+		{
+			name:        "ipv4 happy path with 1 free IP",
+			vlanName:    "fake-vlan",
+			cidr:        "127.0.0.0/30",
+			freeStartIP: "127.0.0.1",
+			freeEndIP:   "127.0.0.1",
+			want: parseVlanOutput{
+				ips: []*ufspb.IP{
+					FormatIP("fake-vlan", "127.0.0.0", true, false),
+					FormatIP("fake-vlan", "127.0.0.1", false, false),
+					FormatIP("fake-vlan", "127.0.0.2", true, false),
+					FormatIP("fake-vlan", "127.0.0.3", true, false),
+				},
+				length:      4,
+				freeStartIP: "127.0.0.1",
+				freeEndIP:   "127.0.0.1",
+				reservedNum: 3,
+			},
+			ok: true,
+		},
+		{
+			name:        "ipv4 happy path with 2 free IPs",
+			vlanName:    "fake-vlan",
+			cidr:        "127.0.0.0/30",
+			freeStartIP: "127.0.0.1",
+			freeEndIP:   "127.0.0.2",
+			want: parseVlanOutput{
+				ips: []*ufspb.IP{
+					FormatIP("fake-vlan", "127.0.0.0", true, false),
+					FormatIP("fake-vlan", "127.0.0.1", false, false),
+					FormatIP("fake-vlan", "127.0.0.2", false, false),
+					FormatIP("fake-vlan", "127.0.0.3", true, false),
+				},
+				length:      4,
+				freeStartIP: "127.0.0.1",
+				freeEndIP:   "127.0.0.2",
+				reservedNum: 2,
+			},
+			ok: true,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			var err error
+			got := parseVlanOutput{}
+
+			got.ips, got.length, got.freeStartIP, got.freeEndIP, got.reservedNum, err = ParseVlan(tt.vlanName, tt.cidr, tt.freeStartIP, tt.freeEndIP)
+
+			if diff := typed.Diff(tt.want, got, cmp.AllowUnexported(parseVlanOutput{})); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+			switch {
+			case err == nil && !tt.ok:
+				t.Error("error is unexpectedly nil")
+			case err != nil && tt.ok:
+				t.Errorf("unexpected error: %s", err)
+			}
+		})
+	}
+}
+
 func TestParseMac(t *testing.T) {
 	Convey("ParseMac - happy path", t, func() {
 		mac, err := ParseMac("12:34:56:78:90:ab")
