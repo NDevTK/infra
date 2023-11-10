@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -40,6 +41,7 @@ func innerMain() error {
 		extraHeaders        = flag.String("extra-headers", "", "Comma separated extra HTTP headers added to the requests, e.g. HEADER1:value,HEADER2:value.")
 		expectedStatusCode  = flag.Int("expected-status-code", 200, "The expected response HTTP status code.")
 		expectedContentMD5  = flag.String("expected-content-md5", "", "The exptected response content MD5 hash value.")
+		sourceAddr          = flag.String("use-source-addr", "", "Use the specified source IP addr instead of the one get automatically")
 		tsmonEndpoint       = flag.String("tsmon-endpoint", "", "URL (including file://, https://, // pubsub://project/topic) to post monitoring metrics to. No metrics to report when skip the option.")
 		tsmonCredentialPath = flag.String("tsmon-credential", "", "The credential file for tsmon client.")
 		tsmonTaskHostname   = flag.String("tsmon-task-hostname", "", "Name of the host on which this checker is running. (default is the hostname)")
@@ -67,7 +69,11 @@ func innerMain() error {
 		checkers = append(checkers, httpContentChecker(*expectedContentMD5))
 	}
 
-	return checkEndpoints(ctx, reqs, checkers)
+	hc, err := getHTTPClient(*sourceAddr)
+	if err != nil {
+		return err
+	}
+	return checkEndpoints(ctx, hc, reqs, checkers)
 }
 
 // metricsInit sets up the tsmon metrics.
@@ -150,14 +156,14 @@ var serviceLiveness = metric.NewBool("chromeos/fleet/service/liveness",
 )
 
 // checkEndpoints checks the liveness of a series of endpoints in parallel.
-func checkEndpoints(ctx context.Context, reqs []*http.Request, checkers []httpRespChecker) error {
+func checkEndpoints(ctx context.Context, c *http.Client, reqs []*http.Request, checkers []httpRespChecker) error {
 	log.Printf("checking %d endpoints", len(reqs))
 	var wg sync.WaitGroup
 	for _, r := range reqs {
 		wg.Add(1)
 		go func(r *http.Request) {
 			defer wg.Done()
-			if err := checkEndpoint(r, checkers); err != nil {
+			if err := checkEndpoint(c, r, checkers); err != nil {
 				log.Printf("checking endpoints: %s", err)
 				serviceLiveness.Set(ctx, false, r.Host)
 			} else {
@@ -171,8 +177,7 @@ func checkEndpoints(ctx context.Context, reqs []*http.Request, checkers []httpRe
 }
 
 // checkEndpoint checks the liveness of a particular endpoint.
-func checkEndpoint(r *http.Request, checkers []httpRespChecker) error {
-	c := &http.Client{}
+func checkEndpoint(c *http.Client, r *http.Request, checkers []httpRespChecker) error {
 	resp, err := c.Do(r)
 	if err != nil {
 		return fmt.Errorf("check endpoint %q: %s", r.URL, err)
@@ -214,4 +219,18 @@ func httpContentChecker(expectedMD5 string) httpRespChecker {
 		}
 		return nil
 	}
+}
+
+// getHTTPClient gets a customized http client.
+func getHTTPClient(sourceAddr string) (*http.Client, error) {
+	if sourceAddr == "" {
+		return http.DefaultClient, nil
+	}
+	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:0", sourceAddr))
+	if err != nil {
+		return nil, fmt.Errorf("get http client bind to %q: %w", sourceAddr, err)
+	}
+	dialer := &net.Dialer{LocalAddr: addr}
+	transport := &http.Transport{DialContext: dialer.DialContext}
+	return &http.Client{Transport: transport}, nil
 }
