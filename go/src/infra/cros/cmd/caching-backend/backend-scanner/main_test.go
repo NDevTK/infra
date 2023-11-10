@@ -27,6 +27,17 @@ func TestConfigTemplate(t *testing.T) {
 				OtelTraceEndpoint: "http://localhost:5678",
 			},
 		},
+		{
+			name:     "keepalived",
+			template: keepalivedTempalte,
+			data: &keepalivedConf{
+				ServiceIP:   "8.8.8.8",
+				ServicePort: 9999,
+				RealServers: []string{"1.1.1.1", "2.2.2.2"},
+				Interface:   "eth0",
+				LBAlgo:      "wlc",
+			},
+		},
 	}
 	for _, tc := range tests {
 		tc := tc
