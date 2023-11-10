@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -183,12 +182,7 @@ func TestIsReachable_false(t *testing.T) {
 
 func TestIsReachable_self(t *testing.T) {
 	CommandRunnerImpl = cmd.RealCommandRunner{}
-
-	tmpDir := "gittest_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
-	defer os.RemoveAll(tmpDir)
-
-	assert.NilError(t, err)
+	tmpDir := t.TempDir()
 	// Create repo.
 	assert.NilError(t, Init(tmpDir, false))
 	// Make commit.
@@ -409,19 +403,14 @@ func TestAddRemote(t *testing.T) {
 
 func TestCheckout(t *testing.T) {
 	CommandRunnerImpl = cmd.RealCommandRunner{}
-
-	tmpDir := "gittest_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
-	defer os.RemoveAll(tmpDir)
-
-	assert.NilError(t, err)
+	tmpDir := t.TempDir()
 	// Create repo.
 	assert.NilError(t, Init(tmpDir, false))
 	// Create first branch.
 	assert.NilError(t, CreateBranch(tmpDir, "branch1"))
 	// In order for the ref to be created, need to commit something.
 	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
-	_, err = CommitAll(tmpDir, "init commit")
+	_, err := CommitAll(tmpDir, "init commit")
 	assert.NilError(t, err)
 	// Create second branch (will switch to this branch).
 	assert.NilError(t, CreateBranch(tmpDir, "branch2"))
@@ -434,12 +423,7 @@ func TestCheckout(t *testing.T) {
 func TestCherryPick(t *testing.T) {
 	ctx := context.Background()
 	CommandRunnerImpl = cmd.RealCommandRunner{}
-
-	tmpDir := "gittest_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
-	defer os.RemoveAll(tmpDir)
-	assert.NilError(t, err)
-
+	tmpDir := t.TempDir()
 	// Create repo.
 	assert.NilError(t, Init(tmpDir, false))
 
@@ -469,12 +453,7 @@ func TestCherryPick(t *testing.T) {
 func TestMerge(t *testing.T) {
 	ctx := context.Background()
 	CommandRunnerImpl = cmd.RealCommandRunner{}
-
-	tmpDir := "gittest_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
-	defer os.RemoveAll(tmpDir)
-	assert.NilError(t, err)
-
+	tmpDir := t.TempDir()
 	// Create repo.
 	assert.NilError(t, Init(tmpDir, false))
 
@@ -516,20 +495,15 @@ func TestMerge(t *testing.T) {
 
 func TestDeleteBranch_success(t *testing.T) {
 	CommandRunnerImpl = cmd.RealCommandRunner{}
-
-	tmpDir := "gittest_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
-	defer os.RemoveAll(tmpDir)
+	tmpDir := t.TempDir()
 	branchName := "newbranch"
-
-	assert.NilError(t, err)
 	// Create repo.
 	assert.NilError(t, Init(tmpDir, false))
 	// Create master branch.
 	assert.NilError(t, CreateBranch(tmpDir, "master"))
 	// In order for the ref to be created, need to commit something.
 	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
-	_, err = CommitAll(tmpDir, "init commit")
+	_, err := CommitAll(tmpDir, "init commit")
 	assert.NilError(t, err)
 	// Create branch to be deleted.
 	assert.NilError(t, CreateBranch(tmpDir, branchName))
@@ -541,18 +515,13 @@ func TestDeleteBranch_success(t *testing.T) {
 
 func TestDeleteBranch_inBranch(t *testing.T) {
 	CommandRunnerImpl = cmd.RealCommandRunner{}
-
-	tmpDir := "gittest_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
-	defer os.RemoveAll(tmpDir)
+	tmpDir := t.TempDir()
 	branchName := "newbranch"
-
-	assert.NilError(t, err)
 	// Create repo.
 	assert.NilError(t, Init(tmpDir, false))
 	// Create branch.
 	assert.NilError(t, CreateBranch(tmpDir, branchName))
-	err = DeleteBranch(tmpDir, branchName, true)
+	err := DeleteBranch(tmpDir, branchName, true)
 	switch {
 	case err == nil:
 		t.Error("error is unexpectedly nil")
@@ -565,20 +534,15 @@ func TestDeleteBranch_inBranch(t *testing.T) {
 
 func TestDeleteBranch_unmerged(t *testing.T) {
 	CommandRunnerImpl = cmd.RealCommandRunner{}
-
-	tmpDir := "gittest_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
-	defer os.RemoveAll(tmpDir)
+	tmpDir := t.TempDir()
 	branchName := "newbranch"
-
-	assert.NilError(t, err)
 	// Create repo.
 	assert.NilError(t, Init(tmpDir, false))
 	// Create master branch.
 	assert.NilError(t, CreateBranch(tmpDir, "master"))
 	// In order for the ref to be created, need to commit something.
 	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
-	_, err = CommitAll(tmpDir, "init commit")
+	_, err := CommitAll(tmpDir, "init commit")
 	assert.NilError(t, err)
 	// Create test branch.
 	assert.NilError(t, CreateBranch(tmpDir, branchName))
@@ -629,14 +593,8 @@ func TestFetch(t *testing.T) {
 
 func TestRemoteBranches(t *testing.T) {
 	CommandRunnerImpl = cmd.RealCommandRunner{}
-
-	local, err := ioutil.TempDir("", "gittest_tmp_dir")
-	defer os.RemoveAll(local)
-
-	remote, err := ioutil.TempDir("", "gittest_tmp_dir")
-	defer os.RemoveAll(remote)
-
-	assert.NilError(t, err)
+	local := t.TempDir()
+	remote := t.TempDir()
 	// Create repos.
 	assert.NilError(t, Init(local, false))
 	assert.NilError(t, Init(remote, false))
@@ -644,7 +602,7 @@ func TestRemoteBranches(t *testing.T) {
 	assert.NilError(t, CreateBranch(local, "master"))
 	// In order for the ref to be created, need to commit something.
 	assert.NilError(t, ioutil.WriteFile(filepath.Join(local, "foo"), []byte("foo"), 0644))
-	_, err = CommitAll(local, "init commit")
+	_, err := CommitAll(local, "init commit")
 	assert.NilError(t, err)
 	// Add remote.
 	assert.NilError(t, AddRemote(local, "remote", remote))
