@@ -208,7 +208,7 @@ func calculateIndicators(buildCtx context.Context, rows []Row, srcConfig SrcConf
 					failedBuilders += 1
 					continue
 				}
-				builderSpec = srcConfig.Default
+				builderSpec.Thresholds = srcConfig.Default.Thresholds
 			} else if builderSpec.Thresholds.Default != "" {
 				rows[i].HealthScore = 0
 				rows[i].ScoreExplanation = fmt.Sprintf("Threshold config error: Default set to unknown sentinel value: %s.", builderSpec.Thresholds.Default)
