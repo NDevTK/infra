@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/uuid"
 	"go.chromium.org/luci/common/bq"
@@ -21,6 +20,7 @@ import (
 	ds "go.chromium.org/luci/gae/service/datastore"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"google.golang.org/protobuf/proto"
 
 	"infra/qscheduler/qslib/tutils"
 	admin "infra/tricium/api/admin/v1"
