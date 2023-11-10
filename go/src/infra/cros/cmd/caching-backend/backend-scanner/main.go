@@ -9,10 +9,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"flag"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"slices"
@@ -36,6 +38,10 @@ var (
 
 	serviceIP   = flag.String("service-ip", "", "the caching service service IP")
 	servicePort = flag.Uint("service-port", 8082, "the caching service service port")
+
+	cacheSizeInGB     = flag.Uint("cache-size", 750, "The size of cache space in GB.")
+	l7Port            = flag.Uint("l7-port", 8083, "the port for caching service L7 balancing")
+	otelTraceEndpoint = flag.String("otel-trace-endpoint", "", "The OTel collector endpoint for backend service tracing. e.g. http://127.0.0.1:4317")
 )
 
 func main() {
@@ -54,6 +60,13 @@ func innerMain() error {
 		cmName:      *cmName,
 		serviceIP:   *serviceIP,
 		servicePort: *servicePort,
+
+		backendConf: &nginxConf{
+			CacheSizeInGB:     int(*cacheSizeInGB),
+			Port:              int(*servicePort),
+			L7Port:            int(*l7Port),
+			OtelTraceEndpoint: *otelTraceEndpoint,
+		},
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/update", s.updateHandler)
@@ -83,6 +96,8 @@ type backendScanner struct {
 	cmName      string
 	serviceIP   string
 	servicePort uint
+
+	backendConf *nginxConf
 }
 
 func (s *backendScanner) updateHandler(w http.ResponseWriter, r *http.Request) {
@@ -107,9 +122,16 @@ func (s *backendScanner) scanOnce() error {
 	}
 	log.Printf("Found pod ip (app=%s): %v", s.appLabel, ips)
 
+	s.backendConf.L7Servers = ips
+	nginx, err := genConfig("nginx", nginxTemplate, s.backendConf)
+	if err != nil {
+		return fmt.Errorf("scan once: %w", err)
+	}
+
 	d := map[string]string{
 		"service-ip":   s.serviceIP,
 		"service-port": fmt.Sprintf("%d", s.servicePort),
+		"nginx.conf":   nginx,
 	}
 	if err := updateConfigMap(clientset.CoreV1().ConfigMaps(s.namespace), s.cmName, s.namespace, d); err != nil {
 		return fmt.Errorf("scan once: %w", err)
@@ -158,6 +180,14 @@ func updateConfigMap(c k8sTypedCoreV1.ConfigMapInterface, name, namespace string
 	return nil
 }
 
+type nginxConf struct {
+	CacheSizeInGB     int
+	Port              int
+	L7Servers         []string
+	L7Port            int
+	OtelTraceEndpoint string
+}
+
 // getPodIPs gets IP list of selected pods with the specified label.
 func getPodIPs(p k8sTypedCoreV1.PodInterface, appLabel string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -190,4 +220,14 @@ func getK8sClientSet() (*kubernetes.Clientset, error) {
 		return nil, fmt.Errorf("get K8s client set: %w", err)
 	}
 	return clientset, nil
+}
+
+// genConfig generates the final template data.
+func genConfig(templateName, configTmpl string, configData interface{}) (string, error) {
+	var buf bytes.Buffer
+	tmpl := template.Must(template.New(templateName).Parse(configTmpl))
+	if err := tmpl.Execute(&buf, configData); err != nil {
+		return "", fmt.Errorf("build config: %s", err)
+	}
+	return buf.String(), nil
 }
