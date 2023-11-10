@@ -103,6 +103,22 @@ func getFreeStartIP(freeStartIP string, startIP uint32) (string, uint32, error) 
 	return IPv4IntToStr(ipInt), ipInt, nil
 }
 
+// getFreeEndIP gets the value of the last freeIP in a vlan.
+//
+// This is either the explicit freeEndIP given, or a fixed number of IPs
+// after the end of the overall IP address.
+func getFreeEndIP(freeEndIP string, startIP uint32, length int) (string, uint32, error) {
+	if freeEndIP == "" {
+		ipInt := startIP + uint32(length-reserveLast-1)
+		return IPv4IntToStr(ipInt), ipInt, nil
+	}
+	ipInt, err := IPv4StrToInt(freeEndIP)
+	if err != nil {
+		return "", 0, err
+	}
+	return IPv4IntToStr(ipInt), ipInt, nil
+}
+
 // ParseVlan parses vlan to a list of IPs
 //
 // vlanName here is a full vlan name, e.g. browser:123
@@ -124,15 +140,9 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 	if err != nil {
 		return nil, 0, "", "", 0, errors.Annotate(err, "computing free start IP %q for vlan %s", freeStartIP, vlanName).Err()
 	}
-	freeEndIPInt := startIP + uint32(length-reserveLast-1)
-	if freeEndIP != "" {
-		ipInt, err := IPv4StrToInt(freeEndIP)
-		if err != nil {
-			return nil, 0, "", "", 0, errors.Reason("invalid free end IP %q for vlan %s", freeEndIP, vlanName).Err()
-		}
-		freeEndIPInt = ipInt
-	} else {
-		freeEndIP = IPv4IntToStr(startIP + uint32(length-reserveLast-1))
+	freeEndIP, freeEndIPInt, err := getFreeEndIP(freeEndIP, startIP, length)
+	if err != nil {
+		return nil, 0, "", "", 0, errors.Annotate(err, "computing free end IP %q for vlan %s", freeStartIP, vlanName).Err()
 	}
 	used, err := ipv4Diff(freeStartIP, freeEndIP)
 	if err != nil {
