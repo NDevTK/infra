@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"strings"
 	"testing"
 
 	"infra/cros/internal/assert"
@@ -507,7 +508,7 @@ func TestMerge(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Merging commit3 returns an error.
-	assert.ErrorContains(t, Merge(ctx, tmpDir, sha3), "failed to merge: exit status 1")
+	assert.ErrorContains(t, Merge(ctx, tmpDir, sha3), "failed to merge")
 
 	// Abort the merge.
 	assert.NilError(t, MergeAbort(ctx, tmpDir))
@@ -552,7 +553,14 @@ func TestDeleteBranch_inBranch(t *testing.T) {
 	// Create branch.
 	assert.NilError(t, CreateBranch(tmpDir, branchName))
 	err = DeleteBranch(tmpDir, branchName, true)
-	assert.ErrorContains(t, err, "checked out")
+	switch {
+	case err == nil:
+		t.Error("error is unexpectedly nil")
+	case strings.Contains(err.Error(), "checked out") || strings.Contains(err.Error(), "worktree"):
+		// No problem. Git operation was blocked for a good reason.
+	default:
+		t.Errorf("unexpected error: %s", err)
+	}
 }
 
 func TestDeleteBranch_unmerged(t *testing.T) {
