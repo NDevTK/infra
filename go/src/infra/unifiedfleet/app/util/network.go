@@ -189,19 +189,11 @@ func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIP ne
 		}
 	}
 	ips := make([]*ufspb.IP, 0, maxPreallocatedVlanSize)
-	freeStartIPInt, err := IPv4StrToInt(freeStartIP.String())
-	if err != nil {
-		return nil, errors.Annotate(err, "converting start IP to integer").Err()
-	}
-	freeEndIPInt, err := IPv4StrToInt(freeEndIP.String())
-	if err != nil {
-		return nil, errors.Annotate(err, "converting end IP to integer").Err()
-	}
-	Uint32Iter(freeStartIPInt, freeEndIPInt, func(ip uint32) error {
+	iputil.IPIter(freeStartIP, freeEndIP, func(ip net.IP) error {
 		if len(ips) > maxPreallocatedVlanSize {
 			return errStopEarly
 		}
-		ips = append(ips, FormatIP(vlanName, IPv4IntToStr(ip), false, false))
+		ips = append(ips, FormatIP(vlanName, ip.String(), false, false))
 		return nil
 	})
 	out := []*ufspb.IP{}
