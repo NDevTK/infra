@@ -1,3 +1,6 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 package main
 
 import (
@@ -579,13 +582,13 @@ func ensureTableAndUploadRows[M protov2.Message](
 
 	logging.Infof(ctx, "uploading rows to BigQuery.")
 	uploader := lucibq.NewUploader(ctx, client, table.DatasetID, table.TableID)
-	// Uploader takes v1 proto rows, so we need to convert DirBQRow to
-	// MessageV1.
-	v1Rows := make([]proto.Message, len(rows))
+	// Uploader takes v2 proto rows, so we need to convert DirBQRow to
+	// MessageV2.
+	v2Rows := make([]protov2.Message, len(rows))
 	for i, row := range rows {
-		v1Rows[i] = proto.MessageV1(row)
+		v2Rows[i] = row
 	}
-	return uploader.Put(ctx, v1Rows...)
+	return uploader.Put(ctx, v2Rows...)
 }
 
 func cmdChromeosDirmdUpdateRun(authOpts auth.Options) *subcommands.Command {
