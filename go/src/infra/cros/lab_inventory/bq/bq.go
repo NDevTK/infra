@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/luci/common/bq"
+	"google.golang.org/protobuf/proto"
 
 	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
 	"infra/cros/lab_inventory/datastore"
