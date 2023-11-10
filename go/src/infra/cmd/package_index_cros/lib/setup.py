@@ -12,7 +12,7 @@ from chromite.lib import git
 from chromite.lib import path_util
 from chromite.lib import repo_util
 
-from .constants import INFRA_ROOT_DIR
+from .constants import PACKAGE_ROOT_DIR
 
 
 class Setup:
@@ -36,7 +36,7 @@ class Setup:
                chroot_out_dir: str = ""):
     self.board = board
 
-    checkout_info = path_util.DetermineCheckout(INFRA_ROOT_DIR)
+    checkout_info = path_util.DetermineCheckout(PACKAGE_ROOT_DIR)
     if checkout_info.type != path_util.CheckoutType.REPO:
       raise repo_util.NotInRepoError(
           'Script is executed outside of ChromeOS checkout')
