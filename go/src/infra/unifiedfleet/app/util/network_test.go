@@ -128,7 +128,7 @@ func TestMakeIPv4sInVlan(t *testing.T) {
 		startIP     uint32
 		length      int
 		freeStartIP net.IP
-		freeEndIP   uint32
+		freeEndIP   net.IP
 		want        []*ufspb.IP
 		ok          bool
 	}{
@@ -138,7 +138,7 @@ func TestMakeIPv4sInVlan(t *testing.T) {
 			startIP:     makeIPv4Uint32(127, 0, 0, 0),
 			length:      2,
 			freeStartIP: iputil.MustParseIP("127.0.0.1"),
-			freeEndIP:   makeIPv4Uint32(127, 0, 0, 1),
+			freeEndIP:   iputil.MustParseIP("127.0.0.1"),
 			want: []*ufspb.IP{
 				FormatIP("fake-vlan", "127.0.0.0", true, false),
 				FormatIP("fake-vlan", "127.0.0.1", false, false),
@@ -151,7 +151,7 @@ func TestMakeIPv4sInVlan(t *testing.T) {
 			startIP:     makeIPv4Uint32(127, 0, 0, 0),
 			length:      2,
 			freeStartIP: iputil.MustParseIP("127.0.0.1"),
-			freeEndIP:   makeIPv4Uint32(127, 0, 0, 2),
+			freeEndIP:   iputil.MustParseIP("127.0.0.2"),
 			want: []*ufspb.IP{
 				FormatIP("fake-vlan", "127.0.0.0", true, false),
 				FormatIP("fake-vlan", "127.0.0.1", false, false),

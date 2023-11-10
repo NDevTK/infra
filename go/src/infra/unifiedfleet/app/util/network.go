@@ -151,7 +151,7 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 		return nil, 0, "", "", 0, err
 	}
 	reservedNum := length - int(used) - 1
-	ips, err := makeIPv4sInVlan(vlanName, startIP, length, uint32ToIP(freeStartIPInt), freeEndIPInt)
+	ips, err := makeIPv4sInVlan(vlanName, startIP, length, uint32ToIP(freeStartIPInt), uint32ToIP(freeEndIPInt))
 	if err != nil {
 		return nil, 0, "", "", 0, err
 	}
@@ -172,16 +172,18 @@ func makeIPv4(vlanName string, ipv4 uint32, reserved bool) *ufspb.IP {
 var errStopEarly = errors.New("stop early")
 
 // makeIPv4sInVlan creates the IP objects in a Vlan that are intended to be created in datastore later.
-func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIP net.IP, freeEndIPInt uint32) ([]*ufspb.IP, error) {
-	endIP := startIP + uint32(length) - 1
+func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIP net.IP, freeEndIP net.IP) ([]*ufspb.IP, error) {
+	endIP := uint32ToIP(startIP + uint32(length) - 1)
 	reservedInitialIPs, err := makeReservedIPv4sInVlan(vlanName, uint32ToIP(startIP), iputil.AddToIP(freeStartIP, big.NewInt(-1)), maxPreallocatedVlanSize)
 	if err != nil {
 		return nil, errors.Annotate(err, "reserving initial IPs").Err()
 	}
 	var reservedFinalIPs []*ufspb.IP
-	if freeEndIPInt+1 <= endIP {
+	afterFreeEndIP := iputil.AddToIP(freeEndIP, big.NewInt(1))
+	le := !iputil.IsNegative(iputil.IPDiff(endIP, afterFreeEndIP))
+	if le {
 		var err error
-		reservedFinalIPs, err = makeReservedIPv4sInVlan(vlanName, uint32ToIP(freeEndIPInt+1), uint32ToIP(endIP), maxPreallocatedVlanSize)
+		reservedFinalIPs, err = makeReservedIPv4sInVlan(vlanName, afterFreeEndIP, endIP, maxPreallocatedVlanSize)
 		if err != nil {
 			return nil, errors.Annotate(err, "reserving final IPs").Err()
 		}
@@ -189,7 +191,11 @@ func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIP ne
 	ips := make([]*ufspb.IP, 0, maxPreallocatedVlanSize)
 	freeStartIPInt, err := IPv4StrToInt(freeStartIP.String())
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "converting start IP to integer").Err()
+	}
+	freeEndIPInt, err := IPv4StrToInt(freeEndIP.String())
+	if err != nil {
+		return nil, errors.Annotate(err, "converting end IP to integer").Err()
 	}
 	Uint32Iter(freeStartIPInt, freeEndIPInt, func(ip uint32) error {
 		if len(ips) > maxPreallocatedVlanSize {

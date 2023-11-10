@@ -58,7 +58,7 @@ func AddToIP(ip net.IP, offset *big.Int) net.IP {
 	ipAsInt := big.NewInt(0)
 	ipAsInt.SetBytes(ip)
 	ipAsInt.Add(ipAsInt, offset)
-	if isNegative(ipAsInt) {
+	if IsNegative(ipAsInt) {
 		return nil
 	}
 	return pad(ipAsInt.Bytes(), len(ip))
@@ -133,7 +133,7 @@ func pad(x []byte, n int) []byte {
 	return out
 }
 
-func isNegative(item *big.Int) bool {
+func IsNegative(item *big.Int) bool {
 	return item.Sign() == -1
 }
 
