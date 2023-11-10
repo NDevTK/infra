@@ -8,8 +8,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -41,7 +42,7 @@ func DeviceToBQMsgs(d *ds.DeviceOpResult) (*apibq.LabInventory, *apibq.StateConf
 	}
 
 	id := string(d.Entity.ID)
-	utime, _ := ptypes.TimestampProto(d.Entity.Updated)
+	utime := timestamppb.New(d.Entity.Updated)
 	return &apibq.LabInventory{
 			Id:          id,
 			Hostname:    d.Entity.Hostname,

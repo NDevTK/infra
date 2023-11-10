@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"github.com/golang/protobuf/proto"
+	protov1 "github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/luci/appengine/gaemiddleware"
 	authclient "go.chromium.org/luci/auth"
@@ -25,6 +25,7 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/proto"
 
 	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
 	"infra/appengine/cros/lab_inventory/app/config"
@@ -143,18 +144,18 @@ func dumpAssetInfoToBQHandler(c *router.Context) error {
 			return err
 		}
 		msgs, err := datastore.GetAllAssetInfo(ctx, false)
+		if err != nil {
+			return err
+		}
 
 		// uploader only accepts proto.Message interface. Casting AssetInfo
 		// to proto.Message interface
 		data := make([]proto.Message, len(msgs))
 		for idx, msg := range msgs {
-			data[idx] = msg
-		}
-		if err != nil {
-			return err
+			data[idx] = protov1.MessageV2(msg)
 		}
 
-		logging.Debugf(ctx, "Dumping %d asset info records to BQ", len(data))
+		logging.Debugf(ctx, "Dumping %d asset info records to BQ", len(msgs))
 		if err := uploader.Put(ctx, data...); err != nil {
 			return err
 		}
