@@ -13,7 +13,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
-	"google.golang.org/protobuf/testing/protocmp"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/util/iputil"
@@ -174,45 +173,6 @@ func TestMakeIPv4sInVlan(t *testing.T) {
 				if err != nil {
 					t.Error(err)
 				}
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
-		})
-	}
-}
-
-// TestMakeIPv4 tests the simple helper function that makes an IPv4.
-func TestMakeIPv4(t *testing.T) {
-	t.Parallel()
-
-	cases := []struct {
-		name     string
-		vlanName string
-		ipv4     uint32
-		reserved bool
-		want     *ufspb.IP
-	}{
-		{
-			name:     "simple vlan",
-			vlanName: "fake-vlan",
-			ipv4:     makeIPv4Uint32(127, 0, 0, 1),
-			reserved: true,
-			want: &ufspb.IP{
-				Id:      GetIPName("fake-vlan", Int64ToStr(int64(makeIPv4Uint32(127, 0, 0, 1)))),
-				Ipv4:    makeIPv4Uint32(127, 0, 0, 1),
-				Ipv4Str: "127.0.0.1",
-				Vlan:    "fake-vlan",
-				Reserve: true,
-			},
-		},
-	}
-
-	for _, tt := range cases {
-		tt := tt
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			got := makeIPv4(tt.vlanName, tt.ipv4, tt.reserved)
-			if diff := cmp.Diff(got, tt.want, protocmp.Transform()); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
 		})

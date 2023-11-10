@@ -151,17 +151,6 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 	return ips, length, freeStartIP, freeEndIP, reservedNum, nil
 }
 
-// makeIPv4 makes a ufs IP object.
-func makeIPv4(vlanName string, ipv4 uint32, reserved bool) *ufspb.IP {
-	return &ufspb.IP{
-		Id:      GetIPName(vlanName, Int64ToStr(int64(ipv4))),
-		Ipv4:    ipv4,
-		Ipv4Str: IPv4IntToStr(ipv4),
-		Reserve: reserved,
-		Vlan:    vlanName,
-	}
-}
-
 var errStopEarly = errors.New("stop early")
 
 // makeIPv4sInVlan creates the IP objects in a Vlan that are intended to be created in datastore later.
