@@ -9,11 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/common/errors"
@@ -188,11 +187,8 @@ func TestDeviceToBQMsgsSeq(t *testing.T) {
 	}
 }
 
-func timestampOrPanic(t time.Time) *timestamp.Timestamp {
-	out, err := ptypes.TimestampProto(t)
-	if err != nil {
-		panic(err)
-	}
+func timestampOrPanic(t time.Time) *timestamppb.Timestamp {
+	out := timestamppb.New(t)
 	return out
 }
 

@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
-	"google.golang.org/protobuf/runtime/protoiface"
+	"google.golang.org/protobuf/proto"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	apibq "infra/unifiedfleet/api/v1/models/bigquery"
@@ -61,7 +61,7 @@ func TestGetAllHwidData(t *testing.T) {
 	ctx = logging.SetLevel(ctx, logging.Error)
 	datastore.GetTestable(ctx).Consistent(true)
 
-	bqMsgs := make([]protoiface.MessageV1, 0, 4)
+	bqMsgs := make([]proto.Message, 0, 4)
 	for i := 0; i < 4; i++ {
 		hdId := fmt.Sprintf("test-hwid-%d", i)
 		hd := mockHwidData()

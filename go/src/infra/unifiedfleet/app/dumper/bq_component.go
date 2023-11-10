@@ -8,10 +8,10 @@ import (
 	"context"
 
 	"cloud.google.com/go/bigquery"
-	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
+	"google.golang.org/protobuf/proto"
 
 	bqlib "infra/cros/lab_inventory/bq"
 	ufspb "infra/unifiedfleet/api/v1/models"
