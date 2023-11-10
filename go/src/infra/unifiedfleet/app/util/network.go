@@ -8,12 +8,14 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"math/big"
 	"net"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/util/iputil"
 )
 
 // The first ip is the subnet ID
@@ -149,7 +151,7 @@ func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int,
 		return nil, 0, "", "", 0, err
 	}
 	reservedNum := length - int(used) - 1
-	ips, err := makeIPv4sInVlan(vlanName, startIP, length, freeStartIPInt, freeEndIPInt)
+	ips, err := makeIPv4sInVlan(vlanName, startIP, length, uint32ToIP(freeStartIPInt), freeEndIPInt)
 	if err != nil {
 		return nil, 0, "", "", 0, err
 	}
@@ -170,9 +172,9 @@ func makeIPv4(vlanName string, ipv4 uint32, reserved bool) *ufspb.IP {
 var errStopEarly = errors.New("stop early")
 
 // makeIPv4sInVlan creates the IP objects in a Vlan that are intended to be created in datastore later.
-func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIPInt uint32, freeEndIPInt uint32) ([]*ufspb.IP, error) {
+func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIP net.IP, freeEndIPInt uint32) ([]*ufspb.IP, error) {
 	endIP := startIP + uint32(length) - 1
-	reservedInitialIPs, err := makeReservedIPv4sInVlan(vlanName, uint32ToIP(startIP), uint32ToIP(freeStartIPInt-1), maxPreallocatedVlanSize)
+	reservedInitialIPs, err := makeReservedIPv4sInVlan(vlanName, uint32ToIP(startIP), iputil.AddToIP(freeStartIP, big.NewInt(-1)), maxPreallocatedVlanSize)
 	if err != nil {
 		return nil, errors.Annotate(err, "reserving initial IPs").Err()
 	}
@@ -185,6 +187,10 @@ func makeIPv4sInVlan(vlanName string, startIP uint32, length int, freeStartIPInt
 		}
 	}
 	ips := make([]*ufspb.IP, 0, maxPreallocatedVlanSize)
+	freeStartIPInt, err := IPv4StrToInt(freeStartIP.String())
+	if err != nil {
+		return nil, err
+	}
 	Uint32Iter(freeStartIPInt, freeEndIPInt, func(ip uint32) error {
 		if len(ips) > maxPreallocatedVlanSize {
 			return errStopEarly
