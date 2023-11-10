@@ -33,6 +33,3 @@ sed -e s/APP_ID/$APP_ID/g -e s/DATASET/$DATASET/g \
 sed -e s/APP_ID/$APP_ID/g -e s/DATASET/$DATASET/g \
   sql/create_weekly_summary_table.sql | \
   bq --project_id $APP_ID query --use_legacy_sql=false
-sed -e s/APP_ID/$APP_ID/g -e s/DATASET/$DATASET/g \
-  sql/create_rdb_swarming_corrections.sql | \
-  bq --project_id $APP_ID query --use_legacy_sql=false
