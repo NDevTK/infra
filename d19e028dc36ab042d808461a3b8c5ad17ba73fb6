@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6661ce39_5f5853b6",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2023-11-11T07:39:57Z",
+      "side": 1,
+      "message": "Good idea, I moved this check up.\n\nSide question, if this check fails and goes through the recovery actions, does it run the check again? (have some kind to retry count?)\n\nOtherwise, done",
+      "parentUuid": "5f0f1d7a_28a87b56",
+      "revId": "d19e028dc36ab042d808461a3b8c5ad17ba73fb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "481abb10_206113e8",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-11-11T04:56:31Z",
       "side": 1,
       "message": "I\u0027d suggest add `AllowFailAfterRecovery: true`, it basically means check and recovery at best efforts, but do not determine a DUT broken solely based on this.\n\nNote: this is common practice for adding new critical actions conservatively, once we confirmed recover mechanism is good enough to fix this critical action, we can then remove the flag.",
+      "revId": "d19e028dc36ab042d808461a3b8c5ad17ba73fb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c8097bc_5fbd3730",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2023-11-11T07:39:57Z",
+      "side": 1,
+      "message": "\u003e I\u0027d suggest add `AllowFailAfterRecovery: true`, it basically means check and recovery at best efforts, but do not determine a DUT broken solely based on this.\n\u003e \n\nAdded, that sounds good to me + good to know.\n\n\u003e Note: this is common practice for adding new critical actions conservatively, once we confirmed recover mechanism is good enough to fix this critical action, we can then remove the flag.\n\nAck\n\n\\- Done",
+      "parentUuid": "481abb10_206113e8",
       "revId": "d19e028dc36ab042d808461a3b8c5ad17ba73fb6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
