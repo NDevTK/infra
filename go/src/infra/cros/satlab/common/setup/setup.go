@@ -105,7 +105,7 @@ func (s *Setup) setupWithBoto(ctx context.Context) error {
 	if err := s.downloadConfigGsutil(); err != nil {
 		return fmt.Errorf("fail to download satlab-config: %w", err)
 	}
-	return nil
+	return runCmd(fmt.Sprintf("sudo chmod -R a+rX %s", site.KeyFolder))
 }
 
 // setupWithUser setups Satlab with interactive user login via a terminal
