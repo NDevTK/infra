@@ -12,6 +12,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/typed"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
@@ -155,6 +156,84 @@ func TestCreateVlan(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, PermissionDenied)
 		})
 	})
+}
+
+// TestCreateVlanTableTest tests creating vlans.
+func TestCreateVlanTableTest(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name   string
+		input  *ufspb.Vlan
+		output *ufspb.Vlan
+		ok     bool
+	}{
+		{
+			name: "medium IPv4 vlan",
+			input: &ufspb.Vlan{
+				Name:        "fake-vlan",
+				VlanAddress: "127.0.0.0/26",
+			},
+			output: &ufspb.Vlan{
+				Name:             "fake-vlan",
+				VlanAddress:      "127.0.0.0/26",
+				FreeStartIp:      "127.0.0.11",
+				FreeEndIp:        "127.0.0.62",
+				FreeStartIpv4Str: "127.0.0.11",
+				FreeEndIpv4Str:   "127.0.0.62",
+				ResourceState:    ufspb.State_STATE_SERVING,
+				ReservedIpNum:    12,
+				CapacityIp:       64,
+			},
+			ok: true,
+		},
+		{
+			name: "medium IPv4 vlan with explicit bounds",
+			input: &ufspb.Vlan{
+				Name:        "fake-vlan",
+				VlanAddress: "127.0.0.0/26",
+				FreeStartIp: "127.0.0.11",
+				FreeEndIp:   "127.0.0.62",
+			},
+			output: &ufspb.Vlan{
+				Name:             "fake-vlan",
+				VlanAddress:      "127.0.0.0/26",
+				FreeStartIp:      "127.0.0.11",
+				FreeEndIp:        "127.0.0.62",
+				FreeStartIpv4Str: "127.0.0.11",
+				FreeEndIpv4Str:   "127.0.0.62",
+				ResourceState:    ufspb.State_STATE_SERVING,
+				ReservedIpNum:    12,
+				CapacityIp:       64,
+			},
+			ok: true,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := testingContext()
+
+			got, err := CreateVlan(ctx, tt.input)
+			if got != nil {
+				got.UpdateTime = nil
+			}
+
+			switch {
+			case err == nil && !tt.ok:
+				t.Error("error is unexpectedly nil")
+			case err != nil && tt.ok:
+				t.Errorf("unexpected error: %s", err)
+			}
+
+			if diff := typed.Diff(got, tt.output); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
+			}
+		})
+	}
 }
 
 func TestUpdateVlan(t *testing.T) {
