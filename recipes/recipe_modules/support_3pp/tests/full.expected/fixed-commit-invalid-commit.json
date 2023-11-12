@@ -130,7 +130,7 @@
       "@@@STEP_LOG_LINE@AssertionError('Non git-rev commit specified: refs&#x2f;heads&#x2f;main')@    version, git_hash = source.resolve_latest(api, spec)@@@",
       "@@@STEP_LOG_LINE@AssertionError('Non git-rev commit specified: refs&#x2f;heads&#x2f;main')@                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@@@",
       "@@@STEP_LOG_LINE@AssertionError('Non git-rev commit specified: refs&#x2f;heads&#x2f;main')@@@@",
-      "@@@STEP_LOG_LINE@AssertionError('Non git-rev commit specified: refs&#x2f;heads&#x2f;main')@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/source.py\", line 119, in resolve_latest@@@",
+      "@@@STEP_LOG_LINE@AssertionError('Non git-rev commit specified: refs&#x2f;heads&#x2f;main')@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/source.py\", line 123, in resolve_latest@@@",
       "@@@STEP_LOG_LINE@AssertionError('Non git-rev commit specified: refs&#x2f;heads&#x2f;main')@    raise AssertionError(@@@",
       "@@@STEP_LOG_LINE@AssertionError('Non git-rev commit specified: refs&#x2f;heads&#x2f;main')@@@@",
       "@@@STEP_LOG_LINE@AssertionError('Non git-rev commit specified: refs&#x2f;heads&#x2f;main')@AssertionError: Non git-rev commit specified: refs/heads/main@@@",
@@ -166,7 +166,7 @@
       "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/create.py\", line 103, in build_resolved_spec",
       "    version, git_hash = source.resolve_latest(api, spec)",
       "                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-      "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/source.py\", line 119, in resolve_latest",
+      "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/source.py\", line 123, in resolve_latest",
       "    raise AssertionError(",
       "AssertionError('Non git-rev commit specified: refs/heads/main')"
     ]

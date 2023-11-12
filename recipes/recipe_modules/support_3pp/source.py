@@ -9,7 +9,7 @@ import itertools
 import operator
 import re
 
-from pkg_resources import parse_version
+import packaging.version
 
 from .run_script import run_script
 
@@ -18,7 +18,7 @@ from PB.recipe_modules.infra.support_3pp.spec import LT, LE, GT, GE, EQ, NE
 
 def _to_versions(raw_ls_remote_lines, version_join, tag_re, tag_filter_re):
   """Converts raw ls-remote output lines to a sorted (descending)
-  list of (Version, v_str, git_hash) objects.
+  list of (packaging.Version, v_str, git_hash) objects.
 
   This is used for source:git method to find latest version and git hash.
   """
@@ -37,7 +37,11 @@ def _to_versions(raw_ls_remote_lines, version_join, tag_re, tag_filter_re):
       if version_join:
         v_str = '.'.join(v_str.split(version_join))
 
-      ret.append((parse_version(v_str), v_str, git_hash))
+      try:
+        v = packaging.version.parse(v_str)
+      except packaging.version.InvalidVersion:
+        continue
+      ret.append((v, v_str, git_hash))
   return sorted(ret, reverse=True)
 
 
@@ -60,8 +64,8 @@ FILTER_TO_REVERSE_OP = {
 
 def _filters_to_func(filters):
   restrictions = [
-    functools.partial(FILTER_TO_REVERSE_OP[f.op], parse_version(f.val))
-    for f in filters
+      functools.partial(FILTER_TO_REVERSE_OP[f.op],
+                        packaging.version.parse(f.val)) for f in filters
   ]
   def _apply_filter(candidate_version):
     for restriction in restrictions:
@@ -182,7 +186,7 @@ def resolve_latest(api, spec):
     versions = _filter_versions(
         versions, source_method_pb.version_restriction)
 
-    highest_cmp = parse_version('0')
+    highest_cmp = packaging.version.parse('0')
     highest_str = ''
     git_tree_hash = ''
     for vers, v_str, git_hash in versions:
