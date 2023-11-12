@@ -234,7 +234,7 @@ func ipv4Diff(startIPv4 string, endIPv4 string) (uint64, error) {
 		return 0, errors.Annotate(err, "diffing IPs %q and %q", startIPv4, endIPv4).Err()
 	}
 	if start > end {
-		return 0, errors.Reason("end IP %q precedes start IP %q", end, start).Err()
+		return 0, errors.Reason("end IP %q precedes start IP %q", endIPv4, startIPv4).Err()
 	}
 	return uint64(end) - uint64(start), nil
 }
