@@ -3,6 +3,9 @@ description: Tricium analyzer check spelling on comments and text files.
 update_latest_ref: true
 platforms:
   - linux-amd64
+go_build_environ:
+  CGO_ENABLED:
+    linux:   0  # to avoid linking to system dynamic libraries
 go_packages:
   - infra/tricium/functions/spellchecker
 root: ../../go/bin
