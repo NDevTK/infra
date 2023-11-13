@@ -473,12 +473,13 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 	}
 
 	r := &run.Run{
-		Suite:     in.GetSuite(),
-		Model:     in.GetModel(),
-		Board:     in.GetBuildTarget(),
-		Milestone: in.GetMilestone(),
-		Build:     in.GetBuildVersion(),
-		Pool:      in.GetPool(),
+		Suite:      in.GetSuite(),
+		Model:      in.GetModel(),
+		Board:      in.GetBuildTarget(),
+		Milestone:  in.GetMilestone(),
+		Build:      in.GetBuildVersion(),
+		Pool:       in.GetPool(),
+		MaxTimeout: true,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
@@ -496,13 +497,14 @@ func (s *SatlabRpcServiceServer) RunTest(ctx context.Context, in *pb.RunTestRequ
 	}
 
 	r := &run.Run{
-		Tests:     in.GetTests(),
-		TestArgs:  in.GetTestArgs(),
-		Board:     in.GetBoard(),
-		Model:     in.GetModel(),
-		Milestone: in.GetMilestone(),
-		Build:     in.GetBuild(),
-		Pool:      in.GetPool(),
+		Tests:      in.GetTests(),
+		TestArgs:   in.GetTestArgs(),
+		Board:      in.GetBoard(),
+		Model:      in.GetModel(),
+		Milestone:  in.GetMilestone(),
+		Build:      in.GetBuild(),
+		Pool:       in.GetPool(),
+		MaxTimeout: true,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
@@ -1072,12 +1074,13 @@ func (s *SatlabRpcServiceServer) RunTestPlan(ctx context.Context, in *pb.RunTest
 	}
 
 	r := &run.Run{
-		Board:     in.GetBoard(),
-		Model:     in.GetModel(),
-		Milestone: in.GetMilestone(),
-		Build:     in.GetBuild(),
-		Pool:      in.GetPool(),
-		Testplan:  in.GetTestPlanName(),
+		Board:      in.GetBoard(),
+		Model:      in.GetModel(),
+		Milestone:  in.GetMilestone(),
+		Build:      in.GetBuild(),
+		Pool:       in.GetPool(),
+		Testplan:   in.GetTestPlanName(),
+		MaxTimeout: true,
 	}
 
 	buildLink, err := r.TriggerRun(ctx)
