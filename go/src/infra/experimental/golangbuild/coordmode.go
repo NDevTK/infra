@@ -183,6 +183,9 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 	if shard != noSharding {
 		bbArgs = append(bbArgs, "-p", fmt.Sprintf(`test_shard=%s`, string(prop)))
 	}
+	if spec.inputs.VersionFile != "" {
+		bbArgs = append(bbArgs, "-p", fmt.Sprintf(`version_file=%q`, spec.inputs.VersionFile))
+	}
 	if spec.invokedSrc.project != "go" && spec.goSrc.commit != nil {
 		bbArgs = append(bbArgs, "-p", fmt.Sprintf(`go_commit=%s`, spec.goSrc.commit.Id))
 	}
