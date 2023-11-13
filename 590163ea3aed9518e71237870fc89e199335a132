@@ -166,6 +166,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1536596_a2229786",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T21:59:09Z",
+      "side": 1,
+      "message": "thanks",
+      "parentUuid": "12ae0ad1_a63f27b6",
+      "range": {
+        "startLine": 340,
+        "startChar": 14,
+        "endLine": 340,
+        "endChar": 36
+      },
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "41437dca_66001523",
