@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1b3807e_69c7abf9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T18:53:10Z",
+      "side": 1,
+      "message": "LGTM % comment to change exec",
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d9f84d58_60e08e3d",
@@ -32,6 +49,24 @@
       "side": 1,
       "message": "I believe we should be running this on reven (flex) as it\u0027s a CrOS image at the end of the day. The overlays shouldn\u0027t have been altered to disable KVM.",
       "parentUuid": "d9f84d58_60e08e3d",
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7b028b1_7646abeb",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T18:53:10Z",
+      "side": 1,
+      "message": "ack.\n\ncc @josephsussman@google.com to be aware about changes.",
+      "parentUuid": "58ea7ab2_4c883093",
       "revId": "590163ea3aed9518e71237870fc89e199335a132",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -85,6 +120,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "856ae26e_09fb9831",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T18:53:10Z",
+      "side": 1,
+      "message": "they both uses the same tooling. `cros_run_command` allowed specify host on which to run and also specify that args is command and why to execute commands. this just more extendable in future and i try to reduce possible future issues.\n\nthe example of usage \n```\nExecName: \"cros_run_command\",\nExecExtraArgs: []string{\n\t\"host:dut\",\n\t\"command:gsctool -a -F disable\",\n},\n```",
+      "parentUuid": "423bfcfa_947df1bb",
+      "range": {
+        "startLine": 340,
+        "startChar": 14,
+        "endLine": 340,
+        "endChar": 36
+      },
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "41437dca_66001523",
         "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
         "patchSetId": 2
@@ -120,6 +179,30 @@
       "side": 1,
       "message": "It should be the case that they are enabled.",
       "parentUuid": "41437dca_66001523",
+      "range": {
+        "startLine": 347,
+        "startChar": 3,
+        "endLine": 349,
+        "endChar": 5
+      },
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a44359f0_bdd9a71c",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T18:53:10Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "fa6813cf_67bf96a7",
       "range": {
         "startLine": 347,
         "startChar": 3,
