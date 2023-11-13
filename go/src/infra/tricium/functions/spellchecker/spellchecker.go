@@ -118,6 +118,7 @@ var (
 		"supportd",      // proper name of a thing in Chromium src
 		"synopsys",      // company name
 		"tast",          // name of a ChromeOS test
+		"vell",          // ChromeOS codename
 		"vertexes",      // alternative of vertices
 		"wasnt",         // contraction, may appear in variable names
 		"weill",         // person name
