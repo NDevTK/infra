@@ -86,32 +86,30 @@ func makeReservedIPsInVlan(vlanName string, beginIP net.IP, endIP net.IP, maximu
 //
 // This is either the explicit freeStartIP given, or a fixed number of IPs
 // after the start of the overall address by default.
-func getFreeStartIP(freeStartIP string, startIP uint32) (string, uint32, error) {
+func getFreeStartIP(freeStartIP string, startIP net.IP) (net.IP, error) {
 	if freeStartIP == "" {
-		ipInt := startIP + reserveFirst
-		return IPv4IntToStr(ipInt), ipInt, nil
+		ip := iputil.AddToIP(startIP, big.NewInt(reserveFirst))
+		return ip, nil
 	}
-	ipInt, err := IPv4StrToInt(freeStartIP)
-	if err != nil {
-		return "", 0, err
+	if ip := net.ParseIP(freeStartIP); ip != nil {
+		return ip, nil
 	}
-	return IPv4IntToStr(ipInt), ipInt, nil
+	return nil, fmt.Errorf("invalid IP address %q", freeStartIP)
 }
 
 // getFreeEndIP gets the value of the last freeIP in a vlan.
 //
 // This is either the explicit freeEndIP given, or a fixed number of IPs
 // after the end of the overall IP address.
-func getFreeEndIP(freeEndIP string, startIP uint32, length int) (string, uint32, error) {
+func getFreeEndIP(freeEndIP string, startIP net.IP, length int) (net.IP, error) {
 	if freeEndIP == "" {
-		ipInt := startIP + uint32(length-reserveLast-1)
-		return IPv4IntToStr(ipInt), ipInt, nil
+		ip := iputil.AddToIP(startIP, big.NewInt(int64(length-reserveLast-1)))
+		return ip, nil
 	}
-	ipInt, err := IPv4StrToInt(freeEndIP)
-	if err != nil {
-		return "", 0, err
+	if ip := net.ParseIP(freeEndIP); ip != nil {
+		return ip, nil
 	}
-	return IPv4IntToStr(ipInt), ipInt, nil
+	return nil, fmt.Errorf("invalid IP address %q", freeEndIP)
 }
 
 // ParseVlan parses vlan to a list of IPs
@@ -119,36 +117,29 @@ func getFreeEndIP(freeEndIP string, startIP uint32, length int) (string, uint32,
 // vlanName here is a full vlan name, e.g. browser:123
 // The first 10 and last 1 ip of this cidr block will be reserved and not returned to users
 // for further operations
-func ParseVlan(vlanName, cidr, freeStartIP, freeEndIP string) ([]*ufspb.IP, int, string, string, int, error) {
+func ParseVlan(vlanName, cidr, freeStartIPStr, freeEndIPStr string) ([]*ufspb.IP, int, string, string, int, error) {
 	ip, subnet, err := net.ParseCIDR(cidr)
 	if err != nil {
 		return nil, 0, "", "", 0, errors.Reason("invalid CIDR block %q for vlan %s", cidr, vlanName).Err()
 	}
-	ipv4 := ip.Mask(subnet.Mask).To4()
-	if ipv4 == nil {
-		return nil, 0, "", "", 0, errors.Reason("invalid IPv4 CIDR block %q for vlan %s", cidr, vlanName).Err()
-	}
 	ones, _ := subnet.Mask.Size()
 	length := 1 << uint32(32-ones)
-	startIP := binary.BigEndian.Uint32(ipv4)
-	freeStartIP, freeStartIPInt, err := getFreeStartIP(freeStartIP, startIP)
+	startIP := ip
+	freeStartIP, err := getFreeStartIP(freeStartIPStr, startIP)
 	if err != nil {
 		return nil, 0, "", "", 0, errors.Annotate(err, "computing free start IP %q for vlan %s", freeStartIP, vlanName).Err()
 	}
-	freeEndIP, freeEndIPInt, err := getFreeEndIP(freeEndIP, startIP, length)
+	freeEndIP, err := getFreeEndIP(freeEndIPStr, startIP, length)
 	if err != nil {
 		return nil, 0, "", "", 0, errors.Annotate(err, "computing free end IP %q for vlan %s", freeStartIP, vlanName).Err()
 	}
-	used, err := ipv4Diff(freeStartIP, freeEndIP)
+	used := iputil.IPDiff(freeEndIP, freeStartIP)
+	reservedNum := length - int(used.Int64()) - 1
+	ips, err := makeIPv4sInVlan(vlanName, startIP, length, freeStartIP, freeEndIP)
 	if err != nil {
 		return nil, 0, "", "", 0, err
 	}
-	reservedNum := length - int(used) - 1
-	ips, err := makeIPv4sInVlan(vlanName, uint32ToIP(startIP), length, uint32ToIP(freeStartIPInt), uint32ToIP(freeEndIPInt))
-	if err != nil {
-		return nil, 0, "", "", 0, err
-	}
-	return ips, length, freeStartIP, freeEndIP, reservedNum, nil
+	return ips, length, StringifyIP(freeStartIP), StringifyIP(freeEndIP), reservedNum, nil
 }
 
 var errStopEarly = errors.New("stop early")
