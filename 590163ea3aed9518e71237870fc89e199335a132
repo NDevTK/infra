@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d9f84d58_60e08e3d",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T18:25:19Z",
+      "side": 1,
+      "message": "please add following code to exclude flex devices.\n```\nConditions: []string{\n\t\"Is a Chromebook\",\n},\n```",
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9d912c9_c56af74e",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T18:25:19Z",
+      "side": 1,
+      "message": "please use `cros_run_command` as it is better.",
+      "range": {
+        "startLine": 340,
+        "startChar": 14,
+        "endLine": 340,
+        "endChar": 36
+      },
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "41437dca_66001523",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T18:25:19Z",
+      "side": 1,
+      "message": "does all of devices is expected to have KVM? just wonder if we can split verifier and recovery. As wonder that we will perform it on all duts even we do not support it there?\n\none is example is flex devices doe snot support it probably.",
+      "range": {
+        "startLine": 347,
+        "startChar": 3,
+        "endLine": 349,
+        "endChar": 5
+      },
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
