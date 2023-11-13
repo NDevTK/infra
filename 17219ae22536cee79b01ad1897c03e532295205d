@@ -70,6 +70,24 @@
       "parentUuid": "d76ccd18_8ff073a4",
       "revId": "17219ae22536cee79b01ad1897c03e532295205d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8669d91c_0070d416",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1355298
+      },
+      "writtenOn": "2023-11-13T17:21:41Z",
+      "side": 1,
+      "message": "Requesting scheduler access for mdb/chromeos-ci-oncalls",
+      "parentUuid": "a86ca3e4_76ee0d95",
+      "revId": "17219ae22536cee79b01ad1897c03e532295205d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
