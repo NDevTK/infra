@@ -16,6 +16,24 @@
       "message": "This is a hack because I don\u0027t know how to regenerate the old protos in `infra/libs/fleet/protos`.",
       "revId": "01671127a780ba97377704d03317c6db5b750a3c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39383449_7750fb88",
+        "filename": "go/src/infra/appengine/cros/lab_inventory/app/cron/cron.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-11-13T20:34:49Z",
+      "side": 1,
+      "message": "Resolving",
+      "parentUuid": "ece95666_cf452bf1",
+      "revId": "01671127a780ba97377704d03317c6db5b750a3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
