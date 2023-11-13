@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9b9d05c_58eea7fc",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2023-11-13T23:14:06Z",
+      "side": 1,
+      "message": "Yes, after success recovery action, we\u0027ll re-run critical actions for re-check.",
+      "parentUuid": "6661ce39_5f5853b6",
+      "revId": "d19e028dc36ab042d808461a3b8c5ad17ba73fb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "481abb10_206113e8",
