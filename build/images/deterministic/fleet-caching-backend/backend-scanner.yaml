@@ -1,0 +1,11 @@
+---
+name: fleet-caching-backend/backend-scanner
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/cros/cmd/caching-backend/backend-scanner/docker/Dockerfile
+deterministic: true
+
+build:
+  - go_binary: infra/cros/cmd/caching-backend/backend-scanner
+    # ContextDir defaults to the directory with Dockerfile
+    dest: ${contextdir}/backend-scanner
