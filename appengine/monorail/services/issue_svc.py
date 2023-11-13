@@ -2966,9 +2966,10 @@ class IssueService(object):
 
     # Update migration_modified timestamp for affected issues.
     deduped_issue_ids = list(set(affected_issue_ids))
-    self.issue_tbl.Update(
-        cnxn, {'migration_modified': timestamp},
-        id=deduped_issue_ids,
-        commit=commit)
+    if deduped_issue_ids:
+      self.issue_tbl.Update(
+          cnxn, {'migration_modified': timestamp},
+          id=deduped_issue_ids,
+          commit=commit)
 
     return deduped_issue_ids
