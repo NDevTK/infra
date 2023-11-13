@@ -16,12 +16,17 @@ USING (
     target_platform,
     builder,
     test_suite,
-    -- Total runtime in seconds divided by the seconds in the time window
-    total_runtime / (LEAST(
+    -- Total runtime in seconds (corrected to swarming time) divided by the
+    -- seconds in the time window
+    corrected_swarming_runtime / (LEAST(
         TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(`date`, "PST8PDT"), SECOND),
         60 * 60 * 24
-        )) AS avg_cores
-  FROM {project}.{dataset}.raw_metrics
+        )) AS avg_bots,
+    corrected_core_runtime / (LEAST(
+        TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(`date`, "PST8PDT"), SECOND),
+        60 * 60 * 24
+        )) AS avg_cores,
+  FROM {project}.{dataset}.raw_metrics AS m
   WHERE `date` BETWEEN @from_date AND @to_date
   ) AS S
 ON
@@ -38,6 +43,7 @@ ON
   AND (T.test_suite = S.test_suite OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
+    avg_bots = S.avg_bots,
     avg_cores = S.avg_cores;
 
 -- Update daily test metric
@@ -55,12 +61,17 @@ USING (
     builder,
     bucket,
     test_suite,
-    -- Total runtime in seconds divided by the seconds in the time window
-    total_runtime / (LEAST(
+    -- Total runtime in seconds (corrected to swarming time) divided by the
+    -- seconds in the time window
+    corrected_swarming_runtime / (LEAST(
         TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(`date`, "PST8PDT"), SECOND),
         60 * 60 * 24
-        )) AS avg_cores
-  FROM {project}.{dataset}.daily_test_metrics
+        )) AS avg_bots,
+    corrected_core_runtime / (LEAST(
+        TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(`date`, "PST8PDT"), SECOND),
+        60 * 60 * 24
+        )) AS avg_cores,
+  FROM {project}.{dataset}.daily_test_metrics AS m
   WHERE `date` BETWEEN @from_date AND @to_date
   ) AS S
 ON
@@ -74,6 +85,7 @@ ON
   AND (T.test_suite = S.test_suite OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
+    avg_bots = S.avg_bots,
     avg_cores = S.avg_cores;
 
 -- Update weekly test metric
@@ -91,12 +103,17 @@ USING (
     builder,
     bucket,
     test_suite,
-    -- Total runtime in seconds divided by the seconds in the time window
-    total_runtime / (LEAST(
+    -- Total runtime in seconds (corrected to swarming time) divided by the
+    -- seconds in the time window
+    corrected_swarming_runtime / (LEAST(
         TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(DATE_TRUNC(`date`, WEEK), "PST8PDT"), SECOND),
         60 * 60 * 24 * 7
-        )) AS avg_cores
-  FROM {project}.{dataset}.weekly_test_metrics
+        )) AS avg_bots,
+    corrected_core_runtime / (LEAST(
+        TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(DATE_TRUNC(`date`, WEEK), "PST8PDT"), SECOND),
+        60 * 60 * 24 * 7
+        )) AS avg_cores,
+  FROM {project}.{dataset}.weekly_test_metrics AS m
   WHERE `date` BETWEEN
     DATE_TRUNC(DATE(@from_date), WEEK) AND
     DATE_ADD(DATE_TRUNC(DATE(@to_date), WEEK), INTERVAL 6 DAY)
@@ -114,6 +131,7 @@ ON
   AND (T.test_suite = S.test_suite OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
+    avg_bots = S.avg_bots,
     avg_cores = S.avg_cores;
 
 -- Update daily file metric
@@ -124,12 +142,17 @@ USING (
     repo,
     component,
     node_name,
-    -- Total runtime in seconds divided by the seconds in the time window
-    total_runtime / (LEAST(
+    -- Total runtime in seconds (corrected to swarming time) divided by the
+    -- seconds in the time window
+    corrected_swarming_runtime / (LEAST(
         TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(`date`, "PST8PDT"), SECOND),
         60 * 60 * 24
-        )) AS avg_cores
-  FROM {project}.{dataset}.daily_file_metrics
+        )) AS avg_bots,
+    corrected_core_runtime / (LEAST(
+        TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(`date`, "PST8PDT"), SECOND),
+        60 * 60 * 24
+        )) AS avg_cores,
+  FROM {project}.{dataset}.daily_file_metrics AS m
   WHERE `date` BETWEEN @from_date AND @to_date
   ) AS S
 ON
@@ -140,6 +163,7 @@ ON
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
+    avg_bots = S.avg_bots,
     avg_cores = S.avg_cores;
 
 -- Update weekly file metric
@@ -150,12 +174,17 @@ USING (
     repo,
     component,
     node_name,
-    -- Total runtime in seconds divided by the seconds in the time window
-    total_runtime / (LEAST(
+    -- Total runtime in seconds (corrected to swarming time) divided by the
+    -- seconds in the time window
+    corrected_swarming_runtime / (LEAST(
         TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(DATE_TRUNC(`date`, WEEK), "PST8PDT"), SECOND),
         60 * 60 * 24 * 7
-        )) AS avg_cores
-  FROM {project}.{dataset}.weekly_file_metrics
+        )) AS avg_bots,
+    corrected_core_runtime / (LEAST(
+        TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(DATE_TRUNC(`date`, WEEK), "PST8PDT"), SECOND),
+        60 * 60 * 24 * 7
+        )) AS avg_cores,
+  FROM {project}.{dataset}.weekly_file_metrics AS m
   WHERE `date` BETWEEN
     DATE_TRUNC(DATE(@from_date), WEEK) AND
     DATE_ADD(DATE_TRUNC(DATE(@to_date), WEEK), INTERVAL 6 DAY)
@@ -170,4 +199,5 @@ ON
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
+    avg_bots = S.avg_bots,
     avg_cores = S.avg_cores;

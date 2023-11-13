@@ -33,6 +33,8 @@ USING (
       SUM(num_failures) AS num_failures,
       SUM(num_flake) AS num_flake,
       SUM(total_runtime) AS total_runtime,
+      SUM(corrected_swarming_runtime) AS corrected_swarming_runtime,
+      SUM(corrected_core_runtime) AS corrected_core_runtime,
       -- The average for the file is still the sum of the tests contained within
       SUM(avg_runtime) AS avg_runtime,
       SUM(p50_runtime) AS p50_runtime,
@@ -63,6 +65,8 @@ USING (
     SUM(num_failures) AS num_failures,
     SUM(num_flake) AS num_flake,
     SUM(total_runtime) AS total_runtime,
+    SUM(corrected_swarming_runtime) AS corrected_swarming_runtime,
+    SUM(corrected_core_runtime) AS corrected_core_runtime,
     SUM(avg_runtime) AS avg_runtime,
     SUM(p50_runtime) AS p50_runtime,
     SUM(p90_runtime) AS p90_runtime,
@@ -81,7 +85,11 @@ WHEN MATCHED THEN
     num_failures = S.num_failures,
     num_flake = S.num_flake,
     avg_runtime = S.avg_runtime,
-    total_runtime = S.total_runtime
+    total_runtime = S.total_runtime,
+    corrected_swarming_runtime = S.corrected_swarming_runtime,
+    corrected_core_runtime = S.corrected_core_runtime,
+    p50_runtime = S.p50_runtime,
+    p90_runtime = S.p90_runtime
 WHEN NOT MATCHED THEN
-  INSERT (`date`, repo, component, node_name, is_file, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
-  VALUES (`date`, repo, component, node_name, is_file, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  INSERT (`date`, repo, component, node_name, is_file, num_runs, num_failures, num_flake, total_runtime, corrected_swarming_runtime, corrected_core_runtime, avg_runtime, p50_runtime, p90_runtime)
+  VALUES (`date`, repo, component, node_name, is_file, num_runs, num_failures, num_flake, total_runtime, corrected_swarming_runtime, corrected_core_runtime, avg_runtime, p50_runtime, p90_runtime)

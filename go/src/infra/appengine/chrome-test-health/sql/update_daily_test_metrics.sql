@@ -20,6 +20,8 @@ USING (
     SUM(num_failures) num_failures,
     SUM(num_flake) num_flake,
     SUM(total_runtime) total_runtime,
+    SUM(corrected_swarming_runtime) corrected_swarming_runtime,
+    SUM(corrected_core_runtime) corrected_core_runtime,
     -- Weighted averages
     SUM(avg_runtime * num_runs) / SUM(num_runs) avg_runtime,
     SUM(p50_runtime * num_runs) / SUM(num_runs) p50_runtime,
@@ -47,7 +49,11 @@ WHEN MATCHED THEN
     num_failures = S.num_failures,
     num_flake = S.num_flake,
     avg_runtime = S.avg_runtime,
-    total_runtime = S.total_runtime
+    total_runtime = S.total_runtime,
+    corrected_swarming_runtime = S.corrected_swarming_runtime,
+    corrected_core_runtime = S.corrected_core_runtime,
+    p50_runtime = S.p50_runtime,
+    p90_runtime = S.p90_runtime
 WHEN NOT MATCHED THEN
-  INSERT (`date`, test_id, test_name, file_name, repo, component, builder, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
-  VALUES (`date`, test_id, test_name, file_name, repo, component, builder, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  INSERT (`date`, test_id, test_name, file_name, repo, component, builder, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, corrected_swarming_runtime, corrected_core_runtime, avg_runtime, p50_runtime, p90_runtime)
+  VALUES (`date`, test_id, test_name, file_name, repo, component, builder, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, corrected_swarming_runtime, corrected_core_runtime, avg_runtime, p50_runtime, p90_runtime)

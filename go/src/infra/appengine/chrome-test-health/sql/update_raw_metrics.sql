@@ -122,14 +122,21 @@ USING (
       -- metrics
       t.num_runs,
       t.num_failures,
-      f.num_flake,
+      IFNULL(f.num_flake, 0) AS num_flake,
       t.avg_runtime,
       t.total_runtime,
+      -- corrected_total_runtime can be null if we don't have a correction
+      t.total_runtime * c.swarming_correction AS corrected_swarming_runtime,
+      t.total_runtime * c.core_correction AS corrected_core_runtime,
       t.runtime_quantiles[500] p50_runtime,
       t.runtime_quantiles[900] p90_runtime,
     FROM tests AS t
-    LEFT JOIN flakes AS f
+    LEFT OUTER JOIN flakes AS f
       USING (variant_hash, test_id, date)
+    LEFT OUTER JOIN {project}.{dataset}.rdb_swarming_correction AS c ON
+      t.builder = c.builder
+      AND t.test_suite = c.test_suite
+      AND t.date = c.date
   ) AS S
 ON
   T.date = S.date
@@ -152,7 +159,11 @@ WHEN MATCHED THEN
     num_failures = S.num_failures,
     num_flake = S.num_flake,
     avg_runtime = S.avg_runtime,
-    total_runtime = S.total_runtime
+    total_runtime = S.total_runtime,
+    corrected_swarming_runtime = S.corrected_swarming_runtime,
+    corrected_core_runtime = S.corrected_core_runtime,
+    p50_runtime = S.p50_runtime,
+    p90_runtime = S.p90_runtime
 WHEN NOT MATCHED THEN
-  INSERT (`date`, test_id, test_name, file_name, repo, component, variant_hash, `project`, bucket, target_platform, builder, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
-  VALUES (`date`, test_id, test_name, file_name, repo, component, variant_hash, `project`, bucket, target_platform, builder, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  INSERT (`date`, test_id, test_name, file_name, repo, component, variant_hash, `project`, bucket, target_platform, builder, test_suite, num_runs, num_failures, num_flake, total_runtime, corrected_swarming_runtime, corrected_core_runtime, avg_runtime, p50_runtime, p90_runtime)
+  VALUES (`date`, test_id, test_name, file_name, repo, component, variant_hash, `project`, bucket, target_platform, builder, test_suite, num_runs, num_failures, num_flake, total_runtime, corrected_swarming_runtime, corrected_core_runtime, avg_runtime, p50_runtime, p90_runtime)
