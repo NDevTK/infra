@@ -263,6 +263,22 @@ const initialState: DataSourcesState = populateMaps({
           }),
         },
         {
+          name: 'Retry With Patch Rate',
+          unit: Unit.Percentage,
+          hasSubsections: true,
+          description: `Percentage of times where the suite was run and then
+          ran a retry with patch`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 0.05),
+        },
+        {
+          name: 'Retry Without Patch Rate',
+          unit: Unit.Percentage,
+          hasSubsections: true,
+          description: `Percentage of times where the suite was run and then
+          ran a retry without patch`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 0.05),
+        },
+        {
           name: 'P50 Total Suite Runtime',
           unit: Unit.Duration,
           hasSubsections: true,

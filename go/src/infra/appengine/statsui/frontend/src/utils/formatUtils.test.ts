@@ -29,6 +29,12 @@ test.each([
   [3.14159, Unit.Number, '3.142'],
   [150, Unit.Number, '150'],
   [1050, Unit.Number, '1,050'],
+
+  // Percent
+  [1, Unit.Percentage, '100.00%'],
+  [0, Unit.Percentage, '0.00%'],
+  [0.12345, Unit.Percentage, '12.35%'],
+  [0.12344, Unit.Percentage, '12.34%'],
 ])('.format(%p, %p)', (value, unit, expected) => {
   expect(format(value, unit)).toBe(expected);
 });

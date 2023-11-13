@@ -9,6 +9,7 @@ export enum Unit {
   Date = 'date',
   Duration = 'duration',
   Number = 'number',
+  Percentage = 'percentage',
 }
 
 export const DateFormat = 'MM/dd/yy';
@@ -53,6 +54,12 @@ export function format(value: string | number, unit: Unit): string {
         return '';
       }
       return numberFormat.format(value);
+    }
+    case Unit.Percentage: {
+      if (typeof value === 'string') {
+        return '';
+      }
+      return String((value * 100).toFixed(2)) + "%"
     }
   }
 }
