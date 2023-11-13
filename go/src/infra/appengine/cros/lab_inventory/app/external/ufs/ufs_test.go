@@ -51,7 +51,7 @@ func testingContext() context.Context {
 }
 
 func TestUpdateUFSDutState(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	Convey("UpdateUFSDutState", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
@@ -140,7 +140,7 @@ func TestUpdateUFSDutState(t *testing.T) {
 }
 
 func TestGetUFSDevicesByIds(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	Convey("GetUFSDevicesByIds", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
@@ -187,7 +187,7 @@ func TestGetUFSDevicesByIds(t *testing.T) {
 }
 
 func TestGetUFSDevicesByHostnames(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	Convey("GetUFSDevicesByHostnames", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
@@ -234,7 +234,7 @@ func TestGetUFSDevicesByHostnames(t *testing.T) {
 }
 
 func TestGetUFSDevicesByModels(t *testing.T) {
-	t.Parallel()
+	/// t.Parallel()
 	Convey("GetUFSDevicesByModels", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
@@ -280,7 +280,7 @@ func TestGetUFSDevicesByModels(t *testing.T) {
 }
 
 func TestGetUFSDutStateForDevices(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	dut1 := &lab.ChromeOSDevice{
 		Id: &lab.ChromeOSDeviceID{Value: "test-machine-dut"},
 	}
@@ -330,7 +330,7 @@ func TestGetUFSDutStateForDevices(t *testing.T) {
 }
 
 func TestGetAllUFSDevicesData(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	Convey("GetAllUFSDevicesData", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
@@ -371,7 +371,7 @@ func TestGetAllUFSDevicesData(t *testing.T) {
 }
 
 func TestGetAllUFSDutStatesData(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	Convey("GetAllUFSDutStatesData", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
@@ -582,7 +582,7 @@ func mockIV2ChromeOSDeviceLabstation(assetTag, hostname, model, board, variant s
 }
 
 func TestCreateMachineLSEs(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	Convey("CreateMachineLSEs", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
@@ -718,7 +718,7 @@ func TestCreateMachineLSEs(t *testing.T) {
 }
 
 func TestUpdateMachineLSEs(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	Convey("UpdateMachineLSEs", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
@@ -760,7 +760,7 @@ func TestUpdateMachineLSEs(t *testing.T) {
 }
 
 func TestDeleteMachineLSEs(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	Convey("DeleteMachineLSEs", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
@@ -823,7 +823,7 @@ func TestDeleteMachineLSEs(t *testing.T) {
 }
 
 func TestGetAssets(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	Convey("GetAssets", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
@@ -851,7 +851,7 @@ func TestGetAssets(t *testing.T) {
 }
 
 func TestUpdateAssets(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 	Convey("UpdateAssets", t, func() {
 		ctx := testingContext()
 		ctx = external.WithTestingContext(ctx)
