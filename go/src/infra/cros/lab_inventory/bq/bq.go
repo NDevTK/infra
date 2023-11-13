@@ -10,8 +10,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"go.chromium.org/luci/common/bq"
 
 	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
@@ -48,7 +49,7 @@ func GetRegisteredAssetsProtos(ctx context.Context) []proto.Message {
 	if err != nil {
 		return nil
 	}
-	ts := ptypes.TimestampNow()
+	ts := timestamppb.Now()
 	msgs := make([]proto.Message, len(assets))
 	for i, a := range assets {
 		msgs[i] = &apibq.RegisteredAsset{
@@ -69,7 +70,7 @@ func GetDeviceConfigProtos(ctx context.Context) []proto.Message {
 	msgs := make([]proto.Message, len(devConfigs))
 	i := 0
 	for dc, t := range devConfigs {
-		ut, _ := ptypes.TimestampProto(t)
+		ut := timestamppb.New(t)
 		msgs[i] = &apibq.DeviceConfigInventory{
 			Id:          deviceconfig.GetDeviceConfigIDStr(dc.GetId()),
 			Config:      dc,
