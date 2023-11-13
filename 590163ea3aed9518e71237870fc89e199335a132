@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "58ea7ab2_4c883093",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2023-11-13T18:31:18Z",
+      "side": 1,
+      "message": "I believe we should be running this on reven (flex) as it\u0027s a CrOS image at the end of the day. The overlays shouldn\u0027t have been altered to disable KVM.",
+      "parentUuid": "d9f84d58_60e08e3d",
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e9d912c9_c56af74e",
         "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
         "patchSetId": 2
@@ -43,6 +61,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "423bfcfa_947df1bb",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2023-11-13T18:31:18Z",
+      "side": 1,
+      "message": "It seemed that all these use the default runner: https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/cros/recovery/internal/execs/cros/cros_execs.go;l\u003d266-379?q\u003dcros_run_command\n\nSo I used the Shell command.\nDo we need this to be `cros_run_command`?",
+      "parentUuid": "e9d912c9_c56af74e",
+      "range": {
+        "startLine": 340,
+        "startChar": 14,
+        "endLine": 340,
+        "endChar": 36
+      },
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "41437dca_66001523",
         "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
         "patchSetId": 2
@@ -54,6 +96,30 @@
       "writtenOn": "2023-11-13T18:25:19Z",
       "side": 1,
       "message": "does all of devices is expected to have KVM? just wonder if we can split verifier and recovery. As wonder that we will perform it on all duts even we do not support it there?\n\none is example is flex devices doe snot support it probably.",
+      "range": {
+        "startLine": 347,
+        "startChar": 3,
+        "endLine": 349,
+        "endChar": 5
+      },
+      "revId": "590163ea3aed9518e71237870fc89e199335a132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa6813cf_67bf96a7",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2023-11-13T18:31:18Z",
+      "side": 1,
+      "message": "It should be the case that they are enabled.",
+      "parentUuid": "41437dca_66001523",
       "range": {
         "startLine": 347,
         "startChar": 3,
