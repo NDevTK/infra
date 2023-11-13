@@ -19,7 +19,7 @@ const (
 	// moSysSkuCmd will retrieve the SKU label of the DUT.
 	moSysSkuCmd                 = "mosys platform sku"
 	crosIDSkuCmd                = "crosid -f SKU"
-	cmdAudioLatencyToolkitCheck = "lsusb -vv -d 16c0:0483 | grep \"Teensyduino\""
+	cmdAudioLatencyToolkitCheck = "lsusb -vv -d 16c0: | grep \"Teensyduino\""
 )
 
 // updateDeviceSKUExec updates device's SKU label if not present in inventory
