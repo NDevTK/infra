@@ -1,0 +1,129 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad2b0a72_e15bdc73",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T23:59:52Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "873bc35f_9bb74504",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/backend-template.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T23:59:52Z",
+      "side": 1,
+      "message": "please add a few details of usage of the template.",
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "437f64aa_6725f526",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T23:59:52Z",
+      "side": 1,
+      "message": "is it max/min cache size expectations?",
+      "range": {
+        "startLine": 42,
+        "startChar": 51,
+        "endLine": 42,
+        "endChar": 80
+      },
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dbb67e3b_5ef3dcee",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T23:59:52Z",
+      "side": 1,
+      "message": "please add description of the scruct",
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b57d6aec_431e9a5a",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T23:59:52Z",
+      "side": 1,
+      "message": "please add description of the struct, if possible details of the fields or usage. (also ok to to have description per group of fields.",
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "70bbd33d_45f8953d",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T23:59:52Z",
+      "side": 1,
+      "message": "nit: empty line between description and package",
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43f9709e_19b39a5a",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-13T23:59:52Z",
+      "side": 1,
+      "message": "nit: maybe add expectations field?  nit as data can be big but still better to see the result and expectations of the function.",
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
