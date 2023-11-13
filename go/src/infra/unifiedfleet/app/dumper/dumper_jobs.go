@@ -22,7 +22,7 @@ var Jobs = []*cron.CronTab{
 		Name:     "ufs.dumper.daily",
 		Time:     20 * time.Minute,
 		TrigType: cron.DAILY,
-		Job:      dump,
+		Job:      dumpDaily,
 	},
 	{
 		// Dump configs, registrations, inventory and states to BQ

@@ -224,28 +224,29 @@ func dumpChangeSnapshotHelper(ctx context.Context, bqClient *bigquery.Client) er
 	return nil
 }
 
-func dumpConfigurations(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
-	return dumpEntitiesHelper(ctx, bqClient, curTimeStr, hourly, configurationDumpToolkit)
+func dumpConfigurations(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) error {
+	return dumpTables(ctx, bqClient, curTimeStr, hourly, configurationDumpToolkit)
 }
 
-func dumpRegistration(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
-	return dumpEntitiesHelper(ctx, bqClient, curTimeStr, hourly, registrationDumpToolkit)
+func dumpRegistration(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) error {
+	return dumpTables(ctx, bqClient, curTimeStr, hourly, registrationDumpToolkit)
 }
 
-func dumpInventory(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
-	return dumpEntitiesHelper(ctx, bqClient, curTimeStr, hourly, inventoryDumpToolkit)
+func dumpInventory(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) error {
+	return dumpTables(ctx, bqClient, curTimeStr, hourly, inventoryDumpToolkit)
 }
 
-func dumpState(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) (err error) {
-	return dumpEntitiesHelper(ctx, bqClient, curTimeStr, hourly, stateDumpToolkit)
+func dumpState(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) error {
+	return dumpTables(ctx, bqClient, curTimeStr, hourly, stateDumpToolkit)
 }
 
-func dumpEntitiesHelper(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool, dumpToolkit map[string]getAllFunc) (err error) {
-	for k, f := range dumpToolkit {
+func dumpTables(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool, funcs map[string]getAllFunc) error {
+	var errs []error
+	for k, f := range funcs {
 		logging.Infof(ctx, "dumping %s", k)
 		msgs, err := f(ctx)
 		if err != nil {
-			return err
+			errs = append(errs, err)
 		}
 		name := k
 		if len(msgs) == 0 {
@@ -258,10 +259,10 @@ func dumpEntitiesHelper(ctx context.Context, bqClient *bigquery.Client, curTimeS
 			name = fmt.Sprintf("%s$%s", k, curTimeStr)
 		}
 		if err := uploadDumpToBQ(ctx, bqClient, msgs, name); err != nil {
-			return err
+			errs = append(errs, err)
 		}
 	}
-	return nil
+	return errors.Join(errs...)
 }
 
 // getCloudStorageWriter creates a storage writer that uses the UFS bucket
