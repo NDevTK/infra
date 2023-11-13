@@ -6,6 +6,7 @@ package controller
 
 import (
 	"context"
+	"net"
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
@@ -39,15 +40,26 @@ func CreateVlan(ctx context.Context, vlan *ufspb.Vlan) (*ufspb.Vlan, error) {
 			return errors.Annotate(err, "CreateVlan - validation failed").Err()
 		}
 
-		ips, length, freeStartIP, freeEndIP, reservedNum, err = util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
+		ips, length, freeStartIP, freeEndIP, reservedNum, err = util.ParseVlan(
+			vlan.GetName(),
+			vlan.GetVlanAddress(),
+			stringOr(vlan.GetFreeStartIp(), vlan.GetFreeStartIpv4Str()),
+			stringOr(vlan.GetFreeEndIp(), vlan.GetFreeEndIpv4Str()),
+		)
 		if err != nil {
 			return errors.Annotate(err, "CreateVlan").Err()
 		}
 		vlan.CapacityIp = int32(length)
 		vlan.ResourceState = ufspb.State_STATE_SERVING
 		vlan.VlanNumber = util.GetSuffixAfterSeparator(vlan.GetName(), ":")
-		vlan.FreeStartIpv4Str = freeStartIP
-		vlan.FreeEndIpv4Str = freeEndIP
+		vlan.FreeStartIp = freeStartIP
+		vlan.FreeEndIp = freeEndIP
+		if net.ParseIP(freeStartIP).To4() != nil {
+			vlan.FreeStartIpv4Str = freeStartIP
+		}
+		if net.ParseIP(freeEndIP).To4() != nil {
+			vlan.FreeEndIpv4Str = freeEndIP
+		}
 		vlan.ReservedIpNum = int64(reservedNum)
 
 		if _, err = configuration.BatchUpdateVlans(ctx, []*ufspb.Vlan{vlan}); err != nil {
@@ -560,4 +572,11 @@ func setRealmForVlan(vlan *ufspb.Vlan) {
 	} else {
 		vlan.Realm = ""
 	}
+}
+
+func stringOr(a, b string) string {
+	if a == "" {
+		return b
+	}
+	return a
 }
