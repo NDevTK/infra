@@ -30,6 +30,7 @@ func crosRepairCriticalActions(skipRepairFailState bool) []string {
 		"Set dev_boot_usb is enabled",
 		"Verify if booted from priority kernel",
 		"Verify rootfs is on fs-verity",
+		"Check KVM is enabled",
 		"Has repair-request for re-provision",
 		"Check if last provision was good",
 		"Python is present",
@@ -328,6 +329,27 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode by USB-drive",
 			},
+		},
+		"Check KVM is enabled": {
+			Docs: []string{
+				"Check KVM is enabled from KVM device path on the DUT",
+			},
+			Dependencies: []string{
+				"Internal storage is responsive",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:ls /dev/kvm",
+				"background:false",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 15,
+			},
+			RecoveryActions: []string{
+				"Cold reset by servo and wait for SSH",
+			},
+			AllowFailAfterRecovery: true,
 		},
 		"Has repair-request for re-provision": {
 			Docs: []string{
