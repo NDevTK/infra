@@ -105,7 +105,7 @@ func TestParseVlanTableTest(t *testing.T) {
 		{
 			name:        "ipv6 happy path with 1 free IP",
 			vlanName:    "fake-vlan",
-			cidr:        "aaaa::/30",
+			cidr:        "aaaa::/126",
 			freeStartIP: "aaaa::1",
 			freeEndIP:   "aaaa::1",
 			want: parseVlanOutput{
@@ -145,7 +145,7 @@ func TestParseVlanTableTest(t *testing.T) {
 		{
 			name:        "ipv6 happy path with 2 free IPs",
 			vlanName:    "fake-vlan",
-			cidr:        "aaaa::/30",
+			cidr:        "aaaa::/126",
 			freeStartIP: "aaaa::1",
 			freeEndIP:   "aaaa::2",
 			want: parseVlanOutput{

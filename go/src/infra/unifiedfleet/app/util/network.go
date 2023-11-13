@@ -122,8 +122,8 @@ func ParseVlan(vlanName, cidr, freeStartIPStr, freeEndIPStr string) ([]*ufspb.IP
 	if err != nil {
 		return nil, 0, "", "", 0, errors.Reason("invalid CIDR block %q for vlan %s", cidr, vlanName).Err()
 	}
-	ones, _ := subnet.Mask.Size()
-	length := 1 << uint32(32-ones)
+	ones, bits := subnet.Mask.Size()
+	length := 1 << (bits - ones)
 	startIP := ip
 	freeStartIP, err := getFreeStartIP(freeStartIPStr, startIP)
 	if err != nil {
