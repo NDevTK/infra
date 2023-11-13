@@ -92,14 +92,16 @@ func btpeerRepairPlan() *Plan {
 				Docs: []string{
 					"Retrieves the production btpeer chameleond config from GCS and stores it in the exec state for later reference.",
 				},
-				ExecName: "btpeer_fetch_btpeer_chameleond_release_config",
+				ExecName:   "btpeer_fetch_btpeer_chameleond_release_config",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Identify expected chameleond release bundle": {
 				Docs: []string{
 					"Identifies the expected chameleond release bundle based off of the config and DUT host.",
 					"Note: For now this step ignores the DUT host and always selects the latest, non-next bundle.",
 				},
-				ExecName: "btpeer_identify_expected_chameleond_release_bundle",
+				ExecName:   "btpeer_identify_expected_chameleond_release_bundle",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Fetch installed chameleond bundle commit from btpeer": {
 				Docs: []string{

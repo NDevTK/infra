@@ -243,14 +243,16 @@ func wifiRouterRepairPlan() *Plan {
 				Docs: []string{
 					"Retrieves the production OpenWrt image config from GCS and stores it in the controller state for later reference.",
 				},
-				ExecName: "wifi_router_openwrt_fetch_config",
+				ExecName:   "wifi_router_openwrt_fetch_config",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Identify expected OS image for this OpenWrt device": {
 				Docs: []string{
 					"Identifies the expected OS image for this OpenWrt device based off of its image build info, the image config, and the host.",
 					"The UUID of the expected image is stored in the controller state for later reference.",
 				},
-				ExecName: "wifi_router_openwrt_identify_expected_image",
+				ExecName:   "wifi_router_openwrt_identify_expected_image",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Device has expected OpenWrt OS image": {
 				Docs: []string{
