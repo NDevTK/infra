@@ -113,6 +113,7 @@ func prebuiltID(spec *buildSpec) (string, error) {
 		fmt.Fprintf(details, "%v=%v", k, spec.inputs.Env[k])
 	}
 	fmt.Fprintf(details, "xcode=%v", spec.inputs.XcodeVersion)
+	fmt.Fprintf(details, "version=%v", spec.inputs.VersionFile)
 
 	return fmt.Sprintf("%s-%s-%s-%x", spec.targetPort.GOOS, spec.targetPort.GOARCH, rev, details.Sum(nil)), nil
 }

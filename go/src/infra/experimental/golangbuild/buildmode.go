@@ -6,7 +6,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"infra/experimental/golangbuild/golangbuildpb"
+	"path/filepath"
 
 	"go.chromium.org/luci/luciexe/build"
 )
@@ -58,6 +60,20 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 
 	// Fetch the main Go repository into goroot.
 	if err := fetchRepo(ctx, spec.goSrc, spec.goroot, spec.inputs); err != nil {
+		return err
+	}
+
+	// Write out the VERSION file.
+	var version string
+	switch {
+	case spec.inputs.VersionFile != "":
+		version = spec.inputs.VersionFile
+	case spec.goSrc.change != nil:
+		version = fmt.Sprintf("devel %d/%d", spec.goSrc.change.Change, spec.goSrc.change.Patchset)
+	case spec.goSrc.commit != nil:
+		version = fmt.Sprintf("devel %s", spec.goSrc.commit.Id)
+	}
+	if err := writeFile(ctx, filepath.Join(spec.goroot, "VERSION"), version); err != nil {
 		return err
 	}
 

@@ -28,6 +28,10 @@ message Inputs {
   // Note: this property is mutable in the builder configuration.
   string go_commit = 19;
 
+  // VersionFile specifies the contents of the VERSION file to write when
+  // building Go. If unset, a devel version will be generated.
+  string version_file = 23;
+
   // BootstrapVersion specifies the version of Go to use as the bootstrap
   // toolchain when needed.
   string bootstrap_version = 16;

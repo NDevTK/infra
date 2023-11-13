@@ -245,17 +245,7 @@ func fetchRepoChangeAsIs(ctx context.Context, inputs *golangbuildpb.Inputs, chan
 		return err
 	}
 
-	if err := cloneFromCache(ctx, inputs, change.Host, change.Project, dst, sha); err != nil {
-		return err
-	}
-
-	if change.Project == "go" {
-		if err := writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset)); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return cloneFromCache(ctx, inputs, change.Host, change.Project, dst, sha)
 }
 
 // fetchRepoChangeWithCherryPick checks out a change by cherry-picking it on
@@ -282,11 +272,6 @@ func fetchRepoChangeWithCherryPick(ctx context.Context, inputs *golangbuildpb.In
 		return err
 	}
 
-	if change.Project == "go" {
-		if err := writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset)); err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
@@ -297,16 +282,7 @@ func fetchRepoAtCommit(ctx context.Context, inputs *golangbuildpb.Inputs, commit
 		return err
 	}
 
-	if err := cloneFromCache(ctx, inputs, commit.Host, commit.Project, dst, commit.Id); err != nil {
-		return err
-	}
-
-	if commit.Project == "go" {
-		if err := writeVersionFile(ctx, dst, commit.Id); err != nil {
-			return err
-		}
-	}
-	return nil
+	return cloneFromCache(ctx, inputs, commit.Host, commit.Project, dst, commit.Id)
 }
 
 // fetchDependencies uses 'go mod download' to fetch
@@ -375,10 +351,6 @@ func goModDownload(ctx context.Context, spec *buildSpec, stepName, dir string) (
 		return lucierrors.Annotate(err, "Failed to run %q", stepName).Err()
 	}
 	return nil
-}
-
-func writeVersionFile(ctx context.Context, dst, version string) error {
-	return writeFile(ctx, filepath.Join(dst, "VERSION"), "devel "+version)
 }
 
 func writeFile(ctx context.Context, path, data string) (err error) {
