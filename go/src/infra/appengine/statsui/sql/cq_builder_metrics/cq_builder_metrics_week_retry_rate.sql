@@ -21,7 +21,7 @@ USING
   (
   WITH builds AS (
     SELECT
-      EXTRACT(DATE FROM b.start_time AT TIME ZONE "PST8PDT") AS `date`,
+      DATE_TRUNC(EXTRACT(DATE FROM b.start_time AT TIME ZONE "PST8PDT"), WEEK(MONDAY)) AS `date`,
       b.id,
       b.builder.builder,
       b.start_time,
