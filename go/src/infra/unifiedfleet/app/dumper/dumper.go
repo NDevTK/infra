@@ -40,7 +40,7 @@ func dumpToBQDaily(ctx context.Context, bqClient *bigquery.Client) (err error) {
 		ns := util.GetNamespaceFromCtx(ctx)
 		dumpToBQDailyTick.Add(ctx, 1, err == nil, ns)
 	}()
-	err = dumpToBQ(ctx, bqClient, false)
+	err = dumpToBQ(ctx, bqClient, dumperFrequencyDaily)
 	return
 }
 
@@ -49,12 +49,12 @@ func dumpToBQHourly(ctx context.Context, bqClient *bigquery.Client) (err error) 
 		ns := util.GetNamespaceFromCtx(ctx)
 		dumpToBQHourlyTick.Add(ctx, 1, err == nil, ns)
 	}()
-	err = dumpToBQ(ctx, bqClient, true)
+	err = dumpToBQ(ctx, bqClient, dumperFrequencyHourly)
 	return
 }
 
 // TODO(echoyang@): Parallelize
-func dumpToBQ(ctx context.Context, bqClient *bigquery.Client, hourly bool) error {
+func dumpToBQ(ctx context.Context, bqClient *bigquery.Client, frequency dumperFrequency) error {
 	logging.Infof(ctx, "Dumping to BQ")
 	curTime := time.Now()
 	curTimeStr := bqlib.GetPSTTimeStamp(curTime)
@@ -65,19 +65,19 @@ func dumpToBQ(ctx context.Context, bqClient *bigquery.Client, hourly bool) error
 		return err
 	}
 	var errs []error
-	if err := dumpConfigurations(ctx, bqClient, curTimeStr, hourly); err != nil {
+	if err := dumpConfigurations(ctx, bqClient, curTimeStr, frequency); err != nil {
 		errs = append(errs, errors.Annotate(err, "dump configurations").Err())
 	}
-	if err := dumpRegistration(ctx, bqClient, curTimeStr, hourly); err != nil {
+	if err := dumpRegistration(ctx, bqClient, curTimeStr, frequency); err != nil {
 		errs = append(errs, errors.Annotate(err, "dump registrations").Err())
 	}
-	if err := dumpInventory(ctx, bqClient, curTimeStr, hourly); err != nil {
+	if err := dumpInventory(ctx, bqClient, curTimeStr, frequency); err != nil {
 		errs = append(errs, errors.Annotate(err, "dump inventories").Err())
 	}
-	if err := dumpState(ctx, bqClient, curTimeStr, hourly); err != nil {
+	if err := dumpState(ctx, bqClient, curTimeStr, frequency); err != nil {
 		errs = append(errs, errors.Annotate(err, "dump states").Err())
 	}
-	logging.Debugf(ctx, "Dump is successfully finished")
+	logging.Debugf(ctx, "Dump successfully finished")
 	return errors.Join(errs...)
 }
 

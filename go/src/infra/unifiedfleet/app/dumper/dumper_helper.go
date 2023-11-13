@@ -27,6 +27,14 @@ import (
 
 const pageSize = 500
 
+type dumperFrequency int32
+
+const (
+	dumperFrequencyUnspecified dumperFrequency = iota
+	dumperFrequencyDaily
+	dumperFrequencyHourly
+)
+
 func dumpChangeEventHelper(ctx context.Context, bqClient *bigquery.Client) error {
 	ns := util.GetNamespaceFromCtx(ctx)
 	dataset := DatastoreNamespaceToBigQueryDataset[ns]
@@ -224,23 +232,23 @@ func dumpChangeSnapshotHelper(ctx context.Context, bqClient *bigquery.Client) er
 	return nil
 }
 
-func dumpConfigurations(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) error {
-	return dumpTables(ctx, bqClient, curTimeStr, hourly, configurationDumpToolkit)
+func dumpConfigurations(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, frequency dumperFrequency) error {
+	return dumpTables(ctx, bqClient, curTimeStr, frequency, configurationDumpToolkit)
 }
 
-func dumpRegistration(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) error {
-	return dumpTables(ctx, bqClient, curTimeStr, hourly, registrationDumpToolkit)
+func dumpRegistration(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, frequency dumperFrequency) error {
+	return dumpTables(ctx, bqClient, curTimeStr, frequency, registrationDumpToolkit)
 }
 
-func dumpInventory(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) error {
-	return dumpTables(ctx, bqClient, curTimeStr, hourly, inventoryDumpToolkit)
+func dumpInventory(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, frequency dumperFrequency) error {
+	return dumpTables(ctx, bqClient, curTimeStr, frequency, inventoryDumpToolkit)
 }
 
-func dumpState(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool) error {
-	return dumpTables(ctx, bqClient, curTimeStr, hourly, stateDumpToolkit)
+func dumpState(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, frequency dumperFrequency) error {
+	return dumpTables(ctx, bqClient, curTimeStr, frequency, stateDumpToolkit)
 }
 
-func dumpTables(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, hourly bool, funcs map[string]getAllFunc) error {
+func dumpTables(ctx context.Context, bqClient *bigquery.Client, curTimeStr string, frequency dumperFrequency, funcs map[string]getAllFunc) error {
 	var errs []error
 	for k, f := range funcs {
 		logging.Infof(ctx, "dumping %s", k)
@@ -253,10 +261,13 @@ func dumpTables(ctx context.Context, bqClient *bigquery.Client, curTimeStr strin
 			logging.Infof(ctx, "0 records found for %s table", name)
 			continue
 		}
-		if hourly {
-			name = fmt.Sprintf("%s_hourly", k)
-		} else {
+		switch frequency {
+		case dumperFrequencyDaily:
 			name = fmt.Sprintf("%s$%s", k, curTimeStr)
+		case dumperFrequencyHourly:
+			name = fmt.Sprintf("%s_hourly", k)
+		default:
+			return errors.Reason("Dumper frequency %v is invalid", frequency).Err()
 		}
 		if err := uploadDumpToBQ(ctx, bqClient, msgs, name); err != nil {
 			errs = append(errs, err)
