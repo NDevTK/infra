@@ -77,7 +77,9 @@ func CreateVlan(ctx context.Context, vlan *ufspb.Vlan) (*ufspb.Vlan, error) {
 	logging.Debugf(ctx, "Updating %d ips", len(ips))
 	for i := 0; ; i += util.OperationPageSize {
 		end := util.Min(i+util.OperationPageSize, len(ips))
-		configuration.BatchUpdateIPs(ctx, ips[i:end])
+		if _, err := configuration.BatchUpdateIPs(ctx, ips[i:end]); err != nil {
+			return nil, errors.Annotate(err, "error encountered while writing a batch of IPs").Err()
+		}
 		if i+util.OperationPageSize >= len(ips) {
 			break
 		}
