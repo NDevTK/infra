@@ -2664,11 +2664,12 @@ func crosRepairActions() map[string]*Action {
 		"Pulse GSC_RST_L with servo and wait for SSH": {
 			Docs: []string{
 				"This repair action call `gsc_reset:on sleep:1 gsc_reset:off` by servo.",
-				"The action is applicable only for setups with c2d2",
+				"The action works with servo_micro/c2d2 if gsc_reset present.",
 			},
 			Conditions: []string{
 				"Is servod running",
-				"is_servo_c2d2",
+				"servo_has_debug_header",
+				"Has gsc_reset control",
 			},
 			Dependencies: []string{
 				"Assert GSC_RST_L by servo",
@@ -2694,12 +2695,23 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
+		"Has gsc_reset control": {
+			Docs: []string{
+				"Read and print gsc_reset control value to logs.",
+			},
+			ExecName: "servod_has",
+			ExecExtraArgs: []string{
+				"command:gsc_reset",
+			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
 		"Deassert GSC_RST_L by servo": {
 			Docs: []string{
 				"Release GSC from reset.",
 			},
 			Dependencies: []string{
 				"Is servod running",
+				"Has gsc_reset control",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
@@ -2716,6 +2728,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Is servod running",
+				"Has gsc_reset control",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
