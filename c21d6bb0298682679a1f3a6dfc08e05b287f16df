@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a8b999d5_3a2b89c9",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-14T00:12:40Z",
+      "side": 1,
+      "message": "q: do we want to add quick provision if the action fail?",
+      "revId": "c21d6bb0298682679a1f3a6dfc08e05b287f16df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
