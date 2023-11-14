@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e14c4d99_dc8cda77",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/backend-template.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-11-14T21:43:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "873bc35f_9bb74504",
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "437f64aa_6725f526",
@@ -107,6 +125,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5c372675_20d075fb",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-11-14T21:43:37Z",
+      "side": 1,
+      "message": "It\u0027s not the only backend port. Actually, the backend includes two ports, i.e. 8082 and 8083, which in charge of different traffic, one for L4, one for L7.",
+      "parentUuid": "50bf5d0c_fcb541c5",
+      "range": {
+        "startLine": 43,
+        "startChar": 32,
+        "endLine": 43,
+        "endChar": 39
+      },
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dbb67e3b_5ef3dcee",
         "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
         "patchSetId": 5
@@ -145,6 +187,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ea2cab5_e37fe83d",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-11-14T21:43:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ccaf1be7_c9c870cc",
+      "range": {
+        "startLine": 126,
+        "startChar": 1,
+        "endLine": 126,
+        "endChar": 6
+      },
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b57d6aec_431e9a5a",
@@ -158,6 +224,24 @@
       "writtenOn": "2023-11-13T23:59:52Z",
       "side": 1,
       "message": "please add description of the struct, if possible details of the fields or usage. (also ok to to have description per group of fields.",
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "08cb42d3_2443cffd",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-11-14T21:43:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b57d6aec_431e9a5a",
       "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -192,6 +276,24 @@
       "writtenOn": "2023-11-13T23:59:52Z",
       "side": 1,
       "message": "nit: maybe add expectations field?  nit as data can be big but still better to see the result and expectations of the function.",
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6c776ed_59ddfcde",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-11-14T21:43:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43f9709e_19b39a5a",
       "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
