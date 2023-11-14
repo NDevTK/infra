@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	port                 = flag.Int("port", 80, "the port the scanner service to listen")
+	port                 = flag.Int("port", 8000, "the port the scanner service to listen")
 	scanIntervalDuration = flag.Duration("scan-interval", 30*time.Minute, "the interval in seconds to scan all backends")
 
 	namespace = flag.String("namespace", "skylab", "the k8s namespace of caching service")
