@@ -25,13 +25,14 @@ func TestParseLine(t *testing.T) {
 			want: &record{
 				Timestamp:     time.Date(2021, 06, 9, 20, 24, 39, 0, time.UTC),
 				ClientIP:      "127.0.0.1",
-				HttpMethod:    "GET",
+				HTTPMethod:    "GET",
 				Path:          "/download/abc",
 				Status:        200,
 				BodyBytesSent: 369,
 				ExpectedSize:  369,
 				RequestTime:   0.123,
 				CacheStatus:   "HIT",
+				ProxyHost:     "gs_archive_servers",
 			},
 		},
 		{

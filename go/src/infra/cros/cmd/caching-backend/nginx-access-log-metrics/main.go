@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"flag"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -24,15 +23,16 @@ import (
 
 type record struct {
 	Timestamp     time.Time `json:"access_time"`
-	hostname      string
-	ClientIP      string  `json:"remote_addr"`
-	HttpMethod    string  `json:"method"`
-	Path          string  `json:"uri"`
-	Status        int     `json:"status"`
-	BodyBytesSent int     `json:"bytes_sent"`
-	ExpectedSize  int     `json:"content_length"`
-	RequestTime   float64 `json:"request_time"`
-	CacheStatus   string  `json:"upstream_cache_status"`
+	Hostname      string    `json:"hostname"`
+	ClientIP      string    `json:"remote_addr"`
+	HTTPMethod    string    `json:"method"`
+	Path          string    `json:"uri"`
+	Status        int       `json:"status"`
+	BodyBytesSent int       `json:"bytes_sent"`
+	ExpectedSize  int       `json:"content_length"`
+	RequestTime   float64   `json:"request_time"`
+	CacheStatus   string    `json:"upstream_cache_status"`
+	ProxyHost     string    `json:"proxy_host"`
 }
 
 var (
@@ -51,11 +51,6 @@ func main() {
 func innerMain() error {
 	flag.Parse()
 
-	hostname, err := os.Hostname()
-	if err != nil {
-		return err
-	}
-
 	ctx := context.Background()
 	setupTsMon(ctx)
 	defer shutdownTsMon(ctx)
@@ -72,7 +67,6 @@ func innerMain() error {
 	go func() {
 		for tailer.Scan() {
 			if r := parseLine(tailer.Text()); r != nil {
-				r.hostname = hostname
 				reportToTsMon(r)
 			}
 		}
@@ -161,6 +155,7 @@ var respBytesSent = metric.NewCounter("chromeos/caching_backend/nginx/response_b
 	field.String("cache"),
 	field.Bool("full_download"),
 	field.Bool("internal_traffic"),
+	field.String("level"),
 )
 
 // respBytesPerSecond is a tsmon metric for the response bandwidth.
@@ -176,6 +171,7 @@ var respBytesPerSecond = metric.NewCumulativeDistribution("chromeos/caching_back
 	field.String("cache"),
 	field.Bool("full_download"),
 	field.Bool("internal_traffic"),
+	field.String("level"),
 )
 
 // reportToTsMon reports the parsed log line data to tsmon server.
@@ -191,14 +187,24 @@ func reportToTsMon(i *record) {
 	fullDownload := i.ExpectedSize == i.BodyBytesSent
 	internalTraffic := i.ClientIP == "127.0.0.1"
 
-	respBytesSent.Add(ctx, int64(i.BodyBytesSent), i.hostname, i.HttpMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic)
+	var level string
+	switch i.ProxyHost {
+	case "l7_upstream":
+		level = "L4"
+	case "downloader":
+		level = "L7"
+	default:
+		level = "unknown"
+	}
+
+	respBytesSent.Add(ctx, int64(i.BodyBytesSent), i.Hostname, i.HTTPMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic, level)
 
 	// Set the response speed metric. The minimum resolution of Nginx request
 	// time is 1 ms. For shorter cases, we just set the download speed to a
 	// high number as the speed is supposed high enough.
 	if speed := 100. * 1024 * 1024; i.RequestTime < 0.001 {
-		respBytesPerSecond.Add(ctx, speed, i.HttpMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic)
+		respBytesPerSecond.Add(ctx, speed, i.HTTPMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic, level)
 	} else {
-		respBytesPerSecond.Add(ctx, float64(i.BodyBytesSent)/i.RequestTime, i.HttpMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic)
+		respBytesPerSecond.Add(ctx, float64(i.BodyBytesSent)/i.RequestTime, i.HTTPMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic, level)
 	}
 }
