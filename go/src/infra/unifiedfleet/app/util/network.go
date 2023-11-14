@@ -44,7 +44,7 @@ func uint32ToIP(addr uint32) net.IP {
 	return net.ParseIP(IPv4IntToStr(addr))
 }
 
-// IPv4ToUInt32 converts an IP to a uint32
+// IPv4ToUint32 converts an IP to a uint32
 func IPv4ToUint32(ip net.IP) (uint32, error) {
 	if ip := ip.To4(); ip != nil {
 		return uint32(ip[0])*256*256*256 + uint32(ip[1])*256*256 + uint32(ip[2])*256 + uint32(ip[3]), nil
