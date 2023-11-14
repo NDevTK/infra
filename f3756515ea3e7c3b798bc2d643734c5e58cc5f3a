@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef56d58c_7536c8c0",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/frontend-template.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-11-14T21:40:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0f2a4cbc_17d5bcae",
+      "revId": "f3756515ea3e7c3b798bc2d643734c5e58cc5f3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e4e0b45e_e9006529",
@@ -48,6 +66,30 @@
       "writtenOn": "2023-11-14T01:01:41Z",
       "side": 1,
       "message": "please rename to `keepalivedConfig`",
+      "range": {
+        "startLine": 142,
+        "startChar": 1,
+        "endLine": 142,
+        "endChar": 11
+      },
+      "revId": "f3756515ea3e7c3b798bc2d643734c5e58cc5f3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bafd9c14_ae65b984",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-11-14T21:40:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e4e0b45e_e9006529",
       "range": {
         "startLine": 142,
         "startChar": 1,
