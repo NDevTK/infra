@@ -60,6 +60,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c6291fcf_832aeba3",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-14T00:03:24Z",
+      "side": 1,
+      "message": "That seem a backend. can we call `backend-cache-size` that will explain what is it used for",
+      "parentUuid": "437f64aa_6725f526",
+      "range": {
+        "startLine": 42,
+        "startChar": 51,
+        "endLine": 42,
+        "endChar": 80
+      },
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dbb67e3b_5ef3dcee",
         "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
         "patchSetId": 5
