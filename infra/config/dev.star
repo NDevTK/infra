@@ -123,7 +123,7 @@ luci.bucket(
 
 luci.builder.defaults.experiments.set({
     "luci.buildbucket.bbagent_getbuild": 100,
-    "luci.buildbucket.backend_alt": 0,
+    "luci.buildbucket.backend_alt": 20,
 })
 luci.builder.defaults.execution_timeout.set(30 * time.minute)
 
