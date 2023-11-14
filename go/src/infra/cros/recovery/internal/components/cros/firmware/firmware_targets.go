@@ -60,6 +60,7 @@ var targetOverridebyHwid = map[string]string{
 	"NIRWEN-ZZCR B2B-B2A-B2A-W7H":                "nivviks_ufs",
 	"NEREID-ZZCR A4B-B2C-E3E-F2A-A2B-48T":        "nereid_hdmi",
 	"PUJJOTEEN-JQII E5B-D2J-E5D-Q2Q-K4E-I5I-A6I": "pujjo_5g",
+	"PUJJOTEEN-JQII G6B-D2I-F5E-Q6A-L2H-I4Y-A7N": "pujjo_5g",
 	"YAHIKO-OPUT B3B-G4H-D2B-X6F-H64-Y9A":        "yaviks_ufs",
 	"YAHIKO-OPUT B3B-G4H-D2B-X6F-P24-Y4M":        "yaviks_ufs",
 	"YAVIKS-BVSW B3B-A2C-B2A-Q6W-I3T":            "yaviks_ufs",
