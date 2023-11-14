@@ -33,6 +33,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/http/pprof"
 	"path/filepath"
@@ -66,6 +67,7 @@ var (
 	cacheServerURL       = flag.String("cache-server-url", "http://127.0.0.1:8082", "cache-server url.")
 	shutdownGracePeriod  = flag.Duration("shutdown-grace-period", 30*time.Minute, "The time duration allowed for tasks to complete before completely shutdown archive-server.")
 	clientRotationPeriod = flag.Duration("client-rotation-period", 24*time.Hour, "The time duration before rotating to new storage client.")
+	sourceAddr           = flag.String("use-source-addr", "", "Use the specified source IP addr instead of the one get automatically")
 	tsmonEndpoint        = flag.String("tsmon-endpoint", "", "URL (including file://, https://, // pubsub://project/topic) to post monitoring metrics to.")
 	tsmonCredentialPath  = flag.String("tsmon-credential", "", "The credentail file for tsmon client")
 	traceEndpoint        = flag.String("trace-endpoint", "", "URL (including file://, http://) to post trace logs to.")
@@ -74,6 +76,7 @@ var (
 type archiveServer struct {
 	gsClient       gsClient
 	cacheServerURL string
+	httpClient     *http.Client
 }
 
 func main() {
@@ -119,9 +122,14 @@ func innerMain() error {
 		}
 	}
 
+	hc, err := getHTTPClient(*sourceAddr, http.DefaultClient)
+	if err != nil {
+		return err
+	}
 	c := &archiveServer{
 		gsClient:       gsClient,
 		cacheServerURL: *cacheServerURL,
+		httpClient:     hc,
 	}
 
 	mux := http.NewServeMux()
@@ -458,9 +466,9 @@ func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodHead:
-		md = handleExtract(ctx, w, r, c.cacheServerURL, id, false)
+		md = handleExtract(ctx, c.httpClient, w, r, c.cacheServerURL, id, false)
 	case http.MethodGet:
-		md = handleExtract(ctx, w, r, c.cacheServerURL, id, true)
+		md = handleExtract(ctx, c.httpClient, w, r, c.cacheServerURL, id, true)
 	default:
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
@@ -474,7 +482,7 @@ func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
 // the target file and writes stat to ResponseWriter header.
 // If wantBody is true which essentially is GET, it will copy content to
 // ResponseWriter body.
-func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string, wantBody bool) metricData {
+func handleExtract(ctx context.Context, c *http.Client, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string, wantBody bool) metricData {
 	objectName, err := parseURL(r.URL.Path)
 	if err != nil {
 		errStr := fmt.Sprintf("%s parseURL error: %s", reqID, err)
@@ -496,7 +504,7 @@ func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, 
 		action = "decompress"
 	}
 	reqURL := fmt.Sprintf("%s/%s/%s/%s", cacheServerURL, action, objectName.bucket, objectName.path)
-	res := downloadURL(ctx, w, reqURL, reqID, r)
+	res := downloadURL(ctx, c, w, reqURL, reqID, r)
 	if res == nil {
 		return metricData{status: http.StatusInternalServerError}
 	}
@@ -525,7 +533,7 @@ func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, 
 // downloadURL downloads the reqURL and returns the content in response.
 // It writes to client header if error occurs or relays non 200 status code
 // from upstream.
-func downloadURL(ctx context.Context, w http.ResponseWriter, reqURL string, reqID string, parentReq *http.Request) *http.Response {
+func downloadURL(ctx context.Context, c *http.Client, w http.ResponseWriter, reqURL string, reqID string, parentReq *http.Request) *http.Response {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
 		errStr := fmt.Sprintf("%s download request %q: %s", reqID, reqURL, err)
@@ -539,7 +547,7 @@ func downloadURL(ctx context.Context, w http.ResponseWriter, reqURL string, reqI
 		req.Header.Add(h, parentReq.Header.Get(h))
 	}
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := c.Do(req)
 	if err != nil {
 		errStr := fmt.Sprintf("%s download request %q: %s", reqID, reqURL, err)
 		http.Error(w, errStr, http.StatusInternalServerError)
@@ -612,7 +620,7 @@ func (c *archiveServer) decompressHandler(w http.ResponseWriter, r *http.Request
 
 	switch r.Method {
 	case http.MethodGet:
-		md = handleDecompressGET(ctx, w, r, c.cacheServerURL, id)
+		md = handleDecompressGET(ctx, c.httpClient, w, r, c.cacheServerURL, id)
 	default:
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
@@ -650,7 +658,7 @@ var compressReaderMap = map[string]compressReaderFunc{
 // It supports file types in allowedCompressExt.
 // Due to the content-size requirement, it decompresses the downloaded file
 // into the memory to get the size, then copies content to ResonpseWriter.
-func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string) metricData {
+func handleDecompressGET(ctx context.Context, c *http.Client, w http.ResponseWriter, r *http.Request, cacheServerURL string, reqID string) metricData {
 	objectName, err := parseURL(r.URL.Path)
 	if err != nil {
 		errStr := fmt.Sprintf("%s parseURL error: %s", reqID, err)
@@ -669,7 +677,7 @@ func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Req
 	}
 
 	reqURL := fmt.Sprintf("%s/download/%s/%s", cacheServerURL, objectName.bucket, objectName.path)
-	res := downloadURL(ctx, w, reqURL, reqID, r)
+	res := downloadURL(ctx, c, w, reqURL, reqID, r)
 	if res == nil {
 		return metricData{status: http.StatusInternalServerError}
 	}
@@ -716,6 +724,21 @@ func decompressWrite(ctx context.Context, w http.ResponseWriter, mem []byte) (in
 	}
 
 	return n, nil
+}
+
+// getHTTPClient gets a http client to download intermediate files for
+// extraction/decompression from the upstream cache server (not GCS).
+func getHTTPClient(sourceAddr string, defaultClient *http.Client) (*http.Client, error) {
+	if sourceAddr == "" {
+		return defaultClient, nil
+	}
+	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:0", sourceAddr))
+	if err != nil {
+		return nil, fmt.Errorf("get http client bind to %q: %w", sourceAddr, err)
+	}
+	dialer := &net.Dialer{LocalAddr: addr}
+	transport := &http.Transport{DialContext: dialer.DialContext}
+	return &http.Client{Transport: transport}, nil
 }
 
 // generateTraceID gets the unique id of the request

@@ -123,6 +123,7 @@ func TestExtracHandler(t *testing.T) {
 		gsClient: &fakeGSClient{
 			objects: fakeObjects,
 		},
+		httpClient: http.DefaultClient,
 	}
 
 	tarFiles := map[string]map[string]string{
@@ -406,6 +407,7 @@ func TestDecompressGZIPHandler(t *testing.T) {
 		gsClient: &fakeGSClient{
 			objects: objects,
 		},
+		httpClient: http.DefaultClient,
 	}
 	for fName, fContent := range compressFiles {
 		var buf bytes.Buffer
@@ -484,6 +486,7 @@ func TestDecompressXZHandler(t *testing.T) {
 		gsClient: &fakeGSClient{
 			objects: objects,
 		},
+		httpClient: http.DefaultClient,
 	}
 	for fName, fContent := range compressFiles {
 		var buf bytes.Buffer
