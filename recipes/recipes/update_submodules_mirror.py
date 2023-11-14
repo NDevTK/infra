@@ -139,6 +139,10 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
     refs_to_mirror.insert(0, MAIN_REF)
 
   try:
+    # When .gitmodules is updated, the cached repository has more gitlinks than
+    # gitmodules entries. This causes fetch to fail. Resetting the repository
+    # before fetching fixes this. See crbug.com/1499932.
+    api.git('reset', '--hard', 'origin/main')
     api.git('fetch', '-t' if with_tags else '-n')
     for ref in refs_to_mirror:
       if not ref.startswith('refs/heads'):
