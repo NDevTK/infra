@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f93c6c0_39351314",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1501785
+      },
+      "writtenOn": "2023-11-14T18:20:06Z",
+      "side": 1,
+      "message": "The Flex team currently requires KVM to be enabled (e.g. see http://go/cros-flex-x1c-setup) and there are several tasts that will fail if it is not enabled, so not objection from us. Out of curiosity: why does virtualization need to be enabled for recovery to work?",
+      "revId": "c21d6bb0298682679a1f3a6dfc08e05b287f16df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a8b999d5_3a2b89c9",
