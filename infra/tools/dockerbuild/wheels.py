@@ -195,6 +195,46 @@ _CFFI_DEPENDENCY = SourceOrPrebuilt(
 
 _NUMPY_DEPENDENCY = SPECS['numpy-1.2x.supported.2']
 
+
+def _NumPyTppLibs(w):
+  # Bring in openblas only on mac.
+  if w.plat.name.startswith('mac'):
+
+    def _NumPySetup(pkg_dir, extra_env):
+      extra_env['OPENBLAS'] = pkg_dir
+
+    return [
+        TppLib(
+            'infra/3pp/static_libs/openblas',
+            'version:2@0.3.24.chromium.1',
+            setup_cb=_NumPySetup)
+    ]
+  return []
+
+
+def _NumPyEnv(w):
+  env = {}
+  if w.plat.name.startswith('linux-arm'):
+    # This library is x86-64 only, and the cross-compile detection in
+    # the build system does not work correctly for us.
+    env['NPY_DISABLE_SVML'] = '1'
+  if w.plat.name.startswith('windows-x86'):
+    # Disable trying to build 64-bit code.
+    env['NUMPY_CPU_DISPATCH'] = 'none'
+  return env
+
+
+_LATEST_NUMPY = SourceOrPrebuilt(
+    'numpy',
+    '1.23.5',
+    packaged=(),
+    tpp_libs_cb=_NumPyTppLibs,
+    env_cb=_NumPyEnv,
+    patches=('cpu-dispatch',),
+    patch_version='chromium.3',
+    pyversions=['py3'],
+)
+
 # lxml doesn't emmbed dependencies in the repo. Instead it downloads
 # the dependencies' source code in the build script. We use
 # LIBXML2_VERSION and LIBXSLT_VERSION to specify the versions of
@@ -223,34 +263,6 @@ def _GrpcEnv(w):
     override_plat = 'linux-armv6l'
   if override_plat:
     env['GRPC_BUILD_OVERRIDE_BORING_SSL_ASM_PLATFORM'] = override_plat
-  return env
-
-
-def _NumPyTppLibs(w):
-  # Bring in openblas only on mac.
-  if w.plat.name.startswith('mac'):
-
-    def _NumPySetup(pkg_dir, extra_env):
-      extra_env['OPENBLAS'] = pkg_dir
-
-    return [
-        TppLib(
-            'infra/3pp/static_libs/openblas',
-            'version:2@0.3.24.chromium.1',
-            setup_cb=_NumPySetup)
-    ]
-  return []
-
-
-def _NumPyEnv(w):
-  env = {}
-  if w.plat.name.startswith('linux-arm'):
-    # This library is x86-64 only, and the cross-compile detection in
-    # the build system does not work correctly for us.
-    env['NPY_DISABLE_SVML'] = '1'
-  if w.plat.name.startswith('windows-x86'):
-    # Disable trying to build 64-bit code.
-    env['NUMPY_CPU_DISPATCH'] = 'none'
   return env
 
 
@@ -898,16 +910,7 @@ SPECS.update({
             patch_version='chromium.1',
             pyversions=['py3'],
         ),
-        SourceOrPrebuilt(
-            'numpy',
-            '1.23.5',
-            packaged=(),
-            tpp_libs_cb=_NumPyTppLibs,
-            env_cb=_NumPyEnv,
-            patches=('cpu-dispatch',),
-            patch_version='chromium.3',
-            pyversions=['py3'],
-        ),
+        _LATEST_NUMPY,
         SourceOrPrebuilt(
             'opencv_python',
             '4.5.3.56',
@@ -968,6 +971,29 @@ SPECS.update({
                 'linux-armv6-py3.8',
             ] + build_platform.ALL_PY311,  # Requires a newer numpy
             patch_version='chromium.1',
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
+            'pandas',
+            '1.5.3',
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools>=51.0.0',
+                    'wheel',
+                    'Cython>=0.29.32,<3',
+                ],
+                local=[_LATEST_NUMPY],
+            ),
+            packaged=[
+                # TODO(fancl): We should copy msvcp140.dll and
+                # msvcp140_1.dll for windows build. See also:
+                # https://github.com/MacPython/pandas-wheels/blob/master/azure/windows.yml
+                'windows-x86-py3.8',
+                'windows-x64-py3.8',
+            ],
+            skip_plat=[
+                'linux-armv6-py3.8',
+            ],
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
