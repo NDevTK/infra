@@ -25,17 +25,17 @@ type Rack struct {
 }
 
 // CheckAndAdd runs check and then update if the item does not exist.
-func (r *Rack) CheckAndAdd(executor executor.IExecCommander, w io.Writer) error {
+func (r *Rack) CheckAndAdd(executor executor.IExecCommander, w io.Writer) (bool, error) {
 	exists, err := r.exists(executor, w)
 	if err != nil {
-		return errors.Annotate(err, "check and update").Err()
+		return false, errors.Annotate(err, "check and update").Err()
 	}
 	if !exists {
-		return r.add(executor, w)
+		return false, r.add(executor, w)
 	} else {
 		fmt.Fprintf(w, "Rack already added\n\n")
 	}
-	return nil
+	return true, nil
 }
 
 // check checks if a rack exists.

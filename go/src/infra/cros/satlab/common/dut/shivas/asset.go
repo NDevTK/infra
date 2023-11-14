@@ -29,18 +29,17 @@ type Asset struct {
 }
 
 // CheckAndAdd adds the asset if it does not already exist.
-func (a *Asset) CheckAndAdd(executor executor.IExecCommander, w io.Writer) error {
+func (a *Asset) CheckAndAdd(executor executor.IExecCommander, w io.Writer) (bool, error) {
 	exists, err := a.exists(executor, w)
 	if err != nil {
-		return errors.Annotate(err, "check and update").Err()
+		return false, errors.Annotate(err, "check and update").Err()
 	}
 	if !exists {
-		return a.add(executor, w)
+		return false, a.add(executor, w)
 	} else {
 		fmt.Fprintf(w, "Asset already added\n\n")
 	}
-
-	return nil
+	return true, nil
 }
 
 // exists checks for the existence of the UFS asset.

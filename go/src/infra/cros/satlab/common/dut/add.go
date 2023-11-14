@@ -18,7 +18,6 @@ import (
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/site"
-	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/common/utils/misc"
 )
@@ -229,6 +228,10 @@ func (c *AddDUT) TriggerRun(
 	c.qualifiedHostname = site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.Hostname)
 	c.qualifiedRack = site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.Rack)
 
+	// The flag indicate the DUT has been deployed before.
+	// We need to rollback the DNS. Otherwise the previous DUT's IP address
+	// will replace the new IP address
+	var exist bool
 	if !c.SkipDNS {
 		content, updateErr := dns.UpdateRecord(
 			ctx,
@@ -251,7 +254,7 @@ func (c *AddDUT) TriggerRun(
 				// information.
 				//
 				// Do not modify the error value.
-			} else if err != nil {
+			} else if err != nil || exist {
 				dnsErr := dns.SetDNSFileContent(content)
 				reloadErr := dns.ForceReloadDNSMasqProcess()
 				err = errors.NewMultiError(err, dnsErr, reloadErr)
@@ -259,17 +262,17 @@ func (c *AddDUT) TriggerRun(
 		})()
 	}
 
-	err = (&shivas.Rack{
+	_, err = (&shivas.Rack{
 		Name:      c.qualifiedRack,
 		Namespace: c.Namespace,
 		Zone:      c.Zone,
 	}).CheckAndAdd(executor, writer)
 
-	if err != nil && !errors.Is(err, e.RackExist) {
+	if err != nil {
 		return err
 	}
 
-	err = (&shivas.Asset{
+	_, err = (&shivas.Asset{
 		Asset:     c.Asset,
 		Rack:      c.qualifiedRack,
 		Zone:      c.Zone,
@@ -279,11 +282,11 @@ func (c *AddDUT) TriggerRun(
 		Type:      c.AssetType,
 	}).CheckAndAdd(executor, writer)
 
-	if err != nil && !errors.Is(err, e.AssetExist) {
+	if err != nil {
 		return err
 	}
 
-	err = (&shivas.DUT{
+	exist, err = (&shivas.DUT{
 		Namespace:  c.Namespace,
 		Zone:       c.Zone,
 		Name:       c.qualifiedHostname,
@@ -292,7 +295,7 @@ func (c *AddDUT) TriggerRun(
 		ShivasArgs: makeAddShivasFlags(c),
 	}).CheckAndAdd(executor, writer)
 
-	if err != nil && !errors.Is(err, e.DUTExist) {
+	if err != nil {
 		return err
 	}
 

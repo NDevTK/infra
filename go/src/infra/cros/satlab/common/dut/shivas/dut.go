@@ -30,18 +30,17 @@ type DUT struct {
 }
 
 // CheckAndAdd adds a DUT if it does not already exist.
-func (d *DUT) CheckAndAdd(executor executor.IExecCommander, w io.Writer) error {
+func (d *DUT) CheckAndAdd(executor executor.IExecCommander, w io.Writer) (bool, error) {
 	exists, err := d.check(executor, w)
 	if err != nil {
-		return errors.Annotate(err, "check and update").Err()
+		return false, errors.Annotate(err, "check and update").Err()
 	}
 	if !exists {
-		return d.add(executor, w)
+		return false, d.add(executor, w)
 	} else {
 		fmt.Fprintf(w, "DUT already added\n\n")
 	}
-
-	return nil
+	return true, nil
 }
 
 // Check checks for the existnce of a UFS DUT.
