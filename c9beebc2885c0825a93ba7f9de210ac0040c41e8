@@ -84,6 +84,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "50bf5d0c_fcb541c5",
+        "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-14T00:06:04Z",
+      "side": 1,
+      "message": "mabe call it `backend-port` for clear usage. L7 is part of description already.",
+      "range": {
+        "startLine": 43,
+        "startChar": 32,
+        "endLine": 43,
+        "endChar": 39
+      },
+      "revId": "c9beebc2885c0825a93ba7f9de210ac0040c41e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dbb67e3b_5ef3dcee",
         "filename": "go/src/infra/cros/cmd/caching-backend/backend-scanner/main.go",
         "patchSetId": 5
