@@ -71,16 +71,20 @@ func newIPEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, erro
 	if p.GetVlan() == "" {
 		return nil, errors.Reason("Empty vlan in IP").Err()
 	}
-	if p.GetIpv4() == 0 {
-		return nil, errors.Reason("Empty ipv4 in IP").Err()
-	}
-	if p.GetIpv4Str() == "" {
-		return nil, errors.Reason("Empty ipv4 str in IP").Err()
+	hasIpv6 := (len(p.GetIpv6()) != 0)
+	if !hasIpv6 {
+		if p.GetIpv4() == 0 {
+			return nil, errors.Reason("Empty ipv4 and no ipv6 in IP").Err()
+		}
+		if p.GetIpv4Str() == "" {
+			return nil, errors.Reason("Empty ipv4 str and no ipv6 in IP").Err()
+		}
 	}
 	return &IPEntity{
 		ID:       p.GetId(),
 		IPv4:     p.GetIpv4(),
 		IPv4Str:  p.GetIpv4Str(),
+		IPv6:     p.GetIpv6(),
 		Vlan:     p.GetVlan(),
 		Occupied: p.GetOccupied(),
 		Reserve:  p.GetReserve(),
@@ -96,6 +100,7 @@ func newDeleteIPEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity
 		ID:       p.GetId(),
 		IPv4:     p.GetIpv4(),
 		IPv4Str:  p.GetIpv4Str(),
+		IPv6:     p.GetIpv6(),
 		Vlan:     p.GetVlan(),
 		Occupied: p.GetOccupied(),
 		Reserve:  p.GetReserve(),
