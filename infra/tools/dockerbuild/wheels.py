@@ -936,6 +936,38 @@ SPECS.update({
             arch_map={'linux-arm64-py3.8': ['manylinux2014_aarch64']},
         ),
         SourceOrPrebuilt(
+            'opencv_python',
+            '4.8.1.78',
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools==59.2.0',
+                    'wheel==0.37.1',
+                    'scikit-build==0.14.0',
+                    'cmake==3.22.4',
+                ],
+                local=[_LATEST_NUMPY],
+            ),
+            packaged=[
+                'linux-arm64-py3.8',
+                'linux-arm64-py3.11',
+                # TODO(https://crbug.com/1502028): Build with VS2022.
+                'windows-x64-py3.8',
+                'windows-x64-py3.11',
+                'windows-x86-py3.8',
+                'windows-x86-py3.11',
+            ],
+            skip_plat=[
+                'linux-armv6-py3.8',
+                'linux-armv6-py3.11',
+            ],
+            pyversions=['py3'],
+            src_filter=lambda path: not _OPENCV_SRC_RE.match(path),
+            arch_map={
+                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
+                'linux-arm64-py3.11': ['manylinux2014_aarch64']
+            },
+        ),
+        SourceOrPrebuilt(
             'pandas',
             '1.1.3',
             packaged=[],

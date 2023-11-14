@@ -5652,6 +5652,29 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
+### 4.8.1.78
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opencv_python/${vpython_platform}"
+  version: "version:4.8.1.78"
+>
+```
+
+
+* *linux-arm64-py3.11*
+* *linux-arm64-py3.8*
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
+* *windows-x64-py3.8*
+* *windows-x86-py3.11*
+* *windows-x86-py3.8*
+
 ## **opentelemetry-api-py3**
 
 ### 1.12.0
