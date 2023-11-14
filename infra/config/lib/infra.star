@@ -67,6 +67,11 @@ def cq_group(name, repo = None, tree_status_host = None):
                 groups = ["luci-cv-quota-dogfooders"],
                 run = cq.run_limits(max_active = 3),
             ),
+            cq.user_limit(
+                name = "googlers",
+                groups = ["googlers"],
+                run = cq.run_limits(max_active = 50),
+            ),
         ],
     )
 
