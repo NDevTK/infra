@@ -31,6 +31,7 @@ func TestCreateSchedulingUnit(t *testing.T) {
 		Convey("Create new SchedulingUnit - happy path", func() {
 			su := mockSchedulingUnit("su-1")
 			resp, err := CreateSchedulingUnit(ctx, su)
+			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp, ShouldResembleProto, su)
 

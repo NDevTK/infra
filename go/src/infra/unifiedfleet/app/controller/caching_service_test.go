@@ -33,6 +33,7 @@ func TestCreateCachingService(t *testing.T) {
 			cs := mockCachingService("127.0.0.1")
 			cs.State = ufspb.State_STATE_SERVING
 			resp, err := CreateCachingService(ctx, cs)
+			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp, ShouldResembleProto, cs)
 

@@ -317,9 +317,6 @@ func TestExistenceConverter(t *testing.T) {
 // Basic test to test integrity and parseability of tle_sources.jsonproto
 func TestTleSourcesJsonproto(t *testing.T) {
 	t.Parallel()
-	ctx := testingContext()
-	ctx = external.WithTestingContext(ctx)
-	ctx = useTestingCfg(ctx)
 
 	t.Run("read and parse file into proto", func(t *testing.T) {
 		mapFile, err := os.ReadFile("tle_sources.jsonproto")

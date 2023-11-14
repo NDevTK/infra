@@ -189,7 +189,8 @@ func (nu *networkUpdater) addHostHelper(ctx context.Context, vlanName, ipv4Str, 
 		return nil, errors.Annotate(err, "addHostHelper - Failed to update IP %s (%s)", ip.GetId(), ip.GetIpv4Str()).Tag(grpcutil.FailedPreconditionTag).Err()
 	}
 	nu.Changes = append(nu.Changes, LogIPChanges(oldIP, ip)...)
-	oldDhcp, err := configuration.GetDHCPConfig(ctx, nu.Hostname)
+	// TODO(gregorynisbet): Do not ignore this error. Surface it. Also fix the tests.
+	oldDhcp, _ := configuration.GetDHCPConfig(ctx, nu.Hostname)
 	dhcp := &ufspb.DHCPConfig{
 		Hostname:   nu.Hostname,
 		Ip:         ip.GetIpv4Str(),

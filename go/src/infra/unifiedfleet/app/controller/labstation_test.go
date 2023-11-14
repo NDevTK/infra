@@ -60,6 +60,7 @@ func TestUpdateLabstation(t *testing.T) {
 			labstation2 = mockLabstation("labstation-2", "")
 			// Attempt to delete machine. Should fail.
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("machines"))
+			So(res, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "InvalidArgument")
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-2")
@@ -93,6 +94,7 @@ func TestUpdateLabstation(t *testing.T) {
 			labstation1 = mockLabstation("labstation-3", "")
 			// Attempt to delete the machine in maskless update. Should fail.
 			res, err = UpdateLabstation(ctx, labstation1, nil)
+			So(res, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "Empty Machine ID")
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-3")
@@ -174,6 +176,7 @@ func TestUpdateLabstation(t *testing.T) {
 			labstation2 := mockLabstation("labstation-5", "machine-5")
 			labstation2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Rpm = &chromeosLab.OSRPM{PowerunitOutlet: ".A6"}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.rpm.host", "labstation.rpm.outlet"))
+			So(res, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "Cannot update outlet")
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-5")
@@ -188,6 +191,7 @@ func TestUpdateLabstation(t *testing.T) {
 				PowerunitOutlet: "",
 			}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.rpm.outlet"))
+			So(res, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "Cannot remove rpm outlet")
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-5")
@@ -203,6 +207,7 @@ func TestUpdateLabstation(t *testing.T) {
 				PowerunitOutlet: "",
 			}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.rpm.outlet", "labstation.rpm.name"))
+			So(res, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "Cannot remove rpm outlet")
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-5")
@@ -367,6 +372,7 @@ func TestUpdateLabstation(t *testing.T) {
 			// Add a description  to the labstation.
 			labstation2.Description = "[12 Jan 2021] crbug.com/35007"
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("description"))
+			So(res, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-8")
 			So(err, ShouldBeNil)
@@ -382,6 +388,7 @@ func TestUpdateLabstation(t *testing.T) {
 			// Reset labstation description.
 			labstation2.Description = ""
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("description"))
+			So(res, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-8")
 			So(err, ShouldBeNil)
@@ -421,6 +428,7 @@ func TestUpdateLabstation(t *testing.T) {
 			// Add a deployment ticket to the labstation.
 			labstation2.DeploymentTicket = "crbug.com/35007"
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("deploymentTicket"))
+			So(res, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-9")
 			So(err, ShouldBeNil)
@@ -436,6 +444,7 @@ func TestUpdateLabstation(t *testing.T) {
 			// Reset deployment ticket to the labstation.
 			labstation2.DeploymentTicket = ""
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("deploymentTicket"))
+			So(res, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-9")
 			So(err, ShouldBeNil)
@@ -475,6 +484,7 @@ func TestUpdateLabstation(t *testing.T) {
 			// Set labstation state to serving.
 			labstation2.ResourceState = ufspb.State_STATE_SERVING
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("resourceState"))
+			So(res, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-10")
 			So(err, ShouldBeNil)

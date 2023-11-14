@@ -1264,6 +1264,7 @@ func TestUpdateKVM(t *testing.T) {
 				Rack: "rack-1",
 			}
 			resp, err := registration.CreateKVM(tf.C, KVM1)
+			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
 			KVM2 := mockKVM("KVM-1")
@@ -1885,6 +1886,7 @@ func TestUpdateDrac(t *testing.T) {
 				Machine: "machine-1",
 			}
 			resp, err := registration.CreateDrac(tf.C, drac1)
+			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
 			drac2 := mockDrac("drac-1")
@@ -2166,6 +2168,7 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: "rack-1",
 			}
 			resp, err := registration.CreateSwitch(tf.C, switch1)
+			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
 			switch2 := mockSwitch("switch-1")

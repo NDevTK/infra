@@ -1346,6 +1346,7 @@ func TestImportOSMachineLSEs(t *testing.T) {
 			So(ds.GetHostname(), ShouldEqual, "chromeos5-test_host")
 
 			ds, err = state.GetDutState(ctx, "mock_labstation_id")
+			So(ds, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, NotFound)
 		})

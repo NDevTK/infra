@@ -38,6 +38,7 @@ func TestUpdateMachineLSEDeployment(t *testing.T) {
 		Convey("Update existing machineLSEDeployment", func() {
 			md2 := mockMachineLSEDeployment("serial-2")
 			resp, err := UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{md2})
+			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
 			md2.Hostname = "hostname-2"

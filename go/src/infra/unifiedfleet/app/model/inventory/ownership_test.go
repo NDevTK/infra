@@ -64,7 +64,7 @@ func TestPutOwnershipData(t *testing.T) {
 		}
 		assetType := "machine"
 		expectedName := "test"
-		got, err := PutOwnershipData(ctx, ownershipData, expectedName, assetType)
+		_, err := PutOwnershipData(ctx, ownershipData, expectedName, assetType)
 		if err != nil {
 			t.Fatalf("PutOwnershipData failed: %s", err)
 		}
@@ -76,7 +76,7 @@ func TestPutOwnershipData(t *testing.T) {
 			Customer:         "flex",
 		}
 		// Update ownership
-		got, err = PutOwnershipData(ctx, updated_ownershipData, expectedName, assetType)
+		got, err := PutOwnershipData(ctx, updated_ownershipData, expectedName, assetType)
 		if err != nil {
 			t.Fatalf("PutOwnershipData failed: %s", err)
 		}

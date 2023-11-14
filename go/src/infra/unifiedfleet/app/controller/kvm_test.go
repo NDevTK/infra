@@ -54,6 +54,7 @@ func TestCreateKVM(t *testing.T) {
 				Rack: "rack-5",
 			}
 			_, err := registration.CreateKVM(ctx, kvm1)
+			So(err, ShouldBeNil)
 
 			resp, err := CreateKVM(ctx, kvm1)
 			So(resp, ShouldBeNil)
@@ -118,6 +119,7 @@ func TestCreateKVM(t *testing.T) {
 				MacAddress: "kvm-2-address",
 			}
 			_, err := registration.CreateKVM(ctx, kvm)
+			So(err, ShouldBeNil)
 			kvm2 := &ufspb.KVM{
 				Name:       "kvm-2-mac2",
 				MacAddress: "kvm-2-address",

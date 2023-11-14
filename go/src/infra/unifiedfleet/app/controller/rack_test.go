@@ -62,6 +62,7 @@ func TestRackRegistration(t *testing.T) {
 			resp, err = RackRegistration(ctx, rack)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "already exists in the system")
+			So(resp, ShouldBeNil)
 		})
 
 		Convey("Create new rack with nil browser/chromeos rack", func() {
@@ -689,6 +690,7 @@ func TestReplaceRack(t *testing.T) {
 			So(resp, ShouldResembleProto, newRack2)
 
 			rlse, err := inventory.GetRackLSE(ctx, "racklse-1")
+			So(err, ShouldBeNil)
 			So(rlse, ShouldNotBeNil)
 			So(rlse.GetRacks(), ShouldResemble, []string{"rack-0", "rack-50", "rack-100", "rack-7"})
 

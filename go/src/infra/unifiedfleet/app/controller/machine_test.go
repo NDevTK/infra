@@ -382,6 +382,7 @@ func TestUpdateMachine(t *testing.T) {
 				Name: "machine-1",
 			}
 			_, err := registration.CreateMachine(ctx, machine)
+			So(err, ShouldBeNil)
 
 			machine = &ufspb.Machine{
 				Name: "machine-1",
@@ -443,7 +444,9 @@ func TestUpdateMachine(t *testing.T) {
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
 			}
-			_, err := registration.CreateMachine(ctx, machine)
+			resp, err := registration.CreateMachine(ctx, machine)
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
 			registration.CreateNic(ctx, &ufspb.Nic{
 				Name:    "nic-update-zone",
 				Zone:    ufspb.Zone_ZONE_CHROMEOS3.String(),
@@ -490,7 +493,7 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AcsLabAdminRealm)
-			resp, err := UpdateMachine(ctx, machine, nil)
+			resp, err = UpdateMachine(ctx, machine, nil)
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, machine)
 			lse, err := inventory.GetMachineLSE(ctx, "lse-update-zone")
@@ -518,6 +521,7 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
+			So(err, ShouldBeNil)
 
 			_, err = registration.CreateKVM(ctx, &ufspb.KVM{
 				Name: "kvm-update",
@@ -688,6 +692,7 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
+			So(err, ShouldBeNil)
 			machineLSE1 := &ufspb.MachineLSE{
 				Name:     "machinelse-update-serial-with-lse",
 				Hostname: "machinelse-update-serial-with-lse",
@@ -990,6 +995,7 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 			// Update is skipped without error
 			So(err, ShouldBeNil)
 			req, err := registration.GetMachine(ctx, machineName)
+			So(err, ShouldBeNil)
 			So(req.GetSerialNumber(), ShouldBeEmpty)
 			So(req.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
 			So(req.GetChromeosMachine().GetSku(), ShouldBeEmpty)

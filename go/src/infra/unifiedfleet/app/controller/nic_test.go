@@ -475,11 +475,14 @@ func TestUpdateNic(t *testing.T) {
 				Machines: []string{"machine-8"},
 				Nic:      "nic-8",
 			})
+			So(lse, ShouldNotBeNil)
+			So(err, ShouldBeNil)
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "lse-partial-update-mac2",
 				Hostname: "lse-partial-update-mac2",
 				Machines: []string{"machine-8-8"},
 			})
+			So(err, ShouldBeNil)
 			dhcp := &ufspb.DHCPConfig{
 				Hostname:   lse.GetName(),
 				Ip:         "fake_ip",
@@ -567,6 +570,7 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateNic(ctx, nic)
+			So(err, ShouldBeNil)
 			nic2 := &ufspb.Nic{
 				Name:       "nic-8.2",
 				MacAddress: "nic-8.2-address",
@@ -628,6 +632,7 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateNic(ctx, nic)
+			So(err, ShouldBeNil)
 
 			machine2 := &ufspb.Machine{
 				Name: "machine-11",
@@ -892,6 +897,7 @@ func TestUpdateNic(t *testing.T) {
 				),
 			})
 			resp, err := UpdateNic(ctx, nic, nil)
+			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp, ShouldResembleProto, nic)
 		})
@@ -936,6 +942,7 @@ func TestUpdateNic(t *testing.T) {
 				),
 			})
 			resp, err := UpdateNic(ctx, nic, &field_mask.FieldMask{Paths: []string{"machine"}})
+			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp.GetMachine(), ShouldEqual, "machine-21")
 		})
@@ -1008,6 +1015,7 @@ func TestDeleteNic(t *testing.T) {
 				Machines: []string{"machine-ip"},
 				Nic:      "nic-ip",
 			})
+			So(err, ShouldBeNil)
 
 			err = DeleteNic(ctx, "nic-ip")
 			So(err, ShouldNotBeNil)
@@ -1166,16 +1174,19 @@ func TestRenameNic(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(res.Name, ShouldEqual, "machine-ren-1:nic-2")
 			machine, err := GetMachine(ctx, "machine-ren-1")
+			So(err, ShouldBeNil)
 			So(machine, ShouldNotBeNil)
 			So(machine.GetChromeBrowserMachine().GetNicObjects()[0].GetName(), ShouldEqual, "machine-ren-1:nic-2")
 			_, err = registration.GetNic(ctx, "machine-ren-1:nic-1")
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, NotFound)
 			nic, err := registration.GetNic(ctx, "machine-ren-1:nic-2")
+			So(err, ShouldBeNil)
 			So(nic, ShouldNotBeNil)
 			So(nic.GetName(), ShouldEqual, "machine-ren-1:nic-2")
 			So(nic.GetMachine(), ShouldEqual, "machine-ren-1")
 			host, err := inventory.GetMachineLSE(ctx, "machinelse-1")
+			So(err, ShouldBeNil)
 			So(host, ShouldNotBeNil)
 			So(host.GetNic(), ShouldResemble, "machine-ren-1:nic-2")
 

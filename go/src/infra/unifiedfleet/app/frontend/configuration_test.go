@@ -661,6 +661,7 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 				Hostname:            "machinelse-1",
 			}
 			machineLSE1, err = inventory.CreateMachineLSE(ctx, machineLSE1)
+			So(machineLSE1, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
 			dreq := &ufsAPI.DeleteMachineLSEPrototypeRequest{

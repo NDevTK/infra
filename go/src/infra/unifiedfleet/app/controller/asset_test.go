@@ -87,6 +87,7 @@ func TestAssetRegistration(t *testing.T) {
 			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
 
 			machine, err := registration.GetMachine(ctx, "C001001")
+			So(err, ShouldBeNil)
 			So(machine, ShouldNotBeNil)
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machines/C001001")
 			So(err, ShouldBeNil)
@@ -224,6 +225,7 @@ func TestUpdateAsset(t *testing.T) {
 			So(changes[1].GetOldValue(), ShouldEqual, "")
 
 			machine, err := registration.GetMachine(ctx, "C001003")
+			So(err, ShouldBeNil)
 			So(machine, ShouldNotBeNil)
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machines/C001003")
 			So(err, ShouldBeNil)
@@ -295,6 +297,7 @@ func TestUpdateAsset(t *testing.T) {
 			So(changes[0].GetOldValue(), ShouldEqual, "SERVO")
 
 			machine, err := registration.GetMachine(ctx, "C001003-servo")
+			So(err, ShouldBeNil)
 			So(machine, ShouldNotBeNil)
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machines/C001003-servo")
 			So(err, ShouldBeNil)

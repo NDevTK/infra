@@ -216,6 +216,7 @@ func TestUpdateVM(t *testing.T) {
 				MachineLseId: "update-host",
 			}
 			_, err := CreateVM(ctx, vm1, nil)
+			So(err, ShouldBeNil)
 			resp, err := UpdateVMHost(ctx, vm1.Name, &ufsAPI.NetworkOption{
 				Vlan: "vlan-1",
 			})
@@ -375,6 +376,7 @@ func TestUpdateVM(t *testing.T) {
 				MachineLseId: "update-host",
 			}
 			_, err := CreateVM(ctx, vm1, nil)
+			So(err, ShouldBeNil)
 			vm1.ResourceState = ufspb.State_STATE_NEEDS_REPAIR
 			resp, err := UpdateVM(ctx, vm1, nil)
 			So(err, ShouldBeNil)
@@ -949,6 +951,7 @@ func TestGenNewMacAddress(t *testing.T) {
 			err = configuration.UpdateServiceConfig(ctx, sc)
 			So(err, ShouldBeNil)
 			mac, err = genNewMacAddress(ctx)
+			So(mac, ShouldNotBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "4 million")
 		})

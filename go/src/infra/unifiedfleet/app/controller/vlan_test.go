@@ -111,7 +111,9 @@ func TestCreateVlan(t *testing.T) {
 			So(resp.GetTags(), ShouldBeNil)
 
 			startIPInt, err := util.IPv4StrToInt("192.168.100.6")
+			So(err, ShouldBeNil)
 			endIPInt, err := util.IPv4StrToInt("192.168.100.26")
+			So(err, ShouldBeNil)
 			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"vlan": "create-vlan-1"})
 			So(err, ShouldBeNil)
 			So(ips, ShouldHaveLength, 32)
@@ -409,7 +411,9 @@ func TestUpdateVlan(t *testing.T) {
 			So(resp.GetFreeStartIpv4Str(), ShouldEqual, "7.7.7.11")
 			So(resp.GetFreeEndIpv4Str(), ShouldEqual, "7.7.7.30")
 			startIPInt, err := util.IPv4StrToInt("7.7.7.11")
+			So(err, ShouldBeNil)
 			endIPInt, err := util.IPv4StrToInt("7.7.7.30")
+			So(err, ShouldBeNil)
 			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"vlan": "update-vlan-7"})
 			So(err, ShouldBeNil)
 			So(ips, ShouldHaveLength, 32)
@@ -430,7 +434,9 @@ func TestUpdateVlan(t *testing.T) {
 			So(resp.GetFreeEndIpv4Str(), ShouldEqual, "7.7.7.29")
 
 			startIPInt, err = util.IPv4StrToInt("7.7.7.10")
+			So(err, ShouldBeNil)
 			endIPInt, err = util.IPv4StrToInt("7.7.7.29")
+			So(err, ShouldBeNil)
 			ips, err = configuration.QueryIPByPropertyName(ctx, map[string]string{"vlan": "update-vlan-7"})
 			So(err, ShouldBeNil)
 			So(ips, ShouldHaveLength, 32)
@@ -450,7 +456,9 @@ func TestUpdateVlan(t *testing.T) {
 			So(resp.GetFreeStartIpv4Str(), ShouldEqual, "7.7.7.11")
 			So(resp.GetFreeEndIpv4Str(), ShouldEqual, "7.7.7.30")
 			startIPInt, err = util.IPv4StrToInt("7.7.7.11")
+			So(err, ShouldBeNil)
 			endIPInt, err = util.IPv4StrToInt("7.7.7.30")
+			So(err, ShouldBeNil)
 			ips, err = configuration.QueryIPByPropertyName(ctx, map[string]string{"vlan": "update-vlan-7"})
 			So(err, ShouldBeNil)
 			So(ips, ShouldHaveLength, 32)
@@ -540,6 +548,7 @@ func TestUpdateVlan(t *testing.T) {
 				),
 			})
 			resp, err := UpdateVlan(ctx, vlan2, nil)
+			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp.GetZones(), ShouldResemble, vlan2.Zones)
 		})
@@ -555,6 +564,7 @@ func TestUpdateVlan(t *testing.T) {
 			vlan2.Zones = []ufspb.Zone{}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.NetworksUpdate, util.BrowserLabAdminRealm)
 			resp, err := UpdateVlan(ctx, vlan2, &field_mask.FieldMask{Paths: []string{"zones"}})
+			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp.GetZones(), ShouldResemble, []ufspb.Zone(nil))
 		})
@@ -581,7 +591,9 @@ func TestUpdateVlan(t *testing.T) {
 			So(resp.GetFreeStartIpv4Str(), ShouldEqual, "9.9.9.11")
 			So(resp.GetFreeEndIpv4Str(), ShouldEqual, "9.9.9.30")
 			startIPInt, err := util.IPv4StrToInt("9.9.9.11")
+			So(err, ShouldBeNil)
 			endIPInt, err := util.IPv4StrToInt("9.9.9.30")
+			So(err, ShouldBeNil)
 			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"vlan": "update-vlan-14"})
 			So(err, ShouldBeNil)
 			So(ips, ShouldHaveLength, 32)
@@ -701,6 +713,7 @@ func TestDeleteVlan(t *testing.T) {
 			vlan2.VlanAddress = "192.168.16.0/24"
 			vlan1.Zones = []ufspb.Zone{ufspb.Zone_ZONE_MTV97, ufspb.Zone_ZONE_MTV96}
 			resp, err := CreateVlan(ctx, vlan2)
+			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.NetworksGet, util.BrowserLabAdminRealm)

@@ -55,6 +55,7 @@ func TestCreateSwitch(t *testing.T) {
 				Rack: "rack-11",
 			}
 			_, err = registration.CreateSwitch(ctx, switch1)
+			So(err, ShouldBeNil)
 
 			resp, err := CreateSwitch(ctx, switch1)
 			So(resp, ShouldBeNil)
@@ -865,6 +866,7 @@ func TestRenameSwitch(t *testing.T) {
 			switch2 := mockSwitch("switch-1")
 			switch2.Rack = "rack-1"
 			_, err = registration.CreateSwitch(ctx, switch2)
+			So(err, ShouldBeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			res, err := RenameSwitch(ctx, "switch-1", "switch-2")
@@ -875,12 +877,15 @@ func TestRenameSwitch(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, NotFound)
 			nic, err := registration.GetNic(ctx, "nic-1")
+			So(err, ShouldBeNil)
 			So(nic, ShouldNotBeNil)
 			So(nic.GetSwitchInterface().GetSwitch(), ShouldEqual, "switch-2")
 			drac, err := registration.GetDrac(ctx, "drac-1")
+			So(err, ShouldBeNil)
 			So(drac, ShouldNotBeNil)
 			So(drac.GetSwitchInterface().GetSwitch(), ShouldEqual, "switch-2")
 			lse, err := inventory.GetMachineLSE(ctx, "machinelse-1")
+			So(err, ShouldBeNil)
 			So(lse, ShouldNotBeNil)
 			So(lse.GetChromeosMachineLse().GetDeviceLse().GetNetworkDeviceInterface().GetSwitch(), ShouldEqual, "switch-2")
 

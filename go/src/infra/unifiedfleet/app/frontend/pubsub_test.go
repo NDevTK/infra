@@ -81,6 +81,7 @@ func TestUpdateAssetInfoHelper(t *testing.T) {
 			So(err, ShouldBeNil)
 			// Machine should reflect the change
 			m2, err := registration.GetMachine(ctx, "test-tag1")
+			So(err, ShouldBeNil)
 			So(m2.GetChromeosMachine().GetBuildTarget(), ShouldEqual, "test-target")
 		})
 		Convey("Update asset info - Machine avoids HWID, phase, sku and mac", func() {

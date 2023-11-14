@@ -1046,6 +1046,7 @@ func TestUpdateDUT(t *testing.T) {
 			resp.UpdateTime = nil
 			So(resp, ShouldResembleProto, dut1)
 			dut2, err := GetMachineLSE(ctx, "dut-3-rpm-del")
+			So(err, ShouldBeNil)
 			// Remove update time to compare proto
 			dut2.UpdateTime = nil
 			So(dut2, ShouldResembleProto, dut1)
@@ -1224,6 +1225,7 @@ func TestUpdateDUT(t *testing.T) {
 			// Update the servo serial of the dut to avoid conflict with labstation-7.
 			dut2 := mockDUT("dut-11", "", "", "serial-2", "", "", int32(0), nil, "")
 			resp, err := UpdateDUT(ctx, dut2, mockFieldMask("dut.servo.serial"))
+			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			dut2 = mockDUT("dut-11", "", "labstation-7", "", "", "", int32(9998), nil, "")
 			resp, err = UpdateDUT(ctx, dut2, mockFieldMask("dut.servo.hostname", "dut.servo.port"))
@@ -2532,6 +2534,7 @@ func TestUpdateDUT(t *testing.T) {
 			// State should be unchanged.
 			So(s.GetState(), ShouldEqual, dut2.GetResourceState())
 			lab2, err := GetMachineLSE(ctx, "labstation-35")
+			So(err, ShouldBeNil)
 			servos := lab2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetServos()
 			So(servos, ShouldHaveLength, 0)
 		})
@@ -2583,6 +2586,7 @@ func TestUpdateDUT(t *testing.T) {
 			// Create a labstation
 			lab1 := mockLabstation("labstation-y", "machine-106")
 			_, err = inventory.CreateMachineLSE(ctx, lab1)
+			So(err, ShouldBeNil)
 			// Update the dut to use labstation instead of servod on docker
 			dut1.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().DockerContainerName = ""
 			dut1.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().ServoHostname = "labstation-y"
@@ -2609,6 +2613,7 @@ func TestUpdateDUT(t *testing.T) {
 			// State should be unchanged.
 			So(s.GetState(), ShouldEqual, dut1.GetResourceState())
 			lab2, err := GetMachineLSE(ctx, "labstation-y")
+			So(err, ShouldBeNil)
 			servos := lab2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetServos()
 			So(servos, ShouldHaveLength, 1)
 		})

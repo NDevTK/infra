@@ -19,6 +19,7 @@ func TestParseGoldenEyeJsonData(t *testing.T) {
 	Convey("Parse Data", t, func() {
 		Convey("happy path", func() {
 			file, err := os.Open("test.json")
+			So(err, ShouldBeNil)
 			reader := bufio.NewReader(file)
 
 			devices, err := parseGoldenEyeData(context.Background(), reader)
@@ -27,6 +28,7 @@ func TestParseGoldenEyeJsonData(t *testing.T) {
 		})
 		Convey("parse for non existent file", func() {
 			file, err := os.Open("test2.json")
+			So(err, ShouldNotBeNil)
 			reader := bufio.NewReader(file)
 
 			devices, err := parseGoldenEyeData(context.Background(), reader)

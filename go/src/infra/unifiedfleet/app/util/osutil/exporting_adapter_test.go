@@ -762,6 +762,7 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			s2, err := inventory.WriteLabToString(&inventory.Lab{
 				Duts: []*inventory.DeviceUnderTest{d2},
 			})
+			So(err, ShouldBeNil)
 			So(s1, ShouldEqual, s2)
 		})
 		Convey("servo_state is UNKNOWN/false by default", func() {

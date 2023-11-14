@@ -484,6 +484,7 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateDrac(ctx, drac)
+			So(err, ShouldBeNil)
 			drac2 := &ufspb.Drac{
 				Name:       "drac-8.2",
 				MacAddress: "drac-8.2-address",
@@ -544,6 +545,7 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateDrac(ctx, drac)
+			So(err, ShouldBeNil)
 			machine2 := &ufspb.Machine{
 				Name: "machine-11",
 			}
@@ -802,6 +804,7 @@ func TestUpdateDrac(t *testing.T) {
 				),
 			})
 			resp, err := UpdateDrac(ctx, drac, nil)
+			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp.GetMachine(), ShouldEqual, "machine-21")
 		})
@@ -848,6 +851,7 @@ func TestUpdateDrac(t *testing.T) {
 				),
 			})
 			resp, err := UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"machine"}})
+			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp.GetMachine(), ShouldEqual, "machine-23")
 		})
