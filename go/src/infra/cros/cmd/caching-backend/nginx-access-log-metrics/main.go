@@ -8,21 +8,17 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"strings"
 	"time"
 
-	"cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/distribution"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/target"
-	"google.golang.org/api/option"
 
-	"infra/cros/cmd/caching-backend/nginx-access-log-metrics/internal/bquploader"
 	"infra/cros/cmd/caching-backend/nginx-access-log-metrics/internal/filetailer"
 )
 
@@ -40,10 +36,6 @@ type record struct {
 }
 
 var (
-	svcAcctJSONPath     = flag.String("service-account-json", "", "Path to JSON file with service account credentials to use")
-	projectID           = flag.String("project-id", "cros-lab-servers", "ID of the cloud project to upload metrics data to")
-	dataset             = flag.String("dataset", "caching_backend", "Dataset name of the BigQuery tables")
-	tableName           = flag.String("table", "access_log", "BigQuery table name")
 	inputLogFile        = flag.String("input-log-file", "/var/log/nginx/gs-cache.access.log", "Nginx access log for gs_cache")
 	tsmonCredentialPath = flag.String("ts-mon-credentials", "", "Path to a pkcs8 json credential file")
 	tsmonEndpoint       = flag.String("ts-mon-endpoint", "", "URL (including file://, https://, pubsub://project/topic) to post monitoring metrics to")
@@ -64,17 +56,6 @@ func innerMain() error {
 		return err
 	}
 
-	t := bquploader.TargetTable{
-		ProjectID: *projectID,
-		Dataset:   *dataset,
-		TableName: *tableName,
-	}
-	uploader, err := bquploader.NewUploader(t, 10*time.Minute, option.WithCredentialsFile(*svcAcctJSONPath))
-	if err != nil {
-		return err
-	}
-	defer uploader.Close()
-
 	ctx := context.Background()
 	setupTsMon(ctx)
 	defer shutdownTsMon(ctx)
@@ -92,7 +73,6 @@ func innerMain() error {
 		for tailer.Scan() {
 			if r := parseLine(tailer.Text()); r != nil {
 				r.hostname = hostname
-				uploader.QueueRecord(r)
 				reportToTsMon(r)
 			}
 		}
@@ -144,26 +124,6 @@ func ignoredPath(path string) bool {
 		return true
 	}
 	return false
-}
-
-func (i *record) Save() (row map[string]bigquery.Value, insertID string, err error) {
-	row = map[string]bigquery.Value{
-		"timestamp":       i.Timestamp,
-		"hostname":        i.hostname,
-		"client_ip":       i.ClientIP,
-		"http_method":     i.HttpMethod,
-		"status":          i.Status,
-		"path":            i.Path,
-		"body_bytes_sent": i.BodyBytesSent,
-		"expected_size":   i.ExpectedSize,
-		"request_time":    i.RequestTime,
-		"cache":           i.CacheStatus,
-	}
-	// A unique insert ID can prevent duplicated uploading when the BigQuery
-	// client retries.
-	insertID = fmt.Sprintf("%v", row)
-
-	return row, insertID, nil
 }
 
 // setupTsMon set up tsmon.

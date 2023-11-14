@@ -4,10 +4,6 @@
 
 # Use ubuntu as the app depends on `tail` command util.
 FROM ubuntu:22.04
-# This is necessary because we need cacerts to talk to BigQuery.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /
 # The binary is built on the host. Copy it into the image.
