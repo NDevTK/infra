@@ -609,6 +609,7 @@ func TestUpdateVlan(t *testing.T) {
 			vlan2.FreeStartIpv4Str = "7.7.7.30"
 			vlan2.FreeEndIpv4Str = "7.7.7.29"
 			resp, err = UpdateVlan(ctx, vlan2, &field_mask.FieldMask{Paths: []string{"free_start_ip", "free_end_ip"}})
+			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "invalid IP Range")
 		})
