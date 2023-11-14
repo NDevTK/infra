@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "aff4d523_511249d5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2023-11-14T18:45:09Z",
+      "side": 1,
+      "message": "Hi Joseph,\n\nIt\u0027s not that virtualization needs to be enabled for recovery to work, but recovery is enabling it again in case it go disabled via random tests/images.",
+      "parentUuid": "6f93c6c0_39351314",
+      "revId": "c21d6bb0298682679a1f3a6dfc08e05b287f16df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a8b999d5_3a2b89c9",
