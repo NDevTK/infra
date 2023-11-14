@@ -63,7 +63,7 @@ func (nu *networkUpdater) deleteHostHelper(ctx context.Context, dhcp *ufspb.DHCP
 		return errors.Annotate(err, "deleteHostHelper - Fail to delete dhcp for hostname %q", dhcp.GetHostname()).Tag(grpcutil.FailedPreconditionTag).Err()
 	}
 	nu.logChanges(LogDHCPChanges(dhcp, nil))
-	ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": dhcp.GetIp()})
+	ips, err := configuration.QueryIPByAddress(ctx, dhcp.GetIp())
 	if err != nil {
 		return errors.Annotate(err, "deleteHostHelper - Fail to query ip by ipv4 str: %q", dhcp.GetIp()).Tag(grpcutil.FailedPreconditionTag).Err()
 	}
@@ -93,9 +93,7 @@ func getFreeIPHelper(ctx context.Context, vlanName string) (*ufspb.IP, error) {
 }
 
 func getSpecifiedIP(ctx context.Context, ipv4Str string) (*ufspb.IP, error) {
-	ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{
-		"ipv4_str": ipv4Str,
-	})
+	ips, err := configuration.QueryIPByAddress(ctx, ipv4Str)
 	if err != nil {
 		return nil, errors.Annotate(err, "Fail to query ip entity by %s", ipv4Str).Err()
 	}

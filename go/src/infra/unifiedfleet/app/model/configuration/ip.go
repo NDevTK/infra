@@ -6,6 +6,7 @@ package configuration
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -107,6 +108,25 @@ func newDeleteIPEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity
 	}, nil
 }
 
+// QueryIPByAddress looks up an IPEntity by IPv4 or IPv6.
+func QueryIPByAddress(ctx context.Context, ip string) ([]*ufspb.IP, error) {
+	// TODO(gregorynisbet): Remove this special case.
+	//
+	// As a special case until the unit tests can be migrated,
+	// successfully return no error when the ip is empty.
+	if ip == "" {
+		return nil, nil
+	}
+	parsed := net.ParseIP(ip)
+	if parsed == nil {
+		return nil, fmt.Errorf("ip address %q is not valid", ip)
+	}
+	if parsed.To4() != nil {
+		return QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": ip})
+	}
+	return QueryIPByPropertyName(ctx, map[string]string{"ipv6": ip})
+}
+
 // QueryIPByPropertyName query IP Entity by property in the datastore
 func QueryIPByPropertyName(ctx context.Context, propertyMap map[string]string) ([]*ufspb.IP, error) {
 	q := datastore.NewQuery(IPKind).FirestoreMode(true)
@@ -120,6 +140,13 @@ func QueryIPByPropertyName(ctx context.Context, propertyMap map[string]string) (
 				return nil, status.Errorf(codes.InvalidArgument, "%s for %q: %s", ufsds.InvalidArgument, propertyName, err.Error())
 			}
 			q = q.Eq(propertyName, uint32(u64))
+		case "ipv6":
+			ip := net.ParseIP(id)
+			if ip == nil {
+				logging.Errorf(ctx, "IPv6 %q does not parse: %s", id)
+				return nil, status.Errorf(codes.InvalidArgument, "%s for %q", ufsds.InvalidArgument, propertyName)
+			}
+			q = q.Eq(propertyName, ip)
 		case "occupied":
 			b, err := strconv.ParseBool(id)
 			if err != nil {
