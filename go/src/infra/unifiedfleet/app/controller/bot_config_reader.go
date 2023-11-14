@@ -65,7 +65,15 @@ func GetConfigAndGitClient(ctx context.Context) (*config.OwnershipConfig, git.Cl
 	}
 	ownershipConfig := config.Get(ctx).GetOwnershipConfig()
 	gitTilesClient, err := es.NewGitTilesInterface(ctx, ownershipConfig.GetGitilesHost())
+	if err != nil {
+		logging.Errorf(ctx, "Got error for gititles client: %s", err.Error())
+		return nil, nil, err
+	}
 	currentSha1, err := fetchLatestSHA1(ctx, gitTilesClient, ownershipConfig.GetProject(), ownershipConfig.GetBranch())
+	if err != nil {
+		logging.Errorf(ctx, "Got error when getting the current SHA: %s", err.Error())
+		return nil, nil, err
+	}
 	isSameSha1 := prevConfig.compareAndSetSha(currentSha1)
 	if isSameSha1 {
 		logging.Infof(ctx, "Nothing changed for enc/security config files - lastest SHA1 : %s", currentSha1)
