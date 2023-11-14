@@ -9385,20 +9385,6 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
-## **types-PyOpenSSL-py3**
-
-### 23.3.0.0
-
-```protobuf
-wheel: <
-  name: "infra/python/wheels/types-pyopenssl-py3"
-  version: "version:23.3.0.0"
->
-```
-
-
-* *universal*
-
 ## **types-PyYAML-py3**
 
 ### 6.0.12.12
@@ -9427,6 +9413,20 @@ wheel: <
 
 * *universal*
 
+## **types-cryptography-py3**
+
+### 3.3.23.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/types-cryptography-py3"
+  version: "version:3.3.23.2"
+>
+```
+
+
+* *universal*
+
 ## **types-protobuf-py3**
 
 ### 4.21.0.7
@@ -9449,6 +9449,32 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/types-psutil-py3"
   version: "version:5.8.23"
+>
+```
+
+
+* *universal*
+
+## **types-pyOpenSSL-py3**
+
+### 23.0.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/types-pyopenssl-py3"
+  version: "version:23.0.0.0"
+>
+```
+
+
+* *universal*
+
+### 23.3.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/types-pyopenssl-py3"
+  version: "version:23.3.0.0"
 >
 ```
 
