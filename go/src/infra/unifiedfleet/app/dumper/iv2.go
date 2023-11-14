@@ -194,7 +194,9 @@ func GetAssetToHostnameMap(ctx context.Context, client *bigquery.Client) (map[st
 	// Read the first mapping as TotalRows is not populated until first
 	// call to Next()
 	var d mapping
-	err = it.Next(&d)
+	if err := it.Next(&d); err != nil {
+		return nil, err
+	}
 	assetsToHostname := make(map[string]string, int(it.TotalRows))
 	assetsToHostname[d.AssetTag] = d.HostName
 
