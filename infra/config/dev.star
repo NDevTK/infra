@@ -123,7 +123,7 @@ luci.bucket(
 
 luci.builder.defaults.experiments.set({
     "luci.buildbucket.bbagent_getbuild": 100,
-    "luci.buildbucket.backend_alt": 20,
+    "luci.buildbucket.backend_alt": 100,
 })
 luci.builder.defaults.execution_timeout.set(30 * time.minute)
 
@@ -256,9 +256,6 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
-    experiments = {
-        "luci.buildbucket.backend_alt": 100,
-    },
     properties = {
         "status": "SUCCESS",
         "steps": [
@@ -308,9 +305,6 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
-    experiments = {
-        "luci.buildbucket.backend_alt": 100,
-    },
     properties = {
         "status": "SUCCESS",
         "steps": [
@@ -332,9 +326,6 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
-    experiments = {
-        "luci.buildbucket.backend_alt": 100,
-    },
     description_html = "No-op builder to measure and monitor bbagent overhead",
     properties = {
         "status": "SUCCESS",
@@ -358,9 +349,6 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
-    experiments = {
-        "luci.buildbucket.backend_alt": 100,
-    },
     properties = {
         "status": "SUCCESS",
         "steps": [
@@ -575,7 +563,6 @@ def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers, 
         build_numbers = build_numbers,
         experiments = {
             "luci.buildbucket.omit_default_packages": 100,
-            "luci.buildbucket.backend_alt": 100,
         },
         caches = [
             swarming.cache(
@@ -643,7 +630,6 @@ def fakebuild_tree_builder(name, children, batch_size, builder, sleep_min_sec, s
         build_numbers = build_numbers,
         experiments = {
             "luci.buildbucket.omit_default_packages": 100,
-            "luci.buildbucket.backend_alt": 100,
         },
         schedule = schedule,
     )
@@ -685,7 +671,6 @@ def fakebuild_search_builder(name, steps, search_steps, sleep_min_sec, sleep_max
         build_numbers = build_numbers,
         experiments = {
             "luci.buildbucket.omit_default_packages": 100,
-            "luci.buildbucket.backend_alt": 100,
         },
     )
 
