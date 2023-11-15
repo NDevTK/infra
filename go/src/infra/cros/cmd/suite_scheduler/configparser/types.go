@@ -43,10 +43,25 @@ type (
 	// BuildTarget is in the form board(-<variant>) with the variant being optional.
 	BuildTarget string
 
-	LabConfig map[Board]BoardEntry
+	// TargetOptions is a map of board->TargetOption to easily retrieve information.
+	TargetOptions map[Board]*TargetOption
 )
 
-// BoardEntry is a slight wrapper on the infrapb Board type
+// TargetOption is a struct which contains all information for a targeted piece
+// of hardware to be tested.
+type TargetOption struct {
+	Board    string
+	Models   []string
+	Variants []string
+}
+
+// LabConfigs is a wrapper to provide quick access to boards and models in the lab.
+type LabConfigs struct {
+	Models map[Model]*BoardEntry
+	Boards map[Board]*BoardEntry
+}
+
+// BoardEntry is a wrapper on the infrapb Board type.
 type BoardEntry struct {
 	isAndroid bool
 	board     *infrapb.Board
@@ -58,6 +73,10 @@ func (b *BoardEntry) isAndroidBoard() bool {
 
 func (b *BoardEntry) GetBoard() *infrapb.Board {
 	return b.board
+}
+
+func (b *BoardEntry) GetName() string {
+	return b.board.Name
 }
 
 // SuiteSchedulerConfigs represents the ADS which will be used for accessing
@@ -83,43 +102,18 @@ type SuiteSchedulerConfigs struct {
 	fortnightlyMap map[Day]HourMap
 }
 
-// isDayCompliant checks the day int type to ensure that it is within the
-// accepted bounds. A flag for fortnightly is required for calculation of day
-// range values.
-func isDayCompliant(day Day, isFortnightly bool) error {
-	highBound := Day(6)
-
-	if isFortnightly {
-		highBound = Day(13)
-	}
-
-	if day < 0 || day > highBound {
-		return fmt.Errorf("Day %d is not within the supported range [0,%d]", day, highBound)
-	}
-
-	return nil
-}
-
-// isHourCompliant checks the hour int type to ensure that it is within the
-// accepted bounds.
-func isHourCompliant(hour Hour) error {
-	if hour < 0 || hour > 23 {
-		return fmt.Errorf("Hour %d is not within the supported range [0,23]", hour)
-	}
-
-	return nil
-}
-
 // addConfigToNewBuildMap takes a newBuild configuration and inserts it into the
 // appropriate tracking lists.
-func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *infrapb.SchedulerConfig, lab LabConfig) error {
-	// Fetch all build targets which can trigger this configuration.
-	targets, err := getBuildTargets(config, lab)
+func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *infrapb.SchedulerConfig, lab *LabConfigs) error {
+	targetOptions, err := GetTargetOptions(config, lab)
+
+	// Fetch all build buildTargets which can trigger this configuration.
+	buildTargets := GetBuildTargets(targetOptions)
 	if err != nil {
 		return err
 	}
 
-	for _, target := range targets {
+	for _, target := range buildTargets {
 		// Add entry if no config with this build target has been
 		// ingested yet.
 		if _, ok := s.newBuildMap[target]; !ok {
@@ -230,151 +224,4 @@ func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *infrapb.Schedu
 	s.configMap[TestPlanName(config.Name)] = config
 
 	return nil
-}
-
-// FetchAllBewBuildConfigs returns all NEW_BUILD type configs.
-func (s *SuiteSchedulerConfigs) FetchAllBewBuildConfigs() ConfigList {
-	return s.newBuildStore
-}
-
-// FetchNewBuildConfigsByBuildTarget returns all NEW_BUILD configs that are
-// to be triggered by a new image of the given build target.
-func (s *SuiteSchedulerConfigs) FetchNewBuildConfigsByBuildTarget(target BuildTarget) (ConfigList, error) {
-	if obj, ok := s.newBuildMap[target]; ok {
-		return obj, nil
-	} else {
-		return nil, fmt.Errorf("no NEW_BUILD configs found for build target %s", target)
-	}
-}
-
-// FetchAllDailyConfigs returns all DAILY type configs.
-func (s *SuiteSchedulerConfigs) FetchAllDailyConfigs() ConfigList {
-	tempList := ConfigList{}
-
-	for _, list := range s.dailyMap {
-		tempList = append(tempList, list...)
-	}
-
-	return tempList
-}
-
-// FetchDailyByHour returns all DAILY configs that are to be scheduled at the
-// specified hour.
-func (s *SuiteSchedulerConfigs) FetchDailyByHour(hour Hour) (ConfigList, error) {
-	err := isHourCompliant(hour)
-	if err != nil {
-		return nil, err
-	}
-
-	if obj, ok := s.dailyMap[hour]; ok {
-		return obj, nil
-	} else {
-		return nil, fmt.Errorf("no DAILY configs found at hour %d", hour)
-	}
-}
-
-// FetchAllWeeklyConfigs returns all WEEKLY type configs.
-func (s *SuiteSchedulerConfigs) FetchAllWeeklyConfigs() ConfigList {
-	tempList := ConfigList{}
-
-	for _, mapobj := range s.weeklyMap {
-		for _, list := range mapobj {
-			tempList = append(tempList, list...)
-		}
-	}
-
-	return tempList
-}
-
-// FetchWeeklyByDay returns all WEEKLY configs that are to be scheduled on the
-// specified DAY.
-func (s *SuiteSchedulerConfigs) FetchWeeklyByDay(day Day) (ConfigList, error) {
-	err := isDayCompliant(day, false)
-	if err != nil {
-		return nil, err
-	}
-
-	if obj, ok := s.weeklyMap[day]; ok {
-		tempList := ConfigList{}
-
-		for _, hour := range obj {
-			tempList = append(tempList, hour...)
-		}
-
-		return tempList, nil
-	} else {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day %d", day)
-	}
-}
-
-// FetchWeeklyByDayHour returns all WEEKLY configs that are to be scheduled on the
-// specified DAY at the given HOUR.
-func (s *SuiteSchedulerConfigs) FetchWeeklyByDayHour(day Day, hour Hour) (ConfigList, error) {
-	err := isDayCompliant(day, false)
-	if err != nil {
-		return nil, err
-	}
-
-	if _, ok := s.weeklyMap[day]; !ok {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day %d", day)
-	}
-
-	if list, ok := s.weeklyMap[day][hour]; ok {
-		return list, nil
-	} else {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day:Hour %d:%d", day, hour)
-	}
-}
-
-// FetchAllFortnightlyConfigs returns all FORTNIGHTLY type configs.
-func (s *SuiteSchedulerConfigs) FetchAllFortnightlyConfigs() ConfigList {
-	tempList := ConfigList{}
-
-	for _, mapobj := range s.fortnightlyMap {
-		for _, list := range mapobj {
-			tempList = append(tempList, list...)
-		}
-	}
-
-	return tempList
-}
-
-// FetchFortnightlyByDay returns all FORTNIGHTLY configs that are to be scheduled on the
-// specified DAY.
-func (s *SuiteSchedulerConfigs) FetchFortnightlyByDay(day Day) (ConfigList, error) {
-	err := isDayCompliant(day, false)
-	if err != nil {
-		return nil, err
-	}
-
-	if obj, ok := s.fortnightlyMap[day]; ok {
-		tempList := ConfigList{}
-
-		for _, hour := range obj {
-			tempList = append(tempList, hour...)
-		}
-
-		return tempList, nil
-	} else {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day %d", day)
-	}
-}
-
-// FetchFortnightlyByDayHour returns all FORTNIGHTLY configs that are to be scheduled on the
-// specified DAY at the given HOUR.
-func (s *SuiteSchedulerConfigs) FetchFortnightlyByDayHour(day Day, hour Hour) (ConfigList, error) {
-	err := isDayCompliant(day, false)
-	if err != nil {
-		return nil, err
-	}
-
-	if _, ok := s.fortnightlyMap[day]; !ok {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day %d", day)
-	}
-
-	if list, ok := s.fortnightlyMap[day][hour]; ok {
-		return list, nil
-	} else {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day:Hour %d:%d", day, hour)
-	}
 }

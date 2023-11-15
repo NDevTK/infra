@@ -14,11 +14,23 @@ More information can be found at: go/suitescheduler-v15
 
 
 ## Current State: WIP
-The current project is capable of fetching the configuration files and ingesting
-them memory for application usage.
+The current project is capable of fetching the configuration files, ingesting
+them into memory, and building CTP requests. 
 
+The project is not able to pull in build information from the release pub/sub
+stream so the CTP requests are only partially filled in. The missing data is
+related to build image requirements.
 
-Until b/305286743 is resolved, the .cfg files will need to be stored locally.
-Once that issue is resolved then we can delete the local CLs so that the program
-only functions using the internet fetched file just like the current production
-Suite Scheduler does.
+## Testing
+Currently the main function has some integration tests that can be validated by
+reading the output. To confirm the correctness of the CTP Requests. The output
+given was tossed into a LED test (with the build image information copied over
+from a valid CTP run) and verified.
+
+Example run: 
+
+https://chromeos-swarming.appspot.com/task?id=65bf847779131c10
+
+Original Run:
+
+[go/bbid/8765603166160534657](https://goto2.corp.google.com/bbid/8765603166160534657)

@@ -7,63 +7,16 @@ package configparser
 
 import (
 	"fmt"
+	"io"
+	"os"
 
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	"google.golang.org/protobuf/encoding/protojson"
 )
-
-// getBuildTargets forms a list of all BuildTarget tracked within the SuSch config.
-func getBuildTargets(config *infrapb.SchedulerConfig, lab LabConfig) ([]BuildTarget, error) {
-	targets := []BuildTarget{}
-
-	excludeVariantsMap := make(map[Board]map[Variant]bool)
-
-	for _, excludeConfig := range config.TargetOptions.ExcludeVariants {
-		if _, ok := excludeVariantsMap[Board(excludeConfig.Board)]; !ok {
-			excludeVariantsMap[Board(excludeConfig.Board)] = make(map[Variant]bool)
-		}
-		excludeVariantsMap[Board(excludeConfig.Board)][Variant(excludeConfig.Variant)] = true
-	}
-
-	for _, board := range config.TargetOptions.BoardsList {
-		tempTargets := []BuildTarget{}
-
-		if _, ok := lab[Board(board)]; !ok {
-			return nil, fmt.Errorf("Config %s target board which isn't present in the lab config", config.Name)
-		}
-
-		labEntry := lab[Board(board)]
-
-		tempTargets = append(tempTargets, BuildTarget(board))
-
-		// If variants are being skipped then continue onto the next board option.
-		if config.TargetOptions.SkipVariants {
-			continue
-		}
-
-		// If no exclude variant check is in place then add the variant to
-		// the target options.
-		for _, variant := range labEntry.board.Variants {
-			// No variants on this board are excluded.
-			if _, ok := excludeVariantsMap[Board(board)]; !ok {
-				tempTargets = append(tempTargets, BuildTarget(board+variant))
-				continue
-			}
-
-			// No exclude variant config found, add variant to targeted options.
-			if _, ok := excludeVariantsMap[Board(board)][Variant(variant)]; !ok {
-				tempTargets = append(tempTargets, BuildTarget(board+variant))
-			}
-		}
-
-		targets = append(targets, tempTargets...)
-	}
-
-	return targets, nil
-}
 
 // IngestSuSchConfigs takes in all of the raw Suite Scheduler and Lab configs and ingests
 // them into a more usage structure.
-func IngestSuSchConfigs(configs ConfigList, lab LabConfig) (*SuiteSchedulerConfigs, error) {
+func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerConfigs, error) {
 	configDS := &SuiteSchedulerConfigs{
 		configStore:    ConfigList{},
 		newBuildMap:    make(map[BuildTarget]ConfigList),
@@ -107,22 +60,76 @@ func IngestSuSchConfigs(configs ConfigList, lab LabConfig) (*SuiteSchedulerConfi
 
 // IngestLabConfigs takes in all of the raw Lab configs and ingests
 // them into a more usage structure.
-func IngestLabConfigs(labConfig *infrapb.LabConfig) (LabConfig, error) {
-	tempConfig := make(LabConfig)
+func IngestLabConfigs(labConfig *infrapb.LabConfig) *LabConfigs {
+	tempConfig := &LabConfigs{
+		Models: map[Model]*BoardEntry{},
+		Boards: map[Board]*BoardEntry{},
+	}
 
 	for _, board := range labConfig.Boards {
-		tempConfig[Board(board.Name)] = BoardEntry{
+		entry := &BoardEntry{
 			isAndroid: false,
 			board:     board,
+		}
+		tempConfig.Boards[Board(board.Name)] = entry
+
+		for _, model := range board.Models {
+			tempConfig.Models[Model(model)] = entry
 		}
 	}
 
 	for _, board := range labConfig.AndroidBoards {
-		tempConfig[Board(board.Name)] = BoardEntry{
+		entry := &BoardEntry{
 			isAndroid: true,
 			board:     board,
 		}
+		tempConfig.Boards[Board(board.Name)] = entry
+
+		for _, model := range board.Models {
+			tempConfig.Models[Model(model)] = entry
+		}
 	}
 
-	return tempConfig, nil
+	return tempConfig
+}
+
+// StringToLabProto takes a JSON formatted string and transforms it into an
+// infrapb.LabConfig object.
+func StringToLabProto(configsBuffer []byte) (*infrapb.LabConfig, error) {
+	configs := &infrapb.LabConfig{}
+
+	err := protojson.Unmarshal(configsBuffer, configs)
+	if err != nil {
+		return nil, err
+	}
+
+	return configs, nil
+}
+
+// StringToSchedulerProto takes a JSON formatted string and transforms it into an
+// infrapb.SchedulerCfg object.
+func StringToSchedulerProto(configsBuffer []byte) (*infrapb.SchedulerCfg, error) {
+	configs := &infrapb.SchedulerCfg{}
+
+	err := protojson.Unmarshal(configsBuffer, configs)
+	if err != nil {
+		return nil, err
+	}
+
+	return configs, nil
+}
+
+// ReadLocalFile reads a file at the given path into memory and returns it's contents.
+func ReadLocalFile(path string) ([]byte, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	err = file.Close()
+	return data, err
 }

@@ -7,6 +7,8 @@ BIN=suite_scheduler
 
 GENERATEDSUSCHCFG=configparser/generated/suite_scheduler.cfg
 GENERATEDLABCFG=configparser/generated/lab_config.cfg
+GENERATEDSUSCHINI=configparser/generated/suite_scheduler.ini
+GENERATEDLABINI=configparser/generated/lab_config.ini
 
 all: run
 
@@ -17,7 +19,7 @@ build:
 	go build -o $(BIN)
 
 clean:
-	rm -rf $(STDERRFILE) $(STDOUTFILE) $(BIN) $(GENERATEDSUSCHCFG) $(GENERATEDLABCFG)
+	rm -rf $(STDERRFILE) $(STDOUTFILE) $(BIN) $(GENERATEDSUSCHCFG) $(GENERATEDLABCFG) $(GENERATEDSUSCHINI) $(GENERATEDLABINI)
 
 test:
 	go test ./...

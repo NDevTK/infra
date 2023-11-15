@@ -15,10 +15,10 @@ import (
 )
 
 const (
-	// TODO(b/305286743): Update the links to use the .cfg files once StarDocker
-	// begins copy them into the SuSch repo.
 	SuiteSchedulerCfgURL = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/suite_scheduler.cfg?format=text"
 	LabCfgURL            = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/lab_config.cfg?format=text"
+	SuiteSchedulerIniURL = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/suite_scheduler.ini?format=text"
+	LabIniURL            = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/lab_config.ini?format=text"
 )
 
 // fetchFileText retrieves text from the given URL. It assumes the text received

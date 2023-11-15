@@ -5,5 +5,8 @@
 # Do not inherit parents from top-level OWNERS
 set noparent
 
+# Project Owner
+juahurta@google.com
+
 # CrOS Infra Test Scheduling & Execution Team
 include chromiumos/owners:v1:/infra/OWNERS.tse

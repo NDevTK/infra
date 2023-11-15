@@ -4,6 +4,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"log"
 	"os"
 
@@ -11,15 +13,22 @@ import (
 	// this project moves to a stand alone service these import will need to be
 	// updated to reflect ./suite_scheduler/ as the root project directory.
 	"infra/cros/cmd/suite_scheduler/configparser"
+	"infra/cros/cmd/suite_scheduler/ctp_request"
+
+	"google.golang.org/protobuf/encoding/protojson"
+)
+
+const (
+	suSchCfgPath  = "configparser/generated/suite_scheduler.cfg"
+	labCfgPath    = "configparser/generated/lab_config.cfg"
+	suSchInigPath = "configparser/generated/suite_scheduler.ini"
+	labIniPath    = "configparser/generated/lab_config.ini"
 )
 
 var (
 	flags  = log.Default().Flags() | log.Lshortfile
 	stdout = log.New(os.Stdout, "", flags)
 	stderr = log.New(os.Stderr, "", flags)
-
-	suSchCfgPath = "configparser/generated/suite_scheduler.cfg"
-	labCfgPath   = "configparser/generated/lab_config.cfg"
 )
 
 // SetUp fetches the .ini files from the SuSch repo.
@@ -30,6 +39,16 @@ func SetUp() error {
 	}
 
 	err = configparser.FetchAndWriteFile(configparser.LabCfgURL, labCfgPath)
+	if err != nil {
+		return err
+	}
+
+	err = configparser.FetchAndWriteFile(configparser.SuiteSchedulerIniURL, suSchInigPath)
+	if err != nil {
+		return err
+	}
+
+	err = configparser.FetchAndWriteFile(configparser.LabIniURL, labIniPath)
 	if err != nil {
 		return err
 	}
@@ -73,11 +92,7 @@ func innerRun() int {
 	stdout.Printf("# of boards: %d\n", len(labConfigs.Boards))
 	stdout.Printf("# of Android boards: %d\n", len(labConfigs.AndroidBoards))
 
-	labMap, err := configparser.IngestLabConfigs(labConfigs)
-	if err != nil {
-		stderr.Println(err)
-		return 1
-	}
+	labMap := configparser.IngestLabConfigs(labConfigs)
 
 	suSuchConfigs, err := configparser.IngestSuSchConfigs(schedulerConfigs.Configs, labMap)
 	if err != nil {
@@ -101,6 +116,36 @@ func innerRun() int {
 	configList = suSuchConfigs.FetchAllFortnightlyConfigs()
 	stdout.Printf("# of Fortnightly configs: %d\n", len(configList))
 
+	testConfig, err := suSuchConfigs.FetchConfigByName("CFTNightly")
+	if err != nil {
+		stderr.Println(err)
+		return 1
+	}
+
+	boards, err := configparser.GetTargetOptions(testConfig, labMap)
+	if err != nil {
+		stderr.Println(err)
+		return 1
+	}
+
+	ctpRequests := ctp_request.BuildAllCTPRequests(testConfig, boards)
+
+	stdout.Printf("# of CTP requests generated for %s: %d", testConfig.Name, len(ctpRequests))
+
+	if len(ctpRequests) >= 1 {
+		tempConfig := ctpRequests[0]
+		str, err := protojson.Marshal(tempConfig)
+		if err != nil {
+			stderr.Println(err)
+			return 1
+		}
+
+		var printBuffer bytes.Buffer
+		err = json.Indent(&printBuffer, str, "", "\t")
+
+		stdout.Printf("Sample Request:\n%s", string(printBuffer.Bytes()))
+
+	}
 	return 0
 }
 
