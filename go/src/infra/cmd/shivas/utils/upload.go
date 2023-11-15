@@ -15,16 +15,15 @@ import (
 const gsBucket = "cros-lab-inventory.appspot.com"
 const scanLogPath = "assetScanLogs"
 
-func upload(sc gs.Client, localFilePath string, remoteFilePath string) error {
+func upload(sc gs.Client, localFilePath string, remoteFilePath string) (e error) {
 	wr, err := sc.NewWriter(gs.Path(remoteFilePath))
 	if err != nil {
 		return err
 	}
 	logReader, err := os.Open(localFilePath)
-	defer logReader.Close()
+	defer reportClose(&e, logReader)
 	if err != nil {
 		return err
-
 	}
 	if _, err := io.Copy(wr, logReader); err != nil {
 		return errors.Annotate(err, "upload %s to %s", localFilePath, gsBucket).Err()

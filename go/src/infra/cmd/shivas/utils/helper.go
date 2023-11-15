@@ -9,6 +9,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -96,11 +97,11 @@ func populateStatistics(logPath, resPath string, tStamp time.Time) (*LogStats, e
 	return lstats, nil
 }
 
-func (lstats *LogStats) populateLogFile() error {
+func (lstats *LogStats) populateLogFile() (e error) {
 	scannedAssets := make(map[string]*AssetStats)
 	scannedLocations := make(map[string]bool)
 	logF, err := os.Open(lstats.LogPath)
-	defer logF.Close()
+	defer reportClose(&e, logF)
 	if err != nil {
 		return err
 	}
@@ -126,10 +127,10 @@ func (lstats *LogStats) populateLogFile() error {
 }
 
 // Should be called after populateLogFile()
-func (lstats *LogStats) populateResFile() error {
+func (lstats *LogStats) populateResFile() (e error) {
 	mismatchedAssets := make(map[string]*AssetStats)
 	resF, err := os.Open(lstats.ResPath)
-	defer resF.Close()
+	defer reportClose(&e, resF)
 	if err != nil {
 		return err
 	}
@@ -213,9 +214,11 @@ func stringListToAsset(csv []string) (a *fleet.ChopsAsset, err error) {
 }
 
 // PrintLogStatsAndResult prints the stats and results for a specified audit scan run.
-func PrintLogStatsAndResult(l *LogStats, index int) {
-	defer tw.Flush()
-	PrintLogStats(LogStatsList{l}, 1, false)
+func PrintLogStatsAndResult(l *LogStats, index int) (e error) {
+	defer reportFlush(&e, tw)
+	if err := PrintLogStats(LogStatsList{l}, 1, false); err != nil {
+		return err
+	}
 
 	fmt.Fprintln(tw, "\nSuccessful assets:")
 	fmt.Fprintln(tw, "Action\t\tNumber of Assets")
@@ -235,6 +238,7 @@ func PrintLogStatsAndResult(l *LogStats, index int) {
 			fmt.Fprintln(tw, out)
 		}
 	}
+	return e
 }
 
 func printLogStatsTitle() {
@@ -242,8 +246,8 @@ func printLogStatsTitle() {
 }
 
 // PrintLogStats prints infos for a batch of audit scan runs.
-func PrintLogStats(l LogStatsList, limit int, reverse bool) {
-	defer tw.Flush()
+func PrintLogStats(l LogStatsList, limit int, reverse bool) (e error) {
+	defer reportFlush(&e, tw)
 	fmt.Fprintln(tw, "\nOverall Stats:")
 	indexArr := make([]int, len(l))
 	for i := range indexArr {
@@ -262,6 +266,8 @@ func PrintLogStats(l LogStatsList, limit int, reverse bool) {
 	for i, lstats := range l {
 		printOneLog(indexArr[i], lstats, tw)
 	}
+
+	return nil
 }
 
 func printOneLog(index int, lstats *LogStats, tw *tabwriter.Writer) {
@@ -331,9 +337,9 @@ func getStats(logPath, resPath, tstampStr string) *LogStats {
 }
 
 // GetAssetsInOrder reads a group of assets from log file.
-func GetAssetsInOrder(logFile string) ([]*fleet.ChopsAsset, error) {
+func GetAssetsInOrder(logFile string) (_ []*fleet.ChopsAsset, e error) {
 	f, err := os.Open(logFile)
-	defer f.Close()
+	defer reportClose(&e, f)
 	if err != nil {
 		return nil, err
 	}
@@ -448,4 +454,22 @@ func GenerateAssetUpdate(machine, model, board, zone, rack string) (*ufspb.Asset
 		paths = append(paths, "location.rack")
 	}
 	return asset, paths
+}
+
+// reportClose closes an io.Closer and adds its error via errors.Join to errRef.
+func reportClose(errRef *error, c io.Closer) {
+	if errRef == nil {
+		panic("error reference in reportClose cannot be nil")
+	}
+	newErr := c.Close()
+	*errRef = errors.Join(newErr, *errRef)
+}
+
+// reportFlush flushes and adds its error via errs.Join to errRef.
+func reportFlush(errRef *error, w *tabwriter.Writer) {
+	if errRef == nil {
+		panic("error reference in reportFlush cannot be nil")
+	}
+	newErr := w.Flush()
+	*errRef = errors.Join(newErr, *errRef)
 }

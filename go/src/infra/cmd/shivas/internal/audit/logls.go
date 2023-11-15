@@ -58,9 +58,13 @@ func (c *logls) innerRun(a subcommands.Application, args []string, env subcomman
 	}
 	sort.Sort(logs)
 	if c.index >= 0 && c.index < len(logs) {
-		utils.PrintLogStatsAndResult(logs[c.index], c.index)
+		if err := utils.PrintLogStatsAndResult(logs[c.index], c.index); err != nil {
+			return err
+		}
 	} else {
-		utils.PrintLogStats(logs, c.limit, true)
+		if err := utils.PrintLogStats(logs, c.limit, true); err != nil {
+			return err
+		}
 	}
 	return nil
 }

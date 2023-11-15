@@ -110,7 +110,9 @@ func (u *Updater) Close() {
 	if err != nil {
 		fmt.Printf("Fail to generate statistics for this round of scan: %s\n", err.Error())
 	}
-	PrintLogStatsAndResult(logStats, 0)
+	if err := PrintLogStatsAndResult(logStats, 0); err != nil {
+		fmt.Printf("Fail to print statistics and log results: %s\n", err.Error())
+	}
 }
 
 /* updateRoutine does the following
