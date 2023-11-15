@@ -696,6 +696,7 @@ luci.task_backend(
 luci.builder(
     name = "test-placeholder-recipe",
     bucket = "cloudbuild",
+    backend_alt = "cloudbuild_poc_backend",
     executable = luci.recipe(
         name = "placeholder",
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
@@ -749,6 +750,7 @@ luci.builder(
 luci.builder(
     name = "test-placeholder-recipe-child",
     bucket = "cloudbuild",
+    backend_alt = "cloudbuild_poc_backend",
     executable = luci.recipe(
         name = "placeholder",
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
