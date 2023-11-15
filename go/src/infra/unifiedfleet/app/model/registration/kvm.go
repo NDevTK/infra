@@ -49,6 +49,11 @@ func (e *KVMEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a KVMEntity is valid.
+func (e *KVMEntity) Validate() error {
+	return nil
+}
+
 func newKVMEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.KVM)
 	if p.GetName() == "" {

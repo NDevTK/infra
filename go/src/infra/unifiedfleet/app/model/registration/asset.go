@@ -54,6 +54,11 @@ func (a *AssetEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether an AssetEntity is valid.
+func (a *AssetEntity) Validate() error {
+	return nil
+}
+
 func (a *AssetEntity) GetRealm() string {
 	return a.Realm
 }

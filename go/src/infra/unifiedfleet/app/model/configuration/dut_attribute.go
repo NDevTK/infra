@@ -43,6 +43,11 @@ func (e *DutAttributeEntity) GetProto() (proto.Message, error) {
 	return p, nil
 }
 
+// Validate returns whether a DutAttributeEntity is valid.
+func (e *DutAttributeEntity) Validate() error {
+	return nil
+}
+
 func newDutAttributeEntity(ctx context.Context, pm proto.Message) (attrEntity ufsds.FleetEntity, err error) {
 	p, ok := pm.(*api.DutAttribute)
 	if !ok {

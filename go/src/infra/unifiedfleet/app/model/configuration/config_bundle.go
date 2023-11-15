@@ -43,6 +43,11 @@ func (e *ConfigBundleEntity) GetProto() (proto.Message, error) {
 	return p, nil
 }
 
+// Validate returns whether a ConfigBundleEntity is valid.
+func (e *ConfigBundleEntity) Validate() error {
+	return nil
+}
+
 func GenerateCBEntityId(cb *payload.ConfigBundle) (string, error) {
 	if len(cb.GetDesignList()) == 0 {
 		return "", errors.New("empty ConfigBundle DesignList")
@@ -151,6 +156,11 @@ func (e *FlatConfigEntity) GetProto() (proto.Message, error) {
 		return nil, err
 	}
 	return p, nil
+}
+
+// Validate returns whether a FlatConfigEntity is valid.
+func (e *FlatConfigEntity) Validate() error {
+	return nil
 }
 
 func GenerateFCEntityId(fc *payload.FlatConfig) (string, error) {

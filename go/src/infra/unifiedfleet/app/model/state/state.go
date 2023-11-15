@@ -45,6 +45,11 @@ func (e *RecordEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a RecordEntity is valid
+func (e *RecordEntity) Validate() error {
+	return nil
+}
+
 func newRecordEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.StateRecord)
 	if p.GetResourceName() == "" {

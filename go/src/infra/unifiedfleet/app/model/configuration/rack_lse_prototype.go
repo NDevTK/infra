@@ -43,6 +43,11 @@ func (e *RackLSEPrototypeEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a RackLSEPrototypeEntity is valid.
+func (e *RackLSEPrototypeEntity) Validate() error {
+	return nil
+}
+
 func newRackLSEPrototypeEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.RackLSEPrototype)
 	if p.GetName() == "" {

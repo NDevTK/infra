@@ -59,6 +59,11 @@ func (e *VMEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a VMEntity is valid
+func (e *VMEntity) Validate() error {
+	return nil
+}
+
 func newVMEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.VM)
 	if p.GetName() == "" {

@@ -48,6 +48,11 @@ func (e *CSEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a CSEntity is valid.
+func (e *CSEntity) Validate() error {
+	return nil
+}
+
 func newCSEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.CachingService)
 	if p.GetName() == "" {

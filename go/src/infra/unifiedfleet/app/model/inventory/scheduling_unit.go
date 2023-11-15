@@ -46,6 +46,11 @@ func (e *SchedulingUnitEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a SchedulingUnitEntity is valid
+func (e *SchedulingUnitEntity) Validate() error {
+	return nil
+}
+
 func newSchedulingUnitEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.SchedulingUnit)
 	if p.GetName() == "" {

@@ -46,6 +46,11 @@ func (e *VlanEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a vlan entity is valid.
+func (e *VlanEntity) Validate() error {
+	return nil
+}
+
 func newVlanEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.Vlan)
 	if p.GetName() == "" {

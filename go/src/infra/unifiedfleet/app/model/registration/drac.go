@@ -50,6 +50,11 @@ func (e *DracEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a DracEntity is valid.
+func (e *DracEntity) Validate() error {
+	return nil
+}
+
 func newDracEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.Drac)
 	if p.GetName() == "" {

@@ -50,6 +50,11 @@ func (e *NicEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a NicEntity is valid.
+func (e *NicEntity) Validate() error {
+	return nil
+}
+
 func newNicEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.Nic)
 	if p.GetName() == "" {

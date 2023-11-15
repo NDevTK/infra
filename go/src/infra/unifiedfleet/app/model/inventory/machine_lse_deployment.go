@@ -45,6 +45,11 @@ func (e *MachineLSEDeploymentEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a MachineLSEDeploymentEntity is valid
+func (e *MachineLSEDeploymentEntity) Validate() error {
+	return nil
+}
+
 func newMachineLSEDeploymentEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.MachineLSEDeployment)
 	if p.GetSerialNumber() == "" {

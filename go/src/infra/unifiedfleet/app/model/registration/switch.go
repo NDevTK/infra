@@ -47,6 +47,11 @@ func (e *SwitchEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a SwitchEntity is valid.
+func (e *SwitchEntity) Validate() error {
+	return nil
+}
+
 func newSwitchEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.Switch)
 	if p.GetName() == "" {

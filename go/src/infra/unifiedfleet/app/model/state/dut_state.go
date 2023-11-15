@@ -49,6 +49,11 @@ func (e *DutStateEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a DutStateEntity is valid
+func (e *DutStateEntity) Validate() error {
+	return nil
+}
+
 func (e *DutStateEntity) GetRealm() string {
 	return e.Realm
 }

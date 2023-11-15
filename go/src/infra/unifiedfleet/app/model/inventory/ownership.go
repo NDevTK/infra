@@ -51,6 +51,11 @@ func (e *OwnershipDataEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether an OwnershipDataEntity is valid.
+func (e *OwnershipDataEntity) Validate() error {
+	return nil
+}
+
 // PutOwnershipData adds a bot name and its corresponding ownership in the datastore.
 func PutOwnershipData(ctx context.Context, ownership *ufspb.OwnershipData, name string, assetType string) (*OwnershipDataEntity, error) {
 	if name == "" {

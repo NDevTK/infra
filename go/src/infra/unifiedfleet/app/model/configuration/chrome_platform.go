@@ -44,6 +44,11 @@ func (e *ChromePlatformEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a ChromePlatformEntity is valid.
+func (e *ChromePlatformEntity) Validate() error {
+	return nil
+}
+
 func newChromePlatformEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.ChromePlatform)
 	if p.GetName() == "" {

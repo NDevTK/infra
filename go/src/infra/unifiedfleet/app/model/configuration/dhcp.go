@@ -45,6 +45,11 @@ func (e *DHCPEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a DHCPEntity is valid.
+func (e *DHCPEntity) Validate() error {
+	return nil
+}
+
 func newDHCPEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.DHCPConfig)
 	if p.GetHostname() == "" {

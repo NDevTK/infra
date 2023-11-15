@@ -34,6 +34,25 @@ const (
 // FleetEntity represents the interface of entity in datastore.
 type FleetEntity interface {
 	GetProto() (proto.Message, error)
+
+	// Validate performs a shallow check to make sure that the record can
+	// be written to datastore.
+	//
+	// We don't validate when information is read, but we do validate when
+	// it's written.
+	//
+	// This function is the last line of defense preventing us from writing
+	// bad data to UFS. It should ONLY be used for enforcing constraints
+	// that can be defined using only this record.
+	//
+	// For example, hostname not being an empty string is a valid
+	// condition, but hostname being unique is not because the latter
+	// forces us to consider what other entities exist, which is too much
+	// complexity for this layer.  (Cross-entity consistency should be part
+	// of request validation here)
+	//
+	// Validate should be a pure function. It should not modify the record.
+	Validate() error
 }
 
 // RealmEntity represents the interface of an entity with a way to associate
@@ -102,6 +121,10 @@ func Put(ctx context.Context, pm proto.Message, nf NewFunc, update bool) (proto.
 		logging.Errorf(ctx, "Failed to marshal new entity: %s", err)
 		return nil, status.Errorf(codes.Internal, InternalError)
 	}
+	if err := entity.Validate(); err != nil {
+		logging.Errorf(ctx, "Entity did not validate: %s", err)
+		return nil, status.Errorf(codes.Internal, "entity did not validate: %s", err)
+	}
 	f := func(ctx context.Context) error {
 		existsResults, err := datastore.Exists(ctx, entity)
 		if err == nil {
@@ -157,6 +180,10 @@ func PutAll(ctx context.Context, pms []proto.Message, nf NewFunc, update bool) (
 		if err != nil {
 			logging.Errorf(ctx, "Failed to marshal new entity: %s", err)
 			return nil, status.Errorf(codes.Internal, fmt.Sprintf("%s: %s", InternalError, err.Error()))
+		}
+		if err := entity.Validate(); err != nil {
+			logging.Errorf(ctx, "Entity did not validate: %s", err)
+			return nil, status.Errorf(codes.Internal, "entity did not validate: %s", err)
 		}
 		entities = append(entities, entity)
 	}

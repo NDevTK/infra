@@ -43,6 +43,11 @@ func (e *ChangeEventEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether the ChangeEventEntity is valid.
+func (e *ChangeEventEntity) Validate() error {
+	return nil
+}
+
 func newChangeEventEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.ChangeEvent)
 	if p.GetName() == "" {

@@ -64,6 +64,11 @@ func (e *IPEntity) GetProto() (proto.Message, error) {
 	}, nil
 }
 
+// Validate returns whether an IPEntity is valid.
+func (e *IPEntity) Validate() error {
+	return nil
+}
+
 func newIPEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.IP)
 	if p.GetId() == "" {

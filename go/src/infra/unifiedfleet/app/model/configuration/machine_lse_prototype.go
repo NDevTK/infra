@@ -43,6 +43,11 @@ func (e *MachineLSEPrototypeEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a MachineLSEPrototypeEntity is valid.
+func (e *MachineLSEPrototypeEntity) Validate() error {
+	return nil
+}
+
 func newMachineLSEPrototypeEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.MachineLSEPrototype)
 	if p.GetName() == "" {

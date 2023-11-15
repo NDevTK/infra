@@ -56,6 +56,11 @@ func (e *RackEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a RackEntity is valid.
+func (e *RackEntity) Validate() error {
+	return nil
+}
+
 func (e *RackEntity) GetRealm() string {
 	return e.Realm
 }

@@ -41,6 +41,11 @@ func (e *DeviceConfigEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a DeviceConfigEntity is valid.
+func (e *DeviceConfigEntity) Validate() error {
+	return nil
+}
+
 // GetRealm returns the realm of the device config.
 func (e *DeviceConfigEntity) GetRealm() string {
 	return e.Realm

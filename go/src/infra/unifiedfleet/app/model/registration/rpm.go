@@ -48,6 +48,11 @@ func (e *RPMEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether an RPMEntity is valid.
+func (e *RPMEntity) Validate() error {
+	return nil
+}
+
 func newRPMEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.RPM)
 	if p.GetName() == "" {

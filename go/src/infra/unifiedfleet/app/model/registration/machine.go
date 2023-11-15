@@ -72,6 +72,11 @@ func (e *MachineEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether a MachineEntity is valid.
+func (e *MachineEntity) Validate() error {
+	return nil
+}
+
 func (e *MachineEntity) GetRealm() string {
 	return e.Realm
 }

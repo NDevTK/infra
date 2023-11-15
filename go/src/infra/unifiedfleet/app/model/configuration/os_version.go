@@ -39,6 +39,11 @@ func (e *OSVersionEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+// Validate returns whether an OSVersionEntity is valid.
+func (e *OSVersionEntity) Validate() error {
+	return nil
+}
+
 func newOSVersionEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.OSVersion)
 	if p.GetValue() == "" {
