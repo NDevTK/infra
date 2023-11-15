@@ -15,6 +15,7 @@ import (
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/servo"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger"
 )
 
@@ -80,6 +81,10 @@ func (p *v3Programmer) programEC(ctx context.Context, imagePath string) error {
 		return errors.Reason("program ec: flash for `ite` chips is blocked by b/268108518").Err()
 	} else {
 		cmd = fmt.Sprintf(ecProgrammerCmdGlob, ecChip, imagePath, p.servod.Port())
+	}
+	if p.ecUpdateRequiresApshutdown(ctx) {
+		// Introduced due EC SW Sync race (b/269804618).
+		cmd += " --try_apshutdown"
 	}
 	out, err := p.run(ctx, firmwareProgramTimeout, cmd)
 	p.log.Debugf("Program EC output: \n%s", out)
@@ -197,6 +202,39 @@ func (p *v3Programmer) servoType(ctx context.Context) (*servo.ServoType, error) 
 	} else {
 		return servo.NewServoType(ecChipI.GetString_()), nil
 	}
+}
+
+// Controls map to tell if `--try_apshutdown` requires to use when EC update.
+// Introduced due EC SW Sync race (b/269804618).
+// Key: control to tell presents of the target control.
+// Value: target control to check if `--try_apshutdown` required to be used.
+var ecUpdateRequiresApshutdownControls = map[string]string{
+	"cpu_fw_spi":     "cpu_fw_spi_depends_on_ec_fw",
+	"ccd_cpu_fw_spi": "ccd_cpu_fw_spi_depends_on_ec_fw",
+}
+
+// ecUpdateRequiresApshutdown checks if flash_ec needs apply '--try_apshutdown'.
+// Both controls are checked because in CCD + debug header combo setups.
+// Introduced due EC SW Sync race (b/269804618).
+func (p *v3Programmer) ecUpdateRequiresApshutdown(ctx context.Context) bool {
+	isSupported := func(presentCheckControl, targetControl string) bool {
+		if err := p.servod.Has(ctx, presentCheckControl); err != nil {
+			log.Debugf(ctx, "Target control %q is not present: %s", targetControl, err)
+			return false
+		}
+		val, err := servo.GetString(ctx, p.servod, targetControl)
+		if err != nil {
+			log.Debugf(ctx, "Failed to read %q: %s", targetControl, err)
+			return false
+		}
+		return val == "yes"
+	}
+	for presentCheckControl, targetControl := range ecUpdateRequiresApshutdownControls {
+		if isSupported(presentCheckControl, targetControl) {
+			return true
+		}
+	}
+	return false
 }
 
 // gbbToInt converts hex value to int.

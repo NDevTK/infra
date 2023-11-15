@@ -11,6 +11,8 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/recovery/internal/components/mocks"
 	"infra/cros/recovery/logger"
 )
@@ -28,6 +30,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			"flash_ec --chip=stm32 --image=ec_image.bin --port=95 --bitbang_rate=57600 --verify --verbose": "",
 		}
 		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("stm32"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(95).Times(1)
@@ -49,6 +55,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			"flash_ec --chip=some_chip --image=ec_image.bin --port=96 --verify --verbose": "",
 		}
 		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("some_chip"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(96).Times(1)
@@ -70,6 +80,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			"which flash_ec": "",
 		}
 		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(0)
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(0)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8XXXX"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(95).Times(0)
@@ -91,6 +105,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			"which flash_ec": "",
 		}
 		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(0)
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(0)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8yyyyy"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(95).Times(0)
@@ -113,7 +131,87 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			"flash_ec --chip=it8yyyyy --image=ec_image.bin --port=96 --verify --verbose": "",
 		}
 		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8yyyyy"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
+		servod.EXPECT().Port().Return(96).Times(1)
+
+		p := &v3Programmer{
+			run:    mockRunner(runRequest),
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programEC(ctx, imagePath)
+		So(err, ShouldBeNil)
+	})
+	Convey("use try_apshutdown is expected for ccd_cpu_fw_spi_depends_on_ec_fw:yes (1)", t, func() {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		runRequest := map[string]string{
+			"which flash_ec": "",
+			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose --try_apshutdown": "",
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("yes"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("just_chip"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
+		servod.EXPECT().Port().Return(96).Times(1)
+
+		p := &v3Programmer{
+			run:    mockRunner(runRequest),
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programEC(ctx, imagePath)
+		So(err, ShouldBeNil)
+	})
+	Convey("use try_apshutdown is expected for cpu_fw_spi_depends_on_ec_fw:yes (2)", t, func() {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		runRequest := map[string]string{
+			"which flash_ec": "",
+			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose --try_apshutdown": "",
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("yes"), nil).Times(1)
+		// not called as above already told yes.
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(0)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
+		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("just_chip"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
+		servod.EXPECT().Port().Return(96).Times(1)
+
+		p := &v3Programmer{
+			run:    mockRunner(runRequest),
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programEC(ctx, imagePath)
+		So(err, ShouldBeNil)
+	})
+	Convey("do not use try_apshutdown if controls are not present", t, func() {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		runRequest := map[string]string{
+			"which flash_ec": "",
+			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose": "",
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(errors.Reason("Not present").Err()).Times(1)
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(errors.Reason("Not present").Err()).Times(1)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("yes"), nil).Times(0)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
+		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("just_chip"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(96).Times(1)
 

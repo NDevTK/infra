@@ -12,6 +12,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
 
