@@ -680,3 +680,93 @@ fakebuild_search_builder("fake-search-no-bn", 100, 10, 2, 10, False)
 
 fakebuild_tree_builder("fake-tree-2", 20, 2, "fake-search", 2, 10, True)
 fakebuild_tree_builder("fake-tree-2-no-bn", 20, 2, "fake-search-no-bn", 2, 10, False, wait_for_children = True)
+
+################################################################################
+## Resources used for Cloudbuild backend test builder.
+## TODO(crbug.com/1495858): Remove this section once CB as a backend is done
+## being tested.
+
+luci.bucket(name = "cloudbuild")
+
+luci.task_backend(
+    name = "cloudbuild_poc_backend",
+    target = "cloudbuild://cloud-build-backend-poc",
+)
+
+luci.builder(
+    name = "test-placeholder-recipe",
+    bucket = "cloudbuild",
+    executable = luci.recipe(
+        name = "placeholder",
+        cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
+        use_python3 = True,
+    ),
+    experiments = {
+        "luci.buildbucket.backend_alt": 100,
+    },
+    properties = {
+        "status": "SUCCESS",
+        "steps": [
+            {
+                "name": "can_outlive_parent child",
+                "child_build": {
+                    "buildbucket": {
+                        "builder": {
+                            "project": "infra",
+                            "bucket": "cloudbuild",
+                            "builder": "test-placeholder-recipe-child",
+                        },
+                    },
+                    "life_time": "DETACHED",
+                },
+            },
+            {
+                "name": "cannot_outlive_parent child",
+                "child_build": {
+                    "id": "bounded_child",
+                    "buildbucket": {
+                        "builder": {
+                            "project": "infra",
+                            "bucket": "cloudbuild",
+                            "builder": "test-placeholder-recipe-child",
+                        },
+                    },
+                    "life_time": "BUILD_BOUND",
+                },
+            },
+            {
+                "name": "collect children",
+                "collect_children": {
+                    "child_build_step_ids": ["bounded_child"],
+                },
+            },
+        ],
+    },
+    service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+    schedule = "triggered",
+)
+
+luci.builder(
+    name = "test-placeholder-recipe-child",
+    bucket = "cloudbuild",
+    executable = luci.recipe(
+        name = "placeholder",
+        cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
+        use_python3 = True,
+    ),
+    experiments = {
+        "luci.buildbucket.backend_alt": 100,
+    },
+    properties = {
+        "status": "SUCCESS",
+        "steps": [
+            {
+                "name": "hello",
+                "fake_step": {
+                    "duration_secs": 90,
+                },
+            },
+        ],
+    },
+    service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+)
