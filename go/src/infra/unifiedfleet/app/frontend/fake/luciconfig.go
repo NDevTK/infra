@@ -137,6 +137,11 @@ func (c *LuciConfigClient) GetConfig(ctx context.Context, configSet luciconfig.S
 	return nil, nil
 }
 
+// GetConfigs exists to satisfy luciconfig.Interface, it isn't called.
+func (c *LuciConfigClient) GetConfigs(ctx context.Context, configSet luciconfig.Set, filter func(path string) bool, metaOnly bool) (map[string]luciconfig.Config, error) {
+	panic("not implemented")
+}
+
 // GetConfigByHash returns the contents of a config
 func (c *LuciConfigClient) GetConfigByHash(ctx context.Context, contentHash string) (string, error) {
 	return "", nil
