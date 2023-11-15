@@ -46,6 +46,30 @@
       },
       "revId": "c213b021ef9b89c26d00000f76d8d9d642cb7bac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a5f1ec1_12d650d4",
+        "filename": "go/src/infra/chromium/compilator_watcher/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1398317
+      },
+      "writtenOn": "2023-11-15T00:51:51Z",
+      "side": 1,
+      "message": "Updated to use tags.",
+      "parentUuid": "e794e3f7_b5ecdec7",
+      "range": {
+        "startLine": 96,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 50
+      },
+      "revId": "c213b021ef9b89c26d00000f76d8d9d642cb7bac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
