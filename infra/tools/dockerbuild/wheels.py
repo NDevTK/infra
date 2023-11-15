@@ -1981,6 +1981,7 @@ SPECS.update({
         Universal('pyasn1_modules', '0.0.8'),
         Universal('pyasn1_modules', '0.2.4'),
         Universal('pyasn1_modules', '0.2.8'),
+        Universal('pycnite', '2023.10.11', pyversions=['py3']),
         Universal('pycodestyle', '2.10.0'),
         Universal('pycparser', '2.21'),
         Universal('pyelftools', '0.29'),
