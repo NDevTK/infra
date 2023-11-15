@@ -40,7 +40,7 @@ func (r *allRunner) Run(ctx context.Context, spec *buildSpec) error {
 		}
 	}
 	// Run tests. (Also fetch dependencies if applicable.)
-	if spec.inputs.Project == "go" {
+	if isGoProject(spec.inputs.Project) {
 		return runGoTests(ctx, spec, noSharding, ports)
 	}
 	return fetchSubrepoAndRunTests(ctx, spec, ports)

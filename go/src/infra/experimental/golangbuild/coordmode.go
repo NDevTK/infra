@@ -41,7 +41,7 @@ func (r *coordRunner) Run(ctx context.Context, spec *buildSpec) error {
 	if err := ensurePrebuiltGoExists(ctx, spec, r.props.BuildBuilder); err != nil {
 		return err
 	}
-	if spec.inputs.Project == "go" {
+	if isGoProject(spec.inputs.Project) {
 		// Trigger downstream builders (subrepo builders) with the commit and/or Gerrit change we got.
 		if builders := r.props.GetBuildersToTriggerAfterToolchainBuild(); len(builders) > 0 {
 			if err := triggerDownstreamBuilds(ctx, spec, builders...); err != nil {
@@ -186,7 +186,7 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 	if spec.inputs.VersionFile != "" {
 		bbArgs = append(bbArgs, "-p", fmt.Sprintf(`version_file=%q`, spec.inputs.VersionFile))
 	}
-	if spec.invokedSrc.project != "go" && spec.goSrc.commit != nil {
+	if !isGoProject(spec.invokedSrc.project) && spec.goSrc.commit != nil {
 		bbArgs = append(bbArgs, "-p", fmt.Sprintf(`go_commit=%s`, spec.goSrc.commit.Id))
 	}
 	if spec.invokedSrc.commit != nil {

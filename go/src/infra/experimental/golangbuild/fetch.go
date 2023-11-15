@@ -29,18 +29,7 @@ import (
 	"infra/experimental/golangbuild/golangbuildpb"
 )
 
-// TODO(yifany): `goHost` is used in the implementation for deriving the build
-// specs in the file `buildspec.go`. The current implementation works under the
-// the situation that:
-//   - development of subrepos is in the public gerrit host,
-//   - tests from subrepos are always against corresponding branch in the go
-//     repo in the public gerrit host.
-//
-// If these conditions changed, the implementation need to adjust accordingly.
-// At that point, the const declarations here may no longer be needed.
 const (
-	goHost       = "go.googlesource.com"
-	goReviewHost = "go-review.googlesource.com"
 	// N.B. Unfortunately Go still calls the main branch "master" due to technical issues.
 	mainBranch = "master" // nocheck
 )
@@ -49,7 +38,7 @@ const (
 //
 // One of commit and change must be non-nil.
 type sourceSpec struct {
-	// project is a go.googlesource.com project. Must not be empty.
+	// project is a project in host. Must not be empty.
 	project string
 
 	// branch is the branch of project that change and/or commit are on. Must not be empty.
@@ -393,12 +382,12 @@ func runGitOutput(ctx context.Context, stepName string, args ...string) (output 
 }
 
 // sourceForBranch produces a sourceSpec representing the tip of a branch for a project.
-func sourceForBranch(ctx context.Context, auth *auth.Authenticator, project, branch string) (*sourceSpec, error) {
+func sourceForBranch(ctx context.Context, auth *auth.Authenticator, host, project, branch string) (*sourceSpec, error) {
 	hc, err := auth.Client()
 	if err != nil {
 		return nil, fmt.Errorf("auth.Client: %w", err)
 	}
-	gc, err := gitiles.NewRESTClient(hc, goHost, true)
+	gc, err := gitiles.NewRESTClient(hc, host, true)
 	if err != nil {
 		return nil, fmt.Errorf("gitiles.NewRESTClient: %w", err)
 	}
@@ -418,7 +407,7 @@ func sourceForBranch(ctx context.Context, auth *auth.Authenticator, project, bra
 		project: project,
 		branch:  branch,
 		commit: &bbpb.GitilesCommit{
-			Host:    goHost,
+			Host:    host,
 			Project: project,
 			Id:      log.Log[0].Id,
 			Ref:     ref,
@@ -428,7 +417,7 @@ func sourceForBranch(ctx context.Context, auth *auth.Authenticator, project, bra
 
 // sourceForGoBranchAndCommit produces a sourceSpec representing
 // the specified branch and commit in the main Go repo.
-func sourceForGoBranchAndCommit(branch, commit string) (*sourceSpec, error) {
+func sourceForGoBranchAndCommit(host, branch, commit string) (*sourceSpec, error) {
 	if branch == "" {
 		return nil, fmt.Errorf("empty branch")
 	}
@@ -444,7 +433,7 @@ func sourceForGoBranchAndCommit(branch, commit string) (*sourceSpec, error) {
 		project: "go",
 		branch:  branch,
 		commit: &bbpb.GitilesCommit{
-			Host:    goHost,
+			Host:    host,
 			Project: "go",
 			Id:      commit,
 			Ref:     "refs/heads/" + branch,

@@ -99,7 +99,7 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 	default:
 		return nil, fmt.Errorf("no commit or change specified for build and test")
 	}
-	if inputs.Project != "go" && changedProject != inputs.Project && changedProject != "go" {
+	if !isGoProject(inputs.Project) && changedProject != inputs.Project && !isGoProject(changedProject) {
 		// This case is something like a "build" commit for an "image" build, which
 		// doesn't make any sense.
 		return nil, fmt.Errorf("unexpected change and project pairing: %s vs. %s", changedProject, inputs.Project)
@@ -121,13 +121,19 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		// child builds before changing this.
 		cherryPick: false,
 	}
+
+	// For now, the internal repository is only supported for invokedSrc.
+	// TODO: In the future, we will probably have subrepos in the security repository.
+	// Which version of Go will we want to test against in that case?
+	const publicGoHost = "go.googlesource.com"
+
 	var goSrc, subrepoSrc *sourceSpec
 	var err error
-	if invokedSrc.project == "go" {
+	if isGoProject(invokedSrc.project) {
 		goSrc = invokedSrc
-		if inputs.Project != "go" {
+		if !isGoProject(inputs.Project) {
 			// We're testing the tip of inputs.Project's main branch against a Go commit.
-			subrepoSrc, err = sourceForBranch(ctx, authenticator, inputs.Project, mainBranch)
+			subrepoSrc, err = sourceForBranch(ctx, authenticator, publicGoHost, inputs.Project, mainBranch)
 			if err != nil {
 				return nil, fmt.Errorf("sourceForBranch: %w", err)
 			}
@@ -139,13 +145,13 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		subrepoSrc = invokedSrc
 		if inputs.GoCommit == "" {
 			// We're testing the tip of inputs.GoBranch against a commit to inputs.Project.
-			goSrc, err = sourceForBranch(ctx, authenticator, "go", inputs.GoBranch)
+			goSrc, err = sourceForBranch(ctx, authenticator, publicGoHost, "go", inputs.GoBranch)
 			if err != nil {
 				return nil, fmt.Errorf("sourceForBranch: %w", err)
 			}
 		} else {
 			// We're testing a commit on inputs.GoBranch that was already selected for us.
-			goSrc, err = sourceForGoBranchAndCommit(inputs.GoBranch, inputs.GoCommit)
+			goSrc, err = sourceForGoBranchAndCommit(publicGoHost, inputs.GoBranch, inputs.GoCommit)
 			if err != nil {
 				return nil, fmt.Errorf("sourceForGoBranchAndCommit: %w", err)
 			}
@@ -153,7 +159,7 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 	}
 
 	// Validate BuildersToTriggerAfterToolchainBuild invariant.
-	if inputs.Project != "go" && len(inputs.GetCoordMode().GetBuildersToTriggerAfterToolchainBuild()) != 0 {
+	if !isGoProject(inputs.Project) && len(inputs.GetCoordMode().GetBuildersToTriggerAfterToolchainBuild()) != 0 {
 		return nil, fmt.Errorf("specified builders to trigger for unsupported project")
 	}
 
@@ -298,7 +304,7 @@ func (b *buildSpec) goTestArgs(patterns ...string) []string {
 	if !b.inputs.LongTest {
 		args = append(args, "-short")
 	}
-	if b.inputs.LongTest && b.inputs.Project == "go" { // TODO(dmitshur): Delete after 1.20 drops off.
+	if b.inputs.LongTest && isGoProject(b.inputs.Project) { // TODO(dmitshur): Delete after 1.20 drops off.
 		const (
 			goTestDefaultTimeout = 10 * time.Minute // Default value taken from Go 1.20.
 			scale                = 5                // An approximation of GO_TEST_TIMEOUT_SCALE.
@@ -488,4 +494,10 @@ func refToBranch(ref string) string {
 		return ref[len(branchRefPrefix):]
 	}
 	return ""
+}
+
+// isGoProject reports whether a project should be treated as the main Go repo.
+// For the moment, we develop security fixes in a project named golang/go-private.
+func isGoProject(name string) bool {
+	return name == "go" || name == "golang/go-private"
 }
