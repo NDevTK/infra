@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE APP_ID.DATASET.weekly_test_metrics (
+CREATE OR REPLACE TABLE `APP_ID`.DATASET.weekly_test_metrics (
   date DATE OPTIONS (description = 'The week being summarized starting on a Sunday'),
 
   -- test level info

@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE APP_ID.DATASET.raw_metrics (
+CREATE OR REPLACE TABLE `APP_ID`.DATASET.raw_metrics (
   date DATE OPTIONS (description = 'The day being summarized'),
 
   -- test level info

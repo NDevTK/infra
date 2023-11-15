@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE APP_ID.DATASET.weekly_file_metrics (
+CREATE OR REPLACE TABLE `APP_ID`.DATASET.weekly_file_metrics (
   `date` DATE OPTIONS (description = 'The week being summarized starting on a Sunday'),
   repo STRING OPTIONS (description = 'Repo from which the file summaries apply'),
   component STRING OPTIONS (description = 'Component rollup. Only files that apply to this component are rolled up here.'),

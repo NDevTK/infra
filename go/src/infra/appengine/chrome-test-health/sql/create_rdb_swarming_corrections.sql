@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE APP_ID.DATASET.rdb_swarming_correction (
+CREATE OR REPLACE TABLE `APP_ID`.DATASET.rdb_swarming_correction (
   `date` DATE OPTIONS (description = 'The day for which the correction factors apply'),
   builder STRING OPTIONS (description = 'The builder running the suites'),
   test_suite STRING OPTIONS (description = 'The test suite ran on the builder'),
