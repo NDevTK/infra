@@ -93,6 +93,12 @@ func parseArgs(args []string) (cmdArgs, error) {
 	compBuildId := fs.String("compilator-id", "", "Buildbucket ID of triggered compilator")
 	getSwarmingTriggerProps := fs.Bool("get-swarming-trigger-props", false, "Sub-build will report steps up to `swarming trigger properties`")
 	getLocalTests := fs.Bool("get-local-tests", false, "Sub-build will report steps of local tests")
+	// TODO(crbug/1248460): Actually use these args once the orchestrator
+	// is passing them in.
+	startStepTag := fs.String("start-step-tag", "", "First step that should be copied over. All subsequent steps will be copied too. If empty, then it will default to the first step in the build.")
+	_ = startStepTag // Take out once this arg is used
+	endStepTag := fs.String("end-step-tag", "", "Last step that should be copied over. If empty, steps will be copied until the build ends.")
+	_ = endStepTag // Take out once this arg is used
 	compPollingTimeoutSec := fs.Int64(
 		"compilator-polling-timeout-sec",
 		7200,
