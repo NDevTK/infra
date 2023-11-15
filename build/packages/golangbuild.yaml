@@ -3,10 +3,12 @@ description: A luciexe that builds and tests the Go project
 platforms:
   - aix-ppc64
   - dragonfly-amd64
+  - freebsd-386
   - freebsd-amd64
   - freebsd-arm64
   - freebsd-riscv64
   - illumos-amd64
+  - linux-386
   - linux-amd64
   - linux-arm64
   - linux-loong64
@@ -20,11 +22,14 @@ platforms:
   - linux-s390x
   - mac-amd64
   - mac-arm64
+  - netbsd-386
   - netbsd-amd64
   - netbsd-arm64
+  - openbsd-386
   - openbsd-amd64
   - openbsd-arm64
   - solaris-amd64
+  - windows-386
   - windows-amd64
   - windows-arm64
 go_packages:
