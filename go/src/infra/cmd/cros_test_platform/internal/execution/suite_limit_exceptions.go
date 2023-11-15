@@ -120,6 +120,10 @@ var exceptions = []suiteFilter{
 		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		suiteName:  "fieldtrial-testing-config-on-weekly",
+		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		suiteName:  "crosbolt_perf_nightly",
 		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
