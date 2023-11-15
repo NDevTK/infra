@@ -22,6 +22,30 @@
       },
       "revId": "c213b021ef9b89c26d00000f76d8d9d642cb7bac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e794e3f7_b5ecdec7",
+        "filename": "go/src/infra/chromium/compilator_watcher/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1398317
+      },
+      "writtenOn": "2023-11-15T00:34:16Z",
+      "side": 1,
+      "message": "Hmm we could use step tags: https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/buildbucket/proto/step.proto;l\u003d110-133;drc\u003dbf5f57542826c26e7c5e7c8947846029eed8d6b1 https://source.chromium.org/chromium/infra/infra/+/main:recipes-py/recipe_modules/step/examples/full.py;l\u003d75",
+      "parentUuid": "e3c4ebfb_9f64cc7f",
+      "range": {
+        "startLine": 96,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 50
+      },
+      "revId": "c213b021ef9b89c26d00000f76d8d9d642cb7bac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
