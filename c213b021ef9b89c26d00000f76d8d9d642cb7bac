@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3c4ebfb_9f64cc7f",
+        "filename": "go/src/infra/chromium/compilator_watcher/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2023-11-15T00:29:28Z",
+      "side": 1,
+      "message": "Is there any way we can do this not using step names? I think it\u0027s less than ideal that the step names are load-bearing due to their use in various queries, but having the step names be part of the interface between these processes seems especially brittle since it would be easy for someone to add a nested step somewhere not knowing it would break the orchestrator/compilator pattern.",
+      "range": {
+        "startLine": 96,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 50
+      },
+      "revId": "c213b021ef9b89c26d00000f76d8d9d642cb7bac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
