@@ -241,6 +241,7 @@ func (f *fakeTask) Save() (row map[string]bigquery.Value, insertID string, err e
 	}
 
 	endTime := f.endTime.In(tz)
+	startTime := f.endTime.In(tz).Add(time.Second * time.Duration(-f.duration))
 	return map[string]bigquery.Value{
 		// Required by the schema
 		"bot": map[string]bigquery.Value{
@@ -255,8 +256,10 @@ func (f *fakeTask) Save() (row map[string]bigquery.Value, insertID string, err e
 		"request": map[string]bigquery.Value{
 			"task_id": f.id + "0",
 		},
+		"start_time": startTime,
 		"end_time":   endTime,
 		"try_number": 1,
+		"state":      "COMPLETED",
 	}, "", nil
 }
 

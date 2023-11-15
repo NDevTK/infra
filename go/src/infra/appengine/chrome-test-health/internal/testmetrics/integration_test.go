@@ -719,12 +719,12 @@ func TestIntegrationTest(t *testing.T) {
 		rf.defaultRuntime = (time.Hour * 24).Seconds()
 
 		// Generate the rollups from fake rdb data.
-		if err := createRollupFromResults(ctx, client, testProject, testDataset, fakeChromiumTryRdb, testPartition, []*fakeRdbResult{
+		if err := createRollupFromResults(ctx, client, testDataset, []*fakeRdbResult{
 			// All tests exist in the same file but with different component/builder combinations
 			rf.createResult().WithId("test1").WithComponent("Unknown").WithDuration(time.Minute * 1).WithFilename("//dir/name/filename.go"),
 			rf.createResult().WithId("test2").WithComponent("Unknown").WithDuration(time.Minute * 3).WithFilename("Unknown File"),
 			rf.createResult().WithId("test3").WithComponent("Unknown").WithDuration(time.Minute * 7).WithFilename("Unknown File"),
-		}); err != nil {
+		}, nil); err != nil {
 			t.Fail()
 		}
 
