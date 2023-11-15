@@ -4749,6 +4749,25 @@ wheel: <
 * *windows-x64-py3.11*
 * *windows-x64-py3.8*
 
+### 1.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/libcst/${vpython_platform}"
+  version: "version:1.1.0"
+>
+```
+
+
+* *linux-arm64-py3.11*
+* *linux-arm64-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
+* *windows-x64-py3.8*
+
 ## **libcst-py3**
 
 ### 0.3.19

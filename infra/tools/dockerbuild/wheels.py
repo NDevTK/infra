@@ -1368,6 +1368,25 @@ SPECS.update({
             pyversions=['py3'],
         ),
         Prebuilt(
+            'libcst',
+            '1.1.0',
+            [
+                'manylinux-x64-py3.8',
+                'manylinux-x64-py3.11',
+                'linux-arm64-py3.8',
+                'linux-arm64-py3.11',
+                'mac-x64-py3.8',
+                'mac-arm64-py3.8',
+                'windows-x64-py3.8',
+                'windows-x64-py3.11',
+            ],
+            arch_map={
+                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
+                'linux-arm64-py3.11': ['manylinux2014_aarch64'],
+            },
+            pyversions=['py3'],
+        ),
+        Prebuilt(
             'lxml',
             '4.6.2',
             ['manylinux-x64-py3.8'],
