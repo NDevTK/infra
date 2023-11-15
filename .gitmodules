@@ -15,41 +15,41 @@
 	url = https://chromium.googlesource.com/chromiumos/infra/proto
 [submodule "appengine/third_party/bootstrap"]
 	path = appengine/third_party/bootstrap
-	url = https://chromium.googlesource.com/external/github.com/twbs/bootstrap.git
+	url = https://chromium.googlesource.com/external/github.com/twbs/bootstrap
 [submodule "appengine/third_party/cloudstorage"]
 	path = appengine/third_party/cloudstorage
-	url = https://chromium.googlesource.com/external/github.com/GoogleCloudPlatform/appengine-gcs-client.git
+	url = https://chromium.googlesource.com/external/github.com/GoogleCloudPlatform/appengine-gcs-client
 [submodule "appengine/third_party/six"]
 	path = appengine/third_party/six
-	url = https://chromium.googlesource.com/external/github.com/benjaminp/six.git
+	url = https://chromium.googlesource.com/external/github.com/benjaminp/six
 [submodule "appengine/third_party/oauth2client"]
 	path = appengine/third_party/oauth2client
-	url = https://chromium.googlesource.com/external/github.com/google/oauth2client.git
+	url = https://chromium.googlesource.com/external/github.com/google/oauth2client
 [submodule "appengine/third_party/uritemplate"]
 	path = appengine/third_party/uritemplate
-	url = https://chromium.googlesource.com/external/github.com/uri-templates/uritemplate-py.git
+	url = https://chromium.googlesource.com/external/github.com/uri-templates/uritemplate-py
 [submodule "appengine/third_party/httplib2"]
 	path = appengine/third_party/httplib2
-	url = https://chromium.googlesource.com/external/github.com/jcgregorio/httplib2.git
+	url = https://chromium.googlesource.com/external/github.com/jcgregorio/httplib2
 [submodule "appengine/third_party/endpoints-proto-datastore"]
 	path = appengine/third_party/endpoints-proto-datastore
-	url = https://chromium.googlesource.com/external/github.com/GoogleCloudPlatform/endpoints-proto-datastore.git
+	url = https://chromium.googlesource.com/external/github.com/GoogleCloudPlatform/endpoints-proto-datastore
 [submodule "appengine/third_party/difflibjs"]
 	path = appengine/third_party/difflibjs
-	url = https://chromium.googlesource.com/external/github.com/qiao/difflib.js.git
+	url = https://chromium.googlesource.com/external/github.com/qiao/difflib.js
 [submodule "appengine/third_party/pipeline"]
 	path = appengine/third_party/pipeline
-	url = https://chromium.googlesource.com/external/github.com/GoogleCloudPlatform/appengine-pipelines.git
+	url = https://chromium.googlesource.com/external/github.com/GoogleCloudPlatform/appengine-pipelines
 [submodule "appengine/third_party/google-api-python-client"]
 	path = appengine/third_party/google-api-python-client
-	url = https://chromium.googlesource.com/external/github.com/google/google-api-python-client.git
+	url = https://chromium.googlesource.com/external/github.com/google/google-api-python-client
 [submodule "appengine/third_party/gae-pytz"]
 	path = appengine/third_party/gae-pytz
-	url = https://chromium.googlesource.com/external/code.google.com/p/gae-pytz/
+	url = https://chromium.googlesource.com/external/code.google.com/p/gae-pytz
 [submodule "appengine/third_party/dateutil"]
 	path = appengine/third_party/dateutil
-	url = https://chromium.googlesource.com/external/code.launchpad.net/dateutil/
+	url = https://chromium.googlesource.com/external/code.launchpad.net/dateutil
 [submodule "appengine/third_party/npm_modules"]
 	path = appengine/third_party/npm_modules
-	url = https://chromium.googlesource.com/infra/third_party/npm_modules.git
+	url = https://chromium.googlesource.com/infra/third_party/npm_modules
 	gclient-condition = checkout_linux or checkout_mac
