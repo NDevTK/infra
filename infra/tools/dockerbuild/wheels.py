@@ -1443,6 +1443,15 @@ SPECS.update({
             pyversions=['py3'],
         ),
         Prebuilt(
+            'pywin32',
+            '306',
+            [
+                'windows-x86-py3.8', 'windows-x86-py3.11', 'windows-x64-py3.8',
+                'windows-x64-py3.11'
+            ],
+            pyversions=['py3'],
+        ),
+        Prebuilt(
             'scipy',
             '1.6.0',
             ['manylinux-x64-py3.8'],
