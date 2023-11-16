@@ -1874,6 +1874,22 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 					Imei:         "654321",
 					Type:         chromeosLab.ModemType_MODEM_TYPE_NL668,
 				},
+				SimInfos: []*chromeosLab.SIMInfo{
+					{
+						SlotId: 1,
+						Type:   chromeosLab.SIMType_SIM_PHYSICAL,
+						Eid:    "0000",
+						ProfileInfo: []*chromeosLab.SIMProfileInfo{
+							{
+								Iccid:       "1111",
+								SimPin:      "2222",
+								SimPuk:      "3333",
+								CarrierName: chromeosLab.NetworkProvider_NETWORK_TMOBILE,
+								OwnNumber:   "12345",
+							},
+						},
+					},
+				},
 				ServoUsbDrive: &labApi.UsbDrive{
 					Serial:        "usb-drive serial",
 					Manufacturer:  "usb-drive-make",
@@ -2277,7 +2293,262 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(modem.GetSimCount(), ShouldEqual, 3)
 			So(modem.GetModelVariant(), ShouldEqual, "some_cellular_variant")
 		})
+		Convey("Update a OS machine LSE - missing SIM info in lab data", func() {
+			const machineName = "machine-labdata-12"
+			labData := &ufsAPI.ChromeOsRecoveryData_LabData{
+				SimInfos: nil,
+			}
+			machineLSE := mockDutMachineLSE(machineName)
+			machineLSE.GetChromeosMachineLse().GetDeviceLse().GetDut().Siminfo = []*chromeosLab.SIMInfo{
+				{
+					SlotId:   1,
+					Type:     chromeosLab.SIMType_SIM_DIGITAL,
+					Eid:      "123456",
+					TestEsim: true,
+					ProfileInfo: []*chromeosLab.SIMProfileInfo{
+						{
+							Iccid:       "654321",
+							SimPin:      "1111",
+							SimPuk:      "2222",
+							OwnNumber:   "3333",
+							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+						},
+					},
+				},
+			}
+			req, err := inventory.CreateMachineLSE(ctx, machineLSE)
+			So(err, ShouldBeNil)
+			So(req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED)
+			err = updateRecoveryLabData(ctx, machineName, ufspb.State_STATE_READY, labData)
+			So(err, ShouldBeNil)
+			req, err = inventory.GetMachineLSE(ctx, machineName)
+			So(err, ShouldBeNil)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_READY)
 
+			si := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetSiminfo()
+			So(len(si), ShouldEqual, 1)
+			So(si[0].GetSlotId(), ShouldEqual, 1)
+			So(si[0].GetType(), ShouldEqual, chromeosLab.SIMType_SIM_DIGITAL)
+			So(si[0].GetEid(), ShouldEqual, "123456")
+			So(si[0].GetTestEsim(), ShouldEqual, true)
+
+			pi := si[0].GetProfileInfo()
+			So(len(pi), ShouldEqual, 1)
+			So(pi[0].GetIccid(), ShouldEqual, "654321")
+			So(pi[0].GetSimPin(), ShouldEqual, "1111")
+			So(pi[0].GetSimPuk(), ShouldEqual, "2222")
+			So(pi[0].GetOwnNumber(), ShouldEqual, "3333")
+			So(pi[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_ATT)
+		})
+		Convey("Update a OS machine LSE - missing SIM info in machine lse", func() {
+			const machineName = "machine-labdata-13"
+			labData := &ufsAPI.ChromeOsRecoveryData_LabData{
+				SimInfos: []*chromeosLab.SIMInfo{
+					{
+						SlotId:   1,
+						Type:     chromeosLab.SIMType_SIM_DIGITAL,
+						Eid:      "123456",
+						TestEsim: true,
+						ProfileInfo: []*chromeosLab.SIMProfileInfo{
+							{
+								Iccid:       "654321",
+								SimPin:      "1111",
+								SimPuk:      "2222",
+								OwnNumber:   "3333",
+								CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+							},
+						},
+					},
+				},
+			}
+			machineLSE := mockDutMachineLSE(machineName)
+			machineLSE.GetChromeosMachineLse().GetDeviceLse().GetDut().Siminfo = nil
+			req, err := inventory.CreateMachineLSE(ctx, machineLSE)
+			So(err, ShouldBeNil)
+			So(req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED)
+			err = updateRecoveryLabData(ctx, machineName, ufspb.State_STATE_READY, labData)
+			So(err, ShouldBeNil)
+			req, err = inventory.GetMachineLSE(ctx, machineName)
+			So(err, ShouldBeNil)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_READY)
+
+			si := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetSiminfo()
+			So(len(si), ShouldEqual, 1)
+			So(si[0].GetSlotId(), ShouldEqual, 1)
+			So(si[0].GetType(), ShouldEqual, chromeosLab.SIMType_SIM_DIGITAL)
+			So(si[0].GetEid(), ShouldEqual, "123456")
+			So(si[0].GetTestEsim(), ShouldEqual, true)
+
+			pi := si[0].GetProfileInfo()
+			So(len(pi), ShouldEqual, 1)
+			So(pi[0].GetIccid(), ShouldEqual, "654321")
+			So(pi[0].GetSimPin(), ShouldEqual, "1111")
+			So(pi[0].GetSimPuk(), ShouldEqual, "2222")
+			So(pi[0].GetOwnNumber(), ShouldEqual, "3333")
+			So(pi[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_ATT)
+		})
+		Convey("Update a OS machine LSE - missing SIM slot", func() {
+			const machineName = "machine-labdata-14"
+			labData := &ufsAPI.ChromeOsRecoveryData_LabData{
+				SimInfos: []*chromeosLab.SIMInfo{
+					{
+						SlotId: 1,
+						Type:   chromeosLab.SIMType_SIM_PHYSICAL,
+						Eid:    "0000",
+						ProfileInfo: []*chromeosLab.SIMProfileInfo{
+							{
+								Iccid:       "4444",
+								SimPin:      "3333",
+								SimPuk:      "2222",
+								OwnNumber:   "1111",
+								CarrierName: chromeosLab.NetworkProvider_NETWORK_TMOBILE,
+							},
+						},
+					},
+				},
+			}
+			machineLSE := mockDutMachineLSE(machineName)
+			machineLSE.GetChromeosMachineLse().GetDeviceLse().GetDut().Siminfo = []*chromeosLab.SIMInfo{
+				{
+					SlotId:   1,
+					Type:     chromeosLab.SIMType_SIM_DIGITAL,
+					Eid:      "123456",
+					TestEsim: true,
+					ProfileInfo: []*chromeosLab.SIMProfileInfo{
+						{
+							Iccid:       "654321",
+							SimPin:      "1111",
+							SimPuk:      "2222",
+							OwnNumber:   "3333",
+							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+						},
+						{
+							Iccid:       "123456",
+							SimPin:      "1111",
+							SimPuk:      "2222",
+							OwnNumber:   "3333",
+							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+						},
+					},
+				},
+			}
+			req, err := inventory.CreateMachineLSE(ctx, machineLSE)
+			So(err, ShouldBeNil)
+			So(req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED)
+			err = updateRecoveryLabData(ctx, machineName, ufspb.State_STATE_READY, labData)
+			So(err, ShouldBeNil)
+			req, err = inventory.GetMachineLSE(ctx, machineName)
+			So(err, ShouldBeNil)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_READY)
+
+			si := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetSiminfo()
+			So(len(si), ShouldEqual, 1)
+			So(si[0].GetSlotId(), ShouldEqual, 1)
+			So(si[0].GetType(), ShouldEqual, chromeosLab.SIMType_SIM_PHYSICAL)
+			So(si[0].GetEid(), ShouldEqual, "0000")
+			So(si[0].GetTestEsim(), ShouldEqual, false)
+
+			pi := si[0].GetProfileInfo()
+			So(len(pi), ShouldEqual, 1)
+			So(pi[0].GetIccid(), ShouldEqual, "4444")
+			So(pi[0].GetSimPin(), ShouldEqual, "3333")
+			So(pi[0].GetSimPuk(), ShouldEqual, "2222")
+			So(pi[0].GetOwnNumber(), ShouldEqual, "1111")
+			So(pi[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_TMOBILE)
+		})
+		Convey("Update a OS machine LSE - Add one profile and skip one", func() {
+			const machineName = "machine-labdata-15"
+			labData := &ufsAPI.ChromeOsRecoveryData_LabData{
+				SimInfos: []*chromeosLab.SIMInfo{
+					{
+						SlotId: 2,
+						Type:   chromeosLab.SIMType_SIM_PHYSICAL,
+						Eid:    "0000",
+						ProfileInfo: []*chromeosLab.SIMProfileInfo{
+							{
+								Iccid:       "1111",
+								SimPin:      "2222",
+								SimPuk:      "3333",
+								OwnNumber:   "4444",
+								CarrierName: chromeosLab.NetworkProvider_NETWORK_TMOBILE,
+							},
+						},
+					},
+				},
+			}
+			machineLSE := mockDutMachineLSE(machineName)
+			machineLSE.GetChromeosMachineLse().GetDeviceLse().GetDut().Siminfo = []*chromeosLab.SIMInfo{
+				{
+					SlotId:   1,
+					Type:     chromeosLab.SIMType_SIM_DIGITAL,
+					Eid:      "123456",
+					TestEsim: true,
+					ProfileInfo: []*chromeosLab.SIMProfileInfo{
+						{
+							Iccid:       "654321",
+							SimPin:      "1111",
+							SimPuk:      "2222",
+							OwnNumber:   "3333",
+							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+						},
+						{
+							Iccid:       "123456",
+							SimPin:      "2222",
+							SimPuk:      "1111",
+							OwnNumber:   "0000",
+							CarrierName: chromeosLab.NetworkProvider_NETWORK_VERIZON,
+						},
+					},
+				},
+			}
+			req, err := inventory.CreateMachineLSE(ctx, machineLSE)
+			So(err, ShouldBeNil)
+			So(req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED)
+			err = updateRecoveryLabData(ctx, machineName, ufspb.State_STATE_READY, labData)
+			So(err, ShouldBeNil)
+			req, err = inventory.GetMachineLSE(ctx, machineName)
+			So(err, ShouldBeNil)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_READY)
+
+			si := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetSiminfo()
+			So(len(si), ShouldEqual, 2)
+			So(si[0].GetSlotId(), ShouldEqual, 1)
+			So(si[0].GetType(), ShouldEqual, chromeosLab.SIMType_SIM_DIGITAL)
+			So(si[0].GetEid(), ShouldEqual, "123456")
+			So(si[0].GetTestEsim(), ShouldEqual, true)
+
+			// Check profiles on SIM slot 1
+			pi1 := si[0].GetProfileInfo()
+			So(len(pi1), ShouldEqual, 2)
+			So(pi1[0].GetIccid(), ShouldEqual, "654321")
+			So(pi1[0].GetSimPin(), ShouldEqual, "1111")
+			So(pi1[0].GetSimPuk(), ShouldEqual, "2222")
+			So(pi1[0].GetOwnNumber(), ShouldEqual, "3333")
+			So(pi1[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_ATT)
+			So(pi1[1].GetIccid(), ShouldEqual, "123456")
+			So(pi1[1].GetSimPin(), ShouldEqual, "2222")
+			So(pi1[1].GetSimPuk(), ShouldEqual, "1111")
+			So(pi1[1].GetOwnNumber(), ShouldEqual, "0000")
+			So(pi1[1].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_VERIZON)
+
+			// Check profiles on SIM slot 2
+			So(si[1].GetSlotId(), ShouldEqual, 2)
+			So(si[1].GetType(), ShouldEqual, chromeosLab.SIMType_SIM_PHYSICAL)
+			So(si[1].GetEid(), ShouldEqual, "0000")
+			So(si[1].GetTestEsim(), ShouldEqual, false)
+
+			pi2 := si[1].GetProfileInfo()
+			So(len(pi2), ShouldEqual, 1)
+			So(pi2[0].GetIccid(), ShouldEqual, "1111")
+			So(pi2[0].GetSimPin(), ShouldEqual, "2222")
+			So(pi2[0].GetSimPuk(), ShouldEqual, "3333")
+			So(pi2[0].GetOwnNumber(), ShouldEqual, "4444")
+			So(pi2[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_TMOBILE)
+		})
 	})
 }
 

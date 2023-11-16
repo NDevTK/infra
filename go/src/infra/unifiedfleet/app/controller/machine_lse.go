@@ -1911,6 +1911,8 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 				updateRecoveryPeripheralWifi(ctx, peri, labData)
 				// Update Cellular Modem Info
 				updateCellularModemInfo(ctx, dut.GetModeminfo(), labData)
+				// Update Cellular SIM Info
+				updateCellularSIMInfo(ctx, dut, labData)
 				// Update Bluetooth peers
 				if err = updateBluetoothPeerStates(peri, labData.GetBluetoothPeers()); err != nil {
 					return err
@@ -1988,6 +1990,49 @@ func updateCellularModemInfo(ctx context.Context, m *chromeosLab.ModemInfo, labD
 
 	if modemType := mi.GetType(); modemType != chromeosLab.ModemType_MODEM_TYPE_UNSPECIFIED {
 		m.Type = modemType
+	}
+}
+
+// updateCellularSIMInfo updates the cellular SIM info.
+func updateCellularSIMInfo(ctx context.Context, dut *chromeosLab.DeviceUnderTest, labData *ufsAPI.ChromeOsRecoveryData_LabData) {
+	simInfoBySlot := make(map[int32]*chromeosLab.SIMInfo)
+	for _, si := range dut.GetSiminfo() {
+		simInfoBySlot[si.GetSlotId()] = si
+	}
+
+	// Update SIM infos to match those that have been passed in from recovery data.
+	// Never remove a missing SIM here, we don't want to wipe data just because
+	// the SIM wasn't detected since we want to know which sim/type couldn't be
+	// detected for debugging. Instead, fail the action to force someone to inspect.
+	for _, newSI := range labData.GetSimInfos() {
+		newProfiles := make([]*chromeosLab.SIMProfileInfo, len(newSI.GetProfileInfo()))
+		for i, profile := range newSI.GetProfileInfo() {
+			newProfiles[i] = &chromeosLab.SIMProfileInfo{
+				Iccid:       profile.GetIccid(),
+				SimPin:      profile.GetSimPin(),
+				SimPuk:      profile.GetSimPuk(),
+				CarrierName: profile.GetCarrierName(),
+				OwnNumber:   profile.GetOwnNumber(),
+			}
+		}
+
+		if si, ok := simInfoBySlot[newSI.GetSlotId()]; ok {
+			// Simple scan for SIM with matching slotID (max number of SIM slots possible is normally 2).
+			si.Type = newSI.GetType()
+			si.Eid = newSI.GetEid()
+			si.TestEsim = newSI.GetTestEsim()
+			si.ProfileInfo = newProfiles
+		} else {
+			// No matching sim slot found, append new.
+			dut.Siminfo = append(dut.Siminfo,
+				&chromeosLab.SIMInfo{
+					SlotId:      newSI.GetSlotId(),
+					Type:        newSI.GetType(),
+					Eid:         newSI.GetEid(),
+					TestEsim:    newSI.GetTestEsim(),
+					ProfileInfo: newProfiles,
+				})
+		}
 	}
 }
 
