@@ -187,7 +187,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Storage:             createDUTStorage(dc, ds),
 			Wifi:                createDUTWifi(make, ds),
 			Bluetooth:           createDUTBluetooth(ds, dc),
-			Cellular:            createDUTCellular(ds, p, dut.GetModeminfo()),
+			Cellular:            createDUTCellular(ds, p, dut.GetModeminfo(), dut.GetSiminfo()),
 			Battery:             battery,
 			Chameleon:           createChameleon(p, ds),
 			WifiRouters:         createWifiRouterHosts(p.GetWifi()),
@@ -445,8 +445,8 @@ func createDUTBluetooth(ds *ufslab.DutState, dc *ufsdevice.Config) *tlw.Bluetoot
 	}
 }
 
-func createDUTCellular(ds *ufslab.DutState, p *ufslab.Peripherals, m *ufslab.ModemInfo) *tlw.Cellular {
-	return &tlw.Cellular{
+func createDUTCellular(ds *ufslab.DutState, p *ufslab.Peripherals, m *ufslab.ModemInfo, siOld []*ufslab.SIMInfo) *tlw.Cellular {
+	cellular := &tlw.Cellular{
 		ModemState:   convertHardwareState(ds.GetCellularModemState()),
 		Carrier:      p.GetCarrier(),
 		ModelVariant: m.GetModelVariant(),
@@ -454,7 +454,30 @@ func createDUTCellular(ds *ufslab.DutState, p *ufslab.Peripherals, m *ufslab.Mod
 			Imei: m.GetImei(),
 			Type: convertModemTypes(m.GetType()),
 		},
+		SimInfos: make([]*tlw.Cellular_SIMInfo, len(siOld)),
 	}
+
+	for i, si := range siOld {
+		simInfo := &tlw.Cellular_SIMInfo{
+			SlotId:       si.GetSlotId(),
+			Type:         convertSIMTypes(si.GetType()),
+			Eid:          si.GetEid(),
+			TestEsim:     si.GetTestEsim(),
+			ProfileInfos: make([]*tlw.Cellular_SIMProfileInfo, len(si.ProfileInfo)),
+		}
+		for j, pi := range si.GetProfileInfo() {
+			simInfo.ProfileInfos[j] = &tlw.Cellular_SIMProfileInfo{
+				Iccid:       pi.GetIccid(),
+				OwnNumber:   pi.GetOwnNumber(),
+				SimPin:      pi.GetSimPin(),
+				SimPuk:      pi.GetSimPuk(),
+				CarrierName: convertSIMProviders(pi.GetCarrierName()),
+			}
+		}
+		cellular.SimInfos[i] = simInfo
+	}
+
+	return cellular
 }
 
 func createDUTAudioLatencyToolkit(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.AudioLatencyToolkit {
@@ -518,6 +541,25 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 			if m := c.GetModemInfo(); m != nil {
 				labData.ModemInfo.Imei = m.Imei
 				labData.ModemInfo.Type = convertModemTypeToUFS(m.Type)
+			}
+
+			for _, si := range c.GetSimInfos() {
+				simInfo := &ufslab.SIMInfo{
+					SlotId: si.GetSlotId(),
+					Type:   convertSIMypeToUFS(si.GetType()),
+					Eid:    si.GetEid(),
+				}
+				for _, pi := range si.GetProfileInfos() {
+					simInfo.ProfileInfo = append(simInfo.ProfileInfo,
+						&ufslab.SIMProfileInfo{
+							Iccid:       pi.GetIccid(),
+							OwnNumber:   pi.GetOwnNumber(),
+							SimPin:      pi.GetSimPin(),
+							SimPuk:      pi.GetSimPuk(),
+							CarrierName: convertSIMProviderToUFS(pi.GetCarrierName()),
+						})
+				}
+				labData.SimInfos = append(labData.SimInfos, simInfo)
 			}
 		}
 		labData.RoVpdMap = ch.GetRoVpdMap()
