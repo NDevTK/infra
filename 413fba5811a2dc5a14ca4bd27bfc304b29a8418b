@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a8e3628f_48ea001b",
+        "filename": "go/src/infra/chromium/compilator_watcher/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2023-11-16T17:17:09Z",
+      "side": 1,
+      "message": "The descriptions of the flags should be updated.",
+      "range": {
+        "startLine": 98,
+        "startChar": 50,
+        "endLine": 98,
+        "endChar": 191
+      },
+      "revId": "413fba5811a2dc5a14ca4bd27bfc304b29a8418b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
