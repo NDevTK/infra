@@ -23,7 +23,6 @@ import (
 
 type record struct {
 	Timestamp     time.Time `json:"access_time"`
-	Hostname      string    `json:"hostname"`
 	ClientIP      string    `json:"remote_addr"`
 	HTTPMethod    string    `json:"method"`
 	Path          string    `json:"uri"`
@@ -150,7 +149,6 @@ func shutdownTsMon(ctx context.Context) {
 var respBytesSent = metric.NewCounter("chromeos/caching_backend/nginx/response_bytes_sent",
 	"response bytes sent to clients from a caching backend",
 	nil,
-	field.String("hostname"),
 	field.String("http_method"),
 	field.String("rpc"),
 	field.Int("status"),
@@ -199,7 +197,7 @@ func reportToTsMon(i *record) {
 		level = "unknown"
 	}
 
-	respBytesSent.Add(ctx, int64(i.BodyBytesSent), i.Hostname, i.HTTPMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic, level)
+	respBytesSent.Add(ctx, int64(i.BodyBytesSent), i.HTTPMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic, level)
 
 	// Set the response speed metric. The minimum resolution of Nginx request
 	// time is 1 ms. For shorter cases, we just set the download speed to a
