@@ -27,13 +27,27 @@ message SIMProfileInfo {
   NetworkProvider carrier_name = 4;
   string own_number = 5;
 }
-// Next Tag: 5
+
+// Next Tag: 18
 enum NetworkProvider {
   NETWORK_OTHER = 0;
+  NETWORK_UNSUPPORTED = 5;
   NETWORK_TEST = 1;
   NETWORK_ATT = 2;
   NETWORK_TMOBILE = 3;
   NETWORK_VERIZON = 4;
+  NETWORK_SPRINT = 6;
+  NETWORK_DOCOMO = 7;
+  NETWORK_SOFTBANK = 8;
+  NETWORK_KDDI = 9;
+  NETWORK_RAKUTEN = 10;
+  NETWORK_VODAFONE = 11;
+  NETWORK_EE = 12;
+  NETWORK_AMARISOFT = 13;
+  NETWORK_ROGER = 14;
+  NETWORK_BELL = 15;
+  NETWORK_TELUS = 16;
+  NETWORK_FI = 17;
 }
 
 // Next Tag: 3
