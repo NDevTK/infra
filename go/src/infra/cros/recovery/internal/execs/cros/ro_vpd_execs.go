@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,8 @@ type DSMVPD struct {
 	Temp []int32 `json:"temp"`
 }
 
-// isROVPDDSMCalibRequired confirms that this device is required to have sku_number in RO_VPD.
-func isROVPDDSMCalibRequired(ctx context.Context, info *execs.ExecInfo) error {
+// isROVPDDSMCalibRequiredExec confirms that this device is required to have sku_number in RO_VPD.
+func isROVPDDSMCalibRequiredExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 
 	speakerAmp, err := r(ctx, time.Minute, "cros_config /audio/main/ speaker-amp")
@@ -67,8 +67,8 @@ func parseSoundCardID(dump string) (string, error) {
 	return m[1], nil
 }
 
-// verifyROVPDDSMCalib confirms that the key 'dsm_calib_r0_0' is present in RO_VPD.
-func verifyROVPDDSMCalib(ctx context.Context, info *execs.ExecInfo) error {
+// verifyROVPDDSMCalibExec confirms that the key 'dsm_calib_r0_0' is present in RO_VPD.
+func verifyROVPDDSMCalibExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	speakerAmp, err := r(ctx, time.Minute, "cros_config /audio/main/ speaker-amp")
 	if err != nil {
@@ -114,8 +114,8 @@ func verifyROVPDDSMCalib(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// setFakeROVPDDSMCalib sets a fake dsm_calib_r{}, dsm_calib_temp{} in RO_VPD.
-func setFakeROVPDDSMCalib(ctx context.Context, info *execs.ExecInfo) error {
+// setFakeROVPDDSMCalibExec sets a fake dsm_calib_r{}, dsm_calib_temp{} in RO_VPD.
+func setFakeROVPDDSMCalibExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	speakerAmp, err := r(ctx, time.Minute, "cros_config /audio/main/ speaker-amp")
 	if err != nil {
@@ -163,8 +163,8 @@ func setFakeROVPDDSMCalib(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// isROVPDSkuNumberRequired confirms that this device is required to have sku_number in RO_VPD.
-func isROVPDSkuNumberRequired(ctx context.Context, info *execs.ExecInfo) error {
+// isROVPDSkuNumberRequiredExec confirms that this device is required to have sku_number in RO_VPD.
+func isROVPDSkuNumberRequiredExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	hasSkuNumber, err := r(ctx, time.Minute, "cros_config /cros-healthd/cached-vpd has-sku-number")
 	if err != nil {
@@ -177,8 +177,8 @@ func isROVPDSkuNumberRequired(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// verifyROVPDSkuNumber confirms that the key 'sku_number' is present in RO_VPD.
-func verifyROVPDSkuNumber(ctx context.Context, info *execs.ExecInfo) error {
+// verifyROVPDSkuNumberExec confirms that the key 'sku_number' is present in RO_VPD.
+func verifyROVPDSkuNumberExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	if _, err := r(ctx, time.Minute, "vpd -i RO_VPD -g sku_number"); err != nil {
 		return errors.Annotate(err, "verify sku_number in RO_VPD").Err()
@@ -187,11 +187,11 @@ func verifyROVPDSkuNumber(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// setFakeROVPDSkuNumber sets a fake sku_number in RO_VPD.
+// setFakeROVPDSkuNumberExec sets a fake sku_number in RO_VPD.
 //
 // @params: actionArgs should be in the format:
 // ["sku_number:FAKE-SKU"]
-func setFakeROVPDSkuNumber(ctx context.Context, info *execs.ExecInfo) error {
+func setFakeROVPDSkuNumberExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	if !argsMap.Has("sku_number") {
 		return errors.Reason("set fake sku_number: fake value is not specified.").Err()
@@ -207,8 +207,8 @@ func setFakeROVPDSkuNumber(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// updateROVPDToInv reads RO_VPD values from the resource listed in roVPDKeys into the inventory.
-func updateROVPDToInv(ctx context.Context, info *execs.ExecInfo) error {
+// updateROVPDToInvExec reads RO_VPD values from the resource listed in roVPDKeys into the inventory.
+func updateROVPDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	if info.GetChromeos().GetRoVpdMap() == nil {
 		info.GetChromeos().RoVpdMap = make(map[string]string)
@@ -223,8 +223,8 @@ func updateROVPDToInv(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// matchROVPDToInv matches RO_VPD values from resource to inventory.
-func matchROVPDToInv(ctx context.Context, info *execs.ExecInfo) error {
+// matchROVPDToInvExec matches RO_VPD values from resource to inventory.
+func matchROVPDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	for k, v := range info.GetChromeos().GetRoVpdMap() {
 		cmd := fmt.Sprintf(readROVPDValuesCmd, k)
@@ -240,8 +240,8 @@ func matchROVPDToInv(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// setROVPD sets RO_VPD values from inventory to resource.
-func setROVPD(ctx context.Context, info *execs.ExecInfo) error {
+// setROVPDExec sets RO_VPD values from inventory to resource.
+func setROVPDExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	for k, v := range info.GetChromeos().GetRoVpdMap() {
 		cmd := fmt.Sprintf(writeVPDValuesCmd, k, v)
@@ -254,13 +254,13 @@ func setROVPD(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func init() {
-	execs.Register("cros_is_ro_vpd_sku_number_required", isROVPDSkuNumberRequired)
-	execs.Register("cros_verify_ro_vpd_sku_number", verifyROVPDSkuNumber)
-	execs.Register("cros_set_fake_ro_vpd_sku_number", setFakeROVPDSkuNumber)
-	execs.Register("cros_is_ro_vpd_dsm_calib_required", isROVPDDSMCalibRequired)
-	execs.Register("cros_verify_ro_vpd_dsm_calib", verifyROVPDDSMCalib)
-	execs.Register("cros_set_fake_ro_vpd_dsm_calib", setFakeROVPDDSMCalib)
-	execs.Register("cros_update_ro_vpd_inventory", updateROVPDToInv)
-	execs.Register("cros_match_ro_vpd_inventory", matchROVPDToInv)
-	execs.Register("cros_set_ro_vpd", setROVPD)
+	execs.Register("cros_is_ro_vpd_sku_number_required", isROVPDSkuNumberRequiredExec)
+	execs.Register("cros_verify_ro_vpd_sku_number", verifyROVPDSkuNumberExec)
+	execs.Register("cros_set_fake_ro_vpd_sku_number", setFakeROVPDSkuNumberExec)
+	execs.Register("cros_is_ro_vpd_dsm_calib_required", isROVPDDSMCalibRequiredExec)
+	execs.Register("cros_verify_ro_vpd_dsm_calib", verifyROVPDDSMCalibExec)
+	execs.Register("cros_set_fake_ro_vpd_dsm_calib", setFakeROVPDDSMCalibExec)
+	execs.Register("cros_update_ro_vpd_inventory", updateROVPDToInvExec)
+	execs.Register("cros_match_ro_vpd_inventory", matchROVPDToInvExec)
+	execs.Register("cros_set_ro_vpd", setROVPDExec)
 }
