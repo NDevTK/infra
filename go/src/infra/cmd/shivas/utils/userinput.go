@@ -815,7 +815,7 @@ func getDut(ctx context.Context, ic UfleetAPI.FleetClient, scanner *bufio.Scanne
 				}
 			// repeated pools
 			case "Pools (y/n)":
-				vals, done := getRepeatedStringInput(nil, nil, scanner, value, "Pool", input, false)
+				vals, done := getRepeatedStringInput(ctx, nil, scanner, value, "Pool", input, false)
 				if done {
 					dut.Pools = vals
 					if acs {
@@ -1083,7 +1083,7 @@ func getLabstation(ctx context.Context, ic UfleetAPI.FleetClient, scanner *bufio
 				}
 			// repeated pools
 			case "Pools (y/n)":
-				vals, done := getRepeatedStringInput(nil, nil, scanner, value, "Pool", input, false)
+				vals, done := getRepeatedStringInput(ctx, nil, scanner, value, "Pool", input, false)
 				if done {
 					labstation.Pools = vals
 					getServos(ctx, ic, machinelse)
