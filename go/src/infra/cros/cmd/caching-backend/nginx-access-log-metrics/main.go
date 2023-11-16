@@ -37,8 +37,9 @@ type record struct {
 
 var (
 	inputLogFile        = flag.String("input-log-file", "/var/log/nginx/gs-cache.access.log", "Nginx access log for gs_cache")
-	tsmonCredentialPath = flag.String("ts-mon-credentials", "", "Path to a pkcs8 json credential file")
-	tsmonEndpoint       = flag.String("ts-mon-endpoint", "", "URL (including file://, https://, pubsub://project/topic) to post monitoring metrics to")
+	tsmonCredentialPath = flag.String("tsmon-credentials", "", "Path to a pkcs8 json credential file")
+	tsmonEndpoint       = flag.String("tsmon-endpoint", "", "URL (including file://, https://, pubsub://project/topic) to post monitoring metrics to")
+	tsmonTaskHostname   = flag.String("tsmon-task-hostname", "", "Name of the host reported to tsmon. (default is the hostname)")
 )
 
 func main() {
@@ -126,6 +127,7 @@ func setupTsMon(ctx context.Context) {
 	fl.Endpoint = *tsmonEndpoint
 	fl.Credentials = *tsmonCredentialPath
 	fl.Flush = tsmon.FlushAuto
+	fl.Target.TaskHostname = *tsmonTaskHostname
 	fl.Target.SetDefaultsFromHostname()
 	fl.Target.TargetType = target.TaskType
 	fl.Target.TaskServiceName = "caching_backend"
