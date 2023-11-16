@@ -10,17 +10,17 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
-	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/vpython/api/vpython"
 )
 
 func TestGeneratingEnsureFile(t *testing.T) {
 	Convey("Test generate ensure file", t, func() {
-		e := template.Expander{}
-		ef, err := ensureFileFromWheels(e, []*vpython.Spec_Package{
-			{Name: "pkg1", Version: "version1"},
-			{Name: "pkg2", Version: "version2"},
-		})
+		ef, err := ensureFileFromVPythonSpec(&vpython.Spec{
+			Wheel: []*vpython.Spec_Package{
+				{Name: "pkg1", Version: "version1"},
+				{Name: "pkg2", Version: "version2"},
+			},
+		}, nil)
 		So(err, ShouldBeNil)
 		So(ef.PackagesBySubdir["wheels"], ShouldResemble, ensure.PackageSlice{
 			{PackageTemplate: "pkg1", UnresolvedVersion: "version1"},
@@ -30,22 +30,26 @@ func TestGeneratingEnsureFile(t *testing.T) {
 	})
 	Convey("Test duplicated wheels", t, func() {
 		Convey("Same version", func() {
-			e := template.Expander{}
-			_, err := ensureFileFromWheels(e, []*vpython.Spec_Package{
-				{Name: "pkg1", Version: "version1"},
-				{Name: "pkg1", Version: "version1"},
+			ef, err := ensureFileFromVPythonSpec(&vpython.Spec{
+				Wheel: []*vpython.Spec_Package{
+					{Name: "pkg1", Version: "version1"},
+					{Name: "pkg1", Version: "version1"},
+				},
+			}, nil)
+			So(err, ShouldBeNil)
+			So(ef.PackagesBySubdir["wheels"], ShouldResemble, ensure.PackageSlice{
+				{PackageTemplate: "pkg1", UnresolvedVersion: "version1"},
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldStartWith, "duplicated package:")
 		})
 		Convey("Different version", func() {
-			e := template.Expander{}
-			_, err := ensureFileFromWheels(e, []*vpython.Spec_Package{
-				{Name: "pkg1", Version: "version1"},
-				{Name: "pkg1", Version: "version2"},
-			})
+			_, err := ensureFileFromVPythonSpec(&vpython.Spec{
+				Wheel: []*vpython.Spec_Package{
+					{Name: "pkg1", Version: "version1"},
+					{Name: "pkg1", Version: "version2"},
+				},
+			}, nil)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldStartWith, "duplicated package:")
+			So(err.Error(), ShouldStartWith, "multiple versions for package")
 		})
 	})
 }

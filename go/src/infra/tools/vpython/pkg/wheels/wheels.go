@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/luci/cipd/client/cipd"
@@ -83,7 +84,7 @@ func MustSetExecutor(reexec *actions.ReexecRegistry) {
 	actions.MustSetExecutor[*vpython.Spec](reexec, actionVPythonSpecExecutor)
 }
 
-func actionVPythonSpecExecutor(ctx context.Context, a *vpython.Spec, out string) error {
+func actionVPythonSpecExecutor(ctx context.Context, s *vpython.Spec, out string) error {
 	envs := environ.FromCtx(ctx)
 
 	// Parse tags file
@@ -98,23 +99,8 @@ func actionVPythonSpecExecutor(ctx context.Context, a *vpython.Spec, out string)
 		return err
 	}
 
-	// Remove unmatched wheels from spec
-	if err := spec.NormalizeSpec(a, tags); err != nil {
-		return err
-	}
-
-	// Get vpython template from tags
-	expander := template.DefaultExpander()
-	if t := pep425TagSelector(tags); t != nil {
-		p := PlatformForPEP425Tag(t)
-		expander = p.Expander()
-		if err := addPEP425CIPDTemplateForTag(expander, t); err != nil {
-			return err
-		}
-	}
-
-	// Translates packages' name in spec into a CIPD ensure file.
-	ef, err := ensureFileFromWheels(expander, a.Wheel)
+	// Translates vpython spec into a CIPD ensure file.
+	ef, err := ensureFileFromVPythonSpec(s, tags)
 	if err != nil {
 		return err
 	}
@@ -144,10 +130,28 @@ func actionVPythonSpecExecutor(ctx context.Context, a *vpython.Spec, out string)
 	return nil
 }
 
-func ensureFileFromWheels(expander template.Expander, wheels []*vpython.Spec_Package) (*ensure.File, error) {
+func ensureFileFromVPythonSpec(s *vpython.Spec, tags []*vpython.PEP425Tag) (*ensure.File, error) {
+	s = proto.Clone(s).(*vpython.Spec)
+
+	// Remove unmatched wheels from spec
+	if err := spec.NormalizeSpec(s, tags); err != nil {
+		return nil, err
+	}
+
+	// Get vpython template from tags
+	expander := template.DefaultExpander()
+	if t := pep425TagSelector(tags); t != nil {
+		p := PlatformForPEP425Tag(t)
+		expander = p.Expander()
+		if err := addPEP425CIPDTemplateForTag(expander, t); err != nil {
+			return nil, err
+		}
+	}
+
+	// Construct cipd packages
 	names := make(map[string]struct{})
-	pslice := make(ensure.PackageSlice, len(wheels))
-	for i, pkg := range wheels {
+	pslice := make(ensure.PackageSlice, len(s.Wheel))
+	for i, pkg := range s.Wheel {
 		name, err := expander.Expand(pkg.Name)
 		if err != nil {
 			if err == template.ErrSkipTemplate {
@@ -165,6 +169,7 @@ func ensureFileFromWheels(expander template.Expander, wheels []*vpython.Spec_Pac
 			UnresolvedVersion: pkg.Version,
 		}
 	}
+
 	return &ensure.File{
 		PackagesBySubdir: map[string]ensure.PackageSlice{"wheels": pslice},
 	}, nil
@@ -177,16 +182,11 @@ func ensureFileFromWheels(expander template.Expander, wheels []*vpython.Spec_Pac
 // directly.
 func Verify(spec *vpython.Spec) error {
 	for _, t := range spec.VerifyPep425Tag {
-		p := PlatformForPEP425Tag(t)
-		e := p.Expander()
-		if err := addPEP425CIPDTemplateForTag(e, t); err != nil {
-			return err
-		}
-		ef, err := ensureFileFromWheels(e, spec.Wheel)
+		ef, err := ensureFileFromVPythonSpec(spec, []*vpython.PEP425Tag{t})
 		if err != nil {
 			return err
 		}
-		ef.VerifyPlatforms = []template.Platform{p}
+		ef.VerifyPlatforms = []template.Platform{PlatformForPEP425Tag(t)}
 		var efs strings.Builder
 		if err := ef.Serialize(&efs); err != nil {
 			return err
