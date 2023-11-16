@@ -133,31 +133,18 @@ func WaitForModemManager(ctx context.Context, runner components.Runner, timeout 
 
 // WaitForModemState polls for the modem to enter a specific state.
 func WaitForModemState(ctx context.Context, runner components.Runner, timeout time.Duration, state ModemState) error {
-	if err := retry.WithTimeout(ctx, time.Second, timeout, func() error {
-		output, err := runner(ctx, 5*time.Second, detectCmd)
-		if err != nil {
-			return errors.Annotate(err, "call mmcli").Err()
-		}
-
-		info, err := parseModemInfo(ctx, output)
-		if err != nil {
-			return errors.Annotate(err, "parse mmcli response").Err()
-		}
-
-		if info == nil || info.Modem == nil {
-			return errors.Reason("no modem found on DUT").Err()
-		}
-
-		if info.GetState() == "" {
+	predicate := func(m *ModemInfo) error {
+		if m.GetState() == "" {
 			return errors.Reason("modem state is empty").Err()
 		}
 
-		if !strings.EqualFold(info.GetState(), string(state)) {
+		if !strings.EqualFold(m.GetState(), string(state)) {
 			return errors.Reason("modem state not equal to %s", state).Err()
 		}
-
 		return nil
-	}, "wait for modem state"); err != nil {
+	}
+
+	if _, err := WaitForModemInfo(ctx, runner, timeout, predicate); err != nil {
 		return errors.Annotate(err, "wait for modem state: wait for modem to enter requested state").Err()
 	}
 
@@ -171,7 +158,11 @@ type ModemInfo struct {
 			Imei string `json:"imei,omitempty"`
 		} `json:"3gpp,omitempty"`
 		Generic *struct {
-			State string `json:"state,omitempty"`
+			ActiveSIMSlot string   `json:"primary-sim-slot,omitempty"`
+			State         string   `json:"state,omitempty"`
+			SIM           string   `json:"sim,omitempty"`
+			SIMSlots      []string `json:"sim-slots,omitempty"`
+			OwnNumbers    []string `json:"own-numbers,omitempty"`
 		} `json:"generic,omitempty"`
 	} `json:"modem,omitempty"`
 }
@@ -185,6 +176,63 @@ const (
 	// ModemStateConnecting represents a modem in the process of connecting to a cellular network.
 	ModemStateConnecting ModemState = "CONNECTING"
 )
+
+// ActiveSIMSlot returns the currently active modem SIM slot.
+func (m *ModemInfo) ActiveSIMSlot() int32 {
+	if m == nil || m.Modem == nil || m.Modem.Generic == nil {
+		return 0
+	}
+
+	if m.Modem.Generic.ActiveSIMSlot == "" || m.Modem.Generic.ActiveSIMSlot == "--" {
+		return 0
+	}
+
+	i, err := strconv.ParseInt(m.Modem.Generic.ActiveSIMSlot, 10, 32)
+	if err != nil {
+		return 0
+	}
+	return int32(i)
+}
+
+// ActiveSIMID returns the ID of the active SIM slot.
+func (m *ModemInfo) ActiveSIMID() string {
+	if m == nil || m.Modem == nil || m.Modem.Generic == nil {
+		return ""
+	}
+
+	if m.Modem.Generic.SIM == "" || m.Modem.Generic.SIM == "--" {
+		return ""
+	}
+
+	simPath := strings.Split(m.Modem.Generic.SIM, "/")
+	return simPath[len(simPath)-1]
+}
+
+// OwnNumber returns the modem's current phone number.
+func (m *ModemInfo) OwnNumber() string {
+	if m == nil || m.Modem == nil || m.Modem.Generic == nil {
+		return ""
+	}
+
+	for _, number := range m.Modem.Generic.OwnNumbers {
+		// Strip the country code from the phone number e.g. +1
+		if len(number) > 10 {
+			return number[len(number)-10:]
+		}
+		if len(number) == 10 {
+			return number
+		}
+	}
+	return ""
+}
+
+// SIMSlotCount returns the number of SIM slots available on the device.
+func (m *ModemInfo) SIMSlotCount() int32 {
+	if m == nil || m.Modem == nil || m.Modem.Generic == nil {
+		return 0
+	}
+	return int32(len(m.Modem.Generic.SIMSlots))
+}
 
 // GetState returns the modems state as reported by ModemManager.
 func (m *ModemInfo) GetState() string {
@@ -202,8 +250,11 @@ func (m *ModemInfo) GetImei() string {
 	return m.Modem.G3PP.Imei
 }
 
+// ModemPredicate returns an error if the modem is not in the correct state.
+type ModemPredicate func(m *ModemInfo) error
+
 // WaitForModemInfo polls for a modem to appear on the DUT, which can take up to two minutes on reboot.
-func WaitForModemInfo(ctx context.Context, runner components.Runner, timeout time.Duration) (*ModemInfo, error) {
+func WaitForModemInfo(ctx context.Context, runner components.Runner, timeout time.Duration, predicates ...ModemPredicate) (*ModemInfo, error) {
 	var info *ModemInfo
 	if err := retry.WithTimeout(ctx, time.Second, timeout, func() error {
 		output, err := runner(ctx, 5*time.Second, detectCmd)
@@ -219,6 +270,13 @@ func WaitForModemInfo(ctx context.Context, runner components.Runner, timeout tim
 
 		if info == nil || info.Modem == nil {
 			return errors.Reason("no modem found on DUT").Err()
+		}
+
+		// Wait for any additional state requirements.
+		for _, predicate := range predicates {
+			if err := predicate(info); err != nil {
+				return errors.Annotate(err, "failed predicate").Err()
+			}
 		}
 
 		return nil
