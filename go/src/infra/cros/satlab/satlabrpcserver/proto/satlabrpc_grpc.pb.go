@@ -12,6 +12,8 @@ package satlabrpcserver
 
 import (
 	context "context"
+	longrunning "go.chromium.org/chromiumos/config/go/longrunning"
+	api "go.chromium.org/chromiumos/config/go/test/api"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -51,6 +53,7 @@ const (
 	SatlabRpcService_SetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/set_cloud_configuration"
 	SatlabRpcService_GetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/get_cloud_configuration"
 	SatlabRpcService_Reboot_FullMethodName                    = "/satlabrpcserver.SatlabRpcService/reboot"
+	SatlabRpcService_StartServod_FullMethodName               = "/satlabrpcserver.SatlabRpcService/StartServod"
 )
 
 // SatlabRpcServiceClient is the client API for SatlabRpcService service.
@@ -91,6 +94,8 @@ type SatlabRpcServiceClient interface {
 	GetCloudConfiguration(ctx context.Context, in *GetCloudConfigurationRequest, opts ...grpc.CallOption) (*GetCloudConfigurationResponse, error)
 	// system
 	Reboot(ctx context.Context, in *RebootRequest, opts ...grpc.CallOption) (*RebootResponse, error)
+	// servo
+	StartServod(ctx context.Context, in *api.StartServodRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 }
 
 type satlabRpcServiceClient struct {
@@ -353,6 +358,15 @@ func (c *satlabRpcServiceClient) Reboot(ctx context.Context, in *RebootRequest, 
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) StartServod(ctx context.Context, in *api.StartServodRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	out := new(longrunning.Operation)
+	err := c.cc.Invoke(ctx, SatlabRpcService_StartServod_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SatlabRpcServiceServer is the server API for SatlabRpcService service.
 // All implementations must embed UnimplementedSatlabRpcServiceServer
 // for forward compatibility
@@ -391,6 +405,8 @@ type SatlabRpcServiceServer interface {
 	GetCloudConfiguration(context.Context, *GetCloudConfigurationRequest) (*GetCloudConfigurationResponse, error)
 	// system
 	Reboot(context.Context, *RebootRequest) (*RebootResponse, error)
+	// servo
+	StartServod(context.Context, *api.StartServodRequest) (*longrunning.Operation, error)
 	mustEmbedUnimplementedSatlabRpcServiceServer()
 }
 
@@ -481,6 +497,9 @@ func (UnimplementedSatlabRpcServiceServer) GetCloudConfiguration(context.Context
 }
 func (UnimplementedSatlabRpcServiceServer) Reboot(context.Context, *RebootRequest) (*RebootResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reboot not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) StartServod(context.Context, *api.StartServodRequest) (*longrunning.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartServod not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) mustEmbedUnimplementedSatlabRpcServiceServer() {}
 
@@ -999,6 +1018,24 @@ func _SatlabRpcService_Reboot_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_StartServod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(api.StartServodRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).StartServod(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_StartServod_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).StartServod(ctx, req.(*api.StartServodRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SatlabRpcService_ServiceDesc is the grpc.ServiceDesc for SatlabRpcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1117,6 +1154,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "reboot",
 			Handler:    _SatlabRpcService_Reboot_Handler,
+		},
+		{
+			MethodName: "StartServod",
+			Handler:    _SatlabRpcService_StartServod_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

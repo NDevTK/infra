@@ -9,6 +9,8 @@ option go_package = "infra/cros/satlab/satlabrpcserver"; // figure out what this
 
 import "google/protobuf/timestamp.proto";
 import "test_platform/request.proto";
+import "chromiumos/longrunning/operations.proto";
+import "chromiumos/test/api/servod_service.proto";
 
 service SatlabRpcService {
   rpc list_accessible_models (ListAccessibleModelsRequest) returns (ListAccessibleModelsResponse);
@@ -51,6 +53,15 @@ service SatlabRpcService {
 
   // system
   rpc reboot (RebootRequest) returns (RebootResponse);
+
+  // servo
+  rpc StartServod(chromiumos.test.api.StartServodRequest)
+      returns (chromiumos.longrunning.Operation) {
+    option (chromiumos.longrunning.operation_info) = {
+      response_type: "StartServodResponse",
+      metadata_type: "StartServodMetadata"
+    };
+  };
 }
 
 message ListBuildTargetsRequest {
