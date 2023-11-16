@@ -259,7 +259,10 @@ func getPodIPs(p k8sTypedCoreV1.PodInterface, appLabel string) ([]string, error)
 	}
 	var ips []string
 	for _, p := range pods.Items {
-		ips = append(ips, p.Status.PodIP)
+		// Pod may has no IP assigned when it's in states like "Pending".
+		if ip := p.Status.PodIP; ip != "" {
+			ips = append(ips, ip)
+		}
 	}
 	slices.Sort(ips) // to keep the list stable
 
