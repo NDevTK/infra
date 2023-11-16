@@ -233,12 +233,21 @@ class Builder(object):
       # point script.
       if regenerated or not os.path.exists(dx.bin):
         with tempfile.TemporaryFile() as script_tmp:
-          self._system.docker([
-              'run',
-              '--rm',
-              dx.identifier,
-          ],
-                              stdout=script_tmp)
+          try:
+            self._system.check_run([
+                'docker',
+                'run',
+                '--rm',
+                dx.identifier,
+            ],
+                                   stdout=script_tmp)
+          except self._system.SubcommandError as e:
+            # Log the temp file, which contains both stdout and stderr,
+            # for debugging.
+            script_tmp.seek(0)
+            util.LOGGER.error('docker output: ' +
+                              script_tmp.read().decode('utf-8'))
+            raise e
 
           # Local modifications to the generated script:
           # - allow passing in a specific container name
