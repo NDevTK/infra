@@ -1324,6 +1324,23 @@ func crosRepairActions() map[string]*Action {
 				UploadPolicy: MetricsConfig_SKIP_ALL,
 			},
 		},
+		"Is not starfish device": {
+			Docs: []string{
+				"Verify that DUT is not a starfish device",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"has_cellular_info",
+			},
+			ExecName: "carrier_not_in",
+			ExecExtraArgs: []string{
+				"carriers:STARFISH,STARFISH_PLUS",
+			},
+			RunControl: RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
 		"Has live carrier": {
 			Docs: []string{
 				"Verify that DUT has a connectable carrier and not a test device.",
@@ -1448,9 +1465,30 @@ func crosRepairActions() map[string]*Action {
 				"Is in cellular pool",
 				"has_cellular_info",
 			},
-			ExecName:               "cros_update_cellular_modem_labels",
-			RunControl:             RunControl_RUN_ONCE,
-			AllowFailAfterRecovery: true,
+			Dependencies: []string{
+				"Cellular modem is up",
+			},
+			ExecName:   "cros_update_cellular_modem_labels",
+			RunControl: RunControl_RUN_ONCE,
+		},
+		"Update cellular sim labels": {
+			Docs: []string{
+				"Detects the sim labels in swarming.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"has_cellular_info",
+				"Is not starfish device",
+			},
+			Dependencies: []string{
+				"Cellular modem is up",
+				"cros_has_only_one_sim_profile",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 360,
+			},
+			ExecName:   "cros_update_cellular_sim_labels",
+			RunControl: RunControl_RUN_ONCE,
 		},
 		"Verify tpm_fwver is updated correctly": {
 			Docs: []string{
