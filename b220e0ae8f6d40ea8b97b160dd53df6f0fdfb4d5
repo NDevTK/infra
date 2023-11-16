@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "105199e5_76678aab",
+        "filename": "go/src/infra/build/siso/build/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 525,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-11-16T06:17:05Z",
+      "side": 1,
+      "message": "I thought we fixed unfriendly numbers. \n`build start: Ready %d Pending %d` makes more sense?",
+      "range": {
+        "startLine": 525,
+        "startChar": 22,
+        "endLine": 525,
+        "endChar": 29
+      },
+      "revId": "b220e0ae8f6d40ea8b97b160dd53df6f0fdfb4d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
