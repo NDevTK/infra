@@ -415,6 +415,8 @@ func setSimInfo(l *inventory.SchedulableLabels, sim []*chromeosLab.SIMInfo) {
 			var np inventory.NetworkProvider
 			pname := p.GetCarrierName()
 			switch pname {
+			case chromeosLab.NetworkProvider_NETWORK_UNSUPPORTED:
+				np = inventory.NetworkProvider_NETWORK_UNSUPPORTED
 			case chromeosLab.NetworkProvider_NETWORK_TEST:
 				np = inventory.NetworkProvider_NETWORK_TEST
 			case chromeosLab.NetworkProvider_NETWORK_ATT:
@@ -423,6 +425,30 @@ func setSimInfo(l *inventory.SchedulableLabels, sim []*chromeosLab.SIMInfo) {
 				np = inventory.NetworkProvider_NETWORK_TMOBILE
 			case chromeosLab.NetworkProvider_NETWORK_VERIZON:
 				np = inventory.NetworkProvider_NETWORK_VERIZON
+			case chromeosLab.NetworkProvider_NETWORK_SPRINT:
+				np = inventory.NetworkProvider_NETWORK_SPRINT
+			case chromeosLab.NetworkProvider_NETWORK_DOCOMO:
+				np = inventory.NetworkProvider_NETWORK_DOCOMO
+			case chromeosLab.NetworkProvider_NETWORK_SOFTBANK:
+				np = inventory.NetworkProvider_NETWORK_SOFTBANK
+			case chromeosLab.NetworkProvider_NETWORK_KDDI:
+				np = inventory.NetworkProvider_NETWORK_KDDI
+			case chromeosLab.NetworkProvider_NETWORK_RAKUTEN:
+				np = inventory.NetworkProvider_NETWORK_RAKUTEN
+			case chromeosLab.NetworkProvider_NETWORK_VODAFONE:
+				np = inventory.NetworkProvider_NETWORK_VODAFONE
+			case chromeosLab.NetworkProvider_NETWORK_EE:
+				np = inventory.NetworkProvider_NETWORK_EE
+			case chromeosLab.NetworkProvider_NETWORK_AMARISOFT:
+				np = inventory.NetworkProvider_NETWORK_AMARISOFT
+			case chromeosLab.NetworkProvider_NETWORK_ROGER:
+				np = inventory.NetworkProvider_NETWORK_ROGER
+			case chromeosLab.NetworkProvider_NETWORK_BELL:
+				np = inventory.NetworkProvider_NETWORK_BELL
+			case chromeosLab.NetworkProvider_NETWORK_TELUS:
+				np = inventory.NetworkProvider_NETWORK_TELUS
+			case chromeosLab.NetworkProvider_NETWORK_FI:
+				np = inventory.NetworkProvider_NETWORK_FI
 			default:
 				np = inventory.NetworkProvider_NETWORK_OTHER
 			}
