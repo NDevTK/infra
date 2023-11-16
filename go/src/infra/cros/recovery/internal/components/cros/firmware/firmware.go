@@ -168,7 +168,7 @@ func validateInstallFirmwareImageRequest(req *InstallFirmwareImageRequest) error
 	return nil
 }
 
-// DisableSoftwareWriteProtection disable software write protection through servo.
+// DisableSoftwareWriteProtectionByServo disable software write protection through servo.
 func DisableSoftwareWriteProtectionByServo(ctx context.Context, run components.Runner, servoPort int, runTimeout time.Duration) error {
 	const (
 		disableWPCmd = "futility flash --wp-disable --servo_port=%d"
