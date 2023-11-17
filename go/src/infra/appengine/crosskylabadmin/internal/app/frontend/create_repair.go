@@ -310,7 +310,8 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 	}
 	url, _, err := buildbucket.ScheduleTask(ctx, bc, params.taskType, p, "crosskylabadmin")
 	if err != nil {
-		logging.Errorf(ctx, "error scheduling task: %q", err)
+		// CrOSSkylabAdmin is getting an error periodically where we fail to create a buildbucket task as of 2023-11-16.
+		logging.Errorf(ctx, "error scheduling task %q on builder %q for device %q with expected state %q: %s", p.TaskName, p.BuilderName, p.UnitName, p.ExpectedState, err)
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()
 	}
 	return url, nil
