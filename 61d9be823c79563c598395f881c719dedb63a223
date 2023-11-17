@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "728c8526_44faf3b6",
+        "filename": "go/src/infra/tools/vpython/pkg/wheels/wheels.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-11-17T00:43:43Z",
+      "side": 1,
+      "message": "So if I understand correctly, the logic change here is that we\u0027ll now call NormalizeSpec() during Verify, whereas before we never did? Is there anything else more subtle that is changing?",
+      "revId": "61d9be823c79563c598395f881c719dedb63a223",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
