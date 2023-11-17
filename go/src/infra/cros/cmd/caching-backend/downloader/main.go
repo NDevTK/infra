@@ -542,8 +542,8 @@ func downloadURL(ctx context.Context, c *http.Client, w http.ResponseWriter, req
 		return nil
 	}
 
-	// Pass down headers needed for customer tracking.
-	for _, h := range []string{"X-SWARMING-TASK-ID", "X-BBID"} {
+	// Pass down headers needed for customer tracking or E2E tests.
+	for _, h := range []string{"X-SWARMING-TASK-ID", "X-BBID", "X-NO-CACHE"} {
 		req.Header.Add(h, parentReq.Header.Get(h))
 	}
 
