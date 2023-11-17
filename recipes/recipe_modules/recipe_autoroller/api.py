@@ -391,14 +391,16 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
       if s.automatic_commit:
         upload_args.append('--use-commit-queue')
       else:
-        upload_args.append('--r-owners')
+        if not spec.autoroll_recipe_options.no_owners:
+          upload_args.append('--r-owners')
         if s.dry_run:
           upload_args.append('--cq-dry-run')
     else:
       s = spec.autoroll_recipe_options.nontrivial
       if s.extra_reviewer_emails:
         upload_args.append('--reviewers=%s' % ','.join(s.extra_reviewer_emails))
-      upload_args.append('--r-owners')
+      if not spec.autoroll_recipe_options.no_owners:
+        upload_args.append('--r-owners')
 
       if s.automatic_commit_dry_run:
         upload_args.append('--cq-dry-run')
