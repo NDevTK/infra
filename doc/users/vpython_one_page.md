@@ -40,7 +40,7 @@ call `vpython3 script.py arg arg`.
 
 ### What if I need a new VPython wheel?
 First check to see if the wheel is already available in [wheels.md]. If not,
-file a bug [here](https://bugs.chromium.org/p/chromium/issues/entry?template=+Vpython+Wheel+Request).
+see the [instructions to add it](/infra/tools/dockerbuild/README.wheels.md).
 
 [go/vpython-and-you]: ./vpython_one_page.md
 [VPython]: ./vpython.md

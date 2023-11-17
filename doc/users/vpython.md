@@ -547,7 +547,7 @@ cipd ls infra/python/wheels
 ```
 
 If a wheel is needed, but is not in this list, please
-[contact Chrome Operations](#Contact).
+[see the instructions to add it](/infra/tools/dockerbuild/README.wheels.md).
 
 ## Templates
 
