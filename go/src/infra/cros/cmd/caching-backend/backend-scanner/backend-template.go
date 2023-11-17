@@ -55,6 +55,21 @@ http {
 
   proxy_cache_path  /var/cache/nginx levels=1:2 keys_zone=google-storage:80m
                     max_size={{ .CacheSizeInGB }}g inactive=720h;
+  proxy_cache           google-storage;
+  proxy_connect_timeout 90;
+  proxy_read_timeout    3600;
+  proxy_redirect        off;
+  proxy_http_version    1.1;
+  proxy_cache_bypass    $http_x_no_cache;
+  proxy_set_header      Connection "";
+  proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
+  proxy_set_header      X-BBID $http_x_bbid;
+  proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_cache_lock on;
+  proxy_cache_lock_age 900s;
+  proxy_cache_lock_timeout 900s;
+  proxy_cache_valid     200 720h;
+  expires max;
 
   upstream downloader{
     server downloader-svc;
@@ -76,28 +91,15 @@ http {
     access_log            /dev/stdout main_json;
     error_log             /dev/stdout info;
 
+    add_header            'X-Cache-L4' '$upstream_cache_status';
+    add_header            'X-CACHING-BACKEND-L4' '$hostname';
+    add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
+    add_header            'X-BBID' '$http_x_bbid';
+
     location / {
-      add_header           'X-Cache-L4' '$upstream_cache_status';
-      add_header           'X-CACHING-BACKEND-L4' '$hostname';
-      proxy_cache_lock      on;
-      proxy_cache_lock_age  3600s;
-      proxy_cache_lock_timeout 3600s;
-      proxy_cache_bypass    $http_x_no_cache;
-      expires               max;
       proxy_pass            http://l7_upstream;
-      proxy_read_timeout    3600;
-      proxy_connect_timeout 90;
-      proxy_redirect        off;
-      proxy_http_version    1.1;
-      proxy_set_header      Connection "";
-      proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
-      proxy_set_header      X-BBID $http_x_bbid;
-      proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_cache           google-storage;
-      proxy_cache_valid     200 720h;
       proxy_cache_key       $request_method$uri$is_args$args;
     }
-
 
     # b/281868022: A location dedicated for AU tests.
     location ~ ^/swarming/(?<swarming>[^/]+)/bbid/(?<bbid>[^/]+)/(?<end>.*)$ {
@@ -154,52 +156,24 @@ http {
     server_name           gs-cache-l7;
     access_log            /dev/stdout main_json;
     error_log             /dev/stdout info;
+
+    add_header            'X-Cache-L7' '$upstream_cache_status';
+    add_header            'X-CACHING-BACKEND-L7' '$hostname';
+
     # CQ build cache configuration.
     # The configuration is exactly same with the "location /" except
     # "proxy_cache_valid" which is much shorter than a release build.
     # A CQ build URL is like "/download/chromeos-image-archive/coral-cq/R92-13913.0.0-46943-8850024658050820208/...".
     location ~ ^/download/[^/]+/[^/]+-cq/ {
-      add_header            'X-Cache-L7' '$upstream_cache_status';
-      add_header            'X-CACHING-BACKEND-L7' '$hostname';
       slice 30m;
-      proxy_cache_lock on;
-      proxy_cache_lock_age 900s;
-      proxy_cache_lock_timeout 900s;
-      proxy_cache_bypass $http_x_no_cache;
-      expires max;
       proxy_pass            http://downloader;
-      proxy_read_timeout    900;
-      proxy_connect_timeout 90;
-      proxy_redirect        off;
-      proxy_http_version    1.1;
-      proxy_set_header      Connection "";
-      proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
-      proxy_set_header      X-BBID $http_x_bbid;
-      proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_cache           google-storage;
       proxy_cache_valid     200 206 48h;
       proxy_cache_key       $request_method$uri$is_args$args$slice_range;
       proxy_set_header      Range $slice_range;
       proxy_force_ranges    on;
     }
     location ~ ^/[^/]+/[^/]+/[^/]+-cq/ {
-      add_header            'X-Cache-L7' '$upstream_cache_status';
-      add_header            'X-CACHING-BACKEND-L7' '$hostname';
-      proxy_cache_lock on;
-      proxy_cache_lock_age 3600s;
-      proxy_cache_lock_timeout 3600s;
-      proxy_cache_bypass $http_x_no_cache;
-      expires max;
       proxy_pass            http://downloader;
-      proxy_read_timeout    3600;
-      proxy_connect_timeout 90;
-      proxy_redirect        off;
-      proxy_http_version    1.1;
-      proxy_set_header      Connection "";
-      proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
-      proxy_set_header      X-BBID $http_x_bbid;
-      proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_cache           google-storage;
       proxy_cache_valid     200 48h;
       proxy_cache_key       $request_method$uri$is_args$args;
     }
@@ -208,45 +182,12 @@ http {
     # downloading in '/download', which doesn't work for other RPCs like
     # '/extract' etc.
     location / {
-      add_header            'X-Cache-L7' '$upstream_cache_status';
-      add_header            'X-CACHING-BACKEND-L7' '$hostname';
-      proxy_cache_lock on;
-      proxy_cache_lock_age 3600s;
-      proxy_cache_lock_timeout 3600s;
-      proxy_cache_bypass $http_x_no_cache;
-      expires max;
       proxy_pass            http://downloader;
-      proxy_read_timeout    3600;
-      proxy_connect_timeout 90;
-      proxy_redirect        off;
-      proxy_http_version    1.1;
-      proxy_set_header      Connection "";
-      proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
-      proxy_set_header      X-BBID $http_x_bbid;
-      proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_cache           google-storage;
-      proxy_cache_valid     200 720h;
       proxy_cache_key       $request_method$uri$is_args$args;
     }
     location ~ ^/download/ {
-      add_header            'X-Cache-L7' '$upstream_cache_status';
-      add_header            'X-CACHING-BACKEND-L7' '$hostname';
         slice 30m;
-        proxy_cache_lock on;
-        proxy_cache_lock_age 900s;
-        proxy_cache_lock_timeout 900s;
-        proxy_cache_bypass $http_x_no_cache;
-        expires max;
         proxy_pass            http://downloader;
-        proxy_read_timeout    900;
-        proxy_connect_timeout 90;
-        proxy_redirect        off;
-        proxy_http_version    1.1;
-        proxy_set_header      Connection "";
-        proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
-        proxy_set_header      X-BBID $http_x_bbid;
-        proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_cache           google-storage;
         proxy_cache_valid     200 206 720h;
         proxy_cache_key       $request_method$uri$is_args$args$slice_range;
         proxy_set_header      Range $slice_range;
