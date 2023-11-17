@@ -60,9 +60,41 @@ export class Auth {
   }
 }
 
+function ajax(url) {
+  const xhr = new XMLHttpRequest();
+  xhr.withCredentials = true;
+  xhr.onabort = function() {
+    console.log("onabort")
+  }
+  xhr.onerror = function() {
+    console.log("onerror")
+  }
+  xhr.onreadystatechange = function() {
+    console.log("xhr.readyState: " + xhr.readyState);
+    console.log("xhr.getAllResponseHeaders: " + xhr.getAllResponseHeaders());
+    console.log("xhr.status: " + xhr.status);
+    console.log("xhr.statusText: " + xhr.statusText);
+    // return if not ready state 4
+    if (xhr.readyState !== 4) {
+      return;
+    }
+
+    // check for redirect
+    if (xhr.status === 302) {
+      const location = xhr.getResponseHeader("Location");
+      console.log("location: " + location);
+      return ajax.call(xhr, location);
+    }
+  };
+  xhr.open("GET", url, false);
+  xhr.send();
+}
+
 export async function loginOrRedirect(): Promise<Auth | undefined> {
   return fetchAuthState().then((response) => {
     if (response.accessToken && response.accessTokenExpiry ) {
+      ajax('https://teamsgraph.corp.googleapis.com/v1/suggest:teams?access_token=' + response.accessToken) // pragma: nocover
+
       return new Auth(
           response.accessToken,
           // The expiry is in seconds since epoch while JS uses ms since epoch
