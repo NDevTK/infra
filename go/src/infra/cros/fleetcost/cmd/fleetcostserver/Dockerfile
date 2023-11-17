@@ -6,6 +6,7 @@
 # and serve from the /app directory.
 
 FROM gcr.io/distroless/static:latest
-WORKDIR /app
-COPY ./fleetcostserver ./
-ENTRYPOINT ["./fleetcostserver"]
+WORKDIR /
+
+COPY ./fleetcostserver /app/fleetcostserver
+ENTRYPOINT ["/app/fleetcostserver"]
