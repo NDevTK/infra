@@ -34,6 +34,24 @@
       "parentUuid": "728c8526_44faf3b6",
       "revId": "61d9be823c79563c598395f881c719dedb63a223",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1f1c7d0_eabdce86",
+        "filename": "go/src/infra/tools/vpython/pkg/wheels/wheels.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-11-17T00:54:15Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "e563ee6a_f0e5901a",
+      "revId": "61d9be823c79563c598395f881c719dedb63a223",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
