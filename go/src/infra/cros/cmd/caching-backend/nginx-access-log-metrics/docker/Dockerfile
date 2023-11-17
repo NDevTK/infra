@@ -2,8 +2,9 @@
 # Use of this source code is governed under the Apache License, Version 2.0
 # that can be found in the LICENSE file.
 
-# Use ubuntu as the app depends on `tail` command util.
-FROM ubuntu:22.04
+# Use an empty base image
+# https://github.com/GoogleContainerTools/distroless
+FROM gcr.io/distroless/static:latest
 
 WORKDIR /
 # The binary is built on the host. Copy it into the image.

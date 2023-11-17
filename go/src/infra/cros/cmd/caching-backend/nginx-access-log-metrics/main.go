@@ -5,11 +5,14 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"flag"
 	"log"
+	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"go.chromium.org/luci/common/tsmon"
@@ -17,8 +20,6 @@ import (
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/target"
-
-	"infra/cros/cmd/caching-backend/nginx-access-log-metrics/internal/filetailer"
 )
 
 type record struct {
@@ -56,22 +57,45 @@ func innerMain() error {
 	defer shutdownTsMon(ctx)
 	// We set up context cancellation after tsmon setup because we want tsmon
 	// to finish flushing.
-	ctx = cancelOnSignals(ctx)
+	ctx, cancel := context.WithCancel(cancelOnSignals(ctx))
+	defer cancel()
 
-	tailer, err := filetailer.New(*inputLogFile)
+	// We need to open the file in read/write mode because for the case of a
+	// named pipe, it won't be closed when no other writers writing to it.
+	f, err := os.OpenFile(*inputLogFile, os.O_RDWR, 0644)
 	if err != nil {
 		return err
 	}
-	defer tailer.Close()
+	defer f.Close()
 
+	scannerExited := make(chan struct{})
+	var wg sync.WaitGroup
+	wg.Add(1)
 	go func() {
-		for tailer.Scan() {
-			if r := parseLine(tailer.Text()); r != nil {
+		defer wg.Done()
+		select {
+		case <-ctx.Done():
+			// Close the input file to break scanner.Scan() in below.
+			f.Close()
+		case <-scannerExited:
+		}
+	}()
+
+	scanner := bufio.NewScanner(f)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for scanner.Scan() {
+			l := scanner.Text()
+			if r := parseLine(l); r != nil {
 				reportToTsMon(r)
 			}
 		}
+		log.Printf("Scanner exited with error %s", scanner.Err())
+		scannerExited <- struct{}{}
 	}()
-	<-ctx.Done()
+
+	wg.Wait()
 	return nil
 }
 
