@@ -65,6 +65,7 @@ http {
   proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
   proxy_set_header      X-BBID $http_x_bbid;
   proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header      X-NO-CACHE $http_x_no_cache;
   proxy_cache_valid     200 720h;
   expires max;
 
