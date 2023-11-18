@@ -65,9 +65,6 @@ http {
   proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
   proxy_set_header      X-BBID $http_x_bbid;
   proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_cache_lock on;
-  proxy_cache_lock_age 900s;
-  proxy_cache_lock_timeout 900s;
   proxy_cache_valid     200 720h;
   expires max;
 
@@ -159,6 +156,10 @@ http {
 
     add_header            'X-Cache-L7' '$upstream_cache_status';
     add_header            'X-CACHING-BACKEND-L7' '$hostname';
+
+    proxy_cache_lock on;
+    proxy_cache_lock_age 900s;
+    proxy_cache_lock_timeout 900s;
 
     # CQ build cache configuration.
     # The configuration is exactly same with the "location /" except
