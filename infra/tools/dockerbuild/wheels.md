@@ -7573,6 +7573,21 @@ wheel: <
 * *mac-arm64-py3.8*
 * *mac-x64-py3.8*
 
+### 10.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyobjc/${vpython_platform}"
+  version: "version:10.0"
+>
+```
+
+
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+
 ## **pyocd-py3**
 
 ### 0.33.1
