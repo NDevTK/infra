@@ -135,7 +135,7 @@ capabilities {
   flashrom: true
   detachablebase: true
   carrier: 2
-  starfish_slot_mapping: "1_verizon,2_tmobile,4_att"
+  starfish_slot_mapping: "1_verizon,2_sprint,4_att"
   bluetooth: true
   atrus: true
   cbx: 1
@@ -306,10 +306,14 @@ var fullLabels = []string{
 	"sim_slot_id:2",
 	"sku:eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB",
 	"smart_usbhub",
-	"starfish_slot_mapping:1_verizon,2_tmobile,4_att",
+	"starfish_slot_mapping:1_verizon,2_sprint,4_att",
 	"storage:storageval",
 	"storage_state:NORMAL",
 	"stylus",
+	"supported_carrier:att",
+	"supported_carrier:sprint",
+	"supported_carrier:tmobile",
+	"supported_carrier:verizon",
 	"telephony:telephonyval",
 	"test_audiojack",
 	"test_hdmiaudio",
@@ -761,7 +765,7 @@ capabilities {
   flashrom: true
   detachablebase: true
   carrier: 2
-  starfish_slot_mapping: "1_verizon,2_tmobile,4_att"
+  starfish_slot_mapping: "1_verizon,2_sprint,4_att"
   bluetooth: true
   atrus: true
   cbx: 0
@@ -927,7 +931,7 @@ var fullLabelsSpecial = []string{
 	"sim_slot_id:2",
 	"sku:eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB",
 	"smart_usbhub",
-	"starfish_slot_mapping:1_verizon,2_tmobile,4_att",
+	"starfish_slot_mapping:1_verizon,2_sprint,4_att",
 	"storage:storageval",
 	"storage_state:ACCEPTABLE",
 	"stylus",

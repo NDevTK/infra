@@ -89,6 +89,17 @@ func stringCapabilitiesConverter(ls *inventory.SchedulableLabels) []string {
 	if v := c.GetStarfishSlotMapping(); v != "" {
 		lv := "starfish_slot_mapping:" + v
 		labels = append(labels, lv)
+		// Starfish slot mapping is stored as a comma deliminated list containing slotID_carrier.
+		// e.g. 0_att,1_tmobile,2_verizon.
+		// We need to split this list and determine each carrier that the testbed supports.
+		for _, slot := range strings.Split(v, ",") {
+			slotArr := strings.Split(slot, "_")
+			if len(slotArr) != 2 {
+				continue
+			}
+			lv := "supported_carrier:" + slotArr[1]
+			labels = append(labels, lv)
+		}
 	}
 	return labels
 }
@@ -98,8 +109,10 @@ func otherCapabilitiesConverter(ls *inventory.SchedulableLabels) []string {
 	c := ls.GetCapabilities()
 	if v := c.GetCarrier(); v != inventory.HardwareCapabilities_CARRIER_INVALID {
 		const plen = 8 // len("CARRIER_")
-		lv := "carrier:" + strings.ToLower(v.String()[plen:])
-		labels = append(labels, lv)
+		carrier := strings.ToLower(v.String()[plen:])
+		labels = append(labels, "carrier:"+carrier)
+		// Carrier should be included in "supported_carrier" along with starfish carriers.
+		labels = append(labels, "supported_carrier:"+carrier)
 	}
 	for _, v := range c.GetVideoAcceleration() {
 		const plen = 19 // len("VIDEO_ACCELERATION_")
@@ -197,6 +210,9 @@ func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, labels []string)
 			type t = inventory.HardwareCapabilities_Carrier
 			vals := inventory.HardwareCapabilities_Carrier_value
 			*c.Carrier = t(vals[vn])
+		case "supported_carrier:":
+			// Nothing to do, carriers is already preserved by either
+			// "carrier" or "starfish_slot_mapping"
 		case "cbx":
 			if v == "True" {
 				*c.Cbx = inventory.HardwareCapabilities_CBX_STATE_TRUE
