@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1215c40_b2406ea0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-20T23:45:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ab0267bf_b6ca85fd",
+      "revId": "eef47f8950cf647a024b8ba3b320a7357f21e6b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "369cb25f_05e16ffe",
@@ -31,6 +49,42 @@
       "writtenOn": "2023-11-20T23:03:11Z",
       "side": 1,
       "message": "Just curious: Will you be moving this function as well in a separate CL?",
+      "revId": "eef47f8950cf647a024b8ba3b320a7357f21e6b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53cbab4e_6f8fa5bf",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_usb.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-20T23:45:26Z",
+      "side": 1,
+      "message": "yes, in future. for now just moved what was used in several places.",
+      "parentUuid": "369cb25f_05e16ffe",
+      "revId": "eef47f8950cf647a024b8ba3b320a7357f21e6b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44e6567b_62541636",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_usb.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-20T23:45:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "369cb25f_05e16ffe",
       "revId": "eef47f8950cf647a024b8ba3b320a7357f21e6b8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

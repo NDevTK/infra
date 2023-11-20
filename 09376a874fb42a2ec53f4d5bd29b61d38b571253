@@ -23,6 +23,30 @@
       },
       "revId": "09376a874fb42a2ec53f4d5bd29b61d38b571253",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3da0787_eb0f2a78",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/usb/usb.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-11-20T23:45:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "66b7c5f9_576a29fe",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 0
+      },
+      "revId": "09376a874fb42a2ec53f4d5bd29b61d38b571253",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
