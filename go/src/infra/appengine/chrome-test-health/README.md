@@ -71,4 +71,4 @@ cd ..
 ./deploy.sh
 ```
 
-See the latest version at [https://chrome-test-health.appspot.com/](https://chrome-test-health.appspot.com/)
+See the latest version at [https://chrome-test-health.googleplex.com/](https://chrome-test-health.googleplex.com/)
