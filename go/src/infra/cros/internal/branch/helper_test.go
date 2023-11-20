@@ -35,10 +35,6 @@ var branchNameTestManifest = repo.Manifest{
 			{Name: "branch-mode", Value: "tot"},
 		}},
 
-		// Cases covered by the mapping feature
-		{Path: "src/third_party/coreboot", Name: "chromiumos/third_party/coreboot", Revision: "8dddd11bc804c01b905b87407e42a2d58d044384", Upstream: "refs/heads/firmware-puff-13324.B-chromeos-2016.05"},
-		{Path: "src/third_party/coreboot", Name: "chromiumos/third_party/coreboot", Revision: "8dddd11bc804c01b905b87407e42a2d58d044385"},
-
 		// Project has two checkouts and uses branch suffixes.
 		{Path: "quz1/", Name: "quz", Upstream: "refs/heads/quz1", Annotations: []repo.Annotation{
 			{Name: "branch-suffix", Value: "quz100"},
@@ -118,17 +114,9 @@ func TestProjectBranchName(t *testing.T) {
 	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[2], ""), "mybranch-101")
 	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[6], ""), "mybranch-myfactory-2.6")
 	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[7], ""), "mybranch")
-	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[11], ""), "mybranch-quz100")
-	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[12], ""), "mybranch-quz200")
-	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[13], ""), "mybranch")
-}
-
-func TestProjectBranchName_MappingFunctionality(t *testing.T) {
-	manifest := branchNameTestManifest
-	c := Client{
-		WorkingManifest: manifest,
-	}
-	assert.StringsEqual(t, c.projectBranchName("coreboot", manifest.Projects[9], ""), "coreboot")
+	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[9], ""), "mybranch-quz100")
+	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[10], ""), "mybranch-quz200")
+	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[11], ""), "mybranch")
 }
 
 func TestProjectBranchName_withOriginal(t *testing.T) {

@@ -63,14 +63,9 @@ type branchMapEntry struct {
 }
 
 // branchMap is a map that defines branch suffix replacements
-var branchMap = map[string]branchMapEntry{
-	"chromiumos/third_party/coreboot": {
-		name:        "chromiumos/third_party/coreboot",
-		path:        "src/third_party/coreboot",
-		suffix:      "-chromeos-2016.05",
-		replacement: "",
-	},
-}
+// This was originally used by coreboot, but that repo has since
+// transitioned to the main branch.
+var branchMap = map[string]branchMapEntry{}
 
 // canBranchProject retuns true if the Project can be branched.
 func canBranchProject(manifest repo.Manifest, project repo.Project) bool {
