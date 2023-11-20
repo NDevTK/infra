@@ -34,7 +34,7 @@ func GetUSBDrivePathOnDut(ctx context.Context, run components.Runner, s componen
 		return "", errors.Annotate(err, "get usb drive path on dut: could not switch USB to DUT").Err()
 	}
 	// A detection delay is required when attaching this USB drive to DUT
-	time.Sleep(usbDetectionDelay * time.Second)
+	time.Sleep(5 * time.Second)
 	if out, err := run(ctx, time.Minute, "ls /dev/sd[a-z]"); err != nil {
 		return "", errors.Annotate(err, "get usb drive path on dut").Err()
 	} else {
