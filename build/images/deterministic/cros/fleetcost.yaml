@@ -1,0 +1,23 @@
+# Automatically build the container for the Fleet cost service that will
+# eventually be used in cloud run.
+#
+# To test this config run:
+#    cloudbuildhelper build fleetcost.yaml
+#
+# For more information see:
+#    https://chromium.googlesource.com/infra/infra/+/refs/heads/main/build/images/#testing-changes-locally
+#
+# For the CL that added this file initally, see:
+#    https://chromium-review.googlesource.com/c/infra/infra/+/5038140
+
+name: cros/fleetcost
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/cros/fleetcost/cmd/fleetcostserver/Dockerfile
+deterministic: true
+
+sources:
+  - ../../../../go/src/infra/cros/fleetcost
+
+build:
+  - go_binary: infra/cros/fleetcost/cmd/fleetcostserver
