@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ab0267bf_b6ca85fd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-11-20T23:03:44Z",
+      "side": 1,
+      "message": "One last thing: please fix any typos in the commit message.",
+      "revId": "eef47f8950cf647a024b8ba3b320a7357f21e6b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "369cb25f_05e16ffe",
         "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_usb.go",
         "patchSetId": 2
