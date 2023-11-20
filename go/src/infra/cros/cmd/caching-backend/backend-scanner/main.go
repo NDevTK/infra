@@ -87,6 +87,10 @@ func innerMain() error {
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/update", s.updateHandler)
+	// TODO(guocb): add smarter logic to /startup and /shutdown to update the
+	// backend list more efficiently.
+	mux.HandleFunc("/startup", s.updateHandler)
+	mux.HandleFunc("/shutdown", s.updateHandler)
 	svr := http.Server{Addr: fmt.Sprintf(":%d", *port), Handler: mux}
 	log.Printf("starting backend scanner")
 
