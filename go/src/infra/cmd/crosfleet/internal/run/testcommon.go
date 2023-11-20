@@ -88,6 +88,7 @@ type testCommonFlags struct {
 	publicBuilderBucket  string
 	publicBuilder        string
 	luciProject          string
+	trv2                 bool
 }
 
 type fleetValidationResults struct {
@@ -137,6 +138,7 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.StringVar(&c.publicBuilder, "public-builder", "", "Public CTP Builder on which the tests are scheduled.")
 	f.StringVar(&c.publicBuilderBucket, "public-builder-bucket", "", "Bucket for the Public CTP Builder on which the tests are scheduled.")
 	f.StringVar(&c.luciProject, "luci-project", "", "LUCI project which the bucket and builder are associated with")
+	f.BoolVar(&c.trv2, "trv2", false, "Run via Trv2.")
 
 	if mainArgType == testCmdName {
 		f.StringVar(&c.testHarness, "harness", "", "Test harness to run tests on (e.g. tast, tauto, etc.).")
@@ -184,6 +186,10 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, args []string, mainArgTy
 	// harness should not be provided for non-cft.
 	if mainArgType == testCmdName && !c.cft && c.testHarness != "" {
 		errors = append(errors, fmt.Sprintf("harness should only be provided for single cft test case"))
+	}
+	// trv2 should be false for non-cft.
+	if mainArgType == testCmdName && !c.cft && c.trv2 {
+		errors = append(errors, fmt.Sprintf("cannot run non-cft test case via trv2"))
 	}
 	if c.image != "" && c.release != "" {
 		errors = append(errors, "cannot specify both image and release branch")
@@ -412,6 +418,7 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 		TestRunnerBuildTags:  testRunnerTags,
 		TimeoutMins:          l.cliFlags.timeoutMins,
 		UseScheduke:          l.cliFlags.scheduke,
+		TRV2:                 l.cliFlags.trv2,
 	}
 }
 
