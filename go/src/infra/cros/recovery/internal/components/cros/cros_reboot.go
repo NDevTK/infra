@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"
 )
 
@@ -32,10 +32,10 @@ const (
 //
 // This function executes an ellaborate reboot sequence that includes
 // executing sync and then attempting forcible reboot etc.
-func Reboot(ctx context.Context, run execs.Runner, timeout time.Duration) error {
+func Reboot(ctx context.Context, run components.Runner, timeout time.Duration) error {
 	log.Debugf(ctx, "Reboot Helper : %s", rebootCommand)
 	out, err := run(ctx, timeout, rebootCommand)
-	if execs.NoExitStatusErrorInternal.In(err) {
+	if components.NoExitStatusErrorInternal.In(err) {
 		// Client closed connected as rebooting.
 		log.Debugf(ctx, "Client exit as device rebooted: %s", err)
 	} else if err != nil {

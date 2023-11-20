@@ -10,14 +10,14 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/components"
 )
 
 // ExtractHttpResponseCode extracts the HTTP Response Code from an
 // error object.
 func ExtractHttpResponseCode(err error) int {
 	var httpResponseCode int
-	stdErr, ok := errors.TagValueIn(execs.StdErrTag, err)
+	stdErr, ok := errors.TagValueIn(components.StdErrTag, err)
 	if !ok {
 		return 0
 	}

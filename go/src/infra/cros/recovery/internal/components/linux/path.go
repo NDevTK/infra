@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,13 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"
 )
 
 // IsPathExist checks if a given path exists or not.
 // Raise error if the path does not exist.
-func IsPathExist(ctx context.Context, run execs.Runner, path string) error {
+func IsPathExist(ctx context.Context, run components.Runner, path string) error {
 	_, err := run(ctx, time.Minute, fmt.Sprintf(`test -e "%s"`, path))
 	if err != nil {
 		return errors.Annotate(err, "path exist").Err()
@@ -30,7 +30,7 @@ func IsPathExist(ctx context.Context, run execs.Runner, path string) error {
 }
 
 // IsPathWritable checks whether a given path is writable.
-func IsPathWritable(ctx context.Context, run execs.Runner, testDir string) error {
+func IsPathWritable(ctx context.Context, run components.Runner, testDir string) error {
 	if err := IsPathExist(ctx, run, testDir); err != nil {
 		return errors.Annotate(err, "path writable").Err()
 	}
@@ -53,7 +53,7 @@ const (
 )
 
 // PathHasEnoughValue is a helper function that checks the given path's free disk space / inodes is no less than the min disk space /indoes specified.
-func PathHasEnoughValue(ctx context.Context, r execs.Runner, dutName string, path string, typeOfSpace SpaceType, minSpaceNeeded float64) error {
+func PathHasEnoughValue(ctx context.Context, r components.Runner, dutName string, path string, typeOfSpace SpaceType, minSpaceNeeded float64) error {
 	if err := IsPathExist(ctx, r, path); err != nil {
 		return errors.Annotate(err, "path has enough value: %s: path: %q not exist", typeOfSpace, path).Err()
 	}
@@ -88,7 +88,7 @@ func PathHasEnoughValue(ctx context.Context, r execs.Runner, dutName string, pat
 }
 
 // PathOccupiedSpacePercentage will find the percentage indicating the occupied space under the specified path.
-func PathOccupiedSpacePercentage(ctx context.Context, r execs.Runner, path string) (float64, error) {
+func PathOccupiedSpacePercentage(ctx context.Context, r components.Runner, path string) (float64, error) {
 	if err := IsPathExist(ctx, r, path); err != nil {
 		return -1, errors.Annotate(err, "path occupied space percentage: path: %q not exist", path).Err()
 	}

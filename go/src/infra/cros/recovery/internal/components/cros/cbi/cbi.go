@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/execs"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
@@ -205,7 +204,7 @@ func ContainsCBIMagic(cbi *labapi.Cbi) bool {
 func VerifyRequiredFields(ctx context.Context, run components.Runner) error {
 	for name, tag := range requiredFields {
 		_, err := run(ctx, cbiCommandTimeout, readCBIFieldCommand, strconv.Itoa(tag))
-		stdErr, ok := errors.TagValueIn(execs.StdErrTag, err)
+		stdErr, ok := errors.TagValueIn(components.StdErrTag, err)
 		if ok && err != nil && strings.Contains(strings.ToLower(stdErr.(string)), "error") {
 			errorString := fmt.Sprintf("verify required fields: required field %s is undefined", name)
 			if err != nil {

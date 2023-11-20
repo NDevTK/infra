@@ -11,11 +11,11 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/components"
 )
 
 // IsRootFSVerityEnabled checks if rootfs is setup using fs-verity
-func IsRootFSVerityEnabled(ctx context.Context, r execs.Runner) (bool, error) {
+func IsRootFSVerityEnabled(ctx context.Context, r components.Runner) (bool, error) {
 	// Check if rootdev outputs /dev/dm
 	output, err := r(ctx, time.Minute, "rootdev")
 	if err != nil {
