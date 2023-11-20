@@ -188,7 +188,7 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, args []string, mainArgTy
 		errors = append(errors, fmt.Sprintf("harness should only be provided for single cft test case"))
 	}
 	// trv2 should be false for non-cft.
-	if mainArgType == testCmdName && !c.cft && c.trv2 {
+	if !c.cft && c.trv2 {
 		errors = append(errors, fmt.Sprintf("cannot run non-cft test case via trv2"))
 	}
 	if c.image != "" && c.release != "" {
