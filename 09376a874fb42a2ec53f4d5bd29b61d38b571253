@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "66b7c5f9_576a29fe",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/usb/usb.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-11-20T23:03:11Z",
+      "side": 1,
+      "message": "\u003e SA1004: sleeping for 2 nanoseconds is probably a bug; be explicit if it isn\u0027t\n\n`time.Sleep(2 * time.Second)`?",
+      "parentUuid": "fb890542_06773aad",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 0
+      },
+      "revId": "09376a874fb42a2ec53f4d5bd29b61d38b571253",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

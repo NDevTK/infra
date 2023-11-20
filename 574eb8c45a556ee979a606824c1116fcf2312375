@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "791eab63_c8096254",
+        "filename": "go/src/infra/cros/recovery/internal/execs/servo/servo_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-11-20T23:03:11Z",
+      "side": 0,
+      "message": "Nit: Please mention in the commit message that this repair step is no longer used/needed.",
+      "revId": "574eb8c45a556ee979a606824c1116fcf2312375",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

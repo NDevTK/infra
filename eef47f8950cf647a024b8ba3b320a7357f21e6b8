@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "369cb25f_05e16ffe",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cros_usb.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-11-20T23:03:11Z",
+      "side": 1,
+      "message": "Just curious: Will you be moving this function as well in a separate CL?",
+      "revId": "eef47f8950cf647a024b8ba3b320a7357f21e6b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
