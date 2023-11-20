@@ -1,0 +1,10 @@
+package: chromiumos/infra/suite_scheduler/${platform}
+description: WIP ChromeOS TSE CLI tool to launch pre-configured test suites on BuildBucket. This service mirrors the legacy SuiteScheduler product made in Python2.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/suite_scheduler
+root: ../../go/bin
+data:
+  - file: suite_scheduler${exe_suffix}
+  - version_file: .versions/suite_scheduler${exe_suffix}.cipd_version

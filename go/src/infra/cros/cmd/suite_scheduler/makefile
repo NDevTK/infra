@@ -4,6 +4,7 @@
 STDOUTFILE=zout_log
 STDERRFILE=zerr_log
 BIN=suite_scheduler
+CIPDBIN=../../../../../bin/suite_scheduler
 
 GENERATEDSUSCHCFG=configparser/generated/suite_scheduler.cfg
 GENERATEDLABCFG=configparser/generated/lab_config.cfg
@@ -17,6 +18,9 @@ run: build
 
 build:
 	go build -o $(BIN)
+
+cipdbuild:
+	go build -o $(CIPDBIN)
 
 clean:
 	rm -rf $(STDERRFILE) $(STDOUTFILE) $(BIN) $(GENERATEDSUSCHCFG) $(GENERATEDLABCFG) $(GENERATEDSUSCHINI) $(GENERATEDLABINI)
