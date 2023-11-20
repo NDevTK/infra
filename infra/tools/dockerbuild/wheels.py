@@ -805,7 +805,7 @@ SPECS.update({
                 'windows-x86-py3.8',
                 'windows-x64-py3.8',
             ],
-            skip_plat=build_platform.ALL_PY311,  # TODO: version 4.9.0+
+            skip_plat=build_platform.ALL_PY311,
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
