@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -302,6 +303,11 @@ func downloadTestPlan(w io.Writer, bucket, testplan string) (string, error) {
 		return "", fmt.Errorf("%q Error: %w", object, err)
 	}
 	defer rc.Close()
+
+	err = os.MkdirAll(filepath.Dir(destFileName), 0777)
+	if err != nil {
+		return "", fmt.Errorf("os.MkdirAll: %w", err)
+	}
 
 	f, err := os.Create(destFileName)
 	if err != nil {
