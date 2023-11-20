@@ -13,7 +13,6 @@ import (
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/servo"
-	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger"
@@ -143,7 +142,7 @@ func StorageIssuesExist(ctx context.Context, err error) tlw.DutStateReason {
 	if err == nil {
 		return tlw.DutStateReasonEmpty
 	}
-	stdErr, ok := errors.TagValueIn(execs.StdErrTag, err)
+	stdErr, ok := errors.TagValueIn(components.StdErrTag, err)
 	if !ok {
 		log.Debugf(ctx, "Check storage error: stderr not found.")
 		return tlw.DutStateReasonEmpty

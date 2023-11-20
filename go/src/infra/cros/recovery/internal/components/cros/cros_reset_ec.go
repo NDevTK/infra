@@ -11,12 +11,12 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"
 )
 
 // Finds the command to reboot ec and executes it.
-func RebootECByEcTool(ctx context.Context, r execs.Runner) error {
+func RebootECByEcTool(ctx context.Context, r components.Runner) error {
 	ecRebootCmds := []string{"ec_reboot", "reboot_ec"}
 
 	var rebootCmd = ""
@@ -25,7 +25,7 @@ func RebootECByEcTool(ctx context.Context, r execs.Runner) error {
 		output, err := r(ctx, 5*time.Second, fmtCmd)
 		log.Debugf(ctx, "RebootECByEcTool EC Reboot command help output : %s", output)
 		if err != nil {
-			errorCode, ok := errors.TagValueIn(execs.ErrCodeTag, err)
+			errorCode, ok := errors.TagValueIn(components.ErrCodeTag, err)
 			if !ok {
 				return errors.Annotate(err, "RebootECByEcTool: cannot find error code").Err()
 			}

@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/components"
 )
 
 // TODO(b/223055228): This has been taken from the package
@@ -54,7 +54,7 @@ type powerSupplyInfo struct {
 //	  state:                   Discharging
 //	  percentage:              95.9276
 //	  technology:              Li-ion
-func ReadPowerInfo(ctx context.Context, r execs.Runner) (*powerSupplyInfo, error) {
+func ReadPowerInfo(ctx context.Context, r components.Runner) (*powerSupplyInfo, error) {
 	output, err := r(ctx, time.Minute, "power_supply_info")
 	if err != nil {
 		return nil, errors.Annotate(err, "read power information").Err()

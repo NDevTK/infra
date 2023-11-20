@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/internal/assert"
-	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/components"
 )
 
 var httpResponseCodeTestCases = map[string]int{
@@ -26,7 +26,7 @@ var httpResponseCodeTestCases = map[string]int{
 func TestExtractHttpResponseCode(t *testing.T) {
 	for k, v := range httpResponseCodeTestCases {
 		errAnnotator := errors.Reason("http code extractor test")
-		errAnnotator.Tag(errors.TagValue{Key: execs.StdErrTag, Value: k})
+		errAnnotator.Tag(errors.TagValue{Key: components.StdErrTag, Value: k})
 		assert.IntsEqual(t, ExtractHttpResponseCode(errAnnotator.Err()), v)
 	}
 }
