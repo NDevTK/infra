@@ -13,48 +13,12 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/servo/topology"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
-
-const (
-	// This is the servod control for obtaining ppdut5 bus voltage in
-	// millivolts.
-	servodPPDut5Cmd = "ppdut5_mv"
-)
-
-// GetUSBDrivePathOnDut finds and returns the path of USB drive on a DUT.
-func GetUSBDrivePathOnDut(ctx context.Context, run components.Runner, s components.Servod) (string, error) {
-	// switch USB on servo multiplexer to the DUT-side
-	if err := s.Set(ctx, "image_usbkey_direction", "dut_sees_usbkey"); err != nil {
-		return "", errors.Annotate(err, "get usb drive path on dut: could not switch USB to DUT").Err()
-	}
-	// A detection delay is required when attaching this USB drive to DUT
-	time.Sleep(usbDetectionDelay * time.Second)
-	if out, err := run(ctx, time.Minute, "ls /dev/sd[a-z]"); err != nil {
-		return "", errors.Annotate(err, "get usb drive path on dut").Err()
-	} else {
-		for _, p := range strings.Split(out, "\n") {
-			dtOut, dtErr := run(ctx, time.Minute, fmt.Sprintf(". /usr/share/misc/chromeos-common.sh; get_device_type %s", p))
-			if dtErr != nil {
-				return "", errors.Annotate(dtErr, "get usb drive path on dut: could not check %q", p).Err()
-			}
-			if dtOut == "USB" {
-				if _, fErr := run(ctx, time.Minute, fmt.Sprintf("fdisk -l %s", p)); fErr == nil {
-					return p, nil
-				} else {
-					log.Debugf(ctx, "Get USB-drive path on dut: checked candidate usb drive path %q and found it incorrect.", p)
-				}
-			}
-		}
-		log.Debugf(ctx, "Get USB-drive path on dut: did not find any valid USB drive path on the DUT.")
-	}
-	return "", errors.Reason("get usb drive path on dut: did not find any USB Drive connected to the DUT as we checked that DUT is up").Err()
-}
 
 // IsContainerizedServoHost checks if the servohost is using servod container.
 func IsContainerizedServoHost(ctx context.Context, servoHost *tlw.ServoHost) bool {
