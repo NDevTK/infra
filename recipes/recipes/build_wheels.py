@@ -29,7 +29,6 @@ DEPS = [
     'recipe_engine/properties',
     'recipe_engine/raw_io',
     'recipe_engine/step',
-    'buildenv',
 ]
 
 PROPERTIES = {
@@ -55,25 +54,10 @@ PROPERTIES = {
             kind=bool,
             default=False,
         ),
-    'experimental':
-        Property(
-            help=("If true, wheels are built in a sub-build that runs a "
-                  "luciexe binary."),
-            kind=bool,
-            default=False,
-        ),
-    'experimental_dry_run':
-        Property(
-            help=("If true, sub-build luciexe binary does not build wheels "
-                  "and echoes the command it would run instead."),
-            kind=bool,
-            default=False,
-        ),
 }
 
 
-def RunSteps(api, platforms, dry_run, rebuild, experimental,
-             experimental_dry_run):
+def RunSteps(api, platforms, dry_run, rebuild):
   solution_path = api.path['cache'].join('builder', 'build_wheels')
   api.file.ensure_directory("init cache if it doesn't exist", solution_path)
   try:
@@ -176,36 +160,8 @@ def RunSteps(api, platforms, dry_run, rebuild, experimental,
         for wheel in wheels:
           args.extend(['--wheel', wheel])
 
-      if experimental:
-        go_version_file_path = solution_path.join("infra", "go", "src",
-                                                  "go.chromium.org", "luci",
-                                                  "build", "GO_VERSION")
-        # Ensures latest golang version is available in the environment.
-        with api.buildenv(
-            solution_path, go_version_file=str(go_version_file_path)):
-          # We build the binary rather than directly running the script as
-          # luciexe inserts an --output flag after the first command-line
-          # space-separated word i.e. `go run` -> `go --output ...`
-          go_path = solution_path.join('infra', 'go', 'src', 'infra')
-          build_path = go_path.join("experimental", "buildwheel")
-
-          go_exe = 'buildwheel.exe' if api.platform.is_win else 'buildwheel'
-          luciexe_binary_path = api.path.mkdtemp('.goexe').join(go_exe)
-
-          with api.context(cwd=go_path):
-            api.step('build go build_wheel binary',
-                     ['go', 'build', '-o', luciexe_binary_path, build_path])
-
-          with api.context(cwd=solution_path.join('infra')):
-            api.step.sub_build(
-                'launch luciexe binary for dockerbuild',
-                [luciexe_binary_path] + ['--'] + args,
-                api.buildbucket.build,
-                output_path=api.path['cleanup'].join('build.json'))
-
-      else:
-        api.step('dockerbuild',
-                 ['vpython3', '-m', 'infra.tools.dockerbuild'] + args)
+      api.step('dockerbuild',
+               ['vpython3', '-m', 'infra.tools.dockerbuild'] + args)
 
 
 @contextmanager
@@ -244,33 +200,6 @@ def GenTests(api):
   yield api.test('mac', api.platform(
       'mac', 64)) + api.properties(platforms=['mac-x64', 'mac-x64-cp38'])
   yield api.test('dry-run', api.properties(dry_run=True))
-
-  # Mock the expected build proto luciexe sub-build outputs on success
-  # As gen-tests doesn't run any sub-processes, we use api.step.sub_build to
-  # supply our expected output proto instead.
-  luciexe_success = build_pb2.Build(
-      id=1234,
-      status=common_pb2.SUCCESS,
-      steps=[
-          step_pb2.Step(
-              name="dockerbuild",
-              status=common_pb2.SUCCESS,
-              logs=[
-                  common_pb2.Log(name="log", url="step/0/log/0"),
-                  common_pb2.Log(name="stdout", url="step/0/log/1"),
-                  common_pb2.Log(name="stderr", url="step/0/log/2"),
-              ])
-      ])
-  yield (api.test('luciexe', api.properties(dry_run=True, experimental=True)) +
-         api.step_data('launch luciexe binary for dockerbuild',
-                       api.step.sub_build(luciexe_success)))
-
-  yield (api.test(
-      'luciexe-win',
-      api.platform('win', 64) + api.properties(
-          platforms=['windows-x64'], dry_run=True, experimental=True) +
-      api.step_data('launch luciexe binary for dockerbuild',
-                    api.step.sub_build(luciexe_success))))
 
   # Can't build 32-bit and 64-bit Windows wheels on the same invocation.
   yield api.test(
