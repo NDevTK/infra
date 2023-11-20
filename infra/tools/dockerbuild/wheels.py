@@ -809,6 +809,18 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
+            'lxml',
+            '4.9.3',
+            env_cb=_LxmlEnv,
+            packaged=[
+                'windows-x86-py3.8',
+                'windows-x86-py3.11',
+                'windows-x64-py3.8',
+                'windows-x64-py3.11',
+            ],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'multidict',
             '6.0.2',
             packaged=(),
