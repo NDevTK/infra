@@ -39,6 +39,30 @@
       },
       "revId": "c88c1ab78606e830d807d4906eca2c342d775f4a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8af39d3_e4dfe2ed",
+        "filename": "go/src/infra/cros/cmd/caching-backend/nginx-access-log-metrics/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-11-20T20:25:55Z",
+      "side": 1,
+      "message": "Ah, I should make it clearer. Actually it is used to unblock the goroutine above. I refactored the code to reflect this.",
+      "parentUuid": "4fcd46c7_be018a65",
+      "range": {
+        "startLine": 85,
+        "startChar": 2,
+        "endLine": 85,
+        "endChar": 16
+      },
+      "revId": "c88c1ab78606e830d807d4906eca2c342d775f4a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
