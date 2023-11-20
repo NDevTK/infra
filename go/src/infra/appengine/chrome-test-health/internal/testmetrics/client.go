@@ -185,7 +185,7 @@ test_summaries AS (
 		f.node_name,
 		ARRAY_REVERSE(SPLIT(f.node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
 		ANY_VALUE(is_file) AS is_file,
-		-- metrics
+		-- Metrics
 		{fileAggMetricTerms},
 	FROM {fileTable} AS f, UNNEST(@parents) AS parent
 	JOIN test_summaries t ON

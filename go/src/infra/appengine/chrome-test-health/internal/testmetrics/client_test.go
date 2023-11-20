@@ -729,7 +729,7 @@ test_summaries AS (
 		f.node_name,
 		ARRAY_REVERSE(SPLIT(f.node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
 		ANY_VALUE(is_file) AS is_file,
-		-- metrics
+		-- Metrics
 		SUM(t.num_runs) AS num_runs,
 	FROM chrome-test-health-project.normal-dataset.daily_file_metrics AS f, UNNEST(@parents) AS parent
 	JOIN test_summaries t ON
