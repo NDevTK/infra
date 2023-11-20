@@ -978,17 +978,6 @@ func servoRepairPlan() *Plan {
 				},
 				AllowFailAfterRecovery: true,
 			},
-			"Audit of USB drive": {
-				Docs: []string{
-					"This action will detect whether or not the USB drive is in working condition.",
-				},
-				Dependencies: []string{
-					"Verify that USB drive is detectable",
-				},
-				ExecName:               "servo_audit_usbkey",
-				ExecTimeout:            &durationpb.Duration{Seconds: 7300},
-				AllowFailAfterRecovery: true,
-			},
 			"Is servo_v4(p1) used with type-c connector": {
 				Docs: []string{
 					"Verify whether servo_V4(p1) device is connect to DUT using Type-C connection.",
