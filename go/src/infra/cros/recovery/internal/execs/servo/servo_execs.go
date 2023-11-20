@@ -17,7 +17,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
-	components_cros "infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/servo"
 	components_topology "infra/cros/recovery/internal/components/servo/topology"
 	"infra/cros/recovery/internal/execs"
@@ -30,14 +29,6 @@ import (
 )
 
 const (
-	// Time between an usb disk plugged-in and detected in the system.
-	usbDetectionDelay = 5
-
-	// The prefix of the badblocks command for verifying USB
-	// drives. The USB-drive path will be attached to it when
-	// badblocks needs to be executed on a drive.
-	badBlocksCommandPrefix = "badblocks -w -e 300 -b 4096 -t random %s"
-
 	// This parameter represents the configuration for minimum number
 	// of child servo devices to be verified-for.
 	topologyMinChildArg = "min_child"
@@ -153,86 +144,6 @@ func servodCreateFlagToUseRecoveryModeExec(ctx context.Context, info *execs.Exec
 	flagPath := filepath.Join(logRoot, servodUseRecoveryModeFlag)
 	err := exec.CommandContext(ctx, "touch", flagPath).Run()
 	return errors.Annotate(err, "servod create flag to use recovery-mode").Err()
-}
-
-func runCheckOnHost(ctx context.Context, run execs.Runner, usbPath string, timeout time.Duration) (tlw.HardwareState, error) {
-	command := fmt.Sprintf(badBlocksCommandPrefix, usbPath)
-	log.Debugf(ctx, "Run Check On Host: Executing %q", command)
-	// The execution timeout for this audit job is configured at the
-	// level of the action. So the execution of this command will be
-	// bound by that.
-	out, err := run(ctx, timeout, command)
-	switch {
-	case err == nil:
-		// TODO(vkjoshi@): recheck if this is required, or does stderr need to be examined.
-		if len(out) > 0 {
-			return tlw.HardwareState_HARDWARE_NEED_REPLACEMENT, nil
-		}
-		return tlw.HardwareState_HARDWARE_NORMAL, nil
-	case execs.SSHErrorLinuxTimeout.In(err): // 124 timeout
-		fallthrough
-	case execs.SSHErrorCLINotFound.In(err): // 127 badblocks
-		return tlw.HardwareState_HARDWARE_UNSPECIFIED, errors.Annotate(err, "run check on host: could not successfully complete check").Err()
-	default:
-		return tlw.HardwareState_HARDWARE_NEED_REPLACEMENT, nil
-	}
-}
-
-func servoAuditUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
-	sh := info.GetChromeos().GetServo()
-	if sh.GetName() == "" {
-		return errors.Reason("servo audit usb key: servo is not present as part of dut info").Err()
-	}
-	dutUsb := ""
-	dutRunner := info.NewRunner(info.GetDut().Name)
-	if components_cros.IsSSHable(ctx, dutRunner, components_cros.DefaultSSHTimeout) == nil {
-		log.Debugf(ctx, "Servo Audit USB-Key Exec: %q is reachable through SSH", info.GetDut().Name)
-		var err error = nil
-		dutUsb, err = GetUSBDrivePathOnDut(ctx, dutRunner, info.NewServod())
-		if err != nil {
-			log.Debugf(ctx, "Servo Audit USB-Key Exec: could not determine USB-drive path on DUT: %q, error: %q. This is not critical. We will continue the audit by setting the path to empty string.", info.GetDut().Name, err)
-		}
-	} else {
-		log.Debugf(ctx, "Servo Audit USB-Key Exec: continue audit from servo-host because DUT %q is not reachable through SSH", info.GetDut().Name)
-	}
-	if dutUsb != "" {
-		// DUT is reachable, and we found a USB drive on it.
-		state, err := runCheckOnHost(ctx, dutRunner, dutUsb, 2*time.Hour)
-		if err != nil {
-			return errors.Reason("servo audit usb key exec: could not check DUT usb path %q", dutUsb).Err()
-		}
-		sh.UsbkeyState = state
-	} else {
-		// Either the DUT is not reachable, or it does not have a USB
-		// drive attached to it.
-
-		// This statement obtains the path of usb drive on
-		// servo-host. It also switches the USB drive on servo
-		// multiplexer to servo-host.
-		servoUsbPath, err := servodGetString(ctx, info.NewServod(), "image_usbkey_dev")
-		if err != nil {
-			// A dependency has already checked that the Servo USB is
-			// available. But here we again check that no errors
-			// occurred while determining USB path, in case something
-			// changed between execution of dependency, and this
-			// operation.
-			sh.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
-			return errors.Annotate(err, "servo audit usb key exec: could not obtain usb path on servo: %q", err).Err()
-		}
-		servoUsbPath = strings.TrimSpace(servoUsbPath)
-		if servoUsbPath == "" {
-			sh.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
-			log.Debugf(ctx, "Servo Audit USB-Key Exec: cannot continue audit because the path to USB-Drive is empty")
-			return errors.Reason("servo audit usb key exec: the path to usb drive is empty").Err()
-		}
-		state, err := runCheckOnHost(ctx, info.NewRunner(sh.GetName()), servoUsbPath, 2*time.Hour)
-		if err != nil {
-			log.Debugf(ctx, "Servo Audit USB-Key Exec: error %q during audit of USB-Drive", err)
-			return errors.Annotate(err, "servo audit usb key: could not check usb path %q on servo-host %q", servoUsbPath, info.GetChromeos().GetServo().GetName()).Err()
-		}
-		sh.UsbkeyState = state
-	}
-	return nil
 }
 
 // Verify that the root servo is enumerated/present on the host.
@@ -393,6 +304,12 @@ func servoSetExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	return nil
 }
+
+const (
+	// This is the servod control for obtaining ppdut5 bsus voltage in
+	// millivolts.
+	servodPPDut5Cmd = "ppdut5_mv"
+)
 
 // Verify that the DUT is connected to Servo using the 'ppdut5_mv'
 // servod control.
@@ -837,7 +754,6 @@ func init() {
 	execs.Register("servo_host_servod_init", servodInitActionExec)
 	execs.Register("servo_host_servod_stop", servodStopActionExec)
 	execs.Register("servo_create_flag_to_use_recovery_mode", servodCreateFlagToUseRecoveryModeExec)
-	execs.Register("servo_audit_usbkey", servoAuditUSBKeyExec)
 	execs.Register("servo_v4_root_present", isRootServoPresentExec)
 	execs.Register("servo_topology_update", servoTopologyUpdateExec)
 	execs.Register("servo_servod_echo_host", servoServodEchoHostExec)
