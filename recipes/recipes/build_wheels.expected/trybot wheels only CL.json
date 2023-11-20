@@ -319,10 +319,6 @@
       "HEAD~"
     ],
     "cwd": "[CACHE]/builder/build_wheels/infra",
-    "env": {
-      "DISTUTILS_USE_SDK": "1",
-      "MSSdk": "1"
-    },
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -346,10 +342,6 @@
       "wheel-json"
     ],
     "cwd": "[CACHE]/builder/build_wheels/infra",
-    "env": {
-      "DISTUTILS_USE_SDK": "1",
-      "MSSdk": "1"
-    },
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -387,10 +379,6 @@
       "HEAD"
     ],
     "cwd": "[CACHE]/builder/build_wheels/infra",
-    "env": {
-      "DISTUTILS_USE_SDK": "1",
-      "MSSdk": "1"
-    },
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -413,10 +401,6 @@
       "HEAD~"
     ],
     "cwd": "[CACHE]/builder/build_wheels/infra",
-    "env": {
-      "DISTUTILS_USE_SDK": "1",
-      "MSSdk": "1"
-    },
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -440,10 +424,6 @@
       "wheel-json"
     ],
     "cwd": "[CACHE]/builder/build_wheels/infra",
-    "env": {
-      "DISTUTILS_USE_SDK": "1",
-      "MSSdk": "1"
-    },
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -481,10 +461,6 @@
       ""
     ],
     "cwd": "[CACHE]/builder/build_wheels/infra",
-    "env": {
-      "DISTUTILS_USE_SDK": "1",
-      "MSSdk": "1"
-    },
     "infra_step": true,
     "luci_context": {
       "realm": {

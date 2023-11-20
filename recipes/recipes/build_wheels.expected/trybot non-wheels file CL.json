@@ -319,10 +319,6 @@
       "HEAD~"
     ],
     "cwd": "[CACHE]/builder/build_wheels/infra",
-    "env": {
-      "DISTUTILS_USE_SDK": "1",
-      "MSSdk": "1"
-    },
     "infra_step": true,
     "luci_context": {
       "realm": {

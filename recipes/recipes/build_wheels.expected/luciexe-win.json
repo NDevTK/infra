@@ -165,6 +165,7 @@
       "-json-output",
       "/path/to/tmp/json"
     ],
+    "cwd": "[CACHE]\\builder\\build_wheels\\infra",
     "infra_step": true,
     "name": "ensure_installed",
     "~followup_annotations": [
@@ -192,6 +193,7 @@
       "--output_json",
       "/path/to/tmp/json"
     ],
+    "cwd": "[CACHE]\\builder\\build_wheels\\infra",
     "name": "read SetEnv json",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
@@ -406,6 +408,7 @@
       "/im",
       "mspdbsrv.exe"
     ],
+    "cwd": "[CACHE]\\builder\\build_wheels\\infra",
     "name": "taskkill mspdbsrv"
   },
   {

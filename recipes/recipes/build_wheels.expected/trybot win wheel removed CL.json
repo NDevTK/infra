@@ -3,13 +3,13 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
       "0777",
-      "[CACHE]/builder/build_wheels"
+      "[CACHE]\\builder\\build_wheels"
     ],
     "infra_step": true,
     "luci_context": {
@@ -30,10 +30,10 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]/gclient.py",
+      "RECIPE_REPO[depot_tools]\\gclient.py",
       "verify"
     ],
-    "cwd": "[CACHE]/builder/build_wheels",
+    "cwd": "[CACHE]\\builder\\build_wheels",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/try/builder/8945511751514863184"
     },
@@ -60,7 +60,7 @@
   {
     "cmd": [
       "vpython3",
-      "RECIPE_REPO[depot_tools]/gerrit_client.py",
+      "RECIPE_REPO[depot_tools]\\gerrit_client.py",
       "changes",
       "--verbose",
       "--host",
@@ -77,7 +77,7 @@
       "DOWNLOAD_COMMANDS"
     ],
     "env": {
-      "PATH": "<PATH>:RECIPE_REPO[depot_tools]"
+      "PATH": "<PATH>;RECIPE_REPO[depot_tools]"
     },
     "infra_step": true,
     "luci_context": {
@@ -116,12 +116,12 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]/gclient.py",
+      "RECIPE_REPO[depot_tools]\\gclient.py",
       "config",
       "--spec",
-      "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': True, 'name': '.', 'url': 'https://chromium.googlesource.com/infra/infra_superproject.git'}]"
+      "cache_dir = '[CACHE]\\\\git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': True, 'name': '.', 'url': 'https://chromium.googlesource.com/infra/infra_superproject.git'}]"
     ],
-    "cwd": "[CACHE]/builder/build_wheels",
+    "cwd": "[CACHE]\\builder\\build_wheels",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/try/builder/8945511751514863184"
     },
@@ -150,11 +150,11 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]/gclient.py",
+      "RECIPE_REPO[depot_tools]\\gclient.py",
       "sync",
       "--verbose",
       "--nohooks",
-      "-j8",
+      "-j2",
       "--reset",
       "--force",
       "--upstream",
@@ -167,7 +167,7 @@
       "--output-json",
       "/path/to/tmp/json"
     ],
-    "cwd": "[CACHE]/builder/build_wheels",
+    "cwd": "[CACHE]\\builder\\build_wheels",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/try/builder/8945511751514863184"
     },
@@ -211,14 +211,14 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]/gclient.py",
+      "RECIPE_REPO[depot_tools]\\gclient.py",
       "recurse",
       "git",
       "config",
       "user.name",
       "local_bot"
     ],
-    "cwd": "[CACHE]/builder/build_wheels",
+    "cwd": "[CACHE]\\builder\\build_wheels",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/try/builder/8945511751514863184"
     },
@@ -247,14 +247,14 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]/gclient.py",
+      "RECIPE_REPO[depot_tools]\\gclient.py",
       "recurse",
       "git",
       "config",
       "user.email",
       "local_bot@example.com"
     ],
-    "cwd": "[CACHE]/builder/build_wheels",
+    "cwd": "[CACHE]\\builder\\build_wheels",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/try/builder/8945511751514863184"
     },
@@ -283,10 +283,10 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]/gclient.py",
+      "RECIPE_REPO[depot_tools]\\gclient.py",
       "runhooks"
     ],
-    "cwd": "[CACHE]/builder/build_wheels",
+    "cwd": "[CACHE]\\builder\\build_wheels",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/try/builder/8945511751514863184"
     },
@@ -318,7 +318,7 @@
       "--name-only",
       "HEAD~"
     ],
-    "cwd": "[CACHE]/builder/build_wheels/infra",
+    "cwd": "[CACHE]\\builder\\build_wheels\\infra",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -341,7 +341,7 @@
       "infra.tools.dockerbuild",
       "wheel-json"
     ],
-    "cwd": "[CACHE]/builder/build_wheels/infra",
+    "cwd": "[CACHE]\\builder\\build_wheels\\infra",
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -366,7 +366,7 @@
       "rev-parse",
       "HEAD"
     ],
-    "cwd": "[CACHE]/builder/build_wheels/infra",
+    "cwd": "[CACHE]\\builder\\build_wheels\\infra",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -388,7 +388,7 @@
       "checkout",
       "HEAD~"
     ],
-    "cwd": "[CACHE]/builder/build_wheels/infra",
+    "cwd": "[CACHE]\\builder\\build_wheels\\infra",
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -411,7 +411,7 @@
       "infra.tools.dockerbuild",
       "wheel-json"
     ],
-    "cwd": "[CACHE]/builder/build_wheels/infra",
+    "cwd": "[CACHE]\\builder\\build_wheels\\infra",
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -448,7 +448,7 @@
       "checkout",
       ""
     ],
-    "cwd": "[CACHE]/builder/build_wheels/infra",
+    "cwd": "[CACHE]\\builder\\build_wheels\\infra",
     "infra_step": true,
     "luci_context": {
       "realm": {

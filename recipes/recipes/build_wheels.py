@@ -94,16 +94,8 @@ def RunSteps(api, platforms, dry_run, rebuild, experimental,
                                            'infra@%s' % ref])
     api.gclient.runhooks()
 
-  # DISTUTILS_USE_SDK and MSSdk are necessary for distutils to correctly locate
-  # MSVC on Windows. They do nothing on other platforms, so we just set them
-  # unconditionally.
-  with PlatformSdk(api, platforms), api.context(
-      cwd=solution_path.join('infra'),
-      env={
-          'DISTUTILS_USE_SDK': '1',
-          'MSSdk': '1',
-      }):
-    wheels = None
+  wheels = None
+  with api.context(cwd=solution_path.join('infra')):
     if api.tryserver.is_tryserver:
       files = api.git(
           '-c',
@@ -150,63 +142,70 @@ def RunSteps(api, platforms, dry_run, rebuild, experimental,
               tag += '-' + '.'.join(sorted(spec['pyversions']))
             wheels.append(tag)
 
-    temp_path = api.path.mkdtemp('.dockerbuild')
-    args = [
-        '--root',
-        temp_path,
-    ]
-    if not dry_run:
-      args.append('--upload-sources')
-    args.append('wheel-build')
-    if not dry_run:
-      args.append('--upload')
+    # If this is a wheel config-only change, but there are no new or changed
+    # wheels, then don't bother running dockerbuild. This is the case if
+    # there's a non-functional change in wheels.py, or if we removed wheels.
+    if wheels == []:
+      return
 
-    if rebuild:
-      args.append('--rebuild')
+    # DISTUTILS_USE_SDK and MSSdk are necessary for distutils to correctly
+    # locate MSVC on Windows. They do nothing on other platforms, so we just
+    # set them unconditionally.
+    with PlatformSdk(api, platforms), api.context(env={
+        'DISTUTILS_USE_SDK': '1',
+        'MSSdk': '1',
+    }):
+      temp_path = api.path.mkdtemp('.dockerbuild')
+      args = [
+          '--root',
+          temp_path,
+      ]
+      if not dry_run:
+        args.append('--upload-sources')
+      args.append('wheel-build')
+      if not dry_run:
+        args.append('--upload')
 
-    for p in platforms:
-      args.extend(['--platform', p])
+      if rebuild:
+        args.append('--rebuild')
 
-    if wheels is not None:
-      # If this is a wheel config-only change, but there are no new or changed
-      # wheels, then don't bother running dockerbuild. This is the case if
-      # there's a non-functional change in wheels.py, or if we removed wheels.
-      if wheels == []:
-        return
+      for p in platforms:
+        args.extend(['--platform', p])
 
-      for wheel in wheels:
-        args.extend(['--wheel', wheel])
+      if wheels is not None:
+        for wheel in wheels:
+          args.extend(['--wheel', wheel])
 
-    if experimental:
-      go_version_file_path = solution_path.join("infra", "go", "src",
-                                                "go.chromium.org", "luci",
-                                                "build", "GO_VERSION")
-      # Ensures latest golang version is available in the environment.
-      with api.buildenv(
-          solution_path, go_version_file=str(go_version_file_path)):
-        # We build the binary rather than directly running the script as luciexe
-        # inserts an --output flag after the first command-line space-separated
-        # word i.e. `go run` -> `go --output ...`
-        go_path = solution_path.join('infra', 'go', 'src', 'infra')
-        build_path = go_path.join("experimental", "buildwheel")
+      if experimental:
+        go_version_file_path = solution_path.join("infra", "go", "src",
+                                                  "go.chromium.org", "luci",
+                                                  "build", "GO_VERSION")
+        # Ensures latest golang version is available in the environment.
+        with api.buildenv(
+            solution_path, go_version_file=str(go_version_file_path)):
+          # We build the binary rather than directly running the script as
+          # luciexe inserts an --output flag after the first command-line
+          # space-separated word i.e. `go run` -> `go --output ...`
+          go_path = solution_path.join('infra', 'go', 'src', 'infra')
+          build_path = go_path.join("experimental", "buildwheel")
 
-        go_exe = 'buildwheel.exe' if api.platform.is_win else 'buildwheel'
-        luciexe_binary_path = api.path.mkdtemp('.goexe').join(go_exe)
+          go_exe = 'buildwheel.exe' if api.platform.is_win else 'buildwheel'
+          luciexe_binary_path = api.path.mkdtemp('.goexe').join(go_exe)
 
-        with api.context(cwd=go_path):
-          api.step('build go build_wheel binary',
-                   ['go', 'build', '-o', luciexe_binary_path, build_path])
+          with api.context(cwd=go_path):
+            api.step('build go build_wheel binary',
+                     ['go', 'build', '-o', luciexe_binary_path, build_path])
 
-        with api.context(cwd=solution_path.join('infra')):
-          api.step.sub_build(
-              'launch luciexe binary for dockerbuild',
-              [luciexe_binary_path] + ['--'] + args,
-              api.buildbucket.build,
-              output_path=api.path['cleanup'].join('build.json'))
+          with api.context(cwd=solution_path.join('infra')):
+            api.step.sub_build(
+                'launch luciexe binary for dockerbuild',
+                [luciexe_binary_path] + ['--'] + args,
+                api.buildbucket.build,
+                output_path=api.path['cleanup'].join('build.json'))
 
-    else:
-      api.step('dockerbuild',
-               ['vpython3', '-m', 'infra.tools.dockerbuild'] + args)
+      else:
+        api.step('dockerbuild',
+                 ['vpython3', '-m', 'infra.tools.dockerbuild'] + args)
 
 
 @contextmanager
@@ -335,6 +334,28 @@ def GenTests(api):
   yield api.test(
       'trybot wheel removed CL',
       api.properties(dry_run=True, rebuild=True) +
+      api.buildbucket.try_build('infra') +
+      api.tryserver.gerrit_change_target_ref('refs/branch-heads/foo') +
+      api.override_step_data(
+          'git diff to find changed files',
+          stdout=api.raw_io.output_text('infra/tools/dockerbuild/wheels.py')) +
+      api.override_step_data(
+          'compute old wheels.json',
+          stdout=api.json.output([{
+              "spec": {
+                  "name": "old-wheel",
+                  "patch_version": None,
+                  "pyversions": ["py3"],
+                  "version": "3.2.0",
+                  "version_suffix": None,
+              }
+          }])) + api.override_step_data(
+              'compute new wheels.json', stdout=api.json.output([])))
+
+  yield api.test(
+      'trybot win wheel removed CL',
+      api.platform('win', 64) + api.properties(
+          dry_run=True, rebuild=True, platforms=['windows-x64-py3']) +
       api.buildbucket.try_build('infra') +
       api.tryserver.gerrit_change_target_ref('refs/branch-heads/foo') +
       api.override_step_data(
