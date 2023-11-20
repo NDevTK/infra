@@ -2052,6 +2052,18 @@ wheel: <
 
 * *universal*
 
+### 0.3.7
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/dill-py3"
+  version: "version:0.3.7"
+>
+```
+
+
+* *universal*
+
 ## **distlib-py3**
 
 ### 0.3.0

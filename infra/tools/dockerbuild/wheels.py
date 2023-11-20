@@ -1762,6 +1762,7 @@ SPECS.update({
         Universal('deprecated', '1.2.13', pyversions=['py3']),
         Universal('deprecation', '2.1.0'),
         Universal('dill', '0.3.4', pyversions=['py3']),
+        Universal('dill', '0.3.7', pyversions=['py3']),
         Universal('docker', '2.7.0'),
         Universal('docker', '5.0.0'),
         Universal('docker-pycreds', '0.2.1'),
