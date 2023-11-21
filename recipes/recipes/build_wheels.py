@@ -91,7 +91,16 @@ def RunSteps(api, platforms, dry_run, rebuild):
           stdout=api.raw_io.output_text()).stdout.split()
       assert (files != [])
       # Avoid rebuilding everything if only the wheel specs have changed.
-      if all(api.path.basename(p) in {'wheels.py', 'wheels.md'} for p in files):
+      wheel_only_change = True
+      for p in files:
+        dirname, basename = api.path.split(p)
+        if (basename not in {'wheels.py', 'wheels.md'} and
+            # Patch changes will be accompanied by changes to the affected
+            # wheel version, so we don't need to force a full rebuild.
+            dirname != 'infra/tools/dockerbuild/patches'):
+          wheel_only_change = False
+          break
+      if wheel_only_change:
         run_wheel_json = lambda step_name: \
           api.step(step_name,
                    ['vpython3', '-m', 'infra.tools.dockerbuild', 'wheel-json'],
@@ -254,6 +263,39 @@ def GenTests(api):
                   "spec": {
                       "name": "entirely-new",
                       "patch_version": 'chromium.1',
+                      "pyversions": ["py3"],
+                      "version": "3.3.0",
+                      "version_suffix": ".chromium.1",
+                  }
+              }])))
+
+  yield api.test(
+      'trybot wheels only CL with patches',
+      api.properties(dry_run=True, rebuild=True) +
+      api.buildbucket.try_build('infra') +
+      api.tryserver.gerrit_change_target_ref('refs/branch-heads/foo') +
+      api.override_step_data(
+          'git diff to find changed files',
+          stdout=api.raw_io.output_text(
+              'infra/tools/dockerbuild/wheels.py\n' +
+              'infra/tools/dockerbuild/patches/entirely-new-3.3.0-fix.patch')) +
+      api.override_step_data(
+          'compute old wheels.json',
+          stdout=api.json.output([{
+              "spec": {
+                  "name": "old-wheel",
+                  "patch_version": None,
+                  "pyversions": ["py3"],
+                  "version": "3.2.0",
+                  "version_suffix": None,
+              }
+          }])) + api.override_step_data(
+              'compute new wheels.json',
+              stdout=api.json.output([{
+                  "spec": {
+                      "name": "entirely-new",
+                      "patch_version": 'chromium.1',
+                      "patches": ['fix'],
                       "pyversions": ["py3"],
                       "version": "3.3.0",
                       "version_suffix": ".chromium.1",

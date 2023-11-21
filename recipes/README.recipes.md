@@ -1510,7 +1510,7 @@ This recipe builds and packages third party software, such as Git.
 [DEPS](/recipes/recipes/build_wheels.py#17): [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [depot\_tools/windows\_sdk][depot_tools/recipe_modules/windows_sdk], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&emsp; **@contextmanager**<br>&mdash; **def [PlatformSdk](/recipes/recipes/build_wheels.py#167)(api, platforms):**
+&emsp; **@contextmanager**<br>&mdash; **def [PlatformSdk](/recipes/recipes/build_wheels.py#176)(api, platforms):**
 
 &mdash; **def [RunSteps](/recipes/recipes/build_wheels.py#60)(api, platforms, dry_run, rebuild):**
 ### *recipes* / [buildenv:examples/simple](/recipes/recipe_modules/buildenv/examples/simple.py)
