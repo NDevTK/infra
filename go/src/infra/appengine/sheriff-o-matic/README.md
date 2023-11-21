@@ -76,8 +76,10 @@ checkout.)
 
 To run locally from an infra.git checkout:
 ```sh
-make devserver
+make devserver_default
 ```
+
+(Note that issue tracker endpoint will return 403 in localhost frontend. Because the access token returned by local server is a fake token, thus the call can't be authorized.)
 
 To run tests:
 ```sh

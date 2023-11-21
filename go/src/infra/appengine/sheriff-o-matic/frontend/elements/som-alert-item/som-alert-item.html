@@ -9,7 +9,6 @@
 <link rel="import" href="../../elements/som-extension-build-failure/som-extension-build-failure.html">
 <link rel="import" href="../../elements/som-alert-type-behavior.html">
 <link rel="import" href="../../elements/som-time-behavior.html">
-<link rel="import" href="../../elements/som-bug-manager-behavior.html">
 
 <script src="../../bower_components/moment/min/moment.min.js"></script>
 <script src="../../bower_components/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
@@ -123,16 +122,6 @@
        padding-right: 16px;
        font-size: smaller;
      }
-     #bugsList .bug {
-       font-size: 0.8em;
-       background: #eee;
-       border-radius: 16px;
-       padding: 1px 2px 1px 4px;
-       display: inline-block;
-       margin: 0 2px;
-       white-space: nowrap;
-       overflow: hidden;
-     }
      #bugsList iron-icon {
        color: #666;
        padding: 0;
@@ -237,17 +226,7 @@
           </div>
           <div id="bugsList" hidden$="[[!_bugs.length]]" class="alert-links">
             <template is="dom-repeat" items="[[_bugs]]" as="bug">
-              <div class="bug no-toggle">
-                <template is="dom-if" if="[[!_isBuganizer(bug)]]">
-                  <a target="_blank" href="https://crbug.com/[[bug.projectId]]/[[bug.id]]">Bug [[bug.id]]</a>
-                  [[bug.summary]]
-                  <em class="bug-status" hidden$="[[!bug.status]]">([[bug.status]])</em>
-                </template>
-                <template is="dom-if" if="[[_isBuganizer(bug)}}">
-                  <a target="_blank" href="https://issuetracker.google.com/issues/[[bug.id]]">Bug b/[[bug.id]]</a>
-                </template>
-                <iron-icon icon="close" title="Remove" id="remove[[index]]" on-tap="_removeBug"></iron-icon>
-              </div>
+              <som-bug-chip bug="[[bug]]" on-remove-pressed="_removeBug"></som-bug-chip>
             </template>
           </div>
         </div>

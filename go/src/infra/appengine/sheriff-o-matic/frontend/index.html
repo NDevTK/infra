@@ -59,6 +59,15 @@ function loadNonVulcanized() {
 
 crdx('setFeedbackButtonLink', 'https://goto.google.com/som-bug');
 </script>
+<script async defer src="https://apis.google.com/js/api.js" onload="gapiLoad()"></script>
+<script>
+  // Load GAPI client.
+  function gapiLoad(){
+    gapi.load('client', function(){
+      gapi.client.init({})
+    })
+  }
+</script>
 {{if not .IsDevAppServer}}
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-C1Y4CCPNP9"></script>

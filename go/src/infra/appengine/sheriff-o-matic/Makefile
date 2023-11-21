@@ -58,7 +58,7 @@ deploy_prod: build
 	$(GAE_PY) upload -A sheriff-o-matic --app-dir . default analyzer
 
 devserver_default:
-	cd frontend && go run main.go -cloud-project sheriff-o-matic-staging
+	cd frontend && go run main.go -cloud-project sheriff-o-matic-staging -http-addr localhost:8080 -encrypted-cookies-expose-state-endpoint
 
 # TODO(mwarton): devserver_analyze
 

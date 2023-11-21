@@ -35,6 +35,12 @@ class SomAlertItem extends Polymer.mixinBehaviors(
    */
 
   /**
+   * Fired when an alert requests that the remove bug dialog be shown.
+   *
+   * @event remove-bug
+   */
+
+  /**
    * Fired when an alert has an annotation change that needs to be sent to the
    * server.
    *
@@ -205,10 +211,6 @@ class SomAlertItem extends Polymer.mixinBehaviors(
     return alert && !!alert.grouped;
   }
 
-  _isBuganizer(bug) {
-    return bug.projectId === 'b';
-  }
-
   _linkBug(evt) {
     this.dispatchEvent(new CustomEvent('link-bug', {
       bubbles: true,
@@ -239,14 +241,8 @@ class SomAlertItem extends Polymer.mixinBehaviors(
   }
 
   _removeBug(evt) {
-    let bug = evt.model.bug;
     this.dispatchEvent(new CustomEvent('remove-bug', {
-      detail: {
-        bug: String(bug.id),
-        summary: bug.summary,
-        project: String(bug.projectId),
-        url: 'https://crbug.com/' + bug.projectId + '/' + bug.id,
-      },
+      detail: evt.detail,
       bubbles: true,
       composed: true,
     }));

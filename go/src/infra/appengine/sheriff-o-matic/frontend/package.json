@@ -22,6 +22,7 @@
   "devDependencies": {
     "@chopsui/wct-runner": "0.0.1",
     "@types/react": "^17.0.40",
+    "@types/gapi": "^0.0.47",
     "@types/react-dom": "^17.0.13",
     "bower": "^1.8.10",
     "esbuild": "^0.14.42",
