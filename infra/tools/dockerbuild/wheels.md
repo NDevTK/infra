@@ -1385,6 +1385,18 @@ wheel: <
 
 * *universal*
 
+### 5.3.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/cachetools-py3"
+  version: "version:5.3.2"
+>
+```
+
+
+* *universal*
+
 ## **cbor2**
 
 ### 5.4.3
@@ -1506,6 +1518,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/certifi-py3"
   version: "version:2023.7.22"
+>
+```
+
+
+* *universal*
+
+### 2023.11.17
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/certifi-py3"
+  version: "version:2023.11.17"
 >
 ```
 
@@ -1637,6 +1661,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/charset_normalizer-py3"
   version: "version:3.1.0"
+>
+```
+
+
+* *universal*
+
+### 3.3.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/charset_normalizer-py3"
+  version: "version:3.3.2"
 >
 ```
 
@@ -2758,6 +2794,18 @@ wheel: <
 
 * *universal*
 
+### 2.14.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-api-core-py3"
+  version: "version:2.14.0"
+>
+```
+
+
+* *universal*
+
 ## **google-api-python-client**
 
 ### 1.6.2
@@ -2854,6 +2902,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-auth-py2_py3"
   version: "version:1.35.0"
+>
+```
+
+
+* *universal*
+
+### 2.23.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-auth-py2_py3"
+  version: "version:2.23.4"
 >
 ```
 
@@ -3096,6 +3156,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-cloud-core-py3"
   version: "version:2.2.2"
+>
+```
+
+
+* *universal*
+
+### 2.3.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-core-py3"
+  version: "version:2.3.3"
 >
 ```
 
@@ -3346,6 +3418,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-cloud-spanner-py2_py3"
   version: "version:0.29.0"
+>
+```
+
+
+* *universal*
+
+### 3.40.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-spanner-py2_py3"
+  version: "version:3.40.1"
 >
 ```
 
@@ -3650,6 +3734,18 @@ wheel: <
 
 * *universal*
 
+### 1.61.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/googleapis-common-protos-py2_py3"
+  version: "version:1.61.0"
+>
+```
+
+
+* *universal*
+
 ## **greenlet**
 
 ### 0.4.15.chromium.1
@@ -3778,6 +3874,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/grpc-google-iam-v1-py2_py3"
   version: "version:0.11.4"
+>
+```
+
+
+* *universal*
+
+### 0.12.7
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/grpc-google-iam-v1-py2_py3"
+  version: "version:0.12.7"
 >
 ```
 
@@ -3952,6 +4060,18 @@ wheel: <
 
 * *universal*
 
+### 1.59.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/grpcio-status-py3"
+  version: "version:1.59.3"
+>
+```
+
+
+* *universal*
+
 ## **grpcio-tools**
 
 ### 1.32.0
@@ -3983,6 +4103,29 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
+* *windows-x86-py3.8*
+
+### 1.59.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/grpcio-tools/${vpython_platform}"
+  version: "version:1.59.3"
+>
+```
+
+
+* *linux-arm64-py3.11*
+* *linux-armv6-py3.11*
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
+* *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **gunicorn-py3**
@@ -6577,6 +6720,18 @@ wheel: <
 
 * *universal*
 
+### 1.22.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/proto-plus-py3"
+  version: "version:1.22.3"
+>
+```
+
+
+* *universal*
+
 ## **protobuf**
 
 ### 3.2.0
@@ -6767,6 +6922,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/protobuf-py3"
   version: "version:4.24.2"
+>
+```
+
+
+* *universal*
+
+### 4.25.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/protobuf-py3"
+  version: "version:4.25.1"
 >
 ```
 
@@ -6997,6 +7164,18 @@ wheel: <
 
 * *universal*
 
+### 0.5.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyasn1-py2_py3"
+  version: "version:0.5.1"
+>
+```
+
+
+* *universal*
+
 ## **pyasn1_modules**
 
 ### 0.0.8
@@ -7029,6 +7208,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pyasn1_modules-py2_py3"
   version: "version:0.2.8"
+>
+```
+
+
+* *universal*
+
+### 0.3.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyasn1_modules-py2_py3"
+  version: "version:0.3.0"
 >
 ```
 
@@ -8496,6 +8687,18 @@ wheel: <
 
 * *universal*
 
+### 4.9.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/rsa-py3"
+  version: "version:4.9.0"
+>
+```
+
+
+* *universal*
+
 ## **ruamel.yaml-py3**
 
 ### 0.17.16
@@ -8951,6 +9154,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/spdx-tools-py3"
   version: "version:0.8.0"
+>
+```
+
+
+* *universal*
+
+## **sqlparse-py3**
+
+### 0.4.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/sqlparse-py3"
+  version: "version:0.4.4"
 >
 ```
 
@@ -9811,6 +10028,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/urllib3-py3"
   version: "version:2.0.3"
+>
+```
+
+
+* *universal*
+
+### 2.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/urllib3-py3"
+  version: "version:2.1.0"
 >
 ```
 
