@@ -4,6 +4,7 @@
 package executor
 
 import (
+	"fmt"
 	"log"
 	"os/exec"
 	"time"
@@ -23,7 +24,11 @@ type IExecCommander interface {
 type ExecCommander struct{}
 
 func (e *ExecCommander) Exec(cmd *exec.Cmd) ([]byte, error) {
-	return cmd.Output()
+	s, err := cmd.CombinedOutput()
+	if err != nil {
+		return s, fmt.Errorf("%w: %s", err, string(s[:]))
+	}
+	return s, err
 }
 
 func (e *ExecCommander) Start(cmd *exec.Cmd) error {
