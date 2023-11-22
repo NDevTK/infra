@@ -17,6 +17,7 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/luciexe/build"
 	resultdbpb "go.chromium.org/luci/resultdb/proto/v1"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -194,6 +195,9 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 		Properties:    &structpb.Struct{},
 		Experiments:   map[string]bool{},
 		Priority:      spec.priority,
+		Exe: &bbpb.Executable{
+			CipdVersion: spec.golangbuildVersion,
+		},
 	}
 	if spec.invokedSrc.change != nil {
 		buildReq.GerritChanges = []*bbpb.GerritChange{spec.invokedSrc.change}
@@ -233,13 +237,24 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 		return nil, err
 	}
 
-	// Unmarshal the output as a bbpb.Build.
-	var build bbpb.Build
-	if err := protojson.Unmarshal(out, &build); err != nil {
+	// Handle the response. bb batch always succeeds and returns a batch reponse.
+	batchResp := &bbpb.BatchResponse{}
+	if err := protojson.Unmarshal(out, batchResp); err != nil {
 		return nil, infraWrap(err)
 	}
-	step.SetSummaryMarkdown(fmt.Sprintf(`[build link](https://ci.chromium.org/b/%d)`, build.Id))
-	return &build, nil
+	if len(batchResp.Responses) != 1 {
+		return nil, infraErrorf("unexpected response count %v", len(batchResp.Responses))
+	}
+	switch resp := batchResp.Responses[0].Response.(type) {
+	case *bbpb.BatchResponse_Response_Error:
+		return nil, infraWrap(status.ErrorProto(resp.Error))
+	case *bbpb.BatchResponse_Response_ScheduleBuild:
+		build := resp.ScheduleBuild
+		step.SetSummaryMarkdown(fmt.Sprintf(`[build link](https://ci.chromium.org/b/%d)`, build.Id))
+		return build, nil
+	default:
+		return nil, infraErrorf("unexpected batch request result type %T", resp)
+	}
 }
 
 // includeResultDBInvocations includes the provided ResultDB invocation IDs in the

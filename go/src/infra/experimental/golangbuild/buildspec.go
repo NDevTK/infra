@@ -33,14 +33,15 @@ import (
 type buildSpec struct {
 	auth *auth.Authenticator
 
-	builderName string
-	workdir     string
-	goroot      string
-	gopath      string
-	gocacheDir  string
-	toolsRoot   string
-	casInstance string
-	priority    int32
+	builderName        string
+	workdir            string
+	goroot             string
+	gopath             string
+	gocacheDir         string
+	toolsRoot          string
+	casInstance        string
+	priority           int32
+	golangbuildVersion string
 
 	inputs *golangbuildpb.Inputs
 
@@ -182,21 +183,22 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 	}
 
 	return &buildSpec{
-		auth:        authenticator,
-		builderName: st.Build().GetBuilder().GetBuilder(),
-		workdir:     cwd,
-		goroot:      filepath.Join(cwd, "goroot"),
-		gopath:      filepath.Join(cwd, "gopath"),
-		gocacheDir:  filepath.Join(cwd, "gocache"),
-		toolsRoot:   toolsRoot,
-		casInstance: casInst,
-		priority:    st.Build().GetInfra().GetSwarming().GetPriority(),
-		inputs:      inputs,
-		invocation:  st.Build().GetInfra().GetResultdb().GetInvocation(),
-		goSrc:       goSrc,
-		subrepoSrc:  subrepoSrc,
-		invokedSrc:  invokedSrc,
-		experiments: experiments,
+		auth:               authenticator,
+		builderName:        st.Build().GetBuilder().GetBuilder(),
+		workdir:            cwd,
+		goroot:             filepath.Join(cwd, "goroot"),
+		gopath:             filepath.Join(cwd, "gopath"),
+		gocacheDir:         filepath.Join(cwd, "gocache"),
+		toolsRoot:          toolsRoot,
+		casInstance:        casInst,
+		priority:           st.Build().GetInfra().GetSwarming().GetPriority(),
+		golangbuildVersion: st.Build().GetExe().GetCipdVersion(),
+		inputs:             inputs,
+		invocation:         st.Build().GetInfra().GetResultdb().GetInvocation(),
+		goSrc:              goSrc,
+		subrepoSrc:         subrepoSrc,
+		invokedSrc:         invokedSrc,
+		experiments:        experiments,
 	}, nil
 }
 
