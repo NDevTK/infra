@@ -226,7 +226,7 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 		}
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, ccPath))
 	}
-	if b.inputs.Target.Goos == "wasm" {
+	if b.inputs.Target.Goarch == "wasm" {
 		// Add go_*_wasm_exec and the appropriate Wasm runtime to PATH.
 		env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.goroot, "misc/wasm"), os.PathListSeparator, env.Get("PATH")))
 		switch {
