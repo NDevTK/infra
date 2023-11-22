@@ -53,6 +53,8 @@ func crosRepairCriticalActions(skipRepairFailState bool) []string {
 		"Login UI is up",
 		"Can list RW VPD Keys",
 		"Verify keys of RW_VPD",
+		"Set VPD region:us",
+		"Check VPD has value for stable_device_secret_DO_NOT_SHARE",
 		"Verify RO_VPD sku_number",
 		"Verify RO_VPD dsm_calib",
 		"Verify RO_VPD data on DUT",
@@ -801,6 +803,33 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"Set VPD region:us": {
+			Docs: []string{
+				"Set VPD region as us.",
+			},
+			Conditions: []string{
+				"Is a Chromebook",
+			},
+			ExecName: "cros_set_vpd_value",
+			ExecExtraArgs: []string{
+				"key:region",
+				"value:us",
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"Check VPD has value for stable_device_secret_DO_NOT_SHARE": {
+			Docs: []string{
+				"Verify that value for key 'stable_device_secret_DO_NOT_SHARE' present.",
+			},
+			Conditions: []string{
+				"Is a Chromebook",
+			},
+			ExecName: "cros_check_vpd_value",
+			ExecExtraArgs: []string{
+				"key:stable_device_secret_DO_NOT_SHARE",
 			},
 			AllowFailAfterRecovery: true,
 		},

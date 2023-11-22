@@ -60,7 +60,7 @@ func IsKernelPriorityChanged(ctx context.Context, run execs.Runner) (bool, error
 	if err != nil {
 		return false, errors.Annotate(err, "is kernel priority changed: fail extract root partition number for %q", diskSuffix).Err()
 	}
-	log.Debugf(ctx, "Booted root partion: %d.", activeRootPartition)
+	log.Debugf(ctx, "Booted root partition: %d.", activeRootPartition)
 	var activeKernel, nextKernel *kernelInfo
 	if kernelA.rootPartition == int(activeRootPartition) {
 		activeKernel, nextKernel = kernelA, kernelB

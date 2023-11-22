@@ -9,10 +9,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros/vpd"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 )
@@ -193,11 +195,10 @@ func verifyROVPDSkuNumberExec(ctx context.Context, info *execs.ExecInfo) error {
 // ["sku_number:FAKE-SKU"]
 func setFakeROVPDSkuNumberExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
-	if !argsMap.Has("sku_number") {
+	skuNumber := argsMap.AsString(ctx, "sku_number", "")
+	if skuNumber == "" {
 		return errors.Reason("set fake sku_number: fake value is not specified.").Err()
 	}
-	skuNumber := argsMap.AsString(ctx, "sku_number", "")
-
 	r := info.DefaultRunner()
 	cmd := fmt.Sprintf(writeVPDValuesCmd, "sku_number", skuNumber)
 	if _, err := r(ctx, time.Minute, cmd); err != nil {
@@ -209,13 +210,12 @@ func setFakeROVPDSkuNumberExec(ctx context.Context, info *execs.ExecInfo) error 
 
 // updateROVPDToInvExec reads RO_VPD values from the resource listed in roVPDKeys into the inventory.
 func updateROVPDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
-	r := info.DefaultRunner()
+	ha := info.DefaultHostAccess()
 	if info.GetChromeos().GetRoVpdMap() == nil {
 		info.GetChromeos().RoVpdMap = make(map[string]string)
 	}
 	for _, key := range roVPDKeys {
-		cmd := fmt.Sprintf(readROVPDValuesCmd, key)
-		if value, err := r(ctx, time.Minute, cmd); err == nil {
+		if value, err := vpd.ReadRO(ctx, ha, time.Minute, key); err == nil {
 			info.GetChromeos().RoVpdMap[key] = value
 		}
 	}
@@ -253,6 +253,38 @@ func setROVPDExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// setVPDValueExec sets VPD value by provided key.
+func setVPDValueExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	key := strings.TrimSpace(argsMap.AsString(ctx, "key", ""))
+	value := strings.TrimSpace(argsMap.AsString(ctx, "value", ""))
+	if key == "" {
+		return errors.Reason("set VPD value: key is empty").Err()
+	} else if value == "" {
+		return errors.Reason("set VPD value by key %q: value is empty", key).Err()
+	}
+	err := vpd.Set(ctx, info.DefaultHostAccess(), info.GetExecTimeout(), key, value)
+	return errors.Annotate(err, "set VPD value %q:%q", key, value).Err()
+}
+
+// checkVPDValueExec checks VPD to read and present of value by provided key.
+func checkVPDValueExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	key := strings.TrimSpace(argsMap.AsString(ctx, "key", ""))
+	if key == "" {
+		return errors.Reason("check VPD value: key is empty").Err()
+	}
+	value, err := vpd.Read(ctx, info.DefaultHostAccess(), info.GetExecTimeout(), key)
+	if err != nil {
+		return errors.Annotate(err, "check VPD value: by key:%q failed", key).Err()
+	}
+	if value == "" {
+		return errors.Reason("check VPD value by key:%q: has empty value", key).Err()
+	}
+	log.Debugf(ctx, "VPD has %q:%q", key, value)
+	return nil
+}
+
 func init() {
 	execs.Register("cros_is_ro_vpd_sku_number_required", isROVPDSkuNumberRequiredExec)
 	execs.Register("cros_verify_ro_vpd_sku_number", verifyROVPDSkuNumberExec)
@@ -263,4 +295,6 @@ func init() {
 	execs.Register("cros_update_ro_vpd_inventory", updateROVPDToInvExec)
 	execs.Register("cros_match_ro_vpd_inventory", matchROVPDToInvExec)
 	execs.Register("cros_set_ro_vpd", setROVPDExec)
+	execs.Register("cros_set_vpd_value", setVPDValueExec)
+	execs.Register("cros_check_vpd_value", checkVPDValueExec)
 }

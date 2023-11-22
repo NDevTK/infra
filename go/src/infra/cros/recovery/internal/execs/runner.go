@@ -84,6 +84,11 @@ type hostAccess struct {
 	access tlw.Access
 }
 
+// DefaultHostAccess returns HostAccess for current resource name specified per plan.
+func (ei *ExecInfo) DefaultHostAccess() *hostAccess {
+	return ei.NewHostAccess(ei.GetActiveResource())
+}
+
 // NewHostAccess creates new instance of HostAccess.
 func (ei *ExecInfo) NewHostAccess(host string) *hostAccess {
 	if ei == nil {
