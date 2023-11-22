@@ -20,15 +20,9 @@ import (
 	"infra/cros/recovery/internal/localtlw/ssh"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/rpm"
+	"infra/cros/recovery/internal/tls"
 	"infra/cros/recovery/tlw"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-)
-
-const (
-	// tlwPort is default port used to run TLW on the drones.
-	tlwPort = 7151
-	// tlsPort is default port used to run TLS on the drones.
-	tlsPort = 7152
 )
 
 // UFSClient is a client that knows how to work with UFS RPC methods.
@@ -286,13 +280,12 @@ func (c *tlwClient) RunRPMAction(ctx context.Context, req *tlw.RunRPMActionReque
 // URL will use to download image to USB-drive and provisioning.
 func (c *tlwClient) GetCacheUrl(ctx context.Context, dutName, filePath string) (string, error) {
 	// TODO(otabek@): Add logic to understand local file and just return it back.
-	addr := fmt.Sprintf("0.0.0.0:%d", tlwPort)
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	bt, err := tls.NewBackgroundTLS()
 	if err != nil {
-		return "", errors.Annotate(err, "connect to background TLW").Err()
+		return "", errors.Annotate(err, "get cache URL").Err()
 	}
-	defer func() { conn.Close() }()
-	return CacheForDut(ctx, conn, filePath, dutName)
+	defer func() { _ = bt.Close() }()
+	return bt.CacheForDut(ctx, filePath, dutName)
 }
 
 // Provision triggers provisioning of the device.
@@ -307,12 +300,13 @@ func (c *tlwClient) Provision(ctx context.Context, req *tlw.ProvisionRequest) er
 		return errors.Reason("provision: system image path is not specified").Err()
 	}
 	log.Debugf(ctx, "Started provisioning by TLS: %s", req)
-	addr := fmt.Sprintf("0.0.0.0:%d", tlsPort)
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	bt, err := tls.NewBackgroundTLS()
 	if err != nil {
-		return errors.Annotate(err, "provision: connect to TLS").Err()
+		return errors.Annotate(err, "tls provision").Err()
 	}
-	defer func() { conn.Close() }()
-	err = TLSProvision(ctx, conn, req)
-	return errors.Annotate(err, "provision").Err()
+	defer func() { _ = bt.Close() }()
+	if err := bt.Provision(ctx, req); err != nil {
+		return errors.Annotate(err, "provision").Err()
+	}
+	return nil
 }
