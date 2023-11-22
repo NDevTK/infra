@@ -126,16 +126,17 @@ class UserServiceTest(unittest.TestCase):
     self.mox.UnsetStubs()
     self.mox.ResetAll()
 
-  def SetUpCreateUsers(self):
+  def testCreateUsers(self):
+    self.user_service.user_tbl.Select(
+        self.cnxn,
+        cols=('user_id',),
+        user_id=[3035911623, 2996997680],
+    ).AndReturn([(2996997680,)])
     self.user_service.user_tbl.InsertRows(
         self.cnxn,
         ['user_id', 'email', 'obscure_email'],
-        [(3035911623, 'a@example.com', True),
-         (2996997680, 'b@example.com', True)]
+        [(3035911623, 'a@example.com', True)],
     ).AndReturn(None)
-
-  def testCreateUsers(self):
-    self.SetUpCreateUsers()
     self.mox.ReplayAll()
     self.user_service._CreateUsers(
         self.cnxn, ['a@example.com', 'b@example.com'])

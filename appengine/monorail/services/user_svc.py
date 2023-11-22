@@ -203,9 +203,23 @@ class UserService(object):
     """Create many users in the database."""
     emails = [email.lower() for email in emails]
     ids = [framework_helpers.MurmurHash3_x86_32(email) for email in emails]
+
+    rows = self.user_tbl.Select(cnxn, cols=('user_id',), user_id=ids)
+    existing_ids = set(row[0] for row in rows)
+    if existing_ids:
+      existing_users = sorted(
+          (user_id, email)
+          for (user_id, email) in zip(ids, emails)
+          if user_id in existing_ids)
+      logging.error(
+          'Unable to create users because IDs are already taken: %s',
+          existing_users)
+
     row_values = [
-      (user_id, email, not framework_bizobj.IsPriviledgedDomainUser(email))
-      for (user_id, email) in zip(ids, emails)]
+        (user_id, email, not framework_bizobj.IsPriviledgedDomainUser(email))
+        for (user_id, email) in zip(ids, emails)
+        if user_id not in existing_ids
+    ]
     self.user_tbl.InsertRows(
         cnxn, ['user_id', 'email', 'obscure_email'], row_values)
     self.user_2lc.InvalidateKeys(cnxn, ids)
