@@ -114,3 +114,11 @@ func AskConfirmation(s string) (bool, error) {
 		}
 	}
 }
+
+// GetEnv is helper to get env variables and falling back if not set
+func GetEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}

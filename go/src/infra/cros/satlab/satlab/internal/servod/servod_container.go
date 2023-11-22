@@ -7,12 +7,12 @@ package servod
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/docker"
+	"infra/cros/satlab/common/utils/misc"
 	ufspb "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
@@ -115,16 +115,8 @@ func generateVols(servoContainerName string) []string {
 func dockerServodImageName(tag string) string {
 	if tag == "" {
 		// TODO(elijahtrexler) add these variables to SATLAB_REMOTE_ACCESS
-		tag = getEnv("SERVOD_CONTAINER_LABEL", "release")
+		tag = misc.GetEnv("SERVOD_CONTAINER_LABEL", "release")
 	}
-	registry := getEnv("REGISTRY_URI", "us-docker.pkg.dev/chromeos-partner-moblab/common-core")
+	registry := misc.GetEnv("REGISTRY_URI", "us-docker.pkg.dev/chromeos-partner-moblab/common-core")
 	return fmt.Sprintf("%s/servod:%s", registry, tag)
-}
-
-// getEnv is helper to get env variables and falling back if not set
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
 }
