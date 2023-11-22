@@ -345,7 +345,7 @@ class AbstractTwoLevelCache(object):
             'kind': self.cache.kind,
             'prefix': self.prefix,
             'count': len(keys),
-            'keys': str(keys)
+            'keys': str(keys)[:100000]
         })
     memcache.delete_multi(
         [self._KeyToStr(key) for key in keys],
