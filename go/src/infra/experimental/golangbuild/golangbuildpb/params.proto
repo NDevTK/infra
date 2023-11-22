@@ -20,6 +20,13 @@ message Inputs {
   // (the "refs/heads/" prefix is omitted).
   string go_branch = 2;
 
+  // Host is the port we're building on. In most cases this is the default
+  // GOOS/GOARCH of the machine, but not in cases like linux-386.
+  Port host = 24;
+  // Target is the port we're testing. It can be wildly different than the
+  // host port, e.g. when we're running a mobile emulator or a Wasm VM.
+  Port target = 25;
+
   // GoCommit optionally specifies a commit on GoBranch branch to use.
   // If it isn't provided, it means to use the tip of the GoBranch branch (a moving target).
   // It can be set only when invoked in a project other than "go".
@@ -119,6 +126,11 @@ message Inputs {
   TestShard test_shard = 15;
 }
 
+message Port {
+  string goos = 1;
+  string goarch = 2;
+}
+
 // golangbuild runs in one of these modes.
 enum Mode {
   // MODE_ALL builds and tests the project all within the same build.
@@ -157,12 +169,6 @@ message CoordinatorMode {
   //
   // This must be empty if project != "go".
   repeated string builders_to_trigger_after_toolchain_build = 4;
-
-  // TargetGoos is the OS we're building for.
-  string target_goos = 5;
-
-  // TargetGoarch is the CPU architecture we're building for.
-  string target_goarch = 6;
 }
 
 // BuildMode contains properties specific to MODE_BUILD.

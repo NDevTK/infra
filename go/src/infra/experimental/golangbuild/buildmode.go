@@ -78,7 +78,9 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 	}
 
 	// Build Go.
-	if err := cmdStepRun(ctx, "make"+scriptExt(), spec.goScriptCmd(ctx, "make"+scriptExt()), false); err != nil {
+	ext := scriptExt(spec.inputs.Host)
+	ctx = addPortEnv(ctx, spec.inputs.Target, "GOHOSTOS="+spec.inputs.Host.Goos, "GOHOSTARCH="+spec.inputs.Host.Goarch)
+	if err := cmdStepRun(ctx, "make"+ext, spec.goScriptCmd(ctx, "make"+ext), false); err != nil {
 		return err
 	}
 
@@ -88,8 +90,8 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 
 // scriptExt returns the extension to use for
 // GOROOT/src/{make,all} scripts on this GOOS.
-func scriptExt() string {
-	switch host.GOOS {
+func scriptExt(host *golangbuildpb.Port) string {
+	switch host.Goos {
 	case "windows":
 		return ".bat"
 	case "plan9":

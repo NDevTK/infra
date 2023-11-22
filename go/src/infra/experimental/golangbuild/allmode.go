@@ -29,7 +29,7 @@ func (r *allRunner) Run(ctx context.Context, spec *buildSpec) error {
 		return err
 	}
 	// Determine what ports to test.
-	ports := []Port{currentPort}
+	ports := []*golangbuildpb.Port{spec.inputs.Target}
 	if spec.inputs.MiscPorts {
 		// Note: There may be code changes in cmd/dist or cmd/go that have not
 		// been fully reviewed yet, and it is a test error if goDistList fails.

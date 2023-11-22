@@ -11,7 +11,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
@@ -41,7 +40,6 @@ type buildSpec struct {
 	gocacheDir  string
 	toolsRoot   string
 	casInstance string
-	targetPort  Port
 
 	inputs *golangbuildpb.Inputs
 
@@ -172,28 +170,14 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 	if inputs.NoNetwork {
 		// Return a helpful error if the system requirements
 		// for disabling external network are unmet.
-		if runtime.GOOS != "linux" {
-			return nil, fmt.Errorf("NoNetwork is not supported on %q", runtime.GOOS)
+		if inputs.Host.Goos != "linux" {
+			return nil, fmt.Errorf("NoNetwork is not supported on %q", inputs.Host.Goos)
 		}
 		for _, cmd := range [...]string{"unshare", "ip", "sh"} {
 			if _, err := exec.LookPath(cmd); err != nil {
 				return nil, fmt.Errorf("NoNetwork needs %s in $PATH: %w", cmd, err)
 			}
 		}
-	}
-
-	// Determine the port we're targeting.
-	var targetPort Port
-	switch inputs.GetMode() {
-	case golangbuildpb.Mode_MODE_ALL:
-		targetPort = host
-	case golangbuildpb.Mode_MODE_COORDINATOR:
-		cm := inputs.GetCoordMode()
-		targetPort = Port{GOOS: cm.TargetGoos, GOARCH: cm.TargetGoarch}
-	case golangbuildpb.Mode_MODE_BUILD:
-		targetPort = host
-	case golangbuildpb.Mode_MODE_TEST:
-		targetPort = host
 	}
 
 	return &buildSpec{
@@ -205,7 +189,6 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		gocacheDir:  filepath.Join(cwd, "gocache"),
 		toolsRoot:   toolsRoot,
 		casInstance: casInst,
-		targetPort:  targetPort,
 		inputs:      inputs,
 		invocation:  st.Build().GetInfra().GetResultdb().GetInvocation(),
 		goSrc:       goSrc,
@@ -231,7 +214,7 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
 	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "bin"), os.PathListSeparator, env.Get("PATH")))
 
-	if host.GOOS == "windows" {
+	if b.inputs.Host.Goos == "windows" {
 		env.Set("GOBUILDEXIT", "1") // On Windows, emit exit codes from .bat scripts. See go.dev/issue/9799.
 		ccPath := filepath.Join(b.toolsRoot, "cc/windows/gcc64/bin")
 		if env.Get("GOARCH") == "386" {
@@ -239,14 +222,14 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 		}
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, ccPath))
 	}
-	if env.Get("GOARCH") == "wasm" {
+	if b.inputs.Target.Goos == "wasm" {
 		// Add go_*_wasm_exec and the appropriate Wasm runtime to PATH.
 		env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.goroot, "misc/wasm"), os.PathListSeparator, env.Get("PATH")))
 		switch {
-		case env.Get("GOOS") == "js":
+		case b.inputs.Target.Goos == "js":
 			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "nodejs/bin"), os.PathListSeparator, env.Get("PATH")))
-		case env.Get("GOOS") == "wasip1" && env.Get("GOWASIRUNTIME") == "wasmtime",
-			env.Get("GOOS") == "wasip1" && env.Get("GOWASIRUNTIME") == "wazero":
+		case b.inputs.Target.Goos == "wasip1" && env.Get("GOWASIRUNTIME") == "wasmtime",
+			b.inputs.Target.Goos == "wasip1" && env.Get("GOWASIRUNTIME") == "wazero":
 			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, env.Get("GOWASIRUNTIME")), os.PathListSeparator, env.Get("PATH")))
 		}
 	}
@@ -254,33 +237,10 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	return env.SetInCtx(ctx)
 }
 
-// testedPort returns the port we're actually testing.
-//
-// Unfortunately b.targetPort is insufficient because certain platforms like js/wasm
-// still want their target to appear as something else (like linux/amd64), for example
-// to decide which prebuilt toolchain to create and download.
-//
-// TODO(mknyszek): Replace this function with b.targetPort, and refactor other users
-// of targetPort to do the necessary translation for the ports that require prebuilt
-// toolchains of other ports.
-func (b *buildSpec) testedPort() Port {
-	port := b.targetPort
-	if goos, ok := b.inputs.Env["GOOS"]; ok {
-		port.GOOS = goos
-	}
-	if goarch, ok := b.inputs.Env["GOARCH"]; ok {
-		port.GOARCH = goarch
-	}
-	return port
-}
-
-func addPortEnv(ctx context.Context, port Port, extraEnv ...string) context.Context {
-	if port == currentPort {
-		return ctx
-	}
+func addPortEnv(ctx context.Context, target *golangbuildpb.Port, extraEnv ...string) context.Context {
 	env := environ.FromCtx(ctx)
-	env.Set("GOOS", port.GOOS)
-	env.Set("GOARCH", port.GOARCH)
+	env.Set("GOOS", target.Goos)
+	env.Set("GOARCH", target.Goarch)
 	for _, e := range extraEnv {
 		env.SetEntry(e)
 	}
@@ -397,11 +357,6 @@ func (b *buildSpec) installDatastoreClient(ctx context.Context) (context.Context
 	return cfg.Use(ctx), nil
 }
 
-var host = Port{
-	GOOS:   runtime.GOOS,
-	GOARCH: runtime.GOARCH,
-}
-
 func (b *buildSpec) toolPath(tool string) string {
 	return filepath.Join(b.toolsRoot, "bin", tool)
 }
@@ -429,10 +384,10 @@ func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
 
 	// Compute all the test tags and variants we want to send to ResultDB.
 	rdbArgs := []string{
-		"-var", fmt.Sprintf("goos:%s", b.testedPort().GOOS),
-		"-var", fmt.Sprintf("goarch:%s", b.testedPort().GOARCH),
-		"-var", fmt.Sprintf("host_goos:%s", host.GOOS),
-		"-var", fmt.Sprintf("host_goarch:%s", host.GOARCH),
+		"-var", fmt.Sprintf("goos:%s", b.inputs.Target.Goos),
+		"-var", fmt.Sprintf("goarch:%s", b.inputs.Target.Goarch),
+		"-var", fmt.Sprintf("host_goos:%s", b.inputs.Host.Goos),
+		"-var", fmt.Sprintf("host_goarch:%s", b.inputs.Host.Goarch),
 		"-var", fmt.Sprintf("builder:%s", b.builderName),
 		"-var", fmt.Sprintf("go_branch:%s", b.inputs.GoBranch),
 		"-tag", fmt.Sprintf("bootstrap_version:%s", b.inputs.BootstrapVersion),

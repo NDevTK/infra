@@ -24,6 +24,7 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/protobuf/proto"
 )
 
 // testRunner runs a non-strict subset of available tests. It requires a prebuilt
@@ -57,7 +58,7 @@ func (r *testRunner) Run(ctx context.Context, spec *buildSpec) error {
 		return err
 	}
 	// Determine what ports to test.
-	ports := []Port{currentPort}
+	ports := []*golangbuildpb.Port{spec.inputs.Target}
 	if spec.inputs.MiscPorts {
 		// Note: There may be code changes in cmd/dist or cmd/go that have not
 		// been fully reviewed yet, and it is a test error if goDistList fails.
@@ -91,7 +92,7 @@ func (s testShard) shouldRunTest(name string) bool {
 // of the test suite.
 var noSharding = testShard{shardID: 0, nShards: 1}
 
-func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []Port) (err error) {
+func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*golangbuildpb.Port) (err error) {
 	step, ctx := build.StartStep(ctx, "run tests")
 	defer endStep(step, &err)
 
@@ -123,7 +124,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 		return errors.Join(testErrors...)
 	}
 
-	if len(ports) != 1 || ports[0] != currentPort {
+	if len(ports) != 1 || !proto.Equal(ports[0], spec.inputs.Target) {
 		return infraErrorf("testing multiple ports is only supported in CompileOnly mode")
 	}
 
@@ -206,7 +207,7 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 	return tests, nil
 }
 
-func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port) (err error) {
+func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []*golangbuildpb.Port) (err error) {
 	step, ctx := build.StartStep(ctx, "run tests")
 	defer endStep(step, &err)
 
@@ -236,7 +237,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 	}
 	if spec.inputs.CompileOnly {
 		return compileTestsInParallel(ctx, spec, modules, ports)
-	} else if len(ports) != 1 || ports[0] != currentPort {
+	} else if len(ports) != 1 || !proto.Equal(ports[0], spec.inputs.Target) {
 		return infraErrorf("testing multiple ports is only supported in CompileOnly mode")
 	}
 	var testErrors []error
@@ -249,7 +250,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 	return errors.Join(testErrors...)
 }
 
-func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []module, ports []Port) error {
+func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []module, ports []*golangbuildpb.Port) error {
 	g := new(errgroup.Group)
 	g.SetLimit(runtime.NumCPU())
 	var testErrors = make([]error, len(ports)*len(modules))
@@ -258,7 +259,7 @@ func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []modu
 		portContext := addPortEnv(ctx, p, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/(len(ports)*len(modules)))))
 		for _, m := range modules {
 			stepName := fmt.Sprintf("test %s module", m.Path)
-			if len(ports) > 1 || p != currentPort {
+			if len(ports) > 1 || !proto.Equal(p, spec.inputs.Target) {
 				stepName += fmt.Sprintf(" for %s", p)
 			}
 			testCmd := spec.wrapTestCmd(spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...))
@@ -356,29 +357,10 @@ func modPath(goModFile string) (string, error) {
 	return f.Module.Mod.Path, nil
 }
 
-// A Port is a Go port identity.
-//
-// The zero value means the implicit, default
-// Go port as determined from the environment.
-type Port struct {
-	GOOS, GOARCH string
-}
-
-func (p Port) String() string {
-	if p == (Port{}) {
-		return "implicit Go port"
-	}
-	return p.GOOS + "/" + p.GOARCH
-}
-
-// currentPort indicates the implicit, default Go port as determined from the environment.
-// Testing only this port is the default behavior for most test modes.
-var currentPort = Port{}
-
 // goDistList uses 'go tool dist list' to get a list of all non-broken ports,
 // excluding ones that definitely already have a pre-submit builder,
 // and returns those that match the provided shard.
-func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []Port, err error) {
+func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []*golangbuildpb.Port, err error) {
 	step, ctx := build.StartStep(ctx, "list ports")
 	defer endStep(step, &err)
 
@@ -393,8 +375,8 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 
 	// Parse the JSON output and collect available ports.
 	var allPorts []struct {
-		Port
-		FirstClass bool
+		GOOS, GOARCH string
+		FirstClass   bool
 	}
 	err = json.Unmarshal(listOutput, &allPorts)
 	if err != nil {
@@ -410,16 +392,16 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 			// all first-class ports to have a pre-submit builder,
 			// and there's not enough benefit to include them here.
 			continue
-		case p.Port == Port{"ios", "arm64"}:
+		case p.GOOS == "ios" && p.GOARCH == "arm64":
 			// TODO(go.dev/issue/61761): Add misc-compile coverage for the ios/arm64 port (iOS).
 			continue
-		case p.Port == Port{"ios", "amd64"}:
+		case p.GOOS == "ios" && p.GOARCH == "amd64":
 			// TODO(go.dev/issue/61760): Add misc-compile coverage for the ios/amd64 port (iOS Simulator).
 			continue
 		case p.GOOS == "android":
 			// TODO(go.dev/issue/61762): Add misc-compile coverage for the GOOS=android ports (Android).
 			continue
-		case spec.inputs.GoBranch == "release-branch.go1.20" && p.Port == Port{"openbsd", "mips64"}:
+		case spec.inputs.GoBranch == "release-branch.go1.20" && p.GOOS == "openbsd" && p.GOARCH == "mips64":
 			// The openbsd/mips64 port is marked broken at tip as of 2023-08-10.
 			// It's not marked as broken in cmd/dist on release-branch.go1.20,
 			// but it still fails to compile a number of golang.org/x repos.
@@ -429,7 +411,7 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 			// TODO(go.dev/issue/61546, go.dev/issue/58110): If the port gets fixed, drop this case.
 			continue
 		}
-		ports = append(ports, p.Port)
+		ports = append(ports, &golangbuildpb.Port{Goos: p.GOOS, Goarch: p.GOARCH})
 	}
 	// Split up the ports into buckets, and pick one for this shard.
 	bucketSize := len(ports) / int(shard.nShards)
@@ -454,18 +436,19 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 //
 // TODO(dmitshur,heschi): Ideally we want to have policy configured in
 // one place, more likely in main.star than here. If so, factor it out.
-func compileOptOut(project string, p Port, modulePath string) bool {
+func compileOptOut(project string, p *golangbuildpb.Port, modulePath string) bool {
 	const (
 		optOut                           = true
 		performCompileOnlyTestingAsUsual = false // Long name so that it stands out. It's the rare case here.
 	)
+	ps := p.Goos + "-" + p.Goarch
 	switch project {
 	case "benchmarks":
-		if p.GOOS == "plan9" {
+		if p.Goos == "plan9" {
 			// Dependency "github.com/coreos/go-systemd/v22/journal" fails to build on Plan 9.
 			return optOut
 		}
-		if p.GOARCH == "wasm" {
+		if p.Goarch == "wasm" {
 			// Dependencies "github.com/blevesearch/mmap-go", "go.etcd.io/bbolt", and "github.com/coreos/go-systemd/v22/journal"
 			// fail to build. Also "golang.org/x/benchmarks/driver" fails to build.
 			return optOut
@@ -473,31 +456,28 @@ func compileOptOut(project string, p Port, modulePath string) bool {
 	case "build":
 		// build is a special repository for internal Go build infrastructure needs.
 		// It relies only on real pre- and post-submit testing, not compile-only testing.
-		if p.GOOS == "darwin" {
+		if p.Goos == "darwin" {
 			// Except darwin, which doesn't yet have pre-submit coverage,
 			// so use compile-only coverage to help out.
 			return performCompileOnlyTestingAsUsual
 		}
 		return optOut
 	case "debug":
-		if p.GOARCH == "wasm" {
+		if p.Goarch == "wasm" {
 			// Dependency "github.com/chzyer/readline" fails to build.
 			return optOut
 		}
 	case "exp":
 		switch modulePath {
 		case "golang.org/x/exp/event":
-			if p == (Port{"wasip1", "wasm"}) {
+			if ps == "wasip1-wasm" {
 				// Dependency "github.com/sirupsen/logrus" fails to build on wasip1/wasm.
 				return optOut
 			}
 		case "golang.org/x/exp/shiny":
-			switch p {
-			case Port{"darwin", "arm64"}, Port{"darwin", "amd64"},
-				Port{"linux", "mips64"}, Port{"linux", "mips64le"},
-				Port{"linux", "ppc64"}, Port{"linux", "ppc64le"},
-				Port{"linux", "s390x"},
-				Port{"openbsd", "amd64"}:
+			switch ps {
+			case "darwin-arm64", "darwin-amd64", "linux-mips64", "linux-mips64le",
+				"linux-ppc64", "linux-ppc64le", "linux-s390x", "openbsd-amd64":
 				return performCompileOnlyTestingAsUsual
 			default:
 				// x/exp/shiny fails to build on most cross-compile platforms, largely because
@@ -511,35 +491,35 @@ func compileOptOut(project string, p Port, modulePath string) bool {
 		return optOut
 	case "pkgsite":
 		// See go.dev/issue/61341.
-		if p.GOOS == "plan9" {
+		if p.Goos == "plan9" {
 			// Dependency "github.com/lib/pq" fails to build on Plan 9.
 			return optOut
 		}
-		if p == (Port{"wasip1", "wasm"}) {
+		if ps == "wasip1-wasm" {
 			// Dependency "github.com/lib/pq" fails to build on wasip1/wasm.
 			return optOut
 		}
 	case "pkgsite-metrics":
-		if p == (Port{"wasip1", "wasm"}) {
+		if ps == "wasip1-wasm" {
 			// Dependency "github.com/lib/pq" fails to build on wasip1/wasm.
 			return optOut
 		}
-		if p == (Port{"aix", "ppc64"}) || p.GOOS == "plan9" {
+		if ps == "aix-ppc64" || p.Goos == "plan9" {
 			// Dependency "github.com/apache/thrift/lib/go/thrift" fails to build on aix/ppc64 and Plan 9.
 			return optOut
 		}
 	case "vuln":
-		if p.GOOS == "plan9" {
+		if p.Goos == "plan9" {
 			// Dependency "github.com/google/go-cmdtest" fails to build on Plan 9.
 			return optOut
 		}
 	case "vulndb":
-		if p == (Port{"aix", "ppc64"}) {
+		if ps == "aix-ppc64" {
 			// Dependency "github.com/go-git/go-billy/v5/osfs" fails to build on aix/ppc64.
 			// See go.dev/issue/58308.
 			return optOut
 		}
-		if p == (Port{"wasip1", "wasm"}) {
+		if ps == "wasip1-wasm" {
 			// Dependency "github.com/go-git/go-billy/v5/osfs" fails to build on wasip1/wasm.
 			return optOut
 		}
