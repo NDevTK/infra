@@ -198,6 +198,9 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 		Exe: &bbpb.Executable{
 			CipdVersion: spec.golangbuildVersion,
 		},
+		Mask: &bbpb.BuildMask{
+			AllFields: true, // Notably, we need the ResultDB invocation ID.
+		},
 	}
 	if spec.invokedSrc.change != nil {
 		buildReq.GerritChanges = []*bbpb.GerritChange{spec.invokedSrc.change}
@@ -211,7 +214,7 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 
 	// This dance is apparently the canonical way to convert a Message to a Struct.
 	// https://github.com/golang/protobuf/issues/1259#issuecomment-750453617
-	propsBytes, err := protojson.Marshal(props)
+	propsBytes, err := protojson.MarshalOptions{UseProtoNames: true}.Marshal(props)
 	if err != nil {
 		return nil, infraWrap(err)
 	}
