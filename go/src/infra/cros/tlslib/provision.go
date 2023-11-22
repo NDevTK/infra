@@ -681,5 +681,5 @@ func checkKvmEnabled(c *ssh.Client) (bool, error) {
 func checkIfLabstationDevice(c *ssh.Client) bool {
 	board, err := getBoard(c)
 	// Treat failure as non-labstation device.
-	return err != nil && strings.Contains(board, "labstation")
+	return err == nil && strings.Contains(board, "labstation")
 }
