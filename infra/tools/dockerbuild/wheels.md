@@ -4332,6 +4332,18 @@ wheel: <
 
 * *universal*
 
+### 0.22.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/httplib2-py3"
+  version: "version:0.22.0"
+>
+```
+
+
+* *universal*
+
 ## **humiolib**
 
 ### 0.2.4
