@@ -53,12 +53,16 @@ func RunCheckOnHost(ctx context.Context, run components.Runner, usbPath string, 
 	if isSmartDevice {
 		command = fmt.Sprintf(smartHealthCommandPrefix, usbPath)
 	}
+	// If error has a message like `it's not safe to run badblocks!` then we have some problems and better to retry.
+	isBadblockIssue := func(err error) bool {
+		return err != nil && strings.Contains(err.Error(), "safe") && strings.Contains(err.Error(), "badblocks")
+	}
 	log.Debugf(ctx, "Run Check On Host: Executing %q", command)
 	// The execution timeout for this audit job is configured at the
 	// level of the action. So the execution of this command will be
 	// bound by that.
 	out, err := run(ctx, timeout, command)
-	if !isSmartDevice && err != nil && strings.Contains(err.Error(), "not safe to run badblocks") {
+	if !isSmartDevice && isBadblockIssue(err) {
 		log.Debugf(ctx, "Check fail due system find USB-drive used by it. Let's retry!")
 		metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("usbkey_audit_restarted", "yes"))
 		// Sometime it happening, so we can retry.
@@ -82,7 +86,7 @@ func RunCheckOnHost(ctx context.Context, run components.Runner, usbPath string, 
 			return tlw.HardwareState_HARDWARE_NEED_REPLACEMENT, nil
 		}
 		return tlw.HardwareState_HARDWARE_NORMAL, nil
-	case strings.Contains(err.Error(), "not safe to run badblocks"):
+	case !isSmartDevice && isBadblockIssue(err):
 		log.Debugf(ctx, "Check fail due system find USB-drive used by it! Skip as something stramge with this DUT.")
 		fallthrough
 	case components.SSHErrorLinuxTimeout.In(err): // 124 timeout
