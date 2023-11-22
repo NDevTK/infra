@@ -242,6 +242,10 @@ TEMPORARY_UNSUPPORTED_PACKAGES_WITH_BUILD = {
     # pulled in
     # Perfectly fine package otherwise.
     'sci-libs/tensorflow',
+
+    # Appears to want both llvm-12 and llvm-15 at the same time when printing
+    # deps. crbug.com/1501725
+    'sys-devel/llvm',
 }
 
 # Set of packages that are not currently supported when building with tests.
