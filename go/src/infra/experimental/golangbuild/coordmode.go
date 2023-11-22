@@ -18,6 +18,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 	resultdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // coordRunner ensures a prebuilt Go toolchain exists (launching a build to build one if
@@ -171,42 +172,63 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("trigger %s (%d of %d)", builder, shard.shardID+1, shard.nShards))
 	defer endStep(step, &err)
 
-	// Construct args.
-	prop, err := protojson.Marshal(&golangbuildpb.TestShard{
-		ShardId:   shard.shardID,
-		NumShards: shard.nShards,
-	})
-	if err != nil {
-		return nil, infraErrorf("marshalling shard identity: %w", err)
-	}
-	bbArgs := []string{"add", "-json"}
-	if shard != noSharding {
-		bbArgs = append(bbArgs, "-p", fmt.Sprintf(`test_shard=%s`, string(prop)))
-	}
-	if spec.inputs.VersionFile != "" {
-		bbArgs = append(bbArgs, "-p", fmt.Sprintf(`version_file=%q`, spec.inputs.VersionFile))
+	props := &golangbuildpb.Inputs{
+		VersionFile: spec.inputs.VersionFile,
+		TestShard: &golangbuildpb.TestShard{
+			ShardId:   shard.shardID,
+			NumShards: shard.nShards,
+		},
 	}
 	if !isGoProject(spec.invokedSrc.project) && spec.goSrc.commit != nil {
-		bbArgs = append(bbArgs, "-p", fmt.Sprintf(`go_commit=%s`, spec.goSrc.commit.Id))
+		props.GoCommit = spec.goSrc.commit.Id
 	}
-	if spec.invokedSrc.commit != nil {
-		bbArgs = append(bbArgs, "-commit", spec.invokedSrc.asURL())
-		bbArgs = append(bbArgs, "-ref", spec.invokedSrc.commit.Ref)
+
+	builderParts := strings.Split(builder, "/")
+	buildReq := &bbpb.ScheduleBuildRequest{
+		Builder: &bbpb.BuilderID{
+			Project: builderParts[0],
+			Bucket:  builderParts[1],
+			Builder: builderParts[2],
+		},
+		GitilesCommit: spec.invokedSrc.commit,
+		Properties:    &structpb.Struct{},
+		Experiments:   map[string]bool{},
+		Priority:      spec.priority,
 	}
 	if spec.invokedSrc.change != nil {
-		bbArgs = append(bbArgs, "-cl", spec.invokedSrc.asURL())
+		buildReq.GerritChanges = []*bbpb.GerritChange{spec.invokedSrc.change}
 	}
 	for ex := range spec.experiments {
 		switch ex {
 		case "golang.force_test_outside_repository":
-			bbArgs = append(bbArgs, "-ex", "+"+ex)
+			buildReq.Experiments[ex] = true
 		}
 	}
-	bbArgs = append(bbArgs, builder)
 
-	// Execute `bb add` for this shard and collect the output.
-	stepName := fmt.Sprintf("bb add (%d of %d)", shard.shardID+1, shard.nShards)
-	out, err := cmdStepOutput(ctx, stepName, spec.toolCmd(ctx, "bb", bbArgs...), true)
+	// This dance is apparently the canonical way to convert a Message to a Struct.
+	// https://github.com/golang/protobuf/issues/1259#issuecomment-750453617
+	propsBytes, err := protojson.Marshal(props)
+	if err != nil {
+		return nil, infraWrap(err)
+	}
+	if err := protojson.Unmarshal(propsBytes, buildReq.Properties); err != nil {
+		return nil, infraWrap(err)
+	}
+
+	reqBytes, err := protojson.Marshal(&bbpb.BatchRequest{
+		Requests: []*bbpb.BatchRequest_Request{{
+			Request: &bbpb.BatchRequest_Request_ScheduleBuild{ScheduleBuild: buildReq},
+		}},
+	})
+	if err != nil {
+		return nil, infraWrap(err)
+	}
+
+	// Execute `bb batch` for this shard and collect the output.
+	stepName := fmt.Sprintf("bb batch (%d of %d)", shard.shardID+1, shard.nShards)
+	bbBatch := spec.toolCmd(ctx, "bb", "batch")
+	bbBatch.Stdin = bytes.NewReader(reqBytes)
+	out, err := cmdStepOutput(ctx, stepName, bbBatch, true)
 	if err != nil {
 		return nil, err
 	}

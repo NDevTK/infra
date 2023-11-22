@@ -40,6 +40,7 @@ type buildSpec struct {
 	gocacheDir  string
 	toolsRoot   string
 	casInstance string
+	priority    int32
 
 	inputs *golangbuildpb.Inputs
 
@@ -189,6 +190,7 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		gocacheDir:  filepath.Join(cwd, "gocache"),
 		toolsRoot:   toolsRoot,
 		casInstance: casInst,
+		priority:    st.Build().GetInfra().GetSwarming().GetPriority(),
 		inputs:      inputs,
 		invocation:  st.Build().GetInfra().GetResultdb().GetInvocation(),
 		goSrc:       goSrc,
