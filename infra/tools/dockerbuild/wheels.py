@@ -1917,7 +1917,6 @@ SPECS.update({
         Universal('keras', '2.7.0', pyversions=['py3']),
         Universal('keras-nightly', '2.5.0.dev2021032900', pyversions=['py3']),
         Universal('keyring', '18.0.1'),
-        Universal('looseversion', '1.3.0'),
         Universal('macholib', '1.11'),
         Universal('markdown-it-py', '2.1.0', pyversions=['py3']),
         Universal('mccabe', '0.6.1'),
