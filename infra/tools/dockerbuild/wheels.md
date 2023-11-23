@@ -998,6 +998,18 @@ wheel: <
 
 * *universal*
 
+### 2.15.8
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/astroid-py3"
+  version: "version:2.15.8"
+>
+```
+
+
+* *universal*
+
 ## **astunparse**
 
 ### 1.5.0
@@ -1758,6 +1770,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/colorama-py2_py3"
   version: "version:0.4.1"
+>
+```
+
+
+* *universal*
+
+### 0.4.6
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/colorama-py2_py3"
+  version: "version:0.4.6"
 >
 ```
 
@@ -7709,6 +7733,18 @@ wheel: <
 
 * *universal*
 
+### 2.17.7
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pylint-py3"
+  version: "version:2.17.7"
+>
+```
+
+
+* *universal*
+
 ## **pylint-quotes**
 
 ### 0.1.8
@@ -9624,6 +9660,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/tomli-py3"
   version: "version:2.0.1"
+>
+```
+
+
+* *universal*
+
+## **tomlkit-py3**
+
+### 0.12.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tomlkit-py3"
+  version: "version:0.12.3"
 >
 ```
 
