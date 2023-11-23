@@ -30,6 +30,9 @@ class ConditionalWheel(Builder):
     default (bool): If true, the wheel will be built by default.
     only_plat: (See Builder's "only_plat" argument.)
     skip_plat: (See Builder's "skip_plat" argument.)
+    patch_version (str or None): If set, this string is appended to the CIPD
+        version tag, for example if set to 'chromium.1', the version tag
+        for version 1.2.3 of the wheel would be 'version:1.2.3.chromium.1'.
   """
 
   def __init__(self,
@@ -39,8 +42,10 @@ class ConditionalWheel(Builder):
                pyversions=None,
                only_plat=None,
                skip_plat=None,
-               default=True):
+               default=True,
+               patch_version=None):
     self._select_fn = select_fn
+    version_suffix = '.' + patch_version if patch_version else None
     super(ConditionalWheel, self).__init__(
         Spec(
             name,
@@ -48,7 +53,7 @@ class ConditionalWheel(Builder):
             universal=False,
             pyversions=pyversions,
             default=default,
-            version_suffix=None),
+            version_suffix=version_suffix),
         only_plat=only_plat,
         skip_plat=skip_plat)
 
@@ -159,7 +164,8 @@ class MultiWheel(Builder):
                pyversions=None,
                only_plat=None,
                skip_plat=None,
-               default=True):
+               default=True,
+               patch_version=None):
     """Builds a wheel consisting of multiple other wheels.
 
     Bundles can be useful when a user always wants a common set of packages.
@@ -176,8 +182,12 @@ class MultiWheel(Builder):
       default (bool): If true, the wheel will be built by default.
       only_plat: (See Builder's "only_plat" argument.)
       skip_plat: (See Builder's "skip_plat" argument.)
+      patch_version (str or None): If set, this string is appended to the CIPD
+          version tag, for example if set to 'chromium.1', the version tag
+          for version 1.2.3 of the wheel would be 'version:1.2.3.chromium.1'.
     """
     self._wheels = wheels
+    version_suffix = '.' + patch_version if patch_version else None
     super(MultiWheel, self).__init__(
         Spec(
             name,
@@ -185,7 +195,7 @@ class MultiWheel(Builder):
             universal=False,
             pyversions=pyversions,
             default=default,
-            version_suffix=None),
+            version_suffix=version_suffix),
         only_plat=only_plat,
         skip_plat=skip_plat)
 

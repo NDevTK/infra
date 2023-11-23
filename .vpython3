@@ -45,6 +45,11 @@ wheel: <
   version: "version:5.8.0.chromium.3"
 >
 
+wheel: <
+  name: "infra/python/wheels/packaging-py3"
+  version: "version:23.0"
+>
+
 # infra_libs and its transitive dependencies
 wheel: <
   name: "infra/python/wheels/infra_libs-py2_py3"

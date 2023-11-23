@@ -4,11 +4,12 @@
 
 import argparse
 import base64
-import distutils.version
 import json
 import os
 import re
 import sys
+
+import packaging.version
 
 from . import concurrency
 from . import dockcross
@@ -124,7 +125,8 @@ def _main_wheel_build(args, system):
 
   # Now that we've registered all our packages, update all the refs.
   # We first create a reverse mapping for the cipd name to wheels.
-  # i.e. We map "pylint-py2_py3" cipd name to all known versions.
+  # i.e. We map "pylint-py2_py3" cipd name to all known versions
+  # (storing the build_id as well to construct the CIPD tag).
   platforms, specs = _filter_platform_specs(args.platform, set())
   package_map = {}
   for spec_name in specs:
@@ -143,21 +145,25 @@ def _main_wheel_build(args, system):
       seen.add(package)
 
       if package.name in updated_packages:
-        buildid = w.build_id
-        package_map.setdefault(package.name, []).append((package, buildid))
+        version = packaging.version.parse(w.spec.version)
+        package_map.setdefault(package.name, []).append(
+            (package, version, w.build_id))
 
   # Now walk the cipd packages to figure refs<->version bindings.
   for package_name, packages in package_map.items():
     util.LOGGER.info('Updating refs for %s', package_name)
 
     # First build the map of all versions that could satisfy a ref.
-    # e.g. This creates {'latest': ['1.0', '2.0'],
-    #                    '1.x': ['1.0'],
-    #                    '2.x': ['2.0']}.
+    # The build_id is also stored in order to construct the CIPD tag.
+    #
+    # e.g. for wheel versions 1.0 and 2.0.chromium.1, this creates:
+    #
+    # {'latest': [('1.0', '1.0'), ('2.0', '2.0.chromium.1')],
+    #  '1.x': [('1.0', '1.0')],
+    #  '2.x': [('2.0', '2.0.chromium.1']}.
     ref_candidates = {'latest': []}
-    for package, buildid in packages:
-      version = distutils.version.LooseVersion(buildid)
-      ref_candidates['latest'].append(version)
+    for package, version, buildid in packages:
+      ref_candidates['latest'].append((version, buildid))
 
       # Create some ".x" refs for version series that are generally considered
       # "compatible".  We leave it to the end user to determine when using these
@@ -168,23 +174,23 @@ def _main_wheel_build(args, system):
       #   1.9     -> 1.x
       #   1.5.6   -> 1.x 1.5.x
       #   1.8.7.3 -> 1.x 1.8.x 1.8.7.x
-      parts = version.version
+      parts = list(version.release)
       for i in range(1, len(parts)):
         # Stop parsing if we hit non-numeric component.
         # e.g. 1.3.0rc1 -> [1, 3, 0, 'rc', 1].
         if not isinstance(parts[i], int):
           break
         series = '.'.join(str(x) for x in parts[0:i] + ['x'])
-        ref_candidates.setdefault(series, []).append(version)
+        ref_candidates.setdefault(series, []).append((version, buildid))
 
     # Then figure out which tags get which refs.  Basically we sort the
     # candidates to find the newest version and then point the ref to it.
-    # e.g. This creates {'version:1.2.3': ['1.2.x'],
+    # e.g. This creates {'version:1.2.3.chromium.2': ['1.2.x'],
     #                    'version:1.3.1': ['latest', '1.3.x', '1.x']}.
     version_refs = {}
-    for ref, versions in ref_candidates.items():
-      version = sorted(versions)[-1]
-      version_tag = 'version:%s' % (version.vstring,)
+    for ref, version_buildids in ref_candidates.items():
+      version = sorted(version_buildids, key=lambda vb: vb[0])[-1]
+      version_tag = 'version:%s' % (version[1],)
       version_refs.setdefault(version_tag, []).append(ref)
 
     # Finally set the refs!

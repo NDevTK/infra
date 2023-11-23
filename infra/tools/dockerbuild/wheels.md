@@ -5688,12 +5688,12 @@ wheel: <
 
 ## **numpy**
 
-### 1.2x.supported.2
+### 1.20.supported.2
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.2x.supported.2"
+  version: "version:1.20.supported.2"
 >
 ```
 

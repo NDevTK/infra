@@ -2,8 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import distutils.version
 import os
+
+import packaging.version
 
 from . import util
 
@@ -77,7 +78,7 @@ contact Chrome Operations:
 
   def add_package(self, whl, plat):
     pyversions = tuple(whl.spec.pyversions or () if whl.spec.universal else ())
-    key = (whl.spec.name, whl.build_id, pyversions)
+    key = (whl.spec.name, whl.spec.version, pyversions)
     _, v = self._packages.setdefault(key, (whl, set()))
     if plat:
       v.add(plat.name)
@@ -101,7 +102,7 @@ contact Chrome Operations:
       ))
 
       for version, (whl, plats) in sorted(
-          versions.items(), key=lambda x: distutils.version.LooseVersion(x[0])):
+          versions.items(), key=lambda x: packaging.version.parse(x[0])):
         package = whl.cipd_package(templated=True)
 
         # Build an italic list of supported platforms.
@@ -111,7 +112,7 @@ contact Chrome Operations:
         ])
 
         fd.write(self._WHEEL_TEMPLATE % dict(
-            version=version,
+            version=whl.build_id,
             supported=supported,
             extra_data='\n'.join(whl.md_lines),
             package_name=package.name,

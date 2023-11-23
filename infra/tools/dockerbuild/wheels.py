@@ -62,7 +62,8 @@ from __future__ import print_function
 import difflib
 import re
 import sys
-from pkg_resources import parse_version
+
+import packaging.version
 
 from . import build_platform
 from .builder import BuildDependencies, TppLib, TppTool
@@ -101,8 +102,9 @@ _OPENCV_SRC_RE = re.compile('opencv-python-[0-9.]+/opencv/samples/.*')
 def assert_sorted(section_type, *builders):
   name_vers = []
   for i, builder in enumerate(builders):
-    name_vers.append((builder.spec.name,
-                      parse_version(builder.spec.version or '???')))
+    name_vers.append(
+        (builder.spec.name, packaging.version.parse(builder.spec.version or
+                                                    '1')))
     t = type(builder).__name__
     if t != section_type:
       print(
@@ -172,9 +174,10 @@ SPECS.update({
         'ConditionalWheel',
         ConditionalWheel(
             'numpy',
-            '1.2x.supported.2',
+            '1.20',
             select_numpy,
             skip_plat=build_platform.ALL_PY311,
+            patch_version='supported.2',
         ),
     )
 })
@@ -193,7 +196,7 @@ _CFFI_DEPENDENCY = SourceOrPrebuilt(
     packaged=(),
 )
 
-_NUMPY_DEPENDENCY = SPECS['numpy-1.2x.supported.2']
+_NUMPY_DEPENDENCY = SPECS['numpy-1.20.supported.2']
 
 
 def _NumPyTppLibs(w):
@@ -2229,12 +2232,9 @@ from .wheel_wheel import MultiWheel
 SPECS.update({
     s.spec.tag: s for s in assert_sorted(
         'MultiWheel',
-        # This should actually be 0.2.7, but the version needs to change in
-        # order to pick up dependencies that weren't included when the
-        # MultiWheel was originally added.
         MultiWheel(
             'pathos',
-            '0.2.7.chromium.6',
+            '0.2.7',
             ([
                 Universal('dill', '0.3.3'),
                 Universal('klepto', '0.2.0', default=False),
@@ -2268,13 +2268,11 @@ SPECS.update({
             ]),
             pyversions=['py3'],
             skip_plat=build_platform.ALL_PY311,
+            patch_version='chromium.6',
         ),
-        # This should actually be 0.3.0, but the version needs to change in
-        # order to remove dependencies that were erroneously included when
-        # the MultiWheel was originally added.
         MultiWheel(
             'pathos',
-            '0.3.0.chromium.2',
+            '0.3.0',
             ([
                 Universal('dill', '0.3.6'),
                 SourceOrPrebuilt(
@@ -2289,17 +2287,16 @@ SPECS.update({
                 Universal('ppft', '1.7.6.6', pyversions=['py3']),
             ]),
             pyversions=['py3'],
+            patch_version='chromium.2',
         ),
-        # This should actually be 4.8.0, but the version needs to change in
-        # order to pick up dependencies that weren't included when the
-        # wheel was originally added.
         MultiWheel(
             'pexpect',
-            '4.8.0.chromium.1',
+            '4.8.0',
             ([
                 Universal('pexpect', '4.8.0'),
                 Universal('ptyprocess', '0.7.0'),
             ]),
+            patch_version='chromium.1',
         ),
         # List cultivated from "pyobjc-7.3"'s "setup.py" as a superset of
         # available packages.
@@ -2308,7 +2305,7 @@ SPECS.update({
         # 11.x (arm64).
         MultiWheel(
             'pyobjc',
-            '7.3.chromium.1',  # Rebuild for crbug/1233745
+            '7.3',
             ([
                 SourceOrPrebuilt(
                     name,
@@ -2436,6 +2433,7 @@ SPECS.update({
             ]),
             only_plat=['mac-x64-py3.8', 'mac-arm64-py3.8'],
             pyversions=['py3'],
+            patch_version='chromium.1',  # Rebuild for crbug/1233745
         ),
         # List cultivated from "pyobjc-10.0"'s "setup.py" as a superset of
         # available packages.
