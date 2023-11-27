@@ -212,7 +212,7 @@ class UserService(object):
           for (user_id, email) in zip(ids, emails)
           if user_id in existing_ids)
       logging.error(
-          'Unable to create users because IDs are already taken: %s',
+          'Unable to create users because IDs are already taken: %.100000s',
           existing_users)
 
     row_values = [

@@ -264,13 +264,14 @@ class MonorailConnection(object):
         '%d rows in %d ms: %s', cursor.rowcount, int(duration),
         formatted_statement)
     if duration >= 2000:
-      logger.log({
-          'log_type': 'database/query',
-          'statement': formatted_statement,
-          'type': formatted_statement.split(' ')[0],
-          'duration': duration / 1000,
-          'row_count': cursor.rowcount,
-      })
+      logger.log(
+          {
+              'log_type': 'database/query',
+              'statement': formatted_statement[:100000],
+              'type': formatted_statement.split(' ')[0],
+              'duration': duration / 1000,
+              'row_count': cursor.rowcount,
+          })
 
     if commit and not stmt_str.startswith('SELECT'):
       try:
