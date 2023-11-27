@@ -67,6 +67,8 @@ http {
   proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
   proxy_set_header      X-NO-CACHE $http_x_no_cache;
   proxy_cache_valid     200 720h;
+  send_timeout          3600;
+  proxy_ignore_client_abort on;
   expires max;
 
   upstream downloader{
