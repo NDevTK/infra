@@ -17,6 +17,9 @@ create {
 
   build {
     tool: "tools/flex"
+    # TODO: Switch this back to the latest protobuf once we are building
+    # an nsjail version with https://github.com/google/nsjail/issues/225
+    # resolved.
     tool: "tools/protoc@2@21.12"
     dep: "tools/protobuf-cpp-21"
     dep: "tools/libnl"
