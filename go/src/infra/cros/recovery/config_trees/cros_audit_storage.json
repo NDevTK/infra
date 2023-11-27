@@ -1649,7 +1649,7 @@
                   "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
-                    "command:chromeos-install --dst $(lsblk --bytes --output NAME  --paths -I 259 -n -d) --yes",
+                    "command:chromeos-install --dst $(lsblk --bytes --output NAME  --paths -I 259,8 -n -d) --yes",
                     "background:false"
                   ],
                   "timeout": "10m0s",
