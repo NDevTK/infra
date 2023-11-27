@@ -79,8 +79,8 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 
 	// Build Go.
 	ext := scriptExt(spec.inputs.Host)
-	ctx = addPortEnv(ctx, spec.inputs.Target, "GOHOSTOS="+spec.inputs.Host.Goos, "GOHOSTARCH="+spec.inputs.Host.Goarch)
-	if err := cmdStepRun(ctx, "make"+ext, spec.goScriptCmd(ctx, "make"+ext), false); err != nil {
+	hostCtx := addEnv(ctx, "GOHOSTOS="+spec.inputs.Host.Goos, "GOHOSTARCH="+spec.inputs.Host.Goarch)
+	if err := cmdStepRun(hostCtx, "make"+ext, spec.goScriptCmd(ctx, "make"+ext), false); err != nil {
 		return err
 	}
 

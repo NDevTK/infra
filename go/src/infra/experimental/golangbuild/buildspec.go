@@ -205,6 +205,8 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	env := environ.FromCtx(ctx)
 	env.Load(b.inputs.Env)
+	env.Set("GOOS", b.inputs.Target.Goos)
+	env.Set("GOARCH", b.inputs.Target.Goarch)
 	env.Set("GOROOT_BOOTSTRAP", filepath.Join(b.toolsRoot, "go_bootstrap"))
 	env.Set("GOPATH", b.gopath) // Explicitly set to an empty per-build directory, to avoid reusing the implicit default one.
 	env.Set("GOBIN", "")
@@ -221,7 +223,7 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	if b.inputs.Host.Goos == "windows" {
 		env.Set("GOBUILDEXIT", "1") // On Windows, emit exit codes from .bat scripts. See go.dev/issue/9799.
 		ccPath := filepath.Join(b.toolsRoot, "cc/windows/gcc64/bin")
-		if env.Get("GOARCH") == "386" {
+		if b.inputs.Target.Goarch == "386" { // Not obvious whether this should check host or target. As of writing they never differ.
 			ccPath = filepath.Join(b.toolsRoot, "cc/windows/gcc32/bin")
 		}
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, ccPath))
@@ -241,14 +243,16 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	return env.SetInCtx(ctx)
 }
 
-func addPortEnv(ctx context.Context, target *golangbuildpb.Port, extraEnv ...string) context.Context {
+func addEnv(ctx context.Context, add ...string) context.Context {
 	env := environ.FromCtx(ctx)
-	env.Set("GOOS", target.Goos)
-	env.Set("GOARCH", target.Goarch)
-	for _, e := range extraEnv {
+	for _, e := range add {
 		env.SetEntry(e)
 	}
 	return env.SetInCtx(ctx)
+}
+
+func addPortEnv(ctx context.Context, target *golangbuildpb.Port, extraEnv ...string) context.Context {
+	return addEnv(ctx, append(extraEnv, "GOOS="+target.Goos, "GOARCH="+target.Goarch)...)
 }
 
 // goTestArgs returns go command arguments that test the specified import path patterns.
