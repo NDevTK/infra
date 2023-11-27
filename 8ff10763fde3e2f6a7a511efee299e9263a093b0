@@ -70,6 +70,30 @@
       },
       "revId": "8ff10763fde3e2f6a7a511efee299e9263a093b0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85e0c332_19351a7d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-11-27T05:34:50Z",
+      "side": 1,
+      "message": "https://chromium-review.googlesource.com/c/infra/infra/+/5060474 is better?",
+      "parentUuid": "aaec193c_48be968d",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 64
+      },
+      "revId": "8ff10763fde3e2f6a7a511efee299e9263a093b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
