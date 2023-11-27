@@ -1,0 +1,10 @@
+package: chromiumos/infra/suite_manager/${platform}
+description: WIP ChromeOS TSE CLI tool for go/suitemanager-dd
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/suite_manager
+root: ../../go/bin
+data:
+  - file: suite_manager${exe_suffix}
+  - version_file: .versions/suite_manager${exe_suffix}.cipd_version
