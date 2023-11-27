@@ -8,6 +8,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
+	"sort"
 	"strings"
 
 	"infra/libs/git"
@@ -20,16 +22,21 @@ import (
 )
 
 type SrcConfig struct {
-	Default BuilderSpec           `json:"_default"`
-	Specs   map[string]BucketSpec `json:"specs"`
+	DefaultSpecs map[string]ProblemSpec  `json:"_default_specs"` // e.g. UNHEALTHY -> {}
+	BucketSpecs  map[string]BuilderSpecs `json:"specs"`          // e.g. ci -> {}
 }
-type BucketSpec map[string]BuilderSpec
+type BuilderSpecs map[string]BuilderSpec // e.g. linux-rel -> {}
 type BuilderSpec struct {
-	Thresholds       Thresholds `json:"thresholds"`
-	ContactTeamEmail string     `json:"contact_team_email"`
+	ContactTeamEmail string        `json:"contact_team_email"`
+	ProblemSpecs     []ProblemSpec `json:"problem_specs"` // e.g. UNHEALTHY -> {}
+}
+type ProblemSpec struct {
+	Name       string     `json:"name"` // This name will be shown in Milo when a builder is affected by this Problem.
+	Score      int        `json:"score"`
+	Thresholds Thresholds `json:"thresholds"`
 }
 type Thresholds struct {
-	Default         string               `json:"_default"` // if set to the sentinel value "_default", then use the defaults
+	Default         string               `json:"_default"` // if set to one of the DefaultSpecs keys defined in SrcConfig, then use that default spec. Mutually exclusive with the other fields in this struct.
 	BuildTime       PercentileThresholds `json:"build_time"`
 	FailRate        AverageThresholds    `json:"fail_rate"`
 	InfraFailRate   AverageThresholds    `json:"infra_fail_rate"`
@@ -48,7 +55,13 @@ type AverageThresholds struct {
 }
 
 const explanationPrefix = "Builder was above the"
-const explanationSuffix = "threshold for the last 7 days of builds."
+
+const HEALTHY_SCORE = 10
+const UNHEALTHY_SCORE = 5
+const LOW_VALUE_SCORE = 1
+const UNSET_SCORE = 0
+
+const UNSET_THRESHOLD = 0
 
 func getSrcConfig(buildCtx context.Context) (*SrcConfig, error) {
 	var err error
@@ -82,26 +95,29 @@ func getSrcConfig(buildCtx context.Context) (*SrcConfig, error) {
 	return &srcConfig, nil
 }
 
-func compareThresholds(ctx context.Context, row *Row, builderConfig *BuilderSpec) error {
-	row.HealthScore = 10
+func compareThresholds(ctx context.Context, row *Row, problemSpec *ProblemSpec) error {
+	if row.HealthScore == UNSET_SCORE {
+		row.HealthScore = HEALTHY_SCORE
+	}
+	// TODO: make metric.Threshold a list, right now it just takes the lowest problem spec score threshold
 	var stepErr error
 	for _, metric := range row.Metrics {
 		switch metric.Type {
 		case "build_mins_p50":
-			metric.Threshold = builderConfig.Thresholds.BuildTime.P50Mins
+			metric.Threshold = problemSpec.Thresholds.BuildTime.P50Mins
 		case "build_mins_p95":
-			metric.Threshold = builderConfig.Thresholds.BuildTime.P95Mins
+			metric.Threshold = problemSpec.Thresholds.BuildTime.P95Mins
 		case "fail_rate":
-			metric.Threshold = builderConfig.Thresholds.FailRate.Average
+			metric.Threshold = problemSpec.Thresholds.FailRate.Average
 		case "infra_fail_rate":
-			metric.Threshold = builderConfig.Thresholds.InfraFailRate.Average
+			metric.Threshold = problemSpec.Thresholds.InfraFailRate.Average
 		case "pending_mins_p50":
-			metric.Threshold = builderConfig.Thresholds.PendingTime.P50Mins
+			metric.Threshold = problemSpec.Thresholds.PendingTime.P50Mins
 		case "pending_mins_p95":
-			metric.Threshold = builderConfig.Thresholds.PendingTime.P95Mins
+			metric.Threshold = problemSpec.Thresholds.PendingTime.P95Mins
 		// TODO: add checks for Test Pending Time once the data is added to the DB query
 		default:
-			metric.HealthScore = 0
+			metric.HealthScore = UNSET_SCORE
 			err := fmt.Errorf("Found unknown metric type %s in BigQuery", metric.Type)
 
 			// Log all, return just the last
@@ -109,23 +125,29 @@ func compareThresholds(ctx context.Context, row *Row, builderConfig *BuilderSpec
 			stepErr = err
 			continue
 		}
-		compareThresholdsHelper(row, metric)
+		compareThresholdsHelper(row, problemSpec, metric)
 	}
 	row.ScoreExplanation = strings.TrimRight(row.ScoreExplanation, " ")
 
 	return stepErr
 }
 
-func compareThresholdsHelper(row *Row, metric *Metric) {
-	if metric.Threshold == 0 {
-		metric.HealthScore = 0 // redundant but wanted to be explicit
+func compareThresholdsHelper(row *Row, problemSpec *ProblemSpec, metric *Metric) {
+	if metric.Threshold == UNSET_THRESHOLD {
 		return
 	}
 
-	metric.HealthScore = 10
+	metric.HealthScore = int(math.Min(HEALTHY_SCORE, float64(metric.HealthScore)))
 	if metric.Value > metric.Threshold {
-		metric.HealthScore = 1
-		row.HealthScore = 1
-		row.ScoreExplanation += fmt.Sprintf("%s %s %s ", explanationPrefix, metric.Type, explanationSuffix)
+		metric.HealthScore = problemSpec.Score
+		row.HealthScore = problemSpec.Score
+		row.ScoreExplanation += fmt.Sprintf("%s %s threshold in the %s ProblemSpec", explanationPrefix, metric.Type, problemSpec.Name)
 	}
+}
+
+// Used for problem precedence
+func sortProblemSpecs(problemSpecs []ProblemSpec) {
+	sort.Slice(problemSpecs, func(i, j int) bool {
+		return problemSpecs[i].Score > problemSpecs[j].Score
+	})
 }
