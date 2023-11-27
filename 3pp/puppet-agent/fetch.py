@@ -8,7 +8,7 @@ import json
 import os
 import sys
 
-VERSION = '7.25.0'
+VERSION = '7.27.0'
 
 _EXTENSION = {
     'windows': '.msi',
