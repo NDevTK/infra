@@ -113,7 +113,7 @@ func (c *Cache) GetActionResult(ctx context.Context, cmd *execute.Cmd) error {
 	cmd.SetActionResult(result, true)
 	c.setActionResultStdout(ctx, cmd, result)
 	c.setActionResultStderr(ctx, cmd, result)
-	err = cmd.RecordOutputs(ctx, c.store, now)
+	err = cmd.RecordOutputs(ctx, c.store, now, result)
 	if err != nil {
 		clog.Infof(ctx, "cache get %s: %v", time.Since(now), err)
 		return err

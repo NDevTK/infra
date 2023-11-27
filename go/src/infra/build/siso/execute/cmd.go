@@ -670,8 +670,8 @@ func (c *Cmd) entriesFromResult(ctx context.Context, ds hashfs.DataSource, resul
 }
 
 // RecordOutputs records cmd's outputs from action result in hashfs.
-func (c *Cmd) RecordOutputs(ctx context.Context, ds hashfs.DataSource, now time.Time) error {
-	entries, depEntries := c.entriesFromResult(ctx, ds, c.actionResult)
+func (c *Cmd) RecordOutputs(ctx context.Context, ds hashfs.DataSource, now time.Time, actionResult *rpb.ActionResult) error {
+	entries, depEntries := c.entriesFromResult(ctx, ds, actionResult)
 	clog.Infof(ctx, "output entries %d+%d", len(entries), len(depEntries))
 	err := c.HashFS.Update(ctx, c.ExecRoot, entries, now, c.CmdHash, c.actionDigest)
 	if err != nil {

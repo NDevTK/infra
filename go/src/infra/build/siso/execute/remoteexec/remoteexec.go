@@ -184,7 +184,7 @@ func (re *RemoteExec) processResult(ctx context.Context, action digest.Digest, c
 		// Even when err was not nil, the outputs were populated to ActionResult for investigation.
 		return err
 	}
-	err = cmd.RecordOutputs(ctx, cmd.HashFS.DataSource(), now)
+	err = cmd.RecordOutputs(ctx, cmd.HashFS.DataSource(), now, result)
 	if err != nil {
 		return err
 	}

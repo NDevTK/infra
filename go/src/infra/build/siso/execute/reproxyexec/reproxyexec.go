@@ -428,5 +428,5 @@ func updateHashFSFromReproxy(ctx context.Context, cmd *execute.Cmd, actionLog *l
 	}
 	// TODO: Should handle output symlinks if they are used in Chromium builds?
 	ds := &reproxyOutputsDataSource{execRoot: cmd.ExecRoot, iometrics: cmd.HashFS.IOMetrics}
-	return cmd.RecordOutputs(ctx, ds, updatedTime)
+	return cmd.RecordOutputs(ctx, ds, updatedTime, actionResult)
 }
