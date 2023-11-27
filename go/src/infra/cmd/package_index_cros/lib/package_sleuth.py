@@ -92,7 +92,8 @@ class PackageSleuth:
     for ebuild in ebuilds:
       is_supported = pkg.IsPackageSupported(ebuild, self.setup)
       if is_supported != pkg.PackageSupport.SUPPORTED:
-        g_logger.warning('%s: Not supported: %s', ebuild.package, is_supported)
+        g_logger.warning('%s: Not supported: %s', ebuild.package,
+                         is_supported.name)
         packages.unsupported.append(ebuild.package)
       else:
         packages.supported.append(

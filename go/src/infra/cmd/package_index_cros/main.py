@@ -206,7 +206,7 @@ def main():
   if args.build_dir:
     args.build_dir = os.path.abspath(args.build_dir)
 
-  SetupLogger(logging.DEBUG if args.verbose else logging.WARNING)
+  SetupLogger(logging.DEBUG if args.verbose else logging.INFO)
 
   chromite_dir = _FindChromite(os.getcwd())
   if not chromite_dir:

@@ -243,6 +243,9 @@ class Package:
 
     raise NotImplementedError('Can compare only with Package or string')
 
+  def __str__(self) -> str:
+    return self.full_name
+
   @property
   def is_built_from_actual_sources(self) -> bool:
     assert self.temp_dir
@@ -315,6 +318,7 @@ class Package:
     """
 
     base_dir = os.path.join(self.setup.board_dir, 'tmp', 'portage')
+    not_in_dirs = []
 
     for version_suffix in self._GetOrderedVersionSuffixes():
       temp_dir = os.path.join(base_dir, self.package_info.category,
@@ -323,9 +327,13 @@ class Package:
 
       if os.path.isdir(temp_dir):
         return temp_dir
+      else:
+        not_in_dirs.append(temp_dir)
 
-    raise Package.DirsException(self, 'Cannot find temp dir',
-                                os.path.join(base_dir))
+    # Failed all tries, report and raise.
+    dirs_tried = ', '.join([str(os.path.join(x)) for x in not_in_dirs])
+
+    raise Package.DirsException(self, 'Cannot find temp dir in', dirs_tried)
 
   def _GetBuildDir(self) -> str:
     """

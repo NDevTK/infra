@@ -66,9 +66,8 @@ class Conductor:
     assert len(packages_list) == len(set([p.full_name for p in packages_list
                                          ])), 'Duplicates among packages'
 
-    if ignored_packages_list:
-      g_logger.warning('Following packages are not supported and ignored: %s',
-                       ignored_packages_list)
+    g_logger.info('The following packages are going forward: %s',
+                  '\n'.join([str(p) for p in packages_list]))
 
     # Sort packages so that dependencies go first.
     self.packages = Conductor._GetSortedPackages(packages_list)
@@ -87,7 +86,13 @@ class Conductor:
     Calls generators one by one. |Prepare| should be called prior this method.
     """
     for p in self.packages:
-      p.Initialize()
+      try:
+        p.Initialize()
+      except Exception as e:
+        if keep_going:
+          g_logger.warning('Skipped with initialization failure: %s', e)
+          continue
+        raise e
 
     build_dir_conflicts = {}
     if build_output_dir:
