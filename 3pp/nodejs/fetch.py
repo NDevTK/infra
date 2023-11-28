@@ -10,8 +10,8 @@ import ssl
 import sys
 import urllib.request
 
-from pkg_resources import parse_version
 import certifi
+import packaging.version
 
 BASE_URL = 'https://nodejs.org/dist/'
 
@@ -24,10 +24,10 @@ urllib.request.install_opener(
 
 def do_latest():
   data = json.load(urllib.request.urlopen(BASE_URL + 'index.json'))
-  max_version, max_string = parse_version('0'), '0'
+  max_version, max_string = packaging.version.parse('0'), '0'
   for release in data:
     s = release['version'].lstrip('v')
-    v = parse_version(s)
+    v = packaging.version.parse(s)
     if v > max_version:
       max_version = v
       max_string = s

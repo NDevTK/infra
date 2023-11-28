@@ -10,13 +10,13 @@ import ssl
 import sys
 import urllib.request
 
-from pkg_resources import parse_version
 import certifi
+import packaging.version
 
 BASE_URL = 'https://nodejs.org/dist/'
 
 # Follow the LTS release track.
-_VERSION_LIMIT = parse_version("19.0")
+_VERSION_LIMIT = packaging.version.parse("19.0")
 
 # Make sure up-to-date root certificates are used.
 urllib.request.install_opener(
@@ -27,10 +27,10 @@ urllib.request.install_opener(
 
 def do_latest():
   data = json.load(urllib.request.urlopen(BASE_URL + 'index.json'))
-  max_version, max_string = parse_version('0'), '0'
+  max_version, max_string = packaging.version.parse('0'), '0'
   for release in data:
     s = release['version'].lstrip('v')
-    v = parse_version(s)
+    v = packaging.version.parse(s)
     if max_version < v < _VERSION_LIMIT:
       max_version = v
       max_string = s

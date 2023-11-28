@@ -12,7 +12,7 @@ import sys
 import urllib.request
 
 import certifi
-from pkg_resources import parse_version
+import packaging.version
 
 # Make sure up-to-date root certificates are used.
 urllib.request.install_opener(
@@ -53,16 +53,16 @@ TAGGED_RELEASE = (
     'https://api.github.com/repos/protocolbuffers/protobuf/releases/tags/v%s')
 
 # TODO(crbug.com/1422445): Remove version limit once blocking issues are fixed.
-VERSION_LIMIT = parse_version("22.0")
+VERSION_LIMIT = packaging.version.parse("22.0")
 
 
 def do_latest():
   releases = json.load(urllib.request.urlopen(RELEASES))
-  latest = parse_version('0')
+  latest = packaging.version.parse('0')
   for r in releases:
     if r['prerelease']:
       continue
-    v = parse_version(r['tag_name'][1:])  # Strip leading 'v'
+    v = packaging.version.parse(r['tag_name'][1:])  # Strip leading 'v'
     if v >= VERSION_LIMIT:
       continue
     latest = max(latest, v)

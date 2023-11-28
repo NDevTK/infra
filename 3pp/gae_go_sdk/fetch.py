@@ -11,7 +11,7 @@ import os
 import sys
 import urllib.request
 
-from pkg_resources import parse_version
+import packaging.version
 
 
 def _gae_platform():
@@ -29,15 +29,15 @@ def do_latest():
   url = BASE_URL+'?prefix=featured/%s&delimiter=/' % ZIP_PREFIX
   print("Hitting %r" % url, file=sys.stderr)
   data = json.load(urllib.request.urlopen(url))
-  max_ver, max_string = parse_version(''), ''
+  max_ver, max_string = packaging.version.parse('0'), '0'
   for obj in data['items']:
     ver_string = obj['name'].split('/')[-1].lstrip(ZIP_PREFIX).rstrip('.zip')
-    ver = parse_version(ver_string)
+    ver = packaging.version.parse(ver_string)
     if ver > max_ver:
       max_ver = ver
       max_string = ver_string
 
-  if not max_string:
+  if max_string == '0':
     print("GOT DATA")
     for obj in data['items']:
       print(obj)

@@ -9,14 +9,15 @@ import os
 import sys
 import urllib.request
 
-from pkg_resources import parse_version
+import packaging.version
 
 
 def do_latest():
   versions = []
   for release in json.load(
       urllib.request.urlopen('https://golang.org/dl/?mode=json')):
-    versions.append(parse_version(release['version'].replace('go', '')))
+    versions.append(
+        packaging.version.parse(release['version'].replace('go', '')))
   versions.sort()
   print(versions[-1])
 

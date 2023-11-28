@@ -11,8 +11,8 @@ import ssl
 import sys
 import urllib.request
 
-import pkg_resources
 import certifi
+import packaging.version
 
 # Make sure up-to-date root certificates are used.
 urllib.request.install_opener(
@@ -34,7 +34,7 @@ def _get_version(pkgname, bad_versions=()):
   releases = json.load(
       urllib.request.urlopen('https://pypi.org/pypi/%s/json' %
                              pkgname))['releases']
-  versions = [pkg_resources.parse_version(v) for v in releases.keys()]
+  versions = [packaging.version.parse(v) for v in releases.keys()]
   for version in sorted(versions, reverse=True):
     version_str = str(version)
     for filedata in releases[version_str]:

@@ -11,7 +11,7 @@ import sys
 import urllib.request
 
 import certifi
-from pkg_resources import parse_version
+import packaging.version
 
 # Make sure up-to-date root certificates are used.
 urllib.request.install_opener(
@@ -69,11 +69,12 @@ PROTOC_PLATFORMS = {
 
 def do_latest():
   releases = json.load(urllib.request.urlopen(RELEASES))
-  latest = parse_version('0')
+  latest = packaging.version.parse('0')
   for r in releases:
     if r['prerelease']:
       continue
-    latest = max(latest, parse_version(r['tag_name'][1:]))  # Strip leading 'v'
+    latest = max(latest, packaging.version.parse(
+        r['tag_name'][1:]))  # Strip leading 'v'
   print(latest)
 
 

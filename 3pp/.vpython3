@@ -37,3 +37,7 @@ wheel: <
   name: "infra/python/wheels/urllib3-py2_py3"
   version: "version:1.26.6"
 >
+wheel: <
+  name: "infra/python/wheels/packaging-py3"
+  version: "version:23.0"
+>

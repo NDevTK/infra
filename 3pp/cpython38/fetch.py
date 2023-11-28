@@ -12,8 +12,8 @@ import subprocess
 import sys
 import urllib.request
 
-from pkg_resources import parse_version
 import certifi
+import packaging.version
 
 
 # TODO: Find these files dynamically.
@@ -62,7 +62,7 @@ def get_webinstaller_suffix(platform):
 
 # Python 3.8.10 was the last 3.8.x release that will have a binary installer
 # available.
-_VERSION_LIMIT = parse_version("3.8.11")
+_VERSION_LIMIT = packaging.version.parse("3.8.11")
 
 
 def do_latest(platform):
@@ -75,7 +75,7 @@ def do_latest(platform):
   highest = None
   href_re = re.compile(r'href="(\d+\.\d+\.\d+)/"')
   for m in href_re.finditer(page_data.read().decode('utf-8')):
-    v = parse_version(m.group(1))
+    v = packaging.version.parse(m.group(1))
     if v < _VERSION_LIMIT:
       if not highest or v > highest:
         highest = v
@@ -85,7 +85,7 @@ def do_latest(platform):
   highest = None
   href_re = re.compile(r'href="python-(\d+\.\d+\.\d+((a|b|rc)\d+)?)%s"' % suf)
   for m in href_re.finditer(page_data.read().decode('utf-8')):
-    v = parse_version(m.group(1))
+    v = packaging.version.parse(m.group(1))
     if v < _VERSION_LIMIT:
       if not highest or v > highest:
         highest = v
