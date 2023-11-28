@@ -8,7 +8,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/builder"
     ],
     "infra_step": true,
@@ -359,7 +359,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/a11f4e145e770058b05ce0e207cc9fb23408ede4aaa3bf2e8b996fc4d94f3728"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",

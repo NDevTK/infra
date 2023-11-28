@@ -1556,7 +1556,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-amd64/1.5.0-rc1"
     ],
     "env": {
@@ -1643,7 +1643,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-amd64/1.5.0-rc1/checkout"
     ],
     "env": {
@@ -2020,7 +2020,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/linux-amd64"
     ],
     "env": {
@@ -2239,7 +2239,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/linux-amd64/1.5.0-rc1/out"
     ],
     "env": {
@@ -2441,7 +2441,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_git/linux-amd64"
     ],
     "env": {
@@ -2788,7 +2788,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/linux-amd64/1.2.3"
     ],
     "env": {
@@ -2834,7 +2834,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/linux-amd64/1.2.3/checkout"
     ],
     "env": {
@@ -2999,7 +2999,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/url/deps/bottom_dep_url/linux-amd64"
     ],
     "env": {
@@ -3216,7 +3216,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/linux-amd64/1.2.3/out"
     ],
     "env": {
@@ -3418,7 +3418,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_url/linux-amd64"
     ],
     "env": {
@@ -3778,7 +3778,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/deep_dep/linux-amd64/1.2.3"
     ],
     "env": {
@@ -3825,7 +3825,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/deep_dep/linux-amd64/1.2.3/checkout"
     ],
     "env": {
@@ -3912,7 +3912,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/source/deep_dep"
     ],
     "env": {
@@ -4122,7 +4122,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/deps/deep_dep/linux-amd64"
     ],
     "env": {
@@ -4524,7 +4524,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/fetch_and_package/linux-amd64/2.0.0"
     ],
     "env": {
@@ -4570,7 +4570,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/fetch_and_package/linux-amd64/2.0.0/checkout"
     ],
     "env": {
@@ -4778,7 +4778,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/fetch_and_package/linux-amd64"
     ],
     "env": {
@@ -5035,7 +5035,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/fetch_and_package"
     ],
     "env": {
@@ -5332,7 +5332,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/linux-amd64/1.1.2"
     ],
     "env": {
@@ -5378,7 +5378,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/linux-amd64/1.1.2/checkout"
     ],
     "env": {
@@ -5543,7 +5543,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/url/tools/pkg/linux-amd64"
     ],
     "env": {
@@ -5760,7 +5760,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/linux-amd64/1.1.2/out"
     ],
     "env": {
@@ -5962,7 +5962,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/pkg/linux-amd64"
     ],
     "env": {
@@ -6257,7 +6257,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/posix_tool/linux-amd64/1.2.0"
     ],
     "env": {
@@ -6303,7 +6303,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/posix_tool/linux-amd64/1.2.0/checkout"
     ],
     "env": {
@@ -6388,7 +6388,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/source/posix_tool"
     ],
     "env": {
@@ -6757,7 +6757,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/posix_tool/linux-amd64/1.2.0/out"
     ],
     "env": {
@@ -6959,7 +6959,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/posix_tool/linux-amd64"
     ],
     "env": {
@@ -7289,7 +7289,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/windows_experiment/linux-amd64/2.0.0"
     ],
     "env": {
@@ -7335,7 +7335,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/windows_experiment/linux-amd64/2.0.0/checkout"
     ],
     "env": {
@@ -7543,7 +7543,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/windows_experiment/linux-amd64"
     ],
     "env": {
@@ -7760,7 +7760,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/windows_experiment/linux-amd64/2.0.0/out"
     ],
     "env": {
@@ -7962,7 +7962,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/windows_experiment/linux-amd64"
     ],
     "env": {
@@ -8296,7 +8296,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/git_tool/linux-amd64/1.5.0-rc1"
     ],
     "env": {
@@ -8480,7 +8480,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/git_tool/linux-amd64/1.5.0-rc1/checkout/src/go.repo/tool"
     ],
     "env": {
@@ -8867,7 +8867,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/git_tool/linux-amd64"
     ],
     "env": {
@@ -9244,7 +9244,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/git_tool/linux-amd64/1.5.0-rc1/out"
     ],
     "env": {
@@ -9453,7 +9453,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/build_tools/git_tool/linux-amd64"
     ],
     "env": {
@@ -9539,7 +9539,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/git_tool/linux-amd64/1.5.0-rc1/verify"
     ],
     "env": {
@@ -9618,7 +9618,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/git_tool/linux-amd64/1.5.0-rc1/bin_tools"
     ],
     "env": {
@@ -10016,7 +10016,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/tool/linux-amd64/1.5.0-rc1"
     ],
     "env": {
@@ -10158,7 +10158,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/tool/linux-amd64/1.5.0-rc1/checkout/src/go.repo/tool"
     ],
     "env": {
@@ -10545,7 +10545,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/linux-amd64"
     ],
     "env": {
@@ -10920,7 +10920,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/tool/linux-amd64/1.5.0-rc1/out"
     ],
     "env": {
@@ -11129,7 +11129,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/linux-amd64"
     ],
     "env": {
@@ -11215,7 +11215,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/tool/linux-amd64/1.5.0-rc1/verify"
     ],
     "env": {
@@ -11294,7 +11294,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/tool/linux-amd64/1.5.0-rc1/bin_tools"
     ],
     "env": {
@@ -11729,7 +11729,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/dep/linux-amd64/1.0.0"
     ],
     "env": {
@@ -11875,7 +11875,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/dep/linux-amd64/1.0.0/checkout"
     ],
     "env": {
@@ -11960,7 +11960,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/source/dep"
     ],
     "env": {
@@ -12277,7 +12277,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/dep/linux-amd64/1.0.0/out"
     ],
     "env": {
@@ -12479,7 +12479,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/deps/dep/linux-amd64"
     ],
     "env": {
@@ -12809,7 +12809,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg/linux-amd64/2.0.0"
     ],
     "env": {
@@ -12998,7 +12998,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg/linux-amd64/2.0.0/checkout"
     ],
     "env": {
@@ -13206,7 +13206,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg/linux-amd64"
     ],
     "env": {
@@ -13613,7 +13613,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg/linux-amd64/2.0.0/out"
     ],
     "env": {
@@ -13815,7 +13815,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/pkg/linux-amd64"
     ],
     "env": {
@@ -14145,7 +14145,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_checkout/linux-amd64/2.0.0"
     ],
     "env": {
@@ -14334,7 +14334,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_checkout/linux-amd64/2.0.0/checkout"
     ],
     "env": {
@@ -14495,7 +14495,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg_checkout/linux-amd64"
     ],
     "env": {
@@ -14902,7 +14902,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_checkout/linux-amd64/2.0.0/out"
     ],
     "env": {
@@ -15104,7 +15104,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/pkg_checkout/linux-amd64"
     ],
     "env": {
@@ -15434,7 +15434,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0"
     ],
     "env": {
@@ -15623,7 +15623,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout"
     ],
     "env": {
@@ -15831,7 +15831,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg_timeout/linux-amd64"
     ],
     "env": {
@@ -16240,7 +16240,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/out"
     ],
     "env": {
@@ -16442,7 +16442,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/pkg_timeout/linux-amd64"
     ],
     "env": {

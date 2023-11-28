@@ -145,7 +145,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/builder/recipe_engine"
     ],
     "infra_step": true,
@@ -298,7 +298,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/builder/depot_tools"
     ],
     "infra_step": true,

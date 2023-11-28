@@ -1562,7 +1562,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1"
     ],
     "env": {
@@ -1655,7 +1655,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout"
     ],
     "env": {
@@ -2062,7 +2062,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/mac-arm64"
     ],
     "env": {
@@ -2296,7 +2296,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/out"
     ],
     "env": {
@@ -2669,7 +2669,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_git/mac-arm64"
     ],
     "env": {
@@ -3040,7 +3040,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3"
     ],
     "env": {
@@ -3089,7 +3089,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout"
     ],
     "env": {
@@ -3266,7 +3266,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/url/deps/bottom_dep_url/mac-arm64"
     ],
     "env": {
@@ -3498,7 +3498,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/out"
     ],
     "env": {
@@ -3871,7 +3871,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_url/mac-arm64"
     ],
     "env": {
@@ -4255,7 +4255,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/deep_dep/mac-arm64/1.2.3"
     ],
     "env": {
@@ -4305,7 +4305,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/deep_dep/mac-arm64/1.2.3/checkout"
     ],
     "env": {
@@ -4398,7 +4398,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/source/deep_dep"
     ],
     "env": {
@@ -4623,7 +4623,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/deps/deep_dep/mac-arm64"
     ],
     "env": {
@@ -5016,7 +5016,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2"
     ],
     "env": {
@@ -5065,7 +5065,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout"
     ],
     "env": {
@@ -5242,7 +5242,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/url/tools/pkg/mac-arm64"
     ],
     "env": {
@@ -5474,7 +5474,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/out"
     ],
     "env": {
@@ -5847,7 +5847,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/pkg/mac-arm64"
     ],
     "env": {
@@ -6163,7 +6163,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0"
     ],
     "env": {
@@ -6212,7 +6212,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout"
     ],
     "env": {
@@ -6303,7 +6303,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/source/posix_tool"
     ],
     "env": {
@@ -6699,7 +6699,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/out"
     ],
     "env": {
@@ -7072,7 +7072,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/posix_tool/mac-arm64"
     ],
     "env": {
@@ -7426,7 +7426,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0"
     ],
     "env": {
@@ -7475,7 +7475,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout"
     ],
     "env": {
@@ -7698,7 +7698,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/windows_experiment/mac-arm64"
     ],
     "env": {
@@ -7930,7 +7930,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/out"
     ],
     "env": {
@@ -8303,7 +8303,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/windows_experiment/mac-arm64"
     ],
     "env": {
@@ -8661,7 +8661,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1"
     ],
     "env": {
@@ -8768,7 +8768,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/mac-arm64"
     ],
     "env": {
@@ -9046,7 +9046,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool"
     ],
     "env": {
@@ -9463,7 +9463,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/git_tool/mac-arm64"
     ],
     "env": {
@@ -9867,7 +9867,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/out"
     ],
     "env": {
@@ -10248,7 +10248,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/build_tools/git_tool/mac-arm64"
     ],
     "env": {
@@ -10340,7 +10340,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify"
     ],
     "env": {
@@ -10880,7 +10880,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1"
     ],
     "env": {
@@ -11085,7 +11085,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool"
     ],
     "env": {
@@ -11502,7 +11502,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/mac-arm64"
     ],
     "env": {
@@ -11904,7 +11904,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/out"
     ],
     "env": {
@@ -12285,7 +12285,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/mac-arm64"
     ],
     "env": {
@@ -12377,7 +12377,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify"
     ],
     "env": {
@@ -12957,7 +12957,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0"
     ],
     "env": {
@@ -13112,7 +13112,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout"
     ],
     "env": {
@@ -13203,7 +13203,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/source/dep"
     ],
     "env": {
@@ -13544,7 +13544,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/out"
     ],
     "env": {
@@ -13917,7 +13917,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/deps/dep/mac-arm64"
     ],
     "env": {
@@ -14271,7 +14271,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0"
     ],
     "env": {
@@ -14472,7 +14472,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout"
     ],
     "env": {
@@ -14695,7 +14695,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg/mac-arm64"
     ],
     "env": {
@@ -15132,7 +15132,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/out"
     ],
     "env": {
@@ -15505,7 +15505,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/pkg/mac-arm64"
     ],
     "env": {
@@ -15859,7 +15859,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0"
     ],
     "env": {
@@ -16060,7 +16060,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout"
     ],
     "env": {
@@ -16233,7 +16233,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg_checkout/mac-arm64"
     ],
     "env": {
@@ -16670,7 +16670,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/out"
     ],
     "env": {
@@ -17043,7 +17043,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/pkg_checkout/mac-arm64"
     ],
     "env": {
@@ -17397,7 +17397,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_timeout/mac-arm64/2.0.0"
     ],
     "env": {
@@ -17598,7 +17598,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_timeout/mac-arm64/2.0.0/checkout"
     ],
     "env": {
@@ -17821,7 +17821,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg_timeout/mac-arm64"
     ],
     "env": {
@@ -18260,7 +18260,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/pkg_timeout/mac-arm64/2.0.0/out"
     ],
     "env": {
@@ -18633,7 +18633,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/pkg_timeout/mac-arm64"
     ],
     "env": {

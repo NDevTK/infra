@@ -1556,7 +1556,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\bottom_dep_git\\windows-amd64\\1.5.0-rc1"
     ],
     "env": {
@@ -1643,7 +1643,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\bottom_dep_git\\windows-amd64\\1.5.0-rc1\\checkout"
     ],
     "env": {
@@ -2020,7 +2020,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\dep\\windows-amd64"
     ],
     "env": {
@@ -2239,7 +2239,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\bottom_dep_git\\windows-amd64\\1.5.0-rc1\\out"
     ],
     "env": {
@@ -2570,7 +2570,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\deps\\bottom_dep_git\\windows-amd64"
     ],
     "env": {
@@ -2917,7 +2917,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\bottom_dep_url\\windows-amd64\\1.2.3"
     ],
     "env": {
@@ -2963,7 +2963,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\bottom_dep_url\\windows-amd64\\1.2.3\\checkout"
     ],
     "env": {
@@ -3128,7 +3128,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\url\\deps\\bottom_dep_url\\windows-amd64"
     ],
     "env": {
@@ -3345,7 +3345,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\bottom_dep_url\\windows-amd64\\1.2.3\\out"
     ],
     "env": {
@@ -3676,7 +3676,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\deps\\bottom_dep_url\\windows-amd64"
     ],
     "env": {
@@ -4036,7 +4036,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\deep_dep\\windows-amd64\\1.2.3"
     ],
     "env": {
@@ -4083,7 +4083,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\deep_dep\\windows-amd64\\1.2.3\\checkout"
     ],
     "env": {
@@ -4170,7 +4170,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\source\\deep_dep"
     ],
     "env": {
@@ -4380,7 +4380,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\deps\\deep_dep\\windows-amd64"
     ],
     "env": {
@@ -4749,7 +4749,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg_override_and_no_latest\\windows-amd64\\1.1.2"
     ],
     "env": {
@@ -4795,7 +4795,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg_override_and_no_latest\\windows-amd64\\1.1.2\\checkout"
     ],
     "env": {
@@ -4960,7 +4960,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\url\\tools\\pkg\\windows-amd64"
     ],
     "env": {
@@ -5177,7 +5177,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg_override_and_no_latest\\windows-amd64\\1.1.2\\out"
     ],
     "env": {
@@ -5508,7 +5508,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\tools\\pkg\\windows-amd64"
     ],
     "env": {
@@ -5836,7 +5836,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\windows_experiment\\windows-amd64\\2.0.0.windows.1"
     ],
     "env": {
@@ -5882,7 +5882,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\windows_experiment\\windows-amd64\\2.0.0.windows.1\\checkout"
     ],
     "env": {
@@ -6090,7 +6090,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\experimental\\3pp\\sources\\script\\tools\\windows_experiment\\windows-amd64"
     ],
     "env": {
@@ -6307,7 +6307,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\windows_experiment\\windows-amd64\\2.0.0.windows.1\\out"
     ],
     "env": {
@@ -6637,7 +6637,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\experimental\\3pp\\tools\\windows_experiment\\windows-amd64"
     ],
     "env": {
@@ -6973,7 +6973,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\build_tools\\git_tool\\windows-amd64\\1.5.0-rc1"
     ],
     "env": {
@@ -7074,7 +7074,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\build_tools\\tool\\windows-amd64"
     ],
     "env": {
@@ -7334,7 +7334,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\build_tools\\git_tool\\windows-amd64\\1.5.0-rc1\\checkout\\src\\go.repo\\tool"
     ],
     "env": {
@@ -7721,7 +7721,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\git_tool\\windows-amd64"
     ],
     "env": {
@@ -8098,7 +8098,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\build_tools\\git_tool\\windows-amd64\\1.5.0-rc1\\out"
     ],
     "env": {
@@ -8437,7 +8437,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\build_tools\\git_tool\\windows-amd64"
     ],
     "env": {
@@ -8523,7 +8523,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\build_tools\\git_tool\\windows-amd64\\1.5.0-rc1\\verify"
     ],
     "env": {
@@ -9017,7 +9017,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\build_tools\\tool\\windows-amd64\\1.5.0-rc1"
     ],
     "env": {
@@ -9210,7 +9210,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\build_tools\\tool\\windows-amd64\\1.5.0-rc1\\checkout\\src\\go.repo\\tool"
     ],
     "env": {
@@ -9597,7 +9597,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\git\\go.repo\\tool\\windows-amd64"
     ],
     "env": {
@@ -9972,7 +9972,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\build_tools\\tool\\windows-amd64\\1.5.0-rc1\\out"
     ],
     "env": {
@@ -10311,7 +10311,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\build_tools\\tool\\windows-amd64"
     ],
     "env": {
@@ -10397,7 +10397,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\build_tools\\tool\\windows-amd64\\1.5.0-rc1\\verify"
     ],
     "env": {
@@ -10928,7 +10928,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\dep\\windows-amd64\\1.0.0"
     ],
     "env": {
@@ -11074,7 +11074,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\dep\\windows-amd64\\1.0.0\\checkout"
     ],
     "env": {
@@ -11159,7 +11159,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\source\\dep"
     ],
     "env": {
@@ -11476,7 +11476,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\deps\\dep\\windows-amd64\\1.0.0\\out"
     ],
     "env": {
@@ -11807,7 +11807,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\deps\\dep\\windows-amd64"
     ],
     "env": {
@@ -12137,7 +12137,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg\\windows-amd64\\2.0.0"
     ],
     "env": {
@@ -12326,7 +12326,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg\\windows-amd64\\2.0.0\\checkout"
     ],
     "env": {
@@ -12534,7 +12534,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\script\\tools\\pkg\\windows-amd64"
     ],
     "env": {
@@ -12941,7 +12941,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg\\windows-amd64\\2.0.0\\out"
     ],
     "env": {
@@ -13272,7 +13272,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\tools\\pkg\\windows-amd64"
     ],
     "env": {
@@ -13602,7 +13602,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg_checkout\\windows-amd64\\2.0.0"
     ],
     "env": {
@@ -13791,7 +13791,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg_checkout\\windows-amd64\\2.0.0\\checkout"
     ],
     "env": {
@@ -13952,7 +13952,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\script\\tools\\pkg_checkout\\windows-amd64"
     ],
     "env": {
@@ -14359,7 +14359,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg_checkout\\windows-amd64\\2.0.0\\out"
     ],
     "env": {
@@ -14690,7 +14690,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\tools\\pkg_checkout\\windows-amd64"
     ],
     "env": {
@@ -15020,7 +15020,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg_timeout\\windows-amd64\\2.0.0"
     ],
     "env": {
@@ -15209,7 +15209,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg_timeout\\windows-amd64\\2.0.0\\checkout"
     ],
     "env": {
@@ -15417,7 +15417,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\script\\tools\\pkg_timeout\\windows-amd64"
     ],
     "env": {
@@ -15826,7 +15826,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]\\3pp\\wd\\tools\\pkg_timeout\\windows-amd64\\2.0.0\\out"
     ],
     "env": {
@@ -16157,7 +16157,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]\\3pp_cipd\\3pp\\tools\\pkg_timeout\\windows-amd64"
     ],
     "env": {
