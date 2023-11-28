@@ -189,8 +189,13 @@ message UpdateDutsFirmwareResponse {
   repeated FirmwareUpdateCommandOutput outputs = 1;
 }
 
+// NEXT_TAG = 3
+message Dim {
+  string key = 1;
+  string value = 2;
+}
 
-// NEXT_TAG = 7
+// NEXT_TAG = 8
 message RunSuiteRequest {
   string suite = 1;
   string build_target = 2;
@@ -198,6 +203,10 @@ message RunSuiteRequest {
   string build_version = 4;
   string model = 5;
   string pool = 6;
+  // We use `repeated Dim` (not `map<string, string>`) in here
+  // because the generated files in Typescript do not
+  // have a setter function.
+  repeated Dim dims = 7;
 }
 
 // NEXT_TAG = 2
@@ -336,7 +345,7 @@ message ListDutEventsResponse {
   repeated BotEvent events = 2;
 }
 
-// NEXT_TAG = 8
+// NEXT_TAG = 9
 message RunTestRequest {
   repeated string tests = 1;
   string test_args = 2;
@@ -345,6 +354,10 @@ message RunTestRequest {
   string milestone = 5;
   string build = 6;
   string pool = 7;
+  // We use `repeated Dim` (not `map<string, string>`) in here
+  // because the generated files in Typescript do not
+  // have a setter function.
+  repeated Dim dims = 8;
 }
 // NEXT_TAG = 2
 message RunTestResponse {
@@ -458,7 +471,7 @@ message ListTestPlansResponse {
   repeated string names = 1;
 }
 
-// NEXT_TAG = 7
+// NEXT_TAG = 8
 message RunTestPlanRequest {
   // the name of the test plan in the bucket that a user wants to run
   string test_plan_name = 1;
@@ -467,6 +480,10 @@ message RunTestPlanRequest {
   string milestone = 4;
   string build = 5;
   string pool = 6;
+  // We use `repeated Dim` (not `map<string, string>`) in here
+  // because the generated files in Typescript do not
+  // have a setter function.
+  repeated Dim dims = 7;
 }
 
 // NEXT_TAG = 2

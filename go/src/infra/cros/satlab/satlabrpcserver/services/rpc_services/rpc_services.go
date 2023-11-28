@@ -464,6 +464,16 @@ func (s *SatlabRpcServiceServer) Close(ctx context.Context) {
 	}
 }
 
+// parseDims parse the dims input.
+func parseDims(data []*pb.Dim) map[string]string {
+	dims := map[string]string{}
+	for _, d := range data {
+		dims[d.GetKey()] = d.GetValue()
+	}
+
+	return dims
+}
+
 // Run suite triggers the test suite on the satlab. Right now, this is implemented using CTPBuildRequest
 func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRequest) (*pb.RunSuiteResponse, error) {
 	logging.Infof(ctx, "gRPC Service triggered: run_suite")
@@ -479,6 +489,7 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 		Milestone:  in.GetMilestone(),
 		Build:      in.GetBuildVersion(),
 		Pool:       in.GetPool(),
+		AddedDims:  parseDims(in.GetDims()),
 		MaxTimeout: true,
 	}
 	buildLink, err := r.TriggerRun(ctx)
@@ -504,6 +515,7 @@ func (s *SatlabRpcServiceServer) RunTest(ctx context.Context, in *pb.RunTestRequ
 		Milestone:  in.GetMilestone(),
 		Build:      in.GetBuild(),
 		Pool:       in.GetPool(),
+		AddedDims:  parseDims(in.GetDims()),
 		MaxTimeout: true,
 	}
 	buildLink, err := r.TriggerRun(ctx)
@@ -1080,6 +1092,7 @@ func (s *SatlabRpcServiceServer) RunTestPlan(ctx context.Context, in *pb.RunTest
 		Build:      in.GetBuild(),
 		Pool:       in.GetPool(),
 		Testplan:   in.GetTestPlanName(),
+		AddedDims:  parseDims(in.GetDims()),
 		MaxTimeout: true,
 	}
 
