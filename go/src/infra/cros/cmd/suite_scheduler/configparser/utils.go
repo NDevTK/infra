@@ -7,6 +7,7 @@ package configparser
 
 import (
 	"fmt"
+	"time"
 
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 )
@@ -257,4 +258,29 @@ func GetBuildTargets(targetsOptions TargetOptions) []BuildTarget {
 	}
 
 	return buildTargets
+}
+
+// TimeToSuSchTime translates time's return values into SuSch parsable time.
+func TimeToSuSchTime(time time.Time, isFortnightly bool) (Day, Hour) {
+	hour := Hour(time.Hour())
+
+	// SuSch and the time package do not share enum values for week days. This
+	// provides a quick translation.
+	day := Day(SuSchDayToTimeDay[time.Weekday()])
+
+	// If we are translating for a FORTNIGHTLY conversion we will need to take
+	// into account the 2 week boundary.
+	if isFortnightly {
+		// NOTE: ISO 8601 states that the first week of year Y is written as
+		// week 1 not 0.
+		// If we are on the second week of the fortnight, add 7 to the
+		// previously calculated day value to line up with the constants we've
+		// defined for FORTNIGHTLY configs.
+		_, week := time.ISOWeek()
+		if week%2 == 0 {
+			day += 7
+		}
+	}
+
+	return day, hour
 }

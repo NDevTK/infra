@@ -11,10 +11,7 @@ GENERATEDLABCFG=configparser/generated/lab_config.cfg
 GENERATEDSUSCHINI=configparser/generated/suite_scheduler.ini
 GENERATEDLABINI=configparser/generated/lab_config.ini
 
-all: run
-
-run: build
-	./$(BIN) >$(STDOUTFILE) 2>$(STDERRFILE)
+all: build
 
 build:
 	go build -o $(BIN)
@@ -24,9 +21,6 @@ cipdbuild:
 
 clean:
 	rm -rf $(STDERRFILE) $(STDOUTFILE) $(BIN) $(GENERATEDSUSCHCFG) $(GENERATEDLABCFG) $(GENERATEDSUSCHINI) $(GENERATEDLABINI)
-
-test:
-	go test ./...
 
 format:
 	go fmt ./...

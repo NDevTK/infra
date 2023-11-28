@@ -55,9 +55,9 @@ func getSwarmingDimensions(config *infrapb.SchedulerConfig) []string {
 }
 
 // TODO(b/305792113): Get the build information from the release pipeline
-// Build target in this case means <build-target>/image-version. E.g. corsola-release/R118-15604.36.0
+// Build target in this case means <build-target>/<image-version>. E.g. corsola-release/R118-15604.36.0
 func getBuildTarget() string {
-	return "<build-target>/<image-version>"
+	return "PLACEHOLDER_BUILD_TARGET/PLACEHOLDER_IMAGE_VERSION"
 }
 
 // getSchedulingFields transforms SuSch SchedulerConfig_PoolOptions into ctp SchedulerConfig_LaunchCriteria_LaunchProfile.
@@ -172,11 +172,11 @@ func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model string) *requ
 			// TODO(b:305792113): Get build information from the release-build pipeline.
 			Metadata: &requestpb.Request_Params_Metadata{
 				// Some gsURL
-				TestMetadataUrl: GS_PREFIX + "<some_path_info>",
+				TestMetadataUrl: GS_PREFIX + "PLACEHOLDER_PATH_INFO",
 				// Some gsURL same as above
-				DebugSymbolsArchiveUrl: GS_PREFIX + "<some_path_info>",
+				DebugSymbolsArchiveUrl: GS_PREFIX + "PLACEHOLDER_PATH_INFO",
 
-				ContainerMetadataUrl: GS_PREFIX + "<some_path_info>" + CONTAINER_METADATA_LOC,
+				ContainerMetadataUrl: GS_PREFIX + "PLACEHOLDER_PATH_INFO" + CONTAINER_METADATA_LOC,
 			},
 			Time: &requestpb.Request_Params_Time{
 				MaximumDuration: &durationpb.Duration{Seconds: getTimeoutSeconds(config.RunOptions.TimeoutMins)},

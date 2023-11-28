@@ -7,9 +7,25 @@ package configparser
 
 import (
 	"fmt"
+	"time"
+
+	"infra/cros/cmd/suite_scheduler/common"
 
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 )
+
+// SuSchDayToTimeDay provides a map to translate time weekday enums to SuSch
+// weekdays.
+// TODO(juahurta): Adjust SuSCh configs such that this is no longer needed.
+var SuSchDayToTimeDay = map[time.Weekday]int{
+	time.Sunday:    common.Sunday,
+	time.Monday:    common.Monday,
+	time.Tuesday:   common.Tuesday,
+	time.Wednesday: common.Wednesday,
+	time.Thursday:  common.Thursday,
+	time.Friday:    common.Friday,
+	time.Saturday:  common.Saturday,
+}
 
 type (
 	/*
@@ -83,14 +99,18 @@ func (b *BoardEntry) GetName() string {
 // SuiteScheduler configurations.
 type SuiteSchedulerConfigs struct {
 	// Array of all configs. Allows quick access to all configurations.
-	configStore ConfigList
+	configList ConfigList
 
 	// Array of all configs. Allows quick access to all new build configurations.
-	newBuildStore ConfigList
+	newBuildList ConfigList
 
 	// newBuildMap stores a mapping of build target to relevant NEW_BUILD
 	// configs. Allows for retrieval of configs when searching by build target.
 	newBuildMap map[BuildTarget]ConfigList
+
+	// configTargets will provided a cached version of the, computationally
+	// expensive to build, target options per config.
+	configTargets map[string]TargetOptions
 
 	// This map provides a quick direct access option for fetching configs by name.
 	configMap map[TestPlanName]*infrapb.SchedulerConfig
@@ -104,14 +124,10 @@ type SuiteSchedulerConfigs struct {
 
 // addConfigToNewBuildMap takes a newBuild configuration and inserts it into the
 // appropriate tracking lists.
-func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *infrapb.SchedulerConfig, lab *LabConfigs) error {
-	targetOptions, err := GetTargetOptions(config, lab)
+func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *infrapb.SchedulerConfig, lab *LabConfigs, targetOptions TargetOptions) {
 
 	// Fetch all build buildTargets which can trigger this configuration.
 	buildTargets := GetBuildTargets(targetOptions)
-	if err != nil {
-		return err
-	}
 
 	for _, target := range buildTargets {
 		// Add entry if no config with this build target has been
@@ -125,13 +141,11 @@ func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *infrapb.Scheduler
 	}
 
 	// Add to the array tracking all SuSch configs.
-	s.configStore = append(s.configStore, config)
-	s.newBuildStore = append(s.newBuildStore, config)
+	s.configList = append(s.configList, config)
+	s.newBuildList = append(s.newBuildList, config)
 
 	// Add to the direct access map.
 	s.configMap[TestPlanName(config.Name)] = config
-
-	return nil
 }
 
 // addConfigToDailyMap takes a daily configuration and inserts it into the
@@ -150,7 +164,7 @@ func (s *SuiteSchedulerConfigs) addConfigToDailyMap(config *infrapb.SchedulerCon
 	s.dailyMap[configHour] = append(s.dailyMap[configHour], config)
 
 	// Add to the array tracking all SuSch configs.
-	s.configStore = append(s.configStore, config)
+	s.configList = append(s.configList, config)
 
 	// Add to the direct access map.
 	s.configMap[TestPlanName(config.Name)] = config
@@ -184,7 +198,7 @@ func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *infrapb.SchedulerCo
 	dayMap[configHour] = append(dayMap[configHour], config)
 
 	// Add to the array tracking all SuSch configs.
-	s.configStore = append(s.configStore, config)
+	s.configList = append(s.configList, config)
 
 	// Add to the direct access map.
 	s.configMap[TestPlanName(config.Name)] = config
@@ -218,7 +232,7 @@ func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *infrapb.Schedu
 	dayMap[configHour] = append(dayMap[configHour], config)
 
 	// Add to the array tracking all SuSch configs.
-	s.configStore = append(s.configStore, config)
+	s.configList = append(s.configList, config)
 
 	// Add to the direct access map.
 	s.configMap[TestPlanName(config.Name)] = config

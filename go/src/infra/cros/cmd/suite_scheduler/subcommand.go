@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/305290856): Implement this as a font end to CLI usage for the program.
-
 package main
 
 import (
@@ -14,6 +12,8 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	suschSubCommands "infra/cros/cmd/suite_scheduler/subcommands"
 )
 
 var (
@@ -28,6 +28,7 @@ func getApplication(authOpts auth.Options) *subcommands.DefaultApplication {
 		Title: "SuSch v1.5 golang implementation",
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
+			suschSubCommands.GetConfigParserCommand(authOpts),
 			authcli.SubcommandInfo(authOpts, "auth-info", false),
 			authcli.SubcommandLogin(authOpts, "auth-login", false),
 			authcli.SubcommandLogout(authOpts, "auth-logout", false),
@@ -45,7 +46,7 @@ type suiteSchedulerCommand interface {
 	validate() error
 }
 
-func mainS() {
+func main() {
 	opts := chromeinfra.DefaultAuthOptions()
 	s := &suiteSchedulerApplication{
 		getApplication(opts),

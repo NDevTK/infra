@@ -7,8 +7,6 @@ package configparser
 
 import (
 	"fmt"
-	"io"
-	"os"
 
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -18,23 +16,31 @@ import (
 // them into a more usage structure.
 func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerConfigs, error) {
 	configDS := &SuiteSchedulerConfigs{
-		configStore:    ConfigList{},
-		newBuildMap:    make(map[BuildTarget]ConfigList),
-		configMap:      make(map[TestPlanName]*infrapb.SchedulerConfig),
-		dailyMap:       make(map[Hour]ConfigList),
-		weeklyMap:      make(map[Day]HourMap),
-		fortnightlyMap: make(map[Day]HourMap),
+		configList:     ConfigList{},
+		newBuildList:   []*infrapb.SchedulerConfig{},
+		newBuildMap:    map[BuildTarget]ConfigList{},
+		configTargets:  map[string]TargetOptions{},
+		configMap:      map[TestPlanName]*infrapb.SchedulerConfig{},
+		dailyMap:       map[Hour]ConfigList{},
+		weeklyMap:      map[Day]HourMap{},
+		fortnightlyMap: map[Day]HourMap{},
 	}
 
 	for _, config := range configs {
+
+		targetOptions, err := GetTargetOptions(config, lab)
+		if err != nil {
+			return nil, err
+		}
+
+		// Cache the calculated target options.
+		configDS.configTargets[config.Name] = targetOptions
+
 		// Add the configuration to the map which holds stores information on
 		// its LaunchProfile type
 		switch config.LaunchCriteria.LaunchProfile {
 		case infrapb.SchedulerConfig_LaunchCriteria_NEW_BUILD:
-			err := configDS.addConfigToNewBuildMap(config, lab)
-			if err != nil {
-				return nil, err
-			}
+			configDS.addConfigToNewBuildMap(config, lab, targetOptions)
 		case infrapb.SchedulerConfig_LaunchCriteria_DAILY:
 			err := configDS.addConfigToDailyMap(config)
 			if err != nil {
@@ -93,9 +99,9 @@ func IngestLabConfigs(labConfig *infrapb.LabConfig) *LabConfigs {
 	return tempConfig
 }
 
-// StringToLabProto takes a JSON formatted string and transforms it into an
+// BytesToLabProto takes a JSON formatted string and transforms it into an
 // infrapb.LabConfig object.
-func StringToLabProto(configsBuffer []byte) (*infrapb.LabConfig, error) {
+func BytesToLabProto(configsBuffer []byte) (*infrapb.LabConfig, error) {
 	configs := &infrapb.LabConfig{}
 
 	err := protojson.Unmarshal(configsBuffer, configs)
@@ -106,9 +112,9 @@ func StringToLabProto(configsBuffer []byte) (*infrapb.LabConfig, error) {
 	return configs, nil
 }
 
-// StringToSchedulerProto takes a JSON formatted string and transforms it into an
+// BytesToSchedulerProto takes a JSON formatted string and transforms it into an
 // infrapb.SchedulerCfg object.
-func StringToSchedulerProto(configsBuffer []byte) (*infrapb.SchedulerCfg, error) {
+func BytesToSchedulerProto(configsBuffer []byte) (*infrapb.SchedulerCfg, error) {
 	configs := &infrapb.SchedulerCfg{}
 
 	err := protojson.Unmarshal(configsBuffer, configs)
@@ -117,19 +123,4 @@ func StringToSchedulerProto(configsBuffer []byte) (*infrapb.SchedulerCfg, error)
 	}
 
 	return configs, nil
-}
-
-// ReadLocalFile reads a file at the given path into memory and returns it's contents.
-func ReadLocalFile(path string) ([]byte, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-	err = file.Close()
-	return data, err
 }

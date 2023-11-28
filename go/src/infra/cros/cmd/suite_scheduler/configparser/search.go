@@ -6,23 +6,37 @@ package configparser
 
 import (
 	"fmt"
+	"infra/cros/cmd/suite_scheduler/common"
 
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 )
 
-// FetchAllBewBuildConfigs returns all NEW_BUILD type configs.
-func (s *SuiteSchedulerConfigs) FetchAllBewBuildConfigs() ConfigList {
-	return s.newBuildStore
+// FetchAllConfigs returns all configs.
+func (s *SuiteSchedulerConfigs) FetchAllConfigs() ConfigList {
+	return s.configList
+}
+
+// FetchConfigTargetOptions returns all target options.
+func (s *SuiteSchedulerConfigs) FetchConfigTargetOptions(configName string) (TargetOptions, error) {
+	targetOptions, ok := s.configTargets[configName]
+	if !ok {
+		return nil, fmt.Errorf("target options for config %s not found", configName)
+	}
+	return targetOptions, nil
+}
+
+// FetchAllNewBuildConfigs returns all NEW_BUILD type configs.
+func (s *SuiteSchedulerConfigs) FetchAllNewBuildConfigs() ConfigList {
+	return s.newBuildList
 }
 
 // FetchNewBuildConfigsByBuildTarget returns all NEW_BUILD configs that are
 // to be triggered by a new image of the given build target.
-func (s *SuiteSchedulerConfigs) FetchNewBuildConfigsByBuildTarget(target BuildTarget) (ConfigList, error) {
+func (s *SuiteSchedulerConfigs) FetchNewBuildConfigsByBuildTarget(target BuildTarget) ConfigList {
 	if obj, ok := s.newBuildMap[target]; ok {
-		return obj, nil
-	} else {
-		return nil, fmt.Errorf("no NEW_BUILD configs found for build target %s", target)
+		return obj
 	}
+	return nil
 }
 
 // FetchAllDailyConfigs returns all DAILY type configs.
@@ -46,9 +60,8 @@ func (s *SuiteSchedulerConfigs) FetchDailyByHour(hour Hour) (ConfigList, error) 
 
 	if obj, ok := s.dailyMap[hour]; ok {
 		return obj, nil
-	} else {
-		return nil, fmt.Errorf("no DAILY configs found at hour %d", hour)
 	}
+	return nil, nil
 }
 
 // FetchAllWeeklyConfigs returns all WEEKLY type configs.
@@ -94,14 +107,14 @@ func (s *SuiteSchedulerConfigs) FetchWeeklyByDayHour(day Day, hour Hour) (Config
 	}
 
 	if _, ok := s.weeklyMap[day]; !ok {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day %d", day)
+		return nil, nil
 	}
 
 	if list, ok := s.weeklyMap[day][hour]; ok {
 		return list, nil
-	} else {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day:Hour %d:%d", day, hour)
 	}
+
+	return nil, nil
 }
 
 // FetchAllFortnightlyConfigs returns all FORTNIGHTLY type configs.
@@ -133,9 +146,8 @@ func (s *SuiteSchedulerConfigs) FetchFortnightlyByDay(day Day) (ConfigList, erro
 		}
 
 		return tempList, nil
-	} else {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day %d", day)
 	}
+	return nil, nil
 }
 
 // FetchFortnightlyByDayHour returns all FORTNIGHTLY configs that are to be scheduled on the
@@ -147,22 +159,50 @@ func (s *SuiteSchedulerConfigs) FetchFortnightlyByDayHour(day Day, hour Hour) (C
 	}
 
 	if _, ok := s.fortnightlyMap[day]; !ok {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day %d", day)
+		return nil, nil
 	}
 
 	if list, ok := s.fortnightlyMap[day][hour]; ok {
 		return list, nil
-	} else {
-		return nil, fmt.Errorf("no WEEKLY configs found at Day:Hour %d:%d", day, hour)
 	}
+	return nil, nil
 }
 
 // FetchConfigByName returns the config with the name provided. If it does not
 // exist then an error is returned.
-func (s *SuiteSchedulerConfigs) FetchConfigByName(name string) (*infrapb.SchedulerConfig, error) {
+func (s *SuiteSchedulerConfigs) FetchConfigByName(name string) *infrapb.SchedulerConfig {
 	if val, ok := s.configMap[TestPlanName(name)]; ok {
-		return val, nil
+		return val
 	}
 
-	return nil, fmt.Errorf("no config found with name %s", name)
+	return nil
+}
+
+// ValidateHoursAheadArgs will check that all of the arguments are within the
+// specified bounds that can be worked with.
+func ValidateHoursAheadArgs(startHour Hour, startDay Day, hoursAhead int64, isFortnightly bool) error {
+	// Validate that all input values fit within the expected bounds.
+	if hoursAhead < 0 {
+		return fmt.Errorf("hours head must be a positive value, %d was given", hoursAhead)
+	}
+
+	if err := isHourCompliant(startHour); err != nil {
+		return err
+	}
+
+	// This check allows the same function to be used by for the daily configs
+	// function as long as it sends over the default int64 value stored as a
+	// constant.
+	if startDay != Day(common.DefaultInt64) {
+		if err := isDayCompliant(startDay, isFortnightly); err != nil {
+			return err
+		}
+
+	}
+
+	return nil
+}
+
+func (s *SuiteSchedulerConfigs) FetchAllTargetOptions() map[string]TargetOptions {
+	return s.configTargets
 }
