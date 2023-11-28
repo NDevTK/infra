@@ -7,11 +7,12 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-from mock import Mock, patch
+from mock import patch
 import six
 import unittest
 
 from google.protobuf import wrappers_pb2
+import pytest
 
 import settings
 from api import converters
@@ -1731,6 +1732,7 @@ class ConverterFunctionsTest(unittest.TestCase):
         self.cnxn, self.services.user, self.services.features, hotlist_ref)
     self.assertEqual(actual_hotlist_id, hotlist.hotlist_id)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testIngestHotlistRef_HotlistID(self):
     self.services.user.TestAddUser('user1@example.com', 111)
     hotlist = self.services.features.CreateHotlist(
@@ -1749,6 +1751,7 @@ class ConverterFunctionsTest(unittest.TestCase):
       converters.IngestHotlistRef(
           self.cnxn, self.services.user, self.services.features, hotlist_ref)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testIngestHotlistRef_InconsistentRequest(self):
     self.services.user.TestAddUser('user1@example.com', 111)
     hotlist1 = self.services.features.CreateHotlist(
