@@ -33,7 +33,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ADAPTER_DIR = os.path.join(ROOT, "cipd", "result_adapter")
 
 
-def check_go_available():
+def _check_go_available():
   """Returns True if go executable is in the PATH."""
   try:
     subprocess.check_output(['go', 'version'], stderr=subprocess.STDOUT)
@@ -45,7 +45,7 @@ def check_go_available():
       return False
 
 
-def clean_go_bin():
+def _clean_go_bin():
   """Removes all files in GOBIN.
 
   GOBIN is in PATH in our environment. There are some binaries there (like 'git'
@@ -58,7 +58,7 @@ def clean_go_bin():
     os.remove(os.path.join(gobin, p))
 
 
-def use_resultdb():
+def _use_resultdb():
   """Checks the luci context to determine if resultdb is configured."""
   ctx_filename = os.environ.get("LUCI_CONTEXT")
   if ctx_filename:
@@ -75,57 +75,69 @@ def use_resultdb():
   return False
 
 
-def get_adapter_path():
+def _get_adapter_path():
   adapter_fname = "result_adapter"
   if sys.platform == "win32":
     adapter_fname += ".exe"
   return os.path.join(ADAPTER_DIR, adapter_fname)
 
 
-def run_vet(package_root):
+def _print_and_run(command: list[str]) -> int:
+  print(f'$ {" ".join(command)}')
+  ret = subprocess.Popen(command).wait()
+  if ret:
+    print(f'## {" ".join(command)} had exit code {ret}')
+  return ret
+
+
+def _run_vet(package_root):
   """Runs 'go vet <package_root>/...'
 
   Returns:
    0 if and only if all tests pass.
   """
-  if not check_go_available():
+  if not _check_go_available():
     print('Can\'t find Go executable in PATH.')
     print('Go vet not supported')
     return 1
 
   # Turn off copylock analysis. Eventually, when we stop copying protobufs
   # in various places, we can turn it on.
-  command = ['go', 'vet', '-copylocks=false', '%s/...' % package_root]
+  command = ['go', 'vet', '-copylocks=false', f'{package_root}/...']
 
   # TODO: adapt results of go vet to resultdb.
 
-  return subprocess.Popen(command).wait()
+  return _print_and_run(command)
 
 
-def run_tests(package_root):
+def _run_tests(package_root):
   """Runs 'go test <package_root>/...'.
 
   Returns:
     0 if all tests pass..
   """
-  if not check_go_available():
-    print('Can\'t find Go executable in PATH.')
-    print('Use python3 test.py')
-    return 1
-  clean_go_bin()
-  command = ['go', 'test', '%s/...' % package_root]
+  command = ['go', 'test', f'{package_root}/...']
 
   prev_env = os.environ.copy()
-  if use_resultdb():
+  if _use_resultdb():
     # Silence goconvey reporter to avoid interference with result_adapter.
     # https://github.com/smartystreets/goconvey/blob/0fc5ef5371303f55e76d89a57286fb7076777e5b/convey/init.go#L37
     os.environ['GOCONVEY_REPORTER'] = 'silent'
-    command = [get_adapter_path(), 'go', '--'] + command
+    command = [_get_adapter_path(), 'go', '--'] + command
   try:
-    return subprocess.Popen(command).wait()
+    return _print_and_run(command)
   finally:
     os.environ.clear()
     os.environ.update(prev_env)
+
+
+def _run_build(package_root):
+  """Runs 'go build <package_root>/...'.
+
+  Returns:
+    0 if everything builds.
+  """
+  return _print_and_run(['go', 'build', f'{package_root}/...'])
 
 
 def run_all(package_root):
@@ -134,10 +146,19 @@ def run_all(package_root):
   Returns:
     0 if and only if all tests pass.
   """
+  if not _check_go_available():
+    print('Can\'t find Go executable in PATH.')
+    print('Use python3 test.py')
+    return 1
+  _clean_go_bin()
 
   # Always run every applicable action so we give the user as much information
   # as possible.
-  results = [run_vet(package_root), run_tests(package_root)]
+  results = [
+    _run_build(package_root),
+    _run_vet(package_root),
+    _run_tests(package_root),
+  ]
 
   for res in results:
     if res:
