@@ -6190,6 +6190,20 @@ wheel: <
 
 * *universal*
 
+## **packaging-legacy-py3**
+
+### 23.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/packaging-legacy-py3"
+  version: "version:23.0"
+>
+```
+
+
+* *universal*
+
 ## **pandas**
 
 ### 1.1.3
