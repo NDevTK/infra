@@ -204,8 +204,10 @@ class UserService(object):
     emails = [email.lower() for email in emails]
     ids = [framework_helpers.MurmurHash3_x86_32(email) for email in emails]
 
+    logging.info('ids to add: %s', ids)
     rows = self.user_tbl.Select(cnxn, cols=('user_id',), user_id=ids)
     existing_ids = set(row[0] for row in rows)
+    logging.info('existing ids: %s', existing_ids)
     if existing_ids:
       existing_users = sorted(
           (user_id, email)
