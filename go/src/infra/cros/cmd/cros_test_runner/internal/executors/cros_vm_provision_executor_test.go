@@ -165,6 +165,32 @@ func TestVMProvisionServiceExecuteCommand(t *testing.T) {
 	})
 }
 
+func TestGetDiskSizeByBoard(t *testing.T) {
+	Convey("Given an image name", t, func() {
+		Convey("When the image contains 'reven-vmtest'", func() {
+			image := "reven-vmtest"
+			expectedSize := int64(20)
+
+			size := getDiskSizeByBoard(image)
+
+			Convey("Then it should return the expected size", func() {
+				So(size, ShouldEqual, expectedSize)
+			})
+		})
+
+		Convey("When the image does not contain 'reven-vmtest'", func() {
+			image := "other-image"
+			expectedSize := int64(13)
+
+			size := getDiskSizeByBoard(image)
+
+			Convey("Then it should return the expected size", func() {
+				So(size, ShouldEqual, expectedSize)
+			})
+		})
+	})
+}
+
 func getMockedVMProvisionInstall(mockClient *mocked_services.MockGenericProvisionServiceClient) *gomock.Call {
 	return mockClient.EXPECT().Install(gomock.Any(),
 		gomock.AssignableToTypeOf(&testapi.InstallRequest{}),

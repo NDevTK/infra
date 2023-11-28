@@ -10,6 +10,7 @@ import (
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
+	"strings"
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -137,7 +138,7 @@ func (ex *CrosVMProvisionExecutor) vmProvisionLeaseCommandExecution(
 			GceMachineType:           common.GceMachineTypeN14,
 			GceMinCpuPlatform:        common.GceMinCpuPlatform,
 			SubnetModeNetworkEnabled: true,
-			GceDiskSize:              13,
+			GceDiskSize:              getDiskSizeByBoard(img),
 		},
 		LeaseDuration: durationpb.New(d),
 	}
@@ -325,4 +326,12 @@ func (ex *CrosVMProvisionExecutor) validateLeaseVMResponse(leaseVMResponse *api.
 		return fmt.Errorf("Nil vm port address in vm leaser response")
 	}
 	return nil
+}
+
+func getDiskSizeByBoard(image string) int64 {
+
+	if strings.Contains(image, "reven-vmtest") {
+		return 20
+	}
+	return 13
 }
