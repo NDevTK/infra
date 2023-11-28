@@ -6,7 +6,3 @@ zerr_log
 zout_log
 
 configparser/generated/*
-
-# SuSch v1.5 is a CLI project first. main.go can be used for local testing and
-# thus should not be sent in with changes.
-main.go
