@@ -251,10 +251,16 @@ $INTERP -s -S "$SCRIPT_DIR/python_mod_gen.py" \
   --output ./Modules/Setup.local \
   "${SETUP_LOCAL_FLAGS[@]}"
 
+# Make sure we don't try to regenerate this file. When extracted from a
+# release tarball, this would have the same timestamp as the inputs so it
+# would not be updated, but this is not guaranteed when using git.
+touch Modules/_blake2/blake2s_impl.c
+
 # Build production Python. BASEMODLIBS override allows -lpthread to be
 # at the end of the linker command for old gcc's (like 4.9, still used on e.g.
 # arm64 as of Nov 2019). This can likely go away when the dockcross base images
 # update to gcc-6 or later.
+make -j $(nproc) python BASEMODLIBS=$BASEMODLIBS
 make install BASEMODLIBS=$BASEMODLIBS
 
 # Augment the Python installation.

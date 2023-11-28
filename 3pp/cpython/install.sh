@@ -239,7 +239,7 @@ $INTERP -s -S "$SCRIPT_DIR/python_mod_gen.py" \
   "${SETUP_LOCAL_FLAGS[@]}"
 
 # Build production Python.
-make install
+make -j $(nproc) install
 
 # Augment the Python installation.
 

@@ -1,7 +1,7 @@
 create {
   verify { test: "python_test.py" }
   source {
-    patch_version: "chromium.46"
+    patch_version: "chromium.47"
     cpe_base_address: "cpe:/a:python:python"
   }
   package { version_file: ".versions/cpython.cipd_version" }
