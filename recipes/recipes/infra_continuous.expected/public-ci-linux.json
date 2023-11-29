@@ -265,7 +265,7 @@
       "rdb",
       "stream",
       "--",
-      "python3",
+      "vpython3",
       "-u",
       "[CACHE]/builder/infra/go/test.py"
     ],

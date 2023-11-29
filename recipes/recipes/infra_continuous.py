@@ -231,7 +231,7 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
         api.step(
             'infra go tests',
             api.resultdb.wrap([
-                'python3', '-u',
+                'vpython3', '-u',
                 checkout.path.join(project_name, 'go', 'test.py')
             ]))
 
