@@ -207,6 +207,8 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	env.Load(b.inputs.Env)
 	env.Set("GOOS", b.inputs.Target.Goos)
 	env.Set("GOARCH", b.inputs.Target.Goarch)
+	env.Set("GOHOSTOS", b.inputs.Host.Goos)
+	env.Set("GOHOSTARCH", b.inputs.Host.Goarch)
 	env.Set("GOROOT_BOOTSTRAP", filepath.Join(b.toolsRoot, "go_bootstrap"))
 	env.Set("GOPATH", b.gopath) // Explicitly set to an empty per-build directory, to avoid reusing the implicit default one.
 	env.Set("GOBIN", "")
