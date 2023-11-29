@@ -33,6 +33,7 @@ func TestParseLine(t *testing.T) {
 				RequestTime:   0.123,
 				CacheStatus:   "HIT",
 				ProxyHost:     "gs_archive_servers",
+				Host:          "100.115.168.189",
 			},
 		},
 		{

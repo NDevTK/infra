@@ -33,6 +33,7 @@ type record struct {
 	RequestTime   float64   `json:"request_time"`
 	CacheStatus   string    `json:"upstream_cache_status"`
 	ProxyHost     string    `json:"proxy_host"`
+	Host          string    `json:"host"`
 }
 
 var (
@@ -209,7 +210,9 @@ func reportToTsMon(i *record) {
 	defer cancel()
 
 	fullDownload := i.ExpectedSize == i.BodyBytesSent
-	internalTraffic := i.ClientIP == "127.0.0.1"
+	// The internal client (i.e. the downloader) use the host name "nginx-svc"
+	// to access the caching service.
+	internalTraffic := i.Host == "nginx-svc"
 
 	var level string
 	switch i.ProxyHost {
