@@ -16,6 +16,8 @@ func registerAddShivasFlags(c *addDUTCmd) {
 	c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 
 	c.Flags.StringVar(&c.NewSpecsFile, "f", "", cmdhelp.DUTRegistrationFileText)
+	c.Flags.StringVar(&c.SatlabID, "satlab-id", "", "the ID for the satlab in question")
+	c.Flags.StringVar(&c.Namespace, "namespace", "", "namespace where data resides.")
 
 	// Asset location fields
 	c.Flags.StringVar(&c.Zone, "zone", site.GetUFSZone(), "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)

@@ -78,6 +78,9 @@ func (c *getDUTCmd) innerRun(
 func registerGetShivasFlags(c *getDUTCmd) {
 	c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 
+	c.Flags.StringVar(&c.SatlabID, "satlab-id", "", "the ID for the satlab in question")
+	c.Flags.StringVar(&c.Namespace, "namespace", "", "namespace where data resides.")
+
 	c.Flags.Var(
 		flag.StringSlice(&c.Zones),
 		"zone",
@@ -134,4 +137,5 @@ func registerGetShivasFlags(c *getDUTCmd) {
 		"Name(s) of a tag to filter by. Can be specified multiple times.",
 	)
 	c.Flags.BoolVar(&c.HostInfoStore, "host-info-store", false, "write host info store to stdout")
+
 }

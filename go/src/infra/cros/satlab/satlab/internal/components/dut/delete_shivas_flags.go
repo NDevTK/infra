@@ -23,4 +23,6 @@ type shivasDeleteDUT struct {
 func registerShivasFlags(c *deleteDUTCmd) {
 	c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 	c.envFlags.Register(&c.Flags)
+
+	c.Flags.StringVar(&c.SatlabID, "satlab-id", "", "the ID for the satlab in question")
 }
