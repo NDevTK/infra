@@ -53,7 +53,10 @@ func (r *Rack) exists(executor executor.IExecCommander, w io.Writer) (exists boo
 	fmt.Fprintf(w, "Check rack exists: run %s\n", args)
 
 	cmd := exec.Command(args[0], args[1:]...)
-	stdout, err := executor.Exec(cmd)
+	// Don't use `CombinedOutput` here because it returns
+	// `rpc error: code = NotFound` that means the rack doesn't exist.
+	// As we check only the length of output.
+	stdout, err := executor.Output(cmd)
 
 	if err != nil {
 		return false, errors.Annotate(err, "add rack").Err()
@@ -83,7 +86,7 @@ func (r *Rack) add(executor executor.IExecCommander, w io.Writer) error {
 	fmt.Fprintf(w, "Add rack: run %s\n", args)
 
 	command := exec.Command(args[0], args[1:]...)
-	out, err := executor.Exec(command)
+	out, err := executor.CombinedOutput(command)
 
 	fmt.Fprintln(w, misc.TrimOutput(out))
 

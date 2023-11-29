@@ -77,7 +77,7 @@ func (g *GetAsset) TriggerRun(
 		AuthRequired: true,
 	}).ToCommand()
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
-	out, err := executor.Exec(command)
+	out, err := executor.CombinedOutput(command)
 	if err != nil {
 		return nil, errors.Annotate(err, "get asset - exec command failed").Err()
 	}

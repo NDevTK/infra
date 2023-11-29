@@ -48,7 +48,7 @@ func ReadContents(ctx context.Context, executor executor.IExecCommander) (string
 		"touch",
 		paths.HostsFilePath,
 	}
-	if _, err := executor.Exec(exec.CommandContext(ctx, args[0], args[1:]...)); err != nil {
+	if _, err := executor.CombinedOutput(exec.CommandContext(ctx, args[0], args[1:]...)); err != nil {
 		return "", errors.Annotate(err, "defensively touch dns file").Err()
 	}
 
@@ -60,7 +60,7 @@ func ReadContents(ctx context.Context, executor executor.IExecCommander) (string
 		paths.HostsFilePath,
 	}
 
-	out, err := executor.Exec(exec.CommandContext(ctx, args[0], args[1:]...))
+	out, err := executor.CombinedOutput(exec.CommandContext(ctx, args[0], args[1:]...))
 	if err != nil {
 		return "", errors.Annotate(err, "get dns file content").Err()
 

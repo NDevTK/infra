@@ -63,7 +63,10 @@ func (a *Asset) exists(executor executor.IExecCommander, w io.Writer) (bool, err
 	fmt.Fprintf(w, "Check asset exists: run %s\n", args)
 
 	command := exec.Command(args[0], args[1:]...)
-	stdout, err := executor.Exec(command)
+	// Don't use `CombinedOutput` here because it returns
+	// `rpc error: code = NotFound` that means the asset doesn't exist.
+	// As we check only the length of output.
+	stdout, err := executor.Output(command)
 
 	if err != nil {
 		return false, errors.Annotate(err, "add asset").Err()
@@ -97,7 +100,7 @@ func (a *Asset) add(executor executor.IExecCommander, w io.Writer) error {
 	fmt.Fprintf(w, "Add asset: run %s\n", args)
 
 	command := exec.Command(args[0], args[1:]...)
-	out, err := executor.Exec(command)
+	out, err := executor.CombinedOutput(command)
 	fmt.Fprintln(w, misc.TrimOutput(out))
 
 	return err

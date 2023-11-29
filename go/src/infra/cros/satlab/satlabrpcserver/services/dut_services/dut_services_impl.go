@@ -185,7 +185,7 @@ var subnetSearchRe = regexp.MustCompile(`(?P<IP>192\.168\.231\.[0-9][0-9]*[0-9]*
 
 func (d *DUTServicesImpl) fetchLeasesFile() (map[string]string, error) {
 	// List all IPs that we applied.
-	out, err := d.commandExecutor.Exec(exec.Command(
+	out, err := d.commandExecutor.CombinedOutput(exec.Command(
 		paths.DockerPath,
 		"exec",
 		"dhcp",
@@ -220,7 +220,9 @@ func (d *DUTServicesImpl) pingDUTs(ctx context.Context, potentialIPs []string) (
 	args := []string{"-a", "-t200", "-B1.0", "-r2"}
 	args = append(args, potentialIPs...)
 
-	out, err := d.commandExecutor.Exec(exec.Command(paths.Fping, args...))
+	// Use `Output` instead of `CombinedOutput` here
+	// because we need to get error code from error.
+	out, err := d.commandExecutor.Output(exec.Command(paths.Fping, args...))
 
 	if err != nil {
 		xerr, ok := err.(*exec.ExitError)

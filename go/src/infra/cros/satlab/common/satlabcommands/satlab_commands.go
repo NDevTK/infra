@@ -49,7 +49,7 @@ type OSVersion struct {
 //
 // Note that this command always returns the identifier in lowercase.
 func GetDockerHostBoxIdentifier(ctx context.Context, executor executor.IExecCommander) (string, error) {
-	out, err := executor.Exec(exec.CommandContext(ctx, paths.GetHostIdentifierScript))
+	out, err := executor.CombinedOutput(exec.CommandContext(ctx, paths.GetHostIdentifierScript))
 	// Immediately normalize the satlab prefix to lowercase. It will save a lot of
 	// trouble later.
 	return strings.ToLower(misc.TrimOutput(out)), errors.Annotate(err, "get host identifier").Err()
@@ -70,7 +70,7 @@ func GetSatlabVersion(ctx context.Context, executor executor.IExecCommander) (st
 	// KEY=VALUE
 	// ...
 	// ```
-	out, err := executor.Exec(
+	out, err := executor.CombinedOutput(
 		exec.CommandContext(
 			ctx,
 			paths.DockerPath,
@@ -93,7 +93,7 @@ func GetSatlabVersion(ctx context.Context, executor executor.IExecCommander) (st
 
 // GetOsVersion gets the OS GetOsVersion
 func GetOsVersion(ctx context.Context, executor executor.IExecCommander) (*OSVersion, error) {
-	out, err := executor.Exec(exec.CommandContext(ctx, paths.GetOSVersionScript))
+	out, err := executor.CombinedOutput(exec.CommandContext(ctx, paths.GetOSVersionScript))
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func GetOsVersion(ctx context.Context, executor executor.IExecCommander) (*OSVer
 
 // GetHostIP gets the host ip.
 func GetHostIP(ctx context.Context, executor executor.IExecCommander) (string, error) {
-	out, err := executor.Exec(exec.CommandContext(ctx, paths.GetHostIPScript))
+	out, err := executor.CombinedOutput(exec.CommandContext(ctx, paths.GetHostIPScript))
 	if err != nil {
 		return "", err
 	}
@@ -158,7 +158,7 @@ func GetMacAddress(ctx context.Context, executor executor.IExecCommander) (strin
 	NICName := hostIPInfoArr[NICIndex]
 
 	cmd := fmt.Sprintf(paths.NetInfoPathTemplate, NICName)
-	out, err := executor.Exec(
+	out, err := executor.CombinedOutput(
 		exec.CommandContext(
 			ctx,
 			paths.DockerPath,
@@ -176,7 +176,7 @@ func GetMacAddress(ctx context.Context, executor executor.IExecCommander) (strin
 
 // GetSatlabStartTime gets start time and uptime of satlab.
 func GetSatlabStartTime(ctx context.Context, executor executor.IExecCommander) (*timestamp.Timestamp, error) {
-	out, err := executor.Exec(
+	out, err := executor.CombinedOutput(
 		exec.CommandContext(
 			ctx,
 			paths.DockerPath,

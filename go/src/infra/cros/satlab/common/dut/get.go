@@ -123,7 +123,7 @@ func (g *GetDUT) TriggerRun(
 		AuthRequired:   true,
 	}).ToCommand()
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
-	out, err := executor.Exec(command)
+	out, err := executor.CombinedOutput(command)
 
 	if err != nil {
 		return nil, errors.Annotate(err, "get dut - exec command failed").Err()

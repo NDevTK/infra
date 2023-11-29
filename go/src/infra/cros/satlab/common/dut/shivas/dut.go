@@ -59,7 +59,10 @@ func (d *DUT) check(executor executor.IExecCommander, w io.Writer) (bool, error)
 	fmt.Fprintf(w, "Check dut exists: run %s\n", args)
 
 	command := exec.Command(args[0], args[1:]...)
-	stdout, err := executor.Exec(command)
+	// Don't use `CombinedOutput` here because it returns
+	// `rpc error: code = NotFound` that means the DUT doesn't exist.
+	// As we check only the length of output.
+	stdout, err := executor.Output(command)
 
 	if err != nil {
 		return false, errors.Annotate(err, "add dut").Err()
@@ -101,7 +104,7 @@ func (d *DUT) add(executor executor.IExecCommander, w io.Writer) error {
 	fmt.Fprintf(w, "Add dut: run %s\n", args)
 
 	command := exec.Command(args[0], args[1:]...)
-	out, err := executor.Exec(command)
+	out, err := executor.CombinedOutput(command)
 
 	fmt.Fprintln(w, misc.TrimOutput(out))
 

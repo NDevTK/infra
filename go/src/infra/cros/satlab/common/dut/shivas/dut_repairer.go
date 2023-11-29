@@ -48,7 +48,7 @@ func (u *DUTRepairer) Repair(
 ) (*DUTRepairResponse, error) {
 	args := u.constructArguments(action)
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
-	out, err := u.Executor.Exec(command)
+	out, err := u.Executor.CombinedOutput(command)
 	if err != nil {
 		return nil, err
 	}

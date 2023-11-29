@@ -1199,7 +1199,7 @@ func innerReboot(executor executor.IExecCommander) {
 	// because `reboot` won't return anything.
 	// we don't want to wait for the stdout
 	cmd := exec.Command(paths.Reboot, "-h", "now")
-	executor.Exec(cmd)
+	executor.CombinedOutput(cmd)
 }
 
 // Reboot call a reboot command on RPC container
