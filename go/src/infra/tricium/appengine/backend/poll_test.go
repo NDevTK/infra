@@ -885,6 +885,169 @@ func TestPollProjectWhitelistBehavior(t *testing.T) {
 	})
 }
 
+func TestPollProjectAllRevisionKindsBehavior(t *testing.T) {
+
+	Convey("Test Environment", t, func() {
+		ctx := triciumtest.Context()
+
+		var (
+			allRevisionsKinds   = "all-revision-kind"
+			noAllRevisionsKinds = "no-all-revision-kinds"
+			projectName         = "infra"
+		)
+
+		now := time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC)
+		ctx, tc := testclock.UseTime(ctx, now)
+		ctx = auth.WithState(ctx, &authtest.FakeState{
+			Identity: identity.AnonymousIdentity,
+		})
+
+		cp := &mockConfigProvider{
+			Projects: map[string]*tricium.ProjectConfig{
+				allRevisionsKinds: {
+					Repos: []*tricium.RepoDetails{
+						{
+							Source: &tricium.RepoDetails_GerritProject{
+								GerritProject: &tricium.GerritProject{
+									Host:    host,
+									Project: projectName,
+									GitUrl:  "https://repo-host.com/all",
+								},
+							},
+							CheckAllRevisionKinds: true,
+						},
+					},
+				},
+				noAllRevisionsKinds: {
+					Repos: []*tricium.RepoDetails{
+						{
+							Source: &tricium.RepoDetails_GerritProject{
+								GerritProject: &tricium.GerritProject{
+									Host:    host,
+									Project: projectName,
+									GitUrl:  "https://repo-host.com/rework",
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		Convey("A non-rework change in a rework-only project", func() {
+			api := &mockPollRestAPI{}
+			lastChangeTS := tc.Now().UTC()
+			revisions := map[string]gr.RevisionInfo{
+				"abcdef": {
+					Kind:  "NO_CODE_CHANGE",
+					Files: map[string]*gr.FileInfo{"README.md": {}}},
+			}
+			api.addChanges(host, projectName, []gr.ChangeInfo{
+				{
+					ChangeID:        "Ideadc0de",
+					Branch:          "branch",
+					Project:         projectName,
+					Status:          "NEW",
+					CurrentRevision: "abcdef",
+					Updated:         gr.TimeStamp(lastChangeTS),
+					Revisions:       revisions,
+					Owner:           &gr.AccountInfo{Email: "user@example.com"},
+				},
+			})
+			So(pollProject(ctx, noAllRevisionsKinds, api, cp), ShouldBeNil)
+			tc.Add(time.Second)
+			So(pollProject(ctx, noAllRevisionsKinds, api, cp), ShouldBeNil)
+			Convey("Enqueues an analyze request", func() {
+				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 0)
+			})
+		})
+
+		Convey("A rework change in a rework-only project", func() {
+			api := &mockPollRestAPI{}
+			lastChangeTS := tc.Now().UTC()
+			revisions := map[string]gr.RevisionInfo{
+				"abcdef": {
+					Kind:  "REWORK",
+					Files: map[string]*gr.FileInfo{"README.md": {}}},
+			}
+			api.addChanges(host, projectName, []gr.ChangeInfo{
+				{
+					ChangeID:        "Ideadc0de",
+					Branch:          "branch",
+					Project:         projectName,
+					Status:          "NEW",
+					CurrentRevision: "abcdef",
+					Updated:         gr.TimeStamp(lastChangeTS),
+					Revisions:       revisions,
+					Owner:           &gr.AccountInfo{Email: "user@example.com"},
+				},
+			})
+			So(pollProject(ctx, noAllRevisionsKinds, api, cp), ShouldBeNil)
+			tc.Add(time.Second)
+			So(pollProject(ctx, noAllRevisionsKinds, api, cp), ShouldBeNil)
+			Convey("Enqueues an analyze request", func() {
+				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 1)
+			})
+		})
+
+		Convey("A non-rework change in an any kind project", func() {
+			api := &mockPollRestAPI{}
+			lastChangeTS := tc.Now().UTC()
+			revisions := map[string]gr.RevisionInfo{
+				"abcdef": {
+					Kind:  "NO_CODE_CHANGE",
+					Files: map[string]*gr.FileInfo{"README.md": {}}},
+			}
+			api.addChanges(host, projectName, []gr.ChangeInfo{
+				{
+					ChangeID:        "Ideadc0de",
+					Branch:          "branch",
+					Project:         projectName,
+					Status:          "NEW",
+					CurrentRevision: "abcdef",
+					Updated:         gr.TimeStamp(lastChangeTS),
+					Revisions:       revisions,
+					Owner:           &gr.AccountInfo{Email: "user@example.com"},
+				},
+			})
+			So(pollProject(ctx, allRevisionsKinds, api, cp), ShouldBeNil)
+			tc.Add(time.Second)
+			So(pollProject(ctx, allRevisionsKinds, api, cp), ShouldBeNil)
+			Convey("Enqueues an analyze request", func() {
+				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 1)
+			})
+		})
+
+		Convey("A rework change in an any kind project", func() {
+			api := &mockPollRestAPI{}
+			lastChangeTS := tc.Now().UTC()
+			revisions := map[string]gr.RevisionInfo{
+				"abcdef": {
+					Kind:  "REWORK",
+					Files: map[string]*gr.FileInfo{"README.md": {}}},
+			}
+			api.addChanges(host, projectName, []gr.ChangeInfo{
+				{
+					ChangeID:        "Ideadc0de",
+					Branch:          "branch",
+					Project:         projectName,
+					Status:          "NEW",
+					CurrentRevision: "abcdef",
+					Updated:         gr.TimeStamp(lastChangeTS),
+					Revisions:       revisions,
+					Owner:           &gr.AccountInfo{Email: "user@example.com"},
+				},
+			})
+			So(pollProject(ctx, allRevisionsKinds, api, cp), ShouldBeNil)
+			tc.Add(time.Second)
+			So(pollProject(ctx, allRevisionsKinds, api, cp), ShouldBeNil)
+			Convey("Enqueues an analyze request", func() {
+				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 1)
+			})
+		})
+	})
+}
+
 func TestStatusCode(t *testing.T) {
 	ctx := triciumtest.Context()
 

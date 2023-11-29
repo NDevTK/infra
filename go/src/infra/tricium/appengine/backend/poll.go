@@ -400,7 +400,7 @@ func filterChanges(c context.Context, repo *tricium.RepoDetails, changes []gr.Ch
 			}.Infof(c, "Skipping change with skip footer.")
 			continue
 		}
-		if curRev.Kind != "REWORK" {
+		if curRev.Kind != "REWORK" && !repo.CheckAllRevisionKinds {
 			// REWORK is the revision kind that involves code change.
 			// For other possible values of Kind, see:
 			// https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#revision-info
