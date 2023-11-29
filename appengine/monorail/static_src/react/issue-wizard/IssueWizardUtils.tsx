@@ -137,7 +137,9 @@ export function buildIssueLabels(category: string, osName: string, chromeVersion
     })
   }
   const mainChromeVersion = chromeVersion.split('.').length > 0 ? chromeVersion.split('.')[0] : null;
-  if (mainChromeVersion !== null) {
+  // Label creation is frozen for Chromium in Monorail, and Needs-Triage-M121 and up don't exist.
+  // So, don't add it in that case.
+  if (mainChromeVersion !== null && parseInt(mainChromeVersion) < 121) {
     labels.push({
       label:'Needs-Triage-M'+mainChromeVersion
     });
