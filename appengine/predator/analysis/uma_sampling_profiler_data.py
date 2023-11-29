@@ -105,8 +105,7 @@ class UMASamplingProfilerData(CrashData):
         self.subtree_stacks, self.subtree_root_depth,
         self._dependency_analyzer.regression_version_deps)
     if not stacktrace:
-      logging.warning('Failed to parse the stacktrace %s',
-                      self.subtree_stacks)
+      logging.warning('Failed to parse the stacktrace')
     return stacktrace
 
   @property

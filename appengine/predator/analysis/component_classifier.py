@@ -5,7 +5,6 @@
 from collections import namedtuple
 from collections import defaultdict
 import functools
-import logging
 import os
 import re
 

@@ -4,7 +4,6 @@
 
 from collections import defaultdict
 from collections import namedtuple
-import logging
 import math
 import os
 import re

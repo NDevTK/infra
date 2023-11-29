@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import json
-import logging
 
 from six.moves.urllib import parse
 from google.appengine.ext import ndb

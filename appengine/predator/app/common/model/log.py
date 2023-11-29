@@ -10,7 +10,6 @@ from collections import defaultdict
 from collections import namedtuple
 import hashlib
 import json
-import logging
 
 from google.appengine.ext import ndb
 

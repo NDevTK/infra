@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 from collections import namedtuple
-import logging
 import math
 
 import libs.math.logarithms as lmath

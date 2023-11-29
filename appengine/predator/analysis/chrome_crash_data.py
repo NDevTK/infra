@@ -121,8 +121,7 @@ class ChromeCrashData(CrashData):
         self._dependency_analyzer.regression_version_deps,
         top_n_frames=self._top_n_frames)
     if not stacktrace:
-      logging.warning('Failed to parse the stacktrace %s',
-                      self._raw_stacktrace)
+      logging.warning('Failed to parse the stacktrace')
     return stacktrace
 
   @cached_property

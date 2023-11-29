@@ -6,7 +6,6 @@
 # in this file better. We avoid having separate todos per task; instead
 # see that meta-issue ticket.
 
-import logging
 import math
 import numpy as np
 # N.B., ``np.array`` can't take generators; you must pass explicit lists.

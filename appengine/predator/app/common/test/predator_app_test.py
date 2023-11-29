@@ -4,7 +4,6 @@
 
 import copy
 import json
-import logging
 import mock
 
 from google.appengine.api import app_identity

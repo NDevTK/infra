@@ -4,7 +4,6 @@
 
 from datetime import datetime
 from datetime import timedelta
-import logging
 
 from google.appengine.ext import ndb
 
