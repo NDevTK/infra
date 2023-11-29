@@ -33,10 +33,12 @@ WITH
     4),
   recent_tests AS (
     SELECT
+    project,
     SUBSTR(r.ingested_invocation_id, 7) AS build_id,
     r.test_id,
     r.realm,
     r.variant_hash,
+    r.source_ref_hash,
     ANY_VALUE(COALESCE((SELECT value FROM UNNEST(r.tags) WHERE key = "test_name"), r.test_id)) AS test_name,
     ANY_VALUE((SELECT value FROM UNNEST(r.tags) WHERE key = "step_name" limit 1)) as step_name,
     -- we prefix 'rules' algorithms with 'a' and others with 'b' so that MIN chooses clusters in order of [rules, reason, testname].
@@ -61,7 +63,8 @@ WITH
           is_included,
           tags,
           realm,
-          variant_hash
+          variant_hash,
+          source_ref_hash
         ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
       FROM `luci-analysis.internal.clustered_failures` cf
       WHERE
@@ -73,12 +76,38 @@ WITH
     AND r.is_ingested_invocation_blocked
     AND ARRAY_LENGTH(r.exonerations) = 0
   GROUP BY
+    project,
     r.ingested_invocation_id,
     r.test_id,
     r.realm,
-    r.variant_hash)
+    r.variant_hash,
+    r.source_ref_hash),
+changepoint_analysis_unexpected_realtime AS(
+    SELECT
+      project, test_id, variant_hash, ref_hash,
+      ARRAY_AGG(merged ORDER BY version DESC LIMIT 1)[OFFSET(0)] AS row
+    FROM (
+        SELECT cp.*
+        FROM luci-analysis.internal.test_variant_segments cp
+        WHERE cp.project IN ("chrome", "chromeos", "chromium", "turquoise", "fuchsia") AND has_recent_unexpected_results = 1
+        UNION ALL
+        SELECT cp.*
+        FROM luci-analysis.internal.test_variant_segment_updates cp
+        WHERE cp.project IN ("chrome", "chromeos", "chromium", "turquoise", "fuchsia") AND has_recent_unexpected_results = 1
+      ) merged
+    GROUP BY project, test_id, variant_hash, ref_hash
+),
+recent_tests_with_changepoint_analysis as (
+  SELECT tr.*, cp.row.segments
+  FROM recent_tests tr
+  LEFT JOIN changepoint_analysis_unexpected_realtime cp
+      ON  tr.project = cp.project
+      AND tr.test_id = cp.test_id
+      AND tr.variant_hash = cp.variant_hash
+      AND tr.source_ref_hash = cp.ref_hash
+)
 SELECT
-  project,
+  b.project,
   bucket,
   builder,
   latest.number,
@@ -104,7 +133,9 @@ SELECT
     tr.test_id as TestID,
     tr.realm as Realm,
     tr.variant_hash as VariantHash,
-    tr.cluster_name as ClusterName)
+    tr.cluster_name as ClusterName,
+    tr.source_ref_hash as RefHash,
+    tr.segments as Segments)
     ORDER BY
       tr.test_name
     LIMIT
@@ -114,7 +145,7 @@ FROM
   latest_builds b,
   b.latest.steps s
 LEFT OUTER JOIN
-  recent_tests tr
+  recent_tests_with_changepoint_analysis tr
 ON
   SAFE_CAST(tr.build_id AS int64) = b.latest.id
   AND (tr.step_name IS NULL OR tr.step_name = s.name)
