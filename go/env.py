@@ -17,8 +17,8 @@ $ ./env.py go version
 assert __name__ == '__main__'
 
 import os
-import pipes
 import subprocess
+import shlex
 import sys
 
 
@@ -58,7 +58,7 @@ if sys.platform == 'win32':
   def emit_env_var(key, value):
     # TODO: The quoting here is probably insufficient for all corner cases.
     # We strip "'" because cmd.exe doesn't like it in PATH for some reason.
-    print('set %s=%s' % (key, pipes.quote(value).strip("'")))
+    print('set %s=%s' % (key, shlex.quote(value).strip("'")))
   def unset_env_var(key):
     print('set %s=' % (key,))
 else:
@@ -67,7 +67,7 @@ else:
     # We will only use the $'...' notation if there was an escaped character
     # in the string.
     print('export %s=%s%s;' % (key, ('$') if orig_value != value else
-                              (''), pipes.quote(value)))
+                              (''), shlex.quote(value)))
   def unset_env_var(key):
     print('unset %s;' % (key,))
 
