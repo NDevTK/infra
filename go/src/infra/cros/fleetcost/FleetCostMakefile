@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+define LECTURE_USER
+Please explicitly set a default target in a local Makefile (that is not checked in to version control).
+See Makefile.sample for an example.
+endef
+
+# GARBAGE is all the generated files that might be created by this makefile
+GARBAGE := fleetcost fleetcostserver ./cmd/fleetcost/fleetcost ./cmd/fleetcost/fleetcostserver
+
+# The first target is the default. By default, tell the user to create their own makefile.
+.PHONY: fleet-cost-makefile-default
+fleet-cost-makefile-default: lecture-user
+
+# Tell the user how to create a local makefile
+.PHONY: lecture-user
+lecture-user:
+	$(error $(LECTURE_USER))
+
+# Run the static analysis tools and the tests and build the binaries.
+# This is intended to be an efficient inner loop for a developer.
+.PHONY: binaries
+binaries:
+	staticcheck ./...
+	go vet ./...
+	go test ./...
+	$(RM) $(GARBAGE)
+	go build ./cmd/fleetcostserver/
+	go build ./cmd/fleetcost/

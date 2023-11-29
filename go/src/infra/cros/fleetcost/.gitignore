@@ -1,0 +1,7 @@
+fleetcost
+fleetcostserver
+
+# Please do not check your Makefile into version control.
+# Doing so increases the odds that some piece of automation
+# somewhere will come to depend on it.
+Makefile
