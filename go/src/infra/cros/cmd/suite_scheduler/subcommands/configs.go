@@ -14,13 +14,14 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/suite_scheduler/common"
-	"infra/cros/cmd/suite_scheduler/configparser"
-	"infra/cros/cmd/suite_scheduler/ctp_request"
-
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
+
+	"infra/cros/cmd/suite_scheduler/common"
+	"infra/cros/cmd/suite_scheduler/configparser"
+	"infra/cros/cmd/suite_scheduler/ctprequest"
 )
 
 const (
@@ -618,8 +619,8 @@ func nameOnlyFormat(configs CLIConfigList, includeTimestamp bool) ([]byte, error
 // ctpRequestFormat converts all found configs to their respective CTPRequests
 // and returns it as a json formatted []byte.
 func ctpRequestFormat(configs CLIConfigList, configTargetOptions map[string]configparser.TargetOptions, includeTimestamp bool) ([]byte, error) {
-	timestampMap := map[time.Time]ctp_request.CTPRequests{}
-	ctpRequestOnlyList := ctp_request.CTPRequests{}
+	timestampMap := map[time.Time]ctprequest.CTPRequests{}
+	ctpRequestOnlyList := ctprequest.CTPRequests{}
 
 	// Per datetime:config build all CTP requests that should be generated
 	// from it's invocation.
@@ -628,7 +629,7 @@ func ctpRequestFormat(configs CLIConfigList, configTargetOptions map[string]conf
 			if _, ok := configTargetOptions[config.Name]; !ok {
 				return nil, fmt.Errorf("config %s is not tracked in the target options cache", config.Name)
 			}
-			requests := ctp_request.BuildAllCTPRequests(config, configTargetOptions[config.Name])
+			requests := ctprequest.BuildAllCTPRequests(config, configTargetOptions[config.Name])
 
 			// To save on space, only add to the object that we will be using
 			// for the json return.

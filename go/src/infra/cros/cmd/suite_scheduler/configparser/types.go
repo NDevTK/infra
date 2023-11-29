@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"time"
 
-	"infra/cros/cmd/suite_scheduler/common"
-
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+
+	"infra/cros/cmd/suite_scheduler/common"
 )
 
 // SuSchDayToTimeDay provides a map to translate time weekday enums to SuSch

@@ -8,8 +8,9 @@ package configparser
 import (
 	"fmt"
 
-	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 )
 
 // IngestSuSchConfigs takes in all of the raw Suite Scheduler and Lab configs and ingests

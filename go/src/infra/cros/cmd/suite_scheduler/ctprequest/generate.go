@@ -2,43 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package ctp_request will build and return a CTP request to be handled by the CTP
+// Package ctprequest will build and return a CTP request to be handled by the CTP
 // BuildBucket builder.
-package ctp_request
+package ctprequest
 
 import (
 	"fmt"
 
+	"google.golang.org/protobuf/types/known/durationpb"
+
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
-	"google.golang.org/protobuf/types/known/durationpb"
 
 	"infra/cros/cmd/suite_scheduler/configparser"
 )
 
 const (
-	GS_PREFIX              = "gs://chromeos-image-archive/"
-	CONTAINER_METADATA_LOC = "metadata/containers.jsonpb"
+	GSPrefix                  = "gs://chromeos-image-archive/"
+	ContainerMetadataLocation = "metadata/containers.jsonpb"
 
-	MAX_RETRY = 3
+	MaxRetry = 3
 
-	FORTNIGHTLY = int64(240)
-	WEEKLY      = int64(230)
-	DAILY       = int64(200)
-	POSTBUILD   = int64(170)
+	Fortnightly = int64(240)
+	Weekly      = int64(230)
+	Daily       = int64(200)
+	PostBuild   = int64(170)
 
 	// CTP requests with a qs account will not require a priority so apply the
 	// default swarming value.
-	DEFAULT = int64(140)
+	Default = int64(140)
 )
 
 // priorityMap returns the proper swarming priority value for the given launch profile type.
 var priorityMap = map[infrapb.SchedulerConfig_LaunchCriteria_LaunchProfile]int64{
-	infrapb.SchedulerConfig_LaunchCriteria_NEW_BUILD:   POSTBUILD,
-	infrapb.SchedulerConfig_LaunchCriteria_DAILY:       DAILY,
-	infrapb.SchedulerConfig_LaunchCriteria_WEEKLY:      WEEKLY,
-	infrapb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY: FORTNIGHTLY,
+	infrapb.SchedulerConfig_LaunchCriteria_NEW_BUILD:   PostBuild,
+	infrapb.SchedulerConfig_LaunchCriteria_DAILY:       Daily,
+	infrapb.SchedulerConfig_LaunchCriteria_WEEKLY:      Weekly,
+	infrapb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY: Fortnightly,
 }
 
 // getSwarmingDimensions reads the configs runOptions dimensions and formats
@@ -69,7 +70,7 @@ func getSchedulingFields(PoolOptions *infrapb.SchedulerConfig_PoolOptions, launc
 
 	if PoolOptions.QsAccount == "" {
 		// Get the priority for the run.
-		priority := DEFAULT
+		priority := Default
 		if val, ok := priorityMap[launchType]; ok {
 			priority = val
 		}
@@ -124,7 +125,7 @@ func getRetryParams(retry bool) *requestpb.Request_Params_Retry {
 	if retry {
 		return &requestpb.Request_Params_Retry{
 			Allow: true,
-			Max:   MAX_RETRY,
+			Max:   MaxRetry,
 		}
 	}
 	return nil
@@ -172,11 +173,11 @@ func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model string) *requ
 			// TODO(b:305792113): Get build information from the release-build pipeline.
 			Metadata: &requestpb.Request_Params_Metadata{
 				// Some gsURL
-				TestMetadataUrl: GS_PREFIX + "PLACEHOLDER_PATH_INFO",
+				TestMetadataUrl: GSPrefix + "PLACEHOLDER_PATH_INFO",
 				// Some gsURL same as above
-				DebugSymbolsArchiveUrl: GS_PREFIX + "PLACEHOLDER_PATH_INFO",
+				DebugSymbolsArchiveUrl: GSPrefix + "PLACEHOLDER_PATH_INFO",
 
-				ContainerMetadataUrl: GS_PREFIX + "PLACEHOLDER_PATH_INFO" + CONTAINER_METADATA_LOC,
+				ContainerMetadataUrl: GSPrefix + "PLACEHOLDER_PATH_INFO" + ContainerMetadataLocation,
 			},
 			Time: &requestpb.Request_Params_Time{
 				MaximumDuration: &durationpb.Duration{Seconds: getTimeoutSeconds(config.RunOptions.TimeoutMins)},
@@ -192,7 +193,7 @@ func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model string) *requ
 	return request
 }
 
-// BuildCTPRequest Generates all potential CTP options for the given configuration.
+// BuildAllCTPRequests Generates all potential CTP options for the given configuration.
 func BuildAllCTPRequests(config *infrapb.SchedulerConfig, targets configparser.TargetOptions) CTPRequests {
 	requests := CTPRequests{}
 	for _, target := range targets {

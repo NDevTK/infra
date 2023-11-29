@@ -6,9 +6,10 @@ package configparser
 
 import (
 	"fmt"
-	"infra/cros/cmd/suite_scheduler/common"
 
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+
+	"infra/cros/cmd/suite_scheduler/common"
 )
 
 // FetchAllConfigs returns all configs.
