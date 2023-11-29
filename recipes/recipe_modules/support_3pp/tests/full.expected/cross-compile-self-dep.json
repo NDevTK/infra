@@ -168,7 +168,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/self_dependency/linux-amd64/2.0.0"
     ],
     "env": {
@@ -202,7 +202,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/self_dependency/linux-amd64/2.0.0/checkout"
     ],
     "env": {
@@ -350,7 +350,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/self_dependency/linux-amd64"
     ],
     "env": {
@@ -464,7 +464,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/self_dependency/linux-amd64"
     ],
     "env": {
@@ -571,7 +571,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/self_dependency/linux-arm64/2.0.0"
     ],
     "env": {
@@ -643,7 +643,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/self_dependency/linux-arm64/2.0.0/checkout"
     ],
     "env": {
@@ -791,7 +791,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/self_dependency/linux-arm64"
     ],
     "env": {
@@ -946,7 +946,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[START_DIR]/3pp/wd/tools/self_dependency/linux-arm64/2.0.0/out"
     ],
     "env": {
@@ -1100,7 +1100,7 @@
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
-      "0777",
+      "0o777",
       "[CACHE]/3pp_cipd/3pp/tools/self_dependency/linux-arm64"
     ],
     "env": {
