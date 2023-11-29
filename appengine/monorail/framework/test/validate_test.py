@@ -30,6 +30,11 @@ class ValidateUnitTest(unittest.TestCase):
       'user@e-x-a-m-p-l-e.com',
       'user@e-x.am-ple.com',
       'user@e--xample.com',
+      'user@example.c',
+      'user@example.comcomcomc',
+      'user@example.co-m',
+      'user@example.c0m',
+      'very-long-email-address@very-long-domain.iam.abcdefghijklmnopqrstuvwxyz',
   ]
 
   BAD_EMAIL_ADDRESSES = [
@@ -51,12 +56,8 @@ class ValidateUnitTest(unittest.TestCase):
       'user@example-.com',
       'user@example',
       'user@example.',
-      'user@example.c',
-      'user@example.comcomcomc',
-      'user@example.co-m',
       'user@exa_mple.com',
       'user@exa-_mple.com',
-      'user@example.c0m',
   ]
 
   def testIsValidEmail(self):

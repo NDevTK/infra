@@ -9,61 +9,17 @@ from __future__ import absolute_import
 
 import re
 
-# RFC 2821-compliant email address regex
-#
-# Please see sections "4.1.2 Command Argument Syntax" and
-# "4.1.3 Address Literals" of:  http://www.faqs.org/rfcs/rfc2821.html
-#
-# The following implementation is still a subset of RFC 2821.  Fully
-# double-quoted <user> parts are not supported (since the RFC discourages
-# their use anyway), and using the backslash to escape other characters
-# that are normally invalid, such as commas, is not supported.
-#
-# The groups in this regular expression are:
-#
-# <user>: all of the valid non-quoted portion of the email address before
-#   the @ sign (not including the @ sign)
-#
-# <domain>: all of the domain name between the @ sign (but not including it)
-#   and the dot before the TLD (but not including that final dot)
-#
-# <tld>: the top-level domain after the last dot (but not including that
-#   final dot)
-#
+# RFC 5322-compliant email address regex
+# https://stackoverflow.com/a/201378
 _RFC_2821_EMAIL_REGEX = r"""
-  (?P<user>
-    # Part of the username that comes before any dots that may occur in it.
-    # At least one of the listed non-dot characters is required before the
-    # first dot.
-    [-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]+
-
-    # Remaining part of the username that starts with the dot and
-    # which may have other dots, if such a part exists.  Only one dot
-    # is permitted between each "Atom", and a trailing dot is not permitted.
-    (?:[.][-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]+)*
-  )
-
-  # Domain name, where subdomains are allowed.  Also, dashes are allowed
-  # given that they are preceded and followed by at least one character.
-  @(?P<domain>
-    (?:[0-9a-zA-Z]       # at least one non-dash
-       (?:[-]*           # plus zero or more dashes
-          [0-9a-zA-Z]+   # plus at least one non-dash
-       )*                # zero or more of dashes followed by non-dashes
-    )                    # one required domain part (may be a sub-domain)
-
-    (?:\.                # dot separator before additional sub-domain part
-       [0-9a-zA-Z]       # at least one non-dash
-       (?:[-]*           # plus zero or more dashes
-          [0-9a-zA-Z]+   # plus at least one non-dash
-       )*                # zero or more of dashes followed by non-dashes
-    )*                   # at least one sub-domain part and a dot
-   )
-  \.                     # dot separator before TLD
-
-  # TLD, the part after 'usernames@domain.' which can consist of 2-9
-  # letters.
-  (?P<tld>[a-zA-Z]{2,9})
+  (?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|
+  "(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|
+  \\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@
+  (?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|
+  \[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|
+  [0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:
+  (?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|
+  \\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])
   """
 
 # object used with <re>.search() or <re>.sub() to find email addresses
