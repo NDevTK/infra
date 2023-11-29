@@ -25,4 +25,5 @@ func registerShivasFlags(c *deleteDUTCmd) {
 	c.envFlags.Register(&c.Flags)
 
 	c.Flags.StringVar(&c.SatlabID, "satlab-id", "", "the ID for the satlab in question")
+	c.Flags.BoolVar(&c.Full, "full", false, "whether to use a full/cascading delete for DUTs")
 }

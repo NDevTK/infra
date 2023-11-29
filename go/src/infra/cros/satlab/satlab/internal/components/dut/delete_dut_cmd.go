@@ -29,9 +29,6 @@ var DeleteDUTCmd = &subcommands.Command{
 	CommandRun: func() subcommands.CommandRun {
 		c := &deleteDUTCmd{}
 		registerShivasFlags(c)
-
-		c.Flags.BoolVar(&c.Full, "full", false, "whether to use a full/cascading delete for DUTs")
-		c.Flags.StringVar(&c.SatlabID, "satlab-id", "", "the ID for the satlab in question")
 		return c
 	},
 }
