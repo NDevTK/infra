@@ -33,6 +33,9 @@ type IBucketServices interface {
 
 	// GetTestPlan get the test plan's content from the given filename.
 	GetTestPlan(context.Context, string) (*test_platform.Request_TestPlan, error)
+
+	// UploadLog upload the log to bucket.
+	UploadLog(context.Context, string, string) (string, error)
 }
 
 type IBucketClient interface {
@@ -44,6 +47,12 @@ type IBucketClient interface {
 
 	// ReadObject read the object content by the given name
 	ReadObject(ctx context.Context, name string) (io.ReadCloser, error)
+
+	// WriteObject writes a object to the bucket
+	WriteObject(ctx context.Context, name string) io.WriteCloser
+
+	// GetBucketName get the current bucket name
+	GetBucketName() string
 
 	// Close clean up
 	Close() error

@@ -40,6 +40,12 @@ const VPDKeyEthernetMAC = "ethernet_mac"
 // GetPeripheralInfoCommand the command of get peripheral information
 const GetPeripheralInfoCommand = "fwupdmgr get-devices --json"
 
+// LogDirectory the path of log directory
+const LogDirectory = "/var/log/satlab"
+
+// GCSObjectURLTemplate the template of log url
+const GCSObjectURLTemplate = "https://console.developers.google.com/storage/browser/_details/%s"
+
 const ListFirmwareCommand = "fwid=`timeout 5 crossystem fwid`;" +
 	"model=`timeout 5 cros_config / name`;" +
 	"fw_update=`timeout 5 chromeos-firmwareupdate --manifest`;" +

@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/go-version"
@@ -40,6 +41,7 @@ import (
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
+	u "infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
@@ -1211,4 +1213,36 @@ func (s *SatlabRpcServiceServer) Reboot(context.Context, *pb.RebootRequest) (*pb
 	}()
 
 	return &pb.RebootResponse{}, nil
+}
+
+func (s *SatlabRpcServiceServer) UploadLog(ctx context.Context, _ *pb.UploadLogRequest) (*pb.UploadLogResponse, error) {
+	if err := s.validateServices(); err != nil {
+		return nil, err
+	}
+
+	hostId, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
+	// prepare the tar filename and bucket path
+	filename := fmt.Sprintf("%d.tar.gz", time.Now().Unix())
+	now := time.Now().Format("2006-01-02_15:04:05")
+	out := fmt.Sprintf("/tmp/%s", filename)
+	if err := u.TarGz(constants.LogDirectory, out); err != nil {
+		return nil, err
+	}
+	// clean up the tar file
+	defer os.Remove(out)
+
+	bPath := fmt.Sprintf("%s/%s/%s", hostId, now, filename)
+	// upload the tar file to the bucket
+	gsPath, err := s.bucketService.UploadLog(ctx, bPath, out)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UploadLogResponse{
+		BucketLink: fmt.Sprintf(constants.GCSObjectURLTemplate, gsPath),
+	}, nil
 }

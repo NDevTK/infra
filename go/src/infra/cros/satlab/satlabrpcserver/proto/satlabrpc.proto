@@ -53,6 +53,7 @@ service SatlabRpcService {
 
   // system
   rpc reboot (RebootRequest) returns (RebootResponse);
+  rpc upload_log (UploadLogRequest) returns (UploadLogResponse);
 
   // servo
   rpc StartServod(chromiumos.test.api.StartServodRequest)
@@ -527,3 +528,12 @@ message RebootRequest {}
 
 // NEXT_TAG = 1
 message RebootResponse {}
+
+// NEXT_TAG = 1
+message UploadLogRequest {}
+
+// NEXT_TAG = 2
+message UploadLogResponse {
+  // the link of visit the tar file in bucket
+  string bucket_link = 1;
+}

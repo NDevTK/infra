@@ -47,3 +47,8 @@ func (m *MockBucketServices) GetTestPlan(ctx context.Context, name string) (*tes
 	args := m.Called(ctx, name)
 	return args.Get(0).(*test_platform.Request_TestPlan), args.Error(1)
 }
+
+func (m *MockBucketServices) UploadLog(ctx context.Context, name, path string) (string, error) {
+	args := m.Called(ctx, name, path)
+	return args.String(0), args.Error(1)
+}

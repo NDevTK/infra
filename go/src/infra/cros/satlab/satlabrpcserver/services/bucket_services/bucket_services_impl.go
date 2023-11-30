@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -47,9 +48,17 @@ func (b *bucketClient) ReadObject(ctx context.Context, name string) (io.ReadClos
 	return b.client.Bucket(b.bucketName).Object(name).NewReader(ctx)
 }
 
+func (b *bucketClient) WriteObject(ctx context.Context, name string) io.WriteCloser {
+	return b.client.Bucket(b.bucketName).Object(name).NewWriter(ctx)
+}
+
 // GetAttrs get the bucket attributes
 func (b *bucketClient) GetAttrs(ctx context.Context) (*storage.BucketAttrs, error) {
 	return b.client.Bucket(b.bucketName).Attrs(ctx)
+}
+
+func (b *bucketClient) GetBucketName() string {
+	return b.bucketName
 }
 
 // Close to close the client connection.
@@ -208,4 +217,26 @@ func (b *BucketConnector) GetTestPlan(ctx context.Context, name string) (*test_p
 	}
 
 	return tp, nil
+}
+
+// UploadLog upload the log from the local to bucket.
+func (b *BucketConnector) UploadLog(ctx context.Context, gsFilename, localFilePath string) (string, error) {
+	data, err := os.ReadFile(localFilePath)
+	if err != nil {
+		return "", err
+	}
+
+	d := "satlab_logs"
+	gsFullPath := fmt.Sprintf("%s/%s", d, gsFilename)
+	w := b.client.WriteObject(ctx, gsFullPath)
+
+	if _, err = w.Write(data); err != nil {
+		return "", err
+	}
+
+	if err := w.Close(); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s/%s", b.client.GetBucketName(), gsFullPath), nil
 }

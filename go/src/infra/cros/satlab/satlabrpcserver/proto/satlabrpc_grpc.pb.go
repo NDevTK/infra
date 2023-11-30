@@ -53,6 +53,7 @@ const (
 	SatlabRpcService_SetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/set_cloud_configuration"
 	SatlabRpcService_GetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/get_cloud_configuration"
 	SatlabRpcService_Reboot_FullMethodName                    = "/satlabrpcserver.SatlabRpcService/reboot"
+	SatlabRpcService_UploadLog_FullMethodName                 = "/satlabrpcserver.SatlabRpcService/upload_log"
 	SatlabRpcService_StartServod_FullMethodName               = "/satlabrpcserver.SatlabRpcService/StartServod"
 )
 
@@ -94,6 +95,7 @@ type SatlabRpcServiceClient interface {
 	GetCloudConfiguration(ctx context.Context, in *GetCloudConfigurationRequest, opts ...grpc.CallOption) (*GetCloudConfigurationResponse, error)
 	// system
 	Reboot(ctx context.Context, in *RebootRequest, opts ...grpc.CallOption) (*RebootResponse, error)
+	UploadLog(ctx context.Context, in *UploadLogRequest, opts ...grpc.CallOption) (*UploadLogResponse, error)
 	// servo
 	StartServod(ctx context.Context, in *api.StartServodRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 }
@@ -358,6 +360,15 @@ func (c *satlabRpcServiceClient) Reboot(ctx context.Context, in *RebootRequest, 
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) UploadLog(ctx context.Context, in *UploadLogRequest, opts ...grpc.CallOption) (*UploadLogResponse, error) {
+	out := new(UploadLogResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_UploadLog_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *satlabRpcServiceClient) StartServod(ctx context.Context, in *api.StartServodRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
 	out := new(longrunning.Operation)
 	err := c.cc.Invoke(ctx, SatlabRpcService_StartServod_FullMethodName, in, out, opts...)
@@ -405,6 +416,7 @@ type SatlabRpcServiceServer interface {
 	GetCloudConfiguration(context.Context, *GetCloudConfigurationRequest) (*GetCloudConfigurationResponse, error)
 	// system
 	Reboot(context.Context, *RebootRequest) (*RebootResponse, error)
+	UploadLog(context.Context, *UploadLogRequest) (*UploadLogResponse, error)
 	// servo
 	StartServod(context.Context, *api.StartServodRequest) (*longrunning.Operation, error)
 	mustEmbedUnimplementedSatlabRpcServiceServer()
@@ -497,6 +509,9 @@ func (UnimplementedSatlabRpcServiceServer) GetCloudConfiguration(context.Context
 }
 func (UnimplementedSatlabRpcServiceServer) Reboot(context.Context, *RebootRequest) (*RebootResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reboot not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) UploadLog(context.Context, *UploadLogRequest) (*UploadLogResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UploadLog not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) StartServod(context.Context, *api.StartServodRequest) (*longrunning.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartServod not implemented")
@@ -1018,6 +1033,24 @@ func _SatlabRpcService_Reboot_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_UploadLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).UploadLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_UploadLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).UploadLog(ctx, req.(*UploadLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SatlabRpcService_StartServod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(api.StartServodRequest)
 	if err := dec(in); err != nil {
@@ -1154,6 +1187,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "reboot",
 			Handler:    _SatlabRpcService_Reboot_Handler,
+		},
+		{
+			MethodName: "upload_log",
+			Handler:    _SatlabRpcService_UploadLog_Handler,
 		},
 		{
 			MethodName: "StartServod",

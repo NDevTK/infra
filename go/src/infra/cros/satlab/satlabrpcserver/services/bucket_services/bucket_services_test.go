@@ -100,6 +100,15 @@ func (m *mockBucketClient) ReadObject(ctx context.Context, name string) (io.Read
 	return args.Get(0).(io.ReadCloser), args.Error(1)
 }
 
+func (m *mockBucketClient) WriteObject(ctx context.Context, name string) io.WriteCloser {
+	args := m.Called(ctx, name)
+	return args.Get(0).(io.WriteCloser)
+}
+
+func (m *mockBucketClient) GetBucketName() string {
+	return "bucket_name"
+}
+
 // Close do clean up
 func (m *mockBucketClient) Close() error {
 	return nil
