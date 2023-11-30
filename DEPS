@@ -187,7 +187,7 @@ deps = {
     'packages': [
       {
         'package': 'infra/tools/result_adapter/${{platform}}',
-        'version': 'git_revision:fe9985447e6b95f4907774f05e9774f031700775',
+        'version': 'git_revision:e893aa29add926a17d9c151195720eced57d9657',
       },
     ],
     'dep_type': 'cipd',
