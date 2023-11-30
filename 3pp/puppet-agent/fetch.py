@@ -6,9 +6,12 @@
 import argparse
 import json
 import os
+import packaging.version
+import re
 import sys
+import urllib.request
 
-VERSION = '7.27.0'
+MAJOR_VERSION = '7'
 
 _EXTENSION = {
     'windows': '.msi',
@@ -22,21 +25,24 @@ _PLATFORMS = {
 
 
 def do_latest():
-  print(VERSION)
+  request = urllib.request.urlopen(
+      f'https://downloads.puppetlabs.com/windows/puppet{MAJOR_VERSION}/')
+  highest = None
+  href_re = re.compile(rf'href="puppet-agent-({MAJOR_VERSION}\.\d+\.\d+).*"')
+  for m in href_re.finditer(request.read().decode('utf-8')):
+    v = packaging.version.parse(m.group(1))
+    if not highest or v > highest:
+      highest = v
+  print(highest)
 
 
 def get_download_url(version, platform):
   if platform not in _PLATFORMS:
-    raise ValueError('unsupported platform {}'.format(platform))
-
+    raise ValueError(f'unsupported platform {platform}')
   extension = _EXTENSION[platform.split('-')[0]]
-
-  url = ('https://downloads.puppetlabs.com/windows/puppet7/'
-         'puppet-agent-{version}-{platform}{extension}'.format(
-             version=version,
-             platform=_PLATFORMS[platform],
-             extension=extension,
-         ))
+  platform = _PLATFORMS[platform]
+  url = (f'https://downloads.puppetlabs.com/windows/puppet{MAJOR_VERSION}/'
+         f'puppet-agent-{version}-{platform}{extension}')
   manifest = {
       'url': [url],
       'ext': extension,
