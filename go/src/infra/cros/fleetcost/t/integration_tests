@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# ./integration_tests
+
+# die prints a message to stderr and exits abornmally.
+die() {
+  printf '%s\n' "$@" 1>&2; exit 1;
+}
+
+# main runs the integration tests.
+main() {
+  export CDPATH=
+  readonly selfdir="$(dirname -- "$0")" || die 'cannot find self dir'
+  cd -- "$selfdir" || die 'cannot chdir'
+
+  readonly fleetcost="../fleetcost"
+
+  test -f "$fleetcost" || die 'cannot find fleetcost binary'
+
+  "$fleetcost" ping --help
+  case "$?" in
+    2) : "do nothing" ;;
+    *) die "unexpected status $?"
+  esac
+}
+
+
+
+main "$@"

@@ -30,6 +30,15 @@ binaries:
 	go build ./cmd/fleetcostserver/
 	go build ./cmd/fleetcost/
 
+# Run integration tests using the local client and local server binaries.
+.PHONY: integration
+integration:
+	./t/integration_tests
+
+# Abbreviation for integration
+.PHONY: int
+int: integration
+
 # Run go generate to rebuild the service definition from the protobufs.
 # Don't make this part of the `binaries` target because updating the generated
 # files is a code change that needs to be reviewed, so it should be opt-in.

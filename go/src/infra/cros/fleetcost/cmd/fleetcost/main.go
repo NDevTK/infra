@@ -11,6 +11,8 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
+
+	"infra/cros/fleetcost/internal/commands"
 )
 
 // getApplication returns the fleetcost command line application.
@@ -23,6 +25,7 @@ func getApplication() *cli.Application {
 		},
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
+			commands.PingCommand,
 		},
 	}
 }
