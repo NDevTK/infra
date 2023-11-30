@@ -22,8 +22,8 @@ import (
 )
 
 type SrcConfig struct {
-	DefaultSpecs map[string]ProblemSpec  `json:"_default_specs"` // e.g. UNHEALTHY -> {}
-	BucketSpecs  map[string]BuilderSpecs `json:"specs"`          // e.g. ci -> {}
+	DefaultSpecs []ProblemSpec           `json:"_default_specs"`
+	BucketSpecs  map[string]BuilderSpecs `json:"specs"` // e.g. ci -> {}
 }
 type BuilderSpecs map[string]BuilderSpec // e.g. linux-rel -> {}
 type BuilderSpec struct {
@@ -36,7 +36,7 @@ type ProblemSpec struct {
 	Thresholds Thresholds `json:"thresholds"`
 }
 type Thresholds struct {
-	Default         string               `json:"_default"` // if set to one of the DefaultSpecs keys defined in SrcConfig, then use that default spec. Mutually exclusive with the other fields in this struct.
+	Default         string               `json:"_default"` // if set to the sentinel value "_default", then use the defaults
 	BuildTime       PercentileThresholds `json:"build_time"`
 	FailRate        AverageThresholds    `json:"fail_rate"`
 	InfraFailRate   AverageThresholds    `json:"infra_fail_rate"`

@@ -15,8 +15,9 @@ func TestSrcConfig(t *testing.T) {
 	t.Parallel()
 
 	var testSrcConfig SrcConfig = SrcConfig{
-		DefaultSpecs: map[string]ProblemSpec{
-			"Unhealthy": {
+		DefaultSpecs: []ProblemSpec{
+			{
+				Name: "Unhealthy",
 				Thresholds: Thresholds{
 					TestPendingTime: PercentileThresholds{P50Mins: 60, P95Mins: 120},
 					PendingTime:     PercentileThresholds{P50Mins: 60, P95Mins: 120},
@@ -25,7 +26,8 @@ func TestSrcConfig(t *testing.T) {
 					InfraFailRate:   AverageThresholds{Average: 0.1},
 				},
 			},
-			"Low Value": {
+			{
+				Name: "Low Value",
 				Thresholds: Thresholds{
 					FailRate:      AverageThresholds{Average: 0.99},
 					InfraFailRate: AverageThresholds{Average: 0.99},
@@ -40,14 +42,14 @@ func TestSrcConfig(t *testing.T) {
 							Name:  "Unhealthy",
 							Score: UNHEALTHY_SCORE,
 							Thresholds: Thresholds{
-								Default: "Unhealthy",
+								Default: "_default",
 							},
 						},
 						{
 							Name:  "Low Value",
 							Score: LOW_VALUE_SCORE,
 							Thresholds: Thresholds{
-								Default: "Low Value",
+								Default: "_default",
 							},
 						},
 					},
@@ -60,7 +62,7 @@ func TestSrcConfig(t *testing.T) {
 							Name:  "Low Value",
 							Score: LOW_VALUE_SCORE,
 							Thresholds: Thresholds{
-								Default: "Low Value",
+								Default: "_default",
 							},
 						},
 						{
@@ -112,7 +114,7 @@ func TestSrcConfig(t *testing.T) {
 							Name:  "Unhealthy",
 							Score: UNHEALTHY_SCORE,
 							Thresholds: Thresholds{
-								Default:         "Unhealthy",
+								Default:         "_default",
 								TestPendingTime: PercentileThresholds{P50Mins: 600, P95Mins: 1200},
 								PendingTime:     PercentileThresholds{P50Mins: 600, P95Mins: 1200},
 								BuildTime:       PercentileThresholds{P50Mins: 600, P95Mins: 1200},
@@ -423,7 +425,7 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
+		So(err, ShouldNotBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "no ProblemSpecs")
 		So(outputRows[0].HealthScore, ShouldEqual, UNSET_SCORE)

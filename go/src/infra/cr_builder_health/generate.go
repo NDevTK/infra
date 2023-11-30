@@ -200,31 +200,51 @@ func calculateIndicators(buildCtx context.Context, rows []Row, srcConfig SrcConf
 				rows[i].HealthScore = UNSET_SCORE
 				rows[i].ScoreExplanation = fmt.Sprintf("Src Config error: Bucket: %s, Builder: %s has no ProblemSpecs", row.Bucket, row.Builder)
 				logging.Errorf(ctx, "Src Config error: Bucket: %s, Builder: %s has no ProblemSpecs", row.Bucket, row.Builder)
+				failedBuilders += 1
 				continue
 			}
 
 			sortProblemSpecs(builderSpec.ProblemSpecs) // to give lower scores precedence
-			for problemName, problemSpec := range builderSpec.ProblemSpecs {
-				if defaultSpec, ok := srcConfig.DefaultSpecs[problemSpec.Thresholds.Default]; ok {
+			for _, problemSpec := range builderSpec.ProblemSpecs {
+				if problemSpec.Thresholds.Default == "_default" {
+					// default set, check if any other thresholds erroneously specified
 					if (problemSpec.Thresholds.BuildTime != PercentileThresholds{} ||
 						problemSpec.Thresholds.TestPendingTime != PercentileThresholds{} ||
 						problemSpec.Thresholds.PendingTime != PercentileThresholds{} ||
 						problemSpec.Thresholds.FailRate != AverageThresholds{} ||
 						problemSpec.Thresholds.InfraFailRate != AverageThresholds{}) {
-						rows[i].HealthScore = UNSET_SCORE
+						rows[i].HealthScore = 0
 						rows[i].ScoreExplanation = "Threshold config error: default sentinel and custom thresholds cannot both be set."
-						logging.Errorf(ctx, "%s Bucket: %s. Builder: %s. ProblemName: %s", rows[i].ScoreExplanation, row.Bucket, row.Builder, problemName)
+						logging.Errorf(ctx, "%s Bucket: %s. Builder: %s.", rows[i].ScoreExplanation, row.Bucket, row.Builder)
 						failedBuilders += 1
 						continue
 					}
-					problemSpec.Thresholds = defaultSpec.Thresholds
+
+					// _default set, look for a matching default spec
+					found := false
+					for _, defaultSpec := range srcConfig.DefaultSpecs {
+						if defaultSpec.Name == problemSpec.Name {
+							problemSpec.Thresholds = defaultSpec.Thresholds
+							found = true
+							break
+						}
+					}
+					if !found {
+						rows[i].HealthScore = 0
+						rows[i].ScoreExplanation = "Threshold config error: default sentinel but no matching default found"
+						logging.Errorf(ctx, "%s Bucket: %s. Builder: %s.", rows[i].ScoreExplanation, row.Bucket, row.Builder)
+						failedBuilders += 1
+						continue
+					}
 				} else if problemSpec.Thresholds.Default != "" {
+					// Unknown sentinel
 					rows[i].HealthScore = UNSET_SCORE
 					rows[i].ScoreExplanation = fmt.Sprintf("Threshold config error: Default set to unknown sentinel value: %s.", problemSpec.Thresholds.Default)
 					logging.Errorf(ctx, "%s Bucket: %s. Builder %s.", rows[i].ScoreExplanation, row.Bucket, row.Builder)
 					failedBuilders += 1
 					continue
 				}
+				// Happy path, compare thresholds
 				stepErr = errors.Join(stepErr, compareThresholds(ctx, &rows[i], &problemSpec))
 			}
 			rows[i].ContactTeamEmail = builderSpec.ContactTeamEmail
