@@ -55,7 +55,8 @@ class PackageSleuth:
     packages = PackageSleuth.SupportedUnsupportedPackages([], [])
 
     ebuilds = self._ListEbuilds(packages_names)
-    dependencies = self._GetPackagesDependencies([e.package for e in ebuilds])
+    dependencies = self._GetPackagesDependencies(
+        [e.package for e in ebuilds if pkg.IsPackageSupported(e, self.setup)])
 
     listed_packages = set([e.package for e in ebuilds])
     # List of packages names to list taken from current dependencies that don't
@@ -69,7 +70,7 @@ class PackageSleuth:
     # dependencies without corresponding ebuild.
     while packages_to_list:
       # It's not necessary that |new_ebuilds| == |packages_to_list|. new_ebuilds
-      #  can be less or even empty.
+      # can be less or even empty.
       new_ebuilds = self._ListEbuilds(packages_to_list)
       if not new_ebuilds:
         break
@@ -78,7 +79,7 @@ class PackageSleuth:
       # needs USE=arcpp or USE=arcvm). Without them emerge fails and cros_sdk
       # raises an exception.
       new_dependencies = self._GetPackagesDependencies(
-          [e.package for e in new_ebuilds])
+          [e.package for e in ebuilds if pkg.IsPackageSupported(e, self.setup)])
 
       ebuilds += new_ebuilds
       dependencies.update(new_dependencies)
