@@ -14,6 +14,7 @@
 global configure_phase
 global build_phase
 global install_phase
+global install_verify_phase
 
 
 def configure_phase(_) -> None:
@@ -24,6 +25,7 @@ def build_phase(exe) -> None:
   """Run build command in the source directory."""
   import json
   import os
+  import pathlib
   import shutil
 
   # Copy source to output if no install section presented in the spec.
@@ -33,16 +35,44 @@ def build_phase(exe) -> None:
     return
 
   args = json.loads(exe.env['fromSpecInstall'])
-  args[0] = os.path.join(exe.env['_3PP_DEF'], args[0])
+
+  script = pathlib.Path(exe.env['_3PP_DEF'], args[0])
+  args[0] = str(script)
+  args.insert(0, 'python3' if script.suffix == '.py' else 'bash')
+
   args.append(exe.env['out'])
   args.append(exe.env['_3PP_PREFIX'])
-  _, ext = os.path.splitext(args[0])
-  args.insert(0, 'python3' if ext == 'py' else 'bash')
 
   exe.execute_cmd(args)
 
 
 def install_phase(_) -> None:
+  return
+
+
+def install_verify_phase(exe) -> None:
+  import json
+  import pathlib
+  import shutil
+
+  if test_raw := exe.env['fromSpecTest']:
+    args = json.loads(test_raw)
+  else:
+    return
+
+  script = pathlib.Path(exe.env['_3PP_DEF'], args[0])
+  args[0] = str(script)
+  args.insert(0, 'python3' if script.suffix == '.py' else 'bash')
+
+  out_file = str(pathlib.Path('_pkg.cipd').absolute())
+  exe.execute_cmd(['cipd', 'pkg-build',
+      '-in', exe.env['out'],
+      '-out', out_file,
+      '-name', 'install_verify_pkg',
+  ])
+  args.append(out_file)
+
+  exe.execute_cmd(args)
   return
 
 #############################################################################

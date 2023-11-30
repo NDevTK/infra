@@ -467,7 +467,9 @@ def main() -> None:
       'patchPhase',
       'configurePhase',
       'buildPhase',
+      'verifyPhase',
       'installPhase',
+      'installVerifyPhase',
   ):
     if exe.env.get(_phase_hook('dont', phase)):
       continue

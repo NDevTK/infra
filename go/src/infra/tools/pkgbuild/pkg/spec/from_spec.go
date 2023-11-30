@@ -142,6 +142,9 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 	if err := create.ParseBuilder(); err != nil {
 		return nil, err
 	}
+	if err := create.ParseVerifier(); err != nil {
+		return nil, err
+	}
 	if err := create.LoadDependencies(buildCipdPlatform, l); err != nil {
 		return nil, err
 	}
@@ -151,6 +154,7 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 	env := create.Enviroments.Clone()
 	env.Set("patches", strings.Join(create.Patches, string(os.PathListSeparator)))
 	env.Set("fromSpecInstall", create.Installer)
+	env.Set("fromSpecTest", create.Tester)
 	env.Set("_3PP_DEF", fmt.Sprintf("{{.%s}}", defDerivation.Name))
 	env.Set("_3PP_PLATFORM", hostCipdPlatform)
 	env.Set("_3PP_TOOL_PLATFORM", buildCipdPlatform)
@@ -159,16 +163,36 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 	env.Set("GOOS", plat.OS())
 	env.Set("GOARCH", plat.Arch())
 
+	baseDeps := []generators.Dependency{
+		{Type: generators.DepsBuildHost, Generator: defDerivation},
+		{Type: generators.DepsBuildHost, Generator: l.supportFiles},
+	}
+	if create.Tester != "" {
+		// See https://source.chromium.org/chromium/infra/infra/+/main:recipes/recipe_modules/support_3pp/verify.py
+		// Ensure cipd & vpython for verify script.
+		baseDeps = append(baseDeps, generators.Dependency{
+			Type: generators.DepsBuildHost,
+			Generator: &generators.CIPDExport{
+				Name: "from_spec_tools",
+				Ensure: ensure.File{
+					PackagesBySubdir: map[string]ensure.PackageSlice{
+						"bin": {
+							{PackageTemplate: path.Join("infra/tools/cipd", buildCipdPlatform), UnresolvedVersion: "latest"},
+							{PackageTemplate: path.Join("infra/tools/luci/vpython", buildCipdPlatform), UnresolvedVersion: "latest"},
+						},
+					},
+				},
+			},
+		})
+	}
+
 	g := &stdenv.Generator{
-		Name:   def.DerivationName(),
-		Source: create.Source,
-		Dependencies: append([]generators.Dependency{
-			{Type: generators.DepsBuildHost, Generator: defDerivation},
-			{Type: generators.DepsBuildHost, Generator: l.supportFiles},
-		}, create.Dependencies...),
-		Env:      env,
-		CIPDName: def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
-		Version:  create.Version,
+		Name:         def.DerivationName(),
+		Source:       create.Source,
+		Dependencies: append(baseDeps, create.Dependencies...),
+		Env:          env,
+		CIPDName:     def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
+		Version:      create.Version,
 	}
 
 	switch hostCipdPlatform {
@@ -190,6 +214,7 @@ type createParser struct {
 	Version      string
 	Patches      []string
 	Installer    string
+	Tester       string
 	Dependencies []generators.Dependency
 	Enviroments  environ.Env
 
@@ -387,6 +412,23 @@ func (p *createParser) ParseBuilder() error {
 		return err
 	}
 	p.Installer = string(installer)
+
+	return nil
+}
+
+func (p *createParser) ParseVerifier() error {
+	verify := p.create.GetVerify()
+
+	testArgs := verify.GetTest()
+	if len(testArgs) == 0 {
+		return nil
+	}
+
+	tester, err := json.Marshal(testArgs)
+	if err != nil {
+		return err
+	}
+	p.Tester = string(tester)
 
 	return nil
 }
