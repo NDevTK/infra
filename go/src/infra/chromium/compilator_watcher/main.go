@@ -27,13 +27,6 @@ import (
 	"infra/chromium/compilator_watcher/internal/bb"
 )
 
-// Set by the compilator.py recipe in tools/build
-const swarmingTriggerPropsStepName = "swarming trigger properties"
-const swarmingOutputPropKey = "swarming_trigger_properties"
-
-const swarmingPhase = "getSwarmingTriggerProps"
-const localTestPhase = "getLocalTests"
-
 func main() {
 	exe.Run(luciEXEMain, exe.WithZlibCompression(zlib.BestCompression))
 }
@@ -56,7 +49,7 @@ func luciEXEMain(ctx context.Context, input *buildbucket_pb.Build, userArgs []st
 		return err
 	}
 
-	compBuild, err := copySteps(ctx, input, parsedArgs, send)
+	compBuild, foundEndTag, err := copySteps(ctx, input, parsedArgs, send)
 	if err != nil {
 		return err
 	}
@@ -68,7 +61,11 @@ func luciEXEMain(ctx context.Context, input *buildbucket_pb.Build, userArgs []st
 
 	input.Output.GitilesCommit = compBuild.GetOutput().GetGitilesCommit()
 
-	if parsedArgs.phase == swarmingPhase && swarmingPropsInCompBuildOutput(compBuild) {
+	// If it successfully copied steps up until the end tagged step,
+	// just return a SUCCESS status. When there is no endStepTag, the
+	// steps are copied until the build is actually over, so then in that
+	// case we'll also copy over the build status and summary.
+	if parsedArgs.endStepTag != "" && foundEndTag {
 		input.Status = buildbucket_pb.Status_SUCCESS
 	} else {
 		input.Status = compBuild.GetStatus()
@@ -81,7 +78,8 @@ func luciEXEMain(ctx context.Context, input *buildbucket_pb.Build, userArgs []st
 
 type cmdArgs struct {
 	compilatorID                   int64
-	phase                          string
+	startStepTag                   string
+	endStepTag                     string
 	compPollingTimeoutSec          time.Duration
 	compPollingIntervalSec         time.Duration
 	maxConsecutiveGetBuildTimeouts int64
@@ -91,14 +89,14 @@ func parseArgs(args []string) (cmdArgs, error) {
 	fs := flag.NewFlagSet("f1", flag.ContinueOnError)
 
 	compBuildId := fs.String("compilator-id", "", "Buildbucket ID of triggered compilator")
+	// TODO(crbug/1248460): Remove once startStepTag and endStepTag are
+	// being used
 	getSwarmingTriggerProps := fs.Bool("get-swarming-trigger-props", false, "Sub-build will report steps up to `swarming trigger properties`")
+	_ = getSwarmingTriggerProps
 	getLocalTests := fs.Bool("get-local-tests", false, "Sub-build will report steps of local tests")
-	// TODO(crbug/1248460): Actually use these args once the orchestrator
-	// is passing them in.
+	_ = getLocalTests
 	startStepTag := fs.String("start-step-tag", "", "Tag of the first step that should be copied over. All subsequent steps will be copied too. If empty, then it will default to the first step in the build.")
-	_ = startStepTag // Take out once this arg is used
 	endStepTag := fs.String("end-step-tag", "", "Tag of the last step that should be copied over. If empty, steps will be copied until the build ends.")
-	_ = endStepTag // Take out once this arg is used
 	compPollingTimeoutSec := fs.Int64(
 		"compilator-polling-timeout-sec",
 		7200,
@@ -122,18 +120,10 @@ func parseArgs(args []string) (cmdArgs, error) {
 	if *compBuildId == "" {
 		errs = append(errs, errors.Reason("compilator-id is required").Err())
 	}
-	if *getSwarmingTriggerProps == *getLocalTests {
-		errs = append(errs, errors.Reason(
-			"Exactly one of -get-swarming-trigger-props or -get-local-tests is required").Err())
-	}
 	if errs.First() != nil {
 		return cmdArgs{}, errs
 	}
 
-	phase := localTestPhase
-	if *getSwarmingTriggerProps {
-		phase = swarmingPhase
-	}
 	convertedCompBuildID, err := strconv.ParseInt(*compBuildId, 10, 64)
 	if err != nil {
 		return cmdArgs{}, err
@@ -141,38 +131,48 @@ func parseArgs(args []string) (cmdArgs, error) {
 
 	return cmdArgs{
 		compilatorID:                   convertedCompBuildID,
-		phase:                          phase,
+		startStepTag:                   *startStepTag,
+		endStepTag:                     *endStepTag,
 		compPollingTimeoutSec:          time.Duration(*compPollingTimeoutSec) * time.Second,
 		compPollingIntervalSec:         time.Duration(*compPollingIntervalSec) * time.Second,
 		maxConsecutiveGetBuildTimeouts: *maxGetBuildTimeouts,
 	}, nil
 }
 
-func getStepsUntilSwarmingTriggerProps(
-	compBuild *buildbucket_pb.Build) []*buildbucket_pb.Step {
-	var displayedSteps []*buildbucket_pb.Step
-	for _, compBuildStep := range compBuild.GetSteps() {
-		name := compBuildStep.GetName()
-
-		displayedSteps = append(displayedSteps, compBuildStep)
-
-		if name == swarmingTriggerPropsStepName {
-			break
+func containsTagKey(tagKey string, tags []*buildbucket_pb.StringPair) bool {
+	for _, tagPair := range tags {
+		if tagPair.GetKey() == tagKey {
+			return true
 		}
 	}
-	return displayedSteps
+	return false
 }
 
-func getStepsAfterSwarmingTriggerProps(
-	compBuild *buildbucket_pb.Build) []*buildbucket_pb.Step {
+// If startStepTag and endStepTag are both empty strings, then all steps
+// will be copied
+func copyStepsBetweenStartAndEndStepTags(
+	compBuild *buildbucket_pb.Build, startStepTag string, endStepTag string) ([]*buildbucket_pb.Step, bool) {
 
-	for i, step := range compBuild.GetSteps() {
-		if step.GetName() == swarmingTriggerPropsStepName {
-			return compBuild.GetSteps()[i+1:]
+	compBuildSteps := compBuild.GetSteps()
+	start := 0
+	if startStepTag != "" {
+		for i, compBuildStep := range compBuildSteps {
+			if containsTagKey(startStepTag, compBuildStep.GetTags()) {
+				start = i
+				break
+			}
 		}
-
 	}
-	return []*buildbucket_pb.Step{}
+
+	var displayedSteps []*buildbucket_pb.Step
+	for _, compBuildStep := range compBuildSteps[start:] {
+		displayedSteps = append(displayedSteps, compBuildStep)
+		if endStepTag != "" && containsTagKey(endStepTag, compBuildStep.GetTags()) {
+			return displayedSteps, true
+		}
+	}
+
+	return displayedSteps, false
 }
 
 func processErr(ctx context.Context, err error, luciBuild *buildbucket_pb.Build, send exe.BuildSender) error {
@@ -203,7 +203,7 @@ func processErr(ctx context.Context, err error, luciBuild *buildbucket_pb.Build,
 	return err
 }
 
-func copySteps(ctx context.Context, luciBuild *buildbucket_pb.Build, parsedArgs cmdArgs, send exe.BuildSender) (*buildbucket_pb.Build, error) {
+func copySteps(ctx context.Context, luciBuild *buildbucket_pb.Build, parsedArgs cmdArgs, send exe.BuildSender) (*buildbucket_pb.Build, bool, error) {
 	// Poll the compilator build until it's complete or the swarming props
 	// are found, while copying over filtered steps depending on the given
 	// phase.
@@ -211,7 +211,7 @@ func copySteps(ctx context.Context, luciBuild *buildbucket_pb.Build, parsedArgs 
 
 	bClient, err := bb.NewClient(ctx)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	cctx, cancel := clock.WithTimeout(ctx, parsedArgs.compPollingTimeoutSec)
@@ -222,7 +222,7 @@ func copySteps(ctx context.Context, luciBuild *buildbucket_pb.Build, parsedArgs 
 		// Check for context err like a timeout or cancelation before
 		// continuing with the for loop
 		if cctx.Err() != nil {
-			return nil, cctx.Err()
+			return nil, false, cctx.Err()
 		}
 
 		compBuild, err := bClient.GetBuild(cctx, parsedArgs.compilatorID)
@@ -236,31 +236,27 @@ func copySteps(ctx context.Context, luciBuild *buildbucket_pb.Build, parsedArgs 
 					continue
 				}
 			}
-			return nil, err
+			return nil, false, err
 		}
 		// Reset counter
 		timeoutCounts = 0
 
-		if parsedArgs.phase == swarmingPhase {
-			luciBuild.Steps = getStepsUntilSwarmingTriggerProps(compBuild)
-		} else {
-			luciBuild.Steps = getStepsAfterSwarmingTriggerProps(compBuild)
-		}
+		foundEndTag := false
+		luciBuild.Steps, foundEndTag = copyStepsBetweenStartAndEndStepTags(
+			compBuild,
+			parsedArgs.startStepTag,
+			parsedArgs.endStepTag,
+		)
 		send()
 
-		if protoutil.IsEnded(compBuild.GetStatus()) || (parsedArgs.phase == swarmingPhase && swarmingPropsInCompBuildOutput(compBuild)) {
-			return compBuild, nil
+		if protoutil.IsEnded(compBuild.GetStatus()) || (parsedArgs.endStepTag != "" && foundEndTag) {
+			return compBuild, foundEndTag, nil
 		}
 
 		if tr := clock.Sleep(cctx, parsedArgs.compPollingIntervalSec); tr.Err != nil {
-			return compBuild, tr.Err
+			return compBuild, foundEndTag, tr.Err
 		}
 	}
-}
-
-func swarmingPropsInCompBuildOutput(compBuild *buildbucket_pb.Build) bool {
-	_, ok := compBuild.GetOutput().GetProperties().GetFields()[swarmingOutputPropKey]
-	return ok
 }
 
 func copyOutputProperties(ctx context.Context, luciBuild *buildbucket_pb.Build, compBuild *buildbucket_pb.Build, parsedArgs cmdArgs, send exe.BuildSender) error {
