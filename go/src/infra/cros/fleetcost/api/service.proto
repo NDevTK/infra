@@ -1,0 +1,30 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromeos.fleetcost;
+
+import "google/api/annotations.proto";
+
+option go_package = "infra/cros/fleetcost/api;fleetcostpb";
+
+service FleetCost {
+  // Ping does not send or receive any information. It just checks that the service is there.
+  //
+  // It can't be given any data and does not return anything especially useful.
+  rpc Ping(PingRequest) returns (PingResponse) {
+    option (google.api.http) = {
+      post: "/v1/ping"
+    };
+  }
+}
+
+// PingRequest intentionally contains nothing.
+message PingRequest {
+}
+
+// PingResponse intentionally contains nothing.
+message PingResponse {
+}

@@ -29,3 +29,10 @@ binaries:
 	$(RM) $(GARBAGE)
 	go build ./cmd/fleetcostserver/
 	go build ./cmd/fleetcost/
+
+# Run go generate to rebuild the service definition from the protobufs.
+# Don't make this part of the `binaries` target because updating the generated
+# files is a code change that needs to be reviewed, so it should be opt-in.
+.PHONY: gen
+gen:
+	go generate ./...
