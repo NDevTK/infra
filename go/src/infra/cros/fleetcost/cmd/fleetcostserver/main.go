@@ -6,9 +6,12 @@
 package main
 
 import (
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
+
+	"infra/cros/fleetcost/internal/costserver"
 )
 
 // main starts the fleet cost server.
@@ -17,7 +20,10 @@ func main() {
 		gaeemulation.NewModuleFromFlags(),
 	}
 
-	server.Main(nil, mods, func(*server.Server) error {
+	server.Main(nil, mods, func(srv *server.Server) error {
+		fleetCostFrontend := costserver.NewFleetCostFrontend()
+		costserver.InstallServices(fleetCostFrontend, srv)
+		logging.Infof(srv.Context, "Initialization finished.")
 		return nil
 	})
 }
