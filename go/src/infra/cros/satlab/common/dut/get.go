@@ -123,7 +123,11 @@ func (g *GetDUT) TriggerRun(
 		AuthRequired:   true,
 	}).ToCommand()
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
-	out, err := executor.CombinedOutput(command)
+
+	// Don't use `CombinedOutput` here because it returns
+	// `rpc error: code = NotFound` that means the asset doesn't exist.
+	// As we check only the length of output.
+	out, err := executor.Output(command)
 
 	if err != nil {
 		return nil, errors.Annotate(err, "get dut - exec command failed").Err()
