@@ -11,12 +11,14 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/bigquery"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging/gologger"
+	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
@@ -1092,6 +1094,234 @@ func TestProcessBQResults(t *testing.T) {
 		})
 		So(len(got[1].Builders), ShouldEqual, 1)
 	})
+
+	Convey("process changepoint result", t, func() {
+		failureRows := []failureRow{
+			{
+				StepName: "some step",
+				BuilderGroup: bigquery.NullString{
+					StringVal: "some builder group",
+					Valid:     true,
+				},
+				Builder:    "some builder",
+				Project:    "some project",
+				Bucket:     "some bucket",
+				TestsTrunc: makeTestFailures("1"),
+				NumTests: bigquery.NullInt64{
+					Int64: 1,
+					Valid: true,
+				},
+				TestNamesFingerprint: bigquery.NullInt64{
+					Int64: 1,
+					Valid: true,
+				},
+			},
+		}
+		Convey("one segment", func() {
+			failureRows[0].TestsTrunc[0].Segments = []*segment{{
+				StartHour: bigquery.NullTimestamp{
+					Timestamp: time.Unix(3600*11, 0),
+					Valid:     true,
+				},
+				CountUnexpectedResults: bigquery.NullInt64{
+					Int64: 10,
+					Valid: true,
+				},
+				CountTotalResults: bigquery.NullInt64{
+					Int64: 100,
+					Valid: true,
+				},
+			}}
+			result := step.TestWithResult{
+				TestName:                "some/test/1",
+				TestID:                  "ninja://some/test/1",
+				VariantHash:             "12341",
+				ClusterName:             "reason-v3/1",
+				Realm:                   "chromium:1",
+				RefHash:                 "ref-hash/1",
+				RegressionStartPosition: 0,
+				RegressionEndPosition:   0,
+				CurStartHour:            time.Unix(3600*11, 0),
+				PrevEndHour:             time.Time{},
+				CurCounts: step.Counts{
+					UnexpectedResults: 10,
+					TotalResults:      100,
+				},
+				PrevCounts: step.Counts{},
+			}
+			got, err := processBQResults(ctx, failureRows)
+			So(err, ShouldEqual, nil)
+			So(len(got), ShouldEqual, 1)
+			reason := got[0].Reason
+			So(reason, ShouldNotBeNil)
+			So(reason.Raw, ShouldResembleProto, &bqFailure{
+				Name:            "some step",
+				kind:            "test",
+				severity:        messages.ReliableFailure,
+				NumFailingTests: 1,
+				Tests:           []step.TestWithResult{result},
+			})
+			So(len(got[0].Builders), ShouldEqual, 1)
+		})
+		Convey("two segments, deterministic failure", func() {
+			failureRows[0].TestsTrunc[0].Segments = []*segment{{
+				StartHour: bigquery.NullTimestamp{
+					Timestamp: time.Unix(3600*11, 0),
+					Valid:     true,
+				},
+				CountUnexpectedResults: bigquery.NullInt64{
+					Int64: 100,
+					Valid: true,
+				},
+				CountTotalResults: bigquery.NullInt64{
+					Int64: 100,
+					Valid: true,
+				},
+				StartPosition: bigquery.NullInt64{
+					Int64: 6,
+					Valid: true,
+				},
+				StartPositionLowerBound99Th: bigquery.NullInt64{
+					Int64: 5,
+					Valid: true,
+				},
+				StartPositionUpperBound99Th: bigquery.NullInt64{
+					Int64: 10,
+					Valid: true,
+				},
+			},
+				{
+					EndHour: bigquery.NullTimestamp{
+						Timestamp: time.Unix(3600*10, 0),
+						Valid:     true,
+					},
+					EndPosition: bigquery.NullInt64{
+						Int64: 4,
+						Valid: true,
+					},
+					CountUnexpectedResults: bigquery.NullInt64{
+						Int64: 0,
+						Valid: true,
+					},
+					CountTotalResults: bigquery.NullInt64{
+						Int64: 100,
+						Valid: true,
+					},
+				}}
+			result := step.TestWithResult{
+				TestName:                "some/test/1",
+				TestID:                  "ninja://some/test/1",
+				VariantHash:             "12341",
+				ClusterName:             "reason-v3/1",
+				Realm:                   "chromium:1",
+				RefHash:                 "ref-hash/1",
+				RegressionStartPosition: 4,
+				RegressionEndPosition:   6,
+				CurStartHour:            time.Unix(3600*11, 0),
+				PrevEndHour:             time.Unix(3600*10, 0),
+				CurCounts: step.Counts{
+					UnexpectedResults: 100,
+					TotalResults:      100,
+				},
+				PrevCounts: step.Counts{
+					UnexpectedResults: 0,
+					TotalResults:      100,
+				},
+			}
+			got, err := processBQResults(ctx, failureRows)
+			So(err, ShouldEqual, nil)
+			So(len(got), ShouldEqual, 1)
+			reason := got[0].Reason
+			So(reason, ShouldNotBeNil)
+			So(reason.Raw, ShouldResembleProto, &bqFailure{
+				Name:            "some step",
+				kind:            "test",
+				severity:        messages.ReliableFailure,
+				NumFailingTests: 1,
+				Tests:           []step.TestWithResult{result},
+			})
+			So(len(got[0].Builders), ShouldEqual, 1)
+		})
+		Convey("two segments, non-deterministic failure", func() {
+			failureRows[0].TestsTrunc[0].Segments = []*segment{{
+				StartHour: bigquery.NullTimestamp{
+					Timestamp: time.Unix(3600*11, 0),
+					Valid:     true,
+				},
+				CountUnexpectedResults: bigquery.NullInt64{
+					Int64: 100,
+					Valid: true,
+				},
+				CountTotalResults: bigquery.NullInt64{
+					Int64: 100,
+					Valid: true,
+				},
+				StartPosition: bigquery.NullInt64{
+					Int64: 6,
+					Valid: true,
+				},
+				StartPositionLowerBound99Th: bigquery.NullInt64{
+					Int64: 5,
+					Valid: true,
+				},
+				StartPositionUpperBound99Th: bigquery.NullInt64{
+					Int64: 10,
+					Valid: true,
+				},
+			},
+				{
+					EndHour: bigquery.NullTimestamp{
+						Timestamp: time.Unix(3600*10, 0),
+						Valid:     true,
+					},
+					EndPosition: bigquery.NullInt64{
+						Int64: 4,
+						Valid: true,
+					},
+					CountUnexpectedResults: bigquery.NullInt64{
+						Int64: 1,
+						Valid: true,
+					},
+					CountTotalResults: bigquery.NullInt64{
+						Int64: 100,
+						Valid: true,
+					},
+				}}
+			result := step.TestWithResult{
+				TestName:                "some/test/1",
+				TestID:                  "ninja://some/test/1",
+				VariantHash:             "12341",
+				ClusterName:             "reason-v3/1",
+				Realm:                   "chromium:1",
+				RefHash:                 "ref-hash/1",
+				RegressionStartPosition: 4,
+				RegressionEndPosition:   10,
+				CurStartHour:            time.Unix(3600*11, 0),
+				PrevEndHour:             time.Unix(3600*10, 0),
+				CurCounts: step.Counts{
+					UnexpectedResults: 100,
+					TotalResults:      100,
+				},
+				PrevCounts: step.Counts{
+					UnexpectedResults: 1,
+					TotalResults:      100,
+				},
+			}
+			got, err := processBQResults(ctx, failureRows)
+			So(err, ShouldEqual, nil)
+			So(len(got), ShouldEqual, 1)
+			reason := got[0].Reason
+			So(reason, ShouldNotBeNil)
+			So(reason.Raw, ShouldResembleProto, &bqFailure{
+				Name:            "some step",
+				kind:            "test",
+				severity:        messages.ReliableFailure,
+				NumFailingTests: 1,
+				Tests:           []step.TestWithResult{result},
+			})
+			So(len(got[0].Builders), ShouldEqual, 1)
+		})
+	})
 }
 
 type byFirstFailure []*messages.BuildFailure
@@ -1474,6 +1704,7 @@ func makeTestFailure(uniquifier string) *TestFailure {
 		Realm:       bigquery.NullString{StringVal: fmt.Sprintf("chromium:%s", uniquifier), Valid: true},
 		VariantHash: bigquery.NullString{StringVal: fmt.Sprintf("1234%s", uniquifier), Valid: true},
 		ClusterName: bigquery.NullString{StringVal: fmt.Sprintf("reason-v3/%s", uniquifier), Valid: true},
+		RefHash:     bigquery.NullString{StringVal: fmt.Sprintf("ref-hash/%s", uniquifier), Valid: true},
 	}
 }
 
@@ -1492,5 +1723,6 @@ func makeTestWithResult(uniquifier string) step.TestWithResult {
 		VariantHash: fmt.Sprintf("1234%s", uniquifier),
 		ClusterName: fmt.Sprintf("reason-v3/%s", uniquifier),
 		Realm:       fmt.Sprintf("chromium:%s", uniquifier),
+		RefHash:     fmt.Sprintf("ref-hash/%s", uniquifier),
 	}
 }

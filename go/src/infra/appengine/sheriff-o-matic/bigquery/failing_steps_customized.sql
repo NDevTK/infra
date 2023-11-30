@@ -98,7 +98,16 @@ changepoint_analysis_unexpected_realtime AS(
     GROUP BY project, test_id, variant_hash, ref_hash
 ),
 recent_tests_with_changepoint_analysis as (
-  SELECT tr.*, cp.row.segments
+  SELECT tr.*, (SELECT ARRAY_AGG(STRUCT(
+      s.start_hour as StartHour,
+      s.end_hour as EndHour,
+      s.start_position as StartPosition,
+      s.end_position as EndPosition,
+      s.start_position_lower_bound_99th as StartPositionLowerBound99Th,
+      s.start_position_upper_bound_99th as StartPositionUpperBound99Th,
+      s.counts.total_results as CountTotalResults,
+      s.counts.unexpected_results as CountUnexpectedResults)) FROM UNNEST(cp.row.segments) s
+    ) AS segments
   FROM recent_tests tr
   LEFT JOIN changepoint_analysis_unexpected_realtime cp
       ON  tr.project = cp.project

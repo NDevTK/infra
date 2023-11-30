@@ -138,6 +138,19 @@ type TestFailure struct {
 	Realm       bigquery.NullString
 	VariantHash bigquery.NullString
 	ClusterName bigquery.NullString
+	RefHash     bigquery.NullString
+	Segments    []*segment
+}
+
+type segment struct {
+	StartHour                   bigquery.NullTimestamp
+	EndHour                     bigquery.NullTimestamp
+	StartPosition               bigquery.NullInt64
+	EndPosition                 bigquery.NullInt64
+	StartPositionLowerBound99Th bigquery.NullInt64
+	StartPositionUpperBound99Th bigquery.NullInt64
+	CountTotalResults           bigquery.NullInt64
+	CountUnexpectedResults      bigquery.NullInt64
 }
 
 type bqBucket struct {
@@ -380,7 +393,39 @@ func processBQResults(ctx context.Context, failureRows []failureRow) ([]*message
 					TestID:      test.TestID.StringVal,
 					Realm:       test.Realm.StringVal,
 					VariantHash: test.VariantHash.StringVal,
+					RefHash:     test.RefHash.StringVal,
 					ClusterName: test.ClusterName.StringVal,
+				}
+				var curSegment *segment
+				var prevSegment *segment
+				if len(test.Segments) > 0 {
+					curSegment = test.Segments[0]
+					result.CurStartHour = curSegment.StartHour.Timestamp
+					result.CurCounts = step.Counts{
+						UnexpectedResults: curSegment.CountUnexpectedResults.Int64,
+						TotalResults:      curSegment.CountTotalResults.Int64,
+					}
+				}
+				if len(test.Segments) > 1 {
+					prevSegment = test.Segments[1]
+					result.PrevEndHour = prevSegment.EndHour.Timestamp
+					result.PrevCounts = step.Counts{
+						UnexpectedResults: prevSegment.CountUnexpectedResults.Int64,
+						TotalResults:      prevSegment.CountTotalResults.Int64,
+					}
+					// Start position lower bound 99th is inclusive. We minus 1 to make it exclusive.
+					result.RegressionStartPosition = curSegment.StartPositionLowerBound99Th.Int64 - 1
+					result.RegressionEndPosition = curSegment.StartPositionUpperBound99Th.Int64
+
+					isCurFailDeterministic := curSegment.CountUnexpectedResults.Int64 == curSegment.CountTotalResults.Int64
+					isPrevPassDeterministic := prevSegment.CountUnexpectedResults.Int64 == 0
+					// Special case when the failure is deterministic.
+					// The regression range can be narrowed down to the range between
+					// the last passed build (exclusive) and the first failed build (inclusive).
+					if isCurFailDeterministic && isPrevPassDeterministic {
+						result.RegressionStartPosition = prevSegment.EndPosition.Int64
+						result.RegressionEndPosition = curSegment.StartPosition.Int64
+					}
 				}
 				reason.Tests = append(reason.Tests, result)
 			}
