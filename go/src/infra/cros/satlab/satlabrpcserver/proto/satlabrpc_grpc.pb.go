@@ -54,6 +54,7 @@ const (
 	SatlabRpcService_GetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/get_cloud_configuration"
 	SatlabRpcService_Reboot_FullMethodName                    = "/satlabrpcserver.SatlabRpcService/reboot"
 	SatlabRpcService_UploadLog_FullMethodName                 = "/satlabrpcserver.SatlabRpcService/upload_log"
+	SatlabRpcService_DownloadLog_FullMethodName               = "/satlabrpcserver.SatlabRpcService/download_log"
 	SatlabRpcService_StartServod_FullMethodName               = "/satlabrpcserver.SatlabRpcService/StartServod"
 )
 
@@ -96,6 +97,7 @@ type SatlabRpcServiceClient interface {
 	// system
 	Reboot(ctx context.Context, in *RebootRequest, opts ...grpc.CallOption) (*RebootResponse, error)
 	UploadLog(ctx context.Context, in *UploadLogRequest, opts ...grpc.CallOption) (*UploadLogResponse, error)
+	DownloadLog(ctx context.Context, in *DownloadLogRequest, opts ...grpc.CallOption) (SatlabRpcService_DownloadLogClient, error)
 	// servo
 	StartServod(ctx context.Context, in *api.StartServodRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 }
@@ -369,6 +371,38 @@ func (c *satlabRpcServiceClient) UploadLog(ctx context.Context, in *UploadLogReq
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) DownloadLog(ctx context.Context, in *DownloadLogRequest, opts ...grpc.CallOption) (SatlabRpcService_DownloadLogClient, error) {
+	stream, err := c.cc.NewStream(ctx, &SatlabRpcService_ServiceDesc.Streams[0], SatlabRpcService_DownloadLog_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &satlabRpcServiceDownloadLogClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type SatlabRpcService_DownloadLogClient interface {
+	Recv() (*DownloadLogResponse, error)
+	grpc.ClientStream
+}
+
+type satlabRpcServiceDownloadLogClient struct {
+	grpc.ClientStream
+}
+
+func (x *satlabRpcServiceDownloadLogClient) Recv() (*DownloadLogResponse, error) {
+	m := new(DownloadLogResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *satlabRpcServiceClient) StartServod(ctx context.Context, in *api.StartServodRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
 	out := new(longrunning.Operation)
 	err := c.cc.Invoke(ctx, SatlabRpcService_StartServod_FullMethodName, in, out, opts...)
@@ -417,6 +451,7 @@ type SatlabRpcServiceServer interface {
 	// system
 	Reboot(context.Context, *RebootRequest) (*RebootResponse, error)
 	UploadLog(context.Context, *UploadLogRequest) (*UploadLogResponse, error)
+	DownloadLog(*DownloadLogRequest, SatlabRpcService_DownloadLogServer) error
 	// servo
 	StartServod(context.Context, *api.StartServodRequest) (*longrunning.Operation, error)
 	mustEmbedUnimplementedSatlabRpcServiceServer()
@@ -512,6 +547,9 @@ func (UnimplementedSatlabRpcServiceServer) Reboot(context.Context, *RebootReques
 }
 func (UnimplementedSatlabRpcServiceServer) UploadLog(context.Context, *UploadLogRequest) (*UploadLogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadLog not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) DownloadLog(*DownloadLogRequest, SatlabRpcService_DownloadLogServer) error {
+	return status.Errorf(codes.Unimplemented, "method DownloadLog not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) StartServod(context.Context, *api.StartServodRequest) (*longrunning.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartServod not implemented")
@@ -1051,6 +1089,27 @@ func _SatlabRpcService_UploadLog_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_DownloadLog_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(DownloadLogRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(SatlabRpcServiceServer).DownloadLog(m, &satlabRpcServiceDownloadLogServer{stream})
+}
+
+type SatlabRpcService_DownloadLogServer interface {
+	Send(*DownloadLogResponse) error
+	grpc.ServerStream
+}
+
+type satlabRpcServiceDownloadLogServer struct {
+	grpc.ServerStream
+}
+
+func (x *satlabRpcServiceDownloadLogServer) Send(m *DownloadLogResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 func _SatlabRpcService_StartServod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(api.StartServodRequest)
 	if err := dec(in); err != nil {
@@ -1197,6 +1256,12 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SatlabRpcService_StartServod_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "download_log",
+			Handler:       _SatlabRpcService_DownloadLog_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "satlabrpc.proto",
 }

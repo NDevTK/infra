@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"sort"
@@ -1245,4 +1246,39 @@ func (s *SatlabRpcServiceServer) UploadLog(ctx context.Context, _ *pb.UploadLogR
 	return &pb.UploadLogResponse{
 		BucketLink: fmt.Sprintf(constants.GCSObjectURLTemplate, gsPath),
 	}, nil
+}
+
+func (s *SatlabRpcServiceServer) DownloadLog(_ *pb.DownloadLogRequest, server pb.SatlabRpcService_DownloadLogServer) error {
+	filename := fmt.Sprintf("%d.tar.gz", time.Now().Unix())
+	out := fmt.Sprintf("/tmp/%s", filename)
+	if err := u.TarGz(constants.LogDirectory, out); err != nil {
+		return err
+	}
+
+	bufSize := 64 * 1024
+	f, err := os.Open(out)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	buf := make([]byte, bufSize)
+	for {
+		c, err := f.Read(buf)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		resp := &pb.DownloadLogResponse{
+			FileChunk: buf[:c],
+		}
+		err = server.Send(resp)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
