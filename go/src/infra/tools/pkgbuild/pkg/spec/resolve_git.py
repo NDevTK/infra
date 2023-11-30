@@ -63,13 +63,27 @@ class GitSource:
   Reimplement the schema in python makes bundling it in Go binary easier.
   """
   repo: str
-  tag_pattern: str = '%s'
+  tag_pattern: Optional[str] = None
   version_restriction: List[SemverRestriction] = (
       dataclasses.field(default_factory=list))
-  version_join: str = '.'
+  version_join: Optional[str] = None
   tag_filter_re: Optional[str] = None
+  fixed_commit: Optional[str] = None
 
   def __post_init__(self):
+    if self.fixed_commit:
+      if any((
+          self.tag_pattern,
+          self.version_restriction,
+          self.version_join,
+          self.tag_filter_re,
+      )):
+        raise AssertionError("fixed_commit is mutually exclusive with tags.")
+      return
+
+    self.tag_pattern = self.tag_pattern or '%s'
+    self.version_join = self.version_join or '.'
+
     if self.version_restriction:
       self.version_restriction = [
           SemverRestriction(**kv) for kv in self.version_restriction
@@ -212,8 +226,13 @@ def get_versions(src: GitSource) -> List[str]:
 def main() -> int:
   raw = json.loads(sys.argv[1])
   src = GitSource(**raw)
-  versions = get_versions(src)
-  tag, commit = resolve_latest(versions)
+
+  if src.fixed_commit:
+    tag, commit = src.fixed_commit, src.fixed_commit
+  else:
+    versions = get_versions(src)
+    tag, commit = resolve_latest(versions)
+
   json.dump({'tag': tag, 'commit': commit}, sys.stdout)
   return 0
 
