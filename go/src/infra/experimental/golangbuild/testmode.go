@@ -57,8 +57,6 @@ func (r *testRunner) Run(ctx context.Context, spec *buildSpec) error {
 	if err := getGo(ctx, spec, true); err != nil {
 		return err
 	}
-	// Run `go env` on the resulting toolchain for debugging purposes.
-	_ = cmdStepRun(ctx, "go env", spec.goCmd(ctx, spec.gopath, "env"), true)
 	// Determine what ports to test.
 	ports := []*golangbuildpb.Port{spec.inputs.Target}
 	if spec.inputs.MiscPorts {

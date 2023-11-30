@@ -37,6 +37,15 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 	step, ctx := build.StartStep(ctx, "get go")
 	defer endStep(step, &err)
 
+	defer func() {
+		if err != nil {
+			return
+		}
+
+		// Run `go env` on the resulting toolchain for debugging purposes.
+		_ = cmdStepRun(ctx, "go env", spec.goCmd(ctx, spec.goroot, "env"), true)
+	}()
+
 	// Check to see if we might have a prebuilt Go in CAS.
 	digest, err := checkForPrebuiltGo(ctx, spec)
 	if err != nil {
