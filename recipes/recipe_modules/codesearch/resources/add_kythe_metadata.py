@@ -95,9 +95,9 @@ def _GenerateMetadata(filename, file_contents, corpus, verbose):
 
 
 def _FormatMetadata(metadata):
-  b64_metadata = base64.encodestring(json.dumps(metadata).encode('utf-8'))
+  b64_metadata = base64.encodebytes(json.dumps(metadata).encode('utf-8'))
 
-  # base64.encodedstring returns multi-line output. This is fine by us, as we
+  # base64.encodebytes returns multi-line output. This is fine by us, as we
   # want to wrap the comment anyway.
   return '/* Metadata comment\n' + b64_metadata.decode('utf-8') + '*/'
 
