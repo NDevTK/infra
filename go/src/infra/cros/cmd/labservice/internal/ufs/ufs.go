@@ -199,6 +199,7 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 				Sku:            di.hwidData.GetSku(),
 				Hwid:           di.hwidData.GetHwid(),
 				Phase:          getPhase(di.hwidData),
+				SimInfos:       getSimInfo(d.GetSiminfo()),
 			},
 		},
 		CacheServer: &labapi.CacheServer{
@@ -538,4 +539,28 @@ func getPhase(hd *ufspb.HwidData) labapi.Phase {
 		}
 	}
 	return labapi.Phase_PHASE_UNSPECIFIED
+}
+
+func getSimInfo(src []*lab.SIMInfo) []*labapi.SIMInfo {
+	var r []*labapi.SIMInfo
+	for _, s := range src {
+		info := labapi.SIMInfo{
+			SlotId:   s.GetSlotId(),
+			Type:     labapi.SIMType(s.GetType()),
+			Eid:      s.GetEid(),
+			TestEsim: s.GetTestEsim(),
+		}
+		for _, p := range s.GetProfileInfo() {
+			info.ProfileInfo = append(info.ProfileInfo,
+				&labapi.SIMProfileInfo{
+					Iccid:       p.GetIccid(),
+					SimPin:      p.GetSimPin(),
+					SimPuk:      p.GetSimPuk(),
+					CarrierName: labapi.NetworkProvider(p.GetCarrierName()),
+					OwnNumber:   p.GetOwnNumber(),
+				})
+		}
+		r = append(r, &info)
+	}
+	return r
 }

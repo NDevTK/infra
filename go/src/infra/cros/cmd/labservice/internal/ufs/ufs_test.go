@@ -91,6 +91,45 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 												},
 											},
 										},
+										Siminfo: []*lab.SIMInfo{
+											{
+												SlotId:   1,
+												Type:     lab.SIMType_SIM_DIGITAL,
+												Eid:      "eid1",
+												TestEsim: true,
+												ProfileInfo: []*lab.SIMProfileInfo{
+													{
+														Iccid:       "iccid1",
+														SimPin:      "pin1",
+														SimPuk:      "puk1",
+														CarrierName: lab.NetworkProvider_NETWORK_ATT,
+														OwnNumber:   "number1",
+													},
+													{
+														Iccid:       "iccid2",
+														SimPin:      "pin2",
+														SimPuk:      "puk2",
+														CarrierName: lab.NetworkProvider_NETWORK_TMOBILE,
+														OwnNumber:   "number2",
+													},
+												},
+											},
+											{
+												SlotId:   2,
+												Type:     lab.SIMType_SIM_PHYSICAL,
+												Eid:      "eid2",
+												TestEsim: false,
+												ProfileInfo: []*lab.SIMProfileInfo{
+													{
+														Iccid:       "iccid3",
+														SimPin:      "pin3",
+														SimPuk:      "puk3",
+														CarrierName: lab.NetworkProvider_NETWORK_VERIZON,
+														OwnNumber:   "number3",
+													},
+												},
+											},
+										},
 									},
 								},
 							},
@@ -217,6 +256,45 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 						Sku:   "fake-sku",
 						Hwid:  "fake-hwid",
 						Phase: labapi.Phase_EVT_MAPLE,
+						SimInfos: []*labapi.SIMInfo{
+							{
+								SlotId:   1,
+								Type:     labapi.SIMType_SIM_DIGITAL,
+								Eid:      "eid1",
+								TestEsim: true,
+								ProfileInfo: []*labapi.SIMProfileInfo{
+									{
+										Iccid:       "iccid1",
+										SimPin:      "pin1",
+										SimPuk:      "puk1",
+										CarrierName: labapi.NetworkProvider_NETWORK_ATT,
+										OwnNumber:   "number1",
+									},
+									{
+										Iccid:       "iccid2",
+										SimPin:      "pin2",
+										SimPuk:      "puk2",
+										CarrierName: labapi.NetworkProvider_NETWORK_TMOBILE,
+										OwnNumber:   "number2",
+									},
+								},
+							},
+							{
+								SlotId:   2,
+								Type:     labapi.SIMType_SIM_PHYSICAL,
+								Eid:      "eid2",
+								TestEsim: false,
+								ProfileInfo: []*labapi.SIMProfileInfo{
+									{
+										Iccid:       "iccid3",
+										SimPin:      "pin3",
+										SimPuk:      "puk3",
+										CarrierName: labapi.NetworkProvider_NETWORK_VERIZON,
+										OwnNumber:   "number3",
+									},
+								},
+							},
+						},
 					},
 				},
 				CacheServer: &labapi.CacheServer{
@@ -264,7 +342,8 @@ func TestGetAndroidDutTopology_single(t *testing.T) {
 					AttachedDevice: &ufspb.AttachedDevice{
 						BuildTarget: buildTarget,
 						Model:       model,
-					}},
+					},
+				},
 			},
 		},
 	}
@@ -290,7 +369,8 @@ func TestGetAndroidDutTopology_single(t *testing.T) {
 							BuildTarget: buildTarget,
 							ModelName:   model,
 						},
-					}},
+					},
+				},
 			},
 		},
 	}
