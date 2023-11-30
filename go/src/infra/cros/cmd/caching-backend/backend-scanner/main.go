@@ -20,6 +20,7 @@ import (
 	"slices"
 	"time"
 
+	k8sAPICoreV1 "k8s.io/api/core/v1"
 	k8sMetaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8sApplyCoreV1 "k8s.io/client-go/applyconfigurations/core/v1"
 	k8sApplyMetaV1 "k8s.io/client-go/applyconfigurations/meta/v1"
@@ -263,9 +264,17 @@ func getPodIPs(p k8sTypedCoreV1.PodInterface, appLabel string) ([]string, error)
 	}
 	var ips []string
 	for _, p := range pods.Items {
-		// Pod may has no IP assigned when it's in states like "Pending".
-		if ip := p.Status.PodIP; ip != "" {
-			ips = append(ips, ip)
+		// Ignore deleteing/Terminatiing pods. See below link for the checking.
+		// https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/#terminating for details
+		if p.DeletionTimestamp != nil {
+			continue
+		}
+		for _, c := range p.Status.Conditions {
+			// Only count ready pods.
+			if c.Type == k8sAPICoreV1.PodReady && c.Status == k8sAPICoreV1.ConditionTrue {
+				ips = append(ips, p.Status.PodIP)
+				break
+			}
 		}
 	}
 	slices.Sort(ips) // to keep the list stable
@@ -309,5 +318,4 @@ func (d *downloaderScale) getReplica(backendCount int) int32 {
 		return r
 	}
 	return minimum
-
 }
