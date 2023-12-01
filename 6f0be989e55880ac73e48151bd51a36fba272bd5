@@ -16,6 +16,24 @@
       "message": "Seems to be required, otherwise it generates an uncaught exception error.\nhttps://logs.chromium.org/logs/infra-internal/buildbucket/cr-buildbucket/8762944801142696369/+/u/RECIPE_CRASH__Uncaught_exception_/logging",
       "revId": "6f0be989e55880ac73e48151bd51a36fba272bd5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "48f1bb0d_1a3a5d69",
+        "filename": "3pp/wimboot/fetch.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-12-01T04:04:11Z",
+      "side": 1,
+      "message": "Yes, it\u0027s expected to be present even if empty.",
+      "parentUuid": "aff56afb_6227dd39",
+      "revId": "6f0be989e55880ac73e48151bd51a36fba272bd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
