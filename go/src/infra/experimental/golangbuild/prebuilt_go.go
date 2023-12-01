@@ -68,7 +68,7 @@ func checkForPrebuiltGo(ctx context.Context, spec *buildSpec) (digest string, er
 	step, ctx := build.StartStep(ctx, "check for prebuilt go")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
-	id, err := prebuiltID(spec)
+	id, err := prebuiltID(ctx, spec)
 	if err != nil {
 		return "", err
 	}
@@ -81,7 +81,7 @@ func checkForPrebuiltGo(ctx context.Context, spec *buildSpec) (digest string, er
 	case err != nil:
 		return "", err
 	}
-	_, err = io.WriteString(step.Log("mapping"), tc.String())
+	_, err = io.WriteString(step.Log("digest"), tc.CASDigest)
 	if err != nil {
 		return "", err
 	}
@@ -92,7 +92,11 @@ var harmlessBuildIDEnvVars = map[string]bool{
 	"GO_TEST_TIMEOUT_SCALE": true,
 }
 
-func prebuiltID(spec *buildSpec) (string, error) {
+// prebuiltID produces a prebuilt cache ID for looking up prebuilt Go toolchains.
+func prebuiltID(ctx context.Context, spec *buildSpec) (id string, err error) {
+	step, _ := build.StartStep(ctx, "construct prebuilt ID")
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
+
 	goSrc := spec.goSrc
 	var rev string
 	if goSrc.commit != nil {
@@ -103,19 +107,31 @@ func prebuiltID(spec *buildSpec) (string, error) {
 		return "", fmt.Errorf("source for (%s, %s) has no change or commit", goSrc.project, goSrc.branch)
 	}
 
-	details := sha256.New()
+	var detailsSummary strings.Builder
+	detailsHash := sha256.New()
+	details := io.MultiWriter(detailsHash, &detailsSummary)
+
 	keys := maps.Keys(spec.inputs.Env)
 	sort.Strings(keys)
 	for _, k := range keys {
 		if _, ok := harmlessBuildIDEnvVars[k]; ok {
 			continue
 		}
-		fmt.Fprintf(details, "%v=%v", k, spec.inputs.Env[k])
+		fmt.Fprintf(details, "%v=%+q\n", k, spec.inputs.Env[k])
 	}
-	fmt.Fprintf(details, "xcode=%v", spec.inputs.XcodeVersion)
-	fmt.Fprintf(details, "version=%v", spec.inputs.VersionFile)
+	fmt.Fprintf(details, "xcode=%+q\n", spec.inputs.XcodeVersion)
+	fmt.Fprintf(details, "version=%+q\n", spec.inputs.VersionFile)
 
-	return fmt.Sprintf("%s-%s-%s-%s-%s-%x", spec.inputs.Host.Goos, spec.inputs.Host.Goarch, spec.inputs.Target.Goos, spec.inputs.Target.Goarch, rev, details.Sum(nil)), nil
+	// Log the ID and the inputs.
+	_, err = io.WriteString(step.Log("id"), id)
+	if err != nil {
+		return "", err
+	}
+	_, err = io.WriteString(step.Log("inputs"), detailsSummary.String())
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s-%s-%s-%s-%s-%x", spec.inputs.Host.Goos, spec.inputs.Host.Goarch, spec.inputs.Target.Goos, spec.inputs.Target.Goarch, rev, detailsHash.Sum(nil)), nil
 }
 
 func fetchGoFromCAS(ctx context.Context, spec *buildSpec, digest, goroot string) (ok bool, err error) {
@@ -203,8 +219,8 @@ func uploadGoToCAS(ctx context.Context, spec *buildSpec, src *sourceSpec, goroot
 		return err
 	}
 
-	// Get the prebuilt ID.
-	id, err := prebuiltID(spec)
+	// Construct the prebuilt ID.
+	id, err := prebuiltID(ctx, spec)
 	if err != nil {
 		return err
 	}
@@ -214,7 +230,7 @@ func uploadGoToCAS(ctx context.Context, spec *buildSpec, src *sourceSpec, goroot
 		ID:        id,
 		CASDigest: strings.TrimSpace(string(output)),
 	}
-	_, err = io.WriteString(step.Log("mapping"), tc.String())
+	_, err = io.WriteString(step.Log("digest"), tc.CASDigest)
 	if err != nil {
 		return err
 	}
