@@ -36,6 +36,12 @@ export interface Platform {
   latestRevision: string,
 }
 
+export interface CoverageTrend {
+  date: string,
+  covered: number,
+  total: number
+}
+
 export interface GetProjectDefaultConfigRequest {
   luci_project: string,
 }
@@ -73,6 +79,29 @@ export interface GetTeamsResponse {
   teams: Team[]
 }
 
+export interface GetAbsoluteTrendsRequest {
+  bucket: string,
+  builder: string,
+  unit_tests_only: boolean,
+  presets: string[],
+  paths: string[],
+  components: string[],
+}
+
+export interface GetAbsoluteTrendsResponse {
+  data: CoverageTrend[],
+}
+
+export interface GetIncrementalTrendsRequest {
+  presets: string[],
+  paths: string[],
+  components: string[],
+}
+
+export interface GetIncrementalTrendsResponse {
+  data: CoverageTrend[],
+}
+
 // ---------------- RPC Calls ----------------
 
 export async function getProjectDefaultConfig(
@@ -103,7 +132,7 @@ export async function getSummaryCoverage(
 
   return request.components && request.components.length > 0 ?
   fixGetSummaryCoverageByComponentResponse(resp) :
-  fixGetSummaryCoverageResponse(resp)
+  fixGetSummaryCoverageResponse(resp);
 }
 
 export async function getTeams(auth: Auth): Promise<GetTeamsResponse> {
@@ -112,6 +141,34 @@ export async function getTeams(auth: Auth): Promise<GetTeamsResponse> {
       'test_resources.Coverage',
       'GetTeams',
       {},
+  );
+  return resp;
+}
+
+export async function getAbsoluteCoverageTrends(
+  auth: Auth,
+  request: GetAbsoluteTrendsRequest
+):
+  Promise<GetAbsoluteTrendsResponse> {
+  const resp: GetAbsoluteTrendsResponse = await prpcClient.call(
+      auth,
+      'test_resources.Coverage',
+      'GetAbsoluteCoverageTrends',
+      request,
+  );
+  return resp;
+}
+
+export async function getIncrementalCoverageTrends(
+  auth: Auth,
+  request: GetIncrementalTrendsRequest
+):
+  Promise<GetIncrementalTrendsResponse> {
+  const resp: GetIncrementalTrendsResponse = await prpcClient.call(
+      auth,
+      'test_resources.Coverage',
+      'GetIncrementalCoverageTrends',
+      request,
   );
   return resp;
 }

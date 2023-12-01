@@ -5,9 +5,15 @@
 import { Auth } from './auth';
 import { prpcClient } from './client';
 import {
+  GetAbsoluteTrendsRequest,
+  GetAbsoluteTrendsResponse,
+  GetIncrementalTrendsRequest,
+  GetIncrementalTrendsResponse,
   GetSummaryCoverageRequest,
   GetTeamsResponse,
   SummaryNode,
+  getAbsoluteCoverageTrends,
+  getIncrementalCoverageTrends,
   getSummaryCoverage,
   getTeams,
 } from './coverage';
@@ -98,7 +104,7 @@ describe('getSummaryCoverageByComponent', () => {
     gitiles_project: 'chromium/src',
     gitiles_ref: 'refs/heads/main',
     gitiles_revision: '03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a',
-    path: "",
+    path: '',
     components: [
       'Blink>CSS',
     ],
@@ -385,6 +391,107 @@ describe('getTeams', () => {
       ],
     };
     const resp = await getTeams(auth);
+
+    expect(mockCall.mock.calls.length).toBe(1);
+    expect(mockCall.mock.calls[0].length).toBe(4);
+    expect(resp).toEqual(expected);
+  });
+});
+
+describe('getAbsoluteTrends', () => {
+  const dummyRequest: GetAbsoluteTrendsRequest = {
+    presets: ['Blink'],
+    paths: ['//a/b/'],
+    components: [
+      'Blink>CSS',
+    ],
+    unit_tests_only: true,
+    bucket: 'ci',
+    builder: 'linux-code-coverage',
+  };
+
+  it('returns trends for absolute absolute line coverage', async () => {
+    const mockCall = jest.spyOn(prpcClient, 'call').mockResolvedValue(
+        {
+          data: [
+            {
+              'date': '2023-06-11',
+              'covered': 78,
+              'total': 100,
+            },
+            {
+              'date': '2023-06-12',
+              'covered': 81,
+              'total': 100,
+            },
+          ],
+        });
+
+    const expected: GetAbsoluteTrendsResponse = {
+      data: [
+        {
+          'date': '2023-06-11',
+          'covered': 78,
+          'total': 100,
+        },
+        {
+          'date': '2023-06-12',
+          'covered': 81,
+          'total': 100,
+        },
+      ],
+    };
+
+    const resp = await getAbsoluteCoverageTrends(auth, dummyRequest);
+
+    expect(mockCall.mock.calls.length).toBe(1);
+    expect(mockCall.mock.calls[0].length).toBe(4);
+    expect(resp).toEqual(expected);
+  });
+});
+
+describe('getIncrementalTrends', () => {
+  const dummyRequest: GetIncrementalTrendsRequest = {
+    presets: ['Blink'],
+    paths: ['//a/b/'],
+    components: [
+      'Blink>CSS',
+    ],
+  };
+
+  it('returns trends for incremental line coverage', async () => {
+    const mockCall = jest.spyOn(prpcClient, 'call').mockResolvedValue(
+        {
+          data: [
+            {
+              'date': '2023-06-11',
+              'covered': 81,
+              'total': 100,
+            },
+            {
+              'date': '2023-06-12',
+              'covered': 90,
+              'total': 100,
+            },
+          ],
+        });
+
+    const expected: GetIncrementalTrendsResponse = {
+      data: [
+        {
+          'date': '2023-06-11',
+          'covered': 81,
+          'total': 100,
+        },
+        {
+          'date': '2023-06-12',
+          'covered': 90,
+          'total': 100,
+        },
+      ],
+    };
+
+    const resp = await getIncrementalCoverageTrends(auth, dummyRequest);
 
     expect(mockCall.mock.calls.length).toBe(1);
     expect(mockCall.mock.calls[0].length).toBe(4);
