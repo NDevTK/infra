@@ -122,6 +122,9 @@ func prebuiltID(ctx context.Context, spec *buildSpec) (id string, err error) {
 	fmt.Fprintf(details, "xcode=%+q\n", spec.inputs.XcodeVersion)
 	fmt.Fprintf(details, "version=%+q\n", spec.inputs.VersionFile)
 
+	// Construct the final ID.
+	id = fmt.Sprintf("%s-%s-%s-%s-%s-%x", spec.inputs.Host.Goos, spec.inputs.Host.Goarch, spec.inputs.Target.Goos, spec.inputs.Target.Goarch, rev, detailsHash.Sum(nil))
+
 	// Log the ID and the inputs.
 	_, err = io.WriteString(step.Log("id"), id)
 	if err != nil {
@@ -131,7 +134,7 @@ func prebuiltID(ctx context.Context, spec *buildSpec) (id string, err error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%s-%s-%s-%s-%s-%x", spec.inputs.Host.Goos, spec.inputs.Host.Goarch, spec.inputs.Target.Goos, spec.inputs.Target.Goarch, rev, detailsHash.Sum(nil)), nil
+	return id, nil
 }
 
 func fetchGoFromCAS(ctx context.Context, spec *buildSpec, digest, goroot string) (ok bool, err error) {
