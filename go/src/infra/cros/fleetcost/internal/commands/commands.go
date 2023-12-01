@@ -6,6 +6,8 @@ package commands
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/maruel/subcommands"
@@ -29,13 +31,15 @@ var PingCommand *subcommands.Command = &subcommands.Command{
 	CommandRun: func() subcommands.CommandRun {
 		c := &pingCommand{}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
+		c.commonFlags.Register(&c.Flags)
 		return c
 	},
 }
 
 type pingCommand struct {
 	subcommands.CommandRunBase
-	authFlags authcli.Flags
+	authFlags   authcli.Flags
+	commonFlags site.CommonFlags
 }
 
 // Run is the main entrypoint to the ping.
@@ -48,24 +52,38 @@ func (c *pingCommand) Run(a subcommands.Application, args []string, env subcomma
 	return 0
 }
 
-func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+func (c *pingCommand) getSecureClient(ctx context.Context) (*http.Client, error) {
 	authOptions, err := c.authFlags.Options()
 	if err != nil {
-		return errors.Annotate(err, "ping").Err()
+		return nil, errors.Annotate(err, "ping").Err()
 	}
 	authenticator := auth.NewAuthenticator(ctx, auth.InteractiveLogin, authOptions)
 	httpClient, err := authenticator.Client()
 	if err != nil {
-		return errors.Annotate(err, "ping").Err()
+		return nil, errors.Annotate(err, "ping").Err()
+	}
+	return httpClient, nil
+}
+
+func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+	var httpClient *http.Client
+	if !c.commonFlags.HTTP() {
+		var err error
+		httpClient, err = c.getSecureClient(ctx)
+		if err != nil {
+			return err
+		}
 	}
 	prpcClient := &prpc.Client{
 		C:    httpClient,
 		Host: "127.0.0.1:8800",
 		Options: &prpc.Options{
+			Insecure:      c.commonFlags.HTTP(),
 			PerRPCTimeout: 30 * time.Second,
 		},
 	}
 	fleetCostClient := fleetcostpb.NewFleetCostPRPCClient(prpcClient)
-	_, err = fleetCostClient.Ping(ctx, &fleetcostpb.PingRequest{})
+	resp, err := fleetCostClient.Ping(ctx, &fleetcostpb.PingRequest{})
+	fmt.Printf("%#v\n", resp)
 	return err
 }
