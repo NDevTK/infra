@@ -250,7 +250,7 @@ describe('merge_test action', () => {
       metrics: metrics,
       variants: [],
     }];
-
+  
     it('with footer', () => {
       const merged = dataReducer(
           state,
@@ -258,7 +258,7 @@ describe('merge_test action', () => {
       );
       expect(merged[0].footer).toBeDefined();
     });
-
+  
     it('without footer', () => {
       const merged = dataReducer(
           state,
