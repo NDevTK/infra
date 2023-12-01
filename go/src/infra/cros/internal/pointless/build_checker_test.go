@@ -13,6 +13,8 @@ import (
 	bbproto "go.chromium.org/luci/buildbucket/proto"
 )
 
+var builderName = "amd64-generic-cq"
+
 func TestCheckBuilder_irrelevantToRelevantPaths(t *testing.T) {
 	// In this test, there's a CL that is fully irrelevant to relevant paths, so the build is pointless.
 
@@ -37,7 +39,10 @@ func TestCheckBuilder_irrelevantToRelevantPaths(t *testing.T) {
 	cfg := testplans_pb.BuildIrrelevanceCfg{}
 
 	affectedFiles, err := ExtractAffectedFiles(changes, chRevData, repoToBranchToSrcRoot)
-	res, err := CheckBuilder(affectedFiles, relevantPaths, false, &cfg)
+	if err != nil {
+		t.Error(err)
+	}
+	res, err := CheckBuilder(affectedFiles, relevantPaths, builderName, false, &cfg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -84,7 +89,10 @@ func TestCheckBuilder_relevantToForcedRelevantPaths(t *testing.T) {
 	}
 
 	affectedFiles, err := ExtractAffectedFiles(changes, chRevData, repoToBranchToSrcRoot)
-	res, err := CheckBuilder(affectedFiles, relevantPaths, false, &cfg)
+	if err != nil {
+		t.Error(err)
+	}
+	res, err := CheckBuilder(affectedFiles, relevantPaths, builderName, false, &cfg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -96,7 +104,7 @@ func TestCheckBuilder_relevantToForcedRelevantPaths(t *testing.T) {
 	}
 
 	// Test that if we force ignore the non portage paths that we respect the option.
-	res, err = CheckBuilder(affectedFiles, relevantPaths, true, &cfg)
+	res, err = CheckBuilder(affectedFiles, relevantPaths, builderName, true, &cfg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -144,7 +152,10 @@ func TestCheckBuilder_relevantToRelevantPaths(t *testing.T) {
 	cfg := testplans_pb.BuildIrrelevanceCfg{}
 
 	affectedFiles, err := ExtractAffectedFiles(changes, chRevData, repoToBranchToSrcRoot)
-	res, err := CheckBuilder(affectedFiles, relevantPaths, false, &cfg)
+	if err != nil {
+		t.Error(err)
+	}
+	res, err := CheckBuilder(affectedFiles, relevantPaths, builderName, false, &cfg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -187,7 +198,126 @@ func TestCheckBuilder_buildIrrelevantPaths(t *testing.T) {
 	}
 
 	affectedFiles, err := ExtractAffectedFiles(changes, chRevData, repoToBranchToSrcRoot)
-	res, err := CheckBuilder(affectedFiles, relevantPaths, false, &cfg)
+	if err != nil {
+		t.Error(err)
+	}
+	res, err := CheckBuilder(affectedFiles, relevantPaths, builderName, false, &cfg)
+	if err != nil {
+		t.Error(err)
+	}
+	if !res.BuildIsPointless.Value {
+		t.Errorf("expected build_is_pointless, instead got result %v", res)
+	}
+	if res.PointlessBuildReason != testplans_pb.PointlessBuildCheckResponse_IRRELEVANT_TO_KNOWN_NON_PORTAGE_DIRECTORIES {
+		t.Errorf("expected IRRELEVANT_TO_KNOWN_NON_PORTAGE_DIRECTORIES, instead got result %v", res)
+	}
+}
+
+func TestCheckBuilder_relevantToRelevantPathsForMatchingBuilder(t *testing.T) {
+	// In this test, there's a CL that is relevant to the forced relevant paths, so the build isn't pointless.
+	proj := "chromiumos/chromite"
+	main := "refs/heads/main"
+
+	changes := []*bbproto.GerritChange{
+		{Host: "test-review.googlesource.com", Change: 123, Patchset: 2, Project: proj}}
+	chRevData := gerrit.GetChangeRevsForTest([]*gerrit.ChangeRev{
+		{
+			ChangeRevKey: gerrit.ChangeRevKey{
+				Host:      "test-review.googlesource.com",
+				ChangeNum: 123,
+				Revision:  2,
+			},
+			Branch:  main,
+			Project: proj,
+			Files:   []string{"api/service/thing.py", "README.md"},
+		},
+	})
+	relevantPaths := []*testplans_pb.PointlessBuildCheckRequest_Path{{Path: "chromite/api/**"}}
+	repoToBranchToSrcRoot := map[string]map[string]string{
+		proj: {main: "chromite"},
+	}
+
+	cfg := testplans_pb.BuildIrrelevanceCfg{
+		RelevantFilePatternsForBuilders: []*testplans_pb.FilePatternWithBuilderRegex{
+			{
+				FilePattern:      &testplans_pb.FilePattern{Pattern: "chromite/api/**"},
+				BuilderNameRegex: ".*-generic-.*",
+			},
+		},
+		// This irrelevant config which overlaps the relevant config ensures that we test the forced relevance first.
+		IrrelevantFilePatterns: []*testplans_pb.FilePattern{
+			{Pattern: "chromite/**"},
+		},
+	}
+
+	affectedFiles, err := ExtractAffectedFiles(changes, chRevData, repoToBranchToSrcRoot)
+	if err != nil {
+		t.Error(err)
+	}
+	res, err := CheckBuilder(affectedFiles, relevantPaths, builderName, false, &cfg)
+	if err != nil {
+		t.Error(err)
+	}
+	if res.BuildIsPointless.Value {
+		t.Errorf("expected build_is_pointless == false, instead got result %v", res)
+	}
+	if res.PointlessBuildReason != testplans_pb.PointlessBuildCheckResponse_RELEVANT_TO_KNOWN_NON_PORTAGE_DIRECTORIES {
+		t.Errorf("expected RELEVANT_TO_KNOWN_NON_PORTAGE_DIRECTORIES, instead got result %v", res)
+	}
+
+	// Test that if we force ignore the non portage paths that we respect the option.
+	res, err = CheckBuilder(affectedFiles, relevantPaths, builderName, true, &cfg)
+	if err != nil {
+		t.Error(err)
+	}
+	if !res.BuildIsPointless.Value {
+		t.Errorf("expected build_is_pointless == true, instead got result %v", res)
+	}
+}
+
+func TestCheckBuilder_relevantToRelevantPathsForNonMatchingBuilder(t *testing.T) {
+	// In this test, there's a CL that is relevant to the forced relevant paths, so the build isn't pointless.
+	builderName := "foo-cq"
+	proj := "chromiumos/chromite"
+	main := "refs/heads/main"
+
+	changes := []*bbproto.GerritChange{
+		{Host: "test-review.googlesource.com", Change: 123, Patchset: 2, Project: proj}}
+	chRevData := gerrit.GetChangeRevsForTest([]*gerrit.ChangeRev{
+		{
+			ChangeRevKey: gerrit.ChangeRevKey{
+				Host:      "test-review.googlesource.com",
+				ChangeNum: 123,
+				Revision:  2,
+			},
+			Branch:  main,
+			Project: proj,
+			Files:   []string{"api/service/thing.py", "README.md"},
+		},
+	})
+	relevantPaths := []*testplans_pb.PointlessBuildCheckRequest_Path{{Path: "chromite/api/**"}}
+	repoToBranchToSrcRoot := map[string]map[string]string{
+		proj: {main: "chromite"},
+	}
+
+	cfg := testplans_pb.BuildIrrelevanceCfg{
+		RelevantFilePatternsForBuilders: []*testplans_pb.FilePatternWithBuilderRegex{
+			{
+				FilePattern:      &testplans_pb.FilePattern{Pattern: "chromite/api/**"},
+				BuilderNameRegex: ".*-generic-.*",
+			},
+		},
+		// This irrelevant config which overlaps the relevant config ensures that we test the forced relevance first.
+		IrrelevantFilePatterns: []*testplans_pb.FilePattern{
+			{Pattern: "chromite/**"},
+		},
+	}
+
+	affectedFiles, err := ExtractAffectedFiles(changes, chRevData, repoToBranchToSrcRoot)
+	if err != nil {
+		t.Error(err)
+	}
+	res, err := CheckBuilder(affectedFiles, relevantPaths, builderName, false, &cfg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -211,7 +341,10 @@ func TestCheckBuilder_noGerritChangesMeansPointlessBuild(t *testing.T) {
 	cfg := testplans_pb.BuildIrrelevanceCfg{}
 
 	affectedFiles, err := ExtractAffectedFiles(changes, chRevData, repoToBranchToSrcRoot)
-	res, err := CheckBuilder(affectedFiles, relevantPaths, false, &cfg)
+	if err != nil {
+		t.Error(err)
+	}
+	res, err := CheckBuilder(affectedFiles, relevantPaths, builderName, false, &cfg)
 	if err != nil {
 		t.Error(err)
 	}

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ package pointless
 import (
 	"fmt"
 	"log"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -25,6 +26,7 @@ import (
 func CheckBuilder(
 	affectedFiles []string,
 	relevantPaths []*testplans_pb.PointlessBuildCheckRequest_Path,
+	builderName string,
 	ignoreKnownNonPortageDirectories bool,
 	cfg *testplans_pb.BuildIrrelevanceCfg) (*testplans_pb.PointlessBuildCheckResponse, error) {
 
@@ -40,7 +42,7 @@ func CheckBuilder(
 	if ignoreKnownNonPortageDirectories {
 		log.Printf("Ignoring RELEVANT_TO_KNOWN_NON_PORTAGE_DIRECTORIES check as requested by ignore_known_non_portage_directories option.")
 	} else {
-		hasAlwaysRelevantPaths := checkAlwaysRelevantPaths(affectedFiles, cfg)
+		hasAlwaysRelevantPaths := checkAlwaysRelevantPaths(affectedFiles, builderName, cfg)
 		log.Printf("After considering the always relevant file paths, is the build pointless yet?: %t", hasAlwaysRelevantPaths)
 		if hasAlwaysRelevantPaths {
 			log.Printf("Since we know the build isn't pointless, we can return early")
@@ -164,9 +166,25 @@ affectedFile:
 	return portageFilteredFiles
 }
 
-func checkAlwaysRelevantPaths(files []string, cfg *testplans_pb.BuildIrrelevanceCfg) bool {
+func checkAlwaysRelevantPaths(files []string, builderName string, cfg *testplans_pb.BuildIrrelevanceCfg) bool {
+	patternsMatchingBuilderName := make([]*testplans_pb.FilePattern, 0)
+	if builderName != "" {
+		for _, patternWithBuilderNameRegex := range cfg.RelevantFilePatternsForBuilders {
+			builderNameRegexPattern := patternWithBuilderNameRegex.BuilderNameRegex
+			builderNameRegex, _ := regexp.Compile(builderNameRegexPattern)
+			builderMatches := builderNameRegex.MatchString(builderName)
+			if builderMatches {
+				patternsMatchingBuilderName = append(patternsMatchingBuilderName,
+					patternWithBuilderNameRegex.FilePattern)
+			} else {
+				log.Printf("Failed to match builder name regex %s against builder name %s. Ignoring pattern %s.",
+					builderNameRegex, builderName, patternWithBuilderNameRegex.FilePattern.Pattern)
+			}
+		}
+	}
+
 	for _, f := range files {
-		for _, pattern := range cfg.RelevantFilePatterns {
+		for _, pattern := range append(cfg.RelevantFilePatterns, patternsMatchingBuilderName...) {
 			match, err := match.FilePatternMatches(pattern, f)
 			if err != nil {
 				log.Fatalf("Failed to match pattern %s against file %s: %v", pattern, f, err)

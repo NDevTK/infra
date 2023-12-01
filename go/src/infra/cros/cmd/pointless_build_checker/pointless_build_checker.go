@@ -126,7 +126,13 @@ func (c *checkBuild) Run(a subcommands.Application, args []string, env subcomman
 		}
 	}
 
-	resp, err := pointless.CheckBuilder(affectedFiles, req.RelevantPaths, req.IgnoreKnownNonPortageDirectories, cfg)
+	resp, err := pointless.CheckBuilder(
+		affectedFiles,
+		req.RelevantPaths,
+		req.BuilderName,
+		req.IgnoreKnownNonPortageDirectories,
+		cfg,
+	)
 	if err != nil {
 		log.Printf("Error checking if build is pointless:\n%v", err)
 		return 7
