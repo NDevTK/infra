@@ -22,6 +22,30 @@
       },
       "revId": "1420f7030667c16ad299580e95b730e2f9da2612",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e40c96b_e40abd7e",
+        "filename": "3pp/wimboot/fetch.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1546477
+      },
+      "writtenOn": "2023-12-01T20:09:40Z",
+      "side": 1,
+      "message": "os.environ: https://docs.python.org/3/library/os.html#os.environ\n\nIf you take a look at the build:\nhttps://ci.chromium.org/ui/p/infra-internal/builders/try/3pp%20linux-amd64/b8762944190209891169/overview\n\nLook on Step 9.1: `fetch.py latest resolved version: v2.7.6`\n\nIt then feeds that version back in here: https://logs.chromium.org/logs/infra-internal/buildbucket/cr-buildbucket/8762944190209891169/+/u/building_tools_wimboot/fetch_sources/fetch.py_get_url/execution_details\nScroll to the very bottom `_3PP_VERSION: v2.7.6`\n\nWhich gives this output: https://logs.chromium.org/logs/infra-internal/buildbucket/cr-buildbucket/8762944190209891169/+/u/building_tools_wimboot/fetch_sources/fetch.py_get_url/json.output",
+      "parentUuid": "3b8ab0c6_5b74373e",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 46,
+        "endChar": 32
+      },
+      "revId": "1420f7030667c16ad299580e95b730e2f9da2612",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
