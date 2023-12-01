@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b8ab0c6_5b74373e",
+        "filename": "3pp/wimboot/fetch.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1306133
+      },
+      "writtenOn": "2023-12-01T17:37:41Z",
+      "side": 1,
+      "message": "I\u0027m confused about where this value being populated? Its used in the url on line 27.",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 46,
+        "endChar": 32
+      },
+      "revId": "1420f7030667c16ad299580e95b730e2f9da2612",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
