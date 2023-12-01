@@ -94,6 +94,30 @@
       },
       "revId": "1420f7030667c16ad299580e95b730e2f9da2612",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d6d9e1c_451787a4",
+        "filename": "3pp/wimboot/fetch.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1306133
+      },
+      "writtenOn": "2023-12-01T21:09:55Z",
+      "side": 1,
+      "message": "Ohh, so is this a function provided by 3pp for common adoption in sinmple usecases for 3pp packages?",
+      "parentUuid": "8815e8fb_ad7e3094",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 46,
+        "endChar": 32
+      },
+      "revId": "1420f7030667c16ad299580e95b730e2f9da2612",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
