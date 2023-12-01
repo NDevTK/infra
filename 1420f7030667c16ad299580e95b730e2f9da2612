@@ -46,6 +46,30 @@
       },
       "revId": "1420f7030667c16ad299580e95b730e2f9da2612",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6c8e82de_82513181",
+        "filename": "3pp/wimboot/fetch.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1306133
+      },
+      "writtenOn": "2023-12-01T20:44:50Z",
+      "side": 1,
+      "message": "what is setting `_3PP_VERSION` to the value returned from do_latest()?",
+      "parentUuid": "6e40c96b_e40abd7e",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 46,
+        "endChar": 32
+      },
+      "revId": "1420f7030667c16ad299580e95b730e2f9da2612",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
