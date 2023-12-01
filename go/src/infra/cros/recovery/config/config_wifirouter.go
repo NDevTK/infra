@@ -180,15 +180,6 @@ func wifiRouterRepairPlan() *Plan {
 					"Clean up tmp space",
 				},
 			},
-			"Clean up tmp space": {
-				Docs: []string{
-					"Clean up tmp space",
-				},
-				ExecName: "cros_run_shell_command",
-				ExecExtraArgs: []string{
-					"rm -Rf /tmp/*",
-				},
-			},
 			"Device has 50 percent stateful partition diskspace": {
 				Docs: []string{
 					"Check if there are more than 50 percent of diskspace in /mnt/stateful_partition",
@@ -202,10 +193,25 @@ func wifiRouterRepairPlan() *Plan {
 					"Clean up stateful sub space",
 				},
 			},
+			"Clean up tmp space": {
+				Docs: []string{
+					"Clean up tmp space",
+				},
+				Dependencies: []string{
+					"Log usage report of tmp space",
+				},
+				ExecName: "cros_run_shell_command",
+				ExecExtraArgs: []string{
+					"rm -Rf /tmp/*",
+				},
+			},
 			"Clean up stateful sub space": {
 				Docs: []string{
 					"Remove unneeded files in /mnt/stateful_partition that grow over time.",
 					"Specifically './home/.shadow', './dev_image/telemetry', and './var/log/metrics/*'.",
+				},
+				Dependencies: []string{
+					"Log usage report of stateful partition diskspace",
 				},
 				ExecName: "cros_run_shell_command",
 				ExecExtraArgs: []string{
@@ -214,6 +220,28 @@ func wifiRouterRepairPlan() *Plan {
 						"/mnt/stateful_partition/dev_image/telemetry " +
 						"/mnt/stateful_partition/var/log/metrics/*", // Every reboot adds a metric.
 				},
+			},
+			"Log usage report of tmp space": {
+				Docs: []string{
+					"Logs a usage report of the /tmp directory",
+				},
+				ExecName: "wifi_router_log_usage_report_of_dir",
+				ExecExtraArgs: []string{
+					"path:/tmp",
+				},
+				RunControl:             RunControl_ALWAYS_RUN,
+				AllowFailAfterRecovery: true,
+			},
+			"Log usage report of stateful partition diskspace": {
+				Docs: []string{
+					"Logs a usage report of the /mnt/stateful_partition directory",
+				},
+				ExecName: "wifi_router_log_usage_report_of_dir",
+				ExecExtraArgs: []string{
+					"path:/mnt/stateful_partition",
+				},
+				RunControl:             RunControl_ALWAYS_RUN,
+				AllowFailAfterRecovery: true,
 			},
 
 			// OpenWrt actions.
