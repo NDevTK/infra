@@ -1,0 +1,23 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome.dir_metadata;
+
+option go_package = "infra/tools/dirmd/proto;dirmdpb";
+
+// TODO(crbug.com/1505875) - Remove this once migration is complete.
+// Note that these definitions are separate from the ones in dir_metadata.proto
+// as these are for compatibility to the mapping definitions provided.
+message ComponentsConfig {
+  repeated ComponentMapping component_def = 1;
+}
+
+message ComponentMapping {
+  // Monorail component path. E.g. "Applications>repo".
+  string path = 1;
+  // ID for the corresponding component in Buganizer.
+  int64 buganizer_id = 2;
+}
