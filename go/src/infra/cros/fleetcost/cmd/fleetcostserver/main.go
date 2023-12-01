@@ -7,6 +7,7 @@ package main
 
 import (
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
@@ -18,6 +19,7 @@ import (
 func main() {
 	mods := []module.Module{
 		gaeemulation.NewModuleFromFlags(),
+		cfgmodule.NewModuleFromFlags(),
 	}
 
 	server.Main(nil, mods, func(srv *server.Server) error {
