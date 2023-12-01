@@ -1,5 +1,10 @@
+# ignore fleet cost as a file only
 fleetcost
+!fleetcost/
+
+# ignore fleetcostserver as a file only
 fleetcostserver
+!fleetcostserver/
 
 # Please do not check your Makefile into version control.
 # Doing so increases the odds that some piece of automation
