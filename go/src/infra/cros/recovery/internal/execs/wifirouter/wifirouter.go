@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package wifirouter initializes execs to be used with wifi routers.
 package wifirouter
 
 import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/wifirouter/controller"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
 
@@ -61,4 +65,18 @@ func activeHostOpenWrtRouterController(ctx context.Context, info *execs.ExecInfo
 		return nil, errors.Reason("active host is not an OpenWrt test router").Err()
 	}
 	return openWrtController, nil
+}
+
+func logReportOfFilesInDir(ctx context.Context, info *execs.ExecInfo, c controller.RouterController, dirPath string) error {
+	csvReport, err := linux.StorageUtilizationReportOfFilesInDir(ctx, c.Runner(), dirPath)
+	if err != nil {
+		return errors.Annotate(err, "log report of files in dir: create report").Err()
+	}
+	logFileName := log.BuildFilename([]string{"storage_utilization_report", dirPath}, "csv")
+	logPath, err := log.WriteResourceLogFile(ctx, info.GetLogRoot(), info.GetActiveResource(), logFileName, []byte(csvReport))
+	if err != nil {
+		return errors.Annotate(err, "log report of files in dir: write report").Err()
+	}
+	log.Infof(ctx, "Logged storage utilization report of router dir %q to %q", dirPath, logPath)
+	return nil
 }

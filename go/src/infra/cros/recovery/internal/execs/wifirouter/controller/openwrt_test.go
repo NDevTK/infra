@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 

@@ -10,10 +10,10 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
-	"infra/cros/recovery/internal/execs/wifirouter/controller"
-	"infra/cros/recovery/internal/log"
 
 	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/execs/wifirouter/controller"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
 
@@ -159,6 +159,26 @@ func updateModelAndFeaturesExec(ctx context.Context, info *execs.ExecInfo) error
 	return nil
 }
 
+func logUsageReportOfDirExec(ctx context.Context, info *execs.ExecInfo) error {
+	c, err := activeHostRouterController(ctx, info)
+	if err != nil {
+		return err
+	}
+	const dirPathArgKey = "path"
+	actionArgs := info.GetActionArgs(ctx)
+	if !actionArgs.Has(dirPathArgKey) {
+		return errors.Reason("missing required action argument %q", dirPathArgKey).Err()
+	}
+	dirPathArg := actionArgs.AsString(ctx, dirPathArgKey, "")
+	if dirPathArg == "" {
+		return errors.Reason("action argument %q must not be empty", dirPathArgKey).Err()
+	}
+	if err := logReportOfFilesInDir(ctx, info, c, dirPathArg); err != nil {
+		return errors.Annotate(err, "log gale dir stateful partition of path %q", dirPathArg).Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("update_peripheral_wifi_state", updatePeripheralWifiStateExec)
 	execs.Register("update_wifi_router_features", updateWifiRouterFeaturesExec)
@@ -167,4 +187,5 @@ func init() {
 	execs.Register("wifi_router_device_type_in_list", deviceTypeInListExec)
 	execs.Register("wifi_router_update_model_and_features", updateModelAndFeaturesExec)
 	execs.Register("wifi_router_reboot", rebootDeviceExec)
+	execs.Register("wifi_router_log_usage_report_of_dir", logUsageReportOfDirExec)
 }

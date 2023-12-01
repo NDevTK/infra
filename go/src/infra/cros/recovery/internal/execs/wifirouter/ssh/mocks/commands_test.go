@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/tlw"
 )
@@ -23,7 +24,7 @@ func TestWgetURL(t *testing.T) {
 		name                      string
 		additionalWgetArgs        []string
 		wgetRunResult             *tlw.RunResult
-		wantHttpErrorResponseCode int
+		wantHTTPErrorResponseCode int
 		wantErr                   bool
 	}{
 		{
@@ -97,7 +98,7 @@ func TestWgetURL(t *testing.T) {
 			mockRunner.EXPECT().
 				RunForResult(gomock.Any(), gomock.Any(), false, "wget", runCmdArgs...).
 				Return(tt.wgetRunResult)
-			gotStdout, gotStderr, gotHttpErrorResponseCode, err := ssh.WgetURL(context.Background(), mockRunner, 0, testURL, tt.additionalWgetArgs...)
+			gotStdout, gotStderr, gotHTTPErrorResponseCode, err := ssh.WgetURL(context.Background(), mockRunner, 0, testURL, tt.additionalWgetArgs...)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("WgetURL() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -108,8 +109,8 @@ func TestWgetURL(t *testing.T) {
 			if gotStderr != tt.wgetRunResult.Stderr {
 				t.Errorf("WgetURL() gotStderr = %v, want %v", gotStderr, tt.wgetRunResult.Stderr)
 			}
-			if gotHttpErrorResponseCode != tt.wantHttpErrorResponseCode {
-				t.Errorf("WgetURL() gotHttpErrorResponseCode = %v, want %v", gotHttpErrorResponseCode, tt.wantHttpErrorResponseCode)
+			if gotHTTPErrorResponseCode != tt.wantHTTPErrorResponseCode {
+				t.Errorf("WgetURL() gotHTTPErrorResponseCode = %v, want %v", gotHTTPErrorResponseCode, tt.wantHTTPErrorResponseCode)
 			}
 		})
 	}

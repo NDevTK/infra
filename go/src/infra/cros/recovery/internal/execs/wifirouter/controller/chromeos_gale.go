@@ -9,6 +9,8 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/tlw"
 )
@@ -53,6 +55,11 @@ func (c *ChromeOSGaleRouterController) WifiRouterHost() *tlw.WifiRouterHost {
 // DeviceType returns the labapi.WifiRouterDeviceType of the router.
 func (c *ChromeOSGaleRouterController) DeviceType() labapi.WifiRouterDeviceType {
 	return labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_CHROMEOS_GALE
+}
+
+// Runner returns a components.Runner for running ssh commands on the router.
+func (c *ChromeOSGaleRouterController) Runner() components.Runner {
+	return c.sshRunner.Run
 }
 
 // Model returns a unique name for the router model.

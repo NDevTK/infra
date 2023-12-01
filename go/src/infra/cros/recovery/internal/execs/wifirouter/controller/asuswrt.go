@@ -11,6 +11,8 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/tlw"
 )
@@ -19,8 +21,8 @@ const (
 	// nvramCmd is the path to the "nvram" command on AsusWrt devices.
 	nvramCmd = "/bin/nvram"
 
-	// asusWrtSshUser is the ssh username to use when connecting to AsusWrt devices.
-	asusWrtSshUser = "admin"
+	// asusWrtSSHUser is the ssh username to use when connecting to AsusWrt devices.
+	asusWrtSSHUser = "admin"
 )
 
 var asuswrtModelToFeatures = map[string][]labapi.WifiRouterFeature{
@@ -129,6 +131,11 @@ func (c *AsusWrtRouterController) FetchAsusModel(ctx context.Context) error {
 // DeviceType returns the labapi.WifiRouterDeviceType of the router.
 func (c *AsusWrtRouterController) DeviceType() labapi.WifiRouterDeviceType {
 	return labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_ASUSWRT
+}
+
+// Runner returns a components.Runner for running ssh commands on the router.
+func (c *AsusWrtRouterController) Runner() components.Runner {
+	return c.sshRunner.Run
 }
 
 // Model returns a unique name for the router model.

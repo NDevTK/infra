@@ -11,9 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/protobuf/encoding/protojson"
+
+	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/internal/log"
@@ -94,6 +97,11 @@ func (c *OpenWrtRouterController) WifiRouterHost() *tlw.WifiRouterHost {
 // DeviceType returns the labapi.WifiRouterDeviceType of the router.
 func (c *OpenWrtRouterController) DeviceType() labapi.WifiRouterDeviceType {
 	return labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_OPENWRT
+}
+
+// Runner returns a components.Runner for running ssh commands on the router.
+func (c *OpenWrtRouterController) Runner() components.Runner {
+	return c.sshRunner.Run
 }
 
 // Model returns a unique name for the router model.

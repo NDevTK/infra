@@ -11,6 +11,8 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/scopes"
@@ -27,7 +29,7 @@ func IdentifyRouterDeviceType(ctx context.Context, sshAccess ssh.Access, resourc
 	// Check if it's a Gale device.
 	deviceType := labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_CHROMEOS_GALE
 	log.Infof(ctx, "Checking if router host has the device type of %q", deviceType)
-	sshRunner := newRouterSshRunner(sshAccess, resource, deviceType)
+	sshRunner := newRouterSSHRunner(sshAccess, resource, deviceType)
 	if err := ssh.TryAccess(ctx, sshRunner); err != nil {
 		log.Debugf(ctx, "Failed to ssh into router host when treating it as the device type of %q: %v", deviceType, err)
 	} else {
@@ -43,7 +45,7 @@ func IdentifyRouterDeviceType(ctx context.Context, sshAccess ssh.Access, resourc
 	// Check if it's an OpenWrt device.
 	deviceType = labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_OPENWRT
 	log.Infof(ctx, "Checking if router host has the device type of %q", deviceType)
-	sshRunner = newRouterSshRunner(sshAccess, resource, deviceType)
+	sshRunner = newRouterSSHRunner(sshAccess, resource, deviceType)
 	if err := ssh.TryAccess(ctx, sshRunner); err != nil {
 		log.Debugf(ctx, "Failed to ssh into router host when treating it as the device type %q: %v", deviceType, err)
 	} else {
@@ -59,7 +61,7 @@ func IdentifyRouterDeviceType(ctx context.Context, sshAccess ssh.Access, resourc
 	// Check if it's an AsusWrt device.
 	deviceType = labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_ASUSWRT
 	log.Infof(ctx, "Checking if router host has the device type of %q", deviceType)
-	sshRunner = newRouterSshRunner(sshAccess, resource, deviceType)
+	sshRunner = newRouterSSHRunner(sshAccess, resource, deviceType)
 	if err := ssh.TryAccess(ctx, sshRunner); err != nil {
 		log.Debugf(ctx, "Failed to ssh into router host when treating it as the device type %q: %v", deviceType, err)
 	} else {
@@ -86,6 +88,9 @@ type RouterController interface {
 	// DeviceType returns the labapi.WifiRouterDeviceType of the router.
 	DeviceType() labapi.WifiRouterDeviceType
 
+	// Runner returns a components.Runner for running ssh commands on the router.
+	Runner() components.Runner
+
 	// Model returns a unique name for the router model.
 	Model() (string, error)
 
@@ -107,7 +112,7 @@ func NewRouterDeviceController(ctx context.Context, sshAccess ssh.Access, cacheA
 	if wifiRouter == nil {
 		return nil, errors.Reason("wifiRouter must not be nil").Err()
 	}
-	sshRunner := newRouterSshRunner(sshAccess, hostResource, wifiRouter.DeviceType)
+	sshRunner := newRouterSSHRunner(sshAccess, hostResource, wifiRouter.DeviceType)
 	routerControllerStateKey := "wifirouter_controller_state/" + hostResource
 	switch wifiRouter.DeviceType {
 	case labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_UNKNOWN:

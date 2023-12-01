@@ -11,14 +11,15 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/log"
 )
 
-// wgetStderrHttpResponseCodeRegex is regex that matches the HTTP error code
+// wgetStderrHTTPResponseCodeRegex is regex that matches the HTTP error code
 // in wget's stderr response. For example, the error would be "HTTP error 404"
 // and this would match it and have a submatch of "404".
-var wgetStderrHttpResponseCodeRegex = regexp.MustCompile(`HTTP error (\d+)`)
+var wgetStderrHTTPResponseCodeRegex = regexp.MustCompile(`HTTP error (\d+)`)
 
 // TestPath runs `test <testFlag> <remotePath>` on the host and returns the
 // result of the test.
@@ -99,7 +100,7 @@ func WgetURL(ctx context.Context, sshRunner Runner, timeout time.Duration, downl
 	if exitCode != 0 {
 		if stderr != "" {
 			// Try to parse the HTTP response code from stderr.
-			match := wgetStderrHttpResponseCodeRegex.FindStringSubmatch(stderr)
+			match := wgetStderrHTTPResponseCodeRegex.FindStringSubmatch(stderr)
 			if len(match) == 2 {
 				if code, err := strconv.Atoi(match[1]); err != nil {
 					httpErrorResponseCode = -1

@@ -12,9 +12,11 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/protobuf/encoding/protojson"
+
 	"infra/cros/recovery/internal/components/urlpath"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/internal/retry"
@@ -281,13 +283,13 @@ func ReadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAcc
 	// Retry every second until the timeout is reached, as it make take some
 	// time for the cache server to prepare the file.
 	var lastStdout string
-	var lastHttpErrorCode int
+	var lastHTTPErrorCode int
 	if err := retry.WithTimeout(ctx, time.Second, downloadTimeout, func() error {
 		var err error
-		lastStdout, _, lastHttpErrorCode, err = ssh.WgetURL(ctx, sshRunner, downloadTimeout, downloadURL, "-q", "-O", "-")
+		lastStdout, _, lastHTTPErrorCode, err = ssh.WgetURL(ctx, sshRunner, downloadTimeout, downloadURL, "-q", "-O", "-")
 		return err
 	}, fmt.Sprintf("router host download %q from cache server", downloadURL)); err != nil {
-		reportCacheFailedMetric(ctx, downloadURL, lastHttpErrorCode)
+		reportCacheFailedMetric(ctx, downloadURL, lastHTTPErrorCode)
 		return "", errors.Annotate(err, "failed to download %q from cache server to router with wget", downloadURL).Err()
 	}
 	return lastStdout, nil
@@ -314,13 +316,13 @@ func DownloadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cach
 	// Download file from cache server to router with wget to dstFilePath.
 	// Retry every second until the timeout is reached, as it make take some
 	// time for the cache server to prepare the file.
-	var lastHttpErrorCode int
+	var lastHTTPErrorCode int
 	if err := retry.WithTimeout(ctx, time.Second, downloadTimeout, func() error {
 		var err error
-		_, _, lastHttpErrorCode, err = ssh.WgetURL(ctx, sshRunner, downloadTimeout, downloadURL, "-O", dstFilePath)
+		_, _, lastHTTPErrorCode, err = ssh.WgetURL(ctx, sshRunner, downloadTimeout, downloadURL, "-O", dstFilePath)
 		return err
 	}, fmt.Sprintf("router host download %q from cache server", downloadURL)); err != nil {
-		reportCacheFailedMetric(ctx, downloadURL, lastHttpErrorCode)
+		reportCacheFailedMetric(ctx, downloadURL, lastHTTPErrorCode)
 		return errors.Annotate(err, "failed to download %q from cache server to router with wget", downloadURL).Err()
 	}
 	return nil

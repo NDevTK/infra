@@ -10,7 +10,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+
 	"infra/cros/recovery/internal/execs/wifirouter/ssh/mocks"
 	"infra/cros/recovery/tlw"
 )
@@ -121,12 +123,12 @@ func Test_readNvramValueByKey(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
-			mockSshRunner := mocks.NewMockRunner(ctrl)
-			mockSshRunner.
+			mockSSHRunner := mocks.NewMockRunner(ctrl)
+			mockSSHRunner.
 				EXPECT().
 				Run(gomock.Any(), gomock.Any(), nvramCmd, "show").
 				Return(tt.args.mockNvramShowStdout, nil)
-			got, err := readNvramValueByKey(context.Background(), mockSshRunner, tt.args.nvramKey)
+			got, err := readNvramValueByKey(context.Background(), mockSSHRunner, tt.args.nvramKey)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("readNvramValueByKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
