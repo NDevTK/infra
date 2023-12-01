@@ -491,13 +491,6 @@ func shouldReInstallXcode(ctx context.Context, cipdPackagePrefix, xcodeAppPath, 
 		logging.Warningf(ctx, "CFBundleVersion mismatched between local %s and cipd %s, Xcode should be re-installed", cfBundleVersion, cfBundleVersionOnCipd)
 		return true, nil
 	}
-	output, err := RunOutput(ctx, "spctl", "--assess", xcodeAppPath)
-	if err != nil {
-		logging.Warningf(ctx, "Failed when checking Xcode app integrity %s %s, Xcode should be re-intalled", output, err.Error())
-		logging.Warningf(ctx, "Removing the hidden cipd files so re-install can be started...")
-		removeCipdFiles(xcodeAppPath)
-		return true, err
-	}
 	logging.Warningf(ctx, "CFBundleVersion %s matches between local and cipd and Xcode passed integrity check. So it should not be re-installed", cfBundleVersion)
 	return false, nil
 }
@@ -611,14 +604,36 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 		}
 	}
 
-	if needToAcceptLicense(ctx, args.xcodeAppPath, args.acceptedLicensesFile) {
-		if err := acceptLicense(ctx, args.xcodeAppPath); err != nil {
-			return err
+	// Accept license and launch Xcode.
+	// The steps are done async because the Xcode app can potentially be corrupted,
+	// and cause the main process to hang. If the async process hangs, the corrupted
+	// Xcode will be removed, and the main process will fail and exit.
+	ch := make(chan error, 1)
+	go func() {
+		if needToAcceptLicense(ctx, args.xcodeAppPath, args.acceptedLicensesFile) {
+			if err := acceptLicense(ctx, args.xcodeAppPath); err != nil {
+				ch <- err
+				return
+			}
 		}
-	}
-
-	if err := finalizeInstall(ctx, args.xcodeAppPath, args.xcodeVersion, args.packageInstallerOnBots); err != nil {
-		return err
+		if err := finalizeInstall(ctx, args.xcodeAppPath, args.xcodeVersion, args.packageInstallerOnBots); err != nil {
+			ch <- err
+		}
+		ch <- nil
+	}()
+	select {
+	case err := <-ch:
+		if err != nil {
+			return err
+		} else {
+			close(ch)
+		}
+	case <-time.After(MaxXcodeLaunchWaitTime):
+		err := os.RemoveAll(args.xcodeAppPath)
+		if err != nil {
+			return errors.Annotate(err, "failed to remove corrupted Xcode %s", args.xcodeAppPath).Err()
+		}
+		return errors.Reason("The downloaded Xcode app is possibly corrupted. The app has been deleted. Please retry...").Err()
 	}
 
 	simulatorDirPath := filepath.Join(args.xcodeAppPath, XcodeIOSSimulatorRuntimeRelPath)

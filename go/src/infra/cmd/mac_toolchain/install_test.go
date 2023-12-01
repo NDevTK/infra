@@ -653,7 +653,6 @@ func TestInstallXcode(t *testing.T) {
 			s.ReturnOutput = []string{
 				"13.2.1", // MacOS Version
 				"cf_bundle_version:12345",
-				"codesign check returns nothing",
 				"", // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"license accpet",
@@ -666,19 +665,12 @@ func TestInstallXcode(t *testing.T) {
 			}
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 12)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"describe", "test/prefix/mac", "-version", "testVersion",
-			})
-
-			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "spctl")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
-				"--assess", "testdata/Xcode-new.app",
 			})
 
 			callCounter++
@@ -842,7 +834,6 @@ func TestInstallXcode(t *testing.T) {
 			s.ReturnOutput = []string{
 				"13.2.1", // MacOS Version
 				"cf_bundle_version:12345",
-				"codesign check returns nothing",
 				"", // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"license accpet",
@@ -875,19 +866,12 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-without-runtime.app"
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldNotBeNil)
-			So(s.Calls, ShouldHaveLength, 29)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"describe", "test/prefix/mac", "-version", "testVersion",
-			})
-
-			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "spctl")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
-				"--assess", installArgsForTest.xcodeAppPath,
 			})
 
 			callCounter++
@@ -985,7 +969,6 @@ func TestInstallXcode(t *testing.T) {
 			s.ReturnOutput = []string{
 				"13.2.1", // MacOS Version
 				"cf_bundle_version:12345",
-				"codesign check returns nothing",
 				"", // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"license accpet",
@@ -1012,19 +995,12 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-without-runtime.app"
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 23)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"describe", "test/prefix/mac", "-version", "testVersion",
-			})
-
-			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "spctl")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
-				"--assess", installArgsForTest.xcodeAppPath,
 			})
 
 			callCounter++
@@ -1176,39 +1152,13 @@ func TestInstallXcode(t *testing.T) {
 			So(err, ShouldBeNil)
 		})
 
-		Convey("Xcode exists but is corrupted so it needs to be re-intalled", func() {
-			s.ReturnError = []error{
-				nil,
-				errors.Reason("xcode package corrupted").Err(),
-			}
-			s.ReturnOutput = []string{
-				"cf_bundle_version:12345",
-				"codesign check returns error",
-			}
-			result, err := shouldReInstallXcode(ctx, "test/prefix", "testdata/Xcode-new.app", "testXcodeVersion")
-			So(s.Calls, ShouldHaveLength, 2)
-			So(s.Calls[0].Args, ShouldResemble, []string{
-				"describe", "test/prefix/mac", "-version", "testXcodeVersion",
-			})
-			So(s.Calls[1].Args, ShouldResemble, []string{
-				"--assess", "testdata/Xcode-new.app",
-			})
-			So(result, ShouldEqual, true)
-			So(err, ShouldNotBeNil)
-		})
-
 		Convey("Xcode exists and CFBundleVersion is the same on cipd so it doesn't need to be re-intalled", func() {
 			s.ReturnOutput = []string{
 				"cf_bundle_version:12345",
-				"codesign check returns nothing",
 			}
 			result, err := shouldReInstallXcode(ctx, "test/prefix", "testdata/Xcode-new.app", "testXcodeVersion")
-			So(s.Calls, ShouldHaveLength, 2)
 			So(s.Calls[0].Args, ShouldResemble, []string{
 				"describe", "test/prefix/mac", "-version", "testXcodeVersion",
-			})
-			So(s.Calls[1].Args, ShouldResemble, []string{
-				"--assess", "testdata/Xcode-new.app",
 			})
 			So(result, ShouldEqual, false)
 			So(err, ShouldBeNil)

@@ -9,6 +9,7 @@ import (
 	"flag"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
@@ -49,8 +50,11 @@ const MacPackageName = "mac"
 // Package name of iOS package in CIPD. The package contains iOS SDK.
 const IosPackageName = "ios"
 
-// Maximum number of days to keep an iOS runtime within Xcode since last used
+// Maximum number of days to keep an iOS runtime within Xcode since last used.
 const MaxIOSRuntimeKeepDays = "14"
+
+// Maximum time to wait for Xcode launch before failing the process.
+const MaxXcodeLaunchWaitTime = 5 * time.Minute
 
 // KindType is the type for enum values for the -kind argument.
 type KindType string
