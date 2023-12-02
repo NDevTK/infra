@@ -141,8 +141,8 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
     updatePlatform: (updatedPlatform: string) => {
       const filteredPlatform = filterPlatform(platformList, updatedPlatform);
       if (filteredPlatform) {
-        params.bucket = filteredPlatform.bucket
-        params.builder = filteredPlatform.builder
+        params.bucket = filteredPlatform.bucket;
+        params.builder = filteredPlatform.builder;
         params.platform = filteredPlatform.platform;
         params.revision = filteredPlatform.latestRevision;
         setBucket(filteredPlatform.bucket);
@@ -277,7 +277,7 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
     loadSummary(
         auth,
         params,
-        "",
+        '',
         components,
         (summaryNodes: SummaryNode[]) => {
           dataDispatch({
