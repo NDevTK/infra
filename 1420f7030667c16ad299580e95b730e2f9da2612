@@ -118,6 +118,30 @@
       },
       "revId": "1420f7030667c16ad299580e95b730e2f9da2612",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4dda5d89_ecc3d1fb",
+        "filename": "3pp/wimboot/fetch.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-12-04T00:07:14Z",
+      "side": 1,
+      "message": "The recipe sets _3PP_VERSION to the version of the package we are trying to build: https://source.chromium.org/chromium/infra/infra/+/main:recipes/recipe_modules/support_3pp/create.py;l\u003d125;drc\u003de311d200302ccb736308037f22d96de4c79cb30c\n\nTypically this is the version that was just returned by calling the fetch script with the \u0027latest\u0027 command. However, there are edge cases where another package might pin a dependency to an old version, in that case get_url would be called with that pinned version. I don\u0027t think you need to worry about that for this package.",
+      "parentUuid": "0d6d9e1c_451787a4",
+      "range": {
+        "startLine": 46,
+        "startChar": 6,
+        "endLine": 46,
+        "endChar": 32
+      },
+      "revId": "1420f7030667c16ad299580e95b730e2f9da2612",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
