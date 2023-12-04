@@ -61,6 +61,7 @@ type AddDUT struct {
 	// Asset location fields
 	Zone string
 	Rack string
+	Hive string
 
 	// ACS DUT fields
 	Chameleons        []string
@@ -98,6 +99,12 @@ type AddDUT struct {
 	qualifiedServo string
 	// qualifiedRack is the rack with the SatlabID prepended
 	qualifiedRack string
+}
+
+func (c *AddDUT) setupHive(hostBoxIdentifier string) {
+	if c.Hive == "" {
+		c.Hive = fmt.Sprintf("%s-%s", site.Satlab, hostBoxIdentifier)
+	}
 }
 
 func (c *AddDUT) setupServo(hostBoxIdentifier string) bool {
@@ -197,6 +204,9 @@ func (c *AddDUT) TriggerRun(
 	if err != nil {
 		return errors.Annotate(err, "add dut").Err()
 	}
+
+	// setup Satlab Hive
+	c.setupHive(dockerHostBoxIdentifier)
 
 	// setup pools
 	c.setupPools(dockerHostBoxIdentifier)
@@ -430,6 +440,9 @@ func makeAddShivasFlags(c *AddDUT) flagmap {
 		out["board"] = []string{c.Board}
 	}
 	out["namespace"] = []string{site.GetNamespace(c.Namespace)}
+	if c.Hive != "" {
+		out["hive"] = []string{c.Hive}
+	}
 	return out
 }
 
