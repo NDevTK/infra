@@ -22,6 +22,7 @@ func registerAddShivasFlags(c *addDUTCmd) {
 	// Asset location fields
 	c.Flags.StringVar(&c.Zone, "zone", site.GetUFSZone(), "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)
 	c.Flags.StringVar(&c.Rack, "rack", "", "Rack that the asset is in.")
+	c.Flags.StringVar(&c.Hive, "hive", "", "Hive that the DUT belongs to. Example: satlab-abc123")
 
 	// DUT/MachineLSE common fields
 	c.Flags.StringVar(&c.Hostname, "name", "", "hostname of the DUT.")
