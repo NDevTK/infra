@@ -11,6 +11,14 @@ const keepalivedTempalte = `
 global_defs {
 	process_names
 	lvs_flush
+
+	# The below "lvs_timeouts" depends on "lvs_sync_daemon".
+	lvs_sync_daemon bond0 VI_Cache
+
+	# During /extract or /decompress of our caching RPC, there may be long time
+	# that's no data transported back to the client. Thus increase the TCP_CHECK
+	# Timeout so LVS won't reset the connections.
+	lvs_timeouts tcp 3600
 }
 
 vrrp_track_file goto_backup {
@@ -39,6 +47,12 @@ virtual_server {{ .ServiceIP }} {{ .ServicePort }}{
 	lb_kind DR
 	persistence_timeout 0 # to force the RR
 	protocol TCP
+
+	# When health checking failed, instead of removing the real server from
+	# the LVS table (which resets the connection), we just set its weight to 0 in
+	# order to make LVS keep forwarding packets to the real server. This is very
+	# important to for our backend Nginx to drain the connections.
+	inhibit_on_failure
 
 	{{ range .RealServers -}}
 	real_server {{ . }} {{ $.ServicePort }}{
