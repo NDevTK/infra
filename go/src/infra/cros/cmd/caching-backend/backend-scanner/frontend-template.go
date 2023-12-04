@@ -55,8 +55,8 @@ virtual_server {{ .ServiceIP }} {{ .ServicePort }}{
 	inhibit_on_failure
 
 	{{ range .RealServers -}}
-	real_server {{ . }} {{ $.ServicePort }}{
-		weight 1
+	real_server {{ .IP }} {{ $.ServicePort }}{
+		weight {{if .Terminating}}0{{else}}1{{end}}
 		TCP_CHECK {
 		  connect_timeout 5
 		  connect_port {{ $.ServicePort }}

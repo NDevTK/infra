@@ -18,6 +18,7 @@ import (
 	"log"
 	"net/http"
 	"slices"
+	"strings"
 	"time"
 
 	k8sAPICoreV1 "k8s.io/api/core/v1"
@@ -142,19 +143,19 @@ func (s *backendScanner) scanOnce() error {
 	if err != nil {
 		return fmt.Errorf("scan once: %w", err)
 	}
-	ips, err := getPodIPs(clientset.CoreV1().Pods(s.namespace), s.appLabel)
+	backends, err := getBackends(clientset.CoreV1().Pods(s.namespace), s.appLabel)
 	if err != nil {
 		return fmt.Errorf("scan once: %w", err)
 	}
-	log.Printf("Found pod ip (app=%s): %v", s.appLabel, ips)
+	log.Printf("Found backends (app=%s): %+v", s.appLabel, backends)
 
-	s.backendConf.L7Servers = ips
+	s.backendConf.L7Servers = backends
 	nc, err := genConfig("nginx", nginxTemplate, s.backendConf)
 	if err != nil {
 		return fmt.Errorf("scan once: %w", err)
 	}
 
-	s.frontendConf.RealServers = ips
+	s.frontendConf.RealServers = backends
 	kc, err := genConfig("keepalived", keepalivedTempalte, s.frontendConf)
 	if err != nil {
 		return fmt.Errorf("scan once: %w", err)
@@ -169,7 +170,7 @@ func (s *backendScanner) scanOnce() error {
 		return fmt.Errorf("scan once: %w", err)
 	}
 
-	if err := scaleDeployment(clientset.AppsV1().Deployments(*namespace), s.downloaderScale.name, s.downloaderScale.getReplica(len(ips))); err != nil {
+	if err := scaleDeployment(clientset.AppsV1().Deployments(*namespace), s.downloaderScale.name, s.downloaderScale.getReplica(len(backends))); err != nil {
 		return fmt.Errorf("update: %w", err)
 	}
 	return nil
@@ -234,24 +235,29 @@ func scaleDeployment(c k8sTypedAppsV1.DeploymentInterface, name string, replica 
 
 // nginxConf is for rendering the Nginx configuration template.
 type nginxConf struct {
-	CacheSizeInGB     int      // the caching space size
-	Port              int      // the backend port (for L4 balancing)
-	L7Servers         []string // the L7 servers which cache files based on URI
-	L7Port            int      // the port of L7 servers
-	OtelTraceEndpoint string   // for OpenTelemetry instruments
+	CacheSizeInGB     int       // the caching space size
+	Port              int       // the backend port (for L4 balancing)
+	L7Servers         []Backend // the L7 servers which cache files based on URI
+	L7Port            int       // the port of L7 servers
+	OtelTraceEndpoint string    // for OpenTelemetry instruments
 }
 
 // keepalivedConf is for rendering the Keepalived configuration template.
 type keepalivedConf struct {
-	ServiceIP   string   // the service IP (or VIP)
-	ServicePort int      // the service port
-	RealServers []string // the real server (i.e. backend) list
-	Interface   string   // the interface Keepalived brings up the service IP
-	LBAlgo      string   // the load balancing algorithm to use
+	ServiceIP   string    // the service IP (or VIP)
+	ServicePort int       // the service port
+	RealServers []Backend // the real server (i.e. backend) list
+	Interface   string    // the interface Keepalived brings up the service IP
+	LBAlgo      string    // the load balancing algorithm to use
 }
 
-// getPodIPs gets IP list of selected pods with the specified label.
-func getPodIPs(p k8sTypedCoreV1.PodInterface, appLabel string) ([]string, error) {
+type Backend struct {
+	IP          string // IP of the backend
+	Terminating bool   // whether the backend accepts new connections
+}
+
+// getBackends gets backend list of selected pods with the specified label.
+func getBackends(p k8sTypedCoreV1.PodInterface, appLabel string) ([]Backend, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	pods, err := p.List(ctx,
@@ -262,24 +268,26 @@ func getPodIPs(p k8sTypedCoreV1.PodInterface, appLabel string) ([]string, error)
 		log.Printf("List pods (app=%s): %s", appLabel, err)
 		return nil, err
 	}
-	var ips []string
+	var backends []Backend
 	for _, p := range pods.Items {
-		// Ignore deleteing/Terminatiing pods. See below link for the checking.
-		// https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/#terminating for details
-		if p.DeletionTimestamp != nil {
-			continue
-		}
 		for _, c := range p.Status.Conditions {
 			// Only count ready pods.
 			if c.Type == k8sAPICoreV1.PodReady && c.Status == k8sAPICoreV1.ConditionTrue {
-				ips = append(ips, p.Status.PodIP)
+				backends = append(
+					backends,
+					// See below link for why we can use deletion timestamp to check terminating state.
+					// https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/#terminating
+					Backend{IP: p.Status.PodIP, Terminating: (p.DeletionTimestamp != nil)},
+				)
 				break
 			}
 		}
 	}
-	slices.Sort(ips) // to keep the list stable
+	slices.SortFunc(backends, func(a, b Backend) int {
+		return strings.Compare(a.IP, b.IP)
+	}) // to keep the list stable
 
-	return ips, nil
+	return backends, nil
 }
 
 func getK8sClientSet() (*kubernetes.Clientset, error) {

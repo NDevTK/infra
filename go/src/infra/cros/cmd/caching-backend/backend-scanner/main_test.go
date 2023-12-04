@@ -4,6 +4,8 @@
 package main
 
 import (
+	"log"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -24,14 +26,13 @@ func TestConfigTemplate(t *testing.T) {
 				CacheSizeInGB:     100,
 				Port:              1234,
 				L7Port:            4321,
-				L7Servers:         []string{"1.1.1.1", "2.2.2.2"},
+				L7Servers:         []Backend{{"1.1.1.1", false}, {"1.1.2.2.", true}, {"2.2.2.2", false}},
 				OtelTraceEndpoint: "http://localhost:5678",
 			},
 			wantLines: []string{
-				"server 1.1.1.1:4321;",
-				"server 2.2.2.2:4321;",
-				"listen *:1234",
 				"max_size=100g",
+				`server 1.1.1.1:4321;[\r\n\s]+server 2.2.2.2:4321;`,
+				"listen \\*:1234", // this is a regexp, so escape the '*'.
 			},
 		},
 		{
@@ -40,7 +41,7 @@ func TestConfigTemplate(t *testing.T) {
 			data: &keepalivedConf{
 				ServiceIP:   "8.8.8.8",
 				ServicePort: 9999,
-				RealServers: []string{"1.1.1.1", "2.2.2.2"},
+				RealServers: []Backend{{"1.1.1.1", false}, {"1.1.2.2", true}, {"2.2.2.2", false}},
 				Interface:   "eth0",
 				LBAlgo:      "wlc",
 			},
@@ -48,9 +49,10 @@ func TestConfigTemplate(t *testing.T) {
 				"interface eth0",
 				"8.8.8.8",
 				"virtual_server 8.8.8.8 9999{",
-				"real_server 1.1.1.1 9999{",
+				`real_server 1.1.1.1 9999{\n\s+weight 1`,
 				"connect_port 9999",
-				"real_server 2.2.2.2 9999{",
+				`real_server 1.1.2.2 9999{\n\s+weight 0`,
+				`real_server 2.2.2.2 9999{\n\s+weight 1`,
 			},
 		},
 	}
@@ -62,10 +64,15 @@ func TestConfigTemplate(t *testing.T) {
 			if err != nil {
 				t.Errorf("genConfig(%q) err %q, want nil", tc.name, err)
 			}
-			for _, w := range tc.wantLines {
-				if !strings.Contains(got, w) {
-					t.Errorf("genConfig(%q) got %q, doesn't contain %q", tc.name, got, w)
-				}
+			// (?ms) means multiline mode and make '.' matches newline.
+			re := "(?ms)" + strings.Join(tc.wantLines, ".*")
+			match, err := regexp.MatchString(re, got)
+			if err != nil {
+				t.Errorf("genConfig(%q) err %q, want nil", tc.name, err)
+			}
+			if !match {
+				log.Printf("%s", got)
+				t.Errorf("genConfig(%q) got %q, doesn't match %q", tc.name, got, re)
 			}
 		})
 	}
