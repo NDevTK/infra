@@ -70,7 +70,7 @@ func New(ufs UFSClient, csac CSAClient, sshKeyPaths []string) (tlw.Access, error
 	c := &tlwClient{
 		ufsClient:     ufs,
 		csaClient:     csac,
-		sshProvider:   ssh.NewProvider(ssh.SSHConfig(sshKeyPaths)),
+		sshProvider:   ssh.NewProvider(ssh.SSHConfig(sshKeyPaths), nil),
 		devices:       make(map[string]*tlw.Dut),
 		hostTypes:     make(map[string]hostType),
 		hostToParents: make(map[string]string),
