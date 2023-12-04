@@ -54,6 +54,9 @@ const (
 	// Root directory for the pre-process artifacts inside docker.
 	PreProcessRootDirInsideDocker = "/tmp/test"
 
+	// Root directory for the post-process artifacts inside docker.
+	PostProcessRootDirInsideDocker = "/tmp/test"
+
 	// Directories inside root dir
 	CrosTestDirInsideDocker        = "/tmp/test/cros-test"
 	CrosTestResultsDirInsideDocker = "/tmp/test/results"
@@ -224,6 +227,42 @@ func RunProvisionCLI(ctx context.Context, image *build_api.ContainerImageInfo, n
 		LogFileDir: dir,
 	}
 	return startService(ctx, d, true, true, "cros-provision")
+}
+
+// RunPostProcessCLI pulls and runs cros-test as CLI.
+func RunPostProcessCLI(ctx context.Context, image *build_api.ContainerImageInfo, networkName, inputFileName, postProcessDir string, dutServicePort int32, tokenFile string) error {
+	p, err := createImagePath(image)
+	if err != nil {
+		return errors.Annotate(err, "failed to create image for cros-test").Err()
+	}
+	r, err := createRegistryName(image)
+	if err != nil {
+		return errors.Annotate(err, "failed to create registry path for cros-test").Err()
+	}
+	// It is necessary to do sudo here because /tmp/test is owned by root inside docker
+	// when docker mount /tmp/test. However, the user that is running cros-test is
+	// chromeos-test inside docker. Hence, the user chromeos-test does not have write
+	// permission in /tmp/test. Therefore, we need to change the owner of the directory.
+	volumes := []string{fmt.Sprintf("%s:%s", postProcessDir, filepath.Join(PostProcessRootDirInsideDocker, "post-process"))}
+
+	dutService := fmt.Sprintf("localhost:%v", dutServicePort)
+	// TODO add the dutservice port to the CLI call.
+	d := &docker.Docker{
+		Name:               fmt.Sprintf(crosTestContainerNameTemplate, os.Getpid(), time.Now().Unix()),
+		RequestedImageName: p,
+		Registry:           r,
+		TokenFile:          tokenFile,
+		ExecCommand: []string{
+			"post-process",
+			"-dutendpoint",
+			dutService,
+		},
+		Volumes: volumes,
+		Detach:  false,
+		Network: networkName,
+	}
+	_, err = startService(ctx, d, true, true, "cros-test")
+	return err
 }
 
 // RunTestCLI pulls and runs cros-test as CLI.
