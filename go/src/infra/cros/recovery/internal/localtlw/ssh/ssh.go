@@ -85,7 +85,7 @@ func run(ctx context.Context, provider SSHProvider, addr string, cmd string, bac
 		return
 	}
 	log.Debugf(ctx, "Getting SSH client: %q", sessionLogsKey)
-	sc, err := provider.Get(addr)
+	sc, err := provider.Get(ctx, addr)
 	if err != nil {
 		result.Stderr = fmt.Sprintf("%s: fail to get client from pool; %s", errorMessage, err)
 		return

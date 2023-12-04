@@ -5,6 +5,8 @@
 package ssh
 
 import (
+	"context"
+	"crypto/tls"
 	"log"
 	"net"
 
@@ -73,12 +75,51 @@ func (c *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFu
 	return newForwarder(l, connFunc, errFunc)
 }
 
-// NewClient connects to SSH client to flesh connection.
-func NewClient(addr string, config *ssh.ClientConfig) (SSHClient, error) {
-	ssh, err := ssh.Dial("tcp", addr, config)
+// NewProxyClient establishes an authenticated SSH connection to target host
+// using TLS channel as the underlying transport.
+func NewProxyClient(ctx context.Context, addr string, config *ssh.ClientConfig, tlsConfig *tls.Config) (SSHClient, error) {
+	conn, err := tls.Dial("tcp", addr, tlsConfig)
 	if err != nil {
-		log.Printf("New Client created with error: %s\n", err)
+		log.Printf("Error creating a new TLS connection: %s\n", err)
+		return nil, errors.Annotate(err, "new proxy client").Err()
+	}
+	var c ssh.Conn
+	var chans <-chan ssh.NewChannel
+	var reqs <-chan *ssh.Request
+	done := make(chan bool)
+	go func() {
+		c, chans, reqs, err = ssh.NewClientConn(conn, addr, config)
+		done <- true
+	}()
+	select {
+	case <-ctx.Done():
+		conn.Close()
+		return nil, errors.Annotate(ctx.Err(), "new proxy client").Err()
+	case <-done:
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &sshClientImpl{ssh.NewClient(c, chans, reqs)}, nil
+}
+
+// NewClient connects to SSH client to flesh connection.
+func NewClient(ctx context.Context, addr string, config *ssh.ClientConfig) (SSHClient, error) {
+	var c *ssh.Client
+	var err error
+	done := make(chan bool)
+	go func() {
+		c, err = ssh.Dial("tcp", addr, config)
+		done <- true
+	}()
+	select {
+	case <-ctx.Done():
+		return nil, errors.Annotate(ctx.Err(), "new SSH client").Err()
+	case <-done:
+	}
+	if err != nil {
+		log.Printf("Error creating a new SSH client: %s\n", err)
 		return nil, errors.Annotate(err, "new SSH client").Err()
 	}
-	return &sshClientImpl{ssh}, nil
+	return &sshClientImpl{c}, nil
 }

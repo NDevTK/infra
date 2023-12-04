@@ -5,6 +5,9 @@
 package ssh
 
 import (
+	"context"
+	"crypto/tls"
+
 	"golang.org/x/crypto/ssh"
 )
 
@@ -12,7 +15,7 @@ import (
 //
 // Provider gives option to use pool or create new client always.
 type SSHProvider interface {
-	Get(addr string) (SSHClient, error)
+	Get(ctx context.Context, addr string) (SSHClient, error)
 	Close() error
 	Config() *ssh.ClientConfig
 
@@ -23,19 +26,27 @@ type SSHProvider interface {
 
 // Implementation of SSHProvider.
 type sshProviderImpl struct {
-	config *ssh.ClientConfig
+	config    *ssh.ClientConfig
+	tlsConfig *tls.Config
 }
 
 // NewProvider creates new provider for use.
-func NewProvider(config *ssh.ClientConfig) SSHProvider {
+//
+//	clientConfig: SSH configuration to configure the new clients.
+//	tlsConfig: Optional TLS configuration to establish SSH connections over TLS channel.
+func NewProvider(clientConfig *ssh.ClientConfig, tlsConfig *tls.Config) SSHProvider {
 	return &sshProviderImpl{
-		config: config,
+		config:    clientConfig,
+		tlsConfig: tlsConfig,
 	}
 }
 
 // Get provides SSH client for requested host.
-func (c *sshProviderImpl) Get(addr string) (SSHClient, error) {
-	return NewClient(addr, c.config)
+func (c *sshProviderImpl) Get(ctx context.Context, addr string) (SSHClient, error) {
+	if c.tlsConfig != nil {
+		return NewProxyClient(ctx, addr, c.config, c.tlsConfig)
+	}
+	return NewClient(ctx, addr, c.config)
 }
 
 // Close closing used resource of the provider.
@@ -52,5 +63,5 @@ func (c *sshProviderImpl) Config() *ssh.ClientConfig {
 func (c *sshProviderImpl) WithUser(username string) SSHProvider {
 	newConfig := cloneSSHConfig(c.config)
 	newConfig.User = username
-	return NewProvider(newConfig)
+	return NewProvider(newConfig, c.tlsConfig)
 }
