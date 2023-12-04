@@ -83,10 +83,12 @@ USING (
     AVG(rdb_duration) AS rdb_duration,
     AVG(swarming_duration) AS swarming_duration,
     -- The correction required to arrive at swarming time spent with a bot
-    AVG(swarming_duration / rdb_duration) AS swarming_correction,
+    SUM(swarming_duration) / SUM(rdb_duration) AS swarming_correction,
     -- The correction required to arrive at swarming time spent with a core of the bot
-    AVG((swarming_duration * actual_cores) / rdb_duration) AS core_correction,
+    SUM(swarming_duration * actual_cores) / SUM(rdb_duration) AS core_correction,
   FROM rdb_swarming_join
+  WHERE
+    `date` BETWEEN @from_date AND @to_date
   GROUP BY builder, test_suite, target_platform, `date`
   ) AS S
 ON
