@@ -37,11 +37,12 @@ PROPERTIES = {
     'source_cache_prefix': Property(default='sources'),
     'to_build': Property(kind=List(str), default=[]),
     'tryserver_affected_files': Property(kind=List(str), default=[]),
+    'use_pkgbuild': Property(kind=bool, default=False),
 }
 
 
 def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
-             source_cache_prefix, to_build, tryserver_affected_files):
+             source_cache_prefix, to_build, tryserver_affected_files, use_pkgbuild):
   # set a cache directory to be similar to what the actual 3pp recipe does.
   # TODO(iannucci): just move the 3pp recipe into the recipe_module here...
   with api.cipd.cache_dir(api.path.mkdtemp()):
@@ -72,7 +73,12 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
     ]
     pkgs = to_build if to_build else pkgs
     _, unsupported = api.support_3pp.ensure_uploaded(
-        pkgs, cipd_platform, tryserver_affected_files=tryserver_affected_files)
+        pkgs,
+        cipd_platform,
+        tryserver_affected_files=tryserver_affected_files,
+        use_pkgbuild=use_pkgbuild)
+    if use_pkgbuild:
+      return
 
     excluded = set()
     if 'unsupported' in pkgs:
@@ -544,6 +550,23 @@ def GenTests(api):
       + api.post_process(
           post_process.MustRun,
           mk_name("building p_something/package_repo.do upload.Compute file hash"))
+  )
+
+  # Test pkgbuild
+  yield (api.test('use-pkgbuild')
+      + api.properties(GOOS='linux', GOARCH='amd64', use_pkgbuild=True)
+      + api.step_data(
+          'find package specs',
+          api.file.glob_paths(['something/3pp.pb', '3pp.pb']))
+      + api.step_data(
+          mk_name("load package specs", "read 'something/3pp.pb'"),
+          api.file.read_text(load_spec))
+      + api.step_data(
+          mk_name("load package specs", "read '3pp.pb'"),
+          api.file.read_text(load_spec))
+      + api.post_process(
+          post_process.MustRun,
+          mk_name("experimental pkgbuild"))
   )
 
   yield (api.test('empty-spec', status='FAILURE') +

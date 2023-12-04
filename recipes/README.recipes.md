@@ -1070,7 +1070,7 @@ This module uses the following named caches:
 
 #### **class [Support3ppApi](/recipes/recipe_modules/support_3pp/api.py#385)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
-&mdash; **def [ensure\_uploaded](/recipes/recipe_modules/support_3pp/api.py#793)(self, packages=(), platform='', force_build=False, tryserver_affected_files=()):**
+&mdash; **def [ensure\_uploaded](/recipes/recipe_modules/support_3pp/api.py#793)(self, packages=(), platform='', force_build=False, tryserver_affected_files=(), use_pkgbuild=False):**
 
 Executes entire {fetch,build,package,verify,upload} pipeline for all the
 packages listed, targeting the given platform.
@@ -1092,6 +1092,9 @@ Args:
     If any files are modified which cannot be mapped to a specific package,
     all packages are rebuilt. Overrides 'packages', and forces
     force_build=True (packages are never uploaded in this mode).
+  * use_pkgbuild (bool) - If True, use the experimental pkgbuild to build
+    3pp packages and skip the rest of the 3pp recipe. This will not upload
+    packages in any case.
 
 Returns (list[(cipd_pkg, cipd_version)], set[str]) of built CIPD packages
 and their tagged versions, as well as a list of unsupported packages.
@@ -1498,7 +1501,7 @@ Returns:
 
 This recipe builds and packages third party software, such as Git.
 
-&mdash; **def [RunSteps](/recipes/recipes/3pp.py#88)(api, package_locations, to_build, platform, force_build, package_prefix, source_cache_prefix):**
+&mdash; **def [RunSteps](/recipes/recipes/3pp.py#95)(api, package_locations, to_build, platform, force_build, package_prefix, source_cache_prefix, use_pkgbuild):**
 ### *recipes* / [build\_from\_tarball](/recipes/recipes/build_from_tarball.py)
 
 [DEPS](/recipes/recipes/build_from_tarball.py#9): [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
@@ -1848,7 +1851,7 @@ A continuous builder which runs recipe tests.
 [DEPS](/recipes/recipe_modules/support_3pp/tests/full.py#13): [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [support\_3pp](#recipe_modules-support_3pp), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/support_3pp/tests/full.py#43)(api, GOOS, GOARCH, experimental, load_dupe, package_prefix, source_cache_prefix, to_build, tryserver_affected_files):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/support_3pp/tests/full.py#44)(api, GOOS, GOARCH, experimental, load_dupe, package_prefix, source_cache_prefix, to_build, tryserver_affected_files, use_pkgbuild):**
 ### *recipes* / [tricium\_infra](/recipes/recipes/tricium_infra.py)
 
 [DEPS](/recipes/recipes/tricium_infra.py#11): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/gerrit][depot_tools/recipe_modules/gerrit], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/tricium][recipe_engine/recipe_modules/tricium]

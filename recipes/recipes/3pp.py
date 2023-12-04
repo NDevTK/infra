@@ -82,11 +82,18 @@ PROPERTIES = {
                 'the source of all downloaded/uploaded packages. This gives '
                 'the flexibility to use different prefixes for different repos '
                 '(Default to "sources").')),
+    'use_pkgbuild':
+        Property(
+            kind=bool,
+            default=False,
+            help=(
+                'Uses pkgbuild for building the packages given in to_build, '
+                'This should only be used for experimenting.')),
 }
 
 
 def RunSteps(api, package_locations, to_build, platform, force_build,
-             package_prefix, source_cache_prefix):
+             package_prefix, source_cache_prefix, use_pkgbuild):
   if api.tryserver.is_tryserver:
     revision = api.tryserver.gerrit_change_fetch_ref
     force_build = True  # Disallow uploading packages from tryjobs
@@ -172,7 +179,9 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
         to_build,
         platform,
         force_build=force_build,
-        tryserver_affected_files=tryserver_affected_files)
+        tryserver_affected_files=tryserver_affected_files,
+        use_pkgbuild=use_pkgbuild,
+    )
     # Report task stage to snoopy.
     if not api.tryserver.is_tryserver and not api.runtime.is_experimental:
       try:
@@ -197,6 +206,9 @@ def GenTests(api):
     ) + api.runtime())
 
   yield (api.test('basic') + defaults() +
+         api.buildbucket.ci_build(experiments=['security.snoopy']))
+
+  yield (api.test('pkgbuild') + defaults() + api.properties(use_pkgbuild=True) +
          api.buildbucket.ci_build(experiments=['security.snoopy']))
 
   pkgs = sorted(dict(

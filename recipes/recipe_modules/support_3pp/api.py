@@ -794,7 +794,8 @@ class Support3ppApi(recipe_api.RecipeApi):
                       packages=(),
                       platform='',
                       force_build=False,
-                      tryserver_affected_files=()):
+                      tryserver_affected_files=(),
+                      use_pkgbuild=False):
     """Executes entire {fetch,build,package,verify,upload} pipeline for all the
     packages listed, targeting the given platform.
 
@@ -815,6 +816,9 @@ class Support3ppApi(recipe_api.RecipeApi):
         If any files are modified which cannot be mapped to a specific package,
         all packages are rebuilt. Overrides 'packages', and forces
         force_build=True (packages are never uploaded in this mode).
+      * use_pkgbuild (bool) - If True, use the experimental pkgbuild to build
+        3pp packages and skip the rest of the 3pp recipe. This will not upload
+        packages in any case.
 
     Returns (list[(cipd_pkg, cipd_version)], set[str]) of built CIPD packages
     and their tagged versions, as well as a list of unsupported packages.
@@ -824,6 +828,13 @@ class Support3ppApi(recipe_api.RecipeApi):
       with self.m.step.nest('compute affected packages') as p:
         packages = self._ComputeAffectedPackages(tryserver_affected_files)
         p.step_text = ','.join(packages) if packages else 'all packages'
+
+    # If `packages` is an empty list, pkgbuild will build all packages under
+    # _packge_roots.
+    if use_pkgbuild:
+      with self.m.step.nest('experimental pkgbuild'):
+        self._pkgbuild(packages, platform)
+        return [], set()
 
     unsupported = set()
 
@@ -864,3 +875,49 @@ class Support3ppApi(recipe_api.RecipeApi):
               self._build_resolved_spec, spec, version, force_build_packages,
               skip_upload))
     return self.m.defer.collect(deferred), unsupported
+
+  def _pkgbuild(self, packages=(), platform=''):
+    """_pkgbuild downloads and executes the experimental pkgbuild implementation.
+    It reads specs from _package_roots and builds all listed packages. If
+    packages is an empty list, all packages will be built.
+    No packages should be uploaded from the _pkgbuild.
+
+    Args:
+    * packages (seq[str]) - A sequence of packages to ensure are
+      uploaded. Packages must be listed as either 'pkgname' or
+      'pkgname@version'. If empty, builds all loaded packages.
+    * platform (str) - If specified, the CIPD ${platform} to build for.
+      If unspecified, this will be the appropriate CIPD ${platform} for the
+      current host machine.
+    """
+    base_dir = self.m.path['start_dir'].join('_pkgbuild')
+
+    self.m.file.ensure_directory('mkdir -p [pkgbuild]', base_dir)
+    self.m.cipd.ensure(
+      base_dir,
+      (self.m.cipd.EnsureFile().
+       add_package(
+         'infra/tools/luci/pkgbuild/%s' % platform_for_host(self.m), 'latest')
+       ))
+
+    storage_dir = base_dir.join('store')
+
+    platform = platform or platform_for_host(self.m)
+    args = [
+        base_dir.join('edge'),
+        '-logging-level',
+        'info',
+        '-cipd-package-prefix',
+        self.package_prefix(),
+        '-storage-dir',
+        storage_dir,
+        '-target-platform',
+        platform,
+    ]
+    # Sort the package roots and packages.
+    # Set doesn't promise to be iterating in insertion order.
+    for d in sorted(self._package_roots):
+      args.extend(('-spec-pool', d))
+    args.extend(sorted(packages))
+
+    self.m.step('build packages', args)

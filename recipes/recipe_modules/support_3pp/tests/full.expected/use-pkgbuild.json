@@ -1,0 +1,237 @@
+[
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "compute_hash",
+      "RECIPE_REPO[infra]",
+      "recipes/recipe_modules/support_3pp",
+      "recipes/recipes/3pp.py",
+      "infra/tools/dockerbuild"
+    ],
+    "infra_step": true,
+    "name": "compute recipe file hash",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "echo",
+      "3pp"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "name": "echo package_prefix"
+  },
+  {
+    "cmd": [
+      "git",
+      "-C",
+      "[CACHE]/builder/package_repo",
+      "ls-files",
+      "**/3pp.pb"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "name": "find package specs",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/something/3pp.pb@@@",
+      "@@@STEP_LOG_END@glob_from_git@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "load package specs"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/builder/package_repo/3pp.pb",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "name": "load package specs.read '3pp.pb'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    create {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      source {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@        script { name: \"fetch.py\" }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    upload {pkg_prefix: \"p_something\"}@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  @@@",
+      "@@@STEP_LOG_END@3pp.pb@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "compute_hash",
+      "[START_DIR]",
+      "../[CACHE]/builder/package_repo"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "name": "load package specs.Compute hash for 'p_something/package_repo'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/builder/package_repo/something/3pp.pb",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "name": "load package specs.read 'something/3pp.pb'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    create {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      source {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@        script { name: \"fetch.py\" }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    upload {pkg_prefix: \"p_something\"}@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  @@@",
+      "@@@STEP_LOG_END@3pp.pb@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "compute_hash",
+      "[START_DIR]",
+      "../[CACHE]/builder/package_repo/something"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "name": "load package specs.Compute hash for 'p_something/something'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "experimental pkgbuild"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[START_DIR]/_pkgbuild"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "name": "experimental pkgbuild.mkdir -p [pkgbuild]",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[START_DIR]/_pkgbuild",
+      "-ensure-file",
+      "infra/tools/luci/pkgbuild/linux-amd64 latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "name": "experimental pkgbuild.ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/pkgbuild/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/_pkgbuild/edge",
+      "-logging-level",
+      "info",
+      "-cipd-package-prefix",
+      "3pp",
+      "-storage-dir",
+      "[START_DIR]/_pkgbuild/store",
+      "-target-platform",
+      "linux-amd64",
+      "-spec-pool",
+      "[CACHE]/builder/package_repo",
+      "p_something/package_repo",
+      "p_something/something"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "name": "experimental pkgbuild.build packages",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]
