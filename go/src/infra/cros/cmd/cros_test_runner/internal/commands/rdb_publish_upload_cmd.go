@@ -37,7 +37,6 @@ type RdbPublishUploadCmd struct {
 	TestResultForRdb *artifactpb.TestResult
 	// Or all these are required.
 	GcsUrl        string
-	DutTopology   *labapi.DutTopology
 	TestResponses *testapipb.CrosTestResponse
 }
 
@@ -85,9 +84,6 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 		}
 		if sk.GcsUrl == "" {
 			return fmt.Errorf("Cmd %q missing dependency: GcsUrl", cmd.GetCommandType())
-		}
-		if sk.DutTopology == nil {
-			return fmt.Errorf("Cmd %q missing dependency: DutTopology", cmd.GetCommandType())
 		}
 		if sk.TestResponses == nil {
 			return fmt.Errorf("Cmd %q missing dependency: TestResponses", cmd.GetCommandType())
@@ -166,8 +162,14 @@ func populateTestInvocationInfo(
 
 	testInv := &artifactpb.TestInvocation{}
 	resultProto.TestInvocation = testInv
+	testInv.DutTopology = &labapi.DutTopology{
+		Duts: []*labapi.Dut{},
+	}
 	if sk.DutTopology != nil {
-		testInv.DutTopology = sk.DutTopology
+		testInv.DutTopology.Id = sk.DutTopology.GetId()
+	}
+	for _, device := range sk.Devices {
+		testInv.DutTopology.Duts = append(testInv.DutTopology.Duts, device.GetDut())
 	}
 }
 
@@ -275,10 +277,10 @@ func populatePrimaryDutInfo(
 	primaryExecInfo.DutInfo = primaryDutInfo
 
 	isSkylab := true
-	testDuts := sk.DutTopology.GetDuts()
+	testDuts := sk.Devices
 	if len(testDuts) > 0 {
-		primaryDutInfo.Dut = testDuts[0]
-		isSkylab = !strings.HasPrefix(testDuts[0].GetId().GetValue(), "satlab-")
+		primaryDutInfo.Dut = testDuts[common.PrimaryDevice].GetDut()
+		isSkylab = !strings.HasPrefix(testDuts[common.PrimaryDevice].GetDut().GetId().GetValue(), "satlab-")
 	}
 
 	primaryDut := sk.CftTestRequest.GetPrimaryDut()
@@ -354,44 +356,30 @@ func populateSecondaryExecutionInfo(
 	resultProto *artifactpb.TestResult,
 	sk *data.HwTestStateKeeper) {
 
-	// If more than one dut, then it's multi-duts.
 	// TODO (azrahman): check if inventory service actually provides these duts info
 	// or not for multi-duts. If not, raise this issue to proper channel.
-	testDuts := sk.DutTopology.GetDuts()
-	if len(testDuts) > 1 {
-		companionDevices := testDuts[1 : len(testDuts)-1]
-		companionDevicesMetadata := sk.CftTestRequest.GetCompanionDuts()
+	companionDevicesMetadata := sk.CompanionDevicesMetadata
+	secondaryExecInfos := []*artifactpb.ExecutionInfo{}
+	for i, device := range sk.CompanionDevices {
+		secondaryExecInfo := &artifactpb.ExecutionInfo{}
+		secondaryDutInfo := &artifactpb.DutInfo{}
+		secondaryExecInfo.DutInfo = secondaryDutInfo
+		secondaryDutInfo.Dut = device.GetDut()
 
-		if sk.CompanionDevicesMetadata != nil {
-			companionDevices = []*labapi.Dut{}
-			for _, device := range sk.CompanionDevices {
-				companionDevices = append(companionDevices, device.GetDut())
+		secondaryBuildInfo := &artifactpb.BuildInfo{}
+		secondaryExecInfo.BuildInfo = secondaryBuildInfo
+		if i < len(companionDevicesMetadata) {
+			if secondaryBoard := companionDevicesMetadata[i].GetDutModel().GetBuildTarget(); secondaryBoard != "" {
+				secondaryBuildInfo.Board = secondaryBoard
 			}
-			companionDevicesMetadata = sk.CompanionDevicesMetadata
+			if secondaryProvisionState := companionDevicesMetadata[i].GetProvisionState(); secondaryProvisionState != nil {
+				secondaryDutInfo.ProvisionState = secondaryProvisionState
+			}
 		}
 
-		secondaryExecInfos := []*artifactpb.ExecutionInfo{}
-		for i, device := range companionDevices {
-			secondaryExecInfo := &artifactpb.ExecutionInfo{}
-			secondaryDutInfo := &artifactpb.DutInfo{}
-			secondaryExecInfo.DutInfo = secondaryDutInfo
-			secondaryDutInfo.Dut = device
-
-			secondaryBuildInfo := &artifactpb.BuildInfo{}
-			secondaryExecInfo.BuildInfo = secondaryBuildInfo
-			if i < len(companionDevicesMetadata) {
-				if secondaryBoard := companionDevicesMetadata[i].GetDutModel().GetBuildTarget(); secondaryBoard != "" {
-					secondaryBuildInfo.Board = secondaryBoard
-				}
-				if secondaryProvisionState := companionDevicesMetadata[i].GetProvisionState(); secondaryProvisionState != nil {
-					secondaryDutInfo.ProvisionState = secondaryProvisionState
-				}
-			}
-
-			secondaryExecInfos = append(secondaryExecInfos, secondaryExecInfo)
-		}
-		resultProto.TestInvocation.SecondaryExecutionsInfo = secondaryExecInfos
+		secondaryExecInfos = append(secondaryExecInfos, secondaryExecInfo)
 	}
+	resultProto.TestInvocation.SecondaryExecutionsInfo = secondaryExecInfos
 }
 
 // populateTestRunsInfo populates test runs info.
