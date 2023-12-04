@@ -212,7 +212,9 @@ func TestLuciEXEMain(t *testing.T) {
 			})
 		})
 
-		Convey("cancel context sets status to CANCELED and returns no err", func() {
+		// TODO(crbug/1507700): Re-enable when flakiness is fixed.
+		// This test fails on ci/infra-continuous-mac-10.14-64
+		SkipConvey("cancel context sets status to CANCELED and returns no err", func() {
 			compBuild := &buildbucket_pb.Build{
 				Status:          buildbucket_pb.Status_CANCELED,
 				Id:              12345,
