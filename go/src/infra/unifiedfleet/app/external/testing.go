@@ -7,8 +7,6 @@ package external
 import (
 	"context"
 
-	luciconfig "go.chromium.org/luci/config"
-
 	"infra/cros/hwid"
 	"infra/libs/git"
 	"infra/libs/sheet"
@@ -20,7 +18,6 @@ func WithTestingContext(ctx context.Context) context.Context {
 	_, err := GetServerInterface(ctx)
 	if err != nil {
 		es := &InterfaceFactory{
-			cfgInterfaceFactory:           fakeCfgInterfaceFactory,
 			crosInventoryInterfaceFactory: fakeCrosInventoryInterface,
 			sheetInterfaceFactory:         fakeSheetInterfaceFactory,
 			gitInterfaceFactory:           fakeGitInterfaceFactory,
@@ -35,10 +32,6 @@ func WithTestingContext(ctx context.Context) context.Context {
 
 func fakeCrosInventoryInterface(ctx context.Context, host string) (CrosInventoryClient, error) {
 	return &fake.InventoryClient{}, nil
-}
-
-func fakeCfgInterfaceFactory(ctx context.Context) luciconfig.Interface {
-	return &fake.LuciConfigClient{}
 }
 
 func fakeSheetInterfaceFactory(ctx context.Context) (sheet.ClientInterface, error) {

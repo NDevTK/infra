@@ -11,7 +11,7 @@ option go_package = "infra/unifiedfleet/app/config";
 // Next Tag: 27
 // Config is the configuration data served by luci-config for this app.
 message Config {
-  string luci_config_service = 1;
+  string luci_config_service = 1 [deprecated=true];
   OSNetworkConfig cros_network_config = 2;
   string bucket_name = 3;
   string machine_db_config_service = 4;

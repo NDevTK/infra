@@ -12,8 +12,6 @@ import (
 	authclient "go.chromium.org/luci/auth"
 	gitilesapi "go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
-	luciconfig "go.chromium.org/luci/config"
-	"go.chromium.org/luci/config/impl/remote"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc"
@@ -38,10 +36,6 @@ var spreadSheetScope = []string{authclient.OAuthScopeEmail, "https://www.googlea
 // InterfaceFactoryKey is the key used to store instance of InterfaceFactory in context.
 var InterfaceFactoryKey = util.Key("ufs external-server-interface key")
 
-// CfgInterfaceFactory is a contsructor for a luciconfig.Interface
-// For potential unittest usage
-type CfgInterfaceFactory func(ctx context.Context) luciconfig.Interface
-
 // CrosInventoryInterfaceFactory is a constructor for a invV2Api.InventoryClient
 type CrosInventoryInterfaceFactory func(ctx context.Context, host string) (CrosInventoryClient, error)
 
@@ -62,7 +56,6 @@ type DeviceConfigFactory func(ctx context.Context, inventoryHost string) (Device
 
 // InterfaceFactory provides a collection of interfaces to external clients.
 type InterfaceFactory struct {
-	cfgInterfaceFactory           CfgInterfaceFactory
 	crosInventoryInterfaceFactory CrosInventoryInterfaceFactory
 	sheetInterfaceFactory         SheetInterfaceFactory
 	gitInterfaceFactory           GitInterfaceFactory
@@ -168,28 +161,6 @@ func gitTilesInterfaceFactoryImpl(ctx context.Context, gitilesHost string) (GitT
 		return nil, err
 	}
 	return gitilesapi.NewRESTClient(&http.Client{Transport: t}, gitilesHost, true)
-}
-
-// NewCfgInterface creates a new config interface.
-func (es *InterfaceFactory) NewCfgInterface(ctx context.Context) luciconfig.Interface {
-	if es.cfgInterfaceFactory == nil {
-		es.cfgInterfaceFactory = cfgInterfaceFactoryImpl
-	}
-	return es.cfgInterfaceFactory(ctx)
-}
-
-func cfgInterfaceFactoryImpl(ctx context.Context) luciconfig.Interface {
-	cfgService := config.Get(ctx).LuciConfigService
-	if cfgService == "" {
-		cfgService = defaultCfgService
-	}
-	return remote.NewV1(cfgService, false, func(ctx context.Context) (*http.Client, error) {
-		t, err := auth.GetRPCTransport(ctx, auth.AsSelf)
-		if err != nil {
-			return nil, err
-		}
-		return &http.Client{Transport: t}, nil
-	})
 }
 
 // NewHwidClientInterface creates a new Hwid server client interface.
