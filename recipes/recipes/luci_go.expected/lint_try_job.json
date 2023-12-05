@@ -343,6 +343,7 @@
       "@@@STEP_LOG_LINE@change list@client/cmd/isolate/lib/archive.go@@@",
       "@@@STEP_LOG_LINE@change list@client/cmd/isolate/lib/batch_archive.go@@@",
       "@@@STEP_LOG_LINE@change list@client/cmd/isolated/lib/archive.go@@@",
+      "@@@STEP_LOG_LINE@change list@server/something.go@@@",
       "@@@STEP_LOG_END@change list@@@"
     ]
   },
@@ -456,6 +457,59 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      ".go-lintable",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read .go-lintable",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@.go-lintable@[section1]@@@",
+      "@@@STEP_LOG_LINE@.go-lintable@paths =@@@",
+      "@@@STEP_LOG_LINE@.go-lintable@    client@@@",
+      "@@@STEP_LOG_LINE@.go-lintable@    stuff@@@",
+      "@@@STEP_LOG_LINE@.go-lintable@[section2]@@@",
+      "@@@STEP_LOG_LINE@.go-lintable@paths =@@@",
+      "@@@STEP_LOG_LINE@.go-lintable@    server@@@",
+      "@@@STEP_LOG_LINE@.go-lintable@    more-stuff@@@",
+      "@@@STEP_LOG_END@.go-lintable@@@"
+    ]
+  },
+  {
+    "cmd": [
       "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/a11f4e145e770058b05ce0e207cc9fb23408ede4aaa3bf2e8b996fc4d94f3728/golangci-lint",
       "run",
       "--out-format=json",
@@ -492,7 +546,79 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "run golangci-lint",
+    "name": "run golangci-lint in client",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"Issues\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"ExpectedNoLintLinter\": \"\",@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"FromLinter\": \"deadcode\",@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"HunkPos\": 4,@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"Pos\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Column\": 6,@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Filename\": \"client/cmd/isolate/lib/batch_archive.go\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Line\": 250,@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Offset\": 7960@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"Severity\": \"\",@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"SourceLines\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"func foo() {}\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ],@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"Text\": \"`foo` is unused\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    },@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"FromLinter\": \"gci\",@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"Pos\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Column\": 0,@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Filename\": \"auth_service/impl/model/init.go\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Line\": 20,@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"Offset\": 0@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"Text\": \"File is not `gci`-ed with --skip-generated -s standard -s default -s prefix(go.chromium.org) --custom-order\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/a11f4e145e770058b05ce0e207cc9fb23408ede4aaa3bf2e8b996fc4d94f3728/golangci-lint",
+      "run",
+      "--out-format=json",
+      "--issues-exit-code=0",
+      "--timeout=5m",
+      "server/..."
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "run golangci-lint in server",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"Issues\": [@@@",
