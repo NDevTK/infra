@@ -494,19 +494,16 @@ Args:
 [DEPS](/recipes/recipe_modules/infra_checkout/__init__.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/gerrit][depot_tools/recipe_modules/gerrit], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/presubmit][depot_tools/recipe_modules/presubmit], [infra\_system](#recipe_modules-infra_system), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/tricium][recipe_engine/recipe_modules/tricium]
 
 
-#### **class [InfraCheckoutApi](/recipes/recipe_modules/infra_checkout/api.py#13)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [InfraCheckoutApi](/recipes/recipe_modules/infra_checkout/api.py#12)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 Stateless API for using public infra gclient checkout.
 
-&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#253)(self, co, go_module_root=''):**
+&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#252)(self, co, path_to_go_modules=''):**
 
-Apply golangci-lint to existing diffs and emit lint warnings via tricium.
+Apply goalngci-lint to existing diffs and emit lint warnings via tricium.
+    
 
-Assumes the current working directory is set to the checkout root and
-`go_module_root` is a Go module root directory relative to the checkout
-root.
-
-&mdash; **def [checkout](/recipes/recipe_modules/infra_checkout/api.py#16)(self, gclient_config_name, patch_root=None, path=None, internal=False, generate_env_with_system_python=False, go_version_variant=None, \*\*kwargs):**
+&mdash; **def [checkout](/recipes/recipe_modules/infra_checkout/api.py#15)(self, gclient_config_name, patch_root=None, path=None, internal=False, generate_env_with_system_python=False, go_version_variant=None, \*\*kwargs):**
 
 Fetches infra gclient checkout into a given path OR named_cache.
 
@@ -538,7 +535,7 @@ Arguments:
 Returns:
   a Checkout object with commands for common actions on infra checkout.
 
-&mdash; **def [get\_footer\_infra\_deps\_overrides](/recipes/recipe_modules/infra_checkout/api.py#226)(self, gerrit_change, step_test_data=None):**
+&mdash; **def [get\_footer\_infra\_deps\_overrides](/recipes/recipe_modules/infra_checkout/api.py#225)(self, gerrit_change, step_test_data=None):**
 
 Returns revision overrides for infra repos parsed from the gerrit footer.
 
@@ -1694,10 +1691,10 @@ Pushes a trivial CL to Gerrit to verify git authentication works on LUCI.
 &mdash; **def [RunSteps](/recipes/recipe_modules/infra_checkout/examples/ci.py#18)(api):**
 ### *recipes* / [infra\_checkout:examples/try](/recipes/recipe_modules/infra_checkout/examples/try.py)
 
-[DEPS](/recipes/recipe_modules/infra_checkout/examples/try.py#13): [depot\_tools/gerrit][depot_tools/recipe_modules/gerrit], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+[DEPS](/recipes/recipe_modules/infra_checkout/examples/try.py#11): [depot\_tools/gerrit][depot_tools/recipe_modules/gerrit], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
 
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/infra_checkout/examples/try.py#22)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/infra_checkout/examples/try.py#19)(api):**
 ### *recipes* / [infra\_cipd:examples/usage](/recipes/recipe_modules/infra_cipd/examples/usage.py)
 
 [DEPS](/recipes/recipe_modules/infra_cipd/examples/usage.py#11): [infra\_cipd](#recipe_modules-infra_cipd), [recipe\_engine/assertions][recipe_engine/recipe_modules/assertions], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
@@ -1751,10 +1748,10 @@ This function runs UI tests in the `luci-go` project.
 &mdash; **def [RunSteps](/recipes/recipe_modules/infra_system/examples/full.py#15)(api):**
 ### *recipes* / [luci\_go](/recipes/recipes/luci_go.py)
 
-[DEPS](/recipes/recipes/luci_go.py#11): [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/tricium][recipe_engine/recipe_modules/tricium]
+[DEPS](/recipes/recipes/luci_go.py#11): [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/tricium][recipe_engine/recipe_modules/tricium]
 
 
-&mdash; **def [RunSteps](/recipes/recipes/luci_go.py#49)(api, GOARCH, go_version_variant, run_integration_tests, run_lint):**
+&mdash; **def [RunSteps](/recipes/recipes/luci_go.py#48)(api, GOARCH, go_version_variant, run_integration_tests, run_lint):**
 ### *recipes* / [luci\_py](/recipes/recipes/luci_py.py)
 
 [DEPS](/recipes/recipes/luci_py.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]

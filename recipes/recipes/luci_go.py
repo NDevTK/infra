@@ -14,7 +14,6 @@ DEPS = [
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',
     'recipe_engine/context',
-    'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/platform',
@@ -122,25 +121,10 @@ def GenTests(api):
       'get change list',
       stdout=api.raw_io.output_text(
           textwrap.dedent("""\
-          client/cmd/isolate/lib/batch_archive.go
-          client/cmd/isolate/lib/archive.go
-          client/cmd/isolated/lib/archive.go
-          server/something.go
-          """)),
-  ) + api.step_data(
-      'read .go-lintable',
-      api.file.read_text(
-          textwrap.dedent("""\
-          [section1]
-          paths =
-              client
-              stuff
-          [section2]
-          paths =
-              server
-              more-stuff
-          """)),
-  ))
+      client/cmd/isolate/lib/batch_archive.go
+      client/cmd/isolate/lib/archive.go
+      client/cmd/isolated/lib/archive.go
+      """))))
 
   yield (
     api.test('override_GOARCH') +

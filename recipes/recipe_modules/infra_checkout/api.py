@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import collections
-import configparser
 import contextlib
 import re
 import textwrap
@@ -250,110 +249,66 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
             'revision')
     return overrides
 
-  def apply_golangci_lint(self, co, go_module_root=''):
-    """Apply golangci-lint to existing diffs and emit lint warnings via tricium.
-
-    Assumes the current working directory is set to the checkout root and
-    `go_module_root` is a Go module root directory relative to the checkout
-    root.
+  def apply_golangci_lint(self, co, path_to_go_modules=''):
+    """Apply goalngci-lint to existing diffs and emit lint warnings via tricium.
     """
-    assert go_module_root == '' or go_module_root.endswith('/'), go_module_root
-
-    # Get list of directories with touched *.go file. Paths are relative to
-    # `go_module_root`.
-    go_dirs = sorted(
+    go_files = sorted(
         set([
-            self.m.path.dirname(f[len(go_module_root):]) or '.'
+            (self.m.path.dirname(f[len(path_to_go_modules):]) or '.') + '/...'
             # Set --diff-filter to exclude deleted/renamed files.
             # https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
             for f in co.get_changed_files(diff_filter='ACMTR')
-            if f.endswith('.go') and f.startswith(go_module_root)
+            if f.endswith('.go') and f.startswith(path_to_go_modules)
         ]))
 
-    if not go_dirs:
+    if not go_files:
       return  # pragma: no cover
 
     # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/golangci-lint
     linter = self.m.cipd.ensure_tool(
         'infra/3pp/tools/golangci-lint/${platform}', 'version:2@1.54.2')
+    result = self.m.step(
+        'run golangci-lint',
+        [
+            linter,
+            'run',
+            '--out-format=json',
+            '--issues-exit-code=0',
+            '--timeout=5m',
+        ] + go_files,
+        step_test_data=lambda: self.m.json.test_api.output_stream({
+            'Issues': [
+                {
+                    'FromLinter': 'deadcode',
+                    'Text': '`foo` is unused',
+                    'Severity': '',
+                    'SourceLines': ['func foo() {}'],
+                    'Pos': {
+                        'Filename': 'client/cmd/isolate/lib/batch_archive.go',
+                        'Offset': 7960,
+                        'Line': 250,
+                        'Column': 6
+                    },
+                    'HunkPos': 4,
+                    'ExpectedNoLintLinter': ''
+                },
+                {
+                    "FromLinter":
+                        "gci",
+                    "Text":
+                        "File is not `gci`-ed with --skip-generated -s standard -s default -s prefix(go.chromium.org) --custom-order",
+                    "Pos": {
+                        "Filename": "auth_service/impl/model/init.go",
+                        "Offset": 0,
+                        "Line": 20,
+                        "Column": 0
+                    },
+                },
+            ],
+        }),
+        stdout=self.m.json.output())
 
-    # Read locations of all directories with .golangci.yaml within them. Paths
-    # are relative to `go_module_root`.
-    roots = []
-    try:
-      path = self.m.path.join(go_module_root, '.go-lintable')
-      text = self.m.file.read_text('read %s' % path, path)
-      cfg = configparser.ConfigParser()
-      cfg.read_file(text.splitlines())
-      for section in cfg:
-        for path in cfg.get(section, 'paths', fallback='').split():
-          path = path.strip()
-          if path:
-            roots.append(path.rstrip('/'))
-    except self.m.file.Error as err:  # pragma: no cover
-      if err.errno_name != 'ENOENT':
-        raise
-
-    # By default assume there's a config at the module's root.
-    roots = roots or ['.']
-
-    def is_under(path, root):
-      return root == '.' or path == root or path.startswith(root + '/')
-
-    # Group touched go files by their linter config root.
-    per_root = collections.defaultdict(list)
-    for go_dir in go_dirs:
-      for root in roots:
-        if is_under(go_dir, root):
-          per_root[root].append(go_dir + '/...')
-          break
-
-    # Invoke the linter many times, once per config root.
-    issues = []
-    for root, pkgs in sorted(per_root.items()):
-      result = self.m.step(
-          'run golangci-lint in %s' % root,
-          [
-              linter,
-              'run',
-              '--out-format=json',
-              '--issues-exit-code=0',
-              '--timeout=5m',
-          ] + sorted(pkgs),
-          step_test_data=lambda: self.m.json.test_api.output_stream({
-              'Issues': [
-                  {
-                      'FromLinter': 'deadcode',
-                      'Text': '`foo` is unused',
-                      'Severity': '',
-                      'SourceLines': ['func foo() {}'],
-                      'Pos': {
-                          'Filename': 'client/cmd/isolate/lib/batch_archive.go',
-                          'Offset': 7960,
-                          'Line': 250,
-                          'Column': 6
-                      },
-                      'HunkPos': 4,
-                      'ExpectedNoLintLinter': ''
-                  },
-                  {
-                      "FromLinter":
-                          "gci",
-                      "Text":
-                          "File is not `gci`-ed with --skip-generated -s standard -s default -s prefix(go.chromium.org) --custom-order",
-                      "Pos": {
-                          "Filename": "auth_service/impl/model/init.go",
-                          "Offset": 0,
-                          "Line": 20,
-                          "Column": 0
-                      },
-                  },
-              ],
-          }),
-          stdout=self.m.json.output())
-      issues.extend(result.stdout.get('Issues') or ())
-
-    for issue in issues:
+    for issue in result.stdout.get('Issues') or ():
       pos = issue['Pos']
       line = pos['Line']
       text = issue['Text']
@@ -365,7 +320,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
       self.m.tricium.add_comment(
           'golangci-lint (%s)' % issue['FromLinter'],
           text,
-          self.m.path.join(go_module_root, pos['Filename']),
+          self.m.path.join(path_to_go_modules, pos['Filename']),
           start_line=line,
           end_line=line,
           # Gerrit (and Tricium, as a pass-through proxy) requires robot
