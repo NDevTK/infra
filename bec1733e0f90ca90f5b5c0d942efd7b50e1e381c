@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c6a3f901_b55223f8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-12-05T22:49:21Z",
+      "side": 1,
+      "message": "is the cl tested? (context: single place where the provider created does not provides new config)",
+      "revId": "bec1733e0f90ca90f5b5c0d942efd7b50e1e381c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f1e6071_50dfe85e",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/ssh/ssh_provider.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-12-05T22:49:21Z",
+      "side": 1,
+      "message": "do we have any case when we use it?",
+      "range": {
+        "startLine": 37,
+        "startChar": 49,
+        "endLine": 37,
+        "endChar": 70
+      },
+      "revId": "bec1733e0f90ca90f5b5c0d942efd7b50e1e381c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
