@@ -10,9 +10,9 @@ import (
 	"os"
 	"time"
 
-	"infra/cr_builder_health/healthpb"
-
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -21,7 +21,8 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/cr_builder_health/healthpb"
 )
 
 var iso8601Format = "2006-01-02"

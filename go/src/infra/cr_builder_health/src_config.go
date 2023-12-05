@@ -12,13 +12,13 @@ import (
 	"sort"
 	"strings"
 
-	"infra/libs/git"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/libs/git"
 )
 
 type SrcConfig struct {

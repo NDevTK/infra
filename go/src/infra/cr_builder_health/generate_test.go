@@ -7,13 +7,17 @@ package main
 import (
 	"context"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/civil"
+	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/grpc"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"google.golang.org/genproto/googleapis/rpc/status"
-	"google.golang.org/grpc"
-
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/cr_builder_health/healthpb"
 )
 
 type bbClientMock struct {
@@ -47,6 +51,110 @@ func (c *bbClientMock) SetBuilderHealth(ctx context.Context, in *buildbucketpb.S
 	}
 
 	return result, nil
+}
+
+func TestIsWeekend(t *testing.T) {
+	t.Parallel()
+	Convey("Test isWeekend function", t, func() {
+		date1 := civil.Date{
+			Year:  2023,
+			Month: time.December,
+			Day:   1,
+		}
+		date2 := civil.Date{
+			Year:  2023,
+			Month: time.December,
+			Day:   2,
+		}
+		date3 := civil.Date{
+			Year:  2023,
+			Month: time.December,
+			Day:   3,
+		}
+		date4 := civil.Date{
+			Year:  2023,
+			Month: time.December,
+			Day:   4,
+		}
+		So(isWeekend(date1), ShouldEqual, false)
+		So(isWeekend(date2), ShouldEqual, true)
+		So(isWeekend(date3), ShouldEqual, true)
+		So(isWeekend(date4), ShouldEqual, false)
+	})
+}
+
+func TestBuilderID(t *testing.T) {
+	t.Parallel()
+	Convey("Test BuilderID function", t, func() {
+		So(builderID("chromium", "ci", "builder1"), ShouldEqual, "chromium/ci/builder1")
+		So(builderID("chrome", "try", "builder2"), ShouldEqual, "chrome/try/builder2")
+	})
+}
+
+func TestCalculateIndicators(t *testing.T) {
+	t.Parallel()
+
+	Convey("(Slightly) healthy builders", t, func() {
+		ctx := context.Background()
+		rowsWithHealthScores := []Row{{
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: UNHEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2023,
+				Month: time.December,
+				Day:   5,
+			},
+		}, {
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: 8,
+			Date: civil.Date{
+				Year:  2023,
+				Month: time.December,
+				Day:   4,
+			},
+		}, {
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: HEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2023,
+				Month: time.December,
+				Day:   3,
+			},
+		}}
+
+		input := healthpb.InputParams{
+			Date: timestamppb.New(time.Date(2023, 12, 6, 0, 0, 0, 0, time.UTC)),
+		}
+
+		var srcConfig = SrcConfig{
+			BucketSpecs: map[string]BuilderSpecs{
+				"bucket": {
+					"existant-builder": BuilderSpec{
+						ProblemSpecs: []ProblemSpec{
+							{
+								Name:  "Unhealthy",
+								Score: UNHEALTHY_SCORE,
+								Thresholds: Thresholds{
+									FailRate: AverageThresholds{Average: 0.2},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
+		So(err, ShouldBeNil)
+		So(len(rowsWithIndicators), ShouldEqual, 1)
+
+		// As 2023/12/03, being a Sunday, is excluded from the health score calculation, the final health score should be 8
+		So(rowsWithIndicators[0].HealthScore, ShouldEqual, 8)
+	},
+	)
 }
 
 func TestGenerate(t *testing.T) {

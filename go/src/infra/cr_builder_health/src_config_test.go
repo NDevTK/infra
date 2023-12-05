@@ -162,7 +162,7 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(savedThresholds, ShouldResemble, testSrcConfig)
@@ -179,7 +179,7 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
@@ -196,7 +196,7 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
@@ -213,7 +213,7 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
@@ -230,7 +230,7 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
@@ -247,7 +247,7 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
@@ -264,7 +264,7 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
@@ -300,7 +300,7 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 2)
 		So(savedThresholds, ShouldResemble, testSrcConfig)
@@ -338,7 +338,7 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 2)
 		So(savedThresholds, ShouldResemble, testSrcConfig)
@@ -377,7 +377,7 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 2)
 		So(savedThresholds, ShouldResemble, testSrcConfig)
@@ -395,7 +395,7 @@ func TestSrcConfig(t *testing.T) {
 			Builder: "improper-builder",
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldNotBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "default")
@@ -410,7 +410,7 @@ func TestSrcConfig(t *testing.T) {
 			Builder: "improper-builder2",
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldNotBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "unknown sentinel")
@@ -424,7 +424,7 @@ func TestSrcConfig(t *testing.T) {
 			Builder: "improper-builder3",
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldNotBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "no ProblemSpecs")
@@ -438,7 +438,7 @@ func TestSrcConfig(t *testing.T) {
 			Builder: "unconfigured-builder",
 		}}
 		savedThresholds := testSrcConfig
-		outputRows, err := calculateIndicators(ctx, rows, testSrcConfig)
+		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].ScoreExplanation, ShouldBeBlank)

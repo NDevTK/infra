@@ -8,11 +8,12 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-
-	"infra/cr_builder_health/healthpb"
+	"time"
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
+	"google.golang.org/api/iterator"
+	"google.golang.org/grpc"
 
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -21,8 +22,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/luciexe/build"
 
-	"google.golang.org/api/iterator"
-	"google.golang.org/grpc"
+	"infra/cr_builder_health/healthpb"
 )
 
 type Row struct {
@@ -66,7 +66,12 @@ func generate(ctx context.Context, input *healthpb.InputParams) error {
 		return errors.Annotate(err, "Get metrics").Err()
 	}
 
-	rowsWithIndicators, err := calculateIndicators(ctx, rows, *srcConfig)
+	rowsWithHealthScores, err := calculateIntermediateHealthScores(ctx, rows, *srcConfig)
+	if err != nil {
+		return errors.Annotate(err, "Calculate intermediate health scores").Err()
+	}
+
+	rowsWithIndicators, err := calculateIndicators(ctx, input, rowsWithHealthScores, *srcConfig)
 	if err != nil {
 		return errors.Annotate(err, "Calculate indicators").Err()
 	}
@@ -120,7 +125,7 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
 
 	q := bqClient.Query(`
 	SELECT
-	  DATE(@date) as date,
+	  DATE(b.create_time) as date,
 	  b.builder.project,
 	  b.builder.bucket,
 	  b.builder.builder,
@@ -137,21 +142,21 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
     ` +
 		"FROM `cr-buildbucket.chrome.builds` as b" + `
 	WHERE
-		b.create_time < @date
-		AND b.create_time >= TIMESTAMP_SUB(@date, INTERVAL 7 DAY)
+		b.create_time < @input_date
+		AND b.create_time >= TIMESTAMP_SUB(@input_date, INTERVAL 7 DAY)
 		AND b.builder.bucket = 'ci'
 		AND b.builder.project IN ('chromium', 'chrome')
 		AND b.input.properties LIKE '%sheriff_rotations%'
 	GROUP BY
-	  b.builder.project, b.builder.bucket, b.builder.builder
-	HAVING n >= 20
+	  b.builder.project, b.builder.bucket, b.builder.builder, date
 	ORDER BY
 	  rotation,
-	  LOWER(builder) ASC
+	  LOWER(builder) ASC,
+	  date DESC
 	`)
 	q.Parameters = []bigquery.QueryParameter{
 		{
-			Name:  "date",
+			Name:  "input_date",
 			Value: input.Date.AsTime().UTC().Format(iso8601Format),
 		},
 	}
@@ -182,15 +187,15 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
 	return rows, nil
 }
 
-func calculateIndicators(buildCtx context.Context, rows []Row, srcConfig SrcConfig) ([]Row, error) {
+func calculateIntermediateHealthScores(buildCtx context.Context, rows []Row, srcConfig SrcConfig) ([]Row, error) {
 	var stepErr error
-	step, ctx := build.StartStep(buildCtx, "Calculate indicators")
+	step, ctx := build.StartStep(buildCtx, "Calculate intermediate health scores")
 	defer func() { step.End(stepErr) }()
 
 	failedBuilders := 0
 	for i, row := range rows {
 		if bucketSpec, ok := srcConfig.BucketSpecs[row.Bucket]; !ok {
-			rows[i].HealthScore = 0
+			rows[i].HealthScore = UNSET_SCORE
 			continue
 		} else if builderSpec, ok := bucketSpec[row.Builder]; !ok {
 			rows[i].HealthScore = UNSET_SCORE
@@ -213,7 +218,7 @@ func calculateIndicators(buildCtx context.Context, rows []Row, srcConfig SrcConf
 						problemSpec.Thresholds.PendingTime != PercentileThresholds{} ||
 						problemSpec.Thresholds.FailRate != AverageThresholds{} ||
 						problemSpec.Thresholds.InfraFailRate != AverageThresholds{}) {
-						rows[i].HealthScore = 0
+						rows[i].HealthScore = UNSET_SCORE
 						rows[i].ScoreExplanation = "Threshold config error: default sentinel and custom thresholds cannot both be set."
 						logging.Errorf(ctx, "%s Bucket: %s. Builder: %s.", rows[i].ScoreExplanation, row.Bucket, row.Builder)
 						failedBuilders += 1
@@ -230,7 +235,7 @@ func calculateIndicators(buildCtx context.Context, rows []Row, srcConfig SrcConf
 						}
 					}
 					if !found {
-						rows[i].HealthScore = 0
+						rows[i].HealthScore = UNSET_SCORE
 						rows[i].ScoreExplanation = "Threshold config error: default sentinel but no matching default found"
 						logging.Errorf(ctx, "%s Bucket: %s. Builder: %s.", rows[i].ScoreExplanation, row.Bucket, row.Builder)
 						failedBuilders += 1
@@ -256,6 +261,87 @@ func calculateIndicators(buildCtx context.Context, rows []Row, srcConfig SrcConf
 	}
 
 	return rows, stepErr
+}
+
+func builderID(project string, bucket string, builder string) string {
+	return project + "/" + bucket + "/" + builder
+}
+
+func isWeekend(date civil.Date) bool {
+	time, _ := time.Parse(time.RFC3339, date.String()+"T00:00:00Z")
+	return time.Weekday() == 0 || time.Weekday() == 6
+}
+
+func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, rows []Row, srcConfig SrcConfig) ([]Row, error) {
+	var stepErr error
+	step, ctx := build.StartStep(buildCtx, "Calculate indicators")
+	defer func() { step.End(stepErr) }()
+
+	builderRows := make(map[string]Row)
+	healthyDays := make(map[string]int)
+	unhealthyDays := make(map[string]int)
+
+	for _, row := range rows {
+		if isWeekend(row.Date) {
+			continue
+		}
+
+		var builderID = builderID(row.Project, row.Bucket, row.Builder)
+		builder, ok := builderRows[builderID]
+		if !ok {
+			// As rows are sorted by date in descending order, this row represents the most recent date
+			builder = row
+		}
+
+		if row.HealthScore > UNSET_SCORE && row.HealthScore <= UNHEALTHY_SCORE {
+			unhealthyDays[builderID] += 1
+		} else if row.HealthScore > UNHEALTHY_SCORE && row.HealthScore <= HEALTHY_SCORE {
+			healthyDays[builderID] += 1
+		}
+
+		if bucketSpecs, ok := srcConfig.BucketSpecs[row.Bucket]; !ok {
+			continue
+		} else if _, ok := bucketSpecs[row.Builder]; !ok {
+			continue
+		} else {
+			// TODO: read the period in the builder spec
+			var period = 7
+
+			diffDate := civil.DateOf(input.Date.AsTime().UTC()).DaysSince(row.Date)
+			if diffDate > period {
+				continue
+			}
+			builder.HealthScore = max(builder.HealthScore, row.HealthScore)
+			builderRows[builderID] = builder
+		}
+	}
+
+	rowsWithIndicators := make([]Row, 0, len(builderRows))
+
+	inactiveBuilders := 0
+	fullyHealthyBuilders := 0
+	fullyUnhealthyBuilders := 0
+	partiallyHealthyBuilders := 0
+
+	for builderID, row := range builderRows {
+		rowsWithIndicators = append(rowsWithIndicators, row)
+		if healthyDays[builderID] == 0 && unhealthyDays[builderID] == 0 {
+			inactiveBuilders += 1
+		} else if healthyDays[builderID] == 0 {
+			fullyUnhealthyBuilders += 1
+		} else if unhealthyDays[builderID] == 0 {
+			fullyHealthyBuilders += 1
+		} else {
+			partiallyHealthyBuilders += 1
+		}
+	}
+
+	logging.Errorf(ctx, "Fully healthy builders: %d", fullyHealthyBuilders)
+	logging.Errorf(ctx, "Partially healthy builders: %d", partiallyHealthyBuilders)
+	logging.Errorf(ctx, "Fully unhealthy builders: %d", fullyUnhealthyBuilders)
+	logging.Errorf(ctx, "Inactive builders: %d", inactiveBuilders)
+
+	return rowsWithIndicators, nil
 }
 
 func bbClient(buildCtx context.Context) (buildbucketpb.BuildersClient, error) {
