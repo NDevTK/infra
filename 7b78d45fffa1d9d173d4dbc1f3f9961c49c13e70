@@ -16,6 +16,29 @@
       "message": "PTAL\n\nThis should land before https://chromium-review.googlesource.com/c/infra/luci/luci-go/+/5078378 and it should have no effect until \".go-lintable\" is added.",
       "revId": "7b78d45fffa1d9d173d4dbc1f3f9961c49c13e70",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b71f69b8_a75f68d2",
+        "filename": "recipes/recipe_modules/infra_checkout/examples/try.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-12-05T04:47:17Z",
+      "side": 1,
+      "message": "I prefer to use raw string literal for this.",
+      "range": {
+        "startLine": 69,
+        "startChar": 42,
+        "endLine": 69,
+        "endChar": 43
+      },
+      "revId": "7b78d45fffa1d9d173d4dbc1f3f9961c49c13e70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
