@@ -89,12 +89,6 @@ func parseArgs(args []string) (cmdArgs, error) {
 	fs := flag.NewFlagSet("f1", flag.ContinueOnError)
 
 	compBuildId := fs.String("compilator-id", "", "Buildbucket ID of triggered compilator")
-	// TODO(crbug/1248460): Remove once startStepTag and endStepTag are
-	// being used
-	getSwarmingTriggerProps := fs.Bool("get-swarming-trigger-props", false, "Sub-build will report steps up to `swarming trigger properties`")
-	_ = getSwarmingTriggerProps
-	getLocalTests := fs.Bool("get-local-tests", false, "Sub-build will report steps of local tests")
-	_ = getLocalTests
 	startStepTag := fs.String("start-step-tag", "", "Tag of the first step that should be copied over. All subsequent steps will be copied too. If empty, then it will default to the first step in the build.")
 	endStepTag := fs.String("end-step-tag", "", "Tag of the last step that should be copied over. If empty, steps will be copied until the build ends.")
 	compPollingTimeoutSec := fs.Int64(
