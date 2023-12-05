@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69e5c297_1e571bc2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2023-12-05T02:46:02Z",
+      "side": 1,
+      "message": "PTAL\n\nThis should land before https://chromium-review.googlesource.com/c/infra/luci/luci-go/+/5078378 and it should have no effect until \".go-lintable\" is added.",
+      "revId": "7b78d45fffa1d9d173d4dbc1f3f9961c49c13e70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
