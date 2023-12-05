@@ -31,6 +31,7 @@ var PingCommand *subcommands.Command = &subcommands.Command{
 	CommandRun: func() subcommands.CommandRun {
 		c := &pingCommand{}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
+		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 		return c
 	},
@@ -52,10 +53,13 @@ func (c *pingCommand) Run(a subcommands.Application, args []string, env subcomma
 	return 0
 }
 
-func (c *pingCommand) getSecureClient(ctx context.Context) (*http.Client, error) {
+func (c *pingCommand) getSecureClient(ctx context.Context, host string) (*http.Client, error) {
 	authOptions, err := c.authFlags.Options()
 	if err != nil {
 		return nil, errors.Annotate(err, "ping").Err()
+	}
+	if authOptions.UseIDTokens && authOptions.Audience == "" {
+		authOptions.Audience = "https://" + host
 	}
 	authenticator := auth.NewAuthenticator(ctx, auth.InteractiveLogin, authOptions)
 	httpClient, err := authenticator.Client()
@@ -66,17 +70,21 @@ func (c *pingCommand) getSecureClient(ctx context.Context) (*http.Client, error)
 }
 
 func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+	host, err := c.commonFlags.Host()
+	if err != nil {
+		return err
+	}
 	var httpClient *http.Client
 	if !c.commonFlags.HTTP() {
 		var err error
-		httpClient, err = c.getSecureClient(ctx)
+		httpClient, err = c.getSecureClient(ctx, host)
 		if err != nil {
 			return err
 		}
 	}
 	prpcClient := &prpc.Client{
 		C:    httpClient,
-		Host: "127.0.0.1:8800",
+		Host: host,
 		Options: &prpc.Options{
 			Insecure:      c.commonFlags.HTTP(),
 			PerRPCTimeout: 30 * time.Second,
