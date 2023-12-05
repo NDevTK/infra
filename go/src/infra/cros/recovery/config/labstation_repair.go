@@ -82,7 +82,6 @@ func LabstationRepairConfig() *Configuration {
 							"servo_verification",
 							"labstation_tryjob",
 							"labstation_canary",
-							"labstation_phone_station",
 							"labstation_block_autoupdate",
 						},
 					},
@@ -406,6 +405,8 @@ func LabstationRepairConfig() *Configuration {
 						},
 						Conditions: []string{
 							"Device is SSHable",
+							// For Special pools, we don't want version get changed in automated way.
+							"Labstation not in auto-update exempted pool",
 						},
 						Dependencies: []string{
 							"Write factory-install-reset to file system",
@@ -427,7 +428,9 @@ func LabstationRepairConfig() *Configuration {
 							"host:dut",
 							"command:servod --sversion",
 						},
-						AllowFailAfterRecovery: true,
+						RecoveryActions: []string{
+							"Powerwash repair labstation",
+						},
 					},
 					"Sleep 10s": {
 						ExecName: "sample_sleep",
