@@ -307,7 +307,7 @@ class Converter(object):
       converted_comments.append(converted_comment)
     return converted_comments
 
-  def ConvertIssue(self, issue):
+  def ConvertIssue(self, issue, migrated_id=None):
     # type: (mrproto.tracker_pb2.Issue) -> api_proto.issue_objects_pb2.Issue
     """Convert a protorpc Issue into a protoc Issue."""
     issues = self.ConvertIssues([issue])
@@ -315,7 +315,10 @@ class Converter(object):
       raise exceptions.NoSuchIssueException()
     if len(issues) > 1:
       logging.warning('More than one converted issue returned: %s', issues)
-    return issues[0]
+    ret_issue = issues[0]
+    if migrated_id:
+      ret_issue.migrated_id = migrated_id
+    return ret_issue
 
   def ConvertIssues(self, issues):
     # type: (Sequence[mrproto.tracker_pb2.Issue]) ->
@@ -435,6 +438,8 @@ class Converter(object):
               seconds=issue.owner_modified_timestamp),
           star_count=issue.star_count,
           phases=phases)
+      if hasattr(issue, 'migrated_id'):
+        result.migrated_id = issue.migrated_id
       # TODO(crbug.com/monorail/5857): Set attachment_count unconditionally
       # after the underlying source of negative attachment counts has been
       # resolved and database has been repaired.

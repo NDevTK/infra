@@ -50,7 +50,8 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
       project = we.GetProjectByName(rnc.IngestProjectFromIssue(request.name))
       mc.LookupLoggedInUserPerms(project)
       issue = we.GetIssue(issue_id, allow_viewing_deleted=True)
-    return self.converter.ConvertIssue(issue)
+      migrated_id = we.GetIssueMigratedID(project.project_name, issue.local_id)
+    return self.converter.ConvertIssue(issue, migrated_id)
 
   @monorail_servicer.PRPCMethod
   def BatchGetIssues(self, mc, request):
