@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.chromium.org/luci/common/logging"
@@ -22,7 +23,11 @@ var (
 	ErrInternalServerError = errors.New("Internal Server Error")
 )
 
-// TODO(crbug.com/1474096) - Refactor the code here into Common and Infra layers
+const (
+	chromiumProject    = "chromium/src"
+	chromiumServerHost = "chromium.googlesource.com"
+)
+
 type Client struct {
 	// Refers to findit's cloud project
 	FinditCloudProject string
@@ -217,6 +222,36 @@ func (c *Client) GetCoverageSummary(ctx context.Context, req *api.GetCoverageSum
 	return &api.GetCoverageSummaryResponse{
 		Summary: combinedSummary,
 	}, nil
+}
+
+// getCoverageReportsForLastYear fetches the absolute code coverage reports
+// for the last 365 days. These reports are specific to builder configuration
+// which is supplied to this function as builder and bucket.
+func (c *Client) getCoverageReportsForLastYear(
+	ctx context.Context,
+	bucket string,
+	builder string,
+) ([]entities.PostsubmitReport, error) {
+	records := []entities.PostsubmitReport{}
+	queryFilters := []datastorage.QueryFilter{
+		{Field: "gitiles_commit.project", Operator: "=", Value: chromiumProject},
+		{Field: "gitiles_commit.server_host", Operator: "=", Value: chromiumServerHost},
+		{Field: "bucket", Operator: "=", Value: bucket},
+		{Field: "builder", Operator: "=", Value: builder},
+		{Field: "visible", Operator: "=", Value: true},
+		{Field: "modifier_id", Operator: "=", Value: 0},
+		{Field: "commit_timestamp", Operator: ">", Value: time.Now().Add(-time.Hour * 24 * 365)},
+	}
+
+	if err := c.coverageV1DsClient.Query(
+		ctx, &records, "PostsubmitReport",
+		queryFilters, "-commit_timestamp", 0,
+	); err != nil {
+		logging.Errorf(ctx, "PostsubmitReport: %w", err)
+		return nil, ErrInternalServerError
+	}
+
+	return records, nil
 }
 
 // GetAbsoluteCoverageDataOneYear TO_BE_IMPLEMENTED

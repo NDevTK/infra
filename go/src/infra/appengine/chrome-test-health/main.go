@@ -70,6 +70,12 @@ var (
 	)
 )
 
+const (
+	// Constants related to Coverage related APIs
+	luciBuilderFormat = `^[a-zA-Z0-9\-_.\(\) ]{1,128}$`
+	luciBucketFormat  = `^[a-z0-9\-_.]{1,100}$`
+)
+
 type Client interface {
 	UpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date) error
 	ListComponents(ctx context.Context, req *api.ListComponentsRequest) (*api.ListComponentsResponse, error)
@@ -222,8 +228,8 @@ func (covServer *coverageServer) GetCoverageSummary(ctx context.Context, req *ap
 		[]string{"Gitiles Project", req.GitilesProject, ""},
 		[]string{"Gitiles Ref", req.GitilesRef, ""},
 		[]string{"Gitiles Revision", req.GitilesRevision, ""},
-		[]string{"Builder", req.Builder, `^[a-zA-Z0-9\-_.\(\) ]{1,128}$`},
-		[]string{"Bucket", req.Bucket, `^[a-z0-9\-_.]{1,100}$`},
+		[]string{"Builder", req.Builder, luciBuilderFormat},
+		[]string{"Bucket", req.Bucket, luciBucketFormat},
 	}
 
 	for _, field := range requiredFields {
@@ -255,11 +261,33 @@ func (covServer *coverageServer) GetCoverageSummary(ctx context.Context, req *ap
 	return resp, nil
 }
 
-// GetAbsoluteCoverageDataOneYear TO_BE_IMPLEMENTED
 func (covServer *coverageServer) GetAbsoluteCoverageDataOneYear(
 	ctx context.Context,
 	req *api.GetAbsoluteCoverageDataOneYearRequest,
 ) (*api.GetAbsoluteCoverageDataOneYearResponse, error) {
+	if isBuilderPresent := validatePresence(req.Builder); !isBuilderPresent {
+		return nil, appstatus.Errorf((codes.InvalidArgument), "Builder is a required argument")
+	}
+
+	if isValidBuilder := validateFormat(req.Builder, luciBuilderFormat); !isValidBuilder {
+		return nil, appstatus.Errorf((codes.InvalidArgument), "Builder is not provided in required format")
+	}
+
+	if isBucketPresent := validatePresence(req.Bucket); !isBucketPresent {
+		return nil, appstatus.Errorf((codes.InvalidArgument), "Bucket is a required argument")
+	}
+
+	if isValidBucket := validateFormat(req.Bucket, luciBuilderFormat); !isValidBucket {
+		return nil, appstatus.Errorf((codes.InvalidArgument), "Bucket is not provided in required format")
+	}
+
+	isPathListPresent := validatePresence(req.Paths)
+	isComponentsListPresent := validatePresence(req.Components)
+
+	if !isPathListPresent && !isComponentsListPresent {
+		return nil, appstatus.Errorf((codes.InvalidArgument), "Either paths or components should be specified")
+	}
+
 	return nil, nil
 }
 
