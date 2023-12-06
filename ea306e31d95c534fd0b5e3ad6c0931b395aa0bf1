@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c54ed119_8e0949c5",
+        "filename": "go/src/infra/appengine/chrome-test-health/internal/coverage/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1368332
+      },
+      "writtenOn": "2023-12-06T22:25:22Z",
+      "side": 1,
+      "message": "Please refactor this to split path and component.\n\nYou can likely refactor the summary.Get call to support either or, but there should be two separate calls for getPathCoverageNumbers and getComponentCoverageNumbers",
+      "range": {
+        "startLine": 267,
+        "startChar": 17,
+        "endLine": 267,
+        "endChar": 42
+      },
+      "revId": "ea306e31d95c534fd0b5e3ad6c0931b395aa0bf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a00abe16_588b77c9",
         "filename": "go/src/infra/appengine/chrome-test-health/internal/coverage/client.go",
         "patchSetId": 2
