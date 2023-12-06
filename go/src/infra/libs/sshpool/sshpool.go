@@ -7,6 +7,7 @@ package sshpool
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"log"
 	"sync"
@@ -29,18 +30,23 @@ import (
 //
 // The user should Close the pool after use, to free any SSH Clients in the pool.
 type Pool struct {
-	mu     sync.Mutex
-	pool   map[string][]*ssh.Client
-	config *ssh.ClientConfig
-	wg     sync.WaitGroup
+	mu        sync.Mutex
+	pool      map[string][]*ssh.Client
+	config    *ssh.ClientConfig
+	tlsConfig *tls.Config
+	wg        sync.WaitGroup
 }
 
 // New returns a new Pool. The provided ssh config is used for new SSH
 // connections if pool has none to reuse.
-func New(c *ssh.ClientConfig) *Pool {
+//
+//	config: SSH configuration to configure the new clients.
+//	tlsConfig: Optional TLS configuration to establish SSH connections over TLS channel.
+func New(config *ssh.ClientConfig, tlsConfig *tls.Config) *Pool {
 	return &Pool{
-		pool:   make(map[string][]*ssh.Client),
-		config: c,
+		pool:      make(map[string][]*ssh.Client),
+		config:    config,
+		tlsConfig: tlsConfig,
 	}
 }
 
@@ -52,15 +58,17 @@ func (p *Pool) Get(host string) (*ssh.Client, error) {
 		c := p.pool[host][n]
 		p.pool[host] = p.pool[host][:n]
 		if !verifyClientIsAlive(c) {
-			log.Printf("SSH client for %q is bad, closing it now!\n", host)
+			log.Printf("sshpool Get: SSH client for %q is bad, closing it now!\n", host)
 			p.closeClient(c)
 			continue
 		}
 		return c, nil
 	}
-	log.Printf("Dial new SSH client for %q\n", host)
-	c, err := ssh.Dial("tcp", host, p.config)
-	return c, err
+	log.Printf("sshpool Get: dial new SSH client for %q\n", host)
+	if p.tlsConfig == nil {
+		return ssh.Dial("tcp", host, p.config)
+	}
+	return p.getProxyClient(host)
 }
 
 // verifyClientIsAlive verifies if the client is alive and can continue to use.
@@ -79,12 +87,28 @@ func verifyClientIsAlive(c *ssh.Client) bool {
 	return true
 }
 
+// getProxyClient returns an active SSH client established over TLS connection.
+func (p *Pool) getProxyClient(host string) (*ssh.Client, error) {
+	conn, err := tls.Dial("tcp", host, p.tlsConfig)
+	if err != nil {
+		log.Printf("sshpool getProxyClient: error creating a new TLS connection: %s\n", err)
+		return nil, err
+	}
+	c, chans, reqs, err := ssh.NewClientConn(conn, host, p.config)
+	if err != nil {
+		log.Printf("sshpool getProxyClient: error creating a new SSH connection over TLS channel: %s\n", err)
+		conn.Close()
+		return nil, err
+	}
+	return ssh.NewClient(c, chans, reqs), nil
+}
+
 // GetContext returns a good SSH client within the context timeout.
 func (p *Pool) GetContext(ctx context.Context, host string) (*ssh.Client, error) {
 	for {
 		select {
 		case <-ctx.Done():
-			return nil, fmt.Errorf("sshpool GetWithTimeout: timeout when trying to connect to %s", host)
+			return nil, fmt.Errorf("sshpool GetContext: timeout when trying to connect to %s", host)
 		default:
 			if c, err := p.Get(host); err == nil {
 				return c, err
@@ -137,8 +161,8 @@ func (p *Pool) closeClient(c *ssh.Client) {
 		// Ignore the error returned in case the client is already closed.
 		// Which could happen if the DUT was rebooted, but the ssh.Client
 		// is being put back into the pool.
-		log.Printf("SSHPool close SSH client: started wating!")
+		log.Printf("sshpool closeClient: started waiting")
 		_ = c.Close()
-		log.Printf("SSHPool close SSH client: client closed!")
+		log.Printf("sshpool closeClient: client closed")
 	}()
 }

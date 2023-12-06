@@ -67,8 +67,8 @@ func newTLWServer(ufsService string, dutSSHSigner ssh.Signer, proxySSHSigner ssh
 	}
 	s := &tlwServer{
 		lroMgr:    lro.New(),
-		dutPool:   sshpool.New(getSSHClientConfig(dutSSHSigners)),
-		proxyPool: sshpool.New(getSSHClientConfigForProxy(proxySSHSigner)),
+		dutPool:   sshpool.New(getSSHClientConfig(dutSSHSigners), nil),
+		proxyPool: sshpool.New(getSSHClientConfigForProxy(proxySSHSigner), nil),
 		tMgr:      newTunnelManager(),
 		cFrontend: cache.NewFrontend(ce),
 		ufsClient: ufsClient,

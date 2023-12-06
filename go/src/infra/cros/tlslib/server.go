@@ -106,7 +106,7 @@ func (s *Server) Serve(l net.Listener) error {
 		log.Printf("Failed to initialize tsmon: %s", err)
 	}
 
-	s.clientPool = sshpool.New(s.sshConfig)
+	s.clientPool = sshpool.New(s.sshConfig, nil)
 	defer s.clientPool.Close()
 	s.lroMgr = lro.New()
 	defer s.lroMgr.Close()
