@@ -73,7 +73,7 @@ func callTouchHostd(ctx context.Context, req *tlw.CallTouchHostdRequest, sp ssh.
 	// port forwarding
 	host := localproxy.BuildAddr(req.GetResource())
 
-	sc, err := sp.Get(host)
+	sc, err := sp.Get(ctx, host)
 	if err != nil {
 		return nil, errors.Annotate(err, "unable to establish SSH client").Err()
 	}

@@ -83,7 +83,7 @@ func callServodLabstation(ctx context.Context, req *ServodCallRequest) (*xmlrpc_
 	// Convert hostname to the proxy name used for local when called.
 	host := localproxy.BuildAddr(req.Host)
 
-	sc, err := req.SSHProvider.Get(host)
+	sc, err := req.SSHProvider.Get(ctx, host)
 	if err != nil {
 		return nil, errors.Annotate(err, "call servod labstation").Err()
 	}
