@@ -57,7 +57,7 @@ var targetOverrideModels = map[string]string{
 var targetOverridebyHwid = map[string]string{
 	// Nissa board.
 	"JOXER-ZELG B3B-C3A-Q6B-I2C-C9Y-A9N":         "joxer_ufs",
-	"JOXER-IPBR D4B-B7A-T2D-A4A-D4K-PGA-A9R":     "joxer_ufs",
+	"JOXER-IPBR D4B-B7A-T2D-A4A-D4K-P6A-A9R":     "joxer_ufs",
 	"NIRWEN-ZZCR B2B-B2A-B2A-W7H":                "nivviks_ufs",
 	"NEREID-ZZCR A4B-B2C-E3E-F2A-A2B-48T":        "nereid_hdmi",
 	"PUJJOTEEN-JQII E5B-D2J-E5D-Q2Q-K4E-I5I-A6I": "pujjo_5g",
