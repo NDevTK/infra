@@ -71,6 +71,13 @@ golang/bootstrap-go/${platform} %v
 			cipdDeps += cipdXcodeDep
 		}
 	}
+	// Append build-only dependencies.
+	switch inputs.GetMode() {
+	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_BUILD:
+		if extraBuild := inputs.GetToolsExtraBuild(); extraBuild != "" {
+			cipdDeps += "\n" + extraBuild
+		}
+	}
 	// Append test-only dependencies.
 	switch inputs.GetMode() {
 	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_TEST:
@@ -90,6 +97,10 @@ infra/3pp/tools/%[1]s/${platform} version:%[2]s
 		}
 		if v := inputs.WazeroVersion; v != "" {
 			cipdDeps += fmt.Sprintf(wasmRuntimeDep, "wazero", v)
+		}
+
+		if extraTest := inputs.GetToolsExtraTest(); extraTest != "" {
+			cipdDeps += "\n" + extraTest
 		}
 	}
 

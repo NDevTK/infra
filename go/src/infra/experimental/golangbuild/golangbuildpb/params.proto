@@ -85,6 +85,18 @@ message Inputs {
   // Required.
   string tools_cache = 7;
 
+  // Optional extra build-only and test-only dependencies to install,
+  // expressed as a CIPD ensure file fragment to be appended to the
+  // end of the generated CIPD ensure file. For example:
+  //
+  //  `@Subdir bin
+  //  golang/a-custom-dependency-for-a-specific-repo/${platform} latest`
+  //
+  // These properties try to provide flexible self-service to repository
+  // owners that wish to have additional control over their dependencies.
+  string tools_extra_build = 26;
+  string tools_extra_test = 27;
+
   // Named cache configured on the builder to use as a git clone cache.
   //
   // Required.
