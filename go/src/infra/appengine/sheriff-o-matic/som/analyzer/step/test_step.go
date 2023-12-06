@@ -6,6 +6,8 @@ package step
 
 import (
 	"time"
+
+	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 )
 
 // ArtifactLink is a link to a test artifact left by perf tests.
@@ -40,10 +42,17 @@ type TestWithResult struct {
 	// Statistics for the current segments from changepoint analysis.
 	CurCounts Counts `json:"cur_counts"`
 	// Statistics for the previous segments from changepoint analysis.
-	PrevCounts Counts `json:"prev_counts"`
+	PrevCounts          Counts                     `json:"prev_counts"`
+	LUCIBisectionResult *LUCIBisectionTestAnalysis `json:"luci_bisection_result"`
 }
 
 type Counts struct {
 	UnexpectedResults int64 `json:"unexpected_results"`
 	TotalResults      int64 `json:"total_results"`
+}
+
+type LUCIBisectionTestAnalysis struct {
+	AnalysisID string                   `json:"analysis_id"`
+	Status     string                   `json:"status"`
+	Culprit    *bisectionpb.TestCulprit `json:"culprit"`
 }

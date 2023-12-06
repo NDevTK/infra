@@ -569,7 +569,7 @@ func TestProcessBQResults(t *testing.T) {
 		So(len(got), ShouldEqual, 1)
 		reason := got[0].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "some step",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -645,7 +645,7 @@ func TestProcessBQResults(t *testing.T) {
 		So(len(got), ShouldEqual, 2)
 		reason := got[0].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "some step",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -720,7 +720,7 @@ func TestProcessBQResults(t *testing.T) {
 
 		reason := got[0].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "some step 1",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -731,7 +731,7 @@ func TestProcessBQResults(t *testing.T) {
 
 		reason = got[1].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "some step 2",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -805,7 +805,7 @@ func TestProcessBQResults(t *testing.T) {
 
 		reason := got[0].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "some step 1",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -817,7 +817,7 @@ func TestProcessBQResults(t *testing.T) {
 
 		reason = got[1].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "some step 1",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -892,7 +892,7 @@ func TestProcessBQResults(t *testing.T) {
 
 		reason := got[0].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "performance_test_suite",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -906,7 +906,7 @@ func TestProcessBQResults(t *testing.T) {
 
 		reason = got[1].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "performance_test_suite",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -983,7 +983,7 @@ func TestProcessBQResults(t *testing.T) {
 
 		reason := got[0].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "performance_test_suite",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -998,7 +998,7 @@ func TestProcessBQResults(t *testing.T) {
 
 		reason = got[1].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "performance_test_suite",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -1074,7 +1074,7 @@ func TestProcessBQResults(t *testing.T) {
 		So(len(got), ShouldEqual, 2)
 		reason := got[0].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "some step 1",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -1085,7 +1085,7 @@ func TestProcessBQResults(t *testing.T) {
 
 		reason = got[1].Reason
 		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &bqFailure{
+		So(reason.Raw, ShouldResemble, &BqFailure{
 			Name:            "some step 2",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
@@ -1154,7 +1154,7 @@ func TestProcessBQResults(t *testing.T) {
 			So(len(got), ShouldEqual, 1)
 			reason := got[0].Reason
 			So(reason, ShouldNotBeNil)
-			So(reason.Raw, ShouldResembleProto, &bqFailure{
+			So(reason.Raw, ShouldResembleProto, &BqFailure{
 				Name:            "some step",
 				kind:            "test",
 				severity:        messages.ReliableFailure,
@@ -1233,7 +1233,7 @@ func TestProcessBQResults(t *testing.T) {
 			So(len(got), ShouldEqual, 1)
 			reason := got[0].Reason
 			So(reason, ShouldNotBeNil)
-			So(reason.Raw, ShouldResembleProto, &bqFailure{
+			So(reason.Raw, ShouldResembleProto, &BqFailure{
 				Name:            "some step",
 				kind:            "test",
 				severity:        messages.ReliableFailure,
@@ -1312,7 +1312,7 @@ func TestProcessBQResults(t *testing.T) {
 			So(len(got), ShouldEqual, 1)
 			reason := got[0].Reason
 			So(reason, ShouldNotBeNil)
-			So(reason.Raw, ShouldResembleProto, &bqFailure{
+			So(reason.Raw, ShouldResembleProto, &BqFailure{
 				Name:            "some step",
 				kind:            "test",
 				severity:        messages.ReliableFailure,
@@ -1338,10 +1338,10 @@ func (f byTests) Len() int      { return len(f) }
 func (f byTests) Swap(i, j int) { f[i], f[j] = f[j], f[i] }
 func (f byTests) Less(i, j int) bool {
 	iTests, jTests := []string{}, []string{}
-	for _, t := range f[i].Reason.Raw.(*bqFailure).Tests {
+	for _, t := range f[i].Reason.Raw.(*BqFailure).Tests {
 		iTests = append(iTests, t.TestName)
 	}
-	for _, t := range f[j].Reason.Raw.(*bqFailure).Tests {
+	for _, t := range f[j].Reason.Raw.(*BqFailure).Tests {
 		jTests = append(jTests, t.TestName)
 	}
 

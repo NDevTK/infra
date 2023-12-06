@@ -21,6 +21,7 @@ type CrBug interface {
 // Bisection returns information about failures that LUCI Bisection analyzes
 type Bisection interface {
 	QueryBisectionResults(c context.Context, bbid int64, stepName string) (*bisectionpb.QueryAnalysisResponse, error)
+	BatchGetTestAnalyses(c context.Context, req *bisectionpb.BatchGetTestAnalysesRequest) (*bisectionpb.BatchGetTestAnalysesResponse, error)
 }
 
 // CrRev returns redirects for commit positions.

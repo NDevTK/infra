@@ -36,6 +36,10 @@ func (cl *BisectionClient) QueryBisectionResults(c context.Context, bbid int64, 
 	return res, nil
 }
 
+func (cl *BisectionClient) BatchGetTestAnalyses(c context.Context, req *bisectionpb.BatchGetTestAnalysesRequest) (*bisectionpb.BatchGetTestAnalysesResponse, error) {
+	return cl.ServiceClient.BatchGetTestAnalyses(c, req)
+}
+
 func NewBisectionServiceClient(c context.Context, host string) (bisectionpb.AnalysesClient, error) {
 	t, err := auth.GetRPCTransport(c, auth.AsSelf)
 	if err != nil {

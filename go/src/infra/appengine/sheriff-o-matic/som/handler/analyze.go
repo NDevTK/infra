@@ -7,6 +7,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/http"
 	"sort"
 	"strconv"
@@ -21,9 +22,11 @@ import (
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/appengine"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/sheriff-o-matic/som/analyzer"
+	"infra/appengine/sheriff-o-matic/som/analyzer/step"
 	"infra/appengine/sheriff-o-matic/som/client"
 	"infra/appengine/sheriff-o-matic/som/model"
 	"infra/appengine/sheriff-o-matic/som/model/gen"
@@ -208,15 +211,98 @@ func getKeyForAlert(ctx context.Context, bf *messages.BuildFailure, tree string)
 	return strings.Join(strs, model.AlertKeySeparator)
 }
 
-func attachLuciBisectionResults(c context.Context, failures []*messages.BuildFailure, bisectionClient client.Bisection) error {
-	// TODO (nqmtuan): supports queries for a list of bbids.
-	if bisectionClient == nil {
-		return fmt.Errorf("bisectionClient is nil")
+func attachLUCIBisectionTestAnalysesResults(c context.Context, failures []*messages.BuildFailure, bisectionClient client.Bisection) error {
+	testfailuresForProjects := map[string][]*step.TestWithResult{}
+	for _, f := range failures {
+		if f.Reason == nil || f.Reason.Kind() != "test" {
+			continue
+		}
+		project := f.Builders[0].Project
+		// Bisection only support chromium and chrome at this moment.
+		if project != "chromium" && project != "chrome" {
+			continue
+		}
+		if _, ok := testfailuresForProjects[project]; !ok {
+			testfailuresForProjects[project] = []*step.TestWithResult{}
+		}
+		tests := f.Reason.Raw.(*analyzer.BqFailure).Tests
+		for i := range tests {
+			// Skip non-deterministically failing tests.
+			// Because there won't be a bisection for test that is not failing deterministically.
+			// This is an optimization to reduce the call volume to Bisection.
+			if tests[i].CurCounts.UnexpectedResults != tests[i].CurCounts.TotalResults {
+				continue
+			}
+			// Append pointer to the test. Bisection result will be attached using this pointer.
+			testfailuresForProjects[project] = append(testfailuresForProjects[project], &tests[i])
+		}
 	}
+	for p, tests := range testfailuresForProjects {
+		if len(tests) == 0 {
+			continue
+		}
+		mask := &fieldmaskpb.FieldMask{Paths: []string{"analysis_id", "status", "culprit"}}
+		testAnalyses, err := batchGetLUCIBisectionTestAnalyses(c, p, tests, mask, bisectionClient)
+		if err != nil {
+			return errors.Annotate(err, "batch get test analyses").Err()
+		}
+		if len(testAnalyses) != len(tests) {
+			return errors.Reason("number of test analyses(%d) in response doesn't equal number of tests(%d) for project %s", len(testAnalyses), len(tests), p).Err()
+		}
+		// Attach test analyses to tests.
+		for i, analysis := range testAnalyses {
+			if analysis == nil {
+				continue
+			}
+			tests[i].LUCIBisectionResult = &step.LUCIBisectionTestAnalysis{
+				AnalysisID: fmt.Sprint(analysis.AnalysisId),
+				Status:     analysis.Status.String(),
+				Culprit:    analysis.Culprit,
+			}
+		}
+	}
+	return nil
+}
+
+// BatchGetLUCIBisectionTestAnalyses calls LUCI bisection BatchGetTestAnalyses RPC to get test bisection result for each test.
+// The returned test analyses for each test are in the order of tests from the input.
+func batchGetLUCIBisectionTestAnalyses(ctx context.Context, project string, tests []*step.TestWithResult, mask *fieldmaskpb.FieldMask, client client.Bisection) ([]*bisectionpb.TestAnalysis, error) {
+	// Split tests into multiple slices, each has at most 100 tests.
+	// Because BatchGetTestAnalyses enforce at most 100 test failures in one request.
+	batchSize := 100
+	batchedTests := [][]*step.TestWithResult{}
+	for i := 0; i < len(tests); i += batchSize {
+		batchedTests = append(batchedTests, tests[i:int(math.Min(float64(len(tests)), float64(i+batchSize)))])
+	}
+	// Call BatchGetTestAnalyses for each batch.
+	results := make([]*bisectionpb.TestAnalysis, 0, len(tests))
+	for _, batch := range batchedTests {
+		tf := []*bisectionpb.BatchGetTestAnalysesRequest_TestFailureIdentifier{}
+		for _, t := range batch {
+			tf = append(tf, &bisectionpb.BatchGetTestAnalysesRequest_TestFailureIdentifier{
+				TestId:      t.TestID,
+				VariantHash: t.VariantHash,
+				RefHash:     t.RefHash,
+			})
+		}
+		resp, err := client.BatchGetTestAnalyses(ctx, &bisectionpb.BatchGetTestAnalysesRequest{
+			Project:      project,
+			TestFailures: tf,
+			Fields:       mask,
+		})
+		if err != nil {
+			return nil, errors.Annotate(err, "batch get test analyses for project %s", project).Err()
+		}
+		results = append(results, resp.GetTestAnalyses()...)
+	}
+	return results, nil
+}
+
+func attachLUCIBisectionCompileFailureAnalyses(c context.Context, failures []*messages.BuildFailure, bisectionClient client.Bisection) error {
+	// TODO (nqmtuan): supports queries for a list of bbids.
 	var errs []error
 	for _, bf := range failures {
 		stepName := bf.StepAtFault.Step.Name
-		// Currently LUCI Bisection only supports compile failures.
 		if stepName != "compile" {
 			continue
 		}
@@ -262,6 +348,23 @@ func attachLuciBisectionResults(c context.Context, failures []*messages.BuildFai
 	}
 	if len(errs) > 0 {
 		return errors.NewMultiError(errs...)
+	}
+	return nil
+}
+
+func attachLuciBisectionResults(c context.Context, failures []*messages.BuildFailure, bisectionClient client.Bisection) error {
+	if bisectionClient == nil {
+		return fmt.Errorf("bisectionClient is nil")
+	}
+	var errs []error
+	if err := attachLUCIBisectionCompileFailureAnalyses(c, failures, bisectionClient); err != nil {
+		errs = append(errs, err)
+	}
+	if err := attachLUCIBisectionTestAnalysesResults(c, failures, bisectionClient); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) > 0 {
+		return errors.Flatten(errors.NewMultiError(errs...))
 	}
 	return nil
 }

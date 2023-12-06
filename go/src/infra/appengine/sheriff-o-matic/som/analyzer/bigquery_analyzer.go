@@ -167,7 +167,7 @@ type bqBuilder struct {
 // This type is a catch-all for every kind of failure. In a better,
 // simpler design we wouldn't have to use this but it's here to make
 // the transition from previous analyzer logic easier.
-type bqFailure struct {
+type BqFailure struct {
 	Name            string `json:"step"`
 	kind            string
 	severity        messages.Severity
@@ -175,19 +175,24 @@ type bqFailure struct {
 	NumFailingTests int64                 `json:"num_failing_tests"`
 }
 
-func (b *bqFailure) Signature() string {
+func (b *BqFailure) Signature() string {
 	return b.Name
 }
 
-func (b *bqFailure) Kind() string {
+func (b *BqFailure) Kind() string {
 	return b.kind
 }
 
-func (b *bqFailure) Severity() messages.Severity {
+func (b *BqFailure) WithKind(kind string) *BqFailure {
+	b.kind = kind
+	return b
+}
+
+func (b *BqFailure) Severity() messages.Severity {
 	return b.severity
 }
 
-func (b *bqFailure) Title(bses []*messages.BuildStep) string {
+func (b *BqFailure) Title(bses []*messages.BuildStep) string {
 	f := bses[0]
 	prefix := fmt.Sprintf("%s failing", f.Step.Name)
 
@@ -380,7 +385,7 @@ func processBQResults(ctx context.Context, failureRows []failureRow) ([]*message
 		regressionRanges := getRegressionRanges(ab.LatestPassingRev, ab.FirstFailingRev)
 
 		// Process tests.
-		reason := &bqFailure{
+		reason := &BqFailure{
 			Name:     r.StepName,
 			kind:     "basic",
 			severity: messages.ReliableFailure,
