@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
     apt-get dist-upgrade -y && \
-    apt-get install -y puppet
+    apt-get install -y puppet=3.8.5-2ubuntu0.1
 
 RUN apt-get autoremove && \
     apt-get autoclean && \
