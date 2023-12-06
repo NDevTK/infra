@@ -22,10 +22,15 @@ clean:
 
 backend-dev:
 	go run main.go \
-	-cloud-project $(CHROME_TEST_HEALTH_CLOUD_PROJECT) \
-	-findit-cloud-project ${FINDIT_CLOUD_PROJECT} \
+	-cloud-project "chrome-test-health-staging" \
+	-findit-cloud-project "findit-for-me" \
 	-auth-service-host chrome-infra-auth-dev.appspot.com \
-	-encrypted-cookies-expose-state-endpoint
+	-encrypted-cookies-expose-state-endpoint \
+	-primary-tink-aead-key sm://tink-aead-primary \
+	-encrypted-cookies-client-id 961841358-3c87679tdm982jrrpebv04a31bl3ibgm.apps.googleusercontent.com \
+	-encrypted-cookies-client-secret sm://oauth-client-secret \
+	-encrypted-cookies-redirect-url http://localhost:8800/auth/openid/callback \
+	-frontend-client-id 961841358-3c87679tdm982jrrpebv04a31bl3ibgm.apps.googleusercontent.com
 
 frontend-dev:
 	cd frontend && npm start

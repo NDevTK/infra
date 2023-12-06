@@ -26,6 +26,7 @@ var (
 const (
 	chromiumProject    = "chromium/src"
 	chromiumServerHost = "chromium.googlesource.com"
+	chromiumRef        = "refs/heads/main"
 )
 
 type Client struct {
@@ -55,6 +56,12 @@ func (c *Client) Init(ctx context.Context) error {
 	c.coverageV2DsClient = covV2DsClient
 
 	return nil
+}
+
+type CoveragePerDate struct {
+	date    string
+	covered float64
+	total   float64
 }
 
 // getProjectConfig extracts out the code coverage default settings from the
@@ -252,6 +259,60 @@ func (c *Client) getCoverageReportsForLastYear(
 	}
 
 	return records, nil
+}
+
+// getCoverageNumbersForPath fetches absolute code coverage numbers for a given
+// path/component for a given set of builder config & commit hashes. It returns
+// per date numbers.
+func (c *Client) getCoverageNumbersForPath(
+	ctx context.Context,
+	reports []entities.PostsubmitReport,
+	path string,
+	bucket string,
+	builder string,
+	isComponent bool,
+) []CoveragePerDate {
+	dataType := "dirs"
+	if isComponent {
+		dataType = "components"
+	}
+
+	coverageNumbers := []CoveragePerDate{}
+	for _, report := range reports {
+		summary := entities.SummaryCoverageData{}
+		err := summary.Get(
+			ctx, c.coverageV1DsClient,
+			chromiumServerHost,
+			chromiumProject,
+			chromiumRef,
+			report.GitilesCommitRevision,
+			dataType,
+			path,
+			bucket,
+			builder,
+		)
+		if err != nil {
+			continue
+		}
+		coverageDetailsStruct := structpb.Struct{}
+		err = getStructFromCompressedData(summary.Data, &coverageDetailsStruct)
+		if err != nil {
+			continue
+		}
+		metrics := coverageDetailsStruct.AsMap()
+		for _, metric := range metrics["summaries"].([]interface{}) {
+			metricMap := metric.(map[string]interface{})
+			if metricMap["name"] == "line" {
+				covNumber := CoveragePerDate{
+					date:    report.CommitTimestamp.Format("2006-01-02"),
+					covered: metricMap["covered"].(float64),
+					total:   metricMap["total"].(float64),
+				}
+				coverageNumbers = append(coverageNumbers, covNumber)
+			}
+		}
+	}
+	return coverageNumbers
 }
 
 // GetAbsoluteCoverageDataOneYear TO_BE_IMPLEMENTED
