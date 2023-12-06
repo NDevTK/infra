@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LitElement, html, css} from 'lit-element';
+import { LitElement, html, css } from 'lit-element';
+import 'elements/framework/mr-comment-content/mr-comment-content.js';
+
+import { connectStore } from 'reducers/base.js';
+import * as projectV0 from 'reducers/projectV0.js';
+import * as userV0 from 'reducers/userV0.js';
 
 // URL where announcements are fetched from.
 const ANNOUNCEMENT_SERVICE =
@@ -20,9 +25,19 @@ const FETCH_HEADERS = Object.freeze({
 export const REFRESH_TIME_MS = 5 * 60 * 1000;
 
 /**
+ * @type {Array<Announcement>} A list of hardcodded announcements for Monorail.
+ */
+export const HARDCODED_ANNOUNCEMENTS = [];
+
+/**
  * @typedef {Object} Announcement
- * @property {string} id
+ * @property {string=} id
  * @property {string} messageContent
+ * @property {Array<string>=} projects Monorail extension for hard-coded
+ *    announcements. Specifies the names of projects the announcement will
+ *    occur in.
+ * @property {Array<string>=} groups Monorail extension for hard-coded
+ *    announcements. Specifies email groups the announces will show up in.
  */
 
 /**
@@ -36,7 +51,7 @@ export const REFRESH_TIME_MS = 5 * 60 * 1000;
  *
  * @customElement chops-announcement
  */
-export class ChopsAnnouncement extends LitElement {
+class _ChopsAnnouncement extends LitElement {
   /** @override */
   static get styles() {
     return css`
@@ -44,7 +59,7 @@ export class ChopsAnnouncement extends LitElement {
         display: block;
         width: 100%;
       }
-      p {
+      mr-comment-content {
         display: block;
         color: #222;
         font-size: 13px;
@@ -65,17 +80,29 @@ export class ChopsAnnouncement extends LitElement {
       return html`<p><strong>Error: </strong>${this._error}</p>`;
     }
     return html`
-      ${this._announcements.map(
-      ({messageContent}) => html`<p>${messageContent}</p>`)}
+      ${this._processedAnnouncements().map(
+      ({ messageContent }) => html`
+          <mr-comment-content
+            .content=${messageContent}>
+          </mr-comment-content>`)}
     `;
   }
 
   /** @override */
   static get properties() {
     return {
-      service: {type: String},
-      _error: {type: String},
-      _announcements: {type: Array},
+      service: { type: String },
+      additionalAnnouncements: { type: Array },
+
+      // Properties from the currently logged in user, usually feched through
+      // Redux.
+      currentUserName: { type: String },
+      userGroups: { type: Array },
+      currentProject: { type: String },
+
+      // Private properties managing state from requests to Chops Dash.
+      _error: { type: String },
+      _announcements: { type: Array },
     };
   }
 
@@ -85,6 +112,9 @@ export class ChopsAnnouncement extends LitElement {
 
     /** @type {string} */
     this.service = undefined;
+    /** @type {Array<Announcement>} */
+    this.additionalAnnouncements = HARDCODED_ANNOUNCEMENTS;
+
     /** @type {string} */
     this._error = undefined;
     /** @type {Array<Announcement>} */
@@ -135,12 +165,12 @@ export class ChopsAnnouncement extends LitElement {
    */
   async refresh() {
     try {
-      const {announcements = []} = await this.fetch(this.service);
+      const { announcements = [] } = await this.fetch(this.service);
       this._error = undefined;
       this._announcements = announcements;
     } catch (e) {
       this._error = e.message;
-      this._announcements = [];
+      this._announcements = HARDCODED_ANNOUNCEMENTS;
     }
   }
 
@@ -176,6 +206,64 @@ export class ChopsAnnouncement extends LitElement {
 
     return JSON.parse(text.substr(XSSI_PREFIX.length));
   }
+
+  _processedAnnouncements() {
+    const announcements = [...this.additionalAnnouncements, ...this._announcements];
+
+    // Only show announcements relevant to the project the user is viewing and
+    // the group the user is part of, if applicable.
+    return announcements.filter(({ groups, projects }) => {
+      if (groups && groups.length && !this._isUserInGroups(groups,
+        this.userGroups, this.currentUserName)) {
+        return false;
+      }
+      if (projects && projects.length && !this._isViewingProject(projects,
+        this.currentProject)) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  /**
+   * Helper to check if the user is a member of the allowed groups.
+   * @param {Array<string>} allowedGroups
+   * @param {Array<{{userId: string, displayName: string}}>} userGroups
+   * @param {string} userEmail
+   */
+  _isUserInGroups(allowedGroups, userGroups, userEmail) {
+    const userGroupSet = new Set(userGroups.map(
+        ({ displayName }) => displayName.toLowerCase()));
+    return allowedGroups.find((group) => {
+      group = group.toLowerCase();
+
+      // Handle custom groups in Monorail like everyone@google.com
+      if (group.startsWith('everyone@')) {
+        let [_, suffix] = group.split('@');
+        suffix = '@' + suffix;
+        return userEmail.endsWith(suffix);
+      }
+
+      return userGroupSet.has(group);
+    });
+  }
+
+  _isViewingProject(projects, currentProject) {
+    return projects.find((project = "") => project.toLowerCase() === currentProject.toLowerCase());
+  }
 }
 
+/** Redux-connected version of _ChopsAnnouncement. */
+export class ChopsAnnouncement extends connectStore(_ChopsAnnouncement) {
+  /** @override */
+  stateChanged(state) {
+    const { displayName, groups } = userV0.currentUser(state);
+    this.currentUserName = displayName;
+    this.userGroups = groups;
+
+    this.currentProject = projectV0.viewedProjectName(state);
+  }
+}
+
+customElements.define('chops-announcement-base', _ChopsAnnouncement);
 customElements.define('chops-announcement', ChopsAnnouncement);

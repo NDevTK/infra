@@ -9,10 +9,21 @@ import sinon from 'sinon';
 let element;
 let clock;
 
+function assertRendersMessage(message) {
+  const messageContainer = element.shadowRoot.querySelector('mr-comment-content');
+  assert.include(messageContainer.content, message);
+}
+
+function assertDoesNotRender() {
+  assert.equal(0, element.shadowRoot.children.length);
+}
+
 describe('chops-announcement', () => {
   beforeEach(() => {
-    element = document.createElement('chops-announcement');
+    element = document.createElement('chops-announcement-base');
     document.body.appendChild(element);
+
+    element.additionalAnnouncements = [];
 
     clock = sinon.useFakeTimers({
       now: new Date(0),
@@ -30,10 +41,6 @@ describe('chops-announcement', () => {
     clock.restore();
 
     window.fetch.restore();
-  });
-
-  it('initializes', () => {
-    assert.instanceOf(element, ChopsAnnouncement);
   });
 
   it('does not request announcements when no service specified', async () => {
@@ -139,7 +146,8 @@ describe('chops-announcement', () => {
 
     assert.deepEqual(element._announcements,
         [{id: '1234', messageContent: 'test thing'}]);
-    assert.include(element.shadowRoot.textContent, 'test thing');
+
+    assertRendersMessage('test thing');
   });
 
   it('renders empty on empty announcement', async () => {
@@ -154,7 +162,7 @@ describe('chops-announcement', () => {
     await element.updateComplete;
 
     assert.deepEqual(element._announcements, []);
-    assert.equal(0, element.shadowRoot.children.length);
+    assertDoesNotRender()
   });
 
   it('fetch returns response data', async () => {
@@ -190,5 +198,86 @@ describe('chops-announcement', () => {
       assert.include(e.message,
           'Something went wrong while fetching announcements');
     }
+  });
+
+  describe('additional announcement handlings', () => {
+    beforeEach(() => {
+      sinon.stub(element, 'fetch');
+      element.fetch.returns({});
+      element.service = 'monorail';
+    });
+
+    it('renders additional announcement', async () => {
+      element.additionalAnnouncements = [{'messageContent': 'test thing'}];
+      await element.updateComplete;
+
+      assertRendersMessage('test thing');
+    });
+
+    it('renders when user is in group', async () => {
+      element.additionalAnnouncements = [
+        {'messageContent': 'test thing', 'groups': ['hello@group.com']}
+      ];
+      element.userGroups = [
+        {"userId": "12344", "displayName": "hello@group.com"}];
+      await element.updateComplete;
+
+      assertRendersMessage('test thing');
+    });
+
+    it('does not render when user is not in group', async () => {
+      element.additionalAnnouncements = [
+        {'messageContent': 'test thing', 'groups': ['hello@group.com']}
+      ];
+      element.userGroups = [
+        {"userId": "12344", "displayName": "hello@othergroup.com"}];
+      await element.updateComplete;
+
+      assertDoesNotRender();
+    });
+
+    it('renders when user is in everyone@ group', async () => {
+      element.additionalAnnouncements = [
+        {'messageContent': 'test thing', 'groups': ['everyone@world.com']}
+      ];
+      element.userGroups = [
+        {"userId": "12344", "displayName": "hello@group.com"}];
+      element.currentUserName = "hello@world.com";
+      await element.updateComplete;
+
+      assertRendersMessage('test thing');
+    });
+
+    it('does not renders when user is not in everyone@ group', async () => {
+      element.additionalAnnouncements = [
+        {'messageContent': 'test thing', 'groups': ['everyone@word.com']}
+      ];
+      element.userGroups = [
+        {"userId": "12344", "displayName": "hello@world.com"}];
+      element.currentUserName = "hello@world.com";
+      await element.updateComplete;
+
+      assertDoesNotRender();
+    });
+
+    it('renders when viewing referenced project', async () => {
+      element.additionalAnnouncements = [
+        {'messageContent': 'test thing', 'projects': ['chromium']}];
+      element.currentProject = 'chromium';
+
+      await element.updateComplete;
+
+      assertRendersMessage('test thing');
+    });
+
+    it('does not render when not viewing referenced project', async () => {
+      element.additionalAnnouncements = [
+        {'messageContent': 'test thing', 'projects': ['chromium']}];
+      element.currentProject = 'chrome';
+
+      await element.updateComplete;
+
+      assertDoesNotRender();
+    });
   });
 });
