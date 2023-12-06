@@ -115,6 +115,8 @@ func updateAssetHelper(ctx context.Context, iv2assetinfo *ufspb.AssetInfo) (*ufs
 			return nil, err
 		}
 		return res[0], nil
+	} else {
+		logging.Debugf(ctx, "updateAssetHelper - No update for %v. Got: %v", ufsAsset.GetName(), iv2assetinfo)
 	}
 	// No update required
 	return nil, nil
