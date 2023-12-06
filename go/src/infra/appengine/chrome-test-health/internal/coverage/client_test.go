@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/datastore"
 	. "github.com/smartystreets/goconvey/convey"
@@ -593,5 +594,52 @@ func TestGetCoverageReportsForLastYear(t *testing.T) {
 		So(err, ShouldNotBeNil)
 		So(err, ShouldResemble, ErrInternalServerError)
 		So(reports, ShouldBeNil)
+	})
+}
+
+func TestGetCoverageNumbersForPath(t *testing.T) {
+	t.Parallel()
+	client := Client{}
+	ctx := context.Background()
+
+	Convey("Should return coverage numbers per day for the path", t, func() {
+		summaryData := getMockSummaryData()
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Get",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"SummaryCoverageData",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+				if key.(string) != summaryData.Key.Name {
+					return ErrEntityNotFound
+				}
+
+				res := reflect.ValueOf(result).Elem()
+				res.Set(reflect.ValueOf(summaryData).Elem())
+				return nil
+			},
+		)
+		client.coverageV1DsClient = mockDataClient
+
+		reports := []entities.PostsubmitReport{*getMockPostsubmitReport()[0]}
+		t := time.Date(2009, 11, 17, 20, 34, 58, 0, time.UTC)
+		reports[0].GitilesCommitRevision = "03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a"
+		reports[0].CommitTimestamp = t
+
+		data := client.getCoverageNumbersForPath(ctx, reports, "//", "ci", "linux-code-coverage", false)
+		So(data, ShouldHaveLength, 1)
+		expectedData := []CoveragePerDate{
+			{
+				date:    "2009-11-17",
+				covered: 123,
+				total:   300,
+			},
+		}
+		So(data, ShouldResemble, expectedData)
 	})
 }
