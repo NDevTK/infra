@@ -110,8 +110,10 @@ def _run_vet(package_root):
   return _print_and_run(command)
 
 
-def _run_tests(package_root):
+def run_tests(package_root):
   """Runs 'go test <package_root>/...'.
+
+  Exported symbol because this function is used outside this repo.
 
   Returns:
     0 if all tests pass..
@@ -157,7 +159,7 @@ def run_all(package_root):
   results = [
     _run_build(package_root),
     _run_vet(package_root),
-    _run_tests(package_root),
+    run_tests(package_root),
   ]
 
   for res in results:
