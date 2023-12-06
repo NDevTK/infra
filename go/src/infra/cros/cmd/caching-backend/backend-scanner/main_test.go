@@ -26,7 +26,7 @@ func TestConfigTemplate(t *testing.T) {
 				CacheSizeInGB:     100,
 				Port:              1234,
 				L7Port:            4321,
-				L7Servers:         []Backend{{"1.1.1.1", false}, {"1.1.2.2.", true}, {"2.2.2.2", false}},
+				L7Servers:         []Backend{{"1.1.1.1", false}, {"2.2.2.2", false}},
 				OtelTraceEndpoint: "http://localhost:5678",
 			},
 			wantLines: []string{

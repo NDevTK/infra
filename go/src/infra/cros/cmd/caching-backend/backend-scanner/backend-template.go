@@ -77,11 +77,11 @@ http {
 
   upstream l7_upstream {
     hash $uri$is_args$args consistent;
-    # For bootstrapping.
-    server downloader-svc backup;
 {{ range .L7Servers }}
-    {{if .Terminating}}{{continue}}{{end}}
     server {{ .IP }}:{{ $.L7Port }};
+{{else}}
+    # For bootstrapping.
+    server downloader-svc;
 {{ end }}
   }
   server {

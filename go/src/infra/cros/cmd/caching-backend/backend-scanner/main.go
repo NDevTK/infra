@@ -149,7 +149,7 @@ func (s *backendScanner) scanOnce() error {
 	}
 	log.Printf("Found backends (app=%s): %+v", s.appLabel, backends)
 
-	s.backendConf.L7Servers = backends
+	s.backendConf.L7Servers = filterRunning(backends)
 	nc, err := genConfig("nginx", nginxTemplate, s.backendConf)
 	if err != nil {
 		return fmt.Errorf("scan once: %w", err)
@@ -174,6 +174,17 @@ func (s *backendScanner) scanOnce() error {
 		return fmt.Errorf("update: %w", err)
 	}
 	return nil
+}
+
+// filterRunning gets the backends which are running.
+func filterRunning(backends []Backend) []Backend {
+	var r []Backend
+	for _, b := range backends {
+		if !b.Terminating {
+			r = append(r, b)
+		}
+	}
+	return r
 }
 
 // regularlyScan scans at the specified interval duration.
