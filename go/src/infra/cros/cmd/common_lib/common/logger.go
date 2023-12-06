@@ -61,12 +61,12 @@ func (li *localLoggerImpl) LogCall(l logging.Level, calldepth int, format string
 	if l < li.level {
 		return
 	}
+	li.Lock()
 	if len(li.fields) > 0 {
 		text := li.formatWithStepHeaders(format, args)
 		format = strings.Replace(text, "%", "%%", -1)
 		args = nil
 	}
-	li.Lock()
 	defer li.Unlock()
 	li.l.ExtraCalldepth = (calldepth + 1)
 	switch l {
