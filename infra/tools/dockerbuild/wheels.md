@@ -10022,6 +10022,18 @@ wheel: <
 
 * *universal*
 
+### 3.0.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/uritemplate-py2_py3"
+  version: "version:3.0.1"
+>
+```
+
+
+* *universal*
+
 ## **uritools-py3**
 
 ### 4.0.1

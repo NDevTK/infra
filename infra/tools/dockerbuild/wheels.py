@@ -2179,6 +2179,7 @@ SPECS.update({
         Universal('typing-extensions', '4.3.0', pyversions=['py3']),
         Universal('typing-inspect', '0.7.1', pyversions=['py3']),
         Universal('uritemplate', '3.0.0'),
+        Universal('uritemplate', '3.0.1'),
         Universal('uritools', '4.0.1',  pyversions=['py3']),
         Universal('urllib3', '1.22'),
         Universal('urllib3', '1.24.1'),
