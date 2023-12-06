@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package attacheddevice
 
 import (
@@ -40,6 +44,7 @@ var expectedDimensions = swarming.Dimensions{
 	"label-model":               {"dummy_model"},
 	"label-board":               {"dummy_board"},
 	"serial_number":             {"1234567890"},
+	"label-device-stable":       {"True"},
 }
 
 func TestConvertAttachedDeviceData(t *testing.T) {

@@ -1,6 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 // Package attacheddevice implements conversion of attached device labels to
 // Swarming dimensions.
 package attacheddevice
@@ -15,6 +16,8 @@ func Convert(attachedDeviceData *ufsapi.AttachedDeviceData) swarming.Dimensions 
 	dims := make(swarming.Dimensions)
 	machine := attachedDeviceData.GetMachine()
 	machineLSE := attachedDeviceData.GetLabConfig()
+	// Phones are always stable. See b:312504830 for details.
+	dims["label-device-stable"] = []string{"True"}
 	// Android DUT id and name.
 	if name := machineLSE.GetHostname(); name != "" {
 		dims["dut_id"] = []string{name}
