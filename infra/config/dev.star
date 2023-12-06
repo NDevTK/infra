@@ -339,6 +339,9 @@ adhoc_builder(
         ],
     },
     schedule = "with 10m interval",
+    experiments = {
+        "luci.buildbucket.backend_alt": 50,
+    },
 )
 
 adhoc_builder(
