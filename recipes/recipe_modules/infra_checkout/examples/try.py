@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import textwrap
+
 from recipe_engine.post_process import DropExpectation
 
 from PB.go.chromium.org.luci.buildbucket.proto.common import GerritChange
@@ -11,6 +13,7 @@ PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 DEPS = [
     'infra_checkout',
     'recipe_engine/buildbucket',
+    'recipe_engine/file',
     'recipe_engine/platform',
     'recipe_engine/raw_io',
     'depot_tools/gerrit',
@@ -25,7 +28,8 @@ def RunSteps(api):
   if api.platform.is_linux:
     with co.go_env():
       co.run_presubmit()
-      api.infra_checkout.apply_golangci_lint(co)
+      api.infra_checkout.apply_golangci_lint(co,
+                                             co.path.join('infra/go/src/infra'))
 
   change = GerritChange(
       host='host', project='infra/infra', change=1234, patchset=5)
@@ -64,4 +68,10 @@ def GenTests(api):
       git_repo='https://chromium.googlesource.com/infra/infra',
   ) + api.step_data('get change list (3)',
                     api.raw_io.stream_output_text('go/src/infra/main.go')) +
-         api.post_process(DropExpectation))
+         api.step_data(
+             'read .go-lintable',
+             api.file.read_text(
+                 textwrap.dedent("""
+                 [section]
+                   paths = .
+                 """))) + api.post_process(DropExpectation))

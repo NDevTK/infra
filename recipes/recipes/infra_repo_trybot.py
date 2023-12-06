@@ -60,9 +60,9 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
   co.gclient_runhooks()
 
   if run_lint:
-    with api.context(
-        cwd=co.path.join('infra', 'go', 'src', 'infra')), co.go_env():
-      api.infra_checkout.apply_golangci_lint(co, 'go/src/infra/')
+    with co.go_env():
+      api.infra_checkout.apply_golangci_lint(co,
+                                             co.path.join('infra/go/src/infra'))
     return
 
   # Analyze the CL to skip unnecessary tests.
