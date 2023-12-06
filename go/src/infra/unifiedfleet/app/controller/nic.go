@@ -145,10 +145,9 @@ func UpdateNic(ctx context.Context, nic *ufspb.Nic, mask *field_mask.FieldMask) 
 }
 
 func verifyNewMachine(ctx context.Context, newMachineName string) (*ufspb.Machine, error) {
-	// Get browser machine to associate the nic
-	machine, err := getBrowserMachine(ctx, newMachineName)
+	machine, err := registration.GetMachine(ctx, newMachineName)
 	if err != nil {
-		return nil, errors.Annotate(err, "UpdateNic - failed to get browser machine %s", newMachineName).Err()
+		return nil, errors.Annotate(err, "UpdateNic - unable to get machine %s", newMachineName).Err()
 	}
 	// check permission for the new machine realm
 	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, machine.GetRealm()); err != nil {
