@@ -4,6 +4,9 @@
 [submodule "luci"]
 	path = luci
 	url = https://chromium.googlesource.com/infra/luci/luci-py
+[submodule "recipes-py"]
+	path = recipes-py
+	url = https://chromium.googlesource.com/infra/luci/recipes-py
 [submodule "go/src/go.chromium.org/luci"]
 	path = go/src/go.chromium.org/luci
 	url = https://chromium.googlesource.com/infra/luci/luci-go
