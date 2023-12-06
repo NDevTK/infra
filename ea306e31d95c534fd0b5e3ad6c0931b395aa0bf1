@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a00abe16_588b77c9",
+        "filename": "go/src/infra/appengine/chrome-test-health/internal/coverage/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1368332
+      },
+      "writtenOn": "2023-12-06T21:25:34Z",
+      "side": 1,
+      "message": "Please add a TODO here to refactor this s.t. we don\u0027t need to instantiate the object to make the Get call. The Get call should likely return the obj and err, and the user should be able to just check that err.",
+      "range": {
+        "startLine": 282,
+        "startChar": 2,
+        "endLine": 282,
+        "endChar": 43
+      },
+      "revId": "ea306e31d95c534fd0b5e3ad6c0931b395aa0bf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53c1960c_91d9e17c",
+        "filename": "go/src/infra/appengine/chrome-test-health/internal/coverage/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1368332
+      },
+      "writtenOn": "2023-12-06T21:25:34Z",
+      "side": 1,
+      "message": "Is it guaranteed that these keys are present? If not, they will throw keyerror here, so you may want to add the check to make sure it\u0027s present\n\n```\nif v, ok :\u003d metrics[\"summaries\"]; ok {\n  ...\n}\n```",
+      "range": {
+        "startLine": 303,
+        "startChar": 34,
+        "endLine": 303,
+        "endChar": 43
+      },
+      "revId": "ea306e31d95c534fd0b5e3ad6c0931b395aa0bf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77c6b4a3_97e8ff22",
+        "filename": "go/src/infra/appengine/chrome-test-health/internal/coverage/client_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 605,
+      "author": {
+        "id": 1368332
+      },
+      "writtenOn": "2023-12-06T21:25:34Z",
+      "side": 1,
+      "message": "Please add a test for when data is not formatted correctly.",
+      "revId": "ea306e31d95c534fd0b5e3ad6c0931b395aa0bf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
