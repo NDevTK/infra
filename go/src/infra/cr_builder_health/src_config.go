@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math"
 	"sort"
 	"strings"
 
@@ -137,7 +136,9 @@ func compareThresholdsHelper(row *Row, problemSpec *ProblemSpec, metric *Metric)
 		return
 	}
 
-	metric.HealthScore = int(math.Min(HEALTHY_SCORE, float64(metric.HealthScore)))
+	if metric.HealthScore == UNSET_SCORE {
+		metric.HealthScore = HEALTHY_SCORE
+	}
 	if metric.Value > metric.Threshold {
 		metric.HealthScore = problemSpec.Score
 		row.HealthScore = problemSpec.Score
