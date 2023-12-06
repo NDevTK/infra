@@ -55,6 +55,14 @@ func (ccm *coverageClientMock) GetCoverageSummary(ctx context.Context, req *api.
 	return &api.GetCoverageSummaryResponse{}, nil
 }
 
+// GetAbsoluteCoverageDataOneYear TO_BE_IMPLEMENTED
+func (ccm *coverageClientMock) GetAbsoluteCoverageDataOneYear(
+	ctx context.Context,
+	req *api.GetAbsoluteCoverageDataOneYearRequest,
+) (*api.GetAbsoluteCoverageDataOneYearResponse, error) {
+	return nil, nil
+}
+
 func TestValidatePresence(t *testing.T) {
 	t.Parallel()
 

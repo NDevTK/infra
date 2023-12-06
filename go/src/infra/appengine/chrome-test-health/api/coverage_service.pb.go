@@ -440,6 +440,215 @@ func (x *GetCoverageSummaryResponse) GetSummary() []*structpb.Struct {
 	return nil
 }
 
+type GetAbsoluteCoverageDataOneYearRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// List of source paths relative to the project root.
+	// E.g: [//, /media/cast/net/rtp/frame_buffer.cc]
+	Paths []string `protobuf:"bytes,1,rep,name=paths,proto3" json:"paths,omitempty"`
+	// List of Monorail components to fetch the coverage summary for.
+	// Note that either path or components must be specified to fetch the summary.
+	Components []string `protobuf:"bytes,2,rep,name=components,proto3" json:"components,omitempty"`
+	// Flag to fetch coverage results for unit tests only.
+	// Defaults to False, which returns all coverage results.
+	UnitTestsOnly bool `protobuf:"varint,3,opt,name=unit_tests_only,json=unitTestsOnly,proto3" json:"unit_tests_only,omitempty"`
+	// Bucket name, e.g. "try". Unique within the project.
+	// Regex: ^[a-z0-9\-_.]{1,100}$
+	// Together with project, defines an ACL.
+	// See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/builder_common.proto for additional details.
+	Bucket string `protobuf:"bytes,4,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	// Builder name, e.g. "linux-rel". Unique within the bucket.
+	// Regex: ^[a-zA-Z0-9\-_.\(\) ]{1,128}$
+	// See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/builder_common.proto for additional details.
+	Builder string `protobuf:"bytes,5,opt,name=builder,proto3" json:"builder,omitempty"`
+}
+
+func (x *GetAbsoluteCoverageDataOneYearRequest) Reset() {
+	*x = GetAbsoluteCoverageDataOneYearRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetAbsoluteCoverageDataOneYearRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAbsoluteCoverageDataOneYearRequest) ProtoMessage() {}
+
+func (x *GetAbsoluteCoverageDataOneYearRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAbsoluteCoverageDataOneYearRequest.ProtoReflect.Descriptor instead.
+func (*GetAbsoluteCoverageDataOneYearRequest) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetAbsoluteCoverageDataOneYearRequest) GetPaths() []string {
+	if x != nil {
+		return x.Paths
+	}
+	return nil
+}
+
+func (x *GetAbsoluteCoverageDataOneYearRequest) GetComponents() []string {
+	if x != nil {
+		return x.Components
+	}
+	return nil
+}
+
+func (x *GetAbsoluteCoverageDataOneYearRequest) GetUnitTestsOnly() bool {
+	if x != nil {
+		return x.UnitTestsOnly
+	}
+	return false
+}
+
+func (x *GetAbsoluteCoverageDataOneYearRequest) GetBucket() string {
+	if x != nil {
+		return x.Bucket
+	}
+	return ""
+}
+
+func (x *GetAbsoluteCoverageDataOneYearRequest) GetBuilder() string {
+	if x != nil {
+		return x.Builder
+	}
+	return ""
+}
+
+// AbsoluteCoverage signifies absolute coverage for a given date.
+type AbsoluteCoverage struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Date is of the format "YYYY-MM-DD"
+	Date string `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
+	// Number of lines that are covered
+	LinesCovered int64 `protobuf:"varint,2,opt,name=lines_covered,json=linesCovered,proto3" json:"lines_covered,omitempty"`
+	// Total number of lines
+	TotalLines int64 `protobuf:"varint,3,opt,name=total_lines,json=totalLines,proto3" json:"total_lines,omitempty"`
+}
+
+func (x *AbsoluteCoverage) Reset() {
+	*x = AbsoluteCoverage{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AbsoluteCoverage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AbsoluteCoverage) ProtoMessage() {}
+
+func (x *AbsoluteCoverage) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AbsoluteCoverage.ProtoReflect.Descriptor instead.
+func (*AbsoluteCoverage) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *AbsoluteCoverage) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *AbsoluteCoverage) GetLinesCovered() int64 {
+	if x != nil {
+		return x.LinesCovered
+	}
+	return 0
+}
+
+func (x *AbsoluteCoverage) GetTotalLines() int64 {
+	if x != nil {
+		return x.TotalLines
+	}
+	return 0
+}
+
+// GetAbsoluteCoverageDataOneYearResponse returns the absolute coverage trends.
+type GetAbsoluteCoverageDataOneYearResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Each item of this list signifies Absolute Coverage percentage for a
+	// particular date.
+	Reports []*AbsoluteCoverage `protobuf:"bytes,1,rep,name=reports,proto3" json:"reports,omitempty"`
+}
+
+func (x *GetAbsoluteCoverageDataOneYearResponse) Reset() {
+	*x = GetAbsoluteCoverageDataOneYearResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetAbsoluteCoverageDataOneYearResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAbsoluteCoverageDataOneYearResponse) ProtoMessage() {}
+
+func (x *GetAbsoluteCoverageDataOneYearResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAbsoluteCoverageDataOneYearResponse.ProtoReflect.Descriptor instead.
+func (*GetAbsoluteCoverageDataOneYearResponse) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetAbsoluteCoverageDataOneYearResponse) GetReports() []*AbsoluteCoverage {
+	if x != nil {
+		return x.Reports
+	}
+	return nil
+}
+
 var File_infra_appengine_chrome_test_health_api_coverage_service_proto protoreflect.FileDescriptor
 
 var file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc = []byte{
@@ -507,22 +716,56 @@ var file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc =
 	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x31, 0x0a, 0x07, 0x73, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79,
 	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52,
-	0x07, 0x73, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x32, 0xf3, 0x01, 0x0a, 0x08, 0x43, 0x6f, 0x76,
-	0x65, 0x72, 0x61, 0x67, 0x65, 0x12, 0x7a, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
-	0x12, 0x2e, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x73, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x44, 0x65, 0x66, 0x61,
-	0x75, 0x6c, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x2f, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x73, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x44, 0x65, 0x66, 0x61,
-	0x75, 0x6c, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x6b, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x43, 0x6f, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65,
-	0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x12, 0x29, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72,
-	0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x6f, 0x76, 0x65,
-	0x72, 0x61, 0x67, 0x65, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72,
-	0x63, 0x65, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x6f, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x53,
-	0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x28,
+	0x07, 0x73, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x22, 0xb7, 0x01, 0x0a, 0x25, 0x47, 0x65, 0x74,
+	0x41, 0x62, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x65, 0x43, 0x6f, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65,
+	0x44, 0x61, 0x74, 0x61, 0x4f, 0x6e, 0x65, 0x59, 0x65, 0x61, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x09, 0x52, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x12, 0x1e, 0x0a, 0x0a, 0x63, 0x6f, 0x6d, 0x70,
+	0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x6f,
+	0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x26, 0x0a, 0x0f, 0x75, 0x6e, 0x69, 0x74,
+	0x5f, 0x74, 0x65, 0x73, 0x74, 0x73, 0x5f, 0x6f, 0x6e, 0x6c, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x08, 0x52, 0x0d, 0x75, 0x6e, 0x69, 0x74, 0x54, 0x65, 0x73, 0x74, 0x73, 0x4f, 0x6e, 0x6c, 0x79,
+	0x12, 0x16, 0x0a, 0x06, 0x62, 0x75, 0x63, 0x6b, 0x65, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x06, 0x62, 0x75, 0x63, 0x6b, 0x65, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x62, 0x75, 0x69, 0x6c,
+	0x64, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x62, 0x75, 0x69, 0x6c, 0x64,
+	0x65, 0x72, 0x22, 0x6c, 0x0a, 0x10, 0x41, 0x62, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x65, 0x43, 0x6f,
+	0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x64, 0x61, 0x74, 0x65, 0x12, 0x23, 0x0a, 0x0d, 0x6c, 0x69,
+	0x6e, 0x65, 0x73, 0x5f, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x0c, 0x6c, 0x69, 0x6e, 0x65, 0x73, 0x43, 0x6f, 0x76, 0x65, 0x72, 0x65, 0x64, 0x12,
+	0x1f, 0x0a, 0x0b, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x6c, 0x69, 0x6e, 0x65, 0x73, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x4c, 0x69, 0x6e, 0x65, 0x73,
+	0x22, 0x64, 0x0a, 0x26, 0x47, 0x65, 0x74, 0x41, 0x62, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x65, 0x43,
+	0x6f, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x44, 0x61, 0x74, 0x61, 0x4f, 0x6e, 0x65, 0x59, 0x65,
+	0x61, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3a, 0x0a, 0x07, 0x72, 0x65,
+	0x70, 0x6f, 0x72, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x74, 0x65,
+	0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x41, 0x62, 0x73,
+	0x6f, 0x6c, 0x75, 0x74, 0x65, 0x43, 0x6f, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x52, 0x07, 0x72,
+	0x65, 0x70, 0x6f, 0x72, 0x74, 0x73, 0x32, 0x85, 0x03, 0x0a, 0x08, 0x43, 0x6f, 0x76, 0x65, 0x72,
+	0x61, 0x67, 0x65, 0x12, 0x7a, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63,
+	0x74, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x2e,
+	0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e,
+	0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c,
+	0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2f,
+	0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e,
+	0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c,
+	0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x6b, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x43, 0x6f, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x53, 0x75,
+	0x6d, 0x6d, 0x61, 0x72, 0x79, 0x12, 0x29, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73,
+	0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x6f, 0x76, 0x65, 0x72, 0x61,
+	0x67, 0x65, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x2a, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
+	0x73, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x6f, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x53, 0x75, 0x6d,
+	0x6d, 0x61, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x8f, 0x01, 0x0a,
+	0x1e, 0x47, 0x65, 0x74, 0x41, 0x62, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x65, 0x43, 0x6f, 0x76, 0x65,
+	0x72, 0x61, 0x67, 0x65, 0x44, 0x61, 0x74, 0x61, 0x4f, 0x6e, 0x65, 0x59, 0x65, 0x61, 0x72, 0x12,
+	0x35, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73,
+	0x2e, 0x47, 0x65, 0x74, 0x41, 0x62, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x65, 0x43, 0x6f, 0x76, 0x65,
+	0x72, 0x61, 0x67, 0x65, 0x44, 0x61, 0x74, 0x61, 0x4f, 0x6e, 0x65, 0x59, 0x65, 0x61, 0x72, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x36, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65,
+	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x62, 0x73, 0x6f, 0x6c,
+	0x75, 0x74, 0x65, 0x43, 0x6f, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x44, 0x61, 0x74, 0x61, 0x4f,
+	0x6e, 0x65, 0x59, 0x65, 0x61, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x28,
 	0x5a, 0x26, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x2d, 0x74, 0x65, 0x73, 0x74, 0x2d, 0x68, 0x65,
 	0x61, 0x6c, 0x74, 0x68, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
@@ -540,27 +783,33 @@ func file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescG
 	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescData
 }
 
-var file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_infra_appengine_chrome_test_health_api_coverage_service_proto_goTypes = []interface{}{
-	(*BuilderConfig)(nil),                   // 0: test_resources.BuilderConfig
-	(*GetProjectDefaultConfigRequest)(nil),  // 1: test_resources.GetProjectDefaultConfigRequest
-	(*GetProjectDefaultConfigResponse)(nil), // 2: test_resources.GetProjectDefaultConfigResponse
-	(*GetCoverageSummaryRequest)(nil),       // 3: test_resources.GetCoverageSummaryRequest
-	(*GetCoverageSummaryResponse)(nil),      // 4: test_resources.GetCoverageSummaryResponse
-	(*structpb.Struct)(nil),                 // 5: google.protobuf.Struct
+	(*BuilderConfig)(nil),                          // 0: test_resources.BuilderConfig
+	(*GetProjectDefaultConfigRequest)(nil),         // 1: test_resources.GetProjectDefaultConfigRequest
+	(*GetProjectDefaultConfigResponse)(nil),        // 2: test_resources.GetProjectDefaultConfigResponse
+	(*GetCoverageSummaryRequest)(nil),              // 3: test_resources.GetCoverageSummaryRequest
+	(*GetCoverageSummaryResponse)(nil),             // 4: test_resources.GetCoverageSummaryResponse
+	(*GetAbsoluteCoverageDataOneYearRequest)(nil),  // 5: test_resources.GetAbsoluteCoverageDataOneYearRequest
+	(*AbsoluteCoverage)(nil),                       // 6: test_resources.AbsoluteCoverage
+	(*GetAbsoluteCoverageDataOneYearResponse)(nil), // 7: test_resources.GetAbsoluteCoverageDataOneYearResponse
+	(*structpb.Struct)(nil),                        // 8: google.protobuf.Struct
 }
 var file_infra_appengine_chrome_test_health_api_coverage_service_proto_depIdxs = []int32{
 	0, // 0: test_resources.GetProjectDefaultConfigResponse.builder_config:type_name -> test_resources.BuilderConfig
-	5, // 1: test_resources.GetCoverageSummaryResponse.summary:type_name -> google.protobuf.Struct
-	1, // 2: test_resources.Coverage.GetProjectDefaultConfig:input_type -> test_resources.GetProjectDefaultConfigRequest
-	3, // 3: test_resources.Coverage.GetCoverageSummary:input_type -> test_resources.GetCoverageSummaryRequest
-	2, // 4: test_resources.Coverage.GetProjectDefaultConfig:output_type -> test_resources.GetProjectDefaultConfigResponse
-	4, // 5: test_resources.Coverage.GetCoverageSummary:output_type -> test_resources.GetCoverageSummaryResponse
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	8, // 1: test_resources.GetCoverageSummaryResponse.summary:type_name -> google.protobuf.Struct
+	6, // 2: test_resources.GetAbsoluteCoverageDataOneYearResponse.reports:type_name -> test_resources.AbsoluteCoverage
+	1, // 3: test_resources.Coverage.GetProjectDefaultConfig:input_type -> test_resources.GetProjectDefaultConfigRequest
+	3, // 4: test_resources.Coverage.GetCoverageSummary:input_type -> test_resources.GetCoverageSummaryRequest
+	5, // 5: test_resources.Coverage.GetAbsoluteCoverageDataOneYear:input_type -> test_resources.GetAbsoluteCoverageDataOneYearRequest
+	2, // 6: test_resources.Coverage.GetProjectDefaultConfig:output_type -> test_resources.GetProjectDefaultConfigResponse
+	4, // 7: test_resources.Coverage.GetCoverageSummary:output_type -> test_resources.GetCoverageSummaryResponse
+	7, // 8: test_resources.Coverage.GetAbsoluteCoverageDataOneYear:output_type -> test_resources.GetAbsoluteCoverageDataOneYearResponse
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_infra_appengine_chrome_test_health_api_coverage_service_proto_init() }
@@ -629,6 +878,42 @@ func file_infra_appengine_chrome_test_health_api_coverage_service_proto_init() {
 				return nil
 			}
 		}
+		file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetAbsoluteCoverageDataOneYearRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AbsoluteCoverage); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetAbsoluteCoverageDataOneYearResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -636,7 +921,7 @@ func file_infra_appengine_chrome_test_health_api_coverage_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -669,6 +954,9 @@ type CoverageClient interface {
 	// GetProjectDefaultConfig rpc call to get the code coverage
 	// lines/percentages along with the directory structure of the project.
 	GetCoverageSummary(ctx context.Context, in *GetCoverageSummaryRequest, opts ...grpc.CallOption) (*GetCoverageSummaryResponse, error)
+	// GetAbsoluteCoverageDataOneYear returns absolute coverage numbers for the last
+	// 365 days.
+	GetAbsoluteCoverageDataOneYear(ctx context.Context, in *GetAbsoluteCoverageDataOneYearRequest, opts ...grpc.CallOption) (*GetAbsoluteCoverageDataOneYearResponse, error)
 }
 type coveragePRPCClient struct {
 	client *prpc.Client
@@ -690,6 +978,15 @@ func (c *coveragePRPCClient) GetProjectDefaultConfig(ctx context.Context, in *Ge
 func (c *coveragePRPCClient) GetCoverageSummary(ctx context.Context, in *GetCoverageSummaryRequest, opts ...grpc.CallOption) (*GetCoverageSummaryResponse, error) {
 	out := new(GetCoverageSummaryResponse)
 	err := c.client.Call(ctx, "test_resources.Coverage", "GetCoverageSummary", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coveragePRPCClient) GetAbsoluteCoverageDataOneYear(ctx context.Context, in *GetAbsoluteCoverageDataOneYearRequest, opts ...grpc.CallOption) (*GetAbsoluteCoverageDataOneYearResponse, error) {
+	out := new(GetAbsoluteCoverageDataOneYearResponse)
+	err := c.client.Call(ctx, "test_resources.Coverage", "GetAbsoluteCoverageDataOneYear", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -722,6 +1019,15 @@ func (c *coverageClient) GetCoverageSummary(ctx context.Context, in *GetCoverage
 	return out, nil
 }
 
+func (c *coverageClient) GetAbsoluteCoverageDataOneYear(ctx context.Context, in *GetAbsoluteCoverageDataOneYearRequest, opts ...grpc.CallOption) (*GetAbsoluteCoverageDataOneYearResponse, error) {
+	out := new(GetAbsoluteCoverageDataOneYearResponse)
+	err := c.cc.Invoke(ctx, "/test_resources.Coverage/GetAbsoluteCoverageDataOneYear", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CoverageServer is the server API for Coverage service.
 type CoverageServer interface {
 	// GetProjectDefaultConfig gets the default configuration stored in the datastore
@@ -731,6 +1037,9 @@ type CoverageServer interface {
 	// GetProjectDefaultConfig rpc call to get the code coverage
 	// lines/percentages along with the directory structure of the project.
 	GetCoverageSummary(context.Context, *GetCoverageSummaryRequest) (*GetCoverageSummaryResponse, error)
+	// GetAbsoluteCoverageDataOneYear returns absolute coverage numbers for the last
+	// 365 days.
+	GetAbsoluteCoverageDataOneYear(context.Context, *GetAbsoluteCoverageDataOneYearRequest) (*GetAbsoluteCoverageDataOneYearResponse, error)
 }
 
 // UnimplementedCoverageServer can be embedded to have forward compatible implementations.
@@ -742,6 +1051,9 @@ func (*UnimplementedCoverageServer) GetProjectDefaultConfig(context.Context, *Ge
 }
 func (*UnimplementedCoverageServer) GetCoverageSummary(context.Context, *GetCoverageSummaryRequest) (*GetCoverageSummaryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCoverageSummary not implemented")
+}
+func (*UnimplementedCoverageServer) GetAbsoluteCoverageDataOneYear(context.Context, *GetAbsoluteCoverageDataOneYearRequest) (*GetAbsoluteCoverageDataOneYearResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAbsoluteCoverageDataOneYear not implemented")
 }
 
 func RegisterCoverageServer(s prpc.Registrar, srv CoverageServer) {
@@ -784,6 +1096,24 @@ func _Coverage_GetCoverageSummary_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Coverage_GetAbsoluteCoverageDataOneYear_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAbsoluteCoverageDataOneYearRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoverageServer).GetAbsoluteCoverageDataOneYear(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/test_resources.Coverage/GetAbsoluteCoverageDataOneYear",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoverageServer).GetAbsoluteCoverageDataOneYear(ctx, req.(*GetAbsoluteCoverageDataOneYearRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Coverage_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "test_resources.Coverage",
 	HandlerType: (*CoverageServer)(nil),
@@ -795,6 +1125,10 @@ var _Coverage_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCoverageSummary",
 			Handler:    _Coverage_GetCoverageSummary_Handler,
+		},
+		{
+			MethodName: "GetAbsoluteCoverageDataOneYear",
+			Handler:    _Coverage_GetAbsoluteCoverageDataOneYear_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

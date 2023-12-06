@@ -218,3 +218,11 @@ func (c *Client) GetCoverageSummary(ctx context.Context, req *api.GetCoverageSum
 		Summary: combinedSummary,
 	}, nil
 }
+
+// GetAbsoluteCoverageDataOneYear TO_BE_IMPLEMENTED
+func (c *Client) GetAbsoluteCoverageDataOneYear(
+	ctx context.Context,
+	req *api.GetAbsoluteCoverageDataOneYearRequest,
+) (*api.GetAbsoluteCoverageDataOneYearResponse, error) {
+	return nil, nil
+}

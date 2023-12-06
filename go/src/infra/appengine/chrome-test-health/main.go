@@ -80,6 +80,10 @@ type Client interface {
 type CoverageClient interface {
 	GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error)
 	GetCoverageSummary(ctx context.Context, req *api.GetCoverageSummaryRequest) (*api.GetCoverageSummaryResponse, error)
+	GetAbsoluteCoverageDataOneYear(
+		ctx context.Context,
+		req *api.GetAbsoluteCoverageDataOneYearRequest,
+	) (*api.GetAbsoluteCoverageDataOneYearResponse, error)
 }
 
 func main() {
@@ -249,6 +253,14 @@ func (covServer *coverageServer) GetCoverageSummary(ctx context.Context, req *ap
 		return nil, err
 	}
 	return resp, nil
+}
+
+// GetAbsoluteCoverageDataOneYear TO_BE_IMPLEMENTED
+func (covServer *coverageServer) GetAbsoluteCoverageDataOneYear(
+	ctx context.Context,
+	req *api.GetAbsoluteCoverageDataOneYearRequest,
+) (*api.GetAbsoluteCoverageDataOneYearResponse, error) {
+	return nil, nil
 }
 
 func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error) {

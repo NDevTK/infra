@@ -21,6 +21,10 @@ service Coverage {
   // GetProjectDefaultConfig rpc call to get the code coverage
   // lines/percentages along with the directory structure of the project.
   rpc GetCoverageSummary(GetCoverageSummaryRequest) returns (GetCoverageSummaryResponse);
+
+  // GetAbsoluteCoverageDataOneYear returns absolute coverage numbers for the last
+  // 365 days.
+  rpc GetAbsoluteCoverageDataOneYear(GetAbsoluteCoverageDataOneYearRequest) returns (GetAbsoluteCoverageDataOneYearResponse);
 }
 
 message BuilderConfig {
@@ -108,4 +112,42 @@ message GetCoverageSummaryRequest {
 message GetCoverageSummaryResponse {
   // Code Coverage summary containing lines/percentage of code covered.
   repeated google.protobuf.Struct summary = 1;
+}
+
+message GetAbsoluteCoverageDataOneYearRequest {
+  // List of source paths relative to the project root.
+  // E.g: [//, /media/cast/net/rtp/frame_buffer.cc]
+  repeated string paths = 1;
+  // List of Monorail components to fetch the coverage summary for.
+  // Note that either path or components must be specified to fetch the summary.
+  repeated string components = 2;
+  // Flag to fetch coverage results for unit tests only.
+  // Defaults to False, which returns all coverage results.
+  bool unit_tests_only = 3;
+  // Bucket name, e.g. "try". Unique within the project.
+  // Regex: ^[a-z0-9\-_.]{1,100}$
+  // Together with project, defines an ACL.
+  // See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/builder_common.proto for additional details.
+  string bucket = 4;
+  // Builder name, e.g. "linux-rel". Unique within the bucket.
+  // Regex: ^[a-zA-Z0-9\-_.\(\) ]{1,128}$
+  // See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/builder_common.proto for additional details.
+  string builder = 5;
+}
+
+// AbsoluteCoverage signifies absolute coverage for a given date.
+message AbsoluteCoverage {
+  // Date is of the format "YYYY-MM-DD"
+  string date = 1;
+  // Number of lines that are covered
+  int64 lines_covered = 2;
+  // Total number of lines
+  int64 total_lines = 3;
+}
+
+// GetAbsoluteCoverageDataOneYearResponse returns the absolute coverage trends.
+message GetAbsoluteCoverageDataOneYearResponse {
+  // Each item of this list signifies Absolute Coverage percentage for a
+  // particular date.
+  repeated AbsoluteCoverage reports = 1;
 }
