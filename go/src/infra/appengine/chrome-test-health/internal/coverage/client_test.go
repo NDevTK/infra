@@ -7,6 +7,7 @@ package coverage
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -523,5 +524,74 @@ func TestGetCoverageSummaryForComponents(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(res, ShouldNotBeNil)
 		So(res.Summary, ShouldHaveLength, 2)
+	})
+}
+
+func TestGetCoverageReportsForLastYear(t *testing.T) {
+	t.Parallel()
+	client := Client{}
+	ctx := context.Background()
+
+	Convey("Should return reports", t, func() {
+		postsubmitReports := getMockPostsubmitReport()
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Query",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"PostsubmitReport",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				for _, rep := range postsubmitReports {
+					if queryFilters[2].Value == rep.Bucket && queryFilters[3].Value == rep.Builder {
+						res := reflect.ValueOf(result).Elem()
+						res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
+						return nil
+					}
+				}
+				return nil
+			},
+		)
+		client.coverageV1DsClient = mockDataClient
+
+		reports, err := client.getCoverageReportsForLastYear(ctx, "ci", "linux-code-coverage")
+		So(err, ShouldBeNil)
+		So(reports, ShouldHaveLength, 1)
+		expectedReports := []entities.PostsubmitReport{
+			{
+				GitilesCommitProject:    "chromium/src",
+				GitilesCommitServerHost: "chromium.googlesource.com",
+				Bucket:                  "ci",
+				Builder:                 "linux-code-coverage",
+				GitilesCommitRevision:   "12345",
+			},
+		}
+		So(reports, ShouldResemble, expectedReports)
+	})
+
+	Convey("Should error out with no matching index message", t, func() {
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Query",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"PostsubmitReport",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				return fmt.Errorf("PostsubmitReport: %s", "No matching indexes found")
+			},
+		)
+		client.coverageV1DsClient = mockDataClient
+
+		reports, err := client.getCoverageReportsForLastYear(ctx, "ci", "linux-code-coverage")
+		So(err, ShouldNotBeNil)
+		So(err, ShouldResemble, ErrInternalServerError)
+		So(reports, ShouldBeNil)
 	})
 }
