@@ -115,6 +115,10 @@ class _ChopsAnnouncement extends LitElement {
     /** @type {Array<Announcement>} */
     this.additionalAnnouncements = HARDCODED_ANNOUNCEMENTS;
 
+    this.currentUserName = '';
+    this.userGroups = [];
+    this.currentProject = '';
+
     /** @type {string} */
     this._error = undefined;
     /** @type {Array<Announcement>} */
