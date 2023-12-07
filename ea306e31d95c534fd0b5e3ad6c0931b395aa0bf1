@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "114ef79d_c2990dad",
+        "filename": "go/src/infra/appengine/chrome-test-health/internal/coverage/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1545038
+      },
+      "writtenOn": "2023-12-07T00:48:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c54ed119_8e0949c5",
+      "range": {
+        "startLine": 267,
+        "startChar": 17,
+        "endLine": 267,
+        "endChar": 42
+      },
+      "revId": "ea306e31d95c534fd0b5e3ad6c0931b395aa0bf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a00abe16_588b77c9",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-12-06T21:25:34Z",
       "side": 1,
       "message": "Please add a TODO here to refactor this s.t. we don\u0027t need to instantiate the object to make the Get call. The Get call should likely return the obj and err, and the user should be able to just check that err.",
+      "range": {
+        "startLine": 282,
+        "startChar": 2,
+        "endLine": 282,
+        "endChar": 43
+      },
+      "revId": "ea306e31d95c534fd0b5e3ad6c0931b395aa0bf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b42744a1_d3339766",
+        "filename": "go/src/infra/appengine/chrome-test-health/internal/coverage/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1545038
+      },
+      "writtenOn": "2023-12-07T00:48:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a00abe16_588b77c9",
       "range": {
         "startLine": 282,
         "startChar": 2,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5b9ffc44_4ee03e5d",
+        "filename": "go/src/infra/appengine/chrome-test-health/internal/coverage/client.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 303,
+      "author": {
+        "id": 1545038
+      },
+      "writtenOn": "2023-12-07T00:48:48Z",
+      "side": 1,
+      "message": "Yes this is guaranteed the way we store data. See the proto here: https://source.chromium.org/chromium/infra/infra/+/main:appengine/findit/model/proto/code_coverage.proto;drc\u003db32ffdccec6feaa95f562d7c95107cf2aeffd6ea;l\u003d155",
+      "parentUuid": "53c1960c_91d9e17c",
+      "range": {
+        "startLine": 303,
+        "startChar": 34,
+        "endLine": 303,
+        "endChar": 43
+      },
+      "revId": "ea306e31d95c534fd0b5e3ad6c0931b395aa0bf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "77c6b4a3_97e8ff22",
@@ -83,6 +155,24 @@
       "writtenOn": "2023-12-06T21:25:34Z",
       "side": 1,
       "message": "Please add a test for when data is not formatted correctly.",
+      "revId": "ea306e31d95c534fd0b5e3ad6c0931b395aa0bf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4afb2519_c7fdf7c0",
+        "filename": "go/src/infra/appengine/chrome-test-health/internal/coverage/client_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 605,
+      "author": {
+        "id": 1545038
+      },
+      "writtenOn": "2023-12-07T00:48:48Z",
+      "side": 1,
+      "message": "Not needed as explained in the comment above.",
+      "parentUuid": "77c6b4a3_97e8ff22",
       "revId": "ea306e31d95c534fd0b5e3ad6c0931b395aa0bf1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
