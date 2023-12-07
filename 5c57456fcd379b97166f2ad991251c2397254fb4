@@ -39,6 +39,30 @@
       },
       "revId": "5c57456fcd379b97166f2ad991251c2397254fb4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "48fd9038_98a69e45",
+        "filename": "go/src/infra/appengine/chrome-test-health/internal/coverage/client.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 302,
+      "author": {
+        "id": 1545038
+      },
+      "writtenOn": "2023-12-07T05:47:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "caebcf57_b90f3811",
+      "range": {
+        "startLine": 302,
+        "startChar": 1,
+        "endLine": 302,
+        "endChar": 16
+      },
+      "revId": "5c57456fcd379b97166f2ad991251c2397254fb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
