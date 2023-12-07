@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.chromium.org/luci/common/logging"
@@ -22,7 +23,12 @@ var (
 	ErrInternalServerError = errors.New("Internal Server Error")
 )
 
-// TODO(crbug.com/1474096) - Refactor the code here into Common and Infra layers
+const (
+	chromiumProject    = "chromium/src"
+	chromiumServerHost = "chromium.googlesource.com"
+	chromiumRef        = "refs/heads/main"
+)
+
 type Client struct {
 	// Refers to findit's cloud project
 	FinditCloudProject string
@@ -50,6 +56,12 @@ func (c *Client) Init(ctx context.Context) error {
 	c.coverageV2DsClient = covV2DsClient
 
 	return nil
+}
+
+type CoveragePerDate struct {
+	date    string
+	covered float64
+	total   float64
 }
 
 // getProjectConfig extracts out the code coverage default settings from the
@@ -219,10 +231,116 @@ func (c *Client) GetCoverageSummary(ctx context.Context, req *api.GetCoverageSum
 	}, nil
 }
 
+// getCoverageReportsForLastYear fetches the absolute code coverage reports
+// for the last 365 days. These reports are specific to builder configuration
+// which is supplied to this function as builder and bucket.
+func (c *Client) getCoverageReportsForLastYear(
+	ctx context.Context,
+	bucket string,
+	builder string,
+) ([]entities.PostsubmitReport, error) {
+	records := []entities.PostsubmitReport{}
+	queryFilters := []datastorage.QueryFilter{
+		{Field: "gitiles_commit.project", Operator: "=", Value: chromiumProject},
+		{Field: "gitiles_commit.server_host", Operator: "=", Value: chromiumServerHost},
+		{Field: "bucket", Operator: "=", Value: bucket},
+		{Field: "builder", Operator: "=", Value: builder},
+		{Field: "visible", Operator: "=", Value: true},
+		{Field: "modifier_id", Operator: "=", Value: 0},
+		{Field: "commit_timestamp", Operator: ">", Value: time.Now().Add(-time.Hour * 24 * 365)},
+	}
+
+	if err := c.coverageV1DsClient.Query(
+		ctx, &records, "PostsubmitReport",
+		queryFilters, "-commit_timestamp", 0,
+	); err != nil {
+		logging.Errorf(ctx, "PostsubmitReport: %w", err)
+		return nil, ErrInternalServerError
+	}
+
+	return records, nil
+}
+
+// getCoverageNumbersForPath fetches absolute code coverage numbers for a given
+// path for a given set of builder config & commit hashes. It returns
+// per date numbers.
+func (c *Client) getCoverageNumbersForPath(
+	ctx context.Context,
+	reports []entities.PostsubmitReport,
+	path string,
+	bucket string,
+	builder string,
+) []CoveragePerDate {
+	return c.getCoverageNumbersHelper(ctx, reports, path, bucket, builder, "dirs")
+}
+
+// getCoverageNumbersForComponent fetches absolute code coverage numbers for a given
+// component for a given set of builder config & commit hashes. It returns
+// per date numbers.
+func (c *Client) getCoverageNumbersForComponent(
+	ctx context.Context,
+	reports []entities.PostsubmitReport,
+	path string,
+	bucket string,
+	builder string,
+) []CoveragePerDate {
+	return c.getCoverageNumbersHelper(ctx, reports, path, bucket, builder, "components")
+}
+
 // GetAbsoluteCoverageDataOneYear TO_BE_IMPLEMENTED
 func (c *Client) GetAbsoluteCoverageDataOneYear(
 	ctx context.Context,
 	req *api.GetAbsoluteCoverageDataOneYearRequest,
 ) (*api.GetAbsoluteCoverageDataOneYearResponse, error) {
 	return nil, nil
+}
+
+// ---------- HELPER FUNCTIONS --------------------
+func (c *Client) getCoverageNumbersHelper(
+	ctx context.Context,
+	reports []entities.PostsubmitReport,
+	pathOrComponent string,
+	bucket string,
+	builder string,
+	dataType string,
+) []CoveragePerDate {
+	coverageNumbers := []CoveragePerDate{}
+	for _, report := range reports {
+		// TODO: The Get method in these entities should return the object and error.
+		// Currently the user has to create an empty entity object and supply it to
+		// the function. See crbug/1509133
+		summary := entities.SummaryCoverageData{}
+		err := summary.Get(
+			ctx, c.coverageV1DsClient,
+			chromiumServerHost,
+			chromiumProject,
+			chromiumRef,
+			report.GitilesCommitRevision,
+			dataType,
+			pathOrComponent,
+			bucket,
+			builder,
+		)
+		if err != nil {
+			continue
+		}
+		coverageDetailsStruct := structpb.Struct{}
+		err = getStructFromCompressedData(summary.Data, &coverageDetailsStruct)
+		if err != nil {
+			continue
+		}
+		metrics := coverageDetailsStruct.AsMap()
+		for _, metric := range metrics["summaries"].([]interface{}) {
+			metricMap := metric.(map[string]interface{})
+			if metricMap["name"] == "line" {
+				covNumber := CoveragePerDate{
+					date:    report.CommitTimestamp.Format("2006-01-02"),
+					covered: metricMap["covered"].(float64),
+					total:   metricMap["total"].(float64),
+				}
+				coverageNumbers = append(coverageNumbers, covNumber)
+			}
+		}
+	}
+	return coverageNumbers
 }

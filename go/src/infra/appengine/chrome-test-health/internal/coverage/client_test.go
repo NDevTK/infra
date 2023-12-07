@@ -7,8 +7,10 @@ package coverage
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/datastore"
 	. "github.com/smartystreets/goconvey/convey"
@@ -160,7 +162,13 @@ func getMockSummaryDataByComponent() []*entities.SummaryCoverageData {
 	"dirs": [],
 	"files": [],
 	"path": "C1",
-	"summaries": []
+	"summaries": [
+		{
+			"covered": 59,
+			"name": "line",
+			"total": 200
+		}
+	]
 }`)
 	res = append(res, &entities.SummaryCoverageData{
 		Key:  datastore.NameKey("SummaryCoverageData", mockKey, nil),
@@ -523,5 +531,169 @@ func TestGetCoverageSummaryForComponents(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(res, ShouldNotBeNil)
 		So(res.Summary, ShouldHaveLength, 2)
+	})
+}
+
+func TestGetCoverageReportsForLastYear(t *testing.T) {
+	t.Parallel()
+	client := Client{}
+	ctx := context.Background()
+
+	Convey("Should return reports", t, func() {
+		postsubmitReports := getMockPostsubmitReport()
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Query",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"PostsubmitReport",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				for _, rep := range postsubmitReports {
+					if queryFilters[2].Value == rep.Bucket && queryFilters[3].Value == rep.Builder {
+						res := reflect.ValueOf(result).Elem()
+						res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
+						return nil
+					}
+				}
+				return nil
+			},
+		)
+		client.coverageV1DsClient = mockDataClient
+
+		reports, err := client.getCoverageReportsForLastYear(ctx, "ci", "linux-code-coverage")
+		So(err, ShouldBeNil)
+		So(reports, ShouldHaveLength, 1)
+		expectedReports := []entities.PostsubmitReport{
+			{
+				GitilesCommitProject:    "chromium/src",
+				GitilesCommitServerHost: "chromium.googlesource.com",
+				Bucket:                  "ci",
+				Builder:                 "linux-code-coverage",
+				GitilesCommitRevision:   "12345",
+			},
+		}
+		So(reports, ShouldResemble, expectedReports)
+	})
+
+	Convey("Should error out with correct error message", t, func() {
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Query",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"PostsubmitReport",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				return fmt.Errorf("PostsubmitReport: %s", "No matching indexes found")
+			},
+		)
+		client.coverageV1DsClient = mockDataClient
+
+		reports, err := client.getCoverageReportsForLastYear(ctx, "ci", "linux-code-coverage")
+		So(err, ShouldNotBeNil)
+		So(err, ShouldResemble, ErrInternalServerError)
+		So(reports, ShouldBeNil)
+	})
+}
+
+func TestGetCoverageNumbersForPath(t *testing.T) {
+	t.Parallel()
+	client := Client{}
+	ctx := context.Background()
+
+	Convey("Should return coverage numbers per day for the path", t, func() {
+		summaryData := getMockSummaryData()
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Get",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"SummaryCoverageData",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+				if key.(string) != summaryData.Key.Name {
+					return ErrEntityNotFound
+				}
+
+				res := reflect.ValueOf(result).Elem()
+				res.Set(reflect.ValueOf(summaryData).Elem())
+				return nil
+			},
+		)
+		client.coverageV1DsClient = mockDataClient
+
+		reports := []entities.PostsubmitReport{*getMockPostsubmitReport()[0]}
+		t := time.Date(2009, 11, 17, 20, 34, 58, 0, time.UTC)
+		reports[0].GitilesCommitRevision = "03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a"
+		reports[0].CommitTimestamp = t
+
+		data := client.getCoverageNumbersForPath(ctx, reports, "//", "ci", "linux-code-coverage")
+		So(data, ShouldHaveLength, 1)
+		expectedData := []CoveragePerDate{
+			{
+				date:    "2009-11-17",
+				covered: 123,
+				total:   300,
+			},
+		}
+		So(data, ShouldResemble, expectedData)
+	})
+}
+
+func TestGetCoverageNumbersForComponent(t *testing.T) {
+	t.Parallel()
+	client := Client{}
+	ctx := context.Background()
+
+	Convey("Should return coverage numbers per day for the component", t, func() {
+		summaryData := getMockSummaryDataByComponent()
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Get",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"SummaryCoverageData",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+				for _, sum := range summaryData {
+					if key.(string) == sum.Key.Name {
+						res := reflect.ValueOf(result).Elem()
+						res.Set(reflect.ValueOf(sum).Elem())
+						return nil
+					}
+				}
+				return nil
+			},
+		)
+		client.coverageV1DsClient = mockDataClient
+
+		reports := []entities.PostsubmitReport{*getMockPostsubmitReport()[0]}
+		t := time.Date(2009, 11, 17, 20, 34, 58, 0, time.UTC)
+		reports[0].GitilesCommitRevision = "03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a"
+		reports[0].CommitTimestamp = t
+
+		data := client.getCoverageNumbersForComponent(ctx, reports, "C1", "ci", "linux-code-coverage")
+		So(data, ShouldHaveLength, 1)
+		expectedData := []CoveragePerDate{
+			{
+				date:    "2009-11-17",
+				covered: 59,
+				total:   200,
+			},
+		}
+		So(data, ShouldResemble, expectedData)
 	})
 }

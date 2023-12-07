@@ -22,8 +22,9 @@ type clientMock struct {
 }
 
 type coverageClientMock struct {
-	lastGetProjectDefaultConfigReq *api.GetProjectDefaultConfigRequest
-	lastGetCoverageSummaryReq      *api.GetCoverageSummaryRequest
+	lastGetProjectDefaultConfigReq        *api.GetProjectDefaultConfigRequest
+	lastGetCoverageSummaryReq             *api.GetCoverageSummaryRequest
+	lastGetAbsoluteCoverageDataOneYearReq *api.GetAbsoluteCoverageDataOneYearRequest
 }
 
 func (cm *clientMock) UpdateSummary(_ context.Context, fromDate civil.Date, toDate civil.Date) error {
@@ -55,12 +56,12 @@ func (ccm *coverageClientMock) GetCoverageSummary(ctx context.Context, req *api.
 	return &api.GetCoverageSummaryResponse{}, nil
 }
 
-// GetAbsoluteCoverageDataOneYear TO_BE_IMPLEMENTED
 func (ccm *coverageClientMock) GetAbsoluteCoverageDataOneYear(
 	ctx context.Context,
 	req *api.GetAbsoluteCoverageDataOneYearRequest,
 ) (*api.GetAbsoluteCoverageDataOneYearResponse, error) {
-	return nil, nil
+	ccm.lastGetAbsoluteCoverageDataOneYearReq = req
+	return &api.GetAbsoluteCoverageDataOneYearResponse{}, nil
 }
 
 func TestValidatePresence(t *testing.T) {
@@ -433,6 +434,78 @@ func TestGetCoverageSummary(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err, ShouldErrLike, "Bucket is not provided in required format")
 			So(resp, ShouldBeNil)
+		})
+	})
+}
+
+func TestGetAbsoluteCoverageDataOneYear(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	mock := &coverageClientMock{}
+	srv := &coverageServer{
+		Client: mock,
+	}
+	request := &api.GetAbsoluteCoverageDataOneYearRequest{
+		Paths:         []string{"//p1/p2/"},
+		Components:    []string{"C1", "C2"},
+		UnitTestsOnly: true,
+		Bucket:        "ci",
+		Builder:       "linux-code-coverage",
+	}
+
+	Convey("Should pass", t, func() {
+		req := request
+		_, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
+		So(err, ShouldBeNil)
+	})
+
+	Convey("Should fail", t, func() {
+		Convey("Missing required params", func() {
+			Convey("Missing both paths and components", func() {
+				req := request
+				req.Paths = []string{}
+				req.Components = []string{}
+				resp, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
+				So(err, ShouldNotBeNil)
+				So(err, ShouldErrLike, "Either paths or components should be specified")
+				So(resp, ShouldBeNil)
+			})
+			Convey("Missing bucket", func() {
+				req := request
+				req.Bucket = ""
+				resp, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
+				So(err, ShouldNotBeNil)
+				So(err, ShouldErrLike, "Bucket is a required argument")
+				So(resp, ShouldBeNil)
+			})
+			Convey("Missing builder", func() {
+				req := request
+				req.Builder = ""
+				resp, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
+				So(err, ShouldNotBeNil)
+				So(err, ShouldErrLike, "Builder is a required argument")
+				So(resp, ShouldBeNil)
+			})
+		})
+
+		Convey("Invalid params", func() {
+			Convey("Invalid Builder", func() {
+				req := request
+				req.Builder = "a___$$$b"
+				resp, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
+				So(err, ShouldNotBeNil)
+				So(err, ShouldErrLike, "Builder is not provided in required format")
+				So(resp, ShouldBeNil)
+			})
+			Convey("Invalid Bucket", func() {
+				req := request
+				req.Builder = "linux-code-coverage"
+				req.Bucket = "a___$$$b"
+				resp, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
+				So(err, ShouldNotBeNil)
+				So(err, ShouldErrLike, "Bucket is not provided in required format")
+				So(resp, ShouldBeNil)
+			})
 		})
 	})
 }
