@@ -287,6 +287,25 @@ func (c *Client) getCoverageNumbersForComponent(
 	return c.getCoverageNumbersHelper(ctx, reports, path, bucket, builder, "components")
 }
 
+func (c *Client) aggregateCoverageReports(
+	aggregatedResults map[string]map[string]int64,
+	data []CoveragePerDate,
+) map[string]map[string]int64 {
+	for _, c := range data {
+		if _, ok := aggregatedResults[c.date]; !ok {
+			aggregatedResults[c.date] = map[string]int64{
+				"covered": 0,
+				"total":   0,
+			}
+		}
+
+		aggregatedResults[c.date]["covered"] = aggregatedResults[c.date]["covered"] + int64(c.covered)
+		aggregatedResults[c.date]["total"] = aggregatedResults[c.date]["total"] + int64(c.total)
+	}
+
+	return aggregatedResults
+}
+
 // GetAbsoluteCoverageDataOneYear TO_BE_IMPLEMENTED
 func (c *Client) GetAbsoluteCoverageDataOneYear(
 	ctx context.Context,
