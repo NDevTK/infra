@@ -337,7 +337,8 @@ class CodesearchApi(recipe_api.RecipeApi):
           self.c.generated_repo,
           ref=self.c.GEN_REPO_BRANCH,
           dir_path=generated_repo_dir,
-          submodules=False)
+          submodules=False,
+          depth=1)
     with self.m.context(cwd=generated_repo_dir):
       self.m.git('config', 'user.email', self.c.generated_author_email)
       self.m.git('config', 'user.name', self.c.generated_author_name)
