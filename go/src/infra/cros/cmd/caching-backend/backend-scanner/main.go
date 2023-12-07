@@ -21,7 +21,6 @@ import (
 	"strings"
 	"time"
 
-	k8sAPICoreV1 "k8s.io/api/core/v1"
 	k8sMetaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8sApplyCoreV1 "k8s.io/client-go/applyconfigurations/core/v1"
 	k8sApplyMetaV1 "k8s.io/client-go/applyconfigurations/meta/v1"
@@ -274,6 +273,7 @@ func getBackends(p k8sTypedCoreV1.PodInterface, appLabel string) ([]Backend, err
 	pods, err := p.List(ctx,
 		k8sMetaV1.ListOptions{
 			LabelSelector: fmt.Sprintf("app=%s", appLabel),
+			FieldSelector: "status.podIP!=''",
 		})
 	if err != nil {
 		log.Printf("List pods (app=%s): %s", appLabel, err)
@@ -281,18 +281,12 @@ func getBackends(p k8sTypedCoreV1.PodInterface, appLabel string) ([]Backend, err
 	}
 	var backends []Backend
 	for _, p := range pods.Items {
-		for _, c := range p.Status.Conditions {
-			// Only count ready pods.
-			if c.Type == k8sAPICoreV1.PodReady && c.Status == k8sAPICoreV1.ConditionTrue {
-				backends = append(
-					backends,
-					// See below link for why we can use deletion timestamp to check terminating state.
-					// https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/#terminating
-					Backend{IP: p.Status.PodIP, Terminating: (p.DeletionTimestamp != nil)},
-				)
-				break
-			}
-		}
+		backends = append(
+			backends,
+			// See below link for why we can use deletion timestamp to check terminating state.
+			// https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/#terminating
+			Backend{IP: p.Status.PodIP, Terminating: (p.DeletionTimestamp != nil)},
+		)
 	}
 	slices.SortFunc(backends, func(a, b Backend) int {
 		return strings.Compare(a.IP, b.IP)
