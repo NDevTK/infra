@@ -697,3 +697,51 @@ func TestGetCoverageNumbersForComponent(t *testing.T) {
 		So(data, ShouldResemble, expectedData)
 	})
 }
+
+func TestAggregateCoverageReports(t *testing.T) {
+	t.Parallel()
+	client := Client{}
+
+	Convey("Should aggregate coverage numbers into the supplied map", t, func() {
+		Convey("When data is complete", func() {
+			existingMap := make(map[string]map[string]int64)
+			existingMap["2023-11-20"] = map[string]int64{
+				"covered": 123,
+				"total":   200,
+			}
+			existingMap["2023-11-21"] = map[string]int64{
+				"covered": 150,
+				"total":   200,
+			}
+
+			data := []CoveragePerDate{
+				{date: "2023-11-20", covered: 10, total: 20},
+				{date: "2023-11-21", covered: 20, total: 30},
+			}
+			existingMap = client.aggregateCoverageReports(existingMap, data)
+
+			So(existingMap["2023-11-20"], ShouldResemble, map[string]int64{"covered": 133, "total": 220})
+			So(existingMap["2023-11-21"], ShouldResemble, map[string]int64{"covered": 170, "total": 230})
+		})
+
+		Convey("When data has missing dates", func() {
+			existingMap := make(map[string]map[string]int64)
+			existingMap["2023-11-20"] = map[string]int64{
+				"covered": 123,
+				"total":   200,
+			}
+			existingMap["2023-11-21"] = map[string]int64{
+				"covered": 150,
+				"total":   200,
+			}
+
+			data := []CoveragePerDate{
+				{date: "2023-11-20", covered: 10, total: 20},
+			}
+			existingMap = client.aggregateCoverageReports(existingMap, data)
+
+			So(existingMap["2023-11-20"], ShouldResemble, map[string]int64{"covered": 133, "total": 220})
+			So(existingMap["2023-11-21"], ShouldResemble, map[string]int64{"covered": 150, "total": 200})
+		})
+	})
+}
