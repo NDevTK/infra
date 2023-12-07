@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5735fe7c_c41d18b0",
+        "filename": ".gitmodules",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1560543
+      },
+      "writtenOn": "2023-12-07T16:46:19Z",
+      "side": 1,
+      "message": "remove this.",
+      "revId": "5946036614f5fc5747e5f1814154425c14f6367b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
