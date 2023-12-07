@@ -44,7 +44,48 @@
             "testCaseInfo": {
                 "bugComponent": {
                     "value": "crbug:OS>LaCrOS"
-                }
+                },
+                "criteria": {
+                    "value": "A very looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong criteria"
+                },
+                "requirements": [
+                    {
+                        "value": "requirement 1 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 2 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 3 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 4 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 5 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 6 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 7 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 8 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 9 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 10 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 11 in a very long list of requirements"
+                    },
+                    {
+                        "value": "requirement 12 in a very long list of requirements"
+                    }
+                ]
             }
         }
     ]

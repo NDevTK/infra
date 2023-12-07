@@ -193,7 +193,9 @@ func TestTastConversions(t *testing.T) {
 					Tags: []*pb.StringPair{
 						pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
 						pbutil.StringPair(executionOrderTag, "2"),
+						pbutil.StringPair("requirements", "requirement 1 in a very long list of requirements,requirement 2 in a very long list of requirements,requirement 3 in a very long list of requirements,requirement 4 in a very long list of requirements,requirement 5 in a very long list of requirements,req..."),
 						pbutil.StringPair("bug_component", "crbug:OS>LaCrOS"),
+						pbutil.StringPair("criteria", "A very looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo..."),
 					},
 					TestMetadata: &pb.TestMetadata{
 						Name: "tast.lacros.Migrate",

@@ -49,6 +49,9 @@ const (
 	// ResultDB limits the total size of the error protos to 3172 bytes.
 	maxErrorsBytes = 3*1024 + 100
 
+	// ResultSink limits a tag's value size to 256 bytes.
+	maxTagValueBytes = 256
+
 	// Prefix of IssueTracker (internally known as Buganizer) components.
 	// See https://developers.google.com/issue-tracker for disambiguation.
 	issueTrackerBugComponentPrefix = "b:"
@@ -132,12 +135,13 @@ func processArtifacts(artifactDir string) (normPathToFullPath map[string]string,
 }
 
 // AppendTags appends a new tag to the tag slice if both key and value exist.
+// The tag value will be truncated to the first 256 bytes.
 func AppendTags(tags []*pb.StringPair, key string, value string) []*pb.StringPair {
 	if key == "" || value == "" {
 		return tags
 	}
 
-	return append(tags, pbutil.StringPair(key, value))
+	return append(tags, pbutil.StringPair(key, truncateString(value, maxTagValueBytes)))
 }
 
 // SortTags sorts the tags slice lexicographically by key, then value.
@@ -183,8 +187,10 @@ func parseMetadata(filePath string) (map[string]*api.TestCaseMetadata, error) {
 }
 
 // metadataToTags converts the following TestCaseMetadata to a list of key value
-// string pairs. Repeated fields are joined with a "," and boolean fields are
-// converted to "true" or "false" strings:
+// string pairs. All tag values will be truncated to the first 256 chars as
+// defined by maxTagValueBytes.
+// Repeated fields are joined with a "," and boolean fields are converted to
+// "true" or "false" strings:
 //   - owners (repeated), e.g. ["chromeos-platform-power@google.com"]
 //   - requirements (repeated), e.g. ["boot-perf-0001-v01"]
 //   - bug_component, e.g. "b:167191"
