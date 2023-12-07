@@ -4,9 +4,6 @@
 [submodule "luci"]
 	path = luci
 	url = https://chromium.googlesource.com/infra/luci/luci-py
-[submodule "go/src/go.chromium.org/luci"]
-	path = go/src/go.chromium.org/luci
-	url = https://chromium.googlesource.com/infra/luci/luci-go
 [submodule "go/src/go.chromium.org/chromiumos/config"]
 	path = go/src/go.chromium.org/chromiumos/config
 	url = https://chromium.googlesource.com/chromiumos/config
