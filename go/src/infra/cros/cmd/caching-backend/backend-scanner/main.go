@@ -48,7 +48,7 @@ var (
 	l7Port            = flag.Uint("l7-port", 8083, "the port for caching service L7 balancing")
 	otelTraceEndpoint = flag.String("otel-trace-endpoint", "", "The OTel collector endpoint for backend service tracing. e.g. http://127.0.0.1:4317")
 
-	downloaderDeployment    = flag.String("backend-downloader-name", "downloader", "the deployment name of the downloader which download files from Google Cloud Storage")
+	downloaderAppLabel      = flag.String("backend-downloader-app-label", "downloader", "the app label of the downloader which download files from Google Cloud Storage")
 	downloaderScalingFactor = flag.Int("backend-downloader-scaling-factor", 4, "the factor to scale the downloader deployment with backends, i.e. '<downlaoder_replica>=<factor> * <backend_count>'")
 )
 
@@ -81,9 +81,9 @@ func innerMain() error {
 			Interface:   *frontendInterface,
 			LBAlgo:      *frontendLBAlgo,
 		},
-		downloaderScale: &downloaderScale{
-			name:   *downloaderDeployment,
-			factor: *downloaderScalingFactor,
+		downloader: &downloader{
+			appLabel:    *downloaderAppLabel,
+			scaleFactor: *downloaderScalingFactor,
 		},
 	}
 	mux := http.NewServeMux()
@@ -121,9 +121,9 @@ type backendScanner struct {
 	serviceIP   string
 	servicePort uint
 
-	backendConf     *nginxConf
-	frontendConf    *keepalivedConf
-	downloaderScale *downloaderScale
+	backendConf  *nginxConf
+	frontendConf *keepalivedConf
+	downloader   *downloader
 }
 
 func (s *backendScanner) updateHandler(w http.ResponseWriter, r *http.Request) {
@@ -169,7 +169,7 @@ func (s *backendScanner) scanOnce() error {
 		return fmt.Errorf("scan once: %w", err)
 	}
 
-	if err := scaleDeployment(clientset.AppsV1().Deployments(*namespace), s.downloaderScale.name, s.downloaderScale.getReplica(len(backends))); err != nil {
+	if err := s.downloader.scale(clientset.AppsV1().Deployments(*namespace), len(backends)); err != nil {
 		return fmt.Errorf("update: %w", err)
 	}
 	return nil
@@ -228,9 +228,7 @@ func updateConfigMap(c k8sTypedCoreV1.ConfigMapInterface, name, namespace string
 }
 
 // scaleDeployment scales the named deployment to the specified replica.
-func scaleDeployment(c k8sTypedAppsV1.DeploymentInterface, name string, replica int32) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+func scaleDeployment(ctx context.Context, c k8sTypedAppsV1.DeploymentInterface, name string, replica int32) error {
 	scale, err := c.GetScale(ctx, name, k8sMetaV1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("scale deploy/%s: %w", name, err)
@@ -318,16 +316,32 @@ func genConfig(templateName, configTmpl string, configData interface{}) (string,
 	return buf.String(), nil
 }
 
-type downloaderScale struct {
-	name   string
-	factor int
+type downloader struct {
+	appLabel    string // the "app" label of the downloader deployment
+	scaleFactor int    // the factor of roughly how many downloader we run on each backend node
+}
+
+func (d *downloader) scale(c k8sTypedAppsV1.DeploymentInterface, backendCount int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	deployments, err := c.List(ctx, k8sMetaV1.ListOptions{LabelSelector: "app=" + d.appLabel})
+	if err != nil {
+		return fmt.Errorf("scale: %w", err)
+	}
+	if l := len(deployments.Items); l != 1 {
+		return fmt.Errorf("scale: expected 1 but found %d deployment(s) with label app=%s", l, d.appLabel)
+	}
+	if err := scaleDeployment(ctx, c, deployments.Items[0].Name, d.getReplica(backendCount)); err != nil {
+		return fmt.Errorf("scale: %w", err)
+	}
+	return nil
 }
 
 // getReplica returns the downloader replicas according to the given backend
 // count. The repicas has a minimum.
-func (d *downloaderScale) getReplica(backendCount int) int32 {
+func (d *downloader) getReplica(backendCount int) int32 {
 	var minimum int32 = 4
-	if r := int32(backendCount * d.factor); r > minimum {
+	if r := int32(backendCount * d.scaleFactor); r > minimum {
 		return r
 	}
 	return minimum
