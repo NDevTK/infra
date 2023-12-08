@@ -253,7 +253,7 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 	defer func() { otil.EndSpan(span, nil) }()
 	startTime := time.Now()
 
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, 60*time.Minute)
 	defer cancel()
 
 	md := metricData{}
@@ -458,7 +458,7 @@ func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s request started", id)
 	defer func() { log.Printf("%s request completed in %fs", id, time.Since(startTime).Seconds()) }()
 
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, 60*time.Minute)
 	defer cancel()
 
 	md := metricData{}
@@ -612,7 +612,7 @@ func (c *archiveServer) decompressHandler(w http.ResponseWriter, r *http.Request
 	log.Printf("%s request started", id)
 	defer func() { log.Printf("%s request completed in %fs", id, time.Since(startTime).Seconds()) }()
 
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, 60*time.Minute)
 	defer cancel()
 
 	md := metricData{}
