@@ -50,6 +50,7 @@ var (
 
 	downloaderAppLabel      = flag.String("backend-downloader-app-label", "downloader", "the app label of the downloader which download files from Google Cloud Storage")
 	downloaderScalingFactor = flag.Int("backend-downloader-scaling-factor", 4, "the factor to scale the downloader deployment with backends, i.e. '<downlaoder_replica>=<factor> * <backend_count>'")
+	downloaderNodeLabel     = flag.String("downloader-node-label", "", "the downloader must run on nodes with the specified label, or they will be evicted")
 )
 
 func main() {
@@ -83,6 +84,7 @@ func innerMain() error {
 		},
 		downloader: &downloader{
 			appLabel:    *downloaderAppLabel,
+			nodeLabel:   *downloaderNodeLabel,
 			scaleFactor: *downloaderScalingFactor,
 		},
 	}
@@ -174,6 +176,9 @@ func (s *backendScanner) scanOnce(ctx context.Context) error {
 	}
 
 	if err := s.downloader.scale(ctx, clientset.AppsV1().Deployments(*namespace), len(backends)); err != nil {
+		return fmt.Errorf("update: %w", err)
+	}
+	if err := s.downloader.evictFromNonCachingNodes(ctx, clientset.CoreV1().Nodes(), clientset.CoreV1().Pods(s.namespace)); err != nil {
 		return fmt.Errorf("update: %w", err)
 	}
 	return nil
@@ -318,6 +323,7 @@ func genConfig(templateName, configTmpl string, configData interface{}) (string,
 
 type downloader struct {
 	appLabel    string // the "app" label of the downloader deployment
+	nodeLabel   string // the node label marking on all caching nodes
 	scaleFactor int    // the factor of roughly how many downloader we run on each backend node
 }
 
@@ -343,4 +349,38 @@ func (d *downloader) getReplica(backendCount int) int32 {
 		return r
 	}
 	return minimum
+}
+
+// evictFromNonCachingNodes removes all downloaders running on non-caching
+// nodes.
+// This may happen when we remove the caching label after we scheduling some
+// downloaders on it. If we don't remove the downloaders, their performance may
+// be impacted by other workloads scheduled on the same node later.
+func (d *downloader) evictFromNonCachingNodes(ctx context.Context, n k8sTypedCoreV1.NodeInterface, p k8sTypedCoreV1.PodInterface) error {
+	log.Printf("Downloader runs on nodes with label %q", d.nodeLabel)
+	if d.nodeLabel == "" {
+		// All nodes are for caching service, so no need to do anything.
+		log.Print("Skip the downloader eviction as all nodes are for caching.")
+		return nil
+	}
+	nodes, err := n.List(ctx,
+		k8sMetaV1.ListOptions{LabelSelector: d.nodeLabel + "=true"},
+	)
+	if err != nil {
+		return fmt.Errorf("evict downloader from non-caching nodes (%s!=true): %w", d.nodeLabel, err)
+	}
+	nodeSelector := []string{}
+	for _, n := range nodes.Items {
+		// We select the non caching nodes, so we use "!=" here.
+		nodeSelector = append(nodeSelector, "spec.nodeName!="+n.Name)
+	}
+	log.Printf("Evicting downloaders of %+v", nodeSelector)
+	if err = p.DeleteCollection(ctx, k8sMetaV1.DeleteOptions{},
+		k8sMetaV1.ListOptions{
+			LabelSelector: fmt.Sprintf("app=%s", d.appLabel),
+			FieldSelector: strings.Join(nodeSelector, ","),
+		}); err != nil {
+		return fmt.Errorf("evict downloader from non-caching nodes: %w", err)
+	}
+	return nil
 }
