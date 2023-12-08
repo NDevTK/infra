@@ -476,7 +476,8 @@
       "origin",
       "win",
       "--progress",
-      "--depth 1"
+      "--depth",
+      "1"
     ],
     "cwd": "[CACHE]/generated",
     "env": {
