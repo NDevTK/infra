@@ -471,7 +471,8 @@
       "fetch",
       "origin",
       "win",
-      "--progress"
+      "--progress",
+      "--depth 1"
     ],
     "cwd": "[CACHE]/generated",
     "env": {
