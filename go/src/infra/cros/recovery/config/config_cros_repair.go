@@ -2375,6 +2375,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"rpm_power_cycle",
 				"Set servo PD to src",
+				"Try cold reset DUT by servo",
 				"Wait to be pingable (normal boot)",
 			},
 			ExecName:   "sample_pass",
@@ -2761,6 +2762,23 @@ func crosRepairActions() map[string]*Action {
 				"timeout:30",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Try cold reset DUT by servo": {
+			Docs: []string{
+				"Try to cold-reset DUT by servo and do not wait.",
+				"The action may fail if the servo is missing or unresponsive.",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:power_state",
+				"string_value:reset",
+				"timeout:30",
+			},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
 		},
 		"Has gsc_reset control": {
 			Docs: []string{
