@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -101,6 +102,14 @@ func getMockPostsubmitReport() []*entities.PostsubmitReport {
 			Bucket:                  "ci",
 			Builder:                 "andr-code-coverage",
 			GitilesCommitRevision:   "23456",
+		},
+		{
+			GitilesCommitProject:    "chromium/src",
+			GitilesCommitServerHost: "chromium.googlesource.com",
+			Bucket:                  "ci",
+			Builder:                 "linux-code-coverage",
+			GitilesCommitRevision:   "03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a",
+			CommitTimestamp:         time.Date(2023, 11, 17, 20, 34, 58, 0, time.UTC),
 		},
 	}
 }
@@ -695,6 +704,156 @@ func TestGetCoverageNumbersForComponent(t *testing.T) {
 			},
 		}
 		So(data, ShouldResemble, expectedData)
+	})
+}
+
+func TestGetAbsoluteCoverageDataOneYear(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := Client{
+		coverageV1DsClient: mocks.NewIDataClient(t),
+	}
+
+	Convey("Should pass", t, func() {
+		postsubmitReports := getMockPostsubmitReport()
+		summaryData := getMockSummaryData()
+		summaryDataByComp := getMockSummaryDataByComponent()
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Query",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"PostsubmitReport",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				for _, rep := range postsubmitReports {
+					if queryFilters[2].Value == rep.Bucket &&
+						queryFilters[3].Value == rep.Builder &&
+						rep.CommitTimestamp.After(queryFilters[6].Value.(time.Time)) {
+						res := reflect.ValueOf(result).Elem()
+						res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
+						return nil
+					}
+				}
+				return nil
+			},
+		)
+
+		mockDataClient.On(
+			"Get",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"SummaryCoverageData",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+				if strings.Contains(key.(string), "dirs") {
+					if key.(string) != summaryData.Key.Name {
+						return ErrEntityNotFound
+					}
+
+					res := reflect.ValueOf(result).Elem()
+					res.Set(reflect.ValueOf(summaryData).Elem())
+					return nil
+				} else {
+					for _, sum := range summaryDataByComp {
+						if key.(string) == sum.Key.Name {
+							res := reflect.ValueOf(result).Elem()
+							res.Set(reflect.ValueOf(sum).Elem())
+							return nil
+						}
+					}
+					return nil
+				}
+			},
+		)
+
+		client.coverageV1DsClient = mockDataClient
+
+		Convey("Valid", func() {
+			req := &api.GetAbsoluteCoverageDataOneYearRequest{
+				Paths:         []string{"//"},
+				Components:    []string{"C1", "C2>C3"},
+				UnitTestsOnly: false,
+				Bucket:        "ci",
+				Builder:       "linux-code-coverage",
+			}
+			res, err := client.GetAbsoluteCoverageDataOneYear(ctx, req)
+			So(err, ShouldBeNil)
+			So(len(res.Reports), ShouldBeGreaterThan, 0)
+			expectedRes := &api.GetAbsoluteCoverageDataOneYearResponse{
+				Reports: []*api.AbsoluteCoverage{{Date: "2023-11-17", LinesCovered: 182, TotalLines: 500}},
+			}
+			So(res, ShouldResemble, expectedRes)
+		})
+		Convey("No components with some paths", func() {
+			req := &api.GetAbsoluteCoverageDataOneYearRequest{
+				Paths:         []string{"//"},
+				Components:    []string{},
+				UnitTestsOnly: false,
+				Bucket:        "ci",
+				Builder:       "linux-code-coverage",
+			}
+			res, err := client.GetAbsoluteCoverageDataOneYear(ctx, req)
+			So(err, ShouldBeNil)
+			So(len(res.Reports), ShouldBeGreaterThan, 0)
+			expectedRes := &api.GetAbsoluteCoverageDataOneYearResponse{
+				Reports: []*api.AbsoluteCoverage{{Date: "2023-11-17", LinesCovered: 123, TotalLines: 300}},
+			}
+			So(res, ShouldResemble, expectedRes)
+		})
+		Convey("No paths with some components", func() {
+			req := &api.GetAbsoluteCoverageDataOneYearRequest{
+				Paths:         []string{},
+				Components:    []string{"C1", "C2>C3"},
+				UnitTestsOnly: false,
+				Bucket:        "ci",
+				Builder:       "linux-code-coverage",
+			}
+			res, err := client.GetAbsoluteCoverageDataOneYear(ctx, req)
+			So(err, ShouldBeNil)
+			So(len(res.Reports), ShouldBeGreaterThan, 0)
+			expectedRes := &api.GetAbsoluteCoverageDataOneYearResponse{
+				Reports: []*api.AbsoluteCoverage{{Date: "2023-11-17", LinesCovered: 59, TotalLines: 200}},
+			}
+			So(res, ShouldResemble, expectedRes)
+		})
+	})
+
+	Convey("Should fail", t, func() {
+		Convey("PostsubmitReport fetch error", func() {
+			mockDataClient := mocks.NewIDataClient(t)
+			mockDataClient.On(
+				"Query",
+				mock.AnythingOfType("backgroundCtx"),
+				mock.Anything,
+				"PostsubmitReport",
+				mock.Anything,
+				mock.Anything,
+				mock.Anything,
+			).Return(
+				func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+					return fmt.Errorf("PostsubmitReport: %s", "entity not found")
+				},
+			)
+			client.coverageV1DsClient = mockDataClient
+			req := &api.GetAbsoluteCoverageDataOneYearRequest{
+				Paths:         []string{"//"},
+				Components:    []string{},
+				UnitTestsOnly: false,
+				Bucket:        "ci",
+				Builder:       "linux-code-coverage",
+			}
+			res, err := client.GetAbsoluteCoverageDataOneYear(ctx, req)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldResemble, ErrInternalServerError)
+			So(res, ShouldBeNil)
+		})
 	})
 }
 

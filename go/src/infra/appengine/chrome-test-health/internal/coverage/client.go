@@ -306,12 +306,49 @@ func (c *Client) aggregateCoverageReports(
 	return aggregatedResults
 }
 
-// GetAbsoluteCoverageDataOneYear TO_BE_IMPLEMENTED
+// GetAbsoluteCoverageDataOneYear returns absolute coverage numbers for the last
+// 365 days.
 func (c *Client) GetAbsoluteCoverageDataOneYear(
 	ctx context.Context,
 	req *api.GetAbsoluteCoverageDataOneYearRequest,
 ) (*api.GetAbsoluteCoverageDataOneYearResponse, error) {
-	return nil, nil
+	// TODO (see crbug/1509667): Introduce Pagination & response
+	// size optimization for GetAbsoluteCoverageDataOneYear API
+	unitTestsOnly := req.UnitTestsOnly
+	bucket := req.Bucket
+	builder := c.getModifedBuilder(req.Builder, &unitTestsOnly)
+	paths := req.Paths
+	components := req.Components
+
+	reportsLastYear, err := c.getCoverageReportsForLastYear(ctx, bucket, builder)
+	if err != nil {
+		return nil, err
+	}
+
+	aggregatedResults := make(map[string]map[string]int64)
+	for _, path := range paths {
+		data := c.getCoverageNumbersForPath(ctx, reportsLastYear, path, bucket, builder)
+		aggregatedResults = c.aggregateCoverageReports(aggregatedResults, data)
+	}
+
+	for _, component := range components {
+		data := c.getCoverageNumbersForComponent(ctx, reportsLastYear, component, bucket, builder)
+		aggregatedResults = c.aggregateCoverageReports(aggregatedResults, data)
+	}
+
+	finalReports := []*api.AbsoluteCoverage{}
+	for date, numbers := range aggregatedResults {
+		absCov := &api.AbsoluteCoverage{
+			Date:         date,
+			LinesCovered: numbers["covered"],
+			TotalLines:   numbers["total"],
+		}
+		finalReports = append(finalReports, absCov)
+	}
+
+	return &api.GetAbsoluteCoverageDataOneYearResponse{
+		Reports: finalReports,
+	}, nil
 }
 
 // ---------- HELPER FUNCTIONS --------------------
