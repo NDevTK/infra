@@ -95,13 +95,13 @@ func innerMain() error {
 	svr := http.Server{Addr: fmt.Sprintf(":%d", *port), Handler: mux}
 	log.Printf("starting backend scanner")
 
-	if err := s.scanOnce(); err != nil {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if err := s.scanOnce(ctx); err != nil {
 		return err
 	}
 	log.Printf("Initial configmap created")
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	go s.regularlyScan(ctx, *scanIntervalDuration)
 	log.Printf("Regular scanning scheduled at every %s", *scanIntervalDuration)
 
@@ -128,7 +128,7 @@ type backendScanner struct {
 
 func (s *backendScanner) updateHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s %s", r.Method, r.URL)
-	if err := s.scanOnce(); err != nil {
+	if err := s.scanOnce(r.Context()); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		if _, err := w.Write([]byte(err.Error())); err != nil {
 			log.Printf("Error writing the response body: %s", err)
@@ -137,12 +137,16 @@ func (s *backendScanner) updateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // scanOnce scans the specified caching backends and run the defined actions.
-func (s *backendScanner) scanOnce() error {
+func (s *backendScanner) scanOnce(ctx context.Context) error {
 	clientset, err := getK8sClientSet()
 	if err != nil {
 		return fmt.Errorf("scan once: %w", err)
 	}
-	backends, err := getBackends(clientset.CoreV1().Pods(s.namespace), s.appLabel)
+
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
+	defer cancel()
+
+	backends, err := getBackends(ctx, clientset.CoreV1().Pods(s.namespace), s.appLabel)
 	if err != nil {
 		return fmt.Errorf("scan once: %w", err)
 	}
@@ -165,11 +169,11 @@ func (s *backendScanner) scanOnce() error {
 		"nginx.conf":      nc,
 		"keepalived.conf": kc,
 	}
-	if err := updateConfigMap(clientset.CoreV1().ConfigMaps(s.namespace), s.cmName, s.namespace, d); err != nil {
+	if err := updateConfigMap(ctx, clientset.CoreV1().ConfigMaps(s.namespace), s.cmName, s.namespace, d); err != nil {
 		return fmt.Errorf("scan once: %w", err)
 	}
 
-	if err := s.downloader.scale(clientset.AppsV1().Deployments(*namespace), len(backends)); err != nil {
+	if err := s.downloader.scale(ctx, clientset.AppsV1().Deployments(*namespace), len(backends)); err != nil {
 		return fmt.Errorf("update: %w", err)
 	}
 	return nil
@@ -197,7 +201,7 @@ func (s *backendScanner) regularlyScan(ctx context.Context, d time.Duration) {
 			return
 		case <-ticker.C:
 			log.Printf("Starting a regular scan")
-			if err := s.scanOnce(); err != nil {
+			if err := s.scanOnce(ctx); err != nil {
 				log.Printf("The regular scan failed: %s", err)
 			}
 		}
@@ -205,7 +209,7 @@ func (s *backendScanner) regularlyScan(ctx context.Context, d time.Duration) {
 }
 
 // updateConfigMap updates the specified k8s configmap with the given data.
-func updateConfigMap(c k8sTypedCoreV1.ConfigMapInterface, name, namespace string, data map[string]string) error {
+func updateConfigMap(ctx context.Context, c k8sTypedCoreV1.ConfigMapInterface, name, namespace string, data map[string]string) error {
 	kind := "ConfigMap"
 	version := "v1"
 	cm := k8sApplyCoreV1.ConfigMapApplyConfiguration{
@@ -219,8 +223,6 @@ func updateConfigMap(c k8sTypedCoreV1.ConfigMapInterface, name, namespace string
 		},
 		Data: data,
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	if _, err := c.Apply(ctx, &cm, k8sMetaV1.ApplyOptions{FieldManager: "caching-backend-scanner"}); err != nil {
 		return fmt.Errorf("update configmap: %w", err)
 	}
@@ -265,9 +267,7 @@ type Backend struct {
 }
 
 // getBackends gets backend list of selected pods with the specified label.
-func getBackends(p k8sTypedCoreV1.PodInterface, appLabel string) ([]Backend, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+func getBackends(ctx context.Context, p k8sTypedCoreV1.PodInterface, appLabel string) ([]Backend, error) {
 	pods, err := p.List(ctx,
 		k8sMetaV1.ListOptions{
 			LabelSelector: fmt.Sprintf("app=%s", appLabel),
@@ -321,9 +321,7 @@ type downloader struct {
 	scaleFactor int    // the factor of roughly how many downloader we run on each backend node
 }
 
-func (d *downloader) scale(c k8sTypedAppsV1.DeploymentInterface, backendCount int) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+func (d *downloader) scale(ctx context.Context, c k8sTypedAppsV1.DeploymentInterface, backendCount int) error {
 	deployments, err := c.List(ctx, k8sMetaV1.ListOptions{LabelSelector: "app=" + d.appLabel})
 	if err != nil {
 		return fmt.Errorf("scale: %w", err)
