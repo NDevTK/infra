@@ -365,24 +365,23 @@ func ReplaceNic(ctx context.Context, oldNic *ufspb.Nic, newNic *ufspb.Nic) (*ufs
 // validateDeleteNic validates if a nic can be deleted
 func validateDeleteNic(ctx context.Context, nic *ufspb.Nic) error {
 	machine, err := registration.GetMachine(ctx, nic.GetMachine())
-	if err != nil {
-		return errors.Annotate(err, "validateDeleteNic - unable to get machine %s", nic.GetMachine()).Err()
-	}
-	// Check permission
-	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsDelete, machine.GetRealm()); err != nil {
-		return err
-	}
-
-	// Get the machinelse associated with the nic
-	lses, err := inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", nic.GetMachine(), false)
-	if err != nil {
-		return errors.Annotate(err, "validateDeleteNic - failed to query host by machine %s", nic.GetMachine()).Err()
-	}
-	for _, lse := range lses {
-		if lse.GetNic() == nic.GetName() {
-			return status.Errorf(codes.InvalidArgument, "validateDeleteNic - nic %s is used by host %s", nic.GetName(), lse.GetName())
+	if err == nil && machine != nil {
+		// Check permission
+		if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsDelete, machine.GetRealm()); err != nil {
+			return errors.Annotate(err, "validateDeleteNic - no permission to delete for realm %s", machine.GetRealm()).Err()
+		}
+		// Get the machinelse associated with the nic
+		lses, err := inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", nic.GetMachine(), false)
+		if err != nil {
+			return errors.Annotate(err, "validateDeleteNic - failed to query host by machine %s", nic.GetMachine()).Err()
+		}
+		for _, lse := range lses {
+			if lse.GetNic() == nic.GetName() {
+				return status.Errorf(codes.InvalidArgument, "validateDeleteNic - nic %s is used by host %s", nic.GetName(), lse.GetName())
+			}
 		}
 	}
+	// It's ok to delete a nic if the attached machine doesn't exist.
 	return nil
 }
 
