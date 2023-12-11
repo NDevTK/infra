@@ -25,6 +25,7 @@ fi
 # Use the cmake in path to bootstrap cmak'ing cmake!
 # Force CMAKE_CXX_STANDARD to 14 because C++17 is buggy on gcc10.
 # See also: https://github.com/scikit-build/cmake-python-distributions/issues/221
+# Disable framework tests on Mac because the builders only have the macOS SDK.
 cmake .. \
   -GNinja \
   -DCMAKE_BUILD_TYPE:STRING=Release \
@@ -32,7 +33,9 @@ cmake .. \
   -DCMAKE_USE_OPENSSL:BOOL=ON \
   -DOPENSSL_ROOT_DIR:STRING="${CMAKE_DEPS_PREFIX}" \
   -DBUILD_TESTING:BOOL=ON \
-  -DCMAKE_CXX_STANDARD:STRING=14
+  -DCMAKE_CXX_STANDARD:STRING=14 \
+  -DCMake_TEST_XcFramework:BOOL=OFF
+
 # Our dockcross environment should automatically set the CMAKE toolchain to
 # enable cross-compilation.
 
@@ -53,26 +56,25 @@ if [[ "$_3PP_PLATFORM" == "$_3PP_TOOL_PLATFORM" && "$_3PP_PLATFORM" != windows-*
   # Unfortunately our UID do exceed the limit, which will result in unpacking
   # extra PaxHeader in the unittest.
   #
-  # CTestLimitDashJ doesn't work well with parallel.
-  # FileDownload can be flaky in parallel because it relies on execution order.
-  # CTestTimeoutAfterMatch also appears to be flaky in parallel.
   # curl test hits the internet and is flaky.
-  # kwsys.testProcess-1 may failed under high load from parallelization.
-  #
+
+  # Tests which are flaky when run in parallel.
+  SERIAL_TESTS="CTestLimitDashJ|FileDownload|CTestTimeoutAfterMatch|kwsys.testProcess-1|TryCompile|RunCMake.ctest_test"
+
   # Unset CMAKE_TOOLCHAIN_FILE to avoid using host cmake libraries in tests
   env -u CMAKE_TOOLCHAIN_FILE \
     ./bin/ctest --parallel "$(nproc)" \
     --force-new-ctest-process \
     --stop-on-failure \
     --output-on-failure \
-    --exclude-regex '(CMake.CheckSourceTree|RunCMake.CPack_STGZ|CTestLimitDashJ|FileDownload|BootstrapTest|CTestTimeoutAfterMatch|curl|kwsys.testProcess-1)'
+    --exclude-regex "(CMake.CheckSourceTree|RunCMake.CPack_STGZ|curl|BootstrapTest|${SERIAL_TESTS})"
 
   env -u CMAKE_TOOLCHAIN_FILE \
     ./bin/ctest \
     --force-new-ctest-process \
     --stop-on-failure \
     --output-on-failure \
-    --tests-regex '(CTestLimitDashJ|FileDownload|CTestTimeoutAfterMatch|kwsys.testProcess-1)'
+    --tests-regex "(${SERIAL_TESTS})"
 fi
 
 # Use the system cmake to actually do the install. Otherwise it will use the
