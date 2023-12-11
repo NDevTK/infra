@@ -4,10 +4,10 @@
 
 TL;DR: [go/vpython-and-you](./vpython_one_page.md)
 
-Chrome Operations builds and maintains a tool called `vpython`, which
-offers a simple, easy, reliable, and dependable mechanism for the instantiation
-of arbitrary user-specified Python virtual environments for Operations and
-client teams.
+Chrome Operations builds and maintains a tool called `vpython` (the current
+version is invoked as `vpython3`), which offers a simple, easy, reliable, and
+dependable mechanism for the instantiation of arbitrary user-specified Python
+virtual environments for Operations and client teams.
 
 A `vpython` invocation looks largely like a standard `python` invocation, with
 the notable difference of the tool name. `vpython` accepts Python interpreter
@@ -30,21 +30,21 @@ more information on wheels, see
 A wheel may be either universal, written in pure Python, or binary, including
 binary content specialized to a specific operating system and/or architecture.
 
-Users can expect that `vpython` will be available in `PATH` in a standard
+Users can expect that `vpython3` will be available in `PATH` in a standard
 Chromium development or bot environment.
 
-`vpython` is deployed:
+`vpython3` is deployed:
 
 * Using `depot_tools`, through a bootstrap wrapper (
-    [Windows](https://chromium.googlesource.com/chromium/tools/depot_tools/+/master/vpython.bat),
-    [Linux and Mac](https://chromium.googlesource.com/chromium/tools/depot_tools/+/master/vpython)).
+    [Windows](https://chromium.googlesource.com/chromium/tools/depot_tools/+/master/vpython3.bat),
+    [Linux and Mac](https://chromium.googlesource.com/chromium/tools/depot_tools/+/master/vpython3)).
 * In bot environments via `PATH`:
     * On LUCI, this is installed into `PATH` in the `luci-config` Swarming Task
       Template.
 
-To reliably invoke `vpython` in both user and bot environments, Windows users
-and scripts should use `vpython.bat` and Linux and Mac users should use
-`vpython`.
+To reliably invoke `vpython3` in both user and bot environments, Windows users
+and scripts should use `vpython3.bat` and Linux and Mac users should use
+`vpython3`.
 
 ## Tool Documentation
 
@@ -62,7 +62,7 @@ A user leverages `vpython` by:
 
 1. Building a [specification protobuf](#Specification-Protobuf) describing their
    Python program's layout.
-2. [Invoking](#Invocation) their Python script through `vpython`.
+2. [Invoking](#Invocation) their Python script through `vpython3`.
 
 In the expected case, Chrome Operations will have already created wheel packages
 for all of the dependencies, and the user just has to pick and choose from that
@@ -90,10 +90,10 @@ wants to use `psutil` to get a count of running processes on the current system.
 The Python script, `test.py`, looks like:
 
 ```python
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import psutil
-print 'Number of running processes is:', len(psutil.pids())
+print('Number of running processes is:', len(psutil.pids()))
 ```
 
 As-is, this script may or may not work, depending on whether or not the target
@@ -101,14 +101,14 @@ system has the `psutil` package installed. Let's try running it on our developer
 system:
 
 ```bash
-python ./test.py
+python3 ./test.py
 Number of running processes is: 1337
 ```
 
 Great, ship it! Well, first let's try running it on a bot:
 
 ```bash
-python ./test.py
+python3 ./test.py
 Traceback (most recent call last):
   File "test.py", line 3, in <module>
     import psutil
@@ -118,7 +118,7 @@ ImportError: No module named psutil
 Yikes! File an infra ticket! But wait, another bot yielded:
 
 ```bash
-python ./test.py
+python3 ./test.py
 Number of running processes:
 Traceback (most recent call last):
   File "test.py", line 4, in <module>
@@ -130,7 +130,7 @@ On this system, there is a `psutil`, but it's really old and doesn't have the
 `pids` member. Let's file an infra ticket to upgrade it on all bots ... but now
 some other builder is red because it depended on that older version...
 
-Enter VirtualEnv (featuring `vpython` and `vpython3`)!
+Enter VirtualEnv (featuring `vpython3`)!
 
 We can use `vpython` to download `psutil` and create a VirtualEnv just for this
 script! Because we have a separate, hermetic, and isolated VirtualEnv for this
@@ -141,7 +141,7 @@ will be re-used) or may choose their own package set with their own wheel
 versions.
 
 ```bash
-vpython ./test.py
+vpython3 ./test.py
 Traceback (most recent call last):
   File "test.py", line 3, in <module>
     import psutil
@@ -164,20 +164,20 @@ We note in the [Available Wheels](#Available-Wheels) section that a wheel
 for `psutil` is already defined. We'll use this one for the script.
 
 Because the script is called `test.py`, we edit a file called
-`test.py.vpython` in the same directory as `test.py`:
+`test.py.vpython3` in the same directory as `test.py`:
 
 ```protobuf
-python_version: "2.7"
+python_version: "3.11"
 wheel: <
   name: "infra/python/wheels/psutil/${vpython_platform}"
-  version: "version:5.2.2"
+  version: "version:5.8.0"
 >
 ```
 
 Now, when we run `test.py` through `vpython`, we get:
 
 ```bash
-vpython ./test.py
+vpython3 ./test.py
 Number of running processes is: 1337
 ```
 
@@ -186,10 +186,10 @@ packages! We have a functional script that will behave consistently on all
 target platforms.
 
 Before we finish, let's update the shebang line in `test.py` to mark that it
-should be called through `vpython` instead of `python` directly:
+should be called through `vpython3` instead of `python3` directly:
 
 ```python
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # (...)
 ```
 
@@ -198,11 +198,11 @@ In summary:
   1. Identify which wheels were needed, referencing the
      [Available Wheels](#Available-Wheels) section.
   1. Build a `vpython` specification file referencing the necessary wheels.
-  1. Configure the script to run through `vpython`.
+  1. Configure the script to run through `vpython3`.
 
 ## Basics
 
-`vpython` is a thin wrapper around a Python invocation. It accepts the same
+`vpython` (`vpython3`) is a thin wrapper around a Python invocation. It accepts the same
 command-line options as Python, and in most cases can be used in place of a
 direct `python` command invocation. When run, `vpython`:
 
@@ -291,7 +291,7 @@ Some Recommendations (see below for specifics):
       it gets copied elsewhere.
 * If your entire collection of scripts wants to share the same environment,
   use a single
-  [Common Specification](#common-specification) (`.vpython` or `.vpython3`) at
+  [Common Specification](#common-specification) (`.vpython3`) at
   the root of your script collection.
 
 In all cases except *Script-Specific Specification*, specification will be
@@ -303,33 +303,31 @@ please [contact Chrome Operations](#Contact).
 #### Script-Specific Specification
 
 A specification protobuf can be dropped alongside a Python script to implicitly
-pair `vpython` with the script. If you are using `vpython3` use the suffix
-`.vpython3` in all the examples below.
+pair `vpython3` with the script.
 
 If the script is a symbolic link, vpython will:
 
 1. Check for a spec with the name of the link in the directory of the link.
 2. Check for a spec with the name of the target in the directory of the target.
 
-e.g: For symbolic link `/A/B -> /C/D`, vpython will first check `/A/B.vpython`,
-then `/C/D.vpython`.
+e.g: For symbolic link `/A/B -> /C/D`, vpython will first check `/A/B.vpython3`,
+then `/C/D.vpython3`.
 
 For a script named `foo.py`, a `vpython` specification would appear in the same
-directory alongside it and be named `foo.py.vpython`. (Or `foo.py.vpython3` if
-you are using `vpython3`.)
+directory alongside it and be named `foo.py.vpython3`.
 
-* foo.py.vpython
+* foo.py.vpython3
   ```protobuf
-  python_version: "2.7"
+  python_version: "3.11"
   wheel: <
     name: "infra/python/wheels/coverage/${vpython_platform}"
-    version: "version:4.3.4"
+    version: "version:7.3.1"
   >
   ```
 
 * foo.py
   ```python
-  #!/usr/bin/env vpython
+  #!/usr/bin/env vpython3
 
   """This is my cool script. It does a lot of stuff. It needs "coverage" though.
 
@@ -339,14 +337,14 @@ you are using `vpython3`.)
   import os
   import coverage
 
-  print coverage.__version__
+  print(coverage.__version__)
   ```
 
-When this script is invoked by `vpython`, its specification will be identified
+When this script is invoked by `vpython3`, its specification will be identified
 in the filesystem and automatically loaded.
 
 ```bash
-vpython foo.py
+vpython3 foo.py
 4.3.4
 ```
 
@@ -364,7 +362,7 @@ For example:
 
 * foo.py
   ```python
-  #!/usr/bin/env vpython
+  #!/usr/bin/env vpython3
 
   """This is my cool script. It does a lot of stuff. It needs "coverage" though.
   """
@@ -372,22 +370,22 @@ For example:
   # [VPYTHON:BEGIN]
   # wheel: <
   #   name: "infra/python/wheels/coverage/${vpython_platform}"
-  #   version: "version:4.3.4"
+  #   version: "version:7.3.1"
   # >
   # [VPYTHON:END]
 
   import os
   import coverage
 
-  print coverage.__version__
+  print(coverage.__version__)
   ```
 
-When this script is invoked by `vpython`, its specification will be parsed from
+When this script is invoked by `vpython3`, its specification will be parsed from
 the script content based on the presence of the bookend strings and
 automatically loaded.
 
 ```bash
-vpython foo.py
+vpython3 foo.py
 4.3.4
 ```
 
@@ -395,25 +393,25 @@ vpython foo.py
 
 If an individual or embedded specification cannot be found, `vpython` will probe
 walk filesystem towards root (or `.gclient` root) looking for a common
-specification file. This file must be named `.vpython` and be located in
+specification file. This file must be named `.vpython3` and be located in
 or above the directory of the invoked script.
 
 Comment characters are stripped from the beginning of each line.
 
 For example:
 
-* .vpython
+* .vpython3
   ```protobuf
-  python_version: "2.7"
+  python_version: "3.11"
   wheel: <
     name: "infra/python/wheels/coverage/${vpython_platform}"
-    version: "version:4.3.4"
+    version: "version:7.3.1"
   >
   ```
 
 * tools/foo.py
   ```python
-  #!/usr/bin/env vpython
+  #!/usr/bin/env vpython3
 
   """This is my cool script. It does a lot of stuff. It needs "coverage" though.
 
@@ -423,14 +421,14 @@ For example:
   import os
   import coverage
 
-  print coverage.__version__
+  print(coverage.__version__)
   ```
 
 When this script is invoked by `vpython` will walk up from `tools/`, identify
-`.vpython` in a parent directory, and automatically load it.
+`.vpython3` in a parent directory, and automatically load it.
 
 ```bash
-vpython tools/foo.py
+vpython3 tools/foo.py
 4.3.4
 ```
 
@@ -441,7 +439,7 @@ complicated specification that pulls in, among other things, the complete
 `cryptography` Python package.
 
 It is available for study
-[here](https://chromium.googlesource.com/infra/luci/recipes-py/+/master/bootstrap/venv.cfg).
+[here](https://chromium.googlesource.com/infra/luci/recipes-py/+/master/.vpython3).
 
 ## Invocation
 
@@ -450,30 +448,20 @@ Chrome Operations tooling.
 
 ### Via Recipe
 
-Python scripts are invoked from recipes using the `python`
-[recipe module](https://chromium.googlesource.com/infra/luci/recipes-py/+/master/README.recipes.md#recipe_modules-python).
-
-The Python invocation accepts a keyword argument, `venv`.
-
-* Setting `venv` to the path of a `vpython` specification file will cause that
-  script to be invoked via `vpython` in that specification's VirtualEnv.
-* Setting `venv` to `True` will invoke the script through `vpython`, having
-  `vpython` probe the specification from the target script.
-
-For more information on specification probing, see the section on
-[Specification Probing](#specification-probing).
+Python scripts are invoked from recipes using the gemeric `step`
+[recipe module](https://chromium.googlesource.com/infra/luci/recipes-py/+/master/README.recipes.md#recipe_modules-step).
 
 ### Via Command-Line
 
-Scripts can be invoked using `vpython` by replacing the Python command-line
-option with `vpython`.
+Scripts can be invoked using `vpython3` by replacing the Python command-line
+option with `vpython3`.
 
 ```bash
-vpython /path/to/script.py
+vpython3 /path/to/script.py
 ```
 
 An explicit specification can be referenced using the `-vpython-spec` flag.  Run
-`vpython -help` for more information.
+`vpython3 -help` for more information.
 
 If you don't provide an explicit specification (recommended),
 [Specification Probing](#specification-probing) will be used to determine which
@@ -482,8 +470,8 @@ specification your script should use.
 ### Propagating VirtualEnv
 
 If your script is invoking another Python script, it will likely work without
-modification. This is because `vpython` adds its VirtualEnv's `bin/` directory
-to `PATH` during invocation, causing other `python` invocations to automatically
+modification. This is because `vpython3` adds its VirtualEnv's `bin/` directory
+to `PATH` during invocation, causing other `python3` invocations to automatically
 inherit the VirtualEnv (and `PATH`).
 
 However, a few standard guidelines should be followed:
@@ -491,12 +479,12 @@ However, a few standard guidelines should be followed:
 * When invoking a Python script from another Python script, use
   `sys.executable` at the beginning of invocation. This prevents cases where
   a Python script explicitly specifies a Python interpreter in its shebang
-  line (e.g., `#! /usr/bin/python`).
+  line (e.g., `#! /usr/bin/python3`).
 * In shebang lines, use `/usr/bin/env` instead of directly referencing a Python
-  interpreter. If you know you want to use `vpython` exclusively, you can
-  directly reference it instead of `python`.
+  interpreter. If you know you want to use `vpython3` exclusively, you can
+  directly reference it instead of `python3`.
   ```bash
-  #!/usr/bin/env python
+  #!/usr/bin/env python3
   ```
 
 ## Caveats
@@ -506,11 +494,11 @@ However, a few standard guidelines should be followed:
 `vpython` loads packages from `CIPD`, a Chrome Operations online package
 deployment service, during initial invocation. Users wishing to ensure that a
 checkout is usable offline should pre-instantiate that checkout's `vpython`
-virtual environments by invoking a `vpython` installation command in their
+virtual environments by invoking a `vpython3` installation command in their
 `gclient runhooks` process.
 
 ```
-vpython -vpython-spec /path/to/vpython.spec -vpython-tool install
+vpython3 -vpython-spec /path/to/vpython.spec -vpython-tool install
 ```
 
 ### No Dependency Resolution
@@ -661,5 +649,5 @@ discuss `vpython` integration design.
 
 * `luci-eng@google.com`
 * [Existing vpython wheels](https://chromium.googlesource.com/infra/infra/+/master/infra/tools/dockerbuild/wheels.md)
-* [Request new vpython wheel](https://bugs.chromium.org/p/chromium/issues/entry?template=+Vpython+Wheel+Request)
+* [Adding a new vpython wheel](/infra/tools/dockerbuild/README.wheels.md)
 * [File a Bug](https://bugs.chromium.org/p/chromium/issues/entry?template=Build%20Infrastructure&components=Infra>ThirdPartySoftware)
