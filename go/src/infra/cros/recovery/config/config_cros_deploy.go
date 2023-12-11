@@ -301,11 +301,11 @@ func deployActions() map[string]*Action {
 				"boot_retry:1",
 				"boot_interval:10",
 				"halt_timeout:120",
-				"ignore_reboot_failure:false",
+				"ignore_reboot_failure:true",
 				"badblocks_mode:not",
 				"after_reboot_check:true",
 				"after_reboot_timeout:150",
-				"after_reboot_allow_use_servo_reset:false",
+				"after_reboot_allow_use_servo_reset:true",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 1500},
 			RecoveryActions: []string{

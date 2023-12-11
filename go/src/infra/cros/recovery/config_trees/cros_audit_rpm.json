@@ -12518,9 +12518,13 @@
                     "install_timeout:1200",
                     "tpm_reset_timeout:60",
                     "post_install_boot_time:15",
+                    "ignore_reboot_failure:true",
                     "badblocks_mode:auto",
                     "rw_badblocks_timeout:5400",
-                    "ro_badblocks_timeout:3600"
+                    "ro_badblocks_timeout:3600",
+                    "after_reboot_check:true",
+                    "after_reboot_timeout:150",
+                    "after_reboot_allow_use_servo_reset:true"
                   ],
                   "timeout": "2h13m20s",
                   "run_control": "ALWAYS_RUN"
@@ -12938,7 +12942,11 @@
                 "halt_timeout:120",
                 "custom_command_allowed_to_fail:true",
                 "custom_command_timeout:60",
-                "custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin"
+                "custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin",
+                "ignore_reboot_failure:true",
+                "after_reboot_check:true",
+                "after_reboot_timeout:150",
+                "after_reboot_allow_use_servo_reset:true"
               ],
               "timeout": "16m40s",
               "run_control": "ALWAYS_RUN"
@@ -13096,9 +13104,13 @@
                     "install_timeout:1200",
                     "tpm_reset_timeout:60",
                     "post_install_boot_time:15",
+                    "ignore_reboot_failure:true",
                     "badblocks_mode:auto",
                     "rw_badblocks_timeout:5400",
-                    "ro_badblocks_timeout:3600"
+                    "ro_badblocks_timeout:3600",
+                    "after_reboot_check:true",
+                    "after_reboot_timeout:150",
+                    "after_reboot_allow_use_servo_reset:true"
                   ],
                   "timeout": "2h13m20s",
                   "run_control": "ALWAYS_RUN"

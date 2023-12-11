@@ -29,9 +29,11 @@ type BootInRecoveryRequest struct {
 	// Prevent PD switch to snk before boot.
 	PreventPowerSnk bool
 	// Call function to cal after device booted in recovery mode.
-	Callback            func(context.Context) error
-	AddObservation      func(*metrics.Observation)
-	IgnoreRebootFailure bool
+	Callback       func(context.Context) error
+	AddObservation func(*metrics.Observation)
+	// Options to ignore errors happened during restoring stage.
+	IgnoreServoRestoreFailure bool
+	IgnoreRebootFailure       bool
 	// After reboot params specified to check if device booted or not.
 	AfterRebootVerify             bool
 	AfterRebootTimeout            time.Duration
@@ -108,19 +110,32 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		if err := servo.UpdateUSBVisibility(ctx, servo.USBVisibleOff, servod); err != nil {
 			log.Debugf("Turn off USB drive on servo failed: %s", err)
 		}
+		return nil
+	}
+	restoreDUTState := func() error {
 		// Waiting 10 seconds before turn it on as the device can be still in transition to off.
 		time.Sleep(10 * time.Second)
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueON); err != nil {
-			return errors.Annotate(err, "boot in recovery mode").Err()
+			return errors.Annotate(err, "restore DUT state").Err()
 		}
 		// Waiting 3 seconds before allowed followeing commands to try something else.
 		time.Sleep(3 * time.Second)
-		log.Debugf("Boot in recovery mode: servo states recovered.")
+		log.Debugf("Boot in recovery mode: DUT booted.")
 		return nil
 	}
 	// Always restore servo state by the end!
 	defer func() {
 		if err := restoreServoState(); err != nil {
+			log.Debugf("Boot in recovery mode: %s", err)
+			// Don't override the original error.
+			if !req.IgnoreServoRestoreFailure && rErr == nil {
+				// We cannot return it, so we set it.
+				// If we fail when restored the states then we have issues.
+				rErr = err
+				return
+			}
+		}
+		if err := restoreDUTState(); err != nil {
 			log.Debugf("Boot in recovery mode: %s", err)
 			// Don't override the original error.
 			if !req.IgnoreRebootFailure && rErr == nil {
