@@ -67,12 +67,18 @@ type Config struct {
 	WinSDK         generators.Generator
 	FindBinary     generators.FindBinaryFunc
 	BuildPlatform  generators.Platform
+
+	// If true, pull docker image(s) during Init. Docker may require gcloud and
+	// other credentials to access private repositories, which are not available
+	// inside the derivation.
+	DockerPullImage bool
 }
 
 func DefaultConfig() *Config {
 	return &Config{
-		FindBinary:    exec.LookPath,
-		BuildPlatform: generators.CurrentPlatform(),
+		FindBinary:      exec.LookPath,
+		BuildPlatform:   generators.CurrentPlatform(),
+		DockerPullImage: true,
 	}
 }
 
@@ -169,6 +175,16 @@ func Init(cfg *Config) error {
 	base = append(base, gs...)
 
 	baseByOS[os] = base
+
+	if os == "linux" && cfg.DockerPullImage {
+		for _, c := range containers {
+			if out, err := exec.Command("docker", "pull", c).CombinedOutput(); err != nil {
+				fmt.Println(string(out))
+				return fmt.Errorf("pull docker images failed: %w", err)
+			}
+		}
+	}
+
 	return nil
 }
 

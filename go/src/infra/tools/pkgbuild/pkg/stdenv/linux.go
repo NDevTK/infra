@@ -10,25 +10,18 @@ import (
 	"go.chromium.org/luci/cipkg/base/workflow"
 )
 
-// Return the dockcross image for the platform.
 // TODO(fancl): build the container using pkgbuild.
-func containers(plat generators.Platform) string {
-	const prefix = "gcr.io/chromium-container-registry/infra-dockerbuild/"
-	const version = ":v1.4.18"
-	if plat.OS() != "linux" {
-		return ""
+// Dict of the dockcross images for all supported platforms.
+// Mapping host.Arch() to the image name.
+var (
+	containerRegistry = "gcr.io/chromium-container-registry/infra-dockerbuild/"
+	containerVersion  = ":v1.4.21"
+	containers        = map[string]string{
+		"amd64": containerRegistry + "manylinux-x64-py3" + containerVersion,
+		"arm64": containerRegistry + "linux-arm64-py3" + containerVersion,
+		"arm":   containerRegistry + "linux-armv6-py3" + containerVersion,
 	}
-	switch plat.Arch() {
-	case "amd64":
-		return prefix + "manylinux-x64-py3" + version
-	case "arm64":
-		return prefix + "linux-arm64-py3" + version
-	case "arm":
-		return prefix + "linux-armv6-py3" + version
-	default:
-		return ""
-	}
-}
+)
 
 func importLinux(cfg *Config, bins ...string) (gs []generators.Generator, err error) {
 	// Import posix utilities
@@ -49,7 +42,7 @@ func importLinux(cfg *Config, bins ...string) (gs []generators.Generator, err er
 }
 
 func (g *Generator) generateLinux(plats generators.Platforms, tmpl *workflow.Generator) error {
-	containers := containers(plats.Host)
+	containers := containers[plats.Host.Arch()]
 	if containers == "" {
 		return fmt.Errorf("containers not available for %s", plats.Host)
 	}
