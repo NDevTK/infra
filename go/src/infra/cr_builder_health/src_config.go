@@ -32,6 +32,7 @@ type BuilderSpec struct {
 type ProblemSpec struct {
 	Name       string     `json:"name"` // This name will be shown in Milo when a builder is affected by this Problem.
 	Score      int        `json:"score"`
+	PeriodDays int        `json:"period_days"`
 	Thresholds Thresholds `json:"thresholds"`
 }
 type Thresholds struct {

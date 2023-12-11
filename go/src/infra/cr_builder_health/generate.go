@@ -278,8 +278,6 @@ func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, 
 	defer func() { step.End(stepErr) }()
 
 	builderRows := make(map[string]Row)
-	healthyDays := make(map[string]int)
-	unhealthyDays := make(map[string]int)
 
 	for _, row := range rows {
 		if isWeekend(row.Date) {
@@ -293,53 +291,60 @@ func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, 
 			builder = row
 		}
 
-		if row.HealthScore > UNSET_SCORE && row.HealthScore <= UNHEALTHY_SCORE {
-			unhealthyDays[builderID] += 1
-		} else if row.HealthScore > UNHEALTHY_SCORE && row.HealthScore <= HEALTHY_SCORE {
-			healthyDays[builderID] += 1
-		}
-
-		if bucketSpecs, ok := srcConfig.BucketSpecs[row.Bucket]; !ok {
+		if bucketSpec, ok := srcConfig.BucketSpecs[row.Bucket]; !ok {
 			continue
-		} else if _, ok := bucketSpecs[row.Builder]; !ok {
+		} else if builderSpec, ok := bucketSpec[row.Builder]; !ok {
 			continue
 		} else {
-			// TODO: read the period in the builder spec
-			var period = 7
+			for _, problemSpec := range builderSpec.ProblemSpecs {
+				var periodDays = problemSpec.PeriodDays
 
-			diffDate := civil.DateOf(input.Date.AsTime().UTC()).DaysSince(row.Date)
-			if diffDate > period {
-				continue
+				diffDate := civil.DateOf(input.Date.AsTime().UTC()).DaysSince(row.Date)
+				if diffDate > periodDays {
+					continue
+				}
+
+				// Let period_days of the unhealthy spec and low-value spec be 7
+				// and 90, respectively, and their scores be 5 and 1,
+				// respectively.
+				// If any score in the last 7 days is greater than 5, the
+				// builder is considered healthy.
+				// If any score in the last 90 days is greater than 1, the
+				// builder is considered unhealthy.
+				// Otherwise, the builder is considered low-value.
+				builder.HealthScore = max(builder.HealthScore, row.HealthScore)
+
+				builderRows[builderID] = builder
 			}
-			builder.HealthScore = max(builder.HealthScore, row.HealthScore)
-			builderRows[builderID] = builder
 		}
 	}
 
 	rowsWithIndicators := make([]Row, 0, len(builderRows))
 
 	inactiveBuilders := 0
-	fullyHealthyBuilders := 0
-	fullyUnhealthyBuilders := 0
-	partiallyHealthyBuilders := 0
+	healthyBuilders := 0
+	unhealthyBuilders := 0
+	lowValueBuilders := 0
 
 	for builderID, row := range builderRows {
 		rowsWithIndicators = append(rowsWithIndicators, row)
-		if healthyDays[builderID] == 0 && unhealthyDays[builderID] == 0 {
-			inactiveBuilders += 1
-		} else if healthyDays[builderID] == 0 {
-			fullyUnhealthyBuilders += 1
-		} else if unhealthyDays[builderID] == 0 {
-			fullyHealthyBuilders += 1
+		if row.HealthScore > 5 {
+			healthyBuilders += 1
+		} else if row.HealthScore > 1 {
+			unhealthyBuilders += 1
+			logging.Errorf(ctx, "Unhealthy builders: %s", builderID)
+		} else if row.HealthScore > 0 {
+			lowValueBuilders += 1
+			logging.Errorf(ctx, "Low-value builders: %s", builderID)
 		} else {
-			partiallyHealthyBuilders += 1
+			inactiveBuilders += 1
 		}
 	}
 
-	logging.Errorf(ctx, "Fully healthy builders: %d", fullyHealthyBuilders)
-	logging.Errorf(ctx, "Partially healthy builders: %d", partiallyHealthyBuilders)
-	logging.Errorf(ctx, "Fully unhealthy builders: %d", fullyUnhealthyBuilders)
-	logging.Errorf(ctx, "Inactive builders: %d", inactiveBuilders)
+	logging.Errorf(ctx, "Total healthy builders: %d", healthyBuilders)
+	logging.Errorf(ctx, "Total unhealthy builders: %d", unhealthyBuilders)
+	logging.Errorf(ctx, "Total low-value builders: %d", lowValueBuilders)
+	logging.Errorf(ctx, "Total inactive builders: %d", inactiveBuilders)
 
 	return rowsWithIndicators, nil
 }

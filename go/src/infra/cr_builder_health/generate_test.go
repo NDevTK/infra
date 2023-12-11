@@ -94,25 +94,78 @@ func TestBuilderID(t *testing.T) {
 func TestCalculateIndicators(t *testing.T) {
 	t.Parallel()
 
-	Convey("(Slightly) healthy builders", t, func() {
+	var srcConfig = SrcConfig{
+		BucketSpecs: map[string]BuilderSpecs{
+			"bucket": {
+				"existant-builder": BuilderSpec{
+					ProblemSpecs: []ProblemSpec{
+						{
+							Name:       "Unhealthy",
+							PeriodDays: 7,
+							Score:      UNHEALTHY_SCORE,
+							Thresholds: Thresholds{
+								FailRate: AverageThresholds{Average: 0.2},
+							},
+						},
+						{
+							Name:       "Low Value",
+							PeriodDays: 7,
+							Score:      LOW_VALUE_SCORE,
+							Thresholds: Thresholds{
+								FailRate: AverageThresholds{Average: 0.9},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	var input = healthpb.InputParams{
+		Date: timestamppb.New(time.Date(2024, 1, 7, 0, 0, 0, 0, time.UTC)),
+	}
+
+	Convey("Weekend score is discarded", t, func() {
+		ctx := context.Background()
+		rowsWithHealthScores := []Row{{
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: HEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   6, // Saturday
+			},
+		}, {
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: UNHEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   5,
+			},
+		}}
+
+		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
+		So(err, ShouldBeNil)
+		So(len(rowsWithIndicators), ShouldEqual, 1)
+
+		// As 2024/01/06, being a Saturday, is excluded from the health score calculation, the final health score should be UNHEALTHY_SCORE
+		So(rowsWithIndicators[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+	},
+	)
+
+	Convey("Score in out-of-period date is discarded", t, func() {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: UNHEALTHY_SCORE,
 			Date: civil.Date{
-				Year:  2023,
-				Month: time.December,
-				Day:   5,
-			},
-		}, {
-			Bucket:      "bucket",
-			Builder:     existantBuilder,
-			HealthScore: 8,
-			Date: civil.Date{
-				Year:  2023,
-				Month: time.December,
-				Day:   4,
+				Year:  2024,
+				Month: time.January,
+				Day:   1,
 			},
 		}, {
 			Bucket:      "bucket",
@@ -121,38 +174,165 @@ func TestCalculateIndicators(t *testing.T) {
 			Date: civil.Date{
 				Year:  2023,
 				Month: time.December,
-				Day:   3,
+				Day:   29, // Friday but out of the 7-day period
 			},
 		}}
-
-		input := healthpb.InputParams{
-			Date: timestamppb.New(time.Date(2023, 12, 6, 0, 0, 0, 0, time.UTC)),
-		}
-
-		var srcConfig = SrcConfig{
-			BucketSpecs: map[string]BuilderSpecs{
-				"bucket": {
-					"existant-builder": BuilderSpec{
-						ProblemSpecs: []ProblemSpec{
-							{
-								Name:  "Unhealthy",
-								Score: UNHEALTHY_SCORE,
-								Thresholds: Thresholds{
-									FailRate: AverageThresholds{Average: 0.2},
-								},
-							},
-						},
-					},
-				},
-			},
-		}
 
 		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
 		So(err, ShouldBeNil)
 		So(len(rowsWithIndicators), ShouldEqual, 1)
 
-		// As 2023/12/03, being a Sunday, is excluded from the health score calculation, the final health score should be 8
-		So(rowsWithIndicators[0].HealthScore, ShouldEqual, 8)
+		So(rowsWithIndicators[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+	},
+	)
+
+	Convey("Healthy & Healthy --> Healthy builder", t, func() {
+		ctx := context.Background()
+		rowsWithHealthScores := []Row{{
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: HEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   2,
+			},
+		}, {
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: HEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   1,
+			},
+		}}
+
+		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
+		So(err, ShouldBeNil)
+		So(len(rowsWithIndicators), ShouldEqual, 1)
+
+		So(rowsWithIndicators[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
+	},
+	)
+
+	Convey("Healthy & Unhealthy --> Healthy builder", t, func() {
+		ctx := context.Background()
+		rowsWithHealthScores := []Row{{
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: HEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   2,
+			},
+		}, {
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: UNHEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   1,
+			},
+		}}
+
+		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
+		So(err, ShouldBeNil)
+		So(len(rowsWithIndicators), ShouldEqual, 1)
+
+		So(rowsWithIndicators[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
+	},
+	)
+
+	Convey("Unhealthy & Unhealthy --> Unhealthy builder", t, func() {
+		ctx := context.Background()
+		rowsWithHealthScores := []Row{{
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: UNHEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   2,
+			},
+		}, {
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: UNHEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   1,
+			},
+		}}
+
+		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
+		So(err, ShouldBeNil)
+		So(len(rowsWithIndicators), ShouldEqual, 1)
+
+		So(rowsWithIndicators[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+	},
+	)
+
+	Convey("Unhealthy & Low-value --> Unhealthy builder", t, func() {
+		ctx := context.Background()
+		rowsWithHealthScores := []Row{{
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: UNHEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   2,
+			},
+		}, {
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: LOW_VALUE_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   1,
+			},
+		}}
+
+		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
+		So(err, ShouldBeNil)
+		So(len(rowsWithIndicators), ShouldEqual, 1)
+
+		So(rowsWithIndicators[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+	},
+	)
+
+	Convey("Low-value & Low-value --> Low-value builder", t, func() {
+		ctx := context.Background()
+		rowsWithHealthScores := []Row{{
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: LOW_VALUE_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   2,
+			},
+		}, {
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: LOW_VALUE_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   1,
+			},
+		}}
+
+		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
+		So(err, ShouldBeNil)
+		So(len(rowsWithIndicators), ShouldEqual, 1)
+
+		So(rowsWithIndicators[0].HealthScore, ShouldEqual, LOW_VALUE_SCORE)
 	},
 	)
 }
