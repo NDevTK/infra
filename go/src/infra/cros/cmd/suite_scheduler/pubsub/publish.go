@@ -12,23 +12,23 @@ import (
 	"cloud.google.com/go/pubsub"
 )
 
-// PubsubClient defines the minimum requires that this project will need of a
+// PublishClient defines the minimum requires that this project will need of a
 // Pub/Sub API.
-type PubsubClient interface {
+type PublishClient interface {
 	InitClient(ctx context.Context, projectID string) error
 	InitTopic(ctx context.Context, topicID string) error
 	PublishMessage(ctx context.Context, data []byte) error
 }
 
-// Client implements the PubsubClient interface.
-type Client struct {
+// Publish implements the PubsubClient interface.
+type Publish struct {
 	client *pubsub.Client
 	topic  *pubsub.Topic
 }
 
-// InitPubSubClient returns a newly created Pub/Sub Client interface.
-func InitPubSubClient(ctx context.Context, projectID, topicID string) (PubsubClient, error) {
-	psClient := &Client{}
+// InitPublishClient returns a newly created Pub/Sub Client interface.
+func InitPublishClient(ctx context.Context, projectID, topicID string) (PublishClient, error) {
+	psClient := &Publish{}
 	err := psClient.InitClient(ctx, projectID)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func InitPubSubClient(ctx context.Context, projectID, topicID string) (PubsubCli
 }
 
 // InitClient creates the client interface for the current Pub/Sub Client.
-func (c *Client) InitClient(ctx context.Context, projectID string) error {
+func (c *Publish) InitClient(ctx context.Context, projectID string) error {
 	if c.client != nil {
 		return fmt.Errorf("client is already initialized")
 	}
@@ -56,7 +56,7 @@ func (c *Client) InitClient(ctx context.Context, projectID string) error {
 }
 
 // InitTopic creates the topic interface for the current Pub/Sub Client.
-func (c *Client) InitTopic(ctx context.Context, topicID string) error {
+func (c *Publish) InitTopic(ctx context.Context, topicID string) error {
 	if c.client == nil {
 		return fmt.Errorf("client has not been initialized yet")
 	}
@@ -77,7 +77,7 @@ func (c *Client) InitTopic(ctx context.Context, topicID string) error {
 
 // PublishMessage sends the provided date to the clients pre-configured Pub/Sub
 // topic.
-func (c *Client) PublishMessage(ctx context.Context, data []byte) error {
+func (c *Publish) PublishMessage(ctx context.Context, data []byte) error {
 	if c.topic == nil {
 		return fmt.Errorf("no topic is set for pubsub client")
 	}
