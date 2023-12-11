@@ -359,6 +359,21 @@ func deployActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
+		"Collect cellular labels": {
+			Docs: []string{
+				"Collect device labels on cellular DUTs",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+			},
+			Dependencies: []string{
+				"Update cellular modem labels",
+				"Update cellular sim labels",
+			},
+			ExecName: "sample_pass",
+			// Do not block deployment on cellular label detection.
+			AllowFailAfterRecovery: true,
+		},
 		"Collect DUT labels": {
 			Docs: []string{
 				"Updating device info in inventory.",
@@ -373,6 +388,7 @@ func deployActions() map[string]*Action {
 				"Read device SKU",
 				"servo_type_label",
 				"Read RO_VPD from DUT",
+				"Collect cellular labels",
 			},
 			ExecName: "sample_pass",
 		},
