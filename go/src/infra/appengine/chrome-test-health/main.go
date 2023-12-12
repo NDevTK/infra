@@ -8,6 +8,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -293,12 +294,7 @@ func (covServer *coverageServer) GetAbsoluteCoverageDataOneYear(
 		return nil, appstatus.Errorf((codes.InvalidArgument), "Either paths or components should be specified")
 	}
 
-	resp, err := covServer.Client.GetAbsoluteCoverageDataOneYear(ctx, req)
-	if err != nil {
-		logging.Errorf(ctx, "Error fetching the absolute coverage stats: %s", err)
-		return nil, err
-	}
-	return resp, nil
+	return nil, nil
 }
 
 // GetIncrementalCoverageDataOneYear TO_BE_IMPLEMENTED
@@ -306,6 +302,21 @@ func (covServer *coverageServer) GetIncrementalCoverageDataOneYear(
 	ctx context.Context,
 	req *api.GetIncrementalCoverageDataOneYearRequest,
 ) (*api.GetIncrementalCoverageDataOneYearResponse, error) {
+	isPathListPresent := validatePresence(req.Paths)
+	if !isPathListPresent {
+		return nil, appstatus.Errorf((codes.InvalidArgument), "Paths should be specified")
+	}
+
+	for _, path := range req.Paths {
+		if !pathRelativeToRoot(path) {
+			return nil, appstatus.Errorf(
+				(codes.InvalidArgument),
+				"Path %s is not relative to root, it should start with //",
+				path,
+			)
+		}
+	}
+
 	return nil, nil
 }
 
@@ -391,6 +402,12 @@ func validatePresence(value interface{}) bool {
 		return false
 	}
 	return true
+}
+
+// pathRelativeToRoot checks if the given path is relative to
+// project root, ie: //
+func pathRelativeToRoot(path string) bool {
+	return strings.HasPrefix(path, "//") && filepath.IsAbs(path)
 }
 
 // validateFormat takes in a value, pattern as arguments and

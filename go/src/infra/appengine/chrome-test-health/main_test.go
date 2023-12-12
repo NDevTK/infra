@@ -519,6 +519,38 @@ func TestGetAbsoluteCoverageDataOneYear(t *testing.T) {
 	})
 }
 
+func TestGetIncrementalCoverageDataOneYear(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	mock := &coverageClientMock{}
+	srv := &coverageServer{
+		Client: mock,
+	}
+	request := &api.GetIncrementalCoverageDataOneYearRequest{
+		Paths: []string{"//p1/p2/"},
+	}
+
+	Convey("Should fail", t, func() {
+		Convey("Missing paths", func() {
+			req := request
+			req.Paths = []string{}
+			resp, err := srv.GetIncrementalCoverageDataOneYear(ctx, req)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Paths should be specified")
+			So(resp, ShouldBeNil)
+		})
+
+		Convey("Path not relative to project root", func() {
+			req := request
+			req.Paths = []string{"/a/b/"}
+			resp, err := srv.GetIncrementalCoverageDataOneYear(ctx, req)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Path /a/b/ is not relative to root, it should start with //")
+			So(resp, ShouldBeNil)
+		})
+	})
+}
+
 func TestGetProjectDefaultConfig(t *testing.T) {
 	t.Parallel()
 
@@ -557,5 +589,19 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 			So(err, ShouldErrLike, "project")
 			So(resp, ShouldBeNil)
 		})
+	})
+}
+
+func TestPathRelativeToRoot(t *testing.T) {
+	t.Parallel()
+
+	Convey("Should be true when path starts with //", t, func() {
+		isRel := pathRelativeToRoot("//a/b/")
+		So(isRel, ShouldBeTrue)
+	})
+
+	Convey("Should be false when path doesn't start with //", t, func() {
+		isRel := pathRelativeToRoot("/a/b/")
+		So(isRel, ShouldBeFalse)
 	})
 }
