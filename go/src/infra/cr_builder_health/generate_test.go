@@ -94,25 +94,27 @@ func TestBuilderID(t *testing.T) {
 func TestCalculateIndicators(t *testing.T) {
 	t.Parallel()
 
-	var srcConfig = SrcConfig{
-		BucketSpecs: map[string]BuilderSpecs{
-			"bucket": {
-				"existant-builder": BuilderSpec{
-					ProblemSpecs: []ProblemSpec{
-						{
-							Name:       "Unhealthy",
-							PeriodDays: 7,
-							Score:      UNHEALTHY_SCORE,
-							Thresholds: Thresholds{
-								FailRate: AverageThresholds{Average: 0.2},
+	var srcConfig = map[string]SrcConfig{
+		"project": {
+			BucketSpecs: map[string]BuilderSpecs{
+				"bucket": {
+					"existant-builder": BuilderSpec{
+						ProblemSpecs: []ProblemSpec{
+							{
+								Name:       "Unhealthy",
+								PeriodDays: 7,
+								Score:      UNHEALTHY_SCORE,
+								Thresholds: Thresholds{
+									FailRate: AverageThresholds{Average: 0.2},
+								},
 							},
-						},
-						{
-							Name:       "Low Value",
-							PeriodDays: 7,
-							Score:      LOW_VALUE_SCORE,
-							Thresholds: Thresholds{
-								FailRate: AverageThresholds{Average: 0.9},
+							{
+								Name:       "Low Value",
+								PeriodDays: 7,
+								Score:      LOW_VALUE_SCORE,
+								Thresholds: Thresholds{
+									FailRate: AverageThresholds{Average: 0.9},
+								},
 							},
 						},
 					},
@@ -128,6 +130,7 @@ func TestCalculateIndicators(t *testing.T) {
 	Convey("Weekend score is discarded", t, func() {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: HEALTHY_SCORE,
@@ -137,6 +140,7 @@ func TestCalculateIndicators(t *testing.T) {
 				Day:   6, // Saturday
 			},
 		}, {
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: UNHEALTHY_SCORE,
@@ -159,6 +163,7 @@ func TestCalculateIndicators(t *testing.T) {
 	Convey("Score in out-of-period date is discarded", t, func() {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: UNHEALTHY_SCORE,
@@ -168,6 +173,7 @@ func TestCalculateIndicators(t *testing.T) {
 				Day:   1,
 			},
 		}, {
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: HEALTHY_SCORE,
@@ -189,6 +195,7 @@ func TestCalculateIndicators(t *testing.T) {
 	Convey("Healthy & Healthy --> Healthy builder", t, func() {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: HEALTHY_SCORE,
@@ -198,6 +205,7 @@ func TestCalculateIndicators(t *testing.T) {
 				Day:   2,
 			},
 		}, {
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: HEALTHY_SCORE,
@@ -219,6 +227,7 @@ func TestCalculateIndicators(t *testing.T) {
 	Convey("Healthy & Unhealthy --> Healthy builder", t, func() {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: HEALTHY_SCORE,
@@ -228,6 +237,7 @@ func TestCalculateIndicators(t *testing.T) {
 				Day:   2,
 			},
 		}, {
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: UNHEALTHY_SCORE,
@@ -249,6 +259,7 @@ func TestCalculateIndicators(t *testing.T) {
 	Convey("Unhealthy & Unhealthy --> Unhealthy builder", t, func() {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: UNHEALTHY_SCORE,
@@ -258,6 +269,7 @@ func TestCalculateIndicators(t *testing.T) {
 				Day:   2,
 			},
 		}, {
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: UNHEALTHY_SCORE,
@@ -279,6 +291,7 @@ func TestCalculateIndicators(t *testing.T) {
 	Convey("Unhealthy & Low-value --> Unhealthy builder", t, func() {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: UNHEALTHY_SCORE,
@@ -288,6 +301,7 @@ func TestCalculateIndicators(t *testing.T) {
 				Day:   2,
 			},
 		}, {
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: LOW_VALUE_SCORE,
@@ -309,6 +323,7 @@ func TestCalculateIndicators(t *testing.T) {
 	Convey("Low-value & Low-value --> Low-value builder", t, func() {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: LOW_VALUE_SCORE,
@@ -318,6 +333,7 @@ func TestCalculateIndicators(t *testing.T) {
 				Day:   2,
 			},
 		}, {
+			Project:     "project",
 			Bucket:      "bucket",
 			Builder:     existantBuilder,
 			HealthScore: LOW_VALUE_SCORE,
@@ -344,6 +360,7 @@ func TestGenerate(t *testing.T) {
 		ctx := context.Background()
 		client := &bbClientMock{}
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "bucket",
 			Builder: existantBuilder,
 			Metrics: []*Metric{
@@ -366,6 +383,7 @@ func TestGenerate(t *testing.T) {
 		client := &bbClientMock{}
 		rows := []Row{
 			{
+				Project: "project",
 				Bucket:  "bucket",
 				Builder: nonExistantBuilder,
 				Metrics: []*Metric{
@@ -378,6 +396,7 @@ func TestGenerate(t *testing.T) {
 				},
 			},
 			{
+				Project: "project",
 				Bucket:  "bucket",
 				Builder: existantBuilder,
 				Metrics: []*Metric{

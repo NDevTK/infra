@@ -56,22 +56,31 @@ func generate(ctx context.Context, input *healthpb.InputParams) error {
 	}
 	defer bqClient.Close()
 
-	srcConfig, err := getSrcConfig(ctx)
+	chromiumSrcConfig, err := getSrcConfig(ctx, "chromium-review.googlesource.com", "chromium.googlesource.com", "chromium/src")
 	if err != nil {
-		return errors.Annotate(err, "Get Src Config").Err()
+		return errors.Annotate(err, "Get Src Config for Chromium").Err()
 	}
 
+	chromeSrcConfig, err := getSrcConfig(ctx, "chrome-internal-review.googlesource.com", "chrome-internal.googlesource.com", "chrome/src-internal")
+	if err != nil {
+		return errors.Annotate(err, "Get Src Config for Chrome").Err()
+	}
+
+	srcConfigs := map[string]SrcConfig{
+		"chromium": *chromiumSrcConfig,
+		"chrome":   *chromeSrcConfig,
+	}
 	rows, err := getMetrics(ctx, bqClient, input)
 	if err != nil {
 		return errors.Annotate(err, "Get metrics").Err()
 	}
 
-	rowsWithHealthScores, err := calculateIntermediateHealthScores(ctx, rows, *srcConfig)
+	rowsWithHealthScores, err := calculateIntermediateHealthScores(ctx, rows, srcConfigs)
 	if err != nil {
 		return errors.Annotate(err, "Calculate intermediate health scores").Err()
 	}
 
-	rowsWithIndicators, err := calculateIndicators(ctx, input, rowsWithHealthScores, *srcConfig)
+	rowsWithIndicators, err := calculateIndicators(ctx, input, rowsWithHealthScores, srcConfigs)
 	if err != nil {
 		return errors.Annotate(err, "Calculate indicators").Err()
 	}
@@ -187,18 +196,24 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
 	return rows, nil
 }
 
-func calculateIntermediateHealthScores(buildCtx context.Context, rows []Row, srcConfig SrcConfig) ([]Row, error) {
+func calculateIntermediateHealthScores(buildCtx context.Context, rows []Row, srcConfigs map[string]SrcConfig) ([]Row, error) {
 	var stepErr error
 	step, ctx := build.StartStep(buildCtx, "Calculate intermediate health scores")
 	defer func() { step.End(stepErr) }()
 
 	failedBuilders := 0
 	for i, row := range rows {
-		if bucketSpec, ok := srcConfig.BucketSpecs[row.Bucket]; !ok {
+		if srcConfig, ok := srcConfigs[row.Project]; !ok {
 			rows[i].HealthScore = UNSET_SCORE
+			logging.Errorf(ctx, "Src Config not found for project: %s", row.Project)
+			continue
+		} else if bucketSpec, ok := srcConfig.BucketSpecs[row.Bucket]; !ok {
+			rows[i].HealthScore = UNSET_SCORE
+			logging.Errorf(ctx, "Src Config not found for project: %s, bucket: %s", row.Project, row.Bucket)
 			continue
 		} else if builderSpec, ok := bucketSpec[row.Builder]; !ok {
 			rows[i].HealthScore = UNSET_SCORE
+			logging.Errorf(ctx, "Src Config not found for project: %s, bucket: %s, builder: %s", row.Project, row.Bucket, row.Builder)
 			continue
 		} else {
 			if len(builderSpec.ProblemSpecs) == 0 {
@@ -272,7 +287,7 @@ func isWeekend(date civil.Date) bool {
 	return time.Weekday() == 0 || time.Weekday() == 6
 }
 
-func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, rows []Row, srcConfig SrcConfig) ([]Row, error) {
+func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, rows []Row, srcConfigs map[string]SrcConfig) ([]Row, error) {
 	var stepErr error
 	step, ctx := build.StartStep(buildCtx, "Calculate indicators")
 	defer func() { step.End(stepErr) }()
@@ -291,7 +306,9 @@ func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, 
 			builder = row
 		}
 
-		if bucketSpec, ok := srcConfig.BucketSpecs[row.Bucket]; !ok {
+		if srcConfig, ok := srcConfigs[row.Project]; !ok {
+			continue
+		} else if bucketSpec, ok := srcConfig.BucketSpecs[row.Bucket]; !ok {
 			continue
 		} else if builderSpec, ok := bucketSpec[row.Builder]; !ok {
 			continue

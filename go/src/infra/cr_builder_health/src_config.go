@@ -63,12 +63,12 @@ const UNSET_SCORE = 0
 
 const UNSET_THRESHOLD = 0
 
-func getSrcConfig(buildCtx context.Context) (*SrcConfig, error) {
+func getSrcConfig(buildCtx context.Context, gerritHost string, repoHost string, repoName string) (*SrcConfig, error) {
 	var err error
 	step, ctx := build.StartStep(buildCtx, "Get Src Config")
 	defer func() { step.End(err) }()
 
-	step.SetSummaryMarkdown("Reading src config from https://chromium.googlesource.com/chromium/src/+/refs/heads/main/infra/config/generated/health-specs/health-specs.json")
+	step.SetSummaryMarkdown(fmt.Sprintf("Reading src config from https://%s/%s/+/refs/heads/main/infra/config/generated/health-specs/health-specs.json", repoHost, repoName))
 
 	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, auth.Options{Scopes: []string{gitiles.OAuthScope}})
 	httpClient, err := authenticator.Client()
@@ -76,7 +76,7 @@ func getSrcConfig(buildCtx context.Context) (*SrcConfig, error) {
 		return nil, errors.Annotate(err, "Initializing Auth").Err()
 	}
 
-	client, err := git.NewClient(ctx, httpClient, "chromium-review.googlesource.com", "chromium.googlesource.com", "chromium/src", "main")
+	client, err := git.NewClient(ctx, httpClient, gerritHost, repoHost, repoName, "main")
 	if err != nil {
 		return nil, errors.Annotate(err, "Initializing Gitiles client").Err()
 	}

@@ -14,7 +14,8 @@ import (
 func TestSrcConfig(t *testing.T) {
 	t.Parallel()
 
-	var testSrcConfig SrcConfig = SrcConfig{
+	var testSrcConfig = make(map[string]SrcConfig)
+	testSrcConfig["project"] = SrcConfig{
 		DefaultSpecs: []ProblemSpec{
 			{
 				Name: "Unhealthy",
@@ -150,6 +151,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("Healthy builder is healthy, default thresholds", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "bucket",
 			Builder: "builder",
 			Metrics: []*Metric{
@@ -172,6 +174,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("P50 percentile above threshold, default thresholds", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "bucket",
 			Builder: "builder",
 			Metrics: []*Metric{
@@ -189,6 +192,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("P95 percentile above thresholds, default thresholds", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "bucket",
 			Builder: "builder",
 			Metrics: []*Metric{
@@ -206,6 +210,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("Fail rate above thresholds, default thresholds", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "bucket",
 			Builder: "builder",
 			Metrics: []*Metric{
@@ -223,6 +228,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("P50 build time below thresholds, slow builder", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "slow-bucket",
 			Builder: "slow-builder",
 			Metrics: []*Metric{
@@ -240,6 +246,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("Infra fail rate above thresholds, slow builder", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "slow-bucket",
 			Builder: "slow-builder",
 			Metrics: []*Metric{
@@ -257,6 +264,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("Default thresholds with custom thresholds error", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "slow-bucket",
 			Builder: "slow-builder",
 			Metrics: []*Metric{
@@ -275,6 +283,7 @@ func TestSrcConfig(t *testing.T) {
 		ctx := context.Background()
 		rows := []Row{
 			{
+				Project: "project",
 				Bucket:  "bucket",
 				Builder: "builder",
 				Metrics: []*Metric{
@@ -287,6 +296,7 @@ func TestSrcConfig(t *testing.T) {
 				},
 			},
 			{
+				Project: "project",
 				Bucket:  "slow-bucket",
 				Builder: "slow-builder",
 				Metrics: []*Metric{
@@ -313,6 +323,7 @@ func TestSrcConfig(t *testing.T) {
 		ctx := context.Background()
 		rows := []Row{
 			{
+				Project: "project",
 				Bucket:  "bucket",
 				Builder: "builder",
 				Metrics: []*Metric{
@@ -325,6 +336,7 @@ func TestSrcConfig(t *testing.T) {
 				},
 			},
 			{
+				Project: "project",
 				Bucket:  "slow-bucket",
 				Builder: "slow-builder",
 				Metrics: []*Metric{
@@ -352,6 +364,7 @@ func TestSrcConfig(t *testing.T) {
 		ctx := context.Background()
 		rows := []Row{
 			{
+				Project: "project",
 				Bucket:  "bucket",
 				Builder: "builder",
 				Metrics: []*Metric{
@@ -364,6 +377,7 @@ func TestSrcConfig(t *testing.T) {
 				},
 			},
 			{
+				Project: "project",
 				Bucket:  "slow-bucket",
 				Builder: "slow-builder",
 				Metrics: []*Metric{
@@ -391,6 +405,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("Improper threshold config, both default and custom thresholds", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "improper-bucket",
 			Builder: "improper-builder",
 		}}
@@ -406,6 +421,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("Improper threshold config, Default set to unknown sentinel value", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "improper-bucket",
 			Builder: "improper-builder2",
 		}}
@@ -420,6 +436,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("Improper ProblemSpecs, no ProblemSpecs", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "improper-bucket",
 			Builder: "improper-builder3",
 		}}
@@ -434,6 +451,7 @@ func TestSrcConfig(t *testing.T) {
 	Convey("Unconfigured builder", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
+			Project: "project",
 			Bucket:  "unconfigured-bucket",
 			Builder: "unconfigured-builder",
 		}}
@@ -469,13 +487,14 @@ func TestSrcConfig(t *testing.T) {
 		const unhealthyIndex = 0
 		const lowValueIndex = 1
 		row := Row{
+			Project: "project",
 			Bucket:  "custom-bucket",
 			Builder: "custom-builder",
 			Metrics: []*Metric{
 				{Type: "fail_rate", Value: 1.0},
 			},
 		}
-		ps := testSrcConfig.BucketSpecs[row.Bucket][row.Builder].ProblemSpecs
+		ps := testSrcConfig["project"].BucketSpecs[row.Bucket][row.Builder].ProblemSpecs
 
 		row.Metrics[0].Threshold = ps[unhealthyIndex].Thresholds.FailRate.Average
 		compareThresholdsHelper(&row, &ps[unhealthyIndex], row.Metrics[0])
