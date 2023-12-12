@@ -24,6 +24,7 @@ import "infra/unifiedfleet/api/v1/models/chromeos/device/config.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto";
 import "infra/unifiedfleet/api/v1/models/machine.proto";
 import "infra/unifiedfleet/api/v1/models/hwid.proto";
+import "infra/unifiedfleet/api/v1/models/wifiinfo.proto";
 import "infra/libs/skylab/inventory/device.proto";
 import "infra/unifiedfleet/api/v1/models/ownership.proto";
 
@@ -141,6 +142,9 @@ message MachineLSE {
     string realm = 25 [
         (google.api.field_behavior) = OUTPUT_ONLY
     ];
+
+    // The secret for wifi tests.
+    WifiSecret wifi_secret = 26;
 }
 
 // ChromeBrowserMachineLSE refers to the entity
