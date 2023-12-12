@@ -47,6 +47,7 @@ func application(p Params) *cli.Application {
 			cmdCompute(),
 			cmdChromiumUpdate(&p),
 			cmdMigrate(),
+			cmdMigrateMonorail(),
 			cmdLocationTags(),
 			cmdParse(),
 

@@ -26,7 +26,7 @@ const (
 
 // TODO(crbug.com/1505875) - Remove this once migration is complete.
 // Note that these definitions are separate from the ones in dir_metadata.proto
-// as these are for compatibility to the mapping definitions provided.
+// as these are for compatibility to the mapping definitions migration.
 type ComponentsConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

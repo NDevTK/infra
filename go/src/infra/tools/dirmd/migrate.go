@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package dirmd
 
@@ -39,6 +39,11 @@ func MigrateMetadata(dir string) error {
 	return writeOwners(filepath.Join(dir, OwnersFilename), owners)
 }
 
+// writeMetadata writes the metadata to the path.
+func writeMetadata(path string, md *dirmdpb.Metadata) error {
+	return os.WriteFile(path, []byte(prototext.Format(md)), 0644)
+}
+
 func writeMD(path string, md *dirmdpb.Metadata) error {
 	// Clear Monorail.Project field, since it's redundant for Chromium
 	// DIR_METADATA files as "chromium" is set as project on the root.
@@ -48,7 +53,7 @@ func writeMD(path string, md *dirmdpb.Metadata) error {
 	if proto.Equal(md.Monorail, emptyMonorail) {
 		md.Monorail = nil
 	}
-	return ioutil.WriteFile(path, []byte(prototext.Format(md)), 0644)
+	return writeMetadata(path, md)
 }
 
 // filterEmptyLines filters out duplicate empty lines, and empty lines at the
