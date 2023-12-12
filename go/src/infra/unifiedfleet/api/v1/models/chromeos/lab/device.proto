@@ -36,7 +36,7 @@ message ChromeOSDevice {
   };
 }
 
-// Next Tag: 12
+// Next Tag: 13
 message DeviceUnderTest{
   string hostname = 1;
   Peripherals peripherals = 2;
@@ -77,6 +77,9 @@ message DeviceUnderTest{
   // Provide DUT/drone affinity
   // Example: satlab-abc123
   string hive = 11;
+
+  // The secret for wifi tests.
+  WifiSecret wifi_secret = 12;
 }
 
 // Next Tag: 5
@@ -91,4 +94,18 @@ message Labstation {
 message Devboard {
   Servo servo = 1;
   repeated string pools = 2;
+}
+
+// Next Tag: 5
+// WifiSecret is the secret stored/managed in the Secret Manager of a GCP
+// project.
+message WifiSecret {
+  // The GCP project storing the secret, default is 'unifiedfleet', i.e. UFS.
+  string project_id = 1;
+  string secret_name = 2; // The secret name in the Secret Manager.
+
+  // A wifi secret can be assigned to multiple DUT pools or a UFS zones, so the
+  // DUTs in the designated pools/zones have the wifi secret as the default.
+  repeated string dut_pools = 3; // The DUT pools using this wifi secret.
+  repeated string zones = 4; // The UFS zone using this wifi secret.
 }
