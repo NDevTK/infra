@@ -417,13 +417,13 @@ func validateCreateNic(ctx context.Context, nic *ufspb.Nic, machine *ufspb.Machi
 //
 // checks if nic, machine and resources referecned by the nic does not exist
 func validateUpdateNic(ctx context.Context, oldNic *ufspb.Nic, nic *ufspb.Nic, mask *field_mask.FieldMask) error {
-	machine, err := registration.GetMachine(ctx, oldNic.GetMachine())
-	if err != nil {
-		return status.Errorf(codes.InvalidArgument, "machine %s not found", oldNic.GetMachine())
-	}
-	// Check permission
-	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, machine.GetRealm()); err != nil {
-		return err
+	if machine, err := registration.GetMachine(ctx, oldNic.GetMachine()); err == nil && machine != nil {
+		// Check permission
+		if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, machine.GetRealm()); err != nil {
+			return errors.Annotate(err, "validateUpdateNic - no permission to update for realm %s", machine.GetRealm()).Err()
+		}
+	} else {
+		logging.Infof(ctx, "Fail to get machine %s for nic %s: %s", oldNic.GetMachine(), oldNic.GetName(), err)
 	}
 	// Aggregate resource to check if does not exist
 	var resourcesNotFound []*Resource
