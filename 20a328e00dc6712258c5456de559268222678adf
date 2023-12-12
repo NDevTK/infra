@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "073e2f73_8c4b620c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1360310
+      },
+      "writtenOn": "2023-12-12T19:32:34Z",
+      "side": 1,
+      "message": "lgtm after comments resolved",
+      "revId": "20a328e00dc6712258c5456de559268222678adf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b387969e_0435e331",
+        "filename": "appengine/findit/common/base_handler.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1360310
+      },
+      "writtenOn": "2023-12-12T19:32:34Z",
+      "side": 1,
+      "message": "Should non-builtin import be separated?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 13
+      },
+      "revId": "20a328e00dc6712258c5456de559268222678adf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5c773d8_f7ee9793",
+        "filename": "appengine/findit/common/token.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1360310
+      },
+      "writtenOn": "2023-12-12T19:32:34Z",
+      "side": 1,
+      "message": "Is this needed? https://source.chromium.org/chromium/infra/infra/+/main:appengine/findit/gae_libs/token.py;drc\u003d0131be118e01ee5b93bfeb648d0524bfb989ba9e;l\u003d160",
+      "range": {
+        "startLine": 160,
+        "startChar": 8,
+        "endLine": 160,
+        "endChar": 12
+      },
+      "revId": "20a328e00dc6712258c5456de559268222678adf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
