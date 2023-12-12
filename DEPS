@@ -203,13 +203,6 @@ hooks = [
       "--deps_file", "bootstrap/deps.pyl", "ENV"
     ],
   },
-  {
-    "pattern": ".",
-    "action": [
-      "python3", "./migration_warning.py"
-    ],
-    "condition": "not infra_superproject_checkout",
-  },
 ]
 
 recursedeps = ['luci']
