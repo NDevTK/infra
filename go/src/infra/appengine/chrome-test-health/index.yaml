@@ -1,0 +1,9 @@
+indexes:
+
+# For Code Coverage.
+- kind: CQSummaryCoverageData
+  properties:
+  - name: path
+  - name: is_unit_test
+  - name: timestamp
+    direction: asc
