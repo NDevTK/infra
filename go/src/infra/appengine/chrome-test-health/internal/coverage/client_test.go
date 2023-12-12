@@ -1005,3 +1005,27 @@ func TestAggregateCoverageReports(t *testing.T) {
 		})
 	})
 }
+
+func TestAggregateIncrementalCoverageReports(t *testing.T) {
+	t.Parallel()
+	client := Client{}
+
+	Convey("Should aggregate inc coverage numbers", t, func() {
+		data := getMockCQSummaryReport()
+		data = append(data, &entities.CQSummaryCoverageData{
+			Timestamp:         time.Date(2023, 11, 17, 20, 34, 58, 0, time.UTC),
+			Change:            4042362,
+			Patchset:          3,
+			IsUnitTest:        false,
+			Path:              "//a/b/",
+			DataType:          "dirs",
+			FilesCovered:      12,
+			TotalFilesChanged: 13,
+		},
+		)
+		m := client.aggregateIncrementalCoverageReports(data)
+
+		So(m["2023-11-17"], ShouldResemble, map[string]int64{"covered": 19, "total": 23})
+		So(m["2021-11-18"], ShouldResemble, map[string]int64{"covered": 5, "total": 10})
+	})
+}

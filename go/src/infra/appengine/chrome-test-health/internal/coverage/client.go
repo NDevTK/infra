@@ -377,6 +377,31 @@ func (c *Client) getIncCoverageReportsForLastYear(
 	return records, nil
 }
 
+// aggregateIncrementalCoverageReports takes in the incremental coverage
+// entities and return a map of date => [files covered, total file changes made]
+func (c *Client) aggregateIncrementalCoverageReports(
+	reports []*entities.CQSummaryCoverageData,
+) map[string]map[string]int64 {
+	aggregatedResults := map[string]map[string]int64{}
+	for _, report := range reports {
+		date := report.Timestamp.Format(time.DateOnly)
+		filesCovered := report.FilesCovered
+		totalFilesChanged := report.TotalFilesChanged
+
+		if _, ok := aggregatedResults[date]; !ok {
+			aggregatedResults[date] = map[string]int64{
+				"covered": 0,
+				"total":   0,
+			}
+		}
+
+		aggregatedResults[date]["covered"] = aggregatedResults[date]["covered"] + int64(filesCovered)
+		aggregatedResults[date]["total"] = aggregatedResults[date]["total"] + int64(totalFilesChanged)
+	}
+
+	return aggregatedResults
+}
+
 // GetIncrementalCoverageDataOneYear TO_BE_IMPLEMENTED
 func (c *Client) GetIncrementalCoverageDataOneYear(
 	ctx context.Context,
@@ -424,7 +449,7 @@ func (c *Client) getCoverageNumbersHelper(
 			metricMap := metric.(map[string]interface{})
 			if metricMap["name"] == "line" {
 				covNumber := CoveragePerDate{
-					date:    report.CommitTimestamp.Format("2006-01-02"),
+					date:    report.CommitTimestamp.Format(time.DateOnly),
 					covered: metricMap["covered"].(float64),
 					total:   metricMap["total"].(float64),
 				}
