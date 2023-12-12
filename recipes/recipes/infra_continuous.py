@@ -167,25 +167,26 @@ CIPD_PACKAGE_BUILDERS = {
     ],
 }
 
-SUPERPROJECT_REPO = 'https://chromium.googlesource.com/infra/infra_superproject'
+INFRA_INTERNAL_REPO = 'https://chrome-internal.googlesource.com/infra/infra_internal'
 INFRA_REPO = 'https://chromium.googlesource.com/infra/infra'
 
 
 def RunSteps(api):
-
-  buildername = api.buildbucket.builder_name
-  if (buildername.startswith('infra-internal-continuous') or
-      buildername.startswith('infra-internal-packager')):
+  buildername: str = api.buildbucket.builder_name
+  if buildername.startswith((
+      'infra-internal-continuous',
+      'infra-internal-packager',
+  )):
     project_name = 'infra_internal'
-    repo_url = SUPERPROJECT_REPO
-    gclient_config = 'infra_internal_superproject'
-    got_key = 'got_revision_superproject'
-  elif (buildername.startswith('infra-continuous') or
-      buildername.startswith('infra-packager')):
+    repo_url = INFRA_INTERNAL_REPO
+    gclient_config = 'infra_internal'
+  elif buildername.startswith((
+      'infra-continuous',
+      'infra-packager',
+  )):
     project_name = 'infra'
     repo_url = INFRA_REPO
     gclient_config = 'infra'
-    got_key = 'got_revision'
   else:  # pragma: no cover
     raise ValueError(
         'This recipe is not intended for builder %s. ' % buildername)
@@ -207,7 +208,7 @@ def RunSteps(api):
   # Whatever is checked out by bot_update. It is usually equal to
   # api.buildbucket.gitiles_commit.id except when the build was triggered
   # manually (commit id is empty in that case).
-  rev = co.bot_update_step.presentation.properties[got_key]
+  rev = co.bot_update_step.presentation.properties['got_revision']
   return build_main(api, co, buildername, project_name, repo_url, rev)
 
 
@@ -356,9 +357,9 @@ def GenTests(api):
              'ci', 'win')
 
   yield test('internal-ci-linux', 'infra-internal-continuous-bionic-64',
-             SUPERPROJECT_REPO, 'infra-internal', 'ci', 'linux')
+             INFRA_INTERNAL_REPO, 'infra-internal', 'ci', 'linux')
   yield test('internal-ci-mac', 'infra-internal-continuous-mac-11-64',
-             SUPERPROJECT_REPO, 'infra-internal', 'ci', 'mac')
+             INFRA_INTERNAL_REPO, 'infra-internal', 'ci', 'mac')
 
   yield test('public-packager-mac', 'infra-packager-mac-64', INFRA_REPO,
              'infra', 'prod', 'mac')
@@ -380,9 +381,9 @@ def GenTests(api):
              'infra', 'prod', 'win')
 
   yield test('internal-packager-linux', 'infra-internal-packager-linux-64',
-             SUPERPROJECT_REPO, 'infra-internal', 'prod', 'linux')
+             INFRA_INTERNAL_REPO, 'infra-internal', 'prod', 'linux')
   yield test('internal-packager-mac-arm64_codesign',
-             'infra-internal-packager-mac-arm64', SUPERPROJECT_REPO,
+             'infra-internal-packager-mac-arm64', INFRA_INTERNAL_REPO,
              'infra_internal', 'prod', 'mac') + api.properties(
                  signing_identity='AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX')
 
