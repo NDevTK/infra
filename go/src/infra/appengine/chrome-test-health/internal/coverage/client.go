@@ -351,6 +351,32 @@ func (c *Client) GetAbsoluteCoverageDataOneYear(
 	}, nil
 }
 
+// getIncCoverageReportsForLastYear fetches the incremental code coverage reports
+// for the last 365 days.
+func (c *Client) getIncCoverageReportsForLastYear(
+	ctx context.Context,
+	path string,
+	unitTestsOnly bool,
+) ([]entities.CQSummaryCoverageData, error) {
+	records := []entities.CQSummaryCoverageData{}
+	queryFilters := []datastorage.QueryFilter{
+		{Field: "path", Operator: "=", Value: path},
+		{Field: "is_unit_test", Operator: "=", Value: unitTestsOnly},
+		{Field: "timestamp", Operator: ">", Value: time.Now().Add(-time.Hour * 24 * 365)},
+	}
+
+	if err := c.coverageV2DsClient.Query(
+		ctx, &records, "CQSummaryCoverageData",
+		queryFilters, "timestamp", 0,
+	); err != nil {
+		logging.Errorf(ctx, "CQSummaryCoverageData: %w", err)
+		return nil, ErrInternalServerError
+	}
+
+	logging.Infof(ctx, "CQSummaryCoverageData: fetched %d records", len(records))
+	return records, nil
+}
+
 // GetIncrementalCoverageDataOneYear TO_BE_IMPLEMENTED
 func (c *Client) GetIncrementalCoverageDataOneYear(
 	ctx context.Context,

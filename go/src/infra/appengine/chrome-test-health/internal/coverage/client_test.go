@@ -114,6 +114,31 @@ func getMockPostsubmitReport() []*entities.PostsubmitReport {
 	}
 }
 
+func getMockCQSummaryReport() []*entities.CQSummaryCoverageData {
+	return []*entities.CQSummaryCoverageData{
+		{
+			Timestamp:         time.Date(2023, 11, 17, 20, 34, 58, 0, time.UTC),
+			Change:            4042361,
+			Patchset:          10,
+			IsUnitTest:        false,
+			Path:              "//a/b/",
+			DataType:          "dirs",
+			FilesCovered:      7,
+			TotalFilesChanged: 10,
+		},
+		{
+			Timestamp:         time.Date(2021, 11, 18, 20, 34, 58, 0, time.UTC),
+			Change:            40423634,
+			Patchset:          2,
+			IsUnitTest:        false,
+			Path:              "//a/b/",
+			DataType:          "dirs",
+			FilesCovered:      5,
+			TotalFilesChanged: 10,
+		},
+	}
+}
+
 func getMockSummaryData() *entities.SummaryCoverageData {
 	mockKey := "chromium.googlesource.com$chromium/src$refs/heads/main" +
 		"$03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a$dirs$//$ci$linux-code-coverage$0"
@@ -606,6 +631,82 @@ func TestGetCoverageReportsForLastYear(t *testing.T) {
 		client.coverageV1DsClient = mockDataClient
 
 		reports, err := client.getCoverageReportsForLastYear(ctx, "ci", "linux-code-coverage")
+		So(err, ShouldNotBeNil)
+		So(err, ShouldResemble, ErrInternalServerError)
+		So(reports, ShouldBeNil)
+	})
+}
+
+func TestGetIncCoverageReportsForLastYear(t *testing.T) {
+	t.Parallel()
+	client := Client{}
+	ctx := context.Background()
+
+	Convey("Should return incremental coverage numbers per day for the path", t, func() {
+		reports := getMockCQSummaryReport()
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Query",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"CQSummaryCoverageData",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				for _, rep := range reports {
+					matchesPath := queryFilters[0].Value == rep.Path
+					matchesIsUnitTests := queryFilters[1].Value == rep.IsUnitTest
+					t := queryFilters[2].Value.(time.Time)
+					matchesTime := t.Before(rep.Timestamp)
+					if matchesPath && matchesIsUnitTests && matchesTime {
+						res := reflect.ValueOf(result).Elem()
+						res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
+						return nil
+					}
+				}
+				return nil
+			},
+		)
+		client.coverageV2DsClient = mockDataClient
+
+		data, err := client.getIncCoverageReportsForLastYear(ctx, "//a/b/", false)
+		So(err, ShouldBeNil)
+		So(data, ShouldHaveLength, 1)
+		expectedData := []entities.CQSummaryCoverageData{
+			{
+				Timestamp:         time.Date(2023, 11, 17, 20, 34, 58, 0, time.UTC),
+				Change:            4042361,
+				Patchset:          10,
+				IsUnitTest:        false,
+				Path:              "//a/b/",
+				DataType:          "dirs",
+				FilesCovered:      7,
+				TotalFilesChanged: 10,
+			},
+		}
+		So(data, ShouldResemble, expectedData)
+	})
+
+	Convey("Should error out with no matching index message", t, func() {
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Query",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"CQSummaryCoverageData",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				return fmt.Errorf("CQSummaryCoverageData: %s", "No matching indexes found")
+			},
+		)
+		client.coverageV2DsClient = mockDataClient
+
+		reports, err := client.getIncCoverageReportsForLastYear(ctx, "//a/b/", false)
 		So(err, ShouldNotBeNil)
 		So(err, ShouldResemble, ErrInternalServerError)
 		So(reports, ShouldBeNil)
