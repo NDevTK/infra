@@ -118,16 +118,18 @@ func (c *getVlan) innerRun(a subcommands.Application, args []string, env subcomm
 	if err != nil {
 		return err
 	}
-	err = utils.PrintEntities(ctx, ic, res, utils.PrintVlansJSON, printVlanFull, printVlanNormal,
-		c.outputFlags.JSON(), emit, full, c.outputFlags.Tsv(), c.keysOnly)
-	if err != nil {
-		return err
-	}
 
-	if len(res) == 1 && c.listIPs {
-		// Only print IP utilization in json mode for 1 vlan
-		if err := printUsedIPs(ctx, ic, res); err != nil {
-			cmdlib.PrintError(a, err)
+	if c.listIPs {
+		if len(res) != 1 {
+			return cmdlib.NewUsageError(c.Flags, "`-ips` only works with single vlan retrieval.")
+		}
+		if err := printUsedIPs(ctx, ic, res, c.outputFlags.JSON()); err != nil {
+			return err
+		}
+	} else {
+		if err := utils.PrintEntities(ctx, ic, res, utils.PrintVlansJSON, printVlanFull, printVlanNormal,
+			c.outputFlags.JSON(), emit, full, c.outputFlags.Tsv(), c.keysOnly); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -182,7 +184,7 @@ func printVlanNormal(entities []proto.Message, tsv, keysOnly bool) error {
 	return nil
 }
 
-func printUsedIPs(ctx context.Context, ic ufsAPI.FleetClient, res []proto.Message) error {
+func printUsedIPs(ctx context.Context, ic ufsAPI.FleetClient, res []proto.Message, json bool) error {
 	v := res[0].(*ufspb.Vlan)
 	toPrint := make([]*ufspb.IP, 0)
 	curPageToken := ""
@@ -209,9 +211,14 @@ func printUsedIPs(ctx context.Context, ic ufsAPI.FleetClient, res []proto.Messag
 	}
 
 	if len(toPrint) > 0 {
-		fmt.Println()
-		utils.PrintTableTitle(utils.IPTitle, false, false)
-		utils.PrintIPs(toPrint, false)
+		if json {
+			// Print a customized json for vlan which includes IP distribution
+			utils.PrintCustomizedVlanJSON(v, toPrint)
+		} else {
+			fmt.Println()
+			utils.PrintTableTitle(utils.IPTitle, false, false)
+			utils.PrintIPs(toPrint, false)
+		}
 	}
 	return nil
 }
@@ -222,9 +229,6 @@ func (c *getVlan) validateArgs() error {
 	}
 	if c.Flags.NArg() > 1 && c.listIPs {
 		return cmdlib.NewUsageError(c.Flags, "Please only provide 1 vlan name if `-ips` is specified.")
-	}
-	if c.listIPs && c.outputFlags.JSON() {
-		return cmdlib.NewUsageError(c.Flags, "`-ips` is not supported when getting a json output of vlan.")
 	}
 	return nil
 }

@@ -1318,6 +1318,42 @@ func vlanOutputStrs(pm proto.Message) []string {
 	}
 }
 
+// CustomzedVlanOutput represents a customzed vlan output
+type CustomzedVlanOutput struct {
+	Name         string
+	AllocatedIPs []string
+	ReservedIPs  []string
+	AvailableIPs []string
+}
+
+// PrintCustomizedVlanJSON prints a customized json for vlan.
+func PrintCustomizedVlanJSON(vlan *ufspb.Vlan, ips []*ufspb.IP) {
+	var allocatedIPs, reservedIPs, availableIPs []string
+	for _, ip := range ips {
+		if ip.GetReserve() {
+			reservedIPs = append(reservedIPs, ip.GetIpv4Str())
+			continue
+		}
+		if ip.GetOccupied() {
+			allocatedIPs = append(allocatedIPs, ip.GetIpv4Str())
+			continue
+		}
+		availableIPs = append(availableIPs, ip.GetIpv4Str())
+	}
+
+	out := CustomzedVlanOutput{
+		Name:         vlan.Name,
+		AllocatedIPs: allocatedIPs,
+		ReservedIPs:  reservedIPs,
+		AvailableIPs: availableIPs,
+	}
+	b, err := json.MarshalIndent(out, "", "\t")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(b))
+}
+
 // PrintIPs prints the all ips in table form.
 func PrintIPs(ips []*ufspb.IP, keysOnly bool) {
 	defer tw.Flush()
