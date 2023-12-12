@@ -36,7 +36,7 @@ export function createParams(params? : OptionalParams) : Params {
 
 async function contextRender(
     ui: (value: TrendsContextValue) => React.ReactElement,
-    { props } = { props: createParams() },
+    { props } = { props: { ...createParams(), isAbsTrend: false } },
 ) {
   await act(async () => {
     renderWithAuth(
@@ -71,16 +71,16 @@ describe('SummaryContext params', () => {
 
     jest.spyOn(Coverage, 'getAbsoluteCoverageTrends').mockResolvedValue(
         {
-          data: [
+          reports: [
             {
               'date': '2023-06-11',
-              'covered': 78,
-              'total': 100,
+              'linesCovered': 78,
+              'totalLines': 100,
             },
             {
               'date': '2023-06-12',
-              'covered': 81,
-              'total': 100,
+              'linesCovered': 81,
+              'totalLines': 100,
             },
           ],
         },
@@ -88,21 +88,21 @@ describe('SummaryContext params', () => {
 
     jest.spyOn(Coverage, 'getIncrementalCoverageTrends').mockResolvedValue(
         {
-          data: [
+          reports: [
             {
               'date': '2023-06-11',
-              'covered': 78,
-              'total': 100,
+              'fileChangesCovered': 78,
+              'totalFileChanges': 100,
             },
             {
               'date': '2023-06-12',
-              'covered': 81,
-              'total': 100,
+              'fileChangesCovered': 81,
+              'totalFileChanges': 100,
             },
             {
               'date': '2023-06-13',
-              'covered': 84,
-              'total': 100,
+              'fileChangesCovered': 84,
+              'totalFileChanges': 100,
             },
           ],
         },
@@ -179,16 +179,16 @@ describe('SummaryContext fetch trends', () => {
 
     jest.spyOn(Coverage, 'getAbsoluteCoverageTrends').mockResolvedValue(
         {
-          data: [
+          reports: [
             {
               'date': '2023-06-11',
-              'covered': 78,
-              'total': 100,
+              'linesCovered': 78,
+              'totalLines': 100,
             },
             {
               'date': '2023-06-12',
-              'covered': 81,
-              'total': 100,
+              'linesCovered': 81,
+              'totalLines': 100,
             },
           ],
         },
@@ -196,21 +196,21 @@ describe('SummaryContext fetch trends', () => {
 
     jest.spyOn(Coverage, 'getIncrementalCoverageTrends').mockResolvedValue(
         {
-          data: [
+          reports: [
             {
               'date': '2023-06-11',
-              'covered': 78,
-              'total': 100,
+              'fileChangesCovered': 78,
+              'totalFileChanges': 100,
             },
             {
               'date': '2023-06-12',
-              'covered': 81,
-              'total': 100,
+              'fileChangesCovered': 81,
+              'totalFileChanges': 100,
             },
             {
               'date': '2023-06-13',
-              'covered': 84,
-              'total': 100,
+              'fileChangesCovered': 84,
+              'totalFileChanges': 100,
             },
           ],
         },

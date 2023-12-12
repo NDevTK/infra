@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {
+  CoverageTrend,
   GetAbsoluteTrendsRequest,
-  GetAbsoluteTrendsResponse,
   GetIncrementalTrendsRequest,
-  GetIncrementalTrendsResponse,
   Platform,
   getAbsoluteCoverageTrends,
   getIncrementalCoverageTrends,
@@ -27,41 +26,61 @@ export function loadAbsoluteCoverageTrends(
     auth: Auth,
     params: Params,
     components: string[],
-    successCallback: (
-    response: GetAbsoluteTrendsResponse,
-  ) => void,
+    successCallback: (response: CoverageTrend[]) => void,
     failureCallback: (error: any) => void,
 ) {
   const request: GetAbsoluteTrendsRequest = {
     bucket: params.bucket,
     builder: params.builder,
     unit_tests_only: params.unitTestsOnly,
-    presets: params.presets,
     paths: params.paths,
     components,
   };
 
   getAbsoluteCoverageTrends(auth, request).then((response) => {
-    successCallback(response);
+    let trends = [] as CoverageTrend[];
+    response.reports.forEach((report) => {
+      trends = [...trends, {
+        date: report.date,
+        covered: report.linesCovered,
+        total: report.totalLines,
+      }];
+    });
+    trends = sortTrends(trends);
+    successCallback(trends);
   }).catch(failureCallback);
 }
 
 export function loadIncrementalCoverageTrends(
     auth: Auth,
     params: Params,
-    components: string[],
-    successCallback: (
-    response: GetIncrementalTrendsResponse,
-  ) => void,
+    successCallback: (response: CoverageTrend[]) => void,
     failureCallback: (error: any) => void,
 ) {
   const request: GetIncrementalTrendsRequest = {
-    presets: params.presets,
     paths: params.paths,
-    components,
+    unit_tests_only: params.unitTestsOnly,
   };
 
   getIncrementalCoverageTrends(auth, request).then((response) => {
-    successCallback(response);
+    let trends = [] as CoverageTrend[];
+    response.reports.forEach((report) => {
+      trends = [...trends, {
+        date: report.date,
+        covered: report.fileChangesCovered,
+        total: report.totalFileChanges,
+      }];
+    });
+    trends = sortTrends(trends);
+    successCallback(trends);
   }).catch(failureCallback);
+}
+
+function sortTrends(trends: CoverageTrend[]): CoverageTrend[] {
+  const sorted = trends.sort((a, b) => {
+    const d1 = new Date(b.date);
+    const d2 = new Date(a.date);
+    return d1.valueOf() - d2.valueOf();
+  });
+  return sorted;
 }

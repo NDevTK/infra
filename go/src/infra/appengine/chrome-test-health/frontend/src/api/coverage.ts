@@ -42,6 +42,18 @@ export interface CoverageTrend {
   total: number
 }
 
+export interface AbsoluteCoverageTrend {
+  date: string,
+  linesCovered: number,
+  totalLines: number
+}
+
+export interface IncrementalCoverageTrend {
+  date: string,
+  fileChangesCovered: number,
+  totalFileChanges: number
+}
+
 export interface GetProjectDefaultConfigRequest {
   luci_project: string,
 }
@@ -83,23 +95,24 @@ export interface GetAbsoluteTrendsRequest {
   bucket: string,
   builder: string,
   unit_tests_only: boolean,
-  presets: string[],
+  presets?: string[],
   paths: string[],
   components: string[],
 }
 
 export interface GetAbsoluteTrendsResponse {
-  data: CoverageTrend[],
+  reports: AbsoluteCoverageTrend[],
 }
 
 export interface GetIncrementalTrendsRequest {
-  presets: string[],
+  presets?: string[],
   paths: string[],
-  components: string[],
+  components?: string[],
+  unit_tests_only: boolean,
 }
 
 export interface GetIncrementalTrendsResponse {
-  data: CoverageTrend[],
+  reports: IncrementalCoverageTrend[],
 }
 
 // ---------------- RPC Calls ----------------
@@ -153,7 +166,7 @@ export async function getAbsoluteCoverageTrends(
   const resp: GetAbsoluteTrendsResponse = await prpcClient.call(
       auth,
       'test_resources.Coverage',
-      'GetAbsoluteCoverageTrends',
+      'GetAbsoluteCoverageDataOneYear',
       request,
   );
   return resp;
@@ -167,7 +180,7 @@ export async function getIncrementalCoverageTrends(
   const resp: GetIncrementalTrendsResponse = await prpcClient.call(
       auth,
       'test_resources.Coverage',
-      'GetIncrementalCoverageTrends',
+      'GetIncrementalCoverageDataOneYear',
       request,
   );
   return resp;

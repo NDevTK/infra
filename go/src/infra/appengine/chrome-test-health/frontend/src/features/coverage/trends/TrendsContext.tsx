@@ -15,8 +15,6 @@ import {
 import { AuthContext } from '../../auth/AuthContext';
 import {
   CoverageTrend,
-  GetAbsoluteTrendsResponse,
-  GetIncrementalTrendsResponse,
   GetProjectDefaultConfigResponse,
   Platform,
 } from '../../../api/coverage';
@@ -43,6 +41,7 @@ export interface TrendsContextValue {
   params: Params,
   isLoading: boolean,
   isConfigLoaded: boolean;
+  isAbsTrend: boolean;
 }
 
 interface TrendsContextProviderProps {
@@ -50,6 +49,7 @@ interface TrendsContextProviderProps {
   unitTestsOnly: boolean,
   paths: string[],
   presets: string[],
+  isAbsTrend: boolean,
   children?: React.ReactNode,
 }
 
@@ -106,6 +106,7 @@ export const TrendsContext = createContext<TrendsContextValue>(
       },
       isLoading: false,
       isConfigLoaded: false,
+      isAbsTrend: false,
     },
 );
 
@@ -126,6 +127,7 @@ export const TrendsContextProvider = (props: TrendsContextProviderProps) => {
   const [isConfigLoaded, setIsConfigLoaded] = useState(false);
   const [loading, loadingDispatch] = useReducer(loadingCountReducer, { count: 0, isLoading: false });
   const [data, setData] = useState([] as CoverageTrend[]);
+  const isAbsTrend = props.isAbsTrend;
 
   const params: Params = useMemo(() => ({
     unitTestsOnly, platform, builder, bucket, platformList,
@@ -160,12 +162,15 @@ export const TrendsContextProvider = (props: TrendsContextProviderProps) => {
       if (auth === undefined) {
         return;
       }
+      loadingDispatch({ type: 'start' });
+      setData([] as CoverageTrend[]);
       loadAbsoluteCoverageTrends(
           auth,
           params,
           components,
-          (resp: GetAbsoluteTrendsResponse) => {
-            setData(resp.data);
+          (trends: CoverageTrend[]) => {
+            setData(trends);
+            loadingDispatch({ type: 'end' });
           },
           loadFailure,
       );
@@ -174,12 +179,14 @@ export const TrendsContextProvider = (props: TrendsContextProviderProps) => {
       if (auth === undefined) {
         return;
       }
+      loadingDispatch({ type: 'start' });
+      setData([] as CoverageTrend[]);
       loadIncrementalCoverageTrends(
           auth,
           params,
-          components,
-          (resp: GetIncrementalTrendsResponse) => {
-            setData(resp.data);
+          (trends: CoverageTrend[]) => {
+            setData(trends);
+            loadingDispatch({ type: 'end' });
           },
           loadFailure,
       );
@@ -232,6 +239,7 @@ export const TrendsContextProvider = (props: TrendsContextProviderProps) => {
       api,
       params,
       isConfigLoaded,
+      isAbsTrend,
     }}>
       {props.children}
     </TrendsContext.Provider>

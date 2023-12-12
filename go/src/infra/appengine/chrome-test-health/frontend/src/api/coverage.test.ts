@@ -413,31 +413,31 @@ describe('getAbsoluteTrends', () => {
   it('returns trends for absolute absolute line coverage', async () => {
     const mockCall = jest.spyOn(prpcClient, 'call').mockResolvedValue(
         {
-          data: [
+          reports: [
             {
               'date': '2023-06-11',
-              'covered': 78,
-              'total': 100,
+              'linesCovered': 78,
+              'totalLines': 100,
             },
             {
               'date': '2023-06-12',
-              'covered': 81,
-              'total': 100,
+              'linesCovered': 81,
+              'totalLines': 100,
             },
           ],
         });
 
     const expected: GetAbsoluteTrendsResponse = {
-      data: [
+      reports: [
         {
           'date': '2023-06-11',
-          'covered': 78,
-          'total': 100,
+          'linesCovered': 78,
+          'totalLines': 100,
         },
         {
           'date': '2023-06-12',
-          'covered': 81,
-          'total': 100,
+          'linesCovered': 81,
+          'totalLines': 100,
         },
       ],
     };
@@ -457,36 +457,37 @@ describe('getIncrementalTrends', () => {
     components: [
       'Blink>CSS',
     ],
+    unit_tests_only: false,
   };
 
   it('returns trends for incremental line coverage', async () => {
     const mockCall = jest.spyOn(prpcClient, 'call').mockResolvedValue(
         {
-          data: [
+          reports: [
             {
               'date': '2023-06-11',
-              'covered': 81,
-              'total': 100,
+              'fileChangesCovered': 81,
+              'totalFileChanges': 100,
             },
             {
               'date': '2023-06-12',
-              'covered': 90,
-              'total': 100,
+              'fileChangesCovered': 90,
+              'totalFileChanges': 100,
             },
           ],
         });
 
     const expected: GetIncrementalTrendsResponse = {
-      data: [
+      reports: [
         {
           'date': '2023-06-11',
-          'covered': 81,
-          'total': 100,
+          'fileChangesCovered': 81,
+          'totalFileChanges': 100,
         },
         {
           'date': '2023-06-12',
-          'covered': 90,
-          'total': 100,
+          'fileChangesCovered': 90,
+          'totalFileChanges': 100,
         },
       ],
     };
