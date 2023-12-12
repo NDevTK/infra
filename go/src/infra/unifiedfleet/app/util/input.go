@@ -1182,3 +1182,8 @@ func ToUFSDevicePhase(devicePhase string) ufsmfg.ManufacturingConfig_Phase {
 
 	return ufsmfg.ManufacturingConfig_Phase(ufsmfg.ManufacturingConfig_Phase_value[v])
 }
+
+// GetNicNameForHost returns a nic name for a ChromeOS DUT
+func GetNicNameForHost(hostname string) string {
+	return fmt.Sprintf("%s:eth0", hostname)
+}

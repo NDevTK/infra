@@ -680,6 +680,14 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 					hcLabstation.SaveChangeEvents(ctx)
 				}
 			}
+
+			// Delete Nic since Nic info is associated with the host name.
+			nicName := util.GetNicNameForHost(id)
+			if nic, err := registration.GetNic(ctx, nicName); err == nil && nic != nil {
+				if err := registration.DeleteNic(ctx, nicName); err != nil {
+					return errors.Annotate(err, "unable to delete nic %s", nicName).Err()
+				}
+			}
 		}
 
 		vms, err := inventory.QueryVMByPropertyName(ctx, "host_id", id, false)

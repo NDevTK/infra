@@ -2747,6 +2747,12 @@ func TestDeleteMachineLSEDUT(t *testing.T) {
 				ResourceName: "hosts/DUTMachineLse-92",
 			})
 			So(err, ShouldBeNil)
+			_, err = registration.CreateNic(ctx, &ufspb.Nic{
+				Name:       "DUTMachineLse-92:eth0",
+				MacAddress: "DUTMachineLse-92-macaddress",
+				Machine:    "machine-1",
+			})
+			So(err, ShouldBeNil)
 
 			err = DeleteMachineLSE(ctx, "DUTMachineLse-92")
 			So(err, ShouldBeNil)
@@ -2757,6 +2763,10 @@ func TestDeleteMachineLSEDUT(t *testing.T) {
 
 			resp, _ := inventory.GetMachineLSE(ctx, "RedLabstation-92")
 			So(resp.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetServos(), ShouldBeEmpty)
+
+			_, err = registration.GetNic(ctx, "DUTMachineLse-92:eth0")
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
 
 			// verify changes
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/RedLabstation-92")
