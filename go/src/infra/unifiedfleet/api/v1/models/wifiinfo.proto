@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models.chromeos.lab;
+
+option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+
+import "infra/unifiedfleet/api/v1/models/location.proto";
+
+// Next Tag: 4
+// DefaultWifi is the default wifi setting in the specified scope.
+message DefaultWifi {
+  oneof scope {
+    string pool = 1;
+    Zone zone = 2;
+  }
+  WifiSecret wifi_select = 3;
+}
+
+// Next Tag: 5
+// WifiSecret is the secret stored/managed in the Secret Manager of a GCP
+// project.
+message WifiSecret {
+  // The GCP project storing the secret, default is 'unifiedfleet', i.e. UFS.
+  string project_id = 1;
+  string secret_name = 2; // The secret name in the Secret Manager.
+}
