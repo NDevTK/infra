@@ -22,9 +22,10 @@ type clientMock struct {
 }
 
 type coverageClientMock struct {
-	lastGetProjectDefaultConfigReq        *api.GetProjectDefaultConfigRequest
-	lastGetCoverageSummaryReq             *api.GetCoverageSummaryRequest
-	lastGetAbsoluteCoverageDataOneYearReq *api.GetAbsoluteCoverageDataOneYearRequest
+	lastGetProjectDefaultConfigReq           *api.GetProjectDefaultConfigRequest
+	lastGetCoverageSummaryReq                *api.GetCoverageSummaryRequest
+	lastGetAbsoluteCoverageDataOneYearReq    *api.GetAbsoluteCoverageDataOneYearRequest
+	lastGetIncrementalCoverageDataOneYearReq *api.GetIncrementalCoverageDataOneYearRequest
 }
 
 func (cm *clientMock) UpdateSummary(_ context.Context, fromDate civil.Date, toDate civil.Date) error {
@@ -62,6 +63,14 @@ func (ccm *coverageClientMock) GetAbsoluteCoverageDataOneYear(
 ) (*api.GetAbsoluteCoverageDataOneYearResponse, error) {
 	ccm.lastGetAbsoluteCoverageDataOneYearReq = req
 	return &api.GetAbsoluteCoverageDataOneYearResponse{}, nil
+}
+
+func (ccm *coverageClientMock) GetIncrementalCoverageDataOneYear(
+	ctx context.Context,
+	req *api.GetIncrementalCoverageDataOneYearRequest,
+) (*api.GetIncrementalCoverageDataOneYearResponse, error) {
+	ccm.lastGetIncrementalCoverageDataOneYearReq = req
+	return &api.GetIncrementalCoverageDataOneYearResponse{}, nil
 }
 
 func TestValidatePresence(t *testing.T) {

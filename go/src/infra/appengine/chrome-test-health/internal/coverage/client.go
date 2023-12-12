@@ -351,6 +351,14 @@ func (c *Client) GetAbsoluteCoverageDataOneYear(
 	}, nil
 }
 
+// GetIncrementalCoverageDataOneYear TO_BE_IMPLEMENTED
+func (c *Client) GetIncrementalCoverageDataOneYear(
+	ctx context.Context,
+	req *api.GetIncrementalCoverageDataOneYearRequest,
+) (*api.GetIncrementalCoverageDataOneYearResponse, error) {
+	return nil, nil
+}
+
 // ---------- HELPER FUNCTIONS --------------------
 func (c *Client) getCoverageNumbersHelper(
 	ctx context.Context,

@@ -48,13 +48,14 @@ var (
 	cov   *coverageServer
 	// RPC-level ACLs.
 	rpcACL = rpcacl.Map{
-		"/discovery.Discovery/*":                           serviceAccessGroup,
-		"/test_resources.Stats/UpdateMetricsTable":         dataOwnersGroup,
-		"/test_resources.Stats/ListComponents":             serviceAccessGroup,
-		"/test_resources.Stats/FetchTestMetrics":           serviceAccessGroup,
-		"/test_resources.Stats/FetchDirectoryMetrics":      serviceAccessGroup,
-		"/test_resources.Coverage/GetProjectDefaultConfig": serviceAccessGroup,
-		"/test_resources.Coverage/GetCoverageSummary":      serviceAccessGroup,
+		"/discovery.Discovery/*":                                     serviceAccessGroup,
+		"/test_resources.Stats/UpdateMetricsTable":                   dataOwnersGroup,
+		"/test_resources.Stats/ListComponents":                       serviceAccessGroup,
+		"/test_resources.Stats/FetchTestMetrics":                     serviceAccessGroup,
+		"/test_resources.Stats/FetchDirectoryMetrics":                serviceAccessGroup,
+		"/test_resources.Coverage/GetProjectDefaultConfig":           serviceAccessGroup,
+		"/test_resources.Coverage/GetCoverageSummary":                serviceAccessGroup,
+		"/test_resources.Coverage/GetIncrementalCoverageDataOneYear": serviceAccessGroup,
 	}
 	// Data set to work with
 	dataSet = flag.String(
@@ -90,6 +91,10 @@ type CoverageClient interface {
 		ctx context.Context,
 		req *api.GetAbsoluteCoverageDataOneYearRequest,
 	) (*api.GetAbsoluteCoverageDataOneYearResponse, error)
+	GetIncrementalCoverageDataOneYear(
+		ctx context.Context,
+		req *api.GetIncrementalCoverageDataOneYearRequest,
+	) (*api.GetIncrementalCoverageDataOneYearResponse, error)
 }
 
 func main() {
@@ -294,6 +299,14 @@ func (covServer *coverageServer) GetAbsoluteCoverageDataOneYear(
 		return nil, err
 	}
 	return resp, nil
+}
+
+// GetIncrementalCoverageDataOneYear TO_BE_IMPLEMENTED
+func (covServer *coverageServer) GetIncrementalCoverageDataOneYear(
+	ctx context.Context,
+	req *api.GetIncrementalCoverageDataOneYearRequest,
+) (*api.GetIncrementalCoverageDataOneYearResponse, error) {
+	return nil, nil
 }
 
 func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error) {
