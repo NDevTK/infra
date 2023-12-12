@@ -7,14 +7,9 @@ import webapp2
 import gae_ts_mon
 
 from gae_libs import appengine_util
-from gae_libs.pipelines import pipeline_handlers
-from gae_libs.pipelines import pipeline_status_ui
 from handlers import completed_build_pubsub_ingestor
 from handlers import home
 from handlers import url_redirect
-from handlers import not_available
-
-from components import endpoints_webapp2
 
 # Default module.
 default_web_pages_handler_mappings = [
@@ -30,16 +25,3 @@ default_web_application = webapp2.WSGIApplication(
 if appengine_util.IsInProductionApp():
   gae_ts_mon.initialize_prod(default_web_application)
 
-
-# App Engine pipeline status pages in the default module.
-# TODO(stgao): Move this to frontend module.
-pipeline_status_handler_mappings = [
-    ('/_ah/pipeline/rpc/tree', pipeline_status_ui._TreeStatusHandler),
-    ('/_ah/pipeline/rpc/class_paths', pipeline_status_ui._ClassPathListHandler),
-    ('/_ah/pipeline/rpc/list', pipeline_status_ui._RootListHandler),
-    ('/_ah/pipeline(/.+)', pipeline_status_ui._StatusUiHandler),
-]
-pipeline_status_application = webapp2.WSGIApplication(
-    pipeline_status_handler_mappings, debug=False)
-if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(pipeline_status_application)
