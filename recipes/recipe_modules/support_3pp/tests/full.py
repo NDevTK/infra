@@ -568,6 +568,21 @@ def GenTests(api):
           post_process.MustRun,
           mk_name("experimental pkgbuild"))
   )
+  yield (api.test('use-pkgbuild-experimental')
+      + api.properties(GOOS='linux', GOARCH='amd64', use_pkgbuild=True, experimental=True)
+      + api.step_data(
+          'find package specs',
+          api.file.glob_paths(['something/3pp.pb', '3pp.pb']))
+      + api.step_data(
+          mk_name("load package specs", "read 'something/3pp.pb'"),
+          api.file.read_text(load_spec))
+      + api.step_data(
+          mk_name("load package specs", "read '3pp.pb'"),
+          api.file.read_text(load_spec))
+      + api.post_process(
+          post_process.MustRun,
+          mk_name("experimental pkgbuild"))
+  )
 
   yield (api.test('empty-spec', status='FAILURE') +
          api.properties(GOOS='linux', GOARCH='amd64') + api.step_data(

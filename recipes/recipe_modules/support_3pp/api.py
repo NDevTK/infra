@@ -908,12 +908,17 @@ class Support3ppApi(recipe_api.RecipeApi):
         '-logging-level',
         'info',
         '-cipd-package-prefix',
-        self.package_prefix(),
+        # self.package_prefix() will prepend experimental/ while pkgbuild
+        # manages the experimental state by itself. Use raw prefix instead.
+        self._package_prefix,
         '-storage-dir',
         storage_dir,
         '-target-platform',
         platform,
     ]
+    if self._experimental:
+      args.append('-experiment')
+
     # Sort the package roots and packages.
     # Set doesn't promise to be iterating in insertion order.
     for d in sorted(self._package_roots):
