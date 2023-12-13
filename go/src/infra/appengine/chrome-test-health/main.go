@@ -294,7 +294,12 @@ func (covServer *coverageServer) GetAbsoluteCoverageDataOneYear(
 		return nil, appstatus.Errorf((codes.InvalidArgument), "Either paths or components should be specified")
 	}
 
-	return nil, nil
+	resp, err := covServer.Client.GetAbsoluteCoverageDataOneYear(ctx, req)
+	if err != nil {
+		logging.Errorf(ctx, "Error fetching the absolute coverage stats: %s", err)
+		return nil, err
+	}
+	return resp, nil
 }
 
 // GetIncrementalCoverageDataOneYear TO_BE_IMPLEMENTED
