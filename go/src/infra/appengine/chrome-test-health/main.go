@@ -302,7 +302,6 @@ func (covServer *coverageServer) GetAbsoluteCoverageDataOneYear(
 	return resp, nil
 }
 
-// GetIncrementalCoverageDataOneYear TO_BE_IMPLEMENTED
 func (covServer *coverageServer) GetIncrementalCoverageDataOneYear(
 	ctx context.Context,
 	req *api.GetIncrementalCoverageDataOneYearRequest,
@@ -322,7 +321,12 @@ func (covServer *coverageServer) GetIncrementalCoverageDataOneYear(
 		}
 	}
 
-	return nil, nil
+	resp, err := covServer.Client.GetIncrementalCoverageDataOneYear(ctx, req)
+	if err != nil {
+		logging.Errorf(ctx, "Error fetching the incremental coverage stats: %s", err)
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error) {

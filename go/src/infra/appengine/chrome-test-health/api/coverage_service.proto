@@ -160,6 +160,9 @@ message GetIncrementalCoverageDataOneYearRequest {
   // List of source paths relative to the project root.
   // E.g: [//, //media/cast/net/rtp/frame_buffer.cc]
   repeated string paths = 1;
+  // Flag to fetch incremental coverage results for unit tests only.
+  // Defaults to False, which returns all coverage results.
+  bool unit_tests_only = 2;
 }
 
 // IncrementalCoverage captures the code coverage rate from CLs for a given set

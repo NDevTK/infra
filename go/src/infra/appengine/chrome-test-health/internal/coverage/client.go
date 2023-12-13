@@ -402,12 +402,43 @@ func (c *Client) aggregateIncrementalCoverageReports(
 	return aggregatedResults
 }
 
-// GetIncrementalCoverageDataOneYear TO_BE_IMPLEMENTED
+// GetIncrementalCoverageDataOneYear returns incremental coverage numbers for
+// the last 365 days.
 func (c *Client) GetIncrementalCoverageDataOneYear(
 	ctx context.Context,
 	req *api.GetIncrementalCoverageDataOneYearRequest,
 ) (*api.GetIncrementalCoverageDataOneYearResponse, error) {
-	return nil, nil
+	// TODO (see crbug/1509667): Introduce Pagination & response
+	// size optimization for GetIncrementalCoverageDataOneYear API
+	unitTestsOnly := req.UnitTestsOnly
+	paths := req.Paths
+
+	reportsLastYear := []*entities.CQSummaryCoverageData{}
+	for _, path := range paths {
+		reports, err := c.getIncCoverageReportsForLastYear(ctx, path, unitTestsOnly)
+		if err != nil {
+			return nil, err
+		}
+		for _, rep := range reports {
+			reportsLastYear = append(reportsLastYear, &rep)
+		}
+	}
+
+	aggregatedResults := c.aggregateIncrementalCoverageReports(reportsLastYear)
+
+	finalReports := []*api.IncrementalCoverage{}
+	for date, numbers := range aggregatedResults {
+		incCov := &api.IncrementalCoverage{
+			Date:               date,
+			FileChangesCovered: numbers["covered"],
+			TotalFileChanges:   numbers["total"],
+		}
+		finalReports = append(finalReports, incCov)
+	}
+
+	return &api.GetIncrementalCoverageDataOneYearResponse{
+		Reports: finalReports,
+	}, nil
 }
 
 // ---------- HELPER FUNCTIONS --------------------

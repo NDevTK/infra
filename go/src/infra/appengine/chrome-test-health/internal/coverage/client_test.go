@@ -958,6 +958,88 @@ func TestGetAbsoluteCoverageDataOneYear(t *testing.T) {
 	})
 }
 
+func TestGetIncrementalCoverageDataOneYear(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := Client{
+		coverageV1DsClient: mocks.NewIDataClient(t),
+	}
+
+	Convey("Should pass", t, func() {
+		reports := getMockCQSummaryReport()
+		mockDataClient := mocks.NewIDataClient(t)
+		mockDataClient.On(
+			"Query",
+			mock.AnythingOfType("backgroundCtx"),
+			mock.Anything,
+			"CQSummaryCoverageData",
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
+		).Return(
+			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				for _, rep := range reports {
+					matchesPath := queryFilters[0].Value == rep.Path
+					matchesIsUnitTests := queryFilters[1].Value == rep.IsUnitTest
+					t := queryFilters[2].Value.(time.Time)
+					matchesTime := t.Before(rep.Timestamp)
+					if matchesPath && matchesIsUnitTests && matchesTime {
+						res := reflect.ValueOf(result).Elem()
+						res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
+						return nil
+					}
+				}
+				return nil
+			},
+		)
+		client.coverageV2DsClient = mockDataClient
+
+		Convey("Valid", func() {
+			req := &api.GetIncrementalCoverageDataOneYearRequest{
+				Paths:         []string{"//a/b/"},
+				UnitTestsOnly: false,
+			}
+			res, err := client.GetIncrementalCoverageDataOneYear(ctx, req)
+			So(err, ShouldBeNil)
+			So(len(res.Reports), ShouldBeGreaterThan, 0)
+			expectedRes := &api.GetIncrementalCoverageDataOneYearResponse{
+				Reports: []*api.IncrementalCoverage{
+					{Date: "2023-11-17", FileChangesCovered: 7, TotalFileChanges: 10},
+				},
+			}
+			So(res, ShouldResemble, expectedRes)
+		})
+	})
+
+	Convey("Should fail", t, func() {
+		Convey("CQSummaryCoverageData fetch error", func() {
+			mockDataClient := mocks.NewIDataClient(t)
+			mockDataClient.On(
+				"Query",
+				mock.AnythingOfType("backgroundCtx"),
+				mock.Anything,
+				"CQSummaryCoverageData",
+				mock.Anything,
+				mock.Anything,
+				mock.Anything,
+			).Return(
+				func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+					return fmt.Errorf("CQSummaryCoverageData: %s", "entity not found")
+				},
+			)
+			client.coverageV2DsClient = mockDataClient
+			req := &api.GetIncrementalCoverageDataOneYearRequest{
+				Paths:         []string{"//a/b/"},
+				UnitTestsOnly: false,
+			}
+			res, err := client.GetIncrementalCoverageDataOneYear(ctx, req)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldResemble, ErrInternalServerError)
+			So(res, ShouldBeNil)
+		})
+	})
+}
+
 func TestAggregateCoverageReports(t *testing.T) {
 	t.Parallel()
 	client := Client{}
