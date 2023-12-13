@@ -52,6 +52,9 @@ func printTSVs(res []proto.Message, keysOnly bool, outputFunc func(proto.Message
 	defer csw.Flush()
 	for _, m := range res {
 		outputs := outputFunc(m)
+		if outputs == nil {
+			continue
+		}
 		if keysOnly {
 			csw.Write([]string{outputs[0]})
 			continue
