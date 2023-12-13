@@ -1328,7 +1328,9 @@ type CustomzedVlanOutput struct {
 
 // PrintCustomizedVlanJSON prints a customized json for vlan.
 func PrintCustomizedVlanJSON(vlan *ufspb.Vlan, ips []*ufspb.IP) {
-	var allocatedIPs, reservedIPs, availableIPs []string
+	allocatedIPs := []string{}
+	reservedIPs := []string{}
+	availableIPs := []string{}
 	for _, ip := range ips {
 		if ip.GetReserve() {
 			reservedIPs = append(reservedIPs, ip.GetIpv4Str())
