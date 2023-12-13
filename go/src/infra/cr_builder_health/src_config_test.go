@@ -18,7 +18,8 @@ func TestSrcConfig(t *testing.T) {
 	testSrcConfig["project"] = SrcConfig{
 		DefaultSpecs: []ProblemSpec{
 			{
-				Name: "Unhealthy",
+				Name:       "Unhealthy",
+				PeriodDays: 1,
 				Thresholds: Thresholds{
 					TestPendingTime: PercentileThresholds{P50Mins: 60, P95Mins: 120},
 					PendingTime:     PercentileThresholds{P50Mins: 60, P95Mins: 120},
@@ -28,7 +29,8 @@ func TestSrcConfig(t *testing.T) {
 				},
 			},
 			{
-				Name: "Low Value",
+				Name:       "Low Value",
+				PeriodDays: 1,
 				Thresholds: Thresholds{
 					FailRate:      AverageThresholds{Average: 0.99},
 					InfraFailRate: AverageThresholds{Average: 0.99},
@@ -40,15 +42,17 @@ func TestSrcConfig(t *testing.T) {
 				"builder": BuilderSpec{
 					ProblemSpecs: []ProblemSpec{
 						{
-							Name:  "Unhealthy",
-							Score: UNHEALTHY_SCORE,
+							Name:       "Unhealthy",
+							PeriodDays: 1,
+							Score:      UNHEALTHY_SCORE,
 							Thresholds: Thresholds{
 								Default: "_default",
 							},
 						},
 						{
-							Name:  "Low Value",
-							Score: LOW_VALUE_SCORE,
+							Name:       "Low Value",
+							PeriodDays: 1,
+							Score:      LOW_VALUE_SCORE,
 							Thresholds: Thresholds{
 								Default: "_default",
 							},
@@ -60,15 +64,17 @@ func TestSrcConfig(t *testing.T) {
 				"slow-builder": BuilderSpec{
 					ProblemSpecs: []ProblemSpec{
 						{
-							Name:  "Low Value",
-							Score: LOW_VALUE_SCORE,
+							Name:       "Low Value",
+							PeriodDays: 1,
+							Score:      LOW_VALUE_SCORE,
 							Thresholds: Thresholds{
 								Default: "_default",
 							},
 						},
 						{
-							Name:  "Unhealthy",
-							Score: UNHEALTHY_SCORE,
+							Name:       "Unhealthy",
+							PeriodDays: 1,
+							Score:      UNHEALTHY_SCORE,
 							Thresholds: Thresholds{
 								TestPendingTime: PercentileThresholds{P50Mins: 600, P95Mins: 1200},
 								PendingTime:     PercentileThresholds{P50Mins: 600, P95Mins: 1200},
@@ -84,8 +90,9 @@ func TestSrcConfig(t *testing.T) {
 				"custom-builder": BuilderSpec{
 					ProblemSpecs: []ProblemSpec{
 						{
-							Name:  "Unhealthy",
-							Score: UNHEALTHY_SCORE,
+							Name:       "Unhealthy",
+							PeriodDays: 1,
+							Score:      UNHEALTHY_SCORE,
 							Thresholds: Thresholds{
 								TestPendingTime: PercentileThresholds{P50Mins: 60, P95Mins: 120},
 								PendingTime:     PercentileThresholds{P50Mins: 60, P95Mins: 120},
@@ -95,8 +102,9 @@ func TestSrcConfig(t *testing.T) {
 							},
 						},
 						{
-							Name:  "Low Value",
-							Score: LOW_VALUE_SCORE,
+							Name:       "Low Value",
+							PeriodDays: 1,
+							Score:      LOW_VALUE_SCORE,
 							Thresholds: Thresholds{
 								TestPendingTime: PercentileThresholds{P50Mins: 600, P95Mins: 1200},
 								PendingTime:     PercentileThresholds{P50Mins: 600, P95Mins: 1200},
@@ -112,8 +120,9 @@ func TestSrcConfig(t *testing.T) {
 				"improper-builder": BuilderSpec{
 					ProblemSpecs: []ProblemSpec{
 						{
-							Name:  "Unhealthy",
-							Score: UNHEALTHY_SCORE,
+							Name:       "Unhealthy",
+							PeriodDays: 1,
+							Score:      UNHEALTHY_SCORE,
 							Thresholds: Thresholds{
 								Default:         "_default",
 								TestPendingTime: PercentileThresholds{P50Mins: 600, P95Mins: 1200},
@@ -128,8 +137,9 @@ func TestSrcConfig(t *testing.T) {
 				"improper-builder2": BuilderSpec{
 					ProblemSpecs: []ProblemSpec{
 						{
-							Name:  "Unhealthy",
-							Score: UNHEALTHY_SCORE,
+							Name:       "Unhealthy",
+							PeriodDays: 1,
+							Score:      UNHEALTHY_SCORE,
 							Thresholds: Thresholds{
 								Default:         "not_default",
 								TestPendingTime: PercentileThresholds{P50Mins: 600, P95Mins: 1200},
@@ -169,7 +179,8 @@ func TestSrcConfig(t *testing.T) {
 		So(len(outputRows), ShouldEqual, 1)
 		So(savedThresholds, ShouldResemble, testSrcConfig)
 		So(outputRows[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
-		So(outputRows[0].ScoreExplanation, ShouldBeEmpty)
+		explanation := scoreExplanation(outputRows[0], savedThresholds)
+		So(explanation, ShouldBeEmpty)
 	})
 	Convey("P50 percentile above threshold, default thresholds", t, func() {
 		ctx := context.Background()
@@ -186,8 +197,10 @@ func TestSrcConfig(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "build_mins_p50")
 		So(savedThresholds, ShouldResemble, testSrcConfig)
+
+		explanation := scoreExplanation(outputRows[0], savedThresholds)
+		So(explanation, ShouldContainSubstring, "build_mins_p50")
 	})
 	Convey("P95 percentile above thresholds, default thresholds", t, func() {
 		ctx := context.Background()
@@ -204,7 +217,8 @@ func TestSrcConfig(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "pending_mins_p95")
+		explanation := scoreExplanation(outputRows[0], savedThresholds)
+		So(explanation, ShouldContainSubstring, "pending_mins_p95")
 		So(savedThresholds, ShouldResemble, testSrcConfig)
 	})
 	Convey("Fail rate above thresholds, default thresholds", t, func() {
@@ -222,7 +236,8 @@ func TestSrcConfig(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "fail_rate")
+		explanation := scoreExplanation(outputRows[0], savedThresholds)
+		So(explanation, ShouldContainSubstring, "fail_rate")
 		So(savedThresholds, ShouldResemble, testSrcConfig)
 	})
 	Convey("P50 build time below thresholds, slow builder", t, func() {
@@ -240,7 +255,8 @@ func TestSrcConfig(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
-		So(outputRows[0].ScoreExplanation, ShouldBeEmpty)
+		explanation := scoreExplanation(outputRows[0], savedThresholds)
+		So(explanation, ShouldBeEmpty)
 		So(savedThresholds, ShouldResemble, testSrcConfig)
 	})
 	Convey("Infra fail rate above thresholds, slow builder", t, func() {
@@ -258,7 +274,8 @@ func TestSrcConfig(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "infra_fail_rate")
+		explanation := scoreExplanation(outputRows[0], savedThresholds)
+		So(explanation, ShouldContainSubstring, "infra_fail_rate")
 		So(savedThresholds, ShouldResemble, testSrcConfig)
 	})
 	Convey("Default thresholds with custom thresholds error", t, func() {
@@ -276,7 +293,8 @@ func TestSrcConfig(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "infra_fail_rate")
+		explanation := scoreExplanation(outputRows[0], savedThresholds)
+		So(explanation, ShouldContainSubstring, "infra_fail_rate")
 		So(savedThresholds, ShouldResemble, testSrcConfig)
 	})
 	Convey("Multiple healthy builders", t, func() {
@@ -315,9 +333,11 @@ func TestSrcConfig(t *testing.T) {
 		So(len(outputRows), ShouldEqual, 2)
 		So(savedThresholds, ShouldResemble, testSrcConfig)
 		So(outputRows[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
-		So(outputRows[0].ScoreExplanation, ShouldBeEmpty)
+		explanation := scoreExplanation(outputRows[0], savedThresholds)
+		So(explanation, ShouldBeEmpty)
 		So(outputRows[1].HealthScore, ShouldEqual, HEALTHY_SCORE)
-		So(outputRows[1].ScoreExplanation, ShouldBeEmpty)
+		explanation = scoreExplanation(outputRows[1], savedThresholds)
+		So(explanation, ShouldBeEmpty)
 	})
 	Convey("One healthy, one unhealthy builder", t, func() {
 		ctx := context.Background()
@@ -355,10 +375,12 @@ func TestSrcConfig(t *testing.T) {
 		So(len(outputRows), ShouldEqual, 2)
 		So(savedThresholds, ShouldResemble, testSrcConfig)
 		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "build_mins")
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "infra_fail_rate")
+		explanation := scoreExplanation(outputRows[0], savedThresholds)
+		So(explanation, ShouldContainSubstring, "build_mins")
+		So(explanation, ShouldContainSubstring, "infra_fail_rate")
 		So(outputRows[1].HealthScore, ShouldEqual, HEALTHY_SCORE)
-		So(outputRows[1].ScoreExplanation, ShouldBeEmpty)
+		explanation = scoreExplanation(outputRows[1], savedThresholds)
+		So(explanation, ShouldBeEmpty)
 	})
 	Convey("One low value, one unhealthy", t, func() {
 		ctx := context.Background()
@@ -396,11 +418,11 @@ func TestSrcConfig(t *testing.T) {
 		So(len(outputRows), ShouldEqual, 2)
 		So(savedThresholds, ShouldResemble, testSrcConfig)
 		So(outputRows[0].HealthScore, ShouldEqual, LOW_VALUE_SCORE)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "fail_rate")
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "Low Value")
+		explanation := scoreExplanation(outputRows[0], savedThresholds)
+		So(explanation, ShouldContainSubstring, "fail_rate")
 		So(outputRows[1].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
-		So(outputRows[1].ScoreExplanation, ShouldContainSubstring, "fail_rate")
-		So(outputRows[1].ScoreExplanation, ShouldContainSubstring, "Unhealthy")
+		explanation = scoreExplanation(outputRows[1], savedThresholds)
+		So(explanation, ShouldContainSubstring, "fail_rate")
 	})
 	Convey("Improper threshold config, both default and custom thresholds", t, func() {
 		ctx := context.Background()
@@ -496,12 +518,10 @@ func TestSrcConfig(t *testing.T) {
 		}
 		ps := testSrcConfig["project"].BucketSpecs[row.Bucket][row.Builder].ProblemSpecs
 
-		row.Metrics[0].Threshold = ps[unhealthyIndex].Thresholds.FailRate.Average
-		compareThresholdsHelper(&row, &ps[unhealthyIndex], row.Metrics[0])
+		compareThresholdsHelper(&row, &ps[unhealthyIndex], row.Metrics[0], ps[unhealthyIndex].Thresholds.FailRate.Average)
 		So(row.HealthScore, ShouldEqual, UNHEALTHY_SCORE)
 
-		row.Metrics[0].Threshold = ps[lowValueIndex].Thresholds.FailRate.Average
-		compareThresholdsHelper(&row, &ps[lowValueIndex], row.Metrics[0])
+		compareThresholdsHelper(&row, &ps[lowValueIndex], row.Metrics[0], ps[lowValueIndex].Thresholds.FailRate.Average)
 		So(row.HealthScore, ShouldEqual, LOW_VALUE_SCORE)
 	})
 }

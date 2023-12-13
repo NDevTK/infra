@@ -292,7 +292,7 @@ func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, 
 	step, ctx := build.StartStep(buildCtx, "Calculate indicators")
 	defer func() { step.End(stepErr) }()
 
-	builderRows := make(map[string]Row)
+	mostRecentRows := make(map[string]Row)
 
 	for _, row := range rows {
 		if isWeekend(row.Date) {
@@ -300,10 +300,10 @@ func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, 
 		}
 
 		var builderID = builderID(row.Project, row.Bucket, row.Builder)
-		builder, ok := builderRows[builderID]
+		mostRecentRow, ok := mostRecentRows[builderID]
 		if !ok {
 			// As rows are sorted by date in descending order, this row represents the most recent date
-			builder = row
+			mostRecentRow = row
 		}
 
 		if srcConfig, ok := srcConfigs[row.Project]; !ok {
@@ -329,21 +329,23 @@ func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, 
 				// If any score in the last 90 days is greater than 1, the
 				// builder is considered unhealthy.
 				// Otherwise, the builder is considered low-value.
-				builder.HealthScore = max(builder.HealthScore, row.HealthScore)
-
-				builderRows[builderID] = builder
+				mostRecentRow.HealthScore = max(mostRecentRow.HealthScore, row.HealthScore)
+				mostRecentRows[builderID] = mostRecentRow
 			}
+
 		}
 	}
 
-	rowsWithIndicators := make([]Row, 0, len(builderRows))
+	rowsWithIndicators := make([]Row, 0, len(mostRecentRows))
 
 	inactiveBuilders := 0
 	healthyBuilders := 0
 	unhealthyBuilders := 0
 	lowValueBuilders := 0
 
-	for builderID, row := range builderRows {
+	for builderID, row := range mostRecentRows {
+		row.ScoreExplanation = scoreExplanation(row, srcConfigs)
+
 		rowsWithIndicators = append(rowsWithIndicators, row)
 		if row.HealthScore > 5 {
 			healthyBuilders += 1
@@ -364,6 +366,33 @@ func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, 
 	logging.Errorf(ctx, "Total inactive builders: %d", inactiveBuilders)
 
 	return rowsWithIndicators, nil
+}
+
+func scoreExplanation(row Row, srcConfigs map[string]SrcConfig) string {
+	// Second pass to insert just the worst problem's ScoreExplanation
+	if srcConfig, ok := srcConfigs[row.Project]; ok {
+		if bucketSpec, ok := srcConfig.BucketSpecs[row.Bucket]; ok {
+			if builderSpec, ok := bucketSpec[row.Builder]; ok {
+				for _, problemSpec := range builderSpec.ProblemSpecs {
+					if problemSpec.Score == row.HealthScore {
+						explanation := ""
+						for _, metric := range row.Metrics {
+							if metric.HealthScore != 0 {
+								if explanation != "" {
+									explanation += "#013;"
+								}
+								explanation += fmt.Sprintf("%s of %.2f exceeded the threshold of %.2f for %d days", metric.Type, metric.Value, metric.Threshold, problemSpec.PeriodDays)
+							}
+						}
+
+						return explanation
+					}
+				}
+			}
+		}
+	}
+
+	return ""
 }
 
 func bbClient(buildCtx context.Context) (buildbucketpb.BuildersClient, error) {

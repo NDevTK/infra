@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
-	"strings"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/api/gitiles"
@@ -54,14 +53,12 @@ type AverageThresholds struct {
 	Average float32 `json:"average"`
 }
 
-const explanationPrefix = "Builder was above the"
-
 const HEALTHY_SCORE = 10
 const UNHEALTHY_SCORE = 5
 const LOW_VALUE_SCORE = 1
 const UNSET_SCORE = 0
 
-const UNSET_THRESHOLD = 0
+const UNSET_THRESHOLD = float32(0)
 
 func getSrcConfig(buildCtx context.Context, gerritHost string, repoHost string, repoName string) (*SrcConfig, error) {
 	var err error
@@ -102,19 +99,20 @@ func compareThresholds(ctx context.Context, row *Row, problemSpec *ProblemSpec) 
 	// TODO: make metric.Threshold a list, right now it just takes the lowest problem spec score threshold
 	var stepErr error
 	for _, metric := range row.Metrics {
+		threshold := float32(UNSET_THRESHOLD)
 		switch metric.Type {
 		case "build_mins_p50":
-			metric.Threshold = problemSpec.Thresholds.BuildTime.P50Mins
+			threshold = problemSpec.Thresholds.BuildTime.P50Mins
 		case "build_mins_p95":
-			metric.Threshold = problemSpec.Thresholds.BuildTime.P95Mins
+			threshold = problemSpec.Thresholds.BuildTime.P95Mins
 		case "fail_rate":
-			metric.Threshold = problemSpec.Thresholds.FailRate.Average
+			threshold = problemSpec.Thresholds.FailRate.Average
 		case "infra_fail_rate":
-			metric.Threshold = problemSpec.Thresholds.InfraFailRate.Average
+			threshold = problemSpec.Thresholds.InfraFailRate.Average
 		case "pending_mins_p50":
-			metric.Threshold = problemSpec.Thresholds.PendingTime.P50Mins
+			threshold = problemSpec.Thresholds.PendingTime.P50Mins
 		case "pending_mins_p95":
-			metric.Threshold = problemSpec.Thresholds.PendingTime.P95Mins
+			threshold = problemSpec.Thresholds.PendingTime.P95Mins
 		// TODO: add checks for Test Pending Time once the data is added to the DB query
 		default:
 			metric.HealthScore = UNSET_SCORE
@@ -125,25 +123,27 @@ func compareThresholds(ctx context.Context, row *Row, problemSpec *ProblemSpec) 
 			stepErr = err
 			continue
 		}
-		compareThresholdsHelper(row, problemSpec, metric)
+		compareThresholdsHelper(row, problemSpec, metric, threshold)
 	}
-	row.ScoreExplanation = strings.TrimRight(row.ScoreExplanation, " ")
 
 	return stepErr
 }
 
-func compareThresholdsHelper(row *Row, problemSpec *ProblemSpec, metric *Metric) {
-	if metric.Threshold == UNSET_THRESHOLD {
+func compareThresholdsHelper(row *Row, problemSpec *ProblemSpec, metric *Metric, threshold float32) {
+	if threshold == UNSET_THRESHOLD {
 		return
 	}
 
 	if metric.HealthScore == UNSET_SCORE {
 		metric.HealthScore = HEALTHY_SCORE
 	}
-	if metric.Value > metric.Threshold {
+	if threshold == UNSET_THRESHOLD {
+		metric.Threshold = threshold
+	}
+	if metric.Value > threshold {
 		metric.HealthScore = problemSpec.Score
+		metric.Threshold = threshold
 		row.HealthScore = problemSpec.Score
-		row.ScoreExplanation += fmt.Sprintf("%s %s threshold in the %s ProblemSpec", explanationPrefix, metric.Type, problemSpec.Name)
 	}
 }
 
