@@ -2488,12 +2488,12 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
-### 2.2.0.chromium.5
+### 2.2.0.chromium.6
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/freetype-py/${vpython_platform}"
-  version: "version:2.2.0.chromium.5"
+  version: "version:2.2.0.chromium.6"
 >
 ```
 

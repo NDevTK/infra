@@ -516,7 +516,7 @@ SPECS.update({
             packaged=['windows-x64-py3.8', 'windows-x64-py3.11'],
             pyversions=['py3'],
             patches=('mac-arm64', 'mirror'),
-            patch_version='chromium.5',
+            patch_version='chromium.6',
             env_cb=lambda w: {
                 'CMAKE_BUILD_TYPE': 'Release',
                 'FREETYPEPY_BUNDLE_FT': '1',
@@ -532,6 +532,16 @@ SPECS.update({
                 'windows-x86-py3.8',
                 'windows-x86-py3.11',
             ],
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools>=42',
+                    'wheel',
+                    'setuptools_scm[toml]>=3.4',
+                    'certifi',
+                    'cmake<3.28.0',  # newer cmake doesn't work
+                ],
+                local=[],
+            ),
         ),
         SourceOrPrebuilt(
             'gevent',
