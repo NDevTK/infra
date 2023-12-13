@@ -84,6 +84,10 @@ func Main(ctx context.Context) error {
 		return errors.Annotate(err, "failed to build packages").Err()
 	}
 
+	for _, pkg := range pkgs {
+		logging.Infof(ctx, "built package %s:%s with %s", pkg.Action.Metadata.Cipd.Name, pkg.Action.Metadata.Cipd.Version, pkg.DerivationID)
+	}
+
 	if err := app.TryUpload(ctx, pkgs); err != nil {
 		return err
 	}
