@@ -1,0 +1,5 @@
+# Go builds
+device-lease-service
+
+# System generated files
+coverage.out
