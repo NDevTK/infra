@@ -14,6 +14,8 @@ import {
 } from './features/components/ComponentContext';
 import { AuthContext } from './features/auth/AuthContext';
 import CoveragePage from './pages/coverage/CoveragePage';
+import AbsoluteTrendsPage from './pages/coverage/AbsoluteTrendsPage';
+import IncrementalTrendsPage from './pages/coverage/IncrementalTrendsPage';
 
 const App = () => {
   const { auth } = useContext(AuthContext);
@@ -45,6 +47,8 @@ const App = () => {
               <Route path="/" element={<Navigate to='resources/tests'/>} />
               <Route path="/resources/tests" element={<TestsPage/>} />
               <Route path="/coverage/summary" element={<CoveragePage/>} />
+              <Route path="/coverage/trends/abs" element={<AbsoluteTrendsPage/>} />
+              <Route path="/coverage/trends/inc" element={<IncrementalTrendsPage/>} />
             </Routes>
           </Box>
         </ComponentContextProvider>
