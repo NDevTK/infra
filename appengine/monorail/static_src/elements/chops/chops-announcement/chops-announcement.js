@@ -27,13 +27,7 @@ export const REFRESH_TIME_MS = 5 * 60 * 1000;
 /**
  * @type {Array<Announcement>} A list of hardcodded announcements for Monorail.
  */
-export const HARDCODED_ANNOUNCEMENTS = [{
-  "messageContent": "The Chromium project will be migrating to Buganizer in " +
-    "early 2024. Please test your workflows for this transition with these " +
-    "instructions: go/cob-buv-quick-start",
-  "projects": ["chromium"],
-  "groups": ["everyone@google.com", "googlers@chromium.org"],
-}];
+export const HARDCODED_ANNOUNCEMENTS = [];
 
 /**
  * @typedef {Object} Announcement
