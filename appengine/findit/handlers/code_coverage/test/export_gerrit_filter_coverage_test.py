@@ -1,11 +1,11 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.from datetime import datetime
+# found in the LICENSE file.
 
 import mock
-import webapp2
+from flask import Flask
 
-from gae_libs.handlers.base_handler import BaseHandler
+from common.base_handler import BaseHandler
 from handlers.code_coverage import export_gerrit_filter_coverage
 from model.code_coverage import CoverageReportModifier
 from services.code_coverage import gerrit_filter_coverage
@@ -13,11 +13,12 @@ from waterfall.test.wf_testcase import WaterfallTestCase
 
 
 class ExportAllCoverageMetricsCronTest(WaterfallTestCase):
-  app_module = webapp2.WSGIApplication([
-      ('/coverage/cron/all-gerrit-filter-coverage',
-       export_gerrit_filter_coverage.ExportAllCoverageMetricsCron),
-  ],
-                                       debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/coverage/cron/all-gerrit-filter-coverage',
+      view_func=export_gerrit_filter_coverage.ExportAllCoverageMetricsCron()
+      .Handle,
+      methods=['GET'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   def testTaskAddedToQueue(self, mocked_is_request_from_appself):
@@ -33,11 +34,11 @@ class ExportAllCoverageMetricsCronTest(WaterfallTestCase):
 
 
 class ExportAllCoverageMetricsTest(WaterfallTestCase):
-  app_module = webapp2.WSGIApplication([
-      ('/coverage/task/all-gerrit-filter-coverage',
-       export_gerrit_filter_coverage.ExportAllCoverageMetrics),
-  ],
-                                       debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/coverage/task/all-gerrit-filter-coverage',
+      view_func=export_gerrit_filter_coverage.ExportAllCoverageMetrics().Handle,
+      methods=['GET'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   def testCoverageFilesExported(self, mocked_is_request_from_appself):
@@ -54,11 +55,11 @@ class ExportAllCoverageMetricsTest(WaterfallTestCase):
 
 
 class ExportCoverageMetricsTest(WaterfallTestCase):
-  app_module = webapp2.WSGIApplication([
-      ('/coverage/task/gerrit-filter-coverage.*',
-       export_gerrit_filter_coverage.ExportCoverageMetrics),
-  ],
-                                       debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/coverage/task/gerrit-filter-coverage',
+      view_func=export_gerrit_filter_coverage.ExportCoverageMetrics().Handle,
+      methods=['GET'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(gerrit_filter_coverage, 'ExportCoverage')

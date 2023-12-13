@@ -1,10 +1,10 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.from datetime import datetime
+# found in the LICENSE file.
 
 import logging
 
-from gae_libs.handlers.base_handler import BaseHandler, Permission
+from common.base_handler import BaseHandler, Permission
 from handlers.code_coverage import utils
 from model import entity_util
 
@@ -12,10 +12,10 @@ from model import entity_util
 class FetchSourceFile(BaseHandler):
   PERMISSION_LEVEL = Permission.APP_SELF
 
-  def HandlePost(self):
-    report_key = self.request.get('report_key')
-    path = self.request.get('path')
-    revision = self.request.get('revision')
+  def HandlePost(self, **kwargs):
+    report_key = self.request.values.get('report_key')
+    path = self.request.values.get('path')
+    revision = self.request.values.get('revision')
 
     assert report_key, 'report_key is required'
     assert path, 'path is required'

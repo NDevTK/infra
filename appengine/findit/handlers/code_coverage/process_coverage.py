@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,10 +23,10 @@ from go.chromium.org.luci.buildbucket.proto import common_pb2
 
 from common import constants
 from common import monitoring
+from common.base_handler import BaseHandler, Permission
 from common.findit_http_client import FinditHttpClient
 from common.waterfall.buildbucket_client import GetV2Build
 from gae_libs.appengine_util import IsInternalInstance
-from gae_libs.handlers.base_handler import BaseHandler, Permission
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
 from handlers.code_coverage import utils
 from libs.deps import chrome_dependency_fetcher
@@ -1020,7 +1020,7 @@ class ProcessCodeCoverageData(BaseHandler):
     build.input.gitiles_commit.ref = gitiles_commit_ref
     build.input.gitiles_commit.id = gitiles_commit_id
 
-  def HandlePost(self):
+  def HandlePost(self, **kwargs):
     """Loads the data from GS bucket, and dumps them into ndb."""
     logging.info('Processing: %s', self.request.path)
     match = _BUILD_ID_REGEX.match(self.request.path)
@@ -1031,5 +1031,5 @@ class ProcessCodeCoverageData(BaseHandler):
     build_id = int(match.group(1))
     return self._ProcessCodeCoverageData(build_id)
 
-  def HandleGet(self):
-    return self.HandlePost()  # For local testing purpose.
+  def HandleGet(self, **kwargs):
+    return self.HandlePost(**kwargs)  # For local testing purpose.

@@ -8,7 +8,7 @@ will be preserved in the URL redirected to. If a URL path changes, it has to be
 added to the mapping below for backward compatibility.
 """
 
-from gae_libs.handlers.base_handler import BaseHandler, Permission
+from common.base_handler import BaseHandler, Permission
 
 # Redirection mappings.
 # {
@@ -61,7 +61,7 @@ _REDIRECTION_MAPPING['findit-for-me-staging.appspot.com'] = {
 class URLRedirect(BaseHandler):
   PERMISSION_LEVEL = Permission.ANYONE
 
-  def HandelPost(self):
+  def HandlePost(self):
     return self.CreateError(
         'Wrong destination URL for a post request. Please file a bug '
         'by clicking the button at the bottom right corner.', 400)
@@ -70,7 +70,7 @@ class URLRedirect(BaseHandler):
     """Returns the hostname and path in the URL. This is for mocking in test."""
     return self.request.host, self.request.path
 
-  def HandleGet(self):
+  def HandleGet(self, **kwargs):
     hostname, path = self._GetHostAndPath()
 
     setting = _REDIRECTION_MAPPING.get(hostname, {})

@@ -6,7 +6,8 @@ import datetime
 import json
 import mock
 import re
-import webapp2
+
+from flask import Flask
 import webtest
 
 from handlers import config
@@ -23,10 +24,11 @@ _MOCK_VERSION_NUMBER = 12
 
 
 class ConfigTest(testing.AppengineTestCase):
-  app_module = webapp2.WSGIApplication([
-      ('/config', config.Configuration),
-  ],
-                                       debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/waterfall/config',
+      view_func=config.Configuration().Handle,
+      methods=['GET', 'POST'])
 
   def testGetConfigurationSettings(self):
     config_data = {
@@ -38,7 +40,7 @@ class ConfigTest(testing.AppengineTestCase):
     wf_config.FinditConfig.Get().Update(
         users.GetCurrentUser(), True, message='message', **config_data)
 
-    response = self.test_app.get('/config', params={'format': 'json'})
+    response = self.test_app.get('/waterfall/config', params={'format': 'json'})
     self.assertEquals(response.status_int, 200)
 
     expected_response = {
@@ -63,7 +65,7 @@ class ConfigTest(testing.AppengineTestCase):
         users.GetCurrentUser(), True, message='message', **config_data)
 
     response = self.test_app.get(
-        '/config', params={
+        '/waterfall/config', params={
             'version': 1,
             'format': 'json'
         })
@@ -95,7 +97,7 @@ class ConfigTest(testing.AppengineTestCase):
         re.compile('The requested version is invalid or not found.',
                    re.MULTILINE | re.DOTALL),
         self.test_app.get,
-        '/config',
+        '/waterfall/config',
         params={
             'version': 0,
             'format': 'json'
@@ -105,12 +107,11 @@ class ConfigTest(testing.AppengineTestCase):
         re.compile('The requested version is invalid or not found.',
                    re.MULTILINE | re.DOTALL),
         self.test_app.get,
-        '/config',
+        '/waterfall/config',
         params={
             'version': 2,
             'format': 'json'
         })
-
 
   def testFormatTimestamp(self):
     self.assertIsNone(config._FormatTimestamp(None))
@@ -119,7 +120,7 @@ class ConfigTest(testing.AppengineTestCase):
         config._FormatTimestamp(
             datetime.datetime(2016, 2, 25, 1, 2, 3, 123456)))
 
-  @mock.patch('gae_libs.token.ValidateAuthToken')
+  @mock.patch('common.token.ValidateAuthToken')
   def testPostConfigurationSettings(self, mocked_ValidateAuthToken):
     self.mock_current_user(user_email='test@chromium.org', is_admin=True)
     mocked_ValidateAuthToken.side_effect = [(True, False)]
@@ -133,7 +134,7 @@ class ConfigTest(testing.AppengineTestCase):
             'reason',
     }
 
-    response = self.test_app.post('/config', params=params)
+    response = self.test_app.post('/waterfall/config', params=params)
 
     expected_response = {
         'code_coverage_settings': _MOCK_CODE_COVERAGE_SETTINGS,
@@ -147,7 +148,7 @@ class ConfigTest(testing.AppengineTestCase):
 
     self.assertEquals(expected_response, response.json_body)
 
-  @mock.patch('gae_libs.token.ValidateAuthToken')
+  @mock.patch('common.token.ValidateAuthToken')
   def testPostConfigurationSettingsFail(self, mocked_ValidateAuthToken):
     self.mock_current_user(user_email='test@chromium.org', is_admin=True)
     mocked_ValidateAuthToken.side_effect = [(True, False)]
@@ -156,7 +157,7 @@ class ConfigTest(testing.AppengineTestCase):
         webtest.app.AppError,
         re.compile('not present in config', re.MULTILINE | re.DOTALL),
         self.test_app.post,
-        '/config',
+        '/waterfall/config',
         params={
             'format': 'json',
             'message': 'forgot how to config',

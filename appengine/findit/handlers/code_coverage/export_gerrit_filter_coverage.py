@@ -6,22 +6,19 @@ import datetime
 import logging
 import time
 
-from gae_libs.handlers.base_handler import BaseHandler, Permission
-
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 
 from common import constants
-from handlers.code_coverage import utils
+from common.base_handler import BaseHandler, Permission
 from model.code_coverage import CoverageReportModifier
-from model.code_coverage import PostsubmitReport
 from services.code_coverage import gerrit_filter_coverage
 
 
 class ExportAllCoverageMetricsCron(BaseHandler):
   PERMISSION_LEVEL = Permission.APP_SELF
 
-  def HandleGet(self):
+  def HandleGet(self, **kwargs):
     # Cron jobs run independently of each other. Therefore, there is no
     # guarantee that they will run either sequentially or simultaneously.
     #
@@ -60,7 +57,7 @@ class ExportAllCoverageMetrics(BaseHandler):
         if x.gerrit_hashtag:
           yield x.key.id()
 
-  def HandleGet(self):
+  def HandleGet(self, **kwargs):
     # Spawn a sub task for each active filter
     for modifier_id in self._GetActiveGerritFilters():
       modifier = CoverageReportModifier.Get(modifier_id)
@@ -87,9 +84,9 @@ class ExportAllCoverageMetrics(BaseHandler):
 class ExportCoverageMetrics(BaseHandler):
   PERMISSION_LEVEL = Permission.APP_SELF
 
-  def HandleGet(self):
+  def HandleGet(self, **kwargs):
     start_time = time.time()
-    modifier_id = int(self.request.get('modifier_id'))
+    modifier_id = int(self.request.values.get('modifier_id'))
     gerrit_filter_coverage.ExportCoverage(modifier_id, int(start_time))
     minutes = (time.time() - start_time) / 60
     modifier = CoverageReportModifier.Get(modifier_id)

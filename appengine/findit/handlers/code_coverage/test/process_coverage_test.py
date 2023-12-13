@@ -1,11 +1,11 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from datetime import datetime
 import json
 import mock
-import webapp2
+from flask import Flask
 
 from components.prpc import client as prpc_client
 
@@ -14,7 +14,7 @@ from go.chromium.org.luci.buildbucket.proto import builder_common_pb2
 from go.chromium.org.luci.buildbucket.proto import builds_service_pb2
 from go.chromium.org.luci.buildbucket.proto import common_pb2
 
-from gae_libs.handlers.base_handler import BaseHandler
+from common.base_handler import BaseHandler
 from handlers.code_coverage import process_coverage
 from handlers.code_coverage import utils
 from model.code_coverage import BlockingStatus
@@ -199,11 +199,11 @@ def _CreateSampleDirectoryCoverageData(builder='linux-code-coverage',
 
 
 class ProcessCodeCoverageDataTest(WaterfallTestCase):
-  app_module = webapp2.WSGIApplication([
-      ('/coverage/task/process-data/.*',
-       process_coverage.ProcessCodeCoverageData),
-  ],
-                                       debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/coverage/task/process-data/build/<build_id>',
+      view_func=process_coverage.ProcessCodeCoverageData().Handle,
+      methods=['POST'])
 
   def setUp(self):
     super(ProcessCodeCoverageDataTest, self).setUp()
@@ -222,7 +222,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   def testPermissionInProcessCodeCoverageData(self):
     self.mock_current_user(user_email='test@google.com', is_admin=False)
     response = self.test_app.post(
-        '/coverage/task/process-data/123?format=json', status=401)
+        '/coverage/task/process-data/build/123?format=json', status=401)
     self.assertEqual(('Either not log in yet or no permission. '
                       'Please log in with your @google.com account.'),
                      response.json_body.get('error_message'))

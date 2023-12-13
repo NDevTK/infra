@@ -6,9 +6,8 @@
 import logging
 import json
 
-from gae_libs import token
-from gae_libs.handlers.base_handler import BaseHandler
-from gae_libs.handlers.base_handler import Permission
+from common import token
+from common.base_handler import BaseHandler, Permission
 from model import wf_config
 from waterfall import waterfall_config
 
@@ -128,17 +127,14 @@ class Configuration(BaseHandler):
   PERMISSION_LEVEL = Permission.ADMIN
 
   @token.AddXSRFToken(action_id='config')
-  def HandleGet(self):
-    version = self.request.params.get('version')
-
+  def HandleGet(self, **kwargs):
+    version = self.request.values.get('version')
     if version is not None:
       version = int(version)
-
     settings = wf_config.FinditConfig.Get(version)
-
     if not settings:
-      return self.CreateError('The requested version is invalid or not found.',
-                              400)
+      return BaseHandler.CreateError(
+          'The requested version is invalid or not found.', 400)
 
     latest_version = settings.GetLatestVersionNumber()
 
@@ -154,20 +150,20 @@ class Configuration(BaseHandler):
     return {'template': 'config.html', 'data': data}
 
   @token.VerifyXSRFToken(action_id='config')
-  def HandlePost(self):
+  def HandlePost(self, **kwargs):
     new_config_dict = {}
-    for name in self.request.params.keys():
+    for name in self.request.values.keys():
       if name not in ('format', 'xsrf_token', 'message'):
-        new_config_dict[name] = json.loads(self.request.params[name])
+        new_config_dict[name] = json.loads(self.request.values[name])
 
-    message = self.request.get('message')
+    message = self.request.values.get('message')
     if not message:  # pragma: no cover
       return self.CreateError('Please provide the reason to update the config',
                               400)
 
     errors = _ValidateConfig('', new_config_dict, _CONFIG_SPEC)
     if errors:
-      return self.CreateError(
+      return BaseHandler.CreateError(
           'New configuration settings is not properly formatted.\n'
           'The following errors were detected \n %s' % '\n'.join(errors), 400)
 
@@ -177,4 +173,4 @@ class Configuration(BaseHandler):
         message=message,
         **new_config_dict)
 
-    return self.HandleGet()
+    return self.HandleGet(**kwargs)

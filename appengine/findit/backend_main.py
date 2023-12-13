@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import webapp2
+from flask import Flask
 
 import gae_ts_mon
 
@@ -16,24 +16,35 @@ from handlers.code_coverage import process_coverage
 from handlers.code_coverage import update_postsubmit_report
 
 # "code-coverage-backend" module.
-code_coverage_backend_handler_mappings = [
-    ('.*/coverage/task/fetch-source-file', fetch_source_file.FetchSourceFile),
-    ('.*/coverage/task/process-data/.*',
-     process_coverage.ProcessCodeCoverageData),
-    ('.*/coverage/cron/files-absolute-coverage',
-     export_absolute_coverage.ExportFilesAbsoluteCoverageMetricsCron),
-    ('.*/coverage/task/files-absolute-coverage',
-     export_absolute_coverage.ExportFilesAbsoluteCoverageMetrics),
-    ('.*/coverage/cron/incremental-coverage',
-     export_incremental_coverage.ExportIncrementalCoverageMetricsCron),
-    ('.*/coverage/cron/all-gerrit-filter-coverage',
-     export_gerrit_filter_coverage.ExportAllCoverageMetricsCron),
-    ('.*/coverage/task/all-gerrit-filter-coverage',
-     export_gerrit_filter_coverage.ExportAllCoverageMetrics),
-    ('.*/coverage/task/postsubmit-report/update',
-     update_postsubmit_report.UpdatePostsubmitReport),
+handler_mappings = [
+    ('/coverage/task/fetch-source-file', 'FetchSourceFile',
+     fetch_source_file.FetchSourceFile().Handle, ['POST']),
+    ('/coverage/task/process-data/build/<build_id>', 'ProcessCodeCoverageData',
+     process_coverage.ProcessCodeCoverageData().Handle, ['GET', 'POST']),
+    ('/coverage/cron/files-absolute-coverage',
+     'ExportFilesAbsoluteCoverageMetricsCron',
+     export_absolute_coverage.ExportFilesAbsoluteCoverageMetricsCron().Handle,
+     ['GET']),
+    ('/coverage/task/files-absolute-coverage',
+     'ExportFilesAbsoluteCoverageMetrics',
+     export_absolute_coverage.ExportFilesAbsoluteCoverageMetrics().Handle,
+     ['GET']),
+    ('/coverage/cron/incremental-coverage',
+     'ExportIncrementalCoverageMetricsCron',
+     export_incremental_coverage.ExportIncrementalCoverageMetricsCron().Handle,
+     ['GET']),
+    ('/coverage/cron/all-gerrit-filter-coverage',
+     'ExportAllCoverageMetricsCron',
+     export_gerrit_filter_coverage.ExportAllCoverageMetricsCron().Handle,
+     ['GET']),
+    ('/coverage/task/all-gerrit-filter-coverage', 'ExportAllCoverageMetrics',
+     export_gerrit_filter_coverage.ExportAllCoverageMetrics().Handle, ['GET']),
+    ('/coverage/task/postsubmit-report/update', 'UpdatePostsubmitReport',
+     update_postsubmit_report.UpdatePostsubmitReport().Handle, ['POST']),
 ]
-code_coverage_backend_web_application = webapp2.WSGIApplication(
-    code_coverage_backend_handler_mappings, debug=False)
+code_coverage_backend_web_application = Flask(__name__)
+for url, endpoint, view_func, methods in handler_mappings:
+  code_coverage_backend_web_application.add_url_rule(
+      url, endpoint=endpoint, view_func=view_func, methods=methods)
 if appengine_util.IsInProductionApp():
   gae_ts_mon.initialize_prod(code_coverage_backend_web_application)

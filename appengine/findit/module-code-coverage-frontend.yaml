@@ -55,9 +55,8 @@ handlers:
   script: frontend_main.code_coverage_frontend_web_application
   secure: always
 
-# Keep this one as the last match for redirection of old URLs.
-- url: /.*
-  script: frontend_main.waterfall_frontend_web_application
+- url: /waterfall/config.*
+  script: frontend_main.code_coverage_frontend_web_application
   secure: always
 
 skip_files:
@@ -73,8 +72,8 @@ skip_files:
 - ^(.*/)?util_scripts/.*$
 
 libraries:
-- name: webapp2
-  version: latest
+- name: flask
+  version: 0.12
 - name: jinja2
   version: latest
 - name: numpy

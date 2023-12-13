@@ -8,7 +8,7 @@ import re
 
 from google.appengine.api import users
 
-from gae_libs.handlers.base_handler import BaseHandler, Permission
+from common.base_handler import BaseHandler, Permission
 from gae_libs.dashboard_util import GetPagedResults
 from handlers.code_coverage import utils
 from libs.time_util import ConvertUTCToPST
@@ -20,9 +20,6 @@ from waterfall import waterfall_config
 
 # The regex to extract the luci project name from the url path.
 _LUCI_PROJECT_REGEX = re.compile(r'^/coverage/p/([^/]+)')
-
-# The regex to extract the year since which referenced coverage is desired
-_REFERENCED_COVERAGE_YEAR_REGEX = re.compile(r'.*/referenced([0-9]+)')
 
 
 def _GetPostsubmitDefaultReportConfig(luci_project):
@@ -262,9 +259,9 @@ class ServeCodeCoverageData(BaseHandler):
                                     revision, platform, bucket, builder,
                                     test_suite_type, modifier_id):
     """Serves coverage data for the project view."""
-    cursor = self.request.get('cursor', None)
-    page_size = int(self.request.get('page_size', 100))
-    direction = self.request.get('direction', 'next').lower()
+    cursor = self.request.values.get('cursor', None)
+    page_size = int(self.request.values.get('page_size', 100))
+    direction = self.request.values.get('direction', 'next').lower()
 
     query = PostsubmitReport.query(
         PostsubmitReport.gitiles_commit.project == project,
@@ -337,7 +334,7 @@ class ServeCodeCoverageData(BaseHandler):
         'template': 'coverage/project_view.html',
     }
 
-  def HandleGet(self):
+  def HandleGet(self, **kwargs):
 
     def _GetLuciProject(path):
       match = _LUCI_PROJECT_REGEX.match(path)
@@ -355,16 +352,17 @@ class ServeCodeCoverageData(BaseHandler):
           'bug with component: Infra>Test>CodeCoverage for fixing it' %
           luci_project, 400)
 
-    host = self.request.get('host', default_config['host'])
-    project = self.request.get('project', default_config['project'])
-    ref = self.request.get('ref', default_config['ref'])
-    revision = self.request.get('revision')
-    platform = self.request.get('platform', default_config['platform'])
-    list_reports = self.request.get('list_reports', 'False').lower() == 'true'
-    path = self.request.get('path')
-    test_suite_type = self.request.get('test_suite_type', 'any')
+    host = self.request.values.get('host', default_config['host'])
+    project = self.request.values.get('project', default_config['project'])
+    ref = self.request.values.get('ref', default_config['ref'])
+    revision = self.request.values.get('revision')
+    platform = self.request.values.get('platform', default_config['platform'])
+    list_reports = self.request.values.get('list_reports',
+                                           'False').lower() == 'true'
+    path = self.request.values.get('path')
+    test_suite_type = self.request.values.get('test_suite_type', 'any')
     try:
-      modifier_id = int(self.request.get('modifier_id', '0'))
+      modifier_id = int(self.request.values.get('modifier_id', '0'))
     except ValueError as e:
       return BaseHandler.CreateError('Malformed request = %s' % str(e), 400)
 

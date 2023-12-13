@@ -1,10 +1,10 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.from datetime import datetime
+# found in the LICENSE file.
 
 from datetime import datetime
 import mock
-import webapp2
+from flask import Flask
 
 from gae_libs.handlers.base_handler import BaseHandler
 from model.code_coverage import DependencyRepository
@@ -48,11 +48,11 @@ def _CreateSampleCoverageSummaryMetric():
 
 
 class UpdatePostsubmitReportTest(WaterfallTestCase):
-  app_module = webapp2.WSGIApplication([
-      ('/coverage/task/postsubmit-report/update',
-       update_postsubmit_report.UpdatePostsubmitReport),
-  ],
-                                       debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/coverage/task/postsubmit-report/update',
+      view_func=update_postsubmit_report.UpdatePostsubmitReport().Handle,
+      methods=['POST'])
 
   def setUp(self):
     super(UpdatePostsubmitReportTest, self).setUp()

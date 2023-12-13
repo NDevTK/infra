@@ -1,18 +1,18 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from google.appengine.api import taskqueue
 
 from common import constants
-from gae_libs.handlers.base_handler import BaseHandler, Permission
+from common.base_handler import BaseHandler, Permission
 from services.code_coverage import files_absolute_coverage
 
 
 class ExportFilesAbsoluteCoverageMetricsCron(BaseHandler):
   PERMISSION_LEVEL = Permission.APP_SELF
 
-  def HandleGet(self):
+  def HandleGet(self, **kwargs):
     # Cron jobs run independently of each other. Therefore, there is no
     # guarantee that they will run either sequentially or simultaneously.
     #
@@ -30,6 +30,6 @@ class ExportFilesAbsoluteCoverageMetricsCron(BaseHandler):
 class ExportFilesAbsoluteCoverageMetrics(BaseHandler):
   PERMISSION_LEVEL = Permission.APP_SELF
 
-  def HandleGet(self):
+  def HandleGet(self, **kwargs):
     files_absolute_coverage.ExportFilesAbsoluteCoverage()
     return {'return_code': 200}

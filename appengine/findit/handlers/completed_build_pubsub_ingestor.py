@@ -10,8 +10,7 @@ import logging
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 
-from gae_libs.handlers.base_handler import BaseHandler
-from gae_libs.handlers.base_handler import Permission
+from common.base_handler import BaseHandler, Permission
 
 from common.waterfall.buildbucket_client import GetV2Build
 
@@ -24,12 +23,12 @@ class CompletedBuildPubsubIngestor(BaseHandler):
 
   PERMISSION_LEVEL = Permission.ANYONE  # Protected with login:admin.
 
-  def HandlePost(self):
+  def HandlePost(self, **kwargs):
     build_id = None
     status = None
     builder_name = None
     try:
-      envelope = json.loads(self.request.body)
+      envelope = self.request.get_json(force=True)
       version = envelope['message']['attributes'].get('version')
       if version and version != 'v1':
         logging.info('Ignoring versions other than v1')
@@ -43,7 +42,7 @@ class CompletedBuildPubsubIngestor(BaseHandler):
       # Ignore requests with invalid message.
       logging.debug('build_id: %r', build_id)
       logging.error('Unexpected PubSub message format: %s', e.message)
-      logging.debug('Post body: %s', self.request.body)
+      logging.debug('Post body: %s', self.request.get_json(force=True))
       return
 
     # Legacy Buildbucket Status
@@ -72,4 +71,3 @@ def _HandlePossibleCodeCoverageBuild(build_id):  # pragma: no cover
         queue_name='code-coverage-process-data')
   except (taskqueue.TombstonedTaskError, taskqueue.TaskAlreadyExistsError):
     logging.warning('Build %s was already scheduled to be processed', build_id)
-

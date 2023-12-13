@@ -6,8 +6,8 @@ import json
 import logging
 import time
 
+from common.base_handler import BaseHandler, Permission
 from common.findit_http_client import FinditHttpClient
-from gae_libs.handlers.base_handler import BaseHandler, Permission
 
 from model.code_coverage import BlockingStatus
 from model.code_coverage import LowCoverageBlocking
@@ -17,7 +17,7 @@ from services import bigquery_helper
 class PostReviewToGerrit(BaseHandler):
   PERMISSION_LEVEL = Permission.APP_SELF
 
-  def HandlePost(self):
+  def HandlePost(self, **kwargs):
     body = json.loads(self.request.body)
     host = body['host']
     change = int(body['change'])

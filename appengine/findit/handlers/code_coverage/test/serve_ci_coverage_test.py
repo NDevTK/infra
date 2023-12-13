@@ -5,11 +5,10 @@
 
 from datetime import datetime
 import mock
-import webapp2
+from flask import Flask
 
 from handlers.code_coverage import serve_ci_coverage
 from handlers.code_coverage import utils
-from model.code_coverage import CoverageReportModifier
 from model.code_coverage import DependencyRepository
 from model.code_coverage import FileCoverageData
 from model.code_coverage import PostsubmitReport
@@ -163,8 +162,20 @@ def _CreateSampleComponentCoverageData(builder='linux-code-coverage'):
 
 
 class ServeCodeCoverageDataTest(WaterfallTestCase):
-  app_module = webapp2.WSGIApplication(
-      [('/coverage/p/.*', serve_ci_coverage.ServeCodeCoverageData)], debug=True)
+  mappings = [('/coverage/p/<string:project>/component',
+               'CIServeCodeCoverageDataComponent',
+               serve_ci_coverage.ServeCodeCoverageData().Handle, ['GET']),
+              ('/coverage/p/<string:project>/dir', 'CIServeCodeCoverageDataDir',
+               serve_ci_coverage.ServeCodeCoverageData().Handle, ['GET']),
+              ('/coverage/p/<string:project>/file',
+               'CIServeCodeCoverageDataFile',
+               serve_ci_coverage.ServeCodeCoverageData().Handle, ['GET']),
+              ('/coverage/p/<string:project>', 'CIServeCodeCoverageDataDefault',
+               serve_ci_coverage.ServeCodeCoverageData().Handle, ['GET'])]
+  app_module = Flask(__name__)
+  for url, endpoint, view_func, methods in mappings:
+    app_module.add_url_rule(
+        url, endpoint=endpoint, view_func=view_func, methods=methods)
 
   def setUp(self):
     super(ServeCodeCoverageDataTest, self).setUp()

@@ -5,7 +5,7 @@
 import logging
 import re
 
-from gae_libs.handlers.base_handler import BaseHandler, Permission
+from common.base_handler import BaseHandler, Permission
 from handlers.code_coverage import utils
 from model.code_coverage import PresubmitCoverageData
 from services.code_coverage import code_coverage_util
@@ -98,21 +98,21 @@ class ServeCodeCoverageData(BaseHandler):
 
       return {'data': {'data': formatted_data,}, 'allowed_origin': '*'}
 
-    gerrit_host = self.request.get('host')
-    project = self.request.get('project')
+    gerrit_host = self.request.values.get('host')
+    project = self.request.values.get('project')
     try:
-      change = int(self.request.get('change'))
-      patchset = int(self.request.get('patchset'))
+      change = int(self.request.values.get('change'))
+      patchset = int(self.request.values.get('patchset'))
     except ValueError, ve:
       return BaseHandler.CreateError(
           error_message=(
               'Invalid value for change(%r) or patchset(%r): need int, %s' %
-              (self.request.get('change'), self.request.get('patchset'),
-               ve.message)),
+              (self.request.values.get('change'),
+               self.request.values.get('patchset'), ve.message)),
           return_code=400,
           allowed_origin='*')
 
-    data_type = self.request.get('type', 'lines')
+    data_type = self.request.values.get('type', 'lines')
 
     logging.info('Serving coverage data for CL:')
     logging.info('host=%s', gerrit_host)
@@ -221,5 +221,5 @@ class ServeCodeCoverageData(BaseHandler):
     entity.put()
     return _ServeLines(entity.data)
 
-  def HandleGet(self):
+  def HandleGet(self, **kwargs):
     return self._ServePerCLCoverageData()

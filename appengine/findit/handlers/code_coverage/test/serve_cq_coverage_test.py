@@ -3,27 +3,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from datetime import datetime
 import json
 import mock
-import webapp2
+from flask import Flask
 
 from handlers.code_coverage import serve_cq_coverage
 from model.code_coverage import CoveragePercentage
-from model.code_coverage import DependencyRepository
-from model.code_coverage import FileCoverageData
-from model.code_coverage import PostsubmitReport
 from model.code_coverage import PresubmitCoverageData
-from model.code_coverage import SummaryCoverageData
 from services.code_coverage import code_coverage_util
 from waterfall.test.wf_testcase import WaterfallTestCase
 
 
 class ServeCodeCoverageDataTest(WaterfallTestCase):
-  app_module = webapp2.WSGIApplication([
-      ('/coverage/api/coverage-data', serve_cq_coverage.ServeCodeCoverageData)
-  ],
-                                       debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/coverage/api/coverage-data',
+      view_func=serve_cq_coverage.ServeCodeCoverageData().Handle,
+      methods=['GET'])
 
   def setUp(self):
     super(ServeCodeCoverageDataTest, self).setUp()

@@ -6,7 +6,7 @@ import base64
 import json
 import mock
 
-import webapp2
+from flask import Flask
 
 from google.appengine.api import taskqueue
 from go.chromium.org.luci.buildbucket.proto.build_pb2 import Build
@@ -19,11 +19,12 @@ from model.isolated_target import IsolatedTarget
 
 
 class CompletedBuildPubsubIngestorTest(AppengineTestCase):
-  app_module = webapp2.WSGIApplication([
-      ('/index-isolated-builds',
-       completed_build_pubsub_ingestor.CompletedBuildPubsubIngestor),
-  ],
-                                       debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/index-isolated-builds',
+      view_func=completed_build_pubsub_ingestor.CompletedBuildPubsubIngestor()
+      .Handle,
+      methods=['POST'])
 
   @mock.patch.object(completed_build_pubsub_ingestor,
                      '_HandlePossibleCodeCoverageBuild')

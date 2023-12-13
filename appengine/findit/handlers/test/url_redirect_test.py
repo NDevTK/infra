@@ -4,7 +4,7 @@
 
 import mock
 
-import webapp2
+from flask import Flask
 
 from handlers import url_redirect
 from waterfall.test import wf_testcase
@@ -25,10 +25,11 @@ _REDIRECTION_MAPPING_MOCK = {
 
 
 class URLRedirectTest(wf_testcase.WaterfallTestCase):
-  app_module = webapp2.WSGIApplication([
-      (r'/.*', url_redirect.URLRedirect),
-  ],
-                                       debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/<path:rest_of_url>',
+      view_func=url_redirect.URLRedirect().Handle,
+      methods=['GET', 'POST'])
 
   @mock.patch.object(
       url_redirect.URLRedirect,
