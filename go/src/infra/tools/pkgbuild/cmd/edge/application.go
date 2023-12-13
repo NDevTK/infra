@@ -192,12 +192,13 @@ func (a *Application) TryUpload(ctx context.Context, pkgs []actions.Package) err
 
 	for _, pkg := range pkgs {
 		metadata := pkg.Action.Metadata
-		logging.Infof(ctx, "creating cipd package %s:%s", metadata.Cipd.Name, metadata.Cipd.Version)
 
 		name := metadata.Cipd.Name
 		if a.Experiment {
 			name = path.Join("experimental", name)
 		}
+
+		logging.Infof(ctx, "creating cipd package %s:%s", name, metadata.Cipd.Version)
 
 		out := filepath.Join(tmp, pkg.DerivationID+".cipd")
 		Iid, err := buildCIPD(name, pkg.Handler.OutputDirectory(), out)
