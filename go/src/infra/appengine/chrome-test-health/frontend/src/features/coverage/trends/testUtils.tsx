@@ -4,13 +4,13 @@
 
 import { BrowserRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
-import { Platform } from '../../../api/coverage';
+import { Platform, CoverageTrend } from '../../../api/coverage';
 import { renderWithAuth } from '../../../features/auth/testUtils';
 import { Params } from './LoadTrends';
 import { TrendsContext, TrendsContextValue } from './TrendsContext';
 
 export interface OptionalContext {
-  data?: [],
+  data?: CoverageTrend[],
   api?: {
     updatePlatform?: () => {/**/},
     updateUnitTestsOnly?: () => {/**/},
