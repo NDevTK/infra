@@ -9,7 +9,11 @@ dispatch:
   - url: "*/rpcexplorer/*"
     service: default-go
 
-  # Go serves all prpc traffic.
+  # TaskBackendLite server is hosted in taskbackendlite service.
+  - url: "*/prpc/buildbucket.v2.TaskBackendLite/*"
+    service: taskbackendlite
+
+  # default-go serves all prpc traffic except `buildbucket.v2.TaskBackendLite/*`
   - url: "*/prpc/*"
     service: default-go
 
