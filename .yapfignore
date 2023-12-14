@@ -2,3 +2,5 @@
 # .gitignore, patterns in this file are only simple Unix shell-style wildcard
 # patterns (e.g. *.ext" matches all paths that end in .ext).
 *_pb2.py
+go/src/infra/experimental/crderiveinputs/embed/depot_tools/*.py
+go/src/infra/experimental/crderiveinputs/embed/depot_tools/**/*.py

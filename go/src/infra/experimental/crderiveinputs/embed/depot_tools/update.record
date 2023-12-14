@@ -1,0 +1,5 @@
+Source URL: https://chromium.googlesource.com/chromium/tools/depot_tools
+Source Commit: 38c697d3eccc54a5e46abc8c267cd0593b7b29b6
+Edits:
+  * Remove gclient_utils import from gclient_eval.py
+  * Replace gclient_utils.Error in gclient_eval with ValueError

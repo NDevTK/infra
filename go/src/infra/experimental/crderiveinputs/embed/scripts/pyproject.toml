@@ -1,0 +1,4 @@
+[tool.pyright]
+extraPaths = [
+  '../depot_tools',
+]

@@ -1,0 +1,185 @@
+// Copyright 2023 The LUCI Authors. All rights reserved.
+// Use of this source code is governed under the Apache License, Version 2.0
+// that can be found in the LICENSE file.
+
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+option go_package = "infra/experimental/crderiveinputs/inputpb";
+
+message ResolvableString {
+  string requested = 1;
+  string resolved = 2;
+  string resolution_source = 3;  // NOTE: This probably needs to be structured
+}
+
+message GitCheckout {
+  string repo = 1;
+  ResolvableString version = 2;
+}
+
+message CIPDPackages {
+  repeated CIPDPackage packges = 1;
+}
+
+message CIPDPackage {
+  ResolvableString pkg = 1;
+  ResolvableString version = 2;
+}
+
+message VpythonEnv {
+  string manifest_sha2 = 1;
+  CIPDPackage python_interpreter = 2;
+  repeated CIPDPackage wheel = 3;
+}
+
+message GCSBlob {
+  string bucket = 1;
+  string object = 2;
+
+  // Hash, when resolved, always has size/sha2.
+  //
+  // There are other unresolved inputs which can be supplied here, but Oracle will
+  // always resolve them to size/sha2.
+  message Hash {
+    google.protobuf.Int64Value size = 1;
+    bytes sha256 = 2;
+
+    // If we had to resolve this Hash against GCS, this records the generation
+    // number we consumed. Resolution only occurs if size and sha256 are not both
+    // supplied by the originating pin file.
+    google.protobuf.Int64Value generation = 3;
+
+    // These hash values may be present in the source, but will all be resolved
+    // to sha2 by crderiveinputs.
+    bytes sha1 = 4;
+  }
+  Hash hash = 3;
+}
+
+message GCSArchives {
+  // unfortunately, download_nacl_toolchains.py unpacks multiple archives on top
+  // of each other...
+  //
+  // For the purpose of this manifest, they are unpacked in order... if there
+  // are conflicts, ideally the unpacker should yell about that.
+  repeated GCSArchive archives = 1;
+}
+
+message GCSArchive {
+  GCSBlob archive = 1;
+
+  // Extract only this subdirectory from the archive.
+  //
+  // Example, in a tarfile like:
+  //   a/stuff
+  //   b/deep/something
+  //   b/other/blah
+  //
+  // if this is 'b/deep', then 'something' would be extracted to the Source.path
+  // that this GCSArchive belongs to.
+  //
+  // This was added due to download_nacl_toolchains.py support. Hopefully this
+  // can be removed.
+  string extract_subdir = 2;
+
+  enum Format {
+    UNKNOWN = 0;
+
+    TAR_GZ = 1;
+    TAR_BZ2 = 2;
+    TAR_XZ = 3;
+  }
+  Format format = 3;
+}
+
+message RawFileContent {
+  string raw_content = 1;
+  string source = 2;  // NOTE: This probably needs to be structured.
+}
+
+message Source {
+  string path = 1;
+
+  // TODO: Add some metadata here about how this Source was added to the
+  // manifest. e.g. if this was the result of evaluating
+  // download_from_google_storage via a DEPS file and it consumed a sha1 file
+  // via a CIPD package, we should somehow be able to see that here.
+
+  oneof content {
+    // This Source is a singluar file.
+    RawFileContent raw_file = 4;
+    GCSBlob gcs_file = 5;
+
+    // This Source is the root of some archive/directory.
+    GitCheckout git = 6;
+    CIPDPackages cipd = 7;
+    GCSArchives gcs_archives = 8;
+  }
+}
+
+message AptDependency {
+  // TODO: Actually resolve these into:
+  //   * A concrete set of .deb files (including transitive dependencies against
+  //     a base OS image)
+
+  message Condition {
+    // If package_available is set, check the apt repo for this package being
+    // available. If it is, then this condition clause is True.
+    string package_available = 1;
+  }
+  // Set of conditions to evaluate - all must be True for this Dependency to
+  // be active.
+  //
+  // An empty conditions set is True.
+  repeated Condition conditions = 1;
+
+  // If conditions is met, then install all of these packages.
+  // If conditions is not met, and orelse is empty, fail.
+  // If conditions is not met, and orelse is not empty, recurse.
+  repeated string packages = 2;
+
+  AptDependency orelse = 3;
+}
+
+message LinuxSystemDeps {
+  // This is actually unconstrained in chromium - install-build-deps will check
+  // that the base os is one of 4 unpinned distributions:
+  //
+  // * "Ubuntu 18.04 LTS (bionic with EoL April 2028)"
+  // * "Ubuntu 20.04 LTS (focal with EoL April 2030)"
+  // * "Ubuntu 22.04 LTS (jammy with EoL April 2032)"
+  // * "Debian 10 (buster) or later"
+  string base_image = 1;
+
+  repeated AptDependency apt_dep = 2;
+}
+
+message Manifest {
+  oneof system {
+    // LinuxSystemDeps is derived from build/install-build-deps.py.
+    LinuxSystemDeps linux_deps = 1;
+    // TODO: Mac, Windows, ???? dependencies.
+  }
+
+  message GclientVal {
+    oneof value {
+      string strVal = 1;
+      bool boolVal = 2;
+    }
+  }
+  map<string, GclientVal> gclient_inputs = 2;
+
+  // NOTE: There are a whole bunch of DEPS entries which are not needed for the
+  // build, but are pulled in anyway - DEPS needs a new variable to set 'build
+  // only'.
+
+  // download_remoteexec_cfg (??)
+
+  map<string, Source> sources = 3;
+
+  // Map of spec sha2 => VpythonEnv.
+  map<string, VpythonEnv> virtualenvs = 4;
+}
+
