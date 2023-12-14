@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "infra/cros/satlab/satlabrpcserver/proto"
+	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 )
 
 const (

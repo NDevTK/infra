@@ -23,6 +23,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"infra/cros/satlab/common/dut"
 	"infra/cros/satlab/common/enumeration"
 	"infra/cros/satlab/common/paths"
@@ -33,7 +34,6 @@ import (
 	mk "infra/cros/satlab/satlabrpcserver/mocks"
 	"infra/cros/satlab/satlabrpcserver/models"
 	cpu "infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
-	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/utils"

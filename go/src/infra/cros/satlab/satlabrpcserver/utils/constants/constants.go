@@ -6,8 +6,8 @@ package constants
 import (
 	"time"
 
+	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"infra/cros/satlab/common/services/build_service"
-	pb "infra/cros/satlab/satlabrpcserver/proto"
 )
 
 // F64Epsilon Machine epsilon value for f64
