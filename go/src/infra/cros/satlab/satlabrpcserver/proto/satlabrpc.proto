@@ -13,48 +13,48 @@ import "chromiumos/longrunning/operations.proto";
 import "chromiumos/test/api/servod_service.proto";
 
 service SatlabRpcService {
-  rpc list_accessible_models (ListAccessibleModelsRequest) returns (ListAccessibleModelsResponse);
-  rpc list_build_versions (ListBuildVersionsRequest) returns (ListBuildVersionsResponse);
-  rpc stage_build (StageBuildRequest) returns (StageBuildResponse);
-  rpc list_connected_duts_firmware (ListConnectedDutsFirmwareRequest) returns (ListConnectedDutsFirmwareResponse);
-  rpc get_system_info (GetSystemInfoRequest) returns (GetSystemInfoResponse);
-  rpc get_version_info (GetVersionInfoRequest) returns (GetVersionInfoResponse);
-  rpc get_network_info (GetNetworkInfoRequest) returns (GetNetworkInfoResponse);
-  rpc get_peripheral_information (GetPeripheralInformationRequest) returns (GetPeripheralInformationResponse);
-  rpc update_duts_firmware (UpdateDutsFirmwareRequest)  returns (UpdateDutsFirmwareResponse);
+  rpc StageBuild(StageBuildRequest) returns (StageBuildResponse);
+  rpc ListConnectedDutsFirmware(ListConnectedDutsFirmwareRequest) returns (ListConnectedDutsFirmwareResponse);
+  rpc GetSystemInfo(GetSystemInfoRequest) returns (GetSystemInfoResponse);
+  rpc GetVersionInfo(GetVersionInfoRequest) returns (GetVersionInfoResponse);
+  rpc GetNetworkInfo(GetNetworkInfoRequest) returns (GetNetworkInfoResponse);
+  rpc UpdateDutsFirmware(UpdateDutsFirmwareRequest)  returns (UpdateDutsFirmwareResponse);
 
   // Run Suite
-  rpc list_build_targets (ListBuildTargetsRequest) returns (ListBuildTargetsResponse);
-  rpc list_milestones (ListMilestonesRequest) returns (ListMilestonesResponse);
-  rpc list_test_plans (ListTestPlansRequest) returns (ListTestPlansResponse);
-  rpc get_test_plan (GetTestPlanRequest) returns (GetTestPlanResponse);
+  rpc ListAccessibleModels(ListAccessibleModelsRequest) returns (ListAccessibleModelsResponse);
+  rpc ListBuildVersions(ListBuildVersionsRequest) returns (ListBuildVersionsResponse);
+  rpc ListBuildTargets(ListBuildTargetsRequest) returns (ListBuildTargetsResponse);
+  rpc ListMilestones(ListMilestonesRequest) returns (ListMilestonesResponse);
+  rpc ListTestPlans(ListTestPlansRequest) returns (ListTestPlansResponse);
+  rpc GetTestPlan(GetTestPlanRequest) returns (GetTestPlanResponse);
+  rpc GetPeripheralInformation(GetPeripheralInformationRequest) returns (GetPeripheralInformationResponse);
 
   // services to run different types of test suites
-  rpc run_suite (RunSuiteRequest) returns (RunSuiteResponse);
-  rpc run_test (RunTestRequest) returns (RunTestResponse);
-  rpc run_test_plan (RunTestPlanRequest) returns (RunTestPlanResponse);
+  rpc RunSuite(RunSuiteRequest) returns (RunSuiteResponse);
+  rpc RunTest(RunTestRequest) returns (RunTestResponse);
+  rpc RunTestPlan(RunTestPlanRequest) returns (RunTestPlanResponse);
 
   // manage DUTs
-  rpc add_pool (AddPoolRequest) returns (AddPoolResponse);
-  rpc update_pool (UpdatePoolRequest) returns (UpdatePoolResponse);
-  rpc delete_duts (DeleteDutsRequest) returns (DeleteDutsResponse);
-  rpc add_duts (AddDutsRequest) returns (AddDutsResponse);
+  rpc AddPool(AddPoolRequest) returns (AddPoolResponse);
+  rpc AddDuts(AddDutsRequest) returns (AddDutsResponse);
+  rpc DeleteDuts(DeleteDutsRequest) returns (DeleteDutsResponse);
+  rpc UpdatePool(UpdatePoolRequest) returns (UpdatePoolResponse);
 
   // get DUTs information
-  rpc get_dut_detail (GetDutDetailRequest) returns (GetDutDetailResponse);
-  rpc list_dut_tasks (ListDutTasksRequest) returns (ListDutTasksResponse);
-  rpc list_dut_events (ListDutEventsRequest) returns (ListDutEventsResponse);
-  rpc list_enrolled_duts (ListEnrolledDutsRequest) returns (ListEnrolledDutsResponse);
-  rpc list_duts (ListDutsRequest) returns (ListDutsResponse);
+  rpc GetDutDetail(GetDutDetailRequest) returns (GetDutDetailResponse);
+  rpc ListDutTasks(ListDutTasksRequest) returns (ListDutTasksResponse);
+  rpc ListDutEvents(ListDutEventsRequest) returns (ListDutEventsResponse);
+  rpc ListEnrolledDuts(ListEnrolledDutsRequest) returns (ListEnrolledDutsResponse);
+  rpc ListDuts(ListDutsRequest) returns (ListDutsResponse);
 
   // setup
-  rpc set_cloud_configuration (SetCloudConfigurationRequest) returns (SetCloudConfigurationResponse);
-  rpc get_cloud_configuration (GetCloudConfigurationRequest) returns (GetCloudConfigurationResponse);
+  rpc SetCloudConfiguration(SetCloudConfigurationRequest) returns (SetCloudConfigurationResponse);
+  rpc GetCloudConfiguration(GetCloudConfigurationRequest) returns (GetCloudConfigurationResponse);
 
   // system
-  rpc reboot (RebootRequest) returns (RebootResponse);
-  rpc upload_log (UploadLogRequest) returns (UploadLogResponse);
-  rpc download_log (DownloadLogRequest) returns (stream DownloadLogResponse);
+  rpc Reboot(RebootRequest) returns (RebootResponse);
+  rpc UploadLog(UploadLogRequest) returns (UploadLogResponse);
+  rpc DownloadLog(DownloadLogRequest) returns (stream DownloadLogResponse);
 
   // servo
   rpc StartServod(chromiumos.test.api.StartServodRequest)

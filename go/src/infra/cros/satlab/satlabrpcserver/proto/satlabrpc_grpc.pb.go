@@ -25,36 +25,36 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	SatlabRpcService_ListAccessibleModels_FullMethodName      = "/satlabrpcserver.SatlabRpcService/list_accessible_models"
-	SatlabRpcService_ListBuildVersions_FullMethodName         = "/satlabrpcserver.SatlabRpcService/list_build_versions"
-	SatlabRpcService_StageBuild_FullMethodName                = "/satlabrpcserver.SatlabRpcService/stage_build"
-	SatlabRpcService_ListConnectedDutsFirmware_FullMethodName = "/satlabrpcserver.SatlabRpcService/list_connected_duts_firmware"
-	SatlabRpcService_GetSystemInfo_FullMethodName             = "/satlabrpcserver.SatlabRpcService/get_system_info"
-	SatlabRpcService_GetVersionInfo_FullMethodName            = "/satlabrpcserver.SatlabRpcService/get_version_info"
-	SatlabRpcService_GetNetworkInfo_FullMethodName            = "/satlabrpcserver.SatlabRpcService/get_network_info"
-	SatlabRpcService_GetPeripheralInformation_FullMethodName  = "/satlabrpcserver.SatlabRpcService/get_peripheral_information"
-	SatlabRpcService_UpdateDutsFirmware_FullMethodName        = "/satlabrpcserver.SatlabRpcService/update_duts_firmware"
-	SatlabRpcService_ListBuildTargets_FullMethodName          = "/satlabrpcserver.SatlabRpcService/list_build_targets"
-	SatlabRpcService_ListMilestones_FullMethodName            = "/satlabrpcserver.SatlabRpcService/list_milestones"
-	SatlabRpcService_ListTestPlans_FullMethodName             = "/satlabrpcserver.SatlabRpcService/list_test_plans"
-	SatlabRpcService_GetTestPlan_FullMethodName               = "/satlabrpcserver.SatlabRpcService/get_test_plan"
-	SatlabRpcService_RunSuite_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/run_suite"
-	SatlabRpcService_RunTest_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/run_test"
-	SatlabRpcService_RunTestPlan_FullMethodName               = "/satlabrpcserver.SatlabRpcService/run_test_plan"
-	SatlabRpcService_AddPool_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/add_pool"
-	SatlabRpcService_UpdatePool_FullMethodName                = "/satlabrpcserver.SatlabRpcService/update_pool"
-	SatlabRpcService_DeleteDuts_FullMethodName                = "/satlabrpcserver.SatlabRpcService/delete_duts"
-	SatlabRpcService_AddDuts_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/add_duts"
-	SatlabRpcService_GetDutDetail_FullMethodName              = "/satlabrpcserver.SatlabRpcService/get_dut_detail"
-	SatlabRpcService_ListDutTasks_FullMethodName              = "/satlabrpcserver.SatlabRpcService/list_dut_tasks"
-	SatlabRpcService_ListDutEvents_FullMethodName             = "/satlabrpcserver.SatlabRpcService/list_dut_events"
-	SatlabRpcService_ListEnrolledDuts_FullMethodName          = "/satlabrpcserver.SatlabRpcService/list_enrolled_duts"
-	SatlabRpcService_ListDuts_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/list_duts"
-	SatlabRpcService_SetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/set_cloud_configuration"
-	SatlabRpcService_GetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/get_cloud_configuration"
-	SatlabRpcService_Reboot_FullMethodName                    = "/satlabrpcserver.SatlabRpcService/reboot"
-	SatlabRpcService_UploadLog_FullMethodName                 = "/satlabrpcserver.SatlabRpcService/upload_log"
-	SatlabRpcService_DownloadLog_FullMethodName               = "/satlabrpcserver.SatlabRpcService/download_log"
+	SatlabRpcService_StageBuild_FullMethodName                = "/satlabrpcserver.SatlabRpcService/StageBuild"
+	SatlabRpcService_ListConnectedDutsFirmware_FullMethodName = "/satlabrpcserver.SatlabRpcService/ListConnectedDutsFirmware"
+	SatlabRpcService_GetSystemInfo_FullMethodName             = "/satlabrpcserver.SatlabRpcService/GetSystemInfo"
+	SatlabRpcService_GetVersionInfo_FullMethodName            = "/satlabrpcserver.SatlabRpcService/GetVersionInfo"
+	SatlabRpcService_GetNetworkInfo_FullMethodName            = "/satlabrpcserver.SatlabRpcService/GetNetworkInfo"
+	SatlabRpcService_UpdateDutsFirmware_FullMethodName        = "/satlabrpcserver.SatlabRpcService/UpdateDutsFirmware"
+	SatlabRpcService_ListAccessibleModels_FullMethodName      = "/satlabrpcserver.SatlabRpcService/ListAccessibleModels"
+	SatlabRpcService_ListBuildVersions_FullMethodName         = "/satlabrpcserver.SatlabRpcService/ListBuildVersions"
+	SatlabRpcService_ListBuildTargets_FullMethodName          = "/satlabrpcserver.SatlabRpcService/ListBuildTargets"
+	SatlabRpcService_ListMilestones_FullMethodName            = "/satlabrpcserver.SatlabRpcService/ListMilestones"
+	SatlabRpcService_ListTestPlans_FullMethodName             = "/satlabrpcserver.SatlabRpcService/ListTestPlans"
+	SatlabRpcService_GetTestPlan_FullMethodName               = "/satlabrpcserver.SatlabRpcService/GetTestPlan"
+	SatlabRpcService_GetPeripheralInformation_FullMethodName  = "/satlabrpcserver.SatlabRpcService/GetPeripheralInformation"
+	SatlabRpcService_RunSuite_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/RunSuite"
+	SatlabRpcService_RunTest_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/RunTest"
+	SatlabRpcService_RunTestPlan_FullMethodName               = "/satlabrpcserver.SatlabRpcService/RunTestPlan"
+	SatlabRpcService_AddPool_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/AddPool"
+	SatlabRpcService_AddDuts_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/AddDuts"
+	SatlabRpcService_DeleteDuts_FullMethodName                = "/satlabrpcserver.SatlabRpcService/DeleteDuts"
+	SatlabRpcService_UpdatePool_FullMethodName                = "/satlabrpcserver.SatlabRpcService/UpdatePool"
+	SatlabRpcService_GetDutDetail_FullMethodName              = "/satlabrpcserver.SatlabRpcService/GetDutDetail"
+	SatlabRpcService_ListDutTasks_FullMethodName              = "/satlabrpcserver.SatlabRpcService/ListDutTasks"
+	SatlabRpcService_ListDutEvents_FullMethodName             = "/satlabrpcserver.SatlabRpcService/ListDutEvents"
+	SatlabRpcService_ListEnrolledDuts_FullMethodName          = "/satlabrpcserver.SatlabRpcService/ListEnrolledDuts"
+	SatlabRpcService_ListDuts_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/ListDuts"
+	SatlabRpcService_SetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/SetCloudConfiguration"
+	SatlabRpcService_GetCloudConfiguration_FullMethodName     = "/satlabrpcserver.SatlabRpcService/GetCloudConfiguration"
+	SatlabRpcService_Reboot_FullMethodName                    = "/satlabrpcserver.SatlabRpcService/Reboot"
+	SatlabRpcService_UploadLog_FullMethodName                 = "/satlabrpcserver.SatlabRpcService/UploadLog"
+	SatlabRpcService_DownloadLog_FullMethodName               = "/satlabrpcserver.SatlabRpcService/DownloadLog"
 	SatlabRpcService_StartServod_FullMethodName               = "/satlabrpcserver.SatlabRpcService/StartServod"
 )
 
@@ -62,29 +62,29 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SatlabRpcServiceClient interface {
-	ListAccessibleModels(ctx context.Context, in *ListAccessibleModelsRequest, opts ...grpc.CallOption) (*ListAccessibleModelsResponse, error)
-	ListBuildVersions(ctx context.Context, in *ListBuildVersionsRequest, opts ...grpc.CallOption) (*ListBuildVersionsResponse, error)
 	StageBuild(ctx context.Context, in *StageBuildRequest, opts ...grpc.CallOption) (*StageBuildResponse, error)
 	ListConnectedDutsFirmware(ctx context.Context, in *ListConnectedDutsFirmwareRequest, opts ...grpc.CallOption) (*ListConnectedDutsFirmwareResponse, error)
 	GetSystemInfo(ctx context.Context, in *GetSystemInfoRequest, opts ...grpc.CallOption) (*GetSystemInfoResponse, error)
 	GetVersionInfo(ctx context.Context, in *GetVersionInfoRequest, opts ...grpc.CallOption) (*GetVersionInfoResponse, error)
 	GetNetworkInfo(ctx context.Context, in *GetNetworkInfoRequest, opts ...grpc.CallOption) (*GetNetworkInfoResponse, error)
-	GetPeripheralInformation(ctx context.Context, in *GetPeripheralInformationRequest, opts ...grpc.CallOption) (*GetPeripheralInformationResponse, error)
 	UpdateDutsFirmware(ctx context.Context, in *UpdateDutsFirmwareRequest, opts ...grpc.CallOption) (*UpdateDutsFirmwareResponse, error)
 	// Run Suite
+	ListAccessibleModels(ctx context.Context, in *ListAccessibleModelsRequest, opts ...grpc.CallOption) (*ListAccessibleModelsResponse, error)
+	ListBuildVersions(ctx context.Context, in *ListBuildVersionsRequest, opts ...grpc.CallOption) (*ListBuildVersionsResponse, error)
 	ListBuildTargets(ctx context.Context, in *ListBuildTargetsRequest, opts ...grpc.CallOption) (*ListBuildTargetsResponse, error)
 	ListMilestones(ctx context.Context, in *ListMilestonesRequest, opts ...grpc.CallOption) (*ListMilestonesResponse, error)
 	ListTestPlans(ctx context.Context, in *ListTestPlansRequest, opts ...grpc.CallOption) (*ListTestPlansResponse, error)
 	GetTestPlan(ctx context.Context, in *GetTestPlanRequest, opts ...grpc.CallOption) (*GetTestPlanResponse, error)
+	GetPeripheralInformation(ctx context.Context, in *GetPeripheralInformationRequest, opts ...grpc.CallOption) (*GetPeripheralInformationResponse, error)
 	// services to run different types of test suites
 	RunSuite(ctx context.Context, in *RunSuiteRequest, opts ...grpc.CallOption) (*RunSuiteResponse, error)
 	RunTest(ctx context.Context, in *RunTestRequest, opts ...grpc.CallOption) (*RunTestResponse, error)
 	RunTestPlan(ctx context.Context, in *RunTestPlanRequest, opts ...grpc.CallOption) (*RunTestPlanResponse, error)
 	// manage DUTs
 	AddPool(ctx context.Context, in *AddPoolRequest, opts ...grpc.CallOption) (*AddPoolResponse, error)
-	UpdatePool(ctx context.Context, in *UpdatePoolRequest, opts ...grpc.CallOption) (*UpdatePoolResponse, error)
-	DeleteDuts(ctx context.Context, in *DeleteDutsRequest, opts ...grpc.CallOption) (*DeleteDutsResponse, error)
 	AddDuts(ctx context.Context, in *AddDutsRequest, opts ...grpc.CallOption) (*AddDutsResponse, error)
+	DeleteDuts(ctx context.Context, in *DeleteDutsRequest, opts ...grpc.CallOption) (*DeleteDutsResponse, error)
+	UpdatePool(ctx context.Context, in *UpdatePoolRequest, opts ...grpc.CallOption) (*UpdatePoolResponse, error)
 	// get DUTs information
 	GetDutDetail(ctx context.Context, in *GetDutDetailRequest, opts ...grpc.CallOption) (*GetDutDetailResponse, error)
 	ListDutTasks(ctx context.Context, in *ListDutTasksRequest, opts ...grpc.CallOption) (*ListDutTasksResponse, error)
@@ -108,24 +108,6 @@ type satlabRpcServiceClient struct {
 
 func NewSatlabRpcServiceClient(cc grpc.ClientConnInterface) SatlabRpcServiceClient {
 	return &satlabRpcServiceClient{cc}
-}
-
-func (c *satlabRpcServiceClient) ListAccessibleModels(ctx context.Context, in *ListAccessibleModelsRequest, opts ...grpc.CallOption) (*ListAccessibleModelsResponse, error) {
-	out := new(ListAccessibleModelsResponse)
-	err := c.cc.Invoke(ctx, SatlabRpcService_ListAccessibleModels_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *satlabRpcServiceClient) ListBuildVersions(ctx context.Context, in *ListBuildVersionsRequest, opts ...grpc.CallOption) (*ListBuildVersionsResponse, error) {
-	out := new(ListBuildVersionsResponse)
-	err := c.cc.Invoke(ctx, SatlabRpcService_ListBuildVersions_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *satlabRpcServiceClient) StageBuild(ctx context.Context, in *StageBuildRequest, opts ...grpc.CallOption) (*StageBuildResponse, error) {
@@ -173,18 +155,27 @@ func (c *satlabRpcServiceClient) GetNetworkInfo(ctx context.Context, in *GetNetw
 	return out, nil
 }
 
-func (c *satlabRpcServiceClient) GetPeripheralInformation(ctx context.Context, in *GetPeripheralInformationRequest, opts ...grpc.CallOption) (*GetPeripheralInformationResponse, error) {
-	out := new(GetPeripheralInformationResponse)
-	err := c.cc.Invoke(ctx, SatlabRpcService_GetPeripheralInformation_FullMethodName, in, out, opts...)
+func (c *satlabRpcServiceClient) UpdateDutsFirmware(ctx context.Context, in *UpdateDutsFirmwareRequest, opts ...grpc.CallOption) (*UpdateDutsFirmwareResponse, error) {
+	out := new(UpdateDutsFirmwareResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_UpdateDutsFirmware_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *satlabRpcServiceClient) UpdateDutsFirmware(ctx context.Context, in *UpdateDutsFirmwareRequest, opts ...grpc.CallOption) (*UpdateDutsFirmwareResponse, error) {
-	out := new(UpdateDutsFirmwareResponse)
-	err := c.cc.Invoke(ctx, SatlabRpcService_UpdateDutsFirmware_FullMethodName, in, out, opts...)
+func (c *satlabRpcServiceClient) ListAccessibleModels(ctx context.Context, in *ListAccessibleModelsRequest, opts ...grpc.CallOption) (*ListAccessibleModelsResponse, error) {
+	out := new(ListAccessibleModelsResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_ListAccessibleModels_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *satlabRpcServiceClient) ListBuildVersions(ctx context.Context, in *ListBuildVersionsRequest, opts ...grpc.CallOption) (*ListBuildVersionsResponse, error) {
+	out := new(ListBuildVersionsResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_ListBuildVersions_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -227,6 +218,15 @@ func (c *satlabRpcServiceClient) GetTestPlan(ctx context.Context, in *GetTestPla
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) GetPeripheralInformation(ctx context.Context, in *GetPeripheralInformationRequest, opts ...grpc.CallOption) (*GetPeripheralInformationResponse, error) {
+	out := new(GetPeripheralInformationResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_GetPeripheralInformation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *satlabRpcServiceClient) RunSuite(ctx context.Context, in *RunSuiteRequest, opts ...grpc.CallOption) (*RunSuiteResponse, error) {
 	out := new(RunSuiteResponse)
 	err := c.cc.Invoke(ctx, SatlabRpcService_RunSuite_FullMethodName, in, out, opts...)
@@ -263,9 +263,9 @@ func (c *satlabRpcServiceClient) AddPool(ctx context.Context, in *AddPoolRequest
 	return out, nil
 }
 
-func (c *satlabRpcServiceClient) UpdatePool(ctx context.Context, in *UpdatePoolRequest, opts ...grpc.CallOption) (*UpdatePoolResponse, error) {
-	out := new(UpdatePoolResponse)
-	err := c.cc.Invoke(ctx, SatlabRpcService_UpdatePool_FullMethodName, in, out, opts...)
+func (c *satlabRpcServiceClient) AddDuts(ctx context.Context, in *AddDutsRequest, opts ...grpc.CallOption) (*AddDutsResponse, error) {
+	out := new(AddDutsResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_AddDuts_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -281,9 +281,9 @@ func (c *satlabRpcServiceClient) DeleteDuts(ctx context.Context, in *DeleteDutsR
 	return out, nil
 }
 
-func (c *satlabRpcServiceClient) AddDuts(ctx context.Context, in *AddDutsRequest, opts ...grpc.CallOption) (*AddDutsResponse, error) {
-	out := new(AddDutsResponse)
-	err := c.cc.Invoke(ctx, SatlabRpcService_AddDuts_FullMethodName, in, out, opts...)
+func (c *satlabRpcServiceClient) UpdatePool(ctx context.Context, in *UpdatePoolRequest, opts ...grpc.CallOption) (*UpdatePoolResponse, error) {
+	out := new(UpdatePoolResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_UpdatePool_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -416,29 +416,29 @@ func (c *satlabRpcServiceClient) StartServod(ctx context.Context, in *api.StartS
 // All implementations must embed UnimplementedSatlabRpcServiceServer
 // for forward compatibility
 type SatlabRpcServiceServer interface {
-	ListAccessibleModels(context.Context, *ListAccessibleModelsRequest) (*ListAccessibleModelsResponse, error)
-	ListBuildVersions(context.Context, *ListBuildVersionsRequest) (*ListBuildVersionsResponse, error)
 	StageBuild(context.Context, *StageBuildRequest) (*StageBuildResponse, error)
 	ListConnectedDutsFirmware(context.Context, *ListConnectedDutsFirmwareRequest) (*ListConnectedDutsFirmwareResponse, error)
 	GetSystemInfo(context.Context, *GetSystemInfoRequest) (*GetSystemInfoResponse, error)
 	GetVersionInfo(context.Context, *GetVersionInfoRequest) (*GetVersionInfoResponse, error)
 	GetNetworkInfo(context.Context, *GetNetworkInfoRequest) (*GetNetworkInfoResponse, error)
-	GetPeripheralInformation(context.Context, *GetPeripheralInformationRequest) (*GetPeripheralInformationResponse, error)
 	UpdateDutsFirmware(context.Context, *UpdateDutsFirmwareRequest) (*UpdateDutsFirmwareResponse, error)
 	// Run Suite
+	ListAccessibleModels(context.Context, *ListAccessibleModelsRequest) (*ListAccessibleModelsResponse, error)
+	ListBuildVersions(context.Context, *ListBuildVersionsRequest) (*ListBuildVersionsResponse, error)
 	ListBuildTargets(context.Context, *ListBuildTargetsRequest) (*ListBuildTargetsResponse, error)
 	ListMilestones(context.Context, *ListMilestonesRequest) (*ListMilestonesResponse, error)
 	ListTestPlans(context.Context, *ListTestPlansRequest) (*ListTestPlansResponse, error)
 	GetTestPlan(context.Context, *GetTestPlanRequest) (*GetTestPlanResponse, error)
+	GetPeripheralInformation(context.Context, *GetPeripheralInformationRequest) (*GetPeripheralInformationResponse, error)
 	// services to run different types of test suites
 	RunSuite(context.Context, *RunSuiteRequest) (*RunSuiteResponse, error)
 	RunTest(context.Context, *RunTestRequest) (*RunTestResponse, error)
 	RunTestPlan(context.Context, *RunTestPlanRequest) (*RunTestPlanResponse, error)
 	// manage DUTs
 	AddPool(context.Context, *AddPoolRequest) (*AddPoolResponse, error)
-	UpdatePool(context.Context, *UpdatePoolRequest) (*UpdatePoolResponse, error)
-	DeleteDuts(context.Context, *DeleteDutsRequest) (*DeleteDutsResponse, error)
 	AddDuts(context.Context, *AddDutsRequest) (*AddDutsResponse, error)
+	DeleteDuts(context.Context, *DeleteDutsRequest) (*DeleteDutsResponse, error)
+	UpdatePool(context.Context, *UpdatePoolRequest) (*UpdatePoolResponse, error)
 	// get DUTs information
 	GetDutDetail(context.Context, *GetDutDetailRequest) (*GetDutDetailResponse, error)
 	ListDutTasks(context.Context, *ListDutTasksRequest) (*ListDutTasksResponse, error)
@@ -461,12 +461,6 @@ type SatlabRpcServiceServer interface {
 type UnimplementedSatlabRpcServiceServer struct {
 }
 
-func (UnimplementedSatlabRpcServiceServer) ListAccessibleModels(context.Context, *ListAccessibleModelsRequest) (*ListAccessibleModelsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListAccessibleModels not implemented")
-}
-func (UnimplementedSatlabRpcServiceServer) ListBuildVersions(context.Context, *ListBuildVersionsRequest) (*ListBuildVersionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListBuildVersions not implemented")
-}
 func (UnimplementedSatlabRpcServiceServer) StageBuild(context.Context, *StageBuildRequest) (*StageBuildResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StageBuild not implemented")
 }
@@ -482,11 +476,14 @@ func (UnimplementedSatlabRpcServiceServer) GetVersionInfo(context.Context, *GetV
 func (UnimplementedSatlabRpcServiceServer) GetNetworkInfo(context.Context, *GetNetworkInfoRequest) (*GetNetworkInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNetworkInfo not implemented")
 }
-func (UnimplementedSatlabRpcServiceServer) GetPeripheralInformation(context.Context, *GetPeripheralInformationRequest) (*GetPeripheralInformationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPeripheralInformation not implemented")
-}
 func (UnimplementedSatlabRpcServiceServer) UpdateDutsFirmware(context.Context, *UpdateDutsFirmwareRequest) (*UpdateDutsFirmwareResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDutsFirmware not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) ListAccessibleModels(context.Context, *ListAccessibleModelsRequest) (*ListAccessibleModelsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAccessibleModels not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) ListBuildVersions(context.Context, *ListBuildVersionsRequest) (*ListBuildVersionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListBuildVersions not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) ListBuildTargets(context.Context, *ListBuildTargetsRequest) (*ListBuildTargetsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListBuildTargets not implemented")
@@ -500,6 +497,9 @@ func (UnimplementedSatlabRpcServiceServer) ListTestPlans(context.Context, *ListT
 func (UnimplementedSatlabRpcServiceServer) GetTestPlan(context.Context, *GetTestPlanRequest) (*GetTestPlanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTestPlan not implemented")
 }
+func (UnimplementedSatlabRpcServiceServer) GetPeripheralInformation(context.Context, *GetPeripheralInformationRequest) (*GetPeripheralInformationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPeripheralInformation not implemented")
+}
 func (UnimplementedSatlabRpcServiceServer) RunSuite(context.Context, *RunSuiteRequest) (*RunSuiteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunSuite not implemented")
 }
@@ -512,14 +512,14 @@ func (UnimplementedSatlabRpcServiceServer) RunTestPlan(context.Context, *RunTest
 func (UnimplementedSatlabRpcServiceServer) AddPool(context.Context, *AddPoolRequest) (*AddPoolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddPool not implemented")
 }
-func (UnimplementedSatlabRpcServiceServer) UpdatePool(context.Context, *UpdatePoolRequest) (*UpdatePoolResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdatePool not implemented")
+func (UnimplementedSatlabRpcServiceServer) AddDuts(context.Context, *AddDutsRequest) (*AddDutsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddDuts not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) DeleteDuts(context.Context, *DeleteDutsRequest) (*DeleteDutsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDuts not implemented")
 }
-func (UnimplementedSatlabRpcServiceServer) AddDuts(context.Context, *AddDutsRequest) (*AddDutsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddDuts not implemented")
+func (UnimplementedSatlabRpcServiceServer) UpdatePool(context.Context, *UpdatePoolRequest) (*UpdatePoolResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePool not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) GetDutDetail(context.Context, *GetDutDetailRequest) (*GetDutDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDutDetail not implemented")
@@ -565,42 +565,6 @@ type UnsafeSatlabRpcServiceServer interface {
 
 func RegisterSatlabRpcServiceServer(s grpc.ServiceRegistrar, srv SatlabRpcServiceServer) {
 	s.RegisterService(&SatlabRpcService_ServiceDesc, srv)
-}
-
-func _SatlabRpcService_ListAccessibleModels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListAccessibleModelsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SatlabRpcServiceServer).ListAccessibleModels(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: SatlabRpcService_ListAccessibleModels_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SatlabRpcServiceServer).ListAccessibleModels(ctx, req.(*ListAccessibleModelsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _SatlabRpcService_ListBuildVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListBuildVersionsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SatlabRpcServiceServer).ListBuildVersions(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: SatlabRpcService_ListBuildVersions_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SatlabRpcServiceServer).ListBuildVersions(ctx, req.(*ListBuildVersionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _SatlabRpcService_StageBuild_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -693,24 +657,6 @@ func _SatlabRpcService_GetNetworkInfo_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SatlabRpcService_GetPeripheralInformation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPeripheralInformationRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SatlabRpcServiceServer).GetPeripheralInformation(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: SatlabRpcService_GetPeripheralInformation_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SatlabRpcServiceServer).GetPeripheralInformation(ctx, req.(*GetPeripheralInformationRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _SatlabRpcService_UpdateDutsFirmware_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateDutsFirmwareRequest)
 	if err := dec(in); err != nil {
@@ -725,6 +671,42 @@ func _SatlabRpcService_UpdateDutsFirmware_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SatlabRpcServiceServer).UpdateDutsFirmware(ctx, req.(*UpdateDutsFirmwareRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SatlabRpcService_ListAccessibleModels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAccessibleModelsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).ListAccessibleModels(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_ListAccessibleModels_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).ListAccessibleModels(ctx, req.(*ListAccessibleModelsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SatlabRpcService_ListBuildVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBuildVersionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).ListBuildVersions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_ListBuildVersions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).ListBuildVersions(ctx, req.(*ListBuildVersionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -801,6 +783,24 @@ func _SatlabRpcService_GetTestPlan_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_GetPeripheralInformation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPeripheralInformationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).GetPeripheralInformation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_GetPeripheralInformation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).GetPeripheralInformation(ctx, req.(*GetPeripheralInformationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SatlabRpcService_RunSuite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RunSuiteRequest)
 	if err := dec(in); err != nil {
@@ -873,20 +873,20 @@ func _SatlabRpcService_AddPool_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SatlabRpcService_UpdatePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdatePoolRequest)
+func _SatlabRpcService_AddDuts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddDutsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SatlabRpcServiceServer).UpdatePool(ctx, in)
+		return srv.(SatlabRpcServiceServer).AddDuts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: SatlabRpcService_UpdatePool_FullMethodName,
+		FullMethod: SatlabRpcService_AddDuts_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SatlabRpcServiceServer).UpdatePool(ctx, req.(*UpdatePoolRequest))
+		return srv.(SatlabRpcServiceServer).AddDuts(ctx, req.(*AddDutsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -909,20 +909,20 @@ func _SatlabRpcService_DeleteDuts_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SatlabRpcService_AddDuts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddDutsRequest)
+func _SatlabRpcService_UpdatePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePoolRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SatlabRpcServiceServer).AddDuts(ctx, in)
+		return srv.(SatlabRpcServiceServer).UpdatePool(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: SatlabRpcService_AddDuts_FullMethodName,
+		FullMethod: SatlabRpcService_UpdatePool_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SatlabRpcServiceServer).AddDuts(ctx, req.(*AddDutsRequest))
+		return srv.(SatlabRpcServiceServer).UpdatePool(ctx, req.(*UpdatePoolRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1136,119 +1136,119 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*SatlabRpcServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "list_accessible_models",
-			Handler:    _SatlabRpcService_ListAccessibleModels_Handler,
-		},
-		{
-			MethodName: "list_build_versions",
-			Handler:    _SatlabRpcService_ListBuildVersions_Handler,
-		},
-		{
-			MethodName: "stage_build",
+			MethodName: "StageBuild",
 			Handler:    _SatlabRpcService_StageBuild_Handler,
 		},
 		{
-			MethodName: "list_connected_duts_firmware",
+			MethodName: "ListConnectedDutsFirmware",
 			Handler:    _SatlabRpcService_ListConnectedDutsFirmware_Handler,
 		},
 		{
-			MethodName: "get_system_info",
+			MethodName: "GetSystemInfo",
 			Handler:    _SatlabRpcService_GetSystemInfo_Handler,
 		},
 		{
-			MethodName: "get_version_info",
+			MethodName: "GetVersionInfo",
 			Handler:    _SatlabRpcService_GetVersionInfo_Handler,
 		},
 		{
-			MethodName: "get_network_info",
+			MethodName: "GetNetworkInfo",
 			Handler:    _SatlabRpcService_GetNetworkInfo_Handler,
 		},
 		{
-			MethodName: "get_peripheral_information",
-			Handler:    _SatlabRpcService_GetPeripheralInformation_Handler,
-		},
-		{
-			MethodName: "update_duts_firmware",
+			MethodName: "UpdateDutsFirmware",
 			Handler:    _SatlabRpcService_UpdateDutsFirmware_Handler,
 		},
 		{
-			MethodName: "list_build_targets",
+			MethodName: "ListAccessibleModels",
+			Handler:    _SatlabRpcService_ListAccessibleModels_Handler,
+		},
+		{
+			MethodName: "ListBuildVersions",
+			Handler:    _SatlabRpcService_ListBuildVersions_Handler,
+		},
+		{
+			MethodName: "ListBuildTargets",
 			Handler:    _SatlabRpcService_ListBuildTargets_Handler,
 		},
 		{
-			MethodName: "list_milestones",
+			MethodName: "ListMilestones",
 			Handler:    _SatlabRpcService_ListMilestones_Handler,
 		},
 		{
-			MethodName: "list_test_plans",
+			MethodName: "ListTestPlans",
 			Handler:    _SatlabRpcService_ListTestPlans_Handler,
 		},
 		{
-			MethodName: "get_test_plan",
+			MethodName: "GetTestPlan",
 			Handler:    _SatlabRpcService_GetTestPlan_Handler,
 		},
 		{
-			MethodName: "run_suite",
+			MethodName: "GetPeripheralInformation",
+			Handler:    _SatlabRpcService_GetPeripheralInformation_Handler,
+		},
+		{
+			MethodName: "RunSuite",
 			Handler:    _SatlabRpcService_RunSuite_Handler,
 		},
 		{
-			MethodName: "run_test",
+			MethodName: "RunTest",
 			Handler:    _SatlabRpcService_RunTest_Handler,
 		},
 		{
-			MethodName: "run_test_plan",
+			MethodName: "RunTestPlan",
 			Handler:    _SatlabRpcService_RunTestPlan_Handler,
 		},
 		{
-			MethodName: "add_pool",
+			MethodName: "AddPool",
 			Handler:    _SatlabRpcService_AddPool_Handler,
 		},
 		{
-			MethodName: "update_pool",
-			Handler:    _SatlabRpcService_UpdatePool_Handler,
-		},
-		{
-			MethodName: "delete_duts",
-			Handler:    _SatlabRpcService_DeleteDuts_Handler,
-		},
-		{
-			MethodName: "add_duts",
+			MethodName: "AddDuts",
 			Handler:    _SatlabRpcService_AddDuts_Handler,
 		},
 		{
-			MethodName: "get_dut_detail",
+			MethodName: "DeleteDuts",
+			Handler:    _SatlabRpcService_DeleteDuts_Handler,
+		},
+		{
+			MethodName: "UpdatePool",
+			Handler:    _SatlabRpcService_UpdatePool_Handler,
+		},
+		{
+			MethodName: "GetDutDetail",
 			Handler:    _SatlabRpcService_GetDutDetail_Handler,
 		},
 		{
-			MethodName: "list_dut_tasks",
+			MethodName: "ListDutTasks",
 			Handler:    _SatlabRpcService_ListDutTasks_Handler,
 		},
 		{
-			MethodName: "list_dut_events",
+			MethodName: "ListDutEvents",
 			Handler:    _SatlabRpcService_ListDutEvents_Handler,
 		},
 		{
-			MethodName: "list_enrolled_duts",
+			MethodName: "ListEnrolledDuts",
 			Handler:    _SatlabRpcService_ListEnrolledDuts_Handler,
 		},
 		{
-			MethodName: "list_duts",
+			MethodName: "ListDuts",
 			Handler:    _SatlabRpcService_ListDuts_Handler,
 		},
 		{
-			MethodName: "set_cloud_configuration",
+			MethodName: "SetCloudConfiguration",
 			Handler:    _SatlabRpcService_SetCloudConfiguration_Handler,
 		},
 		{
-			MethodName: "get_cloud_configuration",
+			MethodName: "GetCloudConfiguration",
 			Handler:    _SatlabRpcService_GetCloudConfiguration_Handler,
 		},
 		{
-			MethodName: "reboot",
+			MethodName: "Reboot",
 			Handler:    _SatlabRpcService_Reboot_Handler,
 		},
 		{
-			MethodName: "upload_log",
+			MethodName: "UploadLog",
 			Handler:    _SatlabRpcService_UploadLog_Handler,
 		},
 		{
@@ -1258,7 +1258,7 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "download_log",
+			StreamName:    "DownloadLog",
 			Handler:       _SatlabRpcService_DownloadLog_Handler,
 			ServerStreams: true,
 		},
