@@ -418,6 +418,8 @@ message HardwareCapabilities {
 //
 // NEXT TAG: 45
 message Peripherals {
+  reserved 32;
+
   optional bool audio_board = 6;
   // The DUT is housed in an audio box to record / replay audio for audio
   // testing.
@@ -522,16 +524,6 @@ message Peripherals {
   // The overall state of all wifi router peripherals in the testbed.
   // Sourced from unifiedfleet.api.v1.models.chromeos.lab.DutState.wifi_peripheral_state.
   optional PeripheralState peripheral_wifi_state = 31;
-  // WifiFeature enums copy UFS peripherals.proto Wifi.Feature and WifiRouter.Feature
-  // Next Tag: 12
-  // TODO(b/294618452): Deprecate and remove this in favor of WifiRouterFeature.
-  enum WifiFeature {
-    UNKNOWN = 0;
-  }
-  // Feature collections from UFS peripheral.wifi and peripheral.wifi.wifiRouters.
-  // TODO(b/294618452): Deprecate and remove this in favor of wifi_router_features.
-  repeated WifiFeature peripheral_wifi_features = 32;
-
 
   // Copy of chromiumos.test.lab.api.WifiRouterFeature.
   //
