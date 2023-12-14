@@ -56,20 +56,21 @@ func generate(ctx context.Context, input *healthpb.InputParams) error {
 	}
 	defer bqClient.Close()
 
+	srcConfigs := make(map[string]SrcConfig)
 	chromiumSrcConfig, err := getSrcConfig(ctx, "chromium-review.googlesource.com", "chromium.googlesource.com", "chromium/src")
-	if err != nil {
-		return errors.Annotate(err, "Get Src Config for Chromium").Err()
+	if err == nil {
+		srcConfigs["chromium"] = *chromiumSrcConfig
 	}
 
 	chromeSrcConfig, err := getSrcConfig(ctx, "chrome-internal-review.googlesource.com", "chrome-internal.googlesource.com", "chrome/src-internal")
-	if err != nil {
-		return errors.Annotate(err, "Get Src Config for Chrome").Err()
+	if err == nil {
+		srcConfigs["chrome"] = *chromeSrcConfig
 	}
 
-	srcConfigs := map[string]SrcConfig{
-		"chromium": *chromiumSrcConfig,
-		"chrome":   *chromeSrcConfig,
+	if len(srcConfigs) == 0 {
+		return errors.Annotate(err, "Get Src Config").Err()
 	}
+
 	rows, err := getMetrics(ctx, bqClient, input)
 	if err != nil {
 		return errors.Annotate(err, "Get metrics").Err()

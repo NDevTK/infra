@@ -70,22 +70,26 @@ func getSrcConfig(buildCtx context.Context, gerritHost string, repoHost string, 
 	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, auth.Options{Scopes: []string{gitiles.OAuthScope}})
 	httpClient, err := authenticator.Client()
 	if err != nil {
+		step.SetSummaryMarkdown("Error in Initializing Auth")
 		return nil, errors.Annotate(err, "Initializing Auth").Err()
 	}
 
 	client, err := git.NewClient(ctx, httpClient, gerritHost, repoHost, repoName, "main")
 	if err != nil {
+		step.SetSummaryMarkdown("Error in Initializing Gitiles client")
 		return nil, errors.Annotate(err, "Initializing Gitiles client").Err()
 	}
 
 	srcConfigString, err := client.GetFile(ctx, "infra/config/generated/health-specs/health-specs.json")
 	if err != nil {
+		step.SetSummaryMarkdown("Error in Downloading src config")
 		return nil, errors.Annotate(err, "Downloading src config").Err()
 	}
 
 	var srcConfig SrcConfig
 	err = json.Unmarshal([]byte(srcConfigString), &srcConfig)
 	if err != nil {
+		step.SetSummaryMarkdown("Error in Unmarshalling src config")
 		return nil, errors.Annotate(err, "Unmarshalling src config").Err()
 	}
 
