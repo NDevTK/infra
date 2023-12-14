@@ -1912,6 +1912,7 @@ SPECS.update({
         Universal('idna', '3.4', pyversions=['py3']),
         Universal('importlib-metadata', '1.6.0'),
         Universal('importlib-metadata', '6.0.0', pyversions=['py3']),
+        Universal('importlib-metadata', '7.0.0', pyversions=['py3']),
         Universal('iniconfig', '1.1.1', pyversions=['py3']),
         Universal('iso8601', '0.1.12', pyversions=['py3']),
         Universal('isodate', '0.6.1'),
@@ -2007,6 +2008,7 @@ SPECS.update({
         Universal('pipenv', '2023.7.23', pyversions=['py3']),
         Universal('platformdirs', '2.5.2', pyversions=['py3']),
         Universal('platformdirs', '3.10.0', pyversions=['py3']),
+        Universal('platformdirs', '4.1.0', pyversions=['py3']),
         Universal('pluggy', '0.6.0', pyversions=['py3']),
         Universal('pluggy', '0.7.1'),
         Universal('pluggy', '0.8.1'),
@@ -2226,9 +2228,11 @@ SPECS.update({
         Universal('yapf', '0.30.0'),
         Universal('yapf', '0.31.0'),
         Universal('yapf', '0.32.0', pyversions=['py3']),
+        Universal('yapf', '0.40.2', pyversions=['py3']),
         Universal('zipp', '1.2.0'),
         Universal('zipp', '3.1.0', pyversions=['py3']),
         Universal('zipp', '3.7.0', pyversions=['py3']),
+        Universal('zipp', '3.17.0', pyversions=['py3']),
         Universal('zope.event', '5.0', pyversions=['py3']),
     ])
 })

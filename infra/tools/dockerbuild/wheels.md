@@ -4580,6 +4580,18 @@ wheel: <
 
 * *universal*
 
+### 7.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/importlib-metadata-py3"
+  version: "version:7.0.0"
+>
+```
+
+
+* *universal*
+
 ## **infra_libs**
 
 ### 2.4.0
@@ -6620,6 +6632,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/platformdirs-py3"
   version: "version:3.10.0"
+>
+```
+
+
+* *universal*
+
+### 4.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/platformdirs-py3"
+  version: "version:4.1.0"
 >
 ```
 
@@ -10632,6 +10656,18 @@ wheel: <
 
 * *universal*
 
+### 0.40.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/yapf-py3"
+  version: "version:0.40.2"
+>
+```
+
+
+* *universal*
+
 ## **yarl**
 
 ### 1.8.1
@@ -10693,6 +10729,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/zipp-py3"
   version: "version:3.7.0"
+>
+```
+
+
+* *universal*
+
+### 3.17.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/zipp-py3"
+  version: "version:3.17.0"
 >
 ```
 
