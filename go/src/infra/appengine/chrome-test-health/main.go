@@ -56,6 +56,7 @@ var (
 		"/test_resources.Stats/FetchDirectoryMetrics":                serviceAccessGroup,
 		"/test_resources.Coverage/GetProjectDefaultConfig":           serviceAccessGroup,
 		"/test_resources.Coverage/GetCoverageSummary":                serviceAccessGroup,
+		"/test_resources.Coverage/GetAbsoluteCoverageDataOneYear":    serviceAccessGroup,
 		"/test_resources.Coverage/GetIncrementalCoverageDataOneYear": serviceAccessGroup,
 	}
 	// Data set to work with
