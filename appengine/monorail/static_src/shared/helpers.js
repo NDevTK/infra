@@ -213,7 +213,7 @@ export const shouldWaitForDefaultQuery = (queryParams) => {
 };
 
 // constant value for required redirect project
-const redirectProjects = Object.freeze(['pigweed', 'git', 'gerrit', 'skia']);
+const redirectProjects = Object.freeze(['pigweed', 'git', 'gerrit', 'skia', 'fuchsia']);
 
 /**
  * Generate the url link for issue in project.
