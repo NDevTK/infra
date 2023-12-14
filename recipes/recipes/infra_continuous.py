@@ -128,6 +128,7 @@ CIPD_PACKAGE_BUILDERS = {
         'linux-s390x',  # ~40 sec
         'netbsd-386',
         'netbsd-amd64',
+        'netbsd-arm',
         'netbsd-arm64',
     ],
     'infra-packager-mac-64': [

@@ -25,6 +25,7 @@ platforms:
   - netbsd-386
   - netbsd-amd64
   - netbsd-arm64
+  - netbsd-armv6l
   - openbsd-386
   - openbsd-amd64
   - openbsd-arm64

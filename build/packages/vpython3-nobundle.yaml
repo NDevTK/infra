@@ -20,6 +20,7 @@ platforms:
   - linux-s390x
   - netbsd-amd64
   - netbsd-arm64
+  - netbsd-armv6l
   - openbsd-amd64
   - openbsd-arm64
   - solaris-amd64
