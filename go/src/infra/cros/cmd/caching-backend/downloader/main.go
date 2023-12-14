@@ -93,13 +93,8 @@ func innerMain() error {
 	}
 
 	ctx := context.Background()
-	gsClient, err := newRealClient(ctx, *credentialFile)
-	if err != nil {
-		return fmt.Errorf("google storage client error: %s", err)
-	}
-	defer gsClient.close()
 
-	if err = metricsInit(ctx, *tsmonEndpoint, *tsmonCredentialPath); err != nil {
+	if err := metricsInit(ctx, *tsmonEndpoint, *tsmonCredentialPath); err != nil {
 		log.Printf("metrics init: %s", err)
 	}
 	defer metricsShutdown(ctx)
@@ -127,7 +122,6 @@ func innerMain() error {
 		return err
 	}
 	c := &archiveServer{
-		gsClient:       gsClient,
 		cacheServerURL: *cacheServerURL,
 		httpClient:     hc,
 	}
@@ -151,7 +145,11 @@ func innerMain() error {
 	idleConnsClosed := make(chan struct{})
 	svr := http.Server{Addr: *archiveServerAddress, Handler: otelMux}
 	ctx = cancelOnSignals(ctx, idleConnsClosed, &svr, *shutdownGracePeriod)
-	c.rotateClient(ctx, *credentialFile, *clientRotationPeriod, *shutdownGracePeriod)
+	if err := c.rotateClient(ctx, *credentialFile, *clientRotationPeriod, *shutdownGracePeriod); err != nil {
+		log.Fatalf("Failed to initiate GCS client: %s", err)
+	}
+	defer c.gsClient.close()
+
 	log.Println("starting archive-server...")
 	if err = svr.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatalf("HTTP server ListenAndServe: %v", err)
@@ -206,35 +204,47 @@ func newResource(ctx context.Context) (*resource.Resource, error) {
 
 // rotateClient updates client every rotationPeriod. It loads credPath file.
 // It will then close the old client after oldClientGracePeriod duration.
-func (c *archiveServer) rotateClient(ctx context.Context, credPath string, rotationPeriod, oldClientGracePeriod time.Duration) {
+func (c *archiveServer) rotateClient(ctx context.Context, credPath string, rotationPeriod, oldClientGracePeriod time.Duration) error {
+	client, err := newRealClient(ctx, *credentialFile)
+	if err != nil {
+		return fmt.Errorf("google storage client error: %w", err)
+	}
+	c.gsClient = client
+
 	go func() {
 		var oldClient gsClient
 		t := time.NewTimer(rotationPeriod)
 		for {
 			select {
 			case <-t.C:
-				gsClient, err := newRealClient(ctx, credPath)
-				if err != nil {
-					log.Printf("Rotating new client failed: %s", err)
-				} else {
-					if oldClient == nil {
-						// Update to new client and reset timer for closing old client.
-						oldClient = c.gsClient
-						c.gsClient = gsClient
-						t.Reset(oldClientGracePeriod)
-						log.Printf("Rotating to new client succeed")
-					} else {
-						// Close old client and reset timer for next rotation.
-						if err := oldClient.close(); err != nil {
-							log.Printf("Error closing old client: %s", err)
-						} else {
-							log.Printf("Old client closed")
-						}
-						oldClient = nil
-						t.Reset(rotationPeriod)
+				if oldClient == nil {
+					gsClient, err := newRealClient(ctx, credPath)
+					if err != nil {
+						log.Printf("Rotating new client failed, will retry in 10min: %s", err)
+						t.Reset(10 * time.Minute)
+						continue
 					}
+					// Update to new client and reset timer for closing old client.
+					oldClient = c.gsClient
+					c.gsClient = gsClient
+					t.Reset(oldClientGracePeriod)
+					log.Printf("Rotating to new client succeed")
+				} else {
+					// Close old client and reset timer for next rotation.
+					if err := oldClient.close(); err != nil {
+						log.Printf("Error closing old client: %s", err)
+					} else {
+						log.Printf("Old client closed")
+					}
+					oldClient = nil
+					t.Reset(rotationPeriod)
 				}
 			case <-ctx.Done():
+				if oldClient != nil {
+					if err := oldClient.close(); err != nil {
+						log.Printf("Error closing old client: %s", err)
+					}
+				}
 				// https://pkg.go.dev/time#Timer.Stop
 				if !t.Stop() {
 					<-t.C
@@ -243,6 +253,7 @@ func (c *archiveServer) rotateClient(ctx context.Context, credPath string, rotat
 			}
 		}
 	}()
+	return nil
 }
 
 // downloadHandler handles the /download/bucket/path/to/file requests.
@@ -346,7 +357,6 @@ func handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Reque
 		status = http.StatusInternalServerError
 	}
 	return metricData{status: status, size: n}
-
 }
 
 // writeHeaderAndStatusOK writes various attributes to response header.
@@ -408,7 +418,7 @@ func parseURL(url string) (*gsObjectName, error) {
 // Not yet support multiple range bytes=start1-end1,start2-end2.
 // Empty input string returns nil byteRange.
 func parseRange(s string) (*byteRange, error) {
-	//s should be bytes=start-end or ""
+	// s should be bytes=start-end or ""
 	if s == "" {
 		return nil, nil
 	}
