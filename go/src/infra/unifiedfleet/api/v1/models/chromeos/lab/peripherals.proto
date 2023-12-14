@@ -94,6 +94,8 @@ message Audio {
 
 // Next Tag: 7
 message Wifi {
+  reserved 5;
+
   // Indicate if the device is inside a hermetic wifi cell.
   bool wificell = 1;
 
@@ -118,16 +120,6 @@ message Wifi {
   // collections of routers used for wifi testing.
   repeated WifiRouter wifi_routers = 4;
 
-  // Feature for Wifi.
-  // Next Tag: 6
-  // TODO(b/294618452): Deprecate and remove this in favor of WifiRouterFeature.
-  enum Feature {
-    UNKNOWN = 0;
-  }
-  // Features this wifi testbed has.
-  // TODO(b/294618452): Deprecate and remove this in favor of wifi_router_features.
-  repeated Feature features = 5;
-
   // WifiRouterFeatures that are supported by all wifi routers in the testbed.
   //
   // If there are no wifi routers this will be empty.
@@ -144,6 +136,7 @@ message Wifi {
 
 // Next Tag: 7
 message WifiRouter {
+  reserved 6;
 
   string hostname = 1;
   PeripheralState state = 2;
@@ -152,16 +145,6 @@ message WifiRouter {
 
   // RPM to perform remote power management. use OSRPM defined here.
   OSRPM rpm = 5;
-
-  // Feature for Wifi.
-  // Next Tag: 7
-  // TODO(b/294618452): Deprecate and remove this in favor of WifiRouterFeature.
-  enum Feature {
-    UNKNOWN = 0;
-  }
-  // Features this router exhibits.
-  // TODO(b/294618452): Deprecate and remove this in favor of supported_features.
-  repeated Feature features = 6;
 
   // Supported test router hardware and software features.
   repeated chromiumos.test.lab.api.WifiRouterFeature supported_features = 7;
