@@ -21,6 +21,7 @@ import (
 	"github.com/hashicorp/go-version"
 	"go.chromium.org/luci/common/logging"
 
+	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"infra/cmd/shivas/utils"
 	"infra/cros/dutstate"
 	"infra/cros/satlab/common/asset"
@@ -39,7 +40,6 @@ import (
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/common/utils/parser"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
-	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	u "infra/cros/satlab/satlabrpcserver/utils"

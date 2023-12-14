@@ -15,11 +15,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
+	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
-	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/services/rpc_services"
