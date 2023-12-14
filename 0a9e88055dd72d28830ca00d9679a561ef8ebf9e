@@ -16,6 +16,24 @@
       "message": "IIUC the WifiSecret is used to mapping to a specific secret stored in in GCP for a given DUT, and it working in a way like:\n\n1. Get a DUT, and read its `WifiSecret` field.\n2. If `WifiSecret` field exists then fetch the corresponding secret from GCP.\n3. If `WifiSecret` is `nil` then based on DUT\u0027s zone or pool to fetch default secret from GCP.\n\n So how the `dut_pools` and `zones` in `WifiSecret` that tied to each individual DUT work in here?",
       "revId": "0a9e88055dd72d28830ca00d9679a561ef8ebf9e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd3dd2da_b6f050cf",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/chromeos/lab/device.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-12-14T02:57:06Z",
+      "side": 1,
+      "message": "\u003e If WifiSecret is nil then based on DUT\u0027s zone or pool to fetch default secret from GCP.\n\nThe main reason is how to associate the wifi secret with a pool or a zone, which are both in simple type (string and enum) in UFS. I think I need to reconsider this. I will update the design doc first and then revise this CL.",
+      "parentUuid": "37b04b25_5612b167",
+      "revId": "0a9e88055dd72d28830ca00d9679a561ef8ebf9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
