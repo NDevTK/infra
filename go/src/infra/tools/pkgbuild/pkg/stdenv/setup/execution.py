@@ -166,7 +166,12 @@ class Execution:
     if name in self.env:
       try:
         # pylint: disable=exec-used
-        exec(self.env[name], globals(), {'exe': self})
+        exec(compile(
+            self.env[name],
+            f'env:{name}',
+            mode='exec',
+            dont_inherit=True,
+        ), globals(), {'exe': self})
       except HookReturnFalseError:
         return False
       return True
@@ -179,7 +184,12 @@ class Execution:
       with open(name) as f:
         try:
           # pylint: disable=exec-used
-          exec(f.read(), globals(), {'exe': self})
+          exec(compile(
+              f.read(),
+              name,
+              mode='exec',
+              dont_inherit=True,
+          ), globals(), {'exe': self})
         except HookReturnFalseError:
           return False
         return True
@@ -299,7 +309,12 @@ class Execution:
     if name in self.env:
       # If the phase is overridden by environment variable
       # pylint: disable=exec-used
-      exec(self.env[name], globals(), {'exe': self})
+      exec(compile(
+          self.env[name],
+          f'env:{name}',
+          mode='exec',
+          dont_inherit=True,
+      ), globals(), {'exe': self})
     elif py_name in globals():
       # If the phase is overridden by defining function
       globals()[py_name](self)
