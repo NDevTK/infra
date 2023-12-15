@@ -319,11 +319,6 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 		return err
 	}
 
-	// Helper to produce a build page URL.
-	buildURL := func(buildID int64) string {
-		return fmt.Sprintf("https://ci.chromium.org/b/%d", buildID)
-	}
-
 	// Presentation state.
 	var summary strings.Builder
 	writeSummaryLine := func(shardID int, buildID int64, result string) {
@@ -372,6 +367,9 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 			e := errorFromOutputProperties(props, fmt.Sprintf("shard %d", i+1))
 			if e != nil {
 				e = attachLinks(e, fmt.Sprintf("shard %d build page", i+1), buildURL(build.Id))
+				if errorTestsFailed(e) {
+					e = attachLinks(e, fmt.Sprintf("shard %d test results", i+1), testResultsURL(build.Id))
+				}
 				failures = append(failures, e)
 			}
 		}
@@ -419,5 +417,18 @@ func errorFromOutputProperties(props *golangbuildpb.Outputs, title string) error
 	for _, link := range props.GetFailure().GetLinks() {
 		err = attachLinks(err, fmt.Sprintf("%s %s", title, link.Name), link.Url)
 	}
+	if props.GetFailure().GetTestsFailed() {
+		err = attachTestsFailed(err)
+	}
 	return err
+}
+
+// buildURL is a helper that produces a build page URL from a buildbucket build ID.
+func buildURL(buildID int64) string {
+	return fmt.Sprintf("https://ci.chromium.org/b/%d", buildID)
+}
+
+// testResultsURL is a helper that produces a test results page URL from a buildbucket build ID.
+func testResultsURL(buildID int64) string {
+	return fmt.Sprintf("https://ci.chromium.org/ui/inv/build-%d", buildID)
 }

@@ -173,7 +173,10 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 
 	// Invoke go tool dist test.
 	testCmd := spec.wrapTestCmd(spec.distTestCmd(ctx, gorootSrc, "", tests, true))
-	return cmdStepRun(ctx, "go tool dist test -json", testCmd, false)
+	if err := cmdStepRun(ctx, "go tool dist test -json", testCmd, false); err != nil {
+		return attachTestsFailed(err)
+	}
+	return nil
 }
 
 func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (tests []string, err error) {

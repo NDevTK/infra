@@ -221,6 +221,9 @@ message FailureSummary {
 
   // Links (typically to logs) that would be helpful in diagnosing the failure.
   repeated Link links = 2;
+
+  // Whether or not any tests failed. Used as a signal to link to test results in the UI.
+  bool tests_failed = 3;
 }
 
 // Link is a URL with a human-friendly name.

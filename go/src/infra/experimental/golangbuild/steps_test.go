@@ -96,3 +96,51 @@ func compareLinks(t *testing.T, got, want []link) {
 		}
 	}
 }
+
+func TestErrTestsFailedMarker(t *testing.T) {
+	t.Parallel()
+
+	t.Run("nil", func(t *testing.T) {
+		var err error
+		err = attachTestsFailed(err)
+		if err != nil {
+			t.Fatal("got non-nil error from attaching links to a nil error")
+		}
+		if errorTestsFailed(err) {
+			t.Fatal("found tests failed marker on nil error")
+		}
+	})
+	t.Run("tree", func(t *testing.T) {
+		// Test simple attachment.
+		err := fmt.Errorf("my error")
+		err = attachTestsFailed(err)
+		if err == nil {
+			t.Fatal("got nil error from attaching tests failed marker to a non-nil error")
+		}
+
+		// Test simple wrapping.
+		err = fmt.Errorf("wrapped: %w", err)
+		if !errorTestsFailed(err) {
+			t.Fatalf("expected marker, but marker not found on wrapped error")
+		}
+
+		// Test no attachments.
+		err2 := fmt.Errorf("my error 2")
+		if errorTestsFailed(err2) {
+			t.Fatal("found tests failed marker on error without explicit marker")
+		}
+
+		// Test joined errors.
+		err3 := fmt.Errorf("my error 3")
+		err = errors.Join(err2, err, err3)
+		if !errorTestsFailed(err) {
+			t.Fatalf("expected marker, but marker not found on joined error")
+		}
+
+		// Test a chain on top of the joined errors.
+		err = fmt.Errorf("wrapped 2: %w", err)
+		if !errorTestsFailed(err) {
+			t.Fatalf("expected marker, but marker not found on chained, then joined error")
+		}
+	})
+}

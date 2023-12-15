@@ -151,6 +151,7 @@ func main() {
 					Url:  link.url,
 				})
 			}
+			outpb.Failure.TestsFailed = errorTestsFailed(runErr)
 		}
 		if spec != nil {
 			if spec.goSrc != nil {
@@ -180,7 +181,12 @@ func main() {
 			}
 		}
 		if runErr != nil {
-			fmt.Fprintf(&sb, "error: %v\n", runErr)
+			testsFailed := errorTestsFailed(runErr)
+			if testsFailed {
+				fmt.Fprintf(&sb, "**Tests failed.** [See all test results.](%s)\n\n", testResultsURL(st.Build().Id))
+			}
+			fmt.Fprintf(&sb, "Error:\n%s\n\n", "\t"+strings.ReplaceAll(runErr.Error(), "\n", "\n\t"))
+			fmt.Fprintf(&sb, "Links:\n")
 			for _, link := range links {
 				fmt.Fprintf(&sb, "* [%s](%s)\n", link.name, link.url)
 			}

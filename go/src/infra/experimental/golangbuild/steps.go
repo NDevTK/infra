@@ -217,3 +217,53 @@ func (e *errLinks) Unwrap() error {
 type link struct {
 	name, url string
 }
+
+// attachTestsFailed marks the error as having failing tests.
+//
+// Accepts a nil error, but also returns a nil error in that case.
+func attachTestsFailed(err error) error {
+	if err == nil || errorTestsFailed(err) {
+		return err
+	}
+	return &errTestsFailed{err}
+}
+
+// errorTestsFailed reports whether the error contains an errTestsFailed marker in its chain.
+func errorTestsFailed(err error) bool {
+	e := err
+	for e != nil {
+		// Check if there are any links to unwrap.
+		if _, ok := e.(*errTestsFailed); ok {
+			return true
+		}
+
+		// Walk errors.Join errors.
+		w, ok := e.(interface{ Unwrap() []error })
+		if ok {
+			for _, err := range w.Unwrap() {
+				if errorTestsFailed(err) {
+					return true
+				}
+			}
+			break
+		}
+
+		// Otherwise, just try to unwrap.
+		e = errors.Unwrap(e)
+	}
+	return false
+}
+
+// errTestsFailed is an error that marks that tests failed.
+// *errTestsFailed implements error. *errTestsFailed is unwrappable.
+type errTestsFailed struct {
+	err error // Must be non-nil
+}
+
+func (e *errTestsFailed) Error() string {
+	return e.err.Error()
+}
+
+func (e *errTestsFailed) Unwrap() error {
+	return e.err
+}
