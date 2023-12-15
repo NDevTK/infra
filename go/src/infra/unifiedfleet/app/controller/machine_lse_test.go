@@ -2549,6 +2549,32 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(pi2[0].GetOwnNumber(), ShouldEqual, "4444")
 			So(pi2[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_TMOBILE)
 		})
+		Convey("Update a OS machine LSE - missing modem lab data", func() {
+			const machineName = "machine-labdata-16"
+			labData := &ufsAPI.ChromeOsRecoveryData_LabData{
+				ModemInfo: &ufsAPI.ChromeOsRecoveryData_ModemInfo{
+					ModelVariant: "some_cellular_variant",
+					Imei:         "123456",
+					Type:         chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
+				},
+			}
+			machineLSE := mockDutMachineLSE(machineName)
+			machineLSE.GetChromeosMachineLse().GetDeviceLse().GetDut().Modeminfo = nil
+			req, err := inventory.CreateMachineLSE(ctx, machineLSE)
+			So(err, ShouldBeNil)
+			So(req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED)
+			err = updateRecoveryLabData(ctx, machineName, ufspb.State_STATE_READY, labData)
+			So(err, ShouldBeNil)
+			req, err = inventory.GetMachineLSE(ctx, machineName)
+			So(err, ShouldBeNil)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_READY)
+
+			modem := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetModeminfo()
+			So(modem.GetType(), ShouldEqual, chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180)
+			So(modem.GetImei(), ShouldEqual, "123456")
+			So(modem.GetModelVariant(), ShouldEqual, "some_cellular_variant")
+		})
 	})
 }
 

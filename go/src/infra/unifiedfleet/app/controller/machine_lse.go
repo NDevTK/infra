@@ -1918,7 +1918,7 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 				// Update WiFi routers
 				updateRecoveryPeripheralWifi(ctx, peri, labData)
 				// Update Cellular Modem Info
-				updateCellularModemInfo(ctx, dut.GetModeminfo(), labData)
+				updateCellularModemInfo(ctx, dut, labData)
 				// Update Cellular SIM Info
 				updateCellularSIMInfo(ctx, dut, labData)
 				// Update Bluetooth peers
@@ -1981,11 +1981,12 @@ func updateRecoveryPeripheralServo(p *chromeosLab.Peripherals, labData *ufsAPI.C
 }
 
 // updateCellularModemInfo updates the cellular modem info.
-func updateCellularModemInfo(ctx context.Context, m *chromeosLab.ModemInfo, labData *ufsAPI.ChromeOsRecoveryData_LabData) {
-	// Cellular cannot be nil, if it is then return to make sure we don't somehow clear anything.
-	if m == nil {
-		return
+func updateCellularModemInfo(ctx context.Context, dut *chromeosLab.DeviceUnderTest, labData *ufsAPI.ChromeOsRecoveryData_LabData) {
+	// Modem info cannot be nil on valid DUT.
+	if dut.GetModeminfo() == nil {
+		dut.Modeminfo = &chromeosLab.ModemInfo{}
 	}
+	m := dut.GetModeminfo()
 
 	mi := labData.GetModemInfo()
 	if mv := mi.GetModelVariant(); mv != "" {
