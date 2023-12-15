@@ -176,6 +176,16 @@ message OpenWrtRouterControllerState {
   string expected_image_uuid = 3;
 }
 
+// UbuntuRouterControllerState holds exec state information for wifirouter
+// execs that use the UbuntuRouterController.
+// Used only as internal state for scope. Do not use for store data.
+message UbuntuRouterControllerState {
+  // The system product name as specified in the device's DMI table.
+  string system_product_name = 1;
+  // The name of the network controller found on the device.
+  string network_controller_name = 2;
+}
+
 // BluetoothPeerScopeState holds exec state information for btpeer execs.
 // Meant to describe the exec state for a single btpeer.
 // Used only as internal state for scope. Do not use for store data.
