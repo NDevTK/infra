@@ -80,11 +80,11 @@ func (inv *Inventory) getAllDevicesInfo(ctx context.Context, resourceName string
 	if resp.GetResourceType() == ufsapi.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT {
 		return inv.getSchedulingUnitInfo(ctx, resp.GetSchedulingUnit().GetMachineLSEs())
 	}
-	deviceInfos, err := appendDeviceInfo([]*deviceInfo{}, resp)
+	di, err := toDeviceInfo(resp)
 	if err != nil {
 		return nil, fmt.Errorf("get all devices info: %w for %s", err, resourceName)
 	}
-	return deviceInfos, nil
+	return []*deviceInfo{di}, nil
 }
 
 // getSchedulingUnitInfo fetches device info for every DUT / attached device in the scheduling unit.
@@ -96,9 +96,11 @@ func (inv *Inventory) getSchedulingUnitInfo(ctx context.Context, hostnames []str
 		if err != nil {
 			return nil, err
 		}
-		if deviceInfos, err = appendDeviceInfo(deviceInfos, resp); err != nil {
+		di, err := toDeviceInfo(resp)
+		if err != nil {
 			return nil, fmt.Errorf("get scheduling unit info: %w for %s", err, hostname)
 		}
+		deviceInfos = append(deviceInfos, di)
 	}
 	return deviceInfos, nil
 }
@@ -112,26 +114,26 @@ func (inv *Inventory) getDeviceData(ctx context.Context, id string) (*ufsapi.Get
 	return resp, nil
 }
 
-// appendDeviceData appends a device data response to the list of responses
+// toDeviceInfo convert a device data response to DeviceInfo
 // after validation. Returns error if the device type is different from ChromeOs
 // or Android device.
-func appendDeviceInfo(deviceInfos []*deviceInfo, resp *ufsapi.GetDeviceDataResponse) ([]*deviceInfo, error) {
+func toDeviceInfo(resp *ufsapi.GetDeviceDataResponse) (*deviceInfo, error) {
 	switch resp.GetResourceType() {
 	case ufsapi.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
-		return append(deviceInfos, &deviceInfo{
+		return &deviceInfo{
 			deviceType:          ChromeOSDevice,
 			machine:             resp.GetChromeOsDeviceData().GetMachine(),
 			machineLse:          resp.GetChromeOsDeviceData().GetLabConfig(),
 			manufactoringConfig: resp.GetChromeOsDeviceData().GetManufacturingConfig(),
 			hwidData:            resp.GetChromeOsDeviceData().GetHwidData(),
 			dutState:            resp.GetChromeOsDeviceData().GetDutState(),
-		}), nil
+		}, nil
 	case ufsapi.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
-		return append(deviceInfos, &deviceInfo{
+		return &deviceInfo{
 			deviceType: AndroidDevice,
 			machine:    resp.GetAttachedDeviceData().GetMachine(),
 			machineLse: resp.GetAttachedDeviceData().GetLabConfig(),
-		}), nil
+		}, nil
 	}
 	return nil, fmt.Errorf("append device info: invalid device type (%s)", resp.GetResourceType())
 }
