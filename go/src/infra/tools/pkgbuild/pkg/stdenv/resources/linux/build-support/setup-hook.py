@@ -44,6 +44,7 @@ def setup(exe) -> None:
         'docker', 'run', '--rm',
         '--workdir', cwd,
         '--user', f'{os.getuid()}:{os.getgid()}',
+        '--env', f'HOME={cwd}',
     ]
 
     env = []
