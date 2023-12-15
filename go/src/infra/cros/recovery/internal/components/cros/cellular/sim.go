@@ -102,6 +102,9 @@ func (s *simInfo) CarrierName() tlw.Cellular_NetworkProvider {
 	// vodafone may be 'vodafone UK' or some other variant.
 	case strings.Contains(strings.ToLower(on), "vodafone"):
 		return tlw.Cellular_NETWORK_VODAFONE
+	// If empty, then return unspecified rather than unsupported.
+	case on == "" || on == "--":
+		return tlw.Cellular_NETWORK_UNSPECIFIED
 	default:
 		return tlw.Cellular_NETWORK_UNSUPPORTED
 	}
