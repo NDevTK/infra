@@ -619,7 +619,7 @@ test_summaries AS (
 		AND file_name IS NOT NULL
 		AND component IN UNNEST(@components)
 		-- Apply the requested filter
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter0)
 	GROUP BY file_name, date, test_id, component
 )
 SELECT
@@ -665,7 +665,7 @@ test_summaries AS (
 		date IN UNNEST(@dates)
 		AND file_name IS NOT NULL
 		-- Apply the requested filter
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter0)
 	GROUP BY file_name, date, test_id, component
 )
 SELECT
@@ -721,7 +721,7 @@ test_summaries AS (
 		AND file_name IS NOT NULL
 		AND component IN UNNEST(@components)
 		-- Apply the requested filter
-		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT('id:', test_id, ' ', 'name:', IFNULL(test_name, ''), ' ', 'file:', IFNULL(file_name, ''), ' ', 'bucket:', IFNULL(bucket, ''), '/', IFNULL(builder, ''), 'builder:', IFNULL(builder, ''), ' ', 'test_suite:', IFNULL(test_suite, '')), @filter0)
 	GROUP BY file_name, date, test_id, test_component
 ), node_summaries AS (
 	SELECT
