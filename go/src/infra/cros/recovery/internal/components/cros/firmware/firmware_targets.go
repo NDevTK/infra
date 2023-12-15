@@ -70,7 +70,7 @@ var targetOverridebyHwid = map[string]string{
 	"YAVIKSO-OFRL C4C-C2F-D3B-W3P-N4E":           "yaviks_ufs",
 	"YAVILLY-ITWJ B3B-G2H-C8K-79E-W4S":           "yavilla_ufs",
 	"AVIJO-PORH B3C-G3K-O4K-79T-I3X":             "yavilla_ufs",
-	"CRAASKANA-QRII B2B-B3B-B3A-C3C-63A":         "craaskana_hdmi",
+	"CRAASKANA-QRII B2B-B3B-B3A-C3C-63A":         "craask_hdmi",
 }
 
 // ecExemptedModels holds a map of models that doesn't have EC firmware.
