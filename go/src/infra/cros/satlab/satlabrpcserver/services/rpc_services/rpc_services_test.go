@@ -589,7 +589,7 @@ func TestListConnectedDUTsFirmwareShouldSuccess(t *testing.T) {
 	// Mock some data
 	IP := "192.168.100.1"
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: IP, IsConnected: true},
+		{IP: IP, IsPingable: true, HasTestImage: true},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).
 		On("RunCommandOnIPs", ctx, mock.Anything, constants.ListFirmwareCommand).
@@ -630,7 +630,7 @@ func TestListConnectedDUTsFirmwareShouldGetEmptyListWhenCommandExecuteFailed(t *
 	// Mock some data
 	IP := "192.168.100.1"
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: IP, IsConnected: true},
+		{IP: IP, IsPingable: true, HasTestImage: true},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).
 		On("RunCommandOnIPs", ctx, mock.Anything, constants.ListFirmwareCommand).
@@ -1168,8 +1168,8 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
@@ -1190,27 +1190,29 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:        "satlab-0wgatfqi21498062-jeff137-c",
-				Hostname:    "satlab-0wgatfqi21498062-jeff137-c",
-				Address:     "192.168.231.222",
-				Pools:       []string{"jev-satlab"},
-				Model:       "atlas",
-				Board:       "atlas",
-				IsConnected: true,
-				MacAddress:  "00:14:3d:14:c4:02",
-				State:       "unknown",
+				Name:         "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:     "satlab-0wgatfqi21498062-jeff137-c",
+				Address:      "192.168.231.222",
+				Pools:        []string{"jev-satlab"},
+				Model:        "atlas",
+				Board:        "atlas",
+				IsPingable:   true,
+				HasTestImage: true,
+				MacAddress:   "00:14:3d:14:c4:02",
+				State:        "unknown",
 			},
 			{
-				Name:        "",
-				Hostname:    "",
-				Address:     "192.168.231.2",
-				Pools:       nil,
-				Model:       "model",
-				Board:       "board",
-				MacAddress:  "e8:9f:80:83:3d:c8",
-				ServoSerial: "SERVOSERIAL",
-				IsConnected: true,
-				State:       "",
+				Name:         "",
+				Hostname:     "",
+				Address:      "192.168.231.2",
+				Pools:        nil,
+				Model:        "model",
+				Board:        "board",
+				MacAddress:   "e8:9f:80:83:3d:c8",
+				ServoSerial:  "SERVOSERIAL",
+				IsPingable:   true,
+				HasTestImage: true,
+				State:        "",
 			},
 		},
 	}
@@ -1234,8 +1236,8 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: false, HasTestImage: false},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: false, HasTestImage: false},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("", nil)
@@ -1257,26 +1259,28 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:        "satlab-0wgatfqi21498062-jeff137-c",
-				Hostname:    "satlab-0wgatfqi21498062-jeff137-c",
-				Address:     "192.168.231.222",
-				Pools:       []string{"jev-satlab"},
-				Model:       "atlas",
-				Board:       "atlas",
-				IsConnected: false,
-				MacAddress:  "00:14:3d:14:c4:02",
-				State:       "unknown",
+				Name:         "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:     "satlab-0wgatfqi21498062-jeff137-c",
+				Address:      "192.168.231.222",
+				Pools:        []string{"jev-satlab"},
+				Model:        "atlas",
+				Board:        "atlas",
+				IsPingable:   false,
+				HasTestImage: false,
+				MacAddress:   "00:14:3d:14:c4:02",
+				State:        "unknown",
 			},
 			{
-				Name:        "",
-				Hostname:    "",
-				Address:     "192.168.231.2",
-				Pools:       nil,
-				Model:       "",
-				Board:       "",
-				MacAddress:  "e8:9f:80:83:3d:c8",
-				IsConnected: false,
-				State:       "",
+				Name:         "",
+				Hostname:     "",
+				Address:      "192.168.231.2",
+				Pools:        nil,
+				Model:        "",
+				Board:        "",
+				MacAddress:   "e8:9f:80:83:3d:c8",
+				IsPingable:   false,
+				HasTestImage: false,
+				State:        "",
 			},
 		},
 	}
@@ -1300,8 +1304,8 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("model", nil)
@@ -1323,25 +1327,27 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:        "",
-				Hostname:    "",
-				Address:     "192.168.231.222",
-				Pools:       nil,
-				Model:       "model",
-				Board:       "board",
-				IsConnected: true,
-				MacAddress:  "00:14:3d:14:c4:02",
+				Name:         "",
+				Hostname:     "",
+				Address:      "192.168.231.222",
+				Pools:        nil,
+				Model:        "model",
+				Board:        "board",
+				IsPingable:   true,
+				HasTestImage: true,
+				MacAddress:   "00:14:3d:14:c4:02",
 			},
 			{
-				Name:        "",
-				Hostname:    "",
-				Address:     "192.168.231.2",
-				Pools:       nil,
-				Model:       "model",
-				Board:       "board",
-				MacAddress:  "e8:9f:80:83:3d:c8",
-				IsConnected: true,
-				ServoSerial: "SERVOSERIAL",
+				Name:         "",
+				Hostname:     "",
+				Address:      "192.168.231.2",
+				Pools:        nil,
+				Model:        "model",
+				Board:        "board",
+				MacAddress:   "e8:9f:80:83:3d:c8",
+				IsPingable:   true,
+				HasTestImage: true,
+				ServoSerial:  "SERVOSERIAL",
 			},
 		},
 	}
@@ -1365,8 +1371,8 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: false, HasTestImage: false},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: false, HasTestImage: false},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("", nil)
@@ -1388,24 +1394,26 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:        "",
-				Hostname:    "",
-				Address:     "192.168.231.222",
-				Pools:       nil,
-				Model:       "",
-				Board:       "",
-				IsConnected: false,
-				MacAddress:  "00:14:3d:14:c4:02",
+				Name:         "",
+				Hostname:     "",
+				Address:      "192.168.231.222",
+				Pools:        nil,
+				Model:        "",
+				Board:        "",
+				IsPingable:   false,
+				HasTestImage: false,
+				MacAddress:   "00:14:3d:14:c4:02",
 			},
 			{
-				Name:        "",
-				Hostname:    "",
-				Address:     "192.168.231.2",
-				Pools:       nil,
-				Model:       "",
-				Board:       "",
-				MacAddress:  "e8:9f:80:83:3d:c8",
-				IsConnected: false,
+				Name:         "",
+				Hostname:     "",
+				Address:      "192.168.231.2",
+				Pools:        nil,
+				Model:        "",
+				Board:        "",
+				MacAddress:   "e8:9f:80:83:3d:c8",
+				IsPingable:   false,
+				HasTestImage: false,
 			},
 		},
 	}
@@ -1429,8 +1437,8 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: true},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: true},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("", errors.New("can't get board"))
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("", errors.New("can't get model"))
@@ -1451,27 +1459,29 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:        "satlab-0wgatfqi21498062-jeff137-c",
-				Hostname:    "satlab-0wgatfqi21498062-jeff137-c",
-				Address:     "192.168.231.222",
-				Pools:       []string{"jev-satlab"},
-				Model:       "atlas",
-				Board:       "atlas",
-				IsConnected: true,
-				MacAddress:  "00:14:3d:14:c4:02",
-				State:       "unknown",
+				Name:         "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:     "satlab-0wgatfqi21498062-jeff137-c",
+				Address:      "192.168.231.222",
+				Pools:        []string{"jev-satlab"},
+				Model:        "atlas",
+				Board:        "atlas",
+				IsPingable:   true,
+				HasTestImage: true,
+				MacAddress:   "00:14:3d:14:c4:02",
+				State:        "unknown",
 			},
 			{
-				Name:        "",
-				Hostname:    "",
-				Address:     "192.168.231.2",
-				Pools:       nil,
-				Model:       "",
-				Board:       "",
-				MacAddress:  "e8:9f:80:83:3d:c8",
-				IsConnected: true,
-				ServoSerial: "SERVOSERIAL",
-				State:       "",
+				Name:         "",
+				Hostname:     "",
+				Address:      "192.168.231.2",
+				Pools:        nil,
+				Model:        "",
+				Board:        "",
+				MacAddress:   "e8:9f:80:83:3d:c8",
+				IsPingable:   true,
+				HasTestImage: true,
+				ServoSerial:  "SERVOSERIAL",
+				State:        "",
 			},
 		},
 	}
@@ -1495,8 +1505,8 @@ func TestListConnectedDutsShouldFail(t *testing.T) {
 
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsConnected: false},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsConnected: false},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: false, HasTestImage: false},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: false, HasTestImage: false},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("model", nil)

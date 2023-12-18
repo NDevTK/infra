@@ -369,7 +369,7 @@ message RunTestResponse {
 // NEXT_TAG = 1
 message ListEnrolledDutsRequest {}
 
-// NEXT_TAG = 13
+// NEXT_TAG = 14
 message Dut {
   string address = 1;
   string name = 2;
@@ -378,11 +378,12 @@ message Dut {
   string model = 5;
   repeated string pools = 6;
   string mac_address = 7;
-  bool is_connected = 8;
+  bool is_pingable = 8;
   string servo_serial = 9;
   string servo_type = 10;
   int32 servo_port = 11;
   string state = 12;
+  bool has_test_image = 13;
 }
 
 // NEXT_TAG = 2

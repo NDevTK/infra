@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"os/exec"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -52,6 +53,7 @@ func createDUTService(config cssh.ClientConfig, address string, executor executo
 		port:            strings.Split(address, ":")[1],
 		clientConnector: connector.New(0, time.Second),
 		commandExecutor: executor,
+		subnetSearchRe:  regexp.MustCompile(`(?P<IP>192\.168\.231\.[0-9][0-9]*[0-9]*).*`),
 	}
 }
 
@@ -200,7 +202,7 @@ func getConnectIPsHelper() executor.IExecCommander {
 	}
 }
 
-func TestGetConnectedIPsShouldWork(t *testing.T) {
+func Test_GetConnectedIPsAreNotPingableAndWithoutTestImageShouldWork(t *testing.T) {
 	expectedResponse := "connect success"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -215,13 +217,75 @@ func TestGetConnectedIPsShouldWork(t *testing.T) {
 
 	expected := []Device{
 		{
-			IP: "127.0.0.1",
-			// TODO consider how to test `isConnected` is true.
-			// As the fping command check the return IP matches this
-			// pattern `192.168.231.x`. but our ssh server is hosted
-			// in local.
-			IsConnected: false,
-			MACAddress:  "00:14:3d:14:c4:02",
+			IP:           "127.0.0.1",
+			IsPingable:   false,
+			HasTestImage: false,
+			MACAddress:   "00:14:3d:14:c4:02",
+		},
+	}
+
+	if diff := cmp.Diff(res, expected); diff != "" {
+		t.Errorf("diff: %v\n", diff)
+	}
+
+}
+
+func Test_GetConnectedIPsArePingableButWithoutTestImageShouldWork(t *testing.T) {
+	expectedResponse := "connect success"
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, getConnectIPsHelper())
+	dutServices.subnetSearchRe = regexp.MustCompile(`(?P<IP>127\.0\.0\.1)`)
+
+	res, err := dutServices.GetConnectedIPs(ctx)
+	if err != nil {
+		t.Errorf("Expected should succes, but got an error: %v\n", err)
+	}
+
+	expected := []Device{
+		{
+			IP:           "127.0.0.1",
+			IsPingable:   true,
+			HasTestImage: false,
+			MACAddress:   "00:14:3d:14:c4:02",
+		},
+	}
+
+	if diff := cmp.Diff(res, expected); diff != "" {
+		t.Errorf("diff: %v\n", diff)
+	}
+
+}
+
+func Test_GetConnectedIPsArePingableAndHasTestImageShouldWork(t *testing.T) {
+	expectedResponse := `CHROMEOS_RELEASE_TRACK=testimage-channel
+CHROMEOS_RELEASE_BUILDER_PATH=atlas-release/R122-15709.0.0
+CHROMEOS_RELEASE_BUILD_NUMBER=15709
+CHROMEOS_RELEASE_CHROME_MILESTONE=122
+CHROMEOS_RELEASE_VERSION=15709.0.0
+GOOGLE_RELEASE=15709.0.0
+CHROMEOS_RELEASE_UNIBUILD=1
+  `
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, getConnectIPsHelper())
+	dutServices.subnetSearchRe = regexp.MustCompile(`(?P<IP>127\.0\.0\.1)`)
+
+	res, err := dutServices.GetConnectedIPs(ctx)
+	if err != nil {
+		t.Errorf("Expected should succes, but got an error: %v\n", err)
+	}
+
+	expected := []Device{
+		{
+			IP:           "127.0.0.1",
+			IsPingable:   true,
+			HasTestImage: true,
+			MACAddress:   "00:14:3d:14:c4:02",
 		},
 	}
 

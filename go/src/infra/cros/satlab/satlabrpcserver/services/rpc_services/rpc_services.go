@@ -340,7 +340,7 @@ func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, 
 
 	IPs := []string{}
 	for _, d := range devices {
-		if d.IsConnected {
+		if d.IsPingable && d.HasTestImage {
 			IPs = append(IPs, d.IP)
 		}
 	}
@@ -876,7 +876,8 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 	for _, dut := range duts {
 		for _, device := range connectedDevices {
 			if dut.Address == device.IP {
-				dut.IsConnected = device.IsConnected
+				dut.IsPingable = device.IsPingable
+				dut.HasTestImage = device.HasTestImage
 				dut.MacAddress = device.MACAddress
 				enrolledIPs = append(enrolledIPs, dut.Address)
 			}
@@ -895,7 +896,7 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 		var servoSerial = ""
 		var board = ""
 		var model = ""
-		if device.IsConnected {
+		if device.IsPingable && device.HasTestImage {
 			board, err = s.dutService.GetBoard(ctx, device.IP)
 			if err != nil {
 				// Skip when we can't get the board from the CLI.
@@ -917,12 +918,13 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 			}
 		}
 		duts = append(duts, &pb.Dut{
-			Board:       board,
-			Model:       model,
-			Address:     device.IP,
-			MacAddress:  device.MACAddress,
-			IsConnected: device.IsConnected,
-			ServoSerial: servoSerial,
+			Board:        board,
+			Model:        model,
+			Address:      device.IP,
+			MacAddress:   device.MACAddress,
+			IsPingable:   device.IsPingable,
+			HasTestImage: device.HasTestImage,
+			ServoSerial:  servoSerial,
 		})
 	}
 

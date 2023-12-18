@@ -13,10 +13,11 @@ import (
 // Device is a struct provides the information
 // of the IP address and is connected.
 type Device struct {
-	IP          string
-	MACAddress  string
-	IsConnected bool
-	ServoSerial string
+	IP           string
+	MACAddress   string
+	IsPingable   bool
+	HasTestImage bool
+	ServoSerial  string
 }
 
 // IDUTServices provides the services that regulate the DUTs.

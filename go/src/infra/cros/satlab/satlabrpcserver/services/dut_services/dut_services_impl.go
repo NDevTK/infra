@@ -65,6 +65,9 @@ type DUTServicesImpl struct {
 	clientConnector connector.ISSHClientConnector
 	// commandExecutor define a interface for executing a command
 	commandExecutor executor.IExecCommander
+	// subnetSearchRe the regex for parsing the `fping` command.
+	// put it in here for testing
+	subnetSearchRe *regexp.Regexp
 }
 
 func New() (IDUTServices, error) {
@@ -88,6 +91,7 @@ func New() (IDUTServices, error) {
 		port:            constants.SSHPort,
 		clientConnector: sshConnector,
 		commandExecutor: &executor.ExecCommander{},
+		subnetSearchRe:  regexp.MustCompile(`(?P<IP>192\.168\.231\.[0-9][0-9]*[0-9]*).*`),
 	}, nil
 }
 
@@ -181,8 +185,6 @@ func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd
 	return res
 }
 
-var subnetSearchRe = regexp.MustCompile(`(?P<IP>192\.168\.231\.[0-9][0-9]*[0-9]*).*`)
-
 func (d *DUTServicesImpl) fetchLeasesFile() (map[string]string, error) {
 	// List all IPs that we applied.
 	out, err := d.commandExecutor.CombinedOutput(exec.Command(
@@ -238,9 +240,9 @@ func (d *DUTServicesImpl) pingDUTs(ctx context.Context, potentialIPs []string) (
 	activeIPs := []string{}
 
 	for _, row := range rawData {
-		if subnetSearchRe.MatchString(row) {
-			matches := subnetSearchRe.FindStringSubmatch(row)
-			IPIndex := subnetSearchRe.SubexpIndex("IP")
+		if d.subnetSearchRe.MatchString(row) {
+			matches := d.subnetSearchRe.FindStringSubmatch(row)
+			IPIndex := d.subnetSearchRe.SubexpIndex("IP")
 			activeIPs = append(activeIPs, matches[IPIndex])
 		}
 	}
@@ -277,22 +279,23 @@ func (d *DUTServicesImpl) GetConnectedIPs(ctx context.Context) ([]Device, error)
 	result := []Device{}
 	for _, r := range res {
 		macAddress := ipToMACMap[r.IP]
-		if r.Error != nil {
-			result = append(result, Device{IP: r.IP, IsConnected: false, MACAddress: macAddress})
-		} else {
-			// we check the some DUTs which install the stable image but they can
-			// open the ssh connection.
-			hasTestImage := strings.Contains(strings.ToLower(r.Value), constants.ChromeosTestImageReleaseTrack)
-			result = append(result, Device{IP: r.IP, IsConnected: hasTestImage, MACAddress: macAddress})
-		}
+		hasTestImage := isTestImage(r.Value)
+		// we check the some DUTs which install the stable image but they can
+		// open the ssh connection.
+		result = append(result, Device{IP: r.IP, IsPingable: true, HasTestImage: hasTestImage, MACAddress: macAddress})
 	}
 
 	for _, r := range inactiveIPs {
 		macAddress := ipToMACMap[r]
-		result = append(result, Device{IP: r, IsConnected: false, MACAddress: macAddress})
+		result = append(result, Device{IP: r, IsPingable: false, HasTestImage: false, MACAddress: macAddress})
 	}
 
 	return result, nil
+}
+
+// isTestImage checking the `lsp-release` contains test image.
+func isTestImage(v string) bool {
+	return strings.Contains(strings.ToLower(v), constants.ChromeosTestImageReleaseTrack)
 }
 
 // GetBoard get the DUT's board from `lsb-release`
