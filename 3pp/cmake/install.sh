@@ -61,9 +61,15 @@ if [[ "$_3PP_PLATFORM" == "$_3PP_TOOL_PLATFORM" && "$_3PP_PLATFORM" != windows-*
   # Tests which are flaky when run in parallel.
   SERIAL_TESTS="CTestLimitDashJ|FileDownload|CTestTimeoutAfterMatch|kwsys.testProcess-1|TryCompile|RunCMake.ctest_test"
 
+  if [[ "$_3PP_PLATFORM" != mac-* ]]; then
+      CTEST_PARALLEL="--parallel $(nproc)"
+  else
+      CTEST_PARALLEL=""  # parallel testing is too flaky on Mac
+  fi
+
   # Unset CMAKE_TOOLCHAIN_FILE to avoid using host cmake libraries in tests
   env -u CMAKE_TOOLCHAIN_FILE \
-    ./bin/ctest --parallel "$(nproc)" \
+    ./bin/ctest ${CTEST_PARALLEL} \
     --force-new-ctest-process \
     --stop-on-failure \
     --output-on-failure \
