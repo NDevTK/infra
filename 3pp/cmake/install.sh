@@ -59,7 +59,7 @@ if [[ "$_3PP_PLATFORM" == "$_3PP_TOOL_PLATFORM" && "$_3PP_PLATFORM" != windows-*
   # curl test hits the internet and is flaky.
 
   # Tests which are flaky when run in parallel.
-  SERIAL_TESTS="CTestLimitDashJ|FileDownload|CTestTimeoutAfterMatch|kwsys.testProcess-1|TryCompile|RunCMake.ctest_test"
+  SERIAL_TESTS="CTestLimitDashJ|FileDownload|CTestTimeoutAfterMatch|kwsys.testProcess-1|TryCompile|RunCMake.ctest_test|RunCMake.CommandLine"
 
   # Unset CMAKE_TOOLCHAIN_FILE to avoid using host cmake libraries in tests
   env -u CMAKE_TOOLCHAIN_FILE \
