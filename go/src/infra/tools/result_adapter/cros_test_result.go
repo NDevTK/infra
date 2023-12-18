@@ -188,6 +188,10 @@ func PopulateProperties(testResult *sinkpb.TestResult, testRun *artifactpb.TestR
 func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.TestInvocation) []*pb.StringPair {
 	tags := []*pb.StringPair{}
 
+	// For common tags.
+	// TODO(b/316624079): Support the "is_cft_run" field in the contract proto
+	tags = AppendTags(tags, "is_cft_run", "True")
+
 	if testInvocation != nil {
 		// For Testhaus MVP parity.
 		// Refer to `_generate_resultdb_base_tags` in test_runner recipe:
