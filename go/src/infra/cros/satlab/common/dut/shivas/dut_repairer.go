@@ -48,7 +48,10 @@ func (u *DUTRepairer) Repair(
 ) (*DUTRepairResponse, error) {
 	args := u.constructArguments(action)
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
-	out, err := u.Executor.CombinedOutput(command)
+	// Don't use `CombinedOutput` here because it returns
+	// `rpc error: code = NotFound desc = requested resources not found`
+	// "anonymous:anonymous" does not have permission to view it.
+	out, err := u.Executor.Output(command)
 	if err != nil {
 		return nil, err
 	}
