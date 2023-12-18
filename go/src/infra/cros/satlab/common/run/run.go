@@ -161,11 +161,17 @@ func (c *Run) setTags() map[string]string {
 	tags := make(map[string]string)
 
 	if c.Testplan != "" {
-		tags["test-plan-id"] = strings.TrimSuffix(c.Testplan, ".json")
+		setTestplanTag(c.Testplan, tags)
 	} else if c.TestplanLocal != "" {
-		tags["test-plan-id"] = strings.TrimSuffix(c.TestplanLocal, ".json")
+		setTestplanTag(c.TestplanLocal, tags)
 	}
+
 	return tags
+}
+
+func setTestplanTag(tpPath string, tags map[string]string) {
+	f := path.Base(tpPath)
+	tags["test-plan-id"] = strings.TrimSuffix(f, ".json")
 }
 
 // Determine CTP timeout based on user input

@@ -254,6 +254,37 @@ func TestCreateCTPBuilder(t *testing.T) {
 				TimeoutMins:         360,
 			},
 		},
+		{
+			&Run{ // testplan run directory in test plan
+				TestplanLocal: "test/testplan.json",
+				Board:         "zork",
+				Model:         "gumboz",
+				Milestone:     "111",
+				Build:         "15329.6.0",
+			},
+			&builder.CTPBuilder{
+				AuthOptions: &opt,
+				Board:       "zork",
+				BuilderID: &buildbucketpb.BuilderID{
+					Project: "chromeos",
+					Bucket:  "cros_test_platform",
+					Builder: "cros_test_platform",
+				},
+				Dimensions:  map[string]string{},
+				Image:       "zork-release/R111-15329.6.0",
+				ImageBucket: "chromeos-image-archive",
+				Model:       "gumboz",
+				TestPlan: &test_platform.Request_TestPlan{
+					Test: []*test_platform.Request_Test{
+						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "audio_CrasGetNodes"}}},
+						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "audio_CrasStress.input_only"}}},
+						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "audio_CrasStress.output_only"}}},
+					},
+				},
+				TestRunnerBuildTags: map[string]string{"test-plan-id": "testplan"},
+				TimeoutMins:         360,
+			},
+		},
 	}
 
 	for _, tc := range tests {
