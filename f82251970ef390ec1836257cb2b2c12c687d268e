@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "46f52e17_0a8ad931",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-12-18T17:00:20Z",
+      "side": 1,
+      "message": "agree with this in general but worried this may cause issues with other uses of the codebase. Anh/Varun can you please weigh in?",
+      "revId": "f82251970ef390ec1836257cb2b2c12c687d268e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
