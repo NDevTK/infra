@@ -1626,12 +1626,24 @@ class WorkEnv(object):
         issue, allow_viewing_deleted=allow_viewing_deleted)
     return issue
 
-  def GetIssueMigratedID(self, project_name, local_id):
+  def ExtractMigratedIdFromLabels(self, labels):
+    """Returns the issue ID from a migration label if present."""
+    # Assume that there's only one migrated label.
+    # Or at least drop any labels besides the first one.
+    if labels is not None:
+      for label in labels:
+        lower_label = label.lower()
+        for prefix in settings.migrated_buganizer_issue_prefixes:
+          if lower_label.startswith(prefix):
+            return label.replace(prefix, '')
+    return None
+
+  def GetIssueMigratedID(self, project_name, local_id, labels=None):
     """Return the redirect id for a specific issue."""
-    if project_name is None or local_id is None:
-      logging.warning('No project name or local id: %r:%r', project_name, local_id)
-      return None
-    return redirectissue.RedirectIssue.Get(project_name, local_id)
+    migrated_id = redirectissue.RedirectIssue.Get(project_name, local_id)
+    if migrated_id is not None:
+      return migrated_id
+    return self.ExtractMigratedIdFromLabels(labels)
 
   def GetRelatedIssueRefs(self, issues):
     """Return a dict {iid: (project_name, local_id)} for all related issues."""

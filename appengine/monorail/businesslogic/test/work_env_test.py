@@ -48,6 +48,8 @@ from testing import testing_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_constants
 from redirect import redirectissue
+from api.api_proto import common_pb2
+
 
 def _Issue(project_id, local_id):
   # TODO(crbug.com/monorail/8124): Many parts of monorail's codebase
@@ -2017,21 +2019,36 @@ class WorkEnvTest(unittest.TestCase):
       with self.work_env as we:
         _actual = we.GetIssueByLocalID(789, 1)
 
-  @mock.patch("redirect.redirectissue.RedirectIssue.Get")
-  def testGetIssueMigratedID(self, mockRedirect):
-    mockRedirect.return_value = '123'
+  def testExtractMigratedIdFromLabels(self):
     with self.work_env as we:
-      actual = we.GetIssueMigratedID('test', '1')
+      actual = we.ExtractMigratedIdFromLabels(
+          ['test-label', 'migrated-to-b-123', 'cob-migrated-to-b-456'])
     self.assertEqual('123', actual)
 
-  def testGetIssueMigratedID_NoProject(self):
+  def testExtractMigratedIdFromLabels_NoMigrationLabel(self):
     with self.work_env as we:
-      actual = we.GetIssueMigratedID(None, 1)
+      actual = we.ExtractMigratedIdFromLabels(['test-label', 'to-b-123'])
     self.assertEqual(None, actual)
 
-  def testGetIssueMigratedID_NoLocalID(self):
+  @mock.patch("redirect.redirectissue.RedirectIssue.Get")
+  def testGetIssueMigratedID_FromDatastore(self, mockRedirect):
+    mockRedirect.return_value = '123'
     with self.work_env as we:
-      actual = we.GetIssueMigratedID('test', None)
+      actual = we.GetIssueMigratedID('test', '1', ['migrated-to-b-999'])
+    self.assertEqual('123', actual)
+
+  @mock.patch("redirect.redirectissue.RedirectIssue.Get")
+  def testGetIssueMigratedID_FromLabels(self, mockRedirect):
+    mockRedirect.return_value = None
+    with self.work_env as we:
+      actual = we.GetIssueMigratedID('test', '1', ['migrated-to-b-999'])
+    self.assertEqual('999', actual)
+
+  @mock.patch("redirect.redirectissue.RedirectIssue.Get")
+  def testGetIssueMigratedID_None(self, mockRedirect):
+    mockRedirect.return_value = None
+    with self.work_env as we:
+      actual = we.GetIssueMigratedID('test', '1', None)
     self.assertEqual(None, actual)
 
   def testGetRelatedIssueRefs_None(self):

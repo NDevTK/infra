@@ -550,3 +550,12 @@ def is_label_allowed(project_id, label):
   # Only allowlist label prefixes for 'Chromium' project.
   if project_id == 16:
     return any(label.startswith(prefix) for prefix in label_prefix_allowlist)
+
+
+# This list should stay in sync with MIGRATED_BUGANIZER_ISSUE_PREFIXES in
+# `appengine/monorail/static_src/reducers/issueV0.js`.
+migrated_buganizer_issue_prefixes = [
+    'migrated-to-b-',
+    'copybara-migration-complete-',
+    'cob-migrated-to-b-',
+]
