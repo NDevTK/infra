@@ -20,6 +20,7 @@ func wifiRouterRepairPlan() *Plan {
 			"Check ChromeOS Gale device",
 			"Check OpenWrt device",
 			"Check AsusWrt device",
+			"Check Ubuntu device",
 
 			// General final actions done for all device types.
 			"Reboot device",
@@ -99,6 +100,17 @@ func wifiRouterRepairPlan() *Plan {
 				ExecName: "wifi_router_device_type_in_list",
 				ExecExtraArgs: []string{
 					"device_types:WIFI_ROUTER_DEVICE_TYPE_ASUSWRT",
+				},
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Is Ubuntu": {
+				Docs: []string{
+					"Checks if the router's device type is WIFI_ROUTER_DEVICE_TYPE_UBUNTU.",
+				},
+				ExecName: "wifi_router_device_type_in_list",
+				ExecExtraArgs: []string{
+					"device_types:WIFI_ROUTER_DEVICE_TYPE_UBUNTU",
 				},
 				RunControl:    RunControl_RUN_ONCE,
 				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -347,6 +359,41 @@ func wifiRouterRepairPlan() *Plan {
 					"Retrieves the AsusWrt device's model name from the device and stores it in the controller state for later reference.",
 				},
 				ExecName: "wifi_router_asuswrt_fetch_model",
+			},
+
+			// Ubuntu actions.
+			"Check Ubuntu device": {
+				Docs: []string{
+					"Recovery checks preformed only for Ubuntu router devices.",
+				},
+				Conditions: []string{
+					"Is Ubuntu",
+				},
+				Dependencies: []string{
+					"Fetch system product name from Ubuntu device",
+					"Fetch network controller name from Ubuntu device",
+					"Update model and features based on this Ubuntu device",
+				},
+				ExecName: "sample_pass",
+			},
+			"Update model and features based on this Ubuntu device": {
+				Docs: []string{
+					"Sets model based on data read from the Ubuntu device and sets the ",
+					"features based on known, hardcoded values based on model.",
+				},
+				ExecName: "wifi_router_update_model_and_features",
+			},
+			"Fetch system product name from Ubuntu device": {
+				Docs: []string{
+					"Retrieves the Ubuntu device's system product name from the device and stores it in the controller state for later reference.",
+				},
+				ExecName: "wifi_router_ubuntu_fetch_system_product_name",
+			},
+			"Fetch network controller name from Ubuntu device": {
+				Docs: []string{
+					"Retrieves the Ubuntu device's network controller name from the device and stores it in the controller state for later reference.",
+				},
+				ExecName: "wifi_router_ubuntu_fetch_network_controller_name",
 			},
 		},
 	}
