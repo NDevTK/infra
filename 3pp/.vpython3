@@ -41,7 +41,3 @@ wheel: <
   name: "infra/python/wheels/packaging-py3"
   version: "version:23.0"
 >
-wheel: <
-  name: "infra/python/wheels/pyfakefs-py3"
-  version: "version:3.7.2"
->
