@@ -206,7 +206,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		},
 		ProvisionedInfo: &tlw.ProvisionedInfo{},
 	}
-	d.Chromeos.WifiRouterFeatures = p.Wifi.GetWifiRouterFeatures()
+	d.GetChromeos().WifiRouterFeatures = p.GetWifi().GetWifiRouterFeatures()
 
 	if p.GetServo().GetServoSetup() == ufslab.ServoSetupType_SERVO_SETUP_DUAL_V4 {
 		d.ExtraAttributes[tlw.ExtraAttributeServoSetup] = []string{tlw.ExtraAttributeServoSetupDual}
