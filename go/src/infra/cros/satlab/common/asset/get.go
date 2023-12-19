@@ -92,7 +92,8 @@ func (g *GetAsset) TriggerRun(
 
 	for _, j := range listOfJson {
 		var data ufsModels.Asset
-		err = protojson.Unmarshal(j, &data)
+		// ignore mismatches due to shivas using a different version of the proto.
+		err = protojson.UnmarshalOptions{DiscardUnknown: true}.Unmarshal(j, &data)
 		if err != nil {
 			return nil, errors.Annotate(err, "get asset - decode json list failed").Err()
 		}

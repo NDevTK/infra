@@ -143,7 +143,8 @@ func (g *GetDUT) TriggerRun(
 
 	for _, j := range messages {
 		data := &ufsModels.MachineLSE{}
-		err = protojson.Unmarshal(j, data)
+		// ignore mismatches due to shivas using a different version of the proto.
+		err = protojson.UnmarshalOptions{DiscardUnknown: true}.Unmarshal(j, data)
 		if err != nil {
 			return nil, errors.Annotate(err, "get dut - decode json list failed").Err()
 		}
