@@ -1,4 +1,3 @@
-bin/
+shellcheck_subtool/
 shellcheck_tricium
-shellcheck-*.tar.xz
 testout/

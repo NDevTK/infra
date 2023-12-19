@@ -1,3 +1,7 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package main
 
 import (
@@ -15,7 +19,7 @@ import (
 
 const (
 	analyzerName   = "ShellCheck"
-	bundledBinPath = "bin/shellcheck/shellcheck"
+	bundledBinPath = "shellcheck_subtool/bin/shellcheck"
 )
 
 var (

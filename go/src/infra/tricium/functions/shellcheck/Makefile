@@ -4,24 +4,25 @@
 
 SRCS := $(wildcard *.go runner/*.go)
 
-.PHONY: build-for-deployment test clean
+.PHONY: build-for-deployment test clean shellcheck_subtool
 
-build-for-deployment: $(SRCS) bin
+build-for-deployment: $(SRCS) shellcheck_subtool
 	GOOS=linux GOARCH=amd64 go build -o shellcheck_tricium
 
-all: shellcheck_tricium bin
+all: shellcheck_tricium shellcheck_subtool
 
 shellcheck_tricium: $(SRCS)
 	go build -o shellcheck_tricium
 
-bin:
-	./fetch_shellcheck.sh
+shellcheck_subtool:
+  # Note: `export` (not `ensure`) to avoid symlinks into a .cipd subfolder.
+	cipd export -ensure-file shellcheck_ensure -root shellcheck_subtool
 
-test: bin
+test: shellcheck_subtool
 	go test .
 
-testrun: shellcheck_tricium bin
+testrun: shellcheck_tricium shellcheck_subtool
 	./shellcheck_tricium -input=testdata -output=testout -path_filters="*.sh" -enable=require-variable-braces
 
 clean:
-	rm -rf shellcheck-*.tbz2 shellcheck-*.xz shellcheck_tricium bin testout
+	rm -rf shellcheck_tricium shellcheck_subtool testout

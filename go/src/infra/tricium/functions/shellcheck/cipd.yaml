@@ -4,4 +4,4 @@ data:
   - file: shellcheck_tricium
 
   # Third party dependencies
-  - dir: bin/shellcheck
+  - dir: shellcheck_subtool
