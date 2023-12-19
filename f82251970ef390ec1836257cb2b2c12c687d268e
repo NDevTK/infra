@@ -33,6 +33,24 @@
       "message": "The bug is about using the new proto from infra proto repo, not changing the current proto",
       "revId": "f82251970ef390ec1836257cb2b2c12c687d268e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43f1ef70_ec0080f2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-12-19T00:58:48Z",
+      "side": 1,
+      "message": "Got it. I will use the existing protocol. Thank you.",
+      "parentUuid": "59eb4243_aeb1086c",
+      "revId": "f82251970ef390ec1836257cb2b2c12c687d268e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
