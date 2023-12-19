@@ -8,7 +8,6 @@ import (
 	"context"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
@@ -19,17 +18,12 @@ const (
 	// RouterModelGale is the model name used for ChromeOS Gale routers.
 	RouterModelGale = "gale"
 
-	lsbReleaseFilePath    = "/etc/lsb-release"
 	lsbReleaseMatchIfGale = "(?m)^CHROMEOS_RELEASE_BOARD=gale$"
 )
 
 // hostIsChromeOSGaleRouter checks if the remote host is a ChromeOS Gale router.
 func hostIsChromeOSGaleRouter(ctx context.Context, sshRunner ssh.Runner) (bool, error) {
-	matches, err := RemoteFileContentsMatch(ctx, sshRunner, lsbReleaseFilePath, lsbReleaseMatchIfGale)
-	if err != nil {
-		return false, errors.Annotate(err, "failed to check if remote file %q contents match %q", lsbReleaseFilePath, lsbReleaseMatchIfGale).Err()
-	}
-	return matches, nil
+	return lsbReleaseFileMatches(ctx, sshRunner, lsbReleaseMatchIfGale)
 }
 
 // ChromeOSGaleRouterController is the RouterController implementation for

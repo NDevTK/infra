@@ -67,6 +67,18 @@ func activeHostOpenWrtRouterController(ctx context.Context, info *execs.ExecInfo
 	return openWrtController, nil
 }
 
+func activeHostUbuntuRouterController(ctx context.Context, info *execs.ExecInfo) (*controller.UbuntuRouterController, error) {
+	genericController, err := activeHostRouterController(ctx, info)
+	if err != nil {
+		return nil, err
+	}
+	ubuntuController, ok := genericController.(*controller.UbuntuRouterController)
+	if !ok {
+		return nil, errors.Reason("active host is not an Ubuntu test router").Err()
+	}
+	return ubuntuController, nil
+}
+
 func logReportOfFilesInDir(ctx context.Context, info *execs.ExecInfo, c controller.RouterController, dirPath string) error {
 	csvReport, err := linux.StorageUtilizationReportOfFilesInDir(ctx, c.Runner(), dirPath)
 	if err != nil {

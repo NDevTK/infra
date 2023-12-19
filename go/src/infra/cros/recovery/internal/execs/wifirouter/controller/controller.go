@@ -58,6 +58,22 @@ func IdentifyRouterDeviceType(ctx context.Context, sshAccess ssh.Access, resourc
 		}
 	}
 
+	// Check if it's an Ubuntu device.
+	deviceType = labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_UBUNTU
+	log.Infof(ctx, "Checking if router host has the device type of %q", deviceType)
+	sshRunner = newRouterSSHRunner(sshAccess, resource, deviceType)
+	if err := ssh.TryAccess(ctx, sshRunner); err != nil {
+		log.Debugf(ctx, "Failed to ssh into router host when treating it as the device type %q: %v", deviceType, err)
+	} else {
+		isUbuntu, err := hostIsUbuntuRouter(ctx, sshRunner)
+		if err != nil {
+			return 0, errors.Annotate(err, "failed to check if host has the device type of %s", deviceType).Err()
+		}
+		if isUbuntu {
+			return deviceType, nil
+		}
+	}
+
 	// Check if it's an AsusWrt device.
 	deviceType = labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_ASUSWRT
 	log.Infof(ctx, "Checking if router host has the device type of %q", deviceType)
@@ -145,7 +161,18 @@ func NewRouterDeviceController(ctx context.Context, sshAccess ssh.Access, cacheA
 			}
 		}
 		return newAsusWrtRouterController(sshRunner, wifiRouter, controllerState), nil
-
+	case labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_UBUNTU:
+		var controllerState *tlw.UbuntuRouterControllerState
+		if state, ok := scopes.ReadConfigParam(ctx, routerControllerStateKey); !ok {
+			controllerState = &tlw.UbuntuRouterControllerState{}
+			scopes.PutConfigParam(ctx, routerControllerStateKey, controllerState)
+		} else {
+			controllerState, ok = state.(*tlw.UbuntuRouterControllerState)
+			if !ok {
+				return nil, errors.Reason("stored controller state does not match device type %q: %v", wifiRouter.DeviceType.String(), state).Err()
+			}
+		}
+		return newUbuntuRouterController(sshRunner, wifiRouter, controllerState), nil
 	}
 	return nil, errors.Reason("unsupported DeviceType %q", wifiRouter.DeviceType).Err()
 }

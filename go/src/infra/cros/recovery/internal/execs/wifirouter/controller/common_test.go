@@ -75,7 +75,7 @@ func Test_remoteFileContentsMatch(t *testing.T) {
 		{
 			"gale match regex",
 			args{
-				lsbReleaseFilePath,
+				"/etc/lsb-release",
 				lsbReleaseMatchIfGale,
 				true,
 				true,
@@ -94,6 +94,19 @@ func Test_remoteFileContentsMatch(t *testing.T) {
 				true,
 				true,
 				"SOME_VALUE=\nDEVICE_MANUFACTURER='OpenWrt'\nOTHER_VALUE=asd\n",
+			},
+			true,
+			false,
+		},
+		{
+			"ubuntu match regex",
+			args{
+				"/etc/lsb-release",
+				lsbReleaseMatchIfUbuntu,
+				true,
+				true,
+				true,
+				"SOME_VALUE=\nDISTRIB_ID=Ubuntu\nOTHER_VALUE=asd\n",
 			},
 			true,
 			false,

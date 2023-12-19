@@ -358,3 +358,12 @@ func fetchWifiRouterConfig(ctx context.Context, sshRunner ssh.Runner, cacheAcces
 	}
 	return config, nil
 }
+
+func lsbReleaseFileMatches(ctx context.Context, sshRunner ssh.Runner, matchRegex string) (bool, error) {
+	lsbReleaseFilePath := "/etc/lsb-release"
+	matches, err := RemoteFileContentsMatch(ctx, sshRunner, lsbReleaseFilePath, matchRegex)
+	if err != nil {
+		return false, errors.Annotate(err, "failed to check if remote file %q contents match %q", lsbReleaseFilePath, matchRegex).Err()
+	}
+	return matches, nil
+}
