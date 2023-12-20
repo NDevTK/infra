@@ -831,6 +831,16 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"key:stable_device_secret_DO_NOT_SHARE",
 			},
+			RecoveryActions: []string{
+				"Set random stable device secret",
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"Set random stable device secret": {
+			Docs: []string{
+				"Set a random stable device secret in RO_VPD",
+			},
+			ExecName:               "cros_set_random_ro_vpd_stable_device_secret",
 			AllowFailAfterRecovery: true,
 		},
 		"Can list RW VPD Keys": {

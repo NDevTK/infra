@@ -6,6 +6,8 @@ package cros
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"regexp"
@@ -285,6 +287,21 @@ func checkVPDValueExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// setRandomStableDeviceSecretExec generates a random 32 byte string and stores it in vpd under
+// "stable_device_secret_DO_NOT_SHARE".
+func setRandomStableDeviceSecretExec(ctx context.Context, info *execs.ExecInfo) error {
+	key := "stable_device_secret_DO_NOT_SHARE"
+
+	bytes := make([]byte, 32)
+	if _, err := rand.Read(bytes); err != nil {
+		return errors.Annotate(err, "failed to generate random string").Err()
+	}
+	value := hex.EncodeToString(bytes)
+
+	err := vpd.Set(ctx, info.DefaultHostAccess(), info.GetExecTimeout(), key, value)
+	return errors.Annotate(err, "set VPD value %q:%q", key, value).Err()
+}
+
 func init() {
 	execs.Register("cros_is_ro_vpd_sku_number_required", isROVPDSkuNumberRequiredExec)
 	execs.Register("cros_verify_ro_vpd_sku_number", verifyROVPDSkuNumberExec)
@@ -297,4 +314,5 @@ func init() {
 	execs.Register("cros_set_ro_vpd", setROVPDExec)
 	execs.Register("cros_set_vpd_value", setVPDValueExec)
 	execs.Register("cros_check_vpd_value", checkVPDValueExec)
+	execs.Register("cros_set_random_ro_vpd_stable_device_secret", setRandomStableDeviceSecretExec)
 }
