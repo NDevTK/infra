@@ -81,15 +81,15 @@ func (r *chromiumOSSDKRun) Run(_ subcommands.Application, _ []string, _ subcomma
 		}
 	}
 
+	if err := r.validate(ctx); err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
+
 	// Need to call run first to do LUCI auth / set up other shared constructs.
 	if ret, err := r.run(ctx); err != nil {
 		r.LogErr(err.Error())
 		return ret
-	}
-
-	if err := r.validate(ctx); err != nil {
-		r.LogErr(err.Error())
-		return CmdError
 	}
 
 	// User email is used for setting BranchPolicy.
