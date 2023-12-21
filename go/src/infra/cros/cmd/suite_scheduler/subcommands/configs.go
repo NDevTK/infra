@@ -9,8 +9,6 @@ package subcommands
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -26,11 +24,6 @@ import (
 
 const (
 	jsonMarshallIndent = "    "
-)
-
-var (
-	stderr = log.New(os.Stderr, "", log.Lshortfile)
-	stdout = log.New(os.Stdout, "", log.Lshortfile)
 )
 
 type CLIConfigList = map[time.Time]configparser.ConfigList
@@ -248,83 +241,16 @@ func (c *configParserCommand) validate() error {
 	return nil
 }
 
-// fetchLabConfigs fetches and ingests the lab configs. It will
-// determine where to read the configs from based on the user provided flags.
-func fetchLabConfigs(path string) (*configparser.LabConfigs, error) {
-	var err error
-	var labBytes []byte
-
-	// If a file path was passed in for the Lab then parse that file. If not
-	// then fetch the LabConfig from the ToT .cfg and ingest it in memory.
-	if path != common.DefaultString {
-		labBytes, err = common.ReadLocalFile(path)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		labBytes, err = common.FetchFileFromURL(common.LabCfgURL)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	labProto, err := configparser.BytesToLabProto(labBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	labConfigs := configparser.IngestLabConfigs(labProto)
-
-	return labConfigs, nil
-}
-
-// fetchSchedulerConfigs fetches and ingests the SuiteScheduler configs. It will
-// determine where to read the configs from based on the user provided flags.
-func fetchSchedulerConfigs(path string, labConfigs *configparser.LabConfigs) (*configparser.SuiteSchedulerConfigs, error) {
-	var err error
-	var schedulerBytes []byte
-
-	// If a file path was passed in for the ScheduleConfigs then parse that file. If not
-	// then fetch the SuiteSchedulerConfigs from the ToT .cfg and ingest it in memory.
-	if path != common.DefaultString {
-		schedulerBytes, err = common.ReadLocalFile(path)
-		if err != nil {
-			return nil, err
-		}
-
-	} else {
-		schedulerBytes, err = common.FetchFileFromURL(common.SuiteSchedulerCfgURL)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// Convert from []byte to a usable object type.
-	scheduleProto, err := configparser.BytesToSchedulerProto(schedulerBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	// Ingest the configs into a data structure which easier and more efficient
-	// to search.
-	schedulerConfigs, err := configparser.IngestSuSchConfigs(scheduleProto.Configs, labConfigs)
-	if err != nil {
-		return nil, err
-	}
-
-	return schedulerConfigs, nil
-}
-
 // fetchConfigs reads the lab and scheduler configs into memory. If a local path
 // is given then it will read from there otherwise it will read from the ToT
 // configs.
 func fetchConfigs(labPath, scheduleConfigsPath string) (*configparser.LabConfigs, *configparser.SuiteSchedulerConfigs, error) {
-	labConfigs, err := fetchLabConfigs(labPath)
+	labConfigs, err := configparser.FetchLabConfigs(labPath)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	schedulerConfigs, err := fetchSchedulerConfigs(scheduleConfigsPath, labConfigs)
+	schedulerConfigs, err := configparser.FetchSchedulerConfigs(scheduleConfigsPath, labConfigs)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -335,36 +261,33 @@ func fetchConfigs(labPath, scheduleConfigsPath string) (*configparser.LabConfigs
 // increaseTimeByAnHour increased the given hour by one and handles the day and
 // week boundaries. We do not perform Day type validation because the user can
 // omit the day return value should it not be needed.
-func increaseTimeByAnHour(hour configparser.Hour, day configparser.Day, isFortnightly bool) (configparser.Hour, configparser.Day) {
-	hour += 1
+func increaseTimeByAnHour(currTime common.SuSchTime) common.SuSchTime {
+	currTime.Hour += 1
 
 	// Handle the new day boundary.
-	if hour > 23 {
-		hour = 0
-		day += 1
+	if currTime.Hour > 23 {
+		currTime.Hour = 0
+		currTime.RegularDay += 1
+		currTime.FortnightDay += 1
 	}
 
 	// Handle the new week boundary
-	if isFortnightly {
-		if day > 13 {
 
-			day = 0
-		}
-	} else if day > 6 {
-		day = 0
+	if currTime.FortnightDay > 13 {
+		currTime.FortnightDay = 0
+	}
+	if currTime.RegularDay > 6 {
+		currTime.RegularDay = 0
 	}
 
-	return hour, day
+	return currTime
 }
 
 // FetchNextNHoursDailyConfigs returns all DAILY configs which will be triggered in
 // the next N hours after the given start time.
-func fetchNextNHoursDailyConfigs(startTime time.Time, hoursAhead int64, configMap *configparser.SuiteSchedulerConfigs) (CLIConfigList, error) {
-
-	_, startHour := configparser.TimeToSuSchTime(startTime, false)
-
+func fetchNextNHoursDailyConfigs(startTime common.SuSchTime, hoursAhead int64, configMap *configparser.SuiteSchedulerConfigs) (CLIConfigList, error) {
 	// Validate that all input values fit within the expected bounds.
-	if err := configparser.ValidateHoursAheadArgs(startHour, configparser.Day(common.DefaultInt64), hoursAhead, false); err != nil {
+	if err := configparser.ValidateHoursAheadArgs(startTime, hoursAhead); err != nil {
 		return nil, err
 	}
 
@@ -373,24 +296,24 @@ func fetchNextNHoursDailyConfigs(startTime time.Time, hoursAhead int64, configMa
 	// If hours ahead is zero then send the configs which we be triggered at the
 	// startHour.
 	if hoursAhead == 0 {
-		configList, err := configMap.FetchDailyByHour(startHour)
+		configList, err := configMap.FetchDailyByHour(startTime.Hour)
 		if err != nil {
 			return nil, err
 		}
-		configs[startTime] = configList
+		configs[startTime.StartTime] = configList
 		return configs, nil
 	}
 
 	for i := 0; i < int(hoursAhead); i++ {
-		configList, err := configMap.FetchDailyByHour(startHour)
+		configList, err := configMap.FetchDailyByHour(startTime.Hour)
 		if err != nil {
 			return nil, err
 		}
-		configs[startTime] = configList
+		configs[startTime.StartTime] = configList
 
 		// Push time the time one hour for the next iteration.
-		startTime = startTime.Add(time.Hour)
-		startHour, _ = increaseTimeByAnHour(startHour, configparser.Day(common.DefaultInt64), false)
+		startTime.StartTime = startTime.StartTime.Add(time.Hour)
+		startTime = increaseTimeByAnHour(startTime)
 	}
 
 	return configs, nil
@@ -400,23 +323,27 @@ func fetchNextNHoursDailyConfigs(startTime time.Time, hoursAhead int64, configMa
 // the next N hours after the given start time. WEEKLY and FORTNIGHTLY share
 // nearly all the same logic so this function is used as a base for both types
 // of configs.
-func fetchNextNHoursConfigsNotDaily(startTime time.Time, hoursAhead int64, isFortnightly bool, fetch func(configparser.Day, configparser.Hour) (configparser.ConfigList, error)) (CLIConfigList, error) {
-	startDay, startHour := configparser.TimeToSuSchTime(startTime, false)
+func fetchNextNHoursConfigsNotDaily(startTime common.SuSchTime, hoursAhead int64, isFortnightly bool, fetch func(common.Day, common.Hour) (configparser.ConfigList, error)) (CLIConfigList, error) {
 	// Validate that all input values fit within the expected bounds.
-	if err := configparser.ValidateHoursAheadArgs(startHour, startDay, hoursAhead, false); err != nil {
+	if err := configparser.ValidateHoursAheadArgs(startTime, hoursAhead); err != nil {
 		return nil, err
 	}
 
 	var err error
 	configs := CLIConfigList{}
 	for i := 0; i < int(hoursAhead); i++ {
-		configs[startTime], err = fetch(startDay, startHour)
+		day := startTime.RegularDay
+		if isFortnightly {
+			day = startTime.FortnightDay
+		}
+
+		configs[startTime.StartTime], err = fetch(day, startTime.Hour)
 		if err != nil {
 			return nil, err
 		}
 
 		// Push time the time one hour for the next iteration.
-		startHour, startDay = increaseTimeByAnHour(startHour, startDay, isFortnightly)
+		startTime = increaseTimeByAnHour(startTime)
 	}
 
 	return configs, nil
@@ -442,15 +369,14 @@ func (c *configParserCommand) sieveViaTopLevelFilter(configs *configparser.Suite
 	} else if c.nextNHours != common.DefaultHoursAhead {
 
 		// Convert time.Time to a SuSch usable form.
-		weeklyDay, weeklyHour := configparser.TimeToSuSchTime(c.commandExecutionTime, false)
-		fnDay, fnHour := configparser.TimeToSuSchTime(c.commandExecutionTime, false)
-		stdout.Printf("Looking ahead %d hours from a start time of %s %s. SuSch time: weekly (day:hour) %d:%d Fortnightly (day:hour) %d:%d\n", int(c.nextNHours.Hours()), c.commandExecutionTime.Weekday().String(), c.commandExecutionTime, weeklyDay, weeklyHour, fnDay, fnHour)
+		suschTime := common.TimeToSuSchTime(c.commandExecutionTime)
+		common.Stdout.Printf("Looking ahead %d hours from a start time of %s %s. SuSch time: weekly (day:hour) %d:%d Fortnightly (day:hour) %d:%d\n", int(c.nextNHours.Hours()), c.commandExecutionTime.Weekday().String(), c.commandExecutionTime, suschTime.RegularDay, suschTime.Hour, suschTime.FortnightDay, suschTime.Hour)
 
 		// Daily
 		// NOTE: This will include duplicate tasks if the a hours ahead value is
 		// greater than 23 hours. They will be separated in different lists
 		// keyed by their anticipated trigger datetime.
-		hoursList, err := fetchNextNHoursDailyConfigs(c.commandExecutionTime, int64(c.nextNHours.Hours()), configs)
+		hoursList, err := fetchNextNHoursDailyConfigs(suschTime, int64(c.nextNHours.Hours()), configs)
 		if err != nil {
 			return nil, err
 		}
@@ -462,7 +388,7 @@ func (c *configParserCommand) sieveViaTopLevelFilter(configs *configparser.Suite
 		// NOTE: This will include duplicate tasks if the a hours ahead value is
 		// greater than 7 days (168 hours). They will be separated in different lists
 		// keyed by their anticipated trigger datetime.
-		weeklyList, err := fetchNextNHoursConfigsNotDaily(c.commandExecutionTime, int64(c.nextNHours.Hours()), false, configs.FetchWeeklyByDayHour)
+		weeklyList, err := fetchNextNHoursConfigsNotDaily(suschTime, int64(c.nextNHours.Hours()), false, configs.FetchWeeklyByDayHour)
 		if err != nil {
 			return nil, err
 		}
@@ -479,7 +405,7 @@ func (c *configParserCommand) sieveViaTopLevelFilter(configs *configparser.Suite
 		// NOTE: This will include duplicate tasks if the a hours ahead value is
 		// greater than 14 days (336 hours). They will be separated in different lists
 		// keyed by their anticipated trigger datetime.
-		fortnightlyList, err := fetchNextNHoursConfigsNotDaily(c.commandExecutionTime, int64(c.nextNHours.Hours()), true, configs.FetchFortnightlyByDayHour)
+		fortnightlyList, err := fetchNextNHoursConfigsNotDaily(suschTime, int64(c.nextNHours.Hours()), true, configs.FetchFortnightlyByDayHour)
 		if err != nil {
 			return nil, err
 		}
@@ -694,11 +620,11 @@ func (c *configParserCommand) outputResults(path string, data []byte) error {
 		if err != nil {
 			return err
 		}
-		stdout.Printf("Results printed out to %s.\n", path)
+		common.Stdout.Printf("Results printed out to %s.\n", path)
 		return nil
 	}
 
-	// We don't use the globally set stdout here so that the text is not
+	// We don't use the globally set common.Stdout here so that the text is not
 	// outputted with the line text prefix in the logger.
 	fmt.Println(string(data))
 	return nil
@@ -708,7 +634,7 @@ func (c *configParserCommand) outputResults(path string, data []byte) error {
 func (c *configParserCommand) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	// Validate that flags passed in are according to spec.
 	if err := c.validate(); err != nil {
-		stderr.Println(err)
+		common.Stderr.Println(err)
 		return 1
 	}
 
@@ -727,35 +653,35 @@ func (c *configParserCommand) Run(a subcommands.Application, args []string, env 
 	// Fetch and ingest the configurations.
 	labConfigs, schedulerConfigs, err := fetchConfigs(c.labCFGInputPath, c.configCFGInputPath)
 	if err != nil {
-		stderr.Println(err)
+		common.Stderr.Println(err)
 		return 1
 	}
 
 	// Retrieve the list of configs according to the top-level filter.
 	filteredConfigs, err := c.sieveViaTopLevelFilter(schedulerConfigs)
 	if err != nil {
-		stderr.Println(err)
+		common.Stderr.Println(err)
 		return 1
 	}
 
 	// Filter out configs which don't match the bottom level filters.
 	filteredConfigs, err = c.sieveViaBottomLevelFilters(filteredConfigs, *labConfigs, schedulerConfigs)
 	if err != nil {
-		stderr.Println(err)
+		common.Stderr.Println(err)
 		return 1
 	}
 
 	output, err := c.formatOutput(filteredConfigs, schedulerConfigs.FetchAllTargetOptions())
 	if err != nil {
-		stderr.Println(err)
+		common.Stderr.Println(err)
 		return 1
 	}
 
 	// return results. If a destination file is given then write the json text
-	// to that file. Otherwise print the results to stdout.
+	// to that file. Otherwise print the results to common.Stdout.
 	err = c.outputResults(c.outputPath, output)
 	if err != nil {
-		stderr.Println(err)
+		common.Stderr.Println(err)
 		return 1
 	}
 

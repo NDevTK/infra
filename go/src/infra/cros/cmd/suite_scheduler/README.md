@@ -18,9 +18,10 @@ More information can be found at: go/suitescheduler-v15
 The current project is capable of fetching the configuration files, ingesting
 them into memory, and building CTP requests.
 
-The project is not able to pull in build information from the release pub/sub
-stream so the CTP requests are only partially filled in. The missing data is
-related to build image requirements.
+As the project stands, it can fetch builds from the release pipeline but it does
+not yet have the ability to store the information long term. Once the
+architecture designed in go/sv15-storage-addendum is built, we will then be able
+to store the build images.
 
 To interact with the current project use the CLI explained in the below section.
 

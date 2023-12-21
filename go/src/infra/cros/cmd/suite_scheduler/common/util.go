@@ -10,12 +10,53 @@ import (
 	"encoding/base64"
 	"io"
 	"io/fs"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 )
+
+// Create a common STDOUT/ERR type so that the full project can standardize
+// logging.
+// TODO(b/317243207): change these to handle both structured and unstructured
+// logging.
+var (
+	Stdout = log.New(os.Stdout, "", log.Lshortfile|log.LstdFlags)
+	Stderr = log.New(os.Stderr, "", log.Lshortfile|log.LstdFlags)
+)
+
+type (
+	// Hour is bounded to [0,23]
+	Hour int32
+
+	// Day is bounded to [0,13]:
+	// 		Weekly will only use [0,6].
+	// 		Fortnightly can use the full [0,13].
+	Day int32
+)
+
+type SuSchTime struct {
+	RegularDay   Day
+	FortnightDay Day
+	Hour         Hour
+	StartTime    time.Time
+}
+
+// SuSchDayToTimeDay provides a map to translate time weekday enums to SuSch
+// weekdays.
+// TODO(juahurta): Adjust SuSCh configs such that this is no longer needed.
+var SuSchDayToTimeDay = map[time.Weekday]int{
+	time.Sunday:    Sunday,
+	time.Monday:    Monday,
+	time.Tuesday:   Tuesday,
+	time.Wednesday: Wednesday,
+	time.Thursday:  Thursday,
+	time.Friday:    Friday,
+	time.Saturday:  Saturday,
+}
 
 // IsTimedEvent returns if the given config is a timed event or a build event type.
 func IsTimedEvent(config *infrapb.SchedulerConfig) bool {
@@ -98,4 +139,26 @@ func HasString(target string, strings []string) bool {
 	}
 
 	return found
+}
+
+// TimeToSuSchTime translates time's return values into SuSch parsable time.
+func TimeToSuSchTime(time time.Time) SuSchTime {
+	retTime := SuSchTime{
+		StartTime: time,
+	}
+
+	retTime.Hour = Hour(time.Hour())
+
+	// SuSch and the time package do not share enum values for week days. This
+	// provides a quick translation.
+	retTime.RegularDay = Day(SuSchDayToTimeDay[time.Weekday()])
+
+	retTime.FortnightDay = Day(SuSchDayToTimeDay[time.Weekday()])
+
+	_, week := time.ISOWeek()
+	if week%2 == 0 {
+		retTime.FortnightDay += 7
+	}
+
+	return retTime
 }

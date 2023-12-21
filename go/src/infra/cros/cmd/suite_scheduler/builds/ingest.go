@@ -9,8 +9,6 @@ package builds
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -23,16 +21,13 @@ import (
 	buildPB "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	suschPB "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
 
+	"infra/cros/cmd/suite_scheduler/common"
 	"infra/cros/cmd/suite_scheduler/metrics"
 	"infra/cros/cmd/suite_scheduler/pubsub"
 )
 
 const projectID = "google.com:suite-scheduler-staging"
 const subscriptionName = "chromeos-builds-all"
-
-var (
-	stdout = log.New(os.Stdout, "", log.Llongfile)
-)
 
 // extractMilestoneAndVersion returns the milestone and platform version from
 // the build report's versions lists.
@@ -183,7 +178,7 @@ func validateReport(report *buildPB.BuildReport) error {
 
 // processPSMessage is called within the Pubsub receive callback to process the
 // contents of the message.
-func (f *Fetcher) processPSMessage(msg *cloudPubsub.Message) error {
+func (h *handler) processPSMessage(msg *cloudPubsub.Message) error {
 	// Unmarshall the raw data into the BuildReport format.
 	buildReport := buildPB.BuildReport{}
 	// google.golang.org/protobuf/proto specifically needs to be used here to
@@ -193,8 +188,6 @@ func (f *Fetcher) processPSMessage(msg *cloudPubsub.Message) error {
 	if err != nil {
 		return err
 	}
-
-	stdout.Printf("Processing build report for go/bbid/%d\n", buildReport.GetBuildbucketId())
 	if err := validateReport(&buildReport); err != nil {
 		return err
 	}
@@ -207,72 +200,78 @@ func (f *Fetcher) processPSMessage(msg *cloudPubsub.Message) error {
 		return nil
 	}
 
+	common.Stdout.Printf("Processing build report for go/bbid/%d\n", buildReport.GetBuildbucketId())
 	// Ingest the report and return all SuSch usable builds.
 	rows, err := transformReportToSuSchBuilds(&buildReport)
 	if err != nil {
 		return err
 	}
-	stdout.Printf("go/bbid/%d produced %d build images for SuiteScheduler\n", buildReport.GetBuildbucketId(), len(rows))
+	common.Stdout.Printf("go/bbid/%d produced %d build images for SuiteScheduler\n", buildReport.GetBuildbucketId(), len(rows))
 
 	// Store build locally for NEW_BUILD configs.
 	// NOTE: We are using a channel here because this function will only be
 	// called asynchronously via goroutines.
 	for _, row := range rows {
-		f.NewBuilds <- row
+		h.buildsChan <- row
 	}
-
-	// TODO(b/315340446): Send the rows to be stored in long term storage.
 
 	return nil
 }
 
-type Fetcher struct {
-	NewBuilds chan *suschPB.BuildInformation
+type handler struct {
+	buildsChan chan *suschPB.BuildInformation
 }
 
 // IngestBuildsFromPubSub connects to pubsub ingests all new build information
 // from the releases Pub/Sub stream. Once read, all builds will be written into
 // long term storage.
-func (f *Fetcher) IngestBuildsFromPubSub() ([]*suschPB.BuildInformation, error) {
-	if f.NewBuilds == nil {
-		return nil, fmt.Errorf("the NewBuilds handler was never implemented")
+func IngestBuildsFromPubSub() ([]*suschPB.BuildInformation, error) {
+	psHandler := handler{
+		buildsChan: make(chan *suschPB.BuildInformation),
 	}
 
 	// Gather all newly processed build images.
 	var wait sync.WaitGroup
 	wait.Add(1)
 	builds := []*suschPB.BuildInformation{}
-	go func(builds *[]*suschPB.BuildInformation, wg *sync.WaitGroup) {
+
+	// Spin up a goroutine to handle the incoming messages to the channel
+	// buffer.
+	// NOTE: non-buffered channels in GO require that a ready consumer is
+	// receiving before any messages can be passed in. If this is launched after
+	// we begin sending messages into the channel the application will hang in a
+	// deadlock.
+	go func(builds *[]*suschPB.BuildInformation, wg *sync.WaitGroup, buildsChan chan *suschPB.BuildInformation) {
 		defer wg.Done()
-		for build := range f.NewBuilds {
+		for build := range buildsChan {
 			*builds = append(*builds, build)
 		}
-	}(&builds, &wait)
+	}(&builds, &wait, psHandler.buildsChan)
 
 	// Initialize the custom pubsub receiver. This custom handler implements a
 	// timeout feature which will stop the pubsub Receive() call once no more
 	// messages are incoming.
-	stdout.Println("Initializing Pub/Sub Receive Client")
+	common.Stdout.Println("Initializing Pub/Sub Receive Client")
 	ctx := context.Background()
-	receiveClient, err := pubsub.InitReceiveClientWithTimer(ctx, projectID, subscriptionName, f.processPSMessage)
+	receiveClient, err := pubsub.InitReceiveClientWithTimer(ctx, projectID, subscriptionName, psHandler.processPSMessage)
 	if err != nil {
 		return nil, err
 	}
 
 	// NOTE: This is a blocking receive call. This will end when the child
 	// context in the ReceiveClient expires due to no messages incoming.
-	stdout.Println("Pulling messages from Pub/Sub Queue")
+	common.Stdout.Println("Pulling messages from Pub/Sub Queue")
 	err = receiveClient.PullMessages()
 	// Close the channel be fore error handling, so that the goroutine finishes
 	// and does not hang.
-	close(f.NewBuilds)
+	close(psHandler.buildsChan)
 	if err != nil {
 		return nil, err
 	}
 
 	// Wait for the buffer receive function to end.
 	wait.Wait()
-	stdout.Printf("Returning %d Builds from Pub/Sub feed\n", len(builds))
+	common.Stdout.Printf("Returning %d Builds from Pub/Sub feed\n", len(builds))
 
 	return builds, nil
 }

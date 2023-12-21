@@ -7,42 +7,20 @@ package configparser
 
 import (
 	"fmt"
-	"time"
 
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/suite_scheduler/common"
 )
 
-// SuSchDayToTimeDay provides a map to translate time weekday enums to SuSch
-// weekdays.
-// TODO(juahurta): Adjust SuSCh configs such that this is no longer needed.
-var SuSchDayToTimeDay = map[time.Weekday]int{
-	time.Sunday:    common.Sunday,
-	time.Monday:    common.Monday,
-	time.Tuesday:   common.Tuesday,
-	time.Wednesday: common.Wednesday,
-	time.Thursday:  common.Thursday,
-	time.Friday:    common.Friday,
-	time.Saturday:  common.Saturday,
-}
-
 type (
 	/*
 	 * SuiteSchedulerConfigs based types
 	 */
 
-	// Hour is bounded to [0,23]
-	Hour int32
-
-	// Day is bounded to [0,13]:
-	// 		Weekly will only use [0,6].
-	// 		Fortnightly can use the full [0,13].
-	Day int32
-
 	TestPlanName string
 
-	HourMap map[Hour]ConfigList
+	HourMap map[common.Hour]ConfigList
 
 	ConfigList []*infrapb.SchedulerConfig
 
@@ -118,8 +96,8 @@ type SuiteSchedulerConfigs struct {
 	// The following maps correspond to the specific set of TimedEvents the
 	// configuration is of.
 	dailyMap       HourMap
-	weeklyMap      map[Day]HourMap
-	fortnightlyMap map[Day]HourMap
+	weeklyMap      map[common.Day]HourMap
+	fortnightlyMap map[common.Day]HourMap
 }
 
 // addConfigToNewBuildMap takes a newBuild configuration and inserts it into the
@@ -151,7 +129,7 @@ func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *infrapb.Scheduler
 // addConfigToDailyMap takes a daily configuration and inserts it into the
 // appropriate tracking lists.
 func (s *SuiteSchedulerConfigs) addConfigToDailyMap(config *infrapb.SchedulerConfig) error {
-	configHour := Hour(config.LaunchCriteria.Hour)
+	configHour := common.Hour(config.LaunchCriteria.Hour)
 	err := isHourCompliant(configHour)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
@@ -175,12 +153,12 @@ func (s *SuiteSchedulerConfigs) addConfigToDailyMap(config *infrapb.SchedulerCon
 // addConfigToWeeklyMap takes a weekly configuration and inserts it into the
 // appropriate tracking lists.
 func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *infrapb.SchedulerConfig) error {
-	configDay := Day(config.LaunchCriteria.Day)
+	configDay := common.Day(config.LaunchCriteria.Day)
 	err := isDayCompliant(configDay, false)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
-	configHour := Hour(config.LaunchCriteria.Hour)
+	configHour := common.Hour(config.LaunchCriteria.Hour)
 	err = isHourCompliant(configHour)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
@@ -209,12 +187,12 @@ func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *infrapb.SchedulerCo
 // addConfigToFortnightlyMap takes a fortnightly configuration and inserts it into the
 // appropriate tracking lists.
 func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *infrapb.SchedulerConfig) error {
-	configDay := Day(config.LaunchCriteria.Day)
-	err := isDayCompliant(configDay, false)
+	configDay := common.Day(config.LaunchCriteria.Day)
+	err := isDayCompliant(configDay, true)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
-	configHour := Hour(config.LaunchCriteria.Hour)
+	configHour := common.Hour(config.LaunchCriteria.Hour)
 	err = isHourCompliant(configHour)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))

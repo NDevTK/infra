@@ -20,7 +20,7 @@ import (
 
 const (
 	GSPrefix                  = "gs://chromeos-image-archive/"
-	ContainerMetadataLocation = "metadata/containers.jsonpb"
+	ContainerMetadataLocation = "/metadata/containers.jsonpb"
 
 	MaxRetry = 3
 
@@ -53,12 +53,6 @@ func getSwarmingDimensions(config *infrapb.SchedulerConfig) []string {
 		dims = append(dims, str)
 	}
 	return dims
-}
-
-// TODO(b/305792113): Get the build information from the release pipeline
-// Build target in this case means <build-target>/<image-version>. E.g. corsola-release/R118-15604.36.0
-func getBuildTarget() string {
-	return "PLACEHOLDER_BUILD_TARGET/PLACEHOLDER_IMAGE_VERSION"
 }
 
 // getSchedulingFields transforms SuSch SchedulerConfig_PoolOptions into ctp SchedulerConfig_LaunchCriteria_LaunchProfile.
@@ -144,9 +138,15 @@ func getTestPlan(config *infrapb.SchedulerConfig) *requestpb.Request_TestPlan {
 	return testPlan
 }
 
+func formBuildImage(buildTarget, buildMilestone, buildVersion string) string {
+	return buildTarget + "-release" + "/R" + buildMilestone + "-" + buildVersion
+}
+
 // BuildCTPRequest takes information from a SuSch config and builds the
 // corresponding CTP request.
-func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model string) *requestpb.Request {
+func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model, buildTarget, buildMilestone, buildVersion string) *requestpb.Request {
+	buildImage := formBuildImage(buildTarget, buildMilestone, buildVersion)
+
 	request := &requestpb.Request{
 		Params: &requestpb.Request_Params{
 			HardwareAttributes: getHardwareAttributes(model),
@@ -161,10 +161,8 @@ func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model string) *requ
 			},
 			SoftwareDependencies: []*requestpb.Request_Params_SoftwareDependency{
 				{
-					// TODO(b:305792113): Get build information from the
-					// release-build pipeline.
 					Dep: &requestpb.Request_Params_SoftwareDependency_ChromeosBuild{
-						ChromeosBuild: getBuildTarget(),
+						ChromeosBuild: buildImage,
 					},
 				},
 			},
@@ -173,17 +171,17 @@ func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model string) *requ
 			// TODO(b:305792113): Get build information from the release-build pipeline.
 			Metadata: &requestpb.Request_Params_Metadata{
 				// Some gsURL
-				TestMetadataUrl: GSPrefix + "PLACEHOLDER_PATH_INFO",
+				TestMetadataUrl: GSPrefix + buildImage,
 				// Some gsURL same as above
-				DebugSymbolsArchiveUrl: GSPrefix + "PLACEHOLDER_PATH_INFO",
+				DebugSymbolsArchiveUrl: GSPrefix + buildImage,
 
-				ContainerMetadataUrl: GSPrefix + "PLACEHOLDER_PATH_INFO" + ContainerMetadataLocation,
+				ContainerMetadataUrl: GSPrefix + buildImage + ContainerMetadataLocation,
 			},
 			Time: &requestpb.Request_Params_Time{
 				MaximumDuration: &durationpb.Duration{Seconds: getTimeoutSeconds(config.RunOptions.TimeoutMins)},
 			},
 			Decorations: &requestpb.Request_Params_Decorations{
-				Tags: getTags(board, model, getBuildTarget(), config),
+				Tags: getTags(board, model, buildImage, config),
 			},
 			RunViaCft: config.RunOptions.RunViaCft,
 		},
@@ -199,11 +197,11 @@ func BuildAllCTPRequests(config *infrapb.SchedulerConfig, targets configparser.T
 	for _, target := range targets {
 		if len(target.Models) > 0 {
 			for _, model := range target.Models {
-				request := BuildCTPRequest(config, string(target.Board), model)
+				request := BuildCTPRequest(config, string(target.Board), model, "", "", "")
 				requests = append(requests, request)
 			}
 		} else {
-			request := BuildCTPRequest(config, string(target.Board), "")
+			request := BuildCTPRequest(config, string(target.Board), "", "", "", "")
 			requests = append(requests, request)
 
 		}

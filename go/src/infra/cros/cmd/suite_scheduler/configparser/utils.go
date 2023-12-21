@@ -7,23 +7,24 @@ package configparser
 
 import (
 	"fmt"
-	"time"
 
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+
+	"infra/cros/cmd/suite_scheduler/common"
 )
 
 // isDayCompliant checks the day int type to ensure that it is within the
 // accepted bounds. A flag for fortnightly is required for calculation of day
 // range values.
-func isDayCompliant(day Day, isFortnightly bool) error {
-	highBound := Day(6)
+func isDayCompliant(day common.Day, isFortnightly bool) error {
+	highBound := common.Day(6)
 
 	if isFortnightly {
-		highBound = Day(13)
+		highBound = common.Day(13)
 	}
 
 	if day < 0 || day > highBound {
-		return fmt.Errorf("Day %d is not within the supported range [0,%d]", day, highBound)
+		return fmt.Errorf("hay %d is not within the supported range [0,%d]", day, highBound)
 	}
 
 	return nil
@@ -31,9 +32,9 @@ func isDayCompliant(day Day, isFortnightly bool) error {
 
 // isHourCompliant checks the hour int type to ensure that it is within the
 // accepted bounds.
-func isHourCompliant(hour Hour) error {
+func isHourCompliant(hour common.Hour) error {
 	if hour < 0 || hour > 23 {
-		return fmt.Errorf("Hour %d is not within the supported range [0,23]", hour)
+		return fmt.Errorf("hour %d is not within the supported range [0,23]", hour)
 	}
 
 	return nil
@@ -258,29 +259,4 @@ func GetBuildTargets(targetsOptions TargetOptions) []BuildTarget {
 	}
 
 	return buildTargets
-}
-
-// TimeToSuSchTime translates time's return values into SuSch parsable time.
-func TimeToSuSchTime(time time.Time, isFortnightly bool) (Day, Hour) {
-	hour := Hour(time.Hour())
-
-	// SuSch and the time package do not share enum values for week days. This
-	// provides a quick translation.
-	day := Day(SuSchDayToTimeDay[time.Weekday()])
-
-	// If we are translating for a FORTNIGHTLY conversion we will need to take
-	// into account the 2 week boundary.
-	if isFortnightly {
-		// NOTE: ISO 8601 states that the first week of year Y is written as
-		// week 1 not 0.
-		// If we are on the second week of the fortnight, add 7 to the
-		// previously calculated day value to line up with the constants we've
-		// defined for FORTNIGHTLY configs.
-		_, week := time.ISOWeek()
-		if week%2 == 0 {
-			day += 7
-		}
-	}
-
-	return day, hour
 }

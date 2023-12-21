@@ -14,13 +14,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
+	"infra/cros/cmd/suite_scheduler/common"
 	suschSubCommands "infra/cros/cmd/suite_scheduler/subcommands"
-)
-
-var (
-	StdoutLog = log.New(os.Stdout, "", logFlags)
-	StderrLog = log.New(os.Stderr, "", logFlags)
-	logFlags  = log.LstdFlags | log.Lmicroseconds
 )
 
 func getApplication(authOpts auth.Options) *subcommands.DefaultApplication {
@@ -51,7 +46,7 @@ func main() {
 	opts := chromeinfra.DefaultAuthOptions()
 	s := &suiteSchedulerApplication{
 		getApplication(opts),
-		log.New(os.Stdout, "", logFlags),
-		log.New(os.Stderr, "", logFlags)}
+		common.Stdout,
+		common.Stderr}
 	os.Exit(subcommands.Run(s, nil))
 }

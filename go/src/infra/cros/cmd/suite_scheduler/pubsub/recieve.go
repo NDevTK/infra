@@ -8,12 +8,12 @@ package pubsub
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/pubsub"
+
+	"infra/cros/cmd/suite_scheduler/common"
 )
 
 const (
@@ -22,10 +22,6 @@ const (
 	MaxIdleSeconds = 5
 
 	loopDuration = 100 * time.Millisecond
-)
-
-var (
-	stdout = log.New(os.Stdout, "", log.Llongfile)
 )
 
 // ReceiveClient defines the minimum requires that this project will need of a
@@ -66,7 +62,7 @@ func (t *Timer) checkMillisecondsLeft() int64 {
 func (t *Timer) Start(parentCtxCancel context.CancelFunc) {
 	lastTick := time.Now()
 
-	stdout.Printf("Starting the Pub/Sub timer with a max of %d seconds\n", t.maxSeconds)
+	common.Stdout.Printf("Starting the Pub/Sub timer with a max of %d seconds\n", t.maxSeconds)
 	for {
 		timeSince := time.Since(lastTick)
 		t.Decrement(time.Duration(timeSince))
@@ -75,7 +71,7 @@ func (t *Timer) Start(parentCtxCancel context.CancelFunc) {
 		if t.checkMillisecondsLeft() < 0 {
 			// Cancel the parent context controlling this timer.
 			parentCtxCancel()
-			stdout.Println("No time left, cancelling the timer context to end receiving from Pub/Sub")
+			common.Stdout.Println("No time left, cancelling the timer context to end receiving from Pub/Sub")
 			return
 		}
 		time.Sleep(loopDuration)
@@ -153,7 +149,7 @@ func InitReceiveClientWithTimer(ctx context.Context, projectID, subscriptionID s
 
 // initClient creates the client interface for the current Pub/Sub Client.
 func (r *ReceiveWithTimer) initClient(projectID string) error {
-	stdout.Printf("Initializing Pub/Sub client to %s GCP project\n", projectID)
+	common.Stdout.Printf("Initializing Pub/Sub client to %s GCP project\n", projectID)
 	if r.client != nil {
 		return fmt.Errorf("client is already initialized")
 	}
@@ -168,7 +164,7 @@ func (r *ReceiveWithTimer) initClient(projectID string) error {
 
 // initSubscription creates the client interface for the current Pub/Sub Client.
 func (r *ReceiveWithTimer) initSubscription(subscriptionID string) error {
-	stdout.Printf("Initializing Pub/Sub subscription to %s \n", subscriptionID)
+	common.Stdout.Printf("Initializing Pub/Sub subscription to %s \n", subscriptionID)
 	if r.subscription != nil {
 		return fmt.Errorf("subscription is already initialized")
 	}
@@ -189,7 +185,7 @@ func (r *ReceiveWithTimer) ingestMessage(ctx context.Context, msg *pubsub.Messag
 	r.idleTimer.Refresh()
 	err := r.handleMessage(msg)
 	if err != nil {
-		stdout.Println(err)
+		common.Stdout.Println(err)
 		msg.Nack()
 		return
 	}
@@ -207,9 +203,9 @@ func (r *ReceiveWithTimer) PullMessages() error {
 	go r.idleTimer.Start(r.cancel)
 
 	// Blocking pull all messages in the feed.
-	stdout.Printf("Begin receiving from Pub/Sub Subscription %s\n", r.subscription.ID())
+	common.Stdout.Printf("Begin receiving from Pub/Sub Subscription %s\n", r.subscription.ID())
 	err := r.subscription.Receive(r.ctx, r.ingestMessage)
-	stdout.Printf("Done receiving from Pub/Sub Subscription %s\n", r.subscription.ID())
+	common.Stdout.Printf("Done receiving from Pub/Sub Subscription %s\n", r.subscription.ID())
 	if err != nil {
 		return err
 	}

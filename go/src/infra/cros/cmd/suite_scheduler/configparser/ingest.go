@@ -11,6 +11,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+
+	"infra/cros/cmd/suite_scheduler/common"
 )
 
 // IngestSuSchConfigs takes in all of the raw Suite Scheduler and Lab configs and ingests
@@ -22,9 +24,9 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 		newBuildMap:    map[BuildTarget]ConfigList{},
 		configTargets:  map[string]TargetOptions{},
 		configMap:      map[TestPlanName]*infrapb.SchedulerConfig{},
-		dailyMap:       map[Hour]ConfigList{},
-		weeklyMap:      map[Day]HourMap{},
-		fortnightlyMap: map[Day]HourMap{},
+		dailyMap:       map[common.Hour]ConfigList{},
+		weeklyMap:      map[common.Day]HourMap{},
+		fortnightlyMap: map[common.Day]HourMap{},
 	}
 
 	for _, config := range configs {
@@ -124,4 +126,77 @@ func BytesToSchedulerProto(configsBuffer []byte) (*infrapb.SchedulerCfg, error) 
 	}
 
 	return configs, nil
+}
+
+// FetchLabConfigs fetches and ingests the lab configs. It will
+// determine where to read the configs from based on the user provided flags.
+func FetchLabConfigs(path string) (*LabConfigs, error) {
+	var err error
+	var labBytes []byte
+
+	// If a file path was passed in for the Lab then parse that file. If not
+	// then fetch the LabConfig from the ToT .cfg and ingest it in memory.
+	if path != common.DefaultString {
+		labBytes, err = common.ReadLocalFile(path)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		labBytes, err = common.FetchFileFromURL(common.LabCfgURL)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	labProto, err := BytesToLabProto(labBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	labConfigs := IngestLabConfigs(labProto)
+
+	return labConfigs, nil
+}
+
+// FetchSchedulerConfigs fetches and ingests the SuiteScheduler configs. It will
+// determine where to read the configs from based on the user provided flags.
+func FetchSchedulerConfigs(path string, labConfigs *LabConfigs) (*SuiteSchedulerConfigs, error) {
+	var err error
+	var schedulerBytes []byte
+
+	// If a file path was passed in for the ScheduleConfigs then parse that file. If not
+	// then fetch the SuiteSchedulerConfigs from the ToT .cfg and ingest it in memory.
+	if path != common.DefaultString {
+		schedulerBytes, err = common.ReadLocalFile(path)
+		if err != nil {
+			return nil, err
+		}
+
+	} else {
+		schedulerBytes, err = common.FetchFileFromURL(common.SuiteSchedulerCfgURL)
+		if err != nil {
+			return nil, err
+		}
+		err := common.WriteToFile("configparser/generated/suite_scheduler.ini", schedulerBytes)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	// Convert from []byte to a usable object type.
+	scheduleProto, err := BytesToSchedulerProto(schedulerBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	// Ingest the configs into a data structure which easier and more efficient
+	// to search.
+	schedulerConfigs, err := IngestSuSchConfigs(scheduleProto.Configs, labConfigs)
+	if err != nil {
+		return nil, err
+	}
+
+	return schedulerConfigs, nil
 }
