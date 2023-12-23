@@ -4,7 +4,7 @@ This page can be found at: [g.co/bugatrooper](https://g.co/bugatrooper)
 
 Have an issue with a piece of build infrastructure?
 Our troopers are here to help. Learn more about Troopering at:
-[go/trooper](https://goto/trooper)
+[go/trooper](http://go/trooper)
 
 Oncall hours: we cover working hours in the Pacific timezone:
 + 1600 - 0000 UTC (900 - 1700 MTV)
