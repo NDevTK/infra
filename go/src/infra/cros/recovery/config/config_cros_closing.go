@@ -22,6 +22,13 @@ func crosRepairClosingActions() map[string]*Action {
 			ExecName:      "dut_servo_host_present",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
+		"No Servo-host": {
+			Conditions: []string{
+				"Servo-host known",
+			},
+			ExecName:      "sample_fail",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
 		"Remove request to reboot if servo is good": {
 			Conditions: []string{
 				"Is a Chromebook",
@@ -153,12 +160,11 @@ func crosRepairClosingActions() map[string]*Action {
 		},
 		"Failure count above threshold": {
 			Docs: []string{
-				"Check if the number of times the recovery task ",
-				"has failed is greater than a threshold value or ",
-				"not.",
+				"Check if the number of recovery task failures ",
+				"on a servo-attached DUT is greater than a threshold",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Servo-host known",
 			},
 			ExecName: "metrics_check_task_failures",
 			ExecExtraArgs: []string{
@@ -167,14 +173,13 @@ func crosRepairClosingActions() map[string]*Action {
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
-		"Failure count above threshold (Flex)": {
+		"Failure count above threshold (Servo-less)": {
 			Docs: []string{
-				"Check if the number of times the recovery task ",
-				"has failed is greater than a threshold value or ",
-				"not.",
+				"Check if the number of recovery task failures ",
+				"on a non-servo-attached DUT is greater than a threshold",
 			},
 			Conditions: []string{
-				"Is Flex device",
+				"No Servo-host",
 			},
 			ExecName: "metrics_check_task_failures",
 			ExecExtraArgs: []string{
@@ -192,7 +197,7 @@ func crosRepairClosingActions() map[string]*Action {
 			Conditions: []string{
 				"DUT state is repair_failed",
 				"Failure count above threshold",
-				"Failure count above threshold (Flex)",
+				"Failure count above threshold (Servo-less)",
 				"Set state: needs_manual_repair",
 			},
 			ExecName: "dut_set_state_reason",
