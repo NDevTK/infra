@@ -82,6 +82,7 @@
     "cmd": [
       "git",
       "checkout",
+      "-f",
       "refs/remotes/origin/main"
     ],
     "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",

@@ -157,7 +157,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
 
   for ref in refs_to_mirror:
     with api.step.nest('Process ' + ref):
-      api.git('checkout', RefToRemoteRef(ref))
+      api.git('checkout', '-f', RefToRemoteRef(ref))
 
       gclient_spec = [{
           'managed': False,
