@@ -847,6 +847,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Power cycle by RPM with delay and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
@@ -855,6 +856,49 @@ func servoRepairPlan() *Plan {
 					"Reset EC from DUT and stop",
 					"Force reflash servo_micro fw and stop",
 				},
+			},
+			"Power cycle by RPM with delay and stop": {
+				Docs: []string{
+					"Perform RPM cycle and wait to device to boot back.",
+					"RPM applicable only for servo-micro testbeds.",
+				},
+				Conditions: []string{
+					"is_servo_micro",
+					"RPM config present",
+				},
+				Dependencies: []string{
+					"Set RPM OFF",
+					"Sleep 35s",
+					"Set RPM ON",
+					"Try Cold reset by servod",
+					"Stop servod",
+				},
+				ExecName:   "sample_pass",
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Set RPM OFF": {
+				ExecName: "device_rpm_power_off",
+				ExecExtraArgs: []string{
+					"device_type:dut",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Set RPM ON": {
+				ExecName: "device_rpm_power_on",
+				ExecExtraArgs: []string{
+					"device_type:dut",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"RPM config present": {
+				Docs: []string{
+					"Verifies that the RPM configuration provided.",
+				},
+				ExecName: "device_has_rpm_info",
+				ExecExtraArgs: []string{
+					"device_type:dut",
+				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Servo type-a hub connected": {
 				Docs: []string{
@@ -1296,7 +1340,10 @@ func servoRepairPlan() *Plan {
 			},
 			"Toggle PD (5 times) and stop": {
 				Docs: []string{
-					"Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize.",
+					"Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards.",
+				},
+				Conditions: []string{
+					"Is servo_v4(p1) used with type-c connector",
 				},
 				Dependencies: []string{
 					"Toggle PD 5 times",
@@ -1518,6 +1565,9 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Try to repair servod by mimic reconnection of servo.",
 				},
+				Conditions: []string{
+					"is_servo_type_ccd",
+				},
 				Dependencies: []string{
 					"Try fake disconnect",
 					"Stop servod",
@@ -1605,6 +1655,16 @@ func servoRepairPlan() *Plan {
 				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"Cold reset by servod": {
+				Docs: []string{
+					"Try to reboot DUT by resetting power state command on servod.",
+				},
+				ExecName: "servo_power_state_reset",
+				ExecExtraArgs: []string{
+					"wait_timeout:1",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Try Cold reset by servod": {
 				Docs: []string{
 					"Try to reboot DUT by resetting power state command on servod.",
 				},
@@ -1785,6 +1845,15 @@ func servoRepairPlan() *Plan {
 				ExecName: "sample_sleep",
 				ExecExtraArgs: []string{
 					"sleep:1",
+				},
+				RunControl:             RunControl_ALWAYS_RUN,
+				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Sleep 35s": {
+				ExecName: "sample_sleep",
+				ExecExtraArgs: []string{
+					"sleep:35",
 				},
 				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,

@@ -1766,6 +1766,13 @@
               "docs": [
                 "Try to repair servod by mimic reconnection of servo."
               ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
               "dependencies": [
                 {
                   "name": "Try fake disconnect",
@@ -2311,9 +2318,114 @@
               "run_control": "RUN_ONCE"
             },
             {
+              "name": "Power cycle by RPM with delay and stop",
+              "docs": [
+                "Perform RPM cycle and wait to device to boot back.",
+                "RPM applicable only for servo-micro testbeds."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_micro",
+                  "exec_name": "is_servo_micro",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "RPM config present",
+                  "docs": [
+                    "Verifies that the RPM configuration provided."
+                  ],
+                  "exec_name": "device_has_rpm_info",
+                  "exec_args": [
+                    "device_type:dut"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "dependencies": [
+                {
+                  "name": "Set RPM OFF",
+                  "exec_name": "device_rpm_power_off",
+                  "exec_args": [
+                    "device_type:dut"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Sleep 35s",
+                  "exec_name": "sample_sleep",
+                  "exec_args": [
+                    "sleep:35"
+                  ],
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Set RPM ON",
+                  "exec_name": "device_rpm_power_on",
+                  "exec_args": [
+                    "device_type:dut"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Try Cold reset by servod",
+                  "docs": [
+                    "Try to reboot DUT by resetting power state command on servod."
+                  ],
+                  "exec_name": "servo_power_state_reset",
+                  "exec_args": [
+                    "wait_timeout:1"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Stop servod",
+                  "docs": [
+                    "Stop the servod daemon.",
+                    "Allowed to fail as can be run when servod is not running."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Save UART capture",
+                      "dependencies": [
+                        {
+                          "name": "Stop UART capture",
+                          "exec_name": "servod_stop_uart_capture",
+                          "allow_fail_after_recovery": true,
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servod_save_uart_capture",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_host_servod_stop",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "ALWAYS_RUN"
+            },
+            {
               "name": "Toggle PD (5 times) and stop",
               "docs": [
-                "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+              ],
+              "conditions": [
+                {
+                  "name": "Is servo_v4(p1) used with type-c connector",
+                  "docs": [
+                    "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                  ],
+                  "exec_name": "servo_check_servod_control",
+                  "exec_args": [
+                    "command:root.dut_connection_type",
+                    "expected_string_value:type-c"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
               ],
               "dependencies": [
                 {
@@ -2337,6 +2449,13 @@
               "name": "Try fake disconnect and stop",
               "docs": [
                 "Try to repair servod by mimic reconnection of servo."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
               ],
               "dependencies": [
                 {
@@ -3668,7 +3787,21 @@
             {
               "name": "Toggle PD (5 times) and stop",
               "docs": [
-                "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+              ],
+              "conditions": [
+                {
+                  "name": "Is servo_v4(p1) used with type-c connector",
+                  "docs": [
+                    "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                  ],
+                  "exec_name": "servo_check_servod_control",
+                  "exec_args": [
+                    "command:root.dut_connection_type",
+                    "expected_string_value:type-c"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
               ],
               "dependencies": [
                 {
@@ -3692,6 +3825,13 @@
               "name": "Try fake disconnect and stop",
               "docs": [
                 "Try to repair servod by mimic reconnection of servo."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
               ],
               "dependencies": [
                 {
@@ -4052,7 +4192,21 @@
                 {
                   "name": "Toggle PD (5 times) and stop",
                   "docs": [
-                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Is servo_v4(p1) used with type-c connector",
+                      "docs": [
+                        "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                      ],
+                      "exec_name": "servo_check_servod_control",
+                      "exec_args": [
+                        "command:root.dut_connection_type",
+                        "expected_string_value:type-c"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -4076,6 +4230,13 @@
                   "name": "Try fake disconnect and stop",
                   "docs": [
                     "Try to repair servod by mimic reconnection of servo."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -4759,7 +4920,21 @@
                 {
                   "name": "Toggle PD (5 times) and stop",
                   "docs": [
-                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Is servo_v4(p1) used with type-c connector",
+                      "docs": [
+                        "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                      ],
+                      "exec_name": "servo_check_servod_control",
+                      "exec_args": [
+                        "command:root.dut_connection_type",
+                        "expected_string_value:type-c"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -4783,6 +4958,13 @@
                   "name": "Try fake disconnect and stop",
                   "docs": [
                     "Try to repair servod by mimic reconnection of servo."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -5438,7 +5620,21 @@
             {
               "name": "Toggle PD (5 times) and stop",
               "docs": [
-                "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+              ],
+              "conditions": [
+                {
+                  "name": "Is servo_v4(p1) used with type-c connector",
+                  "docs": [
+                    "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                  ],
+                  "exec_name": "servo_check_servod_control",
+                  "exec_args": [
+                    "command:root.dut_connection_type",
+                    "expected_string_value:type-c"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
               ],
               "dependencies": [
                 {
@@ -5462,6 +5658,13 @@
               "name": "Try fake disconnect and stop",
               "docs": [
                 "Try to repair servod by mimic reconnection of servo."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
               ],
               "dependencies": [
                 {
@@ -6178,7 +6381,21 @@
                 {
                   "name": "Toggle PD (5 times) and stop",
                   "docs": [
-                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Is servo_v4(p1) used with type-c connector",
+                      "docs": [
+                        "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                      ],
+                      "exec_name": "servo_check_servod_control",
+                      "exec_args": [
+                        "command:root.dut_connection_type",
+                        "expected_string_value:type-c"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -6202,6 +6419,13 @@
                   "name": "Try fake disconnect and stop",
                   "docs": [
                     "Try to repair servod by mimic reconnection of servo."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -6893,7 +7117,21 @@
                 {
                   "name": "Toggle PD (5 times) and stop",
                   "docs": [
-                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Is servo_v4(p1) used with type-c connector",
+                      "docs": [
+                        "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                      ],
+                      "exec_name": "servo_check_servod_control",
+                      "exec_args": [
+                        "command:root.dut_connection_type",
+                        "expected_string_value:type-c"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -6917,6 +7155,13 @@
                   "name": "Try fake disconnect and stop",
                   "docs": [
                     "Try to repair servod by mimic reconnection of servo."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -7527,7 +7772,21 @@
                 {
                   "name": "Toggle PD (5 times) and stop",
                   "docs": [
-                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Is servo_v4(p1) used with type-c connector",
+                      "docs": [
+                        "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                      ],
+                      "exec_name": "servo_check_servod_control",
+                      "exec_args": [
+                        "command:root.dut_connection_type",
+                        "expected_string_value:type-c"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -8032,7 +8291,21 @@
             {
               "name": "Toggle PD (5 times) and stop",
               "docs": [
-                "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+              ],
+              "conditions": [
+                {
+                  "name": "Is servo_v4(p1) used with type-c connector",
+                  "docs": [
+                    "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                  ],
+                  "exec_name": "servo_check_servod_control",
+                  "exec_args": [
+                    "command:root.dut_connection_type",
+                    "expected_string_value:type-c"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
               ],
               "dependencies": [
                 {
@@ -8056,6 +8329,13 @@
               "name": "Try fake disconnect and stop",
               "docs": [
                 "Try to repair servod by mimic reconnection of servo."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
               ],
               "dependencies": [
                 {
@@ -8620,7 +8900,21 @@
                     {
                       "name": "Toggle PD (5 times) and stop",
                       "docs": [
-                        "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                        "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+                      ],
+                      "conditions": [
+                        {
+                          "name": "Is servo_v4(p1) used with type-c connector",
+                          "docs": [
+                            "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                          ],
+                          "exec_name": "servo_check_servod_control",
+                          "exec_args": [
+                            "command:root.dut_connection_type",
+                            "expected_string_value:type-c"
+                          ],
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
                       ],
                       "dependencies": [
                         {
@@ -9125,7 +9419,21 @@
                 {
                   "name": "Toggle PD (5 times) and stop",
                   "docs": [
-                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Is servo_v4(p1) used with type-c connector",
+                      "docs": [
+                        "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                      ],
+                      "exec_name": "servo_check_servod_control",
+                      "exec_args": [
+                        "command:root.dut_connection_type",
+                        "expected_string_value:type-c"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -9149,6 +9457,13 @@
                   "name": "Try fake disconnect and stop",
                   "docs": [
                     "Try to repair servod by mimic reconnection of servo."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -9780,7 +10095,21 @@
             {
               "name": "Toggle PD (5 times) and stop",
               "docs": [
-                "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+              ],
+              "conditions": [
+                {
+                  "name": "Is servo_v4(p1) used with type-c connector",
+                  "docs": [
+                    "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                  ],
+                  "exec_name": "servo_check_servod_control",
+                  "exec_args": [
+                    "command:root.dut_connection_type",
+                    "expected_string_value:type-c"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
               ],
               "dependencies": [
                 {
@@ -9804,6 +10133,13 @@
               "name": "Try fake disconnect and stop",
               "docs": [
                 "Try to repair servod by mimic reconnection of servo."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
               ],
               "dependencies": [
                 {
@@ -10426,6 +10762,13 @@
               "docs": [
                 "Try to repair servod by mimic reconnection of servo."
               ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
               "dependencies": [
                 {
                   "name": "Try fake disconnect",
@@ -10620,6 +10963,13 @@
                   "name": "Try fake disconnect and stop",
                   "docs": [
                     "Try to repair servod by mimic reconnection of servo."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -11135,7 +11485,21 @@
                 {
                   "name": "Toggle PD (5 times) and stop",
                   "docs": [
-                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards. TODO(otabek): Add dependency for servo initialize."
+                    "Toggle the servod command servo_pd_role 5 times. And then stop the servod afterwards."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Is servo_v4(p1) used with type-c connector",
+                      "docs": [
+                        "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                      ],
+                      "exec_name": "servo_check_servod_control",
+                      "exec_args": [
+                        "command:root.dut_connection_type",
+                        "expected_string_value:type-c"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {
@@ -11159,6 +11523,13 @@
                   "name": "Try fake disconnect and stop",
                   "docs": [
                     "Try to repair servod by mimic reconnection of servo."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
                   ],
                   "dependencies": [
                     {

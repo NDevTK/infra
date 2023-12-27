@@ -520,12 +520,14 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"device_type:dut",
 			},
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Set RPM ON": {
 			ExecName: "device_rpm_power_on",
 			ExecExtraArgs: []string{
 				"device_type:dut",
 			},
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Disable factory settings on the DUT": {
 			Conditions: []string{
