@@ -58,6 +58,7 @@ from tracker import issuedetailezt
 from tracker import tracker_bizobj
 from tracker import tracker_constants
 from tracker import tracker_helpers
+from redirect import redirect_utils
 
 from infra_libs import ts_mon
 
@@ -283,7 +284,9 @@ def api_base_checks(request, requester, services, cnxn,
     if not project:
       raise exceptions.NoSuchProjectException(
           'Project %s does not exist' % project_name)
-    if project.state != project_pb2.ProjectState.LIVE:
+    # Allow to view non-live projects that were migrated.
+    if (project.state != project_pb2.ProjectState.LIVE and
+        project_name not in redirect_utils.PROJECT_REDIRECT_MAP):
       raise permissions.PermissionException(
           'API may not access project %s because it is not live'
           % project_name)
@@ -427,7 +430,7 @@ class MonorailApi(remote.Service):
 
     # Temporary block on updating approval subfields.
     if request.updates and request.updates.fieldValues:
-      fds_by_name = {fd.field_name.lower():fd for fd in mar.config.field_defs}
+      fds_by_name = {fd.field_name.lower(): fd for fd in mar.config.field_defs}
       for fv in request.updates.fieldValues:
         # Checking for fv.approvalName is unreliable since it can be removed.
         fd = fds_by_name.get(fv.fieldName.lower())
@@ -790,8 +793,10 @@ class MonorailApi(remote.Service):
       if request.approvalUpdates.fieldValues:
         # Block updating field values that don't belong to the approval.
         approvals_fds_by_name = {
-            fd.field_name.lower():fd for fd in mar.config.field_defs
-            if fd.approval_id == approval_fd.field_id}
+            fd.field_name.lower(): fd
+            for fd in mar.config.field_defs
+            if fd.approval_id == approval_fd.field_id
+        }
         for fv in request.approvalUpdates.fieldValues:
           if approvals_fds_by_name.get(fv.fieldName.lower()) is None:
             raise endpoints.BadRequestException(
