@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 'use strict';
 
 const UNSET_PRIORITY = Number.MAX_SAFE_INTEGER;
@@ -16,6 +20,7 @@ Polymer.Element) {
 
   static get properties() {
     return {
+      hotlistId: String,
       bugQueueLabel: {
         type: String,
         observer: '_bugQueueLabelChanged',
@@ -50,7 +55,12 @@ Polymer.Element) {
       _hideBugQueue: {
         type: Boolean,
         value: true,
-        computed: '_computeHideBugQueue(bugQueueLabel)',
+        computed: '_computeHideBugQueue(hotlistId, bugQueueLabel)',
+      },
+      _isHotlist: {
+        type: Boolean,
+        value: false,
+        computed: '_computeIsHotlist(hotlistId)',
       },
       _priorityField: {
         type: String,
@@ -170,10 +180,17 @@ Polymer.Element) {
     }
   }
 
-  _computeHideBugQueue(bugQueueLabel) {
+  _computeHideBugQueue(hotlistId, bugQueueLabel) {
     // No loading or empty message is shown unless a bug queue exists.
+    if (!!hotlistId) {
+      return false;
+    }
     return !bugQueueLabel || bugQueueLabel === '' ||
       bugQueueLabel === 'Performance-Sheriff-BotHealth';
+  }
+
+  _computeIsHotlist(hotlistId) {
+    return !!hotlistId;
   }
 
   _computePriority(bug, priorityField) {

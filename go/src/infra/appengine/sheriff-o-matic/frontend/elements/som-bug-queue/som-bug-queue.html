@@ -21,34 +21,41 @@
         padding: 0.25em 8px;
         margin: 0 16px;
       }
+
       .bug {
         padding: 0.25em 16px;
         line-height: 160%;
         border-bottom: 1px solid #ddd;
       }
+
       .bug-label {
         padding-left: 4px;
         font-size: 0.8em;
         text-decoration: none;
         color: #008000;
       }
+
       .bug-label:hover,
       .summary:hover {
         text-decoration: underline;
       }
+
       .summary {
         font-weight: bold;
         color: #222;
         text-decoration: none;
       }
+
       .summary-box {
         text-overflow: ellipsis;
         max-width: 90%;
       }
+
       .updated {
         font-size: 12px;
       }
-      .no-component{
+
+      .no-component {
         color: #ff0000;
       }
     </style>
@@ -71,10 +78,14 @@
         <span>
           [[treeDisplayName]] Bug Queue
           (<a href="https://sites.google.com/a/chromium.org/dev/developers/tree-sheriffs/sheriffing-bug-queues" target="_blank">Help?</a>)
-          (<a href$="https://bugs.chromium.org/p/[[_defaultBugProject]]/issues/entry?status=Available&labels=[[bugQueueLabel]]" target="_blank">Add Bug</a>)
+          (<a
+            href$="https://bugs.chromium.org/p/[[_defaultBugProject]]/issues/entry?status=Available&labels=[[bugQueueLabel]]"
+            target="_blank" hidden$="[[_isHotlist]]">Add Bug</a><a
+            href$="https://b.corp.google.com/issues/new?hotlistIds=[[hotlistId]]" target="_blank"
+            hidden$="[[!_isHotlist]]">Add Bug</a>)
         </span>
 
-        <div class="header-buttons">
+        <div class="header-buttons" hidden$="[[_isHotlist]]">
           <span class="collapse-button" on-tap="_collapseAll">
             <iron-icon icon="remove"></iron-icon> Collapse all
           </span>
@@ -88,44 +99,49 @@
           </span>
         </div>
       </h2>
-      <iron-collapse opened="[[_opened]]" no-animation>
-        <div class="error" hidden$="[[_haveNoErrors(_bugQueueJsonError)]]">
-          Error fetching bug queue: [[_bugQueueJsonError.error]]
-        </div>
-        <div id="loadingBugs" hidden$="[[!_showBugsLoading(_bugsLoaded, _bugQueueJsonError)]]"><paper-spinner active="[[!_bugsLoaded]]"></paper-spinner> Loading Bug Queue... </div>
-        <div id="noBugs" hidden$="[[!_showNoBugs]]">No bugs in the queue!</div>
-        <template is="dom-repeat" items="[[_bugsByPriority]]" as="bucket">
-          <h4 on-tap="_togglePriorityCollapse" class="priority-header">
-            <iron-icon
-              icon="[[_computeCollapseIcon(_defaultOpenState)]]"
-              id$="toggleIconPri[[bucket.priority]]"></iron-icon>
-            [[_priorityText(bucket.priority)]] ([[bucket.bugs.length]] total)
-          </h4>
-          <iron-collapse id$="[[_computeCollapseId(bucket.priority)]]" opened="[[_defaultOpenState]]" no-animation>
-            <template is="dom-repeat" items="[[bucket.bugs]]" as="bug">
-              <div class="bug">
-                <div class="summary-box">
-                  <a href="http://crbug.com/[[computeProject(bug)]]/[[computeBugID(bug)]]" target="_blank" title="[[bug.summary]]" class="summary">[[bug.summary]]</a>
-                  <template is="dom-repeat" items="[[_filterBugLabels(bug.labels, bugQueueLabel)]]" as="label">
-                    <a href="https://bugs.chromium.org/p/[[computeProject(bug)]]/issues/list?q=label:[[label]]"
-                      class="bug-label" target="_blank">[[label]]</a>
+      <div id="bugqueue-hotlist" hidden$="[[!_isHotlist]]">
+        Please see <a href$="http://b.corp.google.com/issues?q=status:open%20hotlistid:[[hotlistId]]&p=1"
+          target="_blank">Buganizer</a> for the bug queue
+      </div>
+      <div id="bugqueue" hidden$="[[_isHotlist]]">
+        <iron-collapse opened="[[_opened]]" no-animation>
+          <div class="error" hidden$="[[_haveNoErrors(_bugQueueJsonError)]]">
+            Error fetching bug queue: [[_bugQueueJsonError.error]]
+          </div>
+          <div id="loadingBugs" hidden$="[[!_showBugsLoading(_bugsLoaded, _bugQueueJsonError)]]"><paper-spinner active="[[!_bugsLoaded]]"></paper-spinner> Loading Bug Queue... </div>
+          <div id="noBugs" hidden$="[[!_showNoBugs]]">No bugs in the queue!</div>
+          <template is="dom-repeat" items="[[_bugsByPriority]]" as="bucket">
+            <h4 on-tap="_togglePriorityCollapse" class="priority-header">
+              <iron-icon icon="[[_computeCollapseIcon(_defaultOpenState)]]"
+                id$="toggleIconPri[[bucket.priority]]"></iron-icon>
+              [[_priorityText(bucket.priority)]] ([[bucket.bugs.length]] total)
+            </h4>
+            <iron-collapse id$="[[_computeCollapseId(bucket.priority)]]" opened="[[_defaultOpenState]]" no-animation>
+              <template is="dom-repeat" items="[[bucket.bugs]]" as="bug">
+                <div class="bug">
+                  <div class="summary-box">
+                    <a href="http://crbug.com/[[computeProject(bug)]]/[[computeBugID(bug)]]" target="_blank" title="[[bug.summary]]" class="summary">[[bug.summary]]</a>
+                    <template is="dom-repeat" items="[[_filterBugLabels(bug.labels, bugQueueLabel)]]" as="label">
+                      <a href="https://bugs.chromium.org/p/[[computeProject(bug)]]/issues/list?q=label:[[label]]" class="bug-label" target="_blank">[[label]]</a>
+                    </template>
+                  </div>
+                  <a href="http://crbug.com/[[computeProject(bug)]]/[[computeBugID(bug)]]" target="_blank">Bug
+                    [[computeBugID(bug)]]</a>
+                  ([[bug.status.status]]<template is="dom-if" if="[[bug.owner.name]]">,
+                    [[bug.owner.name]]</template>)
+                  <template is="dom-if" if="[[_validPriority(bucket.priority)]]">
+                    (Pri-[[bucket.priority]])
+                  </template>
+                  <a target="_blank" title="[[bug.modify_time]]" class="modify_time">Last update: [[bug.modify_time]]</a>
+                  <template is="dom-if" if="[[_hasNoComponent(bug)]]">
+                    <span class="no-component">(No component)</span>
                   </template>
                 </div>
-                <a href="http://crbug.com/[[computeProject(bug)]]/[[computeBugID(bug)]]" target="_blank">Bug [[computeBugID(bug)]]</a>
-                ([[bug.status.status]]<template is="dom-if" if="[[bug.owner.name]]">,
-                [[bug.owner.name]]</template>)
-                <template is="dom-if" if="[[_validPriority(bucket.priority)]]">
-                  (Pri-[[bucket.priority]])
-                </template>
-                <a target="_blank" title="[[bug.modify_time]]" class="modify_time">Last update: [[bug.modify_time]]</a>
-                <template is="dom-if" if="[[_hasNoComponent(bug)]]">
-                  <span class="no-component">(No component)</span>
-                </template>
-              </div>
-            </template>
-          </iron-collapse>
-        </template>
-      </iron-collapse>
+              </template>
+            </iron-collapse>
+          </template>
+        </iron-collapse>
+      </div>
     </div>
   </template>
   <script src="som-bug-queue.js"></script>
