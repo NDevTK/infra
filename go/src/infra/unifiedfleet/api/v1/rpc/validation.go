@@ -1652,3 +1652,16 @@ func (r *GetDeviceDataRequest) Validate() error {
 	}
 	return nil
 }
+
+func (r *CreateDefaultWifiRequest) Validate() error {
+	if r == nil {
+		return status.Errorf(codes.InvalidArgument, EmptyRequest)
+	}
+	if r.GetDefaultWifiId() == "" {
+		return status.Errorf(codes.InvalidArgument, EmptyID)
+	}
+	if r.GetDefaultWifi() == nil {
+		return status.Errorf(codes.InvalidArgument, NilEntity)
+	}
+	return nil
+}
