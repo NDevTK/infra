@@ -5563,8 +5563,11 @@ wheel: <
 ```
 
 
+* *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
+* *mac-x64-py3.11*
 * *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
 
 ## **natsort-py3**
