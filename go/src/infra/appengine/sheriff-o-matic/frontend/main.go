@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/xsrf"
@@ -27,6 +28,8 @@ import (
 	"go.chromium.org/luci/server/secrets"
 	_ "go.chromium.org/luci/server/tq/txn/datastore"
 
+	sompb "infra/appengine/sheriff-o-matic/proto/v1"
+	"infra/appengine/sheriff-o-matic/rpc"
 	"infra/appengine/sheriff-o-matic/som/client"
 	"infra/appengine/sheriff-o-matic/som/handler"
 	monorailv3 "infra/monorailv2/api/v3/api_proto"
@@ -244,7 +247,7 @@ func (s *SOMHandlers) refreshAnnotationsPeriodically(ctx context.Context) {
 func (s *SOMHandlers) getAnnotationsHandler(ctx *router.Context) {
 	ah := newAnnotationHandler(ctx.Request.Context(), s)
 	activeKeys := map[string]interface{}{}
-	activeAlerts := handler.GetAlerts(ctx, true, false)
+	activeAlerts := handler.GetAlertsCommonHandler(ctx, true, false)
 	for _, alrt := range activeAlerts.Alerts {
 		activeKeys[alrt.Key] = nil
 	}
@@ -288,7 +291,14 @@ func main() {
 			auth.Authenticate(srv.CookieAuth),
 			requireGoogler,
 		)
+		// Register pPRC servers.
+		srv.ConfigurePRPC(func(s *prpc.Server) {
+			s.AccessControl = prpc.AllowOriginAll
+			// TODO(crbug/1082369): Remove this workaround once field masks can be decoded.
+			s.HackFixFieldMasksForJSON = true
+		})
 
+		sompb.RegisterAlertsServer(srv, rpc.NewAlertsServer())
 		srv.RunInBackground("som.refresh_annotations", somHandlers.refreshAnnotationsPeriodically)
 		srv.RunInBackground("som.refresh_bugqueue", somHandlers.refreshBugQueuePeriodically)
 

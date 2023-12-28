@@ -1,0 +1,59 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package infra.appengine.som.v1;
+
+option go_package = "infra/appengine/sheriff-o-matic/proto/v1;sompb";
+
+// Provides methods to retrieve alerts.
+//
+// An alert corresponds to a step failure on a single builder.
+service Alerts {
+    // Get the list of unresolved alerts for a given tree.
+    rpc ListAlerts(ListAlertsRequest) returns (ListAlertsResponse) {};
+}
+
+message ListAlertsRequest {
+    // The name of the tree to retrieve alerts for
+    // Format: trees/{tree}
+    string parent = 1;
+
+    // The maximum number of alerts to return.  The service may return fewer than
+    // this value.
+    // If unspecified, at most 1000 alerts will be returned.
+    // The maximum value is 1000; values above 1000 will be coerced to 1000.
+    int32 page_size = 2;
+
+    // A page token, received from a previous `ListAlerts` call.
+    // Provide this to retrieve the subsequent page.
+    //
+    // When paginating, all other parameters provided to `ListAlerts` must match
+    // the call that provided the page token.
+    string page_token = 3;
+}
+
+message ListAlertsResponse {
+    // The requested alerts.
+    repeated Alert alerts = 1;
+
+    // A token, which can be sent as `page_token` to retrieve the next page.
+    // If this field is omitted, there are no subsequent pages.
+    string next_page_token = 2;
+}
+
+// An alert corresponding to a failure of a step in a build.
+message Alert {
+    // The opaque, unique key of this alert.  This is also present in the alert_json field.
+    string key = 1;
+
+    // A string containing the JSON for the alert that would be returned by the REST API.
+    //
+    // This is left as JSON rather than proto fields because we intend to reduce usage of
+    // this over time, so it is better to preserve backwards compatibility of the existing
+    // UI codethan to break out invdividual fields which would require rewriting the code
+    // which will soon be replaced anyway.
+    string alert_json = 2;
+}

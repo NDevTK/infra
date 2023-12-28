@@ -37,32 +37,39 @@ var (
 	ErrUnrecognizedTree = fmt.Errorf("unrecognized tree name")
 )
 
-// GetAlerts handles API requests for alerts.
-func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) *messages.AlertsSummary {
+// GetAlertsCommonHandler handles API requests for alerts.
+func GetAlertsCommonHandler(ctx *router.Context, unresolved bool, resolved bool) *messages.AlertsSummary {
 	c, w, p := ctx.Request.Context(), ctx.Writer, ctx.Params
-
 	tree := p.ByName("tree")
 
+	summary, err := GetAlerts(c, tree, unresolved, resolved)
+	if err != nil {
+		errStatus(c, w, http.StatusInternalServerError, err.Error())
+		return nil
+	}
+	return summary
+}
+
+// GetAlerts reads the alerts from datastore.
+func GetAlerts(ctx context.Context, tree string, unresolved, resolved bool) (*messages.AlertsSummary, error) {
 	var q *datastore.Query
 	alertResults := []*model.AlertJSON{}
 	if unresolved {
-		q = datastoreCreateAlertQuery().Ancestor(datastore.MakeKey(c, "Tree", tree)).Eq("Resolved", false)
-		err := datastoreGetAlertsByQuery(c, &alertResults, q)
+		q = datastoreCreateAlertQuery().Ancestor(datastore.MakeKey(ctx, "Tree", tree)).Eq("Resolved", false)
+		err := datastoreGetAlertsByQuery(ctx, &alertResults, q)
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
-			return nil
+			return nil, err
 		}
 	}
 
 	resolvedResults := []*model.AlertJSON{}
 	if resolved {
-		q = datastoreCreateAlertQuery().Ancestor(datastore.MakeKey(c, "Tree", tree)).Eq("Resolved", true)
-		q = q.Gt("Date", clock.Get(c).Now().Add(-recentResolved))
+		q = datastoreCreateAlertQuery().Ancestor(datastore.MakeKey(ctx, "Tree", tree)).Eq("Resolved", true)
+		q = q.Gt("Date", clock.Get(ctx).Now().Add(-recentResolved))
 
-		err := datastoreGetAlertsByQuery(c, &resolvedResults, q)
+		err := datastoreGetAlertsByQuery(ctx, &resolvedResults, q)
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
-			return nil
+			return nil, err
 		}
 	}
 
@@ -79,8 +86,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) *messages.Al
 	for i, alertJSON := range alertResults {
 		err := json.Unmarshal(alertJSON.Contents, &alertsSummary.Alerts[i])
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
-			return nil
+			return nil, err
 		}
 
 		t := messages.EpochTime(alertJSON.Date.Unix())
@@ -92,8 +98,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) *messages.Al
 	for i, alertJSON := range resolvedResults {
 		err := json.Unmarshal(alertJSON.Contents, &alertsSummary.Resolved[i])
 		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
-			return nil
+			return nil, err
 		}
 
 		t := messages.EpochTime(alertJSON.Date.Unix())
@@ -102,12 +107,12 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) *messages.Al
 		}
 	}
 
-	return alertsSummary
+	return alertsSummary, nil
 }
 
 func getAlerts(ctx *router.Context, unresolved bool, resolved bool) {
 	c, w := ctx.Request.Context(), ctx.Writer
-	alertsSummary := GetAlerts(ctx, unresolved, resolved)
+	alertsSummary := GetAlertsCommonHandler(ctx, unresolved, resolved)
 	data, err := json.MarshalIndent(alertsSummary, "", "\t")
 	if err != nil {
 		errStatus(c, w, http.StatusInternalServerError, err.Error())
