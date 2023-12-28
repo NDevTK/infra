@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from collections import defaultdict
 import filecmp
 import json
 import os
@@ -291,6 +292,7 @@ class CdbGenerator:
     self.result_build_dir = result_build_dir
     self.file_conflicts = file_conflicts
     self.keep_going = keep_going
+    self.package_status = defaultdict(list)
 
   def _GenerateCdbForPackage(self, package: Package,
                              packages_to_include_args: Dict) -> Cdb:
@@ -321,11 +323,13 @@ class CdbGenerator:
             package, packages_to_include_args).Fix().data
         result_cdb_data.extend(cdb_data)
       except (Cdb.CdbException, PackagePathException) as e:
+        self.package_status['failed_exception'].append(package.full_name)
         if self.keep_going:
           g_logger.error('%s: Failed to fix compile commands: %s',
                          package.full_name, e)
         else:
           raise e
+      self.package_status['success'].append(package.full_name)
 
     return result_cdb_data
 
@@ -339,6 +343,9 @@ class CdbGenerator:
     assert result_cdb_file
 
     result_cdb = self._GenerateResultCdb(packages)
+
+    g_logger.info('Package CDB Statuses:\n%s',
+                  json.dumps(self.package_status, indent=2))
 
     with open(result_cdb_file, 'w') as output:
       json.dump(result_cdb, output, indent=2)
