@@ -852,7 +852,12 @@ SPECS.update({
             packaged=(),
             patches=('static',),
             only_plat=[
-                'manylinux-x64-py3.8', 'mac-x64-py3.8', 'mac-arm64-py3.8'
+                'manylinux-x64-py3.8',
+                'manylinux-x64-py3.11',
+                'mac-x64-py3.8',
+                'mac-x64-py3.11',
+                'mac-arm64-py3.8',
+                'mac-arm64-py3.11',
             ],
             tpp_libs_cb=lambda w: [
                 TppLib('infra/3pp/static_libs/mysqlclient', 'version:2@8.0.26'),
