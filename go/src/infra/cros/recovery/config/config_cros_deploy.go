@@ -327,6 +327,9 @@ func deployActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
+				"Is a Chromebook",
+				"Is servo USB key detected",
+				"Recovery version has OS image path",
 			},
 			Dependencies: []string{
 				"Install OS in DEV mode by USB-drive",
@@ -339,6 +342,9 @@ func deployActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
+				"Is a Chromebook",
+				"Is servo USB key detected",
+				"Recovery version has OS image path",
 			},
 			Dependencies: []string{
 				"Download stable image to USB-key",
@@ -352,9 +358,17 @@ func deployActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
+				"Is a Chromebook",
+				"Is servo USB key detected",
+				"Recovery version has OS image path",
+				"Recovery version has firmware image path",
 			},
 			Dependencies: []string{
-				"Update FW from fw-image by servo and set GBB to 0x18",
+				"Flash EC (FW) by servo",
+				"Sleep 60 seconds",
+				"Disable software write protection via servo",
+				"Flash AP (FW) with GBB 0x18 by servo",
+				"Sleep 60 seconds",
 				"Install OS in DEV mode by USB-drive",
 			},
 			ExecName: "sample_pass",

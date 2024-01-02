@@ -566,7 +566,7 @@
               ],
               "dependencies": [
                 {
-                  "name": "Flash EC (FW) by servo",
+                  "name": "Flash EC (FW) by servo (allowed failed)",
                   "docs": [
                     "Download fw-image specified in stable version and flash EC to the DUT by servo",
                     "Set timeout for 110 minutes for now as = 10m(download)+4*20m(find/extract file)+20m(ec-update with retry).",

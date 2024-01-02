@@ -2074,6 +2074,69 @@
                     "invert_result:true"
                   ],
                   "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Is servo USB key detected",
+                  "docs": [
+                    "The action used as codiion.",
+                    "The action verify that USB-key is detected and readable."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is servod running",
+                      "docs": [
+                        "Verify that servo host specified in setup and servod is running."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Verify servod is responsive",
+                          "conditions": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servod_echo",
+                          "exec_args": [
+                            "ssh_check:false"
+                          ],
+                          "timeout": "10s",
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_usbkey_is_detected",
+                  "exec_args": [
+                    "file_check:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Recovery version has OS image path",
+                  "docs": [
+                    "Verify that recovery version has OS image path."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Has a stable-version service",
+                      "docs": [
+                        "Verify if we have access to the service provided access to the stable version"
+                      ],
+                      "exec_name": "has_stable_version_service_path",
+                      "run_control": "RUN_ONCE"
+                    }
+                  ],
+                  "exec_name": "has_stable_version_cros_image",
+                  "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
               "dependencies": [

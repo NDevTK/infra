@@ -2690,6 +2690,8 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is servod running",
 				"Is a Chromebook",
+				"Is servo USB key detected",
+				"Recovery version has OS image path",
 			},
 			Dependencies: []string{
 				"Set GBB flags to 0x18 by servo",
@@ -2974,7 +2976,8 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Has a stable-version service",
 			},
-			ExecName: "has_stable_version_fw_image",
+			ExecName:      "has_stable_version_fw_image",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Recovery version has OS image path": {
 			Docs: []string{
@@ -2983,7 +2986,8 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Has a stable-version service",
 			},
-			ExecName: "has_stable_version_cros_image",
+			ExecName:      "has_stable_version_cros_image",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Simple reboot": {
 			Docs: []string{
@@ -3106,6 +3110,27 @@ func crosRepairActions() map[string]*Action {
 			},
 			AllowFailAfterRecovery: true,
 		},
+		"Flash EC (FW) by servo (allowed failed)": {
+			Docs: []string{
+				"Download fw-image specified in stable version and flash EC to the DUT by servo",
+				"Set timeout for 110 minutes for now as = 10m(download)+4*20m(find/extract file)+20m(ec-update with retry).",
+				"We will retry up to 5 times since there is flakiness on flash EC.",
+			},
+			Conditions: []string{
+				"Is servod running",
+			},
+			Dependencies: []string{
+				"Recovery version has firmware image path",
+			},
+			ExecName: "cros_update_fw_with_fw_image_by_servo",
+			ExecExtraArgs: []string{
+				"update_ec_attempt_count:5",
+				"download_timeout:600",
+				"use_cache_extractor:true",
+			},
+			ExecTimeout:            &durationpb.Duration{Seconds: 6600},
+			AllowFailAfterRecovery: true,
+		},
 		"Flash EC (FW) by servo": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash EC to the DUT by servo",
@@ -3124,10 +3149,7 @@ func crosRepairActions() map[string]*Action {
 				"download_timeout:600",
 				"use_cache_extractor:true",
 			},
-			ExecTimeout: &durationpb.Duration{
-				Seconds: 6600,
-			},
-			AllowFailAfterRecovery: true,
+			ExecTimeout: &durationpb.Duration{Seconds: 6600},
 		},
 		"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)": {
 			Docs: []string{
@@ -3167,40 +3189,13 @@ func crosRepairActions() map[string]*Action {
 				"Is a Chromebook",
 			},
 			Dependencies: []string{
-				"Flash EC (FW) by servo",
+				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
 				"Flash AP (FW) with GBB 0x18 by servo",
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "sample_pass",
-		},
-		"Update FW from fw-image by servo and set GBB to 0x18": {
-			Docs: []string{
-				"Download fw-image specified in stable version and flash EC/AP to the DUT by servo",
-				"Set timeout for 180 minutes for now as = 10m(download)+ 6*20m(extraction-file)+10m(ec-update)+40m(ap-update).",
-				"The time will be updated later based on collected metrics",
-				"Each operation with extraction files can take up to a few minutes.",
-				"Ap update on the DUT can take up to 30 minutes",
-				"The GBB will set to 0x18 which equal to switch to DEV mode and enable boot from USB drive in DEV mode.",
-			},
-			Conditions: []string{
-				"Is servod running",
-			},
-			Dependencies: []string{
-				"Recovery version has firmware image path",
-			},
-			ExecName: "cros_update_fw_with_fw_image_by_servo",
-			ExecExtraArgs: []string{
-				"update_ec_attempt_count:3",
-				"update_ap_attempt_count:3",
-				"download_timeout:600",
-				"gbb_flags:0x18",
-				"use_cache_extractor:true",
-			},
-			ExecTimeout: &durationpb.Duration{
-				Seconds: 10800,
-			},
 		},
 		"Boot DUT in recovery and install from USB-drive": {
 			Docs: []string{
@@ -3955,8 +3950,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Verify if we have access to the service provided access to the stable version",
 			},
-			ExecName:   "has_stable_version_service_path",
-			RunControl: RunControl_RUN_ONCE,
+			ExecName:      "has_stable_version_service_path",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Verify if booted from priority kernel": {
 			Docs: []string{
@@ -4155,7 +4151,7 @@ func crosRepairActions() map[string]*Action {
 				"Is a Chromebook",
 			},
 			Dependencies: []string{
-				"Flash EC (FW) by servo",
+				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
 				"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
