@@ -4,8 +4,8 @@
 
 import logging
 
-from gae_libs.http import auth_util
-from gae_libs.http import http_client_appengine
+from common.http import auth_util
+from common.http import http_client_appengine
 
 from common import monitoring
 

@@ -8,7 +8,7 @@ import urlparse
 
 from testing_utils import testing
 
-from libs.http import retry_http_client
+from common.http import retry_http_client
 
 from common import monitoring
 from common import findit_http_client

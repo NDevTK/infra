@@ -7,8 +7,6 @@ import json
 import mock
 from flask import Flask
 
-from components.prpc import client as prpc_client
-
 from go.chromium.org.luci.buildbucket.proto import build_pb2
 from go.chromium.org.luci.buildbucket.proto import builder_common_pb2
 from go.chromium.org.luci.buildbucket.proto import builds_service_pb2
@@ -17,6 +15,7 @@ from go.chromium.org.luci.buildbucket.proto import common_pb2
 from common.base_handler import BaseHandler
 from handlers.code_coverage import process_coverage
 from handlers.code_coverage import utils
+from common.findit_http_client import FinditHttpClient
 from model.code_coverage import BlockingStatus
 from model.code_coverage import CoveragePercentage
 from model.code_coverage import DependencyRepository
@@ -227,15 +226,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                       'Please log in with your @google.com account.'),
                      response.json_body.get('error_message'))
 
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   def testProcessCLPatchData(self, mocked_is_request_from_appself,
                              mocked_get_build, mocked_get_validated_data,
-                             mocked_inc_percentages, *_):
+                             mocked_inc_percentages, mock_buildbucket_post):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.status = common_pb2.Status.SUCCESS
@@ -284,6 +282,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
 
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     request_url = '/coverage/task/process-data/build/123456789'
     response = self.test_app.post(request_url)
     self.assertEqual(200, response.status_int)
@@ -317,17 +320,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  def testProcessCLPatchDataUnitTestBuilder(self,
-                                            mocked_is_request_from_appself,
-                                            mocked_get_build,
-                                            mocked_get_validated_data,
-                                            mocked_inc_percentages, *_):
+  def testProcessCLPatchDataUnitTestBuilder(
+      self, mocked_is_request_from_appself, mocked_get_build,
+      mocked_get_validated_data, mocked_inc_percentages, mock_buildbucket_post):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.status = common_pb2.Status.SUCCESS
@@ -376,6 +376,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
 
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     request_url = '/coverage/task/process-data/build/123456789'
     response = self.test_app.post(request_url)
     self.assertEqual(200, response.status_int)
@@ -409,15 +414,15 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages_unit)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   def testProcessCLPatchDataMergingData(self, mocked_get_build,
                                         mocked_get_validated_data,
-                                        mocked_inc_percentages, *_):
+                                        mocked_inc_percentages,
+                                        mock_buildbucket_post, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.status = common_pb2.Status.SUCCESS
@@ -471,6 +476,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         }])
     existing_entity.put()
 
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     request_url = '/coverage/task/process-data/build/123456789'
     response = self.test_app.post(request_url)
     self.assertEqual(200, response.status_int)
@@ -504,17 +514,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  def testProcessCLPatchDataRTSBuilder_NewEntity(self,
-                                                 mocked_is_request_from_appself,
-                                                 mocked_get_build,
-                                                 mocked_get_validated_data,
-                                                 mocked_inc_percentages, *_):
+  def testProcessCLPatchDataRTSBuilder_NewEntity(
+      self, mocked_is_request_from_appself, mocked_get_build,
+      mocked_get_validated_data, mocked_inc_percentages, mock_buildbucket_post):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.status = common_pb2.Status.SUCCESS
@@ -564,6 +571,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
 
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     request_url = '/coverage/task/process-data/build/123456789'
     response = self.test_app.post(request_url)
     self.assertEqual(200, response.status_int)
@@ -596,15 +608,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].absolute_percentages_unit_rts)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   def testProcessCLPatchDataRTSBuilder_MergeDataIntoExistingEntity(
       self, mocked_is_request_from_appself, mocked_get_build,
-      mocked_get_validated_data, mocked_inc_percentages, *_):
+      mocked_get_validated_data, mocked_inc_percentages, mock_buildbucket_post):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.status = common_pb2.Status.SUCCESS
@@ -673,6 +684,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     existing_entity.put()
 
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     request_url = '/coverage/task/process-data/build/123456789'
     response = self.test_app.post(request_url)
     self.assertEqual(200, response.status_int)
@@ -721,8 +737,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # were triggered for a CL, and the first coverage build is being processed.
   # In this case, the said coverage build produced coverage data.
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
                      '_MayBeBlockCLForLowCoverage')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -731,7 +746,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # pylint: disable=line-too-long
   def testLowCoverageBlocking_firstCoverageBuildWithData_dontCheckForLowCoverage(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mock_blocking_logic, mock_buildbucket_client, *_):
+      mock_blocking_logic, mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': [
@@ -795,17 +810,18 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     mocked_inc_percentages.return_value = inc_percentages
     # Two coverage builds were triggered for the CL
     # and both completed without error
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS),
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-pie-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS),
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(builder='android-pie-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
 
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
@@ -831,14 +847,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # were triggered for a CL, and the first coverage build is being processed.
   # In this case, the said coverage build produced no data.
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
                      '_MayBeBlockCLForLowCoverage')
   @mock.patch.object(process_coverage, 'GetV2Build')
   # pylint: disable=line-too-long
   def testLowCoverageBlocking_firstCoverageBuildWithNoData_dontCheckForLowCoverage(
-      self, mocked_get_build, mock_blocking_logic, mock_buildbucket_client, *_):
+      self, mocked_get_build, mock_blocking_logic, mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': [
@@ -876,17 +891,18 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
 
     # Two coverage builds were triggered for the CL
     # and both completed without error
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS),
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-pie-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS),
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(builder='android-pie-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
 
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
@@ -911,8 +927,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # This test case tests the scenario where multiple coverage builders
   # were triggered for a CL, and one of them failed to complete.
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
                      '_MayBeBlockCLForLowCoverage')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -921,7 +936,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # pylint: disable=line-too-long
   def testLowCoverageBlocking_buildFailure_dontCheckForLowCoverage(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mock_blocking_logic, mock_buildbucket_client, *_):
+      mock_blocking_logic, mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': [
@@ -984,18 +999,19 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # Two coverage builds were triggered for the CL
-    # and both completed without error
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS),
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-pie-x86-rel'),
-                status=common_pb2.Status.FAILURE)
-        ]))
+    # and only one completed without error
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS),
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(builder='android-pie-x86-rel'),
+            status=common_pb2.Status.FAILURE)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
 
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
@@ -1022,8 +1038,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # successfully, only the last one is pending processing and the last builder
   # has produced coverage data
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
                      '_MayBeBlockCLForLowCoverage')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -1032,7 +1047,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # pylint: disable=line-too-long
   def testLowCoverageBlocking_FinalBuildHasData_checkForLowCoverage(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mock_blocking_logic, mock_buildbucket_client, *_):
+      mock_blocking_logic, mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': [
@@ -1097,21 +1112,23 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     # Two coverage builds were triggered for the CL
     # and both completed without error. The third build is in the list
     # just for completeness
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS),
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-pie-x86-rel'),
-                status=common_pb2.Status.SUCCESS),
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-performance-rel'),  # not a coverage build
-                status=common_pb2.Status.SCHEDULED)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS),
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(builder='android-pie-x86-rel'),
+            status=common_pb2.Status.SUCCESS),
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-performance-rel'),  # not a coverage build
+            status=common_pb2.Status.SCHEDULED)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     # Blocking entity created during the processing of a coverage build earlier
     # i.e. chromium/try/android-pie-x86-rel
     LowCoverageBlocking.Create(
@@ -1147,14 +1164,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # successfully, only the last one is pending processing and the last builder
   # has produced coverage data
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
                      '_MayBeBlockCLForLowCoverage')
   @mock.patch.object(process_coverage, 'GetV2Build')
   # pylint: disable=line-too-long
   def testLowCoverageBlocking_FinalBuildHasNoData_checkForLowCoverage(
-      self, mocked_get_build, mock_blocking_logic, mock_buildbucket_client, *_):
+      self, mocked_get_build, mock_blocking_logic, mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': [
@@ -1191,21 +1207,23 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     # Two coverage builds were triggered for the CL
     # and both completed without error. The third build is in the list
     # just for completeness
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS),
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-pie-x86-rel'),
-                status=common_pb2.Status.SUCCESS),
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-performance-rel'),  # not a coverage build
-                status=common_pb2.Status.SCHEDULED)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS),
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(builder='android-pie-x86-rel'),
+            status=common_pb2.Status.SUCCESS),
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-performance-rel'),  # not a coverage build
+            status=common_pb2.Status.SCHEDULED)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     # Blocking entity created during the processing of a coverage build earlier
     # i.e. chromium/try/android-pie-x86-rel
     LowCoverageBlocking.Create(
@@ -1262,9 +1280,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(len(mock_blocking_logic.call_args_list), 1)
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -1273,8 +1289,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # pylint: disable=line-too-long
   def testLowCoverageBlocking_allCoverageBuildsProcessedSuccessfully_block(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+      mocked_fetch_change_details, mocked_get_file_content,
+      mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': [
@@ -1337,13 +1353,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build, and it completed successfully
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@chromium.org'
@@ -1371,18 +1390,18 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertTrue('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testLowCoverageBlocking_revertCL_noop(
-      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+  def testLowCoverageBlocking_revertCL_noop(self, mocked_get_build,
+                                            mocked_get_validated_data,
+                                            mocked_inc_percentages,
+                                            mocked_fetch_change_details,
+                                            mocked_get_file_content,
+                                            mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1442,13 +1461,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -1466,9 +1488,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -1476,8 +1496,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(process_coverage, 'GetV2Build')
   def testLowCoverageBlocking_testMainExampleFile_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+      mocked_fetch_change_details, mocked_get_file_content,
+      mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1567,13 +1587,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggere and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@chromium.org'
@@ -1600,9 +1623,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertFalse('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -1610,8 +1631,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(process_coverage, 'GetV2Build')
   def testLowCoverageBlocking_highAbsoluteCoverage_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+      mocked_fetch_change_details, mocked_get_file_content,
+      mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1671,13 +1692,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -1704,9 +1728,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertFalse('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -1714,8 +1736,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(process_coverage, 'GetV2Build')
   def testLowCoverageBlocking_authorOptInNotDefined_block(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+      mocked_fetch_change_details, mocked_get_file_content,
+      mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1774,13 +1796,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -1802,18 +1827,18 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertTrue('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testLowCoverageBlocking_authorNotOptIn_noop(
-      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+  def testLowCoverageBlocking_authorNotOptIn_noop(self, mocked_get_build,
+                                                  mocked_get_validated_data,
+                                                  mocked_inc_percentages,
+                                                  mocked_fetch_change_details,
+                                                  mocked_get_file_content,
+                                                  mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1873,13 +1898,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -1896,18 +1924,18 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testLowCoverageBlocking_externalAuthor_noop(
-      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+  def testLowCoverageBlocking_externalAuthor_noop(self, mocked_get_build,
+                                                  mocked_get_validated_data,
+                                                  mocked_inc_percentages,
+                                                  mocked_fetch_change_details,
+                                                  mocked_get_file_content,
+                                                  mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1967,13 +1995,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     mocked_fetch_change_details.return_value = {
         'owner': {
             # some other john from outside google created the change.
@@ -1991,18 +2022,18 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testLowCoverageBlocking_DirNotOptIn_allow(
-      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+  def testLowCoverageBlocking_DirNotOptIn_allow(self, mocked_get_build,
+                                                mocked_get_validated_data,
+                                                mocked_inc_percentages,
+                                                mocked_fetch_change_details,
+                                                mocked_get_file_content,
+                                                mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -2062,13 +2093,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -2091,18 +2125,18 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testLowCoverageBlocking_DirInOptOut_allow(
-      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+  def testLowCoverageBlocking_DirInOptOut_allow(self, mocked_get_build,
+                                                mocked_get_validated_data,
+                                                mocked_inc_percentages,
+                                                mocked_fetch_change_details,
+                                                mocked_get_file_content,
+                                                mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -2163,13 +2197,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -2192,18 +2229,18 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testLowCoverageBlocking_notEnoughLines_allow(
-      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+  def testLowCoverageBlocking_notEnoughLines_allow(self, mocked_get_build,
+                                                   mocked_get_validated_data,
+                                                   mocked_inc_percentages,
+                                                   mocked_fetch_change_details,
+                                                   mocked_get_file_content,
+                                                   mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -2264,13 +2301,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -2297,9 +2337,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertFalse('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -2307,8 +2345,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(process_coverage, 'GetV2Build')
   def testLowCoverageBlocking_FileNotOfBlockingFileType_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+      mocked_fetch_change_details, mocked_get_file_content,
+      mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings',
         {
@@ -2371,13 +2409,15 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -2400,9 +2440,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -2410,8 +2448,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(process_coverage, 'GetV2Build')
   def testLowCoverageBlocking_FileOfBlockingFileType_block(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+      mocked_fetch_change_details, mocked_get_file_content,
+      mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -2472,13 +2510,15 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build was triggered and it succeeded
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -2505,18 +2545,16 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertTrue('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   def testLowCoverageBlocking_ProjectNotAllowed_noop(self, mocked_get_build,
                                                      mocked_get_validated_data,
                                                      mocked_inc_percentages,
-                                                     *_):
+                                                     mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -2577,6 +2615,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
 
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
@@ -2588,9 +2631,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # multiple cohorts, out of which only for some coverage requirement may
   # be getting violated.
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -2599,8 +2640,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # pylint: disable=line-too-long
   def testLowCoverageBlocking_multipleCohorts_taskPayloadCreatedCorrectly(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+      mocked_fetch_change_details, mocked_get_file_content,
+      mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': [
@@ -2677,13 +2718,15 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build, and it completed successfully
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@chromium.org'
@@ -2716,9 +2759,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # multiple cohorts, out of which only for some coverage requirement may
   # be getting violated.
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(prpc_client, 'service_account_credentials')
-  @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -2727,8 +2768,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # pylint: disable=line-too-long
   def testLowCoverageBlocking_nonOperationalCohort_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+      mocked_fetch_change_details, mocked_get_file_content,
+      mock_buildbucket_post, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': [
@@ -2800,13 +2841,15 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     ]
     mocked_inc_percentages.return_value = inc_percentages
     # One coverage build, and it completed successfully
-    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
-        builds_service_pb2.SearchBuildsResponse(builds=[
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS)
-        ]))
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[
+        build_pb2.Build(
+            builder=builder_common_pb2.BuilderID(
+                builder='android-nougat-x86-rel'),
+            status=common_pb2.Status.SUCCESS)
+    ])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@chromium.org'

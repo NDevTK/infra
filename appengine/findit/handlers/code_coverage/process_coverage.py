@@ -48,7 +48,12 @@ _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING = 70
 _DEFAULT_RELAX_ABS_COV_THRESHOLD_FOR_BLOCKING = 80
 _DEFAULT_MINIMUM_LINES_OF_CHANGE_FOR_BLOCKING = 5
 _BUILDBUCKET_HOST = 'cr-buildbucket.appspot.com'
+_BUILDBUCKET_V2_SEARCH_BUILDS_ENDPOINT = (
+    'https://{hostname}/prpc/buildbucket.v2.Builds/SearchBuilds'.format(
+        hostname=_BUILDBUCKET_HOST))
 
+# https://github.com/grpc/grpc-go/blob/master/codes/codes.go
+GRPC_OK = '0'
 
 def _AddDependencyToManifest(path, url, revision,
                              manifest):  # pragma: no cover.
@@ -341,20 +346,26 @@ def _FetchCoverageBuildsStatus(host, change, patchset):
           'patchset': patchset
       }]
   }
-  req = builds_service_pb2.SearchBuildsRequest(predicate=predicate)
+  request = builds_service_pb2.SearchBuildsRequest(predicate=predicate)
   try_builders = _GetAllowedChromiumTryBuilders()
-  service_client = prpc_client.Client(
-      _BUILDBUCKET_HOST, builds_service_prpc_pb2.BuildsServiceDescription)
-  resp = service_client.SearchBuilds(
-      req, credentials=prpc_client.service_account_credentials())
-  builds_status = {}
-  for build in resp.builds:
-    if build.builder.builder not in try_builders:
-      continue
-    builds_status[build.builder.builder] = build.status
-  logging.info("build_status for host=%s, change=%d, patch=%d = %r", host,
-               change, patchset, builds_status)
-  return builds_status
+  status_code, content, response_headers = FinditHttpClient().Post(
+      _BUILDBUCKET_V2_SEARCH_BUILDS_ENDPOINT,
+      request.SerializeToString(),
+      headers={'Content-Type': 'application/prpc; encoding=binary'})
+  if status_code == 200 and response_headers.get('X-Prpc-Grpc-Code') == GRPC_OK:
+    result = builds_service_pb2.SearchBuildsResponse()
+    result.ParseFromString(content)
+    builds_status = {}
+    for build in result.builds:
+      if build.builder.builder not in try_builders:
+        continue
+      builds_status[build.builder.builder] = build.status
+    logging.info("build_status for host=%s, change=%d, patch=%d = %r", host,
+                 change, patchset, builds_status)
+    return builds_status
+  logging.warning('Unexpected prpc code: %s',
+                  response_headers.get('X-Prpc-Grpc-Code'))
+  return None
 
 
 class ProcessCodeCoverageData(BaseHandler):
