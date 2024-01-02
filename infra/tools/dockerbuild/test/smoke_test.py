@@ -20,7 +20,7 @@ class TestSmoke(unittest.TestCase):
   def test_check_requests(self):
     code, out = run_vpython(os.path.join(TESTDATA, 'check_requests.py'))
     if code:
-      print out
+      print(out)
       self.fail('Exit code %d' % code)
 
 
@@ -30,28 +30,19 @@ def run_vpython(script):
   Returns:
     (exit code, combined stdout+stderr).
   """
-  env = escape_virtual_env(os.environ)
-  env['PYTHONDONTWRITEBYTECODE'] = '1'
-  proc = subprocess.Popen([
-      'vpython3',
-      '-vpython-log-level',
-      'debug',
-      '-vpython-spec',
-      SPEC,
-      script,
-  ],
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.STDOUT)
-  out, _ = proc.communicate()
-  return proc.returncode, out
+  try:
+    return 0, subprocess.check_output([
+        'vpython3',
+        '-vpython-log-level',
+        'debug',
+        '-vpython-spec',
+        SPEC,
+        script,
+    ],
+                                      stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError as e:
+    return e.returncode, e.output
 
 
-def escape_virtual_env(environ):
-  """Returns a copy of environ which is free of a virtualenv references."""
-  environ = environ.copy()
-  venv = environ.pop('VIRTUAL_ENV', None)
-  if venv:
-    path = environ['PATH'].split(os.pathsep)
-    path = [p for p in path if not p.startswith(venv+os.sep)]
-    environ['PATH'] = os.pathsep.join(path)
-  return environ
+if __name__ == '__main__':
+  unittest.main()

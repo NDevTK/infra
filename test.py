@@ -24,14 +24,18 @@ WIN_ENABLED_PACKAGES = [
   'infra/libs/service_utils',
   'infra/libs/state_machine',
 
-  'infra/tools/dockerbuild',  # for wheel smoke tests
-
   'packages/infra_libs/infra_libs/infra_types',
   'packages/infra_libs/infra_libs/logs',
   'packages/infra_libs/infra_libs/time_functions',
   'packages/infra_libs/infra_libs/ts_mon',
 ]
 
+# Tests to run under vpython3. These should not be part of any
+# of the py2 modules listed below, and must contain their own
+# __main__ implementation.
+VPYTHON3_TESTS = [
+    'infra/tools/dockerbuild/test/smoke_test.py',
+]
 
 def usage():
   print("""\nUsage: %s <action> [<test names>] [<expect_tests options>]
@@ -151,6 +155,15 @@ for module in modules:
   exit_code = module_exit_code or exit_code
   if module_exit_code:
     failed_modules.append(module)
+
+# Tests to run with vpython3
+for test in VPYTHON3_TESTS:
+  print('Running %s...' % test)
+  cmd = ['vpython3', test]
+  test_exit_code = subprocess.call(cmd)
+  exit_code = test_exit_code or exit_code
+  if test_exit_code:
+    failed_modules.append(test)
 
 if exit_code:
   print()
