@@ -19,6 +19,16 @@
 //		"input": {
 //			"properties": {
 //				"project": "go",
+//				"bootstrap_version": "1.20.6",
+//				"host": {
+//					"goarch": "amd64",
+//					"goos": "linux"
+//				},
+//				"target": {
+//					"goarch": "amd64",
+//					"goos": "linux"
+//				},
+//				"git_cache": "gitcache",
 //				"tools_cache": "tools"
 //			},
 //			"gitiles_commit": {
@@ -51,7 +61,17 @@
 //		"input": {
 //			"properties": {
 //				"project": "go",
+//				"bootstrap_version": "1.20.6",
+//				"host": {
+//					"goarch": "amd64",
+//					"goos": "linux"
+//				},
+//				"target": {
+//					"goarch": "amd64",
+//					"goos": "linux"
+//				},
 //				"tools_cache": "tools",
+//				"git_cache": "gitcache",
 //				"$recipe_engine/cq": {
 //					"active": true,
 //					"runMode": "DRY_RUN"
