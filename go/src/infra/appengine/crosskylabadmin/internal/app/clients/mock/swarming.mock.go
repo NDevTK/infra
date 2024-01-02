@@ -15,7 +15,6 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	strpair "go.chromium.org/luci/common/data/strpair"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 )
@@ -59,10 +58,10 @@ func (mr *MockSwarmingClientMockRecorder) CreateTask(c, name, args interface{}) 
 }
 
 // GetTaskResult mocks base method.
-func (m *MockSwarmingClient) GetTaskResult(ctx context.Context, tid string) (*swarming.SwarmingRpcsTaskResult, error) {
+func (m *MockSwarmingClient) GetTaskResult(ctx context.Context, tid string) (*apipb.TaskResultResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTaskResult", ctx, tid)
-	ret0, _ := ret[0].(*swarming.SwarmingRpcsTaskResult)
+	ret0, _ := ret[0].(*apipb.TaskResultResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -74,10 +73,10 @@ func (mr *MockSwarmingClientMockRecorder) GetTaskResult(ctx, tid interface{}) *g
 }
 
 // ListAliveBotsInPool mocks base method.
-func (m *MockSwarmingClient) ListAliveBotsInPool(arg0 context.Context, arg1 string, arg2 strpair.Map) ([]*swarming.SwarmingRpcsBotInfo, error) {
+func (m *MockSwarmingClient) ListAliveBotsInPool(arg0 context.Context, arg1 string, arg2 strpair.Map) ([]*apipb.BotInfo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListAliveBotsInPool", arg0, arg1, arg2)
-	ret0, _ := ret[0].([]*swarming.SwarmingRpcsBotInfo)
+	ret0, _ := ret[0].([]*apipb.BotInfo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -118,10 +117,10 @@ func (mr *MockSwarmingClientMockRecorder) ListBotTasks(id interface{}) *gomock.C
 }
 
 // ListRecentTasks mocks base method.
-func (m *MockSwarmingClient) ListRecentTasks(c context.Context, tags []string, state string, limit int) ([]*swarming.SwarmingRpcsTaskResult, error) {
+func (m *MockSwarmingClient) ListRecentTasks(c context.Context, tags []string, state apipb.StateQuery, limit int32) ([]*apipb.TaskResultResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListRecentTasks", c, tags, state, limit)
-	ret0, _ := ret[0].([]*swarming.SwarmingRpcsTaskResult)
+	ret0, _ := ret[0].([]*apipb.TaskResultResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -133,10 +132,10 @@ func (mr *MockSwarmingClientMockRecorder) ListRecentTasks(c, tags, state, limit 
 }
 
 // ListSortedRecentTasksForBot mocks base method.
-func (m *MockSwarmingClient) ListSortedRecentTasksForBot(c context.Context, botID string, limit int) ([]*swarming.SwarmingRpcsTaskResult, error) {
+func (m *MockSwarmingClient) ListSortedRecentTasksForBot(c context.Context, botID string, limit int32) ([]*apipb.TaskResultResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListSortedRecentTasksForBot", c, botID, limit)
-	ret0, _ := ret[0].([]*swarming.SwarmingRpcsTaskResult)
+	ret0, _ := ret[0].([]*apipb.TaskResultResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -171,10 +170,10 @@ func (m *MockBotTasksCursor) EXPECT() *MockBotTasksCursorMockRecorder {
 }
 
 // Next mocks base method.
-func (m *MockBotTasksCursor) Next(arg0 context.Context, arg1 int64) ([]*swarming.SwarmingRpcsTaskResult, error) {
+func (m *MockBotTasksCursor) Next(arg0 context.Context, arg1 int32) ([]*apipb.TaskResultResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Next", arg0, arg1)
-	ret0, _ := ret[0].([]*swarming.SwarmingRpcsTaskResult)
+	ret0, _ := ret[0].([]*apipb.TaskResultResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

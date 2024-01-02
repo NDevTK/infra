@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"net/url"
 
-	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/data/strpair"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
@@ -54,7 +53,7 @@ func ExtractSingleValuedDimension(dims strpair.Map, key string) (string, error) 
 }
 
 // DimensionsMap converts swarming bot dimensions to a map.
-func DimensionsMap(sdims []*swarming.SwarmingRpcsStringListPair) strpair.Map {
+func DimensionsMap(sdims []*swarmingv2.StringListPair) strpair.Map {
 	dims := make(strpair.Map)
 	for _, sdim := range sdims {
 		dims[sdim.Key] = sdim.Value
@@ -79,7 +78,7 @@ type BotState struct {
 }
 
 // ExtractBotState extracts BOTState from BOT info.
-func ExtractBotState(botInfo *swarming.SwarmingRpcsBotInfo) BotState {
+func ExtractBotState(botInfo *swarmingv2.BotInfo) BotState {
 	state := BotState{}
 	if err := json.Unmarshal([]byte(botInfo.State), &state); err != nil {
 		fmt.Println(err)

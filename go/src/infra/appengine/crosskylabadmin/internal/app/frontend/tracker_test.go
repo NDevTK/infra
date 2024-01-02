@@ -12,14 +12,12 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
-	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/data/strpair"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/swarmingconverter"
 	"infra/appengine/crosskylabadmin/internal/tq"
 	"infra/cros/recovery/logger/metrics"
 )
@@ -35,11 +33,11 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 
 		tf.MockSwarming.EXPECT().ListAliveBotsInPool(
 			gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool), gomock.Any(),
-		).AnyTimes().Return([]*swarming.SwarmingRpcsBotInfo{}, nil)
+		).AnyTimes().Return([]*swarmingv2.BotInfo{}, nil)
 
 		bots, err := tf.MockSwarming.ListAliveBotsInPool(tf.C, config.Get(tf.C).Swarming.BotPool, strpair.Map{})
 		So(err, ShouldBeNil)
-		bots = flattenAndDedpulicateBots([][]*swarming.SwarmingRpcsBotInfo{bots})
+		bots = flattenAndDedpulicateBots([][]*swarmingv2.BotInfo{bots})
 		So(bots, ShouldBeEmpty)
 	})
 
@@ -47,7 +45,7 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 
-		sbots := []*swarming.SwarmingRpcsBotInfo{
+		sbots := []*swarmingv2.BotInfo{
 			BotForDUT("dut_1", "ready", ""),
 			BotForDUT("dut_2", "repair_failed", ""),
 		}
@@ -57,7 +55,7 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 
 		bots, err := tf.MockSwarming.ListAliveBotsInPool(tf.C, config.Get(tf.C).Swarming.BotPool, strpair.Map{})
 		So(err, ShouldBeNil)
-		bots = flattenAndDedpulicateBots([][]*swarming.SwarmingRpcsBotInfo{bots})
+		bots = flattenAndDedpulicateBots([][]*swarmingv2.BotInfo{bots})
 		So(bots, ShouldHaveLength, 2)
 	})
 
@@ -65,7 +63,7 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 
-		sbots := []*swarming.SwarmingRpcsBotInfo{
+		sbots := []*swarmingv2.BotInfo{
 			BotForDUT("dut_1", "ready", ""),
 			BotForDUT("dut_1", "repair_failed", ""),
 		}
@@ -75,7 +73,7 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 
 		bots, err := tf.MockSwarming.ListAliveBotsInPool(tf.C, config.Get(tf.C).Swarming.BotPool, strpair.Map{})
 		So(err, ShouldBeNil)
-		bots = flattenAndDedpulicateBots([][]*swarming.SwarmingRpcsBotInfo{bots})
+		bots = flattenAndDedpulicateBots([][]*swarmingv2.BotInfo{bots})
 		So(bots, ShouldHaveLength, 1)
 	})
 }
@@ -123,7 +121,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 				gomock.Any(), gomock.Eq("ChromeOSSkylab"),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"needs_repair"}}),
-			).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{bot1, bot3, bot1LabStation, bot1SchedulingUnit}), nil)
+			).AnyTimes().Return([]*swarmingv2.BotInfo{bot1, bot3, bot1LabStation, bot1SchedulingUnit}, nil)
 			expectDefaultPerBotRefresh(tf)
 
 			request := fleet.PushBotsForAdminTasksRequest{
@@ -141,7 +139,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 				gomock.Any(), gomock.Eq("ChromeOSSkylab"),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"repair_failed"}}),
-			).AnyTimes().Return([]*swarmingv2.BotInfo{swarmingconverter.ConvertSwarmingRpcsBotInfo(bot2)}, nil)
+			).AnyTimes().Return([]*swarmingv2.BotInfo{bot2}, nil)
 			expectDefaultPerBotRefresh(tf)
 
 			request := fleet.PushBotsForAdminTasksRequest{
@@ -160,7 +158,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 				gomock.Any(),
 				gomock.Eq("ChromeOSSkylab"),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"needs_manual_repair"}}),
-			).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{bot3, bot4}), nil)
+			).AnyTimes().Return([]*swarmingv2.BotInfo{bot3, bot4}, nil)
 			expectDefaultPerBotRefresh(tf)
 			request := fleet.PushBotsForAdminTasksRequest{
 				TargetDutState: fleet.DutState_NeedsManualRepair,
@@ -178,7 +176,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 				gomock.Any(),
 				gomock.Eq("ChromeOSSkylab"),
 				gomock.Eq(strpair.Map{clients.DutStateDimensionKey: {"needs_replacement"}}),
-			).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos([]*swarming.SwarmingRpcsBotInfo{bot3, bot5}), nil)
+			).AnyTimes().Return([]*swarmingv2.BotInfo{bot3, bot5}, nil)
 			expectDefaultPerBotRefresh(tf)
 			request := fleet.PushBotsForAdminTasksRequest{
 				TargetDutState: fleet.DutState_NeedsReplacement,
@@ -240,7 +238,7 @@ func TestPushBotsForAdminAuditTasks(t *testing.T) {
 			tf.MockSwarming.EXPECT().ListAliveBotsInPool(
 				gomock.Any(), gomock.Eq("ChromeOSSkylab"),
 				gomock.Eq(strpair.Map{}),
-			).AnyTimes().Return([]*swarming.SwarmingRpcsBotInfo{bot3, bot4, bot5, bot6, bot7, bot2LabStation, bot1SchedulingUnit}, nil)
+			).AnyTimes().Return([]*swarmingv2.BotInfo{bot3, bot4, bot5, bot6, bot7, bot2LabStation, bot1SchedulingUnit}, nil)
 			expectDefaultPerBotRefresh(tf)
 
 			actions := []string{"verify-servo-usb-drive"}
@@ -265,10 +263,10 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		tqt.CreateQueue(repairLabstationQ)
 		bot1 := BotForDUT("dut_1", "needs_repair", "label-os_type:OS_TYPE_LABSTATION;label-pool:labstation_main;id:lab_1")
 		bot2 := BotForDUT("dut_2", "ready", "label-os_type:OS_TYPE_LABSTATION;label-pool:servo_verification;id:lab_2")
-		bots := []*swarming.SwarmingRpcsBotInfo{bot1, bot2}
+		bots := []*swarmingv2.BotInfo{bot1, bot2}
 		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 			gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool), gomock.Any(),
-		).AnyTimes().Return(swarmingconverter.ConvertSwarmingRpcsBotInfos(bots), nil)
+		).AnyTimes().Return(bots, nil)
 		expectDefaultPerBotRefresh(tf)
 		_, err := tf.Tracker.PushRepairJobsForLabstations(tf.C, &fleet.PushRepairJobsForLabstationsRequest{})
 		So(err, ShouldBeNil)

@@ -1,16 +1,6 @@
-// Copyright 2018 The LUCI Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package clients
 
@@ -19,8 +9,11 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/duration"
-	"github.com/google/go-cmp/cmp"
-	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/luci/common/data/strpair"
+	"go.chromium.org/luci/common/testing/typed"
+	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 )
@@ -29,17 +22,17 @@ func TestGetStateDimension(t *testing.T) {
 	t.Parallel()
 	cases := []struct {
 		name  string
-		input []*swarming.SwarmingRpcsStringListPair
+		input []*swarmingv2.StringListPair
 		want  fleet.DutState
 	}{
 		{"missing key", nil, fleet.DutState_DutStateInvalid},
-		{"normal", []*swarming.SwarmingRpcsStringListPair{
+		{"normal", []*swarmingv2.StringListPair{
 			{Key: "dut_state", Value: []string{"ready"}},
 		}, fleet.DutState_Ready},
-		{"multiple values", []*swarming.SwarmingRpcsStringListPair{
+		{"multiple values", []*swarmingv2.StringListPair{
 			{Key: "dut_state", Value: []string{"ready", "repair_failed"}},
 		}, fleet.DutState_DutStateInvalid},
-		{"multiple pairs", []*swarming.SwarmingRpcsStringListPair{
+		{"multiple pairs", []*swarmingv2.StringListPair{
 			{Key: "dut_state", Value: []string{"ready"}},
 			{Key: "dut_state", Value: []string{"repair_failed"}},
 		}, fleet.DutState_Ready},
@@ -79,36 +72,36 @@ func TestTimeSinceBotTaskN(t *testing.T) {
 	cases := []struct {
 		desc  string
 		now   time.Time
-		input swarming.SwarmingRpcsTaskResult
+		input *swarmingv2.TaskResultResponse
 		want  *duration.Duration
 	}{
 		{
 			desc: "completed",
-			input: swarming.SwarmingRpcsTaskResult{
-				State:       "COMPLETED",
-				CompletedTs: "2016-01-02T03:04:01.000000009",
+			input: &swarmingv2.TaskResultResponse{
+				State:       swarmingv2.TaskState_COMPLETED,
+				CompletedTs: mustParseTime("2016-01-02T03:04:01.000000009"),
 			},
 			want: &duration.Duration{Seconds: 3, Nanos: 999999991},
 		},
 		{
 			desc: "running",
-			input: swarming.SwarmingRpcsTaskResult{
-				State: "RUNNING",
+			input: &swarmingv2.TaskResultResponse{
+				State: swarmingv2.TaskState_RUNNING,
 			},
 			want: &duration.Duration{Seconds: 0, Nanos: 0},
 		},
 		{
 			desc: "killed",
-			input: swarming.SwarmingRpcsTaskResult{
-				State:       "KILLED",
-				AbandonedTs: "2016-01-02T03:04:01.000000009",
+			input: &swarmingv2.TaskResultResponse{
+				State:       swarmingv2.TaskState_KILLED,
+				AbandonedTs: mustParseTime("2016-01-02T03:04:01.000000009"),
 			},
 			want: &duration.Duration{Seconds: 3, Nanos: 999999991},
 		},
 		{
 			desc: "expired",
-			input: swarming.SwarmingRpcsTaskResult{
-				State: "EXPIRED",
+			input: &swarmingv2.TaskResultResponse{
+				State: swarmingv2.TaskState_EXPIRED,
 			},
 			want: nil,
 		},
@@ -117,7 +110,7 @@ func TestTimeSinceBotTaskN(t *testing.T) {
 		c := c
 		t.Run(c.desc, func(t *testing.T) {
 			t.Parallel()
-			got, err := TimeSinceBotTaskN(&c.input, now)
+			got, err := TimeSinceBotTaskN(c.input, now)
 			if err != nil {
 				t.Fatalf("TimeSinceBotTaskN returned unexpected error: %s", err)
 			}
@@ -130,44 +123,44 @@ func TestTaskDoneTime(t *testing.T) {
 	t.Parallel()
 	cases := []struct {
 		desc  string
-		input swarming.SwarmingRpcsTaskResult
+		input *swarmingv2.TaskResultResponse
 		want  time.Time
 	}{
 		{
 			desc: "completed",
-			input: swarming.SwarmingRpcsTaskResult{
-				State:       "COMPLETED",
-				CompletedTs: "2016-01-02T10:04:05.999999999",
+			input: &swarmingv2.TaskResultResponse{
+				State:       swarmingv2.TaskState_COMPLETED,
+				CompletedTs: mustParseTime("2016-01-02T10:04:05.999999999"),
 			},
 			want: time.Date(2016, 1, 2, 10, 4, 5, 999999999, time.UTC),
 		},
 		{
 			desc: "timed out",
-			input: swarming.SwarmingRpcsTaskResult{
-				State:       "TIMED_OUT",
-				CompletedTs: "2016-01-02T10:04:05.999999999",
+			input: &swarmingv2.TaskResultResponse{
+				State:       swarmingv2.TaskState_TIMED_OUT,
+				CompletedTs: mustParseTime("2016-01-02T10:04:05.999999999"),
 			},
 			want: time.Date(2016, 1, 2, 10, 4, 5, 999999999, time.UTC),
 		},
 		{
 			desc: "running",
-			input: swarming.SwarmingRpcsTaskResult{
-				State: "RUNNING",
+			input: &swarmingv2.TaskResultResponse{
+				State: swarmingv2.TaskState_RUNNING,
 			},
 			want: time.Time{},
 		},
 		{
 			desc: "killed",
-			input: swarming.SwarmingRpcsTaskResult{
-				State:       "KILLED",
-				AbandonedTs: "2016-01-02T10:04:05.999999999",
+			input: &swarmingv2.TaskResultResponse{
+				State:       swarmingv2.TaskState_KILLED,
+				AbandonedTs: mustParseTime("2016-01-02T10:04:05.999999999"),
 			},
 			want: time.Date(2016, 1, 2, 10, 4, 5, 999999999, time.UTC),
 		},
 		{
 			desc: "expired",
-			input: swarming.SwarmingRpcsTaskResult{
-				State: "EXPIRED",
+			input: &swarmingv2.TaskResultResponse{
+				State: swarmingv2.TaskState_EXPIRED,
 			},
 			want: time.Time{},
 		},
@@ -176,7 +169,7 @@ func TestTaskDoneTime(t *testing.T) {
 		c := c
 		t.Run(c.desc, func(t *testing.T) {
 			t.Parallel()
-			got, err := TaskDoneTime(&c.input)
+			got, err := TaskDoneTime(c.input)
 			if err != nil {
 				t.Fatalf("TaskDoneTime returned unexpected error: %s", err)
 			}
@@ -194,7 +187,7 @@ func TestConvertToDimensions(t *testing.T) {
 	cases := []struct {
 		desc string
 		in   *SwarmingCreateTaskArgs
-		want []*swarming.SwarmingRpcsStringPair
+		want []*swarmingv2.StringPair
 	}{
 		{
 			desc: "empty collection",
@@ -207,7 +200,7 @@ func TestConvertToDimensions(t *testing.T) {
 				Pool:    "pool1",
 				DutName: "dut1",
 			},
-			want: []*swarming.SwarmingRpcsStringPair{
+			want: []*swarmingv2.StringPair{
 				{
 					Key:   "pool",
 					Value: "pool1",
@@ -224,7 +217,7 @@ func TestConvertToDimensions(t *testing.T) {
 				Pool:  "pool1",
 				BotID: "bot1",
 			},
-			want: []*swarming.SwarmingRpcsStringPair{
+			want: []*swarmingv2.StringPair{
 				{
 					Key:   "pool",
 					Value: "pool1",
@@ -241,7 +234,7 @@ func TestConvertToDimensions(t *testing.T) {
 				Pool:  "pool1",
 				DutID: "dut_id1",
 			},
-			want: []*swarming.SwarmingRpcsStringPair{
+			want: []*swarmingv2.StringPair{
 				{
 					Key:   "pool",
 					Value: "pool1",
@@ -261,7 +254,7 @@ func TestConvertToDimensions(t *testing.T) {
 				DutID:    "dut_id1",
 				DutState: "some_state",
 			},
-			want: []*swarming.SwarmingRpcsStringPair{
+			want: []*swarmingv2.StringPair{
 				{
 					Key:   "pool",
 					Value: "pool1",
@@ -284,7 +277,7 @@ func TestConvertToDimensions(t *testing.T) {
 				DutID:    "dut_id1",
 				DutState: "some_state",
 			},
-			want: []*swarming.SwarmingRpcsStringPair{
+			want: []*swarmingv2.StringPair{
 				{
 					Key:   "pool",
 					Value: "pool1",
@@ -310,9 +303,87 @@ func TestConvertToDimensions(t *testing.T) {
 					t.Fatalf("TaskDoneTime returned unexpected error: %s", err)
 				}
 			}
-			diff := cmp.Diff(got, c.want)
+			diff := typed.Diff(got, c.want)
 			if diff != "" {
 				t.Errorf("Test faild for %#v = %s", c.desc, diff)
+			}
+		})
+	}
+}
+
+// mustParseTime is a helper function that parses a time according to the swarming time format.
+//
+// It panics if the time is invalid or not in the swarming time format.
+func mustParseTime(timeString string) *timestamppb.Timestamp {
+	theTime, err := time.Parse(SwarmingTimeLayout, timeString)
+	if err != nil {
+		panic(err)
+	}
+	return timestamppb.New(theTime)
+}
+
+// TestAsPairs tests converting a map to StringPairs.
+func TestAsPairs(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name   string
+		input  strpair.Map
+		output []*swarmingv2.StringPair
+	}{
+		{
+			name:   "empty",
+			input:  nil,
+			output: nil,
+		},
+		{
+			name:  "singleton",
+			input: strpair.Map{"k": []string{"a", "b"}},
+			output: []*swarmingv2.StringPair{
+				{
+					Key:   "k",
+					Value: "a",
+				},
+				{
+					Key:   "k",
+					Value: "b",
+				},
+			},
+		},
+		{
+			name: "doubleton",
+			input: strpair.Map{
+				"k1": []string{"a1", "b1"},
+				"k2": []string{"a2", "b2"},
+			},
+			output: []*swarmingv2.StringPair{
+				{
+					Key:   "k1",
+					Value: "a1",
+				},
+				{
+					Key:   "k1",
+					Value: "b1",
+				},
+				{
+					Key:   "k2",
+					Value: "a2",
+				},
+				{
+					Key:   "k2",
+					Value: "b2",
+				},
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := asPairs(tt.input)
+			if diff := typed.Diff(got, tt.output); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
 		})
 	}

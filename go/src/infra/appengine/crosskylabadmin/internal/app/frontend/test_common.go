@@ -12,10 +12,10 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"go.chromium.org/luci/appengine/gaetesting"
-	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/gae/service/datastore"
+	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -149,11 +149,11 @@ func (tf *testFixture) setStableVersionFactory(stableVersionFileContent string) 
 func expectDefaultPerBotRefresh(tf testFixture) {
 	tf.MockSwarming.EXPECT().ListSortedRecentTasksForBot(
 		gomock.Any(), gomock.Any(), gomock.Any(),
-	).AnyTimes().Return([]*swarming.SwarmingRpcsTaskResult{}, nil)
+	).AnyTimes().Return([]*swarmingv2.TaskResultResponse{}, nil)
 	tf.MockSwarming.EXPECT().ListBotTasks(gomock.Any()).AnyTimes().Return(
 		tf.MockBotTasksCursor)
 	tf.MockBotTasksCursor.EXPECT().Next(gomock.Any(), gomock.Any()).AnyTimes().Return(
-		[]*swarming.SwarmingRpcsTaskResult{}, nil)
+		[]*swarmingv2.TaskResultResponse{}, nil)
 }
 
 // BotForDUT returns BotInfos for DUTs with the given dut id.
@@ -163,8 +163,8 @@ func expectDefaultPerBotRefresh(tf testFixture) {
 // "a:x,y;b:z" will set the dimensions of the bot to ["a": ["x", "y"], "b":
 //
 //	["z"]]
-func BotForDUT(id string, state string, dims string) *swarming.SwarmingRpcsBotInfo {
-	sdims := make([]*swarming.SwarmingRpcsStringListPair, 0, 2)
+func BotForDUT(id string, state string, dims string) *swarmingv2.BotInfo {
+	sdims := make([]*swarmingv2.StringListPair, 0, 2)
 	if dims != "" {
 		ds := strings.Split(dims, ";")
 		for _, d := range ds {
@@ -173,7 +173,7 @@ func BotForDUT(id string, state string, dims string) *swarming.SwarmingRpcsBotIn
 			if len(kvs) != 2 {
 				panic(fmt.Sprintf("dims string |%s|%s has a non-keyval dimension |%s|", dims, ds, d))
 			}
-			sdim := &swarming.SwarmingRpcsStringListPair{
+			sdim := &swarmingv2.StringListPair{
 				Key:   strings.Trim(kvs[0], " "),
 				Value: []string{},
 			}
@@ -183,19 +183,19 @@ func BotForDUT(id string, state string, dims string) *swarming.SwarmingRpcsBotIn
 			sdims = append(sdims, sdim)
 		}
 	}
-	sdims = append(sdims, &swarming.SwarmingRpcsStringListPair{
+	sdims = append(sdims, &swarmingv2.StringListPair{
 		Key:   "dut_state",
 		Value: []string{state},
 	})
-	sdims = append(sdims, &swarming.SwarmingRpcsStringListPair{
+	sdims = append(sdims, &swarmingv2.StringListPair{
 		Key:   "dut_id",
 		Value: []string{id},
 	})
-	sdims = append(sdims, &swarming.SwarmingRpcsStringListPair{
+	sdims = append(sdims, &swarmingv2.StringListPair{
 		Key:   "dut_name",
 		Value: []string{id + "-host"},
 	})
-	return &swarming.SwarmingRpcsBotInfo{
+	return &swarmingv2.BotInfo{
 		BotId:      fmt.Sprintf("bot_%s", id),
 		Dimensions: sdims,
 	}

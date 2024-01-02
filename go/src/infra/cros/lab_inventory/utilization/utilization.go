@@ -8,12 +8,13 @@ package utilization
 import (
 	"context"
 	"fmt"
-	"infra/cros/dutstate"
-	invV1 "infra/libs/skylab/inventory"
 
-	"go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
+	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
+
+	"infra/cros/dutstate"
+	invV1 "infra/libs/skylab/inventory"
 )
 
 var dutmonMetric = metric.NewInt(
@@ -31,7 +32,7 @@ var dutmonMetric = metric.NewInt(
 //
 // The reported fields closely match those reported by dutmon, but the metrics
 // path is different.
-func ReportMetrics(ctx context.Context, bis []*swarming.SwarmingRpcsBotInfo) {
+func ReportMetrics(ctx context.Context, bis []*swarmingv2.BotInfo) {
 	c := make(counter)
 	for _, bi := range bis {
 		b := getBucketForBotInfo(bi)
@@ -101,7 +102,7 @@ func (c counter) Report(ctx context.Context) {
 	}
 }
 
-func getBucketForBotInfo(bi *swarming.SwarmingRpcsBotInfo) bucket {
+func getBucketForBotInfo(bi *swarmingv2.BotInfo) bucket {
 	b := bucket{
 		board: "[None]",
 		model: "[None]",
@@ -122,7 +123,7 @@ func getBucketForBotInfo(bi *swarming.SwarmingRpcsBotInfo) bucket {
 	return b
 }
 
-func getStatusForBotInfo(bi *swarming.SwarmingRpcsBotInfo) status {
+func getStatusForBotInfo(bi *swarmingv2.BotInfo) status {
 	dutState := ""
 	for _, d := range bi.Dimensions {
 		switch d.Key {
@@ -180,7 +181,7 @@ func getStatusForBotInfo(bi *swarming.SwarmingRpcsBotInfo) status {
 	}
 }
 
-func isBotHealthy(bi *swarming.SwarmingRpcsBotInfo) bool {
+func isBotHealthy(bi *swarmingv2.BotInfo) bool {
 	return !(bi.Deleted || bi.IsDead || bi.Quarantined)
 }
 

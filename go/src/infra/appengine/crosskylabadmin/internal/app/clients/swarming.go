@@ -15,22 +15,20 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
-
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/swarmingconverter"
 
 	"github.com/golang/protobuf/ptypes/duration"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/retry"
-	"go.chromium.org/luci/common/retry/transient"
+	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
+
+	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 )
 
 const (
@@ -66,6 +64,12 @@ const (
 	PoolDimensionKey = "pool"
 	// SwarmingTimeLayout is the layout used by swarming RPCs to specify timestamps.
 	SwarmingTimeLayout = "2006-01-02T15:04:05.999999999"
+
+	// maxSwarmingIterations is a sensible maximum number of iterations for functions that call swarming (possibly with pagination) in a loop.
+	maxSwarmingIterations = 3000
+
+	// swarmingQueryLimit is a sensible maximum number of entities to query at a time.
+	swarmingQueryLimit = 500
 )
 
 // paginationChunkSize is the number of items requested in a single page in
@@ -78,12 +82,12 @@ const paginationChunkSize = 100
 // used. Tests should use a fake.
 type SwarmingClient interface {
 	ListAliveIdleBotsInPool(c context.Context, pool string, dims strpair.Map) ([]*swarmingv2.BotInfo, error)
-	ListAliveBotsInPool(context.Context, string, strpair.Map) ([]*swarming.SwarmingRpcsBotInfo, error)
+	ListAliveBotsInPool(context.Context, string, strpair.Map) ([]*swarmingv2.BotInfo, error)
 	ListBotTasks(id string) BotTasksCursor
-	ListRecentTasks(c context.Context, tags []string, state string, limit int) ([]*swarming.SwarmingRpcsTaskResult, error)
-	ListSortedRecentTasksForBot(c context.Context, botID string, limit int) ([]*swarming.SwarmingRpcsTaskResult, error)
+	ListRecentTasks(c context.Context, tags []string, state swarmingv2.StateQuery, limit int32) ([]*swarmingv2.TaskResultResponse, error)
+	ListSortedRecentTasksForBot(c context.Context, botID string, limit int32) ([]*swarmingv2.TaskResultResponse, error)
 	CreateTask(c context.Context, name string, args *SwarmingCreateTaskArgs) (string, error)
-	GetTaskResult(ctx context.Context, tid string) (*swarming.SwarmingRpcsTaskResult, error)
+	GetTaskResult(ctx context.Context, tid string) (*swarmingv2.TaskResultResponse, error)
 }
 
 // SwarmingCreateTaskArgs contains the arguments to SwarmingClient.CreateTask.
@@ -99,10 +103,10 @@ type SwarmingCreateTaskArgs struct {
 	// If non-empty, the task targets a dut in the given state.
 	DutState             string
 	DutName              string
-	ExecutionTimeoutSecs int64
-	ExpirationSecs       int64
+	ExecutionTimeoutSecs int32
+	ExpirationSecs       int32
 	Pool                 string
-	Priority             int64
+	Priority             int32
 	Tags                 []string
 	User                 string
 	Realm                string
@@ -110,7 +114,9 @@ type SwarmingCreateTaskArgs struct {
 }
 
 type swarmingClientImpl struct {
-	servicev1 *swarming.Service
+	botsClient     swarmingv2.BotsClient
+	swarmingClient swarmingv2.SwarmingClient
+	tasksClient    swarmingv2.TasksClient
 }
 
 // NewSwarmingClient returns a SwarmingClient for interaction with the Swarming
@@ -122,86 +128,111 @@ func NewSwarmingClient(c context.Context, host string) (SwarmingClient, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get RPC transport for host %s", host).Err()
 	}
-	srv, err := swarming.New(&http.Client{Transport: t})
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to create swarming client for host %s", host).Err()
+	prpcClient := &prpc.Client{
+		C:    &http.Client{Transport: t},
+		Host: host,
+		Options: &prpc.Options{
+			UserAgent: "crosskylabadmin",
+		},
 	}
-	srv.BasePath = fmt.Sprintf("https://%s/_ah/api/swarming/v1/", host)
+	swarmingClient := swarmingv2.NewSwarmingClient(prpcClient)
+	botsClient := swarmingv2.NewBotsClient(prpcClient)
+	tasksClient := swarmingv2.NewTasksClient(prpcClient)
 	return &swarmingClientImpl{
-		servicev1: srv,
+		botsClient:     botsClient,
+		swarmingClient: swarmingClient,
+		tasksClient:    tasksClient,
 	}, nil
 }
 
 // ListAliveIdleBotsInPool lists the Swarming bots in the given pool.
 //
 // Use dims to restrict to dimensions beyond pool.
-func (sc *swarmingClientImpl) ListAliveIdleBotsInPool(c context.Context, pool string, dims strpair.Map) ([]*swarmingv2.BotInfo, error) {
-	var botsInfo []*swarming.SwarmingRpcsBotInfo
+func (sc *swarmingClientImpl) ListAliveIdleBotsInPool(ctx context.Context, pool string, dims strpair.Map) ([]*swarmingv2.BotInfo, error) {
 	dims.Set(PoolDimensionKey, pool)
-	call := sc.servicev1.Bots.List().Dimensions(dims.Format()...).IsDead("FALSE").IsBusy("FALSE")
-	for {
-		ic, cancel := context.WithTimeout(c, 60*time.Second)
-		defer cancel()
-		response, err := call.Context(ic).Do()
+	dimsPairs := asPairs(dims)
+
+	getRequest := func(cursor string) *swarmingv2.BotsRequest {
+		return &swarmingv2.BotsRequest{
+			Cursor:     cursor,
+			Dimensions: dimsPairs,
+			IsDead:     swarmingv2.NullableBool_FALSE,
+			IsBusy:     swarmingv2.NullableBool_FALSE,
+			Limit:      swarmingQueryLimit,
+		}
+	}
+
+	cursor := ""
+	var out []*swarmingv2.BotInfo
+
+	for i := 0; i < maxSwarmingIterations; i++ {
+		resp, err := sc.botsClient.ListBots(ctx, getRequest(cursor))
 		if err != nil {
 			return nil, errors.Reason("failed to list alive and idle bots in pool %s", pool).InternalReason(err.Error()).Err()
 		}
-		botsInfo = append(botsInfo, response.Items...)
-		if response.Cursor == "" {
-			break
+		out = append(out, resp.GetItems()...)
+		cursor = resp.GetCursor()
+		if cursor == "" {
+			return out, nil
 		}
-		call = call.Cursor(response.Cursor)
 	}
-	return swarmingconverter.ConvertSwarmingRpcsBotInfos(botsInfo), nil
+
+	return nil, errors.New("internal error in app/clients/swarming.go: we iterated too much over the alive idle bots without encountering an error. Consider raising the limits.")
 }
 
 // ListAliveBotsInPool lists the Swarming bots in the given pool.
 //
 // Use dims to restrict to dimensions beyond pool.
-func (sc *swarmingClientImpl) ListAliveBotsInPool(c context.Context, pool string, dims strpair.Map) ([]*swarming.SwarmingRpcsBotInfo, error) {
-	bis := []*swarming.SwarmingRpcsBotInfo{}
+func (sc *swarmingClientImpl) ListAliveBotsInPool(ctx context.Context, pool string, dims strpair.Map) ([]*swarmingv2.BotInfo, error) {
 	dims.Set(PoolDimensionKey, pool)
-	call := sc.servicev1.Bots.List().Dimensions(dims.Format()...).IsDead("FALSE").Limit(500)
-	for {
-		var response *swarming.SwarmingRpcsBotList
-		f := func() (err error) {
-			ic, cancel := context.WithTimeout(c, 60*time.Second)
-			defer cancel()
-			response, err = call.Context(ic).Do()
-			return err
+	dimsPairs := asPairs(dims)
+
+	getRequest := func(cursor string) *swarmingv2.BotsRequest {
+		return &swarmingv2.BotsRequest{
+			Cursor:     cursor,
+			Dimensions: dimsPairs,
+			IsDead:     swarmingv2.NullableBool_FALSE,
+			Limit:      swarmingQueryLimit,
 		}
-		err := retry.Retry(c, transient.Only(retry.Default), f, retry.LogCallback(c, "retry get Swarming bots"))
-		if err != nil {
-			return nil, errors.Reason("failed to list alive bots in pool %s", pool).InternalReason(err.Error()).Err()
-		}
-		bis = append(bis, response.Items...)
-		if response.Cursor == "" {
-			break
-		}
-		call = call.Cursor(response.Cursor)
 	}
-	return bis, nil
+
+	cursor := ""
+	var out []*swarmingv2.BotInfo
+
+	for i := 0; i < maxSwarmingIterations; i++ {
+		resp, err := sc.botsClient.ListBots(ctx, getRequest(cursor))
+		if err != nil {
+			return nil, errors.Reason("failed to list alive and idle bots in pool %s", pool).InternalReason(err.Error()).Err()
+		}
+		out = append(out, resp.GetItems()...)
+		cursor = resp.GetCursor()
+		if cursor == "" {
+			return out, nil
+		}
+	}
+
+	return nil, errors.New("internal error in app/clients/swarming.go: we iterated too much over the alive bots without encountering an error. Consider raising the limits.")
 }
 
 // CreateTask creates a Swarming task.
 //
 // On success, CreateTask returns the opaque task ID returned by Swarming.
-func (sc *swarmingClientImpl) CreateTask(c context.Context, name string, args *SwarmingCreateTaskArgs) (string, error) {
+func (sc *swarmingClientImpl) CreateTask(ctx context.Context, name string, args *SwarmingCreateTaskArgs) (string, error) {
 
 	dims, err := convertToDimensions(args)
 	if err != nil {
 		return "", errors.Reason("Failed to create dimentions").InternalReason(err.Error()).Err()
 	}
 
-	ntr := &swarming.SwarmingRpcsNewTaskRequest{
+	req := &swarmingv2.NewTaskRequest{
 		EvaluateOnly: false,
 		Name:         name,
 		Priority:     args.Priority,
 		Tags:         args.Tags,
-		TaskSlices: []*swarming.SwarmingRpcsTaskSlice{
+		TaskSlices: []*swarmingv2.TaskSlice{
 			{
 				ExpirationSecs: args.ExpirationSecs,
-				Properties: &swarming.SwarmingRpcsTaskProperties{
+				Properties: &swarmingv2.TaskProperties{
 					Command:              args.Cmd,
 					Dimensions:           dims,
 					ExecutionTimeoutSecs: args.ExecutionTimeoutSecs,
@@ -217,9 +248,7 @@ func (sc *swarmingClientImpl) CreateTask(c context.Context, name string, args *S
 		Realm:          args.Realm,
 		ServiceAccount: args.ServiceAccount,
 	}
-	ic, cancel := context.WithTimeout(c, 60*time.Second)
-	defer cancel()
-	resp, err := sc.servicev1.Tasks.New(ntr).Context(ic).Do()
+	resp, err := sc.tasksClient.NewTask(ctx, req)
 	if err != nil {
 		return "", errors.Reason("Failed to create task").InternalReason(err.Error()).Err()
 	}
@@ -229,34 +258,34 @@ func (sc *swarmingClientImpl) CreateTask(c context.Context, name string, args *S
 // Converts task args to the key-value dimension set.
 //
 // Minimum required one of BotID, DutID or DutName
-func convertToDimensions(args *SwarmingCreateTaskArgs) ([]*swarming.SwarmingRpcsStringPair, error) {
+func convertToDimensions(args *SwarmingCreateTaskArgs) ([]*swarmingv2.StringPair, error) {
 	if args.DutID == "" && args.DutName == "" && args.BotID == "" {
 		return nil, errors.Reason("invalid argument: one of (DutID, DutName, BotID) need to be specified").Err()
 	}
-	dims := []*swarming.SwarmingRpcsStringPair{
+	dims := []*swarmingv2.StringPair{
 		{
 			Key:   PoolDimensionKey,
 			Value: args.Pool,
 		},
 	}
 	if args.BotID != "" {
-		dims = append(dims, &swarming.SwarmingRpcsStringPair{
+		dims = append(dims, &swarmingv2.StringPair{
 			Key:   BotIDDimensionKey,
 			Value: args.BotID,
 		})
 	} else if args.DutID != "" {
-		dims = append(dims, &swarming.SwarmingRpcsStringPair{
+		dims = append(dims, &swarmingv2.StringPair{
 			Key:   DutIDDimensionKey,
 			Value: args.DutID,
 		})
 	} else if args.DutName != "" {
-		dims = append(dims, &swarming.SwarmingRpcsStringPair{
+		dims = append(dims, &swarmingv2.StringPair{
 			Key:   DutNameDimensionKey,
 			Value: args.DutName,
 		})
 	}
 	if args.DutState != "" {
-		dims = append(dims, &swarming.SwarmingRpcsStringPair{
+		dims = append(dims, &swarmingv2.StringPair{
 			Key:   DutStateDimensionKey,
 			Value: args.DutState,
 		})
@@ -265,13 +294,12 @@ func convertToDimensions(args *SwarmingCreateTaskArgs) ([]*swarming.SwarmingRpcs
 }
 
 // GetTaskResult gets the task result for a given task ID.
-func (sc *swarmingClientImpl) GetTaskResult(ctx context.Context, tid string) (*swarming.SwarmingRpcsTaskResult, error) {
-	call := sc.servicev1.Task.Result(tid)
-	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
-	defer cancel()
-	resp, err := call.Context(ctx).Do()
+func (sc *swarmingClientImpl) GetTaskResult(ctx context.Context, tid string) (*swarmingv2.TaskResultResponse, error) {
+	resp, err := sc.tasksClient.GetResult(ctx, &swarmingv2.TaskIdWithPerfRequest{
+		TaskId: tid,
+	})
 	if err != nil {
-		return nil, errors.Reason("failed to get result for task %s", tid).InternalReason(err.Error()).Err()
+		return nil, errors.Annotate(err, "failed to get result for task %s", tid).Err()
 	}
 	return resp, nil
 }
@@ -280,70 +308,54 @@ func (sc *swarmingClientImpl) GetTaskResult(ctx context.Context, tid string) (*s
 //
 // The most recent |limit| tasks are returned.
 // state may be left "" to skip filtering by state.
-func (sc *swarmingClientImpl) ListRecentTasks(c context.Context, tags []string, state string, limit int) ([]*swarming.SwarmingRpcsTaskResult, error) {
+func (sc *swarmingClientImpl) ListRecentTasks(ctx context.Context, tags []string, state swarmingv2.StateQuery, limit int32) ([]*swarmingv2.TaskResultResponse, error) {
 	if limit < 0 {
 		panic(fmt.Sprintf("limit set to %d which is < 0", limit))
 	}
 
-	trs := []*swarming.SwarmingRpcsTaskResult{}
-	call := sc.servicev1.Tasks.List().Tags(tags...)
-	if state != "" {
-		call.State(state)
+	req := &swarmingv2.TasksWithPerfRequest{
+		Tags:  tags,
+		Limit: limit,
+		State: state,
 	}
 
-	// Limit() only limits the number of tasks returned in a single page. The
-	// client must keep track of the total number returned across the calls.
-	p := Pager{Remaining: limit}
-	for {
-		chunk := p.Next()
-		if chunk == 0 {
-			break
-		}
-		ic, cancel := context.WithTimeout(c, 60*time.Second)
-		defer cancel()
-		resp, err := call.Limit(int64(chunk)).Context(ic).Do()
-		if err != nil {
-			return nil, errors.Reason("failed to list tasks with tags %s", strings.Join(tags, " ")).InternalReason(err.Error()).Err()
-		}
-		trs = append(trs, resp.Items...)
-		p.Record(len(resp.Items))
-		if resp.Cursor == "" {
-			break
-		}
-		call = call.Cursor(resp.Cursor)
+	resp, err := sc.tasksClient.ListTasks(ctx, req)
+	if err != nil {
+		return nil, errors.Reason("failed to list tasks with tags %s", strings.Join(tags, " ")).InternalReason(err.Error()).Err()
 	}
-	return trs, nil
+
+	return resp.GetItems(), nil
 }
 
 // BotTasksCursor tracks a paginated query for Swarming bot tasks.
 type BotTasksCursor interface {
-	Next(context.Context, int64) ([]*swarming.SwarmingRpcsTaskResult, error)
+	Next(context.Context, int32) ([]*swarmingv2.TaskResultResponse, error)
 }
 
 // botTasksCursorImpl tracks a paginated query for Swarming bot tasks.
 type botTasksCursorImpl struct {
-	description string
-	call        *swarming.BotTasksCall
-	done        bool
+	description    string
+	botID          string
+	cursor         string
+	swarmingClient *swarmingClientImpl
+	done           bool
 }
 
 // Next returns at most the next N tasks from the task cursor.
-func (c *botTasksCursorImpl) Next(ctx context.Context, n int64) ([]*swarming.SwarmingRpcsTaskResult, error) {
+func (c *botTasksCursorImpl) Next(ctx context.Context, n int32) ([]*swarmingv2.TaskResultResponse, error) {
 	if c.done || n < 1 {
 		return nil, nil
 	}
-	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
-	defer cancel()
-	resp, err := c.call.Limit(n).Context(ctx).Do()
+	resp, err := c.swarmingClient.botsClient.ListBotTasks(ctx, &swarmingv2.BotTasksRequest{
+		BotId:  c.botID,
+		Limit:  n,
+		Cursor: c.cursor,
+	})
 	if err != nil {
-		return nil, errors.Reason("failed to list %s", c.description).InternalReason(err.Error()).Err()
+		return nil, err
 	}
-	if resp.Cursor != "" {
-		c.call.Cursor(resp.Cursor)
-	} else {
-		c.done = true
-	}
-	return resp.Items, nil
+	c.cursor = resp.GetCursor()
+	return resp.GetItems(), nil
 }
 
 // ListBotTasks lists the bot's tasks.  Since the query is paginated,
@@ -351,10 +363,12 @@ func (c *botTasksCursorImpl) Next(ctx context.Context, n int64) ([]*swarming.Swa
 func (sc *swarmingClientImpl) ListBotTasks(id string) BotTasksCursor {
 	// TODO(pprabhu): These should really be sorted by STARTED_TS.
 	// See crbug.com/857595 and crbug.com/857598
-	call := sc.servicev1.Bot.Tasks(id).Sort("CREATED_TS")
 	return &botTasksCursorImpl{
-		description: fmt.Sprintf("tasks for bot %s", id),
-		call:        call,
+		description:    fmt.Sprintf("tasks for bot %s", id),
+		botID:          id,
+		cursor:         id,
+		swarmingClient: sc,
+		done:           false,
 	}
 }
 
@@ -363,8 +377,8 @@ func (sc *swarmingClientImpl) ListBotTasks(id string) BotTasksCursor {
 //
 // duration specifies how far in the back are the tasks allowed to have
 // started. limit limits the number of tasks returned.
-func (sc *swarmingClientImpl) ListSortedRecentTasksForBot(ctx context.Context, botID string, limit int) ([]*swarming.SwarmingRpcsTaskResult, error) {
-	var trs []*swarming.SwarmingRpcsTaskResult
+func (sc *swarmingClientImpl) ListSortedRecentTasksForBot(ctx context.Context, botID string, limit int32) ([]*swarmingv2.TaskResultResponse, error) {
+	var trs []*swarmingv2.TaskResultResponse
 	c := sc.ListBotTasks(botID)
 	p := Pager{Remaining: limit}
 	for {
@@ -372,21 +386,21 @@ func (sc *swarmingClientImpl) ListSortedRecentTasksForBot(ctx context.Context, b
 		if chunk == 0 {
 			break
 		}
-		trs2, err := c.Next(ctx, int64(chunk))
+		trs2, err := c.Next(ctx, chunk)
 		if err != nil {
 			return nil, err
 		}
 		if len(trs2) == 0 {
 			break
 		}
-		p.Record(len(trs2))
+		p.Record(int32(len(trs2)))
 		trs = append(trs, trs2...)
 	}
 	return trs, nil
 }
 
 // TimeSinceBotTask calls TimeSinceBotTaskN with time.Now().
-func TimeSinceBotTask(tr *swarming.SwarmingRpcsTaskResult) (*duration.Duration, error) {
+func TimeSinceBotTask(tr *swarmingv2.TaskResultResponse) (*duration.Duration, error) {
 	return TimeSinceBotTaskN(tr, time.Now())
 }
 
@@ -396,8 +410,8 @@ func TimeSinceBotTask(tr *swarming.SwarmingRpcsTaskResult) (*duration.Duration, 
 // This function only considers tasks that were executed by Swarming to a
 // specific bot. For tasks that were never executed on a bot, this function
 // returns nil duration.
-func TimeSinceBotTaskN(tr *swarming.SwarmingRpcsTaskResult, now time.Time) (*duration.Duration, error) {
-	if tr.State == "RUNNING" {
+func TimeSinceBotTaskN(tr *swarmingv2.TaskResultResponse, now time.Time) (*duration.Duration, error) {
+	if tr.State == swarmingv2.TaskState_RUNNING {
 		return &duration.Duration{}, nil
 	}
 	t, err := TaskDoneTime(tr)
@@ -413,25 +427,18 @@ func TimeSinceBotTaskN(tr *swarming.SwarmingRpcsTaskResult, now time.Time) (*dur
 // TaskDoneTime returns the time when the given task completed on a
 // bot.  If the task was never run or is still running, this function
 // returns a zero time.
-func TaskDoneTime(tr *swarming.SwarmingRpcsTaskResult) (time.Time, error) {
+func TaskDoneTime(tr *swarmingv2.TaskResultResponse) (time.Time, error) {
 	switch tr.State {
-	case "RUNNING":
+	case swarmingv2.TaskState_RUNNING:
 		return time.Time{}, nil
-	case "COMPLETED", "TIMED_OUT":
+	case swarmingv2.TaskState_COMPLETED, swarmingv2.TaskState_TIMED_OUT:
 		// TIMED_OUT tasks are considered to have completed as opposed to EXPIRED
 		// tasks, which set tr.AbandonedTs
-		t, err := time.Parse(SwarmingTimeLayout, tr.CompletedTs)
-		if err != nil {
-			return time.Time{}, errors.Annotate(err, "get task done time").Err()
-		}
-		return t, nil
-	case "KILLED":
-		t, err := time.Parse(SwarmingTimeLayout, tr.AbandonedTs)
-		if err != nil {
-			return time.Time{}, errors.Annotate(err, "get task done time").Err()
-		}
-		return t, nil
-	case "BOT_DIED", "CANCELED", "EXPIRED", "NO_RESOURCE", "PENDING":
+		return tr.CompletedTs.AsTime(), nil
+	case swarmingv2.TaskState_KILLED:
+		return tr.AbandonedTs.AsTime(), nil
+	// TODO(b/317136548): Replace this with a default.
+	case swarmingv2.TaskState_BOT_DIED, swarmingv2.TaskState_CANCELED, swarmingv2.TaskState_EXPIRED, swarmingv2.TaskState_NO_RESOURCE, swarmingv2.TaskState_PENDING:
 		// These states do not indicate any actual run of a task on the dut.
 		return time.Time{}, nil
 	default:
@@ -444,12 +451,12 @@ type Pager struct {
 	// Remaining is set to the number of items to retrieve.  This
 	// can be modified after Pager has been used, but not
 	// concurrently.
-	Remaining int
+	Remaining int32
 }
 
 // Next returns the number of items to request.  If there are no more
 // items to request, returns 0.
-func (p *Pager) Next() int {
+func (p *Pager) Next() int32 {
 	switch {
 	case p.Remaining < 0:
 		return 0
@@ -462,12 +469,12 @@ func (p *Pager) Next() int {
 
 // Record records that items have been received (since a request may
 // not return the exact number of items requested).
-func (p *Pager) Record(n int) {
+func (p *Pager) Record(n int32) {
 	p.Remaining -= n
 }
 
 // GetStateDimension gets the dut_state value from a dimension slice.
-func GetStateDimension(dims []*swarming.SwarmingRpcsStringListPair) fleet.DutState {
+func GetStateDimension(dims []*swarmingv2.StringListPair) fleet.DutState {
 	for _, p := range dims {
 		if p.Key != DutStateDimensionKey {
 			continue
@@ -525,4 +532,29 @@ var DutStateRevMap = map[fleet.DutState]string{
 	fleet.DutState_NeedsManualRepair: "needs_manual_repair",
 	fleet.DutState_NeedsReplacement:  "needs_replacement",
 	fleet.DutState_NeedsDeploy:       "needs_deploy",
+}
+
+// asPairs converts a map into a sorted slice of pairs.
+func asPairs(m strpair.Map) []*swarmingv2.StringPair {
+	if len(m) == 0 {
+		return nil
+	}
+	res := make([]*swarmingv2.StringPair, 0, len(m))
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		values := m[k]
+		sortedValues := values[:]
+		sort.Strings(sortedValues)
+		for _, v := range sortedValues {
+			res = append(res, &swarmingv2.StringPair{
+				Key:   k,
+				Value: v,
+			})
+		}
+	}
+	return res
 }

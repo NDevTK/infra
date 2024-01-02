@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"time"
 
-	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -146,7 +145,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 			return errors.Annotate(err, "failed to obtain Swarming client").Err()
 		}
 		// Schedule audit tasks to ready|needs_repair|needs_reset|repair_failed DUTs.
-		var bots []*swarming.SwarmingRpcsBotInfo
+		var bots []*swarmingv2.BotInfo
 		f := func() (err error) {
 			dims := make(strpair.Map)
 			bots, err = sc.ListAliveBotsInPool(ctx, swarmingPool, dims)
@@ -231,18 +230,18 @@ func (tsi *TrackerServerImpl) ReportBots(ctx context.Context, req *fleet.ReportB
 	}
 
 	bots, err := sc.ListAliveBotsInPool(ctx, cfg.Swarming.BotPool, strpair.Map{})
-	utilization.ReportMetrics(ctx, flattenAndDedpulicateBots([][]*swarming.SwarmingRpcsBotInfo{bots}))
+	utilization.ReportMetrics(ctx, flattenAndDedpulicateBots([][]*swarmingv2.BotInfo{bots}))
 	return &fleet.ReportBotsResponse{}, nil
 }
 
-func flattenAndDedpulicateBots(nb [][]*swarming.SwarmingRpcsBotInfo) []*swarming.SwarmingRpcsBotInfo {
-	bm := make(map[string]*swarming.SwarmingRpcsBotInfo)
+func flattenAndDedpulicateBots(nb [][]*swarmingv2.BotInfo) []*swarmingv2.BotInfo {
+	bm := make(map[string]*swarmingv2.BotInfo)
 	for _, bs := range nb {
 		for _, b := range bs {
 			bm[b.BotId] = b
 		}
 	}
-	bots := make([]*swarming.SwarmingRpcsBotInfo, 0, len(bm))
+	bots := make([]*swarmingv2.BotInfo, 0, len(bm))
 	for _, v := range bm {
 		bots = append(bots, v)
 	}
@@ -281,7 +280,7 @@ func identifyBotsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo) (rep
 }
 
 // identifyBotsForAudit identifies duts to run admin audit.
-func identifyBotsForAudit(ctx context.Context, bots []*swarming.SwarmingRpcsBotInfo, dutStateMap map[fleet.DutState]bool, auditTask fleet.AuditTask) []string {
+func identifyBotsForAudit(ctx context.Context, bots []*swarmingv2.BotInfo, dutStateMap map[fleet.DutState]bool, auditTask fleet.AuditTask) []string {
 	logging.Infof(ctx, "Filtering bots for task: %s", auditTask)
 	botIDs := make([]string, 0, len(bots))
 	for _, b := range bots {
