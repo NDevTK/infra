@@ -4,7 +4,6 @@ cron:
   schedule: every 6 hours synchronized
   timezone: America/Los_Angeles
 
-cron:
 - description: "Update CQ Presubmit Data"
   url: /internal/cron/update-presubmit-data
   schedule: every 24 hours synchronized
