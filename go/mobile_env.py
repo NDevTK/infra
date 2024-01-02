@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -8,8 +8,6 @@
 It wraps env.py, runs `gomobile init`, and adds mobile-specific env vars.
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
 assert __name__ == '__main__'
 
 import os
