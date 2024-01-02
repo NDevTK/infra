@@ -7,7 +7,6 @@ package coverage
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
@@ -17,10 +16,6 @@ import (
 	"infra/appengine/chrome-test-health/api"
 	"infra/appengine/chrome-test-health/datastorage"
 	"infra/appengine/chrome-test-health/internal/coverage/entities"
-)
-
-var (
-	ErrInternalServerError = errors.New("Internal Server Error")
 )
 
 const (
