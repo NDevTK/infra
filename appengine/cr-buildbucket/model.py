@@ -25,7 +25,7 @@ import config
 import experiments
 
 BEGINING_OF_THE_WORLD = datetime.datetime(2010, 1, 1, 0, 0, 0, 0)
-BUILD_TIMEOUT = datetime.timedelta(days=2)
+BUILD_TIMEOUT = datetime.timedelta(days=5)
 
 # For how long to store builds.
 BUILD_STORAGE_DURATION = datetime.timedelta(days=30 * 18)  # ~18mo

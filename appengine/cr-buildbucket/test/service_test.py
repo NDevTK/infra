@@ -427,7 +427,7 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     new_expiration_date = utils.utcnow() + datetime.timedelta(minutes=1)
     exc_regex = (
         'Build was marked as timed out '
-        'because it did not complete for 2 days'
+        'because it did not complete for 5 days'
     )
     with self.assertRaisesRegexp(errors.BuildIsCompletedError, exc_regex):
       service.heartbeat(1, 0, lease_expiration_date=new_expiration_date)
