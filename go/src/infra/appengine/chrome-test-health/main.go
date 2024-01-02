@@ -36,6 +36,7 @@ import (
 
 	"infra/appengine/chrome-test-health/api"
 	"infra/appengine/chrome-test-health/internal/coverage"
+	covCron "infra/appengine/chrome-test-health/internal/coverage/cron"
 	"infra/appengine/chrome-test-health/internal/testmetrics"
 )
 
@@ -99,6 +100,10 @@ type CoverageClient interface {
 	) (*api.GetIncrementalCoverageDataOneYearResponse, error)
 }
 
+type CoverageCronClient interface {
+	UpdatePresubmitData(ctx context.Context) error
+}
+
 func main() {
 	modules := []module.Module{
 		cron.NewModuleFromFlags(),
@@ -119,11 +124,17 @@ func main() {
 		if err != nil {
 			return err
 		}
+		coverageCronClient, err := setupCoverageCronClient(srv)
+		if err != nil {
+			return err
+		}
 		cov = &coverageServer{
-			Client: coverageClient,
+			Client:     coverageClient,
+			CronClient: coverageCronClient,
 		}
 
 		cron.RegisterHandler("update-daily-summary", updateDailySummary)
+		cron.RegisterHandler("update-presubmit-data", updatePresubmitData)
 
 		// All RPC APIs.
 		api.RegisterStatsServer(srv, stats)
@@ -203,12 +214,21 @@ func setupCoverageClient(srv *server.Server) (*coverage.Client, error) {
 	return client, nil
 }
 
+func setupCoverageCronClient(srv *server.Server) (*covCron.CronClient, error) {
+	client, err := covCron.NewClient(srv.Context, *finditCloudProject, srv.Options.CloudProject)
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
 type testResourcesServer struct {
 	Client Client
 }
 
 type coverageServer struct {
-	Client CoverageClient
+	Client     CoverageClient
+	CronClient CoverageCronClient
 }
 
 func (covServer *coverageServer) GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error) {
@@ -328,6 +348,17 @@ func (covServer *coverageServer) GetIncrementalCoverageDataOneYear(
 		return nil, err
 	}
 	return resp, nil
+}
+
+func updatePresubmitData(ctx context.Context) error {
+	deadlineCtx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Hour*2))
+	defer cancel()
+	err := cov.CronClient.UpdatePresubmitData(deadlineCtx)
+	if err != nil {
+		logging.Errorf(deadlineCtx, "Presubmit: Failed backfilling data. Error: %w", err)
+		return err
+	}
+	return nil
 }
 
 func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error) {
