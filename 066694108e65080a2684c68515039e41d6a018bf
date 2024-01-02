@@ -16,6 +16,24 @@
       "message": "3.9 was the latest python version when this version of mysqlclient was released, so it may not have been tested on 3.11. However, I don\u0027t see any commits to the project after this that mention addressing 3.10 or 3.11 compatibility, so it ought to work.",
       "revId": "066694108e65080a2684c68515039e41d6a018bf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "12308653_fe06ee6a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2024-01-02T23:01:24Z",
+      "side": 1,
+      "message": "They do have a wheel built for cp311 (dated 2022-06-22, so before 3.11 release), so I guess they must\u0027ve tested it.\nhttps://pypi.org/project/mysqlclient/2.1.1/#files",
+      "parentUuid": "38c59e1e_6ba32d46",
+      "revId": "066694108e65080a2684c68515039e41d6a018bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
