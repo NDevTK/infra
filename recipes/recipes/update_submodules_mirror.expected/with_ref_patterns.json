@@ -126,6 +126,7 @@
     "cmd": [
       "git",
       "checkout",
+      "-f",
       "refs/remotes/origin/main"
     ],
     "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
@@ -258,6 +259,7 @@
     "cmd": [
       "git",
       "checkout",
+      "-f",
       "refs/remotes/branch-heads/5172"
     ],
     "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
@@ -390,6 +392,7 @@
     "cmd": [
       "git",
       "checkout",
+      "-f",
       "refs/remotes/branch-heads/5173"
     ],
     "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
@@ -522,6 +525,7 @@
     "cmd": [
       "git",
       "checkout",
+      "-f",
       "refs/remotes/branch-heads/5174"
     ],
     "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
