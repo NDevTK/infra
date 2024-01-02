@@ -41,6 +41,7 @@ from testing import testing_helpers
 from testing_utils import testing
 from tracker import tracker_bizobj
 from tracker import tracker_constants
+from redirect import redirect_utils
 
 
 def MakeFakeServiceManager():
@@ -1977,6 +1978,21 @@ class AllBaseChecksTest(unittest.TestCase):
     with self.assertRaises(permissions.PermissionException):
       api_svc_v1.api_base_checks(
           request, requester, self.services, None, self.auth_client_ids, [])
+
+  def testNonLiveMigratedProject(self):
+    archived_project = 'archived-migrated-project'
+    redirect_utils.PROJECT_REDIRECT_MAP = {
+        'archived-migrated-project': 'https://example.dev'
+    }
+    self.services.project.TestAddProject(
+        archived_project,
+        owner_ids=[111],
+        state=project_pb2.ProjectState.ARCHIVED)
+    request = RequestMock()
+    request.projectId = archived_project
+    requester = RequesterMock(email='test@example.com')
+    api_svc_v1.api_base_checks(
+        request, requester, self.services, None, self.auth_client_ids, [])
 
   def testNoViewProjectPermission(self):
     nonmember_email = 'nonmember@example.com'
