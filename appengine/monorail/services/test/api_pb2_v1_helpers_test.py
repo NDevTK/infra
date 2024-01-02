@@ -278,7 +278,8 @@ class ApiV1HelpersTest(unittest.TestCase):
     # TODO(jrobbins): set up a lot more fields.
 
     for cls in [api_pb2_v1.IssueWrapper, api_pb2_v1.IssuesGetInsertResponse]:
-      result = api_pb2_v1_helpers.convert_issue(cls, issue, mar, self.services)
+      result = api_pb2_v1_helpers.convert_issue(
+          cls, issue, mar, self.services, migrated_id='12345')
       self.assertEqual(1, result.id)
       self.assertEqual('one', result.title)
       self.assertEqual('one', result.summary)
@@ -322,6 +323,7 @@ class ApiV1HelpersTest(unittest.TestCase):
           [api_pb2_v1.Phase(phaseName="JustAPhase", rank=4),
            api_pb2_v1.Phase(phaseName="NotAPhase", rank=9)
           ])
+      self.assertEqual('12345', result.migrated_id)
 
       # TODO(jrobbins): check a lot more fields.
 

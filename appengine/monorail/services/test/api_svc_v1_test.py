@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import datetime
+from unittest import mock
 import endpoints
 import logging
 from mock import Mock, patch, ANY
@@ -303,6 +304,41 @@ class MonorailApiTest(testing.EndpointsTestCase):
     self.assertEqual('API', resp['components'][0])
     self.assertEqual('Field1', resp['fieldValues'][0]['fieldName'])
     self.assertEqual('11', resp['fieldValues'][0]['fieldValue'])
+
+  @mock.patch('businesslogic.work_env.WorkEnv.GetIssueMigratedID')
+  def testIssuesGet_GetIssue_MigratedId(self, mockGetIssueMigratedId):
+    """Get the requested issue."""
+    mockGetIssueMigratedId.return_value = '23456'
+
+    self.services.project.TestAddProject(
+        'test-project', owner_ids=[222], project_id=12345)
+    self.SetUpComponents(12345, 1, 'API')
+    self.SetUpFieldDefs(1, 12345, 'Field1', tracker_pb2.FieldTypes.INT_TYPE)
+
+    fv = tracker_pb2.FieldValue(field_id=1, int_value=11)
+    issue1 = fake.MakeTestIssue(
+        project_id=12345,
+        local_id=1,
+        owner_id=222,
+        reporter_id=111,
+        status='New',
+        summary='sum',
+        component_ids=[1],
+        field_values=[fv])
+    self.services.issue.TestAddIssue(issue1)
+
+    resp = self.call_api('issues_get', self.request).json_body
+    self.assertEqual(1, resp['id'])
+    self.assertEqual('New', resp['status'])
+    self.assertEqual('open', resp['state'])
+    self.assertFalse(resp['canEdit'])
+    self.assertTrue(resp['canComment'])
+    self.assertEqual('requester@example.com', resp['author']['name'])
+    self.assertEqual('user@example.com', resp['owner']['name'])
+    self.assertEqual('API', resp['components'][0])
+    self.assertEqual('Field1', resp['fieldValues'][0]['fieldName'])
+    self.assertEqual('11', resp['fieldValues'][0]['fieldValue'])
+    self.assertEqual('23456', resp['migrated_id'])
 
   @patch('framework.cloud_tasks_helpers.create_task')
   def testIssuesInsert_FreezeLabels(self, _create_task_mock):

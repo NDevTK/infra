@@ -218,7 +218,7 @@ def convert_phases(phases):
   return converted_phases
 
 
-def convert_issue(cls, issue, mar, services):
+def convert_issue(cls, issue, mar, services, migrated_id=None):
   """Convert Monorail Issue PB to API IssuesGetInsertResponse."""
 
   config = services.config.GetProjectConfig(mar.cnxn, issue.project_id)
@@ -319,6 +319,8 @@ def convert_issue(cls, issue, mar, services):
   if issue.component_modified_timestamp:
     resp.component_modified = datetime.datetime.fromtimestamp(
         issue.component_modified_timestamp)
+  if migrated_id is not None:
+    resp.migrated_id = migrated_id
   return resp
 
 

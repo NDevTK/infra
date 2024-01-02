@@ -250,7 +250,7 @@ class IssueWrapper(messages.Message):
   component_modified = message_types.DateTimeField(27)
   approvalValues = messages.MessageField(Approval, 28, repeated=True)
   phases = messages.MessageField(Phase, 29, repeated=True)
-
+  migrated_id = messages.StringField(30)
 
 class ProjectWrapper(messages.Message):
   """Project details."""
@@ -461,6 +461,7 @@ class IssuesGetInsertResponse(messages.Message):
   component_modified = message_types.DateTimeField(27)
   approvalValues = messages.MessageField(Approval, 28, repeated=True)
   phases = messages.MessageField(Phase, 29, repeated=True)
+  migrated_id = messages.StringField(30)
 
 
 """Request to list issues."""

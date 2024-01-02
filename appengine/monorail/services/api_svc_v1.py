@@ -427,7 +427,7 @@ class MonorailApi(remote.Service):
 
     # Temporary block on updating approval subfields.
     if request.updates and request.updates.fieldValues:
-      fds_by_name = {fd.field_name.lower():fd for fd in mar.config.field_defs}
+      fds_by_name = {fd.field_name.lower(): fd for fd in mar.config.field_defs}
       for fv in request.updates.fieldValues:
         # Checking for fv.approvalName is unreliable since it can be removed.
         fd = fds_by_name.get(fv.fieldName.lower())
@@ -790,8 +790,10 @@ class MonorailApi(remote.Service):
       if request.approvalUpdates.fieldValues:
         # Block updating field values that don't belong to the approval.
         approvals_fds_by_name = {
-            fd.field_name.lower():fd for fd in mar.config.field_defs
-            if fd.approval_id == approval_fd.field_id}
+            fd.field_name.lower(): fd
+            for fd in mar.config.field_defs
+            if fd.approval_id == approval_fd.field_id
+        }
         for fv in request.approvalUpdates.fieldValues:
           if approvals_fds_by_name.get(fv.fieldName.lower()) is None:
             raise endpoints.BadRequestException(
@@ -923,8 +925,13 @@ class MonorailApi(remote.Service):
     issue = self._services.issue.GetIssueByLocalID(
         mar.cnxn, mar.project_id, request.issueId)
 
+    with work_env.WorkEnv(mar, self._services) as we:
+      migrated_id = we.GetIssueMigratedID(
+          request.projectId, request.issueId, issue.labels)
+
     return api_pb2_v1_helpers.convert_issue(
-        api_pb2_v1.IssuesGetInsertResponse, issue, mar, self._services)
+        api_pb2_v1.IssuesGetInsertResponse, issue, mar, self._services,
+        migrated_id)
 
   @monorail_api_method(
       api_pb2_v1.ISSUES_INSERT_REQUEST_RESOURCE_CONTAINER,
