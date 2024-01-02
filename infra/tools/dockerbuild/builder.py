@@ -258,7 +258,10 @@ def BuildPackageFromPyPiWheel(system, wheel, output_dir):
         ] + ['--platform=%s' % p for p in wheel.download_platform] + [
             '%s==%s' % (wheel.spec.name, wheel.spec.version),
         ],
-        cwd=tdir)
+        cwd=tdir,
+        # Use the per-thread pip cache, see comments in runtime.py
+        env={'PIP_CACHE_DIR': system.pip_cache_dir},
+    )
 
     wheel_name = StageWheelForPackage(system, tdir, wheel, output_dir)
 
