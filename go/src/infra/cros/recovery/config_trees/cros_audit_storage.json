@@ -124,12 +124,30 @@
               "run_control": "ALWAYS_RUN"
             },
             {
-              "name": "Install OS in recovery mode by booting from servo USB-drive",
+              "name": "Install OS in recovery mode by booting from servo USB-drive (no storage check)",
               "docs": [
                 "This action installs the test image on DUT utilizing the features of servo.",
                 "DUT will be booted in recovery mode."
               ],
               "conditions": [
+                {
+                  "name": "Recovery version has OS image path",
+                  "docs": [
+                    "Verify that recovery version has OS image path."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Has a stable-version service",
+                      "docs": [
+                        "Verify if we have access to the service provided access to the stable version"
+                      ],
+                      "exec_name": "has_stable_version_service_path",
+                      "run_control": "RUN_ONCE"
+                    }
+                  ],
+                  "exec_name": "has_stable_version_cros_image",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
                 {
                   "name": "Is servod running",
                   "docs": [
@@ -456,7 +474,7 @@
                   "run_control": "RUN_ONCE"
                 },
                 {
-                  "name": "Boot DUT in recovery and install from USB-drive",
+                  "name": "Boot DUT in recovery and install from USB-drive (no storage check)",
                   "docs": [
                     "This action installs the test image on DUT utilizing ",
                     "the features of servo. DUT will be booted in recovery ",
@@ -476,7 +494,8 @@
                     "tpm_reset_timeout:60",
                     "post_install_boot_time:15",
                     "ignore_reboot_failure:true",
-                    "badblocks_mode:auto",
+                    "run_storage_checks:false",
+                    "badblocks_mode:not",
                     "rw_badblocks_timeout:5400",
                     "ro_badblocks_timeout:3600",
                     "after_reboot_check:true",
@@ -909,30 +928,12 @@
               "run_control": "ALWAYS_RUN"
             },
             {
-              "name": "Install OS in recovery mode by booting from servo USB-drive (special pools)",
+              "name": "Install OS in recovery mode by booting from servo USB-drive",
               "docs": [
                 "This action installs the test image on DUT utilizing the features of servo.",
-                "DUT will be booted in recovery mode. This action is targeted at devices ",
-                "in special pools only."
+                "DUT will be booted in recovery mode."
               ],
               "conditions": [
-                {
-                  "name": "Pools allowed to stay in DEV mode",
-                  "docs": [
-                    "Verify that pools are allowed to stay in DEV mode."
-                  ],
-                  "exec_name": "dut_is_in_pool",
-                  "exec_args": [
-                    "crouton",
-                    "faft-test",
-                    "faft-test-au",
-                    "faft-test-tot",
-                    "nyc-meet-lab",
-                    "satlab_faft",
-                    "mp_firmware_testing"
-                  ],
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                },
                 {
                   "name": "Recovery version has OS image path",
                   "docs": [
@@ -1041,6 +1042,241 @@
                 }
               ],
               "dependencies": [
+                {
+                  "name": "Servo USB-Key needs to be reflashed",
+                  "docs": [
+                    "Check if it is time to download image to servo usbkey.",
+                    "If so, then download the stable image to usbkey."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "It is time to update USB-drive image",
+                      "docs": [
+                        "Check if it is time to force download image to usbkey",
+                        "from the number of failed recoveries since last successful PARIS repair task."
+                      ],
+                      "exec_name": "cros_is_time_to_force_download_image_to_usbkey",
+                      "exec_args": [
+                        "task_name:recovery",
+                        "repair_failed_count:1",
+                        "repair_failed_interval:10"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Download stable image to USB-key",
+                      "docs": [
+                        "Download lab stable image on servo USB-key",
+                        "Download the image can take longer if labstation download parallel a few images.",
+                        "This step is allowed to complete successfully even if some",
+                        " errors happen during download because the image can already",
+                        " be present on the USB-drive."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Setup has servo info",
+                          "exec_name": "dut_servo_host_present",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Is servo USB key detected",
+                          "docs": [
+                            "The action used as codiion.",
+                            "The action verify that USB-key is detected and readable."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Is servod running",
+                              "docs": [
+                                "Verify that servo host specified in setup and servod is running."
+                              ],
+                              "dependencies": [
+                                {
+                                  "name": "Setup has servo info",
+                                  "exec_name": "dut_servo_host_present",
+                                  "run_control": "RERUN_AFTER_RECOVERY"
+                                },
+                                {
+                                  "name": "Verify servod is responsive",
+                                  "conditions": [
+                                    {
+                                      "name": "Setup has servo info",
+                                      "exec_name": "dut_servo_host_present",
+                                      "run_control": "RERUN_AFTER_RECOVERY"
+                                    }
+                                  ],
+                                  "exec_name": "servod_echo",
+                                  "exec_args": [
+                                    "ssh_check:false"
+                                  ],
+                                  "timeout": "10s",
+                                  "run_control": "ALWAYS_RUN"
+                                }
+                              ],
+                              "exec_name": "sample_pass",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            }
+                          ],
+                          "exec_name": "servo_usbkey_is_detected",
+                          "exec_args": [
+                            "file_check:true"
+                          ],
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        },
+                        {
+                          "name": "Call servod to download image to USB-key",
+                          "docs": [
+                            "This action calls servod to download stable version OS image to servo USB-key."
+                          ],
+                          "exec_name": "servo_download_image_to_usb",
+                          "timeout": "50m0s",
+                          "run_control": "ALWAYS_RUN"
+                        },
+                        {
+                          "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                          "docs": [
+                            "Remove UPDATE_USBKEY_IMAGE from repair-requests."
+                          ],
+                          "exec_name": "dut_remove_repair_requests",
+                          "exec_args": [
+                            "requests:UPDATE_USBKEY_IMAGE"
+                          ],
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "exec_name": "sample_pass",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Download stable version OS image to servo usbkey if necessary (allow fail)",
+                  "docs": [
+                    "This action will download model specific stable version OS image to servo usbkey.",
+                    "The action will be skipped if the required image is already loaded."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "Setup has servo info",
+                      "exec_name": "dut_servo_host_present",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Has a stable-version service",
+                      "docs": [
+                        "Verify if we have access to the service provided access to the stable version"
+                      ],
+                      "exec_name": "has_stable_version_service_path",
+                      "run_control": "RUN_ONCE"
+                    },
+                    {
+                      "name": "Stable version image is missing from servo usbkey",
+                      "docs": [
+                        "This is a reverse action which fails when required image is already cached in servo usbkey.",
+                        "The purpose is to serve as a condition of Download stable image to USB-key action, so that we don't do duplicate download.",
+                        "If this action fails, it means the servo usbkey already have required stable_version OS image cached."
+                      ],
+                      "conditions": [
+                        {
+                          "name": "Servo usbkey has stable image",
+                          "docs": [
+                            "Check if the usbkey has the stable_version OS image.",
+                            "TODO: Collect data on the usual number of retries and tweak the default"
+                          ],
+                          "exec_name": "servo_usbkey_has_stable_image",
+                          "exec_args": [
+                            "retry_count:3",
+                            "retry_interval:1",
+                            "usb_file_check:true"
+                          ],
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "sample_fail",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "servo_servod_echo_host",
+                      "exec_name": "servo_servod_echo_host",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Is servo USB key detected",
+                      "docs": [
+                        "The action used as codiion.",
+                        "The action verify that USB-key is detected and readable."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Is servod running",
+                          "docs": [
+                            "Verify that servo host specified in setup and servod is running."
+                          ],
+                          "dependencies": [
+                            {
+                              "name": "Setup has servo info",
+                              "exec_name": "dut_servo_host_present",
+                              "run_control": "RERUN_AFTER_RECOVERY"
+                            },
+                            {
+                              "name": "Verify servod is responsive",
+                              "conditions": [
+                                {
+                                  "name": "Setup has servo info",
+                                  "exec_name": "dut_servo_host_present",
+                                  "run_control": "RERUN_AFTER_RECOVERY"
+                                }
+                              ],
+                              "exec_name": "servod_echo",
+                              "exec_args": [
+                                "ssh_check:false"
+                              ],
+                              "timeout": "10s",
+                              "run_control": "ALWAYS_RUN"
+                            }
+                          ],
+                          "exec_name": "sample_pass",
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servo_usbkey_is_detected",
+                      "exec_args": [
+                        "file_check:true"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Call servod to download image to USB-key",
+                      "docs": [
+                        "This action calls servod to download stable version OS image to servo USB-key."
+                      ],
+                      "exec_name": "servo_download_image_to_usb",
+                      "timeout": "50m0s",
+                      "run_control": "ALWAYS_RUN"
+                    },
+                    {
+                      "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                      "docs": [
+                        "Remove UPDATE_USBKEY_IMAGE from repair-requests."
+                      ],
+                      "exec_name": "dut_remove_repair_requests",
+                      "exec_args": [
+                        "requests:UPDATE_USBKEY_IMAGE"
+                      ],
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "sample_pass",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RUN_ONCE"
+                },
                 {
                   "name": "Boot DUT in recovery and install from USB-drive",
                   "docs": [

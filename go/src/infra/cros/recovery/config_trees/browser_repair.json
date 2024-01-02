@@ -904,6 +904,24 @@
               ],
               "conditions": [
                 {
+                  "name": "Recovery version has OS image path",
+                  "docs": [
+                    "Verify that recovery version has OS image path."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Has a stable-version service",
+                      "docs": [
+                        "Verify if we have access to the service provided access to the stable version"
+                      ],
+                      "exec_name": "has_stable_version_service_path",
+                      "run_control": "RUN_ONCE"
+                    }
+                  ],
+                  "exec_name": "has_stable_version_cros_image",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
                   "name": "Is servod running",
                   "docs": [
                     "Verify that servo host specified in setup and servod is running."
