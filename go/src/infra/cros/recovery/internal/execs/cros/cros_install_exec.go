@@ -64,14 +64,18 @@ func runChromeosInstallCommandWhenBootFromUSBDriveExec(ctx context.Context, info
 	actionArgs := info.GetActionArgs(ctx)
 	err := cros.RunInstallOSCommand(ctx, info.GetExecTimeout(), run)
 	if issueReason := cros.StorageIssuesExist(ctx, err); issueReason.NotEmpty() {
-		info.GetDut().State = dutstate.NeedsReplacement
-		info.GetDut().DutStateReason = issueReason
-		log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
-		newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag())
-		if actionArgs.AsBool(ctx, "allowed_abort_plan", true) {
-			newAnnotator = newAnnotator.Tag(execs.PlanAbortTag)
+		if actionArgs.AsBool(ctx, "run_storage_checks", true) {
+			info.GetDut().State = dutstate.NeedsReplacement
+			info.GetDut().DutStateReason = issueReason
+			log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
+			newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag())
+			if actionArgs.AsBool(ctx, "allowed_abort_plan", true) {
+				newAnnotator = newAnnotator.Tag(execs.PlanAbortTag)
+			}
+			return newAnnotator.Err()
+		} else {
+			log.Debugf(ctx, "Detected storage issue: %s", issueReason)
 		}
-		return newAnnotator.Err()
 	}
 	return errors.Annotate(err, "run install os after boot from USB-drive").Err()
 }
@@ -131,52 +135,57 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 			installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
 			if err := cros.RunInstallOSCommand(ctx, installTimeout, dutRun); err != nil {
 				finishedOSInstall = "failed"
-				if issueReason := cros.StorageIssuesExist(ctx, err); issueReason.NotEmpty() {
-					info.GetDut().State = dutstate.NeedsReplacement
-					info.GetDut().DutStateReason = issueReason
-					log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
-					newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag())
-					if am.AsBool(ctx, "allowed_abort_plan", true) {
-						newAnnotator = newAnnotator.Tag(execs.PlanAbortTag)
-					}
-					return newAnnotator.Err()
-				}
 				log.Debugf(ctx, "Install from usb drive fail: %s", err)
-				log.Debugf(ctx, "Will try to check storage if that is bad!")
-				// When install fail it can be because of bad storage.
-				// Following the logic in legacy repair, we will now
-				// attempt a storage audit on the DUT.
-				if err := storage.AuditStorageSMART(ctx, dutRun, info.GetChromeos().GetStorage(), dut); err != nil {
-					return errors.Annotate(err, "install from usb drive in recovery mode").Tag(retry.LoopBreakTag()).Err()
-				}
-				// Default values for these variables have also been
-				// included in the action to document their availability
-				// for modification. As we booted from USB-drive we can check
-				// internal storage for read-write.
-				bbMode := storage.AuditMode(am.AsString(ctx, "badblocks_mode", "rw"))
-				timeoutRO := am.AsDuration(ctx, "rw_badblocks_timeout", 5400, time.Second)
-				timeoutRW := am.AsDuration(ctx, "ro_badblocks_timeout", 3600, time.Second)
-				bbArgs := storage.BadBlocksArgs{
-					AuditMode: bbMode,
-					Run:       dutRun,
-					Storage:   info.GetChromeos().GetStorage(),
-					Dut:       info.GetDut(),
-					Metrics:   info.GetMetrics(),
-					TimeoutRW: timeoutRW,
-					TimeoutRO: timeoutRO,
-					NewMetric: info.NewMetric,
-				}
-				if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
-					if execs.SSHErrorInternal.In(err) {
-						log.Debugf(ctx, "Install from usb drive: bad blocks check command returned a negative error code, not setting needs replacement state for the DUT.")
+				checkStorage := am.AsBool(ctx, "run_storage_checks", true)
+				if issueReason := cros.StorageIssuesExist(ctx, err); issueReason.NotEmpty() {
+					if checkStorage {
+						info.GetDut().State = dutstate.NeedsReplacement
+						info.GetDut().DutStateReason = issueReason
+						log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
+						newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag())
+						if am.AsBool(ctx, "allowed_abort_plan", true) {
+							newAnnotator = newAnnotator.Tag(execs.PlanAbortTag)
+						}
+						return newAnnotator.Err()
 					} else {
-						log.Debugf(ctx, "The new DUT state: %q, reason: %q", info.GetDut().State, info.GetDut().DutStateReason)
+						log.Debugf(ctx, "Detected storage issue: %s", issueReason)
 					}
-					newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode").Tag(retry.LoopBreakTag())
-					if am.AsBool(ctx, "allowed_abort_plan", true) {
-						newAnnotator = newAnnotator.Tag(execs.PlanAbortTag)
+					log.Debugf(ctx, "Will try to check storage if that is bad!")
+					// When install fail it can be because of bad storage.
+					// Following the logic in legacy repair, we will now
+					// attempt a storage audit on the DUT.
+					if err := storage.AuditStorageSMART(ctx, dutRun, info.GetChromeos().GetStorage(), dut); err != nil {
+						return errors.Annotate(err, "install from usb drive in recovery mode").Tag(retry.LoopBreakTag()).Err()
 					}
-					return newAnnotator.Err()
+					// Default values for these variables have also been
+					// included in the action to document their availability
+					// for modification. As we booted from USB-drive we can check
+					// internal storage for read-write.
+					bbMode := storage.AuditMode(am.AsString(ctx, "badblocks_mode", "rw"))
+					timeoutRO := am.AsDuration(ctx, "rw_badblocks_timeout", 5400, time.Second)
+					timeoutRW := am.AsDuration(ctx, "ro_badblocks_timeout", 3600, time.Second)
+					bbArgs := storage.BadBlocksArgs{
+						AuditMode: bbMode,
+						Run:       dutRun,
+						Storage:   info.GetChromeos().GetStorage(),
+						Dut:       info.GetDut(),
+						Metrics:   info.GetMetrics(),
+						TimeoutRW: timeoutRW,
+						TimeoutRO: timeoutRO,
+						NewMetric: info.NewMetric,
+					}
+					if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
+						if execs.SSHErrorInternal.In(err) {
+							log.Debugf(ctx, "Install from usb drive: bad blocks check command returned a negative error code, not setting needs replacement state for the DUT.")
+						} else {
+							log.Debugf(ctx, "The new DUT state: %q, reason: %q", info.GetDut().State, info.GetDut().DutStateReason)
+						}
+						newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode").Tag(retry.LoopBreakTag())
+						if am.AsBool(ctx, "allowed_abort_plan", true) {
+							newAnnotator = newAnnotator.Tag(execs.PlanAbortTag)
+						}
+						return newAnnotator.Err()
+					}
 				}
 			}
 			haltTimeout := am.AsDuration(ctx, "halt_timeout", 120, time.Second)
