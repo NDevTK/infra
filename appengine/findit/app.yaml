@@ -1,9 +1,9 @@
 application: findit-for-me-staging
 version: 1
-runtime: python27
-api_version: 1
-threadsafe: true
-module: default
+runtime: python38
+app_engine_apis: true
+service: default
+entrypoint: gunicorn -t 0 -b :$PORT -w 8 default_main:default_application
 instance_class: F4
 automatic_scaling:
   min_idle_instances: 1
@@ -48,51 +48,3 @@ handlers:
 - url: /images
   static_dir: static/images
   secure: always
-
-# Enable the admin console for interactive operations, etc.
-- url: /_ah/admin_console(/.*)?
-  script: google.appengine.ext.admin.application
-  login: admin
-  secure: always
-
-# Pipeline status UI handler.
-- url: /_ah/pipeline(/.*)?
-  script: default_main.pipeline_status_application
-  secure: always
-
-# Endpoints handler.
-- url: /_ah/push-handlers/.*
-  script: default_main.default_web_application
-  # Protect PubSub push endpoints with admin login:
-  # https://cloud.google.com/pubsub/docs/push#app-engine-standard-endpoints
-  login: admin
-  secure: always
-
-- url: /_ah/api/.*
-  script: default_main.api_application
-  secure: always
-
-- url: /.*
-  script: default_main.default_web_application
-  secure: always
-
-includes:
-- first_party/gae_ts_mon  # handles /internal/cron/ts_mon/send
-
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*~$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*_test\.py$
-- ^(.*/)?tests\.py$
-- ^(.*/)?\..*$
-- ^(.*/)?.*\.md$
-- ^(.*/)?README$
-- ^(.*/)?Makefile$
-- ^(.*/)?util_scripts/.*$
-
-libraries:
-- name: flask
-  version: 0.12
-- name: jinja2
-  version: latest

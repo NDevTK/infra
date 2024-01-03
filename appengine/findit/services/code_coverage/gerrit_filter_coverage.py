@@ -5,7 +5,6 @@
 import six
 
 from collections import defaultdict
-import json
 import logging
 import difflib
 if six.PY2:
@@ -19,10 +18,8 @@ from google.appengine.ext import ndb
 
 from common.findit_http_client import FinditHttpClient
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
-from gae_libs.http import auth_util
 from handlers.code_coverage import utils
 from libs import time_util
-from libs.gitiles.gitiles_repository import GitilesRepository
 from model.code_coverage import CoverageReportModifier
 from model.code_coverage import FileCoverageData
 from model.code_coverage import PostsubmitReport

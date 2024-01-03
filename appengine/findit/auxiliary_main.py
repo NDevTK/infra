@@ -4,7 +4,20 @@
 
 from flask import Flask
 
+# Fix imports before importing gae_ts_mon.
+import import_utils
+
+import_utils.FixImports()
 import gae_ts_mon
+
+# Setup cloud logging
+import six
+if six.PY3:
+  import google.cloud.logging
+  client = google.cloud.logging.Client()
+  client.setup_logging()
+
+import google.appengine.api
 
 from gae_libs import appengine_util
 
@@ -22,9 +35,12 @@ handler_mappings = [
     ('/coverage/task/low-coverage-blocking', 'PostReviewToGerrit',
      post_review_to_gerrit.PostReviewToGerrit().Handle, ['POST']),
 ]
-auxiliary_coverage_worker_application = Flask(__name__)
+auxiliary_application = Flask(__name__)
+if six.PY3:
+  auxiliary_application.wsgi_app = google.appengine.api.wrap_wsgi_app(
+      auxiliary_application.wsgi_app)
 for url, endpoint, view_func, methods in handler_mappings:
-  auxiliary_coverage_worker_application.add_url_rule(
+  auxiliary_application.add_url_rule(
       url, endpoint=endpoint, view_func=view_func, methods=methods)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(auxiliary_coverage_worker_application)
+  gae_ts_mon.initialize_prod(auxiliary_application)

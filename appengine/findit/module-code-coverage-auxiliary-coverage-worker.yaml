@@ -1,41 +1,10 @@
 application: findit-for-me-staging
-module: code-coverage-auxiliary-coverage-worker
+service: code-coverage-auxiliary-coverage-worker
 version: 1
-runtime: python27
-api_version: 1
-threadsafe: true
+runtime: python38
+app_engine_apis: true
+entrypoint: gunicorn -t 0 -b :$PORT -w 8 auxiliary_main:auxiliary_application
 instance_class: B8  # 1GB memory, 4.8GHz CPU.
 manual_scaling:
   instances: 8
 
-handlers:
-- url: .*/coverage/task/gerrit-filter-coverage.*
-  script: auxiliary_main.auxiliary_coverage_worker_application
-  secure: always
-- url: .*/coverage/task/incremental-coverage.*
-  script: auxiliary_main.auxiliary_coverage_worker_application
-  secure: always
-- url: .*/coverage/task/low-coverage-blocking.*
-  script: auxiliary_main.auxiliary_coverage_worker_application
-  secure: always
-
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*~$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*_test\.py$
-- ^(.*/)?tests\.py$
-- ^(.*/)?\..*$
-- ^(.*/)?.*\.md$
-- ^(.*/)?Makefile$
-- ^(.*/)?README$
-- ^(.*/)?third_party/bower_components/.*$
-- ^(.*/)?util_scripts/.*$
-
-libraries:
-- name: flask
-  version: 0.12
-- name: jinja2
-  version: latest
-- name: numpy
-  version: 1.6.1

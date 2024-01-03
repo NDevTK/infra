@@ -194,7 +194,7 @@ def _RetrieveChromeManifest(repo_url, revision,
   dep_fetcher = chrome_dependency_fetcher.ChromeDependencyFetcher(
       CachedGitilesRepository.Factory(FinditHttpClient()))
   deps = dep_fetcher.GetDependency(revision, os_platform)
-  for path, dep in deps.iteritems():
+  for path, dep in deps.items():
     # Remove clause when crbug.com/929315 gets fixed.
     if path in _GetDisallowedDeps().get(repo_url, []):
       continue
@@ -207,21 +207,6 @@ def _RetrieveChromeManifest(repo_url, revision,
   manifest.sort(key=lambda x: len(x.path), reverse=True)
   return manifest
 
-
-def _IsFileAvailableInGs(gs_path):  # pragma: no cover.
-  """Returns True if the specified object exists, otherwise False.
-
-  Args:
-    gs_path (str): Path to the file, in the format /bucket/object.
-
-  Returns:
-    True if the object exists, otherwise False.
-  """
-  try:
-    _ = storage.stat(gs_path)
-    return True
-  except storage.NotFoundError:
-    return False
 
 
 def _GetValidatedData(gs_path):  # pragma: no cover.
@@ -552,7 +537,7 @@ class ProcessCodeCoverageData(BaseHandler):
     assert revision, 'A valid revision is required'
 
     gs_path = utils.ComposeSourceFileGsPath(report.manifest, path, revision)
-    if _IsFileAvailableInGs(gs_path):
+    if utils.IsFileAvailableInGs(gs_path):
       return
 
     # Fetch the source files from gitile and save it in gs so that coverage
@@ -914,7 +899,7 @@ class ProcessCodeCoverageData(BaseHandler):
       logging.info('%s is not allowed', builder_id)
       return
 
-    # Convert the Struct to standard dict, to use .get, .iteritems etc.
+    # Convert the Struct to standard dict, to use .get, .items etc.
     properties = dict(build.output.properties.items())
     gs_bucket = properties.get('coverage_gs_bucket')
     gs_metadata_dirs = properties.get('coverage_metadata_gs_paths') or []

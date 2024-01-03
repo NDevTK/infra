@@ -211,6 +211,34 @@ def ComposeSourceFileGsPath(manifest, file_path, revision):
                               dependency.project, relative_file_path, revision)
 
 
+def IsFileAvailableInGs(gs_path):  # pragma: no cover.
+  """Returns True if the specified object exists, otherwise False.
+
+  Args:
+    gs_path (str): Path to the file, in the format /bucket/object.
+
+  Returns:
+    True if the object exists, otherwise False.
+  """
+  if six.PY2:
+    try:
+      _ = storage.stat(gs_path)
+      return True
+    except storage.NotFoundError:
+      return False
+  else:
+    try:
+      # extract first word between slashes as bucket
+      m = _GCS_BUCKET_BLOB_REGEX.match(gs_path)
+      logging.error(gs_path)
+      bucket, blob = m[1], m[2]
+      storage_client = storage.Client()
+      bucket = storage_client.bucket(bucket)
+      blob = bucket.blob(blob)
+      return blob.exists()
+    except Exception as e:
+      logging.error(e)
+
 def WriteFileContentToGs(gs_path, content):  # pragma: no cover.
   """Writes the content of a file to cloud storage.
 
@@ -263,7 +291,11 @@ def GetFileContentFromGs(gs_path):  # pragma: no cover.
       storage_client = storage.Client()
       bucket = storage_client.bucket(bucket)
       blob = bucket.blob(blob)
-      with blob.open("r") as f:
-        print(f.read())
-    except Exception:
+      logging.error("xxxx")
+      logging.error(bucket)
+      logging.error(blob)
+      with blob.open('rb') as f:
+        return f.read()
+    except Exception as e:
+      logging.error(e)
       return None

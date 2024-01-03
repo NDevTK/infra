@@ -1,9 +1,9 @@
 application: findit-for-me-staging
-module: code-coverage-frontend
+service: code-coverage-frontend
 version: 1
-runtime: python27
-api_version: 1
-threadsafe: true
+runtime: python38
+app_engine_apis: true
+entrypoint: gunicorn -t 0 -b :$PORT -w 4 frontend_main:frontend_application
 instance_class: F2  # 256MB memory, 1.2GHz CPU.
 automatic_scaling:
   min_idle_instances: 6
@@ -44,37 +44,3 @@ handlers:
 - url: /images
   static_dir: static/images
   secure: always
-
-# Enable the admin console for interactive operations, etc.
-- url: /_ah/admin_console(/.*)?
-  script: google.appengine.ext.admin.application
-  login: admin
-  secure: always
-
-- url: .*/coverage.*
-  script: frontend_main.code_coverage_frontend_web_application
-  secure: always
-
-- url: /waterfall/config.*
-  script: frontend_main.code_coverage_frontend_web_application
-  secure: always
-
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*~$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*_test\.py$
-- ^(.*/)?tests\.py$
-- ^(.*/)?\..*$
-- ^(.*/)?.*\.md$
-- ^(.*/)?Makefile$
-- ^(.*/)?README$
-- ^(.*/)?util_scripts/.*$
-
-libraries:
-- name: flask
-  version: 0.12
-- name: jinja2
-  version: latest
-- name: numpy
-  version: 1.6.1

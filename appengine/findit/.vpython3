@@ -67,6 +67,10 @@ wheel: <
   version: "version:1.2x.supported.1"
 >
 
+wheel: <
+  name: "infra/python/wheels/gunicorn-py3"
+  version: "version:20.1.0"
+>
 # Required by appengine-python-standard==0.3.1
 wheel: <
   name: "infra/python/wheels/attrs-py2_py3"

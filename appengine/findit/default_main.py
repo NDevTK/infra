@@ -4,7 +4,20 @@
 
 from flask import Flask
 
+# Fix imports before importing gae_ts_mon.
+import import_utils
+
+import_utils.FixImports()
 import gae_ts_mon
+
+# Setup cloud logging
+import six
+if six.PY3:
+  import google.cloud.logging
+  client = google.cloud.logging.Client()
+  client.setup_logging()
+
+import google.appengine.api
 
 from gae_libs import appengine_util
 from handlers import completed_build_pubsub_ingestor
@@ -21,9 +34,12 @@ handler_mappings = [
      ['GET', 'POST']),
 ]
 
-default_web_application = Flask(__name__)
+default_application = Flask(__name__)
+if six.PY3:
+  default_application.wsgi_app = google.appengine.api.wrap_wsgi_app(
+      default_application.wsgi_app)
 for url, endpoint, view_func, methods in handler_mappings:
-  default_web_application.add_url_rule(
+  default_application.add_url_rule(
       url, endpoint=endpoint, view_func=view_func, methods=methods)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(default_web_application)
+  gae_ts_mon.initialize_prod(default_application)

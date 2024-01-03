@@ -167,6 +167,7 @@ def FetchChangeDetails(host, project, change, detailed_accounts=False):
   status_code, response, _ = FinditHttpClient().Get(url)
   _CheckChangeDetailsResponseCode(status_code, response)
 
+  response = six.ensure_str(response)
   # Remove XSSI magic prefix
   if response.startswith(')]}\''):
     response = response[4:]

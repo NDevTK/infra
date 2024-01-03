@@ -48,12 +48,12 @@ findit-predeploy:
 	@echo "Deployable Changes. (git pull and client sync if not current)"
 	@git log $(REMOTE_FINDIT_HASH)..HEAD --pretty=oneline .
 
-deploy-coverage-prod: test
+deploy-coverage-prod: pytest
 	$(GAE_PY) upload -x -A $(APPID) $(CODE_COVERAGE_MODULES);
 	@echo "New version is https://$(LOCAL_VERSION)-dot-code-coverage-frontend-"\
 	"dot-$(APPID).appspot.com/p/chromium/coverage"
 
-deploy-coverage-staging: test
+deploy-coverage-staging: pytest
 	$(GAE_PY) upload -x -A $(STAGING_APPID) $(CODE_COVERAGE_MODULES);
 	@echo "New version is https://$(LOCAL_VERSION)-dot-code-coverage-frontend-"\
 	"dot-$(STAGING_APPID).appspot.com/p/chromium/coverage"
