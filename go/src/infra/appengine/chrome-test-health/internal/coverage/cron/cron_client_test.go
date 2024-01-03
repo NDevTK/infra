@@ -127,6 +127,33 @@ func TestGetPresubmitReportsForLastYear(t *testing.T) {
 	})
 }
 
+func TestSplitSinglePresubmitData(t *testing.T) {
+	t.Parallel()
+	client := CronClient{}
+
+	Convey("Should split presubmit data if patchset is latest", t, func() {
+		reports := getMockPresubmitData()
+		maxPatchsetMap := map[int64]int64{1: 2}
+		result := client.splitSinglePresubmitData(reports[0], maxPatchsetMap, false)
+		expected := map[string]IncrementalCoverageData{
+			"//":                   {CoveredFiles: 1, TotalFiles: 2, IsDir: true},
+			"//dir1/":              {CoveredFiles: 1, TotalFiles: 2, IsDir: true},
+			"//dir1/dir2/":         {CoveredFiles: 0, TotalFiles: 1, IsDir: true},
+			"//dir1/dir2/file1.cc": {CoveredFiles: 0, TotalFiles: 1, IsDir: false},
+			"//dir1/dir3/":         {CoveredFiles: 1, TotalFiles: 1, IsDir: true},
+			"//dir1/dir3/file2.cc": {CoveredFiles: 1, TotalFiles: 1, IsDir: false},
+		}
+		So(result, ShouldResemble, expected)
+	})
+
+	Convey("Should return nil if patchset is not latest", t, func() {
+		reports := getMockPresubmitData()
+		maxPatchsetMap := map[int64]int64{1: 2}
+		result := client.splitSinglePresubmitData(reports[1], maxPatchsetMap, false)
+		So(result, ShouldBeNil)
+	})
+}
+
 func TestGetMaxPatchsetToChangeMap(t *testing.T) {
 	t.Parallel()
 	client := CronClient{}
@@ -152,6 +179,30 @@ func TestGetMaxPatchsetToChangeMap(t *testing.T) {
 			have := client.getMaxPatchsetToChangeMap(reports)
 			want := map[int64]int64{1: 3, 2: 1}
 			So(have, ShouldResemble, want)
+		})
+	})
+}
+
+func TestGetDir(t *testing.T) {
+	t.Parallel()
+
+	Convey("Should return parent directory", t, func() {
+		Convey("For a directory path", func() {
+			parent := getDir("//a/b/")
+			So(parent, ShouldEqual, "//a/")
+
+			parent = getDir("//a/")
+			So(parent, ShouldEqual, "//")
+		})
+
+		Convey("For a file path", func() {
+			parent := getDir("//a/b/c.ext")
+			So(parent, ShouldEqual, "//a/b/")
+		})
+
+		Convey("For root path", func() {
+			parent := getDir("//")
+			So(parent, ShouldEqual, "//")
 		})
 	})
 }

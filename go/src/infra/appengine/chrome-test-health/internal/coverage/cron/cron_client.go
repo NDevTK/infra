@@ -6,6 +6,8 @@ package cron
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/logging"
@@ -28,6 +30,12 @@ type CronClient struct {
 	coverageV1DsClient datastorage.IDataClient
 	// References to Chrome-test-health's datastore
 	coverageV2DsClient datastorage.IDataClient
+}
+
+type IncrementalCoverageData struct {
+	CoveredFiles int
+	TotalFiles   int
+	IsDir        bool
 }
 
 func NewClient(ctx context.Context, finditCloudProject string, chromeTestHealthCloudProject string) (*CronClient, error) {
@@ -98,4 +106,100 @@ func (c *CronClient) getMaxPatchsetToChangeMap(
 		}
 	}
 	return highestPatchsetMap
+}
+
+// splitSinglePresubmitData splits the incremental coverage percentage list
+// for the given Presubmit entity into individual elements comprising of
+// file/dir path and their incremental coverage statistics.
+func (c *CronClient) splitSinglePresubmitData(presubmit *entities.PresubmitCoverageData, maxPatchsetMap map[int64]int64, isUnitTest bool) map[string]IncrementalCoverageData {
+	// Changelog number
+	change := presubmit.Change
+	// Patchset number
+	patchset := presubmit.Patchset
+	// Ignore if patchset is not latest
+	if maxPatchsetMap[change] != patchset {
+		return nil
+	}
+
+	pathData := map[string]IncrementalCoverageData{}
+	// For this presubmit data, IncrementalPercentages is an array that stores
+	// the files changed along with their incremental coverage stats
+	percentages := presubmit.IncrementalPercentages
+	if isUnitTest {
+		percentages = presubmit.IncrementalPercentagesUnit
+	}
+
+	// Go over each changed file
+	for _, pathStats := range percentages {
+		path := pathStats.Path
+		percentage := (pathStats.CoveredLines * 100) / pathStats.TotalLines
+		// For each path walk over the path in reverse and store the files
+		// changed & covered.
+		coveredFiles := 0
+		if percentage >= 70 {
+			coveredFiles = 1
+		}
+
+		pathData[path] = IncrementalCoverageData{
+			CoveredFiles: coveredFiles, TotalFiles: 1, IsDir: false,
+		}
+		curr := path
+		parent := getDir(path)
+		for parent != curr {
+			if p, ok := pathData[parent]; ok {
+				incData := pathData[parent]
+				incData.CoveredFiles = p.CoveredFiles + pathData[path].CoveredFiles
+				incData.TotalFiles = p.TotalFiles + pathData[path].TotalFiles
+				incData.IsDir = true
+				pathData[parent] = incData
+			} else {
+				pathData[parent] = IncrementalCoverageData{
+					CoveredFiles: pathData[path].CoveredFiles,
+					TotalFiles:   pathData[path].TotalFiles,
+					IsDir:        true,
+				}
+			}
+			curr = parent
+			parent = getDir(curr)
+		}
+	}
+
+	// Return the pathData map. Examples of this map are shown below:
+	// {
+	//    "//dir1/dir2/file.cc" => {CoveredFiles: 1, TotalFiles: 1, IsDir: false}
+	//    "//dir1/dir2/" => {CoveredFiles: 1, TotalFiles: 2, IsDir: true}
+	// }
+	return pathData
+}
+
+// getDir takes in a directory path in the format: "//a/b/" or "//a/b/file.ext"
+// returns the parent directory of the path. For the above examples this
+// function returns "//a/" and "//a/b/" respectively
+// We are implementing this ourselves because the os lib function is OS
+// specific, and our paths being UNIX format does not work for Windows.
+func getDir(path string) string {
+	if path == "//" {
+		return "//"
+	}
+
+	parts := strings.Split(path, "/")
+	partsLen := len(parts)
+	// Path is a filepath
+	if parts[partsLen-1] != "" {
+		// Path is in format: "//file.c"
+		if partsLen == 3 {
+			return "//"
+		}
+
+		// Path is in format: "//dir/file.c"
+		return fmt.Sprintf("//%s/", strings.Join(parts[2:partsLen-1], "/"))
+	}
+
+	// Path is in format: "//dir/"
+	if partsLen == 4 {
+		return "//"
+	}
+
+	// Path is in format: "//dir1/dir2/"
+	return fmt.Sprintf("//%s/", strings.Join(parts[2:partsLen-2], "/"))
 }
