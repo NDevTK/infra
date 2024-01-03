@@ -32,6 +32,7 @@ func app(authOpts auth.Options) *cli.Application {
 			subcommands.CmdHelp,
 
 			subcommands.Section("Test Planning"),
+			testplancli.CmdGenerate,
 			testplancli.CmdRelevantPlans(authOpts),
 			testplancli.CmdValidate(authOpts),
 			testplancli.CmdMigrationStatus(authOpts),
