@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"infra/cros/recovery/internal/components/mocks"
@@ -44,9 +45,10 @@ my-board/ec.bin`,
 			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC ec.bin": "",
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
-		image, err := extractECImage(ctx, req, tarballPath, logger)
+		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
 		So(err, ShouldBeNil)
 		So(image, ShouldEqual, "/some/folder/my_folder/EC/ec.bin")
+		So(fwBoard, ShouldEqual, "")
 	})
 	Convey("Happy path with board file", t, func() {
 		req := getBaseTestRequest(true)
@@ -61,9 +63,10 @@ my-board/ec.bin`,
 			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin": "",
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
-		image, err := extractECImage(ctx, req, tarballPath, logger)
+		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
 		So(err, ShouldBeNil)
 		So(image, ShouldEqual, "/some/folder/my_folder/EC/my-board/ec.bin")
+		So(fwBoard, ShouldEqual, "my-board")
 	})
 	Convey("Happy path with board file with monitor", t, func() {
 		req := getBaseTestRequest(true)
@@ -79,9 +82,10 @@ npcx_monitor.bin`,
 			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC npcx_monitor.bin": "",
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
-		image, err := extractECImage(ctx, req, tarballPath, logger)
+		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
 		So(err, ShouldBeNil)
 		So(image, ShouldEqual, "/some/folder/my_folder/EC/my-board/ec.bin")
+		So(fwBoard, ShouldEqual, "my-board")
 	})
 	Convey("Happy path without servod", t, func() {
 		req := getBaseTestRequest(true)
@@ -94,9 +98,10 @@ npcx_monitor.bin`,
 			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC npcx_monitor.bin": "",
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
-		image, err := extractECImage(ctx, req, tarballPath, logger)
+		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
 		So(err, ShouldBeNil)
 		So(image, ShouldEqual, "/some/folder/my_folder/EC/my-board/ec.bin")
+		So(fwBoard, ShouldEqual, "my-board")
 	})
 	Convey("Happy path run from DUT", t, func() {
 		req := getBaseTestRequest(false)
@@ -109,9 +114,10 @@ npcx_monitor.bin`,
 			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC npcx_monitor.bin": "",
 		}
 		req.DutRunner = mockRunner(runRequest)
-		image, err := extractECImage(ctx, req, tarballPath, logger)
+		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
 		So(err, ShouldBeNil)
 		So(image, ShouldEqual, "/some/folder/my_folder/EC/my-board/ec.bin")
+		So(fwBoard, ShouldEqual, "my-board")
 	})
 }
 
@@ -197,4 +203,31 @@ image-my-model.bin`,
 		So(err, ShouldBeNil)
 		So(image, ShouldEqual, "/some/folder/my_folder/AP/image-my-model.bin")
 	})
+}
+
+// Test cases for TestBoardFromCandidateName
+var boardFromCandidateNameCases = []struct {
+	in  string
+	out string
+}{
+	{"", ""},
+	{"./reef/ec.bin", "reef"},
+	{"/reef/ec.bin2", "reef"},
+	{"reef/ap.bin5", "reef"},
+	{"basking/ec.bin", "basking"},
+	{"./basking/ec.bin", "basking"},
+}
+
+func TestBoardFromCandidateName(t *testing.T) {
+	t.Parallel()
+	for _, c := range boardFromCandidateNameCases {
+		cs := c
+		t.Run(cs.in, func(t *testing.T) {
+			got := boardFromCandidateName(cs.in)
+
+			if !cmp.Equal(got, cs.out) {
+				t.Errorf("%q ->want: %q\n got: %q", cs.in, cs.out, got)
+			}
+		})
+	}
 }

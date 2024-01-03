@@ -52,16 +52,16 @@ const (
 )
 
 // ProgramEC programs EC firmware to devices by servo.
-func (p *v3Programmer) ProgramEC(ctx context.Context, imagePath string) error {
+func (p *v3Programmer) ProgramEC(ctx context.Context, fwBoard, imagePath string) error {
 	if err := isFileExist(ctx, imagePath, p.run); err != nil {
 		return errors.Annotate(err, "program ec").Err()
 	}
-	return p.programEC(ctx, imagePath)
+	return p.programEC(ctx, fwBoard, imagePath)
 }
 
 // programEC programs EC firmware to devices by servo.
 // Extracted for test purpose to avoid file present check.
-func (p *v3Programmer) programEC(ctx context.Context, imagePath string) error {
+func (p *v3Programmer) programEC(ctx context.Context, fwBoard, imagePath string) error {
 	if err := isToolPresent(ctx, ecProgrammerToolName, p.run); err != nil {
 		return errors.Annotate(err, "program ec").Err()
 	}
@@ -81,6 +81,9 @@ func (p *v3Programmer) programEC(ctx context.Context, imagePath string) error {
 		return errors.Reason("program ec: flash for `ite` chips is blocked by b/268108518").Err()
 	} else {
 		cmd = fmt.Sprintf(ecProgrammerCmdGlob, ecChip, imagePath, p.servod.Port())
+	}
+	if fwBoard != "" {
+		cmd += fmt.Sprintf(" --board=%s", fwBoard)
 	}
 	if p.ecUpdateRequiresApshutdown(ctx) {
 		// Introduced due EC SW Sync race (b/269804618).
