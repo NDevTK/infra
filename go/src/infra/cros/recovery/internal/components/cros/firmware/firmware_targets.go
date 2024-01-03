@@ -50,6 +50,10 @@ var targetOverrideModels = map[string]string{
 	// Rex board.
 	"rex":        "rex0", // EVT b/313364449
 	"screebo4es": "screebo4es",
+	// Nissa board.
+	"pujjo1e":      "pujjo",
+	"pujjoteen":    "pujjo",
+	"pujjoteen15w": "pujjo",
 }
 
 // targetOverrideHwidSkus holds a map of hwid that need to override its firmware target.
