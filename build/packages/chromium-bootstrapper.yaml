@@ -10,9 +10,6 @@ platforms:
   - windows-arm64
 go_packages:
   - infra/chromium/bootstrapper
-go_build_environ:
-  CGO_ENABLED:
-    linux: 0
 root: ../../go/bin
 data:
   - file: bootstrapper${exe_suffix}

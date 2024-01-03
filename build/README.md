@@ -65,15 +65,13 @@ go_packages:
 # Environment variables to set when building go code. Only CGO_ENABLED is
 # recognized currently.
 go_build_environ:
-  # If given, overrides CGO_ENABLED env var when building a **native** variant
-  # of this package (i.e. when not cross-compiling).
+  # If given, sets CGO_ENABLED env var to this value. Defaults to 0 if missing
+  # (i.e. cgo is disabled by default).
   #
   # Note that it is also possible to specify this on per-target GOOS basis, by
   # using a dictionary as a value, e.g. {'darwin': 1, 'windows': 0, 'linux': 0}.
-  #
-  # When cross-compiling CGO_ENABLED is taken from the host environment as
-  # usual, defaulting to 0.
-  CGO_ENABLED: 0
+  CGO_ENABLED:
+    darwin: 1
 
   # If given, attach the flags to the go build command.
   #

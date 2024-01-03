@@ -150,14 +150,14 @@ class PackageDef(collections.namedtuple(
     return self.pkg_def.get('go_packages') or []
 
   def cgo_enabled(self, target_goos):
-    """Either True, False or None (meaning "let go decide itself").
+    """True if the package needs cgo, False to disable it.
 
-    Ignored when cross-compiling.
+    By default cgo is disabled.
     """
     val = self.pkg_def.get('go_build_environ', {}).get('CGO_ENABLED')
     if isinstance(val, dict):
       val = val.get(target_goos)
-    return None if val is None else bool(val)
+    return bool(val)
 
   @property
   def pkg_root(self):
@@ -868,11 +868,8 @@ def build_go_code(go_workspace, module_map, pkg_defs):
   for pkg_def in pkg_defs:
     pkg_env = default_environ
     pkg_env = pkg_env._replace(
-        with_race=pkg_def.with_race(target_goos, target_goarch))
-    if not is_cross_compiling():
-      cgo_enabled = pkg_def.cgo_enabled(target_goos)
-      if cgo_enabled is not None:
-        pkg_env = pkg_env._replace(CGO_ENABLED=cgo_enabled)
+        with_race=pkg_def.with_race(target_goos, target_goarch),
+        CGO_ENABLED=pkg_def.cgo_enabled(target_goos))
     for name in pkg_def.go_packages:
       pkg_env = pkg_env._replace(cwd=find_main_module(module_map, name))
       if name in go_packages and go_packages[name] != pkg_env:

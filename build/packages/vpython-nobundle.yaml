@@ -10,10 +10,6 @@ platforms:
   - linux-ppc64le
   - linux-riscv64
   - linux-s390x
-go_build_environ:
-  CGO_ENABLED:
-    linux:   0  # to avoid linking to system dynamic libraries
-    windows: 0  # we have no cgo toolchain on Windows
 go_packages:
   - infra/tools/vpython/cmd/vpython
 root: ../../go/bin

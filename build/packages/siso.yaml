@@ -12,11 +12,6 @@ platforms:
   - windows-arm64
 go_packages:
   - infra/build/siso
-go_build_environ:
-  CGO_ENABLED:
-    linux: 0
-    windows: 0
-    darwin: 0
 root: ../../go/bin
 data:
   - file: siso${exe_suffix}

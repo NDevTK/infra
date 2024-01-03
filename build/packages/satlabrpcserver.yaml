@@ -9,8 +9,6 @@ platforms:
 go_build_environ:
   CGO_ENABLED:
     darwin:  1  # Inherited from main/build/packages/cipd_client.yaml
-    linux:   0  # satlab, specifically, needs to build inside an alpine linux container.
-    windows: 0  # Inherited from main/build/packages/cipd_client.yaml
 go_packages:
   - infra/cros/satlab/satlabrpcserver
 root: ../../go/bin

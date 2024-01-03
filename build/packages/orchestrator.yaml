@@ -10,8 +10,6 @@ platforms:
   - linux-amd64
 go_packages:
   - go.chromium.org/luci/standalone/orchestrator
-go_build_environ:
-  CGO_ENABLED: 0
 root: ../../go/bin
 data:
   - file: orchestrator${exe_suffix}

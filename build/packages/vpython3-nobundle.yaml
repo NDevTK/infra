@@ -24,10 +24,6 @@ platforms:
   - openbsd-amd64
   - openbsd-arm64
   - solaris-amd64
-go_build_environ:
-  CGO_ENABLED:
-    linux: 0 # to avoid linking to system dynamic libraries
-    windows: 0 # we have no cgo toolchain on Windows
 go_packages:
   - infra/tools/vpython/cmd/vpython3
 root: ../../go/bin

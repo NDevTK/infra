@@ -2,9 +2,6 @@ package: infra/tools/luci/vpython2.7/${platform}
 description: LEGACY vpython 2.7 package. Do not depend on this without talking to LUCI team.
 platforms:
   - linux-amd64
-go_build_environ:
-  CGO_ENABLED:
-    linux:   0  # to avoid linking to system dynamic libraries
 go_packages:
   - infra/tools/vpython/legacy/vpython2.7/cmd/vpython2.7
 install_mode: copy
