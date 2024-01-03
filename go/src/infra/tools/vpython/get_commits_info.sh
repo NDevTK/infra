@@ -12,18 +12,20 @@ if [ -z "$1" ] || [ -z "$2" ]; then
   exit 1
 fi
 
-COMMIT_RANGE=$(git --no-pager log --pretty=format:"%H" ${COMMIT_RANGE_START}..${COMMIT_RANGE_END} go/src/infra/tools/vpython/)
+cd "$(git rev-parse --show-toplevel)"
+
+COMMIT_RANGE=$(git --no-pager log --pretty=format:"%H" ${COMMIT_RANGE_START}..${COMMIT_RANGE_END} -- go/src/infra/tools/vpython/)
 
 DEPS_TEMP=$(mktemp)
 get_luci_go_commit() {
   git show $1:DEPS > ${DEPS_TEMP}
-  gclient getdep --deps-file=${DEPS_TEMP} --revision='infra/go/src/go.chromium.org/luci'
+  gclient getdep --deps-file=${DEPS_TEMP} --revision='go/src/go.chromium.org/luci'
 }
 
 get_luci_vpython_log() {
   LUCI_GO_COMMIT_START=$(get_luci_go_commit $1)
   LUCI_GO_COMMIT_END=$(get_luci_go_commit $2)
-  (cd go/src/go.chromium.org/luci && git --no-pager log --pretty=oneline ${LUCI_GO_COMMIT_START}..${LUCI_GO_COMMIT_END} vpython)
+  (cd go/src/go.chromium.org/luci && git --no-pager log --pretty=oneline ${LUCI_GO_COMMIT_START}..${LUCI_GO_COMMIT_END} -- vpython/ cipkg/)
 }
 
 COMMIT_PREVIOUS=${COMMIT_RANGE_END}
