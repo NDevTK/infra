@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "30585669_57f5ff1c",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/firmware/firmware.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2024-01-03T23:56:19Z",
+      "side": 1,
+      "message": "Nit: Can you change this if to `fwBoard \u003d\u003d \"\" \u0026\u0026 req.UpdateEcUseBoard` to avoid setting the fwBoard to model name(and printing the log) when UpdateEcUseBoard is disabled or make this an else to the below `if !req.UpdateEcUseBoard`?",
+      "revId": "b6365ee9fd95daa02a1504acbeed3c52776cd39b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
