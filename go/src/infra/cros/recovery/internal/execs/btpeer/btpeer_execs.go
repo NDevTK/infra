@@ -70,7 +70,7 @@ func fetchBtpeerChameleondReleaseConfigExec(ctx context.Context, info *execs.Exe
 		return errors.Annotate(err, "failed to get btpeer scope state").Err()
 	}
 	sshRunner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
-	config, err := chameleond.FetchBtpeerChameleondReleaseConfig(ctx, sshRunner, info.GetAccess(), info.GetDut().Name)
+	config, err := chameleond.FetchBtpeerChameleondReleaseConfig(ctx, sshRunner)
 	if err != nil {
 		return errors.Annotate(err, "failed to fetch btpeer chameleond release config").Err()
 	}

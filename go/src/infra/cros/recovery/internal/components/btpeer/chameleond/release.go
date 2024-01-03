@@ -6,6 +6,7 @@ package chameleond
 
 import (
 	"context"
+	"net/url"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -18,19 +19,19 @@ import (
 
 	"infra/cros/recovery/internal/components/cache"
 	"infra/cros/recovery/internal/components/cros"
+	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/internal/log"
 )
 
 const (
-	// btpeerArtifactsGCSBasePath is the base GCS storage path for all btpeer-
-	// related artifacts.
-	btpeerArtifactsGCSBasePath = "gs://chromeos-connectivity-test-artifacts/btpeer"
+	// btpeerArtifactsGCSObjectBasePath is the base GCS storage Object path for
+	// all btpeer-related artifacts.
+	btpeerArtifactsGCSObjectBasePath = "gs://chromeos-connectivity-test-artifacts/btpeer"
 
-	// btpeerChameleondConfigProdGCSPath is the path to the production chameleond
-	// config JSON file meant to be used by any automated process updating
-	// chameleond on btpeers.
-	btpeerChameleondConfigProdGCSPath = btpeerArtifactsGCSBasePath + "/btpeer_chameleond_config_prod.json"
+	// btpeerArtifactsGCSPublicURLBasePath is the base GCS storage public URL path
+	// for all btpeer-related artifacts.
+	btpeerArtifactsGCSPublicURLBasePath = "https://storage.googleapis.com/chromeos-connectivity-test-artifacts/btpeer"
 )
 
 // CacheAccess is a subset of tlw.Access that just has the ability to access the
@@ -46,7 +47,7 @@ type CacheAccess interface {
 // the btpeer.
 func DownloadChameleondBundle(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string, bundleConfig *labapi.BluetoothPeerChameleondConfig_ChameleondBundle) (string, error) {
 	bundleArchivePath := bundleConfig.GetArchivePath()
-	if !strings.HasPrefix(bundleArchivePath, btpeerArtifactsGCSBasePath) {
+	if !strings.HasPrefix(bundleArchivePath, btpeerArtifactsGCSObjectBasePath) {
 		return "", errors.Reason("invalid bundle archive path %q", bundleArchivePath).Err()
 	}
 	bundleFilename := filepath.Base(bundleArchivePath)
@@ -62,20 +63,23 @@ func DownloadChameleondBundle(ctx context.Context, sshRunner ssh.Runner, cacheAc
 }
 
 // FetchBtpeerChameleondReleaseConfig downloads the production
-// BluetoothPeerChameleondConfig JSON file from GCS via the cache server through
+// BluetoothPeerChameleondConfig JSON file from GCS via its public URL through
 // the host and returns its unmarshalled contents.
-func FetchBtpeerChameleondReleaseConfig(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string) (*labapi.BluetoothPeerChameleondConfig, error) {
-	downloadURL, err := cacheAccess.GetCacheUrl(ctx, dutName, btpeerChameleondConfigProdGCSPath)
+//
+// Note: We use the public URL here rather than the cache to ensure we always
+// use the latest version of the config file from GCS.
+func FetchBtpeerChameleondReleaseConfig(ctx context.Context, sshRunner ssh.Runner) (*labapi.BluetoothPeerChameleondConfig, error) {
+	btpeerChameleondConfigProdGCSPublicURL, err := url.JoinPath(btpeerArtifactsGCSPublicURLBasePath, "btpeer_chameleond_config_prod.json")
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get download URL from cache server for file path %q", btpeerChameleondConfigProdGCSPath).Err()
+		return nil, errors.Annotate(err, "fetch btpeer chameleond release config: failed to build download URL").Err()
 	}
-	btpeerChameleondConfigJSON, _, err := cache.CurlFileContents(ctx, sshRunner.Run, downloadURL, 10*time.Second)
+	btpeerChameleondConfigJSON, _, err := linux.CurlURL(ctx, sshRunner.Run, 10*time.Second, btpeerChameleondConfigProdGCSPublicURL, nil)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to read %q on the host through the cache server at %q", btpeerChameleondConfigProdGCSPath, downloadURL).Err()
+		return nil, errors.Annotate(err, "failed to curl %q on the host", btpeerChameleondConfigProdGCSPublicURL).Err()
 	}
 	config := &labapi.BluetoothPeerChameleondConfig{}
 	if err := protojson.Unmarshal([]byte(btpeerChameleondConfigJSON), config); err != nil {
-		return nil, errors.Annotate(err, "failed to unmarshal BluetoothPeerChameleondConfig from %q", btpeerChameleondConfigProdGCSPath).Err()
+		return nil, errors.Annotate(err, "failed to unmarshal BluetoothPeerChameleondConfig from %q", btpeerChameleondConfigProdGCSPublicURL).Err()
 	}
 	return config, nil
 }

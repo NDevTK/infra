@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/scopes"
@@ -86,24 +87,11 @@ func CurlFileContents(ctx context.Context, run components.Runner, cacheURL strin
 // from the error) and the command error is returned along with the output of
 // curl.
 func curlCacheURL(ctx context.Context, run components.Runner, timeout time.Duration, cacheURL string, extraCurlArgs ...string) (curlOutput string, HTTPErrorResponseCode int, err error) {
-	curlArgs := []string{cacheURL, "--fail"}
-	for key, value := range HTTPRequestHeaders(ctx) {
-		curlArgs = append(curlArgs, "-H", fmt.Sprintf("%s:%s", key, value))
-	}
-	if len(extraCurlArgs) != 0 {
-		curlArgs = append(curlArgs, extraCurlArgs...)
-	}
-	combinedArgs := strings.Join(curlArgs, " ")
-	log.Debugf(ctx, "Running 'curl %s'", combinedArgs)
-	curlOutput, err = run(ctx, timeout, "curl", curlArgs...)
+	curlOutput, HTTPErrorResponseCode, err = linux.CurlURL(ctx, run, timeout, cacheURL, HTTPRequestHeaders(ctx), extraCurlArgs...)
 	if err != nil {
-		HTTPErrorResponseCode = ExtractHttpResponseCode(err)
-		log.Debugf(ctx, "Failed run 'curl %q' with HTTPErrorResponseCode %d: %s", combinedArgs, HTTPErrorResponseCode, curlOutput)
 		RecordCacheAccessFailure(ctx, cacheURL, HTTPErrorResponseCode)
-		return curlOutput, HTTPErrorResponseCode, errors.Annotate(err, "failed to run 'curl %s' with HTTPErrorResponseCode %d: %s", combinedArgs, HTTPErrorResponseCode, curlOutput).Err()
 	}
-	log.Debugf(ctx, "Successful run of 'curl %s'", combinedArgs)
-	return curlOutput, 0, nil
+	return curlOutput, HTTPErrorResponseCode, err
 }
 
 // HTTPRequestHeaders returns a map of header keys to values of HTTP headers
