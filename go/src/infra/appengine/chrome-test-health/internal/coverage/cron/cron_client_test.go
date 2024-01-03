@@ -24,6 +24,8 @@ func getMockPresubmitData() []*entities.PresubmitCoverageData {
 	return []*entities.PresubmitCoverageData{
 		{
 			ServerHost:      "chromium-review.googlesource.com",
+			Change:          1,
+			Patchset:        2,
 			UpdateTimestamp: time.Now().Add(-time.Hour * 6),
 			IncrementalPercentages: []entities.Cov{
 				{
@@ -41,6 +43,8 @@ func getMockPresubmitData() []*entities.PresubmitCoverageData {
 		{
 			ServerHost:      "chromium-review.googlesource.com",
 			UpdateTimestamp: time.Now().Add(-time.Hour * 25),
+			Change:          1,
+			Patchset:        1,
 			IncrementalPercentages: []entities.Cov{
 				{
 					Path:         "//dir1/dir2/file1.cc",
@@ -120,5 +124,34 @@ func TestGetPresubmitReportsForLastYear(t *testing.T) {
 		So(err, ShouldNotBeNil)
 		So(err, ShouldResemble, coverage.ErrInternalServerError)
 		So(reports, ShouldBeNil)
+	})
+}
+
+func TestGetMaxPatchsetToChangeMap(t *testing.T) {
+	t.Parallel()
+	client := CronClient{}
+
+	Convey("Should return map", t, func() {
+		Convey("With no reports", func() {
+			reports := []entities.PresubmitCoverageData{}
+			have := client.getMaxPatchsetToChangeMap(reports)
+			want := map[int64]int64{}
+			So(have, ShouldResemble, want)
+		})
+
+		Convey("With some reports", func() {
+			mockRep := getMockPresubmitData()
+			rep1 := *mockRep[0]
+			rep2 := rep1
+			rep2.Change = 2
+			rep2.Patchset = 1
+			rep3 := rep1
+			rep3.Change = 1
+			rep3.Patchset = 3
+			reports := []entities.PresubmitCoverageData{rep1, rep2, rep3}
+			have := client.getMaxPatchsetToChangeMap(reports)
+			want := map[int64]int64{1: 3, 2: 1}
+			So(have, ShouldResemble, want)
+		})
 	})
 }

@@ -79,3 +79,23 @@ func (c *CronClient) getPresubmitReportsOneDay(
 
 	return records, nil
 }
+
+// getMaxPatchsetToChangeMap returns a map. The key is the CL number and value is
+// the latest patchset number for which we have presubmit reports
+func (c *CronClient) getMaxPatchsetToChangeMap(
+	presubmitData []entities.PresubmitCoverageData,
+) map[int64]int64 {
+	highestPatchsetMap := make(map[int64]int64)
+	for _, data := range presubmitData {
+		change := data.Change
+		patchset := data.Patchset
+		if _, ok := highestPatchsetMap[change]; !ok {
+			highestPatchsetMap[change] = patchset
+		}
+
+		if patchset > highestPatchsetMap[change] {
+			highestPatchsetMap[change] = patchset
+		}
+	}
+	return highestPatchsetMap
+}
