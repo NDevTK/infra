@@ -47,7 +47,8 @@ var targetOverrideModels = map[string]string{
 	"limozeen":   "lazor",
 	// Volteer board.
 	"lillipup": "lindar",
-	// Screebo board
+	// Rex board.
+	"rex":        "rex0", // EVT b/313364449
 	"screebo4es": "screebo4es",
 }
 
