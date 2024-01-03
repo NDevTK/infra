@@ -14891,6 +14891,18 @@
                 "device_type:dut"
               ],
               "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Not a Dolos pool",
+              "docs": [
+                "Verify device is in pool related to Dolos testing.",
+                "That is NPI testing pool intdocued by b/318382426"
+              ],
+              "exec_name": "dut_not_in_pool",
+              "exec_args": [
+                "dolos-testing"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
           "dependencies": [
