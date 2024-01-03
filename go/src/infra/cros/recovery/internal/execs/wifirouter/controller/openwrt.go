@@ -36,7 +36,7 @@ const (
 
 	// openWrtArchiveBaseGCSPath is the base GCS object path for all OpenWrt
 	// image archive files.
-	openWrtArchiveBaseGCSPath = wifiRouterArtifactsGCSBasePath + "/openwrt_images/"
+	openWrtArchiveBaseGCSPath = wifiRouterArtifactsGCSObjectBasePath + "/openwrt_images/"
 
 	// openWrtArchiveFileExt is the file extension for all OpenWrt image archive
 	// files.
@@ -49,7 +49,7 @@ const (
 
 // hostIsOpenWrtRouter checks if the remote host is an OpenWrt router.
 func hostIsOpenWrtRouter(ctx context.Context, sshRunner ssh.Runner) (bool, error) {
-	matches, err := RemoteFileContentsMatch(ctx, sshRunner, deviceInfoFilePath, deviceInfoMatchIfOpenWrt)
+	matches, err := remoteFileContentsMatch(ctx, sshRunner, deviceInfoFilePath, deviceInfoMatchIfOpenWrt)
 	if err != nil {
 		return false, errors.Annotate(err, "failed to check if remote file %q contents match %q", deviceInfoFilePath, deviceInfoMatchIfOpenWrt).Err()
 	}
@@ -182,7 +182,7 @@ func (c *OpenWrtRouterController) FetchGlobalImageConfig(ctx context.Context) er
 	deviceName := c.state.GetDeviceBuildInfo().GetStandardBuildConfig().GetDeviceName()
 
 	// Fetch and unmarshal config from GCS.
-	wifiRouterConfig, err := fetchWifiRouterConfig(ctx, c.sshRunner, c.cacheAccess, c.dutName)
+	wifiRouterConfig, err := fetchWifiRouterConfig(ctx, c.sshRunner)
 	if err != nil {
 		return err
 	}
@@ -515,7 +515,7 @@ func (c *OpenWrtRouterController) downloadImageToDevice(ctx context.Context, ima
 		return "", errors.Annotate(err, "failed to create tmp image dir %q on router", tmpDir).Err()
 	}
 	archiveRouterPath := filepath.Join(tmpDir, filepath.Base(imageArchiveGCSPath))
-	if err := DownloadFileFromCacheServer(ctx, c.sshRunner, c.cacheAccess, c.dutName, 5*time.Minute, imageArchiveGCSPath, archiveRouterPath); err != nil {
+	if err := downloadFileFromCacheServer(ctx, c.sshRunner, c.cacheAccess, c.dutName, 5*time.Minute, imageArchiveGCSPath, archiveRouterPath); err != nil {
 		return "", err
 	}
 

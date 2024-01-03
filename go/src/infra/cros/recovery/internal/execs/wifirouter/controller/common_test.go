@@ -136,13 +136,13 @@ func Test_remoteFileContentsMatch(t *testing.T) {
 					Run(gomock.Any(), gomock.Any(), "cat", gomock.Eq(tt.args.remoteFilePath)).
 					Return(tt.args.mockCatFileResult, nil)
 			}
-			got, err := RemoteFileContentsMatch(context.Background(), mockRunner, tt.args.remoteFilePath, tt.args.matchRegex)
+			got, err := remoteFileContentsMatch(context.Background(), mockRunner, tt.args.remoteFilePath, tt.args.matchRegex)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("RemoteFileContentsMatch() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("remoteFileContentsMatch() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("RemoteFileContentsMatch() got = %v, want %v", got, tt.want)
+				t.Errorf("remoteFileContentsMatch() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"regexp"
 	"sort"
 	"strings"
@@ -24,9 +25,17 @@ import (
 	"infra/cros/recovery/tlw"
 )
 
-// wifiRouterArtifactsGCSBasePath is the base Google Cloud Storage path for
-// all wifi-related ChromeOS connectivity test artifact GCS objects.
-const wifiRouterArtifactsGCSBasePath = "gs://chromeos-connectivity-test-artifacts/wifi_router"
+const (
+	// wifiRouterArtifactsGCSObjectBasePath is the base Google Cloud Storage
+	// Object path for all wifi-related ChromeOS connectivity test artifact GCS
+	// objects.
+	wifiRouterArtifactsGCSObjectBasePath = "gs://chromeos-connectivity-test-artifacts/wifi_router"
+
+	// wifiRouterArtifactsGCSObjectBasePath is the base Google Cloud Storage
+	// public URL path for all wifi-related ChromeOS connectivity test artifact
+	// GCS objects.
+	wifiRouterArtifactsGCSPublicURLBasePath = "https://storage.googleapis.com/chromeos-connectivity-test-artifacts/wifi_router"
+)
 
 const (
 	// defaultPostRebootSSHDelay is the default amount of time to wait after
@@ -220,7 +229,7 @@ func CollectOverallTestbedWifiRouterFeatures(routers []*tlw.WifiRouterHost) []la
 	return commonFeatures
 }
 
-// RemoteFileContentsMatch checks if the file at remoteFilePath on the remote
+// remoteFileContentsMatch checks if the file at remoteFilePath on the remote
 // host exists and that its contents match using the regex string matchRegex.
 //
 // Returns true if the file exists and its contents matches. Returns false
@@ -229,7 +238,7 @@ func CollectOverallTestbedWifiRouterFeatures(routers []*tlw.WifiRouterHost) []la
 // - true, nil: the file exists and its contents match.
 // - false, nil: the file does not exist.
 // - false, <error>: failed to check file or the file exists and its contents do not match.
-func RemoteFileContentsMatch(ctx context.Context, sshRunner ssh.Runner, remoteFilePath, matchRegex string) (bool, error) {
+func remoteFileContentsMatch(ctx context.Context, sshRunner ssh.Runner, remoteFilePath, matchRegex string) (bool, error) {
 	// Verify that the file exists.
 	fileExists, err := ssh.TestFileExists(ctx, sshRunner, remoteFilePath)
 	if err != nil {
@@ -259,50 +268,32 @@ type CacheAccess interface {
 	GetCacheUrl(ctx context.Context, dutName, filePath string) (string, error)
 }
 
-// ReadFileFromCacheServer downloads a file from the cache server through
+// readFileFromURL downloads a file from the provided URL through
 // the router host and then returns its contents as a string. No temporary file
 // is used on the router host, as its contents are taken from the stdout of
 // wget.
 //
-// The cache server will download the file from GCS if it is not already cached.
-//
-// If the download from the cache server fails, it will be reattempted every
-// 1 second up until the downloadTimeout is reached.
-func ReadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string, downloadTimeout time.Duration, srcFilePath string) (string, error) {
-	// Prepare file for download from cache server.
-	downloadURL, err := cacheAccess.GetCacheUrl(ctx, dutName, srcFilePath)
-	if err != nil {
-		return "", errors.Annotate(err, "failed to get download URL from cache server for file path %q", srcFilePath).Err()
-	}
-	downloadURL, err = urlpath.EnrichWithTrackingIds(ctx, downloadURL)
-	if err != nil {
-		return "", errors.Annotate(err, "failed to enrich download URL from cache server with tracking IDs for file path %q", srcFilePath).Err()
-	}
-
-	// Download file from cache server to router with wget and output to stdout.
-	// Retry every second until the timeout is reached, as it make take some
-	// time for the cache server to prepare the file.
-	var lastStdout string
-	var lastHTTPErrorCode int
+// If the download fails, it will be reattempted every 1 second up until the
+// downloadTimeout is reached.
+func readFileFromURL(ctx context.Context, sshRunner ssh.Runner, downloadTimeout time.Duration, downloadURL string) (fileContents string, lastHTTPErrorCode int, err error) {
 	if err := retry.WithTimeout(ctx, time.Second, downloadTimeout, func() error {
 		var err error
-		lastStdout, _, lastHTTPErrorCode, err = ssh.WgetURL(ctx, sshRunner, downloadTimeout, downloadURL, "-q", "-O", "-")
+		fileContents, _, lastHTTPErrorCode, err = ssh.WgetURL(ctx, sshRunner, downloadTimeout, downloadURL, "-q", "-O", "-")
 		return err
-	}, fmt.Sprintf("router host download %q from cache server", downloadURL)); err != nil {
-		reportCacheFailedMetric(ctx, downloadURL, lastHTTPErrorCode)
-		return "", errors.Annotate(err, "failed to download %q from cache server to router with wget", downloadURL).Err()
+	}, fmt.Sprintf("router host download %q", downloadURL)); err != nil {
+		return "", lastHTTPErrorCode, errors.Annotate(err, "failed to download %q from router with wget", downloadURL).Err()
 	}
-	return lastStdout, nil
+	return fileContents, 0, nil
 }
 
-// DownloadFileFromCacheServer downloads a file from the cache server to the
+// downloadFileFromCacheServer downloads a file from the cache server to the
 // router host.
 //
 // The cache server will download the file from GCS if it is not already cached.
 //
 // If the download from the cache server fails, it will be reattempted every
 // 1 second up until the downloadTimeout is reached.
-func DownloadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string, downloadTimeout time.Duration, srcFilePath, dstFilePath string) error {
+func downloadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string, downloadTimeout time.Duration, srcFilePath, dstFilePath string) error {
 	// Prepare file for download from cache server.
 	downloadURL, err := cacheAccess.GetCacheUrl(ctx, dutName, srcFilePath)
 	if err != nil {
@@ -344,24 +335,30 @@ func reportCacheFailedMetric(ctx context.Context, sourcePath string, httpRespons
 }
 
 // fetchWifiRouterConfig downloads the production WifiRouterConfig JSON file
-// from GCS via the cache server through the router and returns its unmarshalled
+// from GCS via its public URL through the router and returns its unmarshalled
 // contents.
-func fetchWifiRouterConfig(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, dutName string) (*labapi.WifiRouterConfig, error) {
-	const wifiRouterConfigFileGCSPath = wifiRouterArtifactsGCSBasePath + "/wifi_router_config_prod.json"
-	wifiRouterConfigJSON, err := ReadFileFromCacheServer(ctx, sshRunner, cacheAccess, dutName, 30*time.Second, wifiRouterConfigFileGCSPath)
+//
+// Note: We use the public URL here rather than the cache to ensure we always
+// use the latest version of the config file from GCS.
+func fetchWifiRouterConfig(ctx context.Context, sshRunner ssh.Runner) (*labapi.WifiRouterConfig, error) {
+	wifiRouterConfigFileDownloadURL, err := url.JoinPath(wifiRouterArtifactsGCSPublicURLBasePath, "wifi_router_config_prod.json")
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to read %q on the router through the cache server", wifiRouterConfigFileGCSPath).Err()
+		return nil, errors.Annotate(err, "fetch wifi router config: failed to build download URL").Err()
+	}
+	wifiRouterConfigJSON, _, err := readFileFromURL(ctx, sshRunner, 30*time.Second, wifiRouterConfigFileDownloadURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to read %q on the router", wifiRouterConfigFileDownloadURL).Err()
 	}
 	config := &labapi.WifiRouterConfig{}
 	if err := protojson.Unmarshal([]byte(wifiRouterConfigJSON), config); err != nil {
-		return nil, errors.Annotate(err, "failed to unmarshal WifiRouterConfig from %q", wifiRouterConfigFileGCSPath).Err()
+		return nil, errors.Annotate(err, "failed to unmarshal WifiRouterConfig from %q", wifiRouterConfigFileDownloadURL).Err()
 	}
 	return config, nil
 }
 
 func lsbReleaseFileMatches(ctx context.Context, sshRunner ssh.Runner, matchRegex string) (bool, error) {
 	lsbReleaseFilePath := "/etc/lsb-release"
-	matches, err := RemoteFileContentsMatch(ctx, sshRunner, lsbReleaseFilePath, matchRegex)
+	matches, err := remoteFileContentsMatch(ctx, sshRunner, lsbReleaseFilePath, matchRegex)
 	if err != nil {
 		return false, errors.Annotate(err, "failed to check if remote file %q contents match %q", lsbReleaseFilePath, matchRegex).Err()
 	}
