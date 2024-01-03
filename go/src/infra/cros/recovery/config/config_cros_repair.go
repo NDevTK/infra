@@ -2585,7 +2585,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
 				"host:dut",
-				"command:chromeos-install --dst $(lsblk --bytes --output NAME  --paths -I 259,8 -n -d) --yes",
+				"command:chromeos-install --dst $(lsblk --bytes --output NAME  --paths -I 259 -n -d) --yes",
 				"background:false",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
