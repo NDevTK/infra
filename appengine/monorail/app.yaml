@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-runtime: python39
+runtime: python311
 app_engine_apis: true
 
 entrypoint: gunicorn -b :$PORT --timeout 60 --workers ${WORKERS} --threads 1 main:app
