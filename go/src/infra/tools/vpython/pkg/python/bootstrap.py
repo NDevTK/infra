@@ -7,7 +7,12 @@ import os
 import subprocess
 import sys
 
-ISOLATION_FLAG = '-I' if sys.version_info[0] > 2 else '-sSE'
+if sys.version_info[0] > 2:
+  ISOLATION_FLAG = '-I'
+  COMPILE_WORKERS = os.cpu_count() or 1
+else:
+  ISOLATION_FLAG = '-sSE'
+  COMPILE_WORKERS = 1
 
 # Create virtual environment in ${out} directory
 virtualenv = glob.glob(
@@ -38,7 +43,8 @@ if 'wheels' in os.environ:
 # correctness if .pyc can't be written to the directory anyway.
 try:
   subprocess.check_call([
-      sys.executable, ISOLATION_FLAG, '-m', 'compileall', os.environ['out']
+      sys.executable, ISOLATION_FLAG, '-m', 'compileall', '-j',
+      str(COMPILE_WORKERS), os.environ['out']
   ])
 except subprocess.CalledProcessError as e:
   print('complieall failed and ignored: {}'.format(e.returncode))
