@@ -437,6 +437,52 @@ func (g *Generator) testargs() string {
 	return ta
 }
 
+func (g *Generator) testargsforCFT() *testapi.ExecutionMetadata {
+	ta := g.Invocation.GetTestArgs()
+	args := &testapi.ExecutionMetadata{}
+	things := []*testapi.Arg{}
+
+	// ta will often be a comma deliminated string such as:
+	// "foo=bar,zoo=mar"
+	// Split on the comma, then split again on the =
+	// Lazy parsing the `=`; as KV support is weak at best.
+	// Users are responsible for clean args.
+	for _, kv := range strings.Split(ta, " ") {
+		k := ""
+		v := ""
+		for _, innerkv := range strings.Split(kv, "=") {
+			if k == "" {
+				k = innerkv
+			} else if v == "" {
+				v = innerkv
+			} else {
+				fmt.Println("too many values to unpack, skipping ", innerkv)
+				k = ""
+				v = ""
+			}
+		}
+		kvproto := &testapi.Arg{
+			Flag:  k,
+			Value: v,
+		}
+		things = append(things, kvproto)
+
+	}
+
+	for k, v := range g.Params.GetDecorations().GetTestArgs() {
+		if k == "resultdb_settings" {
+			continue
+		}
+		kvproto := &testapi.Arg{
+			Flag:  k,
+			Value: v,
+		}
+		things = append(things, kvproto)
+	}
+	args.Args = things
+	return args
+}
+
 var reservedTags = map[string]bool{
 	"qs_account":   true,
 	"luci_project": true,
@@ -693,6 +739,7 @@ func buildAndroidProvisionMetadata(builds *builds) (*anypb.Any, error) {
 // cftTestRunnerRequest creates test runner request for cft workflow
 func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runner.CFTTestRequest, error) {
 	kv := g.keyvals(ctx)
+	ta := g.testargsforCFT()
 
 	var deadline *timestamppb.Timestamp
 	if !g.Deadline.IsZero() {
@@ -780,6 +827,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 					TestCaseIds: testCaseIds,
 				},
 			},
+			ExecutionMetadata: ta,
 		},
 	}
 	// TODO(cdelagarza): Remove once plumbing is complete for the translation boolean

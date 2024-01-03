@@ -290,3 +290,39 @@ func TestResultConfig(t *testing.T) {
 		})
 	})
 }
+
+func TestExperiment2s(t *testing.T) {
+	Convey("Given a request with testargs", t, func() {
+		inv := basicInvocation()
+		inv.TestArgs = "foo=bar zoo=topia"
+		setTestName(inv, "foo-name")
+		var params test_platform.Request_Params
+		var dummyWorkerConfig = &config.Config_SkylabWorker{}
+
+		things := []*testapi.Arg{}
+		k1 := &testapi.Arg{
+			Flag:  "foo",
+			Value: "bar",
+		}
+		k2 := &testapi.Arg{
+			Flag:  "zoo",
+			Value: "topia",
+		}
+
+		things = append(things, k1)
+		things = append(things, k2)
+
+		setRequestMaximumDuration(&params, 1000)
+		Convey("when generating a test runner request's args", func() {
+			g := Generator{
+				Invocation:   inv,
+				Params:       &params,
+				WorkerConfig: dummyWorkerConfig,
+			}
+			got := g.testargsforCFT()
+			Convey("the testargs field is propogated correctly", func() {
+				So(got.Args, ShouldResemble, things)
+			})
+		})
+	})
+}
