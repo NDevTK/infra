@@ -16,6 +16,24 @@
       "message": "Shouldn\u0027t this be if !req.UpdateEcUseBoard and checked before extracting the fwBoard?",
       "revId": "f19817143cbdd0b8fec6d48ab1a90f4560fcc57a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e1042706_9e1bae9a",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/firmware/firmware.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-01-03T23:45:34Z",
+      "side": 1,
+      "message": "good catch. left after testing.",
+      "parentUuid": "a8ae621d_b1e517b9",
+      "revId": "f19817143cbdd0b8fec6d48ab1a90f4560fcc57a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
