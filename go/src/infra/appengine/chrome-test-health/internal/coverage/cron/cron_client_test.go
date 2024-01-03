@@ -6,6 +6,7 @@ package cron
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -203,6 +204,54 @@ func TestGetDir(t *testing.T) {
 		Convey("For root path", func() {
 			parent := getDir("//")
 			So(parent, ShouldEqual, "//")
+		})
+	})
+}
+
+func TestCreateCqSummaryDatat(t *testing.T) {
+	t.Parallel()
+	client := CronClient{}
+
+	Convey("Create CQ summary coverage data", t, func() {
+		Convey("Should pass", func() {
+			mockDataClient := mocks.NewIDataClient(t)
+			mockDataClient.On(
+				"BatchPut",
+				mock.AnythingOfType("backgroundCtx"),
+				mock.Anything,
+				mock.Anything,
+			).Return(
+				func(c context.Context, entities interface{}, keys interface{}) error {
+					return nil
+				},
+			)
+			client.coverageV2DsClient = mockDataClient
+
+			mockData := map[string]IncrementalCoverageData{
+				"//":   {CoveredFiles: 2, TotalFiles: 3, IsDir: true},
+				"//a/": {CoveredFiles: 1, TotalFiles: 1, IsDir: true},
+				"//b/": {CoveredFiles: 1, TotalFiles: 2, IsDir: true},
+			}
+			err := client.createCqSummaryData(context.Background(), time.Now(), int64(1234), int64(1), false, mockData)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("Should fail", func() {
+			mockDataClient := mocks.NewIDataClient(t)
+			mockDataClient.On(
+				"BatchPut",
+				mock.AnythingOfType("backgroundCtx"),
+				mock.Anything,
+				mock.Anything,
+			).Return(
+				func(c context.Context, entities interface{}, keys interface{}) error {
+					return fmt.Errorf("Datastore: %s", "Error putting entities")
+				},
+			)
+			client.coverageV2DsClient = mockDataClient
+			err := client.createCqSummaryData(context.Background(), time.Now(), int64(1234), int64(1), false, map[string]IncrementalCoverageData{})
+			So(err, ShouldNotBeNil)
+			So(err, ShouldResemble, errors.New("Datastore: Error putting entities"))
 		})
 	})
 }

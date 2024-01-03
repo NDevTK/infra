@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"cloud.google.com/go/datastore"
+
 	"go.chromium.org/luci/common/logging"
 
 	"infra/appengine/chrome-test-health/datastorage"
@@ -202,4 +204,55 @@ func getDir(path string) string {
 
 	// Path is in format: "//dir1/dir2/"
 	return fmt.Sprintf("//%s/", strings.Join(parts[2:partsLen-2], "/"))
+}
+
+// createCqSummaryData takes in the new set of paths for which
+// incremental code coverage data need to be created on the datastore
+// This function also takes in few other arguments like timestamp, CL change
+// number and the patchset to pinpoint the exact change where the files/dirs were
+// changed
+func (c *CronClient) createCqSummaryData(ctx context.Context, timestamp time.Time, change int64, patchset int64, isUnitTest bool, pathData map[string]IncrementalCoverageData) error {
+	newSummaryCovData := []*entities.CQSummaryCoverageData{}
+	keys := []*datastore.Key{}
+
+	for path, data := range pathData {
+		dataType := "files"
+		if data.IsDir {
+			dataType = "dirs"
+		}
+
+		// By default add the given file path and it's coverage data to the final set
+		// of CQ summary data to be created
+		newSummaryCovData = append(newSummaryCovData, &entities.CQSummaryCoverageData{
+			Timestamp:         timestamp,
+			Change:            change,
+			Patchset:          patchset,
+			IsUnitTest:        isUnitTest,
+			Path:              path,
+			DataType:          dataType,
+			FilesCovered:      int64(data.CoveredFiles),
+			TotalFilesChanged: int64(data.TotalFiles),
+		})
+
+		isUnitTestsLiteral := "all"
+		if isUnitTest {
+			isUnitTestsLiteral = "unit"
+		}
+
+		key := datastore.NameKey(
+			"CQSummaryCoverageData",
+			fmt.Sprintf("%d$%s$%s$%s", change, dataType, path, isUnitTestsLiteral),
+			nil,
+		)
+		keys = append(keys, key)
+	}
+
+	// Put all the entities (in the final-set) in the datastore
+	// If an entity with the key exists, it will update that entity
+	err := c.coverageV2DsClient.BatchPut(ctx, newSummaryCovData, keys)
+	if err != nil {
+		logging.Errorf(ctx, "Error putting entities in datastore: %s", err)
+		return err
+	}
+	return nil
 }
