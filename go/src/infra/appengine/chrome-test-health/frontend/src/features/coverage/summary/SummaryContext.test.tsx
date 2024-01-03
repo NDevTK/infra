@@ -5,7 +5,7 @@
 
 import { fireEvent, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { Platform, SummaryNode } from '../../../api/coverage';
 import { renderWithAuth } from '../../auth/testUtils';
 import * as Coverage from '../../../api/coverage';
@@ -164,5 +164,21 @@ describe('SummaryContext params', () => {
       fireEvent.click(screen.getByTestId('updateRevision'));
     });
     expect(screen.getByText('revision-2345')).toBeInTheDocument();
+  });
+
+  it('should update sort status', async () => {
+    await contextRender((value) => (
+      <Button data-testid='sortDesc' onClick={
+        () => value.api.updateSortOrder(false)
+      }>
+        <Box>{'is-sorted-' + value.isSorted}</Box>
+        <Box>{'is-sorted-asc-' + value.isSortedAscending}</Box>
+      </Button>
+    ));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('sortDesc'));
+    });
+    expect(screen.getByText('is-sorted-true')).toBeInTheDocument();
+    expect(screen.getByText('is-sorted-asc-false')).toBeInTheDocument();
   });
 });

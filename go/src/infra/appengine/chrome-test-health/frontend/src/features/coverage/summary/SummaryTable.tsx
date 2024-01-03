@@ -21,7 +21,7 @@ const colorPallete = (percentage: number): string => {
 };
 
 function SummaryTable() {
-  const { data, isLoading } = useContext(SummaryContext);
+  const { data, api, isLoading, isSorted, isSortedAscending } = useContext(SummaryContext);
 
   function constructColumns() {
     const cols: Column[] = [{
@@ -56,6 +56,11 @@ function SummaryTable() {
           return [value, undefined, sxProps];
         },
         align: 'left',
+        isSortedBy: isSorted,
+        isSortAscending: isSortedAscending,
+        onClick: () => {
+          api.updateSortOrder(isSorted ? !isSortedAscending : true);
+        },
         sx: { whiteSpace: 'nowrap', width: '20%', minWidth: '100px', maxWidth: '140px' },
       });
     });

@@ -10,6 +10,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
   useState,
 } from 'react';
 import { AuthContext } from '../../auth/AuthContext';
@@ -32,7 +33,8 @@ import {
 export interface Api {
   updatePlatform: (platform: string) => void,
   updateRevision: (revision: string) => void,
-  updateUnitTestsOnly: (unitTestOnly: boolean) => void
+  updateUnitTestsOnly: (unitTestOnly: boolean) => void,
+  updateSortOrder: (sortAscending: boolean) => void,
 }
 
 export interface SummaryContextValue {
@@ -41,6 +43,8 @@ export interface SummaryContextValue {
   params: Params,
   isLoading: boolean,
   isConfigLoaded: boolean;
+  isSorted: boolean,
+  isSortedAscending: boolean,
 }
 
 interface SummaryContextProviderProps {
@@ -92,6 +96,7 @@ export const SummaryContext = createContext<SummaryContextValue>(
         updatePlatform: () => {/**/},
         updateUnitTestsOnly: () => {/**/},
         updateRevision: () => {/**/},
+        updateSortOrder: () => {/**/},
       },
       params: {
         host: '',
@@ -106,6 +111,8 @@ export const SummaryContext = createContext<SummaryContextValue>(
       },
       isLoading: false,
       isConfigLoaded: false,
+      isSorted: false,
+      isSortedAscending: true,
     },
 );
 
@@ -128,6 +135,9 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
   const [isConfigLoaded, setIsConfigLoaded] = useState(false);
   const [loading, loadingDispatch] = useReducer(loadingCountReducer, { count: 0, isLoading: false });
   const [data, dataDispatch] = useReducer(dataReducer, []);
+  const [isSorted, setIsSorted] = useState(false);
+  const [isSortedAscending, setIsSortedAscending] = useState(true);
+  const sortedRef = useRef({ isSorted: false, isSortedAscending: true });
 
   const params: Params = useMemo(() => ({
     host, project, gitilesRef, revision, unitTestsOnly,
@@ -157,6 +167,11 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
     updateRevision: (revision: string) => {
       setRevision(revision);
     },
+    updateSortOrder: (sortAscending: boolean) => {
+      setIsSorted(true);
+      setIsSortedAscending(sortAscending);
+      dataDispatch({ type: sortAscending ? DataActionType.SORT_ASC : DataActionType.SORT_DESC });
+    },
   };
 
   // -------------- EFFECTS -------------------
@@ -173,6 +188,10 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
       }
     }
   }, [params, components]);
+
+  useEffect(() => {
+    sortedRef.current = { isSorted, isSortedAscending };
+  }, [isSorted, isSortedAscending]);
 
   // ----------------- Callbacks --------------
   const loadFailure = useCallback((error: any) => {
@@ -214,7 +233,7 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
         },
         loadFailure,
     );
-  }, [auth, revision, params, setHost, setProject, setGitilesRef, setRevision,
+  }, [auth, setHost, setProject, setGitilesRef, setRevision,
     setPlatform, setBuilder, setBucket, loadFailure]);
 
   const loadPathNode = useCallback((node: Node) => {
@@ -235,6 +254,8 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
               loaded: false,
               onExpand: loadPathNode,
               parentId: node.id,
+              isSorted: sortedRef.current.isSorted,
+              isSortedAscending: sortedRef.current.isSortedAscending,
             });
             loadingDispatch({ type: 'end' });
           },
@@ -260,6 +281,8 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
             summaryNodes,
             loaded: false,
             onExpand: loadPathNode,
+            isSorted: sortedRef.current.isSorted,
+            isSortedAscending: sortedRef.current.isSortedAscending,
           });
           loadingDispatch({ type: 'end' });
         },
@@ -299,6 +322,8 @@ export const SummaryContextProvider = (props: SummaryContextProviderProps) => {
       api,
       params,
       isConfigLoaded,
+      isSorted: isSorted,
+      isSortedAscending: isSortedAscending,
     }}>
       {props.children}
     </SummaryContext.Provider>

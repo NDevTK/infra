@@ -146,6 +146,8 @@ describe('merge_dir action', () => {
           loaded: true,
           onExpand,
           parentId: 'dir1/',
+          isSorted: false,
+          isSortedAscending: false,
         },
     );
     expect(modifiedTree[0].rows[0].rows).toHaveLength(1);
@@ -216,5 +218,115 @@ describe('clear_dir action', () => {
     ];
     const clearedTree = dataReducer(tree, { type: DataActionType.CLEAR_DIR });
     expect(clearedTree).toHaveLength(0);
+  });
+});
+
+describe('sort_asc action', () => {
+  it('sorts the tree in ascending order at every depth', () => {
+    const tree = [
+      pathNode(
+        'file.ext', '//file.ext', createMetricMap(70, 100, 70), false, false,
+        DirectoryNodeType.FILENAME, [],
+      ),
+      pathNode(
+        'dir/', '//dir/', createMetricMap(65, 200, 32.5), true, true,
+        DirectoryNodeType.DIRECTORY,
+        [
+          pathNode(
+            'dir2/', '//dir/dir2/', createMetricMap(45, 100, 45), true, false,
+            DirectoryNodeType.DIRECTORY, [],
+          ),
+          pathNode(
+            'dir1/', '//dir/dir1/', createMetricMap(20, 100, 20), true, false,
+            DirectoryNodeType.DIRECTORY, [],
+          ),
+        ],
+      ),
+    ];
+
+    const actual = dataReducer(
+      tree,
+      {
+        type: DataActionType.SORT_ASC,
+      },
+    );
+
+    const expected = [
+      pathNode(
+        'dir/', '//dir/', createMetricMap(65, 200, 32.5), true, true,
+        DirectoryNodeType.DIRECTORY,
+        [
+          pathNode(
+            'dir1/', '//dir/dir1/', createMetricMap(20, 100, 20), true, false,
+            DirectoryNodeType.DIRECTORY, [],
+          ),
+          pathNode(
+            'dir2/', '//dir/dir2/', createMetricMap(45, 100, 45), true, false,
+            DirectoryNodeType.DIRECTORY, [],
+          ),
+        ],
+      ),
+      pathNode(
+        'file.ext', '//file.ext', createMetricMap(70, 100, 70), false, false,
+        DirectoryNodeType.FILENAME, [],
+      ),
+    ];
+
+    expect(JSON.stringify(actual)).toEqual(JSON.stringify(expected));
+  });
+});
+
+describe('sort_desc action', () => {
+  it('sorts the tree in descending order at every depth', () => {
+    const tree = [
+      pathNode(
+        'dir/', '//dir/', createMetricMap(65, 200, 32.5), true, true,
+        DirectoryNodeType.DIRECTORY,
+        [
+          pathNode(
+            'dir1/', '//dir/dir1/', createMetricMap(20, 100, 20), true, false,
+            DirectoryNodeType.DIRECTORY, [],
+          ),
+          pathNode(
+            'dir2/', '//dir/dir2/', createMetricMap(45, 100, 45), true, false,
+            DirectoryNodeType.DIRECTORY, [],
+          ),
+        ],
+      ),
+      pathNode(
+        'file.ext', '//file.ext', createMetricMap(70, 100, 70), false, false,
+        DirectoryNodeType.FILENAME, [],
+      ),
+    ];
+
+    const actual = dataReducer(
+      tree,
+      {
+        type: DataActionType.SORT_DESC,
+      },
+    );
+
+    const expected = [
+      pathNode(
+        'file.ext', '//file.ext', createMetricMap(70, 100, 70), false, false,
+        DirectoryNodeType.FILENAME, [],
+      ),
+      pathNode(
+        'dir/', '//dir/', createMetricMap(65, 200, 32.5), true, true,
+        DirectoryNodeType.DIRECTORY,
+        [
+          pathNode(
+            'dir2/', '//dir/dir2/', createMetricMap(45, 100, 45), true, false,
+            DirectoryNodeType.DIRECTORY, [],
+          ),
+          pathNode(
+            'dir1/', '//dir/dir1/', createMetricMap(20, 100, 20), true, false,
+            DirectoryNodeType.DIRECTORY, [],
+          ),
+        ],
+      ),
+    ];
+
+    expect(JSON.stringify(actual)).toEqual(JSON.stringify(expected));
   });
 });

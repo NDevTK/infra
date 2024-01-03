@@ -57,7 +57,9 @@ export interface Params {
 export enum DataActionType {
   MERGE_DIR = 'merge_dir',
   BUILD_TREE = 'build_tree',
-  CLEAR_DIR = 'clear_dir'
+  CLEAR_DIR = 'clear_dir',
+  SORT_ASC = 'sort_asc',
+  SORT_DESC = 'sort_desc',
 }
 
 type DataAction =
@@ -65,6 +67,8 @@ type DataAction =
     type: DataActionType.MERGE_DIR,
     summaryNodes: SummaryNode[],
     loaded: boolean,
+    isSorted: boolean,
+    isSortedAscending: boolean,
     onExpand: (node: Node) => void,
     parentId?: string
   }
@@ -75,6 +79,12 @@ type DataAction =
   }
   | {
     type: DataActionType.CLEAR_DIR
+  }
+  | {
+    type: DataActionType.SORT_ASC,
+  }
+  | {
+    type: DataActionType.SORT_DESC,
   }
 
 export function dataReducer(state: Node[], action: DataAction): Node[] {
@@ -93,6 +103,9 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
             );
           },
       );
+      if (action.isSorted) {
+        nodes = sortData(nodes, action.isSortedAscending);
+      }
       if (action.parentId === undefined) {
         return nodes;
       } else {
@@ -112,6 +125,12 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
     }
     case DataActionType.CLEAR_DIR: {
       return [] as Node[];
+    }
+    case DataActionType.SORT_ASC: {
+      return sortData(state, true);
+    }
+    case DataActionType.SORT_DESC: {
+      return sortData(state, false);
     }
   }
 }
@@ -235,4 +254,25 @@ function createCoverageMap(
   });
 
   return ret;
+}
+
+function sortData(nodes: Node[], isSortAscending: boolean): Node[] {
+  nodes.forEach((node) => {
+    if (node.rows.length > 0) {
+      node.rows = sortData(node.rows, isSortAscending);
+    }
+  });
+
+  nodes.sort((node1, node2) => {
+    const metric1: MetricData | undefined = node1.metrics.get(MetricType.LINE);
+    const metric2: MetricData | undefined = node2.metrics.get(MetricType.LINE);
+
+    if (metric1==undefined || metric2 == undefined) return 0;
+
+    return isSortAscending ?
+      metric1.percentageCovered - metric2.percentageCovered :
+      metric2.percentageCovered - metric1.percentageCovered;
+  });
+
+  return nodes;
 }

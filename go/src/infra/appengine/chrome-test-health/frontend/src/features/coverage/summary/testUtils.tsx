@@ -14,11 +14,14 @@ export interface OptionalContext {
   api?: {
     updatePlatform?: (platform: string) => void,
     updateRevision?: (revision: string) => void,
-    updateUnitTestsOnly?: (unitTestOnly: boolean) => void
+    updateUnitTestsOnly?: (unitTestOnly: boolean) => void,
+    updateSortOrder: (sortAscending: boolean) => void
   },
   params?: OptionalParams,
   isLoading?: boolean,
   isConfigLoaded?: boolean,
+  isSorted?: false,
+  isSortedAscending?: true,
 }
 
 export interface OptionalParams {
@@ -59,10 +62,13 @@ export function renderWithContext(
       updatePlatform: opts.api?.updatePlatform || defaultApi,
       updateUnitTestsOnly: opts.api?.updateUnitTestsOnly || defaultApi,
       updateRevision: opts.api?.updateRevision || defaultApi,
+      updateSortOrder: opts.api?.updateSortOrder || defaultApi,
     },
     params: createParams(opts.params),
     isLoading: (opts.isLoading === undefined ? false : opts.isLoading),
     isConfigLoaded: (opts.isConfigLoaded === undefined ? true : opts.isConfigLoaded),
+    isSorted: opts.isSorted == undefined ? false : opts.isSorted,
+    isSortedAscending: opts.isSortedAscending == undefined ? false : opts.isSortedAscending,
   };
   return renderWithAuth(
       <BrowserRouter>
