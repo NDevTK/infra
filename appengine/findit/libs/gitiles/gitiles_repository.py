@@ -90,12 +90,14 @@ class GitilesRepository(GitRepository):
 
     status_code, content, _response_headers = self.http_client.Get(
         url, params, headers=_GetAccessTokenHeader())
+    content = six.ensure_str(content)
     if status_code != 200:
       return None
-    elif not content or not content.startswith(prefix):
-      raise Exception('Response does not begin with %s' % prefix)
+    elif not content or not content.startswith(six.ensure_str(prefix)):
+      raise Exception('Response does not begin with %s' %
+                      six.ensure_str(prefix))
 
-    return json.loads(content[len(prefix):])
+    return json.loads(content[len(six.ensure_str(prefix)):])
 
   def _SendRequestForTextResponse(self, url):
     status_code, content, _response_headers = self.http_client.Get(

@@ -29,8 +29,6 @@ if __name__ == '__main__':
       '--ignore',
       'third_party/',
       '--ignore',
-      'libs/',
-      '--ignore',
       'components/',
       '--ignore',
       'gae_libs/',

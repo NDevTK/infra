@@ -62,6 +62,11 @@ wheel: <
   version: "version:3.0.0"
 >
 
+wheel: <
+  name: "infra/python/wheels/numpy/${vpython_platform}"
+  version: "version:1.2x.supported.1"
+>
+
 # Required by appengine-python-standard==0.3.1
 wheel: <
   name: "infra/python/wheels/attrs-py2_py3"

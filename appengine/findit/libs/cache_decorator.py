@@ -1,43 +1,45 @@
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""This module provides a decorator to cache the results of a function.
 
-  Examples:
-  1. Decorate a function:
-    @cache_decorator.Cached()
-    def Test(a):
-      return a + a
+# This module provides a decorator to cache the results of a function.
+#
+# Examples:
+# 1. Decorate a function:
+#   @cache_decorator.Cached()
+#   def Test(a):
+#     return a + a
 
-    Test('a')
-    Test('a')  # Returns the cached 'aa'.
+#   Test('a')
+#   Test('a')  # Returns the cached 'aa'.
 
-  2. Decorate a method in a class:
-    class Downloader(object):
-      def __init__(self, url, retries):
-        self.url = url
-        self.retries = retries
+# 2. Decorate a method in a class:
+#   class Downloader(object):
+#     def __init__(self, url, retries):
+#       self.url = url
+#       self.retries = retries
 
-      @property
-      def identifier(self):
-        return self.url
+#     @property
+#     def identifier(self):
+#       return self.url
 
-      @cache_decorator.Cached():
-      def Download(self, path):
-        return urllib2.urlopen(self.url + '/' + path).read()
+#     @cache_decorator.Cached():
+#     def Download(self, path):
+#       return urllib2.urlopen(self.url + '/' + path).read()
 
-      d1 = Downloader('http://url', 4)
-      d1.Download('path')
+#     d1 = Downloader('http://url', 4)
+#     d1.Download('path')
 
-      d2 = Downloader('http://url', 5)
-      d2.Download('path')  # Returned the cached downloaded data.
-"""
+#     d2 = Downloader('http://url', 5)
+#     d2.Download('path')  # Returned the cached downloaded data.
+#
 
 import functools
 import hashlib
 import logging
 import inspect
 import pickle
+import six
 
 
 def _DefaultKeyGenerator(func, args, kwargs, namespace=None):
@@ -66,7 +68,8 @@ def _DefaultKeyGenerator(func, args, kwargs, namespace=None):
     else:
       params[var_name] = params[var_name].identifier
 
-  encoded_params = hashlib.md5(pickle.dumps(params)).hexdigest()
+  encoded_params = hashlib.md5(six.ensure_binary(
+      pickle.dumps(params))).hexdigest()
   prefix = namespace or '%s.%s' % (func.__module__, func.__name__)
 
   return '%s-%s' % (prefix, encoded_params)

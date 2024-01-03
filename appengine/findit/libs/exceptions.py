@@ -41,7 +41,7 @@ def EnhanceMessage(func):
       function_name = stacks[-1][2]
 
       new_message = '%s:%s %s $$ %s' % (file_path, line_num, function_name,
-                                        e.message)
+                                        six.text_type(e))
       # Re-raise the exception with the new message but the old traceback.
       six.reraise(exc_type, exc_type(new_message), exc_tb)
 

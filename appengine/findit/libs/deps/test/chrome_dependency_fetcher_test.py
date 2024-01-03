@@ -4,6 +4,7 @@
 
 import base64
 import mock
+import six
 
 from testing_utils import testing
 
@@ -90,7 +91,7 @@ class ChromiumDEPSTest(testing.AppengineTestCase):
   def testDEPSDownloaderForChromeVersion(self):
 
     def _MockGet(*_):
-      return 200, base64.b64encode('Dummy DEPS content'), {}
+      return 200, base64.b64encode(six.ensure_binary('Dummy DEPS content')), {}
 
     self.mock(HttpClientAppengine, '_Get', _MockGet)
     deps_downloader = chrome_dependency_fetcher.DEPSDownloader(
@@ -217,9 +218,12 @@ class ChromiumDEPSTest(testing.AppengineTestCase):
     deps_rolls = self.chrome_dep_fetcher.GetDependencyRolls(
         'rev1', 'rev2', 'unix')
     deps_rolls = [roll.ToDict() for roll in deps_rolls]
-    deps_rolls.sort()
-    expected_deps_rolls.sort()
-    self.assertEqual(expected_deps_rolls, deps_rolls)
+    if six.PY2:
+      deps_rolls.sort()
+      expected_deps_rolls.sort()
+      self.assertEqual(expected_deps_rolls, deps_rolls)
+    else:
+      self.assertCountEqual(expected_deps_rolls, deps_rolls)
 
   def testGetDependencyRollsDict(self):
 

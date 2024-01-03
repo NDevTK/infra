@@ -6,6 +6,7 @@ import base64
 from datetime import datetime
 import json
 import re
+import six
 
 from testing_utils import testing
 
@@ -308,9 +309,9 @@ class GitRepositoryTest(TestCase):
 
     git_revision = 'dummy_abcd1234'
     original_diff = 'dummy diff'
-    self.http_client_for_git.SetResponseForUrl('%s/+/%s%%5E%%21/?format=text' %
-                                               (self.repo_url, git_revision),
-                                               base64.b64encode(original_diff))
+    self.http_client_for_git.SetResponseForUrl(
+        '%s/+/%s%%5E%%21/?format=text' % (self.repo_url, git_revision),
+        base64.b64encode(six.ensure_binary(original_diff)))
     diff = self.git_repo.GetChangeDiff(git_revision)
     self.assertEqual(original_diff, diff)
 
@@ -334,7 +335,7 @@ class GitRepositoryTest(TestCase):
     original_source = 'dummy source'
     self.http_client_for_git.SetResponseForUrl(
         '%s/+/%s/%s?format=text' % (self.repo_url, git_revision, path),
-        base64.b64encode(original_source))
+        base64.b64encode(six.ensure_binary(original_source)))
     source = self.git_repo.GetSource(path, git_revision)
     self.assertEqual(original_source, source)
 
@@ -344,7 +345,7 @@ class GitRepositoryTest(TestCase):
     original_source = 'dummy source'
     self.http_client_for_git.SetResponseForUrl(
         '%s/+/%s/%s?format=text' % (self.repo_url, git_revision, path),
-        base64.b64encode(original_source))
+        base64.b64encode(six.ensure_binary(original_source)))
     source, status = self.git_repo.GetSourceAndStatus(path, git_revision)
     self.assertEqual(original_source, source)
     self.assertEqual(200, status)
