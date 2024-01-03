@@ -167,10 +167,10 @@
             {% endif %}
           {% endif %}
           </select>
-          {% for name, value in platform_select.params.iteritems() %}
+          {% for name, value in platform_select.params.items() %}
             <input type="hidden" name="{{name}}" value="{{value}}"/>
           {% endfor %}
-          <input type = "hidden" name = "modifier_id" value = "{{modifier_id}}"/>          
+          <input type = "hidden" name = "modifier_id" value = "{{modifier_id}}"/>
           See <a href="/coverage/p/{{luci_project}}/dir?host={{gitiles_commit.host}}&project={{gitiles_commit.project}}&ref={{gitiles_commit.ref}}&platform={{platform}}&list_reports=true&test_suite_type={{test_suite_type}}&modifier_id={{modifier_id}}">Previous Reports</a>
         </form>
         <br>

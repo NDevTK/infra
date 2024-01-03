@@ -142,9 +142,9 @@
         <option value="{{option.platform}}" {% if option.selected %}selected="selected" {% endif %}>{{option.ui_name}}</option>
       {% endfor %}
       </select>
-      {% for name, value in platform_select.params.iteritems() %}
+      {% for name, value in platform_select.params.items() %}
         <input type="hidden" name="{{name}}" value="{{value}}"/>
-      <input type = "hidden" name = "modifier_id" value = "{{modifier_id}}"/>    
+      <input type = "hidden" name = "modifier_id" value = "{{modifier_id}}"/>
       {% endfor %}
       {% if modifier_id == 0 %}
         <!-- Only directory wise split available for referenced coverage -->

@@ -6,8 +6,7 @@ import mock
 from datetime import datetime
 from datetime import timedelta
 from libs import time_util
-
-from parameterized import parameterized
+import six
 
 from google.appengine.ext import ndb
 from libs import time_util
@@ -16,8 +15,6 @@ from model.code_coverage import PresubmitCoverageData
 from model.code_coverage import CLPatchset
 from services.code_coverage import incremental_coverage
 from services import bigquery_helper
-
-_DEFAULT_LUCI_PROJECT = 'chromium'
 
 
 class IncrementalCoverageTest(WaterfallTestCase):
@@ -104,6 +101,13 @@ class IncrementalCoverageTest(WaterfallTestCase):
         'insert_timestamp': '2020-09-21T00:00:00',
         'run_id': run_id
     }]
-    mocked_report_rows.assert_called_with(expected_bqrows, 'findit-for-me',
-                                          'code_coverage_summaries',
-                                          'incremental_coverage')
+    calls = mocked_report_rows.call_args_list
+    self.assertEqual(len(calls), 1)
+    args, _ = calls[0]
+    if six.PY2:
+      self.assertItemsEqual(args[0], expected_bqrows)
+    else:
+      self.assertCountEqual(args[0], expected_bqrows)
+    self.assertEqual(args[1], 'findit-for-me')
+    self.assertEqual(args[2], 'code_coverage_summaries')
+    self.assertEqual(args[3], 'incremental_coverage')

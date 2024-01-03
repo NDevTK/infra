@@ -5,6 +5,7 @@
 import base64
 from datetime import datetime
 import mock
+import six
 
 from flask import Flask
 
@@ -34,22 +35,26 @@ class TokenTest(testing.AppengineTestCase):
 
   @mock.patch('os.urandom')
   def testGenerateRandomHexKey(self, mocked_urandom):
-    mocked_urandom.side_effect = ['abcd']
+    mocked_urandom.side_effect = [six.ensure_binary('abcd')]
     hex_key = token.GenerateRandomHexKey(256)
     mocked_urandom.assert_called_once_with(256)
-    self.assertEqual('61626364', hex_key)
+    self.assertEqual(six.ensure_binary('61626364'), hex_key)
 
   @mock.patch('os.urandom')
   def testGetSecretKeySameUser(self, mocked_urandom):
-    mocked_urandom.side_effect = ['abcd']
+    mocked_urandom.side_effect = [six.ensure_binary('abcd')]
     secret_key = token.SecretKey.GetSecretKey('me')
     mocked_urandom.assert_called_once_with(token._RANDOM_BYTE_LENGTH)
-    self.assertEqual('61626364', secret_key)
-    self.assertEqual('61626364', token.SecretKey.GetSecretKey('me'))
+    self.assertEqual(six.ensure_binary('61626364'), secret_key)
+    self.assertEqual(
+        six.ensure_binary('61626364'), token.SecretKey.GetSecretKey('me'))
 
   @mock.patch('os.urandom')
   def testGetSecretKeyDifferentUser(self, mocked_urandom):
-    mocked_urandom.side_effect = ['abcd', 'efgh']
+    mocked_urandom.side_effect = [
+        six.ensure_binary('abcd'),
+        six.ensure_binary('efgh')
+    ]
     my_key = token.SecretKey.GetSecretKey('me')
     your_key = token.SecretKey.GetSecretKey('you')
     self.assertNotEqual(my_key, your_key)
@@ -88,7 +93,7 @@ class TokenTest(testing.AppengineTestCase):
     self.assertFalse(expired)
 
   @mock.patch('common.token.GenerateAuthToken')
-  @mock.patch('gae_libs.http.auth_util.GetUserEmail', lambda: None)
+  @mock.patch('common.http.auth_util.GetUserEmail', lambda: None)
   def testNotAddXSRFTokenIfUserNotLogin(self, mocked_GenerateAuthToken):
     response = self.test_app.get('/test-token?format=json')
     self.assertEqual(200, response.status_int)
@@ -96,7 +101,7 @@ class TokenTest(testing.AppengineTestCase):
     self.assertEqual({'key': 'value'}, response.json_body)
 
   @mock.patch('common.token.GenerateAuthToken')
-  @mock.patch('gae_libs.http.auth_util.GetUserEmail', lambda: 'test@google.com')
+  @mock.patch('common.http.auth_util.GetUserEmail', lambda: 'test@google.com')
   def testAddXSRFTokenIfUserLogin(self, mocked_GenerateAuthToken):
     mocked_GenerateAuthToken.side_effect = ['token']
     response = self.test_app.get('/test-token?format=json')
@@ -108,7 +113,7 @@ class TokenTest(testing.AppengineTestCase):
     self.assertTrue(mocked_GenerateAuthToken.called)
 
   @mock.patch('common.token.ValidateAuthToken')
-  @mock.patch('gae_libs.http.auth_util.GetUserEmail', lambda: 'test@google.com')
+  @mock.patch('common.http.auth_util.GetUserEmail', lambda: 'test@google.com')
   def testInvalidXSRFTokenForUserLogin(self, mocked_ValidateAuthToken):
     mocked_ValidateAuthToken.side_effect = [(False, False)]
     self.test_app.post(
@@ -117,7 +122,7 @@ class TokenTest(testing.AppengineTestCase):
                                                      'test@google.com', 'test')
 
   @mock.patch('common.token.ValidateAuthToken')
-  @mock.patch('gae_libs.http.auth_util.GetUserEmail', lambda: 'test@google.com')
+  @mock.patch('common.http.auth_util.GetUserEmail', lambda: 'test@google.com')
   def testValidXSRFTokenForUserLogin(self, mocked_ValidateAuthToken):
     mocked_ValidateAuthToken.side_effect = [(True, False)]
     response = self.test_app.post(
@@ -140,7 +145,7 @@ class TokenTest(testing.AppengineTestCase):
     self.assertFalse(expired)
 
   def testValidateAuthTokenDateInvalid(self):
-    tested_token = base64.urlsafe_b64encode('token')
+    tested_token = base64.urlsafe_b64encode(six.ensure_binary('token'))
     valid, expired = token.ValidateAuthToken('key', tested_token, 'email')
     self.assertFalse(valid)
     self.assertFalse(expired)
@@ -159,8 +164,8 @@ class TokenTest(testing.AppengineTestCase):
   def testValidateAuthTokenLengthDifferent(self, _):
     token_created_timestamp = time_util.ConvertToTimestamp(
         datetime(2017, 6, 13, 0, 0, 0))
-    tested_token = base64.urlsafe_b64encode('token:' +
-                                            str(token_created_timestamp))
+    tested_token = base64.urlsafe_b64encode(
+        six.ensure_binary('token:' + str(token_created_timestamp)))
     valid, expired = token.ValidateAuthToken('key', tested_token, 'email')
     self.assertFalse(valid)
     self.assertFalse(expired)

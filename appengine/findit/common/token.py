@@ -12,10 +12,10 @@ import os
 from google.appengine.ext import ndb
 import six
 
-from gae_libs.http import auth_util
+from common.http import auth_util
 from libs import time_util
 
-_DELIMITER = b':'
+_DELIMITER = six.ensure_binary(':')
 _RANDOM_BYTE_LENGTH = 512
 
 
@@ -70,9 +70,15 @@ def GenerateAuthToken(key_name, user_id, action_id='', when=None):
   digester.update(_DELIMITER)
   digester.update(six.ensure_binary(str(when_timestamp)))
   digest = digester.digest()
-
-  return base64.urlsafe_b64encode(
-      six.ensure_binary('%s%s%d' % (digest, _DELIMITER, when_timestamp)))
+  if six.PY2:
+    return base64.urlsafe_b64encode(
+        six.ensure_binary('%s%s%d' %
+                          (digest, six.ensure_str(_DELIMITER), when_timestamp)))
+  else:
+    return base64.urlsafe_b64encode(
+        digest +
+        six.ensure_binary('%s%d' %
+                          (six.ensure_str(_DELIMITER), when_timestamp)))
 
 
 def ValidateAuthToken(key_name, token, user_id, action_id='', valid_hours=1):
@@ -94,8 +100,9 @@ def ValidateAuthToken(key_name, token, user_id, action_id='', valid_hours=1):
   if not token:
     return False, False
   try:
-    decoded = base64.urlsafe_b64decode(str(token))
-    token_time = datetime.utcfromtimestamp(int(decoded.split(_DELIMITER)[-1]))
+    decoded = base64.urlsafe_b64decode(six.ensure_binary(token))
+    token_time = datetime.utcfromtimestamp(
+        int(six.ensure_str(decoded.split(_DELIMITER)[-1])))
   except (TypeError, ValueError):
     return False, False
 
@@ -114,7 +121,10 @@ def ValidateAuthToken(key_name, token, user_id, action_id='', valid_hours=1):
   # Perform constant time comparison to avoid timing attacks.
   different = 0
   for x, y in zip(token, expected_token):
-    different |= ord(x) ^ ord(y)
+    if six.PY2:
+      different |= ord(x) ^ ord(y)
+    else:
+      different |= x ^ y
   if different:
     return False, expired
 

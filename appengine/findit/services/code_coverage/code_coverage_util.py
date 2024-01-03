@@ -11,12 +11,13 @@ import base64
 import difflib
 import json
 import logging
-import urllib2
+import six
+from six.moves import urllib
 
 from google.appengine.ext import ndb
 
 from common.findit_http_client import FinditHttpClient
-from components import gitiles
+from common import gitiles
 from gae_libs.caches import PickledMemCache
 from libs.cache_decorator import Cached
 from model.code_coverage import CoveragePercentage
@@ -113,7 +114,7 @@ def GetEquivalentPatchsets(host, project, change, patchset):
   assert isinstance(patchset, int), 'Patchset is expected to be an integer'
 
   change_details = FetchChangeDetails(host, project, change)
-  revisions = change_details['revisions'].values()
+  revisions = list(change_details['revisions'].values())
   revisions.sort(key=lambda r: r['_number'], reverse=True)
   patchsets = []
   for i, r in enumerate(revisions):
@@ -270,7 +271,7 @@ def _GetChangeId(project, change):
     A string representing a change id according to:
     https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-id
   """
-  project_quoted = urllib2.quote(project, safe='')
+  project_quoted = urllib.parse.quote(project, safe='')
   return '%s~%d' % (project_quoted, change)
 
 
@@ -308,7 +309,7 @@ def DecompressLineRanges(line_ranges):
   """
   decompressed_lines = []
   for line_range in line_ranges:
-    for line_num in xrange(line_range['first'], line_range['last'] + 1):
+    for line_num in range(line_range['first'], line_range['last'] + 1):
       decompressed_lines.append({
           'line': line_num,
           'count': line_range['count'],
@@ -331,7 +332,7 @@ def CompressLines(lines):
   """
   range_start_index = 0
   line_ranges = []
-  for i in xrange(1, len(lines) + 1):
+  for i in range(1, len(lines) + 1):
     is_continous_line = (
         i < len(lines) and lines[i]['line'] == lines[i - 1]['line'] + 1)
     has_same_count = (
@@ -529,7 +530,7 @@ def CalculateIncrementalPercentages(host, project, change, patchset,
     covered_lines = 0
     total_lines = 0
     for range_data in per_file_data['lines']:
-      for line_num in xrange(range_data['first'], range_data['last'] + 1):
+      for line_num in range(range_data['first'], range_data['last'] + 1):
         if line_num not in added_lines[path]:
           continue
 
@@ -567,7 +568,7 @@ def _FetchDiffForPatchset(host, project, change, patchset_revision):
   status_code, response, _ = FinditHttpClient().Get(url)
   _CheckChangeDetailsResponseCode(status_code, response)
 
-  return base64.b64decode(response)
+  return six.ensure_str(base64.b64decode(response))
 
 
 def _GetPatchsetRevision(patchset, change_details):
@@ -582,7 +583,7 @@ def _GetPatchsetRevision(patchset, change_details):
     Returns a string representing the revision if found in the change details,
     otherwise, a runtime error is raised.
   """
-  for revision, value in change_details['revisions'].iteritems():
+  for revision, value in change_details['revisions'].items():
     if patchset == value['_number']:
       return revision
 
@@ -611,7 +612,7 @@ def MergeFilesCoverageDataForPerCL(a, b):
   merged = []
   a_dict = {i['path']: i for i in a}
   b_dict = {i['path']: i for i in b}
-  for path in set(a_dict.keys() + b_dict.keys()):
+  for path in set(list(a_dict.keys()) + list(b_dict.keys())):
     if path not in a_dict:
       merged.append(b_dict[path])
       continue
@@ -629,13 +630,13 @@ def MergeFilesCoverageDataForPerCL(a, b):
         for i in DecompressLineRanges(b_dict[path]['lines'])
     }
     merged_lines_dict = {}
-    for k in set(a_lines_dict.keys() + b_lines_dict.keys()):
+    for k in set(list(a_lines_dict.keys()) + list(b_lines_dict.keys())):
       merged_lines_dict[k] = a_lines_dict.get(k, 0) + b_lines_dict.get(k, 0)
 
     merged_lines = [{
         'line': l,
         'count': c,
-    } for l, c in sorted(merged_lines_dict.iteritems())]
+    } for l, c in sorted(merged_lines_dict.items())]
     merged.append({
         'path': path,
         'lines': CompressLines(merged_lines),

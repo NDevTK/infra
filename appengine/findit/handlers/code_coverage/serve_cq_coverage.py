@@ -4,6 +4,7 @@
 
 import logging
 import re
+import six
 
 from common.base_handler import BaseHandler, Permission
 from handlers.code_coverage import utils
@@ -78,8 +79,9 @@ class ServeCodeCoverageData(BaseHandler):
           inc_unit_tests_coverage)
 
       formatted_data = {'files': []}
-      for p in set(abs_coverage_per_file.keys() +
-                   abs_unit_tests_coverage_per_file.keys()):
+      for p in set(
+          list(abs_coverage_per_file.keys()) +
+          list(abs_unit_tests_coverage_per_file.keys())):
         # Do not return results for test files
         if re.match(utils.TEST_FILE_REGEX, p):
           continue
@@ -103,12 +105,12 @@ class ServeCodeCoverageData(BaseHandler):
     try:
       change = int(self.request.values.get('change'))
       patchset = int(self.request.values.get('patchset'))
-    except ValueError, ve:
+    except ValueError as ve:
       return BaseHandler.CreateError(
           error_message=(
               'Invalid value for change(%r) or patchset(%r): need int, %s' %
               (self.request.values.get('change'),
-               self.request.values.get('patchset'), ve.message)),
+               self.request.values.get('patchset'), six.text_type(ve))),
           return_code=400,
           allowed_origin='*')
 
@@ -202,7 +204,7 @@ class ServeCodeCoverageData(BaseHandler):
       ) if latest_entity.data_unit else None
     except code_coverage_util.MissingChangeDataException as mcde:
       return BaseHandler.CreateError(
-          'Requested coverage data is not found. %s' % mcde.message,
+          'Requested coverage data is not found. %s' % six.text_type(mcde),
           404,
           allowed_origin='*')
 

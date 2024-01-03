@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import webapp2
 from flask import Flask
 
 import gae_ts_mon

@@ -2,11 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import six
+
 from collections import defaultdict
 import json
 import logging
 import difflib
-import Queue
+if six.PY2:
+  import Queue as queue
+else:
+  import queue
 from threading import Thread
 import time
 
@@ -445,8 +450,8 @@ def ExportCoverage(modifier_id, run_id):
     report = query.fetch(limit=1)[0]
     builder_to_latest_report[builder] = report
   # manifest is supposed to be same across all chromium coverage builders
-  manifest = builder_to_latest_report.values()[0].manifest
-  file_content_queue = Queue.Queue()
+  manifest = list(builder_to_latest_report.values())[0].manifest
+  file_content_queue = queue.Queue()
   files_deleted_at_latest = defaultdict(list)
   interesting_lines_per_builder_per_file = defaultdict(lambda: defaultdict(set))
   commits = _GetCandidateCommits(modifier_id)

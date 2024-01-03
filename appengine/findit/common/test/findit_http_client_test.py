@@ -4,7 +4,11 @@
 
 import logging
 import mock
-import urlparse
+import six
+if six.PY2:
+  import urlparse
+else:
+  import urllib.parse as urlparse
 
 from testing_utils import testing
 
@@ -52,8 +56,14 @@ class HttpClientMetricsInterceptorTest(testing.AppengineTestCase):
     url = 'https://test.com/'
     with self.assertRaises(NotImplementedError):
       _status_code, _content, _response_headers = client.Post(url, {})
-    mock_error_metric.increment.assert_called_once_with({
-        'host': 'test.com',
-        'exception': 'exceptions.NotImplementedError',
-    })
+    if six.PY2:
+      mock_error_metric.increment.assert_called_once_with({
+          'host': 'test.com',
+          'exception': 'exceptions.NotImplementedError',
+      })
+    else:
+      mock_error_metric.increment.assert_called_once_with({
+          'host': 'test.com',
+          'exception': 'builtins.NotImplementedError',
+      })
     self.assertFalse(mock_status_metric.increment.called)

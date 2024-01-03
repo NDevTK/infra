@@ -4,9 +4,7 @@
 
 import mock
 import re
-import urllib
-
-import logging
+import six
 
 from flask import Flask
 import webtest
@@ -229,7 +227,7 @@ class SetResultHandler(BaseHandler):
 
   RESULT = None
 
-  def HandleGet(self):
+  def HandleGet(self, **kwargs):
     return SetResultHandler.RESULT
 
 
@@ -298,7 +296,7 @@ class ResultFormatTest(testing.AppengineTestCase):
     response = self.test_app.get('/format')
     self.assertEquals(200, response.status_int)
     self.assertEquals('text/html', response.content_type)
-    self.assertEquals('error', response.body)
+    self.assertEquals(six.ensure_binary('error'), response.body)
 
   def testRequestForHtmlFormat(self):
     SetResultHandler.RESULT = {
@@ -310,7 +308,7 @@ class ResultFormatTest(testing.AppengineTestCase):
     response = self.test_app.get('/format?format=HTML')
     self.assertEquals(200, response.status_int)
     self.assertEquals('text/html', response.content_type)
-    self.assertTrue('error_message_here' in response.body)
+    self.assertTrue(six.ensure_binary('error_message_here') in response.body)
 
   def testRequestForJsonFormat(self):
     SetResultHandler.RESULT = {
@@ -347,8 +345,13 @@ class ResultFormatTest(testing.AppengineTestCase):
     response = self.test_app.get('/format?format=json&pretty=1')
     self.assertEquals(200, response.status_int)
     self.assertEquals('application/json', response.content_type)
-    expected_body = ('{\n  "a": "b", \n  "z": [\n    1, \n    2, \n    3\n  ], '
-                     '\n  "b": "%s"\n}' % ('1' * 200))
+    if six.PY2:
+      expected_body = (
+          '{\n  "a": "b", \n  "z": [\n    1, \n    2, \n    3\n  ], '
+          '\n  "b": "%s"\n}' % ('1' * 200))
+    else:
+      expected_body = ('{\n  "a": "b",\n  "z": [\n    1,\n    2,\n    3\n  ],'
+                       '\n  "b": "%s"\n}' % ('1' * 200)).encode('utf-8')
     self.assertEquals(response.body, expected_body)
 
   def testToJson(self):

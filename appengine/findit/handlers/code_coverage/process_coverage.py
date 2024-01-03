@@ -6,17 +6,19 @@ import json
 import logging
 import re
 import time
-import urlparse
+from six.moves.urllib.parse import urlparse
 import zlib
 
-import cloudstorage
+import six
+if six.PY2:
+  import cloudstorage as storage
+else:
+  from google.cloud import storage
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
-from components import prpc
-from components.prpc import client as prpc_client
 from go.chromium.org.luci.buildbucket.proto import builds_service_pb2
 from go.chromium.org.luci.buildbucket.proto import builds_service_prpc_pb2
 from go.chromium.org.luci.buildbucket.proto import common_pb2
@@ -72,7 +74,7 @@ def _AddDependencyToManifest(path, url, revision,
   # Parse the url to extract the hostname and project name.
   # For "https://chromium.google.com/chromium/src.git", we get
   # ParseResult(netloc='chromium.google.com', path='/chromium/src.git', ...)
-  result = urlparse.urlparse(url)
+  result = urlparse(url)
   assert result.path, 'No project extracted from %s' % url
 
   manifest.append(
@@ -216,9 +218,9 @@ def _IsFileAvailableInGs(gs_path):  # pragma: no cover.
     True if the object exists, otherwise False.
   """
   try:
-    _ = cloudstorage.stat(gs_path)
+    _ = storage.stat(gs_path)
     return True
-  except cloudstorage.NotFoundError:
+  except storage.NotFoundError:
     return False
 
 

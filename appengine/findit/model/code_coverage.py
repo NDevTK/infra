@@ -2,12 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
+import six
 from google.appengine.api import datastore_errors
 from google.appengine.ext import ndb
-from google.appengine.ext.ndb import msgprop
-from protorpc import messages
 
+if six.PY2:
+  from google.appengine.ext.ndb import msgprop
+  from protorpc import messages
+else:
+  from enum import IntEnum
 
 class DependencyRepository(ndb.Model):
   # The source absolute path of the checkout into the root repository.
@@ -72,22 +75,40 @@ class CLPatchset(ndb.Model):
   patchset = ndb.IntegerProperty(indexed=True, required=True)
 
 
-class BlockingStatus(messages.Enum):
-  """Represents the state machine for blocking low coverage cl logic."""
+if six.PY2:
 
-  # Default. A CL will not be blocked if it has default blocking status
-  DEFAULT = 0
-  # At least one of the coverage builds failed. Do not block the
-  # corresponding CL.
-  DONT_BLOCK_BUILDER_FAILURE = 1
-  # All coverage builds' data has been processed.
-  # CL is awaiting a verdict from the blocking logic.
-  READY_FOR_VERDICT = 2
-  # Blocking logic has decided to not block the CL.
-  VERDICT_NOT_BLOCK = 3
-  # Blocking algorithm has decided to block the CL.
-  VERDICT_BLOCK = 4
+  class BlockingStatus(messages.Enum):
+    """Represents the state machine for blocking low coverage cl logic."""
 
+    # Default. A CL will not be blocked if it has default blocking status
+    DEFAULT = 0
+    # At least one of the coverage builds failed. Do not block the
+    # corresponding CL.
+    DONT_BLOCK_BUILDER_FAILURE = 1
+    # All coverage builds' data has been processed.
+    # CL is awaiting a verdict from the blocking logic.
+    READY_FOR_VERDICT = 2
+    # Blocking logic has decided to not block the CL.
+    VERDICT_NOT_BLOCK = 3
+    # Blocking algorithm has decided to block the CL.
+    VERDICT_BLOCK = 4
+else:
+
+  class BlockingStatus(IntEnum):
+    """Represents the state machine for blocking low coverage cl logic."""
+
+    # Default. A CL will not be blocked if it has default blocking status
+    DEFAULT = 0
+    # At least one of the coverage builds failed. Do not block the
+    # corresponding CL.
+    DONT_BLOCK_BUILDER_FAILURE = 1
+    # All coverage builds' data has been processed.
+    # CL is awaiting a verdict from the blocking logic.
+    READY_FOR_VERDICT = 2
+    # Blocking logic has decided to not block the CL.
+    VERDICT_NOT_BLOCK = 3
+    # Blocking algorithm has decided to block the CL.
+    VERDICT_BLOCK = 4
 
 class LowCoverageBlocking(ndb.Model):
   """Represents the state machine for blocking low coverage cl logic."""
@@ -95,10 +116,15 @@ class LowCoverageBlocking(ndb.Model):
   # Key for the CL Patchset to which this entity belongs to
   cl_patchset = ndb.StructuredProperty(CLPatchset, indexed=True, required=True)
 
-  # Determines if the corresponding patchset may be blocked or not
-  blocking_status = msgprop.EnumProperty(
-      BlockingStatus, indexed=True, default=BlockingStatus.DEFAULT)
-
+  if six.PY2:
+    # Determines if the corresponding patchset may be blocked or not
+    blocking_status = msgprop.EnumProperty(
+        BlockingStatus, indexed=True, default=BlockingStatus.DEFAULT)
+  else:
+    blocking_status = ndb.IntegerProperty(
+        choices=list(BlockingStatus),
+        indexed=True,
+        default=BlockingStatus.DEFAULT)
   # List of try builders from whom coverage data is expected to be received
   expected_builders = ndb.StringProperty(repeated=True)
 

@@ -55,7 +55,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                    '&patchset=%d&concise=1') % (host, project, change, patchset)
     response = self.test_app.get(request_url)
 
-    expected_response_body = json.dumps({
+    expected_response_body = {
         'data': {
             'files': [{
                 'path':
@@ -69,8 +69,9 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                 }]
             }]
         },
-    })
-    self.assertEqual(expected_response_body, response.body)
+    }
+    actual_response_body = json.loads(response.body)
+    self.assertDictEqual(expected_response_body, actual_response_body)
 
   def testServeCLPatchsetLinesDataInvalidPatchset(self):
     host = 'chromium-review.googlesource.com'
@@ -222,7 +223,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                                                 patchset_dest)
     response = self.test_app.get(request_url)
 
-    expected_response_body = json.dumps({
+    expected_response_body = {
         'data': {
             'files': [{
                 'path':
@@ -236,8 +237,9 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                 }]
             }]
         },
-    })
-    self.assertEqual(expected_response_body, response.body)
+    }
+    actual_response_body = json.loads(response.body)
+    self.assertDictEqual(expected_response_body, actual_response_body)
     src_entity = PresubmitCoverageData.Get(host, change, patchset_src)
     dest_entity = PresubmitCoverageData.Get(host, change, patchset_dest)
     self.assertEqual(patchset_src, dest_entity.based_on)
@@ -290,7 +292,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                        host, project, change, patchset)
     response = self.test_app.get(request_url)
 
-    expected_response_body = json.dumps({
+    expected_response_body = {
         'data': {
             'files': [{
                 "path": "dir/myfile.cc",
@@ -312,8 +314,9 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                 },
             }]
         },
-    })
-    self.assertEqual(expected_response_body, response.body)
+    }
+    actual_response_body = json.loads(response.body)
+    self.assertDictEqual(expected_response_body, actual_response_body)
 
   @mock.patch.object(code_coverage_util, 'GetEquivalentPatchsets')
   def testServeCLPatchPercentagesDataEquivalentPatchsets(
@@ -357,7 +360,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                        host, project, change, patchset_dest)
     response = self.test_app.get(request_url)
 
-    expected_response_body = json.dumps({
+    expected_response_body = {
         'data': {
             'files': [{
                 "path": "dir/myfile.cc",
@@ -379,8 +382,9 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                 },
             }]
         },
-    })
-    self.assertEqual(expected_response_body, response.body)
+    }
+    actual_response_body = json.loads(response.body)
+    self.assertDictEqual(expected_response_body, actual_response_body)
 
   def testServeCLPatchPercentagesDataJustUnitTestCoverage(self):
     host = 'chromium-review.googlesource.com'
@@ -412,7 +416,7 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                        host, project, change, patchset)
     response = self.test_app.get(request_url)
 
-    expected_response_body = json.dumps({
+    expected_response_body = {
         'data': {
             'files': [{
                 "path": "dir/myfile.cc",
@@ -428,5 +432,6 @@ class ServeCodeCoverageDataTest(WaterfallTestCase):
                 },
             }]
         },
-    })
-    self.assertEqual(expected_response_body, response.body)
+    }
+    actual_response_body = json.loads(response.body)
+    self.assertDictEqual(expected_response_body, actual_response_body)

@@ -8,6 +8,8 @@ will be preserved in the URL redirected to. If a URL path changes, it has to be
 added to the mapping below for backward compatibility.
 """
 
+import six
+
 from common.base_handler import BaseHandler, Permission
 
 # Redirection mappings.
@@ -82,7 +84,7 @@ class URLRedirect(BaseHandler):
 
     new_url = 'https://%s%s' % (new_hostname, new_path)
 
-    query_string = self.request.query_string
+    query_string = six.ensure_str(self.request.query_string)
     if query_string:
       new_url = '%s?%s' % (new_url, query_string)
 

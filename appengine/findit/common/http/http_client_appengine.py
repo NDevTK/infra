@@ -8,8 +8,8 @@ import logging
 from google.appengine.api import urlfetch
 from google.appengine.api import urlfetch_errors
 
-import auth_util
-from retry_http_client import RetryHttpClient
+from common.http import auth_util
+from common.http.retry_http_client import RetryHttpClient
 
 GAE_RETRIABLE_EXCEPTIONS = [
     urlfetch_errors.DownloadError,

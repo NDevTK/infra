@@ -32,7 +32,7 @@ class FilesTest(wf_testcase.WaterfallTestCase):
         'T.a.c.o': 'a.c.o',
         'T.a.o': 'a.o'
     }
-    for obj_file, expected_file in cases.iteritems():
+    for obj_file, expected_file in cases.items():
       self.assertEqual(
           expected_file,
           files._NormalizeObjectFilePath(obj_file))
@@ -48,7 +48,7 @@ class FilesTest(wf_testcase.WaterfallTestCase):
         'xdtest':
             'xdtest.cc',
     }
-    for expected_file, file_path in cases.iteritems():
+    for expected_file, file_path in cases.items():
       self.assertEqual(
           expected_file,
           files._StripExtensionAndCommonSuffix(file_path))

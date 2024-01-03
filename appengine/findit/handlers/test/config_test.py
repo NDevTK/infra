@@ -6,6 +6,7 @@ import datetime
 import json
 import mock
 import re
+import six
 
 from flask import Flask
 import webtest
@@ -19,9 +20,6 @@ from google.appengine.api import users
 _MOCK_CODE_COVERAGE_SETTINGS = {
     'serve_presubmit_coverage_data': True,
 }
-
-_MOCK_VERSION_NUMBER = 12
-
 
 class ConfigTest(testing.AppengineTestCase):
   app_module = Flask(__name__)
@@ -221,17 +219,35 @@ class ConfigTest(testing.AppengineTestCase):
     self.assertEqual([], config._ValidateConfig('', good_config, spec))
     self.assertEqual([], config._ValidateConfig('', good_config_2, spec))
     self.assertEqual([], config._ValidateConfig('', good_config_3, spec))
-    self.assertEqual([
-        'Expected key inner_key, value 5.0 to be <type \'int\'> in config '
-        '/optional_nested_dict',
-        'Expected key optional_string, value [\'h\', \'e\', \'l\', \'l\', \'o\''
-        '] to be <type \'basestring\'> in config ',
-        'Expected key required_int, value 1.5 to be <type \'int\'> in config ',
-        'Expected key required_even_length_list, value (1, 2, 3, 4) to be '
-        '<type \'list\'> in config '
-    ], config._ValidateConfig('', bad_types, spec))
-    self.assertEqual([
-        'Required key inner_key not present in config /optional_nested_dict',
-        'odd'
-    ], config._ValidateConfig('', bad_custom_validation, spec))
+
+    if six.PY2:
+      self.assertEqual([
+          'Expected key inner_key, value 5.0 to be <type \'int\'> in config '
+          '/optional_nested_dict', 'Expected key optional_string, value '
+          '[\'h\', \'e\', \'l\', \'l\', \'o\''
+          '] to be (<type \'basestring\'>,) in config ',
+          'Expected key required_int, value 1.5 to be '
+          '<type \'int\'> in config ',
+          'Expected key required_even_length_list, value (1, 2, 3, 4) to be '
+          '<type \'list\'> in config '
+      ], config._ValidateConfig('', bad_types, spec))
+      self.assertEqual([
+          'Required key inner_key not present in config /optional_nested_dict',
+          'odd'
+      ], config._ValidateConfig('', bad_custom_validation, spec))
+    else:
+      self.assertCountEqual([
+          'Expected key inner_key, value 5.0 to be <class \'int\'> in config '
+          '/optional_nested_dict', 'Expected key optional_string, value '
+          '[\'h\', \'e\', \'l\', \'l\', \'o\''
+          '] to be (<class \'str\'>,) in config ',
+          'Expected key required_int, value 1.5 to be '
+          '<class \'int\'> in config ',
+          'Expected key required_even_length_list, value (1, 2, 3, 4) to be '
+          '<class \'list\'> in config '
+      ], config._ValidateConfig('', bad_types, spec))
+      self.assertCountEqual([
+          'Required key inner_key not present in config /optional_nested_dict',
+          'odd'
+      ], config._ValidateConfig('', bad_custom_validation, spec))
     self.assertNotEqual([], config._ValidateConfig('', 'not_a_dict', spec))

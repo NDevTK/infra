@@ -8,14 +8,15 @@
 import collections
 import json
 import logging
+import six
 
 import flask
 import jinja2
 
 from common import constants
 from gae_libs import appengine_util
-from gae_libs import token
-from gae_libs.http import auth_util
+from common import token
+from common.http import auth_util
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(constants.HTML_TEMPLATE_DIR),
@@ -61,8 +62,8 @@ class BaseHandler(object):
   def IsCorpUserOrAdmin(self):
     """Returns True if the user logged in with corp account or as admin."""
     user_email = auth_util.GetUserEmail()
-    return ((user_email and user_email.endswith('@google.com')) or
-            auth_util.IsCurrentUserAdmin())
+    is_googler = user_email and user_email.endswith('@google.com')
+    return is_googler or auth_util.IsCurrentUserAdmin()
 
   def _HasPermission(self):
     if self.PERMISSION_LEVEL == Permission.ANYONE:
@@ -184,13 +185,14 @@ class BaseHandler(object):
         length_value = 1
         if isinstance(value, (list, dict)):
           length_value = 2 + len(value)
-        if isinstance(value, (str, basestring)) and len(value) > 100:
+        if isinstance(value,
+                      (six.binary_type, six.string_types)) and len(value) > 100:
           length_value = 10 + len(value)
         return (length_value, key)
 
       # Order the dictionary so that simple and small data comes first.
       ordered_data = collections.OrderedDict(
-          sorted(data.iteritems(), key=lambda (k, v): _Compare(k, v)))
+          sorted(data.items(), key=lambda x: _Compare(x[0], x[1])))
       return json.dumps(ordered_data, indent=2, default=str)
 
     if response_format == 'html' and template is not None:

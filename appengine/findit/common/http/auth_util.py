@@ -9,7 +9,7 @@ from google.appengine.api import oauth
 from google.appengine.api import users
 from google.appengine.api.app_identity import app_identity
 
-from interceptor import LoggingInterceptor
+from common.http.interceptor import LoggingInterceptor
 
 _EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
 # host regex, path regex, scope

@@ -2,7 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cloudstorage
+import re
+import six
+if six.PY2:
+  import cloudstorage as storage
+else:
+  from google.cloud import storage
+  from google.cloud.storage.retry import DEFAULT_RETRY
 import logging
 
 from common.findit_http_client import FinditHttpClient
@@ -13,6 +19,8 @@ from waterfall import waterfall_config
 
 # Cloud storage bucket used to store the source files fetched from gitile.
 _SOURCE_FILE_GS_BUCKET = 'source-files-for-coverage'
+
+_GCS_BUCKET_BLOB_REGEX = re.compile(r'/(.*?)/(.*)')
 
 # Regex to identify all test related files
 # It includes all those files
@@ -210,11 +218,24 @@ def WriteFileContentToGs(gs_path, content):  # pragma: no cover.
     gs_path (str): Path to the file, in the format /bucket/object.
     content (str): Content of the file.
   """
-  write_retry_params = cloudstorage.RetryParams(backoff_factor=2)
-  with cloudstorage.open(
-      gs_path, 'w', content_type='text/plain',
-      retry_params=write_retry_params) as f:
-    f.write(content)
+  if six.PY2:
+    write_retry_params = storage.RetryParams(backoff_factor=2)
+    with storage.open(
+        gs_path,
+        'w',
+        content_type='text/plain',
+        retry_params=write_retry_params) as f:
+      f.write(content)
+  else:
+    # extract first word between slashes as bucket
+    m = _GCS_BUCKET_BLOB_REGEX.match(gs_path)
+    bucket, blob = m[1], m[2]
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket)
+    blob = bucket.blob(blob)
+    modified_retry = DEFAULT_RETRY.with_delay(multiplier=2)
+    with blob.open('w', content_type='text/plain', retry=modified_retry) as f:
+      f.write(content)
 
 
 def GetFileContentFromGs(gs_path):  # pragma: no cover.
@@ -228,8 +249,21 @@ def GetFileContentFromGs(gs_path):  # pragma: no cover.
 
   Returns:
     The content of the file if it exists, otherwise None."""
-  try:
-    with cloudstorage.open(gs_path) as f:
-      return f.read()
-  except cloudstorage.NotFoundError:
-    return None
+  if six.PY2:
+    try:
+      with storage.open(gs_path) as f:
+        return f.read()
+    except storage.NotFoundError:
+      return None
+  else:
+    try:
+      # extract first word between slashes as bucket
+      m = _GCS_BUCKET_BLOB_REGEX.match(gs_path)
+      bucket, blob = m[1], m[2]
+      storage_client = storage.Client()
+      bucket = storage_client.bucket(bucket)
+      blob = bucket.blob(blob)
+      with blob.open("r") as f:
+        print(f.read())
+    except Exception:
+      return None

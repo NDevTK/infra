@@ -5,6 +5,7 @@
 
 import logging
 import json
+import six
 
 from common import token
 from common.base_handler import BaseHandler, Permission
@@ -72,7 +73,7 @@ def _ValidateConfig(name, d, spec):
     if required_type == float:
       required_type = (int, float)
     elif required_type == str:
-      required_type = basestring
+      required_type = six.string_types
 
     # Actual validation.
 

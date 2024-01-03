@@ -5,6 +5,7 @@
 import base64
 import json
 import mock
+import six
 import textwrap
 
 from google.appengine.ext import ndb
@@ -352,7 +353,7 @@ class CodeCoverageUtilTest(WaterfallTestCase):
 
     mock_http_client.side_effect = [
         (200, ')]}\'' + json.dumps(revisions), None),
-        (200, base64.b64encode(diff), None),
+        (200, base64.b64encode(six.ensure_binary(diff)), None),
     ]
 
     coverage_data = [{
@@ -396,7 +397,7 @@ class CodeCoverageUtilTest(WaterfallTestCase):
 
     mock_http_client.side_effect = [
         (200, ')]}\'' + json.dumps(revisions), None),
-        (200, base64.b64encode(diff), None),
+        (200, base64.b64encode(six.ensure_binary(diff)), None),
     ]
 
     coverage_data = [{

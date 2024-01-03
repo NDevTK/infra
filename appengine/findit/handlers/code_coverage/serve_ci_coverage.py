@@ -4,6 +4,7 @@
 
 import collections
 import logging
+import six
 import re
 
 from google.appengine.api import users
@@ -52,7 +53,7 @@ def _GetSameOrMostRecentReportForEachPlatform(luci_project, host, project, ref,
   """
   result = {}
   for platform, info in utils.GetPostsubmitPlatformInfoMap(
-      luci_project).iteritems():
+      luci_project).items():
     # Some 'platforms' are hidden from the selection to avoid confusion, as they
     # may be custom reports that do not make sense outside a certain team.
     # They should still be reachable via a url.
@@ -104,7 +105,7 @@ def _MakePlatformSelect(luci_project, host, project, ref, revision, path,
   if path:
     result['params']['path'] = path
   for platform, report in _GetSameOrMostRecentReportForEachPlatform(
-      luci_project, host, project, ref, revision).iteritems():
+      luci_project, host, project, ref, revision).items():
     option = {
         'platform':
             platform,
@@ -534,7 +535,10 @@ class ServeCodeCoverageData(BaseHandler):
           # Jinja requires passing unicode objects or ASCII-only bytestring,
           # and given that it is possible for source files to have non-ASCII
           # chars, thus converting lines to unicode.
-          line_to_data[i + 1]['line'] = unicode(line, 'utf8')
+          logging.error(type(line))
+          if six.PY2:
+            line = unicode(line, 'utf-8')
+          line_to_data[i + 1]['line'] = line
           line_to_data[i + 1]['count'] = -1
 
         uncovered_blocks = {}
@@ -553,7 +557,7 @@ class ServeCodeCoverageData(BaseHandler):
             else:
               line_to_data[line_num]['is_partially_covered'] = False
 
-        line_to_data = list(line_to_data.iteritems())
+        line_to_data = list(line_to_data.items())
         line_to_data.sort(key=lambda x: x[0])
         return line_to_data
 

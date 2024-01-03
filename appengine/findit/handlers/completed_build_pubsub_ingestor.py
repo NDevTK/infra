@@ -6,6 +6,7 @@
 import base64
 import json
 import logging
+import six
 
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
@@ -41,7 +42,7 @@ class CompletedBuildPubsubIngestor(BaseHandler):
     except (ValueError, KeyError) as e:
       # Ignore requests with invalid message.
       logging.debug('build_id: %r', build_id)
-      logging.error('Unexpected PubSub message format: %s', e.message)
+      logging.error('Unexpected PubSub message format: %s', six.text_type(e))
       logging.debug('Post body: %s', self.request.get_json(force=True))
       return
 

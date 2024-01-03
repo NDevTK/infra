@@ -59,6 +59,16 @@ deploy-coverage-staging: test
 	"dot-$(STAGING_APPID).appspot.com/p/chromium/coverage"
 
 
+generate_requirements_txt:
+	vpython3 -m pip freeze > requirements.txt
+	printf "# This file is generated from the .vpython3 spec file.\n# Use \`make generate_requirements_txt\` to update.\n$$(cat requirements.txt)" > requirements.txt
+
+install_deps:
+	pip3 install -t lib -r requirements.txt
+
+pytest:
+	vpython3 test.py $(TEST_GLOB)
+
 ##### Development ###
 run:
 	$(INFRAPYTHON) $(GAE_PY) devserver

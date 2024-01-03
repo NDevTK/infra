@@ -5,7 +5,7 @@
 from six.moves import urllib
 import time
 
-from interceptor import LoggingInterceptor
+from common.http.interceptor import LoggingInterceptor
 
 
 class RetryHttpClient(object):
@@ -34,7 +34,7 @@ class RetryHttpClient(object):
     raise NotImplementedError(
         '_Get() should be implemented in the child class')  # pragma: no cover
 
-  def _Post(self, url, data, timeout_seconds, headers):  # pylint: disable=W0613, R0201
+  def _Post(self, url, data, timeout_seconds, headers):
     """Sends the actual HTTP POST request.
 
     Returns:
@@ -43,7 +43,7 @@ class RetryHttpClient(object):
     raise NotImplementedError(
         '_Post() should be implemented in the child class')  # pragma: no cover
 
-  def _Put(self, url, data, timeout_seconds, headers):  # pylint: disable=W0613, R0201
+  def _Put(self, url, data, timeout_seconds, headers):
     """Sends the actual HTTP PUT request.
 
     Returns:

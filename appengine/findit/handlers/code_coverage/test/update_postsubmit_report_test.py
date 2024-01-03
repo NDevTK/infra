@@ -6,7 +6,7 @@ from datetime import datetime
 import mock
 from flask import Flask
 
-from gae_libs.handlers.base_handler import BaseHandler
+from common.base_handler import BaseHandler
 from model.code_coverage import DependencyRepository
 from model.code_coverage import PostsubmitReport
 from handlers.code_coverage import update_postsubmit_report

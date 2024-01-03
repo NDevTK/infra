@@ -5,6 +5,7 @@
 import base64
 import json
 import mock
+import six
 
 from flask import Flask
 
@@ -39,16 +40,23 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
                 'build_id': '123456',
             },
             'data':
-                base64.b64encode(
-                    json.dumps({
-                        'build': {
-                            'project': 'chromium',
-                            'bucket': 'luci.chromium.ci',
-                            'status': 'COMPLETED',
-                            'result': 'SUCCESS',
-                            'parameters_json': '{"builder_name": "builder"}',
-                        }
-                    })),
+                six.ensure_str(
+                    base64.b64encode(
+                        six.ensure_binary(
+                            json.dumps({
+                                'build': {
+                                    'project':
+                                        'chromium',
+                                    'bucket':
+                                        'luci.chromium.ci',
+                                    'status':
+                                        'COMPLETED',
+                                    'result':
+                                        'SUCCESS',
+                                    'parameters_json':
+                                        '{"builder_name": "builder"}',
+                                }
+                            })))),
         },
     })
     response = self.test_app.post(
@@ -65,15 +73,21 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
                 'build_id': '123456',
             },
             'data':
-                base64.b64encode(
-                    json.dumps({
-                        'build': {
-                            'project': 'chromium',
-                            'bucket': 'luci.chromium.ci',
-                            'status': 'PENDING',
-                            'parameters_json': '{"builder_name": "builder"}',
-                        }
-                    })),
+                six.ensure_str(
+                    base64.b64encode(
+                        six.ensure_binary(
+                            json.dumps({
+                                'build': {
+                                    'project':
+                                        'chromium',
+                                    'bucket':
+                                        'luci.chromium.ci',
+                                    'status':
+                                        'PENDING',
+                                    'parameters_json':
+                                        '{"builder_name": "builder"}',
+                                }
+                            })))),
         },
     })
     response = self.test_app.post(
@@ -122,21 +136,27 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
                 'build_id': str(mock_build.id),
             },
             'data':
-                base64.b64encode(
-                    json.dumps({
-                        'build': {
-                            'project': 'chromium',
-                            'bucket': 'luci.chromium.ci',
-                            'status': 'COMPLETED',
-                            'parameters_json': '{"builder_name": "builder"}',
-                        }
-                    })),
+                six.ensure_str(
+                    base64.b64encode(
+                        six.ensure_binary(
+                            json.dumps({
+                                'build': {
+                                    'project':
+                                        'chromium',
+                                    'bucket':
+                                        'luci.chromium.ci',
+                                    'status':
+                                        'COMPLETED',
+                                    'parameters_json':
+                                        '{"builder_name": "builder"}',
+                                }
+                            })))),
         },
     })
     response = self.test_app.post(
         '/index-isolated-builds?format=json', params=request_body)
     self.assertEqual(200, response.status_int)
-    self.assertNotIn('created_rows', response.body)
+    self.assertNotIn(six.ensure_binary('created_rows'), response.body)
 
   @mock.patch.object(completed_build_pubsub_ingestor,
                      '_HandlePossibleCodeCoverageBuild')
@@ -168,21 +188,27 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
                 'build_id': str(mock_build.id),
             },
             'data':
-                base64.b64encode(
-                    json.dumps({
-                        'build': {
-                            'project': 'chromium',
-                            'bucket': 'luci.chromium.ci',
-                            'status': 'COMPLETED',
-                            'parameters_json': '{"builder_name": "builder"}',
-                        }
-                    })),
+                six.ensure_str(
+                    base64.b64encode(
+                        six.ensure_binary(
+                            json.dumps({
+                                'build': {
+                                    'project':
+                                        'chromium',
+                                    'bucket':
+                                        'luci.chromium.ci',
+                                    'status':
+                                        'COMPLETED',
+                                    'parameters_json':
+                                        '{"builder_name": "builder"}',
+                                }
+                            })))),
         },
     })
     response = self.test_app.post(
         '/index-isolated-builds?format=json', params=request_body)
     self.assertEqual(200, response.status_int)
-    self.assertNotIn('created_rows', response.body)
+    self.assertNotIn(six.ensure_binary('created_rows'), response.body)
 
   @mock.patch.object(completed_build_pubsub_ingestor,
                      '_HandlePossibleCodeCoverageBuild')
@@ -195,15 +221,21 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
                 'version': 'v2',
             },
             'data':
-                base64.b64encode(
-                    json.dumps({
-                        'build': {
-                            'project': 'chromium',
-                            'bucket': 'luci.chromium.ci',
-                            'status': 'COMPLETED',
-                            'parameters_json': '{"builder_name": "builder"}',
-                        }
-                    })),
+                six.ensure_str(
+                    base64.b64encode(
+                        six.ensure_binary(
+                            json.dumps({
+                                'build': {
+                                    'project':
+                                        'chromium',
+                                    'bucket':
+                                        'luci.chromium.ci',
+                                    'status':
+                                        'COMPLETED',
+                                    'parameters_json':
+                                        '{"builder_name": "builder"}',
+                                }
+                            })))),
         },
     })
     response = self.test_app.post(
