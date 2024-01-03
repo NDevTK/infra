@@ -4,6 +4,9 @@ platforms:
   - linux-amd64
 go_packages:
   - infra/cros/cmd/result_flow
+go_build_environ:
+  CGO_ENABLED:
+    linux: 0
 root: ../../go/bin
 data:
   - file: result_flow${exe_suffix}
