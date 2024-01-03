@@ -166,7 +166,7 @@ func (c *Run) setTags(ctx context.Context) map[string]string {
 	}
 	// Get satlab ID set by user, defaulting to the current box id.
 	satlabID, err := c.getDroneTarget(ctx)
-	if err == nil {
+	if err == nil && satlabID != "" {
 		tags["satlab-id"] = satlabID
 	}
 
