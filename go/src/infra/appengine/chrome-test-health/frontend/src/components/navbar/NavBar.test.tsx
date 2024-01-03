@@ -96,4 +96,12 @@ describe('when rendering the navbar', () => {
     expect(updateMock).toBeCalled();
     expect(updateMock).lastCalledWith(['A', 'B', 'C']);
   });
+
+  it('should render navigation correctly', () => {
+    renderWithComponents(
+      <NavBar/>,
+    );
+    expect(screen.getByText('Coverage')).toBeInTheDocument();
+    expect(screen.getByText('Resources')).toBeInTheDocument();
+  })
 });

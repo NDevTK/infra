@@ -7,11 +7,12 @@ import Toolbar from '@mui/material/Toolbar';
 import {
   Autocomplete,
   AutocompleteChangeReason,
+  Button,
   Divider,
   FilterOptionsState,
   TextField,
 } from '@mui/material';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { useCallback, useContext, useRef, useState } from 'react';
 import { ComponentContext } from '../../features/components/ComponentContext';
 import styles from './NavBar.module.css';
@@ -117,6 +118,14 @@ function NavBar() {
             },
           }}
         />
+        <Divider orientation="vertical" flexItem />
+        <Button disableElevation component={Link} to="/coverage/summary" variant="contained" color="primary">
+          Coverage
+        </Button>
+        <Divider orientation="vertical" flexItem />
+        <Button disableElevation component={Link} to="/resources/tests" variant="contained" color="primary">
+          Resources
+        </Button>
         <Divider orientation="vertical" flexItem />
       </Toolbar>
       <Outlet/>

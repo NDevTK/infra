@@ -4,6 +4,7 @@
 
 import { render } from '@testing-library/react';
 import { ComponentContext } from './ComponentContext';
+import { BrowserRouter } from 'react-router-dom';
 
 interface OptionalContext {
   components?: string[],
@@ -15,14 +16,16 @@ interface OptionalContext {
 
 export function renderWithComponents(ui: React.ReactElement, opts: OptionalContext = {}) {
   return render((
-    <ComponentContext.Provider value={{
-      components: opts.components || [],
-      allComponents: opts.allComponents || [],
-      api: {
-        updateComponents: opts?.api?.updateComponents || (() => {/**/}),
-      },
-    }}>
-      {ui}
-    </ComponentContext.Provider>
+    <BrowserRouter>
+      <ComponentContext.Provider value={{
+        components: opts.components || [],
+        allComponents: opts.allComponents || [],
+        api: {
+          updateComponents: opts?.api?.updateComponents || (() => {/**/}),
+        },
+      }}>
+        {ui}
+      </ComponentContext.Provider>
+    </BrowserRouter>
   ));
 }

@@ -4,7 +4,6 @@
 */
 
 import { act } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import { renderWithComponents } from '../../components/testUtils';
 import { renderWithContext } from './testUtils';
 import { Params } from './LoadSummary';
@@ -49,9 +48,7 @@ describe('when rendering the SummarySearchParams', () => {
     await act(async () => {
       renderWithComponents((
         <>
-          <BrowserRouter>
-            <SummarySearchParams/>
-          </BrowserRouter>
+          <SummarySearchParams/>
         </>
       ), { components: ['a', 'b'] },
       );

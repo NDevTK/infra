@@ -4,7 +4,6 @@
 */
 
 import { act } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import { MetricType, Period, SortType } from '../../../api/resources';
 import { renderWithComponents } from '../../components/testUtils';
 import { renderWithContext } from './testUtils';
@@ -94,9 +93,7 @@ describe('when rendering the ResourcesSearchParams', () => {
     await act(async () => {
       renderWithComponents((
         <>
-          <BrowserRouter>
-            <TestMetricsSearchParams/>
-          </BrowserRouter>
+          <TestMetricsSearchParams/>
         </>
       ), { components: ['a', 'b'] },
       );
