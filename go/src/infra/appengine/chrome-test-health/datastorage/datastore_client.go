@@ -187,3 +187,38 @@ func (c DataStoreClient) Query(
 
 	return nil
 }
+
+// BatchPut takes in a list of entities in the format []S{} where S is the
+// struct's name. It also takes a list of keys in the format []*datastore.Key
+//
+// The length of keys must match with that of entities which corresponds to a
+// 1:1 mapping between them.
+// Example usage:
+//
+//	entities := []A{
+//	 { prop1: "p1", prop2: "p2" }
+//	 { prop1: "p3", prop2: "p4" }
+//	}
+//
+//	keys := []*datastore.Key {
+//	 datastore.NameKey("A", "keyliteral", nil)
+//	}
+//
+// dsclient.BatchPut(ctx, entities, keys)
+func (c DataStoreClient) BatchPut(
+	ctx context.Context,
+	entities interface{},
+	keys interface{},
+) error {
+	datastoreKeys, ok := keys.([]*datastore.Key)
+	if !ok {
+		return fmt.Errorf("%w: The keys must be of type []*datastore.Key", ErrInvalidKey)
+	}
+
+	_, err := c.datastoreClient.PutMulti(ctx, datastoreKeys, entities)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

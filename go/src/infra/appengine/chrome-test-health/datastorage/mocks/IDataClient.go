@@ -18,6 +18,20 @@ type IDataClient struct {
 	mock.Mock
 }
 
+// BatchPut provides a mock function with given fields: ctx, entities, keys
+func (_m *IDataClient) BatchPut(ctx context.Context, entities interface{}, keys interface{}) error {
+	ret := _m.Called(ctx, entities, keys)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}, interface{}) error); ok {
+		r0 = rf(ctx, entities, keys)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Get provides a mock function with given fields: ctx, result, dataType, key, options
 func (_m *IDataClient) Get(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
 	var _ca []interface{}

@@ -54,4 +54,15 @@ type IDataClient interface {
 		limit int,
 		options ...interface{},
 	) error
+
+	// BatchPut function performs a data storage query to save
+	// multiple entities given their corresponding keys into
+	// the storage.
+	//
+	// Returns an error if the operation fails.
+	BatchPut(
+		ctx context.Context,
+		entities interface{},
+		keys interface{},
+	) error
 }
