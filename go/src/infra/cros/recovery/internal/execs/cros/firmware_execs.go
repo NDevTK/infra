@@ -181,6 +181,7 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		Servod:                      info.NewServod(),
 		ForceUpdate:                 actionArgs.AsBool(ctx, "force", false),
 		UpdateEcAttemptCount:        actionArgs.AsInt(ctx, "update_ec_attempt_count", 0),
+		UpdateEcUseBoard:            actionArgs.AsBool(ctx, "update_ec_use_board", true),
 		UpdateApAttemptCount:        actionArgs.AsInt(ctx, "update_ap_attempt_count", 0),
 		GBBFlags:                    actionArgs.AsString(ctx, "gbb_flags", ""),
 		CandidateFirmwareTarget:     actionArgs.AsString(ctx, "candidate_fw_target", ""),
