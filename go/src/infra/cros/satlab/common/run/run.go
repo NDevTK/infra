@@ -87,7 +87,7 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 		return nil, err
 	}
 	// Set tags to pass to ctp and test runner builds
-	c.Tags = c.setTags()
+	tags := c.setTags(ctx)
 
 	dims := c.AddedDims
 	// Will be nil if not provided by user.
@@ -125,8 +125,9 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 		Dimensions:          dims,
 		ImageBucket:         site.GetGCSImageBucket(),
 		AuthOptions:         &opt,
-		TestRunnerBuildTags: c.Tags,
+		TestRunnerBuildTags: tags,
 		TimeoutMins:         c.setTimeout(),
+		CTPBuildTags:        tags,
 		// TRV2:        true,
 	}
 
@@ -156,15 +157,36 @@ func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClie
 	return link, nil
 }
 
-// SetTags passes testplan name as a tag for associated tests and suites
-func (c *Run) setTags() map[string]string {
-	tags := make(map[string]string)
-
-	if c.Testplan != "" {
-		tags["test-plan-id"] = strings.TrimSuffix(c.Testplan, ".json")
-	} else if c.TestplanLocal != "" {
-		tags["test-plan-id"] = strings.TrimSuffix(c.TestplanLocal, ".json")
+// SetTags set tags for associated tests, testplab and suites
+func (c *Run) setTags(ctx context.Context) map[string]string {
+	tags := map[string]string{}
+	// Add user-added tags.
+	for key, val := range c.Tags {
+		tags[key] = val
 	}
+	// Get satlab ID set by user, defaulting to the current box id.
+	satlabID, err := c.getDroneTarget(ctx)
+	if err == nil {
+		tags["satlab-id"] = satlabID
+	}
+
+	switch {
+	case c.Testplan != "":
+		// TODO(prasadv): Move this value to proto enum
+		tags["test-type"] = "testplan"
+		tags["test-plan-id"] = strings.TrimSuffix(c.Testplan, ".json")
+	case c.TestplanLocal != "":
+		tags["test-type"] = "testplan"
+		tags["test-plan-id"] = strings.TrimSuffix(c.TestplanLocal, ".json")
+	case c.Suite != "":
+		// TODO(prasadv): Move this value to proto enum
+		tags["test-type"] = "suite"
+		tags["label-suite"] = c.Suite
+	case c.Tests != nil:
+		// TODO(prasadv): Move this value to proto enum
+		tags["test-type"] = "test"
+	}
+
 	return tags
 }
 
