@@ -40,6 +40,18 @@ func getMockPresubmitData() []*entities.PresubmitCoverageData {
 					TotalLines:   11,
 				},
 			},
+			IncrementalPercentagesUnit: []entities.Cov{
+				{
+					Path:         "//dir1/dir2/file1.cc",
+					CoveredLines: 0,
+					TotalLines:   4,
+				},
+				{
+					Path:         "//dir1/dir3/file2.cc",
+					CoveredLines: 11,
+					TotalLines:   11,
+				},
+			},
 		},
 		{
 			ServerHost:      "chromium-review.googlesource.com",
@@ -58,8 +70,140 @@ func getMockPresubmitData() []*entities.PresubmitCoverageData {
 					TotalLines:   11,
 				},
 			},
+			IncrementalPercentagesUnit: []entities.Cov{
+				{
+					Path:         "//dir1/dir2/file1.cc",
+					CoveredLines: 0,
+					TotalLines:   4,
+				},
+				{
+					Path:         "//dir1/dir3/file2.cc",
+					CoveredLines: 11,
+					TotalLines:   11,
+				},
+			},
 		},
 	}
+}
+
+func TestUpdatePresubmitData(t *testing.T) {
+	t.Parallel()
+	client := CronClient{}
+	ctx := context.Background()
+
+	Convey("Update presubmit data", t, func() {
+		Convey("Should pass", func() {
+			reports := getMockPresubmitData()
+			mockDataClient := mocks.NewIDataClient(t)
+			mockDataClient.On(
+				"Query",
+				mock.AnythingOfType("backgroundCtx"),
+				mock.Anything,
+				"PresubmitCoverageData",
+				mock.Anything,
+				mock.Anything,
+				mock.Anything,
+			).Return(
+				func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+					for _, rep := range reports {
+						matchesHost := queryFilters[0].Value == rep.ServerHost
+						t := queryFilters[1].Value.(time.Time)
+						matchesTime := t.Before(rep.UpdateTimestamp)
+						if matchesHost && matchesTime {
+							res := reflect.ValueOf(result).Elem()
+							res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
+							return nil
+						}
+					}
+					return nil
+				},
+			)
+			mockDataClient.On(
+				"BatchPut",
+				mock.AnythingOfType("backgroundCtx"),
+				mock.Anything,
+				mock.Anything,
+			).Return(
+				func(c context.Context, entities interface{}, keys interface{}) error {
+					return nil
+				},
+			)
+			client.coverageV1DsClient = mockDataClient
+			client.coverageV2DsClient = mockDataClient
+
+			err := client.UpdatePresubmitData(ctx)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("Should fail", func() {
+			Convey("Cannot fetch presubmit data", func() {
+				mockDataClient := mocks.NewIDataClient(t)
+				mockDataClient.On(
+					"Query",
+					mock.AnythingOfType("backgroundCtx"),
+					mock.Anything,
+					"PresubmitCoverageData",
+					mock.Anything,
+					mock.Anything,
+					mock.Anything,
+				).Return(
+					func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+						return fmt.Errorf("PresubmitCoverageData: No matching index")
+					},
+				)
+				client.coverageV1DsClient = mockDataClient
+				client.coverageV2DsClient = mockDataClient
+
+				err := client.UpdatePresubmitData(ctx)
+				So(err, ShouldNotBeNil)
+				So(err, ShouldResemble, coverage.ErrInternalServerError)
+			})
+
+			Convey("Cannot store processed data", func() {
+				reports := getMockPresubmitData()
+				mockDataClient := mocks.NewIDataClient(t)
+				mockDataClient.On(
+					"Query",
+					mock.AnythingOfType("backgroundCtx"),
+					mock.Anything,
+					"PresubmitCoverageData",
+					mock.Anything,
+					mock.Anything,
+					mock.Anything,
+				).Return(
+					func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+						for _, rep := range reports {
+							matchesHost := queryFilters[0].Value == rep.ServerHost
+							t := queryFilters[1].Value.(time.Time)
+							matchesTime := t.Before(rep.UpdateTimestamp)
+							if matchesHost && matchesTime {
+								res := reflect.ValueOf(result).Elem()
+								res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
+								return nil
+							}
+						}
+						return nil
+					},
+				)
+				mockDataClient.On(
+					"BatchPut",
+					mock.AnythingOfType("backgroundCtx"),
+					mock.Anything,
+					mock.Anything,
+				).Return(
+					func(c context.Context, entities interface{}, keys interface{}) error {
+						return fmt.Errorf("PresubmitCoverageData: Error storing the entity")
+					},
+				)
+				client.coverageV1DsClient = mockDataClient
+				client.coverageV2DsClient = mockDataClient
+
+				err := client.UpdatePresubmitData(ctx)
+				So(err, ShouldNotBeNil)
+				So(err, ShouldResemble, errors.New("PresubmitCoverageData: Error storing the entity"))
+			})
+		})
+	})
 }
 
 func TestGetPresubmitReportsForLastYear(t *testing.T) {

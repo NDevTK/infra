@@ -63,8 +63,32 @@ func NewClient(ctx context.Context, finditCloudProject string, chromeTestHealthC
 	return &c, nil
 }
 
-// UpdatePresubmitData TO_BE_IMPLEMENTED
+// UpdatePresubmitData fetches presubmit data for the last 24 hours, processes
+// it and stores it to the datastore
 func (c *CronClient) UpdatePresubmitData(ctx context.Context) error {
+	presubmitData, err := c.getPresubmitReportsOneDay(ctx)
+	if err != nil {
+		logging.Errorf(ctx, "Error fetching Presubmit Reports")
+		return err
+	}
+	patchsetMap := c.getMaxPatchsetToChangeMap(presubmitData)
+
+	for _, data := range presubmitData {
+		allTestsData := c.splitSinglePresubmitData(&data, patchsetMap, false)
+		err := c.createCqSummaryData(ctx, data.UpdateTimestamp, data.Change, data.Patchset, false, allTestsData)
+		if err != nil {
+			logging.Errorf(ctx, "Error storing CQ Cov data for this Presubmit Report: %s", err)
+			return err
+		}
+
+		unitTestsData := c.splitSinglePresubmitData(&data, patchsetMap, true)
+		err = c.createCqSummaryData(ctx, data.UpdateTimestamp, data.Change, data.Patchset, true, unitTestsData)
+		if err != nil {
+			logging.Errorf(ctx, "Error storing CQ Cov data for this Presubmit Report: %s", err)
+			return err
+		}
+	}
+
 	return nil
 }
 
