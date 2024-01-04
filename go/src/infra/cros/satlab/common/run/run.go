@@ -48,8 +48,10 @@ type Run struct {
 	TestArgs      string
 	SatlabId      string
 	CFT           bool
-	Local         bool
-	MaxTimeout    bool
+	// TRV2 determines whether we will use Test Runner V2
+	TRV2       bool
+	Local      bool
+	MaxTimeout bool
 	// Any configs related to results upload for this test run.
 	AddedDims map[string]string
 	Tags      map[string]string
@@ -128,7 +130,7 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 		TestRunnerBuildTags: tags,
 		TimeoutMins:         c.setTimeout(),
 		CTPBuildTags:        tags,
-		// TRV2:        true,
+		TRV2:                c.TRV2,
 	}
 
 	return bbClient, nil
@@ -164,6 +166,7 @@ func (c *Run) setTags(ctx context.Context) map[string]string {
 	for key, val := range c.Tags {
 		tags[key] = val
 	}
+
 	// Get satlab ID set by user, defaulting to the current box id.
 	satlabID, err := c.getDroneTarget(ctx)
 	if err == nil && satlabID != "" {
