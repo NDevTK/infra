@@ -66,11 +66,11 @@ type tlwClient struct {
 }
 
 // New build new local TLW Access instance.
-func New(ufs UFSClient, csac CSAClient, sshKeyPaths []string) (tlw.Access, error) {
+func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
 	c := &tlwClient{
 		ufsClient:     ufs,
 		csaClient:     csac,
-		sshProvider:   ssh.NewProvider(ssh.SSHConfig(sshKeyPaths), nil),
+		sshProvider:   ssh.NewProvider(ssh.SSHConfig(nil), nil),
 		devices:       make(map[string]*tlw.Dut),
 		hostTypes:     make(map[string]hostType),
 		hostToParents: make(map[string]string),

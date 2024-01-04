@@ -82,8 +82,6 @@ For now only running in testing mode.`,
 		c.Flags.BoolVar(&c.updateInventory, "update-inv", false, "Update UFS at the end execution. Default is no.")
 		c.Flags.BoolVar(&c.showSteps, "steps", false, "Show generated steps. Default is no.")
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", `What type of task name to use. The default is "recovery".`)
-
-		c.Flags.StringVar(&c.dutSSHKeyPath, "dut-ssh-key-path", defaultDUTSSHKeyPathLocal(), "the partner ssh key that used internally to ssh a DUT which in ChromeOS image")
 		return c
 	},
 }
@@ -105,7 +103,6 @@ type localRecoveryRun struct {
 	showSteps             bool
 	generateLogFiles      bool
 	taskName              string
-	dutSSHKeyPath         string
 }
 
 // Run initiates execution of local recovery.
@@ -192,7 +189,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	params[scopes.ParamKeyBuildbucketID] = ""
 	ctx = scopes.WithParams(ctx, params)
 	ctx = setDevOptions(ctx)
-	access, err := recovery.NewLocalTLWAccess(ic, csac, []string{c.dutSSHKeyPath})
+	access, err := recovery.NewLocalTLWAccess(ic, csac)
 	if err != nil {
 		return errors.Annotate(err, "local recovery: create tlw access").Err()
 	}
