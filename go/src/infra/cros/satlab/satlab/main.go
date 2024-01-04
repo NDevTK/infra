@@ -61,5 +61,5 @@ func getApplication() *cli.Application {
 
 // Main is the entrypoint for "satlab".
 func main() {
-	os.Exit(subcommands.Run(getApplication(), nil))
+	os.Exit(meta.UpdateThenRun(getApplication()))
 }
