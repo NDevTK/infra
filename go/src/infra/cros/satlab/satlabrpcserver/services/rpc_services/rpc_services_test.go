@@ -23,7 +23,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"infra/cros/satlab/common/dut"
 	"infra/cros/satlab/common/enumeration"
 	"infra/cros/satlab/common/paths"
@@ -43,6 +42,8 @@ import (
 	ufsApi "infra/unifiedfleet/api/v1/rpc"
 	ufspb "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
+
+	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 )
 
 type mockDeleteClient struct {
@@ -1883,6 +1884,67 @@ func Test_validateUpdatePools(t *testing.T) {
 				t.Errorf("unexpected error.")
 			}
 		})
+	}
+
+}
+
+func Test_RepairDutsShouldWork(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	// Create a mock server and mock services
+	s := createMockServer(t)
+	s.commandExecutor = &executor.FakeCommander{
+		FakeFn: func(c *exec.Cmd) ([]byte, error) {
+			if c.Path == paths.GetHostIdentifierScript {
+				return []byte("satlab-id"), nil
+			} else if strings.Join(c.Args, " ") == fmt.Sprintf("%s repair-duts -bucket labpack_runner -builder repair -namespace os -deep satlab-satlab-id-dut1", paths.ShivasCLI) {
+				return []byte(`Build Link: https://ci.chromium.org/p/chromeos/builders/external-cienet/repair/build-id
+### Batch tasks URL ###
+Task Link: https://chromeos-swarming.appspot.com/`), nil
+			} else if strings.Join(c.Args, " ") == fmt.Sprintf("%s repair-duts -bucket labpack_runner -builder repair -namespace os -deep satlab-satlab-id-dut2", paths.ShivasCLI) {
+				return nil, errors.New("Not found")
+			}
+			return nil, errors.New(fmt.Sprintf("unknow command %v", c))
+		},
+	}
+
+	// Act
+	req := &pb.RepairDutsRequest{
+		Hostnames: []string{"dut1", "dut2"},
+		Deep:      true,
+	}
+
+	resp, err := s.RepairDuts(ctx, req)
+	if err != nil {
+		t.Errorf("unexpected error, got an error: %v", err)
+	}
+
+	// Assert
+	expected := &pb.RepairDutsResponse{
+		Result: []*pb.RepairDutsResponse_RepairResult{
+			{
+				Hostname:  "dut1",
+				BuildLink: "https://ci.chromium.org/p/chromeos/builders/external-cienet/repair/build-id",
+				TaskLink:  "https://chromeos-swarming.appspot.com/",
+				IsSuccess: true,
+			},
+			{
+				Hostname:  "dut2",
+				IsSuccess: false,
+			},
+		},
+	}
+
+	// ignore generated pb code
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(
+		pb.RepairDutsResponse{},
+		pb.RepairDutsResponse_RepairResult{},
+	)
+
+	if diff := cmp.Diff(resp, expected, ignorePBFieldOpts); diff != "" {
+		t.Errorf("unexpected diff: %v\n", diff)
 	}
 
 }

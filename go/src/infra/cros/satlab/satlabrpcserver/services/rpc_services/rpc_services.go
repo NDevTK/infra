@@ -27,6 +27,7 @@ import (
 	"infra/cros/satlab/common/asset"
 	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/dut"
+	"infra/cros/satlab/common/dut/shivas"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/satlabcommands"
@@ -1283,4 +1284,44 @@ func (s *SatlabRpcServiceServer) DownloadLog(_ *pb.DownloadLogRequest, server pb
 	}
 
 	return nil
+}
+
+// RepairDuts a GRPC call for repairing the DUTs.
+func (s *SatlabRpcServiceServer) RepairDuts(ctx context.Context, in *pb.RepairDutsRequest) (*pb.RepairDutsResponse, error) {
+	if err := s.validateServices(); err != nil {
+		return nil, err
+	}
+	satlabID, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+	action := shivas.Normal
+	if in.GetDeep() {
+		action = shivas.DeepRepair
+	}
+
+	res := []*pb.RepairDutsResponse_RepairResult{}
+	for _, h := range in.GetHostnames() {
+		r := shivas.DUTRepairer{
+			Name:      site.MaybePrepend(site.Satlab, satlabID, h),
+			Namespace: site.GetNamespace(""),
+			Executor:  s.commandExecutor,
+		}
+		resp, err := r.Repair(ctx, action)
+		buildLink := ""
+		taskLink := ""
+		if err == nil {
+			buildLink = resp.BuildLink
+			taskLink = resp.TaskLink
+		}
+		res = append(res, &pb.RepairDutsResponse_RepairResult{
+			Hostname:  h,
+			BuildLink: buildLink,
+			TaskLink:  taskLink,
+			IsSuccess: err == nil,
+		})
+
+	}
+
+	return &pb.RepairDutsResponse{Result: res}, nil
 }
