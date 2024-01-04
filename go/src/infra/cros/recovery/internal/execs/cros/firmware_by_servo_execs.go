@@ -78,6 +78,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 		Hwid:                        am.AsString(ctx, "hwid", info.GetChromeos().GetHwid()),
 		ForceUpdate:                 am.AsBool(ctx, "force", false),
 		UpdateEcAttemptCount:        am.AsInt(ctx, "update_ec_attempt_count", 0),
+		UpdateEcUseBoard:            am.AsBool(ctx, "update_ec_use_board", true),
 		UpdateApAttemptCount:        am.AsInt(ctx, "update_ap_attempt_count", 0),
 		GBBFlags:                    am.AsString(ctx, "gbb_flags", ""),
 		CandidateFirmwareTarget:     am.AsString(ctx, "candidate_fw_target", ""),

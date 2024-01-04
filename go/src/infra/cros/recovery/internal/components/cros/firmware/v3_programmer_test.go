@@ -22,6 +22,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 	ctx := context.Background()
 	logger := logger.NewLogger()
 	imagePath := "ec_image.bin"
+	fwBoard := ""
 	Convey("Happy path for stm32 chip", t, func() {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -44,7 +45,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
 	})
 	Convey("Happy path for other chips", t, func() {
@@ -69,7 +70,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
 	})
 	Convey("block for ite chips (1)", t, func() {
@@ -94,7 +95,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldNotBeNil)
 	})
 	Convey("block for ite chips (2)", t, func() {
@@ -119,7 +120,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldNotBeNil)
 	})
 	Convey("allowed for ite chips if uses servo_micro", t, func() {
@@ -145,7 +146,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
 	})
 	Convey("use try_apshutdown is expected for ccd_cpu_fw_spi_depends_on_ec_fw:yes (1)", t, func() {
@@ -170,7 +171,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
 	})
 	Convey("use try_apshutdown is expected for cpu_fw_spi_depends_on_ec_fw:yes (2)", t, func() {
@@ -196,7 +197,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
 	})
 	Convey("do not use try_apshutdown if controls are not present", t, func() {
@@ -221,7 +222,34 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath)
+		So(err, ShouldBeNil)
+	})
+	Convey("set try_apshutdown and board when fun flash", t, func() {
+		fwBoard = "reef"
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		runRequest := map[string]string{
+			"which flash_ec": "",
+			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose --board=reef --try_apshutdown": "",
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("yes"), nil).Times(1)
+		// not called as above already told yes.
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(0)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
+		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("just_chip"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
+		servod.EXPECT().Port().Return(96).Times(1)
+
+		p := &v3Programmer{
+			run:    mockRunner(runRequest),
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
 	})
 }
