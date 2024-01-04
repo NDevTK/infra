@@ -20,6 +20,7 @@ import (
 	testpb "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
+	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 
@@ -28,96 +29,100 @@ import (
 	"infra/cros/internal/testplan/protoio"
 )
 
-var CmdGenerate = &subcommands.Command{
-	UsageLine: "generate -plan plan1.star [-plan plan2.star] -dutattributes PATH -buildmetadata -out OUTPUT",
-	ShortDesc: "generate CoverageRule protos",
-	LongDesc: `Generate CoverageRule protos.
+func CmdGenerate(authOpts auth.Options) *subcommands.Command {
+	return &subcommands.Command{
+		UsageLine: "generate -plan plan1.star [-plan plan2.star] -dutattributes PATH -buildmetadata -out OUTPUT",
+		ShortDesc: "generate CoverageRule protos",
+		LongDesc: `Generate CoverageRule protos.
 
 Evaluates Starlark files to generate CoverageRules as newline-delimited json protos.
 `,
-	CommandRun: func() subcommands.CommandRun {
-		r := &generateRun{}
-		r.Flags.Var(
-			flag.StringSlice(&r.planPaths),
-			"plan",
-			"Starlark file to use. Must be specified at least once.",
-		)
-		r.Flags.StringVar(
-			&r.dutAttributeListPath,
-			"dutattributes",
-			"",
-			"Path to a proto file containing a DutAttributeList. Can be JSON "+
-				"or binary proto.",
-		)
-		r.Flags.StringVar(
-			&r.buildMetadataListPath,
-			"buildmetadata",
-			"",
-			"Path to a proto file containing a SystemImage.BuildMetadataList. "+
-				"Can be JSON or binary proto.",
-		)
-		r.Flags.StringVar(
-			&r.configBundleListPath,
-			"configbundlelist",
-			"",
-			"Path to a proto file containing a ConfigBundleList. Can be JSON or "+
-				"binary proto.",
-		)
-		r.Flags.StringVar(
-			&r.chromiumosSourceRootPath,
-			"crossrcroot",
-			"",
-			"Path to the root of a Chromium OS source checkout. Default "+
-				"versions of dutattributes, buildmetadata, configbundlelist, "+
-				"and boardprioritylist in this source checkout will be used, as "+
-				"a convenience to avoid specifying all these full paths. "+
-				"crossrcroot is mutually exclusive with the above flags.",
-		)
-		r.Flags.BoolVar(
-			&r.ctpV1,
-			"ctpv1",
-			false,
-			"Output GenerateTestPlanResponse protos instead of CoverageRules, "+
-				"for backwards compatibility with CTP1. Output is still "+
-				"to <out>. generatetestplanreq must be set if this flag is "+
-				"true",
-		)
-		r.Flags.StringVar(
-			&r.generateTestPlanReqPath,
-			"generatetestplanreq",
-			"",
-			"Path to a proto file containing a GenerateTestPlanRequest. Can be"+
-				"JSON or binary proto. Should be set iff ctpv1 is set.",
-		)
-		r.Flags.StringVar(
-			&r.boardPriorityListPath,
-			"boardprioritylist",
-			"",
-			"Path to a proto file containing a BoardPriorityList. Can be JSON"+
-				"or binary proto. Should be set iff ctpv1 is set.",
-		)
-		r.Flags.StringVar(
-			&r.builderConfigsPath,
-			"builderconfigs",
-			"",
-			"Path to a proto file containing a BuilderConfigs. Can be JSON"+
-				"or binary proto. Should be set iff ctpv1 is set.",
-		)
-		r.Flags.StringVar(
-			&r.out,
-			"out",
-			"",
-			"Path to the output CoverageRules (or GenerateTestPlanResponse if -ctpv1 is set).",
-		)
+		CommandRun: func() subcommands.CommandRun {
+			r := &generateRun{}
+			r.addSharedFlags(authOpts)
 
-		r.templateParametersFlag.Register(&r.Flags)
+			r.Flags.Var(
+				flag.StringSlice(&r.planPaths),
+				"plan",
+				"Starlark file to use. Must be specified at least once.",
+			)
+			r.Flags.StringVar(
+				&r.dutAttributeListPath,
+				"dutattributes",
+				"",
+				"Path to a proto file containing a DutAttributeList. Can be JSON "+
+					"or binary proto.",
+			)
+			r.Flags.StringVar(
+				&r.buildMetadataListPath,
+				"buildmetadata",
+				"",
+				"Path to a proto file containing a SystemImage.BuildMetadataList. "+
+					"Can be JSON or binary proto.",
+			)
+			r.Flags.StringVar(
+				&r.configBundleListPath,
+				"configbundlelist",
+				"",
+				"Path to a proto file containing a ConfigBundleList. Can be JSON or "+
+					"binary proto.",
+			)
+			r.Flags.StringVar(
+				&r.chromiumosSourceRootPath,
+				"crossrcroot",
+				"",
+				"Path to the root of a Chromium OS source checkout. Default "+
+					"versions of dutattributes, buildmetadata, configbundlelist, "+
+					"and boardprioritylist in this source checkout will be used, as "+
+					"a convenience to avoid specifying all these full paths. "+
+					"crossrcroot is mutually exclusive with the above flags.",
+			)
+			r.Flags.BoolVar(
+				&r.ctpV1,
+				"ctpv1",
+				false,
+				"Output GenerateTestPlanResponse protos instead of CoverageRules, "+
+					"for backwards compatibility with CTP1. Output is still "+
+					"to <out>. generatetestplanreq must be set if this flag is "+
+					"true",
+			)
+			r.Flags.StringVar(
+				&r.generateTestPlanReqPath,
+				"generatetestplanreq",
+				"",
+				"Path to a proto file containing a GenerateTestPlanRequest. Can be"+
+					"JSON or binary proto. Should be set iff ctpv1 is set.",
+			)
+			r.Flags.StringVar(
+				&r.boardPriorityListPath,
+				"boardprioritylist",
+				"",
+				"Path to a proto file containing a BoardPriorityList. Can be JSON"+
+					"or binary proto. Should be set iff ctpv1 is set.",
+			)
+			r.Flags.StringVar(
+				&r.builderConfigsPath,
+				"builderconfigs",
+				"",
+				"Path to a proto file containing a BuilderConfigs. Can be JSON"+
+					"or binary proto. Should be set iff ctpv1 is set.",
+			)
+			r.Flags.StringVar(
+				&r.out,
+				"out",
+				"",
+				"Path to the output CoverageRules (or GenerateTestPlanResponse if -ctpv1 is set).",
+			)
 
-		return r
-	},
+			r.templateParametersFlag.Register(&r.Flags)
+
+			return r
+		},
+	}
 }
 
 type generateRun struct {
-	subcommands.CommandRunBase
+	baseTestPlanRun
 
 	planPaths                []string
 	buildMetadataListPath    string
