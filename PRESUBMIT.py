@@ -359,7 +359,6 @@ def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
   py2_files = [
       r'^bootstrap/.*\.py$',
       r'^build/.*\.py$',
-      r'^infra/libs/git2/.*\.py$',
       r'^infra/libs/state_machine/.*\.py$',
       r'^infra/tools/bucket/.*\.py$',
       r'^infra/tools/dockerbuild/.*\.py$',

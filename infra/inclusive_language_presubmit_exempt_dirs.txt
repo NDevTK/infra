@@ -158,8 +158,6 @@ go/src/infra/unifiedfleet/app/controller 1 1
 go/src/infra/unifiedfleet/app/util/osutil 1 1
 infra 2 1
 infra/experimental/doc 12 1
-infra/libs/git2 5 2
-infra/libs/git2/test 20 1
 infra/libs/gitiles 1 1
 infra/libs/gitiles/test 2 1
 infra/libs/protoutil 1 1
