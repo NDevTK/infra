@@ -969,6 +969,30 @@ func (hc *HistoryClient) logSchedulingUnitChanges(oldData, newData *ufspb.Schedu
 	hc.logMsgEntity(resourceName, false, newData)
 }
 
+// logDefaultWifiChanges logs the change of the given DefaultWifi.
+func (hc *HistoryClient) logDefaultWifiChanges(oldData, newData *ufspb.DefaultWifi) {
+	if oldData == nil && newData == nil {
+		return
+	}
+	resourceName := util.AddPrefix(util.DefaultWifiCollection, newData.GetName())
+	if newData == nil {
+		resourceName = util.AddPrefix(util.DefaultWifiCollection, oldData.GetName())
+	}
+	if oldData == nil {
+		hc.changes = append(hc.changes, logLifeCycle(resourceName, "defaultwifi", LifeCycleRegistration)...)
+		hc.logMsgEntity(resourceName, false, newData)
+		return
+	}
+	if newData == nil {
+		hc.changes = append(hc.changes, logLifeCycle(resourceName, "defaultwifi", LifeCycleRetire)...)
+		hc.logMsgEntity(resourceName, true, oldData)
+		return
+	}
+	hc.changes = append(hc.changes, logCommon(resourceName, "defaultwifi.secret.project_id", oldData.GetWifiSecret().GetProjectId(), newData.GetWifiSecret().GetProjectId())...)
+	hc.changes = append(hc.changes, logCommon(resourceName, "defaultwifi.secret.secret_name", oldData.GetWifiSecret().GetSecretName(), newData.GetWifiSecret().GetSecretName())...)
+	hc.logMsgEntity(resourceName, false, newData)
+}
+
 func logCommon(resourceName, label string, oldValue interface{}, newValue interface{}) []*ufspb.ChangeEvent {
 	oldValueStr := fmt.Sprintf("%v", oldValue)
 	newValueStr := fmt.Sprintf("%v", newValue)

@@ -70,6 +70,8 @@ const (
 	DutStateCollection string = "dutstates"
 	// SchedulingUnitCollection refers to the prefix of the SchedulingUnit.
 	SchedulingUnitCollection string = "schedulingunits"
+	// DefaultWifiCollection refers to the prefix of the DefaultWifi.
+	DefaultWifiCollection string = "defaultwifis"
 
 	defaultPageSize int32 = 100
 	// MaxPageSize maximum page size for list operations
