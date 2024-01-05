@@ -1675,3 +1675,10 @@ func (r *GetDefaultWifiRequest) Validate() error {
 	}
 	return nil
 }
+
+func (r *ListDefaultWifisRequest) Validate() error {
+	if err := ValidateFilter(r.Filter); err != nil {
+		return err
+	}
+	return validatePageSize(r.PageSize)
+}
