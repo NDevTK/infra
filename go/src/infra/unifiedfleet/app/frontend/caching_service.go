@@ -75,7 +75,7 @@ func (fs *FleetServerImpl) ListCachingServices(ctx context.Context, req *ufsAPI.
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
