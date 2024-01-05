@@ -69,10 +69,6 @@ func DefaultPythonVersion() string {
 }
 
 func Main(ctx context.Context) error {
-	reexecRegistry := actions.NewReexecRegistry()
-	wheels.MustSetExecutor(reexecRegistry)
-	reexecRegistry.Intercept(ctx)
-
 	rt := GetPythonRuntime(DefaultPythonVersion())
 	app := &application.Application{
 		PruneThreshold:    7 * 24 * time.Hour, // One week.
@@ -83,6 +79,13 @@ func Main(ctx context.Context) error {
 		Environments: os.Environ(),
 		Arguments:    os.Args[1:],
 	}
+
+	// Intercept must be called after capturing Environments to avoid
+	// NoDefaultCurrentDirectoryInExePath being inherited by python.
+	reexecRegistry := actions.NewReexecRegistry()
+	wheels.MustSetExecutor(reexecRegistry)
+	reexecRegistry.Intercept(ctx)
+
 	ctx = app.Initialize(ctx)
 	if err := app.ParseEnvs(ctx); err != nil {
 		return err

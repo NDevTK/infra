@@ -148,6 +148,16 @@ func TestPythonBasic(t *testing.T) {
 					So(exitErr.ExitCode(), ShouldEqual, 42)
 				})
 
+				Convey("preserve NoDefaultCurrentDirectoryInExePath state", func() {
+					cmd := vpython(root, "-vpython-spec", spec, "-c",
+						"import os; print(os.environ['NoDefaultCurrentDirectoryInExePath'])",
+					)
+					cmd.Env = append(cmd.Env, "NoDefaultCurrentDirectoryInExePath=SOMETHING")
+					out, err := cmd.CombinedOutput()
+					So(string(out), ShouldEqualTrimSpace, "SOMETHING")
+					So(err, ShouldBeNil)
+				})
+
 				Convey("help", func() {
 					out, err := vpython(root, "-vpython-spec", spec, "-help").CombinedOutput()
 					So(string(out), ShouldContainSubstring, "Usage of vpython:")
