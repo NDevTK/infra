@@ -1665,3 +1665,13 @@ func (r *CreateDefaultWifiRequest) Validate() error {
 	}
 	return nil
 }
+
+func (r *GetDefaultWifiRequest) Validate() error {
+	if r == nil {
+		return status.Errorf(codes.InvalidArgument, EmptyRequest)
+	}
+	if r.GetName() == "" {
+		return status.Errorf(codes.InvalidArgument, "DefaultWifi name is empty")
+	}
+	return nil
+}

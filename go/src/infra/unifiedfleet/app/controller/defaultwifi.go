@@ -30,6 +30,10 @@ func CreateDefaultWifi(ctx context.Context, wifi *ufspb.DefaultWifi) (*ufspb.Def
 	return wifi, nil
 }
 
+func GetDefaultWifi(ctx context.Context, name string) (*ufspb.DefaultWifi, error) {
+	return registration.GetDefaultWifi(ctx, name)
+}
+
 func getDefaultWifiHistoryClient() *HistoryClient {
 	return &HistoryClient{}
 }

@@ -66,3 +66,12 @@ func NonAtomicBatchCreateDefaultWifis(ctx context.Context, wifis []*ufspb.Defaul
 	}
 	return wifis, nil
 }
+
+// GetDefaultWifi returns the specified default wifi.
+func GetDefaultWifi(ctx context.Context, name string) (*ufspb.DefaultWifi, error) {
+	pm, err := ufsds.Get(ctx, &ufspb.DefaultWifi{Name: name}, newDefaultWifiEntry)
+	if err == nil {
+		return pm.(*ufspb.DefaultWifi), err
+	}
+	return nil, err
+}
