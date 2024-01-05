@@ -35,6 +35,8 @@ PROPERTIES = git_cache_updater_pb.Inputs
 
 OK, EMPTY = range(2)
 
+CONCURRENT_STEPS = 16
+
 
 def _list_host_repos(api, host_url):
   host_url = host_url.rstrip('/')
@@ -182,11 +184,17 @@ def RunSteps(api, inputs):
     env['OVERRIDE_BOOTSTRAP_BUCKET'] = inputs.override_bucket
 
   work = []
+  sem = api.futures.make_bounded_semaphore(CONCURRENT_STEPS)
+
+  def fn(sem, api, url, work_dir, gc_aggressive):
+    with sem:
+      return _do_update_bootstrap(api, url, work_dir, gc_aggressive)
+
   with api.context(env=env), api.depot_tools.on_path():
     for url in sorted(repo_urls):
-      work.append(api.futures.spawn_immediate(
-          _do_update_bootstrap, api, url, work_dir, inputs.gc_aggressive,
-          __name=url))
+      work.append(
+          api.futures.spawn_immediate(
+              fn, sem, api, url, work_dir, inputs.gc_aggressive, __name=url))
 
   total = len(work)
   success = warning = 0
