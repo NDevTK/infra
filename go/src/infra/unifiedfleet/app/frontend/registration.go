@@ -119,7 +119,7 @@ func (fs *FleetServerImpl) ListMachines(ctx context.Context, req *ufsAPI.ListMac
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -232,7 +232,7 @@ func (fs *FleetServerImpl) ListRacks(ctx context.Context, req *ufsAPI.ListRacksR
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -357,7 +357,7 @@ func (fs *FleetServerImpl) ListNics(ctx context.Context, req *ufsAPI.ListNicsReq
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -517,7 +517,7 @@ func (fs *FleetServerImpl) ListKVMs(ctx context.Context, req *ufsAPI.ListKVMsReq
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -660,7 +660,7 @@ func (fs *FleetServerImpl) ListRPMs(ctx context.Context, req *ufsAPI.ListRPMsReq
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -808,7 +808,7 @@ func (fs *FleetServerImpl) ListDracs(ctx context.Context, req *ufsAPI.ListDracsR
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -916,7 +916,7 @@ func (fs *FleetServerImpl) ListSwitches(ctx context.Context, req *ufsAPI.ListSwi
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -1026,7 +1026,7 @@ func (fs *FleetServerImpl) ListAssets(ctx context.Context, req *ufsAPI.ListAsset
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)

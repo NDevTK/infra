@@ -217,12 +217,18 @@ func (r *GetChromePlatformRequest) Validate() error {
 	return validateResourceName(chromePlatformRegex, ChromePlatformNameFormat, r.Name)
 }
 
-// Validate validates input requests of ListChromePlatforms.
-func (r *ListChromePlatformsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
+// ListRequest is the interface for all ListXXXRequest.
+type ListRequest interface {
+	GetFilter() string
+	GetPageSize() int32
+}
+
+// ValidateListRequest validates the request to list a kind of entity.
+func ValidateListRequest(r ListRequest) error {
+	if err := ValidateFilter(r.GetFilter()); err != nil {
 		return err
 	}
-	return validatePageSize(r.PageSize)
+	return validatePageSize(r.GetPageSize())
 }
 
 // Validate validates input requests of DeleteChromePlatform.
@@ -259,14 +265,6 @@ func (r *GetMachineLSEPrototypeRequest) Validate() error {
 	return validateResourceName(machineLSEPrototypeRegex, MachineLSEPrototypeNameFormat, r.Name)
 }
 
-// Validate validates input requests of ListMachineLSEPrototypes.
-func (r *ListMachineLSEPrototypesRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
-}
-
 // Validate validates input requests of DeleteMachineLSEPrototype.
 func (r *DeleteMachineLSEPrototypeRequest) Validate() error {
 	return validateResourceName(machineLSEPrototypeRegex, MachineLSEPrototypeNameFormat, r.Name)
@@ -299,14 +297,6 @@ func (r *UpdateRackLSEPrototypeRequest) Validate() error {
 // Validate validates input requests of GetRackLSEPrototype.
 func (r *GetRackLSEPrototypeRequest) Validate() error {
 	return validateResourceName(rackLSEPrototypeRegex, RackLSEPrototypeNameFormat, r.Name)
-}
-
-// Validate validates input requests of ListRackLSEPrototypes.
-func (r *ListRackLSEPrototypesRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
 }
 
 // Validate validates input requests of DeleteRackLSEPrototype.
@@ -387,14 +377,6 @@ func (r *GetMachineRequest) Validate() error {
 	return validateResourceName(machineRegex, MachineNameFormat, r.Name)
 }
 
-// Validate validates input requests of ListMachines.
-func (r *ListMachinesRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
-}
-
 // Validate validates input requests of DeleteMachine.
 func (r *DeleteMachineRequest) Validate() error {
 	return validateResourceName(machineRegex, MachineNameFormat, r.Name)
@@ -422,14 +404,6 @@ func (r *UpdateRackRequest) Validate() error {
 // Validate validates input requests of GetRack.
 func (r *GetRackRequest) Validate() error {
 	return validateResourceName(rackRegex, RackNameFormat, r.Name)
-}
-
-// Validate validates input requests of ListRacks.
-func (r *ListRacksRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
 }
 
 // Validate validates input requests of DeleteRack.
@@ -506,14 +480,6 @@ func (r *UpdateMachineLSERequest) Validate() error {
 // Validate validates input requests of GetMachineLSE.
 func (r *GetMachineLSERequest) Validate() error {
 	return validateResourceName(machineLSERegex, MachineLSENameFormat, r.Name)
-}
-
-// Validate validates input requests of ListMachineLSEs.
-func (r *ListMachineLSEsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
 }
 
 // Validate validates input requests of DeleteMachineLSE.
@@ -595,14 +561,6 @@ func (r *GetVMRequest) Validate() error {
 	return validateResourceName(vmRegex, VMNameFormat, r.Name)
 }
 
-// Validate validates input requests of ListVMs.
-func (r *ListVMsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
-}
-
 // Validate validates input requests of CreateRackLSE.
 func (r *CreateRackLSERequest) Validate() error {
 	if r.RackLSE == nil {
@@ -630,14 +588,6 @@ func (r *UpdateRackLSERequest) Validate() error {
 // Validate validates input requests of GetRackLSE.
 func (r *GetRackLSERequest) Validate() error {
 	return validateResourceName(rackLSERegex, RackLSENameFormat, r.Name)
-}
-
-// Validate validates input requests of ListRackLSEs.
-func (r *ListRackLSEsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
 }
 
 // Validate validates input requests of DeleteRackLSE.
@@ -912,14 +862,6 @@ func (r *UpdateTestDataRequest) validateHostname() error {
 	return nil
 }
 
-// Validate validates input requests of ListDutStates.
-func (r *ListDutStatesRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
-}
-
 // Validate validates input requests of UpdateNic.
 func (r *UpdateNicRequest) Validate() error {
 	if r.Nic == nil {
@@ -941,14 +883,6 @@ func (r *UpdateNicRequest) Validate() error {
 // Validate validates input requests of GetNic.
 func (r *GetNicRequest) Validate() error {
 	return validateResourceName(nicRegex, NicNameFormat, r.Name)
-}
-
-// Validate validates input requests of ListNics.
-func (r *ListNicsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
 }
 
 // Validate validates input requests of DeleteNic.
@@ -1008,14 +942,6 @@ func (r *GetKVMRequest) Validate() error {
 	return validateResourceName(kvmRegex, KVMNameFormat, r.Name)
 }
 
-// Validate validates input requests of ListKVMs.
-func (r *ListKVMsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
-}
-
 // Validate validates input requests of DeleteKVM.
 func (r *DeleteKVMRequest) Validate() error {
 	return validateResourceName(kvmRegex, KVMNameFormat, r.Name)
@@ -1071,14 +997,6 @@ func (r *UpdateRPMRequest) Validate() error {
 // Validate validates input requests of GetRPM.
 func (r *GetRPMRequest) Validate() error {
 	return validateResourceName(rpmRegex, RPMNameFormat, r.Name)
-}
-
-// Validate validates input requests of ListRPMs.
-func (r *ListRPMsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
 }
 
 // Validate validates input requests of DeleteRPM.
@@ -1146,14 +1064,6 @@ func (r *GetDracRequest) Validate() error {
 	return validateResourceName(dracRegex, DracNameFormat, r.Name)
 }
 
-// Validate validates input requests of ListDracs.
-func (r *ListDracsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
-}
-
 // Validate validates input requests of DeleteDrac.
 func (r *DeleteDracRequest) Validate() error {
 	return validateResourceName(dracRegex, DracNameFormat, r.Name)
@@ -1197,14 +1107,6 @@ func (r *GetSwitchRequest) Validate() error {
 	return validateResourceName(switchRegex, SwitchNameFormat, r.Name)
 }
 
-// Validate validates input requests of ListSwitches.
-func (r *ListSwitchesRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
-}
-
 // Validate validates input requests of DeleteSwitch.
 func (r *DeleteSwitchRequest) Validate() error {
 	return validateResourceName(switchRegex, SwitchNameFormat, r.Name)
@@ -1246,22 +1148,6 @@ func (r *UpdateVlanRequest) Validate() error {
 // Validate validates input requests of GetVlan.
 func (r *GetVlanRequest) Validate() error {
 	return validateResourceName(vlanRegex, VlanNameFormat, r.Name)
-}
-
-// Validate validates input requests of ListVlans.
-func (r *ListVlansRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
-}
-
-// Validate validates input requests of ListVlans.
-func (r *ListIPsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
 }
 
 // Validate validates input requests of DeleteVlan.
@@ -1310,14 +1196,6 @@ func (r *GetAssetRequest) Validate() error {
 	return validateResourceNameAllowAllCharacters(assetRegex, AssetNameFormat, r.Name)
 }
 
-// Validate validates input requests of ListAssets.
-func (r *ListAssetsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
-}
-
 // Validate validates input requests of DeleteAsset.
 func (r *DeleteAssetRequest) Validate() error {
 	return validateResourceNameAllowAllCharacters(assetRegex, AssetNameFormat, r.Name)
@@ -1350,14 +1228,6 @@ func (r *UpdateMachineLSEDeploymentRequest) Validate() error {
 	r.MachineLseDeployment.Hostname = strings.TrimSpace(r.MachineLseDeployment.Hostname)
 	r.MachineLseDeployment.SerialNumber = strings.TrimSpace(r.MachineLseDeployment.SerialNumber)
 	return nil
-}
-
-// Validate validates ListMachineLSEDeploymentsRequest.
-func (r *ListMachineLSEDeploymentsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
 }
 
 // Validate validates input requests of CreateCachingService.
@@ -1425,14 +1295,6 @@ func (r *GetCachingServiceRequest) Validate() error {
 	return nil
 }
 
-// Validate validates input requests of ListCachingServices.
-func (r *ListCachingServicesRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
-}
-
 // Validate validates input requests of DeleteCachingService.
 func (r *DeleteCachingServiceRequest) Validate() error {
 	name := strings.TrimSpace(r.Name)
@@ -1478,14 +1340,6 @@ func (r *UpdateSchedulingUnitRequest) Validate() error {
 // Validate validates input requests of GetSchedulingUnit.
 func (r *GetSchedulingUnitRequest) Validate() error {
 	return validateResourceName(schedulingUnitRegex, SchedulingUnitNameFormat, r.Name)
-}
-
-// Validate validates input requests of ListSchedulingUnits.
-func (r *ListSchedulingUnitsRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
 }
 
 // Validate the MachineLSE rename request.
@@ -1561,14 +1415,6 @@ func (r *GetOwnershipDataRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, EmptyName)
 	}
 	return nil
-}
-
-// Validate validates input requests of ListOwnershipDataRequest.
-func (r *ListOwnershipDataRequest) Validate() error {
-	if err := ValidateFilter(r.Filter); err != nil {
-		return err
-	}
-	return validatePageSize(r.PageSize)
 }
 
 func validatePageSize(pageSize int32) error {

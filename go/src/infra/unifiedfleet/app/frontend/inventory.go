@@ -163,7 +163,7 @@ func (fs *FleetServerImpl) ListMachineLSEs(ctx context.Context, req *ufsAPI.List
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -352,7 +352,7 @@ func (fs *FleetServerImpl) ListVMs(ctx context.Context, req *ufsAPI.ListVMsReque
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -425,7 +425,7 @@ func (fs *FleetServerImpl) ListRackLSEs(ctx context.Context, req *ufsAPI.ListRac
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -552,7 +552,7 @@ func (fs *FleetServerImpl) ListMachineLSEDeployments(ctx context.Context, req *u
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -629,7 +629,7 @@ func (fs *FleetServerImpl) ListSchedulingUnits(ctx context.Context, req *ufsAPI.
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
