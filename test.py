@@ -21,7 +21,6 @@ WIN_ENABLED_PACKAGES = [
   'infra/libs/decorators',
   'infra/libs/gitiles',
   'infra/libs/service_utils',
-  'infra/libs/state_machine',
 
   'packages/infra_libs/infra_libs/infra_types',
   'packages/infra_libs/infra_libs/logs',
