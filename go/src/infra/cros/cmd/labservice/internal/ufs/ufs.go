@@ -8,12 +8,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"infra/cros/cmd/labservice/internal/ufs/cache"
+	"infra/cros/cmd/labservice/internal/ufs/wifisecret"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
@@ -58,6 +60,12 @@ func (inv *Inventory) GetDutTopology(ctx context.Context, id string) (*labapi.Du
 	if err != nil {
 		return nil, status.Errorf(codes.FailedPrecondition, "get dut topology: ID %q: %s", id, err)
 	}
+	wf, err := wifisecret.NewFinder(ctx, inv.client)
+	if err != nil {
+		return nil, status.Errorf(codes.FailedPrecondition, "get dut topology: ID %q: %s", id, err)
+	}
+	defer wf.Close()
+
 	dt := &labapi.DutTopology{
 		Id: &labapi.DutTopology_Id{Value: id},
 	}
@@ -66,6 +74,11 @@ func (inv *Inventory) GetDutTopology(ctx context.Context, id string) (*labapi.Du
 		if err != nil {
 			return nil, status.Errorf(codes.FailedPrecondition, "get dut topology: ID %q: %s", id, err)
 		}
+		w, err := wf.GetSecretForMachineLSE(ctx, deviceInfo.machineLse)
+		if err != nil {
+			log.Printf("Failed to get wifi secret for machine LSE %q: %s", id, err)
+		}
+		d.WifiSecret = w
 		dt.Duts = append(dt.Duts, d)
 	}
 	return dt, nil

@@ -16,6 +16,7 @@ require (
 	cloud.google.com/go/monitoring v1.15.1
 	cloud.google.com/go/profiler v0.3.1
 	cloud.google.com/go/pubsub v1.33.0
+	cloud.google.com/go/secretmanager v1.11.1
 	cloud.google.com/go/storage v1.31.0
 	cloud.google.com/go/trace v1.10.1
 	github.com/Microsoft/go-winio v0.6.1
@@ -125,7 +126,6 @@ require (
 require (
 	cloud.google.com/go/errorreporting v0.3.0 // indirect
 	cloud.google.com/go/iam v1.1.2 // indirect
-	cloud.google.com/go/secretmanager v1.11.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.20.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.19.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.43.1 // indirect
