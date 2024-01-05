@@ -17,7 +17,7 @@ import (
 )
 
 const containerVolume = "default_cache"
-const name = "us-docker.pkg.dev/chromeos-partner-moblab/satlab/nginx:stable"
+const imageName = "us-docker.pkg.dev/chromeos-partner-moblab/satlab/nginx:stable"
 
 var PruneCmd = &subcommands.Command{
 	UsageLine: `prune_cache`,
@@ -43,10 +43,15 @@ func cleanVolume() error {
 	// Shell command to clean folder contents.
 	command := []string{"sh", "-c", "rm -rf /_data/*"}
 
+	// Pull nginx image.
+	if _, err := cli.ImagePull(context.Background(), imageName, types.ImagePullOptions{}); err != nil {
+		return err
+	}
+
 	// Creating a container and binding it to data folder present in default_cache.
 	resp, err := cli.ContainerCreate(context.Background(),
 		&container.Config{
-			Image: name,
+			Image: imageName,
 			Cmd:   command,
 		},
 		&container.HostConfig{
