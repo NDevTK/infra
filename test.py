@@ -19,7 +19,6 @@ INFRA_ROOT = os.path.dirname(os.path.abspath(__file__))
 # Allowlist of packages to test on Windows.
 WIN_ENABLED_PACKAGES = [
   'infra/libs/decorators',
-  'infra/libs/gitiles',
   'infra/libs/service_utils',
 
   'packages/infra_libs/infra_libs/infra_types',

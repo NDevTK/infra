@@ -158,8 +158,6 @@ go/src/infra/unifiedfleet/app/controller 1 1
 go/src/infra/unifiedfleet/app/util/osutil 1 1
 infra 2 1
 infra/experimental/doc 12 1
-infra/libs/gitiles 1 1
-infra/libs/gitiles/test 2 1
 infra/services/android_docker/third_party/devil/android 7 2
 infra/services/lkgr_finder 2 1
 infra/services/lkgr_finder/config 13 1
