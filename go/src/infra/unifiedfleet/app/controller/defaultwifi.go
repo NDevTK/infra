@@ -34,6 +34,10 @@ func GetDefaultWifi(ctx context.Context, name string) (*ufspb.DefaultWifi, error
 	return registration.GetDefaultWifi(ctx, name)
 }
 
+func ListDefaultWifis(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.DefaultWifi, string, error) {
+	return nil, "", nil
+}
+
 func getDefaultWifiHistoryClient() *HistoryClient {
 	return &HistoryClient{}
 }

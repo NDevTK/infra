@@ -49,3 +49,26 @@ func (fs *FleetServerImpl) GetDefaultWifi(ctx context.Context, req *ufsAPI.GetDe
 	rsp.Name = util.AddPrefix(util.DefaultWifiCollection, rsp.Name)
 	return
 }
+
+// ListDefaultWifis list the DefaultWifis information from database.
+func (fs *FleetServerImpl) ListDefaultWifis(ctx context.Context, req *ufsAPI.ListDefaultWifisRequest) (rsp *ufsAPI.ListDefaultWifisResponse, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
+		return nil, err
+	}
+	pageSize := util.GetPageSize(req.PageSize)
+	result, nextPageToken, err := controller.ListDefaultWifis(ctx, pageSize, req.PageToken, req.Filter, req.KeysOnly)
+	if err != nil {
+		return nil, err
+	}
+	// https://aip.dev/122 - as per AIP guideline.
+	for _, cs := range result {
+		cs.Name = util.AddPrefix(util.DefaultWifiCollection, cs.Name)
+	}
+	return &ufsAPI.ListDefaultWifisResponse{
+		DefaultWifis:  result,
+		NextPageToken: nextPageToken,
+	}, nil
+}
