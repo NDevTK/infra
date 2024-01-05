@@ -24,6 +24,7 @@ import (
 // roVPDKeys is the list of keys from RO_VPD that should be persisted and flashed in the recovery process.
 var roVPDKeys = []string{
 	"wifi_sar",
+	"attested_device_id",
 }
 
 const (
@@ -217,8 +218,12 @@ func updateROVPDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 		info.GetChromeos().RoVpdMap = make(map[string]string)
 	}
 	for _, key := range roVPDKeys {
-		if value, err := vpd.ReadRO(ctx, ha, time.Minute, key); err == nil {
+		value, err := vpd.ReadRO(ctx, ha, time.Minute, key)
+		if err == nil {
 			info.GetChromeos().RoVpdMap[key] = value
+		} else {
+			// Not all devices have all RO vpd keys.
+			log.Infof(ctx, "failed to read RO vpd key %s: %v", key, err)
 		}
 	}
 	log.Infof(ctx, "recorded RO_VPD values successfully")
