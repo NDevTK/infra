@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	ufspb "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/model/datastore"
 )
 
@@ -28,6 +29,7 @@ const (
 
 // FleetServerImpl implements the configuration server interfaces.
 type FleetServerImpl struct {
+	ufspb.UnimplementedFleetServer
 	importPageSize int
 }
 
