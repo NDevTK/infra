@@ -23,6 +23,7 @@ import "infra/unifiedfleet/api/v1/models/rack_lse.proto";
 import "infra/unifiedfleet/api/v1/models/network.proto";
 import "infra/unifiedfleet/api/v1/models/peripherals.proto";
 import "infra/unifiedfleet/api/v1/models/lse_prototype.proto";
+import "infra/unifiedfleet/api/v1/models/secret.proto";
 import "infra/unifiedfleet/api/v1/models/state.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
@@ -363,7 +364,7 @@ service Fleet {
   // GetChromeOSDeviceData retrieves requested Chrome OS device data from the UFS and inventoryV2.
   rpc GetChromeOSDeviceData(GetChromeOSDeviceDataRequest) returns (models.ChromeOSDeviceData);
 
-    // CreateCachingService creates a new CachingService.
+  // CreateCachingService creates a new CachingService.
   rpc CreateCachingService(CreateCachingServiceRequest) returns (models.CachingService);
 
   // Update updates the CachingService.
@@ -425,6 +426,21 @@ service Fleet {
 
   // GetDUTsForLabstation gets the DUTs associated with a labstation.
   rpc GetDUTsForLabstation(GetDUTsForLabstationRequest) returns (GetDUTsForLabstationResponse);
+
+  // GetDefaultWifi gets the specified default wifi.
+  rpc GetDefaultWifi(GetDefaultWifiRequest) returns (models.DefaultWifi);
+
+  // ListDefaultWifi lists all the default wifis.
+  rpc ListDefaultWifis(ListDefaultWifisRequest) returns (ListDefaultWifisResponse);
+
+  // CreateDefaultWifi creates a new default wifi.
+  rpc CreateDefaultWifi(CreateDefaultWifiRequest) returns (models.DefaultWifi);
+
+  // UpdateDefaultWifi updates the specified default wifi.
+  rpc UpdateDefaultWifi(UpdateDefaultWifiRequest) returns (models.DefaultWifi);
+
+  // DeleteDefaultWifi deletes the specified default wifi.
+  rpc DeleteDefaultWifi(DeleteDefaultWifiRequest) returns (google.protobuf.Empty);
 }
 
 message GetDUTsForLabstationRequest {
@@ -2508,4 +2524,76 @@ message ListOwnershipDataResponse {
   // A token, which can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.
   string next_page_token = 2;
+}
+
+message GetDefaultWifiRequest {
+  // The name of the default wifi to retrieve.
+  // Format: defaultwifis/{defaultwifi}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/DefaultWifi" }
+  ];
+}
+
+message ListDefaultWifisRequest {
+  // The maximum number of DefaultWifis to return. The service may return fewer
+  // than this value.
+  // If unspecified, at most 100 default wifi will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 1;
+
+  // A page token, received from a previous `ListDefaultWifis` call.
+  // Provide this to retrieve the subsequent page.
+  //
+  // When paginating, all other parameters provided to `ListDefaultWifis` must
+  // match the call that provided the page token.
+  string page_token = 2;
+
+  // filter takes the filtering condition.
+  string filter = 3;
+
+  // if this is true, only keys will be returned else the entire object
+  // will be returned. By setting this to true, the list call be will faster.
+  bool keys_only = 4;
+}
+
+message ListDefaultWifisResponse {
+  // The default wifis from datastore.
+  repeated models.DefaultWifi default_wifis = 1;
+
+  // A token, which can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
+}
+
+message CreateDefaultWifiRequest {
+  // The ID to use for the default wifi, which will become the final component
+  // of the default wifi's resource name.
+  //
+  // This value should be 3-63 characters, and valid characters
+  // are /[a-z][0-9]-_.:/.
+  string default_wifi_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The default wifi to create.
+  models.DefaultWifi default_wifi = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message UpdateDefaultWifiRequest {
+  // The default wifi to update.
+  //
+  // The default wifi's `name` field is used to identify the resource to update.
+  // Format: defaultwifis/{defaultwifi}
+  models.DefaultWifi default_wifi = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message DeleteDefaultWifiRequest {
+  // The name of the default wifi to delete.
+  // Format: defaultwifis/{defaultwifi}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/DefaultWifi" }
+  ];
 }

@@ -2220,3 +2220,88 @@ func (s *DecoratedFleet) GetDUTsForLabstation(ctx context.Context, req *GetDUTsF
 	}
 	return
 }
+
+func (s *DecoratedFleet) GetDefaultWifi(ctx context.Context, req *GetDefaultWifiRequest) (rsp *models.DefaultWifi, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetDefaultWifi", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetDefaultWifi(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetDefaultWifi", rsp, err)
+	}
+	return
+}
+
+func (s *DecoratedFleet) ListDefaultWifis(ctx context.Context, req *ListDefaultWifisRequest) (rsp *ListDefaultWifisResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "ListDefaultWifis", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.ListDefaultWifis(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "ListDefaultWifis", rsp, err)
+	}
+	return
+}
+
+func (s *DecoratedFleet) CreateDefaultWifi(ctx context.Context, req *CreateDefaultWifiRequest) (rsp *models.DefaultWifi, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "CreateDefaultWifi", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.CreateDefaultWifi(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "CreateDefaultWifi", rsp, err)
+	}
+	return
+}
+
+func (s *DecoratedFleet) UpdateDefaultWifi(ctx context.Context, req *UpdateDefaultWifiRequest) (rsp *models.DefaultWifi, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "UpdateDefaultWifi", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.UpdateDefaultWifi(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "UpdateDefaultWifi", rsp, err)
+	}
+	return
+}
+
+func (s *DecoratedFleet) DeleteDefaultWifi(ctx context.Context, req *DeleteDefaultWifiRequest) (rsp *emptypb.Empty, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "DeleteDefaultWifi", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.DeleteDefaultWifi(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "DeleteDefaultWifi", rsp, err)
+	}
+	return
+}
