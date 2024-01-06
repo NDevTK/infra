@@ -31,3 +31,21 @@ func (fs *FleetServerImpl) CreateDefaultWifi(ctx context.Context, req *ufsAPI.Cr
 	rsp.Name = util.AddPrefix(util.DefaultWifiCollection, rsp.Name)
 	return
 }
+
+// GetDefaultWifi returns the specified GetDefaultWifi.
+func (fs *FleetServerImpl) GetDefaultWifi(ctx context.Context, req *ufsAPI.GetDefaultWifiRequest) (rsp *ufspb.DefaultWifi, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	name := util.RemovePrefix(req.Name)
+	rsp, err = controller.GetDefaultWifi(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+	// https://aip.dev/122 - as per AIP guideline.
+	rsp.Name = util.AddPrefix(util.DefaultWifiCollection, rsp.Name)
+	return
+}
