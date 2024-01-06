@@ -2,17 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
 import mock
-import six
-if six.PY2:
-  import urlparse
-else:
-  import urllib.parse as urlparse
+import urllib.parse as urlparse
 
 from testing_utils import testing
-
-from common.http import retry_http_client
 
 from common import monitoring
 from common import findit_http_client
@@ -56,14 +49,8 @@ class HttpClientMetricsInterceptorTest(testing.AppengineTestCase):
     url = 'https://test.com/'
     with self.assertRaises(NotImplementedError):
       _status_code, _content, _response_headers = client.Post(url, {})
-    if six.PY2:
-      mock_error_metric.increment.assert_called_once_with({
-          'host': 'test.com',
-          'exception': 'exceptions.NotImplementedError',
-      })
-    else:
-      mock_error_metric.increment.assert_called_once_with({
-          'host': 'test.com',
-          'exception': 'builtins.NotImplementedError',
-      })
+    mock_error_metric.increment.assert_called_once_with({
+        'host': 'test.com',
+        'exception': 'builtins.NotImplementedError',
+    })
     self.assertFalse(mock_status_metric.increment.called)

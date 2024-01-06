@@ -13,10 +13,7 @@ import time
 from apiclient import discovery
 from google.protobuf import json_format
 
-if six.PY2:
-  from oauth2client import appengine as gae_oauth2client
-else:
-  from google.auth import app_engine as gae_oauth2client
+from google.auth import app_engine as gae_oauth2client
 # Bigquery authentication endpoint.
 _AUTH_ENDPOINT = 'https://www.googleapis.com/auth/bigquery'
 
@@ -40,13 +37,8 @@ def _GetBigqueryClient():
   """
   if hasattr(_GetBigqueryClient, 'client'):
     return getattr(_GetBigqueryClient, 'client')
-  if six.PY2:
-    credentials = gae_oauth2client.AppAssertionCredentials(scope=_AUTH_ENDPOINT)
-    http_auth = credentials.authorize(http=httplib2.Http(timeout=60))
-    bigquery_client = discovery.build('bigquery', 'v2', http=http_auth)
-  else:
-    credentials = gae_oauth2client.Credentials(scopes=_AUTH_ENDPOINT)
-    bigquery_client = discovery.build('bigquery', 'v2', credentials=credentials)
+  credentials = gae_oauth2client.Credentials(scopes=_AUTH_ENDPOINT)
+  bigquery_client = discovery.build('bigquery', 'v2', credentials=credentials)
   setattr(_GetBigqueryClient, 'client', bigquery_client)
   return bigquery_client
 

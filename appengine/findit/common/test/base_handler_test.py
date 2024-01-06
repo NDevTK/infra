@@ -345,13 +345,8 @@ class ResultFormatTest(testing.AppengineTestCase):
     response = self.test_app.get('/format?format=json&pretty=1')
     self.assertEquals(200, response.status_int)
     self.assertEquals('application/json', response.content_type)
-    if six.PY2:
-      expected_body = (
-          '{\n  "a": "b", \n  "z": [\n    1, \n    2, \n    3\n  ], '
-          '\n  "b": "%s"\n}' % ('1' * 200))
-    else:
-      expected_body = ('{\n  "a": "b",\n  "z": [\n    1,\n    2,\n    3\n  ],'
-                       '\n  "b": "%s"\n}' % ('1' * 200)).encode('utf-8')
+    expected_body = ('{\n  "a": "b",\n  "z": [\n    1,\n    2,\n    3\n  ],'
+                     '\n  "b": "%s"\n}' % ('1' * 200)).encode('utf-8')
     self.assertEquals(response.body, expected_body)
 
   def testToJson(self):

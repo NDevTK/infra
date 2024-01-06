@@ -5,17 +5,12 @@
 import datetime
 import json
 import mock
-import six
 import time
 import unittest
 
 from parameterized import parameterized
 
 from apiclient import discovery
-if six.PY2:
-  from oauth2client import appengine as gae_oauth2client
-else:
-  from google.auth import app_engine as gae_oauth2client
 from google.protobuf import json_format
 
 from services import bigquery_helper

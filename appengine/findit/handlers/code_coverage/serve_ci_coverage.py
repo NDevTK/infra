@@ -531,14 +531,7 @@ class ServeCodeCoverageData(BaseHandler):
       else:
         file_lines = file_content.splitlines()
         for i, line in enumerate(file_lines):
-          # According to http://jinja.pocoo.org/docs/2.10/api/#unicode,
-          # Jinja requires passing unicode objects or ASCII-only bytestring,
-          # and given that it is possible for source files to have non-ASCII
-          # chars, thus converting lines to unicode.
-          logging.error(type(line))
-          if six.PY2:
-            line = unicode(line, 'utf-8')
-          line_to_data[i + 1]['line'] = line
+          line_to_data[i + 1]['line'] = six.ensure_str(line)
           line_to_data[i + 1]['count'] = -1
 
         uncovered_blocks = {}

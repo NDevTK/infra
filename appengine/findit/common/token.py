@@ -22,10 +22,7 @@ _RANDOM_BYTE_LENGTH = 512
 def GenerateRandomHexKey(length=_RANDOM_BYTE_LENGTH):
   """Returns a key hexed from random bytes at the given length for crypto."""
   # After encoded in hex, the length doubles.
-  if six.PY2:
-    return os.urandom(length).encode('hex')
-  else:
-    return six.ensure_binary(os.urandom(length).hex())
+  return six.ensure_binary(os.urandom(length).hex())
 
 
 class SecretKey(ndb.Model):
@@ -60,25 +57,16 @@ def GenerateAuthToken(key_name, user_id, action_id='', when=None):
   key = SecretKey.GetSecretKey(key_name)
   when = when or time_util.GetUTCNow()
   when_timestamp = time_util.ConvertToTimestamp(when)
-  if six.PY2:
-    digester = hmac.new(key)
-  else:
-    digester = hmac.new(key, msg=None, digestmod='MD5')
+  digester = hmac.new(key, msg=None, digestmod='MD5')
   digester.update(six.ensure_binary(user_id))
   digester.update(_DELIMITER)
   digester.update(six.ensure_binary(action_id))
   digester.update(_DELIMITER)
   digester.update(six.ensure_binary(str(when_timestamp)))
   digest = digester.digest()
-  if six.PY2:
-    return base64.urlsafe_b64encode(
-        six.ensure_binary('%s%s%d' %
-                          (digest, six.ensure_str(_DELIMITER), when_timestamp)))
-  else:
-    return base64.urlsafe_b64encode(
-        digest +
-        six.ensure_binary('%s%d' %
-                          (six.ensure_str(_DELIMITER), when_timestamp)))
+  return base64.urlsafe_b64encode(
+      digest + six.ensure_binary('%s%d' %
+                                 (six.ensure_str(_DELIMITER), when_timestamp)))
 
 
 def ValidateAuthToken(key_name, token, user_id, action_id='', valid_hours=1):
@@ -121,10 +109,7 @@ def ValidateAuthToken(key_name, token, user_id, action_id='', valid_hours=1):
   # Perform constant time comparison to avoid timing attacks.
   different = 0
   for x, y in zip(token, expected_token):
-    if six.PY2:
-      different |= ord(x) ^ ord(y)
-    else:
-      different |= x ^ y
+    different |= x ^ y
   if different:
     return False, expired
 

@@ -241,7 +241,6 @@ class BaseHandler(object):
       else:
         handler_func = (
             self.HandleGet if self.request.method == 'GET' else self.HandlePost)
-        logging.error(handler_func)
         result = handler_func(**kwargs) or {}
         redirect_url = result.get('redirect_url')
         template = result.get('template')

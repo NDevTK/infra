@@ -11,11 +11,10 @@ import_utils.FixImports()
 import gae_ts_mon
 
 # Setup cloud logging
-import six
-if six.PY3:
-  import google.cloud.logging
-  client = google.cloud.logging.Client()
-  client.setup_logging()
+import google.cloud.logging
+
+client = google.cloud.logging.Client()
+client.setup_logging()
 
 import google.appengine.api
 
@@ -35,9 +34,8 @@ handler_mappings = [
 ]
 
 default_application = Flask(__name__)
-if six.PY3:
-  default_application.wsgi_app = google.appengine.api.wrap_wsgi_app(
-      default_application.wsgi_app)
+default_application.wsgi_app = google.appengine.api.wrap_wsgi_app(
+    default_application.wsgi_app)
 for url, endpoint, view_func, methods in handler_mappings:
   default_application.add_url_rule(
       url, endpoint=endpoint, view_func=view_func, methods=methods)

@@ -7,10 +7,7 @@ import six
 from collections import defaultdict
 import logging
 import difflib
-if six.PY2:
-  import Queue as queue
-else:
-  import queue
+import queue
 from threading import Thread
 import time
 

@@ -218,12 +218,7 @@ class ChromiumDEPSTest(testing.AppengineTestCase):
     deps_rolls = self.chrome_dep_fetcher.GetDependencyRolls(
         'rev1', 'rev2', 'unix')
     deps_rolls = [roll.ToDict() for roll in deps_rolls]
-    if six.PY2:
-      deps_rolls.sort()
-      expected_deps_rolls.sort()
-      self.assertEqual(expected_deps_rolls, deps_rolls)
-    else:
-      self.assertCountEqual(expected_deps_rolls, deps_rolls)
+    self.assertCountEqual(expected_deps_rolls, deps_rolls)
 
   def testGetDependencyRollsDict(self):
 

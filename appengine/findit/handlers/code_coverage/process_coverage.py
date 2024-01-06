@@ -9,18 +9,12 @@ import time
 from six.moves.urllib.parse import urlparse
 import zlib
 
-import six
-if six.PY2:
-  import cloudstorage as storage
-else:
-  from google.cloud import storage
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
 from go.chromium.org.luci.buildbucket.proto import builds_service_pb2
-from go.chromium.org.luci.buildbucket.proto import builds_service_prpc_pb2
 from go.chromium.org.luci.buildbucket.proto import common_pb2
 
 from common import constants

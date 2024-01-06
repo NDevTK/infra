@@ -10,7 +10,7 @@ STAGING_APPID := "findit-for-me-staging"
 # ...$ gclient sync
 PROTOC := "../../cipd/protoc"
 PROTO_PATH ?= "model/proto/"
-CODE_COVERAGE_MODULES := default code-coverage-frontend code-coverage-backend code-coverage-auxiliary-coverage-worker
+CODE_COVERAGE_MODULES := code-coverage-frontend
 LOCAL_VERSION := `$(INFRAPYTHON) $(GAE_PY) version`
 LOCAL_HASH := `git rev-parse --short HEAD`
 # If there are multiple active versions just use the latest one.
@@ -28,9 +28,9 @@ help:
 	      "for staging."
 	@echo
 	@echo "Run tests"
-	@echo "To run ALL tests: \`make test\`"
-	@echo "To run tests in a sub directory: \`make test TEST_GLOB=services\`"
-	@echo "To run a given test: \`make test TEST_GLOB=:*testUnrecognizedMasterUrl*\`"
+	@echo "To run ALL tests: \`make pytest\`"
+	@echo "To run tests in a sub directory: \`make pytest TEST_GLOB=services\`"
+	@echo "To run a given test: \`make pytest TEST_GLOB=:*testUnrecognizedMasterUrl*\`"
 	@echo
 	@echo "To format code run \`make format\`"
 	@echo
@@ -63,9 +63,6 @@ generate_requirements_txt:
 	vpython3 -m pip freeze > requirements.txt
 	printf "# This file is generated from the .vpython3 spec file.\n# Use \`make generate_requirements_txt\` to update.\n$$(cat requirements.txt)" > requirements.txt
 
-install_deps:
-	pip3 install -t lib -r requirements.txt
-
 pytest:
 	vpython3 test.py $(TEST_GLOB)
 
@@ -84,43 +81,3 @@ proto:
 	@$(PROTOC) --proto_path=$(PROTO_PATH) \
 		--python_out=$(PROTO_PATH)gen \
 		$(PROTO_PATH)*.proto
-
-
-
-##### Unit tests ###
-clean-expect_tests:  # $$ is to escape $ in makefile.
-	ps auxef | grep ENV/bin/expect_tests | grep -v grep | \
-	  awk '{print $$2}' | xargs kill -9 >/dev/null 2>&1 | echo
-
-test: clean-expect_tests
-ifeq ($(TEST_GLOB),"")
-	@mkdir -p $(TMPDIR)/coverage
-	$(INFRAPYTHON) ../../test.py test appengine/findit \
-      --html-report $(TMPDIR)/coverage
-else
-	@echo "Note: code coverage disabled when running selected tests."
-	@echo
-	@mkdir -p $(TMPDIR)/coverage
-	$(INFRAPYTHON) ../../test.py test appengine/findit/$(TEST_GLOB) \
-      --html-report $(TMPDIR)/coverage --coveragerc appengine/findit/.coveragerc --no-coverage
-endif
-
-node_deps:
-	npm install
-
-wct: node_deps
-	npx run-wct --base ui/ --dep third_party
-
-wct_debug: node_deps
-	npx run-wct --base ui/ --dep third_party --debug
-
-##### TMP ###
-TMPDIR := $(shell mkdir -p .tmp 2> /dev/null && realpath .tmp)
-ifndef TMPDIR
-TMPDIR :=  $(shell mktemp -d)
-endif
-
-.PHONY: _deploy_findit test update \
-        help migrate deploy-findit-prod deploy-findit-staging \
-        deploy-coverage-prod deploy-coverage-staging findit-predeploy \
-        deploy-all-prod deploy-all-staging

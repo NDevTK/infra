@@ -104,10 +104,7 @@ class IncrementalCoverageTest(WaterfallTestCase):
     calls = mocked_report_rows.call_args_list
     self.assertEqual(len(calls), 1)
     args, _ = calls[0]
-    if six.PY2:
-      self.assertItemsEqual(args[0], expected_bqrows)
-    else:
-      self.assertCountEqual(args[0], expected_bqrows)
+    self.assertCountEqual(args[0], expected_bqrows)
     self.assertEqual(args[1], 'findit-for-me')
     self.assertEqual(args[2], 'code_coverage_summaries')
     self.assertEqual(args[3], 'incremental_coverage')
