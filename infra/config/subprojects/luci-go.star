@@ -74,7 +74,7 @@ def try_builder(
 # run on relatively ancient OSX versions that don't support the bleeding edge
 # Go.
 
-ci_builder(name = "luci-go-continuous-bionic-64", os = "Ubuntu-18.04", tree_closing = True, properties = {
+ci_builder(name = "luci-go-continuous-jammy-64", os = "Ubuntu-22.04", tree_closing = True, properties = {
     "go_version_variant": "bleeding_edge",
     "run_integration_tests": True,
 })
@@ -89,7 +89,7 @@ ci_builder(name = "luci-go-continuous-mac-10.15-64", os = "Mac-10.15", tree_clos
 })
 ci_builder(name = "luci-go-continuous-win10-64", os = "Windows-10", tree_closing = True)
 
-try_builder(name = "luci-go-try-bionic-64", os = "Ubuntu-18.04", properties = {
+try_builder(name = "luci-go-try-linux", os = "Ubuntu-22.04", properties = {
     "run_integration_tests": True,
     "go_version_variant": "bleeding_edge",
 })
@@ -121,7 +121,7 @@ try_builder(
 
 try_builder(
     name = "luci-go-analysis",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
     recipe = "tricium_infra",
     properties = {
         "gclient_config_name": "luci_go",
@@ -134,7 +134,7 @@ try_builder(
 
 try_builder(
     name = "luci-go-lint",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
     properties = {
         "run_lint": True,
     },
@@ -144,19 +144,8 @@ try_builder(
 
 try_builder(
     name = "luci-go-try-frontend",
-    os = "Ubuntu-18.04",
-    recipe = "infra_frontend_tester",
-    caches = [
-        swarming.cache("nodejs"),
-        swarming.cache("npmcache"),
-    ],
-)
-
-try_builder(
-    name = "luci-go-try-frontend-jammy",
     os = "Ubuntu-22.04",
     recipe = "infra_frontend_tester",
-    in_cq = False,
     caches = [
         swarming.cache("nodejs"),
         swarming.cache("npmcache"),
