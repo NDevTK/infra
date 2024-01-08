@@ -85,14 +85,17 @@ class Conductor:
     """
     Calls generators one by one. |Prepare| should be called prior this method.
     """
+    bad_packages: List[Package] = []
     for p in self.packages:
       try:
         p.Initialize()
       except Exception as e:
+        bad_packages.append(p)
         if keep_going:
           g_logger.warning('Skipped with initialization failure: %s', e)
           continue
         raise e
+    self.packages = [p for p in self.packages if p not in bad_packages]
 
     build_dir_conflicts = {}
     if build_output_dir:
