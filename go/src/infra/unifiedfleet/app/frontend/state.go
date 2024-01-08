@@ -13,6 +13,7 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	api "infra/unifiedfleet/api/v1/rpc"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/controller"
 	"infra/unifiedfleet/app/util"
 )
@@ -107,7 +108,7 @@ func (fs *FleetServerImpl) ListDutStates(ctx context.Context, req *api.ListDutSt
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)

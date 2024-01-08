@@ -127,7 +127,7 @@ func (fs *FleetServerImpl) ListChromePlatforms(ctx context.Context, req *ufsAPI.
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -240,7 +240,7 @@ func (fs *FleetServerImpl) ListMachineLSEPrototypes(ctx context.Context, req *uf
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -348,7 +348,7 @@ func (fs *FleetServerImpl) ListRackLSEPrototypes(ctx context.Context, req *ufsAP
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -438,7 +438,7 @@ func (fs *FleetServerImpl) ListIPs(ctx context.Context, req *ufsAPI.ListIPsReque
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
@@ -475,7 +475,7 @@ func (fs *FleetServerImpl) ListVlans(ctx context.Context, req *ufsAPI.ListVlansR
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
+	if err := ufsAPI.ValidateListRequest(req); err != nil {
 		return nil, err
 	}
 	pageSize := util.GetPageSize(req.PageSize)
