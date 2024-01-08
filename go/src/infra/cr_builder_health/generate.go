@@ -139,7 +139,7 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
 	  b.builder.project,
 	  b.builder.bucket,
 	  b.builder.builder,
-	  JSON_VALUE_ARRAY(ANY_VALUE(b.input.properties), '$.sheriff_rotations')[OFFSET(0)] as rotation,
+	  IFNULL(JSON_VALUE_ARRAY(ANY_VALUE(b.input.properties), '$.sheriff_rotations')[OFFSET(0)], '') as rotation,
 	  COUNT(*) as n,
 	  [
 		STRUCT('fail_rate' as type, COUNTIF(b.status = 'FAILURE') / COUNT(*) as value),
@@ -156,7 +156,6 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
 		AND b.create_time >= TIMESTAMP_SUB(@input_date, INTERVAL 7 DAY)
 		AND b.builder.bucket = 'ci'
 		AND b.builder.project IN ('chromium', 'chrome')
-		AND b.input.properties LIKE '%sheriff_rotations%'
 	GROUP BY
 	  b.builder.project, b.builder.bucket, b.builder.builder, date
 	ORDER BY
