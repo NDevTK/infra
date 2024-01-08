@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 
@@ -114,7 +115,8 @@ conveniences such as -crossrcroot that generate does.
 	}
 }
 func (r *getTestableRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
-	return errToCode(a, r.run())
+	ctx := cli.GetContext(a, r, env)
+	return errToCode(a, r.run(ctx))
 }
 
 // validateFlags checks valid flags are passed to get-testable, e.g. all
@@ -175,9 +177,7 @@ func (r *getTestableRun) validateFlags() error {
 	return nil
 }
 
-func (r *getTestableRun) run() error {
-	ctx := context.Background()
-
+func (r *getTestableRun) run(ctx context.Context) error {
 	if err := r.validateFlags(); err != nil {
 		return err
 	}

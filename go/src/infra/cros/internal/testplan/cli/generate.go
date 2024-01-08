@@ -21,6 +21,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 
@@ -138,7 +139,8 @@ type generateRun struct {
 }
 
 func (r *generateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
-	return errToCode(a, r.run())
+	ctx := cli.GetContext(a, r, env)
+	return errToCode(a, r.run(ctx))
 }
 
 // validateFlags checks valid flags are passed to generate, e.g. all required
@@ -205,9 +207,7 @@ func (r *generateRun) validateFlags(ctx context.Context) error {
 }
 
 // run is the actual implementation of the generate command.
-func (r *generateRun) run() (err error) {
-	ctx := context.Background()
-
+func (r *generateRun) run(ctx context.Context) (err error) {
 	if err := r.validateFlags(ctx); err != nil {
 		return err
 	}
