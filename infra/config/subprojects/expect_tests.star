@@ -19,5 +19,5 @@ build.presubmit(
     cq_group = "expect_tests",
     repo_name = "expect_tests",
     run_hooks = False,
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
 )

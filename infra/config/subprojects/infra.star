@@ -78,15 +78,10 @@ def try_builder(
 # Go.
 
 # CI Linux.
-ci_builder(name = "infra-continuous-bionic-64", os = "Ubuntu-18.04", tree_closing = True, properties = {
+ci_builder(name = "infra-continuous-jammy-64", os = "Ubuntu-22.04", tree_closing = True, properties = {
     "go_version_variant": "bleeding_edge",
 })
 ci_builder(name = "infra-continuous-focal-arm64", os = "Ubuntu-20.04", cpu = "arm64", console_category = "linux|20.04|ARM", pool = "luci.flex.ci", properties = {
-    "go_version_variant": "bleeding_edge",
-})
-
-# TODO(crbug.com/1412588): Make this tree-closing when stable.
-ci_builder(name = "infra-continuous-jammy-64", os = "Ubuntu-22.04", tree_closing = False, properties = {
     "go_version_variant": "bleeding_edge",
 })
 
@@ -119,10 +114,7 @@ ci_builder(
 )
 
 # All trybots.
-try_builder(name = "infra-try-bionic-64", os = "Ubuntu-18.04", properties = {
-    "go_version_variant": "bleeding_edge",
-})
-try_builder(name = "infra-try-jammy-64", os = "Ubuntu-22.04", in_cq = False, properties = {
+try_builder(name = "infra-try-jammy-64", os = "Ubuntu-22.04", properties = {
     "go_version_variant": "bleeding_edge",
 })
 
@@ -141,18 +133,8 @@ try_builder(name = "infra-try-win", os = "Windows-10")
 
 try_builder(
     name = "infra-try-frontend",
-    os = "Ubuntu-18.04",
-    recipe = "infra_frontend_tester",
-    caches = [
-        swarming.cache("nodejs"),
-        swarming.cache("npmcache"),
-    ],
-)
-try_builder(
-    name = "luci-try-frontend-jammy",
     os = "Ubuntu-22.04",
     recipe = "infra_frontend_tester",
-    in_cq = False,
     caches = [
         swarming.cache("nodejs"),
         swarming.cache("npmcache"),
@@ -161,7 +143,7 @@ try_builder(
 
 try_builder(
     name = "infra-analysis",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
     recipe = "tricium_infra",
     properties = {
         "gclient_config_name": "infra",
@@ -173,7 +155,7 @@ try_builder(
 
 try_builder(
     name = "infra-go-lint",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
     properties = {
         "run_lint": True,
     },
@@ -201,7 +183,7 @@ build.presubmit(
     name = "infra-try-presubmit",
     cq_group = "infra",
     repo_name = "infra",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
 )
 
 # Recipes ecosystem.
@@ -211,7 +193,7 @@ recipes.simulation_tester(
     triggered_by = infra.poller(),
     console_view = "infra",
     console_category = "misc",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
 )
 
 # Recipe rolls from Infra.

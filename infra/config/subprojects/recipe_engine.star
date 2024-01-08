@@ -48,7 +48,7 @@ build.presubmit(
     cq_group = "recipes-py",
     repo_name = "recipes_py",
     timeout_s = 1200,
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
 )
 build.presubmit(
     name = "recipes-py-try-presubmit-win",
@@ -70,7 +70,7 @@ recipes.simulation_tester(
         refs = ["refs/heads/main"],
     ),
     console_view = "recipes-py",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
 )
 
 # Recipe rolls from Recipe Engine.
