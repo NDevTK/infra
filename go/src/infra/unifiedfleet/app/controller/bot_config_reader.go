@@ -57,14 +57,58 @@ func ImportBotConfigs(ctx context.Context) error {
 	return err
 }
 
+// GetBotConfigsForCommitSh gets the OwnershipConfigs at a particular commitsh
+func GetBotConfigsForCommitSh(ctx context.Context, commitsh string) ([]*api.OwnershipByHost, error) {
+	ownershipConfig, gitTilesClient, err := getConfigAndGitTilesClient(ctx)
+	if err != nil {
+		logging.Errorf(ctx, "Got error for gititles client: %s", err.Error())
+		return nil, err
+	}
+
+	for _, cfg := range ownershipConfig.GetSecurityConfig() {
+		start := time.Now()
+		logging.Debugf(ctx, "########### Parse %s at commit %s ###########", cfg.GetName(), commitsh)
+
+		conf, err := fetchConfigProtoFromGitiles(ctx, gitTilesClient, ownershipConfig.GetProject(), commitsh, cfg.GetRemotePath())
+		if err != nil {
+			return nil, err
+		}
+		content := &ufspb.SecurityInfos{}
+		err = prototext.Unmarshal([]byte(conf), content)
+		if err != nil {
+			return nil, err
+		}
+		botsMap, botPrefixesMap := parseConfigs(ctx, content)
+		var entities []*api.OwnershipByHost
+		for k, v := range botsMap {
+			ownership := &api.OwnershipByHost{
+				Hostname:  k,
+				Ownership: v,
+			}
+			entities = append(entities, ownership)
+			// botConfigs = append(botConfigs, v)
+		}
+		for k, v := range botPrefixesMap {
+			ownership := &api.OwnershipByHost{
+				Hostname:  k,
+				Ownership: v,
+			}
+			entities = append(entities, ownership)
+		}
+		duration := time.Since(start)
+		logging.Debugf(ctx, "########### Done Parsing %s at commit %s; Time taken %s ###########", cfg.GetName(), commitsh, duration.String())
+		return entities, nil
+	}
+	return nil, nil
+}
+
 // GetConfigAndGitClient reads the OwnershipConfig and creates a corresponding git client
 func GetConfigAndGitClient(ctx context.Context) (*config.OwnershipConfig, git.ClientInterface, error) {
 	es, err := external.GetServerInterface(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
-	ownershipConfig := config.Get(ctx).GetOwnershipConfig()
-	gitTilesClient, err := es.NewGitTilesInterface(ctx, ownershipConfig.GetGitilesHost())
+	ownershipConfig, gitTilesClient, err := getConfigAndGitTilesClient(ctx)
 	if err != nil {
 		logging.Errorf(ctx, "Got error for gititles client: %s", err.Error())
 		return nil, nil, err
@@ -84,10 +128,6 @@ func GetConfigAndGitClient(ctx context.Context) (*config.OwnershipConfig, git.Cl
 	if err != nil {
 		logging.Errorf(ctx, "Got Error for git client : %s", err.Error())
 		return nil, nil, fmt.Errorf("failed to initialize connection to Gitiles while importing enc bot configs")
-	}
-	if ownershipConfig == nil {
-		logging.Errorf(ctx, "No config found to read ownership data")
-		return nil, nil, fmt.Errorf("no config found to read ownership data")
 	}
 	logging.Infof(ctx, "Importing new enc/security config files - lastest SHA1 : %s", currentSha1)
 	return ownershipConfig, gitClient, nil
@@ -118,6 +158,23 @@ func ImportSecurityConfig(ctx context.Context, ownershipConfig *config.Ownership
 // ParseSecurityConfig parses the Security Config files and stores the security
 // data in the DataStore for every bot in the config.
 func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
+	botsMap, botPrefixesMap := parseConfigs(ctx, config)
+	// Updating the ownership for the botIdPrefixes (ie. HostPrefixes).
+	if err := updateBotConfigForBotIdPrefix(ctx, botPrefixesMap); err != nil {
+		logging.Debugf(ctx, "Got errors while parsing bot id prefixes config %v", err)
+	}
+
+	// Updating the ownership data for the botIds (ie. Hosts) collected so far.
+	if err := updateBotConfigForBotIds(ctx, botsMap); err != nil {
+		logging.Debugf(ctx, "Got errors while parsing bot id config %v", err)
+	}
+
+	// Delete stale configs
+	deleteStaleConfigs(ctx, botPrefixesMap, botsMap)
+}
+
+// parseConfigs parses the security configs into bot config maps
+func parseConfigs(ctx context.Context, config *ufspb.SecurityInfos) (map[string]*ufspb.OwnershipData, map[string]*ufspb.OwnershipData) {
 	var botsMap = map[string]*ufspb.OwnershipData{}
 	var botPrefixesMap = map[string]*ufspb.OwnershipData{}
 	for _, pool := range config.Pools {
@@ -173,18 +230,7 @@ func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
 			}
 		}
 	}
-	// Updating the ownership for the botIdPrefixes (ie. HostPrefixes).
-	if err := updateBotConfigForBotIdPrefix(ctx, botPrefixesMap); err != nil {
-		logging.Debugf(ctx, "Got errors while parsing bot id prefixes config %v", err)
-	}
-
-	// Updating the ownership data for the botIds (ie. Hosts) collected so far.
-	if err := updateBotConfigForBotIds(ctx, botsMap); err != nil {
-		logging.Debugf(ctx, "Got errors while parsing bot id config %v", err)
-	}
-
-	// Delete stale configs
-	deleteStaleConfigs(ctx, botPrefixesMap, botsMap)
+	return botsMap, botPrefixesMap
 }
 
 // Cleanup ownership data that is no longer present in the starlark configs
@@ -192,7 +238,7 @@ func deleteStaleConfigs(ctx context.Context, botPrefixesMap map[string]*ufspb.Ow
 	var pageToken string
 	staleEntries := make([]string, 0)
 	for {
-		entries, token, err := listOwnershipEntities(ctx, 1000, pageToken, "", true)
+		entries, token, err := listOwnershipEntities(ctx, 1000, pageToken, "", true, nil)
 		if err != nil {
 			logging.Warningf(ctx, "List ownership configs failed during cleanup : %s", err)
 		}
@@ -221,32 +267,6 @@ func deleteStaleConfigs(ctx context.Context, botPrefixesMap map[string]*ufspb.Ow
 
 // ListOwnershipConfigs lists the ownerships based on the specified parameters.
 func ListOwnershipConfigs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*api.OwnershipByHost, string, error) {
-	res, pageToken, err := listOwnershipEntities(ctx, pageSize, pageToken, filter, keysOnly)
-	if err != nil {
-		return nil, "", err
-	}
-	var entities []*api.OwnershipByHost
-
-	for _, entity := range res {
-		p, err := entity.GetProto()
-		if err != nil {
-			logging.Errorf(ctx, "Error parsing entity for ListOwnershipConfigs : %s", err)
-		} else {
-			pm := p.(*ufspb.OwnershipData)
-			ownership := &api.OwnershipByHost{
-				Hostname:  entity.Name,
-				Ownership: pm,
-			}
-			entities = append(entities, ownership)
-		}
-	}
-	return entities, pageToken, nil
-}
-
-// listOwnershipEntities lists the ownership datastore entities,
-// based on the specified parameters.
-func listOwnershipEntities(ctx context.Context, pageSize int32, pageToken,
-	filter string, keysOnly bool) ([]inventory.OwnershipDataEntity, string, error) {
 	var filterMap map[string][]interface{}
 	var err error
 	if filter != "" {
@@ -255,11 +275,72 @@ func listOwnershipEntities(ctx context.Context, pageSize int32, pageToken,
 			return nil, "", errors.Annotate(err, "failed to read filter for listing Ownerships").Err()
 		}
 	}
+	commitsh := ""
+	if vals, ok := filterMap[inventory.CommitSh]; ok {
+		if len(vals) != 1 {
+			return nil, "", errors.Annotate(err, "Can only specify one commitsh for returning configs").Err()
+		}
+		commitsh = strings.TrimSpace(vals[0].(string))
+	}
+
+	if commitsh == "" {
+		res, pageToken, err := listOwnershipEntities(ctx, pageSize, pageToken, filter, keysOnly, filterMap)
+		if err != nil {
+			return nil, "", err
+		}
+		var entities []*api.OwnershipByHost
+
+		for _, entity := range res {
+			p, err := entity.GetProto()
+			if err != nil {
+				logging.Errorf(ctx, "Error parsing entity for ListOwnershipConfigs : %s", err)
+			} else {
+				pm := p.(*ufspb.OwnershipData)
+				ownership := &api.OwnershipByHost{
+					Hostname:  entity.Name,
+					Ownership: pm,
+				}
+				entities = append(entities, ownership)
+			}
+		}
+		return entities, pageToken, nil
+	}
+	entities, err := GetBotConfigsForCommitSh(ctx, commitsh)
+	if err == nil {
+		return entities, "", nil
+	}
+	return nil, "", err
+}
+
+// listOwnershipEntities lists the ownership datastore entities,
+// based on the specified parameters.
+func listOwnershipEntities(ctx context.Context, pageSize int32, pageToken,
+	filter string, keysOnly bool, filterMap map[string][]interface{}) ([]inventory.OwnershipDataEntity, string, error) {
+
 	res, pageToken, err := inventory.ListOwnerships(ctx, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err
 	}
 	return res, pageToken, nil
+}
+
+// getConfigAndGitTilesClient reads the OwnershipConfig and creates a corresponding git client
+func getConfigAndGitTilesClient(ctx context.Context) (*config.OwnershipConfig, external.GitTilesClient, error) {
+	es, err := external.GetServerInterface(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+	ownershipConfig := config.Get(ctx).GetOwnershipConfig()
+	if ownershipConfig == nil {
+		logging.Errorf(ctx, "No config found to read ownership data")
+		return nil, nil, fmt.Errorf("no config found to read ownership data")
+	}
+	gitTilesClient, err := es.NewGitTilesInterface(ctx, ownershipConfig.GetGitilesHost())
+	if err != nil {
+		logging.Errorf(ctx, "Got error for gititles client: %s", err.Error())
+		return nil, nil, err
+	}
+	return ownershipConfig, gitTilesClient, nil
 }
 
 // Updates the Ownership config for the bot ids collected from the config.
@@ -591,6 +672,23 @@ func fetchLatestSHA1(ctx context.Context, gitilesC external.GitTilesClient, proj
 		return "", fmt.Errorf("fetch sha1 for %s branch of %s: empty git-log", branch, project)
 	}
 	return resp.Log[0].GetId(), nil
+}
+
+// fetchConfigProtoFromGitiles fetches security configs at a particular commitsh
+func fetchConfigProtoFromGitiles(ctx context.Context, gitilesC external.GitTilesClient, project, committish, path string) (string, error) {
+	req := &gitiles.DownloadFileRequest{
+		Project:    project,
+		Committish: committish,
+		Path:       path,
+	}
+	rsp, err := gitilesC.DownloadFile(ctx, req)
+	if err != nil {
+		return "", err
+	}
+	if rsp == nil {
+		return "", errors.Reason("downloaded security config was empty").Err()
+	}
+	return rsp.Contents, nil
 }
 
 // Checks if value already exists in the array

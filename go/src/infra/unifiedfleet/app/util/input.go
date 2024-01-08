@@ -137,6 +137,7 @@ var (
 	LogicalZoneFilterName          string = "logicalzone"
 	GPNFilterName                  string = "gpn"
 	AssetType                      string = "assettype"
+	CommittishFilterName           string = "commitsh"
 )
 
 const separator string = "/"

@@ -53,6 +53,13 @@ func (gc *GitTilesClient) DownloadFile(ctx context.Context, req *gitiles.Downloa
 	if req.Path == "test_device_config" {
 		return GitilesData("../frontend/fake/device_config.cfg")
 	}
+	if req.Path == "test_security_git_path" {
+		if req.Committish == "5201756875e0405c5c44d0e6d97de653b0d6cfca" {
+			return GitilesData("../frontend/fake/ufs_security.cfg")
+		} else {
+			return nil, errors.Reason("unknown commitsh %s", req.Committish).Err()
+		}
+	}
 
 	return nil, errors.Reason("unspecified mock path %s", req.Path).Err()
 }

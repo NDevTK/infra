@@ -150,6 +150,32 @@ func TestImportBotConfigs(t *testing.T) {
 	})
 }
 
+// Tests the functionality for fetching the config file and importing the configs at a particular commit hash
+func TestGetBotConfigsForCommitSh(t *testing.T) {
+	ctx := encTestingContext()
+	t.Parallel()
+	Convey("Get Bot Configs For CommitSh", t, func() {
+		contextConfig := mockOwnershipConfig()
+		ctx = config.Use(ctx, contextConfig)
+		Convey("happy path", func() {
+			ownerships, err := GetBotConfigsForCommitSh(ctx, "5201756875e0405c5c44d0e6d97de653b0d6cfca")
+			So(err, ShouldBeNil)
+			So(ownerships, ShouldNotBeNil)
+			So(len(ownerships), ShouldNotBeZeroValue)
+		})
+		Convey("unknown commitsh", func() {
+			ownerships, err := GetBotConfigsForCommitSh(ctx, "blah")
+			So(err, ShouldNotBeNil)
+			So(ownerships, ShouldBeNil)
+		})
+		Convey("empty commitsh", func() {
+			ownerships, err := GetBotConfigsForCommitSh(ctx, "")
+			So(err, ShouldNotBeNil)
+			So(ownerships, ShouldBeNil)
+		})
+	})
+}
+
 // Tests the functionality for reading config files and fetching git client
 // No t.Parallel(): The happy path test relies on comparing a global variable for sha1 hash testing.
 // A race condition arises in which another test can modify this variable before the test finishes.

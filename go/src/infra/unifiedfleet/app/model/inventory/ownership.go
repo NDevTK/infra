@@ -33,6 +33,9 @@ const AssetTypeMachineLSE string = "MachineLSE"
 // AssetTypeVM is the VM asset type.
 const AssetTypeVM string = "VM"
 
+// CommitSh is the commit at which we need to pull the configs.
+const CommitSh string = "CommitSh"
+
 // OwnershipDataEntity is a datastore entity that tracks a OwnershipData.
 type OwnershipDataEntity struct {
 	_kind         string                `gae:"$kind,Ownership"`
@@ -147,6 +150,9 @@ func GetOwnershipIndexedFieldName(input string) (string, error) {
 	switch strings.ToLower(input) {
 	case util.AssetType:
 		field = "AssetType"
+	// CommitSh is not stored in the datastore but can be part of the filter map and will be used to directly fetch the configs at that particular commit
+	case util.CommittishFilterName:
+		field = CommitSh
 	default:
 		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are assettype", input)
 	}
