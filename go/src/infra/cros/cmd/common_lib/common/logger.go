@@ -22,6 +22,10 @@ import (
 	"go.chromium.org/luci/common/system/terminal"
 )
 
+const (
+	StepKey = "build.step"
+)
+
 type localLoggerWrapper struct {
 	sync.Mutex
 	l              *gol.Logger
@@ -63,7 +67,13 @@ func (li *localLoggerImpl) LogCall(l logging.Level, calldepth int, format string
 	}
 	li.Lock()
 	defer li.Unlock()
-	if len(li.fields) > 0 {
+
+	// Try to parse the fileds string to map.
+	fields, _ := toFields(li.fields)
+	// If we can not get the StepKey from fields. it causes `updateStep` fatal error.
+	//
+	// updateStep will access the Step pointer but it is nil
+	if _, ok := fields[StepKey]; ok {
 		text := li.formatWithStepHeaders(format, args)
 		format = strings.Replace(text, "%", "%%", -1)
 		args = nil
@@ -81,16 +91,25 @@ func (li *localLoggerImpl) LogCall(l logging.Level, calldepth int, format string
 	}
 }
 
+// toFields parse the fields string.
+func toFields(s string) (map[string]interface{}, error) {
+	var fields map[string]interface{}
+	if err := json.Unmarshal([]byte(s), &fields); err != nil {
+		return nil, err
+	}
+	return fields, nil
+}
+
 // updateStep traverses through the steps tree to add the message to the step referenced in the logging fields.
 func (li *localLoggerImpl) updateStep(message string) (*Step, string) {
 	// Parse out the fields into something accessible
-	var fields map[string]interface{}
-	if err := json.Unmarshal([]byte(li.fields), &fields); err != nil {
+	fields, err := toFields(li.fields)
+	if err != nil {
 		panic(err)
 	}
 
 	var stepPtr *Step = nil
-	if val, ok := fields["build.step"]; ok {
+	if val, ok := fields[StepKey]; ok {
 		steps := strings.Split(val.(string), "|")
 		stepPtr = getSubstep(li.steps, steps[0], 0, nil)
 		for _, stepName := range steps[1:] {
