@@ -14,7 +14,9 @@ type Cov struct {
 
 type PresubmitCoverageData struct {
 	AbsolutePercentages        []Cov     `datastore:"absolute_percentages"`
+	AbsolutePercentagesRts     []Cov     `datastore:"absolute_percentages_rts"`
 	AbsolutePercentagesUnit    []Cov     `datastore:"absolute_percentages_unit"`
+	AbsolutePercentagesUnitRts []Cov     `datastore:"absolute_percentages_unit_rts"`
 	BasedOn                    int64     `datastore:"based_on"`
 	Change                     int64     `datastore:"cl_patchset.change"`
 	Patchset                   int64     `datastore:"cl_patchset.patchset"`
