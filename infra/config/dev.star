@@ -164,7 +164,6 @@ luci.notifier_template(
     body = "{{ stepNames .MatchingFailedSteps }} on {{ buildUrl . }} {{ .Build.Builder.Builder }} from {{ .Build.Output.GitilesCommit.Id }}",
 )
 
-ci_builder(name = "infra-continuous-bionic-64", os = "Ubuntu-18.04")
 ci_builder(name = "infra-continuous-jammy-64", os = "Ubuntu-22.04")
 ci_builder(name = "infra-continuous-win10-64", os = "Windows-10")
 ci_builder(name = "infra-continuous-win11-64", os = "Windows-11")
@@ -210,24 +209,6 @@ def adhoc_builder(
     )
 
 adhoc_builder(
-    name = "gerrit-hello-world-bionic-64",
-    os = "Ubuntu-18.04",
-    executable = infra.recipe("gerrit_hello_world", use_python3 = True),
-    schedule = "triggered",  # triggered manually via Scheduler UI
-)
-adhoc_builder(
-    name = "gsutil-hello-world-bionic-64",
-    os = "Ubuntu-18.04",
-    executable = infra.recipe("gsutil_hello_world", use_python3 = True),
-    schedule = "triggered",  # triggered manually via Scheduler UI
-)
-adhoc_builder(
-    name = "gsutil-hello-world-win10-64",
-    os = "Windows-10",
-    executable = infra.recipe("gsutil_hello_world", use_python3 = True),
-    schedule = "triggered",  # triggered manually via Scheduler UI
-)
-adhoc_builder(
     name = "build-proto-linux",
     os = "Ubuntu",
     executable = luci.recipe(
@@ -250,7 +231,7 @@ adhoc_builder(
 
 adhoc_builder(
     name = "linux-rel-buildbucket",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
     executable = luci.recipe(
         name = "placeholder",
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
@@ -299,7 +280,7 @@ adhoc_builder(
 
 adhoc_builder(
     name = "linux-rel-buildbucket-child",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
     executable = luci.recipe(
         name = "placeholder",
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
@@ -320,7 +301,7 @@ adhoc_builder(
 
 adhoc_builder(
     name = "linux-rel-buildbucket-noop",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
     executable = luci.recipe(
         name = "placeholder",
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
@@ -346,7 +327,7 @@ adhoc_builder(
 
 adhoc_builder(
     name = "linux-rel-buildbucket-swarming-task-backend",
-    os = "Ubuntu-18.04",
+    os = "Ubuntu-22.04",
     executable = luci.recipe(
         name = "placeholder",
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
@@ -367,21 +348,12 @@ adhoc_builder(
 )
 
 luci.notifier(
-    name = "nodir-spam",
-    on_success = True,
-    on_failure = True,
-    notify_emails = ["nodir+spam@google.com"],
-    template = "test",
-    notified_by = ["infra-continuous-bionic-64"],
-)
-
-luci.notifier(
     name = "luci-notify-test-alerts",
     on_success = True,
     on_failure = True,
     notify_emails = ["luci-notify-test-alerts@chromium.org"],
     template = "test",
-    notified_by = ["infra-continuous-bionic-64"],
+    notified_by = ["infra-continuous-jammy-64"],
 )
 
 luci.notifier_template(
