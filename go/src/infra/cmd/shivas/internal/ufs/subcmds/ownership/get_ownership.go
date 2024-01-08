@@ -19,6 +19,7 @@ import (
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // GetOwnershipDataCmd gets the ownership by the given name.
@@ -43,6 +44,7 @@ Gets the ownership data and prints the output in the user-specified format.`,
 
 		c.Flags.IntVar(&c.pageSize, "n", 0, cmdhelp.ListPageSizeDesc)
 		c.Flags.BoolVar(&c.keysOnly, "keys", false, cmdhelp.KeysOnlyText)
+		c.Flags.StringVar(&c.commitsh, "commitsh", "", "Commitsh to get ownership configs at a particular commit. Only one commitsh can be specified.")
 
 		return c
 	},
@@ -57,6 +59,9 @@ type getOwnershipData struct {
 
 	pageSize int
 	keysOnly bool
+
+	// Filters
+	commitsh string
 }
 
 func (c *getOwnershipData) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -99,7 +104,7 @@ func (c *getOwnershipData) innerRun(a subcommands.Application, args []string, en
 		if len(args) > 0 {
 			res = utils.ConcurrentGet(ctx, ic, args, c.getSingleWithHostName)
 		} else {
-			res, err = utils.BatchList(ctx, ic, ListOwnerships, nil, c.pageSize, c.keysOnly, full)
+			res, err = utils.BatchList(ctx, ic, ListOwnerships, c.formatFilters(), c.pageSize, c.keysOnly, full)
 		}
 		if err != nil {
 			return err
@@ -129,6 +134,13 @@ func (c *getOwnershipData) getSingleWithHostName(ctx context.Context, ic ufsAPI.
 		Ownership: msg,
 	}
 	return res, err
+}
+
+// Formats the specified filters
+func (c *getOwnershipData) formatFilters() []string {
+	filters := make([]string, 0)
+	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.CommittishFilterName, []string{c.commitsh})...)
+	return filters
 }
 
 // ListHosts calls the list MachineLSE in UFS to get a list of MachineLSEs
