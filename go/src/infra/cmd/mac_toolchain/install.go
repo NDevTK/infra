@@ -610,13 +610,11 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	// Xcode will be removed, and the main process will fail and exit.
 	ch := make(chan error, 1)
 	go func() {
-		if needToAcceptLicense(ctx, args.xcodeAppPath, args.acceptedLicensesFile) {
-			if err := acceptLicense(ctx, args.xcodeAppPath); err != nil {
-				ch <- err
-				return
-			}
+		if err := acceptLicense(ctx, args.xcodeAppPath); err != nil {
+			ch <- err
+			return
 		}
-		if err := finalizeInstall(ctx, args.xcodeAppPath, args.xcodeVersion, args.packageInstallerOnBots); err != nil {
+		if err = finalizeInstall(ctx, args.xcodeAppPath, args.xcodeVersion, args.packageInstallerOnBots); err != nil {
 			ch <- err
 		}
 		ch <- nil

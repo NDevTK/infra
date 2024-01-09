@@ -97,6 +97,9 @@ func TestInstallXcode(t *testing.T) {
 				"chomod prints nothing",
 				"", // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
+				"accept license prints nothing",
+				"", // No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing",
 				"xcodebuild -runFirstLaunch installs packages",
 				"xcrun simctl list prints a list of all simulators installed",
 				"Developer mode is currently enabled.\n",
@@ -106,7 +109,7 @@ func TestInstallXcode(t *testing.T) {
 			// skip MacOS version check calls
 			callCounter++
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 9)
+			So(s.Calls, ShouldHaveLength, 12)
 			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
@@ -125,6 +128,18 @@ func TestInstallXcode(t *testing.T) {
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "testdata/Xcode-old.app",
 			})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -155,6 +170,9 @@ func TestInstallXcode(t *testing.T) {
 			s.ReturnOutput = []string{
 				"12.2.1", // MacOS Version
 				"cipd dry run",
+				"", // No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing",
+				"accept license prints nothing",
 				"original/Xcode.app",
 				"xcode-select -s prints nothing",
 				"xcodebuild -runFirstLaunch installs packages",
@@ -164,7 +182,7 @@ func TestInstallXcode(t *testing.T) {
 			}
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 8)
+			So(s.Calls, ShouldHaveLength, 11)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -174,6 +192,18 @@ func TestInstallXcode(t *testing.T) {
 			})
 			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
 			So(s.Calls[callCounter].Env, ShouldResemble, []string(nil))
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -209,15 +239,19 @@ func TestInstallXcode(t *testing.T) {
 			s.ReturnOutput = []string{
 				"12.2.1", // MacOS Version
 				"",
+				"", // No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing",
+				"accept license prints nothing",
 				"original/Xcode.app",
 				"xcode-select -s prints nothing",
 				"xcodebuild -runFirstLaunch installs packages",
 				"xcrun simctl list prints a list of all simulators installed",
+				"xcode-select -s prints nothing",
 				"Developer mode is currently disabled.",
 			}
 			err := installXcode(ctx, installArgs)
 			So(err.Error(), ShouldContainSubstring, "Developer mode is currently disabled! Please use `sudo /usr/sbin/DevToolsSecurity -enable` to enable.")
-			So(s.Calls, ShouldHaveLength, 8)
+			So(s.Calls, ShouldHaveLength, 11)
 
 			callCounter := 0
 			// skip MacOS version check calls
@@ -227,6 +261,18 @@ func TestInstallXcode(t *testing.T) {
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 			})
 			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -262,13 +308,16 @@ func TestInstallXcode(t *testing.T) {
 				"", // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"xcodebuild -runFirstLaunch installs packages",
+				"", // No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing",
+				"xcodebuild -runFirstLaunch installs packages",
 				"xcrun simctl list prints a list of all simulators installed",
 				"Developer mode is currently enabled.\n",
 			}
 			installArgs.serviceAccountJSON = "test/service-account.json"
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 9)
+			So(s.Calls, ShouldHaveLength, 12)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -292,6 +341,18 @@ func TestInstallXcode(t *testing.T) {
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "testdata/Xcode-old.app",
 			})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -413,11 +474,14 @@ func TestInstallXcode(t *testing.T) {
 
 		Convey("install with runtime", func() {
 			s.ReturnOutput = []string{
-				"12.2.1",                         // MacOS Version
-				"12.2.1",                         // MacOS Version
-				"cipd dry run",                   // 0 (index in s.Calls, same below)
-				"cipd ensures",                   // 1
-				"chomod prints nothing",          // 2
+				"12.2.1",                // MacOS Version
+				"12.2.1",                // MacOS Version
+				"cipd dry run",          // 0 (index in s.Calls, same below)
+				"cipd ensures",          // 1
+				"chomod prints nothing", // 2
+				"",
+				"xcode-select -s prints nothing",
+				"xcodebuild -license accept returns nothing",
 				"",                               // 3: No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing", // 4
 				"xcodebuild -runFirstLaunch installs packages",                // 5
@@ -434,7 +498,7 @@ func TestInstallXcode(t *testing.T) {
 			defer os.RemoveAll("testdata/Xcode-old.app/Contents/Developer/Platforms")
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 14)
+			So(s.Calls, ShouldHaveLength, 17)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -457,6 +521,18 @@ func TestInstallXcode(t *testing.T) {
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "testdata/Xcode-old.app",
 			})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
@@ -510,23 +586,26 @@ func TestInstallXcode(t *testing.T) {
 
 		Convey("with runtime but runtime already exist", func() {
 			s.ReturnOutput = []string{
-				"12.2.1",                         // MacOS Version
-				"12.2.1",                         // MacOS Version
-				"cipd dry run",                   // 0 (index in s.Calls, same below)
-				"cipd ensures",                   // 1
-				"chomod prints nothing",          // 2
-				"",                               // 3: No original Xcode when running xcode-select -p
-				"xcode-select -s prints nothing", // 4
-				"xcodebuild -runFirstLaunch installs packages",                // 5
-				"xcrun simctl list prints a list of all simulators installed", // 6
-				"Developer mode is currently enabled.\n",                      // 7
+				"12.2.1",                // MacOS Version
+				"12.2.1",                // MacOS Version
+				"cipd dry run",          // 0 (index in s.Calls, same below)
+				"cipd ensures",          // 1
+				"chomod prints nothing", // 2
+				"",
+				"xcode-select -s prints nothing",
+				"xcodebuild -license accept returns nothing",
+				"",
+				"xcode-select -s prints nothing",
+				"xcodebuild -runFirstLaunch installs packages",
+				"xcrun simctl list prints a list of all simulators installed",
+				"Developer mode is currently enabled.\n",
 			}
 			installArgsForTest := installArgs
 			installArgsForTest.withRuntime = true
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-with-runtime.app"
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 10)
+			So(s.Calls, ShouldHaveLength, 13)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -560,6 +639,18 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-with-runtime.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
 
 			callCounter++
@@ -573,11 +664,14 @@ func TestInstallXcode(t *testing.T) {
 
 		Convey("without runtime", func() {
 			s.ReturnOutput = []string{
-				"12.2.1",                         // MacOS Version
-				"12.2.1",                         // MacOS Version
-				"cipd dry run",                   // 0 (index in s.Calls, same below)
-				"cipd ensures",                   // 1
-				"chomod prints nothing",          // 2
+				"12.2.1",                // MacOS Version
+				"12.2.1",                // MacOS Version
+				"cipd dry run",          // 0 (index in s.Calls, same below)
+				"cipd ensures",          // 1
+				"chomod prints nothing", // 2
+				"",
+				"xcode-select -s prints nothing",
+				"xcodebuild -license accept returns nothing",
 				"",                               // 3: No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing", // 4
 				"xcodebuild -runFirstLaunch installs packages",                // 5
@@ -589,7 +683,7 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-old.app"
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 10)
+			So(s.Calls, ShouldHaveLength, 13)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -612,6 +706,18 @@ func TestInstallXcode(t *testing.T) {
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "testdata/Xcode-old.app",
 			})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
