@@ -40,6 +40,7 @@ func main() {
 	}
 	ctx := context.Background()
 	ctx = utils.AddLoggingContext(ctx)
+	ctx = logging.SetLevel(ctx, logging.Debug)
 	logging.Infof(ctx, "\n\n\n===== STARTING THE SATLAB_RPCSERVER =====\n\n\n")
 
 	envVar, err := exec.Command("/bin/sh", "-c", "printenv").CombinedOutput()
