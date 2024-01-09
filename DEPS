@@ -132,7 +132,7 @@ deps = {
 
       {
         'package': 'infra/3pp/tools/nodejs/${{os=linux,mac}}-${{arch}}',
-        'version': 'version:2@16.13.0',
+        'version': 'version:2@20.10.0',
       },
 
       {
