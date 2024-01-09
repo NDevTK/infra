@@ -78,3 +78,8 @@ func GetDefaultWifi(ctx context.Context, name string) (*ufspb.DefaultWifi, error
 	}
 	return nil, err
 }
+
+// DeleteDefaultWifi deletes the DefaultWifi in datastore.
+func DeleteDefaultWifi(ctx context.Context, name string) error {
+	return ufsds.Delete(ctx, &ufspb.DefaultWifi{Name: name}, newDefaultWifiEntry)
+}

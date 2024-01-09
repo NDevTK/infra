@@ -7,6 +7,7 @@ package frontend
 import (
 	"context"
 
+	empty "github.com/golang/protobuf/ptypes/empty"
 	"go.chromium.org/luci/grpc/grpcutil"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -71,4 +72,17 @@ func (fs *FleetServerImpl) ListDefaultWifis(ctx context.Context, req *ufsAPI.Lis
 		DefaultWifis:  result,
 		NextPageToken: nextPageToken,
 	}, nil
+}
+
+// DeleteDefaultWifi deletes the DefaultWifi from database.
+func (fs *FleetServerImpl) DeleteDefaultWifi(ctx context.Context, req *ufsAPI.DeleteDefaultWifiRequest) (rsp *empty.Empty, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	name := util.RemovePrefix(req.Name)
+	err = controller.DeleteDefaultWifi(ctx, name)
+	return &empty.Empty{}, err
 }

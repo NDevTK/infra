@@ -81,6 +81,26 @@ func ListDefaultWifis(ctx context.Context, pageSize int32, pageToken, filter str
 	return
 }
 
+func DeleteDefaultWifi(ctx context.Context, id string) error {
+	f := func(ctx context.Context) error {
+		// Get the DefaultWifi for logging.
+		wifi, err := GetDefaultWifi(ctx, id)
+		if err != nil {
+			return errors.Annotate(err, "DeleteDefaultWifi - get DefaultWifi %s failed", id).Err()
+		}
+		if err := registration.DeleteDefaultWifi(ctx, id); err != nil {
+			return errors.Annotate(err, "DeleteDefaultWifi - unable to delete DefaultWifi %s", id).Err()
+		}
+		hc := getDefaultWifiHistoryClient()
+		hc.logDefaultWifiChanges(wifi, nil)
+		return hc.SaveChangeEvents(ctx)
+	}
+	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
+		return errors.Annotate(err, "DeleteDefaultWifi - failed to delete DefaultWifi %s in datastore", id).Err()
+	}
+	return nil
+}
+
 func getDefaultWifiHistoryClient() *HistoryClient {
 	return &HistoryClient{}
 }

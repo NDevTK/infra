@@ -51,6 +51,7 @@ var (
 	VlanNameFormat                 string = "Invalid input - Entity Name pattern should be vlans/{vlan}."
 	MachineLSEPrototypeNameFormat  string = "Invalid input - Entity Name pattern should be machineLSEPrototypes/{machineLSEPrototype}."
 	RackLSEPrototypeNameFormat     string = "Invalid input - Entity Name pattern should be rackLSEPrototypes/{rackLSEPrototype}."
+	DefaultWifiNameFormat          string = "Invalid input - Entity Name pattern should be defaultwifis/{defaultwifi}."
 	ResourceFormat                 string = "Invalid input - Entity Name pattern should be in a format of resource_names/XXX, resource_names includes machines/racks/vms/hosts/vlans."
 	EmptyMachineName               string = "Invalid input - Machine name cannot be empty."
 	EmptyHostName                  string = "Invalid input - Host name cannot be empty."
@@ -86,6 +87,7 @@ var rackLSEPrototypeRegex = regexp.MustCompile(`rackLSEPrototypes\.*`)
 var assetRegex = regexp.MustCompile(`assets\.*`)
 var machineLSEDeploymentRegex = regexp.MustCompile(`machineLSEDeployments\.*`)
 var schedulingUnitRegex = regexp.MustCompile(`schedulingunits\.*`)
+var defaultWifiRegex = regexp.MustCompile(`defaultWifis\.*`)
 
 // matches "cachingservices/{hostname or ipv4}"
 var cachingServiceRegex = regexp.MustCompile(`cachingservices/[a-zA-Z0-9-.]{1,63}$`)
@@ -1520,4 +1522,8 @@ func (r *GetDefaultWifiRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, "DefaultWifi name is empty")
 	}
 	return nil
+}
+
+func (r *DeleteDefaultWifiRequest) Validate() error {
+	return validateResourceName(defaultWifiRegex, DefaultWifiNameFormat, r.Name)
 }

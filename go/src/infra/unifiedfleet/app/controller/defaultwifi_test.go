@@ -10,6 +10,7 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	. "infra/unifiedfleet/app/model/datastore"
 )
 
 func TestCreateDefaultWifi(t *testing.T) {
@@ -31,6 +32,29 @@ func TestCreateDefaultWifi(t *testing.T) {
 			_, err := CreateDefaultWifi(ctx, dup)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "already exists")
+		})
+	})
+}
+
+func TestDeleteDefaultWifi(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	CreateDefaultWifi(ctx, &ufspb.DefaultWifi{Name: "pool"})
+	Convey("DeleteDefaultWifi", t, func() {
+		Convey("Delete DefaultWifi by existing ID - happy path", func() {
+			err := DeleteDefaultWifi(ctx, "pool")
+			So(err, ShouldBeNil)
+
+			res, err := GetDefaultWifi(ctx, "pool")
+			So(res, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
+		})
+
+		Convey("Delete DefaultWifi by non-existing ID", func() {
+			err := DeleteDefaultWifi(ctx, "non-existing")
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
 		})
 	})
 }
