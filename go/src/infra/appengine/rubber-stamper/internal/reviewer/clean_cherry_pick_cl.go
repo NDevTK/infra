@@ -53,7 +53,7 @@ func reviewCleanCherryPick(ctx context.Context, cfg *config.Config, gc gerrit.Cl
 			}
 		}
 
-		if len(invalidFiles) > 0 && !bypassFileCheck(ctx, invalidFiles, t.Hashtags, t.OwnerEmail, ccpp.GetFileCheckBypassRule()) {
+		if len(invalidFiles) > 0 && !bypassFileCheck(invalidFiles, t.Hashtags, t.OwnerEmail, ccpp.GetFileCheckBypassRule()) {
 			sort.Strings(invalidFiles)
 			msg := "The current revision changed the following files compared with the initial revision: " + strings.Join(invalidFiles[:], ", ") + "."
 			return msg, nil
@@ -124,7 +124,7 @@ func reviewCleanCherryPick(ctx context.Context, cfg *config.Config, gc gerrit.Cl
 
 // bypassFileCheck tells whether the invalid files check can be bypassed for
 // this cherry-pick.
-func bypassFileCheck(ctx context.Context, invalidFiles []string, hashtags []string, owner string, fr *config.CleanCherryPickPattern_FileCheckBypassRule) bool {
+func bypassFileCheck(invalidFiles []string, hashtags []string, owner string, fr *config.CleanCherryPickPattern_FileCheckBypassRule) bool {
 	if fr == nil || len(fr.IncludedPaths) == 0 || fr.GetHashtag() == "" || len(fr.AllowedOwners) == 0 {
 		return false
 	}
