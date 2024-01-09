@@ -13,6 +13,7 @@ import (
 	"infra/cmd/shivas/internal/ufs/subcmds/attacheddevicemachine"
 	"infra/cmd/shivas/internal/ufs/subcmds/cachingservice"
 	"infra/cmd/shivas/internal/ufs/subcmds/chromeplatform"
+	"infra/cmd/shivas/internal/ufs/subcmds/defaultwifi"
 	"infra/cmd/shivas/internal/ufs/subcmds/devboard"
 	"infra/cmd/shivas/internal/ufs/subcmds/drac"
 	"infra/cmd/shivas/internal/ufs/subcmds/dut"
@@ -47,6 +48,7 @@ var AddCmd = &subcommands.Command{
 	machine-prototype/rack-prototype/chromeplatform/vlan
 	attached-device-machine (aliased as adm/attached-device-machine)
 	attached-device-host (aliased as adh/attached-device-host)
+	defaultwifi
 	peripheral-hmr
 	peripheral-wifi
 	bluetooth-peers
@@ -77,6 +79,7 @@ func (c addApp) GetCommands() []*subcommands.Command {
 		subcommands.CmdHelp,
 		asset.AddAssetCmd,
 		dut.AddDUTCmd,
+		defaultwifi.AddDefaultWifiCmd,
 		devboard.AddDevboardLSECmd,
 		devboard.AddDevboardMachineCmd,
 		labstation.AddLabstationCmd,

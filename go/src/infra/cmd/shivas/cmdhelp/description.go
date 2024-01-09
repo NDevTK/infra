@@ -2327,6 +2327,41 @@ Deletes the given devboard LSE based on LSE name.
 
 For now, only used on Satlab.
 `
+	// AddDefaultWifiLongDesc long description for AddDefaultWifiCmd
+	AddDefaultWifiLongDesc string = `Create a DefaultWifi in UFS.
+
+Examples:
+shivas add defaultwifi -f DefaultWifi.json
+Adds a DefaultWifi by reading a JSON file input.
+
+shivas add defaultwifi -f DefaultWifi.csv
+Adds a DefaultWifi by reading a MCSV file input.
+
+shivas add defaultwifi -name {name} -project-id {project-id} -secret-name {secret-name}
+Adds a DefaultWifi by specifying several attributes directly.`
+
+	// DefaultWifiFileText description for DefaultWifi file input
+	DefaultWifiFileText string = `[JSON/MCSV Mode] Path to a file(.json/.csv) containing DefaultWifi specification.
+
+[JSON Mode]
+This file must contain one DefaultWifi JSON message
+Example DefaultWifi ("name" must be in the lower case):
+{
+	"name": "zone_sfo36_os",
+	"project_id": "unified-fleet-system",
+	"secret_name": "sfo36_os_wifi",
+}
+
+[MCSV Mode]
+The file may have multiple or one DefaultWifi csv record
+The header format and sequence should be: [name,projectId,secretName]
+Example mcsv format:
+name,projectId,secretName
+zone_sfo36_os,unified-fleet-system,sfo36_os_wifi
+wifi-test-pool,unified-fleet-system,wifi-test-pool-credential
+
+The protobuf definition of DefaultWifi is part of
+https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/unifiedfleet/api/v1/models/secret.proto`
 )
 
 func CronTriggerAvailableJobsString() string {
