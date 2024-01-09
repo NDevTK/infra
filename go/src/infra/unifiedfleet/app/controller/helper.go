@@ -221,6 +221,17 @@ func GetSchedulingUnitResource(schedulingUnitID string) *Resource {
 	}
 }
 
+// GetDefaultWifiResource returns a Resource with DefaultWifiEntity.
+func GetDefaultWifiResource(defaultWifiID string) *Resource {
+	return &Resource{
+		Kind: registration.DefaultWifiKind,
+		ID:   defaultWifiID,
+		Entity: &registration.DefaultWifiEntry{
+			ID: defaultWifiID,
+		},
+	}
+}
+
 // ResourceExist checks if the given resources exists in the datastore
 //
 // Returns error if any one resource does not exist in the system.

@@ -21,6 +21,9 @@ import (
 // CreateDefaultWifi creates a default wifi in the datastore.
 func CreateDefaultWifi(ctx context.Context, wifi *ufspb.DefaultWifi) (*ufspb.DefaultWifi, error) {
 	f := func(ctx context.Context) error {
+		if err := validateCreateDefaultWifi(ctx, wifi); err != nil {
+			return errors.Annotate(err, "CreateDefaultWifi - validation failed").Err()
+		}
 		if _, err := registration.NonAtomicBatchCreateDefaultWifis(ctx, []*ufspb.DefaultWifi{wifi}); err != nil {
 			return errors.Annotate(err, "Unable to create wifi %s", wifi).Err()
 		}
@@ -80,4 +83,12 @@ func ListDefaultWifis(ctx context.Context, pageSize int32, pageToken, filter str
 
 func getDefaultWifiHistoryClient() *HistoryClient {
 	return &HistoryClient{}
+}
+
+// validateCreateDefaultWifi validates if a DefaultWifi can be created.
+//
+// checks if the DefaultWifi already exists.
+func validateCreateDefaultWifi(ctx context.Context, cs *ufspb.DefaultWifi) error {
+	// Check if DefaultWifi already exists.
+	return resourceAlreadyExists(ctx, []*Resource{GetDefaultWifiResource(cs.Name)}, nil)
 }

@@ -61,6 +61,9 @@ func newDefaultWifiEntry(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 // operation.
 func NonAtomicBatchCreateDefaultWifis(ctx context.Context, wifis []*ufspb.DefaultWifi) ([]*ufspb.DefaultWifi, error) {
 	wifiProtos := make([]proto.Message, len(wifis))
+	for i, w := range wifis {
+		wifiProtos[i] = w
+	}
 	if _, err := ufsds.PutAll(ctx, wifiProtos, newDefaultWifiEntry, false /*create instead of update*/); err != nil {
 		return nil, err
 	}
