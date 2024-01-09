@@ -414,8 +414,8 @@ func (c *Client) GetIncrementalCoverageDataOneYear(
 		if err != nil {
 			return nil, err
 		}
-		for _, rep := range reports {
-			reportsLastYear = append(reportsLastYear, &rep)
+		for i := range reports {
+			reportsLastYear = append(reportsLastYear, &reports[i])
 		}
 	}
 

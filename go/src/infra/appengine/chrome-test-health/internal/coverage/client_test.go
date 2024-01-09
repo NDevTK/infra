@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -117,7 +118,7 @@ func getMockPostsubmitReport() []*entities.PostsubmitReport {
 func getMockCQSummaryReport() []*entities.CQSummaryCoverageData {
 	return []*entities.CQSummaryCoverageData{
 		{
-			Timestamp:         time.Date(2023, 11, 17, 20, 34, 58, 0, time.UTC),
+			Timestamp:         time.Now().Add(-time.Hour * 24 * 30 * 4),
 			Change:            4042361,
 			Patchset:          10,
 			IsUnitTest:        false,
@@ -127,7 +128,17 @@ func getMockCQSummaryReport() []*entities.CQSummaryCoverageData {
 			TotalFilesChanged: 10,
 		},
 		{
-			Timestamp:         time.Date(2021, 11, 18, 20, 34, 58, 0, time.UTC),
+			Timestamp:         time.Now().Add(-time.Hour * 24 * 30 * 6),
+			Change:            4042359,
+			Patchset:          12,
+			IsUnitTest:        false,
+			Path:              "//a/b/",
+			DataType:          "dirs",
+			FilesCovered:      9,
+			TotalFilesChanged: 10,
+		},
+		{
+			Timestamp:         time.Now().Add(-time.Hour * 24 * 30 * 24),
 			Change:            40423634,
 			Patchset:          2,
 			IsUnitTest:        false,
@@ -663,7 +674,6 @@ func TestGetIncCoverageReportsForLastYear(t *testing.T) {
 					if matchesPath && matchesIsUnitTests && matchesTime {
 						res := reflect.ValueOf(result).Elem()
 						res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
-						return nil
 					}
 				}
 				return nil
@@ -673,18 +683,10 @@ func TestGetIncCoverageReportsForLastYear(t *testing.T) {
 
 		data, err := client.getIncCoverageReportsForLastYear(ctx, "//a/b/", false)
 		So(err, ShouldBeNil)
-		So(data, ShouldHaveLength, 1)
+		So(data, ShouldHaveLength, 2)
 		expectedData := []entities.CQSummaryCoverageData{
-			{
-				Timestamp:         time.Date(2023, 11, 17, 20, 34, 58, 0, time.UTC),
-				Change:            4042361,
-				Patchset:          10,
-				IsUnitTest:        false,
-				Path:              "//a/b/",
-				DataType:          "dirs",
-				FilesCovered:      7,
-				TotalFilesChanged: 10,
-			},
+			*reports[0],
+			*reports[1],
 		}
 		So(data, ShouldResemble, expectedData)
 	})
@@ -986,7 +988,6 @@ func TestGetIncrementalCoverageDataOneYear(t *testing.T) {
 					if matchesPath && matchesIsUnitTests && matchesTime {
 						res := reflect.ValueOf(result).Elem()
 						res.Set(reflect.Append(res, reflect.ValueOf(rep).Elem()))
-						return nil
 					}
 				}
 				return nil
@@ -1004,9 +1005,23 @@ func TestGetIncrementalCoverageDataOneYear(t *testing.T) {
 			So(len(res.Reports), ShouldBeGreaterThan, 0)
 			expectedRes := &api.GetIncrementalCoverageDataOneYearResponse{
 				Reports: []*api.IncrementalCoverage{
-					{Date: "2023-11-17", FileChangesCovered: 7, TotalFileChanges: 10},
+					{Date: reports[0].Timestamp.Format(time.DateOnly), FileChangesCovered: 7, TotalFileChanges: 10},
+					{Date: reports[1].Timestamp.Format(time.DateOnly), FileChangesCovered: 9, TotalFileChanges: 10},
 				},
 			}
+			sort.Slice(res.Reports, func(i, j int) bool {
+				d1, _ := time.Parse(time.DateOnly, res.Reports[i].Date)
+				d2, _ := time.Parse(time.DateOnly, res.Reports[j].Date)
+
+				return d1.Before(d2)
+			})
+
+			sort.Slice(expectedRes.Reports, func(i, j int) bool {
+				d1, _ := time.Parse(time.DateOnly, expectedRes.Reports[i].Date)
+				d2, _ := time.Parse(time.DateOnly, expectedRes.Reports[j].Date)
+
+				return d1.Before(d2)
+			})
 			So(res, ShouldResemble, expectedRes)
 		})
 	})
@@ -1095,7 +1110,7 @@ func TestAggregateIncrementalCoverageReports(t *testing.T) {
 	Convey("Should aggregate inc coverage numbers", t, func() {
 		data := getMockCQSummaryReport()
 		data = append(data, &entities.CQSummaryCoverageData{
-			Timestamp:         time.Date(2023, 11, 17, 20, 34, 58, 0, time.UTC),
+			Timestamp:         data[0].Timestamp,
 			Change:            4042362,
 			Patchset:          3,
 			IsUnitTest:        false,
@@ -1107,7 +1122,8 @@ func TestAggregateIncrementalCoverageReports(t *testing.T) {
 		)
 		m := client.aggregateIncrementalCoverageReports(data)
 
-		So(m["2023-11-17"], ShouldResemble, map[string]int64{"covered": 19, "total": 23})
-		So(m["2021-11-18"], ShouldResemble, map[string]int64{"covered": 5, "total": 10})
+		So(m[data[0].Timestamp.Format(time.DateOnly)], ShouldResemble, map[string]int64{"covered": 19, "total": 23})
+		So(m[data[1].Timestamp.Format(time.DateOnly)], ShouldResemble, map[string]int64{"covered": 9, "total": 10})
+		So(m[data[2].Timestamp.Format(time.DateOnly)], ShouldResemble, map[string]int64{"covered": 5, "total": 10})
 	})
 }
