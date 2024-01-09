@@ -33,11 +33,6 @@ func main() {
 		}
 
 		basemw := router.NewMiddlewareChain()
-		srv.Routes.GET("/hello-world", router.MiddlewareChain{}, func(c *router.Context) {
-			logging.Debugf(c.Request.Context(), "Hello world")
-			c.Writer.Write([]byte("Hello, world. This is Rubber-Stamper."))
-		})
-
 		srv.Routes.GET("/_cron/scheduler", basemw.Extend(gaemiddleware.RequireCron), func(c *router.Context) {
 			cron.ScheduleReviews(c)
 		})
