@@ -322,8 +322,11 @@ func populatePrimaryEnvInfo(
 	if suiteTaskId := getTaskRequestId(build.GetInfra().GetSwarming().GetParentRunId()); suiteTaskId != "" {
 		swarmingInfo.SuiteTaskId = suiteTaskId
 	}
-	if builder := build.GetBuilder(); builder != nil {
-		swarmingInfo.TaskName = fmt.Sprintf("bb-%d-%s/%s/%s", build.GetId(), builder.GetProject(), builder.GetBucket(), builder.GetBuilder())
+
+	buildID := build.GetId()
+	builder := build.GetBuilder()
+	if builder != nil {
+		swarmingInfo.TaskName = fmt.Sprintf("bb-%d-%s/%s/%s", buildID, builder.GetProject(), builder.GetBucket(), builder.GetBuilder())
 	}
 	if pool := getSingleTagValue(botDims, "pool"); pool != "" {
 		swarmingInfo.Pool = pool
@@ -333,8 +336,11 @@ func populatePrimaryEnvInfo(
 	}
 
 	// - BuildBucket info
-	bbInfo := &artifactpb.BuildbucketInfo{}
+	bbInfo := &artifactpb.BuildbucketInfo{Id: buildID}
 
+	if builder != nil {
+		bbInfo.Builder = &artifactpb.BuilderID{Project: builder.GetProject(), Bucket: builder.GetBucket(), Builder: builder.GetBuilder()}
+	}
 	if len(build.AncestorIds) > 0 {
 		bbInfo.AncestorIds = build.AncestorIds
 	}
