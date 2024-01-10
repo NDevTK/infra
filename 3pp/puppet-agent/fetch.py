@@ -8,8 +8,17 @@ import json
 import os
 import packaging.version
 import re
+import ssl
 import sys
 import urllib.request
+
+import certifi
+
+# Make sure up-to-date root certificates are used.
+urllib.request.install_opener(
+    urllib.request.build_opener(
+        urllib.request.HTTPSHandler(
+            context=ssl.create_default_context(cafile=certifi.where()))))
 
 MAJOR_VERSION = '7'
 
