@@ -1840,6 +1840,7 @@ SPECS.update({
         Universal('google-api-python-client', '1.6.2'),
         Universal('google-api-python-client', '1.12.8'),
         Universal('google-api-python-client', '2.2.0', pyversions=['py3']),
+        Universal('google-api-python-client', '2.111.0', pyversions=['py3']),
         Universal('google-auth', '1.2.1'),
         Universal('google-auth', '1.20.1'),
         Universal('google-auth', '1.25.0'),

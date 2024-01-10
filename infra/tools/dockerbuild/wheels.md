@@ -2884,6 +2884,18 @@ wheel: <
 
 * *universal*
 
+### 2.111.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-api-python-client-py3"
+  version: "version:2.111.0"
+>
+```
+
+
+* *universal*
+
 ## **google-auth**
 
 ### 1.2.1
