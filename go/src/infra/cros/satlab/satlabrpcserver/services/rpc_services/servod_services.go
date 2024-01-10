@@ -38,6 +38,11 @@ func (s *SatlabRpcServiceServer) StartServod(ctx context.Context, in *api.StartS
 	}
 	logging.Infof(ctx, "start servod container response %#v\n", r)
 
+	if err = s.verifyServodDaemonIsUp(ctx, in, 60); err != nil {
+		logging.Infof(ctx, "servod daemon of %s is not up and ready\n", in.GetServodDockerContainerName())
+		return nil, err
+	}
+
 	startRes := &api.StartServodResponse{}
 	startResAnypb, err := anypb.New(startRes)
 
@@ -61,7 +66,7 @@ func (s *SatlabRpcServiceServer) validateStartServodRequest(ctx context.Context,
 	}
 	// if board, mode, serial, servo port is missing; fill the information from UFS.
 	if in.GetBoard() == "" || in.GetModel() == "" || in.GetSerialName() == "" || in.GetServodPort() == 0 {
-		if err := s.fillDutServoInfo(ctx, in); err != nil {
+		if err := s.fillDutServoInfo(in); err != nil {
 			return err
 		}
 	}
@@ -86,8 +91,8 @@ func (s *SatlabRpcServiceServer) getDutNameFromServodDockerContainerName(c strin
 }
 
 // fillDutServoInfo fills missing dut servo related information such as board, model, serial etc.
-func (s *SatlabRpcServiceServer) fillDutServoInfo(ctx context.Context, in *api.StartServodRequest) error {
-	ctx = utils.SetupContext(ctx, site.GetNamespace(""))
+func (s *SatlabRpcServiceServer) fillDutServoInfo(in *api.StartServodRequest) error {
+	ctx := utils.SetupContext(context.Background(), site.GetNamespace(""))
 	ufsClient, err := ufs.NewUFSClientWithDefaultOptions(ctx, site.GetUFSService(s.dev))
 	if err != nil {
 		return fmt.Errorf("fillDutServoInfo: error connecting to UFS: %w", err)
@@ -193,4 +198,33 @@ func generateEnvVars(in *api.StartServodRequest) []string {
 		containerEnvVars = append(containerEnvVars, "REC_MODE=1")
 	}
 	return containerEnvVars
+}
+
+func (s *SatlabRpcServiceServer) verifyServodDaemonIsUp(ctx context.Context, in *api.StartServodRequest, waitTime int) error {
+	logging.Debugf(ctx, "verifying servod daemon of %s is up\n", in.GetServodDockerContainerName())
+	dockerClient, err := docker.NewClient(ctx)
+	if err != nil {
+		return fmt.Errorf("verifyServodDaemonIsUp: create docker client: %w", err)
+	}
+	eReq := &docker.ExecRequest{
+		Timeout: 2 * time.Minute,
+		Cmd: []string{
+			"servodtool",
+			"instance",
+			"wait-for-active",
+			"-p",
+			fmt.Sprintf("%d", in.ServodPort),
+			"--timeout",
+			fmt.Sprintf("%d", waitTime),
+		},
+	}
+	res, err := dockerClient.Exec(ctx, in.GetServodDockerContainerName(), eReq)
+	if err != nil {
+		return fmt.Errorf("verifyServodDaemonIsUp: exec servodtool: %w", err)
+	}
+	if res.ExitCode == 0 && res != nil {
+		return fmt.Errorf("verifyServodDaemonIsUp: servodtool failed: exit code: %d, response: %s", res.ExitCode, res.Stderr)
+	}
+	logging.Infof(ctx, "Servod container %s has daemon ready", in.GetServodDockerContainerName())
+	return nil
 }
