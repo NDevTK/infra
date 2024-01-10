@@ -19,7 +19,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	buildPB "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
+	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	suschPB "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
+	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/suite_scheduler/common"
 	"infra/cros/cmd/suite_scheduler/metrics"
@@ -92,51 +94,9 @@ func extractBoardAndVariant(buildTarget string) (string, string, error) {
 	return board, variant, nil
 }
 
-// extractModels returns all models that the image applies towards.
-func extractModels(reportModels []*buildPB.BuildReport_BuildConfig_Model, board string) []string {
-	models := []string{}
-
-	for _, model := range reportModels {
-		models = append(models, model.Name)
-	}
-
-	// If no models were provided use the board name in it's place. This is odd
-	// but it is standard convention in the area. E.g. brya-brya.
-	if len(models) == 0 {
-		models = append(models, board)
-	}
-
-	return models
-}
-
-// generateBuildInfoPerModel returns a unique BuildInformation item per model.
-func generateBuildInfoPerModel(buildTarget, version, imagePath, board, variant string, milestone, bbid int64, models []string) []*suschPB.BuildInformation {
-	createTime := timestamppb.Now()
-
-	rows := []*suschPB.BuildInformation{}
-	for _, model := range models {
-		buildRow := suschPB.BuildInformation{
-			BuildUid:    &suschPB.UID{Id: uuid.NewString()},
-			RunUid:      &suschPB.UID{Id: metrics.GetRunID().Id},
-			CreateTime:  createTime,
-			Bbid:        bbid,
-			BuildTarget: buildTarget,
-			Milestone:   milestone,
-			Version:     version,
-			ImagePath:   imagePath,
-			Board:       board,
-			Variant:     variant,
-			Model:       model,
-		}
-		rows = append(rows, &buildRow)
-	}
-
-	return rows
-}
-
-// transformReportToSuSchBuilds takes a build report and returns all relevant
+// transformReportToSuSchBuild takes a build report and returns all relevant
 // builds in a SuiteScheduler parsable form.
-func transformReportToSuSchBuilds(report *buildPB.BuildReport) ([]*suschPB.BuildInformation, error) {
+func transformReportToSuSchBuild(report *buildPB.BuildReport) (*suschPB.BuildInformation, error) {
 	milestone, version, err := extractMilestoneAndVersion(report.Config.Versions)
 	if err != nil {
 		return nil, fmt.Errorf("%d: %w", report.GetBuildbucketId(), err)
@@ -152,11 +112,17 @@ func transformReportToSuSchBuilds(report *buildPB.BuildReport) ([]*suschPB.Build
 		return nil, fmt.Errorf("%d: %w", report.GetBuildbucketId(), err)
 	}
 
-	models := extractModels(report.Config.Models, board)
-
-	rows := generateBuildInfoPerModel(report.Config.Target.Name, version, imagePath, board, variant, milestone, report.GetBuildbucketId(), models)
-
-	return rows, nil
+	return &suschPB.BuildInformation{
+		BuildUid:    &suschPB.UID{Id: uuid.NewString()},
+		RunUid:      &suschPB.UID{Id: metrics.GetRunID().Id},
+		CreateTime:  timestamppb.Now(),
+		Bbid:        report.GetBuildbucketId(),
+		BuildTarget: report.Config.Target.Name,
+		Milestone:   milestone,
+		Version:     version,
+		ImagePath:   imagePath,
+		Board:       board,
+		Variant:     variant}, nil
 }
 
 // validateReport checks that all necessary fields are not nil.
@@ -202,38 +168,46 @@ func (h *handler) processPSMessage(msg *cloudPubsub.Message) error {
 
 	common.Stdout.Printf("Processing build report for go/bbid/%d\n", buildReport.GetBuildbucketId())
 	// Ingest the report and return all SuSch usable builds.
-	rows, err := transformReportToSuSchBuilds(&buildReport)
+	suschBuild, err := transformReportToSuSchBuild(&buildReport)
 	if err != nil {
 		return err
 	}
-	common.Stdout.Printf("go/bbid/%d produced %d build images for SuiteScheduler\n", buildReport.GetBuildbucketId(), len(rows))
 
 	// Store build locally for NEW_BUILD configs.
 	// NOTE: We are using a channel here because this function will only be
 	// called asynchronously via goroutines.
-	for _, row := range rows {
-		h.buildsChan <- row
+	wrappedBuild := &BuildPackage{
+		Build:   suschBuild,
+		Message: msg,
 	}
 
+	h.buildsChan <- wrappedBuild
 	return nil
 }
 
 type handler struct {
-	buildsChan chan *suschPB.BuildInformation
+	buildsChan chan *BuildPackage
+}
+
+type BuildPackage struct {
+	Build     *suschPB.BuildInformation
+	Message   *cloudPubsub.Message
+	Configs   []*infrapb.SchedulerConfig
+	Requests  []*requestpb.Request
+	ShouldAck bool
 }
 
 // IngestBuildsFromPubSub connects to pubsub ingests all new build information
 // from the releases Pub/Sub stream. Once read, all builds will be written into
 // long term storage.
-func IngestBuildsFromPubSub() ([]*suschPB.BuildInformation, error) {
+func IngestBuildsFromPubSub() ([]*BuildPackage, error) {
 	psHandler := handler{
-		buildsChan: make(chan *suschPB.BuildInformation),
+		buildsChan: make(chan *BuildPackage),
 	}
 
-	// Gather all newly processed build images.
-	var wait sync.WaitGroup
-	wait.Add(1)
-	builds := []*suschPB.BuildInformation{}
+	// TODO(b/309683890): Publish these messages to Pub/Sub for metrics
+	// recording.
+	builds := []*BuildPackage{}
 
 	// Spin up a goroutine to handle the incoming messages to the channel
 	// buffer.
@@ -241,7 +215,9 @@ func IngestBuildsFromPubSub() ([]*suschPB.BuildInformation, error) {
 	// receiving before any messages can be passed in. If this is launched after
 	// we begin sending messages into the channel the application will hang in a
 	// deadlock.
-	go func(builds *[]*suschPB.BuildInformation, wg *sync.WaitGroup, buildsChan chan *suschPB.BuildInformation) {
+	var wait sync.WaitGroup
+	wait.Add(1)
+	go func(builds *[]*BuildPackage, wg *sync.WaitGroup, buildsChan chan *BuildPackage) {
 		defer wg.Done()
 		for build := range buildsChan {
 			*builds = append(*builds, build)

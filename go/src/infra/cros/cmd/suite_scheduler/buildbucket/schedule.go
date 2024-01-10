@@ -41,7 +41,8 @@ var (
 
 // Scheduler interface type describes the BB API functionality connection.
 type Scheduler interface {
-	Schedule(ctpRequest *requestpb.Request) (*bb.Build, error)
+	Schedule(ctpRequest *requestpb.Request, buildID string) (*bb.Build, error)
+	BatchSchedule(ctpRequests []*requestpb.Request, buildID string) ([]*bb.BatchResponse, error)
 }
 
 // client implements the Scheduler interface.
@@ -76,7 +77,7 @@ func InitScheduler(ctx context.Context, authOpts *authcli.Flags, isProd, dryRun 
 
 // ctpToBBRequest transforms the CTP request into a BuildBucket serviceable
 // scheduling request.
-func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool) (*bb.ScheduleBuildRequest, error) {
+func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool, buildID string) (*bb.ScheduleBuildRequest, error) {
 	// Tag the entry in the requests map with the name of the suite.
 	// NOTE: requests is used as opposed to request because I have seen no
 	// evidence to indicate that the singular field is actively supported.
@@ -91,7 +92,7 @@ func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool) (*bb.Sch
 	}
 
 	// Transform the properties proto into a json string.
-	msgJson, err := protojson.Marshal(recipeProto)
+	msgJSON, err := protojson.Marshal(recipeProto)
 	if err != nil {
 		return nil, err
 	}
@@ -105,14 +106,14 @@ func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool) (*bb.Sch
 	// unmarshall-er is chosen down the line, ensure that this functionality is
 	// maintained.
 	properties := &structpb.Struct{}
-	err = protojson.Unmarshal(msgJson, properties)
+	err = protojson.Unmarshal(msgJSON, properties)
 	if err != nil {
 		return nil, err
 	}
 
 	// Based on the isProd flag choose the corresponding builder identification.
 	builder := &ctpBuilderIDStaging
-	if isProd == true {
+	if isProd {
 		builder = &ctpBuilderIDProd
 	}
 
@@ -128,14 +129,23 @@ func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool) (*bb.Sch
 		return nil, fmt.Errorf("no ChromeOS build found")
 	}
 
+	// TODO(b/309683890): Generate an event metric to populate a SuSch eventID
+	// for this particular run.
 	schedulerRequest := &bb.ScheduleBuildRequest{
 		Builder:    builder,
 		Properties: properties,
 		DryRun:     dryRun,
+		// These tags will appear on the Milo UI and will help us search for
+		// builds in plx.
+		// TODO(b/309683890): Include eventID from Metrics module.
 		Tags: []*bb.StringPair{
 			{
 				Key:   "susch-run",
 				Value: metrics.GetRunID().Id,
+			},
+			{
+				Key:   "build-id",
+				Value: buildID,
 			},
 			{
 				Key:   "suite",
@@ -156,8 +166,8 @@ func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool) (*bb.Sch
 }
 
 // Schedule takes in a CTP request and schedules it via the BuildBucket API.
-func (c *client) Schedule(ctpRequest *requestpb.Request) (*bb.Build, error) {
-	schedulerRequest, err := ctpToBBRequest(ctpRequest, c.isProd, c.dryRun)
+func (c *client) Schedule(ctpRequest *requestpb.Request, buildID string) (*bb.Build, error) {
+	schedulerRequest, err := ctpToBBRequest(ctpRequest, c.isProd, c.dryRun, buildID)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +185,7 @@ func (c *client) Schedule(ctpRequest *requestpb.Request) (*bb.Build, error) {
 
 // ctpListToBatchRequest transforms the provided CTP requests into BuildBucket
 // batch request with a max size of 200.
-func ctpListToBatchRequest(ctpRequests []*requestpb.Request, isProd, dryRun bool) ([]*bb.BatchRequest, error) {
+func ctpListToBatchRequest(ctpRequests []*requestpb.Request, isProd, dryRun bool, buildID string) ([]*bb.BatchRequest, error) {
 	batchRequests := []*bb.BatchRequest{}
 
 	currentRequest := &bb.BatchRequest{}
@@ -188,7 +198,7 @@ func ctpListToBatchRequest(ctpRequests []*requestpb.Request, isProd, dryRun bool
 			currentRequest = &bb.BatchRequest{}
 		}
 
-		schedulerRequest, err := ctpToBBRequest(ctpRequest, isProd, dryRun)
+		schedulerRequest, err := ctpToBBRequest(ctpRequest, isProd, dryRun, buildID)
 		if err != nil {
 			return nil, err
 		}
@@ -212,7 +222,7 @@ func ctpListToBatchRequest(ctpRequests []*requestpb.Request, isProd, dryRun bool
 
 // BatchSchedule takes in a list of requests and schedules them via the
 // BuildBucket batch API.
-func (c *client) BatchSchedule(ctpRequests []*requestpb.Request) ([]*bb.BatchResponse, error) {
+func (c *client) BatchSchedule(ctpRequests []*requestpb.Request, buildID string) ([]*bb.BatchResponse, error) {
 	// Noop, exit early to avoid scheduling an empty batch.
 	if len(ctpRequests) == 0 {
 		// Probably do some sort of logging here saying that there was no
@@ -220,7 +230,7 @@ func (c *client) BatchSchedule(ctpRequests []*requestpb.Request) ([]*bb.BatchRes
 		return nil, nil
 	}
 
-	batchRequests, err := ctpListToBatchRequest(ctpRequests, c.isProd, c.dryRun)
+	batchRequests, err := ctpListToBatchRequest(ctpRequests, c.isProd, c.dryRun, buildID)
 	if err != nil {
 		return nil, err
 	}

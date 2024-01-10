@@ -168,11 +168,8 @@ func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model, buildTarget,
 			},
 			Scheduling: getSchedulingFields(config.PoolOptions, config.LaunchCriteria.LaunchProfile),
 			Retry:      getRetryParams(config.RunOptions.Retry),
-			// TODO(b:305792113): Get build information from the release-build pipeline.
 			Metadata: &requestpb.Request_Params_Metadata{
-				// Some gsURL
-				TestMetadataUrl: GSPrefix + buildImage,
-				// Some gsURL same as above
+				TestMetadataUrl:        GSPrefix + buildImage,
 				DebugSymbolsArchiveUrl: GSPrefix + buildImage,
 
 				ContainerMetadataUrl: GSPrefix + buildImage + ContainerMetadataLocation,

@@ -25,6 +25,7 @@ func getApplication(authOpts auth.Options) *subcommands.DefaultApplication {
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
 			suschSubCommands.GetConfigParserCommand(authOpts),
+			suschSubCommands.GetRunCommand(authOpts),
 			authcli.SubcommandInfo(authOpts, "auth-info", false),
 			authcli.SubcommandLogin(authOpts, "auth-login", false),
 			authcli.SubcommandLogout(authOpts, "auth-logout", false),
@@ -36,10 +37,6 @@ type suiteSchedulerApplication struct {
 	*subcommands.DefaultApplication
 	stdoutLog *log.Logger
 	stderrLog *log.Logger
-}
-
-type suiteSchedulerCommand interface {
-	validate() error
 }
 
 func main() {
