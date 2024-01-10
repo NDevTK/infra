@@ -453,3 +453,10 @@ func GetBotoPath() string {
 	}
 	return botoFilePath
 }
+
+// DefaultCTPTimeoutMins is the default build timeout.
+const DefaultCTPTimeoutMins = 360
+
+// MaxIshCTPTimeoutMins is a "maximum" timeout that in reality is just a large
+// number since we can't know exact timeouts on our builders.
+const MaxIshCTPTimeoutMins = 2370

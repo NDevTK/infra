@@ -19,9 +19,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/go-version"
+	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/luci/common/logging"
 
-	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"infra/cmd/shivas/utils"
 	"infra/cros/dutstate"
 	"infra/cros/satlab/common/asset"
@@ -487,14 +487,14 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 	}
 
 	r := &run.Run{
-		Suite:      in.GetSuite(),
-		Model:      in.GetModel(),
-		Board:      in.GetBuildTarget(),
-		Milestone:  in.GetMilestone(),
-		Build:      in.GetBuildVersion(),
-		Pool:       in.GetPool(),
-		AddedDims:  parseDims(in.GetDims()),
-		MaxTimeout: true,
+		Suite:       in.GetSuite(),
+		Model:       in.GetModel(),
+		Board:       in.GetBuildTarget(),
+		Milestone:   in.GetMilestone(),
+		Build:       in.GetBuildVersion(),
+		Pool:        in.GetPool(),
+		AddedDims:   parseDims(in.GetDims()),
+		TimeoutMins: site.MaxIshCTPTimeoutMins,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
@@ -512,15 +512,15 @@ func (s *SatlabRpcServiceServer) RunTest(ctx context.Context, in *pb.RunTestRequ
 	}
 
 	r := &run.Run{
-		Tests:      in.GetTests(),
-		TestArgs:   in.GetTestArgs(),
-		Board:      in.GetBoard(),
-		Model:      in.GetModel(),
-		Milestone:  in.GetMilestone(),
-		Build:      in.GetBuild(),
-		Pool:       in.GetPool(),
-		AddedDims:  parseDims(in.GetDims()),
-		MaxTimeout: true,
+		Tests:       in.GetTests(),
+		TestArgs:    in.GetTestArgs(),
+		Board:       in.GetBoard(),
+		Model:       in.GetModel(),
+		Milestone:   in.GetMilestone(),
+		Build:       in.GetBuild(),
+		Pool:        in.GetPool(),
+		AddedDims:   parseDims(in.GetDims()),
+		TimeoutMins: site.MaxIshCTPTimeoutMins,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
@@ -1092,14 +1092,14 @@ func (s *SatlabRpcServiceServer) RunTestPlan(ctx context.Context, in *pb.RunTest
 	}
 
 	r := &run.Run{
-		Board:      in.GetBoard(),
-		Model:      in.GetModel(),
-		Milestone:  in.GetMilestone(),
-		Build:      in.GetBuild(),
-		Pool:       in.GetPool(),
-		Testplan:   in.GetTestPlanName(),
-		AddedDims:  parseDims(in.GetDims()),
-		MaxTimeout: true,
+		Board:       in.GetBoard(),
+		Model:       in.GetModel(),
+		Milestone:   in.GetMilestone(),
+		Build:       in.GetBuild(),
+		Pool:        in.GetPool(),
+		Testplan:    in.GetTestPlanName(),
+		AddedDims:   parseDims(in.GetDims()),
+		TimeoutMins: site.MaxIshCTPTimeoutMins,
 	}
 
 	buildLink, err := r.TriggerRun(ctx)

@@ -201,14 +201,14 @@ func TestCreateCTPBuilder(t *testing.T) {
 			},
 		},
 		{
-			&Run{ // suite run with max timeout
-				Suite:      "rlz",
-				Board:      "zork",
-				Model:      "gumboz",
-				Milestone:  "111",
-				Build:      "15329.6.0",
-				AddedDims:  map[string]string{"label-dut": "123"},
-				MaxTimeout: true,
+			&Run{ // suite run with timeout mins
+				Suite:       "rlz",
+				Board:       "zork",
+				Model:       "gumboz",
+				Milestone:   "111",
+				Build:       "15329.6.0",
+				AddedDims:   map[string]string{"label-dut": "123"},
+				TimeoutMins: 1234,
 			},
 			&builder.CTPBuilder{
 				AuthOptions: &opt,
@@ -225,7 +225,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				TestPlan:            builder.TestPlanForSuites([]string{"rlz"}),
 				CTPBuildTags:        map[string]string{"label-suite": "rlz", "test-type": "suite"},
 				TestRunnerBuildTags: map[string]string{"label-suite": "rlz", "test-type": "suite"},
-				TimeoutMins:         2370,
+				TimeoutMins:         1234,
 			},
 		},
 		{

@@ -49,9 +49,9 @@ type Run struct {
 	SatlabId      string
 	CFT           bool
 	// TRV2 determines whether we will use Test Runner V2
-	TRV2       bool
-	Local      bool
-	MaxTimeout bool
+	TRV2        bool
+	Local       bool
+	TimeoutMins int
 	// Any configs related to results upload for this test run.
 	AddedDims map[string]string
 	Tags      map[string]string
@@ -195,10 +195,10 @@ func (c *Run) setTags(ctx context.Context) map[string]string {
 
 // Determine CTP timeout based on user input
 func (c *Run) setTimeout() int {
-	if c.MaxTimeout {
-		return 2370
+	if c.TimeoutMins != 0 {
+		return c.TimeoutMins
 	}
-	return 360
+	return site.DefaultCTPTimeoutMins
 }
 
 func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {

@@ -70,7 +70,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		SatlabId:      c.satlabId,
 		CFT:           c.cft,
 		Local:         c.local,
-		MaxTimeout:    c.maxTimeout,
+		TimeoutMins:   c.timeoutMins,
 		AddedDims:     c.addedDims,
 	}
 	buildLink, err := r.TriggerRun(ctx)
@@ -117,6 +117,9 @@ func (c *run) validateArgs() error {
 	}
 	if _, ok := c.addedDims["drone"]; ok {
 		return errors.Reason("-dims cannot include drone (control via -satlabId instead)").Err()
+	}
+	if c.maxTimeout {
+		return errors.Reason("-max-timeout is deprecated").Err()
 	}
 	return nil
 }
