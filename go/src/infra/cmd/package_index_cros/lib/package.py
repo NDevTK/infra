@@ -25,6 +25,14 @@ class PackageSupport(IntEnum):
   # There are some temporary issues with package that should be resolved.
   TEMP_NO_SUPPORT = 4
 
+  def is_supported(self) -> bool:
+    """Return whether this represents a supported package."""
+    return self is PackageSupport.SUPPORTED
+
+  def is_unsupported(self) -> bool:
+    """Return whether this represents an unsupported package."""
+    return not self.is_supported()
+
 
 class PackagePathException(Exception):
   """Exception indicating some troubles while looking for packages dirs."""
@@ -65,8 +73,8 @@ def _CheckEbuildVar(ebuild_file: str,
   return None
 
 
-def IsPackageSupported(ebuild: portage_util.EBuild,
-                       setup: Setup) -> PackageSupport:
+def GetPackageSupport(ebuild: portage_util.EBuild,
+                      setup: Setup) -> PackageSupport:
   """
   Performs checks that the package can be processed:
     * Package has local sources.
@@ -220,6 +228,10 @@ class Package:
                setup: Setup,
                ebuild: portage_util.EBuild,
                deps: List[PackageDependency] = []):
+
+    package_support = GetPackageSupport(ebuild, setup)
+    if package_support.is_unsupported():
+      raise Package.UnsupportedPackageException(ebuild.package, package_support)
 
     is_supported = IsPackageSupported(ebuild, setup)
     if is_supported != PackageSupport.SUPPORTED:

@@ -55,8 +55,11 @@ class PackageSleuth:
     packages = PackageSleuth.SupportedUnsupportedPackages([], [])
 
     ebuilds = self._ListEbuilds(packages_names)
-    dependencies = self._GetPackagesDependencies(
-        [e.package for e in ebuilds if pkg.IsPackageSupported(e, self.setup)])
+    dependencies = self._GetPackagesDependencies([
+        e.package
+        for e in ebuilds
+        if pkg.GetPackageSupport(e, self.setup).is_supported()
+    ])
 
     listed_packages = set([e.package for e in ebuilds])
     # List of packages names to list taken from current dependencies that don't
@@ -78,8 +81,11 @@ class PackageSleuth:
       # TODO: Some packages need specific USE flag for emerge (e.g. arc-base
       # needs USE=arcpp or USE=arcvm). Without them emerge fails and cros_sdk
       # raises an exception.
-      new_dependencies = self._GetPackagesDependencies(
-          [e.package for e in ebuilds if pkg.IsPackageSupported(e, self.setup)])
+      new_dependencies = self._GetPackagesDependencies([
+          e.package
+          for e in ebuilds
+          if pkg.GetPackageSupport(e, self.setup).is_supported()
+      ])
 
       ebuilds += new_ebuilds
       dependencies.update(new_dependencies)
@@ -91,10 +97,10 @@ class PackageSleuth:
       ]
 
     for ebuild in ebuilds:
-      is_supported = pkg.IsPackageSupported(ebuild, self.setup)
-      if is_supported != pkg.PackageSupport.SUPPORTED:
+      package_supported = pkg.GetPackageSupport(ebuild, self.setup)
+      if package_supported.is_unsupported():
         g_logger.warning('%s: Not supported: %s', ebuild.package,
-                         is_supported.name)
+                         package_supported.name)
         packages.unsupported.append(ebuild.package)
       else:
         packages.supported.append(
