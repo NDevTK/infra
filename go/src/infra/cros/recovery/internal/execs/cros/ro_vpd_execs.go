@@ -25,6 +25,9 @@ import (
 var roVPDKeys = []string{
 	"wifi_sar",
 	"attested_device_id",
+	"customization_id",
+	"custom_label_tag",
+	"whitelabel_tag",
 }
 
 const (
@@ -219,12 +222,16 @@ func updateROVPDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	for _, key := range roVPDKeys {
 		value, err := vpd.ReadRO(ctx, ha, time.Minute, key)
-		if err == nil {
-			info.GetChromeos().RoVpdMap[key] = value
-		} else {
+		if err != nil {
 			// Not all devices have all RO vpd keys.
-			log.Infof(ctx, "failed to read RO vpd key %s: %v", key, err)
+			log.Infof(ctx, "failed to read RO vpd key %q: %v", key, err)
+			continue
 		}
+		if value == "" {
+			log.Infof(ctx, "RO vpd key %q value is empty!", key)
+			continue
+		}
+		info.GetChromeos().RoVpdMap[key] = value
 	}
 	log.Infof(ctx, "recorded RO_VPD values successfully")
 	return nil
