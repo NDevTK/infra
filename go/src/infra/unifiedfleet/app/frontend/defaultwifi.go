@@ -86,3 +86,21 @@ func (fs *FleetServerImpl) DeleteDefaultWifi(ctx context.Context, req *ufsAPI.De
 	err = controller.DeleteDefaultWifi(ctx, name)
 	return &empty.Empty{}, err
 }
+
+// UpdateDefaultWifi updates the DefaultWifi information in database.
+func (fs *FleetServerImpl) UpdateDefaultWifi(ctx context.Context, req *ufsAPI.UpdateDefaultWifiRequest) (rsp *ufspb.DefaultWifi, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	req.DefaultWifi.Name = util.RemovePrefix(req.DefaultWifi.Name)
+	wifi, err := controller.UpdateDefaultWifi(ctx, req.DefaultWifi, req.UpdateMask)
+	if err != nil {
+		return nil, err
+	}
+	// https://aip.dev/122 - as per AIP guideline.
+	wifi.Name = util.AddPrefix(util.DefaultWifiCollection, wifi.Name)
+	return wifi, err
+}

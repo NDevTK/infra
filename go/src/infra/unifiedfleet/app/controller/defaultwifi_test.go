@@ -8,9 +8,11 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"google.golang.org/genproto/protobuf/field_mask"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	. "infra/unifiedfleet/app/model/datastore"
+	"infra/unifiedfleet/app/model/history"
 )
 
 func TestCreateDefaultWifi(t *testing.T) {
@@ -55,6 +57,73 @@ func TestDeleteDefaultWifi(t *testing.T) {
 			err := DeleteDefaultWifi(ctx, "non-existing")
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, NotFound)
+		})
+	})
+}
+
+func TestUpdateDefaultWifi(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	Convey("UpdateDefaultWifi", t, func() {
+		Convey("Update DefaultWifi for existing DefaultWifi - happy path", func() {
+			CreateDefaultWifi(ctx, &ufspb.DefaultWifi{
+				Name: "zone_sfo36_os",
+				WifiSecret: &ufspb.Secret{
+					ProjectId:  "p1",
+					SecretName: "s1",
+				},
+			})
+			w2 := &ufspb.DefaultWifi{
+				Name: "zone_sfo36_os",
+				WifiSecret: &ufspb.Secret{
+					ProjectId:  "p1",
+					SecretName: "s2",
+				}}
+			resp, err := UpdateDefaultWifi(ctx, w2, nil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, w2)
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "defaultwifis/zone_sfo36_os")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 2)
+			So(changes[1].GetEventLabel(), ShouldEqual, "defaultwifi.secret.secret_name")
+			So(changes[1].GetOldValue(), ShouldEqual, "s1")
+			So(changes[1].GetNewValue(), ShouldEqual, "s2")
+		})
+
+		Convey("Update DefaultWifi for non-existing DefaultWifi", func() {
+			resp, err := UpdateDefaultWifi(ctx, &ufspb.DefaultWifi{Name: "pool3"}, nil)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "defaultwifis/pool3")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 0)
+		})
+
+		Convey("Update DefaultWifi for existing DefaultWifi with field mask - happy path", func() {
+			w3 := &ufspb.DefaultWifi{
+				Name: "zone_sfo36_os",
+				WifiSecret: &ufspb.Secret{
+					ProjectId:  "ppppp",
+					SecretName: "s3",
+				}}
+			resp, _ := UpdateDefaultWifi(ctx, w3, &field_mask.FieldMask{Paths: []string{"wifi_secret.secret_name"}})
+			So(resp, ShouldNotBeNil)
+			So(resp.GetWifiSecret().GetProjectId(), ShouldEqual, "p1")
+			So(resp.GetWifiSecret().GetSecretName(), ShouldEqual, "s3")
+		})
+
+		Convey("Update DefaultWifi for existing DefaultWifi with field mask - failure", func() {
+			w4 := &ufspb.DefaultWifi{
+				Name: "zone_sfo36_os",
+				WifiSecret: &ufspb.Secret{
+					ProjectId:  "p1",
+					SecretName: "s4",
+				}}
+			resp, err := UpdateDefaultWifi(ctx, w4, &field_mask.FieldMask{Paths: []string{"wifi_secret.non-existing-field"}})
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
 		})
 	})
 }

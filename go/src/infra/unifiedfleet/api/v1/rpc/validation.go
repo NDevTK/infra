@@ -1527,3 +1527,11 @@ func (r *GetDefaultWifiRequest) Validate() error {
 func (r *DeleteDefaultWifiRequest) Validate() error {
 	return validateResourceName(defaultWifiRegex, DefaultWifiNameFormat, r.Name)
 }
+
+// Validate validates input requests of UpdateDefaultWifi.
+func (r *UpdateDefaultWifiRequest) Validate() error {
+	if r.DefaultWifi == nil {
+		return status.Errorf(codes.InvalidArgument, NilEntity)
+	}
+	return validateResourceName(defaultWifiRegex, DefaultWifiNameFormat, r.DefaultWifi.GetName())
+}

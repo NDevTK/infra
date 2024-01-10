@@ -60,11 +60,20 @@ func newDefaultWifiEntry(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 // NonAtomicBatchCreateDefaultWifis updates wifis in datastore in a non-atomic
 // operation.
 func NonAtomicBatchCreateDefaultWifis(ctx context.Context, wifis []*ufspb.DefaultWifi) ([]*ufspb.DefaultWifi, error) {
+	return nonAtomicBatchCreateOrUpdateDefaultWifis(ctx, wifis, false /*create instead of update*/)
+}
+
+// NonAtomicBatchUpdateDefaultWifis	updates DefaultWifis in datastore.
+func NonAtomicBatchUpdateDefaultWifis(ctx context.Context, wifis []*ufspb.DefaultWifi) ([]*ufspb.DefaultWifi, error) {
+	return nonAtomicBatchCreateOrUpdateDefaultWifis(ctx, wifis, true /*update instead of create*/)
+}
+
+func nonAtomicBatchCreateOrUpdateDefaultWifis(ctx context.Context, wifis []*ufspb.DefaultWifi, update bool) ([]*ufspb.DefaultWifi, error) {
 	wifiProtos := make([]proto.Message, len(wifis))
 	for i, w := range wifis {
 		wifiProtos[i] = w
 	}
-	if _, err := ufsds.PutAll(ctx, wifiProtos, newDefaultWifiEntry, false /*create instead of update*/); err != nil {
+	if _, err := ufsds.PutAll(ctx, wifiProtos, newDefaultWifiEntry, update); err != nil {
 		return nil, err
 	}
 	return wifis, nil
