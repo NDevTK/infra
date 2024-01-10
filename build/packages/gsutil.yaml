@@ -17,9 +17,6 @@ platforms:
   - windows-amd64
   - windows-arm64
 install_mode: copy
-go_build_environ:
-  CGO_ENABLED:
-    darwin:  1  # native Go DNS resolved is buggy on OSX (crbug.com/803673)
 go_packages:
   - infra/tools/gsutil
 root: ../../go/bin

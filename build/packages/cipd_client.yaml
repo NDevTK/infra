@@ -34,9 +34,6 @@ platforms:
   - windows-386
   - windows-amd64
   - windows-arm64
-go_build_environ:
-  CGO_ENABLED:
-    darwin: 1 # native Go DNS resolved is buggy on OSX (crbug.com/803673)
 go_packages:
   - go.chromium.org/luci/cipd/client/cmd/cipd
 root: ../../go/bin

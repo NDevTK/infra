@@ -3,9 +3,6 @@ description: vpython3 is a VirtualEnv Python bootstrap tool.
 platforms:
   - mac-amd64
   - mac-arm64
-go_build_environ:
-  CGO_ENABLED:
-    darwin:  1  # native Go DNS resolved is buggy on OSX (crbug.com/803673)
 go_packages:
   - infra/tools/vpython/cmd/vpython3
 install_mode: copy
