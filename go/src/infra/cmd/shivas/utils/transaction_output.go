@@ -410,3 +410,20 @@ func PrintExistingSchedulingUnit(ctx context.Context, ic ufsAPI.FleetClient, nam
 	PrintProtoJSON(res, !NoEmitMode(false))
 	return nil
 }
+
+// PrintExistingDefaultWifi prints the old DefaultWifi in update/delete operations
+func PrintExistingDefaultWifi(ctx context.Context, ic ufsAPI.FleetClient, name string) error {
+	res, err := ic.GetDefaultWifi(ctx, &ufsAPI.GetDefaultWifiRequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.DefaultWifiCollection, name),
+	})
+	if err != nil {
+		return errors.Annotate(err, "Failed to get DefaultWifi").Err()
+	}
+	if res == nil {
+		return errors.Reason("The returned resp is empty").Err()
+	}
+	res.Name = ufsUtil.RemovePrefix(res.Name)
+	fmt.Println("The DefaultWifi before delete/update:")
+	PrintProtoJSON(res, !NoEmitMode(false))
+	return nil
+}

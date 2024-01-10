@@ -87,7 +87,7 @@ var rackLSEPrototypeRegex = regexp.MustCompile(`rackLSEPrototypes\.*`)
 var assetRegex = regexp.MustCompile(`assets\.*`)
 var machineLSEDeploymentRegex = regexp.MustCompile(`machineLSEDeployments\.*`)
 var schedulingUnitRegex = regexp.MustCompile(`schedulingunits\.*`)
-var defaultWifiRegex = regexp.MustCompile(`defaultWifis\.*`)
+var defaultWifiRegex = regexp.MustCompile(`defaultwifis\.*`)
 
 // matches "cachingservices/{hostname or ipv4}"
 var cachingServiceRegex = regexp.MustCompile(`cachingservices/[a-zA-Z0-9-.]{1,63}$`)

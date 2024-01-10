@@ -13,6 +13,7 @@ import (
 	"infra/cmd/shivas/internal/ufs/subcmds/attacheddevicemachine"
 	"infra/cmd/shivas/internal/ufs/subcmds/cachingservice"
 	"infra/cmd/shivas/internal/ufs/subcmds/chromeplatform"
+	"infra/cmd/shivas/internal/ufs/subcmds/defaultwifi"
 	"infra/cmd/shivas/internal/ufs/subcmds/devboard"
 	"infra/cmd/shivas/internal/ufs/subcmds/drac"
 	"infra/cmd/shivas/internal/ufs/subcmds/dut"
@@ -46,6 +47,7 @@ var DeleteCmd = &subcommands.Command{
 	machine-prototype/rack-prototype/chromeplatform/vlan
 	attached-device-machine (aliased as adm/attached-device-machine)
 	attached-device-host (aliased as adh/attached-device-host)
+	defaultwifi
 	peripheral-hmr
 	peripheral-wifi
 	bluetooth-peers
@@ -85,6 +87,7 @@ func (c deleteApp) GetCommands() []*subcommands.Command {
 		host.DeleteHostCmd,
 		attacheddevicehost.DeleteAttachedDeviceHostCmd,
 		attacheddevicehost.DeleteADHCmd,
+		defaultwifi.DeleteDefaultWifiCmd,
 		devboard.DeleteDevboardLSECmd,
 		kvm.DeleteKVMCmd,
 		rpm.DeleteRPMCmd,
