@@ -4,7 +4,6 @@
 """Adds third_party packages to their respective package namespaces."""
 
 import os
-import six
 import sys
 
 

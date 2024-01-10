@@ -20,10 +20,5 @@ makefile
 OWNERS
 package.json
 package-lock.json
-.coveragerc
-.expect_tests.cfg
-.expect_tests_pretest.py
-node_modules/
-third_party/
-local_libs/
-lib/
+^lib/
+^local_libs/

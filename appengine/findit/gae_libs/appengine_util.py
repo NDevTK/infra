@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import os
+import six
 
 from google.appengine.api import app_identity
 from google.appengine.api import modules
@@ -18,6 +19,8 @@ def IsInGAE():  # pragma: no cover.
   # In unit test environment, SERVER_SOFTWARE="Development/1.0 (testbed)".
   # In dev app server environment, SERVER_SOFTWARE="Development/2.0".
   # On App Engine production sever, SERVER_SOFTWARE="Google App Engine.*".
+  if six.PY3:
+    return os.getenv('GAE_ENV', '').startswith('standard')
   return os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine')
 
 

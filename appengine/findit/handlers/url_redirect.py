@@ -63,7 +63,7 @@ _REDIRECTION_MAPPING['findit-for-me-staging.appspot.com'] = {
 class URLRedirect(BaseHandler):
   PERMISSION_LEVEL = Permission.ANYONE
 
-  def HandlePost(self):
+  def HandlePost(self, **kwargs):
     return self.CreateError(
         'Wrong destination URL for a post request. Please file a bug '
         'by clicking the button at the bottom right corner.', 400)

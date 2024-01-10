@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from flask import Flask
+import os
 
 # Fix imports before importing gae_ts_mon.
 import import_utils
@@ -13,8 +14,10 @@ import gae_ts_mon
 # Setup cloud logging
 import google.cloud.logging
 
-client = google.cloud.logging.Client()
-client.setup_logging()
+if os.getenv('GAE_ENV') == 'standard':
+  # If this isn't a local server, set up cloud logging.
+  client = google.cloud.logging.Client()
+  client.setup_logging()
 
 import google.appengine.api
 
