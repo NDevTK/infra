@@ -13,6 +13,7 @@ import (
 	"infra/cmd/shivas/internal/ufs/subcmds/attacheddevicemachine"
 	"infra/cmd/shivas/internal/ufs/subcmds/cachingservice"
 	"infra/cmd/shivas/internal/ufs/subcmds/chromeplatform"
+	"infra/cmd/shivas/internal/ufs/subcmds/defaultwifi"
 	"infra/cmd/shivas/internal/ufs/subcmds/devboard"
 	"infra/cmd/shivas/internal/ufs/subcmds/drac"
 	"infra/cmd/shivas/internal/ufs/subcmds/dut"
@@ -46,7 +47,8 @@ var UpdateCmd = &subcommands.Command{
 	asset/dut/dut-batch/labstation/cachingservice/schedulingunit
 	machine-prototype/rack-prototype/chromeplatform/vlan/host-deployment
 	attached-device-machine (aliased as adm/attached-device-machine)
-	attached-device-host (aliased as adh/attached-device-host)`,
+	attached-device-host (aliased as adh/attached-device-host)
+	defaultwifi`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &update{}
 		return c
@@ -72,6 +74,7 @@ func (c updateApp) GetCommands() []*subcommands.Command {
 	return []*subcommands.Command{
 		subcommands.CmdHelp,
 		asset.UpdateAssetCmd,
+		defaultwifi.UpdateDefaultWifiCmd,
 		dut.UpdateDUTCmd,
 		dut.UpdateDUTBatchCmd,
 		labstation.UpdateLabstationCmd,

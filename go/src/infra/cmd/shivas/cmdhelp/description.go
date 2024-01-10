@@ -2362,6 +2362,31 @@ wifi-test-pool,unified-fleet-system,wifi-test-pool-credential
 
 The protobuf definition of DefaultWifi is part of
 https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/unifiedfleet/api/v1/models/secret.proto`
+
+	// UpdateDefaultWifiLongDesc long description for UpdateDefaultWifiCmd
+	UpdateDefaultWifiLongDesc string = `Update a DefaultWifi by name.
+
+Examples:
+shivas update defaultwifi -f wifi.json
+Update a DefaultWifi by reading a JSON file input.
+
+shivas update defaultwifi -name {defaultwifi name} -secret-name {secret-name}
+Partial updates a DefaultWifi by parameters. Only specified parameters will be updated in the DefaultWifi.`
+
+	// DefaultWifiUpdateFileText description for DefaultWifi file input
+	DefaultWifiUpdateFileText string = `[JSON Mode] Path to a file(.json) containing DefaultWifi specification.
+
+[JSON Mode]
+This file must contain one DefaultWifi JSON message
+Example DefaultWifi ("name" must be in the lower case):
+{
+	"name": "zone_sfo36_os",
+	"project_id": "unified-fleet-system",
+	"secret_name": "sfo36_os_wifi",
+}
+
+The protobuf definition of DefaultWifi is part of
+https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/unifiedfleet/api/v1/models/secret.proto`
 )
 
 func CronTriggerAvailableJobsString() string {
