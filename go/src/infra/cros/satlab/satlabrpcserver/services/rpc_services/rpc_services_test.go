@@ -1899,11 +1899,11 @@ func Test_RepairDutsShouldWork(t *testing.T) {
 		FakeFn: func(c *exec.Cmd) ([]byte, error) {
 			if c.Path == paths.GetHostIdentifierScript {
 				return []byte("satlab-id"), nil
-			} else if strings.Join(c.Args, " ") == fmt.Sprintf("%s repair-duts -bucket labpack_runner -builder repair -namespace os -deep satlab-satlab-id-dut1", paths.ShivasCLI) {
+			} else if c.Args[0] == paths.ShivasCLI && c.Args[1] == "repair-duts" && c.Args[len(c.Args)-1] == "satlab-satlab-id-dut1" {
 				return []byte(`Build Link: https://ci.chromium.org/p/chromeos/builders/external-cienet/repair/build-id
 ### Batch tasks URL ###
 Task Link: https://chromeos-swarming.appspot.com/`), nil
-			} else if strings.Join(c.Args, " ") == fmt.Sprintf("%s repair-duts -bucket labpack_runner -builder repair -namespace os -deep satlab-satlab-id-dut2", paths.ShivasCLI) {
+			} else if c.Args[0] == paths.ShivasCLI && c.Args[1] == "repair-duts" && c.Args[len(c.Args)-1] == "satlab-satlab-id-dut2" {
 				return nil, errors.New("Not found")
 			}
 			return nil, errors.New(fmt.Sprintf("unknow command %v", c))

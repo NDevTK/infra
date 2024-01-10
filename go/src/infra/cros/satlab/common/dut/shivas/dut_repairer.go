@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"regexp"
 
+	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
@@ -46,8 +47,18 @@ func (u *DUTRepairer) Repair(
 	ctx context.Context,
 	action RepairAction,
 ) (*DUTRepairResponse, error) {
-	args := u.constructArguments(action)
+	args := (&commands.CommandWithFlags{
+		Commands: []string{paths.ShivasCLI, "repair-duts"},
+		Flags: map[string][]string{
+			"bucket":    {site.GetDeployBucket()},
+			"builder":   {site.RepairBuilderName},
+			"namespace": {u.Namespace},
+		},
+		PositionalArgs: []string{u.Name},
+		AuthRequired:   true,
+	}).ToCommand()
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
+
 	// Don't use `CombinedOutput` here because it returns
 	// `rpc error: code = NotFound desc = requested resources not found`
 	// "anonymous:anonymous" does not have permission to view it.
@@ -65,19 +76,4 @@ func (u *DUTRepairer) Repair(
 	}
 
 	return &DUTRepairResponse{BuildLink: matches[0], TaskLink: matches[1]}, nil
-}
-
-func (u *DUTRepairer) constructArguments(action RepairAction) []string {
-	args := []string{
-		paths.ShivasCLI,
-		"repair-duts",
-		"-bucket", site.GetDeployBucket(),
-		"-builder", site.RepairBuilderName,
-		"-namespace", u.Namespace,
-	}
-	if action != "" {
-		args = append(args, string(action))
-	}
-	args = append(args, u.Name)
-	return args
 }
