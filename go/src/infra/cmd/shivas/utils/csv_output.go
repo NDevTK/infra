@@ -171,3 +171,8 @@ func PrintTSVCachingServices(msgs []proto.Message, keysOnly bool) {
 func PrintTSVSchedulingUnits(msgs []proto.Message, keysOnly bool) {
 	printTSVs(msgs, keysOnly, schedulingUnitOutputStrs)
 }
+
+// PrintTSVDefaultWifis prints the tsv format of DefaultWifis
+func PrintTSVDefaultWifis(msgs []proto.Message, keysOnly bool) {
+	printTSVs(msgs, keysOnly, cachingServiceOutputStrs)
+}

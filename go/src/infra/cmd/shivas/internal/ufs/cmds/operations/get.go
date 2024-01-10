@@ -13,6 +13,7 @@ import (
 	"infra/cmd/shivas/internal/ufs/subcmds/attacheddevicemachine"
 	"infra/cmd/shivas/internal/ufs/subcmds/cachingservice"
 	"infra/cmd/shivas/internal/ufs/subcmds/chromeplatform"
+	"infra/cmd/shivas/internal/ufs/subcmds/defaultwifi"
 	"infra/cmd/shivas/internal/ufs/subcmds/devboard"
 	"infra/cmd/shivas/internal/ufs/subcmds/drac"
 	"infra/cmd/shivas/internal/ufs/subcmds/dut"
@@ -47,8 +48,9 @@ var GetCmd = &subcommands.Command{
 	host/vm/vm-slots
 	asset/dut/cachingservice/schedulingunit
 	machine-prototype/rack-prototype/platform/vlan/host-deployment
-	attached-device-machine (aliased as adm/attached-device-machine),
-	attached-device-host (aliased as adh/attached-device-host)`,
+	attached-device-machine (aliased as adm/attached-device-machine)
+	attached-device-host (aliased as adh/attached-device-host)
+	defaultwifi`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &get{}
 		return c
@@ -75,6 +77,7 @@ func (c getApp) GetCommands() []*subcommands.Command {
 		subcommands.CmdHelp,
 		asset.GetAssetCmd,
 		dut.GetDutCmd,
+		defaultwifi.GetDefaultWifiCmd,
 		devboard.GetDevboardMachineCmd,
 		devboard.GetDevboardLSECmd,
 		cachingservice.GetCachingServiceCmd,

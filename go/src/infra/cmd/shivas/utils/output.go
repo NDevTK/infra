@@ -81,6 +81,7 @@ var (
 	SchedulingUnitTitle        = []string{"SchedulingUnit Name", "DUTs", "Pools", "Type", "Description", "UpdateTime"}
 	OwnershipDataTitle         = []string{"Pool", "Security Level", "Swarming Instance", "MIBA Realm", "Customer"}
 	OwnershipDataByHostTitle   = []string{"Name", "Pool", "Security Level", "Swarming Instance", "MIBA Realm", "Customer"}
+	DefaultWifiTitle           = []string{"Name", "Project", "SecretName"}
 )
 
 // TimeFormat for all timestamps handled by shivas
@@ -2212,4 +2213,55 @@ func PrettyPrintListOfStruct[X any](xs []*X) {
 		fmt.Fprintln(w, valStr)
 	}
 	w.Flush()
+}
+
+// PrintDefaultWifis prints the all DefaultWifis in table form.
+func PrintDefaultWifis(res []proto.Message, keysOnly bool) {
+	cs := make([]*ufspb.DefaultWifi, len(res))
+	for i, r := range res {
+		cs[i] = r.(*ufspb.DefaultWifi)
+	}
+	defer tw.Flush()
+	for _, c := range cs {
+		printDefaultWifi(c, keysOnly)
+	}
+}
+
+func printDefaultWifi(cs *ufspb.DefaultWifi, keysOnly bool) {
+	if keysOnly {
+		fmt.Fprintln(tw, ufsUtil.RemovePrefix(cs.Name))
+		return
+	}
+	var out string
+	for _, s := range defaultWifiOutputStrs(cs) {
+		out += fmt.Sprintf("%s\t", s)
+	}
+	fmt.Fprintln(tw, out)
+}
+
+func defaultWifiOutputStrs(pm proto.Message) []string {
+	m := pm.(*ufspb.DefaultWifi)
+	return []string{
+		ufsUtil.RemovePrefix(m.Name),
+		m.GetWifiSecret().GetProjectId(),
+		m.GetWifiSecret().GetSecretName(),
+	}
+}
+
+// PrintDefaultWifisJSON prints the DefaultWifi details in json format.
+func PrintDefaultWifisJSON(res []proto.Message, emit bool) {
+	cs := make([]*ufspb.DefaultWifi, len(res))
+	for i, r := range res {
+		cs[i] = r.(*ufspb.DefaultWifi)
+	}
+	fmt.Print("[")
+	for i, s := range cs {
+		s.Name = ufsUtil.RemovePrefix(s.Name)
+		PrintProtoJSON(s, emit)
+		if i < len(cs)-1 {
+			fmt.Print(",")
+			fmt.Println()
+		}
+	}
+	fmt.Println("]")
 }
