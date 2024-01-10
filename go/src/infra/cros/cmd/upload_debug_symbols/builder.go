@@ -13,6 +13,9 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
+	"debug/elf"
+	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -338,9 +341,9 @@ func getCmdUploadDebugSymbols(authOpts auth.Options) *subcommands.Command {
 			b := &uploadDebugSymbols{}
 			b.authFlags = authcli.Flags{}
 			b.Flags.StringVar(&b.gsPath, "gs-path", "", ("[Required] Url pointing to the GS " +
-				"bucket storing the tarball."))
+				"bucket storing the tarball(s)."))
 			b.Flags.StringVar(&b.dataType, "data-type", "breakpad", ("Tarball content data type." +
-				"Can be breakpad or vmlinux."))
+				"Can be breakpad, splitdebug, or vmlinux."))
 			b.Flags.Uint64Var(&b.workerCount, "worker-count", 64, ("Number of worker threads" +
 				" to spawn."))
 			b.Flags.Uint64Var(&b.retryQuota, "retry-quota", 200, ("Number of total upload retries" +
@@ -490,7 +493,7 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 			// a symbol that was already uploaded.
 			// This wastes some file IO but is the easiest way to use the tar
 			// reader.
-			debugInfo, err := getDebugFileInformation(destFilePath)
+			debugInfo, _, err := getDebugFileInformation(destFilePath)
 			if err != nil {
 				return nil, err
 			}
@@ -506,6 +509,197 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 	}
 
 	return retArray, err
+}
+
+// unpackSplitdebugTarballs will take the local path of the fetched tarballs and then unpack
+// them. It will then return a list of file paths pointing to the unpacked symbol
+// files. Searches for .sym and .debug files.
+func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([]string, []string, error) {
+	LogOut("Untarring files from %s and %s and storing symbols in %s", splitdebugPath, breakpadPath, outputDir)
+	retBreakpadArray := []string{}
+	retSplitdebugArray := []string{}
+
+	// Open locally stored .tar file.
+	breakpadReader, err := os.Open(breakpadPath)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer breakpadReader.Close()
+
+	tarReader := tar.NewReader(breakpadReader)
+
+	// Keep track of the symbols we've already processed for deduping purposes.
+	processedSymbols := map[string]bool{}
+	uniqueSuffix := 1
+
+	// Keep track of buildIds for breakpad symbols
+	type buildIdInfo struct {
+		buildId string
+		debugId string
+	}
+	breakpadBuildIds := map[string][]buildIdInfo{}
+
+	// Iterate through the breakpad tar file saving only the breakpad symbols.
+	for {
+		header, err := tarReader.Next()
+		// End of file reached, terminate the loop smoothly.
+		if err == io.EOF {
+			break
+		}
+		// An error occurred fetching the next header.
+		if err != nil {
+			return nil, nil, err
+		}
+		// The header indicates it's a file. Store and save the file if it is a
+		// symbol file.
+		if header.FileInfo().Mode().IsRegular() {
+			// Check if the file is a symbol file.
+			if !strings.HasSuffix(header.Name, ".sym") {
+				continue
+			}
+			symBase := filepath.Base(header.Name)
+			destFilePath := filepath.Join(outputDir, symBase)
+
+			if _, err := os.Stat(destFilePath); err == nil {
+				// File already exists, need to append unique suffix.
+				symBase = fmt.Sprintf("%s-%d", symBase, uniqueSuffix)
+				destFilePath = filepath.Join(outputDir, symBase)
+				uniqueSuffix += 1
+			} else if !errors.Is(err, os.ErrNotExist) {
+				return nil, nil, err
+			}
+
+			destFile, err := os.Create(destFilePath)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			// Write contents of the symbol file to local storage.
+			_, err = io.Copy(destFile, tarReader)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			// Read back the file from disk and make sure that it's not for
+			// a symbol that was already uploaded.
+			// This wastes some file IO but is the easiest way to use the tar
+			// reader.
+			debugInfo, buildId, err := getDebugFileInformation(destFilePath)
+			if err != nil {
+				return nil, nil, err
+			}
+			breakpadBuildIds[debugInfo.DebugFile] = append(breakpadBuildIds[debugInfo.DebugFile], buildIdInfo{buildId, debugInfo.DebugId})
+			if _, exists := processedSymbols[debugInfo.DebugId]; exists {
+				if err := os.Remove(destFilePath); err != nil {
+					return nil, nil, err
+				}
+			} else {
+				retBreakpadArray = append(retBreakpadArray, destFilePath)
+				processedSymbols[debugInfo.DebugId] = true
+			}
+		}
+	}
+
+	// Open locally stored .tar file.
+	splitdebugReader, err := os.Open(splitdebugPath)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer splitdebugReader.Close()
+
+	tarReader = tar.NewReader(splitdebugReader)
+
+	// Keep track of the symbols we've already processed for deduping purposes.
+	processedSymbols = map[string]bool{}
+	uniqueSuffix = 1
+
+	// Iterate through the splitdebug tar file saving only the debug symbols.
+	for {
+		header, err := tarReader.Next()
+		// End of file reached, terminate the loop smoothly.
+		if err == io.EOF {
+			break
+		}
+		// An error occurred fetching the next header.
+		if err != nil {
+			return nil, nil, err
+		}
+		// The header indicates it's a file. Store and save the file if it is a
+		// symbol file.
+		if header.FileInfo().Mode().IsRegular() {
+			// Check if the file is a splitdebug file.
+			if !strings.HasSuffix(header.Name, ".debug") {
+				continue
+			}
+			symBase := filepath.Base(header.Name)
+			destFilePath := filepath.Join(outputDir, symBase)
+			symName, _ := strings.CutSuffix(symBase, ".debug")
+
+			if _, err := os.Stat(destFilePath); err == nil {
+				// File already exists, need to append unique suffix.
+				symBase = fmt.Sprintf("%s-%d", symBase, uniqueSuffix)
+				destFilePath = filepath.Join(outputDir, symBase)
+				uniqueSuffix += 1
+			} else if !errors.Is(err, os.ErrNotExist) {
+				return nil, nil, err
+			}
+
+			destFile, err := os.Create(destFilePath)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			// Write contents of the splitdebug file to local storage.
+			_, err = io.Copy(destFile, tarReader)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			debugId := ""
+			buildIds, exists := breakpadBuildIds[symName]
+			if exists && len(buildIds) == 1 {
+				debugId = buildIds[0].debugId
+			} else {
+				if id, err := getBuildId(destFilePath); err == nil {
+					for _, b := range buildIds {
+						if b.buildId == id {
+							debugId = b.debugId
+							break
+						}
+					}
+
+					debugId, err = debugIdFromBuildId(id)
+					if err != nil {
+						return nil, nil, err
+					}
+				}
+			}
+
+			if debugId == "" {
+				LogOut("Couldn't determine debugId for %s", symName)
+				continue
+			}
+
+			if _, exists := processedSymbols[debugId]; exists {
+				if err := os.Remove(destFilePath); err != nil {
+					return nil, nil, err
+				}
+			} else {
+				debugDir := filepath.Join(outputDir, debugId)
+				if err := os.Mkdir(debugDir, 0750); err != nil {
+					return nil, nil, err
+				}
+				debugFilePath := filepath.Join(debugDir, symName+".debug")
+				if err := os.Rename(destFilePath, debugFilePath); err != nil {
+					return nil, nil, err
+				}
+				retSplitdebugArray = append(retSplitdebugArray, debugFilePath)
+				processedSymbols[debugId] = true
+			}
+		}
+	}
+
+	return retSplitdebugArray, retBreakpadArray, err
 }
 
 // unpackKernelTarball will take the local path of the fetched tarball and then unpack
@@ -562,12 +756,12 @@ func unpackKernelTarball(inputPath, outputDir string) (string, error) {
 
 // getDebugFileInformation parses the given file and returns the debug ID and
 // debug filename, e.g. "352EE5D992DDBBBC19519D0ACB4B0B480", "libassistant.so".
-func getDebugFileInformation(filepath string) (*filterSymbolFileInfo, error) {
+func getDebugFileInformation(filepath string) (*filterSymbolFileInfo, string, error) {
 	// Get id from from the first line of the file.
 	file, err := os.Open(filepath)
 	defer file.Close()
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	lineScanner := bufio.NewScanner(file)
 
@@ -577,14 +771,126 @@ func getDebugFileInformation(filepath string) (*filterSymbolFileInfo, error) {
 		// 	The first line of the syms file will read like:
 		// 	  MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F40 blkid
 		if len(line) != 5 {
-			return nil, fmt.Errorf("error: incorrect first line format for symbol file %s", filepath)
+			return nil, "", fmt.Errorf("error: incorrect first line format for symbol file %s", filepath)
 		}
-		return &filterSymbolFileInfo{
+		fi := &filterSymbolFileInfo{
 			DebugFile: line[4],
 			DebugId:   strings.ReplaceAll(line[3], "-", ""),
-		}, nil
+		}
+
+		if lineScanner.Scan() {
+			line := strings.Split(lineScanner.Text(), " ")
+
+			// 	The second line of the syms file will read like:
+			// 	  INFO CODE_ID 6CFAF6F4CBDEF455039C8DE869C8A2F40
+			if len(line) != 3 {
+				return fi, "", nil
+			}
+
+			return fi, line[2], nil
+		} else {
+			return fi, "", nil
+		}
 	}
-	return nil, nil
+	return nil, "", nil
+}
+
+type ElfNoteHeader struct {
+	Namesz uint32
+	Descsz uint32
+	Type   uint32
+}
+
+const NT_GNU_BUILD_ID = 3
+
+func getBuildIdFromNote(buf io.ReadSeeker, byteOrder binary.ByteOrder) (string, error) {
+	nh := new(ElfNoteHeader)
+	off := int64(0)
+	for {
+		buf.Seek(off, io.SeekStart)
+		if err := binary.Read(buf, byteOrder, nh); err == io.EOF {
+			break
+		} else if err != nil {
+			return "", err
+		}
+
+		namesz := (nh.Namesz + 3) & 0xfffffffc
+		descsz := (nh.Descsz + 3) & 0xfffffffc
+		if nh.Type == NT_GNU_BUILD_ID {
+			desc := make([]byte, nh.Descsz)
+
+			buf.Seek(int64(namesz), io.SeekCurrent)
+			if err := binary.Read(buf, binary.NativeEndian, desc); err == io.EOF {
+				break
+			} else if err != nil {
+				return "", err
+			}
+			return strings.ToUpper(hex.EncodeToString(desc)), nil
+		}
+		off += int64(binary.Size(nh)) + int64(namesz+descsz)
+	}
+
+	return "", nil
+}
+
+// getBuildId parses the given file and returns the build ID
+// e.g. "352EE5D992DDBBBC19519D0ACB4B0B480".
+func getBuildId(splitdebugFilepath string) (string, error) {
+	// Get id from the GNU buildid not section of the file
+	file, err := elf.Open(splitdebugFilepath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	if note := file.Section(".note.gnu.build-id"); note != nil {
+		noteData, err := note.Data()
+		if err != nil {
+			return "", err
+		}
+
+		buf := bytes.NewReader(noteData)
+
+		if id, err := getBuildIdFromNote(buf, file.ByteOrder); err != nil {
+			return "", err
+		} else {
+			return id, nil
+		}
+	}
+
+	for _, p := range file.Progs {
+		if p.Type == elf.PT_NOTE {
+			buf := p.Open()
+			if id, err := getBuildIdFromNote(buf, file.ByteOrder); err != nil {
+				return "", err
+			} else if id != "" {
+				return id, nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("splitdebug file missing build-id note: %s", splitdebugFilepath)
+}
+
+// Convert id from build id to debug id
+func debugIdFromBuildId(id string) (string, error) {
+	// debug id is always 33 characters
+	var b strings.Builder
+	for i := 0; i < 33; i++ {
+		// Last byte is always 0
+		if i < len(id) && i < 32 {
+			if err := b.WriteByte(id[i]); err != nil {
+				return "", err
+			}
+		} else {
+			if _, err := b.WriteString("0"); err != nil {
+				return "", err
+			}
+		}
+	}
+
+	s := b.String()
+	return s[6:8] + s[4:6] + s[2:4] + s[0:2] + s[12:16] + s[8:12] + s[16:], nil
 }
 
 // generateKernelDebugId will take a file path and generate debugId containing board and version info.
@@ -610,7 +916,7 @@ func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint6
 
 	// Generate task configurations.
 	for index, filepath := range symbolFiles {
-		debugInfo, err := getDebugFileInformation(filepath)
+		debugInfo, _, err := getDebugFileInformation(filepath)
 		if err != nil {
 			return nil, err
 		}
@@ -626,6 +932,38 @@ func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint6
 		return nil, err
 	}
 	LogOut("%d of %d symbols were duplicates. %d symbols will be sent for upload.", (len(symbolFiles) - len(tasks)), len(symbolFiles), len(tasks))
+
+	return tasks, nil
+}
+
+// generateSplitdebugConfigs will take a list of strings with containing the paths to the
+// unpacked splitdebug files. It will return a list of generated task configs
+// alongside the communication channels to be used.
+func generateSplitdebugConfigs(ctx context.Context, symbolFiles []string, retryQuota uint64, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
+	LogOut("Generating %d task configs", len(symbolFiles))
+
+	// The task should only sleep on retry.
+	shouldSleep := false
+
+	tasks := make([]taskConfig, len(symbolFiles))
+
+	// Generate task configurations.
+	for index, file := range symbolFiles {
+		debugFile, _, found := strings.Cut(filepath.Base(file), ".debug")
+		if !found {
+			return nil, fmt.Errorf("Not a splitdebug file %s", file)
+		}
+		debugId := filepath.Base(filepath.Dir(file))
+
+		tasks[index] = taskConfig{file, "DEBUG_ONLY", debugFile, debugId, dryRun, shouldSleep}
+	}
+
+	// Filter out already uploaded debug symbols.
+	tasks, err := filterTasksAlreadyUploaded(ctx, tasks, dryRun, crash)
+	if err != nil {
+		return nil, err
+	}
+	LogOut("%d of %d splitdebug symbols were duplicates. %d splitdebug symbols will be sent for upload.", (len(symbolFiles) - len(tasks)), len(symbolFiles), len(tasks))
 
 	return tasks, nil
 }
@@ -832,7 +1170,7 @@ func (b *uploadDebugSymbols) validate() error {
 	if !strings.HasPrefix(b.gsPath, "gs://") {
 		return fmt.Errorf("error: -gs-path must point to a google storage location. E.g. gs://some-bucket/debug.tgz")
 	}
-	if !(strings.HasSuffix(b.gsPath, ".tgz") || strings.HasSuffix(b.gsPath, ".tar.xz")) {
+	if b.dataType != "splitdebug" && (!(strings.HasSuffix(b.gsPath, ".tgz") || strings.HasSuffix(b.gsPath, ".tar.xz"))) {
 		return fmt.Errorf("error: -gs-path must point to a compressed tar file. %s", b.gsPath)
 	}
 	if b.dataType == "vmlinux" && !(strings.HasSuffix(b.gsPath, "vmlinuz.tar.xz")) {
@@ -938,6 +1276,62 @@ func (b *uploadDebugSymbols) Run(a subcommands.Application, args []string, env s
 			LogErr(&crash, err.Error())
 			return 1
 		}
+
+		retcode, err = uploadSymbols(tasks, b.workerCount, b.retryQuota, b.staging, crash)
+		if err != nil {
+			LogErr(&crash, err.Error())
+			return 1
+		}
+	} else if b.dataType == "splitdebug" {
+		symbolDir, err := ioutil.TempDir(workDir, "splitdebug")
+		if err != nil {
+			LogErr(&crash, err.Error())
+			return 1
+		}
+
+		zippedSplitdebugSymbolsPath, err := downloadZippedSymbols(authClient, b.gsPath+"/debug.tgz", workDir)
+		if err != nil {
+			LogErr(&crash, err.Error())
+			return 1
+		}
+
+		splitdebugTarbalPath := filepath.Join(workDir, "splitdebug.tar")
+		err = unzipSymbols(zippedSplitdebugSymbolsPath, splitdebugTarbalPath)
+		if err != nil {
+			LogErr(&crash, err.Error())
+			return 1
+		}
+
+		zippedSymbolsPath, err := downloadZippedSymbols(authClient, b.gsPath+"/debug_breakpad.tar.xz", workDir)
+		if err != nil {
+			LogErr(&crash, err.Error())
+			return 1
+		}
+
+		err = unzipSymbols(zippedSymbolsPath, tarbalPath)
+		if err != nil {
+			LogErr(&crash, err.Error())
+			return 1
+		}
+
+		debugFiles, symbolFiles, err := unpackSplitdebugTarballs(splitdebugTarbalPath, tarbalPath, symbolDir)
+		if err != nil {
+			LogErr(&crash, err.Error())
+			return 1
+		}
+
+		tasks, err := generateConfigs(ctx, symbolFiles, b.retryQuota, b.dryRun, crash)
+		if err != nil {
+			LogErr(&crash, err.Error())
+			return 1
+		}
+
+		debugTasks, err := generateSplitdebugConfigs(ctx, debugFiles, b.retryQuota, b.dryRun, crash)
+		if err != nil {
+			LogErr(&crash, err.Error())
+			return 1
+		}
+		tasks = append(tasks, debugTasks...)
 
 		retcode, err = uploadSymbols(tasks, b.workerCount, b.retryQuota, b.staging, crash)
 		if err != nil {
