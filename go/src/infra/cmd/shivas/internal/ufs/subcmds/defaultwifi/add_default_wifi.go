@@ -38,7 +38,7 @@ var AddDefaultWifiCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.newSpecsFile, "f", "", cmdhelp.DefaultWifiFileText)
 
 		c.Flags.StringVar(&c.name, "name", "", "name of UFS zone or DUT pool with the wifi (all in lower case, and zone name must prefixed with 'zone_')")
-		c.Flags.StringVar(&c.projectID, "project-id ", "unifed-fleet-system", "project ID of the GCP Secret Manager hosting the wifi secret")
+		c.Flags.StringVar(&c.projectID, "project-id ", "unified-fleet-system", "project ID of the GCP Secret Manager hosting the wifi secret")
 		c.Flags.StringVar(&c.secretName, "secret-name", "", "the secret name in the GCP Secret Manager")
 		return c
 	},
