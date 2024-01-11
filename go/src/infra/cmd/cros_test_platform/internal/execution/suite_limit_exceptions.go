@@ -169,4 +169,8 @@ var exceptions = []suiteFilter{
 		suiteName:  "paygen_au_beta",
 		expiration: time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
+	{
+		suiteName:  "paygen_au_canary",
+		expiration: time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC),
+	},
 }
