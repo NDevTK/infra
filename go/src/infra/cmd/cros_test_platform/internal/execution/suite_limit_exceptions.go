@@ -16,10 +16,6 @@ type suiteFilter struct {
 // exceptions stores all granted exceptions from the SuiteLimits project. go/sl-tracking-sheet for more information.
 var exceptions = []suiteFilter{
 	{
-		suiteName:  "arc-cts",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
-	},
-	{
 		suiteName:  "arc-cts-long",
 		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
@@ -29,10 +25,6 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "arc-cts-hardware",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
-	},
-	{
-		suiteName:  "arc-cts-qual",
 		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
@@ -48,15 +40,7 @@ var exceptions = []suiteFilter{
 		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
-		suiteName:  "arc-gts",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
-	},
-	{
 		suiteName:  "arc-gts-long",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
-	},
-	{
-		suiteName:  "arc-gts-qual",
 		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
@@ -73,10 +57,6 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "arc-sts-full-t",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
-	},
-	{
-		suiteName:  "arc-sts-incremental-r",
 		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
