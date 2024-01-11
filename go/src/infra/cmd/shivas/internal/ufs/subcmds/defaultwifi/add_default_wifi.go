@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/grpc/prpc"
@@ -37,7 +38,7 @@ var AddDefaultWifiCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.newSpecsFile, "f", "", cmdhelp.DefaultWifiFileText)
 
 		c.Flags.StringVar(&c.name, "name", "", "name of UFS zone or DUT pool with the wifi (all in lower case, and zone name must prefixed with 'zone_')")
-		c.Flags.StringVar(&c.projectId, "project-id ", "unifed-fleet-system", "project ID of the GCP Secret Manager hosting the wifi secret")
+		c.Flags.StringVar(&c.projectID, "project-id ", "unifed-fleet-system", "project ID of the GCP Secret Manager hosting the wifi secret")
 		c.Flags.StringVar(&c.secretName, "secret-name", "", "the secret name in the GCP Secret Manager")
 		return c
 	},
@@ -52,7 +53,7 @@ type addDefaultWifi struct {
 	newSpecsFile string
 
 	name       string
-	projectId  string
+	projectID  string
 	secretName string
 }
 
@@ -127,7 +128,7 @@ func (c *addDefaultWifi) innerRun(a subcommands.Application, args []string, env 
 func (c *addDefaultWifi) parseArgs(wifi *ufspb.DefaultWifi) {
 	wifi.Name = c.name
 	wifi.WifiSecret = &ufspb.Secret{
-		ProjectId:  c.projectId,
+		ProjectId:  c.projectID,
 		SecretName: c.secretName,
 	}
 }
@@ -137,7 +138,7 @@ func (c *addDefaultWifi) validateArgs() error {
 		if c.name != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-name' cannot be specified at the same time.")
 		}
-		if c.projectId != "" {
+		if c.projectID != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe file mode is specified. '-project-id' cannot be specified at the same time.")
 		}
 		if c.secretName != "" {
