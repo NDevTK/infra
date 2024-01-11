@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b90d855_1beb6584",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2024-01-11T15:43:08Z",
+      "side": 1,
+      "message": "Hi John and Leina,\n\nThis is a follow-up to https://crrev.com/c/5184776. Please let me know if I missed anywhere else this switch might be needed.\n\nThanks,\nPeter",
+      "revId": "06633a85dff80b2e7b4ddb4554db8f76c66db69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
