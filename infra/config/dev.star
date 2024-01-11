@@ -747,3 +747,62 @@ luci.builder(
     },
     service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
 )
+
+################################################################################
+## Resources used for configuring a dynamic bucket to test TaskBackendLite.
+## TODO(crbug.com/1502020): Remove it once the testing is done.
+
+luci.bucket(
+    name = "dynamic-hello-world",
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
+            groups = "mdb/chrome-troopers",
+            users = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        ),
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "mdb/chrome-troopers",
+        ),
+    ],
+    dynamic = True,
+)
+
+luci.task_backend(
+    name = "taskbackendlite",
+    target = "lite://bb-taskbackendlite",
+)
+
+luci.dynamic_builder_template(
+    bucket = "dynamic-hello-world",
+    properties = {
+        "fake_prop": "testing_taskbackendlite",
+    },
+    execution_timeout = 2 * time.minute,
+    heartbeat_timeout = 30 * time.second,
+    expiration_timeout = 3 * time.hour,
+    experiments = {
+        "luci.buildbucket.backend_alt": 100,
+    },
+    backend = "taskbackendlite",
+)
+
+load("@stdlib//internal/luci/proto.star", "scheduler_pb")
+
+# Add a luci-scheduler-dev job which needs to manully triggered via UI.
+# It mimics how WebRTC-internal configs a luci-scheduler job in
+# https://chrome-internal.googlesource.com/chrome/webrtc-internal/+/refs/heads/main/infra/config/main.star#162
+def schedule_in_dynamic_bucket(ctx):
+    cfg = ctx.output.get("luci-scheduler-dev.cfg")
+    cfg.job.append(scheduler_pb.Job(
+        id = "taskbackendlite-tester",
+        realm = "dynamic-hello-world",
+        buildbucket = scheduler_pb.BuildbucketTask(
+            server = "cr-buildbucket-dev.appspot.com",
+            bucket = "dynamic-hello-world",
+            builder = "taskbackendlite-tester",
+        ),
+        schedule = "triggered",
+    ))
+
+lucicfg.generator(impl = schedule_in_dynamic_bucket)
