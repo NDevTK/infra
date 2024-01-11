@@ -20,6 +20,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
 // finder is a struct that finds secret (ssid, password etc) by given machine
@@ -207,7 +208,7 @@ func (f *finder) refresh(ctx context.Context) {
 	for _, d := range resp.DefaultWifis {
 		s := d.GetWifiSecret()
 		version := formatFullSecretName(s.GetProjectId(), s.GetSecretName())
-		f.defaultWifis[d.GetName()] = version
+		f.defaultWifis[ufsutil.RemovePrefix(d.GetName())] = version
 	}
 	f.expire = now.Add(30 * time.Minute)
 }
