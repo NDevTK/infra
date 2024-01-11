@@ -140,6 +140,23 @@ func (fs *FleetServerImpl) GetMachineLSE(ctx context.Context, req *ufsAPI.GetMac
 	return machineLSE, err
 }
 
+// GetMachineLSEBySerial gets the machineLSE information from database from serial number.
+func (fs *FleetServerImpl) GetMachineLSEBySerial(ctx context.Context, req *ufsAPI.GetMachineLSEBySerialRequest) (rsp *ufspb.MachineLSE, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	machineLSE, err := controller.GetMachineLSEBySerial(ctx, req.Serial, req.Full)
+	if err != nil {
+		return nil, err
+	}
+	// https://aip.dev/122 - as per AIP guideline
+	machineLSE.Name = util.AddPrefix(util.MachineLSECollection, machineLSE.Name)
+	return machineLSE, err
+}
+
 // BatchGetMachineLSEs gets a batch of machineLSE information from database.
 func (fs *FleetServerImpl) BatchGetMachineLSEs(ctx context.Context, req *ufsAPI.BatchGetMachineLSEsRequest) (rsp *ufsAPI.BatchGetMachineLSEsResponse, err error) {
 	defer func() {

@@ -555,6 +555,23 @@ func (s *DecoratedFleet) GetMachineLSE(ctx context.Context, req *GetMachineLSERe
 	return
 }
 
+func (s *DecoratedFleet) GetMachineLSEBySerial(ctx context.Context, req *GetMachineLSEBySerialRequest) (rsp *models.MachineLSE, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetMachineLSEBySerial", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetMachineLSEBySerial(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetMachineLSEBySerial", rsp, err)
+	}
+	return
+}
+
 func (s *DecoratedFleet) ListMachineLSEs(ctx context.Context, req *ListMachineLSEsRequest) (rsp *ListMachineLSEsResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

@@ -131,6 +131,9 @@ service Fleet {
   // Get retrieves the details of the machineLSE
   rpc GetMachineLSE(GetMachineLSERequest) returns (models.MachineLSE);
 
+  // Get retrieves the details of the machineLSE by serial number
+  rpc GetMachineLSEBySerial(GetMachineLSEBySerialRequest) returns (models.MachineLSE);
+
   // List gets all the machineLSEs
   rpc ListMachineLSEs(ListMachineLSEsRequest) returns (ListMachineLSEsResponse);
 
@@ -1096,6 +1099,15 @@ message GetMachineLSERequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/MachineLSE" }
   ];
+}
+
+message GetMachineLSEBySerialRequest {
+  // The serial number of the machine underlying the host
+  string serial = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+  // if this is true, machinelse will contain the full information of VMs.
+  bool full = 2;
 }
 
 message ListMachineLSEsRequest {

@@ -484,6 +484,14 @@ func (r *GetMachineLSERequest) Validate() error {
 	return validateResourceName(machineLSERegex, MachineLSENameFormat, r.Name)
 }
 
+// Validate validates input requests of GetMachineLSEBySerial.
+func (r *GetMachineLSEBySerialRequest) Validate() error {
+	if r.Serial == "" {
+		return status.Errorf(codes.InvalidArgument, NilEntity)
+	}
+	return nil
+}
+
 // Validate validates input requests of DeleteMachineLSE.
 func (r *DeleteMachineLSERequest) Validate() error {
 	return validateResourceName(machineLSERegex, MachineLSENameFormat, r.Name)

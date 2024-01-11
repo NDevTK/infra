@@ -3895,6 +3895,7 @@ func TestUpdateAudioboxJackpluggerStates(t *testing.T) {
 		})
 	})
 }
+
 func TestUpdateMachineLSEDevboard(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
@@ -3923,6 +3924,87 @@ func TestUpdateMachineLSEDevboard(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp.GetChromeosMachineLse().GetDeviceLse().GetDevboard().GetPools(), ShouldNotContain, "new-pool")
+		})
+	})
+}
+
+func TestGetMachineLSEBySerial(t *testing.T) {
+	//t.Parallel()
+	ctx := testingContext()
+	Convey("GetMachineLSEBySerial", t, func() {
+		Convey("GetMachineLSEBySerial - Missing machine", func() {
+			_, err := GetMachineLSEBySerial(ctx, "e34a2b3c8c8e9f9acc", true)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
+		})
+		Convey("GetMachineLSEBySerial - Missing machine lse", func() {
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name:         "machine-100",
+				SerialNumber: "e34a2b3c8c8e9f9acc",
+			})
+			So(err, ShouldBeNil)
+			_, err = GetMachineLSEBySerial(ctx, "e34a2b3c8c8e9f9acc", true)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
+		})
+		Convey("GetMachineLSEBySerial - Multiple machines with serial", func() {
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name:         "machine-102",
+				SerialNumber: "e34a2b3c8c8e9f7acc",
+			})
+			So(err, ShouldBeNil)
+			_, err = registration.CreateMachine(ctx, &ufspb.Machine{
+				Name:         "machine-103",
+				SerialNumber: "e34a2b3c8c8e9f7acc",
+			})
+			So(err, ShouldBeNil)
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name:     "machinelse-102",
+				Machines: []string{"machine-102"},
+				Hostname: "machinelse-102",
+			})
+			So(err, ShouldBeNil)
+			_, err = GetMachineLSEBySerial(ctx, "e34a2b3c8c8e9f7acc", true)
+			So(err, ShouldNotBeNil)
+		})
+		Convey("GetMachineLSEBySerial - Multiple lses with machine", func() {
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name:         "machine-104",
+				SerialNumber: "e34a2b3c8c8e9f2acc",
+			})
+			So(err, ShouldBeNil)
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name:     "machinelse-104",
+				Machines: []string{"machine-104"},
+				Hostname: "machinelse-104",
+			})
+			So(err, ShouldBeNil)
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name:     "machinelse-105",
+				Machines: []string{"machine-104"},
+				Hostname: "machinelse-105",
+			})
+			So(err, ShouldBeNil)
+			_, err = GetMachineLSEBySerial(ctx, "e34a2b3c8c8e9f2acc", true)
+			So(err, ShouldNotBeNil)
+		})
+		Convey("GetMachineLSEBySerial - Happy path", func() {
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name:         "machine-101",
+				SerialNumber: "e34a2b3c8c8e9f8acc",
+			})
+			So(err, ShouldBeNil)
+			host := &ufspb.MachineLSE{
+				Name:     "machinelse-101",
+				Machines: []string{"machine-101"},
+				Hostname: "machinelse-101",
+			}
+			resp, err := inventory.CreateMachineLSE(ctx, host)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, host)
+			resp, err = GetMachineLSEBySerial(ctx, "e34a2b3c8c8e9f8acc", true)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, host)
 		})
 	})
 }

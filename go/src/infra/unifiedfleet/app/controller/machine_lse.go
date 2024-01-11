@@ -479,6 +479,35 @@ func GetMachineLSE(ctx context.Context, id string) (*ufspb.MachineLSE, error) {
 	return lse, nil
 }
 
+// GetMachineLSEBySerial returns the machine_lse associated with the serial number of the machine.
+func GetMachineLSEBySerial(ctx context.Context, serial string, full bool) (*ufspb.MachineLSE, error) {
+	filter := fmt.Sprintf("%s=%s", util.SerialNumberFilterName, serial)
+	machines, _, err := ListMachines(ctx, 2, "", filter, true, false)
+	if err != nil {
+		return nil, errors.Annotate(err, "GetMachineLSEBySerial - Failed to get machines").Err()
+	}
+	// There should be exactly one machine with the given serial.
+	if len(machines) > 1 {
+		return nil, errors.Reason("GetMachineLSEBySerial - unexpected!! multiple machines[%v] with same serial %s", machines, serial).Err()
+	}
+	if len(machines) == 0 {
+		return nil, errors.Reason("GetMachineLSEBySerial - Entity not found. No such machine").Err()
+	}
+	lseFilter := fmt.Sprintf("%s=%s", util.MachineFilterName, machines[0].GetName())
+	machineLses, _, err := ListMachineLSEs(ctx, 2, "", lseFilter, false, full)
+	if err != nil {
+		return nil, errors.Annotate(err, "GetMachineLSEBySerial - Failed to get machine LSE").Err()
+	}
+	// There should be exactly one machine lse configured for the machine
+	if len(machineLses) > 1 {
+		return nil, errors.Reason("GetMachineLSEBySerial - unexpected!! multiple machine lses[%v] with same machine %s", machineLses, machines[0]).Err()
+	}
+	if len(machineLses) == 0 {
+		return nil, errors.Reason("GetMachineLSEBySerial - Entity not found, No Lse setup for the machine").Err()
+	}
+	return machineLses[0], nil
+}
+
 // BatchGetMachineLSEs returns a batch of machine lses
 func BatchGetMachineLSEs(ctx context.Context, ids []string) ([]*ufspb.MachineLSE, error) {
 	lses, err := inventory.BatchGetMachineLSEs(ctx, ids)
