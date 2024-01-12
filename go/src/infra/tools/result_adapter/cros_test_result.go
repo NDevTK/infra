@@ -242,6 +242,8 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 			tags = AppendTags(tags, "main_builder_name", testCaseInfo.GetMainBuilderName())
 			tags = AppendTags(tags, "contacts", strings.Join(testCaseInfo.GetContacts(), ","))
 			tags = AppendTags(tags, "suite", testCaseInfo.GetSuite())
+
+			tags = configTestMetadataTags(tags, testCaseInfo.GetTestCaseMetadata())
 		}
 
 		timeInfo := testRun.GetTimeInfo()
@@ -419,5 +421,18 @@ func configMultiDUTTags(tags []*pb.StringPair, primaryExecInfo *artifactpb.Execu
 	// Concatenates board names and model names separately.
 	newTags = AppendTags(newTags, "secondary_boards", strings.Join(secondaryBoards, " | "))
 	newTags = AppendTags(newTags, "secondary_models", strings.Join(secondaryModels, " | "))
+	return newTags
+}
+
+// configTestMetadataTags configs test result tags based on the test case metadata.
+func configTestMetadataTags(tags []*pb.StringPair, testMetadata *apipb.TestCaseMetadata) []*pb.StringPair {
+	metadataTags := metadataToTags(testMetadata)
+	if len(metadataTags) == 0 {
+		return tags
+	}
+
+	newTags := make([]*pb.StringPair, 0, len(tags)+len(metadataTags))
+	newTags = append(newTags, tags...)
+	newTags = append(newTags, metadataTags...)
 	return newTags
 }

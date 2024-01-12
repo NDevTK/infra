@@ -80,6 +80,30 @@
                             "value":"rlz_CheckPing"
                         },
                         "name":"rlz_CheckPing"
+                    },
+                    "test_case_info":{
+                        "owners": [
+                            {
+                                "email": "owner1@test.com"
+                            },
+                            {
+                                "email": "owner2@test.com"
+                            }
+                        ],
+                        "bug_component": {
+                            "value": "b:1234"
+                        },
+                        "criteria": {
+                            "value": "Tauto wrapper for specified tast tests"
+                        },
+                        "requirements": [
+                            {
+                                "value": "requirement 1"
+                            },
+                            {
+                                "value": "requirement 2"
+                            }
+                        ]
                     }
                 },
                 "test_case_result":{
