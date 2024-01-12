@@ -16,6 +16,24 @@
       "message": "Are these changes related to cache checking?",
       "revId": "75a25a7ebb072debc2323357b1796ee7e27182f5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3c616ad_e536c462",
+        "filename": "go/src/infra/cros/recovery/config_trees/cros_deploy.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 36664,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-01-12T00:20:12Z",
+      "side": 0,
+      "message": "yes, so we can say if that is working or not.",
+      "parentUuid": "07333abf_f541d6ad",
+      "revId": "75a25a7ebb072debc2323357b1796ee7e27182f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
