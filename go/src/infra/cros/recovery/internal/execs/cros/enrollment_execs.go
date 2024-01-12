@@ -6,7 +6,6 @@ package cros
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
 	"strings"
 	"time"
@@ -18,11 +17,6 @@ import (
 	"infra/cros/recovery/internal/retry"
 )
 
-const (
-	// The path to get the value of the Flag 2
-	VPD_CACHE = `/mnt/stateful_partition/unencrypted/cache/vpd/full-v2.txt`
-)
-
 // isEnrollmentInCleanState confirms that the device's enrollment state is clean
 //
 // Verify that the device's enrollment state is clean.
@@ -32,10 +26,9 @@ const (
 //
 //	/home/.shadow/install_attributes.pb
 //
-// Flag 2 - The value of "check_enrollment" from VPD. Can be obtained by
+// Flag 2 - The value of "check_enrollment" from VPD. Can be obtained by running
 //
-//	reading the cache file in
-//	/mnt/stateful_partition/unencrypted/cache/vpd/full-v2.txt
+//	vpd -g check_enrollment -i RW_VPD
 //
 // The states:
 // State 1 - Device is enrolled, means flag 1 is true and in flag 2 check_enrollment=1
@@ -52,11 +45,10 @@ const (
 // as unacceptable state here as they may interfere with normal tests.
 func isEnrollmentInCleanStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
-	command := fmt.Sprintf(`grep "check_enrollment" %s`, VPD_CACHE)
-	result, err := run(ctx, time.Minute, command)
+	result, err := run(ctx, time.Minute, "vpd -g check_enrollment -i RW_VPD")
 	if err == nil {
-		log.Debugf(ctx, "Enrollment state in VPD cache: %s", result)
-		if result != `"check_enrollment"="0"` {
+		log.Debugf(ctx, "Enrollment state: %s", result)
+		if result != "0" {
 			return errors.Reason("enrollment in clean state: failed, The device is enrolled, it may interfere with some tests").Err()
 		}
 		return nil
