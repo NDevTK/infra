@@ -13,15 +13,21 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/mock/gomock"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
+	. "go.chromium.org/luci/common/testing/assertions"
 	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 
 	"infra/cros/satlab/common/dut"
 	"infra/cros/satlab/common/enumeration"
@@ -42,8 +48,6 @@ import (
 	ufsApi "infra/unifiedfleet/api/v1/rpc"
 	ufspb "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
-
-	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 )
 
 type mockDeleteClient struct {
@@ -99,7 +103,11 @@ func createMockServer(t *testing.T) *SatlabRpcServiceServer {
 	var mockDUTService = new(mk.MockDUTServices)
 
 	// Create a Mock `ISwarmingService`
-	var swarmingService = new(services.MockSwarmingService)
+	// var swarmingService = new(services.MockISwarmingService) //new(services.MockSwarmingService)
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+
+	var swarmingService = services.NewMockISwarmingService(ctl)
 
 	// Create a SATLab Server
 	return New(true, mockBuildService, mockBucketService, mockDUTService, nil, swarmingService)
@@ -883,10 +891,13 @@ func TestGetVersionInfoShouldFail(t *testing.T) {
 
 func TestGetDUTDetailShouldSuccess(t *testing.T) {
 	t.Parallel()
-
 	ctx := context.Background()
-	// Create a mock data
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+	mockSwarm := services.NewMockISwarmingService(ctl)
+
 	s := createMockServer(t)
+	s.swarmingService = mockSwarm
 	s.commandExecutor = &executor.FakeCommander{
 		CmdOutput: `
 192.168.231.137	satlab-0wgtfqin1846803b-one
@@ -896,44 +907,31 @@ func TestGetDUTDetailShouldSuccess(t *testing.T) {
   `,
 	}
 	mockData := &swarmingapi.BotInfo{BotId: "test bot"}
-	s.swarmingService.(*services.MockSwarmingService).
-		On("GetBot", ctx, mock.Anything).
-		Return(mockData, nil)
 
-	req := &pb.GetDutDetailRequest{
-		Address: "192.168.231.222",
-	}
-	resp, err := s.GetDutDetail(ctx, req)
+	Convey("GetDUTDetailShouldSuccess", t, func() {
+		mockSwarm.EXPECT().GetBot(ctx, "satlab-0wgtfqin1846803b-host12").Return(mockData, nil)
 
-	// Assert
-	if err != nil {
-		t.Errorf("Should not return error, but got an error: {%v}", err)
-	}
+		// Act
+		req := &pb.GetDutDetailRequest{
+			Address: "192.168.231.222",
+		}
+		resp, err := s.GetDutDetail(ctx, req)
+		So(err, ShouldBeNil)
+		So(resp, ShouldResembleProto, &pb.GetDutDetailResponse{
+			BotId:      "test bot",
+			Dimensions: []*pb.StringListPair{},
+		})
+	})
 
-	// Create a expected result
-	expected := &pb.GetDutDetailResponse{
-		BotId:      "test bot",
-		Dimensions: []*pb.StringListPair{},
-	}
-	// ignore pb fields in `FirmwareUpdateCommandOutput`
-	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.GetDutDetailResponse{})
-
-	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts); diff != "" {
-		t.Errorf("Expected: {%v}, got: {%v}, %v", expected, resp, diff)
-	}
 }
 
 func TestListDutTasksShouldSuccess(t *testing.T) {
 	t.Parallel()
-
 	ctx := context.Background()
-	// Create a mock data
-	s := createMockServer(t)
-	s.commandExecutor = &executor.FakeCommander{
-		CmdOutput: `
-192.168.231.222	satlab-0wgtfqin1846803b-host12
-  `,
-	}
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+	mockSwarm := services.NewMockISwarmingService(ctl)
+
 	mockData := &services.TasksIterator{
 		Cursor: "next_cursor",
 		Tasks: []services.Task{
@@ -942,46 +940,47 @@ func TestListDutTasksShouldSuccess(t *testing.T) {
 			},
 		},
 	}
-	s.swarmingService.(*services.MockSwarmingService).
-		On("ListBotTasks", ctx, mock.Anything, mock.Anything, mock.Anything).
-		Return(mockData, nil)
 
+	// Create a mock data
+	s := createMockServer(t)
+	s.swarmingService = mockSwarm
+
+	s.commandExecutor = &executor.FakeCommander{
+		CmdOutput: `
+192.168.231.222	satlab-0wgtfqin1846803b-host12
+  `,
+	}
+
+	Convey("ListDutTasksShouldSuccess", t, func() {
+		mockSwarm.EXPECT().ListBotTasks(ctx, "satlab-0wgtfqin1846803b-host12", "", 1).Return(mockData, nil)
 		// Act
-	req := &pb.ListDutTasksRequest{
-		PageToken: "",
-		PageSize:  1,
-		Address:   "192.168.231.222",
-	}
-	resp, err := s.ListDutTasks(ctx, req)
-
-	// Assert
-	if err != nil {
-		t.Errorf("Should not return error, but got an error: {%v}", err)
-	}
-
-	// Create a expected result
-	expected := &pb.ListDutTasksResponse{
-		NextPageToken: "next_cursor",
-		Tasks: []*pb.Task{
-			{
-				Id: "task id",
-			},
-		},
-	}
-	// ignore pb fields in `FirmwareUpdateCommandOutput`
-	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutTasksResponse{}, pb.Task{})
-
-	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts); diff != "" {
-		t.Errorf("Expected: {%v}, got: {%v}, %v", expected, resp, diff)
-	}
+		req := &pb.ListDutTasksRequest{
+			PageToken: "",
+			PageSize:  1,
+			Address:   "192.168.231.222",
+		}
+		resp, err := s.ListDutTasks(ctx, req)
+		So(err, ShouldBeNil)
+		So(resp, ShouldResembleProto, &pb.ListDutTasksResponse{
+			NextPageToken: "next_cursor",
+			Tasks: []*pb.Task{
+				{
+					Id: "task id",
+				},
+			}})
+	})
 }
 
 func TestListDutEventsShouldSuccess(t *testing.T) {
-	t.Parallel()
 
+	t.Parallel()
 	ctx := context.Background()
-	// Create a mock data
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+	mockSwarm := services.NewMockISwarmingService(ctl)
+
 	s := createMockServer(t)
+	s.swarmingService = mockSwarm
 	s.commandExecutor = &executor.FakeCommander{
 		CmdOutput: `
 192.168.231.222	satlab-0wgtfqin1846803b-host12
@@ -995,38 +994,28 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 			},
 		},
 	}
-	s.swarmingService.(*services.MockSwarmingService).
-		On("ListBotEvents", ctx, mock.Anything, mock.Anything, mock.Anything).
-		Return(mockData, nil)
+
+	Convey("ListDutEventsShouldSuccess", t, func() {
+		mockSwarm.EXPECT().ListBotEvents(ctx, "satlab-0wgtfqin1846803b-host12", "", 1).Return(mockData, nil)
 
 		// Act
-	req := &pb.ListDutEventsRequest{
-		PageToken: "",
-		PageSize:  1,
-		Address:   "192.168.231.222",
-	}
-	resp, err := s.ListDutEvents(ctx, req)
-
-	// Assert
-	if err != nil {
-		t.Errorf("Should not return error, but got an error: {%v}", err)
-	}
-
-	// Create a expected result
-	expected := &pb.ListDutEventsResponse{
-		NextPageToken: "next_cursor",
-		Events: []*pb.BotEvent{
-			{
-				TaskId: "task id",
+		req := &pb.ListDutEventsRequest{
+			PageToken: "",
+			PageSize:  1,
+			Address:   "192.168.231.222",
+		}
+		resp, err := s.ListDutEvents(ctx, req)
+		So(err, ShouldBeNil)
+		So(resp, ShouldResembleProto, &pb.ListDutEventsResponse{
+			NextPageToken: "next_cursor",
+			Events: []*pb.BotEvent{
+				{
+					TaskId: "task id",
+				},
 			},
-		},
-	}
-	// ignore pb fields in `FirmwareUpdateCommandOutput`
-	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutEventsResponse{}, pb.BotEvent{})
+		})
+	})
 
-	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts); diff != "" {
-		t.Errorf("Expected: {%v}, got: {%v}, %v", expected, resp, diff)
-	}
 }
 
 func getDUTOutput() []byte {
@@ -1947,4 +1936,91 @@ Task Link: https://chromeos-swarming.appspot.com/`), nil
 		t.Errorf("unexpected diff: %v\n", diff)
 	}
 
+}
+
+func TestListTasksShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+	mockSwarm := services.NewMockISwarmingService(ctl)
+
+	expectedData := &services.JobsIterator{
+		Cursor: "next_cursor",
+		Jobs: []*pb.Job{
+			{
+				JobId:       "1234",
+				Name:        "suite:audio",
+				CreatedTime: &timestamppb.Timestamp{Seconds: 1517260502, Nanos: 649750000},
+				Status:      pb.Job_PENDING,
+				Hostname:    "",
+				LabelPool:   "pool_1",
+				SatlabId:    "satlab-id",
+			},
+		},
+	}
+
+	mockTr := []*swarmingapi.TaskResultResponse{
+		{
+			State:     swarmingapi.TaskState_PENDING,
+			CreatedTs: &timestamppb.Timestamp{Seconds: 1517260502, Nanos: 649750000},
+			Tags: []string{
+				"authenticated:project:crproj",
+				"buildbucket_bucket:proj/external-abc-xyz",
+				"buildbucket_build_id:1234",
+				"builder:cros_test_platform",
+				"label-pool:pool_1",
+				"luci_project:crproj",
+				"pool:external-pool",
+				"satlab-id:satlab-id",
+				"test-type:suite",
+				"label-suite:audio",
+			},
+			BotDimensions: []*swarmingapi.StringListPair{
+				{
+					Key:   "dut_name",
+					Value: []string{"dut1"},
+				},
+			},
+		},
+	}
+
+	mockTaskResults := &swarmingapi.TaskListResponse{
+		Items:  mockTr,
+		Cursor: "next_cursor",
+	}
+
+	// Create a mock data
+	s := createMockServer(t)
+	s.swarmingService = mockSwarm
+
+	Convey("TestListTasksShouldSuccess", t, func() {
+		req := &pb.ListJobsRequest{
+			PageToken: "",
+			Limit:     1,
+			Tags: []*pb.Tag{
+				{Key: "pool", Value: "ext"},
+				{Key: "satlab-id", Value: "satlab-id"}},
+		}
+		mockSwarm.EXPECT().ListTasks(ctx, getTaskListReq(req)).Return(mockTaskResults, nil)
+		resp, err := s.ListJobs(ctx, req)
+		So(err, ShouldBeNil)
+		So(resp, ShouldResembleProto, &pb.ListJobsResponse{
+			NextPageToken: expectedData.Cursor,
+			Jobs:          expectedData.Jobs,
+		})
+	})
+}
+
+func getTaskListReq(in *pb.ListJobsRequest) *swarmingapi.TasksWithPerfRequest {
+	return &swarmingapi.TasksWithPerfRequest{
+		Start:                   in.GetCreatedTimeGt(),
+		End:                     in.GetCreatedTimeLt(),
+		Tags:                    getListTasksRequestTags(in),
+		Limit:                   int32(in.GetLimit()),
+		State:                   swarmingapi.StateQuery(in.GetQueryStatus()), // default is PENDING
+		Sort:                    swarmingapi.SortQuery(in.GetSortBy()),       // default is CREATED_TS
+		Cursor:                  in.GetPageToken(),
+		IncludePerformanceStats: false,
+	}
 }

@@ -19,8 +19,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/go-version"
+
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/luci/common/logging"
+	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 
 	"infra/cmd/shivas/utils"
 	"infra/cros/dutstate"
@@ -1324,4 +1326,174 @@ func (s *SatlabRpcServiceServer) RepairDuts(ctx context.Context, in *pb.RepairDu
 	}
 
 	return &pb.RepairDutsResponse{Result: res}, nil
+}
+
+// ListJobs a GRPC call to list all jobs(swarming tasks) based on filters.
+func (s *SatlabRpcServiceServer) ListJobs(ctx context.Context, in *pb.ListJobsRequest) (*pb.ListJobsResponse, error) {
+	logging.Infof(ctx, "gRPC Service triggered: ListJobs")
+
+	if err := s.validateServices(); err != nil {
+		logging.Errorf(ctx, "gRPC Service error: ListJobs: need to login before using this")
+		return nil, err
+	}
+
+	limit := in.GetLimit()
+	if limit == 0 {
+		limit = 30
+	}
+	// Swarming API to list all tasks for given filters.
+	resp, err := s.swarmingService.ListTasks(ctx, &swarmingapi.TasksWithPerfRequest{
+		Start:                   in.GetCreatedTimeGt(),
+		End:                     in.GetCreatedTimeLt(),
+		Tags:                    getListTasksRequestTags(in),
+		Limit:                   int32(limit),
+		State:                   swarmingapi.StateQuery(in.GetQueryStatus()), // default is PENDING
+		Sort:                    swarmingapi.SortQuery(in.GetSortBy()),       // default is CREATED_TS
+		Cursor:                  in.GetPageToken(),
+		IncludePerformanceStats: false,
+	})
+
+	if err != nil {
+		logging.Errorf(ctx, "failed to list tasks for the request %v, error: %v", in, err)
+		return nil, err
+	}
+
+	jobs := []*pb.Job{}
+	// Iterate through the list of tasks fetched from Swarming
+	for _, row := range resp.GetItems() {
+		// Extract the required information for UI from the Swarming task
+		job, err := getJobDetails(ctx, row)
+		if err != nil {
+			continue
+		}
+		jobs = append(jobs, job)
+	}
+
+	return &pb.ListJobsResponse{
+		NextPageToken: resp.Cursor,
+		Jobs:          jobs,
+	}, nil
+
+}
+
+// getListTasksRequestTags return filtering tags for ListTasks.
+func getListTasksRequestTags(in *pb.ListJobsRequest) []string {
+	// Define a tags list by setting a default tag of LUCI buildbucket for a given account.
+	tags := []string{fmt.Sprintf("buildbucket_bucket:%s/%s", site.GetLUCIProject(), site.GetCTPBucket())}
+	//  Swarming ListTasks RPC uses concatenated key:value pair as list of string for tags. eg: ["drone:xyz", "pool:abc"]
+	if in.GetTags() != nil {
+		for _, v := range in.GetTags() {
+			tagPair := fmt.Sprintf("%s:%v", v.GetKey(), v.GetValue())
+			tags = append(tags, tagPair)
+		}
+	}
+
+	// Fine tune filters to get only CTP builds when search is for suite or testplan
+	if in.JobType == pb.Job_SUITE || in.JobType == pb.Job_TESTPLAN {
+		tags = append(tags, fmt.Sprintf("%s:%s", site.BuilderTag, site.GetCTPBuilder()))
+	} else if in.JobType == pb.Job_TEST {
+		tags = append(tags, fmt.Sprintf("%s:%s", site.BuilderTag, site.DefaultTestRunnerBuilderName))
+	} else { // Filter for both CTP and Testrunner builds
+		tags = append(tags, fmt.Sprintf("%s:%s|%s", site.BuilderTag, site.DefaultTestRunnerBuilderName, site.GetCTPBuilder()))
+	}
+
+	return tags
+}
+
+// getJobDetails extracts tasks details used by Satlab UI.
+func getJobDetails(ctx context.Context, taskInfo *swarmingapi.TaskResultResponse) (*pb.Job, error) {
+	if taskInfo == nil {
+		return nil, errors.New("task is empty, cannot process task details")
+	}
+
+	tagsInfo := convertTagsSliceToMap(taskInfo.GetTags())
+
+	if tagsInfo == nil {
+		return nil, errors.New("could not determine task tags")
+	}
+
+	job := pb.Job{}
+	job.CreatedTime = taskInfo.GetCreatedTs()
+	job.StartTime = taskInfo.GetStartedTs()
+	job.FinishedTime = taskInfo.GetCompletedTs()
+	job.Status = getJobStatus(taskInfo)
+
+	job.JobId = tagsInfo[site.BuildBucketIDTag]
+	job.SatlabId = tagsInfo[site.SatlabIDTag]
+	job.LabelPool = tagsInfo[site.LabelPoolTag]
+	job.ParentJobId = tagsInfo[site.ParentBuildBucketIDTag]
+
+	if tagsInfo[site.BuilderTag] == site.GetCTPBuilder() {
+		if tagsInfo[site.TestTypeTag] == site.TestPlan {
+			job.Name = fmt.Sprintf("%s:%s", site.TestPlan, tagsInfo[site.TestPlanIDTag])
+		} else if tagsInfo[site.TestTypeTag] == site.Suite {
+			job.Name = fmt.Sprintf("%s:%s", site.Suite, tagsInfo[site.LabelSuiteTag])
+
+		}
+	} else {
+		job.Name = tagsInfo[site.DisplayNameTag]
+		// CTP task we don't need hostname as it is ran on GCE VM bots
+		job.Hostname = getDutHostName(taskInfo.GetBotDimensions())
+	}
+
+	logging.Infof(ctx, "Job with details %s, %s, %s", job.LabelPool, job.Name, job.Hostname)
+
+	return &job, nil
+}
+
+// getJobStatus converts Swarming Task state to Satlab Job status.
+func getJobStatus(taskInfo *swarmingapi.TaskResultResponse) pb.Job_JobStatus {
+	// Map the swarming task State to Job status
+	switch taskInfo.GetState() {
+	case swarmingapi.TaskState_COMPLETED:
+		if !taskInfo.GetFailure() {
+			return pb.Job_COMPLETE_SUCCESS
+		} else {
+			return pb.Job_COMPLETE_FAILURE
+		}
+	case swarmingapi.TaskState_RUNNING:
+		return pb.Job_RUNNING
+	case swarmingapi.TaskState_PENDING:
+		return pb.Job_PENDING
+	case swarmingapi.TaskState_EXPIRED:
+		return pb.Job_EXPIRED
+	case swarmingapi.TaskState_TIMED_OUT:
+		return pb.Job_TIMED_OUT
+	default:
+		return pb.Job_ABORTED
+	}
+}
+
+// getDutHostName gets the DUT hostname from swarming task's bot dimensions.
+func getDutHostName(botDims []*swarmingapi.StringListPair) string {
+	for _, dim := range botDims {
+		if dim.Key != site.DutNameTag {
+			continue
+		}
+		if len(dim.Value) != 1 {
+			return ""
+		}
+		return dim.Value[0]
+	}
+
+	return ""
+}
+
+// convertTagsSliceToMap converts the list of key:value strings to map.
+func convertTagsSliceToMap(tags []string) map[string]string {
+	// Create an empty map
+	tagsMap := map[string]string{}
+	// Iterate over the array and split each key-value pair
+	for _, kv := range tags {
+		parts := strings.SplitN(kv, ":", 2) // Split using a colon as the separator
+		if len(parts) < 2 {
+			continue
+		}
+		key := parts[0]
+		value := parts[1]
+		// Add the key-value pair to the map
+		tagsMap[key] = value
+	}
+
+	return tagsMap
 }

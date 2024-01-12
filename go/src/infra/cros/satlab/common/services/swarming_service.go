@@ -8,8 +8,12 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/grpc"
+
+	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/grpc/prpc"
 	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
@@ -54,6 +58,12 @@ type BotEventsIterator struct {
 	Events []BotEvent
 }
 
+// JobsIterator is a struct contains list of events
+type JobsIterator struct {
+	Cursor string
+	Jobs   []*pb.Job
+}
+
 // ISwarmingService is the interface provides different services.
 type ISwarmingService interface {
 	// GetBot get the bot information from swarming API.
@@ -64,11 +74,22 @@ type ISwarmingService interface {
 
 	// ListBotEvents lsit the bot events from swarming API
 	ListBotEvents(ctx context.Context, hostname, cursor string, pageSize int) (*BotEventsIterator, error)
+
+	// ListTasks lists the tasks from swarming API based on the tags passed.
+	// ListTasks(ctx context.Context, in *pb.ListJobsRequest) (*JobsIterator, error)
+	ListTasks(ctx context.Context, in *swarmingapi.TasksWithPerfRequest) (*swarmingapi.TaskListResponse, error)
+}
+
+type TasksClient interface {
+	ListTasks(ctx context.Context, in *swarmingapi.TasksWithPerfRequest, opts ...grpc.CallOption) (*swarmingapi.TaskListResponse, error)
 }
 
 // SwarmingService is the implementation of ISwarmingService
 type SwarmingService struct {
+	// Swarming Bot Client
 	client swarmingapi.BotsClient
+	// Swarming Tasks Client
+	tasksClient TasksClient //swarmingapi.TasksClient
 }
 
 // NewSwarmingService create a new swarming service
@@ -87,7 +108,13 @@ func NewSwarmingService(ctx context.Context) (ISwarmingService, error) {
 		Host:    site.SwarmingServiceHost,
 	})
 
-	return &SwarmingService{client: client}, nil
+	taskClient := swarmingapi.NewTasksClient(&prpc.Client{
+		C:       c,
+		Options: site.DefaultPRPCOptions,
+		Host:    site.SwarmingServiceHost,
+	})
+
+	return &SwarmingService{client: client, tasksClient: taskClient}, nil
 }
 
 // maybePrepend prepend the bot prefix if the hostname doesn't contain
@@ -195,4 +222,11 @@ func (s *SwarmingService) ListBotEvents(
 	}
 
 	return &BotEventsIterator{Cursor: resp.GetCursor(), Events: events}, nil
+}
+
+// ListTasks returns the list of swarming tasks for given tags and filters
+func (s *SwarmingService) ListTasks(ctx context.Context, in *swarmingapi.TasksWithPerfRequest) (*swarmingapi.TaskListResponse, error) {
+	subCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+	return s.tasksClient.ListTasks(subCtx, in)
 }

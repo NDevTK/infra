@@ -4,31 +4,136 @@
 package services
 
 import (
-	"context"
+	context "context"
+	reflect "reflect"
 
-	"github.com/stretchr/testify/mock"
-	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
+	gomock "github.com/golang/mock/gomock"
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
+	grpc "google.golang.org/grpc"
 )
 
-// MockSwarmingService This object is only for testing
-//
-// Object should provide the same functions that `ISwarmingService` interfaces provide.
-// TODO: I will write a generator for the interface later to generate this file
-type MockSwarmingService struct {
-	mock.Mock
+// MockISwarmingService is a mock of ISwarmingService interface.
+type MockISwarmingService struct {
+	ctrl     *gomock.Controller
+	recorder *MockISwarmingServiceMockRecorder
 }
 
-func (m *MockSwarmingService) GetBot(ctx context.Context, hostname string) (*swarmingapi.BotInfo, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(*swarmingapi.BotInfo), args.Error(1)
+// MockISwarmingServiceMockRecorder is the mock recorder for MockISwarmingService.
+type MockISwarmingServiceMockRecorder struct {
+	mock *MockISwarmingService
 }
 
-func (m *MockSwarmingService) ListBotTasks(ctx context.Context, hostname, cursor string, pageSize int) (*TasksIterator, error) {
-	args := m.Called(ctx, hostname, cursor, pageSize)
-	return args.Get(0).(*TasksIterator), args.Error(1)
+// NewMockISwarmingService creates a new mock instance.
+func NewMockISwarmingService(ctrl *gomock.Controller) *MockISwarmingService {
+	mock := &MockISwarmingService{ctrl: ctrl}
+	mock.recorder = &MockISwarmingServiceMockRecorder{mock}
+	return mock
 }
 
-func (m *MockSwarmingService) ListBotEvents(ctx context.Context, hostname, cursor string, pageSize int) (*BotEventsIterator, error) {
-	args := m.Called(ctx, hostname, cursor, pageSize)
-	return args.Get(0).(*BotEventsIterator), args.Error(1)
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockISwarmingService) EXPECT() *MockISwarmingServiceMockRecorder {
+	return m.recorder
+}
+
+// GetBot mocks base method.
+func (m *MockISwarmingService) GetBot(ctx context.Context, hostname string) (*apipb.BotInfo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBot", ctx, hostname)
+	ret0, _ := ret[0].(*apipb.BotInfo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBot indicates an expected call of GetBot.
+func (mr *MockISwarmingServiceMockRecorder) GetBot(ctx, hostname interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBot", reflect.TypeOf((*MockISwarmingService)(nil).GetBot), ctx, hostname)
+}
+
+// ListBotEvents mocks base method.
+func (m *MockISwarmingService) ListBotEvents(ctx context.Context, hostname, cursor string, pageSize int) (*BotEventsIterator, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListBotEvents", ctx, hostname, cursor, pageSize)
+	ret0, _ := ret[0].(*BotEventsIterator)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListBotEvents indicates an expected call of ListBotEvents.
+func (mr *MockISwarmingServiceMockRecorder) ListBotEvents(ctx, hostname, cursor, pageSize interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBotEvents", reflect.TypeOf((*MockISwarmingService)(nil).ListBotEvents), ctx, hostname, cursor, pageSize)
+}
+
+// ListBotTasks mocks base method.
+func (m *MockISwarmingService) ListBotTasks(ctx context.Context, hostname, cursor string, pageSize int) (*TasksIterator, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListBotTasks", ctx, hostname, cursor, pageSize)
+	ret0, _ := ret[0].(*TasksIterator)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListBotTasks indicates an expected call of ListBotTasks.
+func (mr *MockISwarmingServiceMockRecorder) ListBotTasks(ctx, hostname, cursor, pageSize interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBotTasks", reflect.TypeOf((*MockISwarmingService)(nil).ListBotTasks), ctx, hostname, cursor, pageSize)
+}
+
+// ListTasks mocks base method.
+func (m *MockISwarmingService) ListTasks(ctx context.Context, in *apipb.TasksWithPerfRequest) (*apipb.TaskListResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListTasks", ctx, in)
+	ret0, _ := ret[0].(*apipb.TaskListResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListTasks indicates an expected call of ListTasks.
+func (mr *MockISwarmingServiceMockRecorder) ListTasks(ctx, in interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTasks", reflect.TypeOf((*MockISwarmingService)(nil).ListTasks), ctx, in)
+}
+
+// MockTasksClient is a mock of TasksClient interface.
+type MockTasksClient struct {
+	ctrl     *gomock.Controller
+	recorder *MockTasksClientMockRecorder
+}
+
+// MockTasksClientMockRecorder is the mock recorder for MockTasksClient.
+type MockTasksClientMockRecorder struct {
+	mock *MockTasksClient
+}
+
+// NewMockTasksClient creates a new mock instance.
+func NewMockTasksClient(ctrl *gomock.Controller) *MockTasksClient {
+	mock := &MockTasksClient{ctrl: ctrl}
+	mock.recorder = &MockTasksClientMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTasksClient) EXPECT() *MockTasksClientMockRecorder {
+	return m.recorder
+}
+
+// ListTasks mocks base method.
+func (m *MockTasksClient) ListTasks(ctx context.Context, in *apipb.TasksWithPerfRequest, opts ...grpc.CallOption) (*apipb.TaskListResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListTasks", varargs...)
+	ret0, _ := ret[0].(*apipb.TaskListResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListTasks indicates an expected call of ListTasks.
+func (mr *MockTasksClientMockRecorder) ListTasks(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTasks", reflect.TypeOf((*MockTasksClient)(nil).ListTasks), varargs...)
 }

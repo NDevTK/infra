@@ -118,6 +118,8 @@ const (
 	SwarmingServiceHost = "chromeos-swarming.appspot.com"
 
 	DefaultRPCServerLogFile = "/var/log/satlab/satlab_rpcserver.log"
+	// DefaultTestRunnerBuilderName is the  test_runner builder name
+	DefaultTestRunnerBuilderName = "test_runner"
 	// BotoAccessKeyId is the boto key of the boto config
 	BotoAccessKeyId = "gs_access_key_id"
 	// BotoSecretAccessKey is the boto secret key of the boto config
@@ -147,6 +149,22 @@ The following the are steps this script executes:
    finish the satlab setup)
 --------------------------------------------------------------------------------
 `
+
+// Swarming task tags used to get task details.
+const (
+	BuildBucketIDTag       = "buildbucket_build_id"
+	BuilderTag             = "builder"
+	DisplayNameTag         = "display_name"
+	DutNameTag             = "dut_name"
+	ParentBuildBucketIDTag = "parent_buildbucket_id"
+	LabelPoolTag           = "label-pool"
+	LabelSuiteTag          = "label-suite"
+	SatlabIDTag            = "satlab-id"
+	Suite                  = "suite"
+	TestPlan               = "testplan"
+	TestPlanIDTag          = "test-plan-id"
+	TestTypeTag            = "test-type"
+)
 
 // CommonFlags controls some commonly-used CLI flags.
 type CommonFlags struct {
