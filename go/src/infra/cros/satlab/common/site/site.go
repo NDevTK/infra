@@ -164,6 +164,9 @@ const (
 	TestPlan               = "testplan"
 	TestPlanIDTag          = "test-plan-id"
 	TestTypeTag            = "test-type"
+	MiloSite               = "http://ci.chromium.org/b/"
+	TesthausURLTemplate    = "https://tests.chromeos.goog/p/chromeos/search?union=AND&viewMode=List&"
+	BuildBucketID          = "buildbucket_id"
 )
 
 // CommonFlags controls some commonly-used CLI flags.

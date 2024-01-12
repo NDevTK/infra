@@ -1956,6 +1956,7 @@ func TestListTasksShouldSuccess(t *testing.T) {
 				Hostname:    "",
 				LabelPool:   "pool_1",
 				SatlabId:    "satlab-id",
+				TaskUrl:     "http://ci.chromium.org/b/1234",
 			},
 		},
 	}

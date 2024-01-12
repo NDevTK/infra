@@ -12,6 +12,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -1406,6 +1407,8 @@ func getJobDetails(ctx context.Context, taskInfo *swarmingapi.TaskResultResponse
 		return nil, errors.New("task is empty, cannot process task details")
 	}
 
+	logging.Infof(ctx, "Job with details %#v", taskInfo)
+
 	tagsInfo := convertTagsSliceToMap(taskInfo.GetTags())
 
 	if tagsInfo == nil {
@@ -1434,6 +1437,12 @@ func getJobDetails(ctx context.Context, taskInfo *swarmingapi.TaskResultResponse
 		job.Name = tagsInfo[site.DisplayNameTag]
 		// CTP task we don't need hostname as it is ran on GCE VM bots
 		job.Hostname = getDutHostName(taskInfo.GetBotDimensions())
+	}
+	job.TaskUrl = getMiloBuildLink(tagsInfo)
+
+	// Set results URL only if the task is completed.
+	if taskInfo.GetState() == swarmingapi.TaskState_COMPLETED {
+		job.ResultsUrl = getTestResultsLink(tagsInfo)
 	}
 
 	logging.Infof(ctx, "Job with details %s, %s, %s", job.LabelPool, job.Name, job.Hostname)
@@ -1496,4 +1505,27 @@ func convertTagsSliceToMap(tags []string) map[string]string {
 	}
 
 	return tagsMap
+}
+
+// getMiloBuildLink returns the LUCI Milo build link.
+func getMiloBuildLink(info map[string]string) string {
+	return fmt.Sprintf("%s%s", site.MiloSite, info[site.BuildBucketIDTag])
+}
+
+// getTestResultsLink returns the testhaus result link.
+func getTestResultsLink(info map[string]string) string {
+	filters := fmt.Sprintf("%s~%s", site.BuildBucketID, info[site.BuildBucketIDTag])
+	if info[site.BuilderTag] == site.GetCTPBuilder() {
+		filters = fmt.Sprintf("%s~%s", site.ParentBuildBucketIDTag, info[site.BuildBucketIDTag])
+	}
+	daysToFilter := 30
+	// TODO (prasadv): Add account to the satlab-config.json to avoid parsing.
+	accountID := site.GetUFSZone()
+	re := regexp.MustCompile("[0-9]+")
+	n := re.FindAllString(accountID, -1)
+	if len(n) > 0 {
+		accountID = n[0]
+	}
+
+	return fmt.Sprintf("%sfilters=%s&accountId=%s&days=%d", site.TesthausURLTemplate, filters, accountID, daysToFilter)
 }
