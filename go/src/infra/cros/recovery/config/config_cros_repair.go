@@ -16,9 +16,12 @@ func crosRepairPlan() *Plan {
 }
 
 func crosRepairCriticalActions(skipRepairFailState bool) []string {
-	actions := []string{
+	repairOnlyActions := []string{
 		"Set state: repair_failed",
+		"Verify access to cache",
 		"Collect logs and crashinfo",
+	}
+	otherActions := []string{
 		"Has repair-request for re-image USB-key",
 		"Has repair-request for re-image by USB-key",
 		"Device is pingable",
@@ -75,9 +78,9 @@ func crosRepairCriticalActions(skipRepairFailState bool) []string {
 		"Set state: ready",
 	}
 	if skipRepairFailState {
-		return actions[1:]
+		return otherActions
 	}
-	return actions
+	return append(repairOnlyActions, otherActions...)
 }
 
 func crosRepairActions() map[string]*Action {
@@ -4226,6 +4229,14 @@ func crosRepairActions() map[string]*Action {
 				"device_type:dut",
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Verify access to cache": {
+			Docs: []string{
+				"Verifies connection to the cache service.",
+			},
+			ExecName:               "cache_download_check",
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
 		},
 	}
 }
