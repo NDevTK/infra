@@ -201,19 +201,31 @@ func calculateIntermediateHealthScores(buildCtx context.Context, rows []Row, src
 	step, ctx := build.StartStep(buildCtx, "Calculate intermediate health scores")
 	defer func() { step.End(stepErr) }()
 
+	// Log an error only once when the src config is missing for a builder
+	srcConfigNotFound := make(map[string]bool)
+
 	failedBuilders := 0
 	for i, row := range rows {
 		if srcConfig, ok := srcConfigs[row.Project]; !ok {
 			rows[i].HealthScore = UNSET_SCORE
-			logging.Errorf(ctx, "Src Config not found for project: %s", row.Project)
+			if !srcConfigNotFound[builderID(row.Project, "", "")] {
+				logging.Errorf(ctx, "Src Config not found for project: %s", row.Project)
+				srcConfigNotFound[builderID(row.Project, "", "")] = true
+			}
 			continue
 		} else if bucketSpec, ok := srcConfig.BucketSpecs[row.Bucket]; !ok {
 			rows[i].HealthScore = UNSET_SCORE
-			logging.Errorf(ctx, "Src Config not found for project: %s, bucket: %s", row.Project, row.Bucket)
+			if !srcConfigNotFound[builderID(row.Project, row.Bucket, "")] {
+				logging.Errorf(ctx, "Src Config not found for project: %s, bucket: %s", row.Project, row.Bucket)
+				srcConfigNotFound[builderID(row.Project, row.Bucket, "")] = true
+			}
 			continue
 		} else if builderSpec, ok := bucketSpec[row.Builder]; !ok {
 			rows[i].HealthScore = UNSET_SCORE
-			logging.Errorf(ctx, "Src Config not found for project: %s, bucket: %s, builder: %s", row.Project, row.Bucket, row.Builder)
+			if !srcConfigNotFound[builderID(row.Project, row.Bucket, row.Builder)] {
+				logging.Errorf(ctx, "Src Config not found for project: %s, bucket: %s, builder: %s", row.Project, row.Bucket, row.Builder)
+				srcConfigNotFound[builderID(row.Project, row.Bucket, row.Builder)] = true
+			}
 			continue
 		} else {
 			if len(builderSpec.ProblemSpecs) == 0 {
