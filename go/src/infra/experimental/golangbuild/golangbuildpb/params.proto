@@ -77,6 +77,10 @@ message Inputs {
   // MiscPorts is only supported when CompileOnly is also set.
   bool misc_ports = 18;
 
+  // CompilerLinkerRaceMode controls whether the compiler and linker are built
+  // in race mode to detect data races in their implementations.
+  bool compiler_linker_race_mode = 28;
+
   // Extra environment variables to set for building and testing.
   map<string, string> env = 6;
 

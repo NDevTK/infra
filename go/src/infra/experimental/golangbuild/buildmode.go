@@ -44,6 +44,15 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 
 		// Run `go env` on the resulting toolchain for debugging purposes.
 		_ = cmdStepRun(ctx, "go env", spec.goCmd(ctx, spec.goroot, "env"), true)
+
+		// If requested, reinstall the compiler and linker in race mode.
+		if spec.inputs.CompilerLinkerRaceMode {
+			cmd := spec.goCmd(ctx, spec.goroot, "install", "-race", "cmd/compile", "cmd/link")
+			if r := cmdStepRun(ctx, "go install -race cmd/compile cmd/link", cmd, false); r != nil {
+				err = r
+				return
+			}
+		}
 	}()
 
 	// Check to see if we might have a prebuilt Go in CAS.
