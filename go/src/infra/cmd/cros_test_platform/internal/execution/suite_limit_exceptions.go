@@ -13,144 +13,152 @@ type suiteFilter struct {
 	expiration time.Time
 }
 
+var (
+	// Roughly end of Q2
+	standardExemption = time.Date(2024, time.July, 8, 0, 0, 0, 0, time.UTC)
+
+	// Date beyond the lifetime of this builder to ensure no lapse in coverage
+	releaseLongTerm = time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC)
+)
+
 // exceptions stores all granted exceptions from the SuiteLimits project. go/sl-tracking-sheet for more information.
 var exceptions = []suiteFilter{
 	{
 		suiteName:  "arc-cts-long",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "arc-cts-camera-opendut",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "arc-cts-hardware",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "arc-cts-qual-long",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "arc-cts-vm-stable",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "arc-cts-vm-stable-long",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "arc-gts-long",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "arc-gts-qual-long",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "arc-sts-full",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "arc-sts-full-r",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "arc-sts-full-t",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "bvt-perbuild",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "bvt-tast-arc",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "bvt-tast-cq",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "bvt-tast-cq-cft-crostini",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "bvt-tast-cq-crostini",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "bvt-tast-cq-hw",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "bvt-tast-criticalstaging",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "bvt-tast-informational",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "bvt-tast-cq-non-arc-non-crostini",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "bvt-tast-parallels-informational",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "fieldtrial-testing-config-on-weekly",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "crosbolt_perf_nightly",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "crosbolt_perf_perbuild",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "crosbolt_perf_weekly",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "flex-perbuild",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "chrome-uprev-hw",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "graphics_per-build",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "graphics_per-day",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	{
 		suiteName:  "graphics_per-week",
-		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: standardExemption,
 	},
 	// Release specific exemptions, giving an extra year of time so the
 	// exemption doesn't unexpectedly expire.
 	{
 		suiteName:  "paygen_au_stable",
-		expiration: time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: releaseLongTerm,
 	},
 	{
 		suiteName:  "paygen_au_dev",
-		expiration: time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: releaseLongTerm,
 	},
 	{
 		suiteName:  "paygen_au_beta",
-		expiration: time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: releaseLongTerm,
 	},
 	{
 		suiteName:  "paygen_au_canary",
-		expiration: time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC),
+		expiration: releaseLongTerm,
 	},
 }
