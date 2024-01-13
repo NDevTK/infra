@@ -22,6 +22,7 @@ import (
 type runCommand struct {
 	subcommands.CommandRunBase
 	authFlags   authcli.Flags
+	runID       string
 	prod        bool
 	newBuilds   bool
 	timedEvents bool
@@ -33,6 +34,8 @@ func (c *runCommand) setFlags() {
 	// TODO(b/319273179): Allow a path to local configs to be passed in via CLI
 	// TODO(TBD): Allow for execution of only specified types of TIMED_EVENTS.
 	// E.g. (DAILY | WEEKLY), (DAILY), (FORTNIGHTLY | WEEKLY), etc.
+
+	c.Flags.StringVar(&c.runID, "run-id", common.DefaultString, "Used to manually set the runID. Should only be used by the recipe builder.")
 
 	c.Flags.BoolVar(&c.prod, "prod", false, "Run using prod environments.")
 
@@ -64,7 +67,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	common.Stdout.Printf("Running SuiteSchedulerV1.5... ")
 
 	// Set the RunID for the entire execution run.
-	err = metrics.SetSuiteSchedulerRunID()
+	err = metrics.SetSuiteSchedulerRunID(c.runID)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1

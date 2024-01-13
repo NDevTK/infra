@@ -13,6 +13,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
+
+	"infra/cros/cmd/suite_scheduler/common"
 )
 
 // Pseudo-immutable package variables.
@@ -27,14 +29,17 @@ var (
 
 // SetSuiteSchedulerRunID sets the package variable for the runID. Since we cannot set a
 // compile-time constant for a uuid, this setter incorporates logic to make it pseudo-immutable.
-func SetSuiteSchedulerRunID() error {
+func SetSuiteSchedulerRunID(id string) error {
 	if runID != nil {
 		return fmt.Errorf("suite scheduler runId already set to %s", runID.String())
 	}
 
-	uuid := uuid.NewString()
-	runID = &suschpb.UID{
-		Id: uuid,
+	runID = &suschpb.UID{}
+
+	if id == common.DefaultString {
+		runID.Id = uuid.NewString()
+	} else {
+		runID.Id = id
 	}
 
 	return nil
