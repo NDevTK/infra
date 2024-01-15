@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "lib": ["es2019", "dom", "dom.iterable"],
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
+    "target": "ESNext",
+    "sourceMap": true,
+    "outDir": "out/",
+    "noEmit": true,
+    "isolatedModules": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmitOnError": true,
+    "module": "ESNext",
+    // We cannot use `"moduleResolution": "bundler"` because jest doesn't use a
+    // bundler when building the test code. Additionally, making an separate
+    // "tsconfig.test.json" file to take advantage of the loosen import rules
+    // from `"moduleResolution": "bundler"` (e.g. using an import statement with
+    // an explicit `.ts` extension) could end up breaking the test code at the
+    // type checking step.
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "types": ["@types/jest"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": false
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
