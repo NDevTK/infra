@@ -13,7 +13,7 @@ import "google/api/field_behavior.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
 
 // This proto defines status labels in lab config of a DUT.
-// Next Tag: 24
+// Next Tag: 25
 message DutState {
   ChromeOSDeviceID id = 1;
   PeripheralState servo = 2;
@@ -96,6 +96,9 @@ message DutState {
   string realm = 21 [
     (google.api.field_behavior) = OUTPUT_ONLY
   ];
+
+  // Common version information for a device.
+  VersionInfo version_info = 24;
 }
 
 // Next Tag: 28
@@ -180,4 +183,12 @@ enum HardwareState {
   // Hardware is not detected to run verifiers.
   // (used for USB-drive when it expected but not detected on the device)
   HARDWARE_NOT_DETECTED = 4;
+}
+
+// This proto define common version info we want to record from a device.
+// Next Tag: 4
+message VersionInfo {
+  string os = 1;
+  string ro_firmware = 2;
+  string rw_firmware = 3;
 }
