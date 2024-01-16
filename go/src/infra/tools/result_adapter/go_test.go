@@ -203,25 +203,96 @@ func TestGenerateTestResults(t *testing.T) {
 	})
 }
 
-func TestCopyTestOutput(t *testing.T) {
-	var buf bytes.Buffer
-	r := &goRun{CopyTestOutput: &buf}
-	_, err := r.generateTestResults(context.Background(),
-		[]byte(`{"Action":"start","Package":"example/pkg"}
+var goTestJSONSimple = []byte(`
+{"Action":"start","Package":"example/pkg"}
+{"Action":"run","Package":"example/pkg","Test":"TestA"}
 {"Action":"output","Package":"example/pkg","Test":"TestA","Output":"=== RUN   TestA\n"}
 {"Action":"output","Package":"example/pkg","Test":"TestA","Output":"--- PASS: TestA (0.00s)\n"}
 {"Action":"output","Package":"example/pkg","Output":"PASS\n"}
-{"Action":"output","Package":"example/pkg","Output":"ok  \texample/pkg\t0.123s\n"}`))
-	if err != nil {
-		t.Fatal(err)
+{"Action":"pass","Package":"example/pkg","Test":"TestA"}
+{"Action":"output","Package":"example/pkg","Output":"ok  \texample/pkg\t0.123s\n"}
+{"Action":"pass","Package":"example/pkg"}
+`)
+
+var goTestJSONInterleaved = []byte(`
+{"Action":"start","Package":"example/pkg1"}
+{"Action":"start","Package":"example/pkg2"}
+{"Action":"run","Package":"example/pkg2","Test":"TestB"}
+{"Action":"run","Package":"example/pkg1","Test":"TestA"}
+{"Action":"output","Package":"example/pkg1","Test":"TestA","Output":"=== RUN   TestA\n"}
+{"Action":"output","Package":"example/pkg1","Test":"TestA","Output":"--- PASS: TestA (0.00s)\n"}
+{"Action":"output","Package":"example/pkg2","Test":"TestB","Output":"=== RUN   TestB\n"}
+{"Action":"output","Package":"example/pkg2","Test":"TestB","Output":"--- PASS: TestB (0.00s)\n"}
+{"Action":"output","Package":"example/pkg2","Output":"PASS\n"}
+{"Action":"pass","Package":"example/pkg2","Test":"TestB"}
+{"Action":"output","Package":"example/pkg1","Output":"PASS\n"}
+{"Action":"output","Package":"example/pkg2","Output":"ok  \texample/pkg2\t0.123s\n"}
+{"Action":"pass","Package":"example/pkg2"}
+{"Action":"pass","Package":"example/pkg1","Test":"TestA"}
+{"Action":"output","Package":"example/pkg1","Output":"ok  \texample/pkg1\t0.123s\n"}
+{"Action":"pass","Package":"example/pkg1"}
+`)
+
+func TestCopyTestOutput(t *testing.T) {
+	type test struct {
+		name    string
+		verbose bool
+		input   []byte
+		expect  string
 	}
-	got, want := buf.String(), `=== RUN   TestA
+	for _, test := range []test{
+		{
+			name:    "SimpleVerbose",
+			verbose: true,
+			input:   goTestJSONSimple,
+			expect: `=== RUN   TestA
 --- PASS: TestA (0.00s)
 PASS
 ok  	example/pkg	0.123s
-`
-	if got != want {
-		t.Errorf("test output copy doesn't match:\ngot  %q\nwant %q", got, want)
+`,
+		},
+		{
+			name:    "SimpleNonVerbose",
+			verbose: false,
+			input:   goTestJSONSimple,
+			expect: `ok  	example/pkg	0.123s
+`,
+		},
+		{
+			name:    "InterleavedVerbose",
+			verbose: true,
+			input:   goTestJSONInterleaved,
+			expect: `=== RUN   TestA
+--- PASS: TestA (0.00s)
+PASS
+ok  	example/pkg1	0.123s
+=== RUN   TestB
+--- PASS: TestB (0.00s)
+PASS
+ok  	example/pkg2	0.123s
+`,
+		},
+		{
+			name:    "InterleavedNonVerbose",
+			verbose: false,
+			input:   goTestJSONInterleaved,
+			expect: `ok  	example/pkg1	0.123s
+ok  	example/pkg2	0.123s
+`,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			var buf bytes.Buffer
+			r := &goRun{CopyTestOutput: &buf, VerboseTestOutput: test.verbose}
+			_, err := r.generateTestResults(context.Background(), test.input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, want := buf.String(), test.expect
+			if got != want {
+				t.Errorf("test output copy doesn't match:\ngot  %q\nwant %q", got, want)
+			}
+		})
 	}
 }
 

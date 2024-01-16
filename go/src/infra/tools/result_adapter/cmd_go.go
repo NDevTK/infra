@@ -19,7 +19,11 @@ type goRun struct {
 
 	// CopyTestOutput, if non-nil, specifies where test output
 	// is written to in addition to being uploaded to ResultDB.
-	CopyTestOutput io.StringWriter
+	CopyTestOutput io.Writer
+
+	// VerboseTestOutput, if true, will emit the full test output akin
+	// to go test -v.
+	VerboseTestOutput bool
 }
 
 func cmdGo() *subcommands.Command {
@@ -34,8 +38,13 @@ func cmdGo() *subcommands.Command {
 			r := &goRun{
 				// Print the test output to stdout so that
 				// it's also available as a step log.
-				CopyTestOutput: os.Stdout,
+				CopyTestOutput:    os.Stdout,
+				VerboseTestOutput: true,
 			}
+			r.Flags.BoolVar(&r.VerboseTestOutput, "-v", r.VerboseTestOutput, text.Doc(`
+				Flag to emit the full go test -v output to stdout.
+				If false, then the output will look more like go test without -v.
+			`))
 			r.captureOutput = true
 			// Ignore global flags, go tests are expected to only produce
 			// standard output.

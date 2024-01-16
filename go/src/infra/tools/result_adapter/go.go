@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -57,7 +58,7 @@ func (r *goRun) ensureArgsValid(args []string) ([]string, error) {
 }
 
 func (r *goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb.TestResult, error) {
-	ordered, byID := goTestJsonToTestRecords(ctx, data, r.CopyTestOutput)
+	ordered, byID := goTestJsonToTestRecords(ctx, data, r.CopyTestOutput, r.VerboseTestOutput)
 	return testRecordsToTestProtos(ctx, ordered, byID), nil
 }
 
@@ -68,13 +69,27 @@ func (r *goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb
 // The resulting TestRecord(s) are returned to the caller as a slice in the
 // same order as they were initially seen, and in a map where the test's id
 // maps to its TestRecord.
-func goTestJsonToTestRecords(ctx context.Context, data []byte, copyTestOutput io.StringWriter) ([]*TestRecord, map[string]*TestRecord) {
+func goTestJsonToTestRecords(ctx context.Context, data []byte, copyTestOutput io.Writer, verboseTestOutput bool) ([]*TestRecord, map[string]*TestRecord) {
 	var ordered []*TestRecord
 	var byID = make(map[string]*TestRecord)
 	// Ensure that the scanner below returns the last line in the output.
 	if !bytes.HasSuffix(data, []byte("\n")) {
 		data = append(data, []byte("\n")...)
 	}
+
+	// Set up the test renderer, which will render the go test -json events
+	// to copyTestOutput.
+	var rn *GoTestRenderer
+	var renderFailed bool
+	if copyTestOutput != nil {
+		rn = NewGoTestRenderer(copyTestOutput, verboseTestOutput)
+		defer func() {
+			if err := rn.Close(); err != nil {
+				logging.Warningf(ctx, "failed to finish test output rendering: %v", err)
+			}
+		}()
+	}
+
 	lines := bufio.NewScanner(bytes.NewReader(data))
 	// Iterate over output, parsing an event from each line and making the
 	// appropriate record ingest it.
@@ -95,8 +110,15 @@ func goTestJsonToTestRecords(ctx context.Context, data []byte, copyTestOutput io
 			byID[currentRecord.TestID] = currentRecord
 		}
 		currentRecord.ingest(tEvt)
-		if copyTestOutput != nil {
-			copyTestOutput.WriteString(tEvt.Output)
+
+		// Pass events to the renderer, if available. If we ever fail to render,
+		// stop rendering, otherwise we'll likely be emitting a lot of error lines
+		// for no reason.
+		if rn != nil && !renderFailed {
+			if err := rn.Ingest(tEvt); err != nil {
+				logging.Warningf(ctx, "failed to render test output: %v", err)
+				renderFailed = true
+			}
 		}
 	}
 	return ordered, byID
@@ -249,4 +271,191 @@ func (tr *TestRecord) ingest(te *TestEvent) {
 			tr.Elapsed = te.Elapsed
 		}
 	}
+}
+
+// GoTestRenderer takes a go test -json event stream and renders it as text.
+//
+// It supports two modes: verbose and non-verbose mode. They correspond
+// roughly to the output of "go test" with and without -v respectively.
+type GoTestRenderer struct {
+	w       io.Writer
+	testOut map[string]*pkg
+	pkgs    []string
+	verbose bool
+}
+
+func NewGoTestRenderer(w io.Writer, verbose bool) *GoTestRenderer {
+	return &GoTestRenderer{
+		w:       w,
+		testOut: make(map[string]*pkg),
+		verbose: verbose,
+	}
+}
+
+// Ingest consumes the next event from a go test -json event stream.
+func (r *GoTestRenderer) Ingest(ev *TestEvent) error {
+	// If we see any output from a package, record that
+	// we've seen that package.
+	if ev.Package != "" && r.testOut[ev.Package] == nil {
+		r.testOut[ev.Package] = newPkg()
+		r.pkgs = append(r.pkgs, ev.Package)
+	}
+
+	switch ev.Action {
+	case "error":
+		// Error reading JSON.
+		if _, err := fmt.Fprintf(r.w, ev.Output); err != nil {
+			return err
+		}
+
+	case "run":
+		if ev.Test != "" {
+			r.testOut[ev.Package].tests[ev.Test] = new(lines)
+		}
+
+	case "output":
+		if ev.Test == "" {
+			// Top-level package output.
+			//
+			// Ignore just "PASS" in non-verbose mode because that's
+			// omitted from the standard "go test" output. The next line
+			// will be the "ok" line we do want to print.
+			if !r.verbose && ev.Output == "PASS\n" {
+				break
+			}
+			r.testOut[ev.Package].extra.add(ev.Output)
+			break
+		}
+		// Lines starting with "=== " are progress
+		// updates only shown in verbose mode (like
+		// "=== RUN"). These are never indented.
+		if !r.verbose && strings.HasPrefix(ev.Output, "=== ") {
+			break
+		}
+		// Accumulate output in case this test fails.
+		if lines, ok := r.testOut[ev.Package].tests[ev.Test]; ok {
+			lines.add(ev.Output)
+		} else {
+			if _, err := fmt.Fprintf(r.w, "\"output\" event from unexpected test: %+v\n", ev); err != nil {
+				return err
+			}
+		}
+
+	case "fail":
+		if ev.Test == "" {
+			// Package failed.
+			r.testOut[ev.Package].done = true
+			r.testOut[ev.Package].failed = true
+			break
+		}
+		// Leave failed tests in the map.
+
+	case "pass", "skip":
+		if ev.Test == "" {
+			// Package passed, so mark it done.
+			r.testOut[ev.Package].done = true
+			break
+		}
+		if !r.verbose {
+			// The test passed, so delete accumulated output in non-verbose mode.
+			delete(r.testOut[ev.Package].tests, ev.Test)
+		}
+	}
+
+	// Flush completed tests.
+	for len(r.pkgs) > 0 && r.testOut[r.pkgs[0]].done {
+		pkg := r.testOut[r.pkgs[0]]
+		delete(r.testOut, r.pkgs[0])
+		r.pkgs = r.pkgs[1:]
+		if err := pkg.emitTests(r.w, r.verbose); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *GoTestRenderer) Close() error {
+	if len(r.testOut) != 0 {
+		if _, err := fmt.Fprintf(r.w, "packages neither passed nor failed:\n"); err != nil {
+			return err
+		}
+		for pkgName, pkg := range r.testOut {
+			if _, err := fmt.Fprintf(r.w, "%s\n", pkgName); err != nil {
+				return err
+			}
+			if err := pkg.emitTests(r.w, r.verbose); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// pkg records test output from a package.
+type pkg struct {
+	// tests records output lines for in-flight and failed tests.
+	tests map[string]*lines
+
+	// extra records package-level test output.
+	extra lines
+
+	// done is set when all tests from this package are done, and
+	// failed indicates if a completed package failed.
+	done, failed bool
+}
+
+func newPkg() *pkg {
+	return &pkg{tests: make(map[string]*lines)}
+}
+
+func (p *pkg) emitTests(w io.Writer, verbose bool) error {
+	// Sort tests.
+	tests := make([]string, 0, len(p.tests))
+	for k := range p.tests {
+		tests = append(tests, k)
+	}
+	sort.Strings(tests)
+
+	// Emit each test.
+	for _, test := range tests {
+		if err := p.tests[test].emit(w, verbose); err != nil {
+			return err
+		}
+	}
+
+	// Emit package-level output.
+	return p.extra.emit(w, verbose)
+}
+
+type lines struct {
+	lines []string
+}
+
+func (l *lines) add(line string) {
+	l.lines = append(l.lines, line)
+}
+
+func (l *lines) emit(w io.Writer, verbose bool) error {
+	lines := l.lines
+	// The last line could be a (possibly indented) "--- FAIL". In
+	// non-verbose mode, this is printed *before* the test log.
+	if !verbose && len(lines) > 0 && isFailLine(lines[len(lines)-1]) {
+		if _, err := io.WriteString(w, lines[len(lines)-1]); err != nil {
+			return err
+		}
+		lines = lines[:len(lines)-1]
+	}
+	for _, line := range lines {
+		if _, err := io.WriteString(w, line); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func isFailLine(line string) bool {
+	// The line may be indented.
+	line = strings.TrimLeft(line, " ")
+	return strings.HasPrefix(line, "--- FAIL: ")
 }
