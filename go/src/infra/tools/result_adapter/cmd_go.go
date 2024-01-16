@@ -41,7 +41,7 @@ func cmdGo() *subcommands.Command {
 				CopyTestOutput:    os.Stdout,
 				VerboseTestOutput: true,
 			}
-			r.Flags.BoolVar(&r.VerboseTestOutput, "-v", r.VerboseTestOutput, text.Doc(`
+			r.Flags.BoolVar(&r.VerboseTestOutput, "v", r.VerboseTestOutput, text.Doc(`
 				Flag to emit the full go test -v output to stdout.
 				If false, then the output will look more like go test without -v.
 			`))
