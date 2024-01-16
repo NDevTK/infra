@@ -102,10 +102,10 @@ type fleetValidationResults struct {
 func (c *testCommonFlags) register(f *flag.FlagSet, mainArgType string) {
 	f.StringVar(&c.bucket, "bucket", defaultImageBucket, "Google Storage bucket where the specified image(s) are stored.")
 	f.StringVar(&c.image, "image", "", `Optional fully specified image name to run test against, e.g. octopus-release/R89-13609.0.0.
-If no value for image or release is passed, test will run against the latest green postsubmit build for the given board.`)
+If no value for image or release is passed, test will run against the latest green release build for the given board.`)
 	f.Var(luciflag.CommaList(&c.secondaryImages), "secondary-images", "Comma-separated list of image name(empty string can be used to skip OS provision for a particular DUT, e.g. -secondary-images $path1,,$path2) for secondary DUTs to run tests against, it need to align with boards in secondary-boards args.")
 	f.StringVar(&c.release, "release", "", `Optional ChromeOS release branch to run test against, e.g. R89-13609.0.0.
-If no value for image or release is passed, test will run against the latest green postsubmit build for the given board.`)
+If no value for image or release is passed, test will run against the latest green release build for the given board.`)
 	f.StringVar(&c.board, "board", "", "Board to run tests on.")
 	f.Var(luciflag.CommaList(&c.secondaryBoards), "secondary-boards", "Comma-separated list of boards for secondary DUTs to run tests on, a.k.a multi-DUTs testing.")
 	f.Var(luciflag.StringSlice(&c.models), "model", fmt.Sprintf(`Model to run tests on; may be specified multiple times.
@@ -157,8 +157,8 @@ func (c *testCommonFlags) validateAndAutocompleteFlags(ctx context.Context, f *f
 		// full image name from the release branch.
 		c.image = releaseImage(c.board, c.release)
 	} else if c.image == "" {
-		// If no release or image was specified, determine the latest green
-		// postsubmit image for the given board.
+		// If no release or image was specified, determine the latest green release
+		// image for the given board.
 		latestImage, err := latestImage(ctx, c.board, bbService, authFlags)
 		if err != nil {
 			return fmt.Errorf("error determining the latest image for board %s: %v", c.board, err)
@@ -244,28 +244,28 @@ func releaseImage(board, release string) string {
 	return fmt.Sprintf("%s-release/%s", board, release)
 }
 
-// latestImage gets the build image from the latest green postsubmit build for
+// latestImage gets the build image from the latest green release build for
 // the given board.
 func latestImage(ctx context.Context, board, bbService string, authFlags authcli.Flags) (string, error) {
-	postsubmitBuilder := &buildbucketpb.BuilderID{
+	releaseBuilder := &buildbucketpb.BuilderID{
 		Project: "chromeos",
-		Bucket:  "postsubmit",
-		Builder: fmt.Sprintf("%s-postsubmit", board),
+		Bucket:  "release",
+		Builder: fmt.Sprintf("%s-release-main", board),
 	}
-	postsubmitBBClient, err := buildbucket.NewClient(ctx, postsubmitBuilder, bbService, authFlags)
+	releaseBBClient, err := buildbucket.NewClient(ctx, releaseBuilder, bbService, authFlags)
 	if err != nil {
 		return "", err
 	}
-	latestGreenPostsubmit, err := postsubmitBBClient.GetLatestGreenBuild(ctx)
+	latestGreenRelease, err := releaseBBClient.GetLatestGreenBuild(ctx)
 	if err != nil {
 		return "", err
 	}
-	outputProperties := latestGreenPostsubmit.Output.Properties.GetFields()
+	outputProperties := latestGreenRelease.Output.Properties.GetFields()
 	artifacts := outputProperties["artifacts"].GetStructValue().GetFields()
 	image := artifacts["gs_path"].GetStringValue()
 	if image == "" {
-		buildURL := postsubmitBBClient.BuildURL(latestGreenPostsubmit.Id)
-		return "", fmt.Errorf("most recent postsubmit for board %s has no corresponding build image; visit postsubmit build at %s for more details", board, buildURL)
+		buildURL := releaseBBClient.BuildURL(latestGreenRelease.Id)
+		return "", fmt.Errorf("most recent release for board %s has no corresponding build image; visit release build at %s for more details", board, buildURL)
 	}
 	return image, nil
 }
