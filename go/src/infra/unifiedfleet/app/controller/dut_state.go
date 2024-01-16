@@ -206,6 +206,9 @@ func UpdateDutStateWithMasks(ctx context.Context, maskSet map[string]bool, ds *c
 		if maskSet["dut_state.rpm"] {
 			newDs.RpmState = ds.GetRpmState()
 		}
+		if maskSet["dut_state.version_info"] {
+			newDs.VersionInfo = ds.GetVersionInfo()
+		}
 		if ds.GetHostname() != "" {
 			// Update hostname always as it can change and better to update.
 			newDs.Hostname = ds.GetHostname()
