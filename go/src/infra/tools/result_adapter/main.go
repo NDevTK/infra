@@ -16,16 +16,25 @@ import (
 )
 
 func main() {
-	application := cli.Application{
-		Name:  "result_adapter",
-		Title: "A CLI tool to convert test results to ResultSink native format then upload them to ResultDB via ResultSink.",
-		Context: func(ctx context.Context) context.Context {
-			logCfg := gologger.LoggerConfig{
-				Format: `%{message}`,
-				Out:    os.Stderr,
-			}
-			return logCfg.Use(ctx)
-		},
+	app := makeApp(func(ctx context.Context) context.Context {
+		logCfg := gologger.LoggerConfig{
+			Format: `%{message}`,
+			Out:    os.Stderr,
+		}
+		return logCfg.Use(ctx)
+	})
+	os.Exit(runApp(app, os.Args[1:]))
+}
+
+func runApp(app *cli.Application, args []string) int {
+	return subcommands.Run(app, fixflagpos.FixSubcommands(args))
+}
+
+func makeApp(ctxFunc func(context.Context) context.Context) *cli.Application {
+	return &cli.Application{
+		Name:    "result_adapter",
+		Title:   "A CLI tool to convert test results to ResultSink native format then upload them to ResultDB via ResultSink.",
+		Context: ctxFunc,
 		Commands: []*subcommands.Command{
 			cmdCrosTestResult(),
 			cmdGo(),
@@ -41,5 +50,4 @@ func main() {
 			subcommands.CmdHelp,
 		},
 	}
-	os.Exit(subcommands.Run(&application, fixflagpos.FixSubcommands(os.Args[1:])))
 }
