@@ -229,6 +229,29 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			return errors.Annotate(err, "Failed to get old MachineLSE").Err()
 		}
 
+		// Check if the Lse field is set in the existing record. If not create one
+		switch oldMachinelse.Lse.(type) {
+		case nil:
+			logging.Errorf(ctx, "UpdateMachineLSE: Found an ambiguios machine lse record. %s", oldMachinelse.GetName())
+			// This should not happen. But, if it does happen, Throwing an error would mean
+			// the row has to be deleted and recreated. Instead, add an empty struct instance
+			switch x := machinelse.Lse.(type) {
+			case *ufspb.MachineLSE_ChromeBrowserMachineLse:
+				oldMachinelse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				}
+			case *ufspb.MachineLSE_AttachedDeviceLse:
+				oldMachinelse.Lse = &ufspb.MachineLSE_AttachedDeviceLse{
+					AttachedDeviceLse: &ufspb.AttachedDeviceLSE{},
+				}
+			case nil:
+				// The update is not for anything inside the lse proto. Better log this
+				logging.Errorf(ctx, "UpdateMachineLSE: The ambiguios lse %s is not not resolved", machinelse.GetName())
+			default:
+				return errors.Reason("UpdateMachineLSE: Logical error in processing %v type", x).Err()
+			}
+		}
+
 		// Validate the input
 		err := validateUpdateMachineLSE(ctx, oldMachinelse, machinelse, mask)
 		if err != nil {

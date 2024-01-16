@@ -1545,6 +1545,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 			So(resp.GetTags(), ShouldResemble, []string{"tag-1", "tag-2"})
 			So(resp.GetMachines(), ShouldResemble, []string{"machine-7"})
 		})
+
 		Convey("Partially update machinelse virtual datacenter", func() {
 			machine := &ufspb.Machine{
 				Name: "machine-vdc",
@@ -1643,6 +1644,48 @@ func TestUpdateMachineLSE(t *testing.T) {
 			So(resp.GetAttachedDeviceLse().GetAssociatedHostname(), ShouldEqual, "adm-1")
 			So(resp.GetAttachedDeviceLse().GetAssociatedHostPort(), ShouldEqual, "test-port-2")
 			So(resp.GetSchedulable(), ShouldBeTrue)
+		})
+
+		Convey("Partially update machinelse without an lse", func() {
+			machine := &ufspb.Machine{
+				Name: "machine-nolse",
+			}
+			_, err := registration.CreateMachine(ctx, machine)
+			So(err, ShouldBeNil)
+
+			lse := &ufspb.MachineLSE{
+				Name:     "no-lse",
+				Machines: []string{"machine-nolse"},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, lse)
+			So(err, ShouldBeNil)
+
+			lse1 := &ufspb.MachineLSE{
+				Name: "no-lse",
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
+						OsVersion: &ufspb.OSVersion{
+							Value: "windows-98",
+							Image: "win98-floppy-img",
+						},
+					},
+				},
+			}
+			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"osVersion", "osImage"}})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetChromeBrowserMachineLse().GetOsVersion().GetValue(), ShouldEqual, "windows-98")
+			So(resp.GetChromeBrowserMachineLse().GetOsVersion().GetImage(), ShouldEqual, "win98-floppy-img")
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/no-lse")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 1)
+			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse.chrome_browser_machine_lse.os_version")
+			So(changes[0].GetOldValue(), ShouldEqual, "<nil>")
+			So(changes[0].GetNewValue(), ShouldEqual, fmt.Sprintf("%v", &ufspb.OSVersion{
+				Value: "windows-98",
+				Image: "win98-floppy-img",
+			}))
 		})
 	})
 }
