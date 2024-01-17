@@ -1,6 +1,6 @@
 application: findit-for-me-staging
 version: 1
-runtime: python38
+runtime: python39
 app_engine_apis: true
 service: default
 entrypoint: gunicorn -t 0 -b :$PORT -w 8 default_main:default_application
