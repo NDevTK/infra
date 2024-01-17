@@ -43,4 +43,4 @@ for url, endpoint, view_func, methods in handler_mappings:
   default_application.add_url_rule(
       url, endpoint=endpoint, view_func=view_func, methods=methods)
 if appengine_util.IsInProductionApp():
-  gae_ts_mon.initialize_prod(default_application)
+  gae_ts_mon.instrument_wsgi_application(default_application)
