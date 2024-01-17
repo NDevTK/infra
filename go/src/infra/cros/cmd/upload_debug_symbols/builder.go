@@ -301,11 +301,11 @@ func upload(task *taskConfig, crash crashConnectionInfo) bool {
 	message := bytes.Buffer{}
 	uploadLogger := log.New(&message, "", logFlags)
 	if task.dryRun {
-		uploadLogger.Printf("Would have uploaded %s to crash", task.debugFile)
+		uploadLogger.Printf("Would have uploaded %s (%s) as %s to crash", task.debugFile, task.debugId, task.symbolType)
 		LogOutNoFlags(message.String())
 		return true
 	}
-	uploadLogger.Printf("Uploading %s\n", task.debugFile)
+	uploadLogger.Printf("Uploading %s (%s) as %s type\n", task.debugFile, task.debugId, task.symbolType)
 
 	var uploadInfo crashUploadInformation
 	err := crashRetrieveUploadInformation(&uploadInfo, crash)
