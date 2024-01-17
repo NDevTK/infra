@@ -890,7 +890,7 @@ func debugIdFromBuildId(id string) (string, error) {
 	}
 
 	s := b.String()
-	return s[6:8] + s[4:6] + s[2:4] + s[0:2] + s[12:16] + s[8:12] + s[16:], nil
+	return s[6:8] + s[4:6] + s[2:4] + s[0:2] + s[10:12] + s[8:10] + s[14:16] + s[12:14] + s[16:], nil
 }
 
 // generateKernelDebugId will take a file path and generate debugId containing board and version info.
