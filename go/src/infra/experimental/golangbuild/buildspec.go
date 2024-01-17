@@ -428,10 +428,16 @@ func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
 	}
 
 	// Assemble args and update the command.
+	//
+	// Note: result_adapter is invoked with the flag -v=false, which means that the output
+	// it logs should correspond to "go test" output in non-verbose mode. This is generally
+	// much easier to read for humans and maintains compatibility with watchflakes rules that
+	// match on the entire log. Full structured test output still gets sent to ResultDB, even
+	// with this flag set.
 	cmd.Path = b.toolPath("rdb")
 	args := []string{cmd.Path, "stream"}
 	args = append(args, rdbArgs...)
-	args = append(args, "--", b.toolPath("result_adapter"), "go", "--")
+	args = append(args, "--", b.toolPath("result_adapter"), "go", "-v=false", "--")
 	args = append(args, cmd.Args...)
 	cmd.Args = args
 	return cmd
