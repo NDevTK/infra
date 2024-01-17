@@ -30,8 +30,7 @@ CONFIG_FILE_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
     'testing', 'api_clients.cfg')
 LUCI_CONFIG_URL = (
-    'https://luci-config.appspot.com/_ah/api/config/v1/config_sets'
-    '/services/monorail-prod/config/api_clients.cfg')
+    'https://config.luci.app/prpc/config.service.v2.Configs/GetConfig')
 
 
 client_config_svc = None
@@ -49,26 +48,34 @@ _CONFIG_LOADS = ts_mon.CounterMetric(
     [ts_mon.BooleanField('success'),
      ts_mon.StringField('type')])
 
-
 def _process_response(response):
   try:
-    content = json.loads(response.content)
+    utf8_decoded_content = response.content.decode('utf-8')
+  except AttributeError:
+    logging.error('Response content was not binary: %r', response.content)
+    _CONFIG_LOADS.increment({'success': False, 'type': 'json-load-error'})
+    raise
+
+  try:
+    # Strip the XSSI prefix.
+    stripped_content = utf8_decoded_content[len(")]}'"):].strip()
+    json_config = json.loads(stripped_content)
   except ValueError:
     logging.error('Response was not JSON: %r', response.content)
     _CONFIG_LOADS.increment({'success': False, 'type': 'json-load-error'})
     raise
 
   try:
-    config_content = content['content']
+    config_raw_content = json_config['rawContent']
   except KeyError:
-    logging.error('JSON contained no content: %r', content)
+    logging.error('JSON missing rawContent: %r', json_config)
     _CONFIG_LOADS.increment({'success': False, 'type': 'json-key-error'})
     raise
 
   try:
-    content_text = base64.b64decode(config_content)
-  except (TypeError, binascii.Error):  # TypeError in Python 2 only
-    logging.error('Content was not b64: %r', config_content)
+    content_text = base64.b64decode(config_raw_content)
+  except binascii.Error:
+    logging.error('Content was not b64: %r', config_raw_content)
     _CONFIG_LOADS.increment({'success': False, 'type': 'b64-decode-error'})
     raise
 
@@ -83,32 +90,44 @@ def _process_response(response):
   return content_text
 
 
-def GetLoadApiClientConfigs():
-  global service_account_map
-  global qpm_dict
+def _CallLuciConfig() -> urlfetch._URLFetchResult:
   authorization_token, _ = app_identity.get_access_token(
       framework_constants.OAUTH_SCOPE)
   response = urlfetch.fetch(
       LUCI_CONFIG_URL,
-      method=urlfetch.GET,
+      method=urlfetch.POST,
       follow_redirects=False,
       headers={
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer ' + authorization_token
-      })
-
+          'Content-Type': 'application/json; charset=utf-8',
+          'Authorization': 'Bearer ' + authorization_token,
+          'Accept': 'application/json'
+      },
+      payload=json.dumps(
+          {
+              'configSet': 'services/monorail-prod',
+              'path': 'api_clients.cfg'
+          }),
+  )
   if response.status_code != 200:
     logging.error('Invalid response from luci-config: %r', response)
     _CONFIG_LOADS.increment({'success': False, 'type': 'luci-cfg-error'})
     flask.abort(500, 'Invalid response from luci-config')
+  return response
+
+
+def GetLoadApiClientConfigs():
+  global service_account_map
+  global qpm_dict
+  response = _CallLuciConfig()
 
   try:
-    content_text = _process_response(response)
+    config_content_text = _process_response(response)
   except Exception as e:
     flask.abort(500, str(e))
 
-  logging.info('luci-config content decoded: %r.', content_text)
-  configs = ClientConfig(configs=content_text, key_name='api_client_configs')
+  logging.info('luci-config content decoded: %r.', config_content_text)
+  configs = ClientConfig(
+      configs=config_content_text, key_name='api_client_configs')
   configs.put()
   service_account_map = None
   qpm_dict = None

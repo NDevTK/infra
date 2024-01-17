@@ -21,35 +21,37 @@ class LoadApiClientConfigsTest(unittest.TestCase):
     def __init__(self, content):
       self.content = content
 
+  def testProcessResponse_InvalidContent(self):
+    r = self.FakeResponse('')
+    with self.assertRaises(AttributeError):
+      client_config_svc._process_response(r)
+
   def testProcessResponse_InvalidJSON(self):
-    r = self.FakeResponse('}{')
+    r = self.FakeResponse(b')]}\'}{')
     with self.assertRaises(ValueError):
       client_config_svc._process_response(r)
 
   def testProcessResponse_NoContent(self):
-    r = self.FakeResponse('{"wrong-key": "some-value"}')
+    r = self.FakeResponse(b')]}\'{"wrong-key": "some-value"}')
     with self.assertRaises(KeyError):
       client_config_svc._process_response(r)
 
   def testProcessResponse_NotB64(self):
     # 'asd' is not a valid base64-encoded string.
-    r = self.FakeResponse('{"content": "asd"}')
-    if six.PY2:
-      with self.assertRaises(TypeError):
-        client_config_svc._process_response(r)
-    else:
-      with self.assertRaises(binascii.Error):
-        client_config_svc._process_response(r)
+    r = self.FakeResponse(b')]}\'{"rawContent": "asd"}')
+    with self.assertRaises(binascii.Error):
+      client_config_svc._process_response(r)
 
   def testProcessResponse_NotProto(self):
     # 'asdf' is a valid base64-encoded string.
-    r = self.FakeResponse('{"content": "asdf"}')
-    with self.assertRaises(Exception):
+    r = self.FakeResponse(b')]}\'{"rawContent": "asdf"}')
+    with self.assertRaises(UnicodeDecodeError):
       client_config_svc._process_response(r)
 
   def testProcessResponse_Success(self):
     with open(client_config_svc.CONFIG_FILE_PATH, 'rb') as f:
-      r = self.FakeResponse(b'{"content": "%s"}' % base64.b64encode(f.read()))
+      r = self.FakeResponse(
+          b')]}\'{"rawContent": "%s"}' % base64.b64encode(f.read()))
     c = client_config_svc._process_response(r)
     assert b'123456789.apps.googleusercontent.com' in c
 
