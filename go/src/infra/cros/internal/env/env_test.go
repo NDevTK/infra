@@ -18,3 +18,11 @@ func TestRunningOnBot(t *testing.T) {
 	os.Setenv("USER", "chrome-bot")
 	assert.Assert(t, RunningOnBot())
 }
+
+func TestIsCloudBot(t *testing.T) {
+	os.Setenv("SWARMING_BOT_ID", "chrome-bot")
+	assert.Assert(t, !IsCloudBot())
+
+	os.Setenv("SWARMING_BOT_ID", "cloudbots-12345")
+	assert.Assert(t, IsCloudBot())
+}

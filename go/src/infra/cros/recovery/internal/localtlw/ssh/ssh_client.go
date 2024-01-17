@@ -75,10 +75,10 @@ func (c *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFu
 	return newForwarder(l, connFunc, errFunc)
 }
 
-// NewProxyClient establishes an authenticated SSH connection to target host
+// newProxyClient establishes an authenticated SSH connection to the target host
 // using TLS channel as the underlying transport.
-func NewProxyClient(ctx context.Context, addr string, config *ssh.ClientConfig, tlsConfig *tls.Config) (SSHClient, error) {
-	conn, err := tls.Dial("tcp", addr, tlsConfig)
+func newProxyClient(ctx context.Context, sshConfig *ssh.ClientConfig, proxy *proxyConfig) (SSHClient, error) {
+	conn, err := tls.Dial("tcp", proxy.GetAddr(), proxy.GetConfig())
 	if err != nil {
 		log.Printf("Error creating a new TLS connection: %s\n", err)
 		return nil, errors.Annotate(err, "new proxy client").Err()
@@ -88,7 +88,7 @@ func NewProxyClient(ctx context.Context, addr string, config *ssh.ClientConfig, 
 	var reqs <-chan *ssh.Request
 	done := make(chan bool)
 	go func() {
-		c, chans, reqs, err = ssh.NewClientConn(conn, addr, config)
+		c, chans, reqs, err = ssh.NewClientConn(conn, proxy.GetAddr(), sshConfig)
 		done <- true
 	}()
 	select {
@@ -103,13 +103,20 @@ func NewProxyClient(ctx context.Context, addr string, config *ssh.ClientConfig, 
 	return &sshClientImpl{ssh.NewClient(c, chans, reqs)}, nil
 }
 
-// NewClient connects to SSH client to flesh connection.
-func NewClient(ctx context.Context, addr string, config *ssh.ClientConfig) (SSHClient, error) {
+// NewClient starts a client connection to the given SSH host.
+func NewClient(ctx context.Context, addr, username string, config Config) (SSHClient, error) {
+	sshConfig := config.GetSSHConfig(addr)
+	if username != "" {
+		sshConfig.User = username
+	}
+	if proxy := config.GetProxy(addr); proxy != nil && proxy.GetConfig() != nil {
+		return newProxyClient(ctx, sshConfig, proxy)
+	}
 	var c *ssh.Client
 	var err error
 	done := make(chan bool)
 	go func() {
-		c, err = ssh.Dial("tcp", addr, config)
+		c, err = ssh.Dial("tcp", addr, sshConfig)
 		done <- true
 	}()
 	select {

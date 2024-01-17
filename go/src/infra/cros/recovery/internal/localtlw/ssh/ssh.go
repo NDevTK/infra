@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"time"
 
 	"golang.org/x/crypto/ssh"
 
@@ -16,35 +15,6 @@ import (
 	"infra/cros/recovery/internal/rand"
 	"infra/cros/recovery/tlw"
 )
-
-const (
-	defaultSSHUser = "root"
-	DefaultPort    = 22
-)
-
-// SSHConfig provides default config for SSH.
-func SSHConfig(sshKeyPaths []string) *ssh.ClientConfig {
-	keySigners := getKeySigners(sshKeyPaths)
-	return &ssh.ClientConfig{
-		User:            defaultSSHUser,
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		Auth:            []ssh.AuthMethod{ssh.PublicKeys(keySigners...)},
-		// The timeout specified to established connection only.
-		// That is not an execution timeout.
-		Timeout: 2 * time.Second,
-	}
-}
-
-// cloneSSHConfig creates a new ssh config instance with all the values set
-// by SSHConfig copied (shallowly).
-func cloneSSHConfig(config *ssh.ClientConfig) *ssh.ClientConfig {
-	return &ssh.ClientConfig{
-		User:            config.User,
-		HostKeyCallback: config.HostKeyCallback,
-		Auth:            config.Auth,
-		Timeout:         config.Timeout,
-	}
-}
 
 // Run executes command on the target address by SSH.
 func Run(ctx context.Context, provider SSHProvider, addr string, cmd string) (result *tlw.RunResult) {

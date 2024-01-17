@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	"infra/cros/internal/env"
 	"infra/cros/recovery/docker"
 	"infra/cros/recovery/internal/localtlw/localproxy"
 	"infra/cros/recovery/internal/localtlw/ssh"
@@ -67,10 +68,19 @@ type tlwClient struct {
 
 // New build new local TLW Access instance.
 func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
+	config, err := ssh.NewDefaultConfig(nil)
+	if err != nil {
+		return nil, errors.Annotate(err, "new tlw client").Err()
+	}
+	if env.IsCloudBot() {
+		if err = config.Load(env.DefaultSSHConfigPathOnCloudBot); err != nil {
+			return nil, errors.Annotate(err, "new tlw client").Err()
+		}
+	}
 	c := &tlwClient{
 		ufsClient:     ufs,
 		csaClient:     csac,
-		sshProvider:   ssh.NewProvider(ssh.SSHConfig(nil), nil),
+		sshProvider:   ssh.NewProvider(config),
 		devices:       make(map[string]*tlw.Dut),
 		hostTypes:     make(map[string]hostType),
 		hostToParents: make(map[string]string),
@@ -132,7 +142,7 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 	}
 	log.Debugf(ctx, "Prepare %q to run: %q", req.GetResource(), fullCmd)
 	// For backward compatibility we set max limit 1 hour for any request.
-	// 1 hours as some provisioning or download can take longer.
+	// 1 hour as some provisioning or download can take longer.
 	timeout := time.Hour
 	if req.GetTimeout().IsValid() {
 		timeout = req.GetTimeout().AsDuration()
@@ -214,7 +224,8 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 		var runResult *tlw.RunResult
 		sshProvider := c.sshProvider
 		if req.SshUsername != "" {
-			sshProvider = sshProvider.WithUser(req.SshUsername)
+			sshProvider = sshProvider.Clone()
+			sshProvider.SetUser(req.SshUsername)
 		}
 		go func() {
 			addr := localproxy.BuildAddr(req.GetResource())

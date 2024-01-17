@@ -6,9 +6,6 @@ package ssh
 
 import (
 	"context"
-	"crypto/tls"
-
-	"golang.org/x/crypto/ssh"
 )
 
 // SSHProvider provide access to SSH client manager.
@@ -17,36 +14,30 @@ import (
 type SSHProvider interface {
 	Get(ctx context.Context, addr string) (SSHClient, error)
 	Close() error
-	Config() *ssh.ClientConfig
-
-	// WithUser returns a new SSHProvider with an updated config.User as username.
-	// This SSHProvider instance remains unchanged.
-	WithUser(username string) SSHProvider
+	Config() Config
+	SetUser(username string)
+	Clone() SSHProvider
 }
 
 // Implementation of SSHProvider.
 type sshProviderImpl struct {
-	config    *ssh.ClientConfig
-	tlsConfig *tls.Config
+	username string // overrides SSH config username
+	config   Config
 }
 
 // NewProvider creates new provider for use.
 //
 //	clientConfig: SSH configuration to configure the new clients.
 //	tlsConfig: Optional TLS configuration to establish SSH connections over TLS channel.
-func NewProvider(clientConfig *ssh.ClientConfig, tlsConfig *tls.Config) SSHProvider {
+func NewProvider(config Config) SSHProvider {
 	return &sshProviderImpl{
-		config:    clientConfig,
-		tlsConfig: tlsConfig,
+		config: config,
 	}
 }
 
 // Get provides SSH client for requested host.
 func (c *sshProviderImpl) Get(ctx context.Context, addr string) (SSHClient, error) {
-	if c.tlsConfig != nil {
-		return NewProxyClient(ctx, addr, c.config, c.tlsConfig)
-	}
-	return NewClient(ctx, addr, c.config)
+	return NewClient(ctx, addr, c.username, c.config)
 }
 
 // Close closing used resource of the provider.
@@ -54,14 +45,21 @@ func (c *sshProviderImpl) Close() error {
 	return nil
 }
 
-func (c *sshProviderImpl) Config() *ssh.ClientConfig {
+// Config returns SSH provider configuration.
+func (c *sshProviderImpl) Config() Config {
 	return c.config
 }
 
-// WithUser returns a new SSHProvider with an updated config.User as username.
-// This SSHProvider instance remains unchanged.
-func (c *sshProviderImpl) WithUser(username string) SSHProvider {
-	newConfig := cloneSSHConfig(c.config)
-	newConfig.User = username
-	return NewProvider(newConfig, c.tlsConfig)
+// SetUser sets an username to override SSH config user.
+func (c *sshProviderImpl) SetUser(username string) {
+	c.username = username
+}
+
+// Clone creates a new SSH provider with its own username property.
+// Changes to the username in the clone won't affect the original provider.
+func (c *sshProviderImpl) Clone() SSHProvider {
+	return &sshProviderImpl{
+		username: c.username,
+		config:   c.config,
+	}
 }

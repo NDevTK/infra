@@ -54,7 +54,10 @@ func NewAccess(ctx context.Context, in *lab.LabpackInput) (context.Context, tlw.
 	ctx = scopes.WithParams(ctx, params)
 	// TODO(otabek@): Replace with access to F20 services.
 	access, err := recovery.NewLocalTLWAccess(ic, csac)
-	return ctx, access, errors.Annotate(err, "create tlw access").Err()
+	if err != nil {
+		return nil, nil, errors.Annotate(err, "create tlw access").Err()
+	}
+	return ctx, access, nil
 }
 
 // httpClient returns an HTTP client with authentication set up.
