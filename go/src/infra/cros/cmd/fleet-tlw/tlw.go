@@ -65,10 +65,18 @@ func newTLWServer(ufsService string, dutSSHSigner ssh.Signer, proxySSHSigner ssh
 	if dutSSHSigner != nil {
 		dutSSHSigners = append(dutSSHSigners, dutSSHSigner)
 	}
+	dutPoolConfig, err := sshpool.FromClientConfig(getSSHClientConfig(dutSSHSigners))
+	if err != nil {
+		return nil, errors.Reason("newTLWServer: %s", err).Err()
+	}
+	proxyPoolConfig, err := sshpool.FromClientConfig(getSSHClientConfigForProxy(proxySSHSigner))
+	if err != nil {
+		return nil, errors.Reason("newTLWServer: %s", err).Err()
+	}
 	s := &tlwServer{
 		lroMgr:    lro.New(),
-		dutPool:   sshpool.New(getSSHClientConfig(dutSSHSigners), nil),
-		proxyPool: sshpool.New(getSSHClientConfigForProxy(proxySSHSigner), nil),
+		dutPool:   sshpool.New(dutPoolConfig),
+		proxyPool: sshpool.New(proxyPoolConfig),
 		tMgr:      newTunnelManager(),
 		cFrontend: cache.NewFrontend(ce),
 		ufsClient: ufsClient,

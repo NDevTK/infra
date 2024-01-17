@@ -106,7 +106,16 @@ func (s *Server) Serve(l net.Listener) error {
 		log.Printf("Failed to initialize tsmon: %s", err)
 	}
 
-	s.clientPool = sshpool.New(s.sshConfig, nil)
+	config, err := sshpool.FromClientConfig(s.sshConfig)
+	if err != nil {
+		return err
+	}
+	if env.IsCloudBot() {
+		if err = config.Load(env.DefaultSSHConfigPathOnCloudBot); err != nil {
+			return err
+		}
+	}
+	s.clientPool = sshpool.New(config)
 	defer s.clientPool.Close()
 	s.lroMgr = lro.New()
 	defer s.lroMgr.Close()
