@@ -34,6 +34,7 @@ type buildSpec struct {
 	auth *auth.Authenticator
 
 	builderName        string
+	bucket             string
 	workdir            string
 	goroot             string
 	gopath             string
@@ -185,6 +186,7 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 	return &buildSpec{
 		auth:               authenticator,
 		builderName:        st.Build().GetBuilder().GetBuilder(),
+		bucket:             st.Build().GetBuilder().GetBucket(),
 		workdir:            cwd,
 		goroot:             filepath.Join(cwd, "goroot"),
 		gopath:             filepath.Join(cwd, "gopath"),
@@ -413,6 +415,16 @@ func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
 	}
 	if b.inputs.NodeVersion != "" {
 		rdbArgs = append(rdbArgs, "-tag", "node_version:"+b.inputs.NodeVersion)
+	}
+
+	// If we don't have an invocation in the build already, create one. This can happen
+	// if the builder isn't defined such that buildbucket creates an invocation for us,
+	// or if we're running golangbuild in an environment without an invocation (for example,
+	// LUCIEXE_FAKEBUILD). It's fine to create multiple invocations in these contexts.
+	if b.invocation == "" {
+		// N.B. There's a realm for every buildbucket bucket, which is where invocations get
+		// created by default. Do the same here.
+		rdbArgs = append(rdbArgs, "-new", "-realm", fmt.Sprintf("golang:%s", b.bucket))
 	}
 
 	// Assemble args and update the command.
