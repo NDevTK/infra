@@ -64,9 +64,11 @@ def GenerateAuthToken(key_name, user_id, action_id='', when=None):
   digester.update(_DELIMITER)
   digester.update(six.ensure_binary(str(when_timestamp)))
   digest = digester.digest()
-  return base64.urlsafe_b64encode(
-      digest + six.ensure_binary('%s%d' %
-                                 (six.ensure_str(_DELIMITER), when_timestamp)))
+  return six.ensure_str(
+      base64.urlsafe_b64encode(
+          digest +
+          six.ensure_binary('%s%d' %
+                            (six.ensure_str(_DELIMITER), when_timestamp))))
 
 
 def ValidateAuthToken(key_name, token, user_id, action_id='', valid_hours=1):
@@ -109,7 +111,7 @@ def ValidateAuthToken(key_name, token, user_id, action_id='', valid_hours=1):
   # Perform constant time comparison to avoid timing attacks.
   different = 0
   for x, y in zip(token, expected_token):
-    different |= x ^ y
+    different |= ord(x) ^ ord(y)
   if different:
     return False, expired
 
@@ -148,7 +150,7 @@ class VerifyXSRFToken(object):
 
     def VerifyToken(handler, *args, **kwargs):
       user_email = auth_util.GetUserEmail()
-      xsrf_token = str(handler.request.values.get('xsrf_token'))
+      xsrf_token = handler.request.values.get('xsrf_token')
       valid, expired = ValidateAuthToken('site', xsrf_token, user_email,
                                          self._action_id)
       if (not user_email or not valid or expired):
