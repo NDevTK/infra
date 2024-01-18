@@ -9,6 +9,7 @@ package unifiedfleet.api.v1.models.chromeos.lab;
 option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto";
+import "infra/unifiedfleet/api/v1/models/chromeos/lab/dolos.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
@@ -16,7 +17,7 @@ import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_rou
 
 // This proto defines setup labels in lab config of a DUT.
 
-// Peripherals of device. Next Tag: 20
+// Peripherals of device. Next Tag: 21
 message Peripherals {
   Servo servo = 1;
   Chameleon chameleon = 2;
@@ -51,6 +52,8 @@ message Peripherals {
   HumanMotionRobot human_motion_robot = 18;
   // Indicate if the DUT is connected to an audio latency toolkit
   AudioLatencyToolkit audio_latency_toolkit = 19;
+  // Indicate if the DUT uses Dolos as a battery replacement
+  Dolos dolos = 20;
 }
 
 

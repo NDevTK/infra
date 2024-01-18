@@ -1,0 +1,31 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models.chromeos.lab;
+
+option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
+
+// Major hardware revision for Dolos
+// Next Tag: 2
+enum DolosHWMajorRevision {
+  // Default unset value
+  DOLOS_UNSPECIFIED = 0;
+  DOLOS_V1 = 1;
+}
+
+// Next Tag: 6
+message Dolos {
+  // Serial used to identify device over USB
+  string dolos_serial_cable = 1;
+  // Serial of the cable_cable
+  string dolos_serial_usb = 2;
+  // Hardware revision
+  DolosHWMajorRevision dolos_hw_major_revision = 3;
+  // Dolos firmware version
+  string dolos_fw_version = 4;
+  // Servo hostname
+  string servo_hostname = 5;
+}
