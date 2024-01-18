@@ -69,7 +69,7 @@ func NewGnTargets(gnTargetsPath string) *GnTargets {
 	gn := &GnTargets{
 		filePath: gnTargetsPath,
 		processors: []processor{protoTargetProcessor, mojomTargetProcessor,
-			torqueTargetProcessor},
+			torqueTargetProcessor, tsTargetProcessor},
 	}
 	return gn
 }

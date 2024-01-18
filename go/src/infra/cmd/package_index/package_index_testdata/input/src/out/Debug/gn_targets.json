@@ -5,6 +5,15 @@
     "sources": ["//test.tq"],
     "outputs": ["//out/Debug/gen/test.tq.h"]
   },
+  "//:ts": {
+    "args": [
+      "--tsconfig_output_location",
+      "gen/third_party/devtools-frontend/src/ts-tsconfig.json"
+    ],
+    "sources": ["//test.ts", "//imported.ts"],
+    "outputs": ["//out/Debug/test.js", "//out/Debug/imported.js"],
+    "script": "//third_party/devtools-frontend/src/third_party/typescript/ts_library.py"
+  },
   "//:test_mojom__generator": {
     "args": [
       "--use_bundled_pylibs",
