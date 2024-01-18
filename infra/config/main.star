@@ -124,7 +124,7 @@ luci.notify(tree_closing_enabled = True)
 # Global builder defaults.
 luci.builder.defaults.execution_timeout.set(45 * time.minute)
 luci.builder.defaults.experiments.set({
-    "luci.buildbucket.backend_alt": 20,
+    "luci.buildbucket.backend_alt": 50,
 })
 
 # Global recipe defaults
