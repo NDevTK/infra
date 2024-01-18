@@ -72,12 +72,15 @@ type ISwarmingService interface {
 	// ListBotTasks list the bot tasks from swarming API.
 	ListBotTasks(ctx context.Context, hostname, cursor string, pageSize int) (*TasksIterator, error)
 
-	// ListBotEvents lsit the bot events from swarming API
+	// ListBotEvents list the bot events from swarming API
 	ListBotEvents(ctx context.Context, hostname, cursor string, pageSize int) (*BotEventsIterator, error)
 
 	// ListTasks lists the tasks from swarming API based on the tags passed.
 	// ListTasks(ctx context.Context, in *pb.ListJobsRequest) (*JobsIterator, error)
 	ListTasks(ctx context.Context, in *swarmingapi.TasksWithPerfRequest) (*swarmingapi.TaskListResponse, error)
+
+	// ListBots lists the bot from swarming API.
+	ListBots(ctx context.Context, in *swarmingapi.BotsRequest) (*swarmingapi.BotInfoListResponse, error)
 }
 
 type TasksClient interface {
@@ -229,4 +232,10 @@ func (s *SwarmingService) ListTasks(ctx context.Context, in *swarmingapi.TasksWi
 	subCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 	return s.tasksClient.ListTasks(subCtx, in)
+}
+
+func (s *SwarmingService) ListBots(ctx context.Context, in *swarmingapi.BotsRequest) (*swarmingapi.BotInfoListResponse, error) {
+	subCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+	return s.client.ListBots(subCtx, in)
 }

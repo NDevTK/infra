@@ -95,6 +95,21 @@ func (mr *MockISwarmingServiceMockRecorder) ListTasks(ctx, in interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTasks", reflect.TypeOf((*MockISwarmingService)(nil).ListTasks), ctx, in)
 }
 
+// ListBots mocks base method.
+func (m *MockISwarmingService) ListBots(ctx context.Context, in *apipb.BotsRequest) (*apipb.BotInfoListResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListBots", ctx, in)
+	ret0, _ := ret[0].(*apipb.BotInfoListResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListBots indicates an expected call of ListBots.
+func (mr *MockISwarmingServiceMockRecorder) ListBots(ctx, in interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBots", reflect.TypeOf((*MockISwarmingService)(nil).ListBots), ctx, in)
+}
+
 // MockTasksClient is a mock of TasksClient interface.
 type MockTasksClient struct {
 	ctrl     *gomock.Controller

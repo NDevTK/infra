@@ -58,7 +58,13 @@ const RecoveryVersionDirectory = "/home/satlab/keys/recovery_versions/"
 // name will be used to schedule Repair builds.
 const RepairBuilderName = "repair"
 
-const TaskLinkTemplate = "https://chromeos-swarming.appspot.com/task?id="
+const (
+	TaskLinkTemplate  = "https://chromeos-swarming.appspot.com/task?id="
+	DeployBuilderName = "deploy"
+	TaskRunningTest   = "Running"
+	TaskRunningRepair = "Repairing"
+	TaskRunningDeploy = "Deploying"
+)
 
 const (
 	// CTPBuilderBucketEnv is the env var used to determine what bucket the

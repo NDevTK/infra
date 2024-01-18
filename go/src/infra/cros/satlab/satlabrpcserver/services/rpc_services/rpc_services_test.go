@@ -1093,6 +1093,7 @@ func TestListEnrolledDutsShouldSuccess(t *testing.T) {
 	ctx := context.Background()
 	// Create a mock data
 	s := createMockServer(t)
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, gomock.Any()).Return(nil, nil)
 
 	s.commandExecutor = shivasTestHelper(true)
 	req := &pb.ListEnrolledDutsRequest{}
@@ -1152,10 +1153,10 @@ func TestListEnrolledDutsShouldFail(t *testing.T) {
 func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-
 	// Create a mock data
 	s := createMockServer(t)
 
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, gomock.Any()).Return(nil, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
@@ -1164,6 +1165,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
+
 	s.commandExecutor = shivasTestHelper(true)
 
 	req := &pb.ListDutsRequest{}
@@ -1190,6 +1192,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				HasTestImage: true,
 				MacAddress:   "00:14:3d:14:c4:02",
 				State:        "unknown",
+				BotInfo:      nil,
 			},
 			{
 				Name:         "",
@@ -1203,6 +1206,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				IsPingable:   true,
 				HasTestImage: true,
 				State:        "",
+				BotInfo:      nil,
 			},
 		},
 	}
@@ -1224,6 +1228,7 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 
 	s := createMockServer(t)
 
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, gomock.Any()).Return(nil, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: false, HasTestImage: false},
@@ -1292,6 +1297,7 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	// Create a mock data
 	s := createMockServer(t)
 
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, gomock.Any()).Return(nil, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
@@ -1358,7 +1364,7 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 
 	// Create a mock data
 	s := createMockServer(t)
-
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, gomock.Any()).Return(nil, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: false, HasTestImage: false},
@@ -1424,7 +1430,7 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 
 	// Create a mock data
 	s := createMockServer(t)
-
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, gomock.Any()).Return(nil, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
 		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
@@ -2023,5 +2029,107 @@ func getTaskListReq(in *pb.ListJobsRequest) *swarmingapi.TasksWithPerfRequest {
 		Sort:                    swarmingapi.SortQuery(in.GetSortBy()),       // default is CREATED_TS
 		Cursor:                  in.GetPageToken(),
 		IncludePerformanceStats: false,
+	}
+}
+
+func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	// Create a mock data
+	s := createMockServer(t)
+
+	mockBotList := &swarmingapi.BotInfoListResponse{
+		Items: []*swarmingapi.BotInfo{
+			{
+				Dimensions: []*swarmingapi.StringListPair{
+					{
+						Key:   "drone",
+						Value: []string{"satlab-satlab-id"},
+					},
+				},
+				BotId:       "satlab-0wgatfqi21498062-jeff137-c",
+				IsDead:      false,
+				Quarantined: false,
+				TaskId:      "abcd",
+				TaskName:    "bb-21344/proj/test_runner",
+			},
+		},
+	}
+	reqListBot := &swarmingapi.BotsRequest{
+		Limit: 25,
+		Dimensions: []*swarmingapi.StringPair{
+			{
+				Key:   "drone",
+				Value: "satlab-satlab-id",
+			},
+		},
+	}
+
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, reqListBot).Return(mockBotList, nil).AnyTimes()
+	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
+	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true},
+	}, nil)
+	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
+
+	s.commandExecutor = shivasTestHelper(true)
+
+	req := &pb.ListDutsRequest{}
+	resp, err := s.ListDuts(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: {%v}", err)
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutsResponse{}, pb.Dut{}, pb.BotInfo{})
+	// Create a expected result
+	expected := &pb.ListDutsResponse{
+		Duts: []*pb.Dut{
+			{
+				Name:         "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:     "satlab-0wgatfqi21498062-jeff137-c",
+				Address:      "192.168.231.222",
+				Pools:        []string{"jev-satlab"},
+				Model:        "atlas",
+				Board:        "atlas",
+				IsPingable:   true,
+				HasTestImage: true,
+				MacAddress:   "00:14:3d:14:c4:02",
+				State:        "unknown",
+				BotInfo: &pb.BotInfo{
+					BotState:    pb.BotInfo_BUSY,
+					CurrentTask: "https://chromeos-swarming.appspot.com/task?id=abcd",
+					TaskName:    "Running",
+				},
+			},
+			{
+				Name:         "",
+				Hostname:     "",
+				Address:      "192.168.231.2",
+				Pools:        nil,
+				Model:        "model",
+				Board:        "board",
+				MacAddress:   "e8:9f:80:83:3d:c8",
+				ServoSerial:  "SERVOSERIAL",
+				IsPingable:   true,
+				HasTestImage: true,
+				State:        "",
+				BotInfo:      nil,
+			},
+		},
+	}
+
+	sortModelsOpts := cmpopts.SortSlices(
+		func(x, y *pb.Dut) bool {
+			return x.GetAddress() > y.GetAddress()
+		})
+
+	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts, sortModelsOpts); diff != "" {
+		t.Errorf("diff: %v\n", diff)
 	}
 }

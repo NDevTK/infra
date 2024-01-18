@@ -773,7 +773,7 @@ func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListD
 	}, nil
 }
 
-func getConnectedDuts(ctx context.Context, executor executor.IExecCommander) ([]*pb.Dut, error) {
+func (s *SatlabRpcServiceServer) GetConnectedDuts(ctx context.Context, executor executor.IExecCommander) ([]*pb.Dut, error) {
 	satlabID, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, executor)
 	if err != nil {
 		return nil, err
@@ -785,6 +785,21 @@ func getConnectedDuts(ctx context.Context, executor executor.IExecCommander) ([]
 	}
 	a := asset.GetAsset{
 		Racks: satlabRackFilter,
+	}
+	// All Satlab drone names are set as "satlab-<serial number of satlab box>"
+	droneName := fmt.Sprintf("%s-%s", site.Satlab, satlabID)
+	req := &swarmingapi.BotsRequest{
+		Limit: int32(25),
+		Dimensions: []*swarmingapi.StringPair{
+			{
+				Key:   "drone",
+				Value: droneName,
+			},
+		},
+	}
+	botList, err := s.swarmingService.ListBots(ctx, req)
+	if err != nil {
+		logging.Errorf(ctx, "gRPC ListBots failed, couldn't determine swaming bot info", err)
 	}
 
 	HostMap, err := dns.ReadHostsToHostMap(ctx, executor)
@@ -817,13 +832,21 @@ func getConnectedDuts(ctx context.Context, executor executor.IExecCommander) ([]
 
 		address := HostMap[dut.Hostname]
 		e.Address = address
-
 		for _, asset := range assets {
 			if len(dut.Machines) > 0 {
 				if asset.Name == dut.Machines[0] {
 					e.Model = asset.Model
 					e.Board = asset.Info.BuildTarget
 				}
+			}
+		}
+		// Set the swarming bot status information for the DUT
+		if botList != nil && botList.Items != nil {
+			botInfo, err := getBotStatusInfo(ctx, botList.Items, dut.Hostname)
+			if err == nil && botInfo != nil {
+				e.BotInfo = botInfo
+			} else {
+				logging.Errorf(ctx, "couldn't determine bot status for %s, ignores BotInfo setting", dut.Hostname, err)
 			}
 		}
 
@@ -840,7 +863,7 @@ func (s *SatlabRpcServiceServer) ListEnrolledDuts(ctx context.Context, in *pb.Li
 		return nil, err
 	}
 
-	duts, err := getConnectedDuts(ctx, s.commandExecutor)
+	duts, err := s.GetConnectedDuts(ctx, s.commandExecutor)
 	if err != nil {
 		logging.Errorf(ctx, "gRPC Service error: list_enrolled_duts: %w", err)
 		return nil, err
@@ -862,7 +885,7 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 		return nil, err
 	}
 
-	duts, err := getConnectedDuts(ctx, s.commandExecutor)
+	duts, err := s.GetConnectedDuts(ctx, s.commandExecutor)
 	if err != nil {
 		logging.Errorf(ctx, "gRPC Service error: list_duts: %w", err)
 		return nil, err
@@ -933,6 +956,14 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 	}
 
 	return &pb.ListDutsResponse{Duts: duts}, nil
+}
+
+func createTaskLink(taskID string) string {
+	// If task ID is empty, we can return an empty string
+	if taskID == "" {
+		return ""
+	}
+	return fmt.Sprintf("%s%s", site.TaskLinkTemplate, taskID)
 }
 
 // DeleteDuts the RPC service for deleting DUTs
@@ -1528,4 +1559,54 @@ func getTestResultsLink(info map[string]string) string {
 	}
 
 	return fmt.Sprintf("%sfilters=%s&accountId=%s&days=%d", site.TesthausURLTemplate, filters, accountID, daysToFilter)
+}
+
+// getBotStatusInfo returns the bot info for a given DUT hostname.
+func getBotStatusInfo(ctx context.Context, botList []*swarmingapi.BotInfo, hostname string) (*pb.BotInfo, error) {
+	if botList == nil {
+		return nil, errors.New("bot list is empty, cannot process bot info")
+	}
+
+	for _, bot := range botList {
+		// site.GetBotPrefix() is always suffixed with '-'
+		dutBotName := fmt.Sprintf("%s%s", site.GetBotPrefix(), hostname)
+		if dutBotName == bot.GetBotId() {
+			return generateBotInfo(bot), nil
+		}
+	}
+
+	return nil, errors.New("could not find bot for the given hostname")
+}
+
+// generateBotInfo checks possible different statuses for a bot, and returns the status and task (if applicable).
+func generateBotInfo(bot *swarmingapi.BotInfo) *pb.BotInfo {
+	botInfo := &pb.BotInfo{}
+	if bot.GetIsDead() {
+		botInfo.BotState = pb.BotInfo_DEAD
+	} else if bot.GetQuarantined() {
+		botInfo.BotState = pb.BotInfo_QUARANTINED
+	} else if bot.GetTaskId() != "" {
+		botInfo.BotState = pb.BotInfo_BUSY
+		botInfo.TaskName = getTaskName(bot.GetTaskName())
+		botInfo.CurrentTask = createTaskLink(bot.TaskId)
+	} else if bot.GetTaskId() == "" {
+		botInfo.BotState = pb.BotInfo_IDLE
+	} else {
+		botInfo.BotState = pb.BotInfo_NO_STATE_SET
+	}
+
+	return botInfo
+}
+
+// getTaskName returns the swarming task name for Satlab UI.
+func getTaskName(taskName string) string {
+	if strings.Contains(taskName, site.DeployBuilderName) {
+		return site.TaskRunningDeploy
+	} else if strings.Contains(taskName, site.RepairBuilderName) {
+		return site.TaskRunningRepair
+	} else if strings.Contains(taskName, site.DefaultTestRunnerBuilderName) {
+		return site.TaskRunningTest
+	}
+
+	return ""
 }
