@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// eslint-disable-next-line no-undef
 module.exports = {
   env: {
     browser: true,
     es2021: true,
   },
-  plugins: [
-    'react',
-    '@typescript-eslint',
-    'prettier',
-    'jsx-a11y',
-    'import'
-  ],
+  plugins: ['react', '@typescript-eslint', 'prettier', 'jsx-a11y', 'import'],
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
@@ -24,8 +19,8 @@ module.exports = {
     'plugin:import/recommended',
     'plugin:import/typescript',
     'plugin:jsx-a11y/recommended',
+    'plugin:storybook/recommended',
     'plugin:prettier/recommended',
-    'plugin:storybook/recommended'
   ],
   settings: {
     react: {
@@ -164,4 +159,4 @@ module.exports = {
       },
     },
   ],
-}
+};
