@@ -425,7 +425,19 @@ func (p *pkg) emitTests(w io.Writer, verbose bool) error {
 	}
 
 	// Emit package-level output.
-	return p.extra.emit(w, verbose)
+	if verbose || p.failed {
+		// Emit everything in the case of a failure or in verbose mode.
+		return p.extra.emit(w, verbose)
+	}
+	// Prune everything except the "ok" when passing in non-verbose mode.
+	var pruned lines
+	for _, line := range p.extra.lines {
+		if isOkLine(line) {
+			pruned.add(line)
+			break
+		}
+	}
+	return pruned.emit(w, verbose)
 }
 
 type lines struct {
@@ -458,4 +470,8 @@ func isFailLine(line string) bool {
 	// The line may be indented.
 	line = strings.TrimLeft(line, " ")
 	return strings.HasPrefix(line, "--- FAIL: ")
+}
+
+func isOkLine(line string) bool {
+	return strings.HasPrefix(line, "ok")
 }

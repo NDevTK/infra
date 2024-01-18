@@ -233,6 +233,30 @@ var goTestJSONInterleaved = []byte(`
 {"Action":"pass","Package":"example/pkg1"}
 `)
 
+var goTestJSONPkgLevelOutputPass = []byte(`
+{"Action":"start","Package":"example/pkg"}
+{"Action":"run","Package":"example/pkg","Test":"TestA"}
+{"Action":"output","Package":"example/pkg","Test":"TestA","Output":"=== RUN   TestA\n"}
+{"Action":"output","Package":"example/pkg","Test":"TestA","Output":"--- PASS: TestA (0.00s)\n"}
+{"Action":"output","Package":"example/pkg","Output":"PASS\n"}
+{"Action":"pass","Package":"example/pkg","Test":"TestA"}
+{"Action":"output","Package":"example/pkg","Output":"ok  \texample/pkg\t0.123s\n"}
+{"Action":"output","Package":"example/pkg","Output":"hello world!\n"}
+{"Action":"pass","Package":"example/pkg"}
+`)
+
+var goTestJSONPkgLevelOutputFail = []byte(`
+{"Action":"start","Package":"example/pkg"}
+{"Action":"run","Package":"example/pkg","Test":"TestA"}
+{"Action":"output","Package":"example/pkg","Test":"TestA","Output":"=== RUN   TestA\n"}
+{"Action":"output","Package":"example/pkg","Test":"TestA","Output":"--- FAIL: TestA (0.00s)\n"}
+{"Action":"output","Package":"example/pkg","Output":"FAIL\n"}
+{"Action":"fail","Package":"example/pkg","Test":"TestA"}
+{"Action":"output","Package":"example/pkg","Output":"FAIL\texample/pkg\t0.123s\n"}
+{"Action":"output","Package":"example/pkg","Output":"hello world!\n"}
+{"Action":"fail","Package":"example/pkg"}
+`)
+
 func TestCopyTestOutput(t *testing.T) {
 	type test struct {
 		name    string
@@ -278,6 +302,45 @@ ok  	example/pkg2	0.123s
 			input:   goTestJSONInterleaved,
 			expect: `ok  	example/pkg1	0.123s
 ok  	example/pkg2	0.123s
+`,
+		},
+		{
+			name:    "PkgLevelPassVerbose",
+			verbose: true,
+			input:   goTestJSONPkgLevelOutputPass,
+			expect: `=== RUN   TestA
+--- PASS: TestA (0.00s)
+PASS
+ok  	example/pkg	0.123s
+hello world!
+`,
+		},
+		{
+			name:    "PkgLevelPassNonVerbose",
+			verbose: false,
+			input:   goTestJSONPkgLevelOutputPass,
+			expect: `ok  	example/pkg	0.123s
+`,
+		},
+		{
+			name:    "PkgLevelFailVerbose",
+			verbose: true,
+			input:   goTestJSONPkgLevelOutputFail,
+			expect: `=== RUN   TestA
+--- FAIL: TestA (0.00s)
+FAIL
+FAIL	example/pkg	0.123s
+hello world!
+`,
+		},
+		{
+			name:    "PkgLevelFailNonVerbose",
+			verbose: false,
+			input:   goTestJSONPkgLevelOutputFail,
+			expect: `--- FAIL: TestA (0.00s)
+FAIL
+FAIL	example/pkg	0.123s
+hello world!
 `,
 		},
 	} {
