@@ -6,12 +6,9 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
-	"path"
 	"path/filepath"
 	"time"
 
@@ -152,9 +149,9 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 
 	builder := workflow.NewBuilder(plats, a.PackageManager, ap)
 	builder.SetPreExecuteHook(func(ctx context.Context, pkg actions.Package) error {
-		// TODO(fancl): Fetch package from cipd, if available
-		return nil
+		return cipdPackage(pkg).download(ctx, a.CIPDService)
 	})
+	// TODO: set executor to luciexe.
 
 	return &PackageBuilder{
 		Packages: a.PackageManager,
@@ -164,9 +161,10 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 			Target: target,
 		},
 
-		CIPDHost:   platform.CurrentPlatform(),
-		CIPDTarget: a.TargetPlatform,
-		SpecLoader: loader,
+		CIPDService: a.CIPDService,
+		CIPDHost:    platform.CurrentPlatform(),
+		CIPDTarget:  a.TargetPlatform,
+		SpecLoader:  loader,
 
 		BuildTempDir: filepath.Join(a.StorageDir, "temp"),
 		Builder:      builder,
@@ -191,30 +189,64 @@ func (a *Application) TryUpload(ctx context.Context, pkgs []actions.Package) err
 	defer filesystem.RemoveAll(tmp)
 
 	for _, pkg := range pkgs {
-		metadata := pkg.Action.Metadata
-
-		name := metadata.Cipd.Name
-		if a.Experiment {
-			name = path.Join("experimental", name)
+		if err := a.tryUploadOne(ctx, func(ctx context.Context, in *snooperpb.ReportCipdRequest) error {
+			_, err := clt.ReportCipd(ctx, in)
+			return err
+		}, tmp, pkg); err != nil {
+			return err
 		}
+	}
 
-		logging.Infof(ctx, "creating cipd package %s:%s", name, metadata.Cipd.Version)
+	return nil
+}
 
-		out := filepath.Join(tmp, pkg.DerivationID+".cipd")
-		Iid, err := buildCIPD(name, pkg.Handler.OutputDirectory(), out)
-		if err != nil {
-			return errors.Annotate(err, "failed to build cipd package").Err()
+// We can't pass ProvenanceClient since it's private. Use a wrapper function
+// instead.
+type cipdReporter func(ctx context.Context, in *snooperpb.ReportCipdRequest) error
+
+func (a *Application) tryUploadOne(ctx context.Context, reporter cipdReporter, tmp string, pkg actions.Package) error {
+	cipdPkg := cipdPackage(pkg)
+
+	// Package is available in cipd
+	if cipdPkg.check(ctx, a.CIPDService) {
+		// TODO(fancl): add tags and refs
+		cipdPkg.setTags(ctx, a.CIPDService, nil)
+		return nil
+	}
+
+	// Skip if Package is not available locally.
+	if err := cipdPkg.Handler.IncRef(); err != nil {
+		return nil
+	}
+	defer cipdPkg.Handler.DecRef()
+
+	var prefix string
+	if a.Experiment {
+		prefix = "experimental"
+	}
+
+	// TODO(fancl): add tags and refs
+	name, iid, err := cipdPkg.upload(ctx, tmp, a.CIPDService, prefix, nil)
+	if err != nil {
+		return errors.Annotate(err, "failed to upload package").Err()
+	}
+
+	// Recursively upload package's dependencies
+	var deps []actions.Package
+	deps = append(deps, cipdPkg.BuildDependencies...)
+	deps = append(deps, cipdPkg.RuntimeDependencies...)
+	for _, dep := range deps {
+		if err := a.tryUploadOne(ctx, reporter, tmp, dep); err != nil {
+			return err
 		}
+	}
 
-		if err := registerCIPD(a.CIPDService, out); err != nil {
-			return errors.Annotate(err, "failed to register cipd package").Err()
-		}
-
+	if reporter != nil && iid != "" {
 		// Report package info to server to trigger provenance generation.
-		if _, err := clt.ReportCipd(ctx, &snooperpb.ReportCipdRequest{
+		if err := reporter(ctx, &snooperpb.ReportCipdRequest{
 			CipdReport: &snooperpb.CipdReport{
 				PackageName: name,
-				Iid:         Iid,
+				Iid:         iid,
 				EventTs:     timestamppb.New(time.Now()),
 			},
 		}); err != nil {
@@ -226,58 +258,14 @@ func (a *Application) TryUpload(ctx context.Context, pkgs []actions.Package) err
 	return nil
 }
 
-func buildCIPD(name, src, dst string) (Iid string, err error) {
-	resultFile := dst + ".json"
-	cmd := cipdCommand("pkg-build",
-		"-name", name,
-		"-in", src,
-		"-out", dst,
-		"-json-output", resultFile,
-	)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		return "", err
-	}
-
-	f, err := os.Open(resultFile)
-	if err != nil {
-		return "", err
-	}
-	defer f.Close()
-
-	var result struct {
-		Result struct {
-			Package    string
-			InstanceID string `json:"instance_id"`
-		}
-	}
-	if err := json.NewDecoder(f).Decode(&result); err != nil {
-		return "", err
-	}
-
-	return result.Result.InstanceID, nil
-}
-
-func registerCIPD(cipdService, pkg string) error {
-	// TODO(fancl): add tags and refs
-	cmd := cipdCommand("pkg-register", pkg,
-		"-service-url", cipdService,
-	)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	return cmd.Run()
-}
-
 type PackageBuilder struct {
 	Packages  core.PackageManager
 	Platforms generators.Platforms
 
-	CIPDHost   string
-	CIPDTarget string
-	SpecLoader *spec.SpecLoader
+	CIPDService string
+	CIPDHost    string
+	CIPDTarget  string
+	SpecLoader  *spec.SpecLoader
 
 	BuildTempDir string
 	Builder      *workflow.Builder
@@ -298,7 +286,12 @@ func (b *PackageBuilder) Load(ctx context.Context, name string) error {
 	return nil
 }
 
-// BuildAll builds all added packages.
+// BuildAll builds loaded packages.
+// - If a package we loaded is available in cipd, we don't need to rebuild or
+// make it available locally.
+// - If a package we added depends on a package available in cipd, we can
+// download the prebuilt package.
+// - Otherwise, we will build the package locally.
 func (b *PackageBuilder) BuildAll(ctx context.Context) ([]actions.Package, error) {
 	// TODO(fancl): we should use a real temp directory.
 	if err := filesystem.RemoveAll(b.BuildTempDir); err != nil {
@@ -308,19 +301,24 @@ func (b *PackageBuilder) BuildAll(ctx context.Context) ([]actions.Package, error
 		return nil, err
 	}
 
-	return b.Builder.BuildAll(ctx, b.BuildTempDir, b.loaded)
-}
-
-func cipdCommand(arg ...string) *exec.Cmd {
-	cipd, err := exec.LookPath("cipd")
+	pkgs, err := b.Builder.GeneratePackages(ctx, b.loaded)
 	if err != nil {
-		cipd = "cipd"
+		return nil, err
 	}
 
-	// Use cmd to execute batch file on windows.
-	if filepath.Ext(cipd) == ".bat" {
-		return exec.Command("cmd.exe", append([]string{"/C", cipd}, arg...)...)
+	// Check if package has been built and available in cipd.
+	var newPkgs []actions.Package
+	for _, pkg := range pkgs {
+		if !cipdPackage(pkg).check(ctx, b.CIPDService) {
+			newPkgs = append(newPkgs, pkg)
+		}
 	}
 
-	return exec.Command(cipd, arg...)
+	// Make packages available. We still return all packages regardless of the
+	// error.
+	if err := b.Builder.BuildPackages(ctx, b.BuildTempDir, newPkgs); err != nil {
+		return pkgs, err
+	}
+
+	return pkgs, nil
 }
