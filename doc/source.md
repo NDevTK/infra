@@ -82,5 +82,5 @@ see [bootstraping](/bootstrap/README.md).
 ## For Googlers
 
 If you are a Googler, see [more detailed
-instructions](http://sites/chrome-infrastructure/getting-started) for working in the
+instructions](http://go/chrome-infra-doc-internal) for working in the
 other infra repositories.
