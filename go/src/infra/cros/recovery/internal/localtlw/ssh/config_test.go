@@ -26,7 +26,7 @@ func TestFromSSHConfig(t *testing.T) {
 			Convey("Returns SSH client config for empty hostname", func() {
 				clientConfig := c.GetSSHConfig("")
 				So(clientConfig, ShouldNotBeNil)
-				So(clientConfig.Auth, ShouldEqual, c.(*config).auth)
+				So(clientConfig.Auth, ShouldResemble, c.(*config).auth)
 				So(reflect.TypeOf(clientConfig.HostKeyCallback), ShouldEqual, reflect.TypeOf(ssh.InsecureIgnoreHostKey()))
 				So(clientConfig.Timeout, ShouldBeZeroValue)
 				So(clientConfig.User, ShouldBeEmpty)
@@ -34,7 +34,7 @@ func TestFromSSHConfig(t *testing.T) {
 			Convey("Returns SSH client config for non-empty hostname", func() {
 				clientConfig := c.GetSSHConfig("anyHostname")
 				So(clientConfig, ShouldNotBeNil)
-				So(clientConfig.Auth, ShouldEqual, c.(*config).auth)
+				So(clientConfig.Auth, ShouldResemble, c.(*config).auth)
 				So(reflect.TypeOf(clientConfig.HostKeyCallback), ShouldEqual, reflect.TypeOf(ssh.InsecureIgnoreHostKey()))
 				So(clientConfig.Timeout, ShouldBeZeroValue)
 				So(clientConfig.User, ShouldBeEmpty)
@@ -54,7 +54,7 @@ func TestFromSSHConfig(t *testing.T) {
 			Convey("Returns SSH client config for matching hostname", func() {
 				clientConfig := c.GetSSHConfig("cr-anyHostname")
 				So(clientConfig, ShouldNotBeNil)
-				So(clientConfig.Auth, ShouldEqual, c.(*config).auth)
+				So(clientConfig.Auth, ShouldResemble, c.(*config).auth)
 				So(reflect.TypeOf(clientConfig.HostKeyCallback), ShouldEqual, reflect.TypeOf(ssh.InsecureIgnoreHostKey()))
 				So(clientConfig.Timeout, ShouldBeZeroValue)
 				So(clientConfig.User, ShouldBeEmpty)
@@ -72,9 +72,9 @@ func TestFromSSHConfig(t *testing.T) {
 			Convey("Returns SSH client config with populated values", func() {
 				clientConfig := c.GetSSHConfig("")
 				So(clientConfig, ShouldNotBeNil)
-				So(clientConfig.Auth, ShouldEqual, c.(*config).auth)
+				So(clientConfig.Auth, ShouldResemble, c.(*config).auth)
 				So(reflect.TypeOf(clientConfig.HostKeyCallback), ShouldEqual, reflect.TypeOf(ssh.InsecureIgnoreHostKey()))
-				So(clientConfig.Ciphers, ShouldEqual, []string{"3des-cbc", "blowfish-cbc", "cast128-cbc"})
+				So(clientConfig.Ciphers, ShouldResemble, []string{"3des-cbc", "blowfish-cbc", "cast128-cbc"})
 				So(clientConfig.Timeout, ShouldEqual, 2*time.Second)
 				So(clientConfig.User, ShouldEqual, "root")
 			})
@@ -92,7 +92,7 @@ func TestFromSSHConfig(t *testing.T) {
 			Convey("Returns SSH client config", func() {
 				clientConfig := c.GetSSHConfig("")
 				So(clientConfig, ShouldNotBeNil)
-				So(clientConfig.Auth, ShouldEqual, c.(*config).auth)
+				So(clientConfig.Auth, ShouldResemble, c.(*config).auth)
 				So(reflect.TypeOf(clientConfig.HostKeyCallback), ShouldEqual, reflect.TypeOf(ssh.InsecureIgnoreHostKey()))
 			})
 			Convey("Returns ProxyConfig", func() {
@@ -122,9 +122,9 @@ func TestFromClientConfig(t *testing.T) {
 			So(err, ShouldBeNil)
 			clientConfig := c.GetSSHConfig("")
 			So(clientConfig, ShouldNotBeNil)
-			So(clientConfig.Auth, ShouldEqual, c.(*config).auth)
+			So(clientConfig.Auth, ShouldResemble, c.(*config).auth)
 			So(reflect.TypeOf(clientConfig.HostKeyCallback), ShouldEqual, reflect.TypeOf(ssh.InsecureIgnoreHostKey()))
-			So(clientConfig.Ciphers, ShouldEqual, []string{"aes128-ctr"})
+			So(clientConfig.Ciphers, ShouldResemble, []string{"aes128-ctr"})
 			So(clientConfig.Timeout, ShouldEqual, 5*time.Second)
 			So(clientConfig.User, ShouldEqual, "user")
 		})
