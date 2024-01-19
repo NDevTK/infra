@@ -648,7 +648,10 @@ func TestPollQuitOnError(t *testing.T) {
 func TestPollQuitOnSuccess(t *testing.T) {
 	expected := 3
 	count := 1
-	ctx, cancel := context.WithTimeout(context.Background(), 310*time.Millisecond)
+	// The original value here before 2023-01-18 was 310.
+	// This isn't enough of a buffer and the tree closed one time.
+	// Set the buffer to 3 seconds for safety.
+	ctx, cancel := context.WithTimeout(context.Background(), 3000*time.Millisecond)
 	defer cancel()
 	f := func(ctx context.Context) (bool, error) {
 		count++
