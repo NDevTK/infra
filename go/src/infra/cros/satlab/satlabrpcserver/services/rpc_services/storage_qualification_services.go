@@ -43,7 +43,8 @@ func (s *SatlabRpcServiceServer) RunStorageQual(
 		Tags: map[string]string{
 			BUG_ID: bugId,
 		},
-		TRV2: true,
+		TRV2:  true,
+		Local: true,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
