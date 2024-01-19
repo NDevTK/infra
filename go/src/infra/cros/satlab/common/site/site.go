@@ -76,8 +76,11 @@ const (
 	// DeployBuilderBucketEnv is the env var used to determine what bucket the
 	// deploy task should run in.
 	DeployBuilderBucketEnv = "DEPLOY_BUILDER_BUCKET"
-	// GCSBucket is the partner bucket for staging images.
+	// GCSBucket is the bucket for staging images.
+	// (in case of internal users staging is not needed)
 	GCSImageBucketEnv = "GCS_IMAGE_BUCKET"
+	// GCSBucket is the partner bucket for storing custom images, results and testplans.
+	GCSPartnerBucketEnv = "GCS_PARTNER_BUCKET"
 	// LUCIProjectEnv is the env var used to determine what LUCI project bb
 	// tasks should run in.
 	LUCIProjectEnv = "LUCI_PROJECT"
@@ -107,13 +110,16 @@ const (
 	DefaultDeployBuilderBucket = "labpack_runner"
 	// DefaultCTPBuilderBucket is the bb bucket to specify if
 	// `CTPBuilderBucketEnv` is not specified.
-	DefaultCTPBuilderBucket = "cros_test_platform"
+	DefaultCTPBuilderBucket = "testplatform"
 	// DefaultCTPBuilderName is the bb bucket to specify if
 	// `CTPBuilderNameEnv` is not specified.
 	DefaultCTPBuilderName = "cros_test_platform"
 	// DefaultGCSImageBucket is the GCS bucket to specify if
 	// `GCSImageBucketEnv` is not specified.
 	DefaultGCSImageBucket = "chromeos-image-archive"
+	// DefaultGCSPartnerBucket is the GCS bucket to specify if
+	// `GCSPartnerBucketEnv` is not specified.
+	DefaultGCSPartnerBucket = "chromeos-satlab-internal-users"
 	// DefaultNamespace is the default namespace to use for all operations.
 	DefaultNamespace = "os"
 	// DefaultZone is the default value for the zone command line flag.
@@ -334,6 +340,16 @@ func GetGCSImageBucket() string {
 		return DefaultGCSImageBucket
 	}
 	return imageBucket
+}
+
+// GetGCSPartnerBucket determines which Google storage image bucket
+// to use, based on the environment.
+func GetGCSPartnerBucket() string {
+	partnerBucket := os.Getenv(GCSPartnerBucketEnv)
+	if partnerBucket == "" {
+		return DefaultGCSPartnerBucket
+	}
+	return partnerBucket
 }
 
 // GetUFSZone determines which ZONE the DUTs belongs to,

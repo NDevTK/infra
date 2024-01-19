@@ -56,7 +56,7 @@ func main() {
 	monitor := m.New()
 	defer monitor.Stop()
 
-	bucketService, err := bucket_services.New(ctx, site.GetGCSImageBucket())
+	bucketService, err := bucket_services.New(ctx, site.GetGCSPartnerBucket())
 
 	if err != nil {
 		logging.Errorf(ctx, "Failed to create a bucket connector %v\n", err)

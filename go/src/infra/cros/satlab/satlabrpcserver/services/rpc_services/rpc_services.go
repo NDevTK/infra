@@ -1221,7 +1221,7 @@ func validateCloudConfiguration(in *pb.SetCloudConfigurationRequest) error {
 func (s *SatlabRpcServiceServer) GetCloudConfiguration(ctx context.Context, in *pb.GetCloudConfigurationRequest) (*pb.GetCloudConfigurationResponse, error) {
 	logging.Infof(ctx, "gRPC Service triggered: get_cloud_configuration")
 
-	bucket := site.GetGCSImageBucket()
+	bucket := site.GetGCSPartnerBucket()
 	p := site.GetBotoPath()
 
 	f, err := os.Open(p)

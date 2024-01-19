@@ -104,7 +104,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
-					Bucket:  "cros_test_platform",
+					Bucket:  "testplatform",
 					Builder: "cros_test_platform",
 				},
 				Dimensions:          map[string]string{},
@@ -131,7 +131,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
-					Bucket:  "cros_test_platform",
+					Bucket:  "testplatform",
 					Builder: "cros_test_platform",
 				},
 				Dimensions:          map[string]string{},
@@ -160,7 +160,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
-					Bucket:  "cros_test_platform",
+					Bucket:  "testplatform",
 					Builder: "cros_test_platform",
 				},
 				Dimensions:          map[string]string{"drone": "satlab-0wgatfqi21118003"},
@@ -187,7 +187,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
-					Bucket:  "cros_test_platform",
+					Bucket:  "testplatform",
 					Builder: "cros_test_platform",
 				},
 				Dimensions:          map[string]string{"label-dut": "123"},
@@ -215,7 +215,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
-					Bucket:  "cros_test_platform",
+					Bucket:  "testplatform",
 					Builder: "cros_test_platform",
 				},
 				Dimensions:          map[string]string{"label-dut": "123"},
@@ -242,7 +242,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
-					Bucket:  "cros_test_platform",
+					Bucket:  "testplatform",
 					Builder: "cros_test_platform",
 				},
 				Dimensions:  map[string]string{"label-dut": "123"},
@@ -277,7 +277,7 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Board:       "zork",
 				BuilderID: &buildbucketpb.BuilderID{
 					Project: "chromeos",
-					Bucket:  "cros_test_platform",
+					Bucket:  "testplatform",
 					Builder: "cros_test_platform",
 				},
 				Dimensions:  map[string]string{"label-dut": "123"},

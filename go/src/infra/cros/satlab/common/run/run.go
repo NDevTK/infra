@@ -178,10 +178,7 @@ func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClie
 	// 2. Latency: Waiting for the copying to take place is not a good user experience and
 	// is not necessary anyway in this case. Although copying is fairly quick, it is left to
 	// be handled by server in the background
-	err := StageImageToBucket(ctx, moblabClient, c.Board, c.Model, c.Build)
-	if err != nil {
-		return "", errors.Annotate(err, "satlab stage image to bucket").Err()
-	}
+	_ = StageImageToBucket(ctx, moblabClient, c.Board, c.Model, c.Build)
 
 	link, err := ScheduleBuild(ctx, bbClient)
 	if err != nil {
@@ -252,7 +249,7 @@ func (c *Run) createTestPlan() (*satlabrpcserver.CftMixTestplan, error) {
 	} else if c.Testplan != "" {
 		fmt.Printf("Fetching testplan...\n")
 		var w bytes.Buffer
-		path, err := downloadTestPlan(&w, site.GetGCSImageBucket(), c.Testplan)
+		path, err := downloadTestPlan(&w, site.GetGCSPartnerBucket(), c.Testplan)
 		if err != nil {
 			return nil, err
 		}

@@ -27,7 +27,7 @@ func StageAndWriteLocalStableVersion(
 	buildVersion := strings.Split(rv.OsImage, "-")[1]
 	bucket := site.GetGCSImageBucket()
 	if bucket == "" {
-		return errors.New("GCS_BUCKET not found")
+		return errors.New("GCS_IMAGE_BUCKET not found")
 	}
 	_, err := service.StageBuild(ctx, rv.Board, rv.Model, buildVersion, bucket)
 	if err != nil {
