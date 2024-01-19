@@ -22,6 +22,30 @@
       },
       "revId": "399dce26d765934c5cbf3d5a7ab89e08b1d4273a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d727c3b_2707fbd9",
+        "filename": "go/src/infra/build/siso/build/mtimecheck.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-01-19T05:49:54Z",
+      "side": 1,
+      "message": "prefer less indent..",
+      "parentUuid": "2bb22e37_d5364c5f",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 0
+      },
+      "revId": "399dce26d765934c5cbf3d5a7ab89e08b1d4273a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
