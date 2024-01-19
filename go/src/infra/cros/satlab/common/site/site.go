@@ -59,14 +59,6 @@ const RecoveryVersionDirectory = "/home/satlab/keys/recovery_versions/"
 const RepairBuilderName = "repair"
 
 const (
-	TaskLinkTemplate  = "https://chromeos-swarming.appspot.com/task?id="
-	DeployBuilderName = "deploy"
-	TaskRunningTest   = "Running"
-	TaskRunningRepair = "Repairing"
-	TaskRunningDeploy = "Deploying"
-)
-
-const (
 	// CTPBuilderBucketEnv is the env var used to determine what bucket the
 	// ctp task should run in.
 	CTPBuilderBucketEnv = "CTP_BUILDER_BUCKET"
@@ -164,21 +156,28 @@ The following the are steps this script executes:
 
 // Swarming task tags used to get task details.
 const (
-	BuildBucketIDTag       = "buildbucket_build_id"
-	BuilderTag             = "builder"
-	DisplayNameTag         = "display_name"
-	DutNameTag             = "dut_name"
-	ParentBuildBucketIDTag = "parent_buildbucket_id"
-	LabelPoolTag           = "label-pool"
-	LabelSuiteTag          = "label-suite"
-	SatlabIDTag            = "satlab-id"
-	Suite                  = "suite"
-	TestPlan               = "testplan"
-	TestPlanIDTag          = "test-plan-id"
-	TestTypeTag            = "test-type"
-	MiloSite               = "http://ci.chromium.org/b/"
-	TesthausURLTemplate    = "https://tests.chromeos.goog/p/chromeos/search?union=AND&viewMode=List&"
-	BuildBucketID          = "buildbucket_id"
+	BuildBucketIDTag          = "buildbucket_build_id"
+	BuilderTag                = "builder"
+	DisplayNameTag            = "display_name"
+	DutNameTag                = "dut_name"
+	ParentBuildBucketIDTag    = "parent_buildbucket_id"
+	LabelPoolTag              = "label-pool"
+	LabelSuiteTag             = "label-suite"
+	SatlabIDTag               = "satlab-id"
+	Suite                     = "suite"
+	TestPlan                  = "testplan"
+	TestPlanIDTag             = "test-plan-id"
+	TestTypeTag               = "test-type"
+	MiloSite                  = "http://ci.chromium.org/b/"
+	TesthausURLTemplate       = "https://tests.chromeos.goog/p/chromeos/search?union=AND&viewMode=List&"
+	BuildBucketID             = "buildbucket_id"
+	TaskLinkTemplate          = "https://chromeos-swarming.appspot.com/task?id="
+	DeployBuilderName         = "deploy"
+	TaskRunningTest           = "Running"
+	TaskRunningRepair         = "Repairing"
+	TaskRunningDeploy         = "Deploying"
+	TestRunnerSwarmingPoolEnv = "TEST_RUNNER_SWARMING_POOL"
+	CTPSwarmingPoolEnv        = "CTP_SWARMING_POOL"
 )
 
 // CommonFlags controls some commonly-used CLI flags.
@@ -503,3 +502,23 @@ const DefaultCTPTimeoutMins = 360
 // MaxIshCTPTimeoutMins is a "maximum" timeout that in reality is just a large
 // number since we can't know exact timeouts on our builders.
 const MaxIshCTPTimeoutMins = 2370
+
+// GetTestRunnerSwarmingPool determines which Partner Swarming Pool for test runner,
+// based on the environment.
+func GetTestRunnerSwarmingPool() string {
+	pool := os.Getenv(TestRunnerSwarmingPoolEnv)
+	if pool != "" {
+		return pool
+	}
+	return ""
+}
+
+// GetCTPSwarmingPool determines which Partner Swarming Pool for CTP,
+// based on the environment.
+func GetCTPSwarmingPool() string {
+	pool := os.Getenv(CTPSwarmingPoolEnv)
+	if pool != "" {
+		return pool
+	}
+	return ""
+}

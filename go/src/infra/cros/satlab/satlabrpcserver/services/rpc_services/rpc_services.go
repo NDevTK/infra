@@ -1427,10 +1427,13 @@ func getListTasksRequestTags(in *pb.ListJobsRequest) []string {
 	// Fine tune filters to get only CTP builds when search is for suite or testplan
 	if in.JobType == pb.Job_SUITE || in.JobType == pb.Job_TESTPLAN {
 		tags = append(tags, fmt.Sprintf("%s:%s", site.BuilderTag, site.GetCTPBuilder()))
+		tags = append(tags, fmt.Sprintf("pool:%s", site.GetCTPSwarmingPool()))
 	} else if in.JobType == pb.Job_TEST {
 		tags = append(tags, fmt.Sprintf("%s:%s", site.BuilderTag, site.DefaultTestRunnerBuilderName))
+		tags = append(tags, fmt.Sprintf("pool:%s", site.GetTestRunnerSwarmingPool()))
 	} else { // Filter for both CTP and Testrunner builds
 		tags = append(tags, fmt.Sprintf("%s:%s|%s", site.BuilderTag, site.DefaultTestRunnerBuilderName, site.GetCTPBuilder()))
+		tags = append(tags, fmt.Sprintf("pool:%s|%s", site.GetTestRunnerSwarmingPool(), site.GetCTPSwarmingPool()))
 	}
 
 	return tags
@@ -1486,6 +1489,7 @@ func (s *SatlabRpcServiceServer) GetJobDetails(ctx context.Context, taskInfo *sw
 			fmt.Sprintf("buildbucket_bucket:%s/%s", site.GetLUCIProject(), site.GetCTPBucket()),
 			fmt.Sprintf("%s:%s", site.ParentBuildBucketIDTag, tagsInfo[site.BuildBucketIDTag]),
 			fmt.Sprintf("%s:%s", site.BuilderTag, site.DefaultTestRunnerBuilderName),
+			fmt.Sprintf("pool:%s", site.GetTestRunnerSwarmingPool()),
 		}
 
 		tc, err := s.GetChildTasksCountByStatus(
