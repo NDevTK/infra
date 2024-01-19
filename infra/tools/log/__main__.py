@@ -11,6 +11,8 @@ Commands:
   master <master name>  Prints a log from a master.  This is an alias for
                         cit log cat master_twistd_log master.<master name>
 """
+from __future__ import print_function
+
 import logging
 import sys
 
@@ -63,7 +65,7 @@ class Log(app.BaseApplication):
       elif len(args.target) == 0:
         return cl.list_logs(None)
       else:  # pragma: no cover
-        print 'Invalid number of targets for list (expected 0 or 1)'
+        print('Invalid number of targets for list (expected 0 or 1)')
     elif args.command == 'cat':  # pragma: no cover
       return cl.cat(args.target)
     elif args.command == 'help':  # pragma: no cover

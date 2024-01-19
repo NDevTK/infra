@@ -7,6 +7,8 @@
 # most of this file is actually covered, they're here because of phantom
 # branch misses.
 
+from __future__ import print_function
+
 import datetime
 import httplib2
 import logging
@@ -17,6 +19,7 @@ import time
 
 from googleapiclient import discovery
 from oauth2client.client import OAuth2WebServerFlow
+from six.moves import input
 
 
 # https://chromium.googlesource.com/infra/infra/+/master/infra_libs/logs/README.md
@@ -78,8 +81,8 @@ class LogQuery(object):
         # profile gets chosen is anyone's guess.
         redirect_uri=oauth2client.client.OOB_CALLBACK_URN)
     authorize_url = flow.step1_get_authorize_url()
-    print 'Go to URL: %s' % authorize_url
-    code = raw_input('Enter verification code: ').strip()
+    print('Go to URL: %s' % authorize_url)
+    code = input('Enter verification code: ').strip()
     creds = flow.step2_exchange(code)
     if not os.path.exists(os.path.dirname(CACHE_FILE)):
       os.makedirs(os.path.dirname(CACHE_FILE))
@@ -105,16 +108,18 @@ class LogQuery(object):
     if len(targets) == 2:
       resource_id = targets[1]
     else:
-      print >>sys.stderr, (
+      print(
           'WARNING: Querying for all resources under a service, '
-          'this may take a long time...')
+          'this may take a long time...',
+          file=sys.stderr)
     if not limit:  # pragma: no branch
       limit = self.limit
     tzoffset = datetime.timedelta(
         seconds=time.altzone if time.daylight else time.timezone)
-    offset = time.altzone / 60 / 60
-    print >>sys.stderr, (
-        'NOTE: All times are in local system time (%g hour(s)).' % -offset)
+    offset = time.altzone // 60 // 60
+    print(
+        'NOTE: All times are in local system time (%g hour(s)).' % -offset,
+        file=sys.stderr)
     q = CAT_QUERY % (log_name, self.days_from, self.days_until)
     if resource_id:
       q += '\n WHERE labels.cloudtail_resource_id = "%s"' % resource_id
@@ -136,7 +141,7 @@ class LogQuery(object):
       # poll for the job, since BigQuery doesn't give us partial results.
       job_id = j['jobReference']['jobId']
       while True:
-        print >>sys.stderr, 'Still working... (Job ID: %s)' % job_id
+        print('Still working... (Job ID: %s)' % job_id, file=sys.stderr)
         # inner job
         ij = self._bq.jobs().getQueryResults(
             projectId=PROJECT_ID, jobId=job_id,
@@ -167,7 +172,7 @@ class LogQuery(object):
           maxResults=1000, pageToken=j['pageToken']).execute()
 
     for line in reversed(lines):
-      print line
+      print(line)
 
   def _list_logs_names(self):
     """List all of the log names in a project."""
@@ -188,7 +193,7 @@ class LogQuery(object):
       names.add(table['tableReference']['tableId'][:-9])
 
     for name in sorted(names):
-      print name
+      print(name)
 
   def _list_resources(self, log_name):
     """List all resources associated with a log name."""
@@ -197,7 +202,7 @@ class LogQuery(object):
     j = self._bq.jobs().query(
         projectId=PROJECT_ID, body={'query': q}).execute()
     for row in sorted(j['rows'], key=lambda x: x['f'][0]['v']):
-      print row['f'][0]['v']
+      print(row['f'][0]['v'])
 
   def list_logs(self, log_name):
     if log_name:
