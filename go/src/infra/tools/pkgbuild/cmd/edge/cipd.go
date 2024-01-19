@@ -11,7 +11,6 @@ import (
 	"io/fs"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -44,14 +43,13 @@ func (pkg cipdPackage) check(ctx context.Context, cipdService string) bool {
 	return true
 }
 
-func (pkg cipdPackage) upload(ctx context.Context, workdir, cipdService, prefix string, tags []string) (name string, iid string, err error) {
+func (pkg cipdPackage) upload(ctx context.Context, workdir, cipdService string, tags []string) (name string, iid string, err error) {
 	cipd := pkg.Action.Metadata.GetCipd()
 	if cipd == nil || cipd.Name == "" {
 		return "", "", nil
 	}
 
-	name = path.Join(prefix, cipd.Name)
-	logging.Infof(ctx, "creating cipd package %s:%s with %s", name, pkg.derivationTag(), cipd.Version)
+	logging.Infof(ctx, "creating cipd package %s:%s with %s", cipd.Name, pkg.derivationTag(), cipd.Version)
 
 	out := filepath.Join(workdir, pkg.DerivationID+".cipd")
 	if _, err := os.Stat(out); err == nil || !errors.Is(err, fs.ErrNotExist) {

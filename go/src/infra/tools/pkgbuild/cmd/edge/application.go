@@ -49,9 +49,6 @@ type Application struct {
 	// The prefix to use for uploading built packages.
 	CIPDPackagePrefix string
 
-	// If true, prepend additional experimental/ to upload path.
-	Experiment bool
-
 	// Snoopy service URL for reporting artifact hash.
 	SnoopyService string
 
@@ -81,8 +78,6 @@ func (a *Application) Parse(args []string) error {
 	fs.StringVar(&a.CIPDService, "cipd-service", a.CIPDService, "CIPD service URL for downloading and uploading packages.")
 	fs.BoolVar(&a.Upload, "upload", a.Upload, "If upload is true, packages will be uploaded to CIPD.")
 	fs.StringVar(&a.CIPDPackagePrefix, "cipd-package-prefix", a.CIPDPackagePrefix, "Required; The prefix to use for uploading built packages.")
-
-	fs.BoolVar(&a.Experiment, "experiment", a.Experiment, "If experiment is true, packages will be uploaded to experimental/.")
 
 	fs.StringVar(&a.SnoopyService, "snoopy-service", a.SnoopyService, "Snoopy service URL for reporting artifact hash.")
 
@@ -220,13 +215,8 @@ func (a *Application) tryUploadOne(ctx context.Context, reporter cipdReporter, t
 	}
 	defer cipdPkg.Handler.DecRef()
 
-	var prefix string
-	if a.Experiment {
-		prefix = "experimental"
-	}
-
 	// TODO(fancl): add tags and refs
-	name, iid, err := cipdPkg.upload(ctx, tmp, a.CIPDService, prefix, nil)
+	name, iid, err := cipdPkg.upload(ctx, tmp, a.CIPDService, nil)
 	if err != nil {
 		return errors.Annotate(err, "failed to upload package").Err()
 	}

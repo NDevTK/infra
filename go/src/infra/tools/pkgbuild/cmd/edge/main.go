@@ -39,7 +39,6 @@ func Main(ctx context.Context) error {
 		TargetPlatform: platform.CurrentPlatform(),
 		CIPDService:    chromeinfra.CIPDServiceURL,
 		Upload:         false,
-		Experiment:     false,
 		SnoopyService:  "http://localhost:11000",
 	}
 	if err := app.Parse(os.Args[1:]); err != nil {
