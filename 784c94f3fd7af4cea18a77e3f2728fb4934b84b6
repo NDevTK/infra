@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a5104bc_062bbbfe",
+        "filename": "infra/tools/log/log.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2024-01-19T00:41:12Z",
+      "side": 1,
+      "message": "This has been deprecated ~\u003d a year ago and this _auth() method doesn\u0027t work now. I suspect this is all dead code that no one is using.",
+      "range": {
+        "startLine": 82,
+        "startChar": 21,
+        "endLine": 82,
+        "endChar": 57
+      },
+      "revId": "784c94f3fd7af4cea18a77e3f2728fb4934b84b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
