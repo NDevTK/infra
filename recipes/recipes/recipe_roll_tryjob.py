@@ -463,14 +463,17 @@ def RunSteps(api, upstream_id, upstream_url, downstream_id, downstream_url):
 
   # expected != None at this point, so actual_footer must be None
   msg = FOOTER_ADD_TEMPLATE + EXTRA_MSG[expected_footer]
-  return _failing_step(
-      api, 'MISSING FOOTER IN CL MESSAGE',
-      msg.format(
-          footer=expected_footer,
-          up_id=upstream_id,
-          down_id=downstream_id,
-          down_recipes=downstream_repo.recipes_py,
-      ))
+  expanded_message = msg.format(
+      footer=expected_footer,
+      up_id=upstream_id,
+      down_id=downstream_id,
+      down_recipes=downstream_repo.recipes_py)
+  expanded_message += """
+
+Hint: To locate this repo, look for "_repo_url" in
+http://go/chrome-internal-recipe-repos
+"""
+  return _failing_step(api, 'MISSING FOOTER IN CL MESSAGE', expanded_message)
 
 
 def GenTests(api):
