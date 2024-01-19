@@ -39,8 +39,6 @@ type buildSpec struct {
 	goroot             string
 	gopath             string
 	gocacheDir         string
-	toolsRoot          string
-	casInstance        string
 	priority           int32
 	golangbuildVersion string
 
@@ -55,7 +53,7 @@ type buildSpec struct {
 	experiments map[string]struct{}
 }
 
-func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map[string]struct{}, st *build.State, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
+func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]struct{}, st *build.State, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
 	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
 		Scopes: append([]string{
 			"https://www.googleapis.com/auth/userinfo.email",
@@ -164,12 +162,6 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		return nil, fmt.Errorf("specified builders to trigger for unsupported project")
 	}
 
-	// Get the CAS instance.
-	casInst, err := casInstanceFromEnv()
-	if err != nil {
-		return nil, fmt.Errorf("casInstanceFromEnv: %w", err)
-	}
-
 	if inputs.NoNetwork {
 		// Return a helpful error if the system requirements
 		// for disabling external network are unmet.
@@ -191,8 +183,6 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		goroot:             filepath.Join(cwd, "goroot"),
 		gopath:             filepath.Join(cwd, "gopath"),
 		gocacheDir:         filepath.Join(cwd, "gocache"),
-		toolsRoot:          toolsRoot,
-		casInstance:        casInst,
 		priority:           st.Build().GetInfra().GetSwarming().GetPriority(),
 		golangbuildVersion: st.Build().GetExe().GetCipdVersion(),
 		inputs:             inputs,
@@ -211,7 +201,7 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	env.Set("GOARCH", b.inputs.Target.Goarch)
 	env.Set("GOHOSTOS", b.inputs.Host.Goos)
 	env.Set("GOHOSTARCH", b.inputs.Host.Goarch)
-	env.Set("GOROOT_BOOTSTRAP", filepath.Join(b.toolsRoot, "go_bootstrap"))
+	env.Set("GOROOT_BOOTSTRAP", filepath.Join(toolsRoot(ctx), "go_bootstrap"))
 	env.Set("GOPATH", b.gopath) // Explicitly set to an empty per-build directory, to avoid reusing the implicit default one.
 	env.Set("GOBIN", "")
 	env.Set("GOROOT", "")           // Clear GOROOT because it's possible someone has one set locally, e.g. for luci-go development.
@@ -222,13 +212,13 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 		env.Set("GO_TEST_SHORT", "0") // Tell 'dist test' to operate in longtest mode. See go.dev/issue/12508.
 	}
 	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
-	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "bin"), os.PathListSeparator, env.Get("PATH")))
+	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot(ctx), "bin"), os.PathListSeparator, env.Get("PATH")))
 
 	if b.inputs.Host.Goos == "windows" {
 		env.Set("GOBUILDEXIT", "1") // On Windows, emit exit codes from .bat scripts. See go.dev/issue/9799.
-		ccPath := filepath.Join(b.toolsRoot, "cc/windows/gcc64/bin")
+		ccPath := filepath.Join(toolsRoot(ctx), "cc/windows/gcc64/bin")
 		if b.inputs.Target.Goarch == "386" { // Not obvious whether this should check host or target. As of writing they never differ.
-			ccPath = filepath.Join(b.toolsRoot, "cc/windows/gcc32/bin")
+			ccPath = filepath.Join(toolsRoot(ctx), "cc/windows/gcc32/bin")
 		}
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, ccPath))
 	}
@@ -237,10 +227,10 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 		env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.goroot, "misc/wasm"), os.PathListSeparator, env.Get("PATH")))
 		switch {
 		case b.inputs.Target.Goos == "js":
-			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "nodejs/bin"), os.PathListSeparator, env.Get("PATH")))
+			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot(ctx), "nodejs/bin"), os.PathListSeparator, env.Get("PATH")))
 		case b.inputs.Target.Goos == "wasip1" && env.Get("GOWASIRUNTIME") == "wasmtime",
 			b.inputs.Target.Goos == "wasip1" && env.Get("GOWASIRUNTIME") == "wazero":
-			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, env.Get("GOWASIRUNTIME")), os.PathListSeparator, env.Get("PATH")))
+			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot(ctx), env.Get("GOWASIRUNTIME")), os.PathListSeparator, env.Get("PATH")))
 		}
 	}
 
@@ -369,14 +359,6 @@ func (b *buildSpec) installDatastoreClient(ctx context.Context) (context.Context
 	return cfg.Use(ctx), nil
 }
 
-func (b *buildSpec) toolPath(tool string) string {
-	return filepath.Join(b.toolsRoot, "bin", tool)
-}
-
-func (b *buildSpec) toolCmd(ctx context.Context, tool string, args ...string) *exec.Cmd {
-	return command(ctx, b.toolPath(tool), args...)
-}
-
 // wrapTestCmd wraps cmd with 'rdb' and 'result_adapter' to send test results
 // to ResultDB. cmd must be a test command that emits a JSON stream in the
 // https://go.dev/cmd/test2json#hdr-Output_Format format.
@@ -384,7 +366,7 @@ func (b *buildSpec) toolCmd(ctx context.Context, tool string, args ...string) *e
 // If external network access is to be disabled, cmd is also prefixed with 'unshare'.
 //
 // It edits cmd in place but for convenience also returns cmd back to its caller.
-func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
+func (b *buildSpec) wrapTestCmd(ctx context.Context, cmd *exec.Cmd) *exec.Cmd {
 	if b.inputs.NoNetwork {
 		// Disable external network access for the test command.
 		// Permit internal loopback access.
@@ -434,17 +416,17 @@ func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
 	// much easier to read for humans and maintains compatibility with watchflakes rules that
 	// match on the entire log. Full structured test output still gets sent to ResultDB, even
 	// with this flag set.
-	cmd.Path = b.toolPath("rdb")
+	cmd.Path = toolPath(ctx, "rdb")
 	args := []string{cmd.Path, "stream"}
 	args = append(args, rdbArgs...)
-	args = append(args, "--", b.toolPath("result_adapter"), "go", "-v=false", "--")
+	args = append(args, "--", toolPath(ctx, "result_adapter"), "go", "-v=false", "--")
 	args = append(args, cmd.Args...)
 	cmd.Args = args
 	return cmd
 }
 
-func (b *buildSpec) goScriptCmd(ctx context.Context, script string) *exec.Cmd {
-	dir := filepath.Join(b.goroot, "src")
+func goScriptCmd(ctx context.Context, goroot, script string) *exec.Cmd {
+	dir := filepath.Join(goroot, "src")
 	cmd := command(ctx, filepath.FromSlash("./"+script))
 	cmd.Dir = dir
 	return cmd
@@ -452,10 +434,15 @@ func (b *buildSpec) goScriptCmd(ctx context.Context, script string) *exec.Cmd {
 
 // goCmd creates a command for running 'go {args}' in dir.
 func (b *buildSpec) goCmd(ctx context.Context, dir string, args ...string) *exec.Cmd {
+	return goCmd(ctx, b.goroot, dir, args...)
+}
+
+// goCmd creates a command for running 'go {args}' for the toolchain at goroot in dir.
+func goCmd(ctx context.Context, goroot, dir string, args ...string) *exec.Cmd {
 	env := environ.FromCtx(ctx)
 	// Ensure the go binary found in PATH is the same as the one we're about to execute.
-	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.goroot, "bin"), os.PathListSeparator, env.Get("PATH")))
-	cmd := command(env.SetInCtx(ctx), filepath.Join(b.goroot, "bin", "go"), args...)
+	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(goroot, "bin"), os.PathListSeparator, env.Get("PATH")))
+	cmd := command(env.SetInCtx(ctx), filepath.Join(goroot, "bin", "go"), args...)
 	cmd.Dir = dir
 	return cmd
 }

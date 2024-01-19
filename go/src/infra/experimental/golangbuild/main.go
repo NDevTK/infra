@@ -233,13 +233,22 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	}
 	log.Printf("installed tools")
 
+	// Install tools in context.
+	ctx = withToolsRoot(ctx, toolsRoot)
+
+	// Get the CAS instance.
+	ctx, err = casInstanceFromEnv(ctx)
+	if err != nil {
+		return nil, infraErrorf("casInstanceFromEnv: %w", err)
+	}
+
 	// Define working directory.
 	cwd, err := os.Getwd()
 	if err != nil {
 		return nil, infraErrorf("get CWD")
 	}
 
-	spec, err = deriveBuildSpec(ctx, cwd, toolsRoot, experiments, st, inputs)
+	spec, err = deriveBuildSpec(ctx, cwd, experiments, st, inputs)
 	if err != nil {
 		return nil, infraWrap(err)
 	}

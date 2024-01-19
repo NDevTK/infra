@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"infra/experimental/golangbuild/golangbuildpb"
 	"io"
 	"net/url"
 	"os"
@@ -42,7 +43,7 @@ func (p *prebuiltGo) String() string {
 	return fmt.Sprintf("%q -> %q", p.ID, p.CASDigest)
 }
 
-func casInstanceFromEnv() (string, error) {
+func casInstanceFromEnv(ctx context.Context) (context.Context, error) {
 	// Obtain the instance from SWARMING_SERVER like recipes do.
 	//
 	// It may be a bit weird to import this variable from a command
@@ -51,24 +52,30 @@ func casInstanceFromEnv() (string, error) {
 	// by whoever changes it.
 	server := os.Getenv(swarming.ServerEnvVar)
 	if server == "" {
-		return "", fmt.Errorf("no CAS instance found")
+		return ctx, fmt.Errorf("no CAS instance found")
 	}
 	u, err := url.Parse(server)
 	if err != nil {
-		return "", fmt.Errorf("%q is not a URL: %w", swarming.ServerEnvVar, err)
+		return ctx, fmt.Errorf("%q is not a URL: %w", swarming.ServerEnvVar, err)
 	}
 	inst, found := strings.CutSuffix(u.Host, ".appspot.com")
 	if !found {
-		return "", fmt.Errorf("%q is not an appspot.com URL", swarming.ServerEnvVar)
+		return ctx, fmt.Errorf("%q is not an appspot.com URL", swarming.ServerEnvVar)
 	}
-	return inst, nil
+	return context.WithValue(ctx, casInstanceKey{}, inst), nil
 }
 
-func checkForPrebuiltGo(ctx context.Context, spec *buildSpec) (digest string, err error) {
+type casInstanceKey struct{}
+
+func casInstance(ctx context.Context) string {
+	return ctx.Value(casInstanceKey{}).(string)
+}
+
+func checkForPrebuiltGo(ctx context.Context, goSrc *sourceSpec, inputs *golangbuildpb.Inputs) (digest string, err error) {
 	step, ctx := build.StartStep(ctx, "check for prebuilt go")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
-	id, err := prebuiltID(ctx, spec)
+	id, err := prebuiltID(ctx, goSrc, inputs)
 	if err != nil {
 		return "", err
 	}
@@ -93,11 +100,10 @@ var harmlessBuildIDEnvVars = map[string]bool{
 }
 
 // prebuiltID produces a prebuilt cache ID for looking up prebuilt Go toolchains.
-func prebuiltID(ctx context.Context, spec *buildSpec) (id string, err error) {
+func prebuiltID(ctx context.Context, goSrc *sourceSpec, inputs *golangbuildpb.Inputs) (id string, err error) {
 	step, _ := build.StartStep(ctx, "construct prebuilt ID")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
-	goSrc := spec.goSrc
 	var rev string
 	if goSrc.commit != nil {
 		rev = goSrc.commit.Id
@@ -111,19 +117,19 @@ func prebuiltID(ctx context.Context, spec *buildSpec) (id string, err error) {
 	detailsHash := sha256.New()
 	details := io.MultiWriter(detailsHash, &detailsSummary)
 
-	keys := maps.Keys(spec.inputs.Env)
+	keys := maps.Keys(inputs.Env)
 	sort.Strings(keys)
 	for _, k := range keys {
 		if _, ok := harmlessBuildIDEnvVars[k]; ok {
 			continue
 		}
-		fmt.Fprintf(details, "%v=%+q\n", k, spec.inputs.Env[k])
+		fmt.Fprintf(details, "%v=%+q\n", k, inputs.Env[k])
 	}
-	fmt.Fprintf(details, "xcode=%+q\n", spec.inputs.XcodeVersion)
-	fmt.Fprintf(details, "version=%+q\n", spec.inputs.VersionFile)
+	fmt.Fprintf(details, "xcode=%+q\n", inputs.XcodeVersion)
+	fmt.Fprintf(details, "version=%+q\n", inputs.VersionFile)
 
 	// Construct the final ID.
-	id = fmt.Sprintf("%s-%s-%s-%s-%s-%x", spec.inputs.Host.Goos, spec.inputs.Host.Goarch, spec.inputs.Target.Goos, spec.inputs.Target.Goarch, rev, detailsHash.Sum(nil))
+	id = fmt.Sprintf("%s-%s-%s-%s-%s-%x", inputs.Host.Goos, inputs.Host.Goarch, inputs.Target.Goos, inputs.Target.Goarch, rev, detailsHash.Sum(nil))
 
 	// Log the ID and the inputs.
 	_, err = io.WriteString(step.Log("id"), id)
@@ -137,7 +143,7 @@ func prebuiltID(ctx context.Context, spec *buildSpec) (id string, err error) {
 	return id, nil
 }
 
-func fetchGoFromCAS(ctx context.Context, spec *buildSpec, digest, goroot string) (ok bool, err error) {
+func fetchGoFromCAS(ctx context.Context, digest, goroot string) (ok bool, err error) {
 	step, ctx := build.StartStep(ctx, "fetch prebuilt go")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
@@ -153,9 +159,9 @@ func fetchGoFromCAS(ctx context.Context, spec *buildSpec, digest, goroot string)
 	defer jsonDump.Close()
 
 	// Run 'cas download'.
-	cmd := spec.toolCmd(ctx,
+	cmd := toolCmd(ctx,
 		"cas", "download",
-		"-cas-instance", spec.casInstance,
+		"-cas-instance", casInstance(ctx),
 		"-dir", goroot,
 		"-digest", digest,
 		"-dump-json", jsonDump.Name(),
@@ -176,7 +182,7 @@ func fetchGoFromCAS(ctx context.Context, spec *buildSpec, digest, goroot string)
 	return true, nil
 }
 
-func uploadGoToCAS(ctx context.Context, spec *buildSpec, src *sourceSpec, goroot string) (err error) {
+func uploadGoToCAS(ctx context.Context, src *sourceSpec, inputs *golangbuildpb.Inputs, goroot string) (err error) {
 	step, ctx := build.StartStep(ctx, "upload prebuilt go")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
@@ -208,10 +214,10 @@ func uploadGoToCAS(ctx context.Context, spec *buildSpec, src *sourceSpec, goroot
 	// Run 'cas archive'.
 	args := []string{
 		"archive",
-		"-cas-instance", spec.casInstance,
+		"-cas-instance", casInstance(ctx),
 		"-dump-digest", digestFile.Name(),
 	}
-	cmd := spec.toolCmd(ctx, "cas", append(args, pathArgs...)...)
+	cmd := toolCmd(ctx, "cas", append(args, pathArgs...)...)
 	if err := cmdStepRun(ctx, "cas archive", cmd, true); err != nil {
 		return err
 	}
@@ -223,7 +229,7 @@ func uploadGoToCAS(ctx context.Context, spec *buildSpec, src *sourceSpec, goroot
 	}
 
 	// Construct the prebuilt ID.
-	id, err := prebuiltID(ctx, spec)
+	id, err := prebuiltID(ctx, src, inputs)
 	if err != nil {
 		return err
 	}

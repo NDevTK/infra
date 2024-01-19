@@ -150,3 +150,21 @@ infra/3pp/tools/%[1]s/${platform} version:%[2]s
 	}
 	return toolsRoot, nil
 }
+
+func withToolsRoot(ctx context.Context, toolsRoot string) context.Context {
+	return context.WithValue(ctx, toolsRootKey{}, toolsRoot)
+}
+
+type toolsRootKey struct{}
+
+func toolsRoot(ctx context.Context) string {
+	return ctx.Value(toolsRootKey{}).(string)
+}
+
+func toolPath(ctx context.Context, tool string) string {
+	return filepath.Join(toolsRoot(ctx), "bin", tool)
+}
+
+func toolCmd(ctx context.Context, tool string, args ...string) *exec.Cmd {
+	return command(ctx, toolPath(ctx, tool), args...)
+}

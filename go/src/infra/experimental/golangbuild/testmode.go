@@ -54,7 +54,7 @@ func newTestRunner(props *golangbuildpb.TestMode, gotShard *golangbuildpb.TestSh
 // Run implements the runner interface for testRunner.
 func (r *testRunner) Run(ctx context.Context, spec *buildSpec) error {
 	// Get a built Go toolchain and require it to be prebuilt.
-	if err := getGo(ctx, spec, true); err != nil {
+	if err := getGoFromSpec(ctx, spec, true); err != nil {
 		return err
 	}
 	// Determine what ports to test.
@@ -110,10 +110,10 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 		for i, p := range ports {
 			i, p := i, p
 			portContext := addPortEnv(ctx, p, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/len(ports))))
-			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
+			testCmd := spec.wrapTestCmd(ctx, spec.distTestCmd(portContext, gorootSrc, "", nil, true))
 			if !hasImprovedDistTestCompileOnly {
 				// TODO(when Go 1.20 stops being supported): Delete this non-'dist test' path.
-				testCmd = spec.wrapTestCmd(spec.goCmd(portContext, gorootSrc, spec.goTestArgs("std", "cmd")...))
+				testCmd = spec.wrapTestCmd(ctx, spec.goCmd(portContext, gorootSrc, spec.goTestArgs("std", "cmd")...))
 			}
 			g.Go(func() error {
 				testErrors[i] = cmdStepRun(portContext, fmt.Sprintf("compile %s port", p), testCmd, false)
@@ -142,7 +142,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 		//   - the large remaining set with structured output support (uploaded to ResultDB)
 		//   - a small set of unstructured tests (this part is fully eliminated in Go 1.21!)
 		// While maintaining the property that their union doesn't fall short of all.bash.
-		jsonOnPart := spec.wrapTestCmd(spec.goCmd(ctx, gorootSrc, spec.goTestArgs("std", "cmd")...))
+		jsonOnPart := spec.wrapTestCmd(ctx, spec.goCmd(ctx, gorootSrc, spec.goTestArgs("std", "cmd")...))
 		if err := cmdStepRun(ctx, "run std and cmd tests", jsonOnPart, false); err != nil {
 			return err
 		}
@@ -172,7 +172,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 	}
 
 	// Invoke go tool dist test.
-	testCmd := spec.wrapTestCmd(spec.distTestCmd(ctx, gorootSrc, "", tests, true))
+	testCmd := spec.wrapTestCmd(ctx, spec.distTestCmd(ctx, gorootSrc, "", tests, true))
 	if err := cmdStepRun(ctx, "go tool dist test -json", testCmd, false); err != nil {
 		return attachTestsFailed(err)
 	}
@@ -245,7 +245,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []*gola
 	}
 	var testErrors []error
 	for _, m := range modules {
-		testCmd := spec.wrapTestCmd(spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...))
+		testCmd := spec.wrapTestCmd(ctx, spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...))
 		if err := cmdStepRun(ctx, fmt.Sprintf("test %s module", m.Path), testCmd, false); err != nil {
 			testErrors = append(testErrors, err)
 		}
@@ -265,7 +265,7 @@ func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []modu
 			if len(ports) > 1 || !proto.Equal(p, spec.inputs.Target) {
 				stepName += fmt.Sprintf(" for %s", p)
 			}
-			testCmd := spec.wrapTestCmd(spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...))
+			testCmd := spec.wrapTestCmd(ctx, spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...))
 			if spec.inputs.CompileOnly && compileOptOut(spec.inputs.Project, p, m.Path) {
 				stepName += " (skipped)"
 				testCmd = command(portContext, "echo", "(skipped)")

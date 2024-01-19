@@ -25,7 +25,7 @@ func newAllRunner(props *golangbuildpb.AllMode) *allRunner {
 // Run implements the runner interface for allRunner.
 func (r *allRunner) Run(ctx context.Context, spec *buildSpec) error {
 	// Get a built Go toolchain or build it if necessary.
-	if err := getGo(ctx, spec, false); err != nil {
+	if err := getGoFromSpec(ctx, spec, false); err != nil {
 		return err
 	}
 	// Determine what ports to test.

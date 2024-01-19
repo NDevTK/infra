@@ -78,7 +78,7 @@ func triggerDownstreamBuilds(ctx context.Context, spec *buildSpec, builders ...s
 	}
 	bbArgs = append(bbArgs, builders...)
 
-	return cmdStepRun(ctx, "bb add", spec.toolCmd(ctx, "bb", bbArgs...), true)
+	return cmdStepRun(ctx, "bb add", toolCmd(ctx, "bb", bbArgs...), true)
 }
 
 // ensurePrebuiltGoExists checks if a prebuilt Go exists for the invoked source, and if
@@ -88,7 +88,7 @@ func ensurePrebuiltGoExists(ctx context.Context, spec *buildSpec, builder string
 	defer endStep(step, &err)
 
 	// Check to see if we might have a prebuilt Go in CAS.
-	digest, err := checkForPrebuiltGo(ctx, spec)
+	digest, err := checkForPrebuiltGo(ctx, spec.goSrc, spec.inputs)
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func ensurePrebuiltGoExists(ctx context.Context, spec *buildSpec, builder string
 		//
 		// TODO(mknyszek): Rather than download the toolchain, it would be nice to check
 		// this more directly.
-		ok, err := fetchGoFromCAS(ctx, spec, digest, spec.goroot)
+		ok, err := fetchGoFromCAS(ctx, digest, spec.goroot)
 		if err != nil {
 			return err
 		}
@@ -233,7 +233,7 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 
 	// Execute `bb batch` for this shard and collect the output.
 	stepName := fmt.Sprintf("bb batch (%d of %d)", shard.shardID+1, shard.nShards)
-	bbBatch := spec.toolCmd(ctx, "bb", "batch")
+	bbBatch := toolCmd(ctx, "bb", "batch")
 	bbBatch.Stdin = bytes.NewReader(reqBytes)
 	out, err := cmdStepOutput(ctx, stepName, bbBatch, true)
 	if err != nil {
@@ -289,7 +289,7 @@ func includeResultDBInvocations(ctx context.Context, spec *buildSpec, ids ...str
 	// to luci-go. The latter is preferable and should be considered as
 	// part of a more general unit testing story for golangbuild.
 	// For now, just shell out.
-	cmd := spec.toolCmd(ctx, "rdb", "rpc", "-include-update-token", "luci.resultdb.v1.Recorder", "UpdateIncludedInvocations")
+	cmd := toolCmd(ctx, "rdb", "rpc", "-include-update-token", "luci.resultdb.v1.Recorder", "UpdateIncludedInvocations")
 	cmd.Stdin = bytes.NewReader(out)
 	return cmdStepRun(ctx, "rdb rpc", cmd, true)
 }
@@ -313,7 +313,7 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 	for _, id := range buildIDs {
 		collectArgs = append(collectArgs, strconv.FormatInt(id, 10))
 	}
-	collectCmd := spec.toolCmd(ctx, "bb", collectArgs...)
+	collectCmd := toolCmd(ctx, "bb", collectArgs...)
 	out, err := cmdStepOutput(ctx, "bb collect", collectCmd, true)
 	if err != nil {
 		return err

@@ -30,10 +30,14 @@ func newBuildRunner(props *golangbuildpb.BuildMode) *buildRunner {
 // Run implements the runner interface for buildRunner.
 func (r *buildRunner) Run(ctx context.Context, spec *buildSpec) error {
 	// Grab a prebuilt toolchain or build one and upload it.
-	return getGo(ctx, spec, false)
+	return getGoFromSpec(ctx, spec, false)
 }
 
-func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err error) {
+func getGoFromSpec(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err error) {
+	return getGo(ctx, spec.goroot, spec.goSrc, spec.inputs, requirePrebuilt)
+}
+
+func getGo(ctx context.Context, goroot string, goSrc *sourceSpec, inputs *golangbuildpb.Inputs, requirePrebuilt bool) (err error) {
 	step, ctx := build.StartStep(ctx, "get go")
 	defer endStep(step, &err)
 
@@ -43,11 +47,11 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 		}
 
 		// Run `go env` on the resulting toolchain for debugging purposes.
-		_ = cmdStepRun(ctx, "go env", spec.goCmd(ctx, spec.goroot, "env"), true)
+		_ = cmdStepRun(ctx, "go env", goCmd(ctx, goroot, goroot, "env"), true)
 
 		// If requested, reinstall the compiler and linker in race mode.
-		if spec.inputs.CompilerLinkerRaceMode {
-			cmd := spec.goCmd(ctx, spec.goroot, "install", "-race", "cmd/compile", "cmd/link")
+		if inputs.CompilerLinkerRaceMode {
+			cmd := goCmd(ctx, goroot, goroot, "install", "-race", "cmd/compile", "cmd/link")
 			if r := cmdStepRun(ctx, "go install -race cmd/compile cmd/link", cmd, false); r != nil {
 				err = r
 				return
@@ -56,13 +60,13 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 	}()
 
 	// Check to see if we might have a prebuilt Go in CAS.
-	digest, err := checkForPrebuiltGo(ctx, spec)
+	digest, err := checkForPrebuiltGo(ctx, goSrc, inputs)
 	if err != nil {
 		return err
 	}
 	if digest != "" {
 		// Try to fetch from CAS. Note this might fail if the digest is stale enough.
-		ok, err := fetchGoFromCAS(ctx, spec, digest, spec.goroot)
+		ok, err := fetchGoFromCAS(ctx, digest, goroot)
 		if err != nil {
 			return err
 		}
@@ -77,32 +81,32 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 	// There was no prebuilt toolchain we could grab. Fetch Go and build it.
 
 	// Fetch the main Go repository into goroot.
-	if err := fetchRepo(ctx, spec.goSrc, spec.goroot, spec.inputs); err != nil {
+	if err := fetchRepo(ctx, goSrc, goroot, inputs); err != nil {
 		return err
 	}
 
 	// Write out the VERSION file.
 	var version string
 	switch {
-	case spec.inputs.VersionFile != "":
-		version = spec.inputs.VersionFile
-	case spec.goSrc.change != nil:
-		version = fmt.Sprintf("devel %d/%d", spec.goSrc.change.Change, spec.goSrc.change.Patchset)
-	case spec.goSrc.commit != nil:
-		version = fmt.Sprintf("devel %s", spec.goSrc.commit.Id)
+	case inputs.VersionFile != "":
+		version = inputs.VersionFile
+	case goSrc.change != nil:
+		version = fmt.Sprintf("devel %d/%d", goSrc.change.Change, goSrc.change.Patchset)
+	case goSrc.commit != nil:
+		version = fmt.Sprintf("devel %s", goSrc.commit.Id)
 	}
-	if err := writeFile(ctx, filepath.Join(spec.goroot, "VERSION"), version); err != nil {
+	if err := writeFile(ctx, filepath.Join(goroot, "VERSION"), version); err != nil {
 		return err
 	}
 
 	// Build Go.
-	ext := scriptExt(spec.inputs.Host)
-	if err := cmdStepRun(ctx, "make"+ext, spec.goScriptCmd(ctx, "make"+ext), false); err != nil {
+	ext := scriptExt(inputs.Host)
+	if err := cmdStepRun(ctx, "make"+ext, goScriptCmd(ctx, goroot, "make"+ext), false); err != nil {
 		return err
 	}
 
 	// Upload to CAS.
-	return uploadGoToCAS(ctx, spec, spec.goSrc, spec.goroot)
+	return uploadGoToCAS(ctx, goSrc, inputs, goroot)
 }
 
 // scriptExt returns the extension to use for
