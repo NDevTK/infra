@@ -369,9 +369,6 @@ func getInputProps(t *testing.T, model string) *structpb.Struct {
 					"time": map[string]interface{}{
 						"maximumDuration": "21600s",
 					},
-					"trv2StepsConfig": map[string]interface{}{
-						"hwTestConfig": map[string]interface{}{},
-					},
 				},
 				"testPlan": map[string]interface{}{
 					"suite": []interface{}{
