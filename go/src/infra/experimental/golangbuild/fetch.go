@@ -31,7 +31,8 @@ import (
 
 const (
 	// N.B. Unfortunately Go still calls the main branch "master" due to technical issues.
-	mainBranch = "master" // nocheck
+	mainBranch   = "master" // nocheck
+	publicGoHost = "go.googlesource.com"
 )
 
 // sourceSpec indicates a repository to fetch and what state to fetch it at.

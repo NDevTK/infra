@@ -140,6 +140,9 @@ message Inputs {
   // mutable too, because property mutability is only controllable at the top level.
   // See allowed_property_overrides in https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md#luci.builder-args.
   TestShard test_shard = 15;
+
+  // Properties specific to MODE_PERF.
+  PerfMode perf_mode = 29;
 }
 
 message Port {
@@ -163,6 +166,11 @@ enum Mode {
   //
   // A prebuilt toolchain must be available for the provided source.
   MODE_TEST = 3;
+
+  // MODE_PERF indicates that golangbuild should run benchmarks.
+  // The benchmarks are always run against some baseline in the
+  // same build.
+  MODE_PERF = 4;
 }
 
 // AllMode contains properties specific to MODE_ALL.
@@ -205,6 +213,21 @@ message TestShard {
 
   // Number of test shards.
   uint32 num_shards = 2;
+}
+
+// PerfMode contains properties specific to MODE_PERF.
+message PerfMode {
+  // Baseline indicates the baseline source code that should be
+  // used for the performance comparison.
+  //
+  // Baseline must be one of:
+  // - A valid git branch for the project, with "refs/heads" prefix.
+  //
+  // Baseline is always defined relative to Inputs.Project and the
+  // Gitiles host https://go.googlesource.com.
+  //
+  // Note: this property is mutable in the builder configuration.
+  string baseline = 1;
 }
 
 // Output properties.

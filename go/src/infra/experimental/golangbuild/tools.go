@@ -56,7 +56,7 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 	switch inputs.GetMode() {
 	case golangbuildpb.Mode_MODE_COORDINATOR:
 		cipdDeps = cipdToolDeps
-	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_BUILD, golangbuildpb.Mode_MODE_TEST:
+	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_BUILD, golangbuildpb.Mode_MODE_TEST, golangbuildpb.Mode_MODE_PERF:
 		// Don't install git from CIPD on less-common platforms. We'll get it from the external OS as needed.
 		if _, bestEffortPlatform := experiments["luci.best_effort_platform"]; !bestEffortPlatform {
 			cipdDeps = cipdBuildDeps
@@ -73,14 +73,14 @@ golang/bootstrap-go/${platform} %v
 	}
 	// Append build-only dependencies.
 	switch inputs.GetMode() {
-	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_BUILD:
+	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_BUILD, golangbuildpb.Mode_MODE_PERF:
 		if extraBuild := inputs.GetToolsExtraBuild(); extraBuild != "" {
 			cipdDeps += "\n" + extraBuild
 		}
 	}
 	// Append test-only dependencies.
 	switch inputs.GetMode() {
-	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_TEST:
+	case golangbuildpb.Mode_MODE_ALL, golangbuildpb.Mode_MODE_TEST, golangbuildpb.Mode_MODE_PERF:
 		const wasmRuntimeDep = `
 @Subdir %[1]s
 infra/3pp/tools/%[1]s/${platform} version:%[2]s

@@ -271,6 +271,8 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		rn = newBuildRunner(inputs.GetBuildMode())
 	case golangbuildpb.Mode_MODE_TEST:
 		rn, err = newTestRunner(inputs.GetTestMode(), inputs.GetTestShard())
+	case golangbuildpb.Mode_MODE_PERF:
+		rn = newPerfRunner(inputs.GetPerfMode())
 	}
 	if err != nil {
 		return nil, infraErrorf("initializing runner: %w", err)

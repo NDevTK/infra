@@ -34,11 +34,11 @@ func (r *buildRunner) Run(ctx context.Context, spec *buildSpec) error {
 }
 
 func getGoFromSpec(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err error) {
-	return getGo(ctx, spec.goroot, spec.goSrc, spec.inputs, requirePrebuilt)
+	return getGo(ctx, "get go", spec.goroot, spec.goSrc, spec.inputs, requirePrebuilt)
 }
 
-func getGo(ctx context.Context, goroot string, goSrc *sourceSpec, inputs *golangbuildpb.Inputs, requirePrebuilt bool) (err error) {
-	step, ctx := build.StartStep(ctx, "get go")
+func getGo(ctx context.Context, stepName, goroot string, goSrc *sourceSpec, inputs *golangbuildpb.Inputs, requirePrebuilt bool) (err error) {
+	step, ctx := build.StartStep(ctx, stepName)
 	defer endStep(step, &err)
 
 	defer func() {

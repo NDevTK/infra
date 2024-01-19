@@ -121,10 +121,11 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 		cherryPick: false,
 	}
 
-	// For now, the internal repository is only supported for invokedSrc.
+	// For now, the internal repository is only supported for invokedSrc, so hard-code
+	// publicGoHost below for lookups related to invokedSrc.
+	//
 	// TODO: In the future, we will probably have subrepos in the security repository.
 	// Which version of Go will we want to test against in that case?
-	const publicGoHost = "go.googlesource.com"
 
 	var goSrc, subrepoSrc *sourceSpec
 	var err error
