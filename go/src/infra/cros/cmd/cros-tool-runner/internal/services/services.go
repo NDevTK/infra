@@ -301,7 +301,7 @@ func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networ
 		volumes = append(volumes, fmt.Sprintf("%s:%s", credsFolder, credsFolder))
 	}
 	// TODO: b/319321943 -- Remove Satlab specific logic after cros-servod completion
-	droneName := os.Getenv("DOCKER_DRONE_HIVE")
+	droneName := os.Getenv("DRONE_AGENT_HIVE")
 	if strings.Contains(droneName, "satlab") {
 		volumes = append(volumes, "/dev:/dev")
 	}
