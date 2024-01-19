@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2bb22e37_d5364c5f",
+        "filename": "go/src/infra/build/siso/build/mtimecheck.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-01-19T05:47:07Z",
+      "side": 1,
+      "message": "Checking `if err !\u003d nil` first would look simpler?\n\n```suggestion\n\tif err !\u003d nil {\n\t\tif errors.Is(err, errDirty) {\n\t\t\tclog.Infof(ctx, \"need %v\", err)\n\t\t\tspan.SetAttr(\"run-reason\", \"dirty\")\n\t\t\tfmt.Fprintf(b.explainWriter, \"deps for %s is dirty: %v\\n\", outname, err)\n\t\t} else {\n\t\t\t// missing inputs in deps file? maybe need to rebuild.\n\t\t\tclog.Infof(ctx, \"need: %v\", err)\n\t\t\tspan.SetAttr(\"run-reason\", \"missing-inputs\")\n\t\t\tfmt.Fprintf(b.explainWriter, \"deps for %s is missing: %v\\n\", outname, err)\n\t\t}\n\t\treturn false\n\n\t}\n```",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 0
+      },
+      "revId": "399dce26d765934c5cbf3d5a7ab89e08b1d4273a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
