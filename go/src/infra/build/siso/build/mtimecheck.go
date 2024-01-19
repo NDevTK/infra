@@ -40,7 +40,9 @@ func (b *Builder) checkUpToDate(ctx context.Context, stepDef StepDef, outputs []
 		clog.Infof(ctx, "need %v", err)
 		span.SetAttr("run-reason", "dirty")
 		fmt.Fprintf(b.explainWriter, "deps for %s is dirty: %v\n", outname, err)
-	} else if err != nil {
+		return false
+	}
+	if err != nil {
 		// missing inputs in deps file? maybe need to rebuild.
 		clog.Infof(ctx, "need: %v", err)
 		span.SetAttr("run-reason", "missing-inputs")
