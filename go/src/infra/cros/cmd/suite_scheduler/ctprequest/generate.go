@@ -188,7 +188,10 @@ func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model, buildTarget,
 	return request
 }
 
-// BuildAllCTPRequests Generates all potential CTP options for the given configuration.
+// BuildAllCTPRequests Generates all potential CTP options for the given
+// configuration.
+// FIX(b/321095387): This needs to build all CTPRequests and not require that
+// the targets are passed in.
 func BuildAllCTPRequests(config *infrapb.SchedulerConfig, targets configparser.TargetOptions) CTPRequests {
 	requests := CTPRequests{}
 	for _, target := range targets {
