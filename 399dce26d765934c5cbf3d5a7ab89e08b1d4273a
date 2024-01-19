@@ -46,6 +46,30 @@
       },
       "revId": "399dce26d765934c5cbf3d5a7ab89e08b1d4273a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "502e2c50_66e675f5",
+        "filename": "go/src/infra/build/siso/build/mtimecheck.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-01-19T05:55:59Z",
+      "side": 1,
+      "message": "I realized that the only difference is `reason` part. So, this can be simplified further.\n\n```\n\tif err !\u003d nil {\n\t\tvar reason string\n\t\tif errors.Is(err, errDirty) {\n\t\t\treason \u003d \"dirty\"\n\t\t} else {\n\t\t\t// missing inputs in deps file? maybe need to rebuild.\n\t\t\treason \u003d \"missing-inputs\"\n\t\t}\n\t\tclog.Infof(ctx, \"need %v\", err)\n\t\tspan.SetAttr(\"run-reason\", \"reason)\n\t\tfmt.Fprintf(b.explainWriter, \"deps for %s is %s: %v\\n\", outname, reason, err)\n\t\treturn false\n\t}\n```",
+      "parentUuid": "2d727c3b_2707fbd9",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 0
+      },
+      "revId": "399dce26d765934c5cbf3d5a7ab89e08b1d4273a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
