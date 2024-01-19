@@ -1734,6 +1734,7 @@ SPECS.update({
         Universal('appengine-python-standard', '0.2.2', pyversions=['py3']),
         Universal('appengine-python-standard', '0.3.1', pyversions=['py3']),
         Universal('appengine-python-standard', '1.1.1', pyversions=['py3']),
+        Universal('appengine-python-standard', '1.1.5', pyversions=['py3']),
         Universal('argcomplete', '1.12.2'),
         Universal('argh', '0.26.2'),
         Universal('argparse',
