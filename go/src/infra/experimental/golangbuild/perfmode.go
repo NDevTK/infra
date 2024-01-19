@@ -88,6 +88,9 @@ func (r *perfRunner) Run(ctx context.Context, spec *buildSpec) error {
 }
 
 func sourceForBaseline(ctx context.Context, auth *auth.Authenticator, src *sourceSpec, baseline string) (*sourceSpec, error) {
+	if baseline == "parent" {
+		return sourceForParent(ctx, auth, src)
+	}
 	if branch, ok := strings.CutPrefix(baseline, "refs/heads/"); ok {
 		return sourceForBranch(ctx, auth, publicGoHost, src.project, branch)
 	}

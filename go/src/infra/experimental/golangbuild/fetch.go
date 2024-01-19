@@ -20,8 +20,10 @@ import (
 
 	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/api/gitiles"
 	lucierrors "go.chromium.org/luci/common/errors"
+	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
@@ -440,4 +442,84 @@ func sourceForGoBranchAndCommit(host, branch, commit string) (*sourceSpec, error
 			Ref:     "refs/heads/" + branch,
 		},
 	}, nil
+}
+
+func sourceForParent(ctx context.Context, auth *auth.Authenticator, src *sourceSpec) (*sourceSpec, error) {
+	hc, err := auth.Client()
+	if err != nil {
+		return nil, fmt.Errorf("auth.Client: %w", err)
+	}
+	switch {
+	case src.commit != nil && src.change == nil:
+		gc, err := gitiles.NewRESTClient(hc, src.commit.Host, true)
+		if err != nil {
+			return nil, fmt.Errorf("gitiles.NewRESTClient: %w", err)
+		}
+		log, err := gc.Log(ctx, &gitilespb.LogRequest{
+			Project:    src.commit.Project,
+			Committish: src.commit.Id,
+			PageSize:   2,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("gc.Log: %w", err)
+		}
+		if len(log.Log) == 0 {
+			return nil, fmt.Errorf("commit %s not found in repository %s", src.commit.Id, src.project)
+		} else if len(log.Log) == 1 {
+			return nil, fmt.Errorf("commit %s has no parent in repository %s", src.commit.Id, src.project)
+		}
+		return &sourceSpec{
+			project: src.project,
+			branch:  src.branch,
+			commit: &bbpb.GitilesCommit{
+				Host:    src.commit.Host,
+				Project: src.commit.Project,
+				Id:      log.Log[1].Id,
+				Ref:     src.commit.Ref,
+			},
+		}, nil
+	case src.commit == nil && src.change != nil:
+		gc, err := gerrit.NewRESTClient(hc, src.change.Host, true)
+		if err != nil {
+			return nil, fmt.Errorf("gerrit.NewRESTClient: %w", err)
+		}
+		changeInfo, err := gc.GetChange(ctx, &gerritpb.GetChangeRequest{
+			Number:  src.change.Change,
+			Project: src.change.Project,
+			Options: []gerritpb.QueryOption{
+				gerritpb.QueryOption_ALL_REVISIONS,
+				gerritpb.QueryOption_ALL_COMMITS,
+			},
+		})
+		if err != nil {
+			return nil, fmt.Errorf("gc.GetChange: %w", err)
+		}
+		var commit *gerritpb.CommitInfo
+		for _, rev := range changeInfo.Revisions {
+			if rev.Number == int32(src.change.Patchset) {
+				commit = rev.Commit
+				break
+			}
+		}
+		if commit == nil {
+			return nil, fmt.Errorf("invalid patchset %d for %s not found", src.change.Patchset, src.asURL())
+		} else if len(commit.Parents) > 1 {
+			return nil, fmt.Errorf("change %s has multiple parents and is possibly a merge commit: not supported", src.asURL())
+		} else if len(commit.Parents) == 0 {
+			return nil, fmt.Errorf("change %s has no parent commits", src.asURL())
+		}
+		return &sourceSpec{
+			project: src.project,
+			branch:  src.branch,
+			commit: &bbpb.GitilesCommit{
+				Host:    src.change.Host,
+				Project: src.change.Project,
+				Ref:     "refs/heads/" + src.branch,
+				Id:      commit.Parents[0].Id,
+			},
+		}, nil
+	case src.commit != nil && src.change != nil:
+		panic("sourceSpec has both a change and a commit")
+	}
+	panic("no commit or change in sourceSpec")
 }

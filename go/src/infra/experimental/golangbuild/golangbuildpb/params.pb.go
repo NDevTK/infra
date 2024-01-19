@@ -763,7 +763,9 @@ type PerfMode struct {
 	// used for the performance comparison.
 	//
 	// Baseline must be one of:
-	// - A valid git branch for the project, with "refs/heads" prefix.
+	//   - A valid git branch for the project, with "refs/heads" prefix.
+	//   - The string "parent" which indicates that the baseline is the
+	//     parent commit of whatever source code is being tested.
 	//
 	// Baseline is always defined relative to Inputs.Project and the
 	// Gitiles host https://go.googlesource.com.
