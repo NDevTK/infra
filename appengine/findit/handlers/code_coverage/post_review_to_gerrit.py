@@ -18,7 +18,7 @@ class PostReviewToGerrit(BaseHandler):
   PERMISSION_LEVEL = Permission.APP_SELF
 
   def HandlePost(self, **kwargs):
-    body = json.loads(self.request.body)
+    body = json.loads(self.request.values)
     host = body['host']
     change = int(body['change'])
     patchset = int(body['patchset'])
