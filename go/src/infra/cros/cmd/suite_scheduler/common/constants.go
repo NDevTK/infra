@@ -42,4 +42,9 @@ const (
 	LabCfgPath   = "configparser/generated/lab_config.cfg"
 	SuSchIniPath = "configparser/generated/suite_scheduler.ini"
 	LabIniPath   = "configparser/generated/lab_config.ini"
+
+	StagingProjectID  = "google.com:suite-scheduler-staging"
+	BuildsPubSubTopic = "kron-builds"
+	EventsPubSubTopic = "kron-events"
+	RunsPubSubTopic   = "kron-runs"
 )

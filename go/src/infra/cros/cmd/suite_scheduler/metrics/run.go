@@ -19,12 +19,9 @@ import (
 
 // Pseudo-immutable package variables.
 var (
-	runID           *suschpb.UID
-	startTime       *timestamppb.Timestamp
-	endTime         *timestamppb.Timestamp
-	configNames     []string
-	scheduledSuites []*suschpb.UID
-	rejectedSuites  []*suschpb.UID
+	runID     *suschpb.UID
+	startTime *timestamppb.Timestamp
+	endTime   *timestamppb.Timestamp
 )
 
 // SetSuiteSchedulerRunID sets the package variable for the runID. Since we cannot set a
@@ -84,45 +81,14 @@ func GetEndTime() *timestamppb.Timestamp {
 	return endTime
 }
 
-// addConfigNameToList adds the name of the tracked event to the list of all
-// acted on suites.
-func addConfigNameToList(name string) {
-	if configNames == nil {
-		configNames = []string{}
-	}
-
-	configNames = append(configNames, name)
-}
-
-// RegisterScheduledSuite adds a suite decision event to the tracking list.
-func RegisterScheduledSuite(event *suschpb.SchedulingEvent) {
-	if scheduledSuites == nil {
-		scheduledSuites = []*suschpb.UID{}
-	}
-
-	scheduledSuites = append(scheduledSuites, event.EventUid)
-	addConfigNameToList(event.ConfigName)
-}
-
-// RegisterRejectedSuite adds a suite decision event to the tracking list.
-func RegisterRejectedSuite(event *suschpb.SchedulingEvent) {
-	if rejectedSuites == nil {
-		rejectedSuites = []*suschpb.UID{}
-	}
-
-	rejectedSuites = append(rejectedSuites, event.EventUid)
-	addConfigNameToList(event.ConfigName)
-}
-
 // GenerateRunMessage returns a SchedulingMetric for the current SuiteScheduler
 // run.
 func GenerateRunMessage() *suschpb.SchedulingRun {
+
+	// TODO(b/309683890): remove suite array fields from proto.
 	return &suschpb.SchedulingRun{
-		RunUid:          runID,
-		StartTime:       startTime,
-		EndTime:         endTime,
-		ConfigNames:     configNames,
-		ScheduledSuites: scheduledSuites,
-		RejectedSuites:  rejectedSuites,
+		RunUid:    runID,
+		StartTime: startTime,
+		EndTime:   endTime,
 	}
 }

@@ -7,15 +7,18 @@
 package subcommands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
 	"infra/cros/cmd/suite_scheduler/common"
 	"infra/cros/cmd/suite_scheduler/metrics"
+	"infra/cros/cmd/suite_scheduler/pubsub"
 	"infra/cros/cmd/suite_scheduler/run"
 )
 
@@ -55,6 +58,30 @@ func (c *runCommand) validate() error {
 	return nil
 }
 
+// endRun ends the timer and publishes the message to pubsub.
+func endRun() error {
+	err := metrics.SetEndTime()
+	if err != nil {
+		return err
+	}
+
+	run := metrics.GenerateRunMessage()
+
+	data, err := protojson.Marshal(run)
+
+	client, err := pubsub.InitPublishClient(context.Background(), common.StagingProjectID, common.RunsPubSubTopic)
+	if err != nil {
+		return err
+	}
+
+	err = client.PublishMessage(context.Background(), data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Run is the "main" function of the subcommand.
 func (c *runCommand) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	common.Stdout.Println("Validating flags")
@@ -74,11 +101,30 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	}
 	common.Stdout.Printf("runID: %s\n", metrics.GetRunID().Id)
 
+	// Start the clock for the run metrics
+	err = metrics.SetStartTime()
+	if err != nil {
+		// Stop run timer and publish the message to pubsub
+		endRunErr := endRun()
+		if endRunErr != nil {
+			common.Stderr.Println(err)
+		}
+
+		common.Stderr.Println(err)
+		return 1
+	}
+
 	// Launch execution path for NEW_BUILD type configs
 	if c.newBuilds {
 		common.Stdout.Println("Launching NEW_BUILDS")
 		err := run.NewBuilds(&c.authFlags)
 		if err != nil {
+			// Stop run timer and publish the message to pubsub
+			endRunErr := endRun()
+			if endRunErr != nil {
+				common.Stderr.Println(err)
+			}
+
 			common.Stderr.Println(err)
 			return 1
 		}
@@ -90,10 +136,23 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 		common.Stdout.Println("Launching TIMED_EVENTS")
 		err := run.TimedEvents()
 		if err != nil {
+			// Stop run timer and publish the message to pubsub
+			endRunErr := endRun()
+			if endRunErr != nil {
+				common.Stderr.Println(err)
+			}
+
 			common.Stderr.Println(err)
 			return 1
 		}
 		common.Stdout.Println("Done launching TIMED_EVENTS")
+	}
+
+	// Stop run timer and publish the message to pubsub
+	endRunErr := endRun()
+	if endRunErr != nil {
+		common.Stderr.Println(err)
+		return 1
 	}
 
 	return 0

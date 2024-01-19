@@ -20,7 +20,7 @@ import (
 
 	buildPB "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	suschPB "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
 	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/suite_scheduler/common"
@@ -96,7 +96,7 @@ func extractBoardAndVariant(buildTarget string) (string, string, error) {
 
 // transformReportToSuSchBuild takes a build report and returns all relevant
 // builds in a SuiteScheduler parsable form.
-func transformReportToSuSchBuild(report *buildPB.BuildReport) (*suschPB.BuildInformation, error) {
+func transformReportToSuSchBuild(report *buildPB.BuildReport) (*suschpb.BuildInformation, error) {
 	milestone, version, err := extractMilestoneAndVersion(report.Config.Versions)
 	if err != nil {
 		return nil, fmt.Errorf("%d: %w", report.GetBuildbucketId(), err)
@@ -112,9 +112,9 @@ func transformReportToSuSchBuild(report *buildPB.BuildReport) (*suschPB.BuildInf
 		return nil, fmt.Errorf("%d: %w", report.GetBuildbucketId(), err)
 	}
 
-	return &suschPB.BuildInformation{
-		BuildUid:    &suschPB.UID{Id: uuid.NewString()},
-		RunUid:      &suschPB.UID{Id: metrics.GetRunID().Id},
+	return &suschpb.BuildInformation{
+		BuildUid:    &suschpb.UID{Id: uuid.NewString()},
+		RunUid:      &suschpb.UID{Id: metrics.GetRunID().Id},
 		CreateTime:  timestamppb.Now(),
 		Bbid:        report.GetBuildbucketId(),
 		BuildTarget: report.Config.Target.Name,
@@ -189,11 +189,20 @@ type handler struct {
 	buildsChan chan *BuildPackage
 }
 
+type EventWrapper struct {
+	Event      *suschpb.SchedulingEvent
+	CtpRequest *requestpb.Request
+}
+
+type ConfigDetails struct {
+	Config *infrapb.SchedulerConfig
+	Events []*EventWrapper
+}
+
 type BuildPackage struct {
-	Build     *suschPB.BuildInformation
+	Build     *suschpb.BuildInformation
 	Message   *cloudPubsub.Message
-	Configs   []*infrapb.SchedulerConfig
-	Requests  []*requestpb.Request
+	Requests  []*ConfigDetails
 	ShouldAck bool
 }
 
@@ -205,8 +214,6 @@ func IngestBuildsFromPubSub() ([]*BuildPackage, error) {
 		buildsChan: make(chan *BuildPackage),
 	}
 
-	// TODO(b/309683890): Publish these messages to Pub/Sub for metrics
-	// recording.
 	builds := []*BuildPackage{}
 
 	// Spin up a goroutine to handle the incoming messages to the channel
