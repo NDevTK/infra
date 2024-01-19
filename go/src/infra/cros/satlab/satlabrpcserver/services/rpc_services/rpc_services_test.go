@@ -2133,3 +2133,97 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 		t.Errorf("diff: %v\n", diff)
 	}
 }
+
+func TestListTasksWithChildTaskStatusShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ctl := gomock.NewController(t)
+	defer ctl.Finish()
+	mockSwarm := services.NewMockISwarmingService(ctl)
+
+	expectedData := &services.JobsIterator{
+		Cursor: "next_cursor",
+		Jobs: []*pb.Job{
+			{
+				JobId:       "1234",
+				Name:        "suite:audio",
+				CreatedTime: &timestamppb.Timestamp{Seconds: 1517260502, Nanos: 649750000},
+				StartTime:   &timestamppb.Timestamp{Seconds: 1517260502, Nanos: 649750000},
+				Status:      pb.Job_RUNNING,
+				Hostname:    "",
+				LabelPool:   "pool_1",
+				SatlabId:    "satlab-id",
+				TaskUrl:     "http://ci.chromium.org/b/1234",
+				ChildStatusCount: &pb.TasksStatusCount{
+					TaskCount: []*pb.TasksStatusCount_TaskCount{
+						{
+							State: pb.StateQuery_QUERY_PENDING_RUNNING,
+							Count: 1,
+						},
+						{
+							State: pb.StateQuery_QUERY_ALL,
+							Count: 1,
+						},
+					},
+				},
+			},
+		},
+	}
+	mockTr := []*swarmingapi.TaskResultResponse{
+		{
+			State:     swarmingapi.TaskState_RUNNING,
+			CreatedTs: &timestamppb.Timestamp{Seconds: 1517260502, Nanos: 649750000},
+			StartedTs: &timestamppb.Timestamp{Seconds: 1517260502, Nanos: 649750000},
+			Tags: []string{
+				"authenticated:project:crproj",
+				"buildbucket_bucket:proj/external-abc-xyz",
+				"buildbucket_build_id:1234",
+				"builder:cros_test_platform",
+				"label-pool:pool_1",
+				"luci_project:crproj",
+				"pool:external-pool",
+				"satlab-id:satlab-id",
+				"test-type:suite",
+				"label-suite:audio",
+			},
+			BotDimensions: []*swarmingapi.StringListPair{
+				{
+					Key:   "dut_name",
+					Value: []string{"dut1"},
+				},
+			},
+		},
+	}
+
+	mockTaskResults := &swarmingapi.TaskListResponse{
+		Items:  mockTr,
+		Cursor: "next_cursor",
+	}
+
+	// Create a mock data
+	s := createMockServer(t)
+	s.swarmingService = mockSwarm
+
+	Convey("TestListTasksShouldSuccess", t, func() {
+		req := &pb.ListJobsRequest{
+			PageToken: "",
+			Limit:     1,
+			JobType:   1,
+			Tags: []*pb.Tag{
+				{Key: "pool", Value: "ext"},
+				{Key: "satlab-id", Value: "satlab-id"}},
+		}
+
+		mockSwarm.EXPECT().ListTasks(ctx, getTaskListReq(req)).Return(mockTaskResults, nil)
+		s.swarmingService.(*services.MockISwarmingService).EXPECT().CountTasks(ctx, gomock.Any()).Return(&swarmingapi.TasksCount{
+			Count: 1,
+		}, nil).AnyTimes()
+
+		resp, err := s.ListJobs(ctx, req)
+		So(err, ShouldBeNil)
+		So(resp, ShouldResembleProto, &pb.ListJobsResponse{
+			NextPageToken: expectedData.Cursor,
+			Jobs:          expectedData.Jobs,
+		})
+	})
+}

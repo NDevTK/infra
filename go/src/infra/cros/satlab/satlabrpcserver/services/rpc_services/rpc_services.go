@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/uuid"
 	"github.com/hashicorp/go-version"
 
@@ -1397,7 +1398,7 @@ func (s *SatlabRpcServiceServer) ListJobs(ctx context.Context, in *pb.ListJobsRe
 	// Iterate through the list of tasks fetched from Swarming
 	for _, row := range resp.GetItems() {
 		// Extract the required information for UI from the Swarming task
-		job, err := getJobDetails(ctx, row)
+		job, err := s.GetJobDetails(ctx, row)
 		if err != nil {
 			continue
 		}
@@ -1435,13 +1436,11 @@ func getListTasksRequestTags(in *pb.ListJobsRequest) []string {
 	return tags
 }
 
-// getJobDetails extracts tasks details used by Satlab UI.
-func getJobDetails(ctx context.Context, taskInfo *swarmingapi.TaskResultResponse) (*pb.Job, error) {
+// GetJobDetails extracts tasks details used by Satlab UI.
+func (s *SatlabRpcServiceServer) GetJobDetails(ctx context.Context, taskInfo *swarmingapi.TaskResultResponse) (*pb.Job, error) {
 	if taskInfo == nil {
 		return nil, errors.New("task is empty, cannot process task details")
 	}
-
-	logging.Infof(ctx, "Job with details %#v", taskInfo)
 
 	tagsInfo := convertTagsSliceToMap(taskInfo.GetTags())
 
@@ -1479,7 +1478,32 @@ func getJobDetails(ctx context.Context, taskInfo *swarmingapi.TaskResultResponse
 		job.ResultsUrl = getTestResultsLink(tagsInfo)
 	}
 
-	logging.Infof(ctx, "Job with details %s, %s, %s", job.LabelPool, job.Name, job.Hostname)
+	// Only a task in RUNNINING state can have child tasks.
+	if tagsInfo[site.BuilderTag] == site.GetCTPBuilder() && (job.Status == pb.Job_RUNNING) {
+
+		// Define tags to fetch Child tasks count CTP builds
+		tcTags := []string{
+			fmt.Sprintf("buildbucket_bucket:%s/%s", site.GetLUCIProject(), site.GetCTPBucket()),
+			fmt.Sprintf("%s:%s", site.ParentBuildBucketIDTag, tagsInfo[site.BuildBucketIDTag]),
+			fmt.Sprintf("%s:%s", site.BuilderTag, site.DefaultTestRunnerBuilderName),
+		}
+
+		tc, err := s.GetChildTasksCountByStatus(
+			ctx,
+			taskInfo.GetStartedTs(),
+			tagsInfo[site.BuildBucketIDTag],
+			tcTags,
+			[]swarmingapi.StateQuery{
+				swarmingapi.StateQuery_QUERY_PENDING_RUNNING,
+				swarmingapi.StateQuery_QUERY_ALL,
+			},
+		)
+		if err != nil {
+			logging.Infof(ctx, "job.StatusCount Error %v", err)
+		} else {
+			job.ChildStatusCount = tc
+		}
+	}
 
 	return &job, nil
 }
@@ -1612,4 +1636,35 @@ func getTaskName(taskName string) string {
 	}
 
 	return ""
+}
+
+// GetChildTasksCountByStatus returns child tasks count for given states.
+func (s *SatlabRpcServiceServer) GetChildTasksCountByStatus(
+	ctx context.Context,
+	startTime *timestamp.Timestamp,
+	jobID string,
+	tags []string,
+	jobStates []swarmingapi.StateQuery,
+) (*pb.TasksStatusCount, error) {
+	if startTime == nil || jobID == "" {
+		return nil, errors.New("start time and id cannot be empty, failed to process child task count")
+	}
+	taskCounts := []*pb.TasksStatusCount_TaskCount{}
+	for _, state := range jobStates {
+		resp, err := s.swarmingService.CountTasks(ctx, &swarmingapi.TasksCountRequest{
+			Start: startTime,
+			Tags:  tags,
+			State: state,
+		})
+		if err != nil {
+			logging.Errorf(ctx, "RPC Service error: CountsTasks: %w", err)
+			continue
+		}
+		taskCounts = append(taskCounts, &pb.TasksStatusCount_TaskCount{
+			State: pb.StateQuery(state),
+			Count: resp.GetCount()})
+	}
+	return &pb.TasksStatusCount{
+		TaskCount: taskCounts,
+	}, nil
 }

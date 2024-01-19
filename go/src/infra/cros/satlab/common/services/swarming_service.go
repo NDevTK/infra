@@ -76,15 +76,19 @@ type ISwarmingService interface {
 	ListBotEvents(ctx context.Context, hostname, cursor string, pageSize int) (*BotEventsIterator, error)
 
 	// ListTasks lists the tasks from swarming API based on the tags passed.
-	// ListTasks(ctx context.Context, in *pb.ListJobsRequest) (*JobsIterator, error)
 	ListTasks(ctx context.Context, in *swarmingapi.TasksWithPerfRequest) (*swarmingapi.TaskListResponse, error)
 
 	// ListBots lists the bot from swarming API.
 	ListBots(ctx context.Context, in *swarmingapi.BotsRequest) (*swarmingapi.BotInfoListResponse, error)
+
+	// CountTasks returns the count of swarming tasks for given tags and filters.
+	CountTasks(ctx context.Context, in *swarmingapi.TasksCountRequest) (*swarmingapi.TasksCount, error)
 }
 
 type TasksClient interface {
 	ListTasks(ctx context.Context, in *swarmingapi.TasksWithPerfRequest, opts ...grpc.CallOption) (*swarmingapi.TaskListResponse, error)
+	// CountTasks returns the count of swarming tasks for given tags and filters.
+	CountTasks(ctx context.Context, in *swarmingapi.TasksCountRequest, opts ...grpc.CallOption) (*swarmingapi.TasksCount, error)
 }
 
 // SwarmingService is the implementation of ISwarmingService
@@ -227,7 +231,7 @@ func (s *SwarmingService) ListBotEvents(
 	return &BotEventsIterator{Cursor: resp.GetCursor(), Events: events}, nil
 }
 
-// ListTasks returns the list of swarming tasks for given tags and filters
+// ListTasks returns the list of swarming tasks for given tags and filters.
 func (s *SwarmingService) ListTasks(ctx context.Context, in *swarmingapi.TasksWithPerfRequest) (*swarmingapi.TaskListResponse, error) {
 	subCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
@@ -238,4 +242,11 @@ func (s *SwarmingService) ListBots(ctx context.Context, in *swarmingapi.BotsRequ
 	subCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 	return s.client.ListBots(subCtx, in)
+}
+
+// CountTasks returns the count of swarming tasks for given tags and filters.
+func (s *SwarmingService) CountTasks(ctx context.Context, in *swarmingapi.TasksCountRequest) (*swarmingapi.TasksCount, error) {
+	subCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+	return s.tasksClient.CountTasks(subCtx, in)
 }
