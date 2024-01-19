@@ -12,8 +12,10 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 )
 
 // GenericPublishCmd represents gcloud auth cmd.
@@ -25,6 +27,7 @@ type GenericPublishCmd struct {
 	Identifier     string
 
 	// Updates
+	PublishResp *testapi.PublishResponse
 }
 
 // Instantiate extracts initial state info from the state keeper.
@@ -96,6 +99,39 @@ func (cmd *GenericPublishCmd) extractDepsFromHwTestStateKeeper(
 	for _, dep := range cmd.PublishRequest.DynamicDeps {
 		if dep.Key == "serviceAddress" {
 			cmd.Identifier = dep.GetValue()
+		}
+	}
+
+	return nil
+}
+
+// UpdateStateKeeper updates the state keeper with info from the cmd.
+func (cmd *GenericPublishCmd) UpdateStateKeeper(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
+	var err error
+	switch sk := ski.(type) {
+	case *data.HwTestStateKeeper:
+		err = cmd.updateHwTestStateKeeper(ctx, sk)
+	case *data.LocalTestStateKeeper:
+		err = cmd.updateHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
+	}
+
+	if err != nil {
+		return errors.Annotate(err, "error during updating for command %s: ", cmd.GetCommandType()).Err()
+	}
+
+	return nil
+}
+
+func (cmd *GenericPublishCmd) updateHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
+	if cmd.PublishResp != nil {
+		if err := sk.Injectables.Set(cmd.Identifier+"_publish", cmd.PublishResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_publish")
 		}
 	}
 

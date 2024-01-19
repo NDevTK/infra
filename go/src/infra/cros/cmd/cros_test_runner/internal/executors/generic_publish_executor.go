@@ -69,6 +69,7 @@ func (ex *GenericPublishExecutor) genericPublishHandler(
 	if err != nil {
 		err = errors.Annotate(err, "Publish cmd err: ").Err()
 	}
+	cmd.PublishResp = resp
 
 	common.WriteProtoToStepLog(ctx, step, resp, "publish response")
 

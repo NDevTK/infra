@@ -131,6 +131,9 @@ func (cmd *GenericTestsCmd) updateHwTestStateKeeper(
 	sk *data.HwTestStateKeeper) error {
 
 	if cmd.TestResponses != nil {
+		if err := sk.Injectables.Set(cmd.Identifier+"_runTests", cmd.TestResponses); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_runTests")
+		}
 		sk.TestResponses = cmd.TestResponses
 		if err := sk.Injectables.Set("test-response", sk.TestResponses); err != nil {
 			logging.Infof(ctx, "Warning: failed to set 'test-response' into the InjectableStorage, %s", err)

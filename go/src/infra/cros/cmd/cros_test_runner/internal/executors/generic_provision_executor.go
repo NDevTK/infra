@@ -65,25 +65,26 @@ func (ex *GenericProvisionExecutor) genericProvisionHandler(
 		return
 	}
 
-	err = ex.Startup(ctx, client, cmd.ProvisionRequest.StartupRequest)
+	startUpResp, err := ex.Startup(ctx, client, cmd.ProvisionRequest.StartupRequest)
 	if err != nil {
 		// Error from Startup should be non-breaking to ensure older
 		// builds that don't have this rpc don't require this step.
 		logging.Infof(ctx, "error starting up provision service, %s", err)
 	}
+	cmd.StartUpResp = startUpResp
 
-	resp, err := ex.Install(ctx, client, cmd.ProvisionRequest.GetInstallRequest())
+	installResp, err := ex.Install(ctx, client, cmd.ProvisionRequest.GetInstallRequest())
 	if err != nil {
 		return
 	}
 
-	step.SetSummaryMarkdown(fmt.Sprintf("provision status: %s", resp.GetStatus().String()))
-	step.AddTagValue("provision_status", resp.GetStatus().String())
-	cmd.ProvisionResp = resp
-	common.WriteProtoToStepLog(ctx, step, resp, "provision response")
+	step.SetSummaryMarkdown(fmt.Sprintf("provision status: %s", installResp.GetStatus().String()))
+	step.AddTagValue("provision_status", installResp.GetStatus().String())
+	cmd.InstallResp = installResp
+	common.WriteProtoToStepLog(ctx, step, installResp, "provision response")
 
-	if resp.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
-		err = fmt.Errorf("Provision failure: %s", resp.GetStatus().String())
+	if installResp.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
+		err = fmt.Errorf("Provision failure: %s", installResp.GetStatus().String())
 		common.GlobalNonInfraError = err
 	}
 
@@ -126,7 +127,7 @@ func (ex *GenericProvisionExecutor) Startup(
 	ctx context.Context,
 	client api.GenericProvisionServiceClient,
 	req *api.ProvisionStartupRequest,
-) (err error) {
+) (resp *testapi.ProvisionStartupResponse, err error) {
 	step, ctx := build.StartStep(ctx, "Start Up")
 	defer func() { step.End(err) }()
 
@@ -140,7 +141,7 @@ func (ex *GenericProvisionExecutor) Startup(
 		return
 	}
 
-	resp, err := client.StartUp(ctx, req, grpc.EmptyCallOption{})
+	resp, err = client.StartUp(ctx, req, grpc.EmptyCallOption{})
 	if err != nil {
 		return
 	}

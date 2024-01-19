@@ -28,7 +28,8 @@ type GenericProvisionCmd struct {
 	TargetDevice     string
 
 	// Updates
-	ProvisionResp *testapi.InstallResponse
+	InstallResp *testapi.InstallResponse
+	StartUpResp *testapi.ProvisionStartupResponse
 }
 
 // Instantiate extracts initial state info from the state keeper.
@@ -135,15 +136,24 @@ func (cmd *GenericProvisionCmd) updateHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
-	if cmd.ProvisionResp != nil {
+	if cmd.InstallResp != nil {
 		responses := sk.ProvisionResponses[cmd.TargetDevice]
 		if responses == nil {
 			responses = []*testapi.InstallResponse{}
 		}
-		responses = append(responses, cmd.ProvisionResp)
+		responses = append(responses, cmd.InstallResp)
 		sk.ProvisionResponses[cmd.TargetDevice] = responses
 		if err := sk.Injectables.Set(cmd.TargetDevice+"ProvisionResponses", responses); err != nil {
 			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.TargetDevice+"ProvisionResponses", err)
+		}
+		if err := sk.Injectables.Set(cmd.Identifier+"_install", cmd.InstallResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_install")
+		}
+	}
+
+	if cmd.StartUpResp != nil {
+		if err := sk.Injectables.Set(cmd.Identifier+"_startUp", cmd.StartUpResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_startUp")
 		}
 	}
 
