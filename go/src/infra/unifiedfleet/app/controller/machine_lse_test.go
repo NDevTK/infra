@@ -142,6 +142,9 @@ func TestCreateMachineLSE(t *testing.T) {
 			machineLSE1 := &ufspb.MachineLSE{
 				Hostname: "machinelse-1",
 				Machines: []string{"machine-10"},
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
 			}
 			resp, err := CreateMachineLSE(ctx, machineLSE1, nil)
 			So(resp, ShouldBeNil)
@@ -158,6 +161,9 @@ func TestCreateMachineLSE(t *testing.T) {
 			machineLSE1 := &ufspb.MachineLSE{
 				Hostname: "machinelse-2",
 				Machines: []string{"machine-1", "machine-2"},
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
 			}
 			resp, err := CreateMachineLSE(ctx, machineLSE1, nil)
 			So(resp, ShouldBeNil)
@@ -272,6 +278,9 @@ func TestCreateMachineLSE(t *testing.T) {
 			machineLSE2 := &ufspb.MachineLSE{
 				Hostname: "machinelse-wrong-nic",
 				Machines: []string{"machine-wrong-nic"},
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
 			}
 			resp, err := CreateMachineLSE(ctx, machineLSE2, &ufsAPI.NetworkOption{
 				Vlan: "vlan-1",
@@ -424,6 +433,9 @@ func TestCreateMachineLSE(t *testing.T) {
 			machineLSE2 := &ufspb.MachineLSE{
 				Hostname: "machinelse-3",
 				Machines: []string{"machine-3"},
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
 			}
 			resp, err := CreateMachineLSE(ctx, machineLSE2, nil)
 			So(err, ShouldBeNil)
@@ -468,6 +480,9 @@ func TestCreateMachineLSE(t *testing.T) {
 			machineLSE2 := &ufspb.MachineLSE{
 				Hostname: "machinelse-dr-3",
 				Machines: []string{"machine-dr-3"},
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
 			}
 
 			_, err = inventory.UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{util.FormatDeploymentRecord("", machine1.GetSerialNumber())})
@@ -511,6 +526,9 @@ func TestCreateMachineLSE(t *testing.T) {
 			machineLSE := &ufspb.MachineLSE{
 				Hostname: "machinelse-5",
 				Machines: []string{"machine-4"},
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
 			}
 			resp, err := CreateMachineLSE(ctx, machineLSE, nil)
 			So(resp, ShouldBeNil)
@@ -3156,6 +3174,9 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 				Name:     "machinelse-1",
 				Machines: []string{"machine-1"},
 				Hostname: "machinelse-1",
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
 			}
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesCreate, util.BrowserLabAdminRealm)
@@ -3177,6 +3198,9 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			mlse := &ufspb.MachineLSE{
 				Name:     "machinelse-2",
 				Machines: []string{"machine-2"},
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
 			}
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.AtlLabAdminRealm)

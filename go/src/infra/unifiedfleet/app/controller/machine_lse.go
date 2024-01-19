@@ -42,52 +42,82 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 	// Overwrite the name with hostname
 	machinelse.Name = machinelse.GetHostname()
 
-	// Labstation
-	if machinelse.GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
-		machinelse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hostname = machinelse.GetHostname()
-		return CreateLabstation(ctx, machinelse)
-	}
+	switch x := machinelse.Lse.(type) {
+	case *ufspb.MachineLSE_ChromeosMachineLse:
+		switch y := machinelse.GetChromeosMachineLse().ChromeosLse.(type) {
+		case *ufspb.ChromeOSMachineLSE_DeviceLse:
+			switch z := machinelse.GetChromeosMachineLse().GetDeviceLse().Device.(type) {
+			case *ufspb.ChromeOSDeviceLSE_Dut:
+				// The machinelse update is of type chromeos dut
+				logging.Debugf(ctx, "CreateMachineLSE[%T]: Called createDut", z)
+				machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hostname = machinelse.GetHostname()
 
-	// DUT
-	if machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
-		// ChromeOSMachineLSE for a DUT
-		machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hostname = machinelse.GetHostname()
+				// Capture results for Pub/Sub publishing attempt. Err is not handled here
+				// as it will be handled by the caller.
+				machineLSE, err := CreateDUT(ctx, machinelse)
 
-		// Capture results for Pub/Sub publishing attempt. Err is not handled here
-		// as it will be handled by the caller.
-		machineLSE, err := CreateDUT(ctx, machinelse)
+				// Publish the MachineLSE creation via Pub/Sub.
+				if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
+					logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming CreateMachineLSE results.")
+					if err == nil {
+						// Create a new object so we are not
+						// accidentally mutating the original struct.
+						pubsubMachineLSE := proto.Clone(machineLSE).(*ufspb.MachineLSE)
+						// Generate the message for Pub/Sub
+						row := apibq.MachineLSERow{
+							MachineLse: pubsubMachineLSE,
+							Delete:     false,
+						}
+						data, err_ps := json.Marshal(row)
+						if err_ps != nil {
+							logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
+							return machineLSE, nil
+						}
 
-		// Publish the MachineLSE creation via Pub/Sub.
-		if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
-			logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming CreateMachineLSE results.")
-			if err == nil {
-				// Create a new object so we are not
-				// accidentally mutating the original struct.
-				pubsubMachineLSE := proto.Clone(machineLSE).(*ufspb.MachineLSE)
-				// Generate the message for Pub/Sub
-				row := apibq.MachineLSERow{
-					MachineLse: pubsubMachineLSE,
-					Delete:     false,
+						// Publish the message via Pub/Sub.
+						err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
+						if err_ps != nil {
+							logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
+						}
+					}
 				}
-				data, err_ps := json.Marshal(row)
-				if err_ps != nil {
-					logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-					return machineLSE, nil
-				}
 
-				// Publish the message via Pub/Sub.
-				err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
-				if err_ps != nil {
-					logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-				}
+				return machineLSE, err
+			case *ufspb.ChromeOSDeviceLSE_Labstation:
+				// The machinelse update is of type chromeos dut
+				logging.Debugf(ctx, "CreateMachineLSE[%T]: Called CreateLabstation", z)
+				machinelse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hostname = machinelse.GetHostname()
+				return CreateLabstation(ctx, machinelse)
+			case nil:
+				logging.Errorf(ctx, "CreateMachineLSE[%T]: Expected ChromeOSDeviceLSE to be set", y)
+				return nil, errors.Reason("Unexpcted ChromeOSDeviceLSE type. ChromeOSDeviceLSE is nil").Err()
+			default:
+				// The machinelse update is of one of the remaining types
+				logging.Debugf(ctx, "CreateMachineLSE[%T]: Creating one of device types. Called createBrowserServer", z)
+				return createBrowserServer(ctx, machinelse, nwOpt)
 			}
+
+		case nil:
+			logging.Errorf(ctx, "CreateMachineLSE[%T]: Expected ChromeOSMachineLSE to be set", x)
+			return nil, errors.Reason("Unexpcted ChromeOSMachineLSE type. ChromeOSMachineLSE is nil").Err()
+		default:
+			// TODO(anushruth): Should this path be an error. Or refactored?
+			// The machinelse update is of one of the remaining types
+			logging.Debugf(ctx, "CreateMachineLSE[%T]: Creating one of ChromeOSMachineLSE types. Called createBrowserServer", y)
+			return createBrowserServer(ctx, machinelse, nwOpt)
 		}
-
-		return machineLSE, err
+	case *ufspb.MachineLSE_ChromeBrowserMachineLse:
+		// The browser machine lse
+		logging.Debugf(ctx, "CreateMachineLSE[%T]: Creating the ChromeBrowserMachineLSE", x)
+		return createBrowserServer(ctx, machinelse, nwOpt)
+	case nil:
+		logging.Errorf(ctx, "CreateMachineLSE[%T]: Expected Lse to be set", x)
+		return nil, errors.Reason("Unexpcted Lse type. Lse is nil").Err()
+	default:
+		// The remaining types of machine lse.
+		logging.Debugf(ctx, "CreateMachineLSE[%T]: Calling createBrowserServer", x)
+		return createBrowserServer(ctx, machinelse, nwOpt)
 	}
-
-	// Browser lab servers
-	return createBrowserServer(ctx, machinelse, nwOpt)
 }
 
 func createBrowserServer(ctx context.Context, lse *ufspb.MachineLSE, nwOpt *ufsAPI.NetworkOption) (*ufspb.MachineLSE, error) {

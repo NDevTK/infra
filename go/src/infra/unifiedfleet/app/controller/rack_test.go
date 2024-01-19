@@ -860,6 +860,9 @@ func TestRenameRack(t *testing.T) {
 			_, err = CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Hostname: "rename-host-0",
 				Machines: []string{"rename-machine-0"},
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
 			}, nil)
 			So(err, ShouldBeNil)
 

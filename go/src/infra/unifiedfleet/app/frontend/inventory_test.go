@@ -161,7 +161,17 @@ func TestCreateMachineLSE(t *testing.T) {
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
 
+			mlsePrototype := &ufspb.MachineLSEPrototype{
+				Name: "browser:no-vm",
+			}
+			_, err = configuration.CreateMachineLSEPrototype(ctx, mlsePrototype)
+			So(err, ShouldBeNil)
+
 			machineLSE1 := mockMachineLSE("machineLSE-1")
+			machineLSE1.MachineLsePrototype = "browser:no-vm"
+			machineLSE1.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
+				ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+			}
 			machineLSE1.Machines = []string{"machine-1"}
 			req := &ufsAPI.CreateMachineLSERequest{
 				MachineLSE:   machineLSE1,
