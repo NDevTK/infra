@@ -195,6 +195,7 @@ def FetchMergedChanges(host, project, hashtag=None, author=None):
           'Failed to fetch changes with hashtag %s,status_code: %d response: %s'
           % (hashtag, status_code, response)))
       return
+    response = six.ensure_str(response)
     # Remove XSSI magic prefix
     if response.startswith(')]}\''):
       response = response[4:]
@@ -235,6 +236,7 @@ def FetchLowCoverageRobotComments(host, change, coverage_checker_id):
   status_code, response, _ = FinditHttpClient().Get(query)
   if status_code != 200:
     logging.info('Failed to fetch robot comments for change %d', change)
+  response = six.ensure_str(response)
   # Remove XSSI magic prefix
   if response.startswith(')]}\''):
     response = response[4:]
@@ -461,7 +463,7 @@ def _FetchPatchsetFiles(host, project, change, patchset_revision):
                                   patchset_revision)
   status_code, response, _ = FinditHttpClient().Get(url)
   _CheckChangeDetailsResponseCode(status_code, response)
-
+  response = six.ensure_str(response)
   # Remove XSSI magic prefix
   if response.startswith(')]}\''):
     response = response[4:]
