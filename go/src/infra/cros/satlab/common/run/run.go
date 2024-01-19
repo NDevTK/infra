@@ -19,6 +19,7 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/googleapis/gax-go/v2"
+	"go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -60,34 +61,43 @@ type Run struct {
 // TriggerRun triggers the Run with the given information
 // (it could be either single test or a suite or a test_plan in the GCS bucket or test_plan saved locally)
 func (c *Run) TriggerRun(ctx context.Context) (string, error) {
-	bbClient, err := c.createCTPBuilder(ctx)
+	bbClients, err := c.createCTPBuilders(ctx)
 	if err != nil {
 		return "", err
 	}
-	// Create default client
-	err = bbClient.AddDefaultBBClient(ctx)
-	if err != nil {
-		return "", err
+	var links []string
+	for _, bbClient := range bbClients {
+		// Create default client
+		err = bbClient.AddDefaultBBClient(ctx)
+		if err != nil {
+			return "", err
+		}
+
+		moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
+		if err != nil {
+			return "", errors.Annotate(err, "satlab new moblab api build client").Err()
+		}
+
+		link, err := c.triggerRunWithClients(ctx, moblabClient, bbClient, site.GetGCSImageBucket())
+		if err != nil {
+			return "", errors.Annotate(err, "triggerRunWithClients").Err()
+		}
+		links = append(links, link)
 	}
 
-	moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
-	if err != nil {
-		return "", errors.Annotate(err, "satlab new moblab api build client").Err()
+	if len(links) > 0 {
+		return strings.Join(links, "\n"), nil
 	}
-
-	link, err := c.triggerRunWithClients(ctx, moblabClient, bbClient, site.GetGCSImageBucket())
-	if err != nil {
-		return "", errors.Annotate(err, "triggerRunWithClients").Err()
-	}
-	return link, nil
+	return "", nil
 }
 
-func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error) {
+func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, error) {
 	// Create TestPlan for suite or test
 	tp, err := c.createTestPlan()
 	if err != nil {
 		return nil, err
 	}
+	var res []*builder.CTPBuilder
 	// Set tags to pass to ctp and test runner builds
 	tags := c.setTags(ctx)
 
@@ -116,24 +126,45 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 		c.Image = fmt.Sprintf("%s-release/R%s-%s", c.Board, c.Milestone, c.Build)
 	}
 	opt := site.GetAuthOption(ctx)
-	bbClient := &builder.CTPBuilder{
-		Image:               c.Image,
-		Board:               c.Board,
-		Model:               c.Model,
-		Pool:                c.Pool,
-		CFT:                 c.CFT,
-		TestPlan:            tp,
-		BuilderID:           builderId,
-		Dimensions:          dims,
-		ImageBucket:         site.GetGCSImageBucket(),
-		AuthOptions:         &opt,
-		TestRunnerBuildTags: tags,
-		TimeoutMins:         c.setTimeout(),
-		CTPBuildTags:        tags,
-		TRV2:                c.TRV2,
+
+	if tp.Cft != nil {
+		res = append(res, &builder.CTPBuilder{
+			Image:               c.Image,
+			Board:               c.Board,
+			Model:               c.Model,
+			Pool:                c.Pool,
+			CFT:                 true,
+			TestPlan:            tp.Cft,
+			BuilderID:           builderId,
+			Dimensions:          dims,
+			ImageBucket:         site.GetGCSImageBucket(),
+			AuthOptions:         &opt,
+			TestRunnerBuildTags: tags,
+			TimeoutMins:         c.setTimeout(),
+			CTPBuildTags:        tags,
+			TRV2:                c.TRV2,
+		})
 	}
 
-	return bbClient, nil
+	if tp.NonCft != nil {
+		res = append(res, &builder.CTPBuilder{
+			Image:               c.Image,
+			Board:               c.Board,
+			Model:               c.Model,
+			Pool:                c.Pool,
+			CFT:                 false,
+			TestPlan:            tp.NonCft,
+			BuilderID:           builderId,
+			Dimensions:          dims,
+			ImageBucket:         site.GetGCSImageBucket(),
+			AuthOptions:         &opt,
+			TestRunnerBuildTags: tags,
+			TimeoutMins:         c.setTimeout(),
+			CTPBuildTags:        tags,
+			TRV2:                c.TRV2,
+		})
+	}
+	return res, nil
 }
 
 func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClient, bbClient BuildbucketClient, gcsBucket string) (string, error) {
@@ -201,14 +232,23 @@ func (c *Run) setTimeout() int {
 	return site.DefaultCTPTimeoutMins
 }
 
-func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {
+func (c *Run) createTestPlan() (*satlabrpcserver.CftMixTestplan, error) {
 	var tp *test_platform.Request_TestPlan
-	var err error
 
 	if c.Suite != "" {
 		tp = builder.TestPlanForSuites([]string{c.Suite})
+		if c.CFT {
+			return &satlabrpcserver.CftMixTestplan{Cft: tp}, nil
+		} else {
+			return &satlabrpcserver.CftMixTestplan{NonCft: tp}, nil
+		}
 	} else if c.Tests != nil {
 		tp = builder.TestPlanForTests(c.TestArgs, c.Harness, c.Tests)
+		if c.CFT {
+			return &satlabrpcserver.CftMixTestplan{Cft: tp}, nil
+		} else {
+			return &satlabrpcserver.CftMixTestplan{NonCft: tp}, nil
+		}
 	} else if c.Testplan != "" {
 		fmt.Printf("Fetching testplan...\n")
 		var w bytes.Buffer
@@ -216,19 +256,11 @@ func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {
 		if err != nil {
 			return nil, err
 		}
-		tp, err = readTestPlan(path)
-		if err != nil {
-			return nil, err
-		}
+		return c.readTestPlan(path)
 	} else if c.TestplanLocal != "" {
-		tp, err = readTestPlan(c.TestplanLocal)
-		if err != nil {
-			return nil, err
-		}
-		fmt.Printf("Running local testplan...\n")
+		return c.readTestPlan(c.TestplanLocal)
 	}
-
-	return tp, nil
+	return nil, fmt.Errorf("createTestPlan: must provide a suite/test/testplan")
 }
 
 // StageImageToBucket stages the specified Chrome OS image to the user GCS bucket
@@ -352,16 +384,45 @@ func downloadTestPlan(w io.Writer, bucket, testplan string) (string, error) {
 // JSONPBUnmarshaler unmarshals JSON into proto messages.
 var JSONPBUnmarshaler = jsonpb.Unmarshaler{AllowUnknownFields: true}
 
-func readTestPlan(path string) (*test_platform.Request_TestPlan, error) {
+func (c *Run) readTestPlan(path string) (*satlabrpcserver.CftMixTestplan, error) {
+	tp, err := c.readMixedTestPlan(path)
+
+	if err != nil {
+		fmt.Printf("Cannot parse the test plan with mixed format: %v\n", err)
+		return c.readSingleTestplan(path)
+	}
+	return tp, nil
+}
+
+func (c *Run) readSingleTestplan(path string) (*satlabrpcserver.CftMixTestplan, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("error reading test plan: %v", err)
+		return nil, fmt.Errorf("error reading test plan: %w", err)
 	}
 	defer file.Close()
 
 	testPlan := &test_platform.Request_TestPlan{}
 	if err := JSONPBUnmarshaler.Unmarshal(file, testPlan); err != nil {
-		return nil, fmt.Errorf("error reading test plan: %v", err)
+		return nil, fmt.Errorf("error reading test plan: %w", err)
 	}
-	return testPlan, nil
+	if c.CFT {
+		return &satlabrpcserver.CftMixTestplan{Cft: testPlan}, nil
+	}
+	return &satlabrpcserver.CftMixTestplan{NonCft: testPlan}, nil
+}
+
+func (c *Run) readMixedTestPlan(path string) (*satlabrpcserver.CftMixTestplan, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("error reading test plan: %w", err)
+	}
+	defer file.Close()
+	mixedTestPlan := &satlabrpcserver.CftMixTestplan{}
+	if err := JSONPBUnmarshaler.Unmarshal(file, mixedTestPlan); err != nil {
+		return nil, fmt.Errorf("error reading test plan: %w", err)
+	}
+	if mixedTestPlan.Cft == nil && mixedTestPlan.NonCft == nil {
+		return nil, fmt.Errorf("readMixedTestPlan: %s is not a mixed testplan", path)
+	}
+	return mixedTestPlan, nil
 }

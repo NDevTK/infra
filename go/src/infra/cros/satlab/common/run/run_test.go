@@ -262,17 +262,52 @@ func TestCreateCTPBuilder(t *testing.T) {
 				TimeoutMins:         360,
 			},
 		},
+		{
+			&Run{ // testplan run with dims
+				TestplanLocal: "testplan.json",
+				Board:         "zork",
+				Model:         "gumboz",
+				Milestone:     "111",
+				Build:         "15329.6.0",
+				AddedDims:     map[string]string{"label-dut": "123"},
+				CFT:           true,
+			},
+			&builder.CTPBuilder{
+				AuthOptions: &opt,
+				Board:       "zork",
+				BuilderID: &buildbucketpb.BuilderID{
+					Project: "chromeos",
+					Bucket:  "cros_test_platform",
+					Builder: "cros_test_platform",
+				},
+				Dimensions:  map[string]string{"label-dut": "123"},
+				Image:       "zork-release/R111-15329.6.0",
+				ImageBucket: "chromeos-image-archive",
+				Model:       "gumboz",
+				TestPlan: &test_platform.Request_TestPlan{
+					Test: []*test_platform.Request_Test{
+						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "audio_CrasGetNodes"}}},
+						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "audio_CrasStress.input_only"}}},
+						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "audio_CrasStress.output_only"}}},
+					},
+				},
+				CFT:                 true,
+				CTPBuildTags:        map[string]string{"test-plan-id": "testplan", "test-type": "testplan"},
+				TestRunnerBuildTags: map[string]string{"test-plan-id": "testplan", "test-type": "testplan"},
+				TimeoutMins:         360,
+			},
+		},
 	}
 
 	for _, tc := range tests {
 		ctx := context.Background()
-		bbClient, err := tc.inputCommand.createCTPBuilder(ctx)
+		bbClient, err := tc.inputCommand.createCTPBuilders(ctx)
 
 		if err != nil {
 			t.Errorf("unexpected err: %s", err)
 		}
 
-		if diff := cmp.Diff(tc.expectedBBClient, bbClient, ignoreOpts); diff != "" {
+		if diff := cmp.Diff(tc.expectedBBClient, bbClient[0], ignoreOpts); diff != "" {
 			t.Errorf("Unexpected diff in CTPBuilder: %s", diff)
 		}
 	}
@@ -280,9 +315,9 @@ func TestCreateCTPBuilder(t *testing.T) {
 
 func TestReadTestPlan(t *testing.T) {
 	t.Parallel()
-
+	r := Run{}
 	path := "testplan.json"
-	res, err := readTestPlan(path)
+	res, err := r.readTestPlan(path)
 	if err != nil {
 		t.Errorf("Unexpected err: %v", err)
 	}
@@ -312,11 +347,11 @@ func TestReadTestPlan(t *testing.T) {
 			},
 		},
 	}
-	if expected.String() != res.String() {
+	if expected.String() != res.NonCft.String() {
 		t.Error("readTestPlan Error")
 	}
 
-	_, err = readTestPlan("testplan1.json")
+	_, err = r.readTestPlan("testplan1.json")
 	if err == nil {
 		t.Errorf("Unexpected err: %v", err)
 	}
@@ -324,9 +359,29 @@ func TestReadTestPlan(t *testing.T) {
 
 func TestReadTestPlanFail(t *testing.T) {
 	t.Parallel()
-
-	_, err := readTestPlan("testplan1.json")
+	r := Run{}
+	_, err := r.readTestPlan("testplan1.json")
 	if err == nil {
 		t.Errorf("Unexpected err: %v", err)
+	}
+}
+
+func TestReadMixedTestplan(t *testing.T) {
+	t.Parallel()
+	r := Run{CFT: false}
+	mixedTestPlan, err := r.readTestPlan("testplan_mixed.json")
+	if err != nil {
+		t.Errorf("Unexpected err: %v", err)
+	}
+	if mixedTestPlan.Cft == nil || mixedTestPlan.NonCft == nil {
+		t.Errorf("Mixed testplan should produce 2 testplans")
+	}
+
+	cftOnlyTestPlan, err := r.readTestPlan("testplan_mixed_cft_only.json")
+	if err != nil {
+		t.Errorf("Unexpected err: %v", err)
+	}
+	if cftOnlyTestPlan.Cft == nil || cftOnlyTestPlan.NonCft != nil {
+		t.Errorf("CFT only testplan must produce 1 CFT test plan")
 	}
 }

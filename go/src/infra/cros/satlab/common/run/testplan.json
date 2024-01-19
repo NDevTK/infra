@@ -1,20 +1,19 @@
 {
-    "test": [
-      {
-        "autotest": {
-          "name": "audio_CrasGetNodes"
-        }
-      },
-      {
-        "autotest": {
-          "name": "audio_CrasStress.input_only"
-        }
-      },
-      {
-        "autotest": {
-          "name": "audio_CrasStress.output_only"
-        }
+  "test": [
+    {
+      "autotest": {
+        "name": "audio_CrasGetNodes"
       }
-    ]
-  }
-  
+    },
+    {
+      "autotest": {
+        "name": "audio_CrasStress.input_only"
+      }
+    },
+    {
+      "autotest": {
+        "name": "audio_CrasStress.output_only"
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+    "cft": {
+        "test": [
+            {
+                "autotest": {
+                    "name": "tauto.logging_UserCrash"
+                }
+            }
+        ]
+    }
+}
