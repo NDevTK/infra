@@ -361,7 +361,6 @@ def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
       r'^build/.*\.py$',
       r'^infra/tools/bucket/.*\.py$',
       r'^infra/tools/dockerbuild/.*\.py$',
-      r'^infra/tools/log/.*\.py$',
       r'^infra/tools/new_tool/.*\.py$',
       r'^infra/tools/zip_release_commits/.*\.py$',
       r'^go/src/infra/tools/cloudtail/.*\.py$',

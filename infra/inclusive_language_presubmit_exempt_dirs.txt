@@ -163,7 +163,6 @@ infra/services/lkgr_finder 2 1
 infra/services/lkgr_finder/config 13 1
 infra/services/swarm_docker 1 1
 infra/tools/dockerbuild 4 4
-infra/tools/log 10 2
 node/node_modules/jshint 4 2
 node/node_modules/jshint/dist 8 2
 node/node_modules/jshint/node_modules/cli 5 1
