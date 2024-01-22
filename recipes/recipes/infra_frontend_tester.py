@@ -88,6 +88,10 @@ def RunInfraFrontendTests(api, root_path):
                        'frontend')
   RunFrontendTests(api, cwd, 'chopsdash')
 
+  cwd = root_path.join('go', 'src', 'infra', 'appengine', 'chrome-test-health',
+                       'frontend')
+  RunFrontendTests(api, cwd, 'chrome-test-health')
+
 
 def RunLuciGoTests(api, root_path):
   """This function runs UI tests in the `luci-go` project.

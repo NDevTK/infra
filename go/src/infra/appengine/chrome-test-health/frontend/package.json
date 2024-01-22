@@ -8,7 +8,7 @@
     "fix": "npx eslint --fix .",
     "start": "react-scripts start",
     "start-stg": "PROXY='https://chrome-test-health-staging.appspot.com/' react-scripts start",
-    "test": "react-scripts test"
+    "test": "react-scripts test --watchAll=false"
   },
   "browserslist": {
     "production": [

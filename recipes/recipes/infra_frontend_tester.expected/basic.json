@@ -403,6 +403,67 @@
     "name": "chopsdash test"
   },
   {
+    "cmd": [
+      "npm",
+      "ci"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra/appengine/chrome-test-health/frontend",
+    "env": {
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra/infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "chrome-test-health npm install"
+  },
+  {
+    "cmd": [
+      "npm",
+      "run",
+      "test"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra/appengine/chrome-test-health/frontend",
+    "env": {
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra/infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "chrome-test-health test"
+  },
+  {
     "name": "$result"
   }
 ]
