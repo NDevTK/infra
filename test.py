@@ -23,7 +23,6 @@ WIN_ENABLED_PACKAGES = [
 
   'packages/infra_libs/infra_libs/infra_types',
   'packages/infra_libs/infra_libs/logs',
-  'packages/infra_libs/infra_libs/time_functions',
   'packages/infra_libs/infra_libs/ts_mon',
 ]
 
