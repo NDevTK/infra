@@ -40,8 +40,7 @@ options = parser.parse_args()
 infra_libs.logs.process_argparse_options(options)
 ```
 
-Logging messages should be done this way (other example in
-`infra.libs.service_utils.outer_loop`):
+Logging messages should be done this way:
 
 ```python
 import logging
