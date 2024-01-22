@@ -19,13 +19,13 @@ enum DolosHWMajorRevision {
 // Next Tag: 6
 message Dolos {
   // Serial used to identify device over USB
-  string dolos_serial_cable = 1;
+  string serial_cable = 1;
   // Serial of the cable_cable
-  string dolos_serial_usb = 2;
+  string serial_usb = 2;
   // Hardware revision
-  DolosHWMajorRevision dolos_hw_major_revision = 3;
+  DolosHWMajorRevision hw_major_revision = 3;
   // Dolos firmware version
-  string dolos_fw_version = 4;
-  // Servo hostname
-  string servo_hostname = 5;
+  string fw_version = 4;
+  // Hostname of the host machine the dolos connected to via USB cable.
+  string hostname = 5;
 }
