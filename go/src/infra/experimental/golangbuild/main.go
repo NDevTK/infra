@@ -154,6 +154,7 @@ func main() {
 	inputs := new(golangbuildpb.Inputs)
 	var writeOutputProps func(*golangbuildpb.Outputs)
 	build.Main(inputs, &writeOutputProps, nil, func(ctx context.Context, args []string, st *build.State) error {
+		ctx = withTopLevelLogger(ctx, st)
 		spec, runErr := run(ctx, args, st, inputs)
 
 		// Extract any links from the error. nil errors are OK and have no links.
@@ -197,6 +198,14 @@ func main() {
 				needNewLine = true
 			}
 			if needNewLine {
+				fmt.Fprintln(&sb)
+			}
+			extraLogLinks := topLevelLogLinks(ctx)
+			if len(extraLogLinks) != 0 {
+				fmt.Fprintf(&sb, "Top-level logs:\n")
+				for _, link := range extraLogLinks {
+					fmt.Fprintf(&sb, "* [%s](%s)\n", link.name, link.url)
+				}
 				fmt.Fprintln(&sb)
 			}
 		}

@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"infra/experimental/golangbuild/golangbuildpb"
@@ -78,11 +79,20 @@ func (r *perfRunner) Run(ctx context.Context, spec *buildSpec) error {
 	)
 
 	// Run benchmarks.
-	if err := cmdStepRun(ctx, "go run cmd/bench", benchCmd, false); err != nil {
+	results, err := cmdStepOutput(ctx, "go run cmd/bench", benchCmd, false)
+	if err != nil {
 		return err
 	}
 
-	// TODO(mknyszek): Compute a summary of the results a la benchstat and log them.
+	// Summarize results with benchstat.
+	benchstatCmd := toolCmd(ctx, "benchstat", "-col", "toolchain@(baseline experiment)", "-ignore", "pkg,shortname", "-")
+	benchstatCmd.Stdin = bytes.NewReader(results)
+	formattedResults, err := cmdStepOutput(ctx, "benchstat", benchstatCmd, true)
+	if err != nil {
+		return err
+	}
+	topLevelLog(ctx, "benchmark results").Write(formattedResults)
+
 	// TODO(mknyszek): Upload results to perfdata.golang.org.
 	return nil
 }

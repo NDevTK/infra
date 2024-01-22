@@ -103,6 +103,13 @@ infra/3pp/tools/%[1]s/${platform} version:%[2]s
 			cipdDeps += "\n" + extraTest
 		}
 	}
+	// Append perf-only dependencies.
+	if inputs.GetMode() == golangbuildpb.Mode_MODE_PERF {
+		cipdDeps += `
+@Subdir bin
+golang/benchstat/${platform} latest
+`
+	}
 
 	io.WriteString(step.Log("ensure file"), cipdDeps)
 

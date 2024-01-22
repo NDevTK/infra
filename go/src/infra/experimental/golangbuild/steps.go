@@ -267,3 +267,36 @@ func (e *errTestsFailed) Error() string {
 func (e *errTestsFailed) Unwrap() error {
 	return e.err
 }
+
+type topLevelLogger struct {
+	state *build.State
+	links []link
+}
+
+// withTopLevelLogger installs a topLevelLogger in a new context.Context based on ctx.
+func withTopLevelLogger(ctx context.Context, st *build.State) context.Context {
+	return context.WithValue(ctx, topLevelLoggerKey{}, &topLevelLogger{state: st})
+}
+
+type topLevelLoggerKey struct{}
+
+// topLevelLog creates a new top-level log entry and registers it with the topLevelLogger
+// in ctx.
+func topLevelLog(ctx context.Context, name string) *build.Log {
+	logger, _ := ctx.Value(topLevelLoggerKey{}).(*topLevelLogger)
+	if logger == nil {
+		panic("topLevelLog called without topLevelLogger in context")
+	}
+	log := logger.state.Log(name)
+	logger.links = append(logger.links, link{name: name, url: log.UILink()})
+	return log
+}
+
+// topLevelLogLinks returns UI links to all the top-level logs that have been accumulated in ctx.
+func topLevelLogLinks(ctx context.Context) []link {
+	logger, _ := ctx.Value(topLevelLoggerKey{}).(*topLevelLogger)
+	if logger == nil {
+		panic("topLevelLog called without topLevelLogger in context")
+	}
+	return logger.links
+}
