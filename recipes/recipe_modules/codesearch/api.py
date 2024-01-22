@@ -8,6 +8,13 @@ from recipe_engine import recipe_api
 class CodesearchApi(recipe_api.RecipeApi):
   _PROJECT_BROWSER, _PROJECT_OS, _PROJECT_UNSUPPORTED = range(3)
 
+  @property
+  def _is_experimental(self) -> bool:
+    """Return whether this build is running in experimental mode."""
+    # TODO(jsca): Delete the second part of the below condition after LUCI
+    # migration is complete.
+    return self.c.EXPERIMENTAL or self.m.runtime.is_experimental
+
   def get_config_defaults(self):
     return {
         'CHECKOUT_PATH': self.m.path['checkout'],
@@ -139,10 +146,7 @@ class CodesearchApi(recipe_api.RecipeApi):
     Returns:
       Path to the generated index pack.
     """
-    # TODO(jsca): Delete the second part of the below condition after LUCI
-    # migration is complete.
-    experimental_suffix = '_experimental' if (
-        self.c.EXPERIMENTAL or self.m.runtime.is_experimental) else ''
+    experimental_suffix = '_experimental' if self._is_experimental else ''
 
     index_pack_kythe_base = '%s_%s' % (self.c.PROJECT, self.c.PLATFORM)
     index_pack_kythe_name = '%s.kzip' % index_pack_kythe_base
@@ -357,7 +361,7 @@ class CodesearchApi(recipe_api.RecipeApi):
         generated_repo_dir,
     ])
 
-    if self.m.runtime.is_experimental:
+    if self._is_experimental:
       cmd.append('--dry-run')
     if kzip_path:
       cmd.extend(['--kzip-prune', kzip_path])

@@ -354,7 +354,7 @@ Args:
 
 #### **class [CodesearchApi](/recipes/recipe_modules/codesearch/api.py#8)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
-&mdash; **def [add\_kythe\_metadata](/recipes/recipe_modules/codesearch/api.py#55)(self):**
+&mdash; **def [add\_kythe\_metadata](/recipes/recipe_modules/codesearch/api.py#62)(self):**
 
 Adds inline Kythe metadata to Mojom generated files.
 
@@ -362,7 +362,7 @@ This metadata is used to connect things in the generated file to the thing
 in the Mojom file which generated it. This is made possible by annotations
 added to the generated file by the Mojo compiler.
 
-&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#275)(self, copy, revision, kzip_path=None, ignore=None):**
+&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#279)(self, copy, revision, kzip_path=None, ignore=None):**
 
 Check out the generated files repo and sync the generated files
    into this checkout.
@@ -387,18 +387,18 @@ Args:
   ignore: List of paths that shouldn't be synced.
   revision: A commit hash to be used in the commit message.
 
-&mdash; **def [cleanup\_old\_generated](/recipes/recipe_modules/codesearch/api.py#16)(self, age_days=7):**
+&mdash; **def [cleanup\_old\_generated](/recipes/recipe_modules/codesearch/api.py#23)(self, age_days=7):**
 
 Clean up generated files older than the specified number of days.
 
 Args:
   age_days: Minimum age in days for files to delete (integer).
 
-&mdash; **def [clone\_clang\_tools](/recipes/recipe_modules/codesearch/api.py#70)(self, clone_dir):**
+&mdash; **def [clone\_clang\_tools](/recipes/recipe_modules/codesearch/api.py#77)(self, clone_dir):**
 
 Clone chromium/src clang tools.
 
-&mdash; **def [create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#127)(self, commit_hash, commit_timestamp, commit_position=None):**
+&mdash; **def [create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#134)(self, commit_hash, commit_timestamp, commit_position=None):**
 
 Create the kythe index pack and upload it to google storage.
 
@@ -411,9 +411,9 @@ Args:
 Returns:
   Path to the generated index pack.
 
-&mdash; **def [get\_config\_defaults](/recipes/recipe_modules/codesearch/api.py#11)(self):**
+&mdash; **def [get\_config\_defaults](/recipes/recipe_modules/codesearch/api.py#18)(self):**
 
-&mdash; **def [run\_clang\_tool](/recipes/recipe_modules/codesearch/api.py#79)(self, clang_dir=None, run_dirs=None):**
+&mdash; **def [run\_clang\_tool](/recipes/recipe_modules/codesearch/api.py#86)(self, clang_dir=None, run_dirs=None):**
 
 Download and run the clang tool.
 ### *recipe_modules* / [docker](/recipes/recipe_modules/docker)
