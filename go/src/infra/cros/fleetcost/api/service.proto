@@ -7,6 +7,7 @@ syntax = "proto3";
 package chromeos.fleetcost;
 
 import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
 
 option go_package = "infra/cros/fleetcost/api;fleetcostpb";
 
@@ -27,4 +28,18 @@ message PingRequest {
 
 // PingResponse intentionally contains nothing.
 message PingResponse {
+}
+
+// PingUFSRequest intentionally contains nothing.
+message PingUFSRequest {
+}
+
+// PingUFSResponse contains information about the request sent to and returned from UFS.
+//
+// This RPC is intended solely for diagnostic purposes.
+message PingUFSResponse {
+  // ufs_request is the request to UFS, encoded as JSON.
+  google.protobuf.Any ufs_request = 1;
+  // ufs_response is the response from UFS, encoded as JSON.
+  google.protobuf.Any ufs_response = 2;
 }
