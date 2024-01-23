@@ -25,6 +25,7 @@ export const SEARCH_MATCHED_BACKGROUND_COLOR = yellow[400];
 
 // Default selected background color
 export const SELECTED_NODE_BACKGROUND_COLOR = lightBlue[50];
+
 /**
  * Props for default node renderer.
  */

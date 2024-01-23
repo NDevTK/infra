@@ -138,6 +138,7 @@ module.exports = {
     'require-jsdoc': 0,
     'valid-jsdoc': 0,
     'jsx-a11y/click-events-have-key-events': 0,
+    eqeqeq: ['error', 'always'],
   },
   overrides: [
     {

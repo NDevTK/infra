@@ -32,7 +32,7 @@ export function IndentBorder({
         <div
           style={{
             height: '100%',
-            marginLeft: `${i == 0 ? 12 : nodeIndentation}px`,
+            marginLeft: `${i === 0 ? 12 : nodeIndentation}px`,
             marginRight: `${i === level - 1 ? '8px' : '0'}`,
             borderLeft: '1px solid rgba(0,0,0,0.4)',
           }}

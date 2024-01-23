@@ -19,7 +19,7 @@ import { VirtualTree } from './virtual_tree';
 // Returns nth parent of the element if it exists or returns null.
 const getNthParent = (element: HTMLElement, n: number): HTMLElement | null => {
   let nthParent: HTMLElement | null = element;
-  while (n != 0 && nthParent !== null) {
+  while (n !== 0 && nthParent !== null) {
     nthParent = nthParent.parentElement;
     n--;
   }
@@ -375,7 +375,7 @@ describe('<VirtualTree />', () => {
       searchedNodes.forEach((matchedNode, index) => {
         expect(matchedNode.parentElement).toHaveStyle({
           'background-color': `${
-            index == 0
+            index === 0
               ? ACTIVE_NODE_SELECTION_BACKGROUND_COLOR
               : SEARCH_MATCHED_BACKGROUND_COLOR
           }`,
