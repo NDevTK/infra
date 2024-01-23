@@ -85,6 +85,7 @@ var (
 		"decomposit",    // valid word, related to compositing
 		"dedup",         // variant abbr. of deduplicate
 		"deques",        // plural form of the datastructure deque
+		"diaresis",      // alternative of diaeresis
 		"didi",          // person name
 		"doesnt",        // contraction, may appear in variable names
 		"doman",         // person name
