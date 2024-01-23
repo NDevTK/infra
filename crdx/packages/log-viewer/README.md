@@ -18,6 +18,8 @@ It was built using [ReactJS](https://react.dev/),
    npm install @chopsui/log-viewer
    ```
 
+**Note:** Ensure that `@chopsui` packages are allowlisted in Skia NPM registry for your project.
+
 ## Local development
 
 There are two methods to locally test the component:
@@ -86,3 +88,36 @@ npm unlink -g
 
 If you are not yet ready to use the published version, you can skip step
 2 and just run step 3, which reset the version to the one you had before linking.
+
+### Technical guidelines for development
+
+1. All components must be extracted in the top directory, except for sub components.
+
+2. All folders must include an `index.ts` files that exposes the components and files that
+   will be exposed as an external API.
+
+3. Ensure that your changes are backwards compatible and ideally also forward compatible,
+   if a breaking change has to be introduced, then discuss this with the other team.
+
+4. Versioning:
+   a. Use PATCH versions for bugfixes and security updates.
+   b. use MINOR versions for new components or features.
+
+5. _After_ making your changes and _before_ subtmitting the CL,
+   you **must** run this command to ensure the version is updated in the same CL:
+
+   ```sh
+   npm run versionPatch # for patch updates
+
+   npm run versionMinor # for minor updates
+   ```
+
+### Publishing the library to npm
+
+1. Only publish the package _after_ you have submitted your changes CL changes.
+
+2. After versioning your package run:
+
+   ```sh
+   npm publish
+   ```

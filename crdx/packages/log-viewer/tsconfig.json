@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es2019", "dom", "dom.iterable", "webworker"],
+    "lib": ["esnext", "dom", "dom.iterable"],
     "allowJs": true,
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
@@ -31,5 +31,5 @@
   "include": [
       "src/**/*.ts", "src/**/*.tsx",
   ],
-  "exclude": ["node_modules", "dist", "**/*.stories.tsx"]
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,6 +1,6 @@
 {
   "name": "@chopsui/log-viewer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "React and MUI based log data viewer.",
   "keywords": [
     "chopsui",
@@ -21,16 +21,17 @@
   "scripts": {
     "build": "vite build",
     "build-storybook": "storybook build",
-    "storybook": "storybook dev -p 6006",
     "lint": "eslint ./src",
-    "test": "jest"
-  },
-  "dependencies": {
-    "react-virtuoso": "^4.6.2"
+    "storybook": "storybook dev -p 6006",
+    "test": "jest",
+    "versionMinor": "npm version minor --no-git-tag-version",
+    "versionPatch": "npm version patch --no-git-tag-version"
   },
   "devDependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.4",
+    "@mui/lab": "^5.0.0-alpha.160",
     "@mui/material": "^5.15.2",
     "@storybook/addon-essentials": "^7.6.7",
     "@storybook/addon-interactions": "^7.6.7",
@@ -64,6 +65,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-virtuoso": "^4.6.2",
     "storybook": "^7.6.7",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
@@ -77,6 +79,10 @@
     "@emotion/styled": "^11.0.0",
     "@mui/material": "^5.4.0",
     "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0"
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-virtuoso": "^4.6.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

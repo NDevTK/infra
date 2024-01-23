@@ -15,7 +15,12 @@ export default defineConfig({
     dts({
       include: ['src'],
       insertTypesEntry: true,
-      exclude: ['./src/**/*.test.tsx', './src/test_utils/**'],
+      tsConfigFilePath: 'tsconfig.build.json',
+      exclude: [
+        './src/**/*.test.tsx',
+        './src/test_utils/**',
+        '**/*.stories.tsx',
+      ],
     }),
     tsconfigPaths(),
   ],
@@ -31,6 +36,7 @@ export default defineConfig({
       external: [
         'react',
         'react/jsx-runtime',
+        'react-virtuoso',
         '@mui/material',
         /^@emotion\/\S+$/,
         /^@mui\/\S+$/,

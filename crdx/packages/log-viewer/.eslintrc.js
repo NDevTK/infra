@@ -137,6 +137,7 @@ module.exports = {
     // [1]: https://eslint.org/blog/2018/11/jsdoc-end-of-life/
     'require-jsdoc': 0,
     'valid-jsdoc': 0,
+    'jsx-a11y/click-events-have-key-events': 0,
   },
   overrides: [
     {
