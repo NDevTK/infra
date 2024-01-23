@@ -2,3 +2,5 @@ ufs-service
 dumper
 coverage.out
 !*/
+# ignore editor files
+.vscode
