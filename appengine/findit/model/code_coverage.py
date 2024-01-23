@@ -152,12 +152,28 @@ class PresubmitCoverageData(ndb.Model):
   cl_patchset = ndb.StructuredProperty(CLPatchset, indexed=True, required=True)
 
   # A list of file level coverage data for all the source files modified by
-  # the CL.
+  # the CL. This may contain data merged with data equivalent patchsets.
+  # For corresponding coverage data generated strictly by coverage builds
+  # corresponding to this patchset, see data_orig
   data = ndb.JsonProperty(indexed=False, compressed=True, required=False)
 
   # A list of file level coverage data (unit tests only) for all the source
-  # files modified by this CL.
+  # files modified by this CL. This may contain data merged with data
+  # equivalent patchsets.
+  # For correponding coverage data generated strictly by coverage builds
+  # corresponding to this patchset, see data_unit_orig
   data_unit = ndb.JsonProperty(indexed=False, compressed=True, required=False)
+
+  # A list of file level coverage data for all the source files modified by
+  # the CL. Contains coverage data generated strictly by builds corresponding
+  # to the given patchset
+  data_orig = ndb.JsonProperty(indexed=False, compressed=True, required=False)
+
+  # A list of file level coverage data (unit tests only) for all the source
+  # files modified by this CL. Contains coverage data generated strictly by
+  # builds corresponding to the given patchset.
+  data_unit_orig = ndb.JsonProperty(
+      indexed=False, compressed=True, required=False)
 
   # A list of file level coverage data for all the source files modified by the
   # this CL, based on coverage data collected from builders using RTS
@@ -202,6 +218,11 @@ class PresubmitCoverageData(ndb.Model):
   # are shared between equivalent patchsets, such as trivial-rebase.
   based_on = ndb.IntegerProperty(indexed=True)
 
+  # If assigned, represents the patchset number which is equivalent to the
+  # current patchset and whose coverage data was merged with data generated
+  # by the coverage builds of the current patchset.
+  merged_with = ndb.IntegerProperty(indexed=True)
+
   # Timestamp this coverage report got created.
   insert_timestamp = ndb.DateTimeProperty(auto_now_add=True)
 
@@ -219,15 +240,20 @@ class PresubmitCoverageData(ndb.Model):
     return ndb.Key(cls, '%s$%s$%s' % (server_host, change, patchset))
 
   @classmethod
-  def Create(cls,
-             server_host,
-             change,
-             patchset,
-             data=None,
-             data_unit=None,
-             data_rts=None,
-             data_unit_rts=None,
-             project=None):
+  def Create(
+      cls,
+      server_host,
+      change,
+      patchset,
+      data=None,
+      data_unit=None,
+      data_orig=None,
+      data_unit_orig=None,
+      merged_with=None,
+      data_rts=None,
+      data_unit_rts=None,
+      project=None,
+  ):
     assert data or data_unit, "Atleast one of data/data_unit must be specified."
     key = cls._CreateKey(server_host, change, patchset)
     cl_patchset = CLPatchset(
@@ -240,6 +266,9 @@ class PresubmitCoverageData(ndb.Model):
         cl_patchset=cl_patchset,
         data=data,
         data_unit=data_unit,
+        data_orig=data_orig,
+        data_unit_orig=data_unit_orig,
+        merged_with=merged_with,
         data_rts=data_rts,
         data_unit_rts=data_unit_rts)
 

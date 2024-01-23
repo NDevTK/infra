@@ -576,17 +576,21 @@ class ProcessCodeCoverageData(BaseHandler):
     @ndb.transactional
     def _UpdateCoverageDataAsync():
 
-      def _GetEntity(entity):
+      def _GetEntity(entity, merged_coverage_data, equivalent_patchset):
         if entity:
           entity.data = code_coverage_util.MergeFilesCoverageDataForPerCL(
-              entity.data, coverage_data)
+              entity.data, merged_coverage_data)
+          entity.data_orig = code_coverage_util.MergeFilesCoverageDataForPerCL(
+              entity.data_orig, coverage_data)
           entity.times_updated = entity.times_updated + 1
         else:
           entity = PresubmitCoverageData.Create(
               server_host=patch.host,
               change=patch.change,
               patchset=patch.patchset,
-              data=coverage_data)
+              data=merged_coverage_data,
+              data_orig=coverage_data)
+        entity.merged_with = equivalent_patchset
         entity.absolute_percentages = (
             code_coverage_util.CalculateAbsolutePercentages(entity.data))
         entity.incremental_percentages = (
@@ -600,17 +604,22 @@ class ProcessCodeCoverageData(BaseHandler):
               code_coverage_util.CalculateAbsolutePercentages(entity.data_rts))
         return entity
 
-      def _GetEntityForUnit(entity):
+      def _GetEntityForUnit(entity, merged_coverage_data, equivalent_patchset):
         if entity:
           entity.data_unit = code_coverage_util.MergeFilesCoverageDataForPerCL(
-              entity.data_unit, coverage_data)
+              entity.data_unit, merged_coverage_data)
+          entity.data_unit_orig = (
+              code_coverage_util.MergeFilesCoverageDataForPerCL(
+                  entity.data_unit_orig, coverage_data))
           entity.times_updated_unit = entity.times_updated_unit + 1
         else:
           entity = PresubmitCoverageData.Create(
               server_host=patch.host,
               change=patch.change,
               patchset=patch.patchset,
-              data_unit=coverage_data)
+              data_unit=merged_coverage_data,
+              data_unit_orig=coverage_data)
+        entity.merged_with = equivalent_patchset
         entity.absolute_percentages_unit = (
             code_coverage_util.CalculateAbsolutePercentages(entity.data_unit))
         entity.incremental_percentages_unit = (
@@ -626,15 +635,45 @@ class ProcessCodeCoverageData(BaseHandler):
                   entity.data_unit_rts))
         return entity
 
+      # Chromium Recipe performs optimization where sometimes they don't run
+      # certain tests, if they passes earlier on an equivalent patchset's
+      # build. In such cases merely processing coverage data from current
+      # build won't suffice because we would be missing coverage data from
+      # bypassed tests. To guard against such optmizations, we merge current
+      # coverage data with coverage data of a previous equivalent patchset
+      equivalent_patchsets = code_coverage_util.GetEquivalentPatchsets(
+          patch.host, patch.project, patch.change, patch.patchset)
+      merged_coverage_data = coverage_data
+      equivalent_patchset = None
+      if equivalent_patchsets:
+        equivalent_entity = None
+        for ps in sorted(equivalent_patchsets, reverse=True):
+          equivalent_entity = PresubmitCoverageData.Get(
+              server_host=patch.host, change=patch.change, patchset=ps)
+          if equivalent_entity:
+            equivalent_patchset = equivalent_entity.cl_patchset.patchset
+            break
+        if equivalent_entity:
+          # Merge current coverage data with data from equivalent_entity
+          if mimic_builder.endswith('_unit'):
+            merged_coverage_data = (
+                code_coverage_util.MergeFilesCoverageDataForPerCL(
+                    equivalent_entity.data_unit, coverage_data))
+          else:
+            merged_coverage_data = (
+                code_coverage_util.MergeFilesCoverageDataForPerCL(
+                    equivalent_entity.data, coverage_data))
+
       logging.info("mimic_builder = %s", mimic_builder)
       entity = yield PresubmitCoverageData.GetAsync(
           server_host=patch.host, change=patch.change, patchset=patch.patchset)
       # Update/Create entity with unit test coverage fields populated
       # if mimic_builder represents a unit tests only builder.
       if mimic_builder.endswith('_unit'):
-        entity = _GetEntityForUnit(entity)
+        entity = _GetEntityForUnit(entity, merged_coverage_data,
+                                   equivalent_patchset)
       else:
-        entity = _GetEntity(entity)
+        entity = _GetEntity(entity, merged_coverage_data, equivalent_patchset)
       yield entity.put_async()
       raise ndb.Return(entity)
 

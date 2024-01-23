@@ -63,7 +63,7 @@ class CodeCoverageUtilTest(WaterfallTestCase):
 
     result = code_coverage_util.GetEquivalentPatchsets(
         'chromium-review.googlesource.com', 'chromium/src', 12345, 7)
-    self.assertListEqual([7, 6, 5, 4, 3], result)
+    self.assertListEqual([6, 5, 4, 3], result)
 
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Get')
   def testNoEquivalentPatchsets(self, mock_http_client):
@@ -84,7 +84,7 @@ class CodeCoverageUtilTest(WaterfallTestCase):
 
     result = code_coverage_util.GetEquivalentPatchsets(
         'chromium-review.googlesource.com', 'chromium/src', 12345, 8)
-    self.assertListEqual([8], result)
+    self.assertListEqual([], result)
 
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Get')
   def testEquivalentPatchsetsIsCached(self, mock_http_client):
@@ -94,6 +94,10 @@ class CodeCoverageUtilTest(WaterfallTestCase):
                                          'revisions': {
                                              'aaaaaaaaaaa': {
                                                  '_number': 8,
+                                                 'kind': 'TRIVIAL_REBASE',
+                                             },
+                                             'bbbbbbbbbbb': {
+                                                 '_number': 7,
                                                  'kind': 'REWORK',
                                              },
                                          },

@@ -226,6 +226,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                       'Please log in with your @google.com account.'),
                      response.json_body.get('error_message'))
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
@@ -233,7 +235,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   def testProcessCLPatchData(self, mocked_is_request_from_appself,
                              mocked_get_build, mocked_get_validated_data,
-                             mocked_inc_percentages, mock_buildbucket_post):
+                             mocked_inc_percentages, mock_buildbucket_post, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.status = common_pb2.Status.SUCCESS
@@ -320,14 +322,19 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  def testProcessCLPatchDataUnitTestBuilder(
-      self, mocked_is_request_from_appself, mocked_get_build,
-      mocked_get_validated_data, mocked_inc_percentages, mock_buildbucket_post):
+  def testProcessCLPatchDataUnitTestBuilder(self,
+                                            mocked_is_request_from_appself,
+                                            mocked_get_build,
+                                            mocked_get_validated_data,
+                                            mocked_inc_percentages,
+                                            mock_buildbucket_post, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.status = common_pb2.Status.SUCCESS
@@ -414,6 +421,235 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages_unit)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=[3])
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(FinditHttpClient, 'Post')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchData_MergeDataFromEquivalentPatchset_UnitTest(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mock_buildbucket_post, *_):
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'linux-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'linux-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['linux-rel_unit'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path': '//dir/test.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 1,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    mocked_inc_percentages.return_value = []
+
+    existing_entity = PresubmitCoverageData.Create(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=3,  # Notice this patchset is different from the current(4)
+        data_unit=[{
+            'path': '//dir/test.cc',
+            'lines': [{
+                'count': 100,
+                'first': 2,
+                'last': 2,
+            }],
+        }])
+    existing_entity.put()
+
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    response = self.test_app.post(request_url)
+    self.assertEqual(200, response.status_int)
+
+    expected_entity = PresubmitCoverageData.Create(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4,
+        data_unit=[{
+            'path': '//dir/test.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 2,
+            }],
+        }],
+        data_unit_orig=[{
+            'path': '//dir/test.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 1
+            }]
+        }],
+        merged_with=3)
+    expected_entity.absolute_percentages_unit = [
+        CoveragePercentage(
+            covered_lines=2, path=u'//dir/test.cc', total_lines=2)
+    ]
+    expected_entity.incremental_percentages_unit = []
+    fetched_entities = PresubmitCoverageData.query().order(
+        -PresubmitCoverageData.cl_patchset.patchset).fetch()
+
+    self.assertEqual(2, len(fetched_entities))
+    self.assertEqual(expected_entity.cl_patchset,
+                     fetched_entities[0].cl_patchset)
+    self.assertEqual(expected_entity.data_unit, fetched_entities[0].data_unit)
+    self.assertEqual(expected_entity.absolute_percentages_unit,
+                     fetched_entities[0].absolute_percentages_unit)
+    self.assertEqual(expected_entity.incremental_percentages_unit,
+                     fetched_entities[0].incremental_percentages_unit)
+    self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
+    self.assertEqual(expected_entity.data_unit_orig,
+                     fetched_entities[0].data_unit_orig)
+    self.assertEqual(expected_entity.merged_with, 3)
+
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=[3])
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(FinditHttpClient, 'Post')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchData_MergeDataFromEquivalentPatchset(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mock_buildbucket_post, *_):
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'linux-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'linux-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['linux-rel'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path': '//dir/test.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 1,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    mocked_inc_percentages.return_value = []
+
+    existing_entity = PresubmitCoverageData.Create(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=3,  # Notice this patchset is different from the current(4)
+        data=[{
+            'path': '//dir/test.cc',
+            'lines': [{
+                'count': 100,
+                'first': 2,
+                'last': 2,
+            }],
+        }])
+    existing_entity.put()
+
+    mock_response = builds_service_pb2.SearchBuildsResponse(builds=[])
+    mock_headers = {'X-Prpc-Grpc-Code': '0'}
+    binary_data = mock_response.SerializeToString()
+    mock_buildbucket_post.return_value = (200, binary_data, mock_headers)
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    response = self.test_app.post(request_url)
+    self.assertEqual(200, response.status_int)
+
+    expected_entity = PresubmitCoverageData.Create(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4,
+        data=[{
+            'path': '//dir/test.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 2,
+            }],
+        }],
+        data_orig=[{
+            'path': '//dir/test.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 1
+            }]
+        }],
+        merged_with=3)
+    expected_entity.absolute_percentages = [
+        CoveragePercentage(
+            covered_lines=2, path=u'//dir/test.cc', total_lines=2)
+    ]
+    expected_entity.incremental_percentages = []
+    fetched_entities = PresubmitCoverageData.query().order(
+        -PresubmitCoverageData.cl_patchset.patchset).fetch()
+
+    self.assertEqual(2, len(fetched_entities))
+    self.assertEqual(expected_entity.cl_patchset,
+                     fetched_entities[0].cl_patchset)
+    self.assertEqual(expected_entity.data, fetched_entities[0].data)
+    self.assertEqual(expected_entity.absolute_percentages,
+                     fetched_entities[0].absolute_percentages)
+    self.assertEqual(expected_entity.incremental_percentages,
+                     fetched_entities[0].incremental_percentages)
+    self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
+    self.assertEqual(expected_entity.data_orig, fetched_entities[0].data_orig)
+    self.assertEqual(expected_entity.merged_with, 3)
+
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
@@ -514,14 +750,19 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  def testProcessCLPatchDataRTSBuilder_NewEntity(
-      self, mocked_is_request_from_appself, mocked_get_build,
-      mocked_get_validated_data, mocked_inc_percentages, mock_buildbucket_post):
+  def testProcessCLPatchDataRTSBuilder_NewEntity(self,
+                                                 mocked_is_request_from_appself,
+                                                 mocked_get_build,
+                                                 mocked_get_validated_data,
+                                                 mocked_inc_percentages,
+                                                 mock_buildbucket_post, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.status = common_pb2.Status.SUCCESS
@@ -608,6 +849,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].absolute_percentages_unit_rts)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
@@ -615,7 +858,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   def testProcessCLPatchDataRTSBuilder_MergeDataIntoExistingEntity(
       self, mocked_is_request_from_appself, mocked_get_build,
-      mocked_get_validated_data, mocked_inc_percentages, mock_buildbucket_post):
+      mocked_get_validated_data, mocked_inc_percentages, mock_buildbucket_post,
+      *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.status = common_pb2.Status.SUCCESS
@@ -736,6 +980,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # This test case tests the scenario where multiple coverage builders
   # were triggered for a CL, and the first coverage build is being processed.
   # In this case, the said coverage build produced coverage data.
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
@@ -926,6 +1172,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
 
   # This test case tests the scenario where multiple coverage builders
   # were triggered for a CL, and one of them failed to complete.
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
@@ -1037,6 +1285,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # This test tests for the scenario where all coverage builders have completed
   # successfully, only the last one is pending processing and the last builder
   # has produced coverage data
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
@@ -1279,6 +1529,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     # Assert that CL was checked for low coverage
     self.assertEqual(len(mock_blocking_logic.call_args_list), 1)
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -1389,6 +1641,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertTrue('clank' in payload['cohorts_matched'])
     self.assertTrue('clank' in payload['cohorts_violated'])
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -1487,6 +1741,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         queue_names='postreview-request-queue')
     self.assertEqual(0, len(tasks))
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -1622,6 +1878,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertTrue('clank' in payload['cohorts_matched'])
     self.assertFalse('clank' in payload['cohorts_violated'])
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -1727,6 +1985,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertTrue('clank' in payload['cohorts_matched'])
     self.assertFalse('clank' in payload['cohorts_violated'])
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -1826,6 +2086,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertTrue('clank' in payload['cohorts_matched'])
     self.assertTrue('clank' in payload['cohorts_violated'])
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -1923,6 +2185,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         queue_names='postreview-request-queue')
     self.assertEqual(0, len(tasks))
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -2021,6 +2285,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         queue_names='postreview-request-queue')
     self.assertEqual(0, len(tasks))
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -2124,6 +2390,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         queue_names='postreview-request-queue')
     self.assertEqual(0, len(tasks))
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -2228,6 +2496,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         queue_names='postreview-request-queue')
     self.assertEqual(0, len(tasks))
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -2336,6 +2606,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertTrue('clank' in payload['cohorts_matched'])
     self.assertFalse('clank' in payload['cohorts_violated'])
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -2439,6 +2711,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         queue_names='postreview-request-queue')
     self.assertEqual(0, len(tasks))
 
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -2630,6 +2904,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   # This test tests for scenario where a CL makes changes which fall under
   # multiple cohorts, out of which only for some coverage requirement may
   # be getting violated.
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
@@ -2755,9 +3031,10 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertFalse('ios' in payload['cohorts_violated'])
     self.assertTrue('clank' in payload['cohorts_violated'])
 
-  # This test tests for scenario where a CL makes changes which fall under
-  # multiple cohorts, out of which only for some coverage requirement may
-  # be getting violated.
+  # This test tests for scenario where a CL makes low coverage changes, but
+  # nothing happens because the cohort blocking is not operational
+  @mock.patch.object(
+      code_coverage_util, 'GetEquivalentPatchsets', return_value=None)
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')

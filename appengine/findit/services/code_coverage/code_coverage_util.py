@@ -141,7 +141,8 @@ def GetEquivalentPatchsets(host, project, change, patchset):
       # If this revision was a non-trivial change, don't consider patchsets
       # prior to it.
       break
-
+  if patchsets and patchsets[0] == patchset:
+    patchsets = patchsets[1:]
   return patchsets
 
 
