@@ -20,6 +20,13 @@ service FleetCost {
       post: "/v1/ping"
     };
   }
+
+  // PingUFS pings UFS and returns what it did.
+  rpc PingUFS(PingUFSRequest) returns (PingUFSResponse) {
+    option (google.api.http) = {
+      post: "/v1/ping"
+    };
+  }
 }
 
 // PingRequest intentionally contains nothing.
