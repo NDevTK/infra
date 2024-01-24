@@ -1,5 +1,0 @@
-[run]
-include = appengine/ui_catalogue/pylib/*
-
-[expect_tests]
-expected_coverage_min = 85
