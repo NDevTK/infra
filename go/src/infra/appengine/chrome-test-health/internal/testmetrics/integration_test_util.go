@@ -112,6 +112,11 @@ func (f *fakeRdbResult) WithBuilder(builder string) *fakeRdbResult {
 	return f
 }
 
+func (f *fakeRdbResult) WithPlatform(platform string) *fakeRdbResult {
+	f.platform = platform
+	return f
+}
+
 func (f *fakeRdbResult) AddTime(time time.Duration) *fakeRdbResult {
 	f.offsetTime = time
 	return f

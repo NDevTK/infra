@@ -62,7 +62,7 @@ USING (
         variant_hash,
         ANY_VALUE(IFNULL(test_name, test_id)) AS test_name,
         ANY_VALUE(file_name) AS file_name,
-        IFNULL(ANY_VALUE(component), "Unknown") AS component,
+        IFNULL(component, "Unknown") AS component,
         COUNT(*) AS num_runs,
         COUNTIF(NOT tr.expected AND NOT tr.exonerated) AS num_failures,
         AVG(tr.duration) AS avg_runtime,
@@ -72,7 +72,7 @@ USING (
         raw_results_tables AS tr
       GROUP BY
         `date`, test_id, repo, `project`, bucket, builder, test_suite,
-        target_platform, variant_hash
+        target_platform, variant_hash, component
     ), attempt_builds AS (
       SELECT
         EXTRACT(DATE FROM start_time AT TIME ZONE "PST8PDT") AS `date`,
@@ -137,6 +137,7 @@ USING (
       t.builder = c.builder
       AND t.test_suite = c.test_suite
       AND t.date = c.date
+      AND t.target_platform = c.target_platform
   ) AS S
 ON
   T.date = S.date

@@ -45,37 +45,44 @@ func TestIntegrationTest(t *testing.T) {
 		// Deleting rows with a streaming buffer doesn't work well, instead
 		// partition the fake table
 		testPartition := "2023-07-02"
+		rf.defaultRuntime = (time.Hour * 24).Seconds()
 		rf.timePartition, err = civil.ParseDate(testPartition)
 		if err != nil {
 			t.Fail()
 		}
+		tf := taskFactory{
+			defaultCores:    1,
+			defaultDuration: (time.Hour * 24).Seconds(),
+		}
 
 		// Generate the fake rdb data.
-		if err := createFakeRdb(ctx, bqClient, testDataset, fakeChromiumTryRdb, []*fakeRdbResult{
+		if err := createRollupFromResults(ctx, client, testDataset, []*fakeRdbResult{
 			rf.createResult(),
 			rf.createResult(),
 			rf.createResult().AddTime(time.Hour * 24),
 			rf.createResult().AddTime(time.Hour * 24 * 2),
 			rf.createResult().AddTime(time.Hour * 24 * 6),
+			// Ensure the corrections table doesn't cause dupes
+			rf.createResult().WithBuilder("fake-builder").WithTestSuite("fake-suite").WithPlatform("fake-platform").InBuild("build1"),
+		}, []*fakeTask{
+			tf.createTask().OnDay(rf.timePartition).WithId("build1"),
 		}); err != nil {
 			t.Fail()
 		}
 
-		err = client.UpdateSummary(ctx, rf.timePartition, rf.timePartition.AddDays(6))
-		So(err, ShouldBeNil)
 		// Even if new data appears after the first roll up, that data needs to
 		// be included in existing rows, not as new ones
-		if err := createFakeRdb(ctx, bqClient, testDataset, fakeChromiumTryRdb, []*fakeRdbResult{
+		if err := createRollupFromResults(ctx, client, testDataset, []*fakeRdbResult{
 			rf.createResult(),
 			rf.createResult().AddTime(time.Hour * 24),
 			rf.createResult().AddTime(time.Hour * 24 * 2),
 			rf.createResult().AddTime(time.Hour * 24 * 6),
+			rf.createResult().WithBuilder("fake-builder").WithTestSuite("fake-suite").WithPlatform("changed-fake-platform").InBuild("build2"),
+		}, []*fakeTask{
+			tf.createTask().OnDay(rf.timePartition).WithId("build2"),
 		}); err != nil {
 			t.Fail()
 		}
-		// Run the updates again to ensure nothing changes
-		err = client.UpdateSummary(ctx, rf.timePartition, rf.timePartition.AddDays(6))
-		So(err, ShouldBeNil)
 
 		// Check the rolled up tables
 		err := checkForDuplicateRows(ctx, bqClient)
