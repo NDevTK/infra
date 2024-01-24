@@ -1,0 +1,10 @@
+package: chromiumos/infra/suite_publisher/${platform}
+description: CLI to publish Suite and SuiteSet data to cros-test-analytics
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/suite_publisher
+root: ../../go/bin
+data:
+  - file: suite_publisher${exe_suffix}
+  - version_file: .versions/suite_publisher${exe_suffix}.cipd_version
