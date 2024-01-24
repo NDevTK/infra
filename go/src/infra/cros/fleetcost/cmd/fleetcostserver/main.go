@@ -37,8 +37,9 @@ func main() {
 			Transport: t,
 		}
 		prpcClient := &prpc.Client{
-			C:    httpClient,
-			Host: "ufs.api.cr.dev",
+			C: httpClient,
+			// TODO(gregorynisbet): Un-hardcode this.
+			Host: "staging.ufs.api.cr.dev",
 		}
 		ufsClient := ufspb.NewFleetPRPCClient(prpcClient)
 		fleetCostFrontend := costserver.NewFleetCostFrontend().(*costserver.FleetCostFrontend)
