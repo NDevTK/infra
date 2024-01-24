@@ -6,10 +6,14 @@
 package main
 
 import (
+	"net/http"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
+	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
+	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
@@ -25,11 +29,19 @@ func main() {
 	}
 
 	server.Main(nil, mods, func(srv *server.Server) error {
-		fleetCostFrontend := costserver.NewFleetCostFrontend().(*costserver.FleetCostFrontend)
-		ufsClient, err := ufspb.NewClient(srv.Context)
+		t, err := auth.GetRPCTransport(srv.Context, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
 		if err != nil {
 			return errors.Annotate(err, "setting up UFS client").Err()
 		}
+		httpClient := &http.Client{
+			Transport: t,
+		}
+		prpcClient := &prpc.Client{
+			C:    httpClient,
+			Host: "ufs.api.cr.dev",
+		}
+		ufsClient := ufspb.NewFleetPRPCClient(prpcClient)
+		fleetCostFrontend := costserver.NewFleetCostFrontend().(*costserver.FleetCostFrontend)
 		costserver.SetUFSClient(fleetCostFrontend, ufsClient)
 		costserver.InstallServices(fleetCostFrontend, srv)
 		logging.Infof(srv.Context, "Initialization finished.")
