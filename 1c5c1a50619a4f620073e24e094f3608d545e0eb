@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9653ce83_935587dd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1551397
+      },
+      "writtenOn": "2024-01-24T13:41:57Z",
+      "side": 1,
+      "message": "PTAL. There was one infra failure that was unrelated to task backend (swarming bot died due to failed transaction for BotInfo).",
+      "revId": "1c5c1a50619a4f620073e24e094f3608d545e0eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
