@@ -7,6 +7,7 @@ package testfinder
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -46,8 +47,9 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestFinderRequest, crosTest
 	}
 	log.Printf("Run test: created the %s directory %s", CrosTestFinderName, crosTestFinderDir)
 
-	testReq := &api.CrosTestFinderRequest{
-		TestSuites: req.GetTestSuites(),
+	testReq, err := newTestFinderRequest(req)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to parse test finder request").Err()
 	}
 	if err := writeTestFinderInput(inputFileName, testReq); err != nil {
 		return nil, errors.Annotate(err, "prepare to run test finder: failed to create input file %s", inputFileName).Err()
@@ -68,6 +70,18 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestFinderRequest, crosTest
 	return &api.CrosToolRunnerTestFinderResponse{
 		TestSuites: out.TestSuites,
 	}, err
+}
+
+func newTestFinderRequest(req *api.CrosToolRunnerTestFinderRequest) (*api.CrosTestFinderRequest, error) {
+	if req.GetRequest() != nil && len(req.GetTestSuites()) > 0 {
+		return nil, fmt.Errorf("cannot provide both the TestSuites and Request field in the same request, must provide one or the other")
+	}
+	if req.GetRequest() != nil {
+		return req.GetRequest(), nil
+	}
+	return &api.CrosTestFinderRequest{
+		TestSuites: req.GetTestSuites(),
+	}, nil
 }
 
 // writeTestFinderInput writes a CrosTestFinderRequest json.
