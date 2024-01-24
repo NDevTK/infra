@@ -134,12 +134,14 @@ func crosRepairActions() map[string]*Action {
 			RunControl:    RunControl_RUN_ONCE,
 		},
 		"DUT has board info": {
-			ExecName:   "dut_has_board_name",
-			RunControl: RunControl_RUN_ONCE,
+			ExecName:      "dut_has_board_name",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"DUT has model info": {
-			ExecName:   "dut_has_model_name",
-			RunControl: RunControl_RUN_ONCE,
+			ExecName:      "dut_has_model_name",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Device is pingable": {
 			Docs: []string{
@@ -310,12 +312,12 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
+				"Read OS version",
 			},
 			ExecName: "cros_has_python_interpreter_working",
 			RecoveryActions: []string{
 				"Quick provision OS",
-				"Repair by powerwash",
-				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
 				"Install OS in DEV mode by USB-drive",
 			},
 		},
@@ -329,10 +331,11 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_last_provision_successful",
 			RecoveryActions: []string{
-				"Repair by powerwash",
-				"Install OS in recovery mode by booting from servo USB-drive",
+				"Quick provision OS",
+				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
+				"Install OS in recovery mode by booting from servo USB-drive (with FW update)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
-				"Install OS in DEV mode by USB-drive",
+				"Install OS in DEV mode, with force to DEV-mode",
 			},
 		},
 		"Check KVM is enabled": {
@@ -366,7 +369,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				"Quick provision OS",
-				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
+				"Install OS in recovery mode by booting from servo USB-drive (with FW update)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
@@ -393,7 +397,8 @@ func crosRepairActions() map[string]*Action {
 				"requests:REIMAGE_BY_USBKEY",
 			},
 			RecoveryActions: []string{
-				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
+				"Install OS in recovery mode by booting from servo USB-drive (with FW update)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
@@ -2523,6 +2528,32 @@ func crosRepairActions() map[string]*Action {
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
+		"Install OS in recovery mode by booting from servo USB-drive (with FW update)": {
+			Docs: []string{
+				"This action installs the test image on DUT utilizing the features of servo.",
+				"DUT will be booted in recovery mode.",
+			},
+			Conditions: []string{
+				"Recovery version has OS image path",
+				"Recovery version has firmware image path",
+				"Is servod running",
+				"Is a Chromebook",
+				"Is servo USB key detected",
+			},
+			Dependencies: []string{
+				"Flash EC (FW) by servo (allowed failed)",
+				"Sleep 60 seconds",
+				"Disable software write protection via servo",
+				"Flash AP (FW) with GBB 0x18 by servo",
+				"Servo USB-Key needs to be reflashed",
+				"Download stable version OS image to servo usbkey if necessary (allow fail)",
+				"Boot DUT in recovery and install from USB-drive",
+				"Wait to be SSHable (normal boot)",
+				"Remove REIMAGE_BY_USBKEY repair-request",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
 		"Install OS in recovery mode by booting from servo USB-drive (no storage check)": {
 			Docs: []string{
 				"This action installs the test image on DUT utilizing the features of servo.",
@@ -3189,6 +3220,7 @@ func crosRepairActions() map[string]*Action {
 				"actions into a single repair action.",
 			},
 			Conditions: []string{
+				"Recovery version has firmware image path",
 				"Is servod running",
 				"Is a Chromebook",
 			},
@@ -4195,6 +4227,8 @@ func crosRepairActions() map[string]*Action {
 				"The action doesn't use recovery boot.",
 			},
 			Conditions: []string{
+				"Recovery version has OS image path",
+				"Recovery version has firmware image path",
 				"Is a Chromebook",
 			},
 			Dependencies: []string{
