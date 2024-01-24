@@ -24,7 +24,6 @@ import threading
 import time
 
 import google.protobuf.message
-import infra_libs
 
 from infra_libs import luci_auth
 from infra.libs import git
@@ -152,9 +151,8 @@ _BUILDBUCKET_SEARCH_ENDPOINT_V2 = (
 _DEFAULT_BUILDBUCKET_INSTANCE = 'cr-buildbucket.appspot.com'
 
 
-def _FetchFromBuildbucketImpl(
-    project, bucket_name, builder,
-    service_account_file=None):  # pragma: no cover
+def _FetchFromBuildbucketImpl(project, bucket_name,
+                              builder):  # pragma: no cover
   request_pb = builds_service_pb2.SearchBuildsRequest()
   request_pb.predicate.builder.project = project
   request_pb.predicate.builder.bucket = bucket_name
@@ -173,10 +171,7 @@ def _FetchFromBuildbucketImpl(
 
   http = httplib2.Http(timeout=300)
   creds = None
-  if service_account_file:
-    creds = infra_libs.get_signed_jwt_assertion_credentials(
-        service_account_file, scope=OAUTH_SCOPES)
-  elif luci_auth.available():
+  if luci_auth.available():
     creds = luci_auth.LUCICredentials(scopes=OAUTH_SCOPES)
   if creds:
     creds.authorize(http)
@@ -205,8 +200,7 @@ _BUILDBUCKET_STATUS = {
 }
 
 
-def FetchBuildbucketBuildsForBuilder(
-    bucket, builder, service_account_file=None):
+def FetchBuildbucketBuildsForBuilder(bucket, builder):
   LOGGER.debug('Fetching builds for %s/%s from buildbucket', bucket, builder)
 
   if not '/' in bucket:
@@ -219,9 +213,7 @@ def FetchBuildbucketBuildsForBuilder(
   project, bucket_name = bucket.split('/', 1)
 
   try:
-    response_pb = _FetchFromBuildbucketImpl(
-        project, bucket_name, builder,
-        service_account_file=service_account_file)
+    response_pb = _FetchFromBuildbucketImpl(project, bucket_name, builder)
   except httplib2.HttpLib2Error as e:
     LOGGER.error(
         'RequestException while fetching %s/%s/%s:\n%s',
@@ -255,16 +247,14 @@ def FetchBuildsWorker(fetch_q, fetch_fn):  # pragma: no cover
   """
   while True:
     try:
-      bucket, builder, service_account, output_builds = fetch_q.get(False)
+      bucket, builder, output_builds = fetch_q.get(False)
     except queue.Empty:
       return
 
-    output_builds[builder] = fetch_fn(
-        bucket, builder, service_account_file=service_account)
+    output_builds[builder] = fetch_fn(bucket, builder)
 
 
-def FetchBuildbucketBuilds(
-    buckets, max_threads=0, service_account=None):  # pragma: no cover
+def FetchBuildbucketBuilds(buckets, max_threads=0):  # pragma: no cover
   """Fetch all build data about the builders from the given buckets.
 
   Args:
@@ -278,18 +268,16 @@ def FetchBuildbucketBuilds(
     @type max_threads: int
   """
   return _FetchBuilds(
-      buckets, FetchBuildbucketBuildsForBuilder,
-      max_threads=max_threads, service_account=service_account)
+      buckets, FetchBuildbucketBuildsForBuilder, max_threads=max_threads)
 
 
-def _FetchBuilds(
-    config, fetch_fn, max_threads=0, service_account=None):  # pragma: no cover
+def _FetchBuilds(config, fetch_fn, max_threads=0):  # pragma: no cover
   build_data = {key: {} for key in config}
   fetch_q = queue.Queue()
   for key, config_data in config.items():
     builders = config_data['builders']
     for builder in builders:
-      fetch_q.put((key, builder, service_account, build_data[key]))
+      fetch_q.put((key, builder, build_data[key]))
   fetch_threads = set()
   if not max_threads:
     max_threads = fetch_q.qsize()

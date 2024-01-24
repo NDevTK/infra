@@ -140,9 +140,6 @@ def ParseArgs(argv):
                       help='Force updating the lkgr to the found (or manually '
                            'specified) value. Skips checking for validity '
                            'against the current LKGR.')
-  parser.add_argument('--service-account',
-                      help='Service account to use when doing RPCs to '
-                           'buildbucket.')
 
   args = parser.parse_args(argv)
   return args, config_arg_names
@@ -203,7 +200,7 @@ def main(argv):
       buildbucket_builders = config.get('buckets', [])
       if buildbucket_builders:
         buildbucket_builds, failures = lkgr_lib.FetchBuildbucketBuilds(
-            buildbucket_builders, args.max_threads, args.service_account)
+            buildbucket_builders, args.max_threads)
         if failures > 0:
           return 1
         builds.update(buildbucket_builds)
