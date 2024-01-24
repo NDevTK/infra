@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 instance=chromiumos/infra/labpack/linux-amd64
 
@@ -16,7 +16,7 @@ echo "Get the latest CIPD and git information..."
 read latest_id latest_git < <(get_data "latest")
 read prod_id prod_git < <(get_data "prev-prod")
 
-git fetch origin/main
+git fetch origin main
 changelist=$(git log refs/remotes/origin/main --oneline ${prod_git}..${latest_git} -- . ../../recovery)
 
 cat <<EOF
