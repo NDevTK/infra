@@ -13,6 +13,7 @@ import (
 	"crypto/x509"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"regexp"
 	"strings"
@@ -200,9 +201,14 @@ func (c *config) addHostConfig(hc *hostConfig) {
 }
 
 func (c *config) getHostConfig(host string) *hostConfig {
+	hostname, _, err := net.SplitHostPort(host)
+	if err != nil {
+		// The port is not specified, using the given value.
+		hostname = host
+	}
 	for _, hc := range c.hostConfigs {
 		for _, re := range hc.hostRe {
-			if re.MatchString(host) {
+			if re.MatchString(hostname) {
 				return hc
 			}
 		}
@@ -313,8 +319,17 @@ func expandHostToken(token, host string) string {
 	if token == "" || host == "" {
 		return host
 	}
-	r := strings.NewReplacer("%h", host)
-	return r.Replace(token)
+	hostname, port, err := net.SplitHostPort(host)
+	if err != nil {
+		// The port is not specified, using the given value.
+		hostname = host
+	}
+	r := strings.NewReplacer("%h", hostname)
+	hostname = r.Replace(token)
+	if port != "" && port != "22" {
+		hostname = net.JoinHostPort(hostname, port)
+	}
+	return hostname
 }
 
 // FromClientConfig creates a new instance of Config structure and populates it with
