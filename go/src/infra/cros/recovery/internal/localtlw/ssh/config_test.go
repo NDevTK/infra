@@ -89,18 +89,46 @@ func TestFromSSHConfig(t *testing.T) {
 			c, err := fromSSHConfig(sshConfig, nil)
 
 			So(err, ShouldBeNil)
-			Convey("Returns SSH client config", func() {
+			Convey("Returns default SSH client config", func() {
 				clientConfig := c.GetSSHConfig("")
 				So(clientConfig, ShouldNotBeNil)
 				So(clientConfig.Auth, ShouldResemble, c.(*config).auth)
 				So(reflect.TypeOf(clientConfig.HostKeyCallback), ShouldEqual, reflect.TypeOf(ssh.InsecureIgnoreHostKey()))
 			})
-			Convey("Returns ProxyConfig", func() {
+			Convey("Given hostname - Returns SSH client config", func() {
+				clientConfig := c.GetSSHConfig("test")
+				So(clientConfig, ShouldNotBeNil)
+				So(clientConfig.Auth, ShouldResemble, c.(*config).auth)
+				So(reflect.TypeOf(clientConfig.HostKeyCallback), ShouldEqual, reflect.TypeOf(ssh.InsecureIgnoreHostKey()))
+			})
+			Convey("Given hostname:port - Returns SSH client config", func() {
+				clientConfig := c.GetSSHConfig("test:22")
+				So(clientConfig, ShouldNotBeNil)
+				So(clientConfig.Auth, ShouldResemble, c.(*config).auth)
+				So(reflect.TypeOf(clientConfig.HostKeyCallback), ShouldEqual, reflect.TypeOf(ssh.InsecureIgnoreHostKey()))
+			})
+			Convey("Given hostname - Returns ProxyConfig", func() {
 				pc := c.GetProxy("test")
 				So(pc, ShouldNotBeNil)
 				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
 				So(pc.GetConfig(), ShouldResemble, &tls.Config{
 					ServerName: "test.google.com",
+				})
+			})
+			Convey("Given hostname:default port - Returns ProxyConfig", func() {
+				pc := c.GetProxy("test:22")
+				So(pc, ShouldNotBeNil)
+				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
+				So(pc.GetConfig(), ShouldResemble, &tls.Config{
+					ServerName: "test.google.com",
+				})
+			})
+			Convey("Given hostname:port - Returns ProxyConfig", func() {
+				pc := c.GetProxy("test:2222")
+				So(pc, ShouldNotBeNil)
+				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
+				So(pc.GetConfig(), ShouldResemble, &tls.Config{
+					ServerName: "test.google.com:2222",
 				})
 			})
 		})
