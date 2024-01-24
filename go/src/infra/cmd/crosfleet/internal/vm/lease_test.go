@@ -71,11 +71,13 @@ var validLeaseFlags = []leaseFlags{
 		durationMins: 60,
 		board:        "betty-arc-r",
 		build:        "",
+		diskSize:     20,
 	},
 	{
 		durationMins: maxLeaseLengthMinutes,
 		board:        "",
 		build:        "betty-arc-r-release/R119-15626.0.0",
+		diskSize:     maxDiskSize,
 	},
 }
 
@@ -92,21 +94,25 @@ var invalidLeaseFlags = []leaseFlags{
 		durationMins: 60,
 		board:        "",
 		build:        "",
+		diskSize:     0,
 	},
 	{
 		durationMins: 60,
 		board:        "betty-arc-r",
 		build:        "betty-arc-r-release/R119-15626.0.0",
+		diskSize:     250,
 	},
 	{
 		durationMins: maxLeaseLengthMinutes + 1,
 		board:        "betty-arc-r",
 		build:        "",
+		diskSize:     0,
 	},
 	{
 		durationMins: 0,
 		board:        "betty-arc-r",
 		build:        "",
+		diskSize:     0,
 	},
 }
 

@@ -27,9 +27,27 @@ import (
 const (
 	// maxLeaseLengthMinutes is 24 hours in minutes.
 	maxLeaseLengthMinutes = 24 * 60
+	// maxDiskSize to protect GCE resources (in GB).
+	maxDiskSize = 200
 	// leaseCmdName is the name of the `crosfleet vm lease` command.
 	leaseCmdName = "lease"
 )
+
+// leaseFlags contains parameters for the "vm lease" subcommand.
+type leaseFlags struct {
+	durationMins int64
+	board        string
+	build        string
+	diskSize     int64
+}
+
+// Registers lease-specific flags.
+func (c *leaseFlags) register(f *flag.FlagSet) {
+	f.Int64Var(&c.durationMins, "minutes", 60, "Duration of lease in minutes.")
+	f.StringVar(&c.board, "board", "", "Board name for the VM image, for example betty-arc-r, the latest release image will be used")
+	f.StringVar(&c.build, "build", "", "Build path of the VM image, for example betty-arc-r-release/R119-15626.0.0, should not be used with -board")
+	f.Int64Var(&c.diskSize, "disk-size", 13, "Disk size of VM in GB.")
+}
 
 var lease = &subcommands.Command{
 	UsageLine: fmt.Sprintf("%s [FLAGS...]", leaseCmdName),
@@ -118,7 +136,7 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 			GceNetwork:               croscommon.GceNetwork,
 			GceMachineType:           croscommon.GceMachineTypeN14,
 			SubnetModeNetworkEnabled: true,
-			GceDiskSize:              13,
+			GceDiskSize:              c.diskSize,
 		},
 		TestingClient: api.VMTestingClient_VM_TESTING_CLIENT_CROSFLEET,
 		Labels: map[string]string{
@@ -155,20 +173,6 @@ func getLatestImage(iapi vmapi.ImageApi, board string) (string, error) {
 	return images[0].GetName(), nil
 }
 
-// leaseFlags contains parameters for the "vm lease" subcommand.
-type leaseFlags struct {
-	durationMins int64
-	board        string
-	build        string
-}
-
-// Registers lease-specific flags.
-func (c *leaseFlags) register(f *flag.FlagSet) {
-	f.Int64Var(&c.durationMins, "minutes", 60, "Duration of lease in minutes.")
-	f.StringVar(&c.board, "board", "", "Board name for the VM image, for example betty-arc-r, the latest release image will be used")
-	f.StringVar(&c.build, "build", "", "Build path of the VM image, for example betty-arc-r-release/R119-15626.0.0, should not be used with -board")
-}
-
 func (c *leaseFlags) validate(f *flag.FlagSet) error {
 	var errors []string
 	if c.durationMins <= 0 {
@@ -182,6 +186,12 @@ func (c *leaseFlags) validate(f *flag.FlagSet) error {
 	}
 	if c.board != "" && c.build != "" {
 		errors = append(errors, "-board and -build should not be used together")
+	}
+	if c.diskSize <= 0 {
+		errors = append(errors, "disk size should be greater than 0")
+	}
+	if c.diskSize > maxDiskSize {
+		errors = append(errors, fmt.Sprintf("disk size cannot exceed %d GB", maxDiskSize))
 	}
 
 	if len(errors) > 0 {
