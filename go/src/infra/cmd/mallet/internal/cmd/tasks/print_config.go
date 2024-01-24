@@ -32,6 +32,7 @@ var RecoveryConfig = &subcommands.Command{
 		c.Flags.StringVar(&c.deviceType, "device", "cros", "Device type supported 'cros', 'labstation'.")
 		c.Flags.StringVar(&c.planName, "plan", "", "Print only plan instead of config.")
 		c.Flags.BoolVar(&c.asTree, "tree", false, "Print data as tree.")
+		c.Flags.BoolVar(&c.asShortTree, "short", false, "Print a short version of tree.")
 		return c
 	},
 }
@@ -40,10 +41,11 @@ type printConfigRun struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
 
-	taskName   string
-	deviceType string
-	planName   string
-	asTree     bool
+	taskName    string
+	deviceType  string
+	planName    string
+	asTree      bool
+	asShortTree bool
 }
 
 // Run output the content of the recovery config file.
@@ -82,14 +84,14 @@ func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env 
 	var obj interface{}
 	if c.planName == "" {
 		if c.asTree {
-			obj = tree.ConvertConfiguration(config)
+			obj = tree.ConvertConfiguration(config, c.asShortTree)
 		} else {
 			obj = config
 		}
 	} else {
 		plan := config.GetPlans()[c.planName]
 		if c.asTree {
-			obj = tree.ConvertPlan(c.planName, plan)
+			obj = tree.ConvertPlan(c.planName, plan, c.asShortTree)
 		} else {
 			obj = plan
 		}

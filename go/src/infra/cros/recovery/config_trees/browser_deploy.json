@@ -5,10 +5,10 @@
       "critical_actions": [
         {
           "name": "Set state: needs_deploy",
+          "exec_name": "dut_set_state",
           "docs": [
             "The action set devices with request to be redeployed."
           ],
-          "exec_name": "dut_set_state",
           "exec_args": [
             "state:needs_deploy"
           ],
@@ -16,40 +16,42 @@
         },
         {
           "name": "Check stable versions exist",
+          "exec_name": "sample_pass",
           "docs": [
             "Check the DUT has model specific cros, firmware and faft stable_version configured."
           ],
           "conditions": [
             {
               "name": "Has a stable-version service",
+              "exec_name": "has_stable_version_service_path",
               "docs": [
                 "Verify if we have access to the service provided access to the stable version"
               ],
-              "exec_name": "has_stable_version_service_path",
               "run_control": "RUN_ONCE"
             }
           ],
           "dependencies": [
             {
               "name": "Recovery version has OS image path",
+              "exec_name": "has_stable_version_cros_image",
               "docs": [
                 "Verify that recovery version has OS image path."
               ],
               "dependencies": [
                 {
                   "name": "Has a stable-version service",
+                  "exec_name": "has_stable_version_service_path",
                   "docs": [
                     "Verify if we have access to the service provided access to the stable version"
                   ],
-                  "exec_name": "has_stable_version_service_path",
                   "run_control": "RUN_ONCE"
                 }
               ],
-              "exec_name": "has_stable_version_cros_image",
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
               "name": "Check stable firmware version exists",
+              "exec_name": "has_stable_version_fw_version",
               "docs": [
                 "Check the DUT has model specific firmware stable_version configured.",
                 "Flex device are exampted from this check as they don't run cros firmware"
@@ -57,10 +59,10 @@
               "conditions": [
                 {
                   "name": "Is a Chromebook",
+                  "exec_name": "dut_check_board",
                   "docs": [
                     "Check that DUT is a Chromebook by checking for non-Chromebook boards"
                   ],
-                  "exec_name": "dut_check_board",
                   "exec_args": [
                     "string_values:aurora,reven",
                     "invert_result:true"
@@ -69,31 +71,29 @@
                 },
                 {
                   "name": "Has a stable-version service",
+                  "exec_name": "has_stable_version_service_path",
                   "docs": [
                     "Verify if we have access to the service provided access to the stable version"
                   ],
-                  "exec_name": "has_stable_version_service_path",
                   "run_control": "RUN_ONCE"
                 }
               ],
-              "exec_name": "has_stable_version_fw_version",
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "sample_pass",
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "Device is SSHable",
+          "exec_name": "cros_ssh",
           "docs": [
             "Verify that device is reachable by SSH.",
             "Limited to 15 seconds."
           ],
-          "exec_name": "cros_ssh",
-          "timeout": "15s",
           "recoveries": [
             {
               "name": "Power cycle DUT by RPM and wait",
+              "exec_name": "sample_pass",
               "docs": [
                 "Perform RPM cycle and wait to device to boot back."
               ],
@@ -112,23 +112,24 @@
                 },
                 {
                   "name": "Wait to be pingable (normal boot)",
+                  "exec_name": "cros_ping",
                   "docs": [
                     "Wait DUT to be pingable after some action on it.",
                     "Waiting time 150 seconds."
                   ],
-                  "exec_name": "cros_ping",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             }
           ],
+          "timeout": "15s",
           "run_control": "ALWAYS_RUN"
         },
         {
           "name": "DUT has expected dev firmware (for browser DUTs)",
+          "exec_name": "cros_has_dev_signed_firmware",
           "docs": [
             "Verify that FW on the DUT has dev keys."
           ],
@@ -142,15 +143,15 @@
           "dependencies": [
             {
               "name": "Device is SSHable",
+              "exec_name": "cros_ssh",
               "docs": [
                 "Verify that device is reachable by SSH.",
                 "Limited to 15 seconds."
               ],
-              "exec_name": "cros_ssh",
-              "timeout": "15s",
               "recoveries": [
                 {
                   "name": "Power cycle DUT by RPM and wait",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Perform RPM cycle and wait to device to boot back."
                   ],
@@ -169,27 +170,26 @@
                     },
                     {
                       "name": "Wait to be pingable (normal boot)",
+                      "exec_name": "cros_ping",
                       "docs": [
                         "Wait DUT to be pingable after some action on it.",
                         "Waiting time 150 seconds."
                       ],
-                      "exec_name": "cros_ping",
                       "timeout": "2m30s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "ALWAYS_RUN"
                 }
               ],
+              "timeout": "15s",
               "run_control": "ALWAYS_RUN"
             }
           ],
-          "exec_name": "cros_has_dev_signed_firmware",
-          "timeout": "10m0s",
           "recoveries": [
             {
               "name": "Update DUT firmware with factory mode and restart by host",
+              "exec_name": "sample_pass",
               "docs": [
                 "Force update FW on the DUT by factory mode.",
                 "Reboot device by host"
@@ -197,89 +197,89 @@
               "dependencies": [
                 {
                   "name": "Device is SSHable",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Verify that device is reachable by SSH.",
                     "Limited to 15 seconds."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "15s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Collect HWID into inventory",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Collect DUT hwid and update it into inventory info."
                   ],
                   "dependencies": [
                     {
                       "name": "Read HWID from DUT",
+                      "exec_name": "cros_update_hwid_to_inventory",
                       "conditions": [
                         {
                           "name": "Not Satlab device",
+                          "exec_name": "sample_fail",
                           "docs": [
                             "Verify that DUT name is not belong Satlab."
                           ],
                           "conditions": [
                             {
                               "name": "Is Satlab device",
+                              "exec_name": "dut_regex_name_match",
                               "docs": [
                                 "Verify that DUT name is belong Satlab."
                               ],
-                              "exec_name": "dut_regex_name_match",
                               "exec_args": [
                                 "regex:^satlab"
                               ],
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "sample_fail",
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "cros_update_hwid_to_inventory",
                       "run_control": "ALWAYS_RUN"
                     },
                     {
                       "name": "Read HWID from DUT (Satlab)",
+                      "exec_name": "cros_update_hwid_to_inventory",
                       "conditions": [
                         {
                           "name": "Is Satlab device",
+                          "exec_name": "dut_regex_name_match",
                           "docs": [
                             "Verify that DUT name is belong Satlab."
                           ],
-                          "exec_name": "dut_regex_name_match",
                           "exec_args": [
                             "regex:^satlab"
                           ],
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "cros_update_hwid_to_inventory",
                       "allow_fail_after_recovery": true,
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RUN_ONCE"
                 },
                 {
                   "name": "Disable software-controlled write-protect for 'internal'",
+                  "exec_name": "cros_disable_fprom_write_protect",
                   "docs": [
                     "Disable write-protect fprom 'internal'."
                   ],
                   "dependencies": [
                     {
                       "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "Verify that device is reachable by SSH.",
                         "Limited to 15 seconds."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "15s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_disable_fprom_write_protect",
                   "exec_args": [
                     "fprom:internal"
                   ],
@@ -289,22 +289,22 @@
                 },
                 {
                   "name": "Disable software-controlled write-protect for 'ec'",
+                  "exec_name": "cros_disable_fprom_write_protect",
                   "docs": [
                     "Disable write-protect fprom 'ec'."
                   ],
                   "dependencies": [
                     {
                       "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "Verify that device is reachable by SSH.",
                         "Limited to 15 seconds."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "15s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_disable_fprom_write_protect",
                   "exec_args": [
                     "fprom:ec"
                   ],
@@ -314,6 +314,7 @@
                 },
                 {
                   "name": "Try to update FW from firmware image with factory mode",
+                  "exec_name": "cros_update_firmware_from_firmware_image",
                   "docs": [
                     "Download firmware image to DUT, and install via firmware updater.",
                     "Update firmware from faft stable image with chromeos-firmwareupdate tool",
@@ -327,7 +328,6 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_update_firmware_from_firmware_image",
                   "exec_args": [
                     "mode:factory",
                     "force:true",
@@ -342,6 +342,7 @@
                 },
                 {
                   "name": "Try to update FW from OS image with factory mode",
+                  "exec_name": "cros_run_firmware_update",
                   "docs": [
                     "Run chromeos-firmwareupdate with factory mode.",
                     "The reboot is not triggered as part of the action.",
@@ -351,6 +352,7 @@
                   "conditions": [
                     {
                       "name": "Missing stable fw image",
+                      "exec_name": "sample_fail",
                       "docs": [
                         "Verify that the DUT doesn't have model specific stable_version record in faft section"
                       ],
@@ -361,11 +363,9 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "sample_fail",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_run_firmware_update",
                   "exec_args": [
                     "mode:factory",
                     "force:true",
@@ -377,22 +377,22 @@
                 },
                 {
                   "name": "Simple reboot",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Simple un-blocker reboot."
                   ],
                   "dependencies": [
                     {
                       "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "Verify that device is reachable by SSH.",
                         "Limited to 15 seconds."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "15s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:reboot",
@@ -402,23 +402,24 @@
                 },
                 {
                   "name": "Wait to be SSHable (normal boot)",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable after the device being rebooted.",
                     "Waiting time 150 seconds."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             }
           ],
+          "timeout": "10m0s",
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "Update inventory info",
+          "exec_name": "sample_pass",
           "docs": [
             "Updating device info in inventory."
           ],
@@ -439,33 +440,32 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "sample_pass",
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "Set state: ready",
+          "exec_name": "dut_set_state",
           "docs": [
             "The action set devices with state ready for the testing."
           ],
           "dependencies": [
             {
               "name": "All repair-requests resolved",
+              "exec_name": "dut_has_no_repair_requests",
               "docs": [
                 "Checks if all repair requests are resolved"
               ],
-              "exec_name": "dut_has_no_repair_requests",
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
               "name": "Reset DUT-state reason",
+              "exec_name": "dut_reset_state_reason",
               "docs": [
                 "Reset DUT-state-reason for good DUT as it becomes stale."
               ],
-              "exec_name": "dut_reset_state_reason",
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "dut_set_state",
           "exec_args": [
             "state:ready"
           ],
