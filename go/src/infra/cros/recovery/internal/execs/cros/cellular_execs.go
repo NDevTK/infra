@@ -250,7 +250,13 @@ func updateCellularModemLabelsExec(ctx context.Context, info *execs.ExecInfo) er
 		return errors.Reason("audit cellular modem labels: cellular variant not present on device").Err()
 	}
 
-	modemType := cellular.GetModemTypeFromVariant(variant)
+	// First try to get modem type from config otherwise fall-back to inferring from variant.
+	modemType := cellular.GetModemTypeFromConfig(ctx, info.DefaultRunner())
+	if modemType == tlw.Cellular_MODEM_TYPE_UNSPECIFIED || modemType == tlw.Cellular_MODEM_TYPE_UNSUPPORTED {
+		log.Infof(ctx, "audit cellular modem labels: failed to get modem type from config, falling back to variant")
+		modemType = cellular.GetModemTypeFromVariant(variant)
+	}
+
 	if modemType == tlw.Cellular_MODEM_TYPE_UNSUPPORTED && (c.ModemInfo.Type == tlw.Cellular_MODEM_TYPE_UNSPECIFIED || c.ModemInfo.Type == tlw.Cellular_MODEM_TYPE_UNSUPPORTED) {
 		// If unknown modem type and no modem was previously specified then just log as its a new device.
 		log.Errorf(ctx, "audit cellular modem labels: unknown modem type for variant: %q", variant)
@@ -357,7 +363,7 @@ func auditCellularModemExec(ctx context.Context, info *execs.ExecInfo) error {
 	if c == nil {
 		return errors.Reason("audit cellular modem: cellular data is not present in dut info").Err()
 	}
-	expected := cellular.IsExpected(ctx, info.DefaultRunner())
+	expected := cellular.HasCellularVariant(ctx, info.DefaultRunner())
 
 	// if no cellular is expected then set total timeout to be much lower otherwise we will add
 	// ~2 minutes to every repair even ones that don't require a modem.

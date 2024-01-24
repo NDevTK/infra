@@ -5,6 +5,12 @@
 package cellular
 
 import (
+	"context"
+	"strings"
+	"time"
+
+	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
 
@@ -15,8 +21,8 @@ const (
 	ModemTypeNL668   = tlw.Cellular_MODEM_TYPE_NL668
 	ModemTypeFM350   = tlw.Cellular_MODEM_TYPE_FM350
 	ModemTypeFM101   = tlw.Cellular_MODEM_TYPE_FM101
-	ModemTypeSC7180  = tlw.Cellular_MODEM_TYPE_UNSPECIFIED
-	ModemTypeSC7280  = tlw.Cellular_MODEM_TYPE_QUALCOMM_SC7180
+	ModemTypeSC7180  = tlw.Cellular_MODEM_TYPE_QUALCOMM_SC7180
+	ModemTypeSC7280  = tlw.Cellular_MODEM_TYPE_QUALCOMM_SC7280
 	ModemTypeEM060   = tlw.Cellular_MODEM_TYPE_EM060
 )
 
@@ -27,9 +33,21 @@ type DeviceInfo struct {
 	Modem        tlw.Cellular_ModemType
 }
 
-// Note: This list should be kept in sync with:
-// go.chromium.org/tast/core/testing/cellularconst/cellularconst.go
-// TODO(b/308606112): Migrate both codes to a shared library when available.
+// Maps modem type enums in: go.chromium.org/chromiumos/config/proto/chromiumos/config/api/topology.proto
+// to tlw.Cellular_ModemType.
+var modemTypeMap = map[string]tlw.Cellular_ModemType{
+	"0": ModemTypeUnknown,
+	"1": ModemTypeL850,
+	"2": ModemTypeNL668,
+	"3": ModemTypeFM101,
+	"4": ModemTypeFM350,
+	"5": ModemTypeSC7180,
+	"6": ModemTypeSC7280,
+	"7": ModemTypeEM060,
+}
+
+// This list is left as a fallback for older devices and images that do not contain
+// modem-type information in their cros_config. No new models should be added here.
 var (
 	// KnownVariants mapping between variant and modem type.
 	KnownVariants = map[string]DeviceInfo{
@@ -112,7 +130,42 @@ var (
 	}
 )
 
+// HasCellularVariant returns true if cellular modem is expected to exist on the DUT.
+func HasCellularVariant(ctx context.Context, runner components.Runner) bool {
+	const cmd = "cros_config /modem firmware-variant"
+	if _, err := runner(ctx, 5*time.Second, cmd); err != nil {
+		return false
+	}
+	return true
+}
+
+// GetModelVariant returns the model sub-variant for models that support multiple types of modems.
+func GetModelVariant(ctx context.Context, runner components.Runner) string {
+	const cmd = "cros_config /modem firmware-variant"
+	out, err := runner(ctx, 5*time.Second, cmd)
+	if err != nil {
+		// If no variant is present on the DUT then return empty string.
+		log.Errorf(ctx, "get model variant: failed to get variant from cros_config: %s", err.Error())
+		return ""
+	}
+	return out
+}
+
+// GetModemTypeFromConfig tries to get the modem type from cros_config or returns unspecified if it's not populated.
+func GetModemTypeFromConfig(ctx context.Context, runner components.Runner) tlw.Cellular_ModemType {
+	const cmd = "cros_config /modem modem-type"
+	if out, err := runner(ctx, 5*time.Second, cmd); err != nil {
+		// Field is not required and may not be populated on all devices, so just return UNSPECIFIED.
+		log.Errorf(ctx, "get modem type: failed to get modem type from cros_config: %s", err.Error())
+		return tlw.Cellular_MODEM_TYPE_UNSPECIFIED
+	} else if val, ok := modemTypeMap[strings.TrimSpace(out)]; ok {
+		return val
+	}
+	return tlw.Cellular_MODEM_TYPE_UNSUPPORTED
+}
+
 // GetModemTypeFromVariant gets DUT's modem type from variant.
+// Note: This only is only available as a fallback for devices that do not yet support GetModemTypeFromConfig.
 func GetModemTypeFromVariant(variant string) tlw.Cellular_ModemType {
 	device, ok := KnownVariants[variant]
 	if !ok {
