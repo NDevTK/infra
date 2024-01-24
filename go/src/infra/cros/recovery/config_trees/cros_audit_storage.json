@@ -5,10 +5,10 @@
       "critical_actions": [
         {
           "name": "Set state: needs_repair",
+          "exec_name": "dut_set_state",
           "docs": [
             "The action set devices with state means that repair tsk did not success to recover the devices."
           ],
-          "exec_name": "dut_set_state",
           "exec_args": [
             "state:needs_repair"
           ],
@@ -16,15 +16,15 @@
         },
         {
           "name": "Device is SSHable",
+          "exec_name": "cros_ssh",
           "docs": [
             "Verify that device is reachable by SSH.",
             "Limited to 15 seconds."
           ],
-          "exec_name": "cros_ssh",
-          "timeout": "15s",
           "recoveries": [
             {
               "name": "Cold reset by servo and wait for SSH",
+              "exec_name": "sample_pass",
               "docs": [
                 "This repair action will use servod command to reset power_state on the DUT.",
                 "TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT."
@@ -32,6 +32,7 @@
               "conditions": [
                 {
                   "name": "Is servod running",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Verify that servo host specified in setup and servod is running."
                   ],
@@ -43,6 +44,7 @@
                     },
                     {
                       "name": "Verify servod is responsive",
+                      "exec_name": "servod_echo",
                       "conditions": [
                         {
                           "name": "Setup has servo info",
@@ -50,7 +52,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servod_echo",
                       "exec_args": [
                         "ssh_check:false"
                       ],
@@ -58,19 +59,20 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
               "dependencies": [
                 {
                   "name": "Cold reset DUT by servo",
+                  "exec_name": "servo_set",
                   "docs": [
                     "Cold reset device by servo and do not wait."
                   ],
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -82,6 +84,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -89,7 +92,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -97,11 +99,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_set",
                   "exec_args": [
                     "command:power_state",
                     "string_value:reset",
@@ -111,20 +111,20 @@
                 },
                 {
                   "name": "Wait to be SSHable (normal boot)",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable after the device being rebooted.",
                     "Waiting time 150 seconds."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             },
             {
               "name": "Install OS in recovery mode by booting from servo USB-drive (no storage check)",
+              "exec_name": "sample_pass",
               "docs": [
                 "This action installs the test image on DUT utilizing the features of servo.",
                 "DUT will be booted in recovery mode."
@@ -132,24 +132,25 @@
               "conditions": [
                 {
                   "name": "Recovery version has OS image path",
+                  "exec_name": "has_stable_version_cros_image",
                   "docs": [
                     "Verify that recovery version has OS image path."
                   ],
                   "dependencies": [
                     {
                       "name": "Has a stable-version service",
+                      "exec_name": "has_stable_version_service_path",
                       "docs": [
                         "Verify if we have access to the service provided access to the stable version"
                       ],
-                      "exec_name": "has_stable_version_service_path",
                       "run_control": "RUN_ONCE"
                     }
                   ],
-                  "exec_name": "has_stable_version_cros_image",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Is servod running",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Verify that servo host specified in setup and servod is running."
                   ],
@@ -161,6 +162,7 @@
                     },
                     {
                       "name": "Verify servod is responsive",
+                      "exec_name": "servod_echo",
                       "conditions": [
                         {
                           "name": "Setup has servo info",
@@ -168,7 +170,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servod_echo",
                       "exec_args": [
                         "ssh_check:false"
                       ],
@@ -176,15 +177,14 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Is a Chromebook",
+                  "exec_name": "dut_check_board",
                   "docs": [
                     "Check that DUT is a Chromebook by checking for non-Chromebook boards"
                   ],
-                  "exec_name": "dut_check_board",
                   "exec_args": [
                     "string_values:aurora,reven",
                     "invert_result:true"
@@ -193,6 +193,7 @@
                 },
                 {
                   "name": "Is servo USB key detected",
+                  "exec_name": "servo_usbkey_is_detected",
                   "docs": [
                     "The action used as codiion.",
                     "The action verify that USB-key is detected and readable."
@@ -200,6 +201,7 @@
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -211,6 +213,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -218,7 +221,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -226,11 +228,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_usbkey_is_detected",
                   "exec_args": [
                     "file_check:true"
                   ],
@@ -240,6 +240,7 @@
               "dependencies": [
                 {
                   "name": "Servo USB-Key needs to be reflashed",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Check if it is time to download image to servo usbkey.",
                     "If so, then download the stable image to usbkey."
@@ -247,11 +248,11 @@
                   "conditions": [
                     {
                       "name": "It is time to update USB-drive image",
+                      "exec_name": "cros_is_time_to_force_download_image_to_usbkey",
                       "docs": [
                         "Check if it is time to force download image to usbkey",
                         "from the number of failed recoveries since last successful PARIS repair task."
                       ],
-                      "exec_name": "cros_is_time_to_force_download_image_to_usbkey",
                       "exec_args": [
                         "task_name:recovery",
                         "repair_failed_count:1",
@@ -263,6 +264,7 @@
                   "dependencies": [
                     {
                       "name": "Download stable image to USB-key",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Download lab stable image on servo USB-key",
                         "Download the image can take longer if labstation download parallel a few images.",
@@ -278,6 +280,7 @@
                         },
                         {
                           "name": "Is servo USB key detected",
+                          "exec_name": "servo_usbkey_is_detected",
                           "docs": [
                             "The action used as codiion.",
                             "The action verify that USB-key is detected and readable."
@@ -285,6 +288,7 @@
                           "dependencies": [
                             {
                               "name": "Is servod running",
+                              "exec_name": "sample_pass",
                               "docs": [
                                 "Verify that servo host specified in setup and servod is running."
                               ],
@@ -296,6 +300,7 @@
                                 },
                                 {
                                   "name": "Verify servod is responsive",
+                                  "exec_name": "servod_echo",
                                   "conditions": [
                                     {
                                       "name": "Setup has servo info",
@@ -303,7 +308,6 @@
                                       "run_control": "RERUN_AFTER_RECOVERY"
                                     }
                                   ],
-                                  "exec_name": "servod_echo",
                                   "exec_args": [
                                     "ssh_check:false"
                                   ],
@@ -311,11 +315,9 @@
                                   "run_control": "ALWAYS_RUN"
                                 }
                               ],
-                              "exec_name": "sample_pass",
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servo_usbkey_is_detected",
                           "exec_args": [
                             "file_check:true"
                           ],
@@ -323,35 +325,34 @@
                         },
                         {
                           "name": "Call servod to download image to USB-key",
+                          "exec_name": "servo_download_image_to_usb",
                           "docs": [
                             "This action calls servod to download stable version OS image to servo USB-key."
                           ],
-                          "exec_name": "servo_download_image_to_usb",
                           "timeout": "50m0s",
                           "run_control": "ALWAYS_RUN"
                         },
                         {
                           "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                          "exec_name": "dut_remove_repair_requests",
                           "docs": [
                             "Remove UPDATE_USBKEY_IMAGE from repair-requests."
                           ],
-                          "exec_name": "dut_remove_repair_requests",
                           "exec_args": [
                             "requests:UPDATE_USBKEY_IMAGE"
                           ],
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "allow_fail_after_recovery": true,
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Download stable version OS image to servo usbkey if necessary (allow fail)",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "This action will download model specific stable version OS image to servo usbkey.",
                     "The action will be skipped if the required image is already loaded."
@@ -364,14 +365,15 @@
                     },
                     {
                       "name": "Has a stable-version service",
+                      "exec_name": "has_stable_version_service_path",
                       "docs": [
                         "Verify if we have access to the service provided access to the stable version"
                       ],
-                      "exec_name": "has_stable_version_service_path",
                       "run_control": "RUN_ONCE"
                     },
                     {
                       "name": "Stable version image is missing from servo usbkey",
+                      "exec_name": "sample_fail",
                       "docs": [
                         "This is a reverse action which fails when required image is already cached in servo usbkey.",
                         "The purpose is to serve as a condition of Download stable image to USB-key action, so that we don't do duplicate download.",
@@ -380,11 +382,11 @@
                       "conditions": [
                         {
                           "name": "Servo usbkey has stable image",
+                          "exec_name": "servo_usbkey_has_stable_image",
                           "docs": [
                             "Check if the usbkey has the stable_version OS image.",
                             "TODO: Collect data on the usual number of retries and tweak the default"
                           ],
-                          "exec_name": "servo_usbkey_has_stable_image",
                           "exec_args": [
                             "retry_count:3",
                             "retry_interval:1",
@@ -393,7 +395,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "sample_fail",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
@@ -405,6 +406,7 @@
                     },
                     {
                       "name": "Is servo USB key detected",
+                      "exec_name": "servo_usbkey_is_detected",
                       "docs": [
                         "The action used as codiion.",
                         "The action verify that USB-key is detected and readable."
@@ -412,6 +414,7 @@
                       "dependencies": [
                         {
                           "name": "Is servod running",
+                          "exec_name": "sample_pass",
                           "docs": [
                             "Verify that servo host specified in setup and servod is running."
                           ],
@@ -423,6 +426,7 @@
                             },
                             {
                               "name": "Verify servod is responsive",
+                              "exec_name": "servod_echo",
                               "conditions": [
                                 {
                                   "name": "Setup has servo info",
@@ -430,7 +434,6 @@
                                   "run_control": "RERUN_AFTER_RECOVERY"
                                 }
                               ],
-                              "exec_name": "servod_echo",
                               "exec_args": [
                                 "ssh_check:false"
                               ],
@@ -438,11 +441,9 @@
                               "run_control": "ALWAYS_RUN"
                             }
                           ],
-                          "exec_name": "sample_pass",
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servo_usbkey_is_detected",
                       "exec_args": [
                         "file_check:true"
                       ],
@@ -450,31 +451,31 @@
                     },
                     {
                       "name": "Call servod to download image to USB-key",
+                      "exec_name": "servo_download_image_to_usb",
                       "docs": [
                         "This action calls servod to download stable version OS image to servo USB-key."
                       ],
-                      "exec_name": "servo_download_image_to_usb",
                       "timeout": "50m0s",
                       "run_control": "ALWAYS_RUN"
                     },
                     {
                       "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                      "exec_name": "dut_remove_repair_requests",
                       "docs": [
                         "Remove UPDATE_USBKEY_IMAGE from repair-requests."
                       ],
-                      "exec_name": "dut_remove_repair_requests",
                       "exec_args": [
                         "requests:UPDATE_USBKEY_IMAGE"
                       ],
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "allow_fail_after_recovery": true,
                   "run_control": "RUN_ONCE"
                 },
                 {
                   "name": "Boot DUT in recovery and install from USB-drive (no storage check)",
+                  "exec_name": "cros_install_in_recovery_mode",
                   "docs": [
                     "This action installs the test image on DUT utilizing ",
                     "the features of servo. DUT will be booted in recovery ",
@@ -482,7 +483,6 @@
                     "recovery mode with active PD, so we will change it to ",
                     "sink-mode if required."
                   ],
-                  "exec_name": "cros_install_in_recovery_mode",
                   "exec_args": [
                     "run_tpm_reset:true",
                     "run_os_install:true",
@@ -507,31 +507,31 @@
                 },
                 {
                   "name": "Wait to be SSHable (normal boot)",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable after the device being rebooted.",
                     "Waiting time 150 seconds."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove REIMAGE_BY_USBKEY repair-request",
+                  "exec_name": "dut_remove_repair_requests",
                   "docs": [
                     "Remove REIMAGE_BY_USBKEY and PROVISION repair-requests."
                   ],
-                  "exec_name": "dut_remove_repair_requests",
                   "exec_args": [
                     "requests:PROVISION,REIMAGE_BY_USBKEY"
                   ],
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             },
             {
               "name": "Update FW from fw-image by servo and wait for boot",
+              "exec_name": "sample_pass",
               "docs": [
                 "This action will repair the firmware on the DUT, and ",
                 "then reboot and wait for the DUT to again become ",
@@ -541,24 +541,25 @@
               "conditions": [
                 {
                   "name": "Recovery version has firmware image path",
+                  "exec_name": "has_stable_version_fw_image",
                   "docs": [
                     "Verify that recovery version has firmware image path."
                   ],
                   "dependencies": [
                     {
                       "name": "Has a stable-version service",
+                      "exec_name": "has_stable_version_service_path",
                       "docs": [
                         "Verify if we have access to the service provided access to the stable version"
                       ],
-                      "exec_name": "has_stable_version_service_path",
                       "run_control": "RUN_ONCE"
                     }
                   ],
-                  "exec_name": "has_stable_version_fw_image",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Is servod running",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Verify that servo host specified in setup and servod is running."
                   ],
@@ -570,6 +571,7 @@
                     },
                     {
                       "name": "Verify servod is responsive",
+                      "exec_name": "servod_echo",
                       "conditions": [
                         {
                           "name": "Setup has servo info",
@@ -577,7 +579,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servod_echo",
                       "exec_args": [
                         "ssh_check:false"
                       ],
@@ -585,15 +586,14 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Is a Chromebook",
+                  "exec_name": "dut_check_board",
                   "docs": [
                     "Check that DUT is a Chromebook by checking for non-Chromebook boards"
                   ],
-                  "exec_name": "dut_check_board",
                   "exec_args": [
                     "string_values:aurora,reven",
                     "invert_result:true"
@@ -604,6 +604,7 @@
               "dependencies": [
                 {
                   "name": "Flash EC (FW) by servo (allowed failed)",
+                  "exec_name": "cros_update_fw_with_fw_image_by_servo",
                   "docs": [
                     "Download fw-image specified in stable version and flash EC to the DUT by servo",
                     "Set timeout for 110 minutes for now as = 10m(download)+4*20m(find/extract file)+20m(ec-update with retry).",
@@ -612,6 +613,7 @@
                   "conditions": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -623,6 +625,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -630,7 +633,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -638,31 +640,29 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
                   "dependencies": [
                     {
                       "name": "Recovery version has firmware image path",
+                      "exec_name": "has_stable_version_fw_image",
                       "docs": [
                         "Verify that recovery version has firmware image path."
                       ],
                       "dependencies": [
                         {
                           "name": "Has a stable-version service",
+                          "exec_name": "has_stable_version_service_path",
                           "docs": [
                             "Verify if we have access to the service provided access to the stable version"
                           ],
-                          "exec_name": "has_stable_version_service_path",
                           "run_control": "RUN_ONCE"
                         }
                       ],
-                      "exec_name": "has_stable_version_fw_image",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_update_fw_with_fw_image_by_servo",
                   "exec_args": [
                     "update_ec_attempt_count:5",
                     "download_timeout:600",
@@ -684,12 +684,14 @@
                 },
                 {
                   "name": "Disable software write protection via servo",
+                  "exec_name": "cros_disable_software_write_protection_by_servo",
                   "docs": [
                     "Disable software write protection(for flash firmware) via servo."
                   ],
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -701,6 +703,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -708,7 +711,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -716,17 +718,16 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_disable_software_write_protection_by_servo",
                   "timeout": "1m0s",
                   "allow_fail_after_recovery": true,
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Flash AP (FW) with GBB 0x18 by servo",
+                  "exec_name": "cros_update_fw_with_fw_image_by_servo",
                   "docs": [
                     "Download fw-image specified in stable version and flash AP to the DUT by servo",
                     "Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).",
@@ -735,6 +736,7 @@
                   "conditions": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -746,6 +748,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -753,7 +756,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -761,31 +763,29 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
                   "dependencies": [
                     {
                       "name": "Recovery version has firmware image path",
+                      "exec_name": "has_stable_version_fw_image",
                       "docs": [
                         "Verify that recovery version has firmware image path."
                       ],
                       "dependencies": [
                         {
                           "name": "Has a stable-version service",
+                          "exec_name": "has_stable_version_service_path",
                           "docs": [
                             "Verify if we have access to the service provided access to the stable version"
                           ],
-                          "exec_name": "has_stable_version_service_path",
                           "run_control": "RUN_ONCE"
                         }
                       ],
-                      "exec_name": "has_stable_version_fw_image",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_update_fw_with_fw_image_by_servo",
                   "exec_args": [
                     "update_ap_attempt_count:3",
                     "download_timeout:600",
@@ -798,26 +798,27 @@
                 },
                 {
                   "name": "Wait to be SSHable (normal boot)",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable after the device being rebooted.",
                     "Waiting time 150 seconds."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
               "name": "Update fingerpprint FW from USB drive",
+              "exec_name": "cros_install_in_recovery_mode",
               "docs": [
                 "The goal to force update fingerprint fw when devices booted from USB-stick"
               ],
               "conditions": [
                 {
                   "name": "Is servod running",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Verify that servo host specified in setup and servod is running."
                   ],
@@ -829,6 +830,7 @@
                     },
                     {
                       "name": "Verify servod is responsive",
+                      "exec_name": "servod_echo",
                       "conditions": [
                         {
                           "name": "Setup has servo info",
@@ -836,7 +838,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servod_echo",
                       "exec_args": [
                         "ssh_check:false"
                       ],
@@ -844,15 +845,14 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Is a Chromebook",
+                  "exec_name": "dut_check_board",
                   "docs": [
                     "Check that DUT is a Chromebook by checking for non-Chromebook boards"
                   ],
-                  "exec_name": "dut_check_board",
                   "exec_args": [
                     "string_values:aurora,reven",
                     "invert_result:true"
@@ -861,6 +861,7 @@
                 },
                 {
                   "name": "Is servo USB key detected",
+                  "exec_name": "servo_usbkey_is_detected",
                   "docs": [
                     "The action used as codiion.",
                     "The action verify that USB-key is detected and readable."
@@ -868,6 +869,7 @@
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -879,6 +881,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -886,7 +889,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -894,11 +896,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_usbkey_is_detected",
                   "exec_args": [
                     "file_check:true"
                   ],
@@ -908,6 +908,7 @@
               "dependencies": [
                 {
                   "name": "Set fw_wp_state to force_off",
+                  "exec_name": "servo_set",
                   "docs": [
                     "Force disable wp of FW by servo."
                   ],
@@ -918,7 +919,6 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_set",
                   "exec_args": [
                     "command:fw_wp_state",
                     "string_value:force_off"
@@ -926,7 +926,6 @@
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "cros_install_in_recovery_mode",
               "exec_args": [
                 "badblocks_mode:not",
                 "run_custom_commands:true",
@@ -947,6 +946,7 @@
             },
             {
               "name": "Install OS in recovery mode by booting from servo USB-drive",
+              "exec_name": "sample_pass",
               "docs": [
                 "This action installs the test image on DUT utilizing the features of servo.",
                 "DUT will be booted in recovery mode."
@@ -954,24 +954,25 @@
               "conditions": [
                 {
                   "name": "Recovery version has OS image path",
+                  "exec_name": "has_stable_version_cros_image",
                   "docs": [
                     "Verify that recovery version has OS image path."
                   ],
                   "dependencies": [
                     {
                       "name": "Has a stable-version service",
+                      "exec_name": "has_stable_version_service_path",
                       "docs": [
                         "Verify if we have access to the service provided access to the stable version"
                       ],
-                      "exec_name": "has_stable_version_service_path",
                       "run_control": "RUN_ONCE"
                     }
                   ],
-                  "exec_name": "has_stable_version_cros_image",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Is servod running",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Verify that servo host specified in setup and servod is running."
                   ],
@@ -983,6 +984,7 @@
                     },
                     {
                       "name": "Verify servod is responsive",
+                      "exec_name": "servod_echo",
                       "conditions": [
                         {
                           "name": "Setup has servo info",
@@ -990,7 +992,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servod_echo",
                       "exec_args": [
                         "ssh_check:false"
                       ],
@@ -998,15 +999,14 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Is a Chromebook",
+                  "exec_name": "dut_check_board",
                   "docs": [
                     "Check that DUT is a Chromebook by checking for non-Chromebook boards"
                   ],
-                  "exec_name": "dut_check_board",
                   "exec_args": [
                     "string_values:aurora,reven",
                     "invert_result:true"
@@ -1015,6 +1015,7 @@
                 },
                 {
                   "name": "Is servo USB key detected",
+                  "exec_name": "servo_usbkey_is_detected",
                   "docs": [
                     "The action used as codiion.",
                     "The action verify that USB-key is detected and readable."
@@ -1022,6 +1023,7 @@
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -1033,6 +1035,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -1040,7 +1043,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -1048,11 +1050,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_usbkey_is_detected",
                   "exec_args": [
                     "file_check:true"
                   ],
@@ -1062,6 +1062,7 @@
               "dependencies": [
                 {
                   "name": "Servo USB-Key needs to be reflashed",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Check if it is time to download image to servo usbkey.",
                     "If so, then download the stable image to usbkey."
@@ -1069,11 +1070,11 @@
                   "conditions": [
                     {
                       "name": "It is time to update USB-drive image",
+                      "exec_name": "cros_is_time_to_force_download_image_to_usbkey",
                       "docs": [
                         "Check if it is time to force download image to usbkey",
                         "from the number of failed recoveries since last successful PARIS repair task."
                       ],
-                      "exec_name": "cros_is_time_to_force_download_image_to_usbkey",
                       "exec_args": [
                         "task_name:recovery",
                         "repair_failed_count:1",
@@ -1085,6 +1086,7 @@
                   "dependencies": [
                     {
                       "name": "Download stable image to USB-key",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Download lab stable image on servo USB-key",
                         "Download the image can take longer if labstation download parallel a few images.",
@@ -1100,6 +1102,7 @@
                         },
                         {
                           "name": "Is servo USB key detected",
+                          "exec_name": "servo_usbkey_is_detected",
                           "docs": [
                             "The action used as codiion.",
                             "The action verify that USB-key is detected and readable."
@@ -1107,6 +1110,7 @@
                           "dependencies": [
                             {
                               "name": "Is servod running",
+                              "exec_name": "sample_pass",
                               "docs": [
                                 "Verify that servo host specified in setup and servod is running."
                               ],
@@ -1118,6 +1122,7 @@
                                 },
                                 {
                                   "name": "Verify servod is responsive",
+                                  "exec_name": "servod_echo",
                                   "conditions": [
                                     {
                                       "name": "Setup has servo info",
@@ -1125,7 +1130,6 @@
                                       "run_control": "RERUN_AFTER_RECOVERY"
                                     }
                                   ],
-                                  "exec_name": "servod_echo",
                                   "exec_args": [
                                     "ssh_check:false"
                                   ],
@@ -1133,11 +1137,9 @@
                                   "run_control": "ALWAYS_RUN"
                                 }
                               ],
-                              "exec_name": "sample_pass",
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servo_usbkey_is_detected",
                           "exec_args": [
                             "file_check:true"
                           ],
@@ -1145,35 +1147,34 @@
                         },
                         {
                           "name": "Call servod to download image to USB-key",
+                          "exec_name": "servo_download_image_to_usb",
                           "docs": [
                             "This action calls servod to download stable version OS image to servo USB-key."
                           ],
-                          "exec_name": "servo_download_image_to_usb",
                           "timeout": "50m0s",
                           "run_control": "ALWAYS_RUN"
                         },
                         {
                           "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                          "exec_name": "dut_remove_repair_requests",
                           "docs": [
                             "Remove UPDATE_USBKEY_IMAGE from repair-requests."
                           ],
-                          "exec_name": "dut_remove_repair_requests",
                           "exec_args": [
                             "requests:UPDATE_USBKEY_IMAGE"
                           ],
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "allow_fail_after_recovery": true,
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Download stable version OS image to servo usbkey if necessary (allow fail)",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "This action will download model specific stable version OS image to servo usbkey.",
                     "The action will be skipped if the required image is already loaded."
@@ -1186,14 +1187,15 @@
                     },
                     {
                       "name": "Has a stable-version service",
+                      "exec_name": "has_stable_version_service_path",
                       "docs": [
                         "Verify if we have access to the service provided access to the stable version"
                       ],
-                      "exec_name": "has_stable_version_service_path",
                       "run_control": "RUN_ONCE"
                     },
                     {
                       "name": "Stable version image is missing from servo usbkey",
+                      "exec_name": "sample_fail",
                       "docs": [
                         "This is a reverse action which fails when required image is already cached in servo usbkey.",
                         "The purpose is to serve as a condition of Download stable image to USB-key action, so that we don't do duplicate download.",
@@ -1202,11 +1204,11 @@
                       "conditions": [
                         {
                           "name": "Servo usbkey has stable image",
+                          "exec_name": "servo_usbkey_has_stable_image",
                           "docs": [
                             "Check if the usbkey has the stable_version OS image.",
                             "TODO: Collect data on the usual number of retries and tweak the default"
                           ],
-                          "exec_name": "servo_usbkey_has_stable_image",
                           "exec_args": [
                             "retry_count:3",
                             "retry_interval:1",
@@ -1215,7 +1217,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "sample_fail",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
@@ -1227,6 +1228,7 @@
                     },
                     {
                       "name": "Is servo USB key detected",
+                      "exec_name": "servo_usbkey_is_detected",
                       "docs": [
                         "The action used as codiion.",
                         "The action verify that USB-key is detected and readable."
@@ -1234,6 +1236,7 @@
                       "dependencies": [
                         {
                           "name": "Is servod running",
+                          "exec_name": "sample_pass",
                           "docs": [
                             "Verify that servo host specified in setup and servod is running."
                           ],
@@ -1245,6 +1248,7 @@
                             },
                             {
                               "name": "Verify servod is responsive",
+                              "exec_name": "servod_echo",
                               "conditions": [
                                 {
                                   "name": "Setup has servo info",
@@ -1252,7 +1256,6 @@
                                   "run_control": "RERUN_AFTER_RECOVERY"
                                 }
                               ],
-                              "exec_name": "servod_echo",
                               "exec_args": [
                                 "ssh_check:false"
                               ],
@@ -1260,11 +1263,9 @@
                               "run_control": "ALWAYS_RUN"
                             }
                           ],
-                          "exec_name": "sample_pass",
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servo_usbkey_is_detected",
                       "exec_args": [
                         "file_check:true"
                       ],
@@ -1272,31 +1273,31 @@
                     },
                     {
                       "name": "Call servod to download image to USB-key",
+                      "exec_name": "servo_download_image_to_usb",
                       "docs": [
                         "This action calls servod to download stable version OS image to servo USB-key."
                       ],
-                      "exec_name": "servo_download_image_to_usb",
                       "timeout": "50m0s",
                       "run_control": "ALWAYS_RUN"
                     },
                     {
                       "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                      "exec_name": "dut_remove_repair_requests",
                       "docs": [
                         "Remove UPDATE_USBKEY_IMAGE from repair-requests."
                       ],
-                      "exec_name": "dut_remove_repair_requests",
                       "exec_args": [
                         "requests:UPDATE_USBKEY_IMAGE"
                       ],
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "allow_fail_after_recovery": true,
                   "run_control": "RUN_ONCE"
                 },
                 {
                   "name": "Boot DUT in recovery and install from USB-drive",
+                  "exec_name": "cros_install_in_recovery_mode",
                   "docs": [
                     "This action installs the test image on DUT utilizing ",
                     "the features of servo. DUT will be booted in recovery ",
@@ -1304,7 +1305,6 @@
                     "recovery mode with active PD, so we will change it to ",
                     "sink-mode if required."
                   ],
-                  "exec_name": "cros_install_in_recovery_mode",
                   "exec_args": [
                     "run_tpm_reset:true",
                     "run_os_install:true",
@@ -1328,31 +1328,31 @@
                 },
                 {
                   "name": "Wait to be SSHable (normal boot)",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable after the device being rebooted.",
                     "Waiting time 150 seconds."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove REIMAGE_BY_USBKEY repair-request",
+                  "exec_name": "dut_remove_repair_requests",
                   "docs": [
                     "Remove REIMAGE_BY_USBKEY and PROVISION repair-requests."
                   ],
-                  "exec_name": "dut_remove_repair_requests",
                   "exec_args": [
                     "requests:PROVISION,REIMAGE_BY_USBKEY"
                   ],
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             },
             {
               "name": "Install OS in recovery mode by booting from servo USB-drive (Flex)",
+              "exec_name": "sample_pass",
               "docs": [
                 "The action design only for Flex devices.",
                 "This action installs the test image on DUT utilizing the features of servo.",
@@ -1361,10 +1361,10 @@
               "conditions": [
                 {
                   "name": "Is Flex device",
+                  "exec_name": "dut_check_board",
                   "docs": [
                     "Check that DUT is a Flex board"
                   ],
-                  "exec_name": "dut_check_board",
                   "exec_args": [
                     "string_values:aurora,reven",
                     "invert_result:false"
@@ -1373,6 +1373,7 @@
                 },
                 {
                   "name": "Is servod running",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Verify that servo host specified in setup and servod is running."
                   ],
@@ -1384,6 +1385,7 @@
                     },
                     {
                       "name": "Verify servod is responsive",
+                      "exec_name": "servod_echo",
                       "conditions": [
                         {
                           "name": "Setup has servo info",
@@ -1391,7 +1393,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servod_echo",
                       "exec_args": [
                         "ssh_check:false"
                       ],
@@ -1399,11 +1400,11 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Is servo USB key detected",
+                  "exec_name": "servo_usbkey_is_detected",
                   "docs": [
                     "The action used as codiion.",
                     "The action verify that USB-key is detected and readable."
@@ -1411,6 +1412,7 @@
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -1422,6 +1424,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -1429,7 +1432,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -1437,11 +1439,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_usbkey_is_detected",
                   "exec_args": [
                     "file_check:true"
                   ],
@@ -1451,6 +1451,7 @@
               "dependencies": [
                 {
                   "name": "Servo USB-Key needs to be reflashed",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Check if it is time to download image to servo usbkey.",
                     "If so, then download the stable image to usbkey."
@@ -1458,11 +1459,11 @@
                   "conditions": [
                     {
                       "name": "It is time to update USB-drive image",
+                      "exec_name": "cros_is_time_to_force_download_image_to_usbkey",
                       "docs": [
                         "Check if it is time to force download image to usbkey",
                         "from the number of failed recoveries since last successful PARIS repair task."
                       ],
-                      "exec_name": "cros_is_time_to_force_download_image_to_usbkey",
                       "exec_args": [
                         "task_name:recovery",
                         "repair_failed_count:1",
@@ -1474,6 +1475,7 @@
                   "dependencies": [
                     {
                       "name": "Download stable image to USB-key",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Download lab stable image on servo USB-key",
                         "Download the image can take longer if labstation download parallel a few images.",
@@ -1489,6 +1491,7 @@
                         },
                         {
                           "name": "Is servo USB key detected",
+                          "exec_name": "servo_usbkey_is_detected",
                           "docs": [
                             "The action used as codiion.",
                             "The action verify that USB-key is detected and readable."
@@ -1496,6 +1499,7 @@
                           "dependencies": [
                             {
                               "name": "Is servod running",
+                              "exec_name": "sample_pass",
                               "docs": [
                                 "Verify that servo host specified in setup and servod is running."
                               ],
@@ -1507,6 +1511,7 @@
                                 },
                                 {
                                   "name": "Verify servod is responsive",
+                                  "exec_name": "servod_echo",
                                   "conditions": [
                                     {
                                       "name": "Setup has servo info",
@@ -1514,7 +1519,6 @@
                                       "run_control": "RERUN_AFTER_RECOVERY"
                                     }
                                   ],
-                                  "exec_name": "servod_echo",
                                   "exec_args": [
                                     "ssh_check:false"
                                   ],
@@ -1522,11 +1526,9 @@
                                   "run_control": "ALWAYS_RUN"
                                 }
                               ],
-                              "exec_name": "sample_pass",
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servo_usbkey_is_detected",
                           "exec_args": [
                             "file_check:true"
                           ],
@@ -1534,35 +1536,34 @@
                         },
                         {
                           "name": "Call servod to download image to USB-key",
+                          "exec_name": "servo_download_image_to_usb",
                           "docs": [
                             "This action calls servod to download stable version OS image to servo USB-key."
                           ],
-                          "exec_name": "servo_download_image_to_usb",
                           "timeout": "50m0s",
                           "run_control": "ALWAYS_RUN"
                         },
                         {
                           "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                          "exec_name": "dut_remove_repair_requests",
                           "docs": [
                             "Remove UPDATE_USBKEY_IMAGE from repair-requests."
                           ],
-                          "exec_name": "dut_remove_repair_requests",
                           "exec_args": [
                             "requests:UPDATE_USBKEY_IMAGE"
                           ],
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "allow_fail_after_recovery": true,
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Download stable version OS image to servo usbkey if necessary (allow fail)",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "This action will download model specific stable version OS image to servo usbkey.",
                     "The action will be skipped if the required image is already loaded."
@@ -1575,14 +1576,15 @@
                     },
                     {
                       "name": "Has a stable-version service",
+                      "exec_name": "has_stable_version_service_path",
                       "docs": [
                         "Verify if we have access to the service provided access to the stable version"
                       ],
-                      "exec_name": "has_stable_version_service_path",
                       "run_control": "RUN_ONCE"
                     },
                     {
                       "name": "Stable version image is missing from servo usbkey",
+                      "exec_name": "sample_fail",
                       "docs": [
                         "This is a reverse action which fails when required image is already cached in servo usbkey.",
                         "The purpose is to serve as a condition of Download stable image to USB-key action, so that we don't do duplicate download.",
@@ -1591,11 +1593,11 @@
                       "conditions": [
                         {
                           "name": "Servo usbkey has stable image",
+                          "exec_name": "servo_usbkey_has_stable_image",
                           "docs": [
                             "Check if the usbkey has the stable_version OS image.",
                             "TODO: Collect data on the usual number of retries and tweak the default"
                           ],
-                          "exec_name": "servo_usbkey_has_stable_image",
                           "exec_args": [
                             "retry_count:3",
                             "retry_interval:1",
@@ -1604,7 +1606,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "sample_fail",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
@@ -1616,6 +1617,7 @@
                     },
                     {
                       "name": "Is servo USB key detected",
+                      "exec_name": "servo_usbkey_is_detected",
                       "docs": [
                         "The action used as codiion.",
                         "The action verify that USB-key is detected and readable."
@@ -1623,6 +1625,7 @@
                       "dependencies": [
                         {
                           "name": "Is servod running",
+                          "exec_name": "sample_pass",
                           "docs": [
                             "Verify that servo host specified in setup and servod is running."
                           ],
@@ -1634,6 +1637,7 @@
                             },
                             {
                               "name": "Verify servod is responsive",
+                              "exec_name": "servod_echo",
                               "conditions": [
                                 {
                                   "name": "Setup has servo info",
@@ -1641,7 +1645,6 @@
                                   "run_control": "RERUN_AFTER_RECOVERY"
                                 }
                               ],
-                              "exec_name": "servod_echo",
                               "exec_args": [
                                 "ssh_check:false"
                               ],
@@ -1649,11 +1652,9 @@
                               "run_control": "ALWAYS_RUN"
                             }
                           ],
-                          "exec_name": "sample_pass",
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servo_usbkey_is_detected",
                       "exec_args": [
                         "file_check:true"
                       ],
@@ -1661,37 +1662,38 @@
                     },
                     {
                       "name": "Call servod to download image to USB-key",
+                      "exec_name": "servo_download_image_to_usb",
                       "docs": [
                         "This action calls servod to download stable version OS image to servo USB-key."
                       ],
-                      "exec_name": "servo_download_image_to_usb",
                       "timeout": "50m0s",
                       "run_control": "ALWAYS_RUN"
                     },
                     {
                       "name": "Remove UPDATE_USBKEY_IMAGE repair-request",
+                      "exec_name": "dut_remove_repair_requests",
                       "docs": [
                         "Remove UPDATE_USBKEY_IMAGE from repair-requests."
                       ],
-                      "exec_name": "dut_remove_repair_requests",
                       "exec_args": [
                         "requests:UPDATE_USBKEY_IMAGE"
                       ],
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "allow_fail_after_recovery": true,
                   "run_control": "RUN_ONCE"
                 },
                 {
                   "name": "Power OFF DUT by servo",
+                  "exec_name": "servo_set",
                   "docs": [
                     "Turn DUT OFF by servo and do not wait."
                   ],
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -1703,6 +1705,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -1710,7 +1713,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -1718,11 +1720,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_set",
                   "exec_args": [
                     "command:power_state",
                     "string_value:off",
@@ -1732,12 +1732,14 @@
                 },
                 {
                   "name": "Direct USB-drive to DUT",
+                  "exec_name": "servo_set",
                   "docs": [
                     "Switch servo's USB-drive to point to DUT."
                   ],
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -1749,6 +1751,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -1756,7 +1759,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -1764,11 +1766,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_set",
                   "exec_args": [
                     "command:image_usbkey_direction",
                     "string_value:dut_sees_usbkey"
@@ -1788,12 +1788,14 @@
                 },
                 {
                   "name": "Power ON DUT by servo",
+                  "exec_name": "servo_set",
                   "docs": [
                     "Turn DUT ON by servo and do not wait."
                   ],
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -1805,6 +1807,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -1812,7 +1815,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -1820,11 +1822,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_set",
                   "exec_args": [
                     "command:power_state",
                     "string_value:on"
@@ -1843,20 +1843,20 @@
                 },
                 {
                   "name": "Wait to be SSHable (normal boot)",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable after the device being rebooted.",
                     "Waiting time 150 seconds."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Print active devices",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Print active devices visible for DUT."
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:lsblk",
@@ -1867,16 +1867,17 @@
                 },
                 {
                   "name": "Is Flex booted from USB-drive",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Check if device booted from USB in installer mode."
                   ],
                   "conditions": [
                     {
                       "name": "Is Flex device",
+                      "exec_name": "dut_check_board",
                       "docs": [
                         "Check that DUT is a Flex board"
                       ],
-                      "exec_name": "dut_check_board",
                       "exec_args": [
                         "string_values:aurora,reven",
                         "invert_result:false"
@@ -1884,7 +1885,6 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:is_running_from_installer |grep yes",
@@ -1894,6 +1894,7 @@
                 },
                 {
                   "name": "Run chromeos-install for Flex",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Run chromeos-install for Flex DUTs with detecting destination.",
                     "Flex device does not detect destination as part of chromeos-install script."
@@ -1901,10 +1902,10 @@
                   "dependencies": [
                     {
                       "name": "Is Flex device",
+                      "exec_name": "dut_check_board",
                       "docs": [
                         "Check that DUT is a Flex board"
                       ],
-                      "exec_name": "dut_check_board",
                       "exec_args": [
                         "string_values:aurora,reven",
                         "invert_result:false"
@@ -1912,7 +1913,6 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:chromeos-install --dst $(lsblk --bytes --output NAME  --paths -I 259 -n -d) --yes",
@@ -1933,12 +1933,14 @@
                 },
                 {
                   "name": "Power OFF DUT by servo",
+                  "exec_name": "servo_set",
                   "docs": [
                     "Turn DUT OFF by servo and do not wait."
                   ],
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -1950,6 +1952,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -1957,7 +1960,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -1965,11 +1967,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_set",
                   "exec_args": [
                     "command:power_state",
                     "string_value:off",
@@ -1979,12 +1979,14 @@
                 },
                 {
                   "name": "Direct USB-drive to servo host",
+                  "exec_name": "servo_set",
                   "docs": [
                     "Switch servo's USB-drive to point to servo-host."
                   ],
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -1996,6 +1998,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -2003,7 +2006,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -2011,11 +2013,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_set",
                   "exec_args": [
                     "command:image_usbkey_direction",
                     "string_value:servo_sees_usbkey"
@@ -2025,12 +2025,14 @@
                 },
                 {
                   "name": "Power ON DUT by servo",
+                  "exec_name": "servo_set",
                   "docs": [
                     "Turn DUT ON by servo and do not wait."
                   ],
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -2042,6 +2044,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -2049,7 +2052,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -2057,11 +2059,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_set",
                   "exec_args": [
                     "command:power_state",
                     "string_value:on"
@@ -2070,55 +2070,56 @@
                 },
                 {
                   "name": "Wait to be SSHable (normal boot)",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable after the device being rebooted.",
                     "Waiting time 150 seconds."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove REIMAGE_BY_USBKEY repair-request",
+                  "exec_name": "dut_remove_repair_requests",
                   "docs": [
                     "Remove REIMAGE_BY_USBKEY and PROVISION repair-requests."
                   ],
-                  "exec_name": "dut_remove_repair_requests",
                   "exec_args": [
                     "requests:PROVISION,REIMAGE_BY_USBKEY"
                   ],
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             },
             {
               "name": "Install OS in DEV mode by USB-drive",
+              "exec_name": "sample_pass",
               "docs": [
                 "This action installs the test image on DUT after booking the DUT in dev mode."
               ],
               "conditions": [
                 {
                   "name": "Recovery version has OS image path",
+                  "exec_name": "has_stable_version_cros_image",
                   "docs": [
                     "Verify that recovery version has OS image path."
                   ],
                   "dependencies": [
                     {
                       "name": "Has a stable-version service",
+                      "exec_name": "has_stable_version_service_path",
                       "docs": [
                         "Verify if we have access to the service provided access to the stable version"
                       ],
-                      "exec_name": "has_stable_version_service_path",
                       "run_control": "RUN_ONCE"
                     }
                   ],
-                  "exec_name": "has_stable_version_cros_image",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Is servod running",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Verify that servo host specified in setup and servod is running."
                   ],
@@ -2130,6 +2131,7 @@
                     },
                     {
                       "name": "Verify servod is responsive",
+                      "exec_name": "servod_echo",
                       "conditions": [
                         {
                           "name": "Setup has servo info",
@@ -2137,7 +2139,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servod_echo",
                       "exec_args": [
                         "ssh_check:false"
                       ],
@@ -2145,15 +2146,14 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
                 {
                   "name": "Is a Chromebook",
+                  "exec_name": "dut_check_board",
                   "docs": [
                     "Check that DUT is a Chromebook by checking for non-Chromebook boards"
                   ],
-                  "exec_name": "dut_check_board",
                   "exec_args": [
                     "string_values:aurora,reven",
                     "invert_result:true"
@@ -2162,6 +2162,7 @@
                 },
                 {
                   "name": "Is servo USB key detected",
+                  "exec_name": "servo_usbkey_is_detected",
                   "docs": [
                     "The action used as codiion.",
                     "The action verify that USB-key is detected and readable."
@@ -2169,6 +2170,7 @@
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -2180,6 +2182,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -2187,7 +2190,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -2195,11 +2197,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_usbkey_is_detected",
                   "exec_args": [
                     "file_check:true"
                   ],
@@ -2209,6 +2209,7 @@
               "dependencies": [
                 {
                   "name": "Boot DUT from USB in DEV mode",
+                  "exec_name": "cros_dev_mode_boot_from_servo_usb_drive",
                   "docs": [
                     "Restart and try to boot from USB-drive",
                     "First boot in dev mode can take time so set boot time to 10 minutes."
@@ -2220,7 +2221,6 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_dev_mode_boot_from_servo_usb_drive",
                   "exec_args": [
                     "boot_retry:2",
                     "boot_timeout:600",
@@ -2232,21 +2232,23 @@
                 },
                 {
                   "name": "Run install after boot from USB-drive",
+                  "exec_name": "cros_run_chromeos_install_command_after_boot_usbdrive",
                   "docs": [
                     "Perform install process when device booted from USB-drive."
                   ],
-                  "exec_name": "cros_run_chromeos_install_command_after_boot_usbdrive",
                   "timeout": "20m0s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Cold reset DUT by servo and wait to boot",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Cold reset device by servo and wait for DUT to become ping-able."
                   ],
                   "conditions": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -2258,6 +2260,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -2265,7 +2268,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -2273,19 +2275,20 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
                   "dependencies": [
                     {
                       "name": "Cold reset DUT by servo",
+                      "exec_name": "servo_set",
                       "docs": [
                         "Cold reset device by servo and do not wait."
                       ],
                       "dependencies": [
                         {
                           "name": "Is servod running",
+                          "exec_name": "sample_pass",
                           "docs": [
                             "Verify that servo host specified in setup and servod is running."
                           ],
@@ -2297,6 +2300,7 @@
                             },
                             {
                               "name": "Verify servod is responsive",
+                              "exec_name": "servod_echo",
                               "conditions": [
                                 {
                                   "name": "Setup has servo info",
@@ -2304,7 +2308,6 @@
                                   "run_control": "RERUN_AFTER_RECOVERY"
                                 }
                               ],
-                              "exec_name": "servod_echo",
                               "exec_args": [
                                 "ssh_check:false"
                               ],
@@ -2312,11 +2315,9 @@
                               "run_control": "ALWAYS_RUN"
                             }
                           ],
-                          "exec_name": "sample_pass",
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servo_set",
                       "exec_args": [
                         "command:power_state",
                         "string_value:reset",
@@ -2326,45 +2327,44 @@
                     },
                     {
                       "name": "Wait to be pingable (normal boot)",
+                      "exec_name": "cros_ping",
                       "docs": [
                         "Wait DUT to be pingable after some action on it.",
                         "Waiting time 150 seconds."
                       ],
-                      "exec_name": "cros_ping",
                       "timeout": "2m30s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Wait to be SSHable (normal boot)",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable after the device being rebooted.",
                     "Waiting time 150 seconds."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Remove REIMAGE_BY_USBKEY repair-request",
+                  "exec_name": "dut_remove_repair_requests",
                   "docs": [
                     "Remove REIMAGE_BY_USBKEY and PROVISION repair-requests."
                   ],
-                  "exec_name": "dut_remove_repair_requests",
                   "exec_args": [
                     "requests:PROVISION,REIMAGE_BY_USBKEY"
                   ],
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             },
             {
               "name": "Reset power using servo if booted from USB",
+              "exec_name": "sample_pass",
               "docs": [
                 "This action will reboot the DUT using servo if device ",
                 "is not booted after off/on performed as part of ",
@@ -2373,6 +2373,7 @@
               "conditions": [
                 {
                   "name": "Is servod running",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Verify that servo host specified in setup and servod is running."
                   ],
@@ -2384,6 +2385,7 @@
                     },
                     {
                       "name": "Verify servod is responsive",
+                      "exec_name": "servod_echo",
                       "conditions": [
                         {
                           "name": "Setup has servo info",
@@ -2391,7 +2393,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "servod_echo",
                       "exec_args": [
                         "ssh_check:false"
                       ],
@@ -2399,19 +2400,20 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
               "dependencies": [
                 {
                   "name": "Cold reset DUT by servo",
+                  "exec_name": "servo_set",
                   "docs": [
                     "Cold reset device by servo and do not wait."
                   ],
                   "dependencies": [
                     {
                       "name": "Is servod running",
+                      "exec_name": "sample_pass",
                       "docs": [
                         "Verify that servo host specified in setup and servod is running."
                       ],
@@ -2423,6 +2425,7 @@
                         },
                         {
                           "name": "Verify servod is responsive",
+                          "exec_name": "servod_echo",
                           "conditions": [
                             {
                               "name": "Setup has servo info",
@@ -2430,7 +2433,6 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "servod_echo",
                           "exec_args": [
                             "ssh_check:false"
                           ],
@@ -2438,11 +2440,9 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "sample_pass",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "servo_set",
                   "exec_args": [
                     "command:power_state",
                     "string_value:reset",
@@ -2452,38 +2452,38 @@
                 },
                 {
                   "name": "Wait to be SSHable (normal boot)",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable after the device being rebooted.",
                     "Waiting time 150 seconds."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
+          "timeout": "15s",
           "run_control": "ALWAYS_RUN"
         },
         {
           "name": "Audit storage (SMART only)",
+          "exec_name": "cros_audit_storage_smart",
           "docs": [
             "Quick audit internal storage by reading SMART data.",
             "The check updates storage state.",
             "The check is not critical as update storage state."
           ],
-          "exec_name": "cros_audit_storage_smart",
           "allow_fail_after_recovery": true,
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "Audit device storage using badblocks",
+          "exec_name": "cros_audit_storage_bad_blocks",
           "docs": [
             "Use the badblocks command to audit the storage on the DUT"
           ],
-          "exec_name": "cros_audit_storage_bad_blocks",
           "exec_args": [
             "badblocks_mode:auto",
             "rw_badblocks_timeout:5400",

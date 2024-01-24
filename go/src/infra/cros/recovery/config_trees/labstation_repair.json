@@ -10,6 +10,7 @@
         },
         {
           "name": "check_host_info",
+          "exec_name": "sample_pass",
           "docs": [
             "Check basic info for deployment."
           ],
@@ -30,19 +31,18 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "sample_pass",
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "Device is SSHable",
+          "exec_name": "cros_ssh",
           "docs": [
             "This verifier checks whether the host is accessible over ssh."
           ],
-          "exec_name": "cros_ssh",
-          "timeout": "30s",
           "recoveries": [
             {
               "name": "Power cycle by RPM",
+              "exec_name": "sample_pass",
               "docs": [
                 "Action is always runnable."
               ],
@@ -61,30 +61,30 @@
                 },
                 {
                   "name": "Wait to be SSHable",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable during after the device being rebooted."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "10m0s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Start system services",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Start system-services on the labstation"
                   ],
                   "dependencies": [
                     {
                       "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "This verifier checks whether the host is accessible over ssh."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "30s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:start system-services"
@@ -94,37 +94,38 @@
                 },
                 {
                   "name": "Remove reboot requests",
+                  "exec_name": "cros_remove_all_reboot_request",
                   "docs": [
                     "Remove all requests for reboot on the host.",
                     "The action has to be called after reboot of the device."
                   ],
-                  "exec_name": "cros_remove_all_reboot_request",
                   "allow_fail_after_recovery": true,
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             }
           ],
+          "timeout": "30s",
           "run_control": "ALWAYS_RUN"
         },
         {
           "name": "System services is up",
+          "exec_name": "cros_wait_for_system",
           "docs": [
             "Check whether system-services is up and running"
           ],
           "dependencies": [
             {
               "name": "Device is SSHable",
+              "exec_name": "cros_ssh",
               "docs": [
                 "This verifier checks whether the host is accessible over ssh."
               ],
-              "exec_name": "cros_ssh",
-              "timeout": "30s",
               "recoveries": [
                 {
                   "name": "Power cycle by RPM",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Action is always runnable."
                   ],
@@ -143,30 +144,30 @@
                     },
                     {
                       "name": "Wait to be SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "Try to wait device to be sshable during after the device being rebooted."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "10m0s",
                       "run_control": "ALWAYS_RUN"
                     },
                     {
                       "name": "Start system services",
+                      "exec_name": "cros_run_command",
                       "docs": [
                         "Start system-services on the labstation"
                       ],
                       "dependencies": [
                         {
                           "name": "Device is SSHable",
+                          "exec_name": "cros_ssh",
                           "docs": [
                             "This verifier checks whether the host is accessible over ssh."
                           ],
-                          "exec_name": "cros_ssh",
                           "timeout": "30s",
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "cros_run_command",
                       "exec_args": [
                         "host:dut",
                         "command:start system-services"
@@ -176,41 +177,40 @@
                     },
                     {
                       "name": "Remove reboot requests",
+                      "exec_name": "cros_remove_all_reboot_request",
                       "docs": [
                         "Remove all requests for reboot on the host.",
                         "The action has to be called after reboot of the device."
                       ],
-                      "exec_name": "cros_remove_all_reboot_request",
                       "allow_fail_after_recovery": true,
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "ALWAYS_RUN"
                 }
               ],
+              "timeout": "30s",
               "run_control": "ALWAYS_RUN"
             }
           ],
-          "exec_name": "cros_wait_for_system",
           "recoveries": [
             {
               "name": "Start system services",
+              "exec_name": "cros_run_command",
               "docs": [
                 "Start system-services on the labstation"
               ],
               "dependencies": [
                 {
                   "name": "Device is SSHable",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "This verifier checks whether the host is accessible over ssh."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "30s",
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "cros_run_command",
               "exec_args": [
                 "host:dut",
                 "command:start system-services"
@@ -223,38 +223,39 @@
         },
         {
           "name": "Clean up logs if necessary",
+          "exec_name": "cros_log_clean_up",
           "docs": [
             "Check size of messages logs on labstation and cleanup if necessary."
           ],
-          "exec_name": "cros_log_clean_up",
           "allow_fail_after_recovery": true,
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "Filesystem is writable",
+          "exec_name": "cros_is_file_system_writable",
           "docs": [
             "This verifier checks whether the host filesystem is writable."
           ],
-          "exec_name": "cros_is_file_system_writable",
           "allow_fail_after_recovery": true,
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "Check servod dependencies",
+          "exec_name": "cros_run_command",
           "docs": [
             "Ensure critical dependencies for servod is there, this check may fail if labstation had a incomplete provision."
           ],
           "dependencies": [
             {
               "name": "Device is SSHable",
+              "exec_name": "cros_ssh",
               "docs": [
                 "This verifier checks whether the host is accessible over ssh."
               ],
-              "exec_name": "cros_ssh",
-              "timeout": "30s",
               "recoveries": [
                 {
                   "name": "Power cycle by RPM",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Action is always runnable."
                   ],
@@ -273,30 +274,30 @@
                     },
                     {
                       "name": "Wait to be SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "Try to wait device to be sshable during after the device being rebooted."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "10m0s",
                       "run_control": "ALWAYS_RUN"
                     },
                     {
                       "name": "Start system services",
+                      "exec_name": "cros_run_command",
                       "docs": [
                         "Start system-services on the labstation"
                       ],
                       "dependencies": [
                         {
                           "name": "Device is SSHable",
+                          "exec_name": "cros_ssh",
                           "docs": [
                             "This verifier checks whether the host is accessible over ssh."
                           ],
-                          "exec_name": "cros_ssh",
                           "timeout": "30s",
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "cros_run_command",
                       "exec_args": [
                         "host:dut",
                         "command:start system-services"
@@ -306,49 +307,45 @@
                     },
                     {
                       "name": "Remove reboot requests",
+                      "exec_name": "cros_remove_all_reboot_request",
                       "docs": [
                         "Remove all requests for reboot on the host.",
                         "The action has to be called after reboot of the device."
                       ],
-                      "exec_name": "cros_remove_all_reboot_request",
                       "allow_fail_after_recovery": true,
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "ALWAYS_RUN"
                 }
               ],
+              "timeout": "30s",
               "run_control": "ALWAYS_RUN"
             }
-          ],
-          "exec_name": "cros_run_command",
-          "exec_args": [
-            "host:dut",
-            "command:servod --sversion"
           ],
           "recoveries": [
             {
               "name": "Powerwash repair labstation",
+              "exec_name": "sample_pass",
               "docs": [
                 "Powerwash and then install stable_version image on the labstation."
               ],
               "conditions": [
                 {
                   "name": "Device is SSHable",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "This verifier checks whether the host is accessible over ssh."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "30s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Labstation not in auto-update exempted pool",
+                  "exec_name": "dut_not_in_pool",
                   "docs": [
                     "There are some labstations we don't want they receive auto-update, e.g. labstations that used for image qualification purpose"
                   ],
-                  "exec_name": "dut_not_in_pool",
                   "exec_args": [
                     "servo_verification",
                     "labstation_tryjob",
@@ -369,6 +366,7 @@
                 },
                 {
                   "name": "Labstation reboot",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Perform reboot of the host and perform additional actions as necessary.",
                     "If reboot succeed then we can remove all request for reboot as we just did it."
@@ -386,13 +384,13 @@
                     },
                     {
                       "name": "cros_clean_tmp_owner_request",
+                      "exec_name": "cros_clean_tmp_owner_request",
                       "docs": [
                         "In some cases, the update flow puts the TPM into a state such that it fails verification.",
                         "We don't know why. However, this call papers over the problem by clearing the TPM during the reboot.",
                         "We ignore failures from 'crossystem'.",
                         "Although failure here is unexpected, and could signal a bug, the point of the exercise is to paper over problems."
                       ],
-                      "exec_name": "cros_clean_tmp_owner_request",
                       "allow_fail_after_recovery": true,
                       "run_control": "ALWAYS_RUN"
                     },
@@ -403,6 +401,7 @@
                     },
                     {
                       "name": "Simple reboot",
+                      "exec_name": "cros_run_command",
                       "docs": [
                         "Simple un-blocker reboot.",
                         "The action will not run if the labstation's filesystem I/O is blocked because /sbin/reboot may not work if the filesystem is hosed."
@@ -414,7 +413,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "cros_run_command",
                       "exec_args": [
                         "command:reboot",
                         "background:true"
@@ -423,6 +421,7 @@
                     },
                     {
                       "name": "Sysrq reboot",
+                      "exec_name": "cros_run_shell_command",
                       "docs": [
                         "Immediately reboot the system, without unmounting or syncing filesystems",
                         "The action only runs when the filesystem is hosed where regular reboot executable will not work."
@@ -430,6 +429,7 @@
                       "conditions": [
                         {
                           "name": "Filesystem IO blocked",
+                          "exec_name": "sample_fail",
                           "docs": [
                             "Filesystem I/O is blocked on the labstation.",
                             "The action is expected to fail when filesystem I/O is not blocked on the labstation."
@@ -441,11 +441,9 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "sample_fail",
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "cros_run_shell_command",
                       "exec_args": [
                         "echo b \u003e /proc/sysrq-trigger"
                       ],
@@ -463,30 +461,30 @@
                     },
                     {
                       "name": "Wait to be SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "Try to wait device to be sshable during after the device being rebooted."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "10m0s",
                       "run_control": "ALWAYS_RUN"
                     },
                     {
                       "name": "Start system services",
+                      "exec_name": "cros_run_command",
                       "docs": [
                         "Start system-services on the labstation"
                       ],
                       "dependencies": [
                         {
                           "name": "Device is SSHable",
+                          "exec_name": "cros_ssh",
                           "docs": [
                             "This verifier checks whether the host is accessible over ssh."
                           ],
-                          "exec_name": "cros_ssh",
                           "timeout": "30s",
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "cros_run_command",
                       "exec_args": [
                         "host:dut",
                         "command:start system-services"
@@ -496,20 +494,20 @@
                     },
                     {
                       "name": "Remove reboot requests",
+                      "exec_name": "cros_remove_all_reboot_request",
                       "docs": [
                         "Remove all requests for reboot on the host.",
                         "The action has to be called after reboot of the device."
                       ],
-                      "exec_name": "cros_remove_all_reboot_request",
                       "allow_fail_after_recovery": true,
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Install stable labstation image without reboot",
+                  "exec_name": "cros_provision",
                   "docs": [
                     "Install stable labstation image but do not reboot."
                   ],
@@ -525,7 +523,6 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_provision",
                   "exec_args": [
                     "no_reboot"
                   ],
@@ -534,6 +531,7 @@
                 },
                 {
                   "name": "Labstation reboot",
+                  "exec_name": "sample_pass",
                   "docs": [
                     "Perform reboot of the host and perform additional actions as necessary.",
                     "If reboot succeed then we can remove all request for reboot as we just did it."
@@ -551,13 +549,13 @@
                     },
                     {
                       "name": "cros_clean_tmp_owner_request",
+                      "exec_name": "cros_clean_tmp_owner_request",
                       "docs": [
                         "In some cases, the update flow puts the TPM into a state such that it fails verification.",
                         "We don't know why. However, this call papers over the problem by clearing the TPM during the reboot.",
                         "We ignore failures from 'crossystem'.",
                         "Although failure here is unexpected, and could signal a bug, the point of the exercise is to paper over problems."
                       ],
-                      "exec_name": "cros_clean_tmp_owner_request",
                       "allow_fail_after_recovery": true,
                       "run_control": "ALWAYS_RUN"
                     },
@@ -568,6 +566,7 @@
                     },
                     {
                       "name": "Simple reboot",
+                      "exec_name": "cros_run_command",
                       "docs": [
                         "Simple un-blocker reboot.",
                         "The action will not run if the labstation's filesystem I/O is blocked because /sbin/reboot may not work if the filesystem is hosed."
@@ -579,7 +578,6 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "cros_run_command",
                       "exec_args": [
                         "command:reboot",
                         "background:true"
@@ -588,6 +586,7 @@
                     },
                     {
                       "name": "Sysrq reboot",
+                      "exec_name": "cros_run_shell_command",
                       "docs": [
                         "Immediately reboot the system, without unmounting or syncing filesystems",
                         "The action only runs when the filesystem is hosed where regular reboot executable will not work."
@@ -595,6 +594,7 @@
                       "conditions": [
                         {
                           "name": "Filesystem IO blocked",
+                          "exec_name": "sample_fail",
                           "docs": [
                             "Filesystem I/O is blocked on the labstation.",
                             "The action is expected to fail when filesystem I/O is not blocked on the labstation."
@@ -606,11 +606,9 @@
                               "run_control": "RERUN_AFTER_RECOVERY"
                             }
                           ],
-                          "exec_name": "sample_fail",
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "cros_run_shell_command",
                       "exec_args": [
                         "echo b \u003e /proc/sysrq-trigger"
                       ],
@@ -628,30 +626,30 @@
                     },
                     {
                       "name": "Wait to be SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "Try to wait device to be sshable during after the device being rebooted."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "10m0s",
                       "run_control": "ALWAYS_RUN"
                     },
                     {
                       "name": "Start system services",
+                      "exec_name": "cros_run_command",
                       "docs": [
                         "Start system-services on the labstation"
                       ],
                       "dependencies": [
                         {
                           "name": "Device is SSHable",
+                          "exec_name": "cros_ssh",
                           "docs": [
                             "This verifier checks whether the host is accessible over ssh."
                           ],
-                          "exec_name": "cros_ssh",
                           "timeout": "30s",
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "exec_name": "cros_run_command",
                       "exec_args": [
                         "host:dut",
                         "command:start system-services"
@@ -661,27 +659,30 @@
                     },
                     {
                       "name": "Remove reboot requests",
+                      "exec_name": "cros_remove_all_reboot_request",
                       "docs": [
                         "Remove all requests for reboot on the host.",
                         "The action has to be called after reboot of the device."
                       ],
-                      "exec_name": "cros_remove_all_reboot_request",
                       "allow_fail_after_recovery": true,
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "sample_pass",
                   "run_control": "ALWAYS_RUN"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "RERUN_AFTER_RECOVERY"
             }
+          ],
+          "exec_args": [
+            "host:dut",
+            "command:servod --sversion"
           ],
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "cros_is_on_stable_version",
+          "exec_name": "cros_is_on_stable_version",
           "conditions": [
             {
               "name": "has_stable_version_cros_image",
@@ -695,10 +696,10 @@
             },
             {
               "name": "Labstation not in auto-update exempted pool",
+              "exec_name": "dut_not_in_pool",
               "docs": [
                 "There are some labstations we don't want they receive auto-update, e.g. labstations that used for image qualification purpose"
               ],
-              "exec_name": "dut_not_in_pool",
               "exec_args": [
                 "servo_verification",
                 "labstation_tryjob",
@@ -708,10 +709,10 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "cros_is_on_stable_version",
           "recoveries": [
             {
               "name": "Install stable labstation image without reboot",
+              "exec_name": "cros_provision",
               "docs": [
                 "Install stable labstation image but do not reboot."
               ],
@@ -727,7 +728,6 @@
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "cros_provision",
               "exec_args": [
                 "no_reboot"
               ],
@@ -740,15 +740,16 @@
         },
         {
           "name": "Update provisioned info",
+          "exec_name": "cros_update_provision_info",
           "docs": [
             "Update OS version for provision info."
           ],
-          "exec_name": "cros_update_provision_info",
           "allow_fail_after_recovery": true,
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "booted_from_right_kernel",
+          "exec_name": "cros_kernel_priority_has_not_changed",
           "docs": [
             "Verified if kernel has update and waiting for update.",
             "Kernel can wait for reboot as provisioning is not doing reboot by default for labstations."
@@ -760,10 +761,10 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "cros_kernel_priority_has_not_changed",
           "recoveries": [
             {
               "name": "Labstation reboot",
+              "exec_name": "sample_pass",
               "docs": [
                 "Perform reboot of the host and perform additional actions as necessary.",
                 "If reboot succeed then we can remove all request for reboot as we just did it."
@@ -781,13 +782,13 @@
                 },
                 {
                   "name": "cros_clean_tmp_owner_request",
+                  "exec_name": "cros_clean_tmp_owner_request",
                   "docs": [
                     "In some cases, the update flow puts the TPM into a state such that it fails verification.",
                     "We don't know why. However, this call papers over the problem by clearing the TPM during the reboot.",
                     "We ignore failures from 'crossystem'.",
                     "Although failure here is unexpected, and could signal a bug, the point of the exercise is to paper over problems."
                   ],
-                  "exec_name": "cros_clean_tmp_owner_request",
                   "allow_fail_after_recovery": true,
                   "run_control": "ALWAYS_RUN"
                 },
@@ -798,6 +799,7 @@
                 },
                 {
                   "name": "Simple reboot",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Simple un-blocker reboot.",
                     "The action will not run if the labstation's filesystem I/O is blocked because /sbin/reboot may not work if the filesystem is hosed."
@@ -809,7 +811,6 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "command:reboot",
                     "background:true"
@@ -818,6 +819,7 @@
                 },
                 {
                   "name": "Sysrq reboot",
+                  "exec_name": "cros_run_shell_command",
                   "docs": [
                     "Immediately reboot the system, without unmounting or syncing filesystems",
                     "The action only runs when the filesystem is hosed where regular reboot executable will not work."
@@ -825,6 +827,7 @@
                   "conditions": [
                     {
                       "name": "Filesystem IO blocked",
+                      "exec_name": "sample_fail",
                       "docs": [
                         "Filesystem I/O is blocked on the labstation.",
                         "The action is expected to fail when filesystem I/O is not blocked on the labstation."
@@ -836,11 +839,9 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "sample_fail",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_shell_command",
                   "exec_args": [
                     "echo b \u003e /proc/sysrq-trigger"
                   ],
@@ -858,30 +859,30 @@
                 },
                 {
                   "name": "Wait to be SSHable",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable during after the device being rebooted."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "10m0s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Start system services",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Start system-services on the labstation"
                   ],
                   "dependencies": [
                     {
                       "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "This verifier checks whether the host is accessible over ssh."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "30s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:start system-services"
@@ -891,20 +892,20 @@
                 },
                 {
                   "name": "Remove reboot requests",
+                  "exec_name": "cros_remove_all_reboot_request",
                   "docs": [
                     "Remove all requests for reboot on the host.",
                     "The action has to be called after reboot of the device."
                   ],
-                  "exec_name": "cros_remove_all_reboot_request",
                   "allow_fail_after_recovery": true,
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             },
             {
               "name": "Power cycle by RPM",
+              "exec_name": "sample_pass",
               "docs": [
                 "Action is always runnable."
               ],
@@ -923,30 +924,30 @@
                 },
                 {
                   "name": "Wait to be SSHable",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable during after the device being rebooted."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "10m0s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Start system services",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Start system-services on the labstation"
                   ],
                   "dependencies": [
                     {
                       "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "This verifier checks whether the host is accessible over ssh."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "30s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:start system-services"
@@ -956,16 +957,15 @@
                 },
                 {
                   "name": "Remove reboot requests",
+                  "exec_name": "cros_remove_all_reboot_request",
                   "docs": [
                     "Remove all requests for reboot on the host.",
                     "The action has to be called after reboot of the device."
                   ],
-                  "exec_name": "cros_remove_all_reboot_request",
                   "allow_fail_after_recovery": true,
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             }
           ],
@@ -973,6 +973,7 @@
         },
         {
           "name": "reboot_by_request",
+          "exec_name": "sample_fail",
           "docs": [
             "Some DUTs can request reboot labstation if they has issue with servo-nic or other issues with servo-host.",
             "We allowed to remove requests for reboot if we rebooted per request."
@@ -997,10 +998,10 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "sample_fail",
           "recoveries": [
             {
               "name": "Labstation reboot",
+              "exec_name": "sample_pass",
               "docs": [
                 "Perform reboot of the host and perform additional actions as necessary.",
                 "If reboot succeed then we can remove all request for reboot as we just did it."
@@ -1018,13 +1019,13 @@
                 },
                 {
                   "name": "cros_clean_tmp_owner_request",
+                  "exec_name": "cros_clean_tmp_owner_request",
                   "docs": [
                     "In some cases, the update flow puts the TPM into a state such that it fails verification.",
                     "We don't know why. However, this call papers over the problem by clearing the TPM during the reboot.",
                     "We ignore failures from 'crossystem'.",
                     "Although failure here is unexpected, and could signal a bug, the point of the exercise is to paper over problems."
                   ],
-                  "exec_name": "cros_clean_tmp_owner_request",
                   "allow_fail_after_recovery": true,
                   "run_control": "ALWAYS_RUN"
                 },
@@ -1035,6 +1036,7 @@
                 },
                 {
                   "name": "Simple reboot",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Simple un-blocker reboot.",
                     "The action will not run if the labstation's filesystem I/O is blocked because /sbin/reboot may not work if the filesystem is hosed."
@@ -1046,7 +1048,6 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "command:reboot",
                     "background:true"
@@ -1055,6 +1056,7 @@
                 },
                 {
                   "name": "Sysrq reboot",
+                  "exec_name": "cros_run_shell_command",
                   "docs": [
                     "Immediately reboot the system, without unmounting or syncing filesystems",
                     "The action only runs when the filesystem is hosed where regular reboot executable will not work."
@@ -1062,6 +1064,7 @@
                   "conditions": [
                     {
                       "name": "Filesystem IO blocked",
+                      "exec_name": "sample_fail",
                       "docs": [
                         "Filesystem I/O is blocked on the labstation.",
                         "The action is expected to fail when filesystem I/O is not blocked on the labstation."
@@ -1073,11 +1076,9 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "sample_fail",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_shell_command",
                   "exec_args": [
                     "echo b \u003e /proc/sysrq-trigger"
                   ],
@@ -1095,30 +1096,30 @@
                 },
                 {
                   "name": "Wait to be SSHable",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable during after the device being rebooted."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "10m0s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Start system services",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Start system-services on the labstation"
                   ],
                   "dependencies": [
                     {
                       "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "This verifier checks whether the host is accessible over ssh."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "30s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:start system-services"
@@ -1128,20 +1129,20 @@
                 },
                 {
                   "name": "Remove reboot requests",
+                  "exec_name": "cros_remove_all_reboot_request",
                   "docs": [
                     "Remove all requests for reboot on the host.",
                     "The action has to be called after reboot of the device."
                   ],
-                  "exec_name": "cros_remove_all_reboot_request",
                   "allow_fail_after_recovery": true,
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             },
             {
               "name": "Power cycle by RPM",
+              "exec_name": "sample_pass",
               "docs": [
                 "Action is always runnable."
               ],
@@ -1160,30 +1161,30 @@
                 },
                 {
                   "name": "Wait to be SSHable",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable during after the device being rebooted."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "10m0s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Start system services",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Start system-services on the labstation"
                   ],
                   "dependencies": [
                     {
                       "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "This verifier checks whether the host is accessible over ssh."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "30s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:start system-services"
@@ -1193,16 +1194,15 @@
                 },
                 {
                   "name": "Remove reboot requests",
+                  "exec_name": "cros_remove_all_reboot_request",
                   "docs": [
                     "Remove all requests for reboot on the host.",
                     "The action has to be called after reboot of the device."
                   ],
-                  "exec_name": "cros_remove_all_reboot_request",
                   "allow_fail_after_recovery": true,
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             }
           ],
@@ -1210,6 +1210,7 @@
         },
         {
           "name": "Reboot labstation if uptime longer than 7 days",
+          "exec_name": "cros_validate_uptime",
           "docs": [
             "Check labstation uptime and trigger a reboot if it's longer than 7 days (168 hours)."
           ],
@@ -1220,13 +1221,10 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "cros_validate_uptime",
-          "exec_args": [
-            "max_duration:168"
-          ],
           "recoveries": [
             {
               "name": "Labstation reboot",
+              "exec_name": "sample_pass",
               "docs": [
                 "Perform reboot of the host and perform additional actions as necessary.",
                 "If reboot succeed then we can remove all request for reboot as we just did it."
@@ -1244,13 +1242,13 @@
                 },
                 {
                   "name": "cros_clean_tmp_owner_request",
+                  "exec_name": "cros_clean_tmp_owner_request",
                   "docs": [
                     "In some cases, the update flow puts the TPM into a state such that it fails verification.",
                     "We don't know why. However, this call papers over the problem by clearing the TPM during the reboot.",
                     "We ignore failures from 'crossystem'.",
                     "Although failure here is unexpected, and could signal a bug, the point of the exercise is to paper over problems."
                   ],
-                  "exec_name": "cros_clean_tmp_owner_request",
                   "allow_fail_after_recovery": true,
                   "run_control": "ALWAYS_RUN"
                 },
@@ -1261,6 +1259,7 @@
                 },
                 {
                   "name": "Simple reboot",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Simple un-blocker reboot.",
                     "The action will not run if the labstation's filesystem I/O is blocked because /sbin/reboot may not work if the filesystem is hosed."
@@ -1272,7 +1271,6 @@
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "command:reboot",
                     "background:true"
@@ -1281,6 +1279,7 @@
                 },
                 {
                   "name": "Sysrq reboot",
+                  "exec_name": "cros_run_shell_command",
                   "docs": [
                     "Immediately reboot the system, without unmounting or syncing filesystems",
                     "The action only runs when the filesystem is hosed where regular reboot executable will not work."
@@ -1288,6 +1287,7 @@
                   "conditions": [
                     {
                       "name": "Filesystem IO blocked",
+                      "exec_name": "sample_fail",
                       "docs": [
                         "Filesystem I/O is blocked on the labstation.",
                         "The action is expected to fail when filesystem I/O is not blocked on the labstation."
@@ -1299,11 +1299,9 @@
                           "run_control": "RERUN_AFTER_RECOVERY"
                         }
                       ],
-                      "exec_name": "sample_fail",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_shell_command",
                   "exec_args": [
                     "echo b \u003e /proc/sysrq-trigger"
                   ],
@@ -1321,30 +1319,30 @@
                 },
                 {
                   "name": "Wait to be SSHable",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable during after the device being rebooted."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "10m0s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Start system services",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Start system-services on the labstation"
                   ],
                   "dependencies": [
                     {
                       "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "This verifier checks whether the host is accessible over ssh."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "30s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:start system-services"
@@ -1354,20 +1352,20 @@
                 },
                 {
                   "name": "Remove reboot requests",
+                  "exec_name": "cros_remove_all_reboot_request",
                   "docs": [
                     "Remove all requests for reboot on the host.",
                     "The action has to be called after reboot of the device."
                   ],
-                  "exec_name": "cros_remove_all_reboot_request",
                   "allow_fail_after_recovery": true,
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             },
             {
               "name": "Power cycle by RPM",
+              "exec_name": "sample_pass",
               "docs": [
                 "Action is always runnable."
               ],
@@ -1386,30 +1384,30 @@
                 },
                 {
                   "name": "Wait to be SSHable",
+                  "exec_name": "cros_ssh",
                   "docs": [
                     "Try to wait device to be sshable during after the device being rebooted."
                   ],
-                  "exec_name": "cros_ssh",
                   "timeout": "10m0s",
                   "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Start system services",
+                  "exec_name": "cros_run_command",
                   "docs": [
                     "Start system-services on the labstation"
                   ],
                   "dependencies": [
                     {
                       "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
                       "docs": [
                         "This verifier checks whether the host is accessible over ssh."
                       ],
-                      "exec_name": "cros_ssh",
                       "timeout": "30s",
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "exec_name": "cros_run_command",
                   "exec_args": [
                     "host:dut",
                     "command:start system-services"
@@ -1419,23 +1417,26 @@
                 },
                 {
                   "name": "Remove reboot requests",
+                  "exec_name": "cros_remove_all_reboot_request",
                   "docs": [
                     "Remove all requests for reboot on the host.",
                     "The action has to be called after reboot of the device."
                   ],
-                  "exec_name": "cros_remove_all_reboot_request",
                   "allow_fail_after_recovery": true,
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
             }
+          ],
+          "exec_args": [
+            "max_duration:168"
           ],
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "Cleanup bluetooth",
+          "exec_name": "sample_pass",
           "docs": [
             "Attempt to remove bluetooth device and then power off BT adapter.",
             "This action should be removed once b/245824583 got fixed."
@@ -1443,19 +1444,19 @@
           "dependencies": [
             {
               "name": "Attempt to remove bluetooth device",
+              "exec_name": "cros_remove_bt_devices",
               "docs": [
                 "Attempt to remove bluetooth device from the labstation."
               ],
-              "exec_name": "cros_remove_bt_devices",
               "allow_fail_after_recovery": true,
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
               "name": "Attempt to power off bluetooth adapter",
+              "exec_name": "cros_run_shell_command",
               "docs": [
                 "Attempt to power off bluetooth adapter on the labstation."
               ],
-              "exec_name": "cros_run_shell_command",
               "exec_args": [
                 "bluetoothctl power off"
               ],
@@ -1463,12 +1464,12 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "sample_pass",
           "allow_fail_after_recovery": true,
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
           "name": "Update inventory info",
+          "exec_name": "sample_pass",
           "docs": [
             "Updating device info in inventory."
           ],
@@ -1485,7 +1486,6 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
-          "exec_name": "sample_pass",
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
