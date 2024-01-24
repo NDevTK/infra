@@ -9,10 +9,13 @@ import (
 	"os"
 
 	"github.com/maruel/subcommands"
+
+	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
 	"infra/cros/fleetcost/internal/commands"
+	"infra/cros/fleetcost/internal/site"
 )
 
 // getApplication returns the fleetcost command line application.
@@ -26,6 +29,10 @@ func getApplication() *cli.Application {
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
 			commands.PingCommand,
+			subcommands.Section("Authentication"),
+			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
+			authcli.SubcommandLogin(site.DefaultAuthOptions, "login", false),
+			authcli.SubcommandLogout(site.DefaultAuthOptions, "logout", false),
 		},
 	}
 }
