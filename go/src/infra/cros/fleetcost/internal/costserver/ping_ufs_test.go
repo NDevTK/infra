@@ -8,17 +8,20 @@ import (
 	"context"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+
 	fleetcostpb "infra/cros/fleetcost/api"
 )
 
 // TestPing tests the ping API, which does nothing
-func TestPing(t *testing.T) {
+func TestPingUFS(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.Background()
-	tf := newFixture(ctx, t)
+	tf := newFixture(context.Background(), t)
 
-	_, err := tf.frontend.Ping(tf.ctx, &fleetcostpb.PingRequest{})
+	tf.mockUFS.EXPECT().ListMachineLSEs(gomock.Any(), gomock.Any())
+
+	_, err := tf.frontend.PingUFS(tf.ctx, &fleetcostpb.PingUFSRequest{})
 	if err != nil {
 		t.Error(err)
 	}

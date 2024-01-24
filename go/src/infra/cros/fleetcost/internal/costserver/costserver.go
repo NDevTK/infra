@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 
 	fleetcostpb "infra/cros/fleetcost/api"
+	ufspb "infra/unifiedfleet/api/v1/rpc"
 )
 
 // NewFleetCostFrontend returns a new fleet cost frontend.
@@ -16,9 +17,22 @@ func NewFleetCostFrontend() fleetcostpb.FleetCostServer {
 }
 
 // FleetCostFrontend is the fleet cost frontend.
-type FleetCostFrontend struct{}
+type FleetCostFrontend struct {
+	fleetClient ufspb.FleetClient
+}
 
 // InstallServices installs services (such as the prpc server) into the frontend.
 func InstallServices(costFrontend fleetcostpb.FleetCostServer, srv grpc.ServiceRegistrar) {
 	fleetcostpb.RegisterFleetCostServer(srv, costFrontend)
+}
+
+// SetUFSClient sets the UFS client on a frontend.
+func SetUFSClient(costFrontend *FleetCostFrontend, client ufspb.FleetClient) {
+	if costFrontend == nil {
+		panic("SetUFSClient: cost frontend cannot be nil")
+	}
+	if client == nil {
+		panic("SetUFSClient: ufs client cannot be nil")
+	}
+	costFrontend.fleetClient = client
 }
