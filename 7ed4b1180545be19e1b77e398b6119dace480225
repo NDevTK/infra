@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d5b696ae_c0372b72",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2024-01-24T17:52:00Z",
+      "side": 1,
+      "message": "no idea if this works because both run_locally \u0026 run_remotely are failing, and their logs/error messages are unreadable.  hopefully CQ handles it better.",
+      "revId": "7ed4b1180545be19e1b77e398b6119dace480225",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
