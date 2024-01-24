@@ -120,7 +120,8 @@ func TestConfigTreeChanges(t *testing.T) {
 				t.Errorf("TestConfigTreeChanges:%q -> fail to read configuration", cs.name)
 				return
 			}
-			configTree := tree.ConvertConfiguration(config)
+			shortVersion := false
+			configTree := tree.ConvertConfiguration(config, shortVersion)
 			treeBytes, err := json.MarshalIndent(configTree, "", "  ")
 			if err != nil {
 				t.Errorf("TestConfigTreeChanges:%q -> fail to convert configuration", cs.name)
