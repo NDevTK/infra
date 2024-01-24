@@ -25,8 +25,8 @@ def BaseConfig(PROJECT,
     CHECKOUT_PATH: the source checkout path.
     PLATFORM: The platform or board for which the code is compiled.
     EXPERIMENTAL: If True, appends '_experimental' to the generated kzip file,
-      indicating that it isn't ready for ingestion by Kythe. Additionally,
-      sync_generated_files.py will be run in dryrun mode.
+      indicating that it isn't ready for ingestion by Kythe, and syncs/uploads
+      files in dryrun mode.
     SYNC_GENERATED_FILES: Whether to sync generated files into a git repo.
     GEN_REPO_BRANCH: Which branch in the generated files repo to sync to.
     GEN_REPO_OUT_DIR: Which output dir in the generated files repo to sync to.

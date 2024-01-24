@@ -242,7 +242,8 @@ class CodesearchApi(recipe_api.RecipeApi):
         name='upload kythe index pack',
         source=index_pack_kythe_path,
         bucket=bucket_name,
-        dest='prod/%s' % index_pack_kythe_name_with_id)
+        dest='prod/%s' % index_pack_kythe_name_with_id,
+        dry_run=self._is_experimental)
 
   def _upload_compile_commands_json(self, bucket_name, destination_filename):
     """Upload the compile_commands.json file to Google Storage.
@@ -258,7 +259,8 @@ class CodesearchApi(recipe_api.RecipeApi):
         name='upload compile_commands.json',
         source=self.c.compile_commands_json_file,
         bucket=bucket_name,
-        dest='debug/%s' % destination_filename)
+        dest='debug/%s' % destination_filename,
+        dry_run=self._is_experimental)
 
   def _upload_gn_targets_json(self, bucket_name, destination_filename):
     """Upload the gn_targets.json file to Google Storage.
@@ -274,7 +276,8 @@ class CodesearchApi(recipe_api.RecipeApi):
         name='upload gn_targets.json',
         source=self.c.gn_targets_json_file,
         bucket=bucket_name,
-        dest='debug/%s' % destination_filename)
+        dest='debug/%s' % destination_filename,
+        dry_run=self._is_experimental)
 
   def checkout_generated_files_repo_and_sync(self,
                                              copy,

@@ -325,92 +325,32 @@
     "name": "create kythe index pack"
   },
   {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "[START_DIR]/infra/out/win-Debug/chromium_win.kzip",
-      "gs://chrome-codesearch/prod/chromium_win_123_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa+1337000000_experimental.kzip"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
+    "cmd": [],
     "name": "gsutil upload kythe index pack",
     "~followup_annotations": [
+      "@@@STEP_TEXT@Pretending to run gsutil command@@@",
+      "@@@STEP_LOG_LINE@command@python3 -u RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py -- RECIPE_REPO[depot_tools]/gsutil.py ---- cp [START_DIR]/infra/out/win-Debug/chromium_win.kzip gs://chrome-codesearch/prod/chromium_win_123_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa+1337000000_experimental.kzip@@@",
+      "@@@STEP_LOG_END@command@@@",
       "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/chrome-codesearch/prod/chromium_win_123_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa+1337000000_experimental.kzip@@@"
     ]
   },
   {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "[START_DIR]/infra/out/win-Debug/compile_commands.json",
-      "gs://chrome-codesearch/debug/compile_commands_win_123.json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
+    "cmd": [],
     "name": "gsutil upload compile_commands.json",
     "~followup_annotations": [
+      "@@@STEP_TEXT@Pretending to run gsutil command@@@",
+      "@@@STEP_LOG_LINE@command@python3 -u RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py -- RECIPE_REPO[depot_tools]/gsutil.py ---- cp [START_DIR]/infra/out/win-Debug/compile_commands.json gs://chrome-codesearch/debug/compile_commands_win_123.json@@@",
+      "@@@STEP_LOG_END@command@@@",
       "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/chrome-codesearch/debug/compile_commands_win_123.json@@@"
     ]
   },
   {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "[START_DIR]/infra/out/win-Debug/gn_targets.json",
-      "gs://chrome-codesearch/debug/gn_targets_win_123.json"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "project:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
+    "cmd": [],
     "name": "gsutil upload gn_targets.json",
     "~followup_annotations": [
+      "@@@STEP_TEXT@Pretending to run gsutil command@@@",
+      "@@@STEP_LOG_LINE@command@python3 -u RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py -- RECIPE_REPO[depot_tools]/gsutil.py ---- cp [START_DIR]/infra/out/win-Debug/gn_targets.json gs://chrome-codesearch/debug/gn_targets_win_123.json@@@",
+      "@@@STEP_LOG_END@command@@@",
       "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/chrome-codesearch/debug/gn_targets_win_123.json@@@"
     ]
   },
