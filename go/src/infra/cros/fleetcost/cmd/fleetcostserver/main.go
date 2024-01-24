@@ -7,6 +7,7 @@ package main
 
 import (
 	"net/http"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -20,6 +21,14 @@ import (
 	"infra/cros/fleetcost/internal/costserver"
 	ufspb "infra/unifiedfleet/api/v1/rpc"
 )
+
+// getUFSName gets the name of the UFS service corresponding to the current cloud project if there is one.
+func getUFSName(cloudProject string) string {
+	if strings.HasSuffix(cloudProject, "prod") {
+		return "ufs.api.cr.dev"
+	}
+	return "staging.ufs.api.cr.dev"
+}
 
 // main starts the fleet cost server.
 func main() {
@@ -37,9 +46,8 @@ func main() {
 			Transport: t,
 		}
 		prpcClient := &prpc.Client{
-			C: httpClient,
-			// TODO(gregorynisbet): Un-hardcode this.
-			Host: "staging.ufs.api.cr.dev",
+			C:    httpClient,
+			Host: getUFSName(srv.Options.CloudProject),
 		}
 		ufsClient := ufspb.NewFleetPRPCClient(prpcClient)
 		fleetCostFrontend := costserver.NewFleetCostFrontend().(*costserver.FleetCostFrontend)
