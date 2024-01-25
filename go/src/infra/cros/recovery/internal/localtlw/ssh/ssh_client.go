@@ -7,11 +7,12 @@ package ssh
 import (
 	"context"
 	"crypto/tls"
-	"log"
 	"net"
 
 	"go.chromium.org/luci/common/errors"
 	"golang.org/x/crypto/ssh"
+
+	"infra/cros/recovery/internal/log"
 )
 
 // SSHClient provides base API to work with SSH client.
@@ -78,9 +79,10 @@ func (c *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFu
 // newProxyClient establishes an authenticated SSH connection to the target host
 // using TLS channel as the underlying transport.
 func newProxyClient(ctx context.Context, sshConfig *ssh.ClientConfig, proxy *proxyConfig) (SSHClient, error) {
+	log.Debugf(ctx, "Proxy config: %+v", *proxy)
 	conn, err := tls.Dial("tcp", proxy.GetAddr(), proxy.GetConfig())
 	if err != nil {
-		log.Printf("Error creating a new TLS connection: %s\n", err)
+		log.Errorf(ctx, "Error creating a new TLS connection: %s", err)
 		return nil, errors.Annotate(err, "new proxy client").Err()
 	}
 	var c ssh.Conn
@@ -109,6 +111,7 @@ func NewClient(ctx context.Context, addr, username string, config Config) (SSHCl
 	if username != "" {
 		sshConfig.User = username
 	}
+	log.Debugf(ctx, "SSH config: %+v", *sshConfig)
 	if proxy := config.GetProxy(addr); proxy != nil && proxy.GetConfig() != nil {
 		return newProxyClient(ctx, sshConfig, proxy)
 	}
@@ -125,7 +128,7 @@ func NewClient(ctx context.Context, addr, username string, config Config) (SSHCl
 	case <-done:
 	}
 	if err != nil {
-		log.Printf("Error creating a new SSH client: %s\n", err)
+		log.Errorf(ctx, "Error creating a new SSH client: %s", err)
 		return nil, errors.Annotate(err, "new SSH client").Err()
 	}
 	return &sshClientImpl{c}, nil
