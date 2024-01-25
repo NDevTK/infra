@@ -87,11 +87,12 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			Builder:      workflow.NewBuilder(plats, pm, ap),
 		}
 		b.Builder.SetExecutor(func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil })
+		b.Builder.SetPreExecuteHook(func(ctx context.Context, pkg actions.Package) error { return nil })
 
 		Convey("build ninja", func() {
 			err := b.Load(ctx, "tools/ninja")
 			So(err, ShouldBeNil)
-			pkgs, err := b.BuildAll(ctx)
+			pkgs, err := b.BuildAll(ctx, false)
 			So(err, ShouldBeNil)
 
 			pkg := pkgs[len(pkgs)-1]
@@ -104,7 +105,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 		Convey("Build go", func() {
 			err := b.Load(ctx, "tools/go")
 			So(err, ShouldBeNil)
-			pkgs, err := b.BuildAll(ctx)
+			pkgs, err := b.BuildAll(ctx, false)
 			So(err, ShouldBeNil)
 
 			pkg := pkgs[len(pkgs)-1]
@@ -152,11 +153,12 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			Builder:      workflow.NewBuilder(plats, pm, ap),
 		}
 		b.Builder.SetExecutor(func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil })
+		b.Builder.SetPreExecuteHook(func(ctx context.Context, pkg actions.Package) error { return nil })
 
 		Convey("build packages", func() {
 			err := b.Load(ctx, "tools/ninja")
 			So(err, ShouldBeNil)
-			pkgs, err := b.BuildAll(ctx)
+			pkgs, err := b.BuildAll(ctx, false)
 			So(err, ShouldBeNil)
 
 			pkg := pkgs[len(pkgs)-1]
@@ -229,11 +231,12 @@ func TestPackageSources(t *testing.T) {
 			Builder:      workflow.NewBuilder(plats, pm, ap),
 		}
 		b.Builder.SetExecutor(func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil })
+		b.Builder.SetPreExecuteHook(func(ctx context.Context, pkg actions.Package) error { return nil })
 
 		Convey("git source", func() {
 			err := b.Load(ctx, "tools/ninja")
 			So(err, ShouldBeNil)
-			pkgs, err := b.BuildAll(ctx)
+			pkgs, err := b.BuildAll(ctx, false)
 			So(err, ShouldBeNil)
 
 			verifySource(t, pkgs, &core.Action_Metadata{
@@ -247,7 +250,7 @@ func TestPackageSources(t *testing.T) {
 		Convey("url source", func() {
 			err := b.Load(ctx, "static_libs/curl")
 			So(err, ShouldBeNil)
-			pkgs, err := b.BuildAll(ctx)
+			pkgs, err := b.BuildAll(ctx, false)
 			So(err, ShouldBeNil)
 
 			verifySource(t, pkgs, &core.Action_Metadata{
@@ -261,7 +264,7 @@ func TestPackageSources(t *testing.T) {
 		Convey("script source", func() {
 			err := b.Load(ctx, "tools/go")
 			So(err, ShouldBeNil)
-			pkgs, err := b.BuildAll(ctx)
+			pkgs, err := b.BuildAll(ctx, false)
 			So(err, ShouldBeNil)
 
 			verifySource(t, pkgs, &core.Action_Metadata{
