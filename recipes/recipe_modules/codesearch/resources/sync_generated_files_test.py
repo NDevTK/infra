@@ -10,7 +10,7 @@ import shutil
 import tempfile
 import unittest
 
-import sync_generated_files as sync
+from recipe_modules.codesearch.resources import sync_generated_files as sync
 
 
 class SyncGeneratedFilesCodesearchTest(unittest.TestCase):

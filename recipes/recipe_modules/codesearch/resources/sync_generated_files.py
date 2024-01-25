@@ -3,9 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 import argparse
 import errno
 import os.path
@@ -13,8 +10,10 @@ import re
 import shutil
 import subprocess
 import sys
+from typing import Optional, Sequence, Set, Union
 import zipfile
 
+sys.path.insert(0, os.path.dirname(__file__))
 from kythe.proto import analysis_pb2
 
 
@@ -283,7 +282,7 @@ def main():
   parser.add_argument(
       '--dry-run',
       action='store_true',
-      help='if set, does a dry run of push to remote repo.')
+      help='if set, skips pushing to the remote repo.')
   parser.add_argument(
       '--ignore', action='append', help='source paths to ignore when copying')
   parser.add_argument(
@@ -323,18 +322,30 @@ def main():
   cmd = ['git', 'push']
   if opts.nokeycheck:
     cmd.extend(['-o', 'nokeycheck'])
-  if opts.dry_run:
-    cmd.append('--dry-run')
   cmd.extend(['origin', 'HEAD:%s' % opts.dest_branch])
-  check_call(cmd, cwd=opts.dest_repo)
+  check_call(cmd, cwd=opts.dest_repo, dry_run=opts.dry_run)
   return 0
 
 
-def check_call(cmd, cwd=None):
-  if cwd is None:
-    print('Running %s' % cmd)
-  else:
-    print('Running %s in %s' % (cmd, cwd))
+def check_call(cmd: Union[str, Sequence[str]],
+               cwd: Optional[str] = None,
+               dry_run: bool = False) -> int:
+  """Wrapper for subprocess.check_call().
+
+  Args:
+    cmd: The command to run.
+    cwd: The directory in which to run the command.
+    dry_run: If True, don't actually run the command.
+
+  Returns:
+    The command's return code.
+  """
+  message = f'Pretending to run {cmd}' if dry_run else f'Running {cmd}'
+  if cwd is not None:
+    message = f'{message} in {cwd}'
+  print(message)
+  if dry_run:
+    return 0
   return subprocess.check_call(cmd, cwd=cwd)
 
 
