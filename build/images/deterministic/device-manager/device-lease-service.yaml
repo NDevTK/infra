@@ -1,0 +1,21 @@
+# Automatically builds the container for the Device Lease service that will
+# be deployed to Cloud Run.
+#
+# To test this config run:
+#    cloudbuildhelper build device-manager-service.yaml
+#
+# For more information see:
+#    https://chromium.googlesource.com/infra/infra/+/refs/heads/main/build/images/#testing-changes-locally
+
+name: device-manager/device-lease-service
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/device_manager/cmd/device_lease_service/docker/Dockerfile
+deterministic: true
+
+sources:
+  - ../../../../go/src/infra/device_manager
+
+build:
+  - go_binary: infra/device_manager/cmd/device_lease_service
+    dest: ${contextdir}/device-lease-service
