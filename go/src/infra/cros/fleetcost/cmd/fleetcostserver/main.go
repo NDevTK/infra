@@ -38,6 +38,7 @@ func main() {
 	}
 
 	server.Main(nil, mods, func(srv *server.Server) error {
+		ufsHostname := getUFSName(srv.Options.CloudProject)
 		t, err := auth.GetRPCTransport(srv.Context, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
 		if err != nil {
 			return errors.Annotate(err, "setting up UFS client").Err()
@@ -47,11 +48,12 @@ func main() {
 		}
 		prpcClient := &prpc.Client{
 			C:    httpClient,
-			Host: getUFSName(srv.Options.CloudProject),
+			Host: ufsHostname,
 		}
 		ufsClient := ufspb.NewFleetPRPCClient(prpcClient)
 		fleetCostFrontend := costserver.NewFleetCostFrontend().(*costserver.FleetCostFrontend)
 		costserver.SetUFSClient(fleetCostFrontend, ufsClient)
+		costserver.SetUFSHostname(fleetCostFrontend, ufsHostname)
 		costserver.InstallServices(fleetCostFrontend, srv)
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil

@@ -18,7 +18,10 @@ func NewFleetCostFrontend() fleetcostpb.FleetCostServer {
 
 // FleetCostFrontend is the fleet cost frontend.
 type FleetCostFrontend struct {
+	// Clients.
 	fleetClient ufspb.FleetClient
+	// Debugging information exposed through admin RPCs.
+	ufsHostname string
 }
 
 // InstallServices installs services (such as the prpc server) into the frontend.
@@ -35,4 +38,11 @@ func SetUFSClient(costFrontend *FleetCostFrontend, client ufspb.FleetClient) {
 		panic("SetUFSClient: ufs client cannot be nil")
 	}
 	costFrontend.fleetClient = client
+}
+
+// SetUFSHostname sets the UFS hostname on the frontend.
+//
+// This is used to populate debugging info in the PingUFS RPC.
+func SetUFSHostname(costFrontend *FleetCostFrontend, ufsHostname string) {
+	costFrontend.ufsHostname = ufsHostname
 }
