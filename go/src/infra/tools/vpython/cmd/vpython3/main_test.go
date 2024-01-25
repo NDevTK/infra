@@ -20,8 +20,7 @@ import (
 
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
-
-	"infra/tools/vpython/pkg/common"
+	"go.chromium.org/luci/vpython/common"
 )
 
 const vpythonTestReexec = "_VPYTHON_TEST_REEXEC"

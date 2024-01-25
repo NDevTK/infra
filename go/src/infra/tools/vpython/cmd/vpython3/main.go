@@ -13,11 +13,11 @@ import (
 
 	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/common/errors"
-
-	"infra/tools/vpython/pkg/application"
-	"infra/tools/vpython/pkg/common"
-	"infra/tools/vpython/pkg/python"
-	"infra/tools/vpython/pkg/wheels"
+	vpythonApi "go.chromium.org/luci/vpython/api/vpython"
+	"go.chromium.org/luci/vpython/application"
+	"go.chromium.org/luci/vpython/common"
+	"go.chromium.org/luci/vpython/python"
+	"go.chromium.org/luci/vpython/wheels"
 )
 
 const DefaultPythonVersion = "3.8"
@@ -82,6 +82,7 @@ func Main(ctx context.Context) error {
 		return app.ExecutePython(ctx)
 	}
 
+	app.VpythonSpec = &vpythonApi.Spec{}
 	if err := app.LoadSpec(ctx); err != nil {
 		return err
 	}
