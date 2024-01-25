@@ -49,4 +49,8 @@ message PingUFSResponse {
   google.protobuf.Any ufs_request = 1;
   // ufs_response is the response from UFS, encoded as JSON.
   google.protobuf.Any ufs_response = 2;
+  // ufs_error is the error we encountered from trying to ping UFS.
+  string ufs_error = 3;
+  // ufs_hostname is the hostname of the UFS instance that we contacted.
+  string ufs_hostname = 4;
 }
