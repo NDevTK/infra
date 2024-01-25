@@ -225,6 +225,21 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 			// For Multi-DUT testing info.
 			tags = configMultiDUTTags(tags, primaryExecInfo, testInvocation.GetSecondaryExecutionsInfo())
 		}
+
+		schedulingMetadata := testInvocation.GetSchedulingMetadata()
+		if schedulingMetadata != nil {
+			schedulingArgs := schedulingMetadata.GetSchedulingArgs()
+			requestedArgs := map[string]bool{
+				"analytics_name":    true,
+				"ctp-fwd-task-name": true,
+				"qs_account":        true,
+			}
+			for k, v := range schedulingArgs {
+				if _, ok := requestedArgs[k]; ok {
+					tags = AppendTags(tags, k, v)
+				}
+			}
+		}
 	}
 
 	if testRun != nil {
@@ -297,6 +312,17 @@ func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.Bu
 	if lacros != nil {
 		newTags = AppendTags(newTags, "ash_version", lacros.GetAshVersion())
 		newTags = AppendTags(newTags, "lacros_version", lacros.GetLacrosVersion())
+	}
+
+	chameleon := buildMetadata.GetChameleon()
+	if chameleon != nil {
+		chameleonTypes := []string{}
+		for _, t := range chameleon.GetTypes() {
+			chameleonTypes = append(chameleonTypes, t.Enum().String())
+		}
+		if len(chameleonTypes) != 0 {
+			newTags = AppendTags(newTags, "chameleon_type", strings.Join(chameleonTypes, ","))
+		}
 	}
 
 	return newTags

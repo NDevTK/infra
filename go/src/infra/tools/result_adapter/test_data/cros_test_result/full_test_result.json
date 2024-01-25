@@ -27,6 +27,12 @@
                     "lacros":{
                         "ash_version":"109.0.5391.0",
                         "lacros_version":"109.0.5391.0"
+                    },
+                    "chameleon":{
+                        "types":[
+                            "V2",
+                            "V3"
+                        ]
                     }
                 }
             },
@@ -68,6 +74,13 @@
                         8814951792758733697
                     ]
                 }
+            }
+        },
+        "scheduling_metadata":{
+            "scheduling_args":{
+                "analytics_name":"Bluetooth_Sa_Perbuild",
+                "ctp-fwd-task-name":"Bluetooth_Sa_Perbuild",
+                "qs_account":"unmanaged_p2"
             }
         }
     },
