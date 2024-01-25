@@ -915,9 +915,13 @@ class Support3ppApi(recipe_api.RecipeApi):
         storage_dir,
         '-target-platform',
         platform,
+        '-upload'
     ]
     if self._experimental:
-      args.append('-experiment')
+      args.extend((
+          '-cipd-service',
+          'https://chrome-infra-packages-dev.appspot.com/',
+      ))
 
     # Sort the package roots and packages.
     # Set doesn't promise to be iterating in insertion order.
