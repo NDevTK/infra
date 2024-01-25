@@ -61,11 +61,14 @@ def get_access_token(scopes=DEFAULT_SCOPES, environ=None, http=None):
   resp, content = http.request(
       uri='http://%s/rpc/LuciLocalAuthService.GetOAuthToken' % host,
       method='POST',
-      body=json.dumps({
-        'account_id': params.default_account_id,
-        'scopes': scopes,
-        'secret': params.secret,
-      }),
+      body=json.dumps(
+          {
+              'account_id': params.default_account_id,
+              'scopes': scopes,
+              'secret': params.secret,
+          },
+          # Sort the keys to simplify mocking.
+          sort_keys=True),
       headers={'Content-Type': 'application/json'})
   if resp.status != 200:
     raise LUCIAuthError(

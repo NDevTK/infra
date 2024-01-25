@@ -8,6 +8,7 @@ import os
 import unittest
 
 import infra_libs
+from six import PY2
 
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
@@ -56,23 +57,27 @@ class ReadJsonTest(unittest.TestCase):
     # Make sure all keys can be decoded as utf8
     for key in new_dict.keys():
       self.assertIsInstance(key, str)
-      key.decode('utf-8')  # should raise no exceptions
+      if PY2:  # pragma: no cover
+        key.decode('utf-8')  # should raise no exceptions
 
     # Make sure all values contain only utf8
     self.assertIsInstance(new_dict['string'], str)
-    new_dict['string'].decode('utf-8')
+    if PY2:  # pragma: no cover
+      new_dict['string'].decode('utf-8')
 
     for value in new_dict['list_of_strings']:
       self.assertIsInstance(value, str)
-      value.decode('utf-8')
+      if PY2:  # pragma: no cover
+        value.decode('utf-8')
 
     sub_dict = new_dict['clé accentuée']
     for key, value in sub_dict.items():
       self.assertIsInstance(key, str)
       self.assertIsInstance(value, str)
 
-      key.decode('utf-8')
-      value.decode('utf-8')
+      if PY2:  # pragma: no cover
+        key.decode('utf-8')
+        value.decode('utf-8')
 
   def test_read_from_string(self):
     orig_dict = {"string": "prêt¿",
@@ -88,23 +93,27 @@ class ReadJsonTest(unittest.TestCase):
     # Make sure all keys can be decoded as utf8
     for key in new_dict.keys():
       self.assertIsInstance(key, str)
-      key.decode('utf-8')  # should raise no exceptions
+      if PY2:  # pragma: no cover
+        key.decode('utf-8')  # should raise no exceptions
 
     # Make sure all values contain only utf8
     self.assertIsInstance(new_dict['string'], str)
-    new_dict['string'].decode('utf-8')
+    if PY2:  # pragma: no cover
+      new_dict['string'].decode('utf-8')
 
     for value in new_dict['list_of_strings']:
       self.assertIsInstance(value, str)
-      value.decode('utf-8')
+      if PY2:  # pragma: no cover
+        value.decode('utf-8')
 
     sub_dict = new_dict['clé accentuée']
     for key, value in sub_dict.items():
       self.assertIsInstance(key, str)
       self.assertIsInstance(value, str)
 
-      key.decode('utf-8')
-      value.decode('utf-8')
+      if PY2:  # pragma: no cover
+        key.decode('utf-8')
+        value.decode('utf-8')
 
   def test_read_from_string_no_unicode(self):
     # only numerical value. Keys have to be string in json.

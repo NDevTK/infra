@@ -473,20 +473,24 @@ class DistributionMetricTest(TestBase):
   def _test_distribution_proto(self, dist):
     interface.register(dist)
 
-    self.time_fn.return_value = 100.3
-    for num in [0, 1, 5, 5.5, 9, 10, 10000]:
-      dist.add(num)
+    try:
+      self.time_fn.return_value = 100.3
+      for num in [0, 1, 5, 5.5, 9, 10, 10000]:
+        dist.add(num)
 
-    self.time_fn.return_value = 1000.6
-    proto = list(interface._generate_proto())[0]
-    data_set = proto.metrics_collection[0].metrics_data_set[0]
-    data = data_set.data[0]
+      self.time_fn.return_value = 1000.6
+      proto = list(interface._generate_proto())[0]
+      data_set = proto.metrics_collection[0].metrics_data_set[0]
+      data = data_set.data[0]
 
-    self.assertAlmostEqual(1432.928571428, data.distribution_value.mean)
-    self.assertEqual(metrics_pb2.DISTRIBUTION, data_set.value_type)
-    self.assertEqual(100, data.start_timestamp.seconds)
-    self.assertEqual(1000, data.end_timestamp.seconds)
-    self.assertFalse(data_set.annotations.HasField('unit'))
+      self.assertAlmostEqual(1432.928571428, data.distribution_value.mean)
+      self.assertEqual(metrics_pb2.DISTRIBUTION, data_set.value_type)
+      self.assertEqual(100, data.start_timestamp.seconds)
+      self.assertEqual(1000, data.end_timestamp.seconds)
+      self.assertFalse(data_set.annotations.HasField('unit'))
+
+    finally:
+      interface.unregister(dist)
 
     return data_set, data
 

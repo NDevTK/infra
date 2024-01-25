@@ -83,13 +83,16 @@ class AuthTest(unittest.TestCase):
           http=http)
       self.assertEqual(tok, 'new-token')
       self.assertEqual(exp, datetime.datetime.utcfromtimestamp(expiry))
-      self.assertEqual(http.requests_made, [http.HttpCall(
-          uri='http://127.0.0.1:%s/rpc/'
+      self.assertEqual(http.requests_made, [
+          http.HttpCall(
+              uri='http://127.0.0.1:%s/rpc/'
               'LuciLocalAuthService.GetOAuthToken' % _PORT,
-          method='POST',
-          body='{"scopes": ["a", "b"], "secret": "zzz", "account_id": "task"}',
-          headers={'Content-Type': 'application/json'},
-      )])
+              method='POST',
+              body=('{"account_id": "task", "scopes": ["a", "b"], ' +
+                    '"secret": "zzz"}'),
+              headers={'Content-Type': 'application/json'},
+          )
+      ])
 
   def test_get_access_token_happy_without_exp(self):
     with self.luci_ctx({'local_auth': _LOCAL_AUTH}) as environ:
