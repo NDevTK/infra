@@ -218,6 +218,7 @@
       "[START_DIR]/_pkgbuild/store",
       "-target-platform",
       "linux-amd64",
+      "-upload",
       "-spec-pool",
       "[CACHE]/builder/package_repo",
       "p_something/package_repo",
