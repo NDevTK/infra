@@ -102,7 +102,7 @@ def read_json_as_utf8(filename=None, text=None):
   if filename is None and text is None:
     raise ValueError('One of "filename" and "text" must be provided')
 
-  def to_utf8(obj):
+  def to_utf8(obj):  # pragma: no cover
     if isinstance(obj, dict):
       return {to_utf8(key): to_utf8(value) for key, value in list(obj.items())}
     if isinstance(obj, list):
