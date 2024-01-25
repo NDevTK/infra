@@ -12,8 +12,6 @@ import unittest
 
 import mock
 
-from testing_support import auto_stub
-
 from infra_libs.ts_mon import config
 from infra_libs.ts_mon.common import interface
 from infra_libs.ts_mon.common import standard_metrics
@@ -25,12 +23,12 @@ import infra_libs
 DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
 
 
-class GlobalsTest(auto_stub.TestCase):
+@mock.patch.object(config, 'load_machine_config', lambda x: {})
+class GlobalsTest(unittest.TestCase):
 
   def setUp(self):
     super(GlobalsTest, self).setUp()
     interface.state = interface.State()
-    self.mock(config, 'load_machine_config', lambda x: {})
 
   def tearDown(self):
     # It's important to call close() before un-setting the mock state object,
@@ -180,23 +178,24 @@ class GlobalsTest(auto_stub.TestCase):
     self.assertEqual(interface.state.target.hostname, 'autogen:host')
 
   def test_autogen_device_config(self):
-    self.mock(config, 'load_machine_config', lambda x: {
-        'autogen_hostname': True,
-        'credentials': '/path/to/creds.p8.json',
-        'endpoint': 'test://endpoint'})
-    p = argparse.ArgumentParser()
-    config.add_argparse_options(p)
-    args = p.parse_args([
-        '--ts-mon-target-type', 'device',
-        '--ts-mon-device-region', 'reg',
-        '--ts-mon-device-role', 'role',
-        '--ts-mon-device-network', 'net',
-        '--ts-mon-device-hostname', 'host'])
-    config.process_argparse_options(args)
-    self.assertEqual(interface.state.target.region, 'reg')
-    self.assertEqual(interface.state.target.role, 'role')
-    self.assertEqual(interface.state.target.network, 'net')
-    self.assertEqual(interface.state.target.hostname, 'autogen:host')
+    with mock.patch.object(
+        config, 'load_machine_config', lambda x: {
+            'autogen_hostname': True,
+            'credentials': '/path/to/creds.p8.json',
+            'endpoint': 'test://endpoint'
+        }):
+      p = argparse.ArgumentParser()
+      config.add_argparse_options(p)
+      args = p.parse_args([
+          '--ts-mon-target-type', 'device', '--ts-mon-device-region', 'reg',
+          '--ts-mon-device-role', 'role', '--ts-mon-device-network', 'net',
+          '--ts-mon-device-hostname', 'host'
+      ])
+      config.process_argparse_options(args)
+      self.assertEqual(interface.state.target.region, 'reg')
+      self.assertEqual(interface.state.target.role, 'role')
+      self.assertEqual(interface.state.target.network, 'net')
+      self.assertEqual(interface.state.target.hostname, 'autogen:host')
 
   def test_task_args(self):
     p = argparse.ArgumentParser()
@@ -234,24 +233,25 @@ class GlobalsTest(auto_stub.TestCase):
     self.assertEqual(interface.state.target.task_num, 1)
 
   def test_autogen_task_config(self):
-    self.mock(config, 'load_machine_config', lambda x: {
-        'autogen_hostname': True,
-        'credentials': '/path/to/creds.p8.json',
-        'endpoint': 'test://endpoint'})
-    p = argparse.ArgumentParser()
-    config.add_argparse_options(p)
-    args = p.parse_args(['--ts-mon-target-type', 'task',
-                         '--ts-mon-task-service-name', 'serv',
-                         '--ts-mon-task-job-name', 'job',
-                         '--ts-mon-task-region', 'reg',
-                         '--ts-mon-task-hostname', 'host',
-                         '--ts-mon-task-number', '1'])
-    config.process_argparse_options(args)
-    self.assertEqual(interface.state.target.service_name, 'serv')
-    self.assertEqual(interface.state.target.job_name, 'job')
-    self.assertEqual(interface.state.target.region, 'reg')
-    self.assertEqual(interface.state.target.hostname, 'autogen:host')
-    self.assertEqual(interface.state.target.task_num, 1)
+    with mock.patch.object(
+        config, 'load_machine_config', lambda x: {
+            'autogen_hostname': True,
+            'credentials': '/path/to/creds.p8.json',
+            'endpoint': 'test://endpoint'
+        }):
+      p = argparse.ArgumentParser()
+      config.add_argparse_options(p)
+      args = p.parse_args([
+          '--ts-mon-target-type', 'task', '--ts-mon-task-service-name', 'serv',
+          '--ts-mon-task-job-name', 'job', '--ts-mon-task-region', 'reg',
+          '--ts-mon-task-hostname', 'host', '--ts-mon-task-number', '1'
+      ])
+      config.process_argparse_options(args)
+      self.assertEqual(interface.state.target.service_name, 'serv')
+      self.assertEqual(interface.state.target.job_name, 'job')
+      self.assertEqual(interface.state.target.region, 'reg')
+      self.assertEqual(interface.state.target.hostname, 'autogen:host')
+      self.assertEqual(interface.state.target.task_num, 1)
 
   def test_task_args_missing_service_name(self):
     p = argparse.ArgumentParser()

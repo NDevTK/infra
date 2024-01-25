@@ -5,12 +5,11 @@
 import sys
 import unittest
 
-from testing_support import auto_stub
 from infra.libs.service_utils import daemon
 
 
 
-class TestTimeout(auto_stub.TestCase):
+class TestTimeout(unittest.TestCase):
   @unittest.skipUnless(sys.platform.startswith('linux'), 'Requires linux')
   def setUp(self):  # pragma: no cover
     super(TestTimeout, self).setUp()
