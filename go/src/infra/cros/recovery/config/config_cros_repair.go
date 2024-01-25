@@ -3473,7 +3473,8 @@ func crosRepairActions() map[string]*Action {
 				"Setup has servo info",
 				"Verify servod is responsive",
 			},
-			ExecName: "sample_pass",
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Setup has servo info": {
 			ExecName: "dut_servo_host_present",

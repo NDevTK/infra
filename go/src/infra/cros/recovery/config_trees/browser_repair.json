@@ -948,7 +948,7 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Is a Chromebook",
@@ -999,7 +999,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -1086,7 +1086,7 @@
                                   "run_control": "ALWAYS_RUN"
                                 }
                               ],
-                              "run_control": "RERUN_AFTER_RECOVERY"
+                              "run_control": "ALWAYS_RUN"
                             }
                           ],
                           "exec_args": [
@@ -1212,7 +1212,7 @@
                               "run_control": "ALWAYS_RUN"
                             }
                           ],
-                          "run_control": "RERUN_AFTER_RECOVERY"
+                          "run_control": "ALWAYS_RUN"
                         }
                       ],
                       "exec_args": [
@@ -1373,7 +1373,7 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Is a Chromebook",
@@ -1424,7 +1424,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -1472,7 +1472,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "dependencies": [
@@ -1550,7 +1550,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "timeout": "1m0s",
@@ -1595,7 +1595,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "dependencies": [
@@ -1705,7 +1705,7 @@
                                   "run_control": "ALWAYS_RUN"
                                 }
                               ],
-                              "run_control": "RERUN_AFTER_RECOVERY"
+                              "run_control": "ALWAYS_RUN"
                             }
                           ],
                           "exec_args": [
@@ -1831,7 +1831,7 @@
                               "run_control": "ALWAYS_RUN"
                             }
                           ],
-                          "run_control": "RERUN_AFTER_RECOVERY"
+                          "run_control": "ALWAYS_RUN"
                         }
                       ],
                       "exec_args": [
@@ -1968,7 +1968,7 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Is servo USB key detected",
@@ -2007,7 +2007,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -2094,7 +2094,7 @@
                                   "run_control": "ALWAYS_RUN"
                                 }
                               ],
-                              "run_control": "RERUN_AFTER_RECOVERY"
+                              "run_control": "ALWAYS_RUN"
                             }
                           ],
                           "exec_args": [
@@ -2220,7 +2220,7 @@
                               "run_control": "ALWAYS_RUN"
                             }
                           ],
-                          "run_control": "RERUN_AFTER_RECOVERY"
+                          "run_control": "ALWAYS_RUN"
                         }
                       ],
                       "exec_args": [
@@ -2288,7 +2288,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -2334,7 +2334,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -2390,7 +2390,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -2535,7 +2535,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -2581,7 +2581,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -2627,7 +2627,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -2696,7 +2696,7 @@
                       "run_control": "ALWAYS_RUN"
                     }
                   ],
-                  "run_control": "RERUN_AFTER_RECOVERY"
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Is a Chromebook",
@@ -2747,7 +2747,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -2812,7 +2812,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     }
                   ],
                   "exec_args": [
@@ -2876,7 +2876,7 @@
                           "run_control": "ALWAYS_RUN"
                         }
                       ],
-                      "run_control": "RERUN_AFTER_RECOVERY"
+                      "run_control": "ALWAYS_RUN"
                     },
                     {
                       "name": "Is a Chromebook",
@@ -2927,7 +2927,7 @@
                               "run_control": "ALWAYS_RUN"
                             }
                           ],
-                          "run_control": "RERUN_AFTER_RECOVERY"
+                          "run_control": "ALWAYS_RUN"
                         }
                       ],
                       "exec_args": [
@@ -3005,7 +3005,7 @@
                               "run_control": "ALWAYS_RUN"
                             }
                           ],
-                          "run_control": "RERUN_AFTER_RECOVERY"
+                          "run_control": "ALWAYS_RUN"
                         }
                       ],
                       "dependencies": [
@@ -3045,7 +3045,7 @@
                                   "run_control": "ALWAYS_RUN"
                                 }
                               ],
-                              "run_control": "RERUN_AFTER_RECOVERY"
+                              "run_control": "ALWAYS_RUN"
                             }
                           ],
                           "exec_args": [
