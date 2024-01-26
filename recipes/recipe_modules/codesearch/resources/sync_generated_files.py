@@ -259,7 +259,7 @@ def copy_generated_files(source_dir: str,
     # Only check for tmp in the path relative to the source root, otherwise all
     # source files will be ignored if the source root contains a tmp component
     # (as is the case when running tests locally).
-    if 'tmp' in os.path.relpath(source_dir, dirpath).split(os.sep):
+    if 'tmp' in os.path.relpath(dirpath, source_dir).split(os.sep):
       continue
 
     for filename in filenames:

@@ -250,6 +250,15 @@ class SyncGeneratedFilesCodesearchTest(unittest.TestCase):
     self.assertFalse(
         os.path.exists(os.path.join(self.dest_root, 'ignorefile.cc')))
 
+  def testDontCopyTmpFiles(self) -> None:
+    """Make sure files in src_root/**/tmp/** don't get copied."""
+    os.makedirs(os.path.join(self.src_root, 'tmp'), exist_ok=True)
+    with open(os.path.join(self.src_root, 'tmp', 'foo.cc'), 'w') as f:
+      f.write('contents')
+    sync.copy_generated_files(self.src_root, self.dest_root)
+    self.assertFalse(
+        os.path.exists(os.path.join(self.dest_root, 'tmp', 'foo.cc')))
+
 
 if __name__ == '__main__':
   unittest.main()
