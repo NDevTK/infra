@@ -38,7 +38,7 @@ func cancelExceededTests(ctx context.Context, client trservice.Client, taskSetNa
 	for _, task := range taskSet.activeTasks {
 		taskIds = append(taskIds, task.TaskReference)
 	}
-	err := client.CancelTasks(ctx, taskIds, "SUITE EXECUTION TIME LIMIT EXCEEDED")
+	err := client.CancelTasks(ctx, taskIds, "SUITE EXECUTION TIME LIMIT EXCEEDED: go/suitelimits-faqs")
 	if err != nil {
 		return err
 	}

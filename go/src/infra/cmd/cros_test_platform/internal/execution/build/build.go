@@ -104,7 +104,7 @@ const (
 	// Include a leading newline to separate from the step name.
 	latestAttemptTemplate     = "*    [latest attempt](%s)"
 	previousAttemptsTemplate  = "*    previous failed attempts: %s"
-	ExceededExecutionTimeText = "*    SUITE EXECUTION TIME LIMIT EXCEEDED"
+	ExceededExecutionTimeText = "*    SUITE EXECUTION TIME LIMIT EXCEEDED: go/suitelimits-faqs"
 )
 
 func (i *InvocationStepUpdater) AddCancelledSummary() {
