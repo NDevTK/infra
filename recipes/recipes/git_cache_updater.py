@@ -35,7 +35,7 @@ PROPERTIES = git_cache_updater_pb.Inputs
 
 OK, EMPTY = range(2)
 
-CONCURRENT_STEPS = 4
+CONCURRENT_STEPS = 1
 
 
 def _list_host_repos(api, host_url):
