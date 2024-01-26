@@ -17,8 +17,8 @@ class SyncGeneratedFilesCodesearchTest(unittest.TestCase):
 
   def setUp(self):
     super().setUp()
-    self.src_root = tempfile.mkdtemp(suffix='_%s_src' % self._testMethodName)
-    self.dest_root = tempfile.mkdtemp(suffix='_%s_dest' % self._testMethodName)
+    self.src_root = tempfile.mkdtemp(suffix=f'_{self._testMethodName}_src')
+    self.dest_root = tempfile.mkdtemp(suffix=f'_{self._testMethodName}_dest')
 
   def tearDown(self):
     super().tearDown()

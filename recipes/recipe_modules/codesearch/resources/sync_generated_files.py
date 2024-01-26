@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+"""Script to sync generated kzip files to a remote git repository."""
+
 import argparse
 import errno
 import os.path
@@ -10,28 +12,31 @@ import re
 import shutil
 import subprocess
 import sys
-from typing import Optional, Sequence, Set, Union
+from typing import Optional, Sequence, Set, Tuple, Union
 import zipfile
 
 sys.path.insert(0, os.path.dirname(__file__))
 from kythe.proto import analysis_pb2
 
 
-def has_allowed_extension(filename):
-  """ Checks if this file has one of the approved extensions. """
+def has_allowed_extension(filename: str) -> bool:
+  """Check whether this file has one of the approved extensions.
 
-  # Exclude everything except generated source code.
-  # Note that we use a allowlist here instead of a blocklist, because:
-  # 1. If we allowlist, the problem is that some legit files might be excluded.
-  #    The solution to this is simple; we just allowlist the filetype and then
-  #    they show up in CS a few hours later.
-  # 2. If we blocklist, the problem is that some large binary files of a new
-  #    filetype may show up. This could go undetected for a long time, causing
-  #    the Git repo to start expanding until it gets too big for the builders to
-  #    fetch. The fix in this case is essentially to blow away the generated Git
-  #    repo and start again.
-  # Since the problems caused by allowlisting are more easily managed than those
-  # caused by blocklisting, we allowlist below.
+  Exclude everything except generated source code.
+
+  Note that we use a allowlist here instead of a blocklist, because:
+  1. If we allowlist, the problem is that some legit files might be excluded.
+     The solution to this is simple; we just allowlist the filetype and then
+     they show up in CS a few hours later.
+  2. If we blocklist, the problem is that some large binary files of a new
+     filetype may show up. This could go undetected for a long time, causing
+     the Git repo to start expanding until it gets too big for the builders to
+     fetch. The fix in this case is essentially to blow away the generated Git
+     repo and start again.
+
+  Since the problems caused by allowlisting are more easily managed than those
+  caused by blocklisting, we use an allowlist.
+  """
   allowed_extensions = {
       'build_metadata',
       'c',
@@ -42,7 +47,7 @@ def has_allowed_extension(filename):
       'desugardeps',
       'gn',
       'h',
-      'hpp ',
+      'hpp',
       'htm',
       'html',
       'hxx',
@@ -65,26 +70,31 @@ def has_allowed_extension(filename):
   return dot_index != -1 and filename[dot_index + 1:] in allowed_extensions
 
 
-def translate_root(source_root, target_root, filename):
-  """ Given a root path (source_root), a path under that path (filename) and
-      another root path (target_root), translate the path such that it has the
-      new root instead of the old one, but is otherwise unchanged.
+def translate_root(source_root: str, target_root: str, filename: str) -> str:
+  """Translate a filepath from one relative root to another.
 
-      For example:
-      translate_root('/foo', '/bar', '/foo/baz') => '/bar/baz'
+  For example:
+    translate_root('/foo', '/bar', '/foo/baz') => '/bar/baz'
+
+  Args:
+    source_root: The root that the input filepath is already relative to.
+    target_root: The root that the output filepath will be relative to.
+    filename: The file to translate.
+
+  Returns:
+    An updated filename, relative to target_root instead of source_root.
   """
-
   relative_to_root = os.path.join(filename[len(source_root) + 1:])
   return os.path.join(target_root, relative_to_root)
 
 
-def kzip_input_paths(kzip_path):
-  """ Get the set of all required_inputs in the kzip. """
-
-  required_inputs = set()
+def kzip_input_paths(kzip_path: str) -> Set[str]:
+  """Return the set of all required_inputs in the kzip."""
+  required_inputs: Set[str] = set()
   try:
     with zipfile.ZipFile(
-        kzip_path, 'r', zipfile.ZIP_DEFLATED, allowZip64=True) as kzip:
+        kzip_path, mode='r', compression=zipfile.ZIP_DEFLATED,
+        allowZip64=True) as kzip:
 
       for zip_info in kzip.infolist():
         # kzip should contain following structure:
@@ -98,34 +108,39 @@ def kzip_input_paths(kzip_path):
         if not re.match(r'.*/pbunits/\w*', zip_info.filename):
           continue
 
-        cu = analysis_pb2.IndexedCompilation()
-        with kzip.open(zip_info, 'r') as f:
-          cu.ParseFromString(f.read())
+        compilation = analysis_pb2.IndexedCompilation()
+        with kzip.open(zip_info, 'r') as file:
+          compilation.ParseFromString(file.read())
 
-        for r in cu.unit.required_input:
-          p = r.v_name.path
+        for required_input in compilation.unit.required_input:
+          path = required_input.v_name.path
 
           # Absolute paths refer to libraries. Ignore these.
-          if not os.path.isabs(p) and has_allowed_extension(p):
-            # package_index may adjust vname paths. Add possible adjustments to
-            # the required_inputs set.
-            parts = p.split(os.sep)
+          if os.path.isabs(path):
+            continue
+          if not has_allowed_extension(path):
+            continue
 
-            # Don't sync any temporary files. These aren't actually referenced.
-            if 'tmp' in parts:
-              continue
+          # package_index may adjust vname paths. Add possible adjustments to
+          # the required_inputs set.
+          parts = path.split(os.sep)
 
-            for i in range(len(parts)):
-              # Kzips use forward slashes.
-              required_inputs.add('/'.join(parts[i:]))
+          # Don't sync any temporary files. These aren't actually referenced.
+          if 'tmp' in parts:
+            continue
+
+          for i in range(len(parts)):
+            # Kzips use forward slashes.
+            required_inputs.add('/'.join(parts[i:]))
   except zipfile.BadZipfile as e:
-    print('Error reading kzip file %s: %s' % (kzip_path, e))
+    print(f'Error reading kzip file {kzip_path}: {e}')
 
   return required_inputs
 
 
-def has_secrets(filepath):
-  patterns = (
+def has_secrets(filepath: str) -> bool:
+  """Check whether a file contains any secrets that shouldn't be indexed."""
+  patterns: Tuple[str] = (
       # Patterns adapted from
       # https://www.ndss-symposium.org/wp-content/uploads/2019/02/ndss2019_04B-3_Meli_paper.pdf
 
@@ -144,17 +159,36 @@ def has_secrets(filepath):
     return re.search(r, text) is not None
 
 
-def copy_generated_files(source_dir,
-                         dest_dir,
-                         kzip_input_suffixes=None,
-                         ignore=None):
-  try:
-    os.makedirs(dest_dir)
-  except OSError as e:
-    if e.errno != errno.EEXIST:
-      raise
+def copy_generated_files(source_dir: str,
+                         dest_dir: str,
+                         kzip_input_suffixes: Optional[Set[str]] = None,
+                         ignore: Optional[Set[str]] = None) -> None:
+  """Copy files from source_dir to dest_dir.
 
-  def is_referenced(path):
+  Args:
+    source_dir: The directory to copy from.
+    dest_dir: The directory to copy into. Will be created if it doesn't already
+      exist.
+    kzip_input_suffixes: A set of file endings referenced by the kzip.
+    ignore: A list of source paths to ignore when copying.
+  """
+  os.makedirs(dest_dir, exist_ok=True)
+  if ignore is None:
+    ignore = set()
+
+  def is_referenced(path: str) -> bool:
+    """Check whether the given source path is referenced by kzip_input_suffixes.
+
+    Args:
+      path: The source path to check.
+
+    Returns:
+      True if any suffix of this path is in kzip_input_suffixes.
+
+    Raises:
+      AssertionError: Called when kzip_input_paths is None.
+    """
+    assert kzip_input_paths is not None
     # Since kzip_input_suffixes is a set of path endings, check each ending
     # of dest_file for membership in the set. Checking this way is faster than
     # linear time search with endswith.
@@ -166,7 +200,15 @@ def copy_generated_files(source_dir,
         return True
     return False
 
-  def is_ignored(path):
+  def is_ignored(path: str) -> bool:
+    """Check whether the given source path should be ignored.
+
+    Args:
+      path: The source path to check.
+
+    Returns:
+      True if the source path, or any of its parent dirs, is in the ignore set.
+    """
     parts = os.path.normpath(path).split(os.sep)
     for i in range(len(parts)):
       if os.sep.join(parts[:i + 1]) in ignore:
@@ -186,24 +228,24 @@ def copy_generated_files(source_dir,
 
       delete = False
       if not os.path.exists(source_file):
-        reason = 'source_file %s does not exist.' % source_file
+        reason = f'source_file {source_file} does not exist.'
         delete = True
-      elif ignore and is_ignored(source_file):
-        reason = 'source_file %s is ignored.' % source_file
+      elif is_ignored(source_file):
+        reason = f'source_file {source_file} is ignored.'
         delete = True
       elif not has_allowed_extension(source_file):
         reason = \
-            'source_file %s does not have an allowed extension.' % source_file
+            f'source_file {source_file} does not have an allowed extension.'
         delete = True
       elif has_secrets(dest_file):
-        reason = 'dest_file %s may contain secrets.' % dest_file
+        reason = f'dest_file {dest_file} may contain secrets.'
         delete = True
       elif kzip_input_suffixes and not is_referenced(dest_file):
-        reason = 'dest_file %s not referenced by kzip.' % dest_file
+        reason = f'dest_file {dest_file} not referenced by kzip.'
         delete = True
 
       if delete:
-        print('Deleting dest_file %s: %s' % (dest_file, reason))
+        print(f'Deleting dest_file {dest_file}: {reason}')
         os.remove(dest_file)
 
   # Second, copy everything that matches the allowlist from source to dest. If
@@ -211,11 +253,7 @@ def copy_generated_files(source_dir,
   # ignored paths.
   for dirpath, _, filenames in os.walk(source_dir):
     if dirpath != source_dir:
-      try:
-        os.mkdir(translate_root(source_dir, dest_dir, dirpath))
-      except OSError as e:
-        if e.errno != errno.EEXIST:
-          raise
+      os.makedirs(translate_root(source_dir, dest_dir, dirpath), exist_ok=True)
 
     # Don't sync any temporary files. These aren't actually referenced.
     # Only check for tmp in the path relative to the source root, otherwise all
@@ -247,14 +285,14 @@ def copy_generated_files(source_dir,
   # Finally, delete any empty directories. We keep going to a fixed point, to
   # remove directories that contain only other empty directories.
   dirs_to_examine = [
-      dirpath for dirpath, _, _ in os.walk(dest_dir) if dirpath != dest_dir
+      dirpath for (dirpath, _, _) in os.walk(dest_dir) if dirpath != dest_dir
   ]
-  while dirs_to_examine != []:
+  while dirs_to_examine:
     d = dirs_to_examine.pop()
 
     # We make no effort to deduplicate paths in dirs_to_examine, so we might
     # have already removed this path.
-    if os.path.exists(d) and os.listdir(d) == []:
+    if os.path.exists(d) and not os.listdir(d):
       print('Deleting empty directory:', d)
       os.rmdir(d)
 
@@ -264,7 +302,8 @@ def copy_generated_files(source_dir,
         dirs_to_examine.append(parent_dir)
 
 
-def main():
+def _parse_args() -> argparse.Namespace:
+  """Parse command-line args."""
   parser = argparse.ArgumentParser()
   parser.add_argument('--message', help='commit message', required=True)
   parser.add_argument(
@@ -278,13 +317,16 @@ def main():
   parser.add_argument(
       '--nokeycheck',
       action='store_true',
-      help=('if set, skips keycheck on git push.'))
+      help='if set, skips keycheck on git push.')
   parser.add_argument(
       '--dry-run',
       action='store_true',
       help='if set, skips pushing to the remote repo.')
   parser.add_argument(
-      '--ignore', action='append', help='source paths to ignore when copying')
+      '--ignore',
+      action='append',
+      help='source paths to ignore when copying',
+      default=set())
   parser.add_argument(
       '--copy',
       action='append',
@@ -292,39 +334,61 @@ def main():
             'dest_repo. takes the format /path/to/src;dest_dir'),
       required=True)
   parser.add_argument('dest_repo', help='git checkout to copy files to')
-  opts = parser.parse_args()
+  return parser.parse_args()
 
-  kzip_input_suffixes = None
+
+def main():
+  """Main script entrypoint."""
+  opts = _parse_args()
+
+  kzip_input_suffixes: Optional[Set[str]] = None
   if opts.kzip_prune:
     kzip_input_suffixes = kzip_input_paths(opts.kzip_prune)
 
-  ignore_paths = None
-  if opts.ignore:
-    ignore_paths = {os.path.normpath(i) for i in opts.ignore}
+  ignore_paths: Set[str] = set(os.path.normpath(i) for i in opts.ignore)
 
   for c in opts.copy:
     source, dest = c.split(';')
-    copy_generated_files(source, os.path.join(opts.dest_repo, dest),
-                         kzip_input_suffixes, ignore_paths)
+    copy_generated_files(source, os.path.join(opts.dest_repo, dest), ignore,
+                         kzip_input_suffixes)
 
-  # Add the files to the git index, exit if there were no changes.
-  check_call(['git', 'add', '--', '.'], cwd=opts.dest_repo)
-  check_call(['git', 'status'], cwd=opts.dest_repo)
-  check_call(['git', 'diff'], cwd=opts.dest_repo)
+  send_to_git(
+      opts.dest_repo,
+      opts.dest.branch,
+      commit_message=opts.message,
+      dry_run=opts.dry_run)
+
+
+def send_to_git(dest_repo: str,
+                dest_branch: str,
+                commit_message: str,
+                nokeycheck: bool = False,
+                dry_run: bool = False) -> None:
+  """Upload the generated files to Git.
+
+  Args:
+    dest_repo: The local checkout to which files were copied.
+    dest_branch: The Git branch in the destination repo to sync to.
+    commit_message: What to write for the Git commit message.
+    nokeycheck: If True, skip keycheck during git push.
+    dry_run: If True, don't actually push the files to the Git remote.
+  """
+  check_call(['git', 'add', '--', '.'], cwd=dest_repo)
+  check_call(['git', 'status'], cwd=dest_repo)
+  check_call(['git', 'diff'], cwd=dest_repo)
   status = subprocess.check_output(['git', 'status', '--porcelain'],
-                                   cwd=opts.dest_repo)
+                                   cwd=dest_repo)
   if not status:
     print('No changes, exiting')
-    return 0
+    return
 
-  check_call(['git', 'commit', '-m', opts.message], cwd=opts.dest_repo)
+  check_call(['git', 'commit', '-m', commit_message], cwd=dest_repo)
 
   cmd = ['git', 'push']
-  if opts.nokeycheck:
+  if nokeycheck:
     cmd.extend(['-o', 'nokeycheck'])
-  cmd.extend(['origin', 'HEAD:%s' % opts.dest_branch])
-  check_call(cmd, cwd=opts.dest_repo, dry_run=opts.dry_run)
-  return 0
+  cmd.extend(['origin', f'HEAD:{dest_branch}'])
+  check_call(cmd, cwd=dest_repo, dry_run=dry_run)
 
 
 def check_call(cmd: Union[str, Sequence[str]],
