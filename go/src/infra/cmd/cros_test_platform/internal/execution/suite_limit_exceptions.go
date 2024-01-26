@@ -161,4 +161,8 @@ var exceptions = []suiteFilter{
 		suiteName:  "paygen_au_canary",
 		expiration: releaseLongTerm,
 	},
+	{
+		suiteName:  "cq-medium",
+		expiration: standardExemption,
+	},
 }
