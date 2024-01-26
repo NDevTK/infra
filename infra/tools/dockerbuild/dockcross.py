@@ -113,7 +113,12 @@ class Builder(object):
         relpath (str): The path of the source, relative to the container root.
         name (str): The basename of the source (e.g., "/foo/bar" => "bar").
       """
-      src = repo.ensure(SOURCES[src_name], src_dir, unpack=False)
+      if dx.platform.cipd_platform in PLATFORM_SOURCES and src_name in PLATFORM_SOURCES[
+          dx.platform.cipd_platform]:
+        src_spec = PLATFORM_SOURCES[dx.platform.cipd_platform][src_name]
+      else:
+        src_spec = SOURCES[src_name]
+      src = repo.ensure(src_spec, src_dir, unpack=False)
       return rp(src)
 
     perl_relpath = ensure_src('perl')
@@ -423,7 +428,7 @@ SOURCES = {
     ),
     # TODO(https://crbug.com/1247674): For compatibility, this version should
     # not be updated until we have switched to bundling libffi in the cffi
-    # wheel.
+    # wheel. Once this is updated, RISC-V should not need a different version.
     'libffi': source.remote_archive(
         name='libffi',
         version='3.2.1',
@@ -445,4 +450,15 @@ SOURCES = {
         version='6.1',
         url='http://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.1.tar.gz',
     ),
+}
+
+# Platform-specific overrides for packages in SOURCES.
+PLATFORM_SOURCES = {
+    'linux-riscv64': {
+        'libffi': source.remote_archive(
+            name='libffi',
+            version='3.4.4',
+            url='https://github.com/libffi/libffi/archive/refs/tags/v3.4.4.tar.gz',
+        ),
+    }
 }
