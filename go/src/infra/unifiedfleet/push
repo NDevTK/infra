@@ -1,0 +1,86 @@
+#!/bin/bash -e
+# A helper script to guide UFS push to prod.
+
+# Create the uprev CL.
+WORKDIR=$(mktemp -d /tmp/ufs-push.XXXXXX)
+pushd "$WORKDIR" >/dev/null || (
+	echo "Failed to enter created temp working dir $WORKDIR. Exiting."
+	exit
+)
+
+# The clone command is copied from
+# https://chrome-internal-review.googlesource.com/admin/repos/infradata/k8s,general
+# Please keep sync with it (though it should be stable).
+# The only change here is to use shallow clone for speed.
+# {
+(
+	git clone --depth 1 https://chrome-internal.googlesource.com/infradata/k8s && (
+		cd k8s && f=$(git rev-parse --git-dir)/hooks/commit-msg
+		mkdir -p $(dirname $f)
+		curl -Lo $f https://gerrit-review.googlesource.com/tools/hooks/commit-msg
+		chmod +x $f
+	)
+) &>/dev/null
+# }
+cd k8s || (
+	echo "Failed to enter clones respoitory. Exiting."
+	exit 1
+)
+VERSION_FILE=projects/unified-fleet-system/channels.json
+NEW_IMAGE_TAG=$(cat $VERSION_FILE | awk -F \" '/staging/{print $4; exit}')
+OLD_IMAGE_TAG=$(cat $VERSION_FILE | awk -F \" '/stable/{print $4; exit}')
+sed -E -i "/canary|stable/s,ci-[^\"]*,$NEW_IMAGE_TAG," "$VERSION_FILE"
+
+./main.star
+git commit -a -F - <<EOF
+UFS: push to prod
+
+dumper => $NEW_IMAGE_TAG
+ufs-service => $NEW_IMAGE_TAG
+
+BUG=None
+TEST=./main.star
+EOF
+
+cat - | more <<EOF
+== The UFS push CL:
+
+$(git log -1 -p)
+
+EOF
+
+echo "== Are they looks good? [y/n]"
+read -r CONFIRM
+
+if [[ $CONFIRM != "y" ]]; then
+	echo "Aboring the CL and push"
+	exit 1
+fi
+git cl upload --no-squash
+
+popd >/dev/null || (
+	echo "Failed to exit from the temp working dir $WORKDIR. Exiting."
+	exit 1
+)
+
+# Generate the announce email.
+OLD_GIT=${OLD_IMAGE_TAG##*-}
+NEW_GIT=${NEW_IMAGE_TAG##*-}
+git fetch origin main &>/dev/null
+cat - <<EOF
+
+== Please ask the team to +2 the CL just uploaded above.
+== Then follow go/ufs-p2p for the remaining steps.
+== Finally, don't forget sending out below email to announce.
+
+== To:
+ufs-announce@google.com
+
+== Title:
+UFS & shivas push ($OLD_GIT..$NEW_GIT)
+
+== Content:
+
+$(git log refs/remotes/origin/main --oneline "$OLD_GIT".."$NEW_GIT" -- . ../cmd/shivas)
+EOF
+rm -rf "$WORKDIR"
