@@ -349,8 +349,9 @@ def main():
 
   for c in opts.copy:
     source, dest = c.split(';')
-    copy_generated_files(source, os.path.join(opts.dest_repo, dest), ignore,
-                         kzip_input_suffixes)
+    copy_generated_files(source, os.path.join(opts.dest_repo, dest),
+                         kzip_input_suffixes=kzip_input_suffixes,
+                         ignore=ignore_paths)
 
   send_to_git(
       opts.dest_repo,
