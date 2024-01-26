@@ -326,7 +326,7 @@ def _parse_args() -> argparse.Namespace:
       '--ignore',
       action='append',
       help='source paths to ignore when copying',
-      default=set())
+      default=[])
   parser.add_argument(
       '--copy',
       action='append',
@@ -345,7 +345,7 @@ def main():
   if opts.kzip_prune:
     kzip_input_suffixes = kzip_input_paths(opts.kzip_prune)
 
-  ignore_paths: Set[str] = set(os.path.normpath(i) for i in opts.ignore)
+  ignore_paths: Set[str] = {os.path.normpath(i) for i in opts.ignore}
 
   for c in opts.copy:
     source, dest = c.split(';')
