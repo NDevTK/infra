@@ -70,6 +70,14 @@ func mockDUT(hostname, machine, servoHost, servoSerial, rpm, rpmOutlet string, s
 	}
 }
 
+func addMockDolosToDUT(machinelse *ufspb.MachineLSE, dolosHost, dolosSerialCable, DolosSerialUsb string) {
+	machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().Dolos = &chromeosLab.Dolos{
+		Hostname:    dolosHost,
+		SerialCable: dolosSerialCable,
+		SerialUsb:   DolosSerialUsb,
+	}
+}
+
 func mockLabstation(hostname, machine string) *ufspb.MachineLSE {
 	return &ufspb.MachineLSE{
 		Name:     hostname,
@@ -136,6 +144,64 @@ func createValidDUTWithLabstation(ctx context.Context, dutName, dutMachine, labs
 		return err
 	}
 	dut1 := mockDUT(dutName, dutMachine, labstationName, "serial-1", dutName+"-power-1", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+	_, err = CreateDUT(ctx, dut1)
+	if err != nil {
+		return err
+	}
+	changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/"+dutName)
+	if err != nil {
+		return err
+	}
+	So(changes, ShouldHaveLength, 1)
+	msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/"+dutName)
+	if err != nil {
+		return err
+	}
+	So(msgs, ShouldHaveLength, 1)
+	So(msgs[0].Delete, ShouldBeFalse)
+	return nil
+}
+
+func createValidDUTWithDolos(ctx context.Context, dutName, dutMachine, labstationName, labstationMachine string) error {
+	machine1 := &ufspb.Machine{
+		Name: labstationMachine,
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_CHROMEOS6,
+		},
+		Device: &ufspb.Machine_ChromeosMachine{
+			ChromeosMachine: &ufspb.ChromeOSMachine{
+				BuildTarget: "test",
+				Model:       "test",
+			},
+		},
+	}
+	machine2 := &ufspb.Machine{
+		Name: dutMachine,
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_CHROMEOS6,
+		},
+		Device: &ufspb.Machine_ChromeosMachine{
+			ChromeosMachine: &ufspb.ChromeOSMachine{
+				BuildTarget: "test",
+				Model:       "test",
+			},
+		},
+	}
+	_, err := registration.CreateMachine(ctx, machine1)
+	if err != nil {
+		return err
+	}
+	_, err = registration.CreateMachine(ctx, machine2)
+	if err != nil {
+		return err
+	}
+	labstation1 := mockLabstation(labstationName, labstationMachine)
+	_, err = CreateLabstation(ctx, labstation1)
+	if err != nil {
+		return err
+	}
+	dut1 := mockDUT(dutName, dutMachine, labstationName, "serial-dolos", dutName+"-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+	addMockDolosToDUT(dut1, labstationName, "dolos-serial-cable", "dolos-serial-usb")
 	_, err = CreateDUT(ctx, dut1)
 	if err != nil {
 		return err
@@ -284,6 +350,44 @@ func TestCreateDUT(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(changes, ShouldHaveLength, 1)
 		})
+		Convey("CreateDUT - With non-existent Dolos host(labstation)", func() {
+			machine1 := &ufspb.Machine{
+				Name: "machine-520",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			}
+			machine2 := &ufspb.Machine{
+				Name: "machine-521",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			}
+			_, merr := registration.CreateMachine(ctx, machine1)
+			So(merr, ShouldBeNil)
+			_, merr = registration.CreateMachine(ctx, machine2)
+			So(merr, ShouldBeNil)
+			labstation1 := mockLabstation("labstation-520", "machine-521")
+			_, err := CreateLabstation(ctx, labstation1)
+			So(err, ShouldBeNil)
+			dut1 := mockDUT("dut-520", "machine-520", "labstation-520", "serial-520", "dut-520-power-1", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+			addMockDolosToDUT(dut1, "labstation-521", "dolos-serial-cable", "dolos-serial-usb")
+			_, err = CreateDUT(ctx, dut1)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "labstation-521 not found in the system")
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-520")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 0)
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-520")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 0)
+		})
 		Convey("CreateDUT - Happy Path", func() {
 			machine1 := &ufspb.Machine{
 				Name: "machine-90",
@@ -311,6 +415,7 @@ func TestCreateDUT(t *testing.T) {
 			_, err := CreateLabstation(ctx, labstation1)
 			So(err, ShouldBeNil)
 			dut1 := mockDUT("dut-7", "machine-00", "labstation-5", "serial-1", "dut-7-power-3", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+			addMockDolosToDUT(dut1, "labstation-5", "dolos-serial-cable", "dolos-serial-usb")
 			_, err = CreateDUT(ctx, dut1)
 			So(err, ShouldBeNil)
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-7")
@@ -2760,6 +2865,115 @@ func TestUpdateDUT(t *testing.T) {
 			So(s.GetState(), ShouldEqual, dut2.GetResourceState())
 		})
 
+		Convey("UpdateDUT - With invalid dolos mask (delete host and update serial cable)", func() {
+			err := createValidDUTWithDolos(ctx, "dut-dolos-1", "machine-dolos-1", "labstation-dolos-1", "machine-dolos-host1")
+			So(err, ShouldBeNil)
+			dut1 := mockDUT("dut-dolos-1", "machine-dolos-1", "labstation-dolos-1", "serial-dolos", "dut-dolos-1-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+			addMockDolosToDUT(dut1, "", "dolos-serial-cable", "dolos-serial-usb")
+			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.hostname", "dut.dolos.serial.cable"))
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "Cannot update dolos serial cable. Dolos host is being reset")
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-dolos-1")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 1)
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-dolos-1")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 1)
+			// Verify that dut-dolos-1 wasn't changed after last update.
+			newDut, err := GetMachineLSE(ctx, "dut-dolos-1")
+			So(err, ShouldBeNil)
+			// Verify that nothing was changed on labstation.
+			So(newDut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetDolos(), ShouldResembleProto, &chromeosLab.Dolos{
+				Hostname:    "labstation-dolos-1",
+				SerialCable: "dolos-serial-cable",
+				SerialUsb:   "dolos-serial-usb",
+			})
+			s, err := state.GetStateRecord(ctx, "hosts/dut-dolos-1")
+			So(err, ShouldBeNil)
+			// State should be set to registered. No change.
+			So(s.GetState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
+		})
+
+		Convey("UpdateDUT - With invalid dolos mask (delete host and update serial usb)", func() {
+			err := createValidDUTWithDolos(ctx, "dut-dolos-2", "machine-dolos-2", "labstation-dolos-2", "machine-dolos-host2")
+			So(err, ShouldBeNil)
+			dut1 := mockDUT("dut-dolos-2", "machine-dolos-2", "labstation-dolos-2", "serial-dolos", "dut-dolos-2-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+			addMockDolosToDUT(dut1, "", "dolos-serial-cable", "dolos-serial-usb")
+			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.hostname", "dut.dolos.serial.usb"))
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "Cannot update dolos serial usb. Dolos host is being reset")
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-dolos-2")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 1)
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-dolos-2")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 1)
+			// Verify that dut-dolos-2 wasn't changed after last update.
+			newDut, err := GetMachineLSE(ctx, "dut-dolos-2")
+			So(err, ShouldBeNil)
+			// Verify that nothing was changed on labstation.
+			So(newDut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetDolos(), ShouldResembleProto, &chromeosLab.Dolos{
+				Hostname:    "labstation-dolos-2",
+				SerialCable: "dolos-serial-cable",
+				SerialUsb:   "dolos-serial-usb",
+			})
+			s, err := state.GetStateRecord(ctx, "hosts/dut-dolos-2")
+			So(err, ShouldBeNil)
+			// State should be set to registered. No change.
+			So(s.GetState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
+		})
+
+		Convey("UpdateDUT - Add dolos to a DUT(created without dolos)", func() {
+			err := createValidDUTWithLabstation(ctx, "dut-dolos-3", "machine-dolos-3", "labstation-dolos-3", "machine-dolos-host3")
+			So(err, ShouldBeNil)
+			dut1 := mockDUT("dut-dolos-3", "machine-dolos-3", "labstation-dolos-3", "serial-dolos", "dut-dolos-3-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+			addMockDolosToDUT(dut1, "labstation-dolos-3", "dolos-serial-cable", "dolos-serial-usb")
+			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.hostname", "dut.dolos.serial.usb", "dut.dolos.serial.cable"))
+			So(err, ShouldBeNil)
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-dolos-3")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 1)
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-dolos-3")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 2)
+			// Verify that dut-dolos-3 changed as expected after last update.
+			newDut, err := GetMachineLSE(ctx, "dut-dolos-3")
+			So(err, ShouldBeNil)
+			// Verify that nothing was changed on labstation.
+			So(newDut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetDolos(), ShouldResembleProto, &chromeosLab.Dolos{
+				Hostname:    "labstation-dolos-3",
+				SerialCable: "dolos-serial-cable",
+				SerialUsb:   "dolos-serial-usb",
+			})
+			s, err := state.GetStateRecord(ctx, "hosts/dut-dolos-3")
+			So(err, ShouldBeNil)
+			// State should be set to registered. No change.
+			So(s.GetState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
+		})
+
+		Convey("UpdateDUT - Remove the dolos device from a DUT", func() {
+			err := createValidDUTWithDolos(ctx, "dut-dolos-4", "machine-dolos-4", "labstation-dolos-4", "machine-dolos-host4")
+			So(err, ShouldBeNil)
+			dut1 := mockDUT("dut-dolos-4", "machine-dolos-4", "labstation-dolos-4", "serial-dolos", "dut-dolos-4-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+			addMockDolosToDUT(dut1, "", "", "")
+			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.hostname"))
+			So(err, ShouldBeNil)
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-dolos-4")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 1)
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-dolos-4")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 2)
+			// Verify that dut-dolos-4 changed as expected after last update.
+			newDut, err := GetMachineLSE(ctx, "dut-dolos-4")
+			So(err, ShouldBeNil)
+			// Verify that nothing was changed on labstation.
+			So(newDut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetDolos(), ShouldBeNil)
+			s, err := state.GetStateRecord(ctx, "hosts/dut-dolos-4")
+			So(err, ShouldBeNil)
+			// State should be set to registered. No change.
+			So(s.GetState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
+		})
 	})
 }
 

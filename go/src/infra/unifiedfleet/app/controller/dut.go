@@ -108,6 +108,11 @@ func CreateDUT(ctx context.Context, machinelse *ufspb.MachineLSE) (*ufspb.Machin
 			}
 		}
 
+		// Validate Dolos host when necessary.
+		if err := dolosHostValidation(ctx, machinelse, nil); err != nil {
+			return err
+		}
+
 		// BatchUpdate both DUT (and its machine), and Labstation
 		if _, err := registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine}); err != nil {
 			return errors.Annotate(err, "Fail to update machine %s", machine.GetName()).Err()
@@ -231,6 +236,11 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 			servoUpdated = true
 		}
 
+		// Validate Dolos host when necessary.
+		if err := dolosHostValidation(ctx, machinelse, mask); err != nil {
+			return err
+		}
+
 		// Common refs to avoid multiple queries
 		var newLabstationMachinelse *ufspb.MachineLSE
 		var hcNewLabstation *HistoryClient
@@ -329,6 +339,28 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 		return nil, errors.Annotate(err, "UpdateDUT - failed transaction").Err()
 	}
 	return machinelse, nil
+}
+
+// dolosHostValidation validate(e.g. the given host is exists) Dolos host upon an update.
+// In our lab, Dolos will share labstation with servos, so it's checking the existence of a given labstation.
+func dolosHostValidation(ctx context.Context, newMachineLse *ufspb.MachineLSE, mask *field_mask.FieldMask) error {
+	dolosMasks := []string{
+		"dut.dolos.hostname",
+		"dut.dolos.serial.cable",
+		"dut.dolos.serial.usb",
+	}
+	// We do not need to perform validation when any masks exist but no Dolos specific masks found in there.
+	if mask != nil && len(mask.Paths) > 0 && !util.ContainsAnyStrings(mask.Paths, dolosMasks...) {
+		return nil
+	}
+	// We need to ensure that the host machine(labstation) of dolos exists.
+	newDolos := newMachineLse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetDolos()
+	if newDolos != nil && newDolos.GetHostname() != "" {
+		if _, err := getLabstationMachineLSE(ctx, newDolos.GetHostname()); err != nil {
+			return errors.Annotate(err, "Validation error - Cannot get Dolos host(labstation)").Err()
+		}
+	}
+	return nil
 }
 
 // assignServoPortIfMissing assigns a servo port to the given servo
@@ -443,12 +475,14 @@ func cleanPreDeployFields(servo *chromeosLab.Servo) {
 func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
 	var servo *chromeosLab.Servo
 	var rpm *chromeosLab.OSRPM
+	var dolos *chromeosLab.Dolos
 
 	// GetDut should return an object. Otherwise UpdateDUT isn't called
 	dut := machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut()
 	if peripherals := dut.GetPeripherals(); peripherals != nil {
 		servo = peripherals.GetServo()
 		rpm = peripherals.GetRpm()
+		dolos = peripherals.GetDolos()
 	}
 
 	maskSet := make(map[string]struct{}) // Set of all the masks
@@ -495,6 +529,13 @@ func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufs
 			if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
 				return err
 			}
+		case "dut.dolos.hostname":
+			if _, ok := maskSet["dut.dolos.serial.cable"]; dolos.GetHostname() == "" && ok && dolos.GetSerialCable() != "" {
+				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot update dolos serial cable. Dolos host is being reset.")
+			}
+			if _, ok := maskSet["dut.dolos.serial.usb"]; dolos.GetHostname() == "" && ok && dolos.GetSerialUsb() != "" {
+				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot update dolos serial usb. Dolos host is being reset.")
+			}
 		case "deploymentTicket":
 		case "tags":
 		case "description":
@@ -528,6 +569,8 @@ func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufs
 		case "dut.usb.smarthub":
 		case "dut.modeminfo":
 		case "dut.siminfo":
+		case "dut.dolos.serial.cable":
+		case "dut.dolos.serial.usb":
 			// valid fields, nothing to validate.
 		default:
 			return status.Errorf(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - unsupported update mask path %q", path)
@@ -541,6 +584,7 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 	// Extract all the peripherals to avoid doing it for every update in loop.
 	var oldServo, newServo *chromeosLab.Servo
 	var oldRPM, newRPM *chromeosLab.OSRPM
+	var oldDolos, newDolos *chromeosLab.Dolos
 	oldDut := oldMachineLse.GetChromeosMachineLse().GetDeviceLse().GetDut()
 	newDut := newMachineLse.GetChromeosMachineLse().GetDeviceLse().GetDut()
 	if oldDut != nil {
@@ -554,6 +598,10 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 			if oldRPM == nil {
 				oldRPM = &chromeosLab.OSRPM{}
 			}
+			oldDolos = oldPeripherals.GetDolos()
+			if oldDolos == nil {
+				oldDolos = &chromeosLab.Dolos{}
+			}
 		}
 	}
 	if newDut != nil {
@@ -566,6 +614,10 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 			newRPM = newPeripherals.GetRpm()
 			if newRPM == nil {
 				newRPM = &chromeosLab.OSRPM{}
+			}
+			newDolos = newPeripherals.GetDolos()
+			if newDolos == nil {
+				newDolos = &chromeosLab.Dolos{}
 			}
 		}
 	}
@@ -614,6 +666,9 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 					processUpdateMachineLSERPMMask(oldRPM, newRPM, path)
 					continue
 				}
+				if strings.HasPrefix(path, "dut.dolos") {
+					processUpdateMachineLSEDolosMask(oldDolos, newDolos, path)
+				}
 				processUpdateMachineLSEDUTMask(oldDut, newDut, path)
 			}
 		}
@@ -627,6 +682,11 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 		oldDut.GetPeripherals().Rpm = oldRPM
 	} else { // Reset RPM if the rpm host is reset.
 		oldDut.GetPeripherals().Rpm = nil
+	}
+	if oldDolos.GetHostname() != "" {
+		oldDut.GetPeripherals().Dolos = oldDolos
+	} else { // Reset Dolos if the dolos host is reset.
+		oldDut.GetPeripherals().Dolos = nil
 	}
 	// return existing/old machinelse with new updated values.
 	return oldMachineLse, nil
@@ -831,6 +891,18 @@ func processUpdateMachineLSERPMMask(oldRPM, newRPM *chromeosLab.OSRPM, path stri
 		oldRPM.PowerunitName = newRPM.GetPowerunitName()
 	case "dut.rpm.outlet":
 		oldRPM.PowerunitOutlet = newRPM.GetPowerunitOutlet()
+	}
+}
+
+// processUpdateMachineLSEDolosMask returns dolos with new updated params from the mask.
+func processUpdateMachineLSEDolosMask(oldDolos, newDolos *chromeosLab.Dolos, path string) {
+	switch path {
+	case "dut.dolos.hostname":
+		oldDolos.Hostname = newDolos.GetHostname()
+	case "dut.dolos.serial.cable":
+		oldDolos.SerialCable = newDolos.GetSerialCable()
+	case "dut.dolos.serial.usb":
+		oldDolos.SerialUsb = newDolos.GetSerialUsb()
 	}
 }
 
