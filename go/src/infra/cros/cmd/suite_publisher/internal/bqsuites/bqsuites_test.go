@@ -1,0 +1,110 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+package bqsuites
+
+import (
+	"errors"
+	"testing"
+
+	"cloud.google.com/go/bigquery"
+	"github.com/google/go-cmp/cmp"
+
+	"infra/cros/cmd/suite_publisher/internal/suite"
+	"infra/cros/cmd/suite_publisher/test"
+)
+
+func TestSave(t *testing.T) {
+	type wantInfo struct {
+		values   map[string]bigquery.Value
+		dedupeID string
+		err      error
+	}
+
+	for _, tc := range []struct {
+		publishInfo *PublishInfo
+		want        wantInfo
+	}{
+		{
+			publishInfo: &PublishInfo{
+				Suite:         suite.NewSuite(test.ExampleSuite()),
+				BuildTarget:   "example_build_target",
+				CrosVersion:   "15755.0.0",
+				CrosMilestone: "123",
+			},
+			want: wantInfo{
+				values: map[string]bigquery.Value{
+					"build_target":   "example_build_target",
+					"cros_version":   "15755.0.0",
+					"cros_milestone": "123",
+					"id":             "example_suite",
+					"bug_component":  "b:123456",
+					"criteria":       "This is an example suite",
+					"owners":         []string{"example@chromium.org", "example2@chromium.org"},
+					"test_ids":       []string{"example_test_0", "example_test_1", "example_test_2"},
+				},
+				dedupeID: "example_suite.example_build_target.15755.0.0",
+				err:      nil,
+			},
+		},
+		{
+			publishInfo: &PublishInfo{
+				Suite:         suite.NewSuiteSet(test.ExampleSuiteSet()),
+				BuildTarget:   "example_build_target_2",
+				CrosVersion:   "15754.0.0",
+				CrosMilestone: "122",
+			},
+			want: wantInfo{
+				values: map[string]bigquery.Value{
+					"build_target":   "example_build_target_2",
+					"cros_version":   "15754.0.0",
+					"cros_milestone": "122",
+					"id":             "example_suite_set",
+					"bug_component":  "b:123456",
+					"criteria":       "This is an example suite set",
+					"owners":         []string{"example@chromium.org", "example2@chromium.org"},
+					"suites":         []string{"example_suite"},
+					"suite_sets":     []string{"example_suite_set_b"},
+				},
+				dedupeID: "example_suite_set.example_build_target_2.15754.0.0",
+				err:      nil,
+			},
+		},
+		{
+			publishInfo: &PublishInfo{
+				Suite:         suite.NewSuiteSet(test.ExampleSuiteSet()),
+				BuildTarget:   "example_build_target_2",
+				CrosVersion:   "15754.0.0",
+				CrosMilestone: "122",
+			},
+			want: wantInfo{
+				values: map[string]bigquery.Value{
+					"build_target":   "example_build_target_2",
+					"cros_version":   "15754.0.0",
+					"cros_milestone": "122",
+					"id":             "example_suite_set",
+					"bug_component":  "b:123456",
+					"criteria":       "This is an example suite set",
+					"owners":         []string{"example@chromium.org", "example2@chromium.org"},
+					"suites":         []string{"example_suite"},
+					"suite_sets":     []string{"example_suite_set_b"},
+				},
+				dedupeID: "example_suite_set.example_build_target_2.15754.0.0",
+				err:      nil,
+			},
+		},
+	} {
+		t.Run(tc.publishInfo.Suite.ID(), func(t *testing.T) {
+			gotValues, gotDedupeID, err := tc.publishInfo.Save()
+			if !errors.Is(err, tc.want.err) {
+				t.Errorf("Save() got error: %v, want: %v", err, tc.want.err)
+			}
+			if gotDedupeID != tc.want.dedupeID {
+				t.Errorf("Save() got dedupeID: %q, want: %q", gotDedupeID, tc.want.dedupeID)
+			}
+			if diff := cmp.Diff(gotValues, tc.want.values); diff != "" {
+				t.Errorf("Save() got values mismatch (-got +want):\n%s", diff)
+			}
+		})
+	}
+}
