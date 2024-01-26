@@ -512,24 +512,24 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 }
 
 // unpackSplitdebugTarballs will take the local path of the fetched tarballs and then unpack
-// them. It will then return a list of file paths pointing to the unpacked symbol
-// files. Searches for .sym and .debug files.
-func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([]string, []string, error) {
+// both the .sym and .debug files. It will then return a list of file paths pointing
+// to the unpacked breakpad symbol files.
+func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([]string, error) {
 	LogOut("Untarring files from %s and %s and storing symbols in %s", splitdebugPath, breakpadPath, outputDir)
 	retBreakpadArray := []string{}
-	retSplitdebugArray := []string{}
 
 	// Open locally stored .tar file.
 	breakpadReader, err := os.Open(breakpadPath)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	defer breakpadReader.Close()
 
 	tarReader := tar.NewReader(breakpadReader)
 
 	// Keep track of the symbols we've already processed for deduping purposes.
-	processedSymbols := map[string]bool{}
+	// Key is debug ID and value is complete path to breakpad symbol file.
+	processedBreakpadSymbols := map[string]string{}
 	uniqueSuffix := 1
 
 	// Keep track of buildIds for breakpad symbols
@@ -548,7 +548,7 @@ func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([
 		}
 		// An error occurred fetching the next header.
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		// The header indicates it's a file. Store and save the file if it is a
 		// symbol file.
@@ -566,18 +566,18 @@ func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([
 				destFilePath = filepath.Join(outputDir, symBase)
 				uniqueSuffix += 1
 			} else if !errors.Is(err, os.ErrNotExist) {
-				return nil, nil, err
+				return nil, err
 			}
 
 			destFile, err := os.Create(destFilePath)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 
 			// Write contents of the symbol file to local storage.
 			_, err = io.Copy(destFile, tarReader)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 
 			// Read back the file from disk and make sure that it's not for
@@ -586,16 +586,26 @@ func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([
 			// reader.
 			debugInfo, buildId, err := getDebugFileInformation(destFilePath)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 			breakpadBuildIds[debugInfo.DebugFile] = append(breakpadBuildIds[debugInfo.DebugFile], buildIdInfo{buildId, debugInfo.DebugId})
-			if _, exists := processedSymbols[debugInfo.DebugId]; exists {
+			if _, exists := processedBreakpadSymbols[debugInfo.DebugId]; exists {
 				if err := os.Remove(destFilePath); err != nil {
-					return nil, nil, err
+					return nil, err
 				}
 			} else {
-				retBreakpadArray = append(retBreakpadArray, destFilePath)
-				processedSymbols[debugInfo.DebugId] = true
+				debugDir := filepath.Join(outputDir, debugInfo.DebugId)
+				// processedBreakpadSymbols is already checking for duplicate debug IDs so this Mkdir will never get os.ErrExist.
+				if err := os.Mkdir(debugDir, 0750); err != nil {
+					return nil, err
+				}
+				// Move the file to the debug Id directory.
+				debugFilePath := filepath.Join(debugDir, debugInfo.DebugFile+".sym")
+				if err := os.Rename(destFilePath, debugFilePath); err != nil {
+					return nil, err
+				}
+				retBreakpadArray = append(retBreakpadArray, debugFilePath)
+				processedBreakpadSymbols[debugInfo.DebugId] = debugInfo.DebugFile
 			}
 		}
 	}
@@ -603,14 +613,14 @@ func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([
 	// Open locally stored .tar file.
 	splitdebugReader, err := os.Open(splitdebugPath)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	defer splitdebugReader.Close()
 
 	tarReader = tar.NewReader(splitdebugReader)
 
 	// Keep track of the symbols we've already processed for deduping purposes.
-	processedSymbols = map[string]bool{}
+	processedSplitdebugs := map[string]bool{}
 	uniqueSuffix = 1
 
 	// Iterate through the splitdebug tar file saving only the debug symbols.
@@ -622,7 +632,7 @@ func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([
 		}
 		// An error occurred fetching the next header.
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		// The header indicates it's a file. Store and save the file if it is a
 		// symbol file.
@@ -641,18 +651,18 @@ func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([
 				destFilePath = filepath.Join(outputDir, symBase)
 				uniqueSuffix += 1
 			} else if !errors.Is(err, os.ErrNotExist) {
-				return nil, nil, err
+				return nil, err
 			}
 
 			destFile, err := os.Create(destFilePath)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 
 			// Write contents of the splitdebug file to local storage.
 			_, err = io.Copy(destFile, tarReader)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 
 			debugId := ""
@@ -670,7 +680,7 @@ func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([
 
 					debugId, err = debugIdFromBuildId(id)
 					if err != nil {
-						return nil, nil, err
+						return nil, err
 					}
 				}
 			}
@@ -680,26 +690,35 @@ func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([
 				continue
 			}
 
-			if _, exists := processedSymbols[debugId]; exists {
-				if err := os.Remove(destFilePath); err != nil {
-					return nil, nil, err
+			if breakpadSymName, exists := processedBreakpadSymbols[debugId]; exists {
+				if _, exists := processedSplitdebugs[debugId]; exists {
+					if err := os.Remove(destFilePath); err != nil {
+						return nil, err
+					}
+				} else {
+					// Move the file to the debug Id directory.
+					debugDir := filepath.Join(outputDir, debugId)
+					debugFilePath := filepath.Join(debugDir, breakpadSymName+".debug")
+					if err := os.Rename(destFilePath, debugFilePath); err != nil {
+						return nil, err
+					}
+					processedSplitdebugs[debugId] = true
 				}
 			} else {
-				debugDir := filepath.Join(outputDir, debugId)
-				if err := os.Mkdir(debugDir, 0750); err != nil {
-					return nil, nil, err
+				// No matching breakpad file, ignore. This means we have a splitdebug file but breakpad
+				// symbols weren't created for it. There's a bug somewhere in the breakpad symbol generation
+				// process or the file is explicitly skipped (e.g. firmware). There's little value in a native
+				// symbol without a breakpad symbol, so drop the native symbol -- Googlers can read
+				// g/crash-users/c/dVZKAvrQvwo/m/mxy1BQMXBQAJ for more details.
+				if err := os.Remove(destFilePath); err != nil {
+					return nil, err
 				}
-				debugFilePath := filepath.Join(debugDir, symName+".debug")
-				if err := os.Rename(destFilePath, debugFilePath); err != nil {
-					return nil, nil, err
-				}
-				retSplitdebugArray = append(retSplitdebugArray, debugFilePath)
-				processedSymbols[debugId] = true
+				LogOut("Couldn't find breakpad symbols for splitdebug %s", header.Name)
 			}
 		}
 	}
 
-	return retSplitdebugArray, retBreakpadArray, err
+	return retBreakpadArray, err
 }
 
 // unpackKernelTarball will take the local path of the fetched tarball and then unpack
@@ -909,6 +928,19 @@ func generateKernelDebugId(filepath string) (string, error) {
 func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint64, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
 	LogOut("Generating %d task configs", len(symbolFiles))
 
+	tasks, err := generateBreakpadConfigs(ctx, symbolFiles, dryRun, crash)
+	if err != nil {
+		return nil, err
+	}
+
+	LogOut("%d of %d symbols were duplicates. %d symbols will be sent for upload.", (len(symbolFiles) - len(tasks)), len(symbolFiles), len(tasks))
+
+	return tasks, nil
+}
+
+// generateBreakpadConfigs will take a list of strings containing the paths to the
+// unpacked symbol files. It will return a list of generated task configs.
+func generateBreakpadConfigs(ctx context.Context, symbolFiles []string, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
 	// The task should only sleep on retry.
 	shouldSleep := false
 
@@ -931,39 +963,34 @@ func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint6
 	if err != nil {
 		return nil, err
 	}
-	LogOut("%d of %d symbols were duplicates. %d symbols will be sent for upload.", (len(symbolFiles) - len(tasks)), len(symbolFiles), len(tasks))
 
 	return tasks, nil
 }
 
-// generateSplitdebugConfigs will take a list of strings with containing the paths to the
-// unpacked splitdebug files. It will return a list of generated task configs
-// alongside the communication channels to be used.
+// generateSplitdebugConfigs will take a list of strings containing the paths
+// to the unpacked breakpad files. It will return a list of generated task
+// configs alongside the communication channels to be used.
 func generateSplitdebugConfigs(ctx context.Context, symbolFiles []string, retryQuota uint64, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
-	LogOut("Generating %d task configs", len(symbolFiles))
+	LogOut("Generating %d task configs", len(symbolFiles)*2)
 
 	// The task should only sleep on retry.
 	shouldSleep := false
 
-	tasks := make([]taskConfig, len(symbolFiles))
-
-	// Generate task configurations.
-	for index, file := range symbolFiles {
-		debugFile, _, found := strings.Cut(filepath.Base(file), ".debug")
-		if !found {
-			return nil, fmt.Errorf("Not a splitdebug file %s", file)
-		}
-		debugId := filepath.Base(filepath.Dir(file))
-
-		tasks[index] = taskConfig{file, "DEBUG_ONLY", debugFile, debugId, dryRun, shouldSleep}
-	}
-
-	// Filter out already uploaded debug symbols.
-	tasks, err := filterTasksAlreadyUploaded(ctx, tasks, dryRun, crash)
+	tasks, err := generateBreakpadConfigs(ctx, symbolFiles, dryRun, crash)
 	if err != nil {
 		return nil, err
 	}
-	LogOut("%d of %d splitdebug symbols were duplicates. %d splitdebug symbols will be sent for upload.", (len(symbolFiles) - len(tasks)), len(symbolFiles), len(tasks))
+
+	splitdebugTasks := make([]taskConfig, len(tasks))
+	for index, task := range tasks {
+		debugDir := filepath.Dir(task.symbolPath)
+		debugFile := filepath.Join(debugDir, task.debugFile+".debug")
+
+		splitdebugTasks[index] = taskConfig{debugFile, "DEBUG_ONLY", task.debugFile, task.debugId, dryRun, shouldSleep}
+	}
+
+	tasks = append(tasks, splitdebugTasks...)
+	LogOut("%d of %d symbols were duplicates. %d symbols will be sent for upload.", ((len(symbolFiles) * 2) - len(tasks)), len(symbolFiles)*2, len(tasks))
 
 	return tasks, nil
 }
@@ -1314,24 +1341,17 @@ func (b *uploadDebugSymbols) Run(a subcommands.Application, args []string, env s
 			return 1
 		}
 
-		debugFiles, symbolFiles, err := unpackSplitdebugTarballs(splitdebugTarbalPath, tarbalPath, symbolDir)
+		symbolFiles, err := unpackSplitdebugTarballs(splitdebugTarbalPath, tarbalPath, symbolDir)
 		if err != nil {
 			LogErr(&crash, err.Error())
 			return 1
 		}
 
-		tasks, err := generateConfigs(ctx, symbolFiles, b.retryQuota, b.dryRun, crash)
+		tasks, err := generateSplitdebugConfigs(ctx, symbolFiles, b.retryQuota, b.dryRun, crash)
 		if err != nil {
 			LogErr(&crash, err.Error())
 			return 1
 		}
-
-		debugTasks, err := generateSplitdebugConfigs(ctx, debugFiles, b.retryQuota, b.dryRun, crash)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-		tasks = append(tasks, debugTasks...)
 
 		retcode, err = uploadSymbols(tasks, b.workerCount, b.retryQuota, b.staging, crash)
 		if err != nil {

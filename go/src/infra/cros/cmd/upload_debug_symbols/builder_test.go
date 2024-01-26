@@ -369,7 +369,7 @@ func TestUnpackSplitdebugTarballs(t *testing.T) {
 		{"b/c", "", fs.ModeDir},
 		// Different Debug ID as other test1.so.sym so should be included.
 		{"b/c/test1.so.sym", "MODULE Linux arm " + debugId1Dup + " test1.so\nINFO CODE_ID " + buildId1Dup, 0600},
-		{"../test3.so.sym", "MODULE Linux arm " + debugId3 + " test3.so\nINFO CODE_ID " + buildId3, 0600},
+		{"../test3.so.1.sym", "MODULE Linux arm " + debugId3 + " test3.so.1\nINFO CODE_ID " + buildId3, 0600},
 		{"a/b/c/d/", "", fs.ModeDir},
 		{"./test4.so.sym", "MODULE Linux arm " + debugId4 + " test4.so\nINFO CODE_ID " + buildId4, 0600},
 		// Same Debug ID as previous file so should not be included.
@@ -379,11 +379,11 @@ func TestUnpackSplitdebugTarballs(t *testing.T) {
 
 	// List of files we expect to see return after the test call.
 	expectedSymbolFiles := map[string]bool{
-		debugSymbolsDir + "/test1.so.sym":   false,
-		debugSymbolsDir + "/test1.so.sym-1": false,
-		debugSymbolsDir + "/test2.so.sym":   false,
-		debugSymbolsDir + "/test3.so.sym":   false,
-		debugSymbolsDir + "/test4.so.sym":   false,
+		debugSymbolsDir + "/" + debugId1 + "/test1.so.sym":    false,
+		debugSymbolsDir + "/" + debugId1Dup + "/test1.so.sym": false,
+		debugSymbolsDir + "/" + debugId2 + "/test2.so.sym":    false,
+		debugSymbolsDir + "/" + debugId3 + "/test3.so.1.sym":  false,
+		debugSymbolsDir + "/" + debugId4 + "/test4.so.sym":    false,
 	}
 
 	// Struct for file info
@@ -400,22 +400,13 @@ func TestUnpackSplitdebugTarballs(t *testing.T) {
 		{"b/c", nil, fs.ModeDir},
 		// Different Debug ID as other test1.so.debug so should be included.
 		{"b/c/test1.so.debug", buildFakeELFWithNote(buildId1Dup), 0600},
-		// Different name as breakpad symbol (test3.so.sym) should be included
-		{"../test3.so.4.0.5.debug", buildFakeELFWithNote(buildId3), 0600},
+		// Different name as breakpad symbol (test3.so.1.sym) should be included
+		{"../test3.so.1.0.5.debug", buildFakeELFWithNote(buildId3), 0600},
 		{"a/b/c/d/", nil, fs.ModeDir},
 		{"./test4.so.debug", buildFakeELFWithNote(buildId4), 0600},
 		// Same Debug ID as previous file so should not be included.
 		{"a/b/c/d/test4.so.debug", buildFakeELFWithNote(buildId4), 0600},
 		{"a/shouldntadd.txt", []byte("not a symbol file\x00"), 0600},
-	}
-
-	// List of files we expect to see return after the test call.
-	expectedSplitdebugFiles := map[string]bool{
-		debugSymbolsDir + "/" + debugId1 + "/test1.so.debug":       false,
-		debugSymbolsDir + "/" + debugId1Dup + "/test1.so.debug":    false,
-		debugSymbolsDir + "/" + debugId2 + "/test2.so.debug":       false,
-		debugSymbolsDir + "/" + debugId3 + "/test3.so.4.0.5.debug": false,
-		debugSymbolsDir + "/" + debugId4 + "/test4.so.debug":       false,
 	}
 
 	// Generate file information.
@@ -478,32 +469,12 @@ func TestUnpackSplitdebugTarballs(t *testing.T) {
 	}
 
 	// Call the function under test.
-	splitdebugPaths, breakpadPaths, err := unpackSplitdebugTarballs(splitdebugTarPath, symbolTarPath, debugSymbolsDir)
+	breakpadPaths, err := unpackSplitdebugTarballs(splitdebugTarPath, symbolTarPath, debugSymbolsDir)
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
-	if splitdebugPaths == nil || len(splitdebugPaths) <= 0 {
-		t.Error("error: Empty list of splitdebug paths returned")
-	}
 	if breakpadPaths == nil || len(breakpadPaths) <= 0 {
 		t.Error("error: Empty list of breakpad paths returned")
-	}
-	// Verify that we received a list pointing to all the expected files and no
-	// others.
-	for _, path := range splitdebugPaths {
-		if val, ok := expectedSplitdebugFiles[path]; ok {
-			if val {
-				t.Errorf("error: splitdebug file %q appeared multiple times in function return", path)
-			}
-			expectedSplitdebugFiles[path] = true
-		} else {
-			t.Errorf("error: unexpected splitdebug file returned %q", path)
-		}
-	}
-	for path, ok := range expectedSplitdebugFiles {
-		if !ok {
-			t.Errorf("error: splitdebug file %q not found", path)
-		}
 	}
 	// Verify that we received a list pointing to all the expected files and no
 	// others.
@@ -512,6 +483,13 @@ func TestUnpackSplitdebugTarballs(t *testing.T) {
 			if val {
 				t.Errorf("error: breakpad file %q appeared multiple times in function return", path)
 			}
+			// Verify that the breakpad file has an associated splitdebug file.
+			base, _ := strings.CutSuffix(path, ".sym")
+			debugFile := base + ".debug"
+			if _, err := os.Stat(debugFile); err != nil {
+				t.Errorf("error: breakpad file %q missing splitdebug file", path)
+			}
+
 			expectedSymbolFiles[path] = true
 		} else {
 			t.Errorf("error: unexpected breakpad file returned %q", path)
@@ -720,45 +698,52 @@ func TestGenerateSplitdebugConfigs(t *testing.T) {
 	// Init the mock files and verifying structures.
 	expectedTasks := map[taskConfig]bool{}
 	type responseInfo struct {
-		filename  string
-		symbol    string
-		status    string
-		localPath string
+		filename       string
+		symbol         string
+		status         string
+		breakpadPath   string
+		splitdebugPath string
 	}
 	mockResponses := []*responseInfo{
 		{
-			filename:  "test1.so",
-			symbol:    "F4F6FA6CCBDEF455039C8DE869C8A2F40",
-			status:    "FOUND",
-			localPath: "test1.so.debug",
+			filename:       "test1.so",
+			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:         "FOUND",
+			breakpadPath:   "test1.so.sym",
+			splitdebugPath: "test1.so.debug",
 		}, {
-			filename:  "test2.so",
-			symbol:    "F4F6FA6CCBDEF455039C8DE869C8A2F40",
-			status:    "FOUND",
-			localPath: "test2.so.debug",
+			filename:       "test2.so",
+			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:         "FOUND",
+			breakpadPath:   "test2.so.sym",
+			splitdebugPath: "test2.so.debug",
 		}, {
-			filename:  "test3.so",
-			symbol:    "F4F6FA6CCBDEF455039C8DE869C8A2F40",
-			status:    "Missing",
-			localPath: "test3.so.debug",
+			filename:       "test3.so",
+			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:         "Missing",
+			breakpadPath:   "test3.so.sym",
+			splitdebugPath: "test3.so.debug",
 		},
 		{
-			filename:  "test4.so",
-			symbol:    "F4F6FA6CCBDEF455039C8DE869C8A2F40",
-			status:    "MISSING",
-			localPath: "test4.so.debug",
+			filename:       "test4.so.1",
+			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:         "MISSING",
+			breakpadPath:   "test4.so.1.sym",
+			splitdebugPath: "test4.so.1.debug",
 		},
 		{
-			filename:  "test5.so",
-			symbol:    "F4F6FA6CCBDEF455039C8DE869C8A2F40",
-			status:    "STATUS_UNSPECIFIED",
-			localPath: "test5.so.debug",
+			filename:       "test5.so",
+			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:         "STATUS_UNSPECIFIED",
+			breakpadPath:   "test5.so.sym",
+			splitdebugPath: "test5.so.debug",
 		},
 		{
-			filename:  "test6.so",
-			symbol:    "F4F6FA6CCBDEF455039C8DE869C8A2F40",
-			status:    "STATUS_UNSPECIFIED",
-			localPath: "test6.so.debug",
+			filename:       "test6.so",
+			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:         "STATUS_UNSPECIFIED",
+			breakpadPath:   "test6.so.sym",
+			splitdebugPath: "test6.so.debug",
 		},
 	}
 
@@ -780,25 +765,35 @@ func TestGenerateSplitdebugConfigs(t *testing.T) {
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
-	//defer os.RemoveAll(testDir)
+	defer os.RemoveAll(testDir)
 
 	mockPaths := []string{}
 	for _, response := range mockResponses {
-		localPath := response.localPath
+		// Make a mock directory with the debug Id.
 		localDir := filepath.Join(testDir, response.symbol)
 		err := os.Mkdir(localDir, 0750)
 		if err != nil && !os.IsExist(err) {
 			t.Error("error: " + err.Error())
 		}
-		mockPath := filepath.Join(localDir, localPath)
-		err = ioutil.WriteFile(mockPath, buildFakeELFWithNote(response.symbol), 0644)
+		// Create a mock splitdebug file.
+		mockSplitdebugPath := filepath.Join(localDir, response.splitdebugPath)
+		err = ioutil.WriteFile(mockSplitdebugPath, buildFakeELFWithNote(response.symbol), 0644)
 		if err != nil {
 			t.Error("error: " + err.Error())
 		}
-		task := taskConfig{mockPath, "DEBUG_ONLY", response.filename, response.symbol, false, false}
+		// Create a mock breakpad file.
+		mockPath := filepath.Join(localDir, response.breakpadPath)
+		err = ioutil.WriteFile(mockPath, []byte(fmt.Sprintf("MODULE Linux arm %s %s", response.symbol, response.filename)), 0644)
+		if err != nil {
+			t.Error("error: " + err.Error())
+		}
+		// Generate two tasks.
+		task := taskConfig{mockPath, "BREAKPAD", response.filename, response.symbol, false, false}
+		splitdebugTask := taskConfig{mockSplitdebugPath, "DEBUG_ONLY", response.filename, response.symbol, false, false}
 
 		if response.status != "FOUND" {
 			expectedTasks[task] = false
+			expectedTasks[splitdebugTask] = false
 		}
 		mockPaths = append(mockPaths, mockPath)
 	}
@@ -830,7 +825,7 @@ func TestGenerateSplitdebugConfigs(t *testing.T) {
 
 	for task, value := range expectedTasks {
 		if value == false {
-			t.Errorf("error: task for file %s never seen", task.debugFile)
+			t.Errorf("error: task %+v never seen", task)
 		}
 	}
 }
