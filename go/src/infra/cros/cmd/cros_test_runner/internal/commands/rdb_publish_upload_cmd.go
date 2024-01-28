@@ -351,7 +351,7 @@ func populatePrimaryEnvInfo(
 		primaryExecInfo.EnvInfo = &artifactpb.ExecutionInfo_SkylabInfo{SkylabInfo: skylabInfo}
 	} else {
 		// Satlab
-		satlabInfo := &artifactpb.SatlabInfo{SwarmingInfo: swarmingInfo, BuildbucketInfo: bbInfo}
+		satlabInfo := &artifactpb.SatlabInfo{DroneInfo: droneInfo, SwarmingInfo: swarmingInfo, BuildbucketInfo: bbInfo}
 		primaryExecInfo.EnvInfo = &artifactpb.ExecutionInfo_SatlabInfo{SatlabInfo: satlabInfo}
 	}
 }
