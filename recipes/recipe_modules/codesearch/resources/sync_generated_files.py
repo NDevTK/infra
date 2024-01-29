@@ -12,7 +12,7 @@ import re
 import shutil
 import subprocess
 import sys
-from typing import Optional, Sequence, Set, Tuple, Union
+from typing import List, Optional, Sequence, Set, Tuple, Union
 import zipfile
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -302,8 +302,12 @@ def copy_generated_files(source_dir: str,
         dirs_to_examine.append(parent_dir)
 
 
-def _parse_args() -> argparse.Namespace:
-  """Parse command-line args."""
+def _parse_args(argv: List[str]) -> argparse.Namespace:
+  """Parse command-line args.
+
+  Args:
+    argv: List of command-line arguments, excluding the script name.
+  """
   parser = argparse.ArgumentParser()
   parser.add_argument('--message', help='commit message', required=True)
   parser.add_argument(
@@ -334,12 +338,16 @@ def _parse_args() -> argparse.Namespace:
             'dest_repo. takes the format /path/to/src;dest_dir'),
       required=True)
   parser.add_argument('dest_repo', help='git checkout to copy files to')
-  return parser.parse_args()
+  return parser.parse_args(argv)
 
 
-def main():
-  """Main script entrypoint."""
-  opts = _parse_args()
+def main(argv: List[str]) -> None:
+  """Main script entrypoint.
+
+  Args:
+    argv: List of command-line arguments, excluding the script name.
+  """
+  opts = _parse_args(argv)
 
   kzip_input_suffixes: Optional[Set[str]] = None
   if opts.kzip_prune:
@@ -355,7 +363,7 @@ def main():
 
   send_to_git(
       opts.dest_repo,
-      opts.dest.branch,
+      opts.dest_branch,
       commit_message=opts.message,
       dry_run=opts.dry_run)
 
@@ -415,4 +423,4 @@ def check_call(cmd: Union[str, Sequence[str]],
 
 
 if '__main__' == __name__:
-  sys.exit(main())
+  sys.exit(main(sys.argv[1:]))

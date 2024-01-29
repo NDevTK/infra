@@ -11,6 +11,7 @@ import shutil
 import tempfile
 from typing import Iterable, List, Optional, Set
 import unittest
+import unittest.mock
 
 from recipe_modules.codesearch.resources import sync_generated_files as sync
 
@@ -30,6 +31,34 @@ class SyncGeneratedFilesCodesearchTest(unittest.TestCase):
     super().tearDown()
     shutil.rmtree(self.src_root)
     shutil.rmtree(self.dest_root)
+
+  @unittest.mock.patch('subprocess.check_call')
+  @unittest.mock.patch('subprocess.check_output')
+  def test_main(self, mock_check_call, mock_check_output) -> None:
+    """Basic end-to-end test."""
+    # Set up as follows:
+    #
+    # src_root/
+    # | foo.cc
+    # dest_root/
+    #
+    # The contents of src_root should be copied to dest_root.
+
+    basename = 'foo.cc'
+    contents = 'foo contents'
+    src_file = self.src_root / basename
+    src_file.write_text(contents)
+
+    sync.main([
+        '--copy',
+        f'{self.src_root};{self.dest_root}',
+        '--message',
+        'my cool commit message',
+        'path/to/dest/repo',
+    ])
+
+    dest_file = self.dest_root / basename
+    self.assertEqual(dest_file.read_text(), contents)
 
   def test_copy_files_basic(self) -> None:
     """Test a basic copy."""
