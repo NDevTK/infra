@@ -10045,6 +10045,20 @@ wheel: <
 
 * *universal*
 
+## **tzdata**
+
+### 2023.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tzdata-py2_py3"
+  version: "version:2023.4"
+>
+```
+
+
+* *universal*
+
 ## **unittest-xml-reporting**
 
 ### 3.1.0
