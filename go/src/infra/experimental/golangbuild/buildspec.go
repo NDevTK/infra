@@ -41,6 +41,7 @@ type buildSpec struct {
 	gocacheDir         string
 	priority           int32
 	golangbuildVersion string
+	ccOverride         string
 
 	inputs *golangbuildpb.Inputs
 
@@ -176,6 +177,15 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 		}
 	}
 
+	// Determine if we want to override our C compiler.
+	var ccOverride string
+	if inputs.GetMode() != golangbuildpb.Mode_MODE_COORDINATOR {
+		relPath := inputs.GetToolsCCompilerRelPath()
+		if relPath != "" {
+			ccOverride = filepath.Join(toolsRoot(ctx), relPath)
+		}
+	}
+
 	return &buildSpec{
 		auth:               authenticator,
 		builderName:        st.Build().GetBuilder().GetBuilder(),
@@ -186,6 +196,7 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 		gocacheDir:         filepath.Join(cwd, "gocache"),
 		priority:           st.Build().GetInfra().GetSwarming().GetPriority(),
 		golangbuildVersion: st.Build().GetExe().GetCipdVersion(),
+		ccOverride:         ccOverride,
 		inputs:             inputs,
 		invocation:         st.Build().GetInfra().GetResultdb().GetInvocation(),
 		goSrc:              goSrc,
@@ -217,6 +228,8 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 
 	if b.inputs.Host.Goos == "windows" {
 		env.Set("GOBUILDEXIT", "1") // On Windows, emit exit codes from .bat scripts. See go.dev/issue/9799.
+		// TODO(mknyszek): Consider promoting the toolchain selection to the builder configuration and having this get
+		// set by the ccOverride path.
 		ccPath := filepath.Join(toolsRoot(ctx), "cc/windows/gcc64/bin")
 		if b.inputs.Target.Goarch == "386" { // Not obvious whether this should check host or target. As of writing they never differ.
 			ccPath = filepath.Join(toolsRoot(ctx), "cc/windows/gcc32/bin")
@@ -233,6 +246,9 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 			b.inputs.Target.Goos == "wasip1" && env.Get("GOWASIRUNTIME") == "wazero":
 			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot(ctx), env.Get("GOWASIRUNTIME")), os.PathListSeparator, env.Get("PATH")))
 		}
+	}
+	if b.ccOverride != "" {
+		env.Set("CC", b.ccOverride)
 	}
 
 	return env.SetInCtx(ctx)

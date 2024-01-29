@@ -101,6 +101,13 @@ message Inputs {
   string tools_extra_build = 26;
   string tools_extra_test = 27;
 
+  // Relative path to an alternative C compiler in the tools installation
+  // root. Applied only in modes that build and test. This allows for C
+  // compilers installed via tools_extra_build and tools_extra_test to be
+  // set up correctly for build and test. Optional. If not set, the C
+  // compiler installed on the machine by default will be used.
+  string tools_c_compiler_rel_path = 30;
+
   // Named cache configured on the builder to use as a git clone cache.
   //
   // Required.
