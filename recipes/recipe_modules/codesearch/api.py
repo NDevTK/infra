@@ -372,7 +372,7 @@ class CodesearchApi(recipe_api.RecipeApi):
       for i in ignore:
         cmd.extend(['--ignore', i])
 
-    # Temporarily disable keycheck for all projects, to push test data.
-    cmd.append('--nokeycheck')
+    if self._get_project_type() == self._PROJECT_BROWSER:
+      cmd.append('--nokeycheck')
 
     self.m.step('sync generated files', cmd)
