@@ -9,7 +9,10 @@ import datetime
 import json
 import logging
 import re
+import urllib2
+import contextlib
 
+from google.appengine.api import app_identity
 from google.appengine.api import memcache
 from google.appengine.ext import db
 
@@ -27,6 +30,14 @@ ALLOWED_ORIGINS = [
 
 DEFAULT_USERNAME = "user"
 
+EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
+
+JSON_PREFIX = ")]}'"
+
+ISO_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+
+TREE_STATUS_SERVICE = ('https://luci-tree-status.appspot.com/' +
+                       'prpc/luci.tree_status.v1.TreeStatus/')
 
 class TextFragment(object):
   """Simple object to hold text that might be linked"""
@@ -263,21 +274,84 @@ class Status(db.Model):
     data['can_commit_freely'] = self.can_commit_freely
     return data
 
+  @classmethod
+  def FromDict(cls, value):
+    """Creates a Status object from a dict with message, createUser and
+    createTime keys (i.e. the Status proto from the new tree status app)."""
+    return Status(
+        message=value['message'],
+        username=value['createUser'],
+        date=datetime.datetime.strptime(value['createTime'], ISO_FORMAT))
+
+
+def tree_name_for_prpc():
+  """Get the tree name for the current tree status instance in the new Tree
+  Status service.
+
+  This is equivalent to the app engine application id with the -status suffix
+  removed (if present)
+  """
+  name = app_identity.get_application_id()
+  if name.endswith('-hr'):
+    name = name[:-len('-hr')]
+  if name.endswith('-status'):
+    name = name[:-len('-status')]
+  return name
+
+
+def tree_status_prpc(method, request_json):
+  """Makes a PRPC call to the given method in the luci tree status server
+
+    request_json should be a JSON serializable representation of the request
+    object.
+
+    returns a parsed JSON structure of the response.
+
+    raises an Exception on any errors.
+  """
+  request = urllib2.Request(
+      TREE_STATUS_SERVICE + method, json.dumps(request_json), {
+          'Accept':
+              'application/json',
+          'Authorization':
+              'Bearer ' + app_identity.get_access_token([EMAIL_SCOPE])[0],
+          'Content-Type':
+              'application/json',
+      })
+  with contextlib.closing(urllib2.urlopen(request)) as response:
+    if response.getcode() != 200:
+      logging.warning('server returned HTTP error: %s', response.getcode())
+      raise Exception('tree status server returned HTTP error for ' + method +
+                      ' ' + json.dumps(request_json) + ': ' +
+                      response.getcode())
+    text = response.read()
+    if text.startswith(JSON_PREFIX):
+      text = text[len(JSON_PREFIX):]
+    return json.loads(text)
 
 def get_status():
   """Returns the current Status, e.g. the most recent one."""
   status = memcache.get('last_status')
   if status is None:
+    try:
+      status = Status.FromDict(
+          tree_status_prpc(
+              'GetStatus',
+              {'name': 'trees/' + tree_name_for_prpc() + '/status/latest'}))
+      memcache.set('last_status', status, 30)  # cache for 30 seconds
+      return status
+    except Exception as e:
+      logging.warning(
+          'exception when making tree status PRPC request', exc_info=e)
     status = Status.all().order('-date').get()
-    # Use add instead of set(); must not change it if it was already set.
-    memcache.add('last_status', status)
+    memcache.set('last_status', status, 30)  # cache for 30 seconds
   return status
 
 
 def put_status(status):
   """Sets the current Status, e.g. append a new one."""
   status.put()
-  memcache.set('last_status', status)
+  memcache.set('last_status', status, 30)  # cache for 30 seconds
   memcache.delete('last_statuses')
 
 
@@ -285,8 +359,19 @@ def get_last_statuses(limit):
   """Returns the last |limit| statuses."""
   statuses = memcache.get('last_statuses')
   if not statuses or len(statuses) < limit:
+    try:
+      values_json = tree_status_prpc('ListStatus', {
+          'parent': 'trees/' + tree_name_for_prpc() + '/status',
+          'pageSize': limit
+      })
+      statuses = [Status.FromDict(value) for value in values_json['status']]
+      memcache.set('last_statuses', statuses, 30)  # cache for 30 seconds
+      return statuses[:limit]
+    except Exception as e:
+      logging.warning(
+          'exception when making tree status PRPC request', exc_info=e)
     statuses = Status.all().order('-date').fetch(limit)
-    memcache.add('last_statuses', statuses)
+    memcache.add('last_statuses', statuses, 30)
   return statuses[:limit]
 
 
@@ -335,17 +420,33 @@ class AllStatusPage(BasePage):
           ).filter('date <', end_date).order('-date').get()
 
     out_format = self.request.get('format', 'csv')
+    if out_format in ['csv', 'json']:
+      try:
+        # Note that this disregards the startTime/endTime parameters, we can
+        # re-introduce these if required, but I suspect they are only used
+        # from the UI which is being retired.
+        values = tree_status_prpc(
+            'ListStatus', {
+                'parent': 'trees/' + tree_name_for_prpc() + '/status',
+                'pageSize': limit
+            })
+        statuses = [Status.FromDict(value) for value in values['status']]
+      except Exception as e:
+        logging.warning(
+            "exception in prpc call to tree status server from AllStatusPage",
+            exc_info=e)
+        statuses = query.fetch(limit)
     if out_format == 'csv':
       # It's not really an html page.
       self.response.headers['Content-Type'] = 'text/plain'
       template_values = self.InitializeTemplate(self.APP_NAME + ' Tree Status')
-      template_values['status'] = query.fetch(limit)
+      template_values['status'] = statuses
       template_values['beyond_end_of_range_status'] = beyond_end_of_range_status
       self.DisplayTemplate('allstatus.html', template_values)
     elif out_format == 'json':
       self.response.headers['Content-Type'] = 'application/json'
       self.response.headers['Access-Control-Allow-Origin'] = '*'
-      statuses = [s.AsDict() for s in query.fetch(limit)]
+      statuses = [s.AsDict() for s in statuses]
       if beyond_end_of_range_status:
         statuses.append(beyond_end_of_range_status.AsDict())
       data = json.dumps(statuses)
@@ -461,29 +562,8 @@ class MainPage(BasePage):
   @utils.requires_login
   @utils.requires_read_access
   def get(self):
-    return self._handle()
-
-  def _handle(self, error_message='', last_message=''):
-    """Sets the information to be displayed on the main page."""
-    try:
-      limit = min(max(int(self.request.get('limit')), 1), 1000)
-    except ValueError:
-      limit = 25
-    status = get_last_statuses(limit)
-    current_status = get_status()
-    if not last_message:
-      last_message = current_status.message
-
-    template_values = self.InitializeTemplate(self.APP_NAME + ' Tree Status')
-    template_values['status'] = status
-    template_values['message'] = last_message
-    template_values['last_status_key'] = current_status.key().id()
-    template_values['error_message'] = error_message
-    template_values['limit'] = limit
-    template_values['preamble'] = self.PREAMBLE
-    template_values['postamble'] = self.POSTAMBLE
-    self.DisplayTemplate('main.html', template_values)
-
+    self.redirect('https://ci.chromium.org/ui/labs/tree-status/' +
+                  tree_name_for_prpc())
 
   @utils.requires_login
   @utils.requires_write_access
