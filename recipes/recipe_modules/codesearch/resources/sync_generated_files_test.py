@@ -6,8 +6,10 @@
 """Tests for sync_generated_files_codesearch."""
 
 import os
+from pathlib import Path
 import shutil
 import tempfile
+from typing import Iterable, List, Optional, Set
 import unittest
 
 from recipe_modules.codesearch.resources import sync_generated_files as sync
@@ -15,249 +17,461 @@ from recipe_modules.codesearch.resources import sync_generated_files as sync
 
 class SyncGeneratedFilesCodesearchTest(unittest.TestCase):
 
-  def setUp(self):
+  def setUp(self) -> None:
+    """Set up the test case."""
     super().setUp()
-    self.src_root = tempfile.mkdtemp(suffix=f'_{self._testMethodName}_src')
-    self.dest_root = tempfile.mkdtemp(suffix=f'_{self._testMethodName}_dest')
+    self.src_root = Path(
+        tempfile.mkdtemp(suffix=f'_{self._testMethodName}_src'))
+    self.dest_root = Path(
+        tempfile.mkdtemp(suffix=f'_{self._testMethodName}_dest'))
 
-  def tearDown(self):
+  def tearDown(self) -> None:
+    """Tear down the test case."""
     super().tearDown()
     shutil.rmtree(self.src_root)
     shutil.rmtree(self.dest_root)
 
-  def testCopyFilesBasic(self):
-    with open(os.path.join(self.src_root, 'foo.cc'), 'w') as f:
-      f.write('foo contents')
+  def test_copy_files_basic(self) -> None:
+    """Test a basic copy."""
+    # Set up as follows:
+    #
+    # src_root/
+    # | foo.cc
+    # dest_root/
+    #
+    # The contents of src_root should be copied to dest_root.
 
-    sync.copy_generated_files(self.src_root, self.dest_root)
+    basename = 'foo.cc'
+    contents = 'foo contents'
+    src_file = self.src_root / basename
+    src_file.write_text(contents)
 
-    try:
-      with open(os.path.join(self.dest_root, 'foo.cc'), 'r') as f:
-        self.assertEqual(f.read(), 'foo contents')
-    except IOError as e:
-      self.fail(e)
+    sync.copy_generated_files(str(self.src_root), str(self.dest_root))
 
-  def testCopyFilesNested(self):
-    os.makedirs(os.path.join(self.src_root, 'dir1'))
-    os.makedirs(os.path.join(self.src_root, 'dir2', 'dir21'))
-    with open(os.path.join(self.src_root, 'foo.cc'), 'w') as f:
-      f.write('foo contents')
-    with open(os.path.join(self.src_root, 'dir1', 'bar.css'), 'w') as f:
-      f.write('bar contents')
-    with open(os.path.join(self.src_root, 'dir2', 'baz.js'), 'w') as f:
-      f.write('baz contents')
-    with open(os.path.join(self.src_root, 'dir2', 'dir21', 'quux.json'),
-              'w') as f:
-      f.write('quux contents')
-    with open(os.path.join(self.src_root, 'dir2', 'dir21', 'zip.txt'),
-              'w') as f:
-      f.write('zip contents')
+    dest_file = self.dest_root / basename
+    self.assertEqual(dest_file.read_text(), contents)
 
-    sync.copy_generated_files(self.src_root, self.dest_root)
+  def test_copy_files_nested(self) -> None:
+    """Test that we can copy files in nested dirs."""
+    # Set up as follows:
+    #
+    # src_root/
+    # | foo.cc
+    # | dir1/
+    # | | bar.css
+    # | | baz.js
+    # | dir2/
+    # | | dir21/
+    # | | | quux.json
+    # | | | zip.txt
+    # dest_root/
+    #
+    # The contents of src_root should be copied to dest_root.
 
-    try:
-      with open(os.path.join(self.dest_root, 'foo.cc'), 'r') as f:
-        self.assertEqual(f.read(), 'foo contents')
-      with open(os.path.join(self.dest_root, 'dir1', 'bar.css'), 'r') as f:
-        self.assertEqual(f.read(), 'bar contents')
-      with open(os.path.join(self.dest_root, 'dir2', 'baz.js'), 'r') as f:
-        self.assertEqual(f.read(), 'baz contents')
-      with open(
-          os.path.join(self.dest_root, 'dir2', 'dir21', 'quux.json'), 'r') as f:
-        self.assertEqual(f.read(), 'quux contents')
-      with open(os.path.join(self.dest_root, 'dir2', 'dir21', 'zip.txt'),
-                'r') as f:
-        self.assertEqual(f.read(), 'zip contents')
-    except IOError as e:
-      self.fail(e)
+    relative_dir_paths: Tuple(Path) = (
+        Path('dir1'),
+        Path('dir2'),
+        Path('dir2', 'dir21'),
+    )
+    relative_paths_to_contents: Dict[Path, str] = {
+        Path('foo.cc'): 'foo contents',
+        Path('dir1', 'bar.css'): 'bar contents',
+        Path('dir2', 'baz.js'): 'baz contents',
+        Path('dir2', 'dir21', 'quux.json'): 'quux contents',
+        Path('dir2', 'dir21', 'zip.txt'): 'zip contents',
+    }
 
-  def testCopyFilesNotWhitelisted(self):
-    with open(os.path.join(self.src_root, 'foo.crazy'), 'w') as f:
-      f.write('foo contents')
+    for relative_dir_path in relative_dir_paths:
+      src_dir = self.src_root / relative_dir_path
+      src_dir.mkdir()
+    for relative_path, contents in relative_paths_to_contents.items():
+      src_file = self.src_root / relative_path
+      src_file.write_text(contents)
 
-    sync.copy_generated_files(self.src_root, self.dest_root)
+    sync.copy_generated_files(str(self.src_root), str(self.dest_root))
 
-    self.assertFalse(os.path.exists(os.path.join(self.dest_root, 'foo.crazy')))
+    for relative_dir_path in relative_dir_paths:
+      dest_dir = self.dest_root / relative_dir_path
+      self.assertTrue(dest_dir.exists())
+    for relative_path, contents in relative_paths_to_contents.items():
+      dest_file = self.dest_root / relative_path
+      self.assertEqual(dest_file.read_text(), contents)
 
-  def testCopyFilesContentsChanged(self):
-    with open(os.path.join(self.src_root, 'foo.cc'), 'w') as f:
-      f.write('new foo contents')
+  def test_copy_files_not_allowlisted(self) -> None:
+    """Test that we don't copy any files with non-allowlisted extensions."""
+    # Set up as follows:
+    #
+    # src_root/
+    # | foo.crazy
+    # dest_root/
+    #
+    # foo.crazy should not be copied to dest_root, since it doesn't have
+    # an allowlisted file extension.
 
-    with open(os.path.join(self.dest_root, 'foo.cc'), 'w') as f:
-      f.write('old foo contents')
+    basename = 'foo.crazy'
+    contents = 'foo contents'
+    src_file = self.src_root / basename
+    src_file.write_text(contents)
 
-    sync.copy_generated_files(self.src_root, self.dest_root)
+    sync.copy_generated_files(str(self.src_root), str(self.dest_root))
 
-    try:
-      with open(os.path.join(self.dest_root, 'foo.cc'), 'r') as f:
-        self.assertEqual(f.read(), 'new foo contents')
-    except IOError as e:
-      self.fail(e)
+    dest_file = self.dest_root / basename
+    self.assertFalse(dest_file.exists())
 
-  def testCopyFilesDeleteNoLongerExistingFiles(self):
-    with open(os.path.join(self.src_root, 'foo.cc'), 'w') as f:
-      f.write('foo contents')
+  def test_copy_files_contents_changed(self) -> None:
+    """Test that if a dest file already exists, it will be overwritten."""
+    # Set up as follows:
+    #
+    # src_root/
+    # | foo.cc
+    # dest_root/
+    # | foo.cc (but with different contents than in src)
+    #
+    # The contents of dest_root/foo.cc should be overwritten.
 
-    os.makedirs(os.path.join(self.dest_root, 'the_dir'))
-    with open(os.path.join(self.dest_root, 'the_dir', 'the_file.cc'), 'w') as f:
-      f.write('the data')
+    basename = 'foo.cc'
+    src_contents = 'new foo contents'
+    src_file = self.src_root / basename
+    src_file.write_text(src_contents)
 
-    sync.copy_generated_files(self.src_root, self.dest_root)
+    original_dest_contents = 'old foo contents'
+    dest_file = self.dest_root / basename
+    dest_file.write_text(original_dest_contents)
 
-    self.assertFalse(os.path.exists(os.path.join(self.dest_root, 'the_dir')))
-    self.assertFalse(
-        os.path.exists(os.path.join(self.dest_root, 'the_dir', 'the_file.cc')))
+    sync.copy_generated_files(str(self.src_root), str(self.dest_root))
 
-  def testCopyFilesDeleteNestedEmptyDirs(self):
-    with open(os.path.join(self.src_root, 'foo.cc'), 'w') as f:
-      f.write('foo contents')
+    self.assertEqual(dest_file.read_text(), src_contents)
 
-    os.makedirs(os.path.join(self.dest_root, 'the_dir', 'inner_dir'))
-    with open(
-        os.path.join(self.dest_root, 'the_dir', 'inner_dir', 'the_file.cc'),
-        'w') as f:
-      f.write('the data')
+  def test_copy_files_delete_no_longer_existing_files(self) -> None:
+    """Test that any existng dest files that don't exist in src get deleted."""
+    # Set up as follows:
+    #
+    # src_root/
+    # dest_root/
+    # | the_dir/
+    # | | the_file.cc
+    #
+    # The contents of dest_root don't exist in src_root, so they should get
+    # deleted.
 
-    sync.copy_generated_files(self.src_root, self.dest_root)
+    dest_dir = self.dest_root / 'the_dir'
+    dest_dir.mkdir()
 
-    self.assertFalse(os.path.exists(os.path.join(self.dest_root, 'the_dir')))
-    self.assertFalse(
-        os.path.exists(os.path.join(self.dest_root, 'the_dir', 'inner_dir')))
-    self.assertFalse(
-        os.path.exists(
-            os.path.join(self.dest_root, 'the_dir', 'inner_dir',
-                         'the_file.cc')))
+    dest_file = dest_dir / 'the_file.cc'
+    dest_file.write_text('the data')
 
-  def testCopyFilesDeleteExcludedFiles(self):
-    os.makedirs(os.path.join(self.src_root, 'the_dir'))
-    with open(os.path.join(self.src_root, 'foo.cc'), 'w') as f:
-      f.write('foo contents')
-    with open(os.path.join(self.src_root, 'the_dir', 'the_file.woah'),
-              'w') as f:
-      f.write('the data')
+    sync.copy_generated_files(str(self.src_root), str(self.dest_root))
 
-    os.makedirs(os.path.join(self.dest_root, 'the_dir'))
-    with open(os.path.join(self.dest_root, 'the_dir', 'the_file.woah'),
-              'w') as f:
-      f.write('the data')
+    self.assertFalse(dest_dir.exists())
+    self.assertFalse(dest_file.exists())
 
-    sync.copy_generated_files(self.src_root, self.dest_root)
+  def test_copy_files_delete_nested_empty_dirs(self) -> None:
+    """Test that we recursively delete empty dest dirs after syncing."""
+    # Set up as follows:
+    #
+    # src_root/
+    # dest_root/
+    # | outer_dir/
+    # | | inner_dir/
+    # | | | the_file.cc
+    #
+    # First, the_file.cc should be deleted from dest_root, because it doesn't
+    # exist in src_root.
+    # Then, inner_dir should be deleted, since it's now empty.
+    # Finally, outer_dir should be deleted, since it's now empty.
+    dest_outer_dir = self.dest_root / 'outer_dir'
+    dest_outer_dir.mkdir()
 
-    self.assertFalse(os.path.exists(os.path.join(self.dest_root, 'the_dir')))
-    self.assertFalse(
-        os.path.exists(
-            os.path.join(self.dest_root, 'the_dir', 'the_file.woah')))
+    dest_inner_dir = dest_outer_dir / 'inner_dir'
+    dest_inner_dir.mkdir()
 
-  def testCopyFilesWithSecrets(self):
-    with open(os.path.join(self.src_root, 'foo.json'), 'w') as f:
-      f.write('foo contents')
-    with open(os.path.join(self.src_root, 'creds1.json'), 'w') as f:
-      f.write('"accessToken": "ya29.c.dontuploadme"')
-    with open(os.path.join(self.src_root, 'creds2.json'), 'w') as f:
-      f.write('"code": "4/topsecret"')
-    shutil.copy(
-        os.path.join(self.src_root, 'creds2.json'),
-        os.path.join(self.dest_root, 'creds2.json'))
-    with open(os.path.join(self.src_root, 'creds3.json'), 'wb') as f:
-      f.write(bytes([0xfa]))  # invalid utf8
-      f.write(b'"code": "4/topsecret"')
-    shutil.copy(
-        os.path.join(self.src_root, 'creds3.json'),
-        os.path.join(self.dest_root, 'creds3.json'))
+    dest_file = dest_inner_dir / 'the_file.cc'
+    dest_file.write_text('the data')
 
-    with open(os.path.join(self.dest_root, 'creds3.json'), 'wb') as f:
-      f.write(bytes([0xfa]))  # invalid utf8
-      f.write(b'"code": "4/topsecret"')
+    sync.copy_generated_files(str(self.src_root), str(self.dest_root))
 
-    sync.copy_generated_files(self.src_root, self.dest_root)
+    self.assertFalse(dest_outer_dir.exists())
+    self.assertFalse(dest_inner_dir.exists())
+    self.assertFalse(dest_file.exists())
 
-    try:
-      with open(os.path.join(self.dest_root, 'foo.json'), 'r') as f:
-        self.assertEqual(f.read(), 'foo contents')
-    except IOError as e:
-      self.fail(e)
+  def test_copy_files_delete_excluded_files(self) -> None:
+    """Test that non-allowlisted files get deleted from dest."""
+    # Set up as follows:
+    #
+    # src_root/
+    # | the_dir/
+    # | | the_file.woah
+    # dest_root/
+    # | the_dir/
+    # | | the_file.woah
+    #
+    # Even though the_file.woah exists in src_root, it shouldn't be copied,
+    # since it doesn't have an allowlisted extension.
+    # Even though the_file.woah exists in dest_root, it should be deleted,
+    # since no file was synced to it.
+    # Finally, dest_root/the_dir/ should be deleted, since it's now empty.
+    dir_basename = 'the_dir'
+    file_basename = 'the_file.woah'
+    file_contents = 'the_data'
 
-    try:
-      with open(os.path.join(self.dest_root, 'creds1.json'), 'r') as f:
-        self.fail('creds1.json should not be synced')
-    except IOError as e:
-      pass
+    src_dir = self.src_root / dir_basename
+    src_dir.mkdir()
+    src_file = src_dir / file_basename
+    src_file.write_text(file_contents)
 
-    try:
-      with open(os.path.join(self.dest_root, 'creds2.json'), 'r') as f:
-        self.fail('creds2.json should have been deleted')
-    except IOError as e:
-      pass
+    dest_dir = self.dest_root / dir_basename
+    dest_dir.mkdir()
+    dest_file = dest_dir / file_basename
+    dest_file.write_text(file_contents)
 
-    try:
-      with open(os.path.join(self.dest_root, 'creds3.json'), 'r') as f:
-        self.fail('creds3.json should have been deleted')
-    except IOError as e:
-      pass
+    sync.copy_generated_files(str(self.src_root), str(self.dest_root))
 
-  def testCopyFilesKzipSuffixSet(self):
-    with open(os.path.join(self.src_root, 'foo.cc'), 'w') as f:
-      f.write('foo contents')
-    with open(os.path.join(self.src_root, 'bar.cc'), 'w') as f:
-      f.write('bar contents')
+    self.assertFalse(dest_dir.exists())
+    self.assertFalse(dest_file.exists())
 
-    with open(os.path.join(self.dest_root, 'bar.cc'), 'w') as f:
-      f.write('bar contents')
-    with open(os.path.join(self.dest_root, 'baz.cc'), 'w') as f:
-      f.write('baz contents')
+  def test_copy_files_with_secrets(self) -> None:
+    """Test that we avoid copying any files with secrets in them."""
+    # Set up as follows:
+    #
+    # src_root/
+    # | foo.json
+    # | creds1.json (contains a secret)
+    # | creds2.json (contains a secret)
+    # | creds3.json (contains invalid utf8, and a secret)
+    # dest_root/
+    # | creds2.json (contains a secret)
+    # | creds3.json (contains invalid utf8, and a secret)
+    #
+    # foo.json should be copied to dest_root.
+    # None of the creds files should be copied, since they all contain secrets.
+    # The creds files already present in dest-root should be deleted.
 
-    kzip_suffixes = set(('foo.cc',))
+    safe_file_basename = 'foo.json'
+    safe_file_contents = 'foo contents'
+    src_safe_file = self.src_root / safe_file_basename
+    src_safe_file.write_text(safe_file_contents)
+    dest_safe_file = self.dest_root / safe_file_basename
 
-    # Files not mentioned in kzip should not be copied.
-    sync.copy_generated_files(self.src_root, self.dest_root, kzip_suffixes)
+    creds1_basename = 'creds1.json'
+    creds1_contents = '"accessToken": "ya29.c.dontuploadme"'
+    src_creds1_file = self.src_root / creds1_basename
+    dest_creds1_file = self.dest_root / creds1_basename
+    src_creds1_file.write_text(creds1_contents)
 
-    self.assertTrue(os.path.exists(os.path.join(self.dest_root, 'foo.cc')))
-    self.assertFalse(os.path.exists(os.path.join(self.dest_root, 'bar.cc')))
-    self.assertFalse(os.path.exists(os.path.join(self.dest_root, 'baz.cc')))
+    creds2_basename = 'creds2.json'
+    creds2_contents = '"code": "4/topsecret"'
+    src_creds2_file = self.src_root / creds2_basename
+    dest_creds2_file = self.dest_root / creds2_basename
+    src_creds2_file.write_text(creds2_contents)
+    dest_creds2_file.write_text(creds2_contents)
 
-  def testCopyFilesIgnore(self):
-    with open(os.path.join(self.src_root, 'relevant.cc'), 'w') as f:
-      f.write('relevant contents')
-    with open(os.path.join(self.src_root, 'ignorefile.cc'), 'w') as f:
-      f.write('ignorefile contents')
-    os.makedirs(os.path.join(self.src_root, 'ignoredir'))
-    with open(os.path.join(self.src_root, 'ignoredir', 'foo.cc'), 'w') as f:
-      f.write('foo contents')
+    creds3_basename = 'creds3.json'
+    creds3_contents = b'\n'.join((bytes([0xfa]), b'"code": "4/topsecret"'))
+    src_creds3_file = self.src_root / creds3_basename
+    dest_creds3_file = self.dest_root / creds3_basename
+    src_creds3_file.write_bytes(creds3_contents)
+    dest_creds3_file.write_bytes(creds3_contents)
 
-    with open(os.path.join(self.dest_root, 'ignorefile.cc'), 'w') as f:
-      f.write('ignorefile contents')
-    os.makedirs(os.path.join(self.dest_root, 'ignoredir'))
-    with open(os.path.join(self.dest_root, 'ignoredir', 'foo.cc'), 'w') as f:
-      f.write('foo contents')
-    with open(os.path.join(self.dest_root, 'ignoredir', 'bar.cc'), 'w') as f:
-      f.write('bar contents')
+    sync.copy_generated_files(str(self.src_root), str(self.dest_root))
 
-    ignore = set((
-        os.path.join(self.src_root, 'ignoredir'),
-        os.path.join(self.src_root, 'ignorefile.cc'),
-    ))
+    self.assertEqual(dest_safe_file.read_text(), safe_file_contents)
 
-    # Files not mentioned in kzip should not be copied.
+    for dest_file, failure_message in (
+        (dest_creds1_file, 'creds1.json should not be synced'),
+        (dest_creds2_file, 'creds2.json should have been deleted'),
+        (dest_creds3_file, 'creds3.json should have been deleted'),
+    ):
+      self.assertFalse(dest_file.exists(), msg=failure_message)
+
+  def test_copy_files_kzip_suffix_set(self) -> None:
+    """Test that we don't sync, and do delete, files not in the suffix set."""
+    # Set up as follows:
+    #
+    # src_root/
+    # | foo.cc
+    # | bar.cc
+    # dest_root/
+    # | bar.cc
+    # | baz.cc
+    #
+    # kzip_suffixes will specify that we should only sync foo.cc.
+    # Thus, bar.cc shouldn't be copied, and both files already in dest_root
+    # should be deleted.
+
+    for (basename, contents) in (
+        # foo.cc is mentioned in kzip_suffixes, so it'll be copied.
+        ('foo.cc', 'foo contents'),
+        # bar.cc isn't in kzip_suffixes, so it won't be copied.
+        ('bar.cc', 'bar contents'),
+    ):
+      src_path = self.src_root / basename
+      src_path.write_text(contents)
+
+    for (basename, contents) in (
+        # bar.cc isn't in kzip_suffixes, so it'll be deleted, even though it's
+        # in the source root.
+        ('bar.cc', 'bar contents'),
+        # baz.cc isn't in kzip_suffixes, so it'll be deleted.
+        ('baz.cc', 'baz.contents'),
+    ):
+      dest_path = self.dest_root / basename
+      dest_path.write_text(contents)
+
+    kzip_suffixes: Set[str] = {'foo.cc'}
+
     sync.copy_generated_files(
-        self.src_root, self.dest_root, kzip_input_suffixes=None, ignore=ignore)
+        str(self.src_root),
+        str(self.dest_root),
+        kzip_input_suffixes=kzip_suffixes)
 
-    self.assertTrue(os.path.exists(os.path.join(self.dest_root, 'relevant.cc')))
-    self.assertFalse(
-        os.path.exists(os.path.join(self.dest_root, 'ignoredir', 'foo.cc')))
-    self.assertFalse(
-        os.path.exists(os.path.join(self.dest_root, 'ignoredir', 'bar.cc')))
-    self.assertFalse(os.path.exists(os.path.join(self.dest_root, 'ignoredir')))
-    self.assertFalse(
-        os.path.exists(os.path.join(self.dest_root, 'ignorefile.cc')))
+    self.assertTrue((self.dest_root / 'foo.cc').exists())
+    self.assertFalse((self.dest_root / 'bar.cc').exists())
+    self.assertFalse((self.dest_root / 'baz.cc').exists())
 
-  def testDontCopyTmpFiles(self) -> None:
+  def test_copy_files_ignore(self) -> None:
+    """Test that we don't copy files in the ignore set."""
+    # Set up as follows:
+    #
+    # src_root/
+    # | relevant.cc
+    # | ignorefile.cc
+    # | ignoredir/
+    # | | inner.cc
+    # dest_root/
+    # | ignorefile.cc
+    # | ignoredir/
+    # | | inner.cc
+    # | | extra.cc
+    #
+    # We'll sync with ignore={ignorefile.cc, ignoredir}.
+    # relevant.cc should be synced like normal, since it's not ignored.
+    # ignorefile.cc and ignoredir/, and the contents of ignoredir/, should not
+    # be synced, and should be deleted from dest_root.
+
+    # relevant_file exists in src, but not in dest.
+    # It should be synced like normal.
+    relevant_file_basename = 'relevant.cc'
+    relevant_file_contents = 'relevant contents'
+    src_relevant_file = self.src_root / relevant_file_basename
+    src_relevant_file.write_text(relevant_file_contents)
+    dest_relevant_file = self.dest_root / relevant_file_basename
+
+    # ignorefile will be named in the ignore set.
+    # Since it already exists in dest, it should get deleted.
+    ignorefile_basename = 'ignorefile.cc'
+    ignorefile_contents = 'ignorefile contents'
+    src_ignorefile = self.src_root / ignorefile_basename
+    src_ignorefile.write_text(ignorefile_contents)
+    dest_ignorefile = self.dest_root / ignorefile_basename
+    dest_ignorefile.write_text(ignorefile_contents)
+
+    # ignoredir will be named in the ignore set.
+    # Since it already exists in dest, it and its children should get deleted.
+    ignoredir_basename = 'ignoredir'
+    src_ignoredir = self.src_root / ignoredir_basename
+    src_ignoredir.mkdir()
+    dest_ignoredir = self.dest_root / ignoredir_basename
+    dest_ignoredir.mkdir()
+
+    # inner_ignorefile is a file within ignoredir.
+    # It already exists in both src and dest.
+    inner_ignorefile_basename = 'inner.cc'
+    inner_ignorefile_contents = 'inner ignorefile contents'
+    src_inner_ignorefile = (
+        self.src_root / ignoredir_basename / inner_ignorefile_basename)
+    src_inner_ignorefile.write_text(inner_ignorefile_contents)
+    dest_inner_ignorefile = (
+        self.dest_root / ignoredir_basename / inner_ignorefile_basename)
+    dest_inner_ignorefile.write_text(inner_ignorefile_contents)
+
+    # extra_inner_ignorefile is also a file within ignoredir.
+    # It already exists in dest, but not in src.
+    extra_inner_ignorefile_basename = 'extra.cc'
+    extra_inner_ignorefile_contents = 'extra inner ignorefile contents'
+    dest_extra_inner_ignorefile = (
+        self.dest_root / ignoredir_basename / extra_inner_ignorefile_basename)
+    dest_extra_inner_ignorefile.write_text(extra_inner_ignorefile_contents)
+
+    ignore: Set[str] = {str(src_ignoredir), str(src_ignorefile)}
+    sync.copy_generated_files(
+        str(self.src_root), str(self.dest_root), ignore=ignore)
+
+    self.assertTrue(dest_relevant_file.exists())
+    self.assertFalse(dest_ignorefile.exists())
+    self.assertFalse(dest_ignoredir.exists())
+    self.assertFalse(dest_inner_ignorefile.exists())
+    self.assertFalse(dest_extra_inner_ignorefile.exists())
+
+  def test_dont_copy_tmp_files(self) -> None:
     """Make sure files in src_root/**/tmp/** don't get copied."""
-    os.makedirs(os.path.join(self.src_root, 'tmp'), exist_ok=True)
-    with open(os.path.join(self.src_root, 'tmp', 'foo.cc'), 'w') as f:
-      f.write('contents')
-    sync.copy_generated_files(self.src_root, self.dest_root)
-    self.assertFalse(
-        os.path.exists(os.path.join(self.dest_root, 'tmp', 'foo.cc')))
+    # Set up as follows:
+    #
+    # src_root/
+    # | tmp/
+    # | | foo.cc
+    # | tmp.cc
+    # | not_tmp/
+    # | | foo.cc
+    # dest_root/
+    #
+    # tmp/foo.cc should not be synced, since its relative path contains `tmp`.
+    # However, tmp.cc and not/foo.cc should be synced, since `tmp` isn't a whole
+    # dir name in either of them.
+
+    # root/tmp/
+    # Should be ignored.
+    tmp_dir_basename = 'tmp'
+    src_tmp_dir = self.src_root / 'tmp'
+    src_tmp_dir.mkdir()
+
+    # root/tmp/foo.cc
+    # Should be igored, because it's in tmp/.
+    tmp_foo_cc_basename = 'foo.cc'
+    tmp_foo_cc_contents = 'tmp/foo.cc contents'
+    src_tmp_foo_cc = src_tmp_dir / tmp_foo_cc_basename
+    src_tmp_foo_cc.write_text(tmp_foo_cc_contents)
+
+    # root/tmp.cc
+    # Filename contains the substring "tmp", but we should only ignore exact
+    # matches. Thus, should be copied.
+    tmp_cc_basename = 'tmp.cc'
+    tmp_cc_contents = 'tmp.cc contents'
+    src_tmp_cc = self.src_root / tmp_cc_basename
+    src_tmp_cc.write_text(tmp_cc_contents)
+
+    # root/not_tmp/
+    # Dir contains the substring "tmp", but we should only ignore exact matches.
+    # Thus, should be copied.
+    not_tmp_basename = 'not_tmp'
+    src_not_tmp = self.src_root / 'not_tmp'
+    src_not_tmp.mkdir()
+
+    # root/not_tmp/foo.cc
+    # Should be copied because not_tmp/ isn't ignored.
+    not_tmp_foo_cc_basename = 'foo.cc'
+    not_tmp_foo_cc_contents = 'not_tmp/foo.cc contents'
+    src_not_tmp_foo_cc = src_not_tmp / not_tmp_foo_cc_basename
+    src_not_tmp_foo_cc.write_text(not_tmp_foo_cc_contents)
+
+    sync.copy_generated_files(str(self.src_root), str(self.dest_root))
+
+    # /tmp/ and /tmp/foo.cc should not be synced.
+    dest_tmp_dir = self.dest_root / tmp_dir_basename
+    dest_tmp_foo_cc = dest_tmp_dir / tmp_foo_cc_basename
+    self.assertFalse(dest_tmp_dir.exists())
+    self.assertFalse(dest_tmp_foo_cc.exists())
+
+    # /tmp.cc should be synced.
+    dest_tmp_cc = self.dest_root / tmp_cc_basename
+    self.assertTrue(dest_tmp_cc.exists())
+    self.assertEqual(dest_tmp_cc.read_text(), tmp_cc_contents)
+
+    # /not_tmp/ and /not_tmp/foo.cc should be synced.
+    dest_not_tmp = self.dest_root / not_tmp_basename
+    dest_not_tmp_foo_cc = dest_not_tmp / not_tmp_foo_cc_basename
+    self.assertTrue(dest_not_tmp.exists())
+    self.assertTrue(dest_not_tmp_foo_cc.exists())
+    self.assertEqual(dest_not_tmp_foo_cc.read_text(), not_tmp_foo_cc_contents)
 
 
 if __name__ == '__main__':
