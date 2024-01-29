@@ -48,7 +48,7 @@ func chamCmd(mode action) *subcommands.Command {
 			c.Flags.StringVar(&c.rpmHostname, "rpm", "", "hostname for rpm connected to chameleon")
 			c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "outlet number of rpm connected to chameleon")
 			c.Flags.BoolVar(&c.audioBoard, "audio-board", false, "audio board chameleon")
-			c.Flags.StringVar(&c.trrsTypeName, "trrs", "", "type of trrs, ie. CTIA or OMTP")
+			c.Flags.StringVar(&c.trrsTypeName, "trrs", "", "type of trrs, ie. CTIA or OMTP, default to original trrs value or CTIA when audio-cable is set on DUT")
 
 			return &c
 		},
@@ -122,6 +122,12 @@ func (c *manageChamCmd) run(a subcommands.Application, args []string, env subcom
 	var (
 		peripherals = lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 		currentCham = peripherals.GetChameleon()
+	)
+
+	c.trrsType = setDefaultTrrs(
+		c.trrsType,
+		currentCham.GetTrrsType(),
+		peripherals.GetAudio().GetAudioCable(),
 	)
 
 	nb, err := c.newCham(currentCham)
@@ -284,4 +290,21 @@ func supportedTrrsTypes() []string {
 		supportedTrrsTypes = append(supportedTrrsTypes, key)
 	}
 	return supportedTrrsTypes
+}
+
+func setDefaultTrrs(
+	cliTrrs lab.Chameleon_TRRSType, // shivas -trrs
+	originalTrrs lab.Chameleon_TRRSType, // from UFS
+	hasAudioCable bool, // from UFS
+) lab.Chameleon_TRRSType {
+	if !hasAudioCable {
+		return lab.Chameleon_TRRS_TYPE_UNSPECIFIED
+	}
+	if cliTrrs != lab.Chameleon_TRRS_TYPE_UNSPECIFIED {
+		return cliTrrs
+	}
+	if originalTrrs != lab.Chameleon_TRRS_TYPE_UNSPECIFIED {
+		return originalTrrs // preserve original TRRS if not provided
+	}
+	return lab.Chameleon_TRRS_TYPE_CTIA
 }
