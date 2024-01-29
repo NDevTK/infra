@@ -15,17 +15,25 @@ func crosRepairPlan() *Plan {
 	}
 }
 
-func crosRepairCriticalActions(skipRepairFailState bool) []string {
-	repairOnlyActions := []string{
-		"Set state: repair_failed",
-		"Verify access to cache",
-		"Collect logs and crashinfo",
+func crosRepairCriticalActions(isDeployment bool) []string {
+	isRepair := !isDeployment
+	var actions []string
+	if isRepair {
+		actions = append(actions,
+			"Set state: repair_failed",
+			"Collect logs and crashinfo",
+		)
 	}
-	otherActions := []string{
+	actions = append(actions,
 		"Has repair-request for re-image USB-key",
 		"Has repair-request for re-image by USB-key",
 		"Device is pingable",
 		"Device is SSHable",
+	)
+	if isRepair {
+		actions = append(actions, "Verify access to cache")
+	}
+	actions = append(actions,
 		"Enable verbose network logging for cellular DUTs",
 		"Collect logs and crashinfo",
 		"Read bootId",
@@ -76,11 +84,8 @@ func crosRepairCriticalActions(skipRepairFailState bool) []string {
 		"Reset DUT-state reason",
 		"Servo is in WORKING state",
 		"Set state: ready",
-	}
-	if skipRepairFailState {
-		return otherActions
-	}
-	return append(repairOnlyActions, otherActions...)
+	)
+	return actions
 }
 
 func crosRepairActions() map[string]*Action {
@@ -4268,6 +4273,10 @@ func crosRepairActions() map[string]*Action {
 		"Verify access to cache": {
 			Docs: []string{
 				"Verifies connection to the cache service.",
+				"Connection checked from the DUT.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
 			},
 			ExecName:               "cache_download_check",
 			RunControl:             RunControl_ALWAYS_RUN,
