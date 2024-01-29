@@ -26,7 +26,7 @@ create {
 }
 
 create {
-  platform_re: "linux-arm.*|linux-mips.*"
+  platform_re: "linux-arm.*|linux-mips.*|linux-riscv64"
   build {
     tool: "tools/cpython38"
     tool: "tools/ninja"  # Depend on the bootstrapped version when cross-compiling
