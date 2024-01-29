@@ -281,9 +281,12 @@ func ListOwnershipConfigs(ctx context.Context, pageSize int32, pageToken, filter
 			return nil, "", errors.Annotate(err, "Can only specify one commitsh for returning configs").Err()
 		}
 		commitsh = strings.TrimSpace(vals[0].(string))
+		// Delete the commitsh from filterMap as we don't need it anymore
+		// and that field doesn't exist in the database
+		delete(filterMap, inventory.CommitSh)
 	}
-
 	if commitsh == "" {
+		logging.Infof(ctx, "Getting ownership for latest commit")
 		res, pageToken, err := listOwnershipEntities(ctx, pageSize, pageToken, filter, keysOnly, filterMap)
 		if err != nil {
 			return nil, "", err
@@ -305,6 +308,7 @@ func ListOwnershipConfigs(ctx context.Context, pageSize int32, pageToken, filter
 		}
 		return entities, pageToken, nil
 	}
+	logging.Infof(ctx, "Getting ownership for specified commit %s", commitsh)
 	entities, err := GetBotConfigsForCommitSh(ctx, commitsh)
 	if err == nil {
 		return entities, "", nil
