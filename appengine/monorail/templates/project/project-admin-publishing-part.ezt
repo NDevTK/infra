@@ -11,9 +11,8 @@
            value="Archive">
   </td>
   <td>
-    Archive this project. It will only be visible read-only to
-    project members.  Once it is archived, you may unarchive it, or go ahead
-    and fully delete it.
+    Archive this project. It will become read-only. Once it is archived,
+    you may unarchive it, or go ahead and fully delete it.
     <br><br>
   </td>
  </tr>
@@ -40,7 +39,7 @@
   </td>
   <td>
     Make this project active again.
-    All project contents will become visible and editable to users as normal.
+    All project contents will become editable to users as normal.
     <br><br>
   </td>
  </tr>
@@ -73,9 +72,8 @@
   <td>
     Immediately archive this project and schedule it for deletion in
     90 days.  Only a site admin can un-archive the project, not a
-    project owner.  In the meantime, the project will be read-only for
-    project members only, and the reason for deletion will be displayed at the top
-    of each page.
+    project owner.  In the meantime, the project will be read-only, and
+    the reason for deletion will be displayed at the top of each page.
     <br><br>
     <b>Reason:</b>
     <input type="text" name="reason" size="50" value="[default_doom_reason]">
