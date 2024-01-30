@@ -34,6 +34,24 @@
       "parentUuid": "c601038b_99cd7c16",
       "revId": "c33af5b2db9bf0d4fe102a44121817a954e68e7e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "54018b98_7010fc5c",
+        "filename": "go/src/infra/experimental/golangbuild/prebuilt_go.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-01-30T00:42:58Z",
+      "side": 1,
+      "message": "This was",
+      "parentUuid": "68a31188_30c1ad80",
+      "revId": "c33af5b2db9bf0d4fe102a44121817a954e68e7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
