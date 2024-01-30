@@ -22,7 +22,15 @@ LINUX_EXTRAS=
 if [ "$(uname -s)" == "Linux" ]; then
       LINUX_EXTRAS=cloud-spanner-emulator
 fi
-./google-cloud-sdk/bin/gcloud components install -q \
+
+# gcloud's shell script may not support Windows with mingw properly. Use the
+# cmd script instead.
+GCLOUD_BIN=./google-cloud-sdk/bin/gcloud
+if [[ $_3PP_PLATFORM =~ windows-.*  ]]; then
+      GCLOUD_BIN="$GCLOUD_BIN".cmd
+fi
+
+"$GCLOUD_BIN" components install -q \
     alpha \
     beta \
     app-engine-go \
@@ -37,15 +45,15 @@ fi
 rm -rf ./google-cloud-sdk/.install/.backup
 
 # Disable update checks, we deploy updates through CIPD.
-./google-cloud-sdk/bin/gcloud config set --installation \
+"$GCLOUD_BIN" config set --installation \
     component_manager/disable_update_check true
 
 # No need to report usage from bots.
-./google-cloud-sdk/bin/gcloud config set --installation \
+"$GCLOUD_BIN" config set --installation \
     core/disable_usage_reporting true
 
 # No need to survey bots.
-./google-cloud-sdk/bin/gcloud config set --installation \
+"$GCLOUD_BIN" config set --installation \
     survey/disable_prompts true
 
 # Copy CHECKSUM to mitigate crbug/1365718#c14
