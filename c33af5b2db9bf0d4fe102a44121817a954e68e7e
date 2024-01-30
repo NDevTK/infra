@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c601038b_99cd7c16",
+        "filename": "go/src/infra/experimental/golangbuild/prebuilt_go.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-01-30T00:30:52Z",
+      "side": 1,
+      "message": "Hmm, this isn\u0027t enough in the general case. The linux-amd64-clang15 builder whose rel path is `clang/bin/clang` but it has clang 15.0.6, while there could be another linux-amd64-clang17 builder with a different clang and the same rel path.",
+      "revId": "c33af5b2db9bf0d4fe102a44121817a954e68e7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
