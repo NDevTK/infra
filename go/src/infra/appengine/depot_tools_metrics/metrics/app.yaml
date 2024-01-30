@@ -5,6 +5,7 @@ app_engine_apis: true
 luci_gae_vars:
   cit-cli-metrics:
     AUTH_SERVICE_HOST: chrome-infra-auth.appspot.com
+    TS_MON_ACCOUNT: app-engine-metric-publishers@prodx-mon-chrome-infra.google.com.iam.gserviceaccount.com
 
 handlers:
 - url: /(internal|admin)/.*
@@ -18,3 +19,4 @@ handlers:
 entrypoint: >
   main
   -auth-service-host ${AUTH_SERVICE_HOST}
+  -ts-mon-account ${TS_MON_ACCOUNT}
