@@ -164,7 +164,7 @@ class Builder(object):
     if self.spec.universal != plat.universal:
       return False
 
-    return True
+    return plat.default
 
   def build(self, wheel, system, rebuild=False):
     if not self.supported(wheel.plat):

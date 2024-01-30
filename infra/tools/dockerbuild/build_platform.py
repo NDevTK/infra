@@ -58,6 +58,9 @@ class Platform(
             # Extra environment variables to set when building wheels on this
             # platform.
             'env',
+
+            # Whether wheels are built for this platform by default.
+            'default',
         ))):
 
   @property
@@ -90,6 +93,7 @@ ALL = {
             packaged=False,
             cipd_platform='linux-armv6l',
             env={},
+            default=True,
         ),
         Platform(
             name='linux-armv6-py3.11',
@@ -104,6 +108,7 @@ ALL = {
             packaged=False,
             cipd_platform='linux-armv6l',
             env={},
+            default=True,
         ),
         Platform(
             name='linux-arm64-py3.8',
@@ -117,6 +122,7 @@ ALL = {
             packaged=False,
             cipd_platform='linux-arm64',
             env={},
+            default=True,
         ),
         Platform(
             name='linux-arm64-py3.11',
@@ -130,6 +136,7 @@ ALL = {
             packaged=False,
             cipd_platform='linux-arm64',
             env={},
+            default=True,
         ),
         Platform(
             name='linux-riscv64-py3.8',
@@ -143,6 +150,7 @@ ALL = {
             packaged=False,
             cipd_platform='linux-riscv64',
             env={},
+            default=False,
         ),
         Platform(
             name='linux-riscv64-py3.11',
@@ -156,6 +164,7 @@ ALL = {
             packaged=False,
             cipd_platform='linux-riscv64',
             env={},
+            default=False,
         ),
         Platform(
             name='manylinux-x64-py3.8',
@@ -169,6 +178,7 @@ ALL = {
             packaged=True,
             cipd_platform='linux-amd64',
             env=_MANYLINUX_ENV,
+            default=True,
         ),
         Platform(
             name='manylinux-x64-py3.11',
@@ -182,6 +192,7 @@ ALL = {
             packaged=False,  # Most wheels not available on pypi.org
             cipd_platform='linux-amd64',
             env=_MANYLINUX_ENV,
+            default=True,
         ),
         Platform(
             name='mac-x64-py3.8',
@@ -200,6 +211,7 @@ ALL = {
                 'ARCHFLAGS': '-arch x86_64',
                 'MACOSX_DEPLOYMENT_TARGET': '10.11'
             },
+            default=True,
         ),
         Platform(
             name='mac-x64-py3.11',
@@ -218,6 +230,7 @@ ALL = {
                 'ARCHFLAGS': '-arch x86_64',
                 'MACOSX_DEPLOYMENT_TARGET': '10.11'
             },
+            default=True,
         ),
         Platform(
             name='mac-arm64-py3.8',
@@ -238,6 +251,7 @@ ALL = {
                 'ARCHFLAGS': '-arch arm64',
                 'MACOSX_DEPLOYMENT_TARGET': '11.0'
             },
+            default=True,
         ),
         Platform(
             name='mac-arm64-py3.11',
@@ -256,6 +270,7 @@ ALL = {
                 'ARCHFLAGS': '-arch arm64',
                 'MACOSX_DEPLOYMENT_TARGET': '11.0'
             },
+            default=True,
         ),
         Platform(
             name='windows-x86-py3.8',
@@ -269,6 +284,7 @@ ALL = {
             packaged=True,
             cipd_platform='windows-386',
             env={},
+            default=True,
         ),
         Platform(
             name='windows-x86-py3.11',
@@ -282,6 +298,7 @@ ALL = {
             packaged=True,
             cipd_platform='windows-386',
             env={},
+            default=True,
         ),
         Platform(
             name='windows-x64-py3.8',
@@ -295,6 +312,7 @@ ALL = {
             packaged=True,
             cipd_platform='windows-amd64',
             env={},
+            default=True,
         ),
         Platform(
             name='windows-x64-py3.11',
@@ -308,6 +326,7 @@ ALL = {
             packaged=True,
             cipd_platform='windows-amd64',
             env={},
+            default=True,
         ),
         Platform(
             name='universal',
@@ -321,6 +340,7 @@ ALL = {
             packaged=True,
             cipd_platform=None,
             env={},
+            default=True,
         ),
     )
 }
