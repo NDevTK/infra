@@ -70,6 +70,24 @@
       "parentUuid": "54018b98_7010fc5c",
       "revId": "c33af5b2db9bf0d4fe102a44121817a954e68e7e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82ab6eab_05d3034e",
+        "filename": "go/src/infra/experimental/golangbuild/prebuilt_go.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-01-30T01:16:39Z",
+      "side": 1,
+      "message": "ah shoot, good point about cache pollution...",
+      "parentUuid": "d98e7095_8e277d1e",
+      "revId": "c33af5b2db9bf0d4fe102a44121817a954e68e7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
