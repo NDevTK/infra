@@ -13,7 +13,6 @@ import (
 
 	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/common/errors"
-	vpythonApi "go.chromium.org/luci/vpython/api/vpython"
 	"go.chromium.org/luci/vpython/application"
 	"go.chromium.org/luci/vpython/common"
 	"go.chromium.org/luci/vpython/python"
@@ -82,7 +81,6 @@ func Main(ctx context.Context) error {
 		return app.ExecutePython(ctx)
 	}
 
-	app.VpythonSpec = &vpythonApi.Spec{}
 	if err := app.LoadSpec(ctx); err != nil {
 		return err
 	}
