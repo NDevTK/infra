@@ -272,6 +272,8 @@ class Status(db.Model):
     data = super(Status, self).AsDict()
     data['general_state'] = self.general_state
     data['can_commit_freely'] = self.can_commit_freely
+    if 'key' not in data or not data['key']:
+      data['key'] = -1
     return data
 
   @classmethod
