@@ -68,19 +68,6 @@ def removeall(path):
     shutil.rmtree(path, onerror=remove_readonly)
 
 
-class NamedAnonymousFile(object):
-  def __init__(self, fd, name):
-    self._fd = fd
-    self._name = name
-
-  @property
-  def name(self):
-    return self._name
-
-  def __getattr__(self, key):
-    return getattr(self._fd, key)
-
-
 @contextlib.contextmanager
 def tempdir(parent, suffix=''):
   """contextmanager that creates a tempdir and deletes it afterwards.
@@ -95,24 +82,8 @@ def tempdir(parent, suffix=''):
     removeall(tdir)
 
 
-@contextlib.contextmanager
-def anonfile(base, prefix='tmp', suffix='', text=False):
-  fd, path = tempfile.mkstemp(suffix=suffix, prefix=prefix, dir=base, text=text)
-  fd = os.fdopen(fd, 'w')
-  try:
-    yield NamedAnonymousFile(fd, path)
-  finally:
-    fd.close()
-
-
 def resource_path(name):
   return os.path.join(RESOURCES_DIR, name)
-
-
-def resource_install(name, dest_dir):
-  dest = os.path.join(dest_dir, name)
-  shutil.copyfile(resource_path(name), dest)
-  return dest
 
 
 def download_to(url, dst_fd, hash_obj=None):
