@@ -52,6 +52,24 @@
       "parentUuid": "68a31188_30c1ad80",
       "revId": "c33af5b2db9bf0d4fe102a44121817a954e68e7e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d98e7095_8e277d1e",
+        "filename": "go/src/infra/experimental/golangbuild/prebuilt_go.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-01-30T00:57:15Z",
+      "side": 1,
+      "message": "\u003e as a side-note, there is a dirty trick we can pull here\n\nPS 2 does something that I\u0027d also consider a bit of a dirty trick. Good enough for today if you want to prevent the cache pollution from today\u0027s new builder.\n\n\u003e it makes me wonder if we should just have a c_compiler property and derive the dependency from that. it might end up being simpler to understand overall\n\nSounds good. golangbuild already knows about xcode,node,wasmtime,wazero versions, I think it knowing about clang in a configuration-update-friendly way is good too. Perhaps some motivation to consolidate those individual properties into a map with well-known and documented string keys. Leaving that to you.",
+      "parentUuid": "54018b98_7010fc5c",
+      "revId": "c33af5b2db9bf0d4fe102a44121817a954e68e7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

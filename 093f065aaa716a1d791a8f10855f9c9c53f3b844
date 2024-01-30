@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7154d0e4_6b9b36bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-01-30T00:57:15Z",
+      "side": 1,
+      "message": "Feel free to submit if you want to use this approach to prevent the cache pollution from today\u0027s builder until something better is in place, or leave it if it\u0027s not needed.",
+      "revId": "093f065aaa716a1d791a8f10855f9c9c53f3b844",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
