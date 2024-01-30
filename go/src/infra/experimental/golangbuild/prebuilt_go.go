@@ -127,6 +127,9 @@ func prebuiltID(ctx context.Context, goSrc *sourceSpec, inputs *golangbuildpb.In
 	}
 	fmt.Fprintf(details, "xcode=%+q\n", inputs.XcodeVersion)
 	fmt.Fprintf(details, "version=%+q\n", inputs.VersionFile)
+	if inputs.ToolsCCompilerRelPath != "" {
+		fmt.Fprintf(details, "ccoverride=%+q\n", inputs.ToolsCCompilerRelPath)
+	}
 
 	// Construct the final ID.
 	id = fmt.Sprintf("%s-%s-%s-%s-%s-%x", inputs.Host.Goos, inputs.Host.Goarch, inputs.Target.Goos, inputs.Target.Goarch, rev, detailsHash.Sum(nil))
