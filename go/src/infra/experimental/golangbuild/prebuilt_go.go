@@ -127,10 +127,6 @@ func prebuiltID(ctx context.Context, goSrc *sourceSpec, inputs *golangbuildpb.In
 	}
 	fmt.Fprintf(details, "xcode=%+q\n", inputs.XcodeVersion)
 	fmt.Fprintf(details, "version=%+q\n", inputs.VersionFile)
-	if inputs.ToolsCCompilerRelPath != "" {
-		fmt.Fprintf(details, "ccoverride=%+q\n", inputs.ToolsCCompilerRelPath)
-		fmt.Fprintf(details, "extrabuild=%+q\n", inputs.ToolsExtraBuild)
-	}
 	if inputs.ClangVersion != "" {
 		fmt.Fprintf(details, "clang=%+q\n", inputs.ClangVersion)
 	}

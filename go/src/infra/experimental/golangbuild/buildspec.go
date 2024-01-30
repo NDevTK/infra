@@ -41,7 +41,6 @@ type buildSpec struct {
 	gocacheDir         string
 	priority           int32
 	golangbuildVersion string
-	ccOverride         string
 
 	inputs *golangbuildpb.Inputs
 
@@ -177,15 +176,6 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 		}
 	}
 
-	// Determine if we want to override our C compiler.
-	var ccOverride string
-	if inputs.GetMode() != golangbuildpb.Mode_MODE_COORDINATOR {
-		relPath := inputs.GetToolsCCompilerRelPath()
-		if relPath != "" {
-			ccOverride = filepath.Join(toolsRoot(ctx), relPath)
-		}
-	}
-
 	return &buildSpec{
 		auth:               authenticator,
 		builderName:        st.Build().GetBuilder().GetBuilder(),
@@ -196,7 +186,6 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 		gocacheDir:         filepath.Join(cwd, "gocache"),
 		priority:           st.Build().GetInfra().GetSwarming().GetPriority(),
 		golangbuildVersion: st.Build().GetExe().GetCipdVersion(),
-		ccOverride:         ccOverride,
 		inputs:             inputs,
 		invocation:         st.Build().GetInfra().GetResultdb().GetInvocation(),
 		goSrc:              goSrc,
@@ -244,10 +233,6 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 			b.inputs.Target.Goos == "wasip1" && env.Get("GOWASIRUNTIME") == "wazero":
 			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot(ctx), env.Get("GOWASIRUNTIME")), os.PathListSeparator, env.Get("PATH")))
 		}
-	}
-	if b.ccOverride != "" {
-		// TODO(mknyszek): Delete this. It is being replaced by ClangVersion.
-		env.Set("CC", b.ccOverride)
 	}
 	if b.inputs.ClangVersion != "" {
 		env.Set("CC", filepath.Join(toolsRoot(ctx), "clang/bin/clang"))

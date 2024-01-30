@@ -101,13 +101,6 @@ message Inputs {
   string tools_extra_build = 26;
   string tools_extra_test = 27;
 
-  // Relative path to an alternative C compiler in the tools installation
-  // root. Applied only in modes that build and test. This allows for C
-  // compilers installed via tools_extra_build and tools_extra_test to be
-  // set up correctly for build and test. Optional. If not set, the C
-  // compiler installed on the machine by default will be used.
-  string tools_c_compiler_rel_path = 30;
-
   // Named cache configured on the builder to use as a git clone cache.
   //
   // Required.
@@ -126,7 +119,7 @@ message Inputs {
 
   // The version of clang to install. If set, builds will use clang instead of
   // the system toolchain.
-  string clang_version = 31;
+  string clang_version = 30;
 
   // Which mode to run golangbuild in. See the Mode enum for details.
   Mode mode = 10;
