@@ -228,8 +228,6 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 
 	if b.inputs.Host.Goos == "windows" {
 		env.Set("GOBUILDEXIT", "1") // On Windows, emit exit codes from .bat scripts. See go.dev/issue/9799.
-		// TODO(mknyszek): Consider promoting the toolchain selection to the builder configuration and having this get
-		// set by the ccOverride path.
 		ccPath := filepath.Join(toolsRoot(ctx), "cc/windows/gcc64/bin")
 		if b.inputs.Target.Goarch == "386" { // Not obvious whether this should check host or target. As of writing they never differ.
 			ccPath = filepath.Join(toolsRoot(ctx), "cc/windows/gcc32/bin")
@@ -248,7 +246,11 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 		}
 	}
 	if b.ccOverride != "" {
+		// TODO(mknyszek): Delete this. It is being replaced by ClangVersion.
 		env.Set("CC", b.ccOverride)
+	}
+	if b.inputs.ClangVersion != "" {
+		env.Set("CC", filepath.Join(toolsRoot(ctx), "clang/bin/clang"))
 	}
 
 	return env.SetInCtx(ctx)

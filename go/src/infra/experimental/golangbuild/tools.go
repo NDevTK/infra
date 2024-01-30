@@ -70,6 +70,12 @@ golang/bootstrap-go/${platform} %v
 			gotXcode = true
 			cipdDeps += cipdXcodeDep
 		}
+		if inputs.ClangVersion != "" {
+			cipdDeps += fmt.Sprintf(`
+@Subdir clang
+golang/third_party/clang/${platform} version:%s
+`, inputs.ClangVersion)
+		}
 	}
 	// Append build-only dependencies.
 	switch inputs.GetMode() {

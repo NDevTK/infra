@@ -124,6 +124,10 @@ message Inputs {
   // A wazero version to add to PATH, if any. Supported on Linux hosts only.
   string wazero_version = 22;
 
+  // The version of clang to install. If set, builds will use clang instead of
+  // the system toolchain.
+  string clang_version = 31;
+
   // Which mode to run golangbuild in. See the Mode enum for details.
   Mode mode = 10;
 
