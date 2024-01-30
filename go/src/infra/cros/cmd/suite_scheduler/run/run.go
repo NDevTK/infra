@@ -13,6 +13,9 @@ import (
 	"sync"
 	"time"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
+	v15 "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
@@ -21,6 +24,8 @@ import (
 	"infra/cros/cmd/suite_scheduler/common"
 	"infra/cros/cmd/suite_scheduler/configparser"
 	"infra/cros/cmd/suite_scheduler/ctprequest"
+	"infra/cros/cmd/suite_scheduler/metrics"
+	"infra/cros/cmd/suite_scheduler/pubsub"
 )
 
 // fetchTriggeredDailyEvents returns all DAILY configs which are triggered at
@@ -160,39 +165,107 @@ func TimedEvents() error {
 	return nil
 }
 
+// publishBuilds uploads each build information proto to a pubsub queue
+// to later be sent to BigQuery.
+func publishBuilds(builds []*builds.BuildPackage) error {
+	common.Stdout.Printf("Initializing client for pub sub topic %s", common.BuildsPubSubTopic)
+	client, err := pubsub.InitPublishClient(context.Background(), common.StagingProjectID, common.BuildsPubSubTopic)
+	if err != nil {
+		return err
+	}
+
+	common.Stdout.Printf("Publishing %d builds to pub sub", len(builds))
+	for _, build := range builds {
+
+		data, err := protojson.Marshal(build.Build)
+		if err != nil {
+			return err
+		}
+
+		err = client.PublishMessage(context.Background(), data)
+		if err != nil {
+			return err
+		}
+		common.Stdout.Printf("Published %s build %s to Pub/Sub", build.Build.BuildTarget, build.Build.BuildUid.Id)
+	}
+	common.Stdout.Printf("Done publishing %d builds to pub sub", len(builds))
+
+	return nil
+}
+
+// publishEvent sends the event message to Pub/Sub.
+func publishEvent(client pubsub.PublishClient, event *v15.SchedulingEvent) error {
+	data, err := protojson.Marshal(event)
+	if err != nil {
+		return err
+	}
+
+	err = client.PublishMessage(context.Background(), data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // scheduleBatchViaBB batch schedules all CTP requests for the given build and
 // handles their response.
-func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient buildbucket.Scheduler, wg *sync.WaitGroup) {
+func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient buildbucket.Scheduler, publishClient pubsub.PublishClient, wg *sync.WaitGroup) {
 	// Release the WaitGroups lock on this function.
 	defer wg.Done()
 
 	// Batch Schedule all requests in the provided build.
-	batchResponses, err := schedulerClient.BatchSchedule(buildRequest.Requests, buildRequest.Build.BuildUid.Id)
-	if err != nil {
-		common.Stderr.Println(err)
-		buildRequest.Message.Nack()
-		return
-	}
-
-	// Set it to the non-default value so that any failures can force us
-	// to nack the msg.
 	buildRequest.ShouldAck = true
-	for _, response := range batchResponses {
-		for _, scheduleResponse := range response.Responses {
-			// TODO(b/319276542): Consider swapping wg to an ErrorGroup to allow
-			// for better error reporting in this goroutine function.
-			if scheduleResponse.GetScheduleBuild().Status != buildbucketpb.Status_SCHEDULED {
+	common.Stdout.Printf("Scheduling %d requests to CTP", len(buildRequest.Requests))
+	for _, request := range buildRequest.Requests {
+		for _, event := range request.Events {
+
+			response, err := schedulerClient.Schedule(event.CtpRequest, buildRequest.Build.BuildUid.Id, event.Event.EventUid.Id)
+			if err != nil {
+				common.Stderr.Println(err)
+				event.Event.Decision = &v15.SchedulingDecision{
+					Type:         v15.DecisionType_UNKNOWN,
+					Scheduled:    false,
+					FailedReason: err.Error(),
+				}
+				common.Stdout.Printf("Event %s failed to scheduled for unknown reason", event.Event.EventUid.Id)
+
 				buildRequest.ShouldAck = false
-				common.Stderr.Printf("http://go/bbid/%d returned with status %s\n", scheduleResponse.GetScheduleBuild().Id, scheduleResponse.GetGetBuildStatus().Status)
-				continue
+				// TODO: Decide if we want to fast fail on one error or keep going
+				// on.
 			}
 
-			// TODO(TBD): Refactor the build info type to display the suite name
-			common.Stdout.Printf("BuildID %s scheduled run at http://go/bbid/%d\n", buildRequest.Build.BuildUid.Id, scheduleResponse.GetScheduleBuild().Id)
+			// TODO(b/309683890): Add better support for failure/infra_failure/cancelled.
+			if response.Status == buildbucketpb.Status_SCHEDULED {
+				event.Event.Decision = &v15.SchedulingDecision{
+					Type:      v15.DecisionType_SCHEDULED,
+					Scheduled: true,
+				}
+
+				// TODO(b/309683890): update the metric proto to just use 1 bbid
+				event.Event.Bbids = []int64{response.Id}
+
+				common.Stdout.Printf("Event %s scheduled at http://go/bbid/%d using buildId %s", event.Event.EventUid.Id, response.Id, buildRequest.Build.BuildUid.Id)
+			} else {
+				event.Event.Decision = &v15.SchedulingDecision{
+					Type:         v15.DecisionType_UNKNOWN,
+					Scheduled:    false,
+					FailedReason: buildbucketpb.Status_name[int32(response.Status.Number())],
+				}
+
+				common.Stdout.Printf("Event %s failed to scheduled for unknown reason", event.Event.EventUid.Id)
+
+				// TODO: decide on if we should nack the message on one failure or
+				// not.
+			}
+
+			err = publishEvent(publishClient, event.Event)
+			if err != nil {
+				common.Stderr.Println(err)
+			}
 		}
 	}
 
-	// TODO(b/309683890): Build event metric for logging.
 	// TODO(b/319276542 | b/319464677): Consider removing the Ack/Nack logic here and moving
 	// it to after the DB Insertion would take place. To solve the issue of
 	// failed schedules, we could implement a backfill feature
@@ -202,6 +275,47 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 		common.Stderr.Printf("Nacking build message for build %s because one or more failed\n", buildRequest.Build.BuildUid.Id)
 		buildRequest.Message.Nack()
 	}
+}
+
+func buildConfigList(build builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) (*builds.BuildPackage, error) {
+	// TODO(b/319273876): Remove slow migration logic upon completion of
+	// transition. Right now only the CFTNewBuild config on brya is
+	// supported.
+	if build.Build.Board != "brya" {
+		build.Message.Nack()
+		return nil, nil
+	}
+
+	// Fetch all configs for which this build will will launch a NEW_BUILD
+	// event.
+	configs := suiteSchedulerConfigs.FetchNewBuildConfigsByBuildTarget(configparser.BuildTarget(build.Build.BuildTarget))
+
+	hasCFTNewBuild := false
+	for _, config := range configs {
+		// Skips all configs which aren't CFTNewBuild
+		// TODO(b/319273876): Remove slow migration logic upon completion of
+		// transition. This logic below limits the number of builds to 1 so that
+		// we do not overload the lab.
+		if config.Name != "CFTNewBuild" {
+			continue
+		}
+
+		hasCFTNewBuild = true
+
+		request := &builds.ConfigDetails{
+			Config: config,
+		}
+
+		build.Requests = append(build.Requests, request)
+	}
+
+	if !hasCFTNewBuild {
+		return nil, nil
+	}
+
+	common.Stdout.Printf("Adding build from http://go/bbid/%d\n", build.Build.Bbid)
+	return &build, nil
+
 }
 
 // NewBuilds fetches all builds from the release Pub/Sub queue, finds all
@@ -226,7 +340,7 @@ func NewBuilds(authOpts *authcli.Flags) error {
 		return err
 	}
 
-	common.Stdout.Println("Fetch Builds")
+	common.Stdout.Println("Fetching builds from Pub/Sub.")
 
 	// Get build information
 	// TODO(b/315340446): Inside this client we need to not ACK the builds until
@@ -238,14 +352,20 @@ func NewBuilds(authOpts *authcli.Flags) error {
 
 	}
 
-	// TODO(b/315340446): Write build info to long term storage
+	// TODO(b/315340446): Write build info to long term storage(database)
+
+	// Write all build information to pubsub
+	err = publishBuilds(releaseBuilds)
+	if err != nil {
+		return err
+	}
 
 	// TODO(TBD): For in run events, determine if we need to squash the
 	// builds so that NEW_BUILD configs are only triggered by the newest images.
 	// The created time is stored inside the build artifact type. Reach out to
 	// release team to determine if this is required.
 	// https://chromium.googlesource.com/chromiumos/infra/proto/+/refs/heads/main/src/chromiumos/build_report.proto#197
-	common.Stdout.Println("Finding all NEW_BUILD requests.")
+	common.Stdout.Println("Gathering all configs triggered from retrieved build images.")
 
 	// TODO(b/319273876): Remove slow migration logic upon completion of
 	// transition.
@@ -253,58 +373,54 @@ func NewBuilds(authOpts *authcli.Flags) error {
 
 	// Build the list of all configs triggered by the ingested build images.
 	for _, build := range releaseBuilds {
-		// TODO(b/319273876): Remove slow migration logic upon completion of
-		// transition. Right now only the CFTNewBuild config on brya is
-		// supported.
-		if build.Build.Board != "brya" {
-			build.Message.Nack()
-			continue
+		// Search for all NEW_BUILD configs for which this image triggers.
+		// TODO(b/319273876): When we are migrated fully do not use a tempBuild
+		// anymore.
+		tempBuild, err := buildConfigList(*build, suiteSchedulerConfigs)
+		if err != nil {
+			return err
 		}
 
-		// Fetch all configs for which this build will will launch a NEW_BUILD
-		// event.
-		build.Configs = suiteSchedulerConfigs.FetchNewBuildConfigsByBuildTarget(configparser.BuildTarget(build.Build.BuildTarget))
-
-		// TODO(b/319273876): Remove slow migration logic upon completion of
-		// transition. This logic below limits the number of builds to 1 so that
-		// we do not overload the lab.
-		common.Stdout.Printf("Adding build from http://go/bbid/%d\n", build.Build.Bbid)
-
-		// Ensure that the config we need is included
-		// TODO(b/319273876): Remove slow migration logic upon completion of
-		// transition.
-		hasCFTNewBuild := false
-		for _, config := range build.Configs {
-			if config.Name == "CFTNewBuild" {
-				hasCFTNewBuild = true
-			}
-		}
-		if !hasCFTNewBuild {
+		// The build will be returned as nil if it has been filtered out.
+		// TODO(b/319273876): When we are migrated fully do not use a tempBuild
+		// anymore.
+		if tempBuild == nil {
 			continue
 		}
 
 		if len(filteredBuilds) == 0 {
-			filteredBuilds = append(filteredBuilds, build)
+			filteredBuilds = append(filteredBuilds, tempBuild)
 		} else if filteredBuilds[0].Build.CreateTime.AsTime().Before(build.Build.CreateTime.AsTime()) {
-			common.Stdout.Printf("http://go/bbid/%d is before http://go/bbid/%d, swapping. %s < %s.\n", filteredBuilds[0].Build.Bbid, build.Build.Bbid, filteredBuilds[0].Build.CreateTime.AsTime().Local().String(), build.Build.CreateTime.AsTime().Local().String())
-			filteredBuilds[0] = build
+			common.Stdout.Printf("http://go/bbid/%d is before http://go/bbid/%d, swapping. %s < %s.\n", filteredBuilds[0].Build.Bbid, tempBuild.Build.Bbid, filteredBuilds[0].Build.CreateTime.AsTime().Local().String(), tempBuild.Build.CreateTime.AsTime().Local().String())
+			filteredBuilds[0] = tempBuild
 		}
 	}
-
 	common.Stdout.Println("Building CTP requests for all NEW_BUILD configs triggered.")
 
 	// Build CTP Requests for all triggered configs.
 	for _, wrappedBuild := range filteredBuilds {
 		build := wrappedBuild.Build
-		for _, config := range wrappedBuild.Configs {
+		for _, request := range wrappedBuild.Requests {
 			// TODO(b/319273876): Remove slow migration logic upon completion of
 			// transition. Right now only the CFTNewBuild config on brya is
 			// supported.
-			if config.Name != "CFTNewBuild" {
+			if request.Config.Name != "CFTNewBuild" {
 				continue
 			}
 
-			wrappedBuild.Requests = append(wrappedBuild.Requests, ctprequest.BuildCTPRequest(config, build.Board, "", build.BuildTarget, strconv.FormatInt(build.Milestone, 10), build.Version))
+			event := &builds.EventWrapper{}
+			// FIX(b/321095387): This needs to build all CTPRequests. Right now no
+			// models are being considered even though this could trigger
+			// multiple models to have their own CTP request.
+			event.CtpRequest = ctprequest.BuildCTPRequest(request.Config, build.Board, "", build.BuildTarget, strconv.FormatInt(build.Milestone, 10), build.Version)
+
+			event.Event, err = metrics.GenerateEventMessage(request.Config, nil, nil)
+			if err != nil {
+				return err
+			}
+
+			request.Events = append(request.Events, event)
+
 		}
 	}
 
@@ -327,11 +443,20 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	}
 
 	// Initialize an authenticated BuildBucket client for scheduling.
-	SchedulerClient, err := buildbucket.InitScheduler(context.Background(), authOpts, false, false)
+	common.Stdout.Printf("Initializing BuildBucket scheduling client prod: %t dryrun: %t", false, false)
+	schedulerClient, err := buildbucket.InitScheduler(context.Background(), authOpts, false, false)
 	if err != nil {
 		return err
 	}
 
+	// Initialize the Pub/Sub client for event message publishing.
+	common.Stdout.Printf("Initializing client for pub sub topic %s", common.EventsPubSubTopic)
+	publishClient, err := pubsub.InitPublishClient(context.Background(), common.StagingProjectID, common.EventsPubSubTopic)
+	if err != nil {
+		return err
+	}
+
+	// Introduce a wait group to hold for all spun out goroutines.
 	var wg sync.WaitGroup
 
 	// Schedule all requests via BuildBucket in parallel.
@@ -339,7 +464,7 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	// transition.
 	for _, wrappedBuild := range filteredBuilds {
 		wg.Add(1)
-		go scheduleBatchViaBB(wrappedBuild, SchedulerClient, &wg)
+		go scheduleBatchViaBB(wrappedBuild, schedulerClient, publishClient, &wg)
 	}
 
 	common.Stdout.Println("Waiting for batched requests to finish scheduling...")

@@ -17,7 +17,7 @@ import (
 )
 
 // GenerateEventMessage builds a metric event.
-func GenerateEventMessage(config *infrapb.SchedulerConfig, runID *suschpb.UID, schedulingDecision *suschpb.SchedulingDecision, bbids []int64) (*suschpb.SchedulingEvent, error) {
+func GenerateEventMessage(config *infrapb.SchedulerConfig, schedulingDecision *suschpb.SchedulingDecision, bbids []int64) (*suschpb.SchedulingEvent, error) {
 	if runID == nil {
 		return nil, fmt.Errorf("runID cannot be nil")
 	}
@@ -31,6 +31,8 @@ func GenerateEventMessage(config *infrapb.SchedulerConfig, runID *suschpb.UID, s
 		SuiteName:  config.Suite,
 		EventTime:  timestamppb.Now(),
 		Decision:   schedulingDecision,
-		Bbids:      bbids,
+
+		// TODO(b/309683890): Update proto to hold a singular BBID.
+		Bbids: bbids,
 	}, nil
 }

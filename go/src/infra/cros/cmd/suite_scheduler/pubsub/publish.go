@@ -15,8 +15,6 @@ import (
 // PublishClient defines the minimum requires that this project will need of a
 // Pub/Sub API.
 type PublishClient interface {
-	InitClient(ctx context.Context, projectID string) error
-	InitTopic(ctx context.Context, topicID string) error
 	PublishMessage(ctx context.Context, data []byte) error
 }
 
@@ -29,11 +27,11 @@ type Publish struct {
 // InitPublishClient returns a newly created Pub/Sub Client interface.
 func InitPublishClient(ctx context.Context, projectID, topicID string) (PublishClient, error) {
 	psClient := &Publish{}
-	err := psClient.InitClient(ctx, projectID)
+	err := psClient.initClient(ctx, projectID)
 	if err != nil {
 		return nil, err
 	}
-	err = psClient.InitTopic(ctx, topicID)
+	err = psClient.initTopic(ctx, topicID)
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +39,8 @@ func InitPublishClient(ctx context.Context, projectID, topicID string) (PublishC
 	return psClient, nil
 }
 
-// InitClient creates the client interface for the current Pub/Sub Client.
-func (c *Publish) InitClient(ctx context.Context, projectID string) error {
+// initClient creates the client interface for the current Pub/Sub Client.
+func (c *Publish) initClient(ctx context.Context, projectID string) error {
 	if c.client != nil {
 		return fmt.Errorf("client is already initialized")
 	}
@@ -55,8 +53,8 @@ func (c *Publish) InitClient(ctx context.Context, projectID string) error {
 	return nil
 }
 
-// InitTopic creates the topic interface for the current Pub/Sub Client.
-func (c *Publish) InitTopic(ctx context.Context, topicID string) error {
+// initTopic creates the topic interface for the current Pub/Sub Client.
+func (c *Publish) initTopic(ctx context.Context, topicID string) error {
 	if c.client == nil {
 		return fmt.Errorf("client has not been initialized yet")
 	}
