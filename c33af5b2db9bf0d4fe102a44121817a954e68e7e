@@ -16,6 +16,24 @@
       "message": "Hmm, this isn\u0027t enough in the general case. The linux-amd64-clang15 builder whose rel path is `clang/bin/clang` but it has clang 15.0.6, while there could be another linux-amd64-clang17 builder with a different clang and the same rel path.",
       "revId": "c33af5b2db9bf0d4fe102a44121817a954e68e7e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68a31188_30c1ad80",
+        "filename": "go/src/infra/experimental/golangbuild/prebuilt_go.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-01-30T00:40:16Z",
+      "side": 1,
+      "message": "yeah... it makes me wonder if we should just have a c_compiler property and derive the dependency from that. it might end up being simpler to understand overall. while having it be entirely configuration-driven was a nice idea, I think the fact that we\u0027re realistically only going to support 2 sets of C toolchains (gcc and clang) means that it\u0027s not a bad idea to make a special case for it. (realistically I think we\u0027re going to want our options to look like \"clang \u003cversion\u003e\" and \"system\" which means to just use whatever is on the system.)\n\nas a side-note, there is a dirty trick we can pull here, and that\u0027s the fact that clang/bin/clang just symlinks to clang/bin/clang-15. so we could actually specify clang/bin/clang-15, but the fact that it ends up part of the prebuilt key isn\u0027t obvious.",
+      "parentUuid": "c601038b_99cd7c16",
+      "revId": "c33af5b2db9bf0d4fe102a44121817a954e68e7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
