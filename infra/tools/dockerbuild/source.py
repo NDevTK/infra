@@ -260,9 +260,9 @@ class Repository(object):
       path = os.path.join(download_dir, 'file')
       util.LOGGER.debug('Downloading source to: [%s]', path)
       with concurrency.PROCESS_SPAWN_LOCK.shared():
-        with open(path, 'wb') as fd:
-          filename = self._DOWNLOAD_MAP[src.download_type](fd,
-                                                           src.download_meta)
+        fd = open(path, 'wb')
+      with fd:  # Release the lock so that the download can spawn a process.
+        filename = self._DOWNLOAD_MAP[src.download_type](fd, src.download_meta)
         # Move the downloaded "file" into the package under its download name
         # and package it.
         os.rename(path, os.path.join(package_dir, filename))
@@ -375,6 +375,35 @@ def local_directory(name, version, path):
       download_type='local_directory',
       download_meta=path)
 Repository._DOWNLOAD_MAP['local_directory'] = _download_local
+
+
+GitSource = collections.namedtuple(
+    'GitSource', ('system', 'repo', 'commit', 'setup_path', 'basename'))
+
+
+def _download_git(fd, meta):
+  with util.tempdir(meta.system.root, '-'.join([meta.basename,
+                                                meta.commit])) as git_root:
+    util.check_run(meta.system, None, git_root,
+                   ['git', 'clone', '-n', meta.repo, meta.basename])
+    git_checkout = os.path.join(git_root, meta.basename)
+    util.check_run(meta.system, None, git_checkout,
+                   ['git', 'checkout', meta.commit])
+
+    with tarfile.open(mode='w:bz2', fileobj=fd) as tf:
+      tf.add(
+          os.path.join(git_checkout, meta.setup_path),
+          arcname=meta.basename,
+          filter=lambda ti: None if os.path.basename(ti.name) == '.git' else ti)
+    return '%s.tar.bz2' % (meta.basename,)
+
+
+def git_source(name, version, src):
+  return Source(
+      name=name, version=version, download_type='git_source', download_meta=src)
+
+
+Repository._DOWNLOAD_MAP['git_source'] = _download_git
 
 
 def pypi_sdist(name, version, patches=(), patch_base=None):

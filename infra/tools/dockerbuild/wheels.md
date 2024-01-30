@@ -2330,6 +2330,20 @@ wheel: <
 
 * *universal*
 
+## **expect_tests-py3**
+
+### 0.4.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/expect_tests-py3"
+  version: "version:0.4.1"
+>
+```
+
+
+* *universal*
+
 ## **ezt**
 
 ### 1.1

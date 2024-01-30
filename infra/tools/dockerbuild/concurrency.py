@@ -228,13 +228,17 @@ class RWLock():
 
 
 # This lock is used to make sure that no processes are spawned while a file is
-# open for writing. It's acquired in 'shared' mode by anything opening files,
-# and in 'exclusive' mode by System.run around spawning processes.
+# in the process of being opened for writing. It's acquired in 'shared' mode by
+# anything opening files, and in 'exclusive' mode by System.run around spawning
+# processes.
 #
 # On systems using `fork' to spawn new processes, the subprocess will
-# inherit any open file handles from the parent. If a process is spawned while
-# we have files open, that process will keep the file handle open much longer
-# than it should, which can cause issues with:
+# inherit any inheritable open file handles from the parent. While handles are
+# non-inheritable by default in Python 3, there may be race conditions where
+# a file has not yet been set as non-inheritable during open(). If a process
+# is spawned while a file handle is open and inheritable, that process will
+# keep the file handle open much longer than it should, which can cause issues
+# with:
 #
 # * Multiple processes trying to write to the same file, which Windows seems not
 #   to like.

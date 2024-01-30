@@ -340,3 +340,47 @@ class UniversalSource(Builder):
       return []
 
     return ['\n* custom patches: %s' % (', '.join(self._pypi_src.patches),)]
+
+
+class GitUniversalSource(Builder):
+
+  def __init__(self,
+               name,
+               version,
+               git_repo,
+               git_commit,
+               setup_path='',
+               **kwargs):
+    """Version of UniversalSource that always builds a Universal wheel
+    from a git repo source rather than pypi.org.
+
+    Args:
+      name (str): The wheel name.
+      version (str): The wheel version.
+      git_repo (str): The git repository to fetch.
+      git_commit (str): The commit or tag to fetch.
+      setup_path (str): The repository-relative path to setup.py.
+      kwargs: Keyword arguments forwarded to Builder.
+
+    Returns (Builder): A configured Builder for the specified wheel.
+    """
+    self._git_repo = git_repo
+    self._git_commit = git_commit
+    self._setup_path = setup_path
+    super(GitUniversalSource, self).__init__(
+        Spec(
+            name,
+            version,
+            universal=True,
+            pyversions=['py3'],
+            default=True,
+            version_suffix=None,
+        ), **kwargs)
+
+  def build_fn(self, system, wheel, output_dir):
+    return BuildPackageFromSource(
+        system, wheel,
+        source.git_source(
+            self.spec.name, self.spec.version,
+            source.GitSource(system, self._git_repo, self._git_commit,
+                             self._setup_path, self.spec.name)), output_dir)

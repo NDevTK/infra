@@ -2613,6 +2613,20 @@ SPECS.update({
     )
 })
 
+# GitUniversalSource. These are packages which produce universal (pure-python)
+# wheels, but are only available from a git repository.
+from .wheel_wheel import GitUniversalSource
+
+SPECS.update({
+    s.spec.tag: s for s in assert_sorted(
+        'GitUniversalSource',
+        GitUniversalSource(
+            'expect_tests', '0.4.1',
+            'https://chromium.googlesource.com/infra/testing/expect_tests',
+            'd5d6dd803ac8f83570506b7e1693ef317535115d'),
+    )
+})
+
 SPEC_NAMES = sorted(SPECS.keys())
 DEFAULT_SPEC_NAMES = sorted(
     [s.spec.tag for s in SPECS.values() if s.spec.default])
