@@ -28,8 +28,6 @@ Standalone one-purpose repos:
 * [expect_tests](https://chromium.googlesource.com/infra/testing/expect_tests):
   testing framework used for [recipe tests](users/recipes.md) and
   [infra.git's test.py](../test.py).
-* [testing_support](https://chromium.googlesource.com/infra/testing/testing_support):
-  utilities to support writing unittests for infra-related tools.
 * [gae](https://github.com/luci/gae): Go wrapper interface around appengine APIs for
   better testability. ([docs](https://godoc.org/github.com/luci/gae))
 
