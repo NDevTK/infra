@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2023 The Chromium Authors
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Pulls the most recent Intel GPU drivers and uploads them to CIPD.
@@ -297,11 +297,10 @@ def _parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
-  download_page_url_suffix = (
-      '/content/www/us/en/download/762755/'
-      'intel-6th-10th-gen-processor-graphics-windows.html')
-  file_name_base = 'intel_gen_6_to_12_driver'
-  file_extension = '.zip'
+  download_page_url_suffix = ('/content/www/us/en/download/785597/'
+                              'intel-arc-iris-xe-graphics-windows.html')
+  file_name_base = 'intel_arc_and_xe_driver'
+  file_extension = '.exe'
   args = _parse_args()
   url = BASE_URL + download_page_url_suffix
   args.func(url, args, download_page_url_suffix, file_name_base, file_extension)

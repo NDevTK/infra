@@ -10,7 +10,7 @@ driver version and its download link is determined by a dropdown menu on that
 page.
 
 This file needs to be kept in sync with the version in
-intel_gen_7_to_10_drivers/ except for the constants in main() until 3pp code
+intel_gen_6_to_12_drivers/ except for the constants in main() until 3pp code
 sharing is properly supported on Windows.
 """
 
@@ -27,6 +27,13 @@ import requests
 BASE_URL = 'https://www.intel.com'
 
 DRIVER_VERSION_REGEX = re.compile(r'^\s*(\d+\.\d+\.\d+\.\d+)\s+.*$')
+# This can end up being used if the driver download contains multiple slightly
+# different drivers for different GPUs. For example, for the combined Arc/Xe
+# download, the reported driver version can be something like
+# "31.0.101.5186_101.5234", which means that 31.0.101.5186 would be used for
+# one GPU and 31.0.101.5234 would be used for the other.
+MIXED_DRIVER_VERSION_REGEX = re.compile(
+    r'^\s*(\d+\.\d+\.\d+\.\d+_\d+\.\d+)\s+.*$')
 SHA1_REGEX = re.compile(r'^\s*SHA1:\s*([a-fA-F0-9]{40})\s*$')
 
 
@@ -72,10 +79,13 @@ def _get_driver_version(soup: bs4.BeautifulSoup, url: str,
     raise RuntimeError(
         'More than one option found for selected driver. Options: %s' %
         ', '.join([str(s) for s in selected_drivers]))
-  match = DRIVER_VERSION_REGEX.match(selected_drivers[0].string)
+  driver_string = selected_drivers[0].string
+  match = DRIVER_VERSION_REGEX.match(driver_string)
   if not match:
-    raise RuntimeError('Unable to extract driver version from %s' %
-                       selected_drivers[0].string)
+    match = MIXED_DRIVER_VERSION_REGEX.match(driver_string)
+    if not match:
+      raise RuntimeError('Unable to extract driver version from %s' %
+                         driver_string)
   return match.group(1)
 
 

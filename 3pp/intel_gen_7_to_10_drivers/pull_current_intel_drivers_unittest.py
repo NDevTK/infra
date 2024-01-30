@@ -48,6 +48,20 @@ class GetDriverVersionUnittest(unittest.TestCase):
     soup = bs4.BeautifulSoup(html, 'html.parser')
     self.assertEqual(pcid._get_driver_version(soup, '', 'suffix'), '1.2.3.4')
 
+  def test_success_mixed_driver_version(self):
+    """Tests the happy path/success case with mixed driver versions."""
+    html = """\
+<body>
+<select id="driver-select">
+  <option selected value="suffix">1.2.3.4_5.6 (Latest)</option>
+  <option value="suffix">0.1.2.3</option>
+</select>
+</body>
+"""
+    soup = bs4.BeautifulSoup(html, 'html.parser')
+    self.assertEqual(
+        pcid._get_driver_version(soup, '', 'suffix'), '1.2.3.4_5.6')
+
   def test_no_found_option(self):
     """Tests behavior when no valid option tag is found."""
     # Missing selected attribute.
