@@ -2332,12 +2332,12 @@ wheel: <
 
 ## **expect_tests-py3**
 
-### 0.4.1
+### 0.4.2
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/expect_tests-py3"
-  version: "version:0.4.1"
+  version: "version:0.4.2"
 >
 ```
 

@@ -2621,9 +2621,9 @@ SPECS.update({
     s.spec.tag: s for s in assert_sorted(
         'GitUniversalSource',
         GitUniversalSource(
-            'expect_tests', '0.4.1',
+            'expect_tests', '0.4.2',
             'https://chromium.googlesource.com/infra/testing/expect_tests',
-            'd5d6dd803ac8f83570506b7e1693ef317535115d'),
+            '3d14313e7eeb56b9f058984b6b8d4c27c99dd89d'),
     )
 })
 
