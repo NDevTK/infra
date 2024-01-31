@@ -232,6 +232,8 @@ class Status(db.Model):
   # The message. It can contain html code.
   message = db.StringProperty(required=True)
 
+  _general_state = None
+
   def __init__(self, *args, **kwargs):
     # Normalize newlines otherwise the DB store barfs.  We don't really want to
     # make this field handle newlines as none of the places where we output the
@@ -254,6 +256,8 @@ class Status(db.Model):
 
     Note: Keep in sync with main.html help text.
     """
+    if self._general_state is not None:
+      return self._general_state
     message = self.message
     closed = re.search('close', message, re.IGNORECASE)
     if closed and re.search('maint', message, re.IGNORECASE):
@@ -280,10 +284,12 @@ class Status(db.Model):
   def FromDict(cls, value):
     """Creates a Status object from a dict with message, createUser and
     createTime keys (i.e. the Status proto from the new tree status app)."""
-    return Status(
+    status = Status(
         message=value['message'],
         username=value['createUser'],
         date=datetime.datetime.strptime(value['createTime'], ISO_FORMAT))
+    status._general_state = value['generalState'].lower()
+    return status
 
 
 def tree_name_for_prpc():
