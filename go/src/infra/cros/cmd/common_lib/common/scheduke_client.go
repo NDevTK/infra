@@ -124,7 +124,7 @@ func (s *SchedukeClient) parseGetIdsResponse(response *http.Response) (*scheduke
 }
 
 // ScheduleExecution will schedule TR executions via scheduke.
-func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.TaskRequestEvents) (*schedukeapi.CreateTaskStatesResponse, error) {
+func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEvents) (*schedukeapi.CreateTaskStatesResponse, error) {
 	endpoint, err := url.JoinPath(s.baseURL, SCHEDUKE_EXECUTION_ENDPOINT)
 	if err != nil {
 		return nil, errors.Annotate(err, "url.joinpath").Err()
