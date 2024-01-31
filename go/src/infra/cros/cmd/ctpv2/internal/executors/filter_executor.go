@@ -109,12 +109,15 @@ func (ex *FilterExecutor) ExecuteFilter(
 	if filterServiceClient == nil {
 		return nil, fmt.Errorf("filterServiceClient is nil")
 	}
-
+	maxRecvSizeOption := grpc.MaxCallRecvMsgSize(32 * 10e6)
+	maxSendSizeOption := grpc.MaxCallSendMsgSize(32 * 10e6)
 	// Call filter grpc endpoint
-	findTestResp, err := filterServiceClient.Execute(ctx, filterReq, grpc.EmptyCallOption{})
+	findTestResp, err := filterServiceClient.Execute(ctx, filterReq, maxRecvSizeOption, maxSendSizeOption)
 	if err != nil {
 		return nil, errors.Annotate(err, "filter grpc execution failure: ").Err()
 	}
 
 	return findTestResp, nil
 }
+
+// Good: 9dd496c5cdda3d25752f320a7c2906b8a9f3be27af078dd2f356692ac76d36a9

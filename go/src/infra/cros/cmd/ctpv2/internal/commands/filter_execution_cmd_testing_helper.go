@@ -7,8 +7,6 @@
 package commands
 
 import (
-	"fmt"
-
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 )
 
@@ -18,13 +16,16 @@ func addNTests(n int) *testapi.InternalTestplan {
 
 	for i := 0; i < n; i++ {
 		testCase := &testapi.CTPTestCase{
-			Name: fmt.Sprintf("test%d", i),
+			//Name: fmt.Sprintf("test%d", i),
+			Name: "tast.example.DDDTestOne",
 			Metadata: &testapi.TestCaseMetadata{
 				TestCase: &testapi.TestCase{
 					Id: &testapi.TestCase_Id{
-						Value: fmt.Sprintf("tast.test%d", i),
+						// Value: fmt.Sprintf("tast.test%d", i),
+						Value: "tast.example.DDDTestOne",
 					},
-					Name: fmt.Sprintf("test%d", i),
+					//Name: fmt.Sprintf("test%d", i),
+					Name: "tast.example.DDDTestOne",
 				},
 				TestCaseExec: &testapi.TestCaseExec{
 					TestHarness: &testapi.TestHarness{

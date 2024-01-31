@@ -15,4 +15,5 @@ const (
 	FilterStopCmdType              interfaces.CommandType = "FilterStop"
 	TranslateRequestType           interfaces.CommandType = "TranslateRequest"
 	MiddleoutExecutionType         interfaces.CommandType = "MiddleOutExecution"
+	ScheduleTasksCmdType           interfaces.CommandType = "ScheduleTasks"
 )

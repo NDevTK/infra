@@ -12,13 +12,14 @@ import (
 
 	"github.com/golang/protobuf/ptypes/duration"
 	"github.com/google/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	configpb "go.chromium.org/chromiumos/config/go"
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labpb "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // GetMockedTestResultProto returns a mock result proto

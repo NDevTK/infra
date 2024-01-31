@@ -7,15 +7,17 @@ package common
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/interfaces"
 	"os"
 	"path"
+
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
+
+	"infra/cros/cmd/common_lib/interfaces"
 )
 
 // WriteProtoToStepLog writes provided proto to build step.

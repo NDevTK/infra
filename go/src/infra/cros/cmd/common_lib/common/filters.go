@@ -8,17 +8,31 @@ import (
 	"container/list"
 	"context"
 	"encoding/json"
+	"strings"
+
+	"golang.org/x/exp/slices"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
-	"golang.org/x/exp/slices"
 )
 
-// Default filters
-var DefaultKarbonFilterNames = []string{"provision_filter", "test_finder_filter", "legacy_hw_filter"}
+// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
+var DefaultKarbonFilterNames = []string{"provision-filter", "test_finder_filter"}
+
+// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
 var DefaultKoffeeFilterNames = []string{}
+
+// SetDefaultFilters sets/appends proper default filters
+func SetDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) {
+	suiteName := strings.ToLower(suiteReq.GetTestSuite().GetName())
+	if strings.HasPrefix(suiteName, "3d") || strings.HasPrefix(suiteName, "ddd") {
+		DefaultKarbonFilterNames = append(DefaultKarbonFilterNames, "ttcp-demo")
+	} else {
+		DefaultKarbonFilterNames = append(DefaultKarbonFilterNames, "legacy_hw_filter")
+	}
+}
 
 // GetDefaultFilters constructs ctp filters for provided default filters.
 func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo) ([]*api.CTPFilter, error) {

@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package schedulers
+
+import (
+	"context"
+
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+
+	"infra/cros/cmd/common_lib/common"
+)
+
+// DirectBBScheduler defines scheduler that schedules request(s) directly
+// through buildbucket.
+type DirectBBScheduler struct {
+	*AbstractScheduler
+
+	BBClient *buildbucketpb.BuildsClient
+}
+
+func NewDirectBBScheduler() *DirectBBScheduler {
+	absSched := NewAbstractScheduler(DirectBBSchedulerType)
+	return &DirectBBScheduler{AbstractScheduler: absSched}
+}
+
+func (sc *DirectBBScheduler) Setup(ctx context.Context) error {
+	if sc.BBClient == nil {
+		client, err := common.NewBBClient(ctx)
+		if err != nil {
+			return err
+		}
+		sc.BBClient = &client
+	}
+	return nil
+}
+
+func (sc *DirectBBScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest) (*buildbucketpb.Build, error) {
+	scheduledBuild, err := (*sc.BBClient).ScheduleBuild(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return scheduledBuild, nil
+}

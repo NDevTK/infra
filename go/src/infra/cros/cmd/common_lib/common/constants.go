@@ -40,6 +40,7 @@ const (
 	VmLabMachineTypeExperiment             = "chromeos.cros_infra_config.vmlab.machine_type_n1"
 	SwarmingBasePath                       = "https://chromeos-swarming.appspot.com/_ah/api/swarming/v1/"
 	SwarmingMaxLimitForEachQuery           = 1000
+	ContainerMetadataPath                  = "/metadata/containers.jsonpb"
 	// SourceMetadataPath is the path in the build output directory that
 	// details the code sources compiled into the build. The path is
 	// specified relative to the root of the build output directory.

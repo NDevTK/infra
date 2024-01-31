@@ -7,14 +7,16 @@ package commands
 import (
 	"context"
 	"fmt"
+
+	"google.golang.org/protobuf/proto"
+
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/data"
 	ctpv2_data "infra/cros/cmd/ctpv2/data"
-
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
-	"google.golang.org/protobuf/proto"
 )
 
 // FilterExecutionCmd represents test execution cmd.
@@ -98,7 +100,7 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 	// TODO (azrahman): remove these custom test plans call once ttcp filter stablized.
 	// Only to be used to test ttcp filter through led.
 	// if cmd.ContainerInfo.GetKey() == "ttcp-demo" {
-	// 	cmd.InputTestPlan = addNTests(100)
+	// 	cmd.InputTestPlan = addNTests(5)
 	// }
 
 	// if cmd.ContainerInfo.GetKey() == "ttcp-demo" {

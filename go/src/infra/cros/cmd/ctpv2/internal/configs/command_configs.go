@@ -49,6 +49,9 @@ func (cfg *CommandConfig) GetCommand(
 	case commands.MiddleoutExecutionType:
 		cmd = commands.NewMiddleOutRequestCmd()
 
+	case commands.ScheduleTasksCmdType:
+		cmd = commands.NewScheduleTasksCmd()
+
 	case commands.FilterExecutionCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {

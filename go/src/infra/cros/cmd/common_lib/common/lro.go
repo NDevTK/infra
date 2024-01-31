@@ -9,9 +9,10 @@ import (
 	"fmt"
 	"time"
 
+	"google.golang.org/protobuf/types/known/anypb"
+
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // ProcessLro process a long running operation and parses the result to a proto

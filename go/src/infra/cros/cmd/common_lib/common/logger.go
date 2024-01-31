@@ -18,6 +18,7 @@ import (
 	"time"
 
 	gol "github.com/op/go-logging"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/terminal"
 )

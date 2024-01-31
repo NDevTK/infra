@@ -26,6 +26,7 @@ var ContainerReadLogs_ContainerExecutor = &common_configs.CommandExecutorPairedC
 var ContainerCloseLogs_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerCloseLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
 
 var MiddleOut_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.MiddleoutExecutionType, ExecutorType: common_executors.NoExecutorType}
+var ScheduleTasks_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ScheduleTasksCmdType, ExecutorType: common_executors.NoExecutorType}
 
 // GenerateFilterConfigs generates cmd execution for ctpv2.
 func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_configs.Configs {
@@ -57,6 +58,9 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_config
 
 	// Middleout
 	mainConfigs = append(mainConfigs, MiddleOut_NoExecutor)
+
+	// Schedule tasks
+	mainConfigs = append(mainConfigs, ScheduleTasks_NoExecutor)
 
 	// Stop CTR
 	mainConfigs = append(mainConfigs,

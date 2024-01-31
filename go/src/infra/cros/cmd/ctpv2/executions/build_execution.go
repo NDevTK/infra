@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/schedulers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/protos"
 	"infra/cros/cmd/ctpv2/data"
@@ -103,7 +104,14 @@ func executeFiltersInLuciBuild(
 		DockerKeyFileLocation: dockerKeyFile,
 		Ctr:                   ctr,
 		ContainerInfoQueue:    list.New(),
+		BuildState:            buildState,
+		// TODO (azrahman): Read scheduler from input request and set it here.
+		// hardcoding it for now.
+		Scheduler: schedulers.NewDirectBBScheduler(),
 	}
+
+	// Set default filters
+	common.SetDefaultFilters(ctx, req.GetSuiteRequest())
 
 	// Generate config
 	ctpv2Config := configs.NewCtpv2ExecutionConfig(getTotalFilters(req, common.DefaultKarbonFilterNames, common.DefaultKoffeeFilterNames), configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)

@@ -8,13 +8,14 @@ import (
 	"fmt"
 	"strings"
 
+	"google.golang.org/protobuf/types/known/anypb"
+
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
 	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
-	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // addDevicesInfoToKeyvals modifies the keyvals within CrosTestRunnerRequest_Params.

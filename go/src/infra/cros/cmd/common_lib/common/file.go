@@ -20,6 +20,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/chromiumos/config/go/build/api"
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/common/errors"
@@ -364,4 +367,33 @@ func LocateFile(candidates []string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("failed to locate file from all candidates %v", candidates)
+}
+
+// ReadProtoJSONFile reads a protocol buffer from the given file.
+func ReadProtoJSONFile(ctx context.Context, filePath string, outputProto proto.Message) (retErr error) {
+	_, fileName := path.Split(filePath)
+
+	f, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("opening file %q: %w", fileName, err)
+	}
+	defer func() {
+		err := f.Close()
+		if err != nil && retErr == nil {
+			retErr = fmt.Errorf("error closing file %q: %w", fileName, err)
+		}
+	}()
+
+	bytes, err := io.ReadAll(f)
+	if err != nil {
+		return fmt.Errorf("reading file %q: %w", fileName, err)
+	}
+
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+	err = opts.Unmarshal(bytes, outputProto)
+	if err != nil {
+		return fmt.Errorf("unmarshalling proto for %q: %w", fileName, err)
+	}
+
+	return nil
 }

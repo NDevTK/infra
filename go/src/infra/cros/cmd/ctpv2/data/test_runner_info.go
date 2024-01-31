@@ -13,3 +13,8 @@ type TrRequest struct {
 	Req *api.HWRequirements
 	Tcs []*api.CTPTestCase
 }
+
+type MiddleOutResponse struct {
+	TrReqs    []*TrRequest
+	SuiteInfo *api.SuiteInfo
+}

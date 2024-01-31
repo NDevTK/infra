@@ -12,9 +12,10 @@ import (
 	"log"
 	"os/exec"
 
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/luci/common/logging"
 )
 
 // RunCommand supports running any cli command

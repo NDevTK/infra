@@ -8,23 +8,23 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/ctpv2/data"
+	"math"
 	"reflect"
+	"sort"
 	"strings"
 	"sync"
+
+	hashstructure "github.com/mitchellh/hashstructure/v2"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/protobuf/proto"
 
-	"math"
-	"sort"
-
-	hashstructure "github.com/mitchellh/hashstructure/v2"
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/ctpv2/data"
 )
 
 // FilterExecutionCmd represents test execution cmd.
@@ -35,8 +35,7 @@ type MiddleOutRequestCmd struct {
 	InternalTestPlan *api.InternalTestplan
 
 	// Updates
-
-	MiddledOut []*data.TrRequest
+	MiddledOutResp *data.MiddleOutResponse
 }
 
 // ExtractDependencies (Boiler plate)
@@ -50,7 +49,7 @@ func (cmd *MiddleOutRequestCmd) ExtractDependencies(
 		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 
 	default:
-		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
 
 	if err != nil {
@@ -106,8 +105,8 @@ func (cmd *MiddleOutRequestCmd) updateFilterStateKeeper(
 	ctx context.Context,
 	sk *data.FilterStateKeeper) error {
 
-	if cmd.MiddledOut != nil {
-		sk.MiddleOut = cmd.MiddledOut
+	if cmd.MiddledOutResp != nil {
+		sk.MiddledOutResp = cmd.MiddledOutResp
 	}
 
 	return nil
@@ -119,30 +118,32 @@ func (cmd *MiddleOutRequestCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Middle Out")
 	defer func() { step.End(err) }()
 
-	common.WriteProtoToStepLog(ctx, step, cmd.InternalTestPlan, "Middle out input")
+	//common.WriteProtoToStepLog(ctx, step, cmd.InternalTestPlan, "Middle out input")
 
 	// TODO (dbeckett/Aziz) figure out how to properly make this
-	cfg := distroCfg{isUnitTest: true, unitTestDevices: 5, maxInShard: 2}
+	cfg := distroCfg{isUnitTest: true, unitTestDevices: 5, maxInShard: 1000}
 
-	data, err := middleOut(ctx, cmd.InternalTestPlan, cfg)
+	trReqs, err := middleOut(ctx, cmd.InternalTestPlan, cfg)
 	if err != nil {
 		return errors.Annotate(err, "Failed to execute MiddleOPut: ").Err()
 	}
 
-	cmd.MiddledOut = data
-
-	middleOutData, err := json.MarshalIndent(data, "", "\t")
-	if err != nil {
-		logging.Infof(
-			ctx,
-			"error during writing data to log: %s",
-			err.Error())
-	}
-	step.Log("Middle out output").Write(middleOutData)
 	logging.Infof(
 		ctx,
 		"len of data: %d",
-		len(data))
+		len(trReqs))
+
+	cmd.MiddledOutResp = &data.MiddleOutResponse{TrReqs: trReqs, SuiteInfo: cmd.InternalTestPlan.GetSuiteInfo()}
+
+	middleOutData, err := json.MarshalIndent(cmd.MiddledOutResp, "", "  ")
+	if err != nil {
+		logging.Infof(
+			ctx,
+			"error during writing MO response to log: %s",
+			err.Error())
+	}
+	_, _ = step.Log("Middle out output").Write(middleOutData)
+
 	return nil
 }
 
@@ -247,7 +248,6 @@ func middleOut(ctx context.Context, resp *api.InternalTestplan, cfg distroCfg) (
 	for key, hwOptions := range solverData.hwUUIDMap {
 		solverData.hwEquivalenceMap[key] = findMatches(hwOptions, solverData.flatHWUUIDMap)
 	}
-
 	return createTrRequests(greedyDistro(ctx, solverData), solverData)
 }
 
@@ -450,6 +450,7 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 		swarmingServ, err := common.CreateNewSwarmingService(context.Background())
 		if err != nil {
 			logging.Infof(ctx, fmt.Sprintf("error found while creating new swarming service: %s", err))
+			return
 		}
 		// Query swarming asynchronously for device availability.
 		wg := sync.WaitGroup{}
@@ -457,13 +458,11 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 			wg.Add(1)
 			go func(hwInfoInput *hwInfo) {
 				defer wg.Done()
-				// TODO (dbeckett/azrahman): pass real dims instead of mocked dims.
-				dims := []string{"label-board:zork", "label-model:morphius", "dut_state:ready"}
+				dims := CreateDims(hwInfoInput)
 				botCount, err := common.GetBotCount(ctx, dims, swarmingServ)
 				if err != nil {
 					logging.Infof(ctx, fmt.Sprintf("error found in GetBOTcount: %s", err))
 				}
-				logging.Infof(ctx, fmt.Sprintf("botcount found for dims %v: %d", dims, botCount))
 				hwInfoInput.labLoading = &loading{value: int(botCount)}
 			}(hwInfoObj)
 		}
