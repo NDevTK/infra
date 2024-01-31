@@ -108,6 +108,8 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.chaos, "chaos", false, "adding this flag will specify if chaos is present")
 		c.Flags.BoolVar(&c.audioCable, "audiocable", false, "adding this flag will specify if audiocable is present")
 		c.Flags.BoolVar(&c.smartUSBHub, "smartusbhub", false, "adding this flag will specify if smartusbhub is present")
+		c.Flags.StringVar(&c.dolosHost, "dolos-host", "", "Hostname of the host machine of the Dolos device, usually it's a labstation.")
+		c.Flags.StringVar(&c.dolosSerialCable, "dolos-serial-cable", "", "Serial number from the Dolos cable(the one between Dolos and DUT).")
 
 		// Machine fields
 		// crbug.com/1188488 showed us that it might be wise to add model/board during deployment if required.
@@ -121,6 +123,7 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
 		c.Flags.StringVar(&c.deployBBProject, "deploy-project", "chromeos", "LUCI project to run deploy in. Defaults to `chromeos`")
 		c.Flags.StringVar(&c.deployBBBucket, "deploy-bucket", "labpack_runner", "LUCI bucket to run deploy in. Defaults to `labpack`")
+
 		return c
 	},
 }
@@ -188,6 +191,10 @@ type addDUT struct {
 	latestVersion   bool
 	deployBBProject string
 	deployBBBucket  string
+
+	// Dolos
+	dolosHost        string
+	dolosSerialCable string
 }
 
 var mcsvFields = []string{
@@ -385,6 +392,12 @@ func (c addDUT) validateArgs() error {
 		if c.logicalZone != "" && !ufsUtil.IsLogicalZone(c.logicalZone) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid logical zone name, please check help info for '-logicalzone'.", c.logicalZone)
 		}
+		if c.dolosSerialCable != "" && c.dolosHost == "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong useage!!\nDolos serial cable is provided but dolos host is empty, need both information.")
+		}
+		if c.dolosSerialCable == "" && c.dolosHost != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong useage!!\nDolos host is provided but dolos serial cable is empty, need both information.")
+		}
 	}
 	if c.newSpecsFile == "" && c.hostname == "" {
 		return cmdlib.NewQuietUsageError(c.Flags, "Need hostname to create a DUT")
@@ -534,6 +547,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 									Wifi:          &chromeosLab.Wifi{},
 									Touch:         &chromeosLab.Touch{},
 									CameraboxInfo: &chromeosLab.Camerabox{},
+									Dolos:         &chromeosLab.Dolos{},
 								},
 							},
 						},
@@ -684,6 +698,10 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 				Hostname: fmt.Sprintf("%s-pcap", name),
 			},
 		}
+	}
+	if c.dolosHost != "" {
+		peripherals.GetDolos().Hostname = c.dolosHost
+		peripherals.GetDolos().SerialCable = c.dolosSerialCable
 	}
 	// Get the updated asset and update paths
 	asset, paths := utils.GenerateAssetUpdate(machines[0], model, board, c.zone, c.rack)

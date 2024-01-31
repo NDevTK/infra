@@ -86,6 +86,10 @@ const (
 	// Operations string for Summary table.
 	ufsOp   = "Update to Database"
 	swarmOp = "Deployment"
+
+	// Dolos related UpdateMask paths.
+	dolosHostnamePath    = "dut.dolos.hostname"
+	dolosSerialCablePath = "dut.dolos.serial.cable"
 )
 
 // partialUpdateDeployPaths is a collection of paths for which there is a partial update on servo/rpm.
@@ -124,6 +128,8 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.Var(luciFlag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.logicalZone, "logicalzone", "", "Logical zone. "+cmdhelp.LogicalZoneHelpText)
+		c.Flags.StringVar(&c.dolosHost, "dolos-host", "", "Hostname of the host machine of the Dolos device, usually it's a labstation. Clearing this field will delete the dolos from the DUT. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.dolosSerialCable, "dolos-serial-cable", "", "Serial number from the Dolos cable(the one between Dolos and DUT).")
 
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a deploy task for all the updates.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
@@ -182,6 +188,8 @@ type updateDUT struct {
 	tags                     []string
 	description              string
 	logicalZone              string
+	dolosHost                string
+	dolosSerialCable         string
 
 	// Deploy task inputs.
 	forceDeploy bool
@@ -495,7 +503,7 @@ func (c *updateDUT) parseArgs() ([]*ufsAPI.UpdateMachineLSERequest, error) {
 	}}, nil
 }
 
-// validateDUTFromJSON checks if the input lse represents DUT and ensures servo/rpm isn't incomplete.
+// validateDUTFromJSON checks if the input lse represents DUT and ensures servo/rpm/dolos isn't incomplete.
 func (c *updateDUT) validateDUTFromJSON(dutLse *ufspb.MachineLSE) error {
 	if err := utils.IsDUT(dutLse); err != nil {
 		return errors.Annotate(err, "The LSE in %s is not a DUT", c.newSpecsFile).Err()
@@ -518,6 +526,11 @@ func (c *updateDUT) validateDUTFromJSON(dutLse *ufspb.MachineLSE) error {
 	if rpm := dutLse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetRpm(); rpm != nil {
 		if (rpm.GetPowerunitName() != "" && rpm.GetPowerunitOutlet() == "") || (rpm.GetPowerunitName() == "" && rpm.GetPowerunitOutlet() != "") {
 			return cmdlib.NewQuietUsageError(c.Flags, "Cannot update incomplete RPM. Need both host and outlet")
+		}
+	}
+	if dolos := dutLse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetDolos(); dolos != nil {
+		if (dolos.GetHostname() != "" && dolos.GetSerialCable() == "") || (dolos.GetHostname() == "" && dolos.GetSerialCable() != "") {
+			return cmdlib.NewQuietUsageError(c.Flags, "Cannot update incomplete Dolos. Need both hostname and serial cable")
 		}
 	}
 	return nil
@@ -603,6 +616,7 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 									Wifi:          &chromeosLab.Wifi{},
 									Touch:         &chromeosLab.Touch{},
 									CameraboxInfo: &chromeosLab.Camerabox{},
+									Dolos:         &chromeosLab.Dolos{},
 								},
 							},
 						},
@@ -663,6 +677,11 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 	// Create and assign rpm and corresponding masks.
 	rpm, paths := generateRPMWithMask(rpmHost, rpmOutlet)
 	peripherals.Rpm = rpm
+	mask.Paths = append(mask.Paths, paths...)
+
+	// Create and assign dolos and corresponding masks.
+	dolos, paths := generateDolosWithMask(c.dolosHost, c.dolosSerialCable)
+	peripherals.Dolos = dolos
 	mask.Paths = append(mask.Paths, paths...)
 
 	// Check if description field is being updated/cleared.
@@ -1000,6 +1019,27 @@ func generateRPMWithMask(rpmHost, rpmOutlet string) (*chromeosLab.OSRPM, []strin
 		paths = append(paths, rpmOutletPath)
 	}
 	return rpm, paths
+}
+
+// generateDolosWithMask generates a Dolos object from the given inputs and corresponding masks.
+func generateDolosWithMask(dolosHost, dolosSerialCable string) (*chromeosLab.Dolos, []string) {
+	// Check the case if the Dolos is being deleted.
+	if dolosHost == utils.ClearFieldValue {
+		return nil, []string{dolosHostnamePath}
+	}
+
+	// Handling regular updates.
+	dolos := &chromeosLab.Dolos{}
+	paths := []string{}
+	if dolosHost != "" {
+		dolos.Hostname = dolosHost
+		paths = append(paths, dolosHostnamePath)
+	}
+	if dolosSerialCable != "" {
+		dolos.SerialCable = dolosSerialCable
+		paths = append(paths, dolosSerialCablePath)
+	}
+	return dolos, paths
 }
 
 // needToDeploy checks the machineLse request and decides if the deploy task required.

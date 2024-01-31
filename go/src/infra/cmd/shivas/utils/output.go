@@ -1518,6 +1518,18 @@ func PrintDutsFull(duts []*ufspb.MachineLSE, machineMap map[string]*ufspb.Machin
 		} else {
 			fmt.Fprintf(tw, "RPM: None\n")
 		}
+
+		dolos := dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetDolos()
+		if dolos != nil {
+			fmt.Fprintf(tw, "Dolos:\n")
+			fmt.Fprintf(tw, "\thostname:\t%s\n", dolos.GetHostname())
+			fmt.Fprintf(tw, "\tserial cable:\t%s\n", dolos.GetSerialCable())
+			fmt.Fprintf(tw, "\tserial usb:\t%s\n", dolos.GetSerialUsb())
+			fmt.Fprintf(tw, "\thardware major revision:\t%s\n", dolos.GetHwMajorRevision())
+			fmt.Fprintf(tw, "\tfirmware version:\t%s\n", dolos.GetFwVersion())
+		} else {
+			fmt.Fprintf(tw, "Dolos: None\n")
+		}
 	}
 }
 
