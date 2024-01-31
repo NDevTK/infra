@@ -27,7 +27,7 @@ var test = &subcommands.Command{
 	ShortDesc: "runs an individual test",
 	LongDesc: `Launches an individual test task with the given test name.
 
-You must supply -board and -pool. If running via CFT, you must supply -harness.
+You must supply -board, -pool, and -harness.
 
 This command does not wait for the task to start running.
 
