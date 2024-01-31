@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/cros"
+	"infra/cros/recovery/internal/components/cros/storage"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
@@ -20,7 +21,7 @@ import (
 
 // isBootedFromExternalStorageExec verify that device has been booted from external storage.
 func isBootedFromExternalStorageExec(ctx context.Context, info *execs.ExecInfo) error {
-	err := cros.IsBootedFromExternalStorage(ctx, info.NewRunner(info.GetDut().Name))
+	err := storage.IsBootedFromExternalStorage(ctx, info.NewRunner(info.GetDut().Name))
 	return errors.Annotate(err, "is booted from external storage").Err()
 }
 

@@ -42,7 +42,7 @@ func devModeBootFromServoUSBDriveExec(ctx context.Context, info *execs.ExecInfo)
 			return errors.Annotate(err, "retry boot in dev-mode").Err()
 		}
 		if verifyUSBDriveBoot {
-			if err := cros.IsBootedFromExternalStorage(ctx, run); err != nil {
+			if err := storage.IsBootedFromExternalStorage(ctx, run); err != nil {
 				logger.Infof("Boot in DEV-mode: booted from internal storage.")
 				return errors.Annotate(err, "retry boot in dev-mode").Err()
 			}
@@ -62,8 +62,9 @@ func devModeBootFromServoUSBDriveExec(ctx context.Context, info *execs.ExecInfo)
 func runChromeosInstallCommandWhenBootFromUSBDriveExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 	actionArgs := info.GetActionArgs(ctx)
-	err := cros.RunInstallOSCommand(ctx, info.GetExecTimeout(), run)
-	if issueReason := cros.StorageIssuesExist(ctx, err); issueReason.NotEmpty() {
+	destinationDevice := actionArgs.AsString(ctx, "destination_device", "")
+	err := storage.RunInstallOSCommand(ctx, info.GetExecTimeout(), run, destinationDevice)
+	if issueReason := storage.StorageIssuesExist(ctx, err); issueReason.NotEmpty() {
 		if actionArgs.AsBool(ctx, "run_storage_checks", true) {
 			info.GetDut().State = dutstate.NeedsReplacement
 			info.GetDut().DutStateReason = issueReason
@@ -133,11 +134,12 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 		}
 		if am.AsBool(ctx, "run_os_install", false) {
 			installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
-			if err := cros.RunInstallOSCommand(ctx, installTimeout, dutRun); err != nil {
+			destinationDevice := am.AsString(ctx, "destination_device", "")
+			if err := storage.RunInstallOSCommand(ctx, installTimeout, dutRun, destinationDevice); err != nil {
 				finishedOSInstall = "failed"
 				log.Debugf(ctx, "Install from usb drive fail: %s", err)
 				checkStorage := am.AsBool(ctx, "run_storage_checks", true)
-				if issueReason := cros.StorageIssuesExist(ctx, err); issueReason.NotEmpty() {
+				if issueReason := storage.StorageIssuesExist(ctx, err); issueReason.NotEmpty() {
 					if checkStorage {
 						info.GetDut().State = dutstate.NeedsReplacement
 						info.GetDut().DutStateReason = issueReason

@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/components/cros/storage"
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger"
@@ -194,7 +195,7 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		if err := WaitUntilSSHable(ctx, req.BootTimeout, req.BootInterval, dutRun, log); err != nil {
 			return errors.Annotate(err, "retry boot").Err()
 		}
-		if err := IsBootedFromExternalStorage(ctx, dutRun); err != nil {
+		if err := storage.IsBootedFromExternalStorage(ctx, dutRun); err != nil {
 			log.Infof("Device booted from internal storage.")
 			return errors.Annotate(err, "retry boot").Err()
 		}

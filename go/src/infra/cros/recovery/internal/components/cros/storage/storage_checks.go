@@ -16,7 +16,6 @@ import (
 
 	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
@@ -541,7 +540,7 @@ type BadBlocksArgs struct {
 // used to decide whether it is time to again run the badblocks
 // command.
 func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
-	usbBootErr := cros.IsBootedFromExternalStorage(ctx, bbArgs.Run)
+	usbBootErr := IsBootedFromExternalStorage(ctx, bbArgs.Run)
 	switch bbArgs.AuditMode {
 	case auditModeNot:
 		// As also mentioned in the comment that introduced this flag,
@@ -592,7 +591,7 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 	default:
 		return errors.Reason("check bad blocks: unknown audit mode %q", bbArgs.AuditMode).Err()
 	}
-	mainStorage, err := cros.DeviceMainStoragePath(ctx, bbArgs.Run)
+	mainStorage, err := DeviceMainStoragePath(ctx, bbArgs.Run)
 	if err != nil {
 		return errors.Annotate(err, "check bad blocks").Err()
 	} else if mainStorage == "" {
