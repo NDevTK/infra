@@ -121,6 +121,7 @@ capabilities {
   atrus: true
   cbx: 0
   cbx_branding: 0
+  form_factor: 1
 }
 board: "boardval"
 arc: true
@@ -281,6 +282,7 @@ capabilities {
   atrus: true
   cbx: 0
   cbx_branding: 0
+  form_factor: 1
 }
 board: "boardval"
 arc: true
@@ -369,6 +371,7 @@ var fullDimensions = Dimensions{
 	"label-ec_type":                 {"EC_TYPE_CHROME_OS"},
 	"label-fingerprint":             {"True"},
 	"label-flashrom":                {"True"},
+	"label-form_factor":             {"FORM_FACTOR_CLAMSHELL"},
 	"label-gpu_family":              {"gpufamilyval"},
 	"label-graphics":                {"graphicsval"},
 	"label-hangout_app":             {"True"},

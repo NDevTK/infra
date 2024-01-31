@@ -313,7 +313,7 @@ message SchedulableLabels {
 
 // Keep sorted by field name.
 //
-// NEXT TAG: 23
+// NEXT TAG: 24
 message HardwareCapabilities {
   optional bool atrus = 17;
   optional bool bluetooth = 7;
@@ -373,9 +373,24 @@ message HardwareCapabilities {
   optional string starfish_slot_mapping = 20;
 
   optional bool detachablebase = 12;
+
   // Indicating if the device has fingerprint sensor.
   optional bool fingerprint = 19;
   optional bool flashrom = 14;
+
+  // Next tag: 8
+  enum FormFactor {
+    FORM_FACTOR_UNSPECIFIED = 0;
+    FORM_FACTOR_CLAMSHELL = 1;
+    FORM_FACTOR_CONVERTIBLE = 2;
+    FORM_FACTOR_DETACHABLE = 3;
+    FORM_FACTOR_CHROMEBASE = 4;
+    FORM_FACTOR_CHROMEBOX = 5;
+    FORM_FACTOR_CHROMEBIT = 6;
+    FORM_FACTOR_CHROMESLATE = 7;
+  }
+  optional FormFactor form_factor = 23;
+
   optional string gpu_family = 3;
   optional string graphics = 4;
   optional bool hotwording = 15;

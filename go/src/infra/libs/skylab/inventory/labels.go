@@ -19,6 +19,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 			Detachablebase:      new(bool),
 			Carrier:             new(HardwareCapabilities_Carrier),
 			StarfishSlotMapping: new(string),
+			FormFactor:          new(HardwareCapabilities_FormFactor),
 			Fingerprint:         new(bool),
 			Flashrom:            new(bool),
 			GpuFamily:           new(string),

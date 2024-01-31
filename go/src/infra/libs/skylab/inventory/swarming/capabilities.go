@@ -130,6 +130,9 @@ func otherCapabilitiesConverter(dims Dimensions, ls *inventory.SchedulableLabels
 	for _, v := range c.GetVideoAcceleration() {
 		appendDim(dims, "label-video_acceleration", v.String())
 	}
+	if v := c.GetFormFactor(); v != inventory.HardwareCapabilities_FORM_FACTOR_UNSPECIFIED {
+		dims["label-form_factor"] = []string{v.String()}
+	}
 }
 
 func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
@@ -165,5 +168,11 @@ func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Di
 		}
 	}
 	delete(d, "label-video_acceleration")
+	if v, ok := getLastStringValue(d, "label-form_factor"); ok {
+		if p, ok := inventory.HardwareCapabilities_FormFactor_value[v]; ok {
+			*c.FormFactor = inventory.HardwareCapabilities_FormFactor(p)
+		}
+		delete(d, "label-form_factor")
+	}
 	return d
 }

@@ -461,6 +461,7 @@ common {
 			cbx_branding: CBX_BRANDING_UNSPECIFIED
 			detachablebase: true
 			fingerprint: true
+			form_factor: FORM_FACTOR_CHROMEBASE
 			gpu_family: "test_gpu"
 			graphics: "gles"
 			power: "AC_only"

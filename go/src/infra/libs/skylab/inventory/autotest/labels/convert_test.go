@@ -140,6 +140,7 @@ capabilities {
   atrus: true
   cbx: 1
   cbx_branding: 2
+  form_factor: 0
 }
 board: "boardval"
 arc: true
@@ -770,6 +771,7 @@ capabilities {
   atrus: true
   cbx: 0
   cbx_branding: 0
+  form_factor: 0
 }
 board: "boardval"
 arc: true

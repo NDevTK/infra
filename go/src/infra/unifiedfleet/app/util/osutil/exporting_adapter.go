@@ -317,6 +317,26 @@ func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
 			inventory.SchedulableLabels_CTS_CPU_ARM,
 		}
 	}
+
+	// Set Form_Factor
+	switch d.GetFormFactor() {
+	case device.Config_FORM_FACTOR_CLAMSHELL:
+		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CLAMSHELL.Enum()
+	case device.Config_FORM_FACTOR_CONVERTIBLE:
+		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CONVERTIBLE.Enum()
+	case device.Config_FORM_FACTOR_DETACHABLE:
+		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_DETACHABLE.Enum()
+	case device.Config_FORM_FACTOR_CHROMEBASE:
+		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CHROMEBASE.Enum()
+	case device.Config_FORM_FACTOR_CHROMEBOX:
+		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CHROMEBOX.Enum()
+	case device.Config_FORM_FACTOR_CHROMEBIT:
+		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CHROMEBIT.Enum()
+	case device.Config_FORM_FACTOR_CHROMESLATE:
+		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CHROMESLATE.Enum()
+	default:
+		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_UNSPECIFIED.Enum()
+	}
 }
 
 func setHwidData(l *inventory.SchedulableLabels, h *ufspb.HwidData) {
