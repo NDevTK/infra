@@ -78,6 +78,8 @@ func triggerDownstreamBuilds(ctx context.Context, spec *buildSpec, builders ...s
 	}
 	bbArgs = append(bbArgs, builders...)
 
+	// Note: The hide-in-gerrit tag should never be added to these builders, since this triggers
+	// top-level builds.
 	return cmdStepRun(ctx, "bb add", toolCmd(ctx, "bb", bbArgs...), true)
 }
 
@@ -169,6 +171,10 @@ func triggerTestShards(ctx context.Context, spec *buildSpec, shards uint32, buil
 //
 // If shard is not noSharding, then this function will pass the test shard identity
 // as a set of properties to the build.
+//
+// This function is intended to be used for "worker" builds and adds some specific
+// details to the builds with that assumption. When using this function for other
+// purposes, make sure to take that into consideration.
 func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder string) (b *bbpb.Build, err error) {
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("trigger %s (%d of %d)", builder, shard.shardID+1, shard.nShards))
 	defer endStep(step, &err)
@@ -200,6 +206,11 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 		},
 		Mask: &bbpb.BuildMask{
 			AllFields: true, // Notably, we need the ResultDB invocation ID.
+		},
+		Tags: []*bbpb.StringPair{
+			// Always hide "worker" builds that run tests or build Go.
+			// See https://chromium.googlesource.com/infra/gerrit-plugins/buildbucket/+/refs/heads/main/README.md.
+			{Key: "hide-in-gerrit", Value: "redundant"},
 		},
 	}
 	if spec.invokedSrc.change != nil {
