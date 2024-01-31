@@ -37,6 +37,7 @@ def _extract_contextual_dockerbuild_env_args(api):
 _DOCKERBUILD_PLATFORM = {
     'linux-armv6l': 'linux-armv6-py3.8',
     'linux-arm64': 'linux-arm64-py3.8',
+    'linux-riscv64': 'linux-riscv64-py3.8',
     # TODO: Remove linux-mips platforms or update the images to py3.
     #  'linux-mipsle': 'linux-mipsel',
     #  'linux-mips64': 'linux-mips64',
