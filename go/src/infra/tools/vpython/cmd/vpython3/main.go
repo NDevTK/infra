@@ -44,8 +44,10 @@ func GetPythonRuntime(ver string) *PythonRuntime {
 func Main(ctx context.Context) error {
 	rt := GetPythonRuntime(DefaultPythonVersion)
 	app := &application.Application{
-		PruneThreshold:    7 * 24 * time.Hour, // One week.
-		MaxPrunesPerSweep: 3,
+		PruneThreshold: 7 * 24 * time.Hour, // One week.
+
+		// double the worst-case scenario (cpython, empty venv, pep425_tags, wheels, venv)
+		MaxPrunesPerSweep: 10,
 
 		DefaultSpecPattern: ".vpython3",
 
