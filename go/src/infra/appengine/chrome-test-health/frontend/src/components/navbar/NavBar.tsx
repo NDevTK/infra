@@ -119,12 +119,12 @@ function NavBar() {
           }}
         />
         <Divider orientation="vertical" flexItem />
-        <Button disableElevation component={Link} to="/coverage/summary" variant="contained" color="primary">
-          Coverage
+        <Button disableElevation disableRipple sx={{ "&.MuiButtonBase-root:hover": { backgroundColor: "transparent" } }} component={Link} to="/resources/tests" variant="contained" color="primary">
+          Resources
         </Button>
         <Divider orientation="vertical" flexItem />
-        <Button disableElevation component={Link} to="/resources/tests" variant="contained" color="primary">
-          Resources
+        <Button disableElevation disableRipple sx={{ "&.MuiButtonBase-root:hover": { backgroundColor: "transparent" } }} component={Link} to="/coverage/summary" variant="contained" color="primary">
+          Coverage
         </Button>
         <Divider orientation="vertical" flexItem />
       </Toolbar>
