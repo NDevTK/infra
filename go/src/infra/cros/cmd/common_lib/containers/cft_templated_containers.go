@@ -63,10 +63,19 @@ func NewCrosPublishTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	if contType != CrosGcsPublishTemplatedContainerType && contType != CrosTkoPublishTemplatedContainerType && contType != CrosCpconPublishTemplatedContainerType && contType != CrosRdbPublishTemplatedContainerType {
+	if contType != CrosGcsPublishTemplatedContainerType && contType != CrosTkoPublishTemplatedContainerType && contType != CrosPublishTemplatedContainerType && contType != CrosRdbPublishTemplatedContainerType {
 		return nil
 	}
 	return NewContainer(contType, "cros-publish", containerImage, ctr, true)
+}
+
+func NewGenericTemplatedContainer(
+	contType interfaces.ContainerType,
+	containerImage string,
+	namePrefix string,
+	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
+
+	return NewContainer(contType, namePrefix, containerImage, ctr, true)
 }
 
 func NewGenericProvisionTemplatedContainer(

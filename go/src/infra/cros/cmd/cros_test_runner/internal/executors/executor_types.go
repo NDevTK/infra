@@ -23,7 +23,7 @@ const (
 	CrosGcsPublishExecutorType   interfaces.ExecutorType = "CrosGcsPublishExecutor"
 	CrosTkoPublishExecutorType   interfaces.ExecutorType = "CrosTkoPublishExecutor"
 	CrosRdbPublishExecutorType   interfaces.ExecutorType = "CrosRdbPublishExecutor"
-	CrosCpconPublishExecutorType interfaces.ExecutorType = "CrosCpconPublishExecutor"
+	CrosPublishExecutorType      interfaces.ExecutorType = "CrosPublishExecutor"
 	SshTunnelExecutorType        interfaces.ExecutorType = "SshTunnelExecutor"
 	GenericProvisionExecutorType interfaces.ExecutorType = "GenericProvisionExecutor"
 	GenericTestsExecutorType     interfaces.ExecutorType = "GenericTestsExecutor"

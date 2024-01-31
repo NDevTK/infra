@@ -27,8 +27,7 @@ type GenericTestsCmd struct {
 	Identifier  string
 
 	// Updates
-	TestResponses      *testapi.CrosTestResponse
-	CpconPublishSrcDir string
+	TestResponses *testapi.CrosTestResponse
 }
 
 // Instantiate extracts initial state info from the state keeper.
@@ -146,9 +145,6 @@ func (cmd *GenericTestsCmd) updateHwTestStateKeeper(
 		if err := sk.Injectables.Set("rdb-test-result", sk.TestResultForRdb); err != nil {
 			logging.Infof(ctx, "Warning: failed to set 'rdb-test-result' into the InjectableStorage, %s", err)
 		}
-	}
-	if cmd.CpconPublishSrcDir != "" {
-		sk.CpconPublishSrcDir = cmd.CpconPublishSrcDir
 	}
 
 	return nil

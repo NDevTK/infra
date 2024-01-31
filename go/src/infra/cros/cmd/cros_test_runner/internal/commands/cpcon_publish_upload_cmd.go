@@ -22,7 +22,9 @@ type CpconPublishUploadCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	CpconJobName string
+	CpconPublishSrcDir string
+	CpconJobName       string
+	GcsUrl             string
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -60,6 +62,16 @@ func (cmd *CpconPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	formattedSwarmingTaskId := common.FormatSwarmingTaskId(swarmingTaskId)
 	jobName := fmt.Sprintf("swarming-%s0", formattedSwarmingTaskId)
 	cmd.CpconJobName = jobName
+
+	if sk.CpconPublishSrcDir == "" {
+		return fmt.Errorf("Cmd %q missing dependency: CpconPublishSrcDir", cmd.GetCommandType())
+	}
+	cmd.CpconPublishSrcDir = sk.CpconPublishSrcDir
+
+	if sk.GcsUrl == "" {
+		return fmt.Errorf("Cmd %q missing dependency: GcsUrl", cmd.GetCommandType())
+	}
+	cmd.GcsUrl = sk.GcsUrl
 
 	return nil
 }

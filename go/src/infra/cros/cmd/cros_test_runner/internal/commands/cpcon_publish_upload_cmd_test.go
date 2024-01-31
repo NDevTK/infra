@@ -24,40 +24,41 @@ func TestCpconPublishPublishCmd_UnsupportedSK(t *testing.T) {
 		sk := &UnsupportedStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(
-			containers.CrosCpconPublishTemplatedContainerType,
+		cont := containers.NewGenericTemplatedContainer(
+			containers.CrosPublishTemplatedContainerType,
 			"container/image/path",
+			"cros-publish",
 			ctr)
 		exec := executors.NewCrosPublishExecutor(
 			cont,
-			executors.CrosCpconPublishExecutorType)
+			executors.CrosPublishExecutorType)
 		cmd := commands.NewCpconPublishUploadCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldNotBeNil)
 	})
 }
 
-// TODO(b/278760353): Restore when issue fixed.
-// func TestCpconPublishPublishCmd_MissingDeps(t *testing.T) {
-// 	t.Setenv("SWARMING_TASK_ID", "")
+func TestCpconPublishPublishCmd_MissingDeps(t *testing.T) {
+	t.Setenv("SWARMING_TASK_ID", "")
 
-// 	Convey("Cmd missing deps", t, func() {
-// 		ctx := context.Background()
-// 		sk := &data.HwTestStateKeeper{}
-// 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
-// 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-// 		cont := containers.NewCrosPublishTemplatedContainer(
-// 			containers.CrosCpconPublishTemplatedContainerType,
-// 			"container/image/path",
-// 			ctr)
-// 		exec := executors.NewCrosPublishExecutor(
-// 			cont,
-// 			executors.CrosCpconPublishExecutorType)
-// 		cmd := commands.NewCpconPublishUploadCmd(exec)
-// 		err := cmd.ExtractDependencies(ctx, sk)
-// 		So(err, ShouldNotBeNil)
-// 	})
-// }
+	Convey("Cmd missing deps", t, func() {
+		ctx := context.Background()
+		sk := &data.HwTestStateKeeper{}
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := containers.NewGenericTemplatedContainer(
+			containers.CrosPublishTemplatedContainerType,
+			"container/image/path",
+			"cros-publish",
+			ctr)
+		exec := executors.NewCrosPublishExecutor(
+			cont,
+			executors.CrosPublishExecutorType)
+		cmd := commands.NewCpconPublishUploadCmd(exec)
+		err := cmd.ExtractDependencies(ctx, sk)
+		So(err, ShouldNotBeNil)
+	})
+}
 
 func TestCpconPublishPublishCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
@@ -66,13 +67,14 @@ func TestCpconPublishPublishCmd_UpdateSK(t *testing.T) {
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(
-			containers.CrosCpconPublishTemplatedContainerType,
+		cont := containers.NewGenericTemplatedContainer(
+			containers.CrosPublishTemplatedContainerType,
 			"container/image/path",
+			"cros-publish",
 			ctr)
 		exec := executors.NewCrosPublishExecutor(
 			cont,
-			executors.CrosCpconPublishExecutorType)
+			executors.CrosPublishExecutorType)
 		cmd := commands.NewCpconPublishUploadCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
@@ -86,23 +88,28 @@ func TestCpconPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 	Convey("ProvisionStartCmd extract deps", t, func() {
 
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{}
+		wantGcsUrl := "gs://this-is-a-gcs-path/results"
+		sk := &data.HwTestStateKeeper{
+			GcsUrl:             wantGcsUrl,
+			CpconPublishSrcDir: "this/is/a/fake/path",
+		}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(
-			containers.CrosCpconPublishTemplatedContainerType,
+		cont := containers.NewGenericTemplatedContainer(
+			containers.CrosPublishTemplatedContainerType,
 			"container/image/path",
+			"cros-publish",
 			ctr)
 		exec := executors.NewCrosPublishExecutor(
 			cont,
-			executors.CrosCpconPublishExecutorType)
+			executors.CrosPublishExecutorType)
 		cmd := commands.NewCpconPublishUploadCmd(exec)
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldBeNil)
 		So(cmd.CpconJobName, ShouldEqual, fmt.Sprintf("swarming-%s", wantSwarmingTaskId))
-
+		So(cmd.GcsUrl, ShouldEqual, wantGcsUrl)
 	})
 
 }

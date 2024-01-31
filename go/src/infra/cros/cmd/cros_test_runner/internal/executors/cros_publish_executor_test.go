@@ -311,7 +311,7 @@ func TestPublishServiceExecuteCommand(t *testing.T) {
 			containers.CrosGcsPublishTemplatedContainerType,
 			"container/image/path",
 			ctr)
-		exec := NewCrosPublishExecutor(cont, CrosCpconPublishExecutorType)
+		exec := NewCrosPublishExecutor(cont, CrosPublishExecutorType)
 		err := exec.ExecuteCommand(ctx, commands.NewCpconPublishServiceStartCmd(exec))
 		So(err, ShouldNotBeNil)
 	})
@@ -324,7 +324,7 @@ func TestPublishServiceExecuteCommand(t *testing.T) {
 			containers.CrosGcsPublishTemplatedContainerType,
 			"container/image/path",
 			ctr)
-		exec := NewCrosPublishExecutor(cont, CrosCpconPublishExecutorType)
+		exec := NewCrosPublishExecutor(cont, CrosPublishExecutorType)
 		err := exec.ExecuteCommand(ctx, commands.NewCpconPublishUploadCmd(exec))
 		So(err, ShouldNotBeNil)
 	})

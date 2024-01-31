@@ -24,12 +24,12 @@ func TestCpconPublishStartCmd_UnsupportedSK(t *testing.T) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosPublishTemplatedContainer(
-			containers.CrosCpconPublishTemplatedContainerType,
+			containers.CrosPublishTemplatedContainerType,
 			"container/image/path",
 			ctr)
 		exec := executors.NewCrosPublishExecutor(
 			cont,
-			executors.CrosCpconPublishExecutorType)
+			executors.CrosPublishExecutorType)
 		cmd := commands.NewCpconPublishServiceStartCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldNotBeNil)
@@ -44,12 +44,12 @@ func TestCpconPublishStartCmd_MissingDeps(t *testing.T) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosPublishTemplatedContainer(
-			containers.CrosCpconPublishTemplatedContainerType,
+			containers.CrosPublishTemplatedContainerType,
 			"container/image/path",
 			ctr)
 		exec := executors.NewCrosPublishExecutor(
 			cont,
-			executors.CrosCpconPublishExecutorType)
+			executors.CrosPublishExecutorType)
 		cmd := commands.NewCpconPublishServiceStartCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldNotBeNil)
@@ -64,12 +64,12 @@ func TestCpconPublishStartCmd_UpdateSK(t *testing.T) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosPublishTemplatedContainer(
-			containers.CrosCpconPublishTemplatedContainerType,
+			containers.CrosPublishTemplatedContainerType,
 			"container/image/path",
 			ctr)
 		exec := executors.NewCrosPublishExecutor(
 			cont,
-			executors.CrosCpconPublishExecutorType)
+			executors.CrosPublishExecutorType)
 		cmd := commands.NewCpconPublishServiceStartCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
@@ -86,12 +86,12 @@ func TestCpconPublishStartCmd_ExtractDepsSuccess(t *testing.T) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosPublishTemplatedContainer(
-			containers.CrosCpconPublishTemplatedContainerType,
+			containers.CrosPublishTemplatedContainerType,
 			"container/image/path",
 			ctr)
 		exec := executors.NewCrosPublishExecutor(
 			cont,
-			executors.CrosCpconPublishExecutorType)
+			executors.CrosPublishExecutorType)
 		cmd := commands.NewCpconPublishServiceStartCmd(exec)
 
 		// Extract deps first

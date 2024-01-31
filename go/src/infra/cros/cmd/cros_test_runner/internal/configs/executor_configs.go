@@ -133,15 +133,15 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 		}
 		exec = executors.NewCrosPublishExecutor(container, execType)
 
-	case executors.CrosCpconPublishExecutorType:
-		container, err := cfg.ContainerConfig.GetContainer(containers.CrosCpconPublishTemplatedContainerType)
+	case executors.CrosRdbPublishExecutorType:
+		container, err := cfg.ContainerConfig.GetContainer(containers.CrosRdbPublishTemplatedContainerType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
 		}
 		exec = executors.NewCrosPublishExecutor(container, execType)
 
-	case executors.CrosRdbPublishExecutorType:
-		container, err := cfg.ContainerConfig.GetContainer(containers.CrosRdbPublishTemplatedContainerType)
+	case executors.CrosPublishExecutorType:
+		container, err := cfg.ContainerConfig.GetContainer(containers.CrosPublishTemplatedContainerType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
 		}

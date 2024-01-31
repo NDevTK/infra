@@ -21,7 +21,7 @@ const (
 	CrosGcsPublishTemplatedContainerType   interfaces.ContainerType = "CrosGcsPublishTemplatedContainer"
 	CrosTkoPublishTemplatedContainerType   interfaces.ContainerType = "CrosTkoPublishTemplatedContainer"
 	CrosRdbPublishTemplatedContainerType   interfaces.ContainerType = "CrosRdbPublishTemplatedContainer"
-	CrosCpconPublishTemplatedContainerType interfaces.ContainerType = "CrosCpconPublishTemplatedContainer"
+	CrosPublishTemplatedContainerType      interfaces.ContainerType = "CrosPublishTemplatedContainer"
 	GenericProvisionTemplatedContainerType interfaces.ContainerType = "GenericProvisionTemplatedContainer"
 )
 
@@ -44,7 +44,7 @@ func GetContainerImageKeyFromContainerType(containerType interfaces.ContainerTyp
 		return "cros-test"
 	case CrosTestFinderTemplatedContainerType:
 		return "cros-test-finder"
-	case CrosGcsPublishTemplatedContainerType, CrosTkoPublishTemplatedContainerType, CrosRdbPublishTemplatedContainerType, CrosCpconPublishTemplatedContainerType:
+	case CrosGcsPublishTemplatedContainerType, CrosTkoPublishTemplatedContainerType, CrosRdbPublishTemplatedContainerType, CrosPublishTemplatedContainerType:
 		return "cros-publish"
 	case CrosVMProvisionTemplatedContainerType:
 		return "vm-provision"

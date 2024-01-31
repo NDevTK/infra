@@ -33,7 +33,6 @@ var aCrosTestProcessor = newCrosTestProcessor()
 var aCrosGcsPublishProcessor = newCrosGcsPublishProcessor()
 var aCrosTkoPublishProcessor = newCrosTkoPublishProcessor()
 var aCrosRdbPublishProcessor = newCrosRdbPublishProcessor()
-var aCrosCpconPublishProcessor = newCrosCpconPublishProcessor()
 var aCacheServerProcessor = newCacheServerProcessor()
 var aCrosFwProvisionProcessor = newCrosFwProvisionProcessor()
 var aCrosVMProvisionProcessor = newCrosVMProvisionProcessor()
@@ -116,8 +115,6 @@ func (*RequestRouter) getActualPublishProcessor(publishType api.CrosPublishTempl
 		return aCrosTkoPublishProcessor, nil
 	case api.CrosPublishTemplate_PUBLISH_RDB:
 		return aCrosRdbPublishProcessor, nil
-	case api.CrosPublishTemplate_PUBLISH_CPCON:
-		return aCrosCpconPublishProcessor, nil
 	default:
 		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("%v to be implemented", publishType))
 	}

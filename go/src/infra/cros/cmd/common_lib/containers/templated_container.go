@@ -194,10 +194,9 @@ func (cont *TemplatedContainer) initializeCrosPublishTemplate(
 	}
 
 	if publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_GCS ||
-		publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_TKO ||
-		publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_CPCON {
+		publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_TKO {
 		if publishTemplate.PublishSrcDir == "" {
-			return fmt.Errorf("PublishSrcDir is empty but required for GCS, TKO, and CPCON publish types!")
+			return fmt.Errorf("PublishSrcDir is empty but required for GCS, TKO publish types!")
 		}
 	}
 

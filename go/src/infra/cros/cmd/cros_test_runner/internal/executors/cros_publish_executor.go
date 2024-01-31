@@ -40,7 +40,7 @@ func NewCrosPublishExecutor(
 	execType interfaces.ExecutorType) *CrosPublishExecutor {
 	if execType != CrosGcsPublishExecutorType &&
 		execType != CrosTkoPublishExecutorType &&
-		execType != CrosCpconPublishExecutorType &&
+		execType != CrosPublishExecutorType &&
 		execType != CrosRdbPublishExecutorType {
 		return nil
 	}
@@ -305,14 +305,16 @@ func (ex *CrosPublishExecutor) cpconPublishStartCommandExecution(
 	step, ctx := build.StartStep(ctx, "cpcon-publish service start")
 	defer func() { step.End(err) }()
 
-	cpconPublishTemplate := &testapi.CrosPublishTemplate{
-		PublishType:   testapi.CrosPublishTemplate_PUBLISH_CPCON,
-		PublishSrcDir: cmd.CpconPublishSrcDir}
 	publishClient, err := ex.Start(
 		ctx,
 		&api.Template{
-			Container: &api.Template_CrosPublish{
-				CrosPublish: cpconPublishTemplate,
+			Container: &api.Template_Generic{
+				Generic: &api.GenericTemplate{
+					BinaryName:        "cpcon-publish",
+					DockerArtifactDir: "/tmp/cpcon-publish",
+					BinaryArgs:        []string{"server", "--port", "0"},
+					AdditionalVolumes: []string{"/creds/service_accounts:/keys/", cmd.CpconPublishSrcDir + ":" + common.CpconPublishTestArtifactsDir},
+				},
 			},
 		},
 	)
@@ -343,9 +345,16 @@ func (ex *CrosPublishExecutor) cpconPublishUploadCommandExecution(
 		HostType: _go.StoragePath_LOCAL,
 		Path:     common.CpconPublishTestArtifactsDir,
 	}
-	//reuse tko metadata function of testapi
-	cpconMetadata, err := anypb.New(&testapi.PublishTkoMetadata{
-		JobName: cmd.CpconJobName,
+	// reuse gcs metadata attributes of testapi
+	cpconMetadata, err := anypb.New(&testapi.PublishGcsMetadata{
+		GcsPath: &_go.StoragePath{
+			HostType: _go.StoragePath_GS,
+			Path:     cmd.GcsUrl,
+		},
+		ServiceAccountCredsFilePath: &_go.StoragePath{
+			HostType: _go.StoragePath_LOCAL,
+			Path:     "/keys/skylab-drone.json",
+		},
 	},
 	)
 	if err != nil {

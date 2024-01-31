@@ -88,7 +88,7 @@ func (cfg *ContainerConfig) GetContainer(contType interfaces.ContainerType) (int
 		}
 		cont = containers.NewCrosTestFinderTemplatedContainer(containerImage, cfg.Ctr)
 
-	case containers.CrosGcsPublishTemplatedContainerType, containers.CrosTkoPublishTemplatedContainerType, containers.CrosRdbPublishTemplatedContainerType, containers.CrosCpconPublishTemplatedContainerType:
+	case containers.CrosGcsPublishTemplatedContainerType, containers.CrosTkoPublishTemplatedContainerType, containers.CrosRdbPublishTemplatedContainerType:
 		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
