@@ -13,14 +13,15 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/api/iterator"
-
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
-
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
+	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	gceproviderpb "go.chromium.org/luci/gce/api/config/v1"
 )
 
 const USAGE = `
@@ -102,21 +103,47 @@ func queryTimeSeriesQuota(ctx context.Context, client *monitoring.MetricClient, 
 	return client.ListTimeSeries(ctx, monitoringRequest)
 }
 
-func main() {
-	ctx := context.Background()
-	project, _, _ := parseFlags()
+func loadCfg(cfgPath string) *gceproviderpb.Configs {
+	in, err := os.ReadFile(cfgPath)
+	if err != nil {
+		log.Fatalln("Error reading cfg file:", err)
+	}
+	configs := &gceproviderpb.Configs{}
+	opts := prototext.UnmarshalOptions{
+		DiscardUnknown: true,
+	}
+	if err := opts.Unmarshal(in, configs); err != nil {
+		log.Fatalln("Failed to parse gce config:", err)
+	}
+	return configs
+}
 
-	quotasPerRegion := make(map[string]*regionQuotas)
-	quotaPerNetwork := make(map[string]*quotaVals)
+func zoneToRegion(zone string, possibleRegions []string) string {
+	for _, region := range possibleRegions {
+		if strings.HasPrefix(zone, region) {
+			return region
+		}
+	}
+	log.Fatalln("Couldn't find region for: ", zone)
+	return zone
+}
 
+func getRegionQuotas(ctx context.Context, project string) (map[string]*regionQuotas, []string) {
 	// Get regions and their quotas. Simply calling ListRegion will get
 	// a variety of quota info for each region, which includes most of
 	// what we care about.
+	var regionNames []string
+	quotasPerRegion := make(map[string]*regionQuotas)
 	c, err := compute.NewRegionsRESTClient(ctx)
 	if err != nil {
 		log.Fatalln("Error init'ing gcloud client:", err)
 	}
-	defer c.Close()
+	defer func() {
+		if err = c.Close(); err != nil {
+			log.Fatalln(err)
+		}
+	}()
+
 	req := &computepb.ListRegionsRequest{
 		Project: project,
 	}
@@ -147,8 +174,12 @@ func main() {
 			}
 		}
 		quotasPerRegion[*resp.Name] = &quotas
+		regionNames = append(regionNames, *resp.Name)
 	}
+	return quotasPerRegion, regionNames
+}
 
+func getLocalSSDQuotas(ctx context.Context, project string, quotasPerRegion map[string]*regionQuotas) {
 	// Get local-SSD per region per vm-family quotas. Need to query a quota
 	// metric for this. Note: we query the "limit" here and then calculate
 	// the expected "usage" later on by reading gce-provider vms.cfg files.
@@ -156,7 +187,11 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer client.Close()
+	defer func() {
+		if err = client.Close(); err != nil {
+			log.Fatalln(err)
+		}
+	}()
 	timeSeriesIterator := queryTimeSeriesQuota(ctx, client, "local_ssd_total_storage_per_vm_family/limit", project)
 	for {
 		timeSeriesResp, err := timeSeriesIterator.Next()
@@ -182,10 +217,22 @@ func main() {
 		// project.
 		regionQuota.localSSDPerFamilyQuota[machineFamily] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value()}
 	}
+}
 
+func getNetworkQuotas(ctx context.Context, project string) map[string]*quotaVals {
 	// Get the number of instances per network. Also need to query a quota
 	// metric for this.
-	timeSeriesIterator = queryTimeSeriesQuota(ctx, client, "instances_per_vpc_network/limit", project)
+	client, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer func() {
+		if err = client.Close(); err != nil {
+			log.Fatalln(err)
+		}
+	}()
+	quotasPerNetwork := make(map[string]*quotaVals)
+	timeSeriesIterator := queryTimeSeriesQuota(ctx, client, "instances_per_vpc_network/limit", project)
 	for {
 		timeSeriesResp, err := timeSeriesIterator.Next()
 		if err == iterator.Done {
@@ -216,8 +263,64 @@ func main() {
 				break
 			}
 		}
-		quotaPerNetwork[networkName] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value()}
+		quotasPerNetwork[networkName] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value()}
 	}
+	return quotasPerNetwork
+}
+
+func parseCfgFiles(project string, cfgPaths []string, regionNames []string, quotasPerRegion map[string]*regionQuotas, quotasPerNetwork map[string]*quotaVals) {
+	// Read vms.cfg. The 'configs' slice is used to flatten all configs
+	// across all possible cfg files.
+	var configs []*gceproviderpb.Config
+	for _, cfgPath := range cfgPaths {
+		thisConfig := loadCfg(cfgPath)
+		configs = append(configs, thisConfig.Vms...)
+	}
+
+	// Parse vms.cfg
+	for _, config := range configs {
+		if config.Attributes.Project != project {
+			continue
+		}
+		region := zoneToRegion(config.Attributes.Zone, regionNames)
+
+		// Get max num instances
+		maxInstances := config.Amount.Max
+		for _, scheduledChange := range config.Amount.Change {
+			if scheduledChange.Max > maxInstances {
+				maxInstances = scheduledChange.Max
+			}
+		}
+		quotasPerRegion[region].instancesQuota.used += int64(maxInstances)
+
+		// Get network
+		if len(config.Attributes.NetworkInterface) != 1 || config.Attributes.NetworkInterface[0].Network == "" {
+			log.Fatalln("Unknown network config on ", config.Prefix)
+		}
+		network := config.Attributes.NetworkInterface[0].Network
+		network, _ = strings.CutPrefix(network, "global/networks/")
+		quotasPerNetwork[network].used += int64(maxInstances)
+
+		// TODO: Get IP address
+
+		// TODO: Get core count
+
+		// TODO: Get disk info
+	}
+}
+
+func main() {
+	ctx := context.Background()
+	project, _, cfgPaths := parseFlags()
+
+	// Query GCE for all relevant quotas for the project.
+	quotasPerRegion, regionNames := getRegionQuotas(ctx, project)
+	getLocalSSDQuotas(ctx, project, quotasPerRegion)
+	quotasPerNetwork := getNetworkQuotas(ctx, project)
+
+	// Parse vms.cfgs and determine max quota usage for all deployments for
+	// the oroject.
+	parseCfgFiles(project, cfgPaths, regionNames, quotasPerRegion, quotasPerNetwork)
 
 	// TODO: Finish the rest.
 }
