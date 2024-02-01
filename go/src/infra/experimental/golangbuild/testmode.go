@@ -389,8 +389,8 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 		if p.GOOS == "" || p.GOARCH == "" {
 			return nil, fmt.Errorf("go tool dist list returned an invalid GOOS/GOARCH pair: %#v", p)
 		}
-		switch {
-		case p.FirstClass && p.GOOS != "darwin":
+		switch firstClassWithPre := p.FirstClass && (p.GOOS != "darwin" && p.GOARCH != "arm"); {
+		case firstClassWithPre:
 			// There's enough machine capacity and speed for almost
 			// all first-class ports to have a pre-submit builder,
 			// and there's not enough benefit to include them here.
