@@ -277,14 +277,6 @@ func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
 			c.Touchscreen = &trueValue
 		}
 	}
-	var power string
-	switch pr := d.GetPower(); pr {
-	case device.Config_POWER_SUPPLY_AC_ONLY:
-		power = "AC_only"
-	case device.Config_POWER_SUPPLY_BATTERY:
-		power = "battery"
-	}
-	c.Power = &power
 
 	if st := d.GetStorage(); st != device.Config_STORAGE_UNSPECIFIED {
 		// Extract the storge type, e.g. "STORAGE_SSD" -> "ssd".
@@ -604,6 +596,22 @@ func setTrrsType(s chromeosLab.Chameleon_TRRSType) *inventory.Peripherals_TRRSTy
 	return &target
 }
 
+func setPower(labels *inventory.SchedulableLabels, p *chromeosLab.Peripherals, d *device.Config) {
+	c := labels.GetCapabilities()
+	var power string
+	if p.GetDolos().GetHostname() != "" {
+		power = "dolos"
+	} else {
+		switch pr := d.GetPower(); pr {
+		case device.Config_POWER_SUPPLY_AC_ONLY:
+			power = "AC_only"
+		case device.Config_POWER_SUPPLY_BATTERY:
+			power = "battery"
+		}
+	}
+	c.Power = &power
+}
+
 func createDutLabels(machine *ufspb.Machine, devConfig *device.Config, osType *inventory.SchedulableLabels_OSType) *inventory.SchedulableLabels {
 	// Use GetXXX in case any object is nil.
 	platform := machine.GetChromeosMachine().GetBuildTarget()
@@ -700,6 +708,7 @@ func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.DeviceUnd
 	setDutPeripherals(labels, p)
 	setDutState(labels, data.GetDutState())
 	setDeviceConfig(labels, devConfig)
+	setPower(labels, p, devConfig)
 	setManufacturingConfig(labels, data.GetManufacturingConfig())
 	setHwidData(labels, data.GetHwidData())
 	setCbx(labels, machine)
