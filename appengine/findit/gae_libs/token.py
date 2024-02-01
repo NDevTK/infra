@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import base64
+import binascii
 from datetime import datetime
 from datetime import timedelta
 import hashlib
@@ -96,7 +97,7 @@ def ValidateAuthToken(key_name, token, user_id, action_id='', valid_hours=1):
   try:
     decoded = base64.urlsafe_b64decode(str(token))
     token_time = datetime.utcfromtimestamp(int(decoded.split(_DELIMITER)[-1]))
-  except (TypeError, ValueError):
+  except (TypeError, ValueError, binascii.Error):
     return False, False
 
   current_time = time_util.GetUTCNow()

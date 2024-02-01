@@ -6,6 +6,7 @@
 
 import argparse
 import base64
+import binascii
 import collections
 import itertools
 import logging
@@ -127,7 +128,8 @@ def json_to_metric_data(json_str):
   if not json_str.startswith('{'):
     try:
       json_str = base64.b64decode(json_str)
-    except TypeError:  # Wrong padding in base64 string. Oh well.
+    # Wrong padding in base64 string. Oh well.
+    except (TypeError, binascii.Error):
       pass
 
   try:

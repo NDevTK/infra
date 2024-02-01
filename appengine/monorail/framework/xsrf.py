@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import base64
+import binascii
 import hashlib
 import hmac
 import six
@@ -92,7 +93,7 @@ def ValidateToken(
   try:
     decoded = base64.urlsafe_b64decode(six.ensure_binary(token))
     token_time = int(decoded.split(DELIMITER)[-1])
-  except (TypeError, ValueError):
+  except (TypeError, ValueError, binascii.Error):
     raise TokenIncorrect('could not decode token')
   now = int(time.time())
 

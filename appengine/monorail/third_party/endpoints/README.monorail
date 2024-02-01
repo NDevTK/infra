@@ -34,3 +34,6 @@ Local Modifications:
    * iteritems() --> items()
    * iterkeys() -> keys()
    * itervalues() --> values()
+
+   Library changes:
+   * base64 decoding errors throw binascii.Error rather than TypeError

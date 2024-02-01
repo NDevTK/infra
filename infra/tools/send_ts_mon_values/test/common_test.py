@@ -96,12 +96,12 @@ class JsonParsingTest(unittest.TestCase):
                       {'myfield': 'mystring', 'otherfield': 42})
 
   def test_json_parsing_invalid_base64_1(self):
-    # 'bd' raises TypeError in base64.b64decode
+    # 'bd' raises TypeError/binascii.Error in base64.b64decode
     with self.assertRaises(ValueError):
       common.json_to_metric_data('bd')
 
   def test_json_parsing_invalid_base64_2(self):
-    # 'blah' does NOT raise TypeError in base64.b64decode
+    # 'blah' does NOT raise TypeError/binascii.Error in base64.b64decode
     with self.assertRaises(ValueError):
       common.json_to_metric_data('blah')
 
