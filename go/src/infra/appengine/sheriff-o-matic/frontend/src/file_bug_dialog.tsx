@@ -54,9 +54,12 @@ const monorailProjectId = (tree: TreeJson): string => {
     return tree.default_monorail_project_name || 'chromium';
 }
 const fileBugLink = (tree: TreeJson, alerts: AlertJson[]): string => {
-    const projectId = monorailProjectId(tree);
-    const summary = bugSummary(tree, alerts);
     const description = bugComment(tree, alerts);
+    const summary = bugSummary(tree, alerts);
+    if (tree.hotlist_id) {
+        return `https://b.corp.google.com/issues/new?title=${encodeURIComponent(summary)}&description=${encodeURIComponent(description)}&hotlistIds=${encodeURIComponent(tree.hotlist_id)}`;
+    }
+    const projectId = monorailProjectId(tree);
     const labels = bugLabels(tree, alerts);
     return `https://bugs.chromium.org/p/${encodeURIComponent(projectId)}/issues/entry?summary=${encodeURIComponent(summary)}&description=${encodeURIComponent(description)}&labels=${encodeURIComponent(labels.join(','))}`;
 }

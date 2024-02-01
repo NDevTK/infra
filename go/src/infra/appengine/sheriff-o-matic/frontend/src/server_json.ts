@@ -8,6 +8,8 @@ export interface TreeJson {
     bb_project_filter: string;
     default_monorail_project_name?: string;  // default to 'chromium' if undefined.
     bug_queue_label: string;
+    // The buganizer hotlist to use for SOM bugs in this tree.
+    hotlist_id?: string
 }
 
 export const treeJsonFromName = (treeName: string): TreeJson | null => {
