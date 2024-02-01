@@ -96,10 +96,6 @@ func (o *Oracle) PinVpythonSpec(specPath string) error {
 	// TODO: support py_platform, py_version, py_tag?
 	expander["vpython_platform"] = fmt.Sprintf("%s_%s_%s", expander["platform"], pyVersion, abi)
 
-	if spec.Virtualenv != nil {
-		TODO("Vpython spec %q has Virtualenv entry", specPath, spec.Virtualenv)
-	}
-
 	LEAKY("Using hard-coded python interpreter version.")
 	if curVenv.PythonInterpreter, err = o.pinCipd(interpDef, nil, "", o.cipdExpander); err != nil {
 		return err
