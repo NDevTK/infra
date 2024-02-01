@@ -38,15 +38,16 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("stm32"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(95).Times(1)
-
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
 	Convey("Happy path for other chips", t, func() {
 		ctrl := gomock.NewController(t)
@@ -63,23 +64,21 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("some_chip"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(96).Times(1)
-
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
 	Convey("block for ite chips (1)", t, func() {
 		// TODO(b:270170790): remove when we can recover functionality fo flash EC for ite chips.
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		runRequest := map[string]string{
-			"which flash_ec": "",
-		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(0)
 		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(0)
@@ -90,21 +89,18 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		servod.EXPECT().Port().Return(95).Times(0)
 
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    nil, // Runner is not expected to be used.
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
-		So(err, ShouldNotBeNil)
+		So(err, ShouldBeNil)
 	})
 	Convey("block for ite chips (2)", t, func() {
 		// TODO(b:270170790): remove when we can recover functionality fo flash EC for ite chips.
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		runRequest := map[string]string{
-			"which flash_ec": "",
-		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(0)
 		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(0)
@@ -115,13 +111,14 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		servod.EXPECT().Port().Return(95).Times(0)
 
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    nil, // Runner is not expected to be used.
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
-		So(err, ShouldNotBeNil)
+		// Skip os not a reason to fail.
+		So(err, ShouldBeNil)
 	})
 	Convey("allowed for ite chips if uses servo_micro", t, func() {
 		// TODO(b:270170790): remove when we can recover functionality fo flash EC for ite chips.
@@ -139,15 +136,16 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8yyyyy"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(96).Times(1)
-
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
 	Convey("use try_apshutdown is expected for ccd_cpu_fw_spi_depends_on_ec_fw:yes (1)", t, func() {
 		ctrl := gomock.NewController(t)
@@ -164,15 +162,16 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("just_chip"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(96).Times(1)
-
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
 	Convey("use try_apshutdown is expected for cpu_fw_spi_depends_on_ec_fw:yes (2)", t, func() {
 		ctrl := gomock.NewController(t)
@@ -190,15 +189,16 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("just_chip"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(96).Times(1)
-
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
 	Convey("do not use try_apshutdown if controls are not present", t, func() {
 		ctrl := gomock.NewController(t)
@@ -215,15 +215,16 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("just_chip"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(96).Times(1)
-
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
 	Convey("set try_apshutdown and board when fun flash", t, func() {
 		fwBoard = "reef"
@@ -242,15 +243,16 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("just_chip"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
 		servod.EXPECT().Port().Return(96).Times(1)
-
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
 }
 
@@ -268,15 +270,16 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(97).Times(1)
-
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programAP(ctx, imagePath, "", false)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
 	Convey("Happy path with GBB 0x18", t, func() {
 		runRequest := map[string]string{
@@ -285,15 +288,16 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(91).Times(1)
-
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programAP(ctx, imagePath, "0x18", false)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
 	Convey("Happy path with force update", t, func() {
 		runRequest := map[string]string{
@@ -302,15 +306,16 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(97).Times(1)
-
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    mockRunner(runRequest),
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programAP(ctx, imagePath, "", true)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
 }
 

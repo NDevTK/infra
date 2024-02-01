@@ -30,34 +30,38 @@ func TestNewProgrammer(t *testing.T) {
 	Convey("Fail if servod fail to respond to servod", t, func() {
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "servo_type").Return(nil, errors.Reason("fail to get servo_type!").Err()).Times(1)
-
-		p, err := NewProgrammer(ctx, mockRunner(nil), servod, logger)
+		run, runCounter := mockRunnerWithCheck(nil)
+		p, err := NewProgrammer(ctx, run, servod, logger)
 		So(p, ShouldBeNil)
 		So(err, ShouldNotBeNil)
+		So(runCounter(), ShouldEqual, 0)
 	})
 	Convey("Fail as servo_v2 is not supported", t, func() {
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v2"), nil).Times(1)
-
-		p, err := NewProgrammer(ctx, mockRunner(nil), servod, logger)
+		run, runCounter := mockRunnerWithCheck(nil)
+		p, err := NewProgrammer(ctx, run, servod, logger)
 		So(p, ShouldBeNil)
 		So(err, ShouldNotBeNil)
+		So(runCounter(), ShouldEqual, 0)
 	})
 	Convey("Creates programmer for servo_v3", t, func() {
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v3"), nil).Times(1)
-
-		p, err := NewProgrammer(ctx, mockRunner(nil), servod, logger)
+		run, runCounter := mockRunnerWithCheck(nil)
+		p, err := NewProgrammer(ctx, run, servod, logger)
 		So(p, ShouldNotBeNil)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, 0)
 	})
 	Convey("Creates programmer for servo_v4", t, func() {
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4"), nil).Times(1)
-
-		p, err := NewProgrammer(ctx, mockRunner(nil), servod, logger)
+		run, runCounter := mockRunnerWithCheck(nil)
+		p, err := NewProgrammer(ctx, run, servod, logger)
 		So(p, ShouldNotBeNil)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, 0)
 	})
 }
 
@@ -69,12 +73,21 @@ func stringValue(v string) *xmlrpc.Value {
 	}
 }
 
-func mockRunner(runResponse map[string]string) components.Runner {
+func mockRunner(runResponses map[string]string) components.Runner {
+	run, _ := mockRunnerWithCheck(runResponses)
+	return run
+}
+func mockRunnerWithCheck(runResponses map[string]string) (components.Runner, func() int) {
+	calls := make(map[string]bool)
 	return func(ctx context.Context, timeout time.Duration, cmd string, args ...string) (string, error) {
-		cmd = strings.Join(append([]string{cmd}, args...), " ")
-		if v, ok := runResponse[cmd]; ok {
-			return v, nil
+			cmd = strings.Join(append([]string{cmd}, args...), " ")
+			// Mark that call was done.
+			calls[cmd] = true
+			if v, ok := runResponses[cmd]; ok {
+				return v, nil
+			}
+			return "", errors.Reason("Did not found response for %q!", cmd).Err()
+		}, func() int {
+			return len(calls)
 		}
-		return "", errors.Reason("Did not found response for %q!", cmd).Err()
-	}
 }
