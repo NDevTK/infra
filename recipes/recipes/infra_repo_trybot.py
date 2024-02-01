@@ -83,7 +83,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
       with api.context(cwd=co.path.join(patch_root)):
         deferred.append(
             api.defer(api.step, 'python tests',
-                      ['python3', 'test.py', 'test', '--verbose']))
+                      ['vpython3', 'test.py', 'test', '--verbose']))
 
       if internal and (api.platform.is_linux or api.platform.is_mac) and any(
           f.startswith('appengine/chromiumdash') for f in files):

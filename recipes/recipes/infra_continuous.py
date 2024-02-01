@@ -291,8 +291,8 @@ def run_python_tests(api, checkout, project_name):
     # Run Linux tests everywhere, Windows tests only on public CI.
     if api.platform.is_linux or project_name == 'infra':
       deferred.append(
-          api.defer(
-              api.step, 'infra python tests', ['python3', 'test.py', 'test']))
+          api.defer(api.step, 'infra python tests',
+                    ['vpython3', 'test.py', 'test']))
 
     if ((api.platform.is_linux or api.platform.is_mac) and
         project_name == 'infra'):

@@ -270,7 +270,7 @@
   },
   {
     "cmd": [
-      "python3",
+      "vpython3",
       "test.py",
       "test",
       "--verbose"
