@@ -401,31 +401,34 @@ func unzipSymbols(inputPath, outputPath string) error {
 		cmd := exec.Command("unxz", inputPath)
 		err := cmd.Run()
 		if err != nil {
-			return err
+			return fmt.Errorf("unxz failed: %w", err)
 		}
 		return nil
 	}
 	srcReader, err := os.Open(inputPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open file to unzip: %w", err)
 	}
 	defer srcReader.Close()
 
 	destWriter, err := os.Create(outputPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create output path while unzipping: %w", err)
 	}
 	defer destWriter.Close()
 
 	gzipReader, err := gzip.NewReader(srcReader)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create gzip reader: %w", err)
 	}
 	defer gzipReader.Close()
 
 	_, err = io.Copy(destWriter, gzipReader)
 
-	return err
+	if err != nil {
+		return fmt.Errorf("failed to copy unzipped symbols: %w", err)
+	}
+	return nil
 }
 
 // unpackTarball will take the local path of the fetched tarball and then unpack
