@@ -243,10 +243,28 @@ func GetTargetOptions(config *infrapb.SchedulerConfig, lab *LabConfigs) (TargetO
 	return targets, nil
 }
 
-// GetBuildTargets creates a list of build targets that the configuration is
+// GetBuildTargets generates the BuildTarget for the given target options. A
+// build target is in the syntax of <board>(-<variant>). If there are no
+// variants then this will return a single value. If there are variants in the
+// target option then this will return a list of all combinations using the
+// above syntax. Models are not considered when generating the BuildTarget
+func GetBuildTargets(target TargetOption) []BuildTarget {
+	buildTargets := []BuildTarget{}
+
+	if len(target.Variants) > 0 {
+		for _, variant := range target.Variants {
+			buildTargets = append(buildTargets, BuildTarget(fmt.Sprintf("%s%s", target.Board, variant)))
+		}
+	} else {
+		buildTargets = append(buildTargets, BuildTarget(target.Board))
+	}
+	return buildTargets
+}
+
+// GetBuildTargetsForAllTargets creates a list of build targets that the configuration is
 // tracking. A build target refers to the build image that should be used by the
 // CTP run. A build target is in the form of board(-<variant>).
-func GetBuildTargets(targetsOptions TargetOptions) []BuildTarget {
+func GetBuildTargetsForAllTargets(targetsOptions TargetOptions) []BuildTarget {
 	buildTargets := []BuildTarget{}
 	for board, target := range targetsOptions {
 		if len(target.Variants) > 0 {

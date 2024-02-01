@@ -17,6 +17,21 @@ func (s *SuiteSchedulerConfigs) FetchAllConfigs() ConfigList {
 	return s.configList
 }
 
+// FetchConfigTargetOptionsForBoard returns the target options for the specified
+// board for the specified config.
+func (s *SuiteSchedulerConfigs) FetchConfigTargetOptionsForBoard(configName string, board Board) (*TargetOption, error) {
+	targetOptions, ok := s.configTargets[configName]
+	if !ok {
+		return nil, fmt.Errorf("target options for config %s not found", configName)
+	}
+
+	if targetOption, ok := targetOptions[board]; !ok {
+		return nil, fmt.Errorf("board %s not found in %s's target options", board, configName)
+	} else {
+		return targetOption, nil
+	}
+}
+
 // FetchConfigTargetOptions returns all target options.
 func (s *SuiteSchedulerConfigs) FetchConfigTargetOptions(configName string) (TargetOptions, error) {
 	targetOptions, ok := s.configTargets[configName]

@@ -105,7 +105,7 @@ type SuiteSchedulerConfigs struct {
 func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *infrapb.SchedulerConfig, lab *LabConfigs, targetOptions TargetOptions) {
 
 	// Fetch all build buildTargets which can trigger this configuration.
-	buildTargets := GetBuildTargets(targetOptions)
+	buildTargets := GetBuildTargetsForAllTargets(targetOptions)
 
 	for _, target := range buildTargets {
 		// Add entry if no config with this build target has been

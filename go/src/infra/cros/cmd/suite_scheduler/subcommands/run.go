@@ -49,8 +49,9 @@ func (c *runCommand) setFlags() {
 
 }
 
+// validate ensures that the provided flags are being used in an expected
+// manner.
 func (c *runCommand) validate() error {
-
 	if !c.newBuilds && !c.timedEvents {
 		return fmt.Errorf("-new-builds or -timed-events must be specified")
 	}

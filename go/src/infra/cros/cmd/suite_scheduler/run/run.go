@@ -15,6 +15,7 @@ import (
 
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	v15 "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -216,7 +217,7 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 
 	// Batch Schedule all requests in the provided build.
 	buildRequest.ShouldAck = true
-	common.Stdout.Printf("Scheduling %d requests to CTP", len(buildRequest.Requests))
+	common.Stdout.Printf("Scheduling %d requests to CTP for build %s of board %s", len(buildRequest.Requests), buildRequest.Build.BuildUid, buildRequest.Build.Board)
 	for _, request := range buildRequest.Requests {
 		for _, event := range request.Events {
 
@@ -318,6 +319,62 @@ func buildConfigList(build builds.BuildPackage, suiteSchedulerConfigs *configpar
 
 }
 
+// buildCTPRequests iterates through all the provided BuildPackages and
+// generates BuildBucket CTP requests for all triggered configs.
+func buildCTPRequests(wrappedBuilds []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) ([]*builds.BuildPackage, error) {
+	workingBuilds := wrappedBuilds
+
+	// Iterate through the wrapped builds and insert CTP request and their
+	// associated metrics events into the package.
+	for _, wrappedBuild := range workingBuilds {
+		// Iterate through all
+		for _, requests := range wrappedBuild.Requests {
+			// TODO(b/319273876): Remove slow migration logic upon completion of
+			// transition. Right now only the CFTNewBuild config on brya is
+			// supported.
+			if requests.Config.Name != "CFTNewBuild" {
+				continue
+			}
+
+			// Fetch the target options requested for the current board on the
+			// current configuration.
+			boardTargetOption, err := suiteSchedulerConfigs.FetchConfigTargetOptionsForBoard(requests.Config.Name, configparser.Board(wrappedBuild.Build.Board))
+			if err != nil {
+				return nil, err
+			}
+
+			// If provided, build a CTP request per model, otherwise leave the model
+			// absent.
+			ctpRequests := []*test_platform.Request{}
+			if len(boardTargetOption.Models) > 0 {
+				// Generate a CTP Request for each board/model combo.
+				for _, model := range boardTargetOption.Models {
+					ctpRequests = append(ctpRequests, ctprequest.BuildCTPRequest(requests.Config, wrappedBuild.Build.Board, model, wrappedBuild.Build.BuildTarget, strconv.FormatInt(wrappedBuild.Build.Milestone, 10), wrappedBuild.Build.Version))
+				}
+			} else {
+				ctpRequests = append(ctpRequests, ctprequest.BuildCTPRequest(requests.Config, wrappedBuild.Build.Board, "", wrappedBuild.Build.BuildTarget, strconv.FormatInt(wrappedBuild.Build.Milestone, 10), wrappedBuild.Build.Version))
+			}
+
+			// Pair all generated CTP Requests inside an event message to be
+			// uploaded to pubsub.
+			events := []*builds.EventWrapper{}
+			for _, ctpRequest := range ctpRequests {
+				event := builds.EventWrapper{
+					CtpRequest: ctpRequest,
+				}
+				event.Event, err = metrics.GenerateEventMessage(requests.Config, nil, nil)
+				if err != nil {
+					return nil, err
+				}
+				events = append(events, &event)
+			}
+
+			requests.Events = append(requests.Events, events...)
+		}
+	}
+	return workingBuilds, nil
+}
+
 // NewBuilds fetches all builds from the release Pub/Sub queue, finds all
 // triggered NEW_BUILD configs, then builds their respective CTP requests for
 // BB.
@@ -398,30 +455,9 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	common.Stdout.Println("Building CTP requests for all NEW_BUILD configs triggered.")
 
 	// Build CTP Requests for all triggered configs.
-	for _, wrappedBuild := range filteredBuilds {
-		build := wrappedBuild.Build
-		for _, request := range wrappedBuild.Requests {
-			// TODO(b/319273876): Remove slow migration logic upon completion of
-			// transition. Right now only the CFTNewBuild config on brya is
-			// supported.
-			if request.Config.Name != "CFTNewBuild" {
-				continue
-			}
-
-			event := &builds.EventWrapper{}
-			// FIX(b/321095387): This needs to build all CTPRequests. Right now no
-			// models are being considered even though this could trigger
-			// multiple models to have their own CTP request.
-			event.CtpRequest = ctprequest.BuildCTPRequest(request.Config, build.Board, "", build.BuildTarget, strconv.FormatInt(build.Milestone, 10), build.Version)
-
-			event.Event, err = metrics.GenerateEventMessage(request.Config, nil, nil)
-			if err != nil {
-				return err
-			}
-
-			request.Events = append(request.Events, event)
-
-		}
+	filteredBuilds, err = buildCTPRequests(filteredBuilds, suiteSchedulerConfigs)
+	if err != nil {
+		return err
 	}
 
 	// TODO(b/319273876): Remove slow migration logic upon completion of
@@ -435,6 +471,10 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	}
 
 	if len(filteredBuilds[0].Requests) == 0 {
+		return fmt.Errorf("no configs")
+	}
+
+	if len(filteredBuilds[0].Requests[0].Events) == 0 {
 		return fmt.Errorf("no requests")
 	}
 
