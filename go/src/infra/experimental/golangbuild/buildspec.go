@@ -235,7 +235,10 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 		}
 	}
 	if b.inputs.ClangVersion != "" {
-		env.Set("CC", filepath.Join(toolsRoot(ctx), "clang/bin/clang"))
+		// Set up clang (and other LLVM tools, like llvm-symbolizer) in PATH. Then, set CC to clang to actually use it.
+		clangBin := filepath.Join(toolsRoot(ctx), "clang", "bin")
+		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, clangBin))
+		env.Set("CC", "clang")
 	}
 
 	return env.SetInCtx(ctx)
