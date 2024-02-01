@@ -526,6 +526,10 @@ func compileOptOut(project string, p *golangbuildpb.Port, modulePath string) boo
 			// Dependency "github.com/go-git/go-billy/v5/osfs" fails to build on wasip1/wasm.
 			return optOut
 		}
+		if p.Goos == "plan9" {
+			// Dependency "github.com/cyphar/filepath-securejoin" fails to build on Plan 9.
+			return optOut
+		}
 	}
 	// The default policy decision is not to opt out.
 	return performCompileOnlyTestingAsUsual
