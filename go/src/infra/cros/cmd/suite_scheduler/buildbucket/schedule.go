@@ -41,7 +41,7 @@ var (
 
 // Scheduler interface type describes the BB API functionality connection.
 type Scheduler interface {
-	Schedule(ctpRequest *requestpb.Request, buildID, eventID string) (*bb.Build, error)
+	Schedule(ctpRequest *requestpb.Request, buildID, eventID, configName string) (*bb.Build, error)
 }
 
 // client implements the Scheduler interface.
@@ -76,7 +76,7 @@ func InitScheduler(ctx context.Context, authOpts *authcli.Flags, isProd, dryRun 
 
 // ctpToBBRequest transforms the CTP request into a BuildBucket serviceable
 // scheduling request.
-func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool, buildID, eventID string) (*bb.ScheduleBuildRequest, error) {
+func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool, buildID, eventID, configName string) (*bb.ScheduleBuildRequest, error) {
 	// Tag the entry in the requests map with the name of the suite.
 	// NOTE: requests is used as opposed to request because I have seen no
 	// evidence to indicate that the singular field is actively supported.
@@ -159,6 +159,10 @@ func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool, buildID,
 				Key:   "label-image",
 				Value: image,
 			},
+			{
+				Key:   "suite-scheduler-config",
+				Value: configName,
+			},
 		},
 	}
 
@@ -166,8 +170,8 @@ func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool, buildID,
 }
 
 // Schedule takes in a CTP request and schedules it via the BuildBucket API.
-func (c *client) Schedule(ctpRequest *requestpb.Request, buildID, eventID string) (*bb.Build, error) {
-	schedulerRequest, err := ctpToBBRequest(ctpRequest, c.isProd, c.dryRun, buildID, eventID)
+func (c *client) Schedule(ctpRequest *requestpb.Request, buildID, eventID, configName string) (*bb.Build, error) {
+	schedulerRequest, err := ctpToBBRequest(ctpRequest, c.isProd, c.dryRun, buildID, eventID, configName)
 	if err != nil {
 		return nil, err
 	}

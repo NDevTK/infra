@@ -221,7 +221,7 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 	for _, request := range buildRequest.Requests {
 		for _, event := range request.Events {
 
-			response, err := schedulerClient.Schedule(event.CtpRequest, buildRequest.Build.BuildUid.Id, event.Event.EventUid.Id)
+			response, err := schedulerClient.Schedule(event.CtpRequest, buildRequest.Build.BuildUid.Id, event.Event.EventUid.Id, event.Event.ConfigName)
 			if err != nil {
 				common.Stderr.Println(err)
 				event.Event.Decision = &v15.SchedulingDecision{
@@ -278,69 +278,33 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 	}
 }
 
-func buildConfigList(build builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) (*builds.BuildPackage, error) {
-	// TODO(b/319273876): Remove slow migration logic upon completion of
-	// transition. Right now only the CFTNewBuild config on brya is
-	// supported.
-	if build.Build.Board != "brya" {
-		build.Message.Nack()
-		return nil, nil
-	}
+func fetchTriggeredConfigs(buildPackages []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) {
+	for _, build := range buildPackages {
+		configs := suiteSchedulerConfigs.FetchNewBuildConfigsByBuildTarget(configparser.BuildTarget(build.Build.BuildTarget))
+		for _, config := range configs {
+			request := &builds.ConfigDetails{
+				Config: config,
+			}
 
-	// Fetch all configs for which this build will will launch a NEW_BUILD
-	// event.
-	configs := suiteSchedulerConfigs.FetchNewBuildConfigsByBuildTarget(configparser.BuildTarget(build.Build.BuildTarget))
-
-	hasCFTNewBuild := false
-	for _, config := range configs {
-		// Skips all configs which aren't CFTNewBuild
-		// TODO(b/319273876): Remove slow migration logic upon completion of
-		// transition. This logic below limits the number of builds to 1 so that
-		// we do not overload the lab.
-		if config.Name != "CFTNewBuild" {
-			continue
+			build.Requests = append(build.Requests, request)
 		}
-
-		hasCFTNewBuild = true
-
-		request := &builds.ConfigDetails{
-			Config: config,
-		}
-
-		build.Requests = append(build.Requests, request)
 	}
-
-	if !hasCFTNewBuild {
-		return nil, nil
-	}
-
-	common.Stdout.Printf("Adding build from http://go/bbid/%d\n", build.Build.Bbid)
-	return &build, nil
-
 }
 
 // buildCTPRequests iterates through all the provided BuildPackages and
 // generates BuildBucket CTP requests for all triggered configs.
-func buildCTPRequests(wrappedBuilds []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) ([]*builds.BuildPackage, error) {
-	workingBuilds := wrappedBuilds
+func buildCTPRequests(buildPackages []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) error {
 
 	// Iterate through the wrapped builds and insert CTP request and their
 	// associated metrics events into the package.
-	for _, wrappedBuild := range workingBuilds {
+	for _, wrappedBuild := range buildPackages {
 		// Iterate through all
 		for _, requests := range wrappedBuild.Requests {
-			// TODO(b/319273876): Remove slow migration logic upon completion of
-			// transition. Right now only the CFTNewBuild config on brya is
-			// supported.
-			if requests.Config.Name != "CFTNewBuild" {
-				continue
-			}
-
 			// Fetch the target options requested for the current board on the
 			// current configuration.
 			boardTargetOption, err := suiteSchedulerConfigs.FetchConfigTargetOptionsForBoard(requests.Config.Name, configparser.Board(wrappedBuild.Build.Board))
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			// If provided, build a CTP request per model, otherwise leave the model
@@ -364,7 +328,7 @@ func buildCTPRequests(wrappedBuilds []*builds.BuildPackage, suiteSchedulerConfig
 				}
 				event.Event, err = metrics.GenerateEventMessage(requests.Config, nil, nil)
 				if err != nil {
-					return nil, err
+					return err
 				}
 				events = append(events, &event)
 			}
@@ -372,7 +336,7 @@ func buildCTPRequests(wrappedBuilds []*builds.BuildPackage, suiteSchedulerConfig
 			requests.Events = append(requests.Events, events...)
 		}
 	}
-	return workingBuilds, nil
+	return nil
 }
 
 // NewBuilds fetches all builds from the release Pub/Sub queue, finds all
@@ -397,12 +361,11 @@ func NewBuilds(authOpts *authcli.Flags) error {
 		return err
 	}
 
-	common.Stdout.Println("Fetching builds from Pub/Sub.")
-
 	// Get build information
 	// TODO(b/315340446): Inside this client we need to not ACK the builds until
 	// we can launch the BB task. This may require that we do a lot of heavy
 	// lifting in the callback but overall it would be safer.
+	common.Stdout.Println("Fetching builds from Pub/Sub.")
 	releaseBuilds, err := builds.IngestBuildsFromPubSub()
 	if err != nil {
 		return err
@@ -412,50 +375,32 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	// TODO(b/315340446): Write build info to long term storage(database)
 
 	// Write all build information to pubsub
+	common.Stdout.Println("Publishing fetched builds information to Pub/Sub.")
 	err = publishBuilds(releaseBuilds)
 	if err != nil {
 		return err
 	}
 
+	// TODO(b/319273876): Remove slow migration logic upon completion of
+	// transition.
+	common.Stdout.Println("Filtering out builds not on migration allowlist.")
+	filteredBuilds := filterBuilds(releaseBuilds)
+
+	// Build the list of all configs triggered by the ingested build images.
+	//
 	// TODO(TBD): For in run events, determine if we need to squash the
 	// builds so that NEW_BUILD configs are only triggered by the newest images.
 	// The created time is stored inside the build artifact type. Reach out to
 	// release team to determine if this is required.
 	// https://chromium.googlesource.com/chromiumos/infra/proto/+/refs/heads/main/src/chromiumos/build_report.proto#197
 	common.Stdout.Println("Gathering all configs triggered from retrieved build images.")
+	fetchTriggeredConfigs(filteredBuilds, suiteSchedulerConfigs)
 
-	// TODO(b/319273876): Remove slow migration logic upon completion of
-	// transition.
-	filteredBuilds := []*builds.BuildPackage{}
-
-	// Build the list of all configs triggered by the ingested build images.
-	for _, build := range releaseBuilds {
-		// Search for all NEW_BUILD configs for which this image triggers.
-		// TODO(b/319273876): When we are migrated fully do not use a tempBuild
-		// anymore.
-		tempBuild, err := buildConfigList(*build, suiteSchedulerConfigs)
-		if err != nil {
-			return err
-		}
-
-		// The build will be returned as nil if it has been filtered out.
-		// TODO(b/319273876): When we are migrated fully do not use a tempBuild
-		// anymore.
-		if tempBuild == nil {
-			continue
-		}
-
-		if len(filteredBuilds) == 0 {
-			filteredBuilds = append(filteredBuilds, tempBuild)
-		} else if filteredBuilds[0].Build.CreateTime.AsTime().Before(build.Build.CreateTime.AsTime()) {
-			common.Stdout.Printf("http://go/bbid/%d is before http://go/bbid/%d, swapping. %s < %s.\n", filteredBuilds[0].Build.Bbid, tempBuild.Build.Bbid, filteredBuilds[0].Build.CreateTime.AsTime().Local().String(), tempBuild.Build.CreateTime.AsTime().Local().String())
-			filteredBuilds[0] = tempBuild
-		}
-	}
-	common.Stdout.Println("Building CTP requests for all NEW_BUILD configs triggered.")
+	common.Stdout.Println("Filtering out SuSch configs not on migration allowlist.")
+	filteredBuilds = filterConfigs(filteredBuilds)
 
 	// Build CTP Requests for all triggered configs.
-	filteredBuilds, err = buildCTPRequests(filteredBuilds, suiteSchedulerConfigs)
+	err = buildCTPRequests(filteredBuilds, suiteSchedulerConfigs)
 	if err != nil {
 		return err
 	}
@@ -463,11 +408,17 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	// TODO(b/319273876): Remove slow migration logic upon completion of
 	// transition. Right now only the CFTNewBuild config on brya is
 	// supported. Below checks ensure only one request can launch per run.
-	if len(filteredBuilds) > 1 {
-		return fmt.Errorf("too many builds %d", len(filteredBuilds))
-	}
 	if len(filteredBuilds) == 0 {
 		return fmt.Errorf("no builds")
+	}
+
+	// TODO(b/319273876): For earliest stage of migration only launch 1 request.
+	// Once we begin Acking messages from the chromeos build pipeline we can let
+	// all requests flow through.
+	filteredBuilds = filteredBuilds[:1]
+
+	if len(filteredBuilds) > 1 {
+		return fmt.Errorf("too many builds %d", len(filteredBuilds))
 	}
 
 	if len(filteredBuilds[0].Requests) == 0 {
