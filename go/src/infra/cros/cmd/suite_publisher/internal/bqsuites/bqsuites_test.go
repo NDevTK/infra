@@ -27,10 +27,12 @@ func TestSave(t *testing.T) {
 	}{
 		{
 			publishInfo: &PublishInfo{
-				Suite:         suite.NewSuite(test.ExampleSuite()),
-				BuildTarget:   "example_build_target",
-				CrosVersion:   "15755.0.0",
-				CrosMilestone: "123",
+				Suite: suite.NewSuite(test.ExampleSuite()),
+				Build: BuildInfo{
+					BuildTarget:   "example_build_target",
+					CrosVersion:   "15755.0.0",
+					CrosMilestone: "123",
+				},
 			},
 			want: wantInfo{
 				values: map[string]bigquery.Value{
@@ -49,10 +51,12 @@ func TestSave(t *testing.T) {
 		},
 		{
 			publishInfo: &PublishInfo{
-				Suite:         suite.NewSuiteSet(test.ExampleSuiteSet()),
-				BuildTarget:   "example_build_target_2",
-				CrosVersion:   "15754.0.0",
-				CrosMilestone: "122",
+				Suite: suite.NewSuiteSet(test.ExampleSuiteSet()),
+				Build: BuildInfo{
+					BuildTarget:   "example_build_target_2",
+					CrosVersion:   "15754.0.0",
+					CrosMilestone: "122",
+				},
 			},
 			want: wantInfo{
 				values: map[string]bigquery.Value{
@@ -72,10 +76,12 @@ func TestSave(t *testing.T) {
 		},
 		{
 			publishInfo: &PublishInfo{
-				Suite:         suite.NewSuiteSet(test.ExampleSuiteSet()),
-				BuildTarget:   "example_build_target_2",
-				CrosVersion:   "15754.0.0",
-				CrosMilestone: "122",
+				Suite: suite.NewSuiteSet(test.ExampleSuiteSet()),
+				Build: BuildInfo{
+					BuildTarget:   "example_build_target_2",
+					CrosVersion:   "15754.0.0",
+					CrosMilestone: "122",
+				},
 			},
 			want: wantInfo{
 				values: map[string]bigquery.Value{

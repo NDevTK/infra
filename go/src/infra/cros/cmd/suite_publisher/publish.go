@@ -147,10 +147,12 @@ func (s *suitePublisher) publishSuites(ctx context.Context, bqClient *bigquery.C
 	for _, suite := range suites {
 		LogOut("Publishing %s:%s\n", suite.Type(), suite.ID())
 		p := &bqsuites.PublishInfo{
-			Suite:         suite,
-			BuildTarget:   s.buildTarget,
-			CrosMilestone: s.milestone,
-			CrosVersion:   s.version,
+			Suite: suite,
+			Build: bqsuites.BuildInfo{
+				BuildTarget:   s.buildTarget,
+				CrosMilestone: s.milestone,
+				CrosVersion:   s.version,
+			},
 		}
 		if err := bqsuites.PublishSuite(ctx, inserter, p); err != nil {
 			return err
