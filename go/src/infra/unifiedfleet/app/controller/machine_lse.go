@@ -359,17 +359,6 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		hc.LogMachineLSEChanges(oldMachinelseCopy, machinelse)
 
 		updatedMachinelse = machinelse
-		/* Comment this part for now
-		// TODO(eshwarn): Add support for labstation state in the future, have a separate updatelabstation func.
-		// Update states
-		if osLSE := machinelse.GetChromeosMachineLse(); osLSE != nil {
-			// Update labstation state to needs_deploy
-			if osLSE.GetDeviceLse().GetLabstation() != nil {
-				if err := hc.stUdt.updateStateHelper(ctx, ufspb.State_STATE_DEPLOYED_PRE_SERVING); err != nil {
-					return err
-				}
-			}
-		}*/
 		return hc.SaveChangeEvents(ctx)
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
