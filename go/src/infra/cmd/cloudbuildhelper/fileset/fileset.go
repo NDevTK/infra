@@ -12,7 +12,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -33,6 +32,25 @@ type File struct {
 	Executable bool  // true if the file is executable, only for regular files
 
 	Body func() (io.ReadCloser, error) // emits the body, only for regular files
+}
+
+// ReadAll reads the body of this file if this is a regular file.
+func (f *File) ReadAll() ([]byte, error) {
+	if f.Body == nil {
+		return nil, errors.Reason("not a regular file").Err()
+	}
+	rc, err := f.Body()
+	if err != nil {
+		return nil, err
+	}
+	blob, err := io.ReadAll(rc)
+	if err != nil {
+		return nil, err
+	}
+	if err := rc.Close(); err != nil {
+		return nil, err
+	}
+	return blob, nil
 }
 
 // normalize clears redundant fields and converts file paths to Unix style.
@@ -152,7 +170,7 @@ func (s *Set) AddFromMemory(setPath string, blob []byte, f *File) error {
 	nf.Directory = false
 	nf.Size = int64(len(blob))
 	nf.Body = func() (io.ReadCloser, error) {
-		return ioutil.NopCloser(bytes.NewReader(blob)), nil
+		return io.NopCloser(bytes.NewReader(blob)), nil
 	}
 	return s.Add(nf)
 }
@@ -195,11 +213,20 @@ func (s *Set) Enumerate(cb func(f File) error) error {
 // Files returns all files in the set, in alphabetical order.
 func (s *Set) Files() []File {
 	out := make([]File, 0, len(s.files))
-	s.Enumerate(func(f File) error {
+	_ = s.Enumerate(func(f File) error {
 		out = append(out, f)
 		return nil
 	})
 	return out
+}
+
+// File returns an existing file in the set, if any.
+//
+// If there's no such file returns `File{}, false`.
+func (s *Set) File(setPath string) (File, bool) {
+	setPath = path.Clean(filepath.ToSlash(setPath))
+	file, ok := s.files[setPath]
+	return file, ok
 }
 
 // Materialize dumps all files in this set into the given directory.
@@ -226,13 +253,13 @@ func (s *Set) Materialize(root string) error {
 		if err != nil {
 			return err
 		}
-		defer r.Close()
+		defer func() { _ = r.Close() }()
 
 		w, err := os.OpenFile(p, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, f.filePerm())
 		if err != nil {
 			return err
 		}
-		defer w.Close() // this is for early exits, we'll also explicitly close later
+		defer func() { _ = w.Close() }() // this is for early exits, we'll also explicitly close later
 
 		copied, err := io.CopyBuffer(w, r, buf)
 		if err != nil {
@@ -285,7 +312,7 @@ func (s *Set) ToTar(w *tar.Writer) error {
 		if err != nil {
 			return err
 		}
-		defer r.Close()
+		defer func() { _ = r.Close() }()
 
 		_, err = io.CopyBuffer(w, r, buf)
 		return err
@@ -299,12 +326,12 @@ func (s *Set) ToTarGz(w io.Writer) error {
 	gz := gzip.NewWriter(w)
 	tb := tar.NewWriter(gz)
 	if err := s.ToTar(tb); err != nil {
-		tb.Close()
-		gz.Close()
+		_ = tb.Close()
+		_ = gz.Close()
 		return err
 	}
 	if err := tb.Close(); err != nil {
-		gz.Close()
+		_ = gz.Close()
 		return err
 	}
 	if err := gz.Close(); gz != nil {
@@ -321,7 +348,7 @@ func (s *Set) ToTarGzFile(path string) (sha256hex string, err error) {
 	if err != nil {
 		return "", errors.Annotate(err, "failed to open for writing %s", path).Err()
 	}
-	defer out.Close() // for early exits
+	defer func() { _ = out.Close() }() // for early exits
 	h := sha256.New()
 	if err := s.ToTarGz(io.MultiWriter(out, h)); err != nil {
 		return "", errors.Annotate(err, "failed to write to %s", path).Err()
@@ -388,7 +415,7 @@ func (s *Set) addDir(fsPath, setPath string, exclude Excluder) error {
 	if err != nil {
 		return err
 	}
-	f.Close()
+	_ = f.Close()
 
 	for _, f := range files {
 		if err := s.addImpl(filepath.Join(fsPath, f), path.Join(setPath, f), exclude); err != nil {

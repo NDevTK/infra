@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -113,19 +112,21 @@ func TestSet(t *testing.T) {
 		dir1 := newTempDir(c)
 		dir1.put("f", "1", 0666)
 		So(s.AddFromDisk(dir1.join(""), "", nil), ShouldBeNil)
+		So(s.Files(), ShouldHaveLength, 1)
 
-		files := s.Files()
-		So(files, ShouldHaveLength, 1)
-		So(read(files[0]), ShouldEqual, "1")
+		f, ok := s.File("f")
+		So(ok, ShouldBeTrue)
+		So(read(f), ShouldEqual, "1")
 
 		dir2 := newTempDir(c)
 		dir2.put("f", "2", 0666)
 		So(s.AddFromDisk(dir2.join(""), "", nil), ShouldBeNil)
+		So(s.Files(), ShouldHaveLength, 1) // overwritten
 
 		// Overwritten.
-		files = s.Files()
-		So(files, ShouldHaveLength, 1)
-		So(read(files[0]), ShouldEqual, "2")
+		f, ok = s.File("f")
+		So(ok, ShouldBeTrue)
+		So(read(f), ShouldEqual, "2")
 	})
 
 	Convey("Reading memfile", t, func(c C) {
@@ -287,12 +288,9 @@ func read(f File) string {
 	if f.Directory || f.SymlinkTarget != "" {
 		return ""
 	}
-	r, err := f.Body()
+	blob, err := f.ReadAll()
 	So(err, ShouldBeNil)
-	defer r.Close()
-	body, err := ioutil.ReadAll(r)
-	So(err, ShouldBeNil)
-	return string(body)
+	return string(blob)
 }
 
 func prepSet() *Set {
@@ -319,7 +317,7 @@ func memFile(path, body string) File {
 		Size:     int64(len(body)),
 		Writable: runtime.GOOS == "windows", // FileMode perms don't work on windows
 		Body: func() (io.ReadCloser, error) {
-			return ioutil.NopCloser(strings.NewReader(body)), nil
+			return io.NopCloser(strings.NewReader(body)), nil
 		},
 	}
 }
@@ -348,9 +346,9 @@ type tmpDir struct {
 }
 
 func newTempDir(c C) tmpDir {
-	tmp, err := ioutil.TempDir("", "fileset_test")
+	tmp, err := os.MkdirTemp("", "fileset_test")
 	c.So(err, ShouldBeNil)
-	c.Reset(func() { os.RemoveAll(tmp) })
+	c.Reset(func() { _ = os.RemoveAll(tmp) })
 	return tmpDir{tmp, c}
 }
 
