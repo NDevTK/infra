@@ -35,6 +35,7 @@ type ContainerExecutor struct {
 		string
 		interfaces.ContainerInterface
 	}
+	isClosed bool
 }
 
 func NewContainerExecutor(ctr *crostoolrunner.CrosToolRunner) *ContainerExecutor {
@@ -42,7 +43,7 @@ func NewContainerExecutor(ctr *crostoolrunner.CrosToolRunner) *ContainerExecutor
 	return &ContainerExecutor{AbstractExecutor: absExec, Ctr: ctr, WaitGroups: []*sync.WaitGroup{}, LogChannels: []chan<- bool{}, ContainerChannel: make(chan struct {
 		string
 		interfaces.ContainerInterface
-	})}
+	}), isClosed: false}
 }
 
 func (ex *ContainerExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
@@ -176,14 +177,21 @@ func (ex *ContainerExecutor) streamLogAsync(ctx context.Context, step *build.Ste
 
 // CloseLogs signals to the streaming logs through their channels that they can close.
 func (ex *ContainerExecutor) CloseLogs() error {
+	// Already closed
+	if ex.isClosed {
+		return nil
+	}
 	for _, logChannel := range ex.LogChannels {
 		logChannel <- true
 	}
+	ex.LogChannels = []chan<- bool{}
 	for _, waitGroup := range ex.WaitGroups {
 		waitGroup.Wait()
 	}
+	ex.WaitGroups = []*sync.WaitGroup{}
 
 	close(ex.ContainerChannel)
+	ex.isClosed = true
 
 	return nil
 }
