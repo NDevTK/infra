@@ -28,11 +28,14 @@ export const REFRESH_TIME_MS = 5 * 60 * 1000;
  * @type {Array<Announcement>} A list of hardcodded announcements for Monorail.
  */
 export const HARDCODED_ANNOUNCEMENTS = [{
-  "messageContent": "The Chromium project will be migrating to Buganizer on " +
-    " February 5  (go/chrome-buganizer). Please test your workflows for this " +
-    "transition with these instructions: go/cob-buv-quick-start",
+  "messageContent": "The Chromium project will have scheduled downtime " +
+  "from Feb 2 @ 5pm PT to Feb 5, 2024 while we migrate to a new issue " +
+  "tracker. Documentation will be made available on chromium.org " +
+  "once complete. \n\nTo file bugs during downtime, please see: " +
+  "https://g.co/dev/chromium-migration. For all non-critical issues, " +
+  "please wait until the migration is complete to file in Chromium’s new " +
+  "issue tracker.",
   "projects": ["chromium"],
-  "groups": ["everyone@google.com", "googlers@chromium.org"],
 }];
 
 /**
