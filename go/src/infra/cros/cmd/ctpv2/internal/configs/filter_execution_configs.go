@@ -18,6 +18,8 @@ import (
 // Config types
 const (
 	LuciBuildFilterExecutionConfigType interfaces.ConfigType = "LuciBuild"
+	Ctpv2PreExecutionConfigType        interfaces.ConfigType = "Ctpv2PreExection"
+	Ctpv2PostExecutionConfigType       interfaces.ConfigType = "Ctpv2PostExection"
 
 	// For unit tests purposes only
 	UnSupportedFilterExecutionConfigType interfaces.ConfigType = "UnsupportedTest"
@@ -50,8 +52,12 @@ func (ctpv2cfg *Ctpv2ExecutionConfig) GenerateConfig(ctx context.Context) error 
 	defer func() { step.End(err) }()
 
 	switch configType := ctpv2cfg.GetConfigType(); configType {
+	case Ctpv2PreExecutionConfigType:
+		ctpv2cfg.Configs = GeneratePreConfigs(ctx)
 	case LuciBuildFilterExecutionConfigType:
 		ctpv2cfg.Configs = GenerateFilterConfigs(ctx, ctpv2cfg.TotalFilters)
+	case Ctpv2PostExecutionConfigType:
+		ctpv2cfg.Configs = GeneratePostConfigs(ctx)
 	default:
 		err = fmt.Errorf("Config type %s is not supported!", configType)
 	}

@@ -32,6 +32,10 @@ type ContainerStartCmd struct {
 	// Updates
 	Endpoint          *labapi.IpEndpoint
 	ContainerInstance interfaces.ContainerInterface
+
+	// For internal use only
+	// skip starting the container (skips execute)
+	SkipStartingContainer bool
 }
 
 // Instantiate extracts initial state info from the state keeper.
@@ -165,6 +169,18 @@ func (cmd *ContainerStartCmd) extractDepsFromFilterStateKeeper(
 		return errors.Annotate(err, "cmd %q missing dependency: ContainerImage", cmd.GetCommandType()).Err()
 	}
 	cmd.ContainerImage = imagePath
+	// Check map to see if the container is started already by another thread
+	contInfoFromMap, err := sk.ContainerInfoMap.Get(imagePath)
+	if err != nil {
+		logging.Infof(ctx,
+			"Container NOT found in the map with key %s. Error: %s", imagePath, err)
+		cmd.SkipStartingContainer = false
+	} else if contInfoFromMap != nil {
+		logging.Infof(ctx, "Container found in the map with key %s", imagePath)
+		cmd.SkipStartingContainer = true
+		cmd.containerInfo = contInfoFromMap
+		contInfo.ServiceEndpoint = contInfoFromMap.ServiceEndpoint
+	}
 
 	return nil
 }
@@ -193,6 +209,13 @@ func (cmd *ContainerStartCmd) updateFilterStateKeeper(
 
 	if cmd.Endpoint != nil {
 		cmd.containerInfo.ServiceEndpoint = cmd.Endpoint
+		imagePath, err := cmd.containerInfo.GetImagePath()
+		if err != nil {
+			logging.Infof(ctx, "error while getting image path: %s", err)
+		} else if imagePath != "" {
+			sk.ContainerInfoMap.Set(imagePath, cmd.containerInfo)
+			logging.Infof(ctx, "Set in the map with key: %s", imagePath)
+		}
 	}
 
 	return nil

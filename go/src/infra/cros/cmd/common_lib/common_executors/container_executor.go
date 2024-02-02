@@ -69,6 +69,11 @@ func (ex *ContainerExecutor) ExecuteCommand(ctx context.Context, cmdInterface in
 func (ex *ContainerExecutor) startContainerCommandExecution(
 	ctx context.Context,
 	cmd *common_commands.ContainerStartCmd) error {
+	if cmd.SkipStartingContainer {
+		// skip starting the container
+		logging.Infof(ctx, "skipping starting container %s", cmd.ContainerRequest.DynamicIdentifier)
+		return nil
+	}
 	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Container Start: %s", cmd.ContainerRequest.DynamicIdentifier))
 	defer func() {

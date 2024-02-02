@@ -37,13 +37,10 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_config
 	mainConfigs = append(mainConfigs,
 		TranslateRequest_NoExecutor)
 
-	// Start CTR and do GcloudAuth
 	mainConfigs = append(mainConfigs,
-		CtrStartAsync_CtrExecutor,
-		GcloudAuth_CtrExecutor)
+		PrepareFilterContainers_NoExecutor)
 
 	mainConfigs = append(mainConfigs,
-		PrepareFilterContainers_NoExecutor,
 		ContainerReadLogs_ContainerExecutor)
 
 	for i := 0; i < totalFilters; i++ {
@@ -62,11 +59,39 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_config
 	// Schedule tasks
 	mainConfigs = append(mainConfigs, ScheduleTasks_NoExecutor)
 
-	// Stop CTR
+	cleanupConfigs = append(cleanupConfigs,
+		ContainerCloseLogs_ContainerExecutor)
+
+	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+}
+
+// GeneratePreConfigs generates pre cmd execution for ctpv2.
+func GeneratePreConfigs(ctx context.Context) *common_configs.Configs {
+	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
+	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
+
+	// Start CTR and do GcloudAuth
+	mainConfigs = append(mainConfigs,
+		CtrStartAsync_CtrExecutor,
+		GcloudAuth_CtrExecutor)
+
+	// Cleanup configs
+	cleanupConfigs = append(cleanupConfigs,
+		CtrStop_CtrExecutor)
+
+	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+}
+
+// GeneratePostConfigs generates post cmd execution for ctpv2.
+func GeneratePostConfigs(ctx context.Context) *common_configs.Configs {
+	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
+	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
+
+	// Stop Ctr
 	mainConfigs = append(mainConfigs,
 		CtrStop_CtrExecutor)
+
 	cleanupConfigs = append(cleanupConfigs,
-		ContainerCloseLogs_ContainerExecutor,
 		CtrStop_CtrExecutor)
 
 	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}

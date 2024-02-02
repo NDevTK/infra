@@ -19,11 +19,11 @@ import (
 type FilterStateKeeper struct {
 	interfaces.StateKeeper
 
-	CtpV2Req                *testapi.CTPv2Request
+	CtpReq                  *testapi.CTPRequest
 	CtpV2Response           *testapi.CTPv2Response
 	InitialInternalTestPlan *testapi.InternalTestplan
 	TestPlanStates          []*testapi.InternalTestplan
-	Scheduler               interfaces.SchedulerInterface
+	Scheduler               testapi.SchedulerInfo_Scheduler
 
 	// Build related
 	BuildState *build.State
@@ -33,6 +33,7 @@ type FilterStateKeeper struct {
 
 	// Dictionaries
 	ContainerMetadataMap map[string]*buildapi.ContainerImageInfo
+	ContainerInfoMap     *ContainerInfoMap
 
 	// Tools and their related dependencies
 	Ctr                   *crostoolrunner.CrosToolRunner

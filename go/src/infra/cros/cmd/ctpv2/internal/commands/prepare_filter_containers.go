@@ -27,7 +27,7 @@ type PrepareFilterContainersInfoCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	CtpV2Req *testapi.CTPv2Request
+	CtpReq *testapi.CTPRequest
 
 	// Updates
 	ContainerInfoQueue   *list.List
@@ -77,11 +77,11 @@ func (cmd *PrepareFilterContainersInfoCmd) extractDepsFromFilterStateKeepr(
 	ctx context.Context,
 	sk *data.FilterStateKeeper) error {
 
-	if sk.CtpV2Req == nil {
+	if sk.CtpReq == nil {
 		return fmt.Errorf("Cmd %q missing dependency: CtpV2Req", cmd.GetCommandType())
 	}
 
-	cmd.CtpV2Req = sk.CtpV2Req
+	cmd.CtpReq = sk.CtpReq
 	return nil
 }
 
@@ -112,7 +112,7 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	// to the request. We don't want to run test-finder per board as that's extremely expensive to setup/act on, however
 	// CFT design has test-finder being board specific. For initial MVP we will just use the first board in the request to
 	// get the container MD from, but this will need to be solved long term.
-	board, gcsPath, err := gcsInfo(cmd.CtpV2Req)
+	board, gcsPath, err := gcsInfo(cmd.CtpReq)
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 		return errors.Annotate(err, "failed to fetch container image data: ").Err()
 	}
 
-	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpV2Req, buildContainerMetadata)
+	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpReq, buildContainerMetadata)
 	cmd.ContainerMetadataMap = finalMetadataMap
 
 	// Write to log
@@ -138,13 +138,13 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 
 	ctpFilters := make([]*api.CTPFilter, 0)
 
-	karbonFilters, err := common.ConstructCtpFilters(ctx, common.DefaultKarbonFilterNames, finalMetadataMap, cmd.CtpV2Req.GetKarbonFilters())
+	karbonFilters, err := common.ConstructCtpFilters(ctx, common.DefaultKarbonFilterNames, finalMetadataMap, cmd.CtpReq.GetKarbonFilters())
 	if err != nil {
 		return errors.Annotate(err, "failed to create karbon filters: ").Err()
 	}
 	ctpFilters = append(ctpFilters, karbonFilters...)
 
-	koffeeFilters, err := common.ConstructCtpFilters(ctx, common.DefaultKoffeeFilterNames, finalMetadataMap, cmd.CtpV2Req.GetKoffeeFilters())
+	koffeeFilters, err := common.ConstructCtpFilters(ctx, common.DefaultKoffeeFilterNames, finalMetadataMap, cmd.CtpReq.GetKoffeeFilters())
 	if err != nil {
 		return errors.Annotate(err, "failed to create koffee filters: ").Err()
 	}
@@ -179,13 +179,13 @@ func NewPrepareFilterContainersInfoCmd() *PrepareFilterContainersInfoCmd {
 	return &PrepareFilterContainersInfoCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
 }
 
-func gcsInfo(req *testapi.CTPv2Request) (string, string, error) {
-	board := getFirstBoardFromLegacy(req.Targets)
+func gcsInfo(req *testapi.CTPRequest) (string, string, error) {
+	board := getFirstBoardFromLegacy(req.GetScheduleTargets())
 	if board == "" {
 		return "", "", errors.New("no board provided in legacy request")
 	}
 
-	gcsPath := getFirstGcsPathFromLegacy(req.Targets)
+	gcsPath := getFirstGcsPathFromLegacy(req.GetScheduleTargets())
 	if gcsPath == "" {
 		return "", "", errors.New("no gcsPath provided in legacy request")
 	}
@@ -193,11 +193,12 @@ func gcsInfo(req *testapi.CTPv2Request) (string, string, error) {
 	return board, gcsPath, nil
 }
 
-func getFirstBoardFromLegacy(targs []*testapi.Targets) string {
-	if len(targs) == 0 {
+func getFirstBoardFromLegacy(targs []*testapi.ScheduleTargets) string {
+	if len(targs) == 0 || len(targs[0].GetTargets()) == 0 {
 		return ""
 	}
-	switch hw := targs[0].HwTarget.Target.(type) {
+	// TODO (azrahman): add support for multi-dut.
+	switch hw := targs[0].GetTargets()[0].HwTarget.Target.(type) {
 	case *testapi.HWTarget_LegacyHw:
 		return hw.LegacyHw.Board
 	default:
@@ -205,7 +206,8 @@ func getFirstBoardFromLegacy(targs []*testapi.Targets) string {
 	}
 }
 
-func getFirstGcsPathFromLegacy(targs []*testapi.Targets) string {
+func getFirstGcsPathFromLegacy(schedTargs []*testapi.ScheduleTargets) string {
+	targs := schedTargs[0].GetTargets()
 	if len(targs) == 0 {
 		return ""
 	}
@@ -220,7 +222,7 @@ func getFirstGcsPathFromLegacy(targs []*testapi.Targets) string {
 	}
 }
 
-func createContainerImagesInfoMap(ctx context.Context, req *testapi.CTPv2Request, buildContMetadata map[string]*buildapi.ContainerImageInfo) map[string]*buildapi.ContainerImageInfo {
+func createContainerImagesInfoMap(ctx context.Context, req *testapi.CTPRequest, buildContMetadata map[string]*buildapi.ContainerImageInfo) map[string]*buildapi.ContainerImageInfo {
 	// In case of any overlap of container metadata between input and build metadata,
 	// the input metadata will be prioritized.
 	for _, filter := range req.GetKarbonFilters() {
@@ -236,19 +238,25 @@ func createContainerImagesInfoMap(ctx context.Context, req *testapi.CTPv2Request
 
 // CtpFilterToContainerInfo creates container info from provided ctp filter.
 func CtpFilterToContainerInfo(ctpFilter *api.CTPFilter) *data.ContainerInfo {
+	contName := ctpFilter.GetContainer().GetName()
 	// TODO (azrahman): remove this once container creation is more generic.
-	if ctpFilter.GetContainer().GetName() == "ttcp-demo" {
+	if contName == "ttcp-demo" {
 		return &data.ContainerInfo{
-			ImageKey:  ctpFilter.GetContainer().GetName(),
+			ImageKey:  contName,
 			Request:   common.CreateTTCPContainerRequest(ctpFilter),
+			ImageInfo: ctpFilter.GetContainer(),
+		}
+	} else if contName == "cros-test-finder" {
+		return &data.ContainerInfo{
+			ImageKey:  contName,
+			Request:   common.CreateTFContainerRequest(ctpFilter),
 			ImageInfo: ctpFilter.GetContainer(),
 		}
 	} else {
 		return &data.ContainerInfo{
-			ImageKey:  ctpFilter.GetContainer().GetName(),
+			ImageKey:  contName,
 			Request:   common.CreateContainerRequest(ctpFilter),
 			ImageInfo: ctpFilter.GetContainer(),
 		}
 	}
-
 }

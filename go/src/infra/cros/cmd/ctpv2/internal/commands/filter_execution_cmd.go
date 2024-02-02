@@ -16,7 +16,6 @@ import (
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/data"
-	ctpv2_data "infra/cros/cmd/ctpv2/data"
 )
 
 // FilterExecutionCmd represents test execution cmd.
@@ -25,7 +24,7 @@ type FilterExecutionCmd struct {
 
 	// Deps
 	InputTestPlan *testapi.InternalTestplan
-	ContainerInfo *ctpv2_data.ContainerInfo
+	ContainerInfo *data.ContainerInfo
 
 	// Updates
 	OutputTestPlan *testapi.InternalTestplan
@@ -78,7 +77,7 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 		return fmt.Errorf("cmd %q missing dependency: ContainerInfo", cmd.GetCommandType())
 	}
 
-	cmd.ContainerInfo = sk.ContainerInfoQueue.Remove(sk.ContainerInfoQueue.Front()).(*ctpv2_data.ContainerInfo)
+	cmd.ContainerInfo = sk.ContainerInfoQueue.Remove(sk.ContainerInfoQueue.Front()).(*data.ContainerInfo)
 	if cmd.ContainerInfo.ServiceEndpoint == nil {
 		return fmt.Errorf("cmd %q missing dependency: ServiceEndpoint", cmd.GetCommandType())
 	}

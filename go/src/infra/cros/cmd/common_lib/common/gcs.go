@@ -165,10 +165,13 @@ func FetchImageData(ctx context.Context, board string, gcsPath string) (map[stri
 		return nil, fmt.Errorf("unable to unmarshal metadata: %s", err)
 	}
 
-	images := metadata.Containers[board].Images
+	imagesMap, ok := metadata.Containers[board]
+	if !ok {
+		return nil, fmt.Errorf("provided board %s not found in container images map", board)
+	}
 
 	Containers := make(map[string]*api.ContainerImageInfo)
-	for _, image := range images {
+	for _, image := range imagesMap.GetImages() {
 		Containers[image.Name] = &api.ContainerImageInfo{
 			Digest:     image.Digest,
 			Repository: image.Repository,

@@ -19,7 +19,7 @@ import (
 )
 
 // DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
-var DefaultKarbonFilterNames = []string{"provision-filter", "test_finder_filter"}
+var DefaultKarbonFilterNames = []string{"provision-filter", "cros-test-finder"}
 
 // DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
 var DefaultKoffeeFilterNames = []string{}
@@ -116,6 +116,31 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_runner.
 					},
 					// TODO (azrahman): Get binary name from new field of CTPFilter proto.
 					BinaryName: requestedFilter.GetContainer().GetName(),
+				},
+			},
+		},
+		// TODO (azrahman): figure this out (not being used right now).
+		ContainerImageKey: requestedFilter.GetContainer().GetName(),
+		Network:           "host",
+	}
+}
+
+// CreateTFContainerRequest creates container request from provided ctp filter.
+func CreateTFContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_runner.ContainerRequest {
+	return &skylab_test_runner.ContainerRequest{
+		DynamicIdentifier: requestedFilter.GetContainer().GetName(),
+		Container: &api.Template{
+			Container: &api.Template_Generic{
+				Generic: &api.GenericTemplate{
+					// TODO (azrahman): Finalize the format of the this dir. Ideally, it should be /tmp/<container_name>.
+					// So keeping it as comment for now.
+					//DockerArtifactDir: fmt.Sprintf("/tmp/%s", filter.GetContainer().GetName()),
+					DockerArtifactDir: "/tmp/filters",
+					BinaryArgs: []string{
+						"server", "-port", "0",
+					},
+					// TODO (azrahman): Get binary name from new field of CTPFilter proto.
+					BinaryName: "test_finder_filter",
 				},
 			},
 		},

@@ -9,6 +9,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
+	"sync"
+	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
@@ -16,7 +19,6 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/schedulers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/protos"
 	"infra/cros/cmd/ctpv2/data"
@@ -47,7 +49,7 @@ func LuciBuildExecution() {
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
 			resp := &steps.CTPv2BinaryBuildOutput{}
-			_, err := executeFiltersInLuciBuild(ctx, input.Ctpv2Request, ctrCipdInfo.GetVersion().GetCipdLabel(), st)
+			_, err := executeCtpRequests(ctx, input.Ctpv2Request, ctrCipdInfo.GetVersion().GetCipdLabel(), st)
 			// TODO (azrahman): add compressed result for upstream
 			// if resp != nil {
 			// 	m, _ := proto.Marshal(resp)
@@ -70,16 +72,16 @@ func LuciBuildExecution() {
 	)
 }
 
-func executeFiltersInLuciBuild(
+func executeCtpRequests(
 	ctx context.Context,
-	req *api.CTPv2Request,
+	reqs *api.CTPv2Request,
 	ctrCipdVersion string,
 	buildState *build.State) (*api.CTPv2Response, error) {
+
 	// Validation
 	if ctrCipdVersion == "" {
 		return nil, fmt.Errorf("Cros-tool-runner cipd version cannot be empty for hw test execution.")
 	}
-
 	// Create ctr
 	ctrCipdInfo := crostoolrunner.CtrCipdInfo{
 		Version:        ctrCipdVersion,
@@ -100,21 +102,78 @@ func executeFiltersInLuciBuild(
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	sk := &data.FilterStateKeeper{
-		CtpV2Req:              req,
 		DockerKeyFileLocation: dockerKeyFile,
 		Ctr:                   ctr,
 		ContainerInfoQueue:    list.New(),
 		BuildState:            buildState,
-		// TODO (azrahman): Read scheduler from input request and set it here.
-		// hardcoding it for now.
-		Scheduler: schedulers.NewDirectBBScheduler(),
 	}
 
-	// Set default filters
-	common.SetDefaultFilters(ctx, req.GetSuiteRequest())
+	ctpv2PreConfig := configs.NewCtpv2ExecutionConfig(0, configs.Ctpv2PreExecutionConfigType, cmdCfg, sk)
+	err = ctpv2PreConfig.GenerateConfig(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "error during generating pre execution configs: ").Err()
+	}
+
+	ctpv2PostConfig := configs.NewCtpv2ExecutionConfig(0, configs.Ctpv2PostExecutionConfigType, cmdCfg, sk)
+	err = ctpv2PostConfig.GenerateConfig(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "error during generating post execution configs: ").Err()
+	}
+
+	// Execute pre configs
+	err = ctpv2PreConfig.Execute(ctx)
+	if err != nil {
+		return sk.CtpV2Response, errors.Annotate(err, "error during executing pre execution configs: ").Err()
+	}
+
+	wg := &sync.WaitGroup{}
+	contInfoMap := data.NewContainerInfoMap()
+	for i, ctpReq := range reqs.GetRequests() {
+		wg.Add(1)
+		if i == 1 {
+			logging.Infof(ctx, "sleeping ... 25s")
+			time.Sleep(25 * time.Second)
+		}
+		// TODO (azrahman): handle errors through channels
+		go executeFiltersInLuciBuild(ctx, ctpReq, ctrCipdVersion, buildState, wg, ctr, dockerKeyFile, contInfoMap)
+	}
+	wg.Wait()
+
+	// Execute post configs
+	err = ctpv2PostConfig.Execute(ctx)
+	if err != nil {
+		return sk.CtpV2Response, errors.Annotate(err, "error during executing post execution configs: ").Err()
+	}
+
+	return &api.CTPv2Response{}, nil
+}
+
+func executeFiltersInLuciBuild(
+	ctx context.Context,
+	req *api.CTPRequest,
+	ctrCipdVersion string,
+	buildState *build.State,
+	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, dockerKeyFile string, contInfoMap *data.ContainerInfoMap) (*api.CTPv2Response, error) {
+	defer wg.Done()
+	var err error
+	step, ctx := build.StartStep(ctx, req.GetSuiteRequest().GetTestSuite().GetName())
+	defer func() { step.End(err) }()
+
+	executorCfg := configs.NewExecutorConfig(ctr, nil)
+	cmdCfg := configs.NewCommandConfig(executorCfg)
+
+	sk := &data.FilterStateKeeper{
+		CtpReq:                req,
+		DockerKeyFileLocation: dockerKeyFile,
+		Ctr:                   ctr,
+		ContainerInfoQueue:    list.New(),
+		BuildState:            buildState,
+		Scheduler:             req.GetSchedulerInfo().GetScheduler(),
+		ContainerInfoMap:      contInfoMap,
+	}
 
 	// Generate config
-	ctpv2Config := configs.NewCtpv2ExecutionConfig(getTotalFilters(req, common.DefaultKarbonFilterNames, common.DefaultKoffeeFilterNames), configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)
+	ctpv2Config := configs.NewCtpv2ExecutionConfig(getTotalFilters(req, GetDefaultFilters(ctx, req.GetSuiteRequest()), common.DefaultKoffeeFilterNames), configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)
 	err = ctpv2Config.GenerateConfig(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "error during generating filter configs: ").Err()
@@ -129,7 +188,7 @@ func executeFiltersInLuciBuild(
 	return sk.CtpV2Response, nil
 }
 
-func getTotalFilters(req *api.CTPv2Request, defaultKarbonFilterNames []string, defaultKoffeeFilterNames []string) int {
+func getTotalFilters(req *api.CTPRequest, defaultKarbonFilterNames []string, defaultKoffeeFilterNames []string) int {
 	filterSet := map[string]bool{}
 
 	for _, filterName := range defaultKarbonFilterNames {
@@ -149,4 +208,16 @@ func getTotalFilters(req *api.CTPv2Request, defaultKarbonFilterNames []string, d
 	}
 
 	return len(filterSet)
+}
+
+// GetDefaultFilters sets/appends proper default filters
+func GetDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) []string {
+	defaultKarbonFilters := common.DefaultKarbonFilterNames
+	suiteName := strings.ToLower(suiteReq.GetTestSuite().GetName())
+	if strings.HasPrefix(suiteName, "3d") || strings.HasPrefix(suiteName, "ddd") {
+		defaultKarbonFilters = append(defaultKarbonFilters, "ttcp-demo")
+	} else {
+		defaultKarbonFilters = append(defaultKarbonFilters, "legacy_hw_filter")
+	}
+	return defaultKarbonFilters
 }

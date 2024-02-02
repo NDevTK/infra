@@ -42,7 +42,7 @@ type TranslateRequestCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	CtpV2Req *testapi.CTPv2Request
+	CtpReq *testapi.CTPRequest
 
 	// Updates
 	InternalTestPlan *testapi.InternalTestplan
@@ -91,11 +91,11 @@ func (cmd *TranslateRequestCmd) extractDepsFromFilterStateKeepr(
 	ctx context.Context,
 	sk *data.FilterStateKeeper) error {
 
-	if sk.CtpV2Req == nil {
-		return fmt.Errorf("Cmd %q missing dependency: CtpV2Req", cmd.GetCommandType())
+	if sk.CtpReq == nil {
+		return fmt.Errorf("Cmd %q missing dependency: CtpReq", cmd.GetCommandType())
 	}
 
-	cmd.CtpV2Req = sk.CtpV2Req
+	cmd.CtpReq = sk.CtpReq
 	return nil
 }
 
@@ -118,21 +118,21 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 
 	req := step.Log("request received")
 	marsh := jsonpb.Marshaler{Indent: "  "}
-	if err = marsh.Marshal(req, cmd.CtpV2Req); err != nil {
+	if err = marsh.Marshal(req, cmd.CtpReq); err != nil {
 		err = errors.Annotate(err, "failed to marshal proto").Err()
 	}
 
 	internalStruct := &testapi.InternalTestplan{}
-	targs := targetRequirements(cmd.CtpV2Req)
+	targs := targetRequirements(cmd.CtpReq)
 	suitemd := &testapi.SuiteMetadata{
 		TargetRequirements: targs,
-		Pool:               cmd.CtpV2Req.GetPool(),
-		ExecutionMetadata:  executionMetadata(cmd.CtpV2Req),
+		Pool:               cmd.CtpReq.GetPool(),
+		ExecutionMetadata:  executionMetadata(cmd.CtpReq),
 	}
 
 	internalStruct.SuiteInfo = &testapi.SuiteInfo{
 		SuiteMetadata: suitemd,
-		SuiteRequest:  cmd.CtpV2Req.GetSuiteRequest(),
+		SuiteRequest:  cmd.CtpReq.GetSuiteRequest(),
 	}
 
 	translated_req := step.Log("translated request")
@@ -286,8 +286,11 @@ func httpClient(ctx context.Context) (*http.Client, error) {
 	return h, nil
 }
 
-func targetRequirements(req *testapi.CTPv2Request) (targs []*testapi.TargetRequirements) {
-	for _, targ := range req.Targets {
+func targetRequirements(req *testapi.CTPRequest) []*testapi.TargetRequirements {
+	targs := []*testapi.TargetRequirements{}
+	for _, scheduleTarget := range req.GetScheduleTargets() {
+		// TODO (azrahman): 0 indexing now for single dut. Add multi-dut support.
+		targ := scheduleTarget.GetTargets()[0]
 		switch hw := targ.HwTarget.Target.(type) {
 		case *testapi.HWTarget_LegacyHw:
 
@@ -340,7 +343,7 @@ func NewTranslateRequestCmd() *TranslateRequestCmd {
 	return &TranslateRequestCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
 }
 
-func executionMetadata(req *api.CTPv2Request) *api.ExecutionMetadata {
+func executionMetadata(req *api.CTPRequest) *api.ExecutionMetadata {
 	ta := req.GetSuiteRequest().GetTestArgs()
 	args := &testapi.ExecutionMetadata{}
 	things := []*testapi.Arg{}

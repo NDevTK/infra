@@ -12,4 +12,7 @@ const (
 	UnsupportedSchedulerType interfaces.SchedulerType = "UnsupportedScheduler"
 	// Direct bb scheduler schedules requests directly through buildbucket
 	DirectBBSchedulerType interfaces.SchedulerType = "DirectBBScheduler"
+	// LocalSchedulerType is a dummy scheduler for local mode/debugging. It will
+	// normally print out the request without scheduling anywhere.
+	LocalSchedulerType interfaces.SchedulerType = "LocalScheduler"
 )

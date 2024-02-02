@@ -198,10 +198,7 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 			continue
 		}
 		cmdType := cmd.GetCommandType()
-		logging.Infof(ctx, "Executing cmd: %T", cmd)
-		if _, ok := tecfg.executedCommands[cmdType]; ok {
-			logging.Warningf(ctx, "Command type %s already executed as part of current config. Executing again...", cmdType)
-		}
+		logging.Infof(ctx, "Executing cmd: %s", cmdType)
 
 		if singleErr = cmd.ExtractDependencies(ctx, tecfg.StateKeeper); singleErr != nil {
 			foundErr = true
@@ -218,7 +215,7 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 			}
 			continue
 		}
-		logging.Infof(ctx, "Command type %s execution completed. Marking as completed.", cmdType)
+		logging.Infof(ctx, "Cmd completed: %s", cmdType)
 		tecfg.executedCommands[cmdType] = true
 		if singleErr = cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); singleErr != nil {
 			foundErr = true

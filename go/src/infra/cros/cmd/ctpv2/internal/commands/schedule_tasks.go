@@ -21,6 +21,7 @@ import (
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/schedulers"
 	"infra/cros/cmd/ctpv2/data"
 )
 
@@ -92,14 +93,18 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 		return fmt.Errorf("Cmd %q missing dependency: Scheduler", cmd.GetCommandType())
 	}
 
-	if sk.Scheduler == nil {
+	if sk.Scheduler == api.SchedulerInfo_UNSPECIFIED {
 		return fmt.Errorf("Cmd %q missing dependency: Scheduler", cmd.GetCommandType())
 	}
 
 	cmd.MiddledOutResp = sk.MiddledOutResp
 	cmd.BuildState = sk.BuildState
-	cmd.Scheduler = sk.Scheduler
-
+	// Assign scheduler
+	if sk.Scheduler == api.SchedulerInfo_QSCHEDULER {
+		cmd.Scheduler = schedulers.NewDirectBBScheduler()
+	} else if sk.Scheduler == api.SchedulerInfo_PRINT_REQUEST_ONLY {
+		cmd.Scheduler = schedulers.NewLocalScheduler()
+	}
 	return nil
 }
 
@@ -178,7 +183,9 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 			logging.Infof(ctx, "error while scheduling req: %s", err)
 			return nil, errors.Annotate(err, "error while generating req:").Err()
 		}
-		step.SetSummaryMarkdown(fmt.Sprintf("[latest attempt](%s)", common.BBUrl(builderId, scheduledBuild.Id)))
+		if scheduledBuild != nil {
+			step.SetSummaryMarkdown(fmt.Sprintf("[latest attempt](%s)", common.BBUrl(builderId, scheduledBuild.Id)))
+		}
 	}
 
 	// Spit out the request
