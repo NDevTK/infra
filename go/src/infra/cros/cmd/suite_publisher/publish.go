@@ -20,9 +20,10 @@ import (
 )
 
 const (
-	defaultProject = "cros-test-analytics"
-	defaultDataset = "testmetadata"
-	defaultTable   = "centralized_suites"
+	defaultProject      = "cros-test-analytics"
+	defaultDataset      = "testmetadata"
+	defaultTable        = "centralized_suites"
+	defaultClosureTable = "centralized_suite_closures"
 )
 
 type suitePublisher struct {
@@ -143,18 +144,30 @@ func (s *suitePublisher) publishSuites(ctx context.Context, bqClient *bigquery.C
 	}
 
 	inserter := bqClient.Dataset(s.dataset).Table(defaultTable).Inserter()
-
-	for _, suite := range suites {
-		LogOut("Publishing %s:%s\n", suite.Type(), suite.ID())
+	closureInserter := bqClient.Dataset(s.dataset).Table(defaultClosureTable).Inserter()
+	build := bqsuites.BuildInfo{
+		BuildTarget:   s.buildTarget,
+		CrosMilestone: s.milestone,
+		CrosVersion:   s.version,
+	}
+	for _, s := range suites {
+		LogOut("Publishing %s:%s\n", s.Type(), s.ID())
 		p := &bqsuites.PublishInfo{
-			Suite: suite,
-			Build: bqsuites.BuildInfo{
-				BuildTarget:   s.buildTarget,
-				CrosMilestone: s.milestone,
-				CrosVersion:   s.version,
-			},
+			Suite: s,
+			Build: build,
 		}
 		if err := bqsuites.PublishSuite(ctx, inserter, p); err != nil {
+			return err
+		}
+		c := s.Closures(suites)
+		var closures []*bqsuites.ClosurePublishInfo
+		for _, closure := range c {
+			closures = append(closures, &bqsuites.ClosurePublishInfo{
+				Closure: closure,
+				Build:   build,
+			})
+		}
+		if err := bqsuites.PublishSuiteClosures(ctx, closureInserter, closures); err != nil {
 			return err
 		}
 	}

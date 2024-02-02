@@ -45,3 +45,20 @@ func ExampleSuiteSet() *api.SuiteSet {
 		},
 	}
 }
+
+func ExampleSuiteSetB() *api.SuiteSet {
+	return &api.SuiteSet{
+		Id: &api.SuiteSet_Id{Value: "example_suite_set_b"},
+		Metadata: &api.Metadata{
+			Owners: []*api.Contact{
+				{Email: "exampleb@chromium.org"},
+				{Email: "exampleb2@chromium.org"},
+			},
+			Criteria:     &api.Criteria{Value: "This is an example suite set b"},
+			BugComponent: &api.BugComponent{Value: "b:123457"},
+		},
+		Suites: []*api.Suite_Id{
+			{Value: "example_suite"},
+		},
+	}
+}

@@ -30,6 +30,11 @@ type PublishInfo struct {
 	Build BuildInfo
 }
 
+type ClosurePublishInfo struct {
+	Closure *suite.SuiteClosure
+	Build   BuildInfo
+}
+
 // PublishSuite publishes a suite to BigQuery using the provided inserter.
 func PublishSuite(ctx context.Context, inserter *bigquery.Inserter, suite *PublishInfo) error {
 	return inserter.Put(ctx, suite)
@@ -56,6 +61,27 @@ func (p *PublishInfo) Save() (map[string]bigquery.Value, string, error) {
 	}
 	dedupeID := fmt.Sprintf("%s.%s.%s", ret["id"], ret["build_target"], ret["cros_version"])
 	return ret, dedupeID, nil
+}
+
+// PublishSuiteClosures publishes a list of SuiteClosures to BigQuery
+// using the provided inserter, these are used for quicker lookups of relation
+// info between suites and suite sets.
+func PublishSuiteClosures(ctx context.Context, inserter *bigquery.Inserter, closures []*ClosurePublishInfo) error {
+	return inserter.Put(ctx, closures)
+}
+
+// Save implements the ValueSaver interface so that write operations can write
+// from a ClosurePublishInfo struct to the database.
+func (p *ClosurePublishInfo) Save() (map[string]bigquery.Value, string, error) {
+	ret := map[string]bigquery.Value{
+		"id":    p.Closure.ID,
+		"child": p.Closure.Child,
+		"depth": p.Closure.Depth,
+	}
+	if err := saveBuildInfo(&p.Build, ret); err != nil {
+		return nil, "", err
+	}
+	return ret, "", nil
 }
 
 func saveMetadata(metadata *suite.Metadata, v map[string]bigquery.Value) error {

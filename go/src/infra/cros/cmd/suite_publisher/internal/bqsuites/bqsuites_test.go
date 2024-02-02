@@ -14,7 +14,7 @@ import (
 	"infra/cros/cmd/suite_publisher/test"
 )
 
-func TestSave(t *testing.T) {
+func TestSavePublishInfo(t *testing.T) {
 	type wantInfo struct {
 		values   map[string]bigquery.Value
 		dedupeID string
@@ -102,6 +102,59 @@ func TestSave(t *testing.T) {
 	} {
 		t.Run(tc.publishInfo.Suite.ID(), func(t *testing.T) {
 			gotValues, gotDedupeID, err := tc.publishInfo.Save()
+			if !errors.Is(err, tc.want.err) {
+				t.Errorf("Save() got error: %v, want: %v", err, tc.want.err)
+			}
+			if gotDedupeID != tc.want.dedupeID {
+				t.Errorf("Save() got dedupeID: %q, want: %q", gotDedupeID, tc.want.dedupeID)
+			}
+			if diff := cmp.Diff(gotValues, tc.want.values); diff != "" {
+				t.Errorf("Save() got values mismatch (-got +want):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestSaveSuiteClosure(t *testing.T) {
+	type wantInfo struct {
+		values   map[string]bigquery.Value
+		dedupeID string
+		err      error
+	}
+
+	for _, tc := range []struct {
+		closure ClosurePublishInfo
+		want    wantInfo
+	}{
+		{
+			closure: ClosurePublishInfo{
+				Closure: &suite.SuiteClosure{
+					ID:    "test_1",
+					Child: "test_2",
+					Depth: 1,
+				},
+				Build: BuildInfo{
+					BuildTarget:   "example_build_target",
+					CrosVersion:   "15755.0.0",
+					CrosMilestone: "123",
+				},
+			},
+			want: wantInfo{
+				values: map[string]bigquery.Value{
+					"build_target":   "example_build_target",
+					"cros_version":   "15755.0.0",
+					"cros_milestone": "123",
+					"id":             "test_1",
+					"child":          "test_2",
+					"depth":          1,
+				},
+				dedupeID: "",
+				err:      nil,
+			},
+		},
+	} {
+		t.Run(tc.closure.Closure.ID, func(t *testing.T) {
+			gotValues, gotDedupeID, err := tc.closure.Save()
 			if !errors.Is(err, tc.want.err) {
 				t.Errorf("Save() got error: %v, want: %v", err, tc.want.err)
 			}

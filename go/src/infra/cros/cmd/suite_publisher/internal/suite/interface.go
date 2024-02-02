@@ -45,6 +45,11 @@ type CentralizedSuite interface {
 
 	// SuiteSets returns the child suitesets for a SuiteSet or empty list if the Type is SuiteType.
 	SuiteSets() []string
+
+	// Closures takes in map of all known Suites/SuiteSets and generates closure
+	// relationships to be uploaded to database for efficient queries, only generates
+	// closures for the CentralizedSuite not for all Suites/SuiteSets in suites arg.
+	Closures(suites map[string]CentralizedSuite) []*SuiteClosure
 }
 
 func convertMetadata(metadata *api.Metadata) *Metadata {
