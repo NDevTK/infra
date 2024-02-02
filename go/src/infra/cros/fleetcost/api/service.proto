@@ -24,7 +24,7 @@ service FleetCost {
   // PingUFS pings UFS and returns what it did.
   rpc PingUFS(PingUFSRequest) returns (PingUFSResponse) {
     option (google.api.http) = {
-      post: "/v1/ping"
+      post: "/v1/ping-ufs"
     };
   }
 }
