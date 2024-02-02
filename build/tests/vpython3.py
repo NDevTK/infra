@@ -4,9 +4,10 @@
 
 """Test vpython3.cipd package by running 'vpython3 -c'."""
 
+import os
 import subprocess
 import sys
-import os
+import tempfile
 
 
 # .exe on Windows.
@@ -14,11 +15,14 @@ EXE_SUFFIX = '.exe' if sys.platform == 'win32' else ''
 
 
 def main():
-  res = subprocess.check_output([
-      os.path.join(os.getcwd(), 'vpython3'+EXE_SUFFIX),
-      '-c',
-      'print(1)',
-  ])
+  with tempfile.TemporaryDirectory() as tmp:
+    res = subprocess.check_output([
+        os.path.join(os.getcwd(), 'vpython3'+EXE_SUFFIX),
+        '-vpython-root',
+        tmp,
+        '-c',
+        'print(1)',
+    ])
   return 0 if res.strip() == b'1' else 1
 
 

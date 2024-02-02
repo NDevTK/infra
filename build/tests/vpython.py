@@ -4,9 +4,10 @@
 
 """Test vpython.cipd package by running 'vpython -c'."""
 
+import os
 import subprocess
 import sys
-import os
+import tempfile
 
 
 # .exe on Windows.
@@ -22,39 +23,46 @@ def main():
   with open(os.path.join(os.getcwd(), '.vpython3'), 'w') as f:
     f.write('python_version: "3.8"')
 
-  res = subprocess.check_output([
-      os.path.join(os.getcwd(), 'vpython'+EXE_SUFFIX),
-      '-c',
-      'import sys; print sys.version_info.major',
-  ], env=env).strip().decode()
-  if res != '2':
-    print('sys.version_info.major: expected 2, actual {}'.format(res))
-    return 1
+  with tempfile.TemporaryDirectory() as tmp:
+    res = subprocess.check_output([
+        os.path.join(os.getcwd(), 'vpython'+EXE_SUFFIX),
+        '-vpython-root',
+        tmp,
+        '-c',
+        'import sys; print sys.version_info.major',
+    ], env=env).strip().decode()
+    if res != '2':
+      print('sys.version_info.major: expected 2, actual {}'.format(res))
+      return 1
 
-  res = subprocess.check_output([
-      os.path.join(os.getcwd(), 'vpython3'+EXE_SUFFIX),
-      '-c',
-      'import sys; print(sys.version_info.major)',
-  ], env=env).strip().decode()
-  if res != '3':
-    print('sys.version_info.major: expected 3, actual {}'.format(res))
-    return 1
-
-  with open(os.path.join(os.getcwd(), '.vpython3'), 'w') as f:
-    f.write('python_version: "2.7"')
-  try:
     res = subprocess.check_output([
         os.path.join(os.getcwd(), 'vpython3'+EXE_SUFFIX),
+        '-vpython-root',
+        tmp,
         '-c',
         'import sys; print(sys.version_info.major)',
-    ], env=env)
-  except subprocess.CalledProcessError:
-    pass
-  else:
-    print('Python2 should only work with calling vpython')
-    return 1
+    ], env=env).strip().decode()
+    if res != '3':
+      print('sys.version_info.major: expected 3, actual {}'.format(res))
+      return 1
 
-  return 0
+    with open(os.path.join(os.getcwd(), '.vpython3'), 'w') as f:
+      f.write('python_version: "2.7"')
+    try:
+      res = subprocess.check_output([
+          os.path.join(os.getcwd(), 'vpython3'+EXE_SUFFIX),
+          '-vpython-root',
+          tmp,
+          '-c',
+          'import sys; print(sys.version_info.major)',
+      ], env=env)
+    except subprocess.CalledProcessError:
+      pass
+    else:
+      print('Python2 should only work with calling vpython')
+      return 1
+
+    return 0
 
 if __name__ == '__main__':
   sys.exit(main())
