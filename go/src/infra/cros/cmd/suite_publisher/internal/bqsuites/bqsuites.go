@@ -52,13 +52,9 @@ func (p *PublishInfo) Save() (map[string]bigquery.Value, string, error) {
 	if err := saveMetadata(p.Suite.Metadata(), ret); err != nil {
 		return nil, "", err
 	}
-	switch p.Suite.Type() {
-	case suite.SuiteType:
-		ret["test_ids"] = p.Suite.Tests()
-	case suite.SuiteSetType:
-		ret["suites"] = p.Suite.Suites()
-		ret["suite_sets"] = p.Suite.SuiteSets()
-	}
+	ret["test_ids"] = p.Suite.Tests()
+	ret["suites"] = p.Suite.Suites()
+	ret["suite_sets"] = p.Suite.SuiteSets()
 	dedupeID := fmt.Sprintf("%s.%s.%s", ret["id"], ret["build_target"], ret["cros_version"])
 	return ret, dedupeID, nil
 }

@@ -24,14 +24,9 @@ func (s *SuiteSet) ID() string {
 	return s.suiteSet.GetId().GetValue()
 }
 
-// Type returns whether the CentralizedSuite holds a Suite or SuiteSet.
-func (*SuiteSet) Type() CentralizedSuiteType {
-	return SuiteSetType
-}
-
 // Tests returns an empty list since this is not a Suite.
 func (s *SuiteSet) Tests() []string {
-	return nil
+	return []string{}
 }
 
 // Suites returns the IDs of the child Suites of the SuiteSet.

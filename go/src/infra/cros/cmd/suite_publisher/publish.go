@@ -151,7 +151,7 @@ func (s *suitePublisher) publishSuites(ctx context.Context, bqClient *bigquery.C
 		CrosVersion:   s.version,
 	}
 	for _, s := range suites {
-		LogOut("Publishing %s:%s\n", s.Type(), s.ID())
+		LogOut("Publishing %s\n", s.ID())
 		p := &bqsuites.PublishInfo{
 			Suite: s,
 			Build: build,

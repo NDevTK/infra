@@ -24,11 +24,6 @@ func (s *Suite) ID() string {
 	return s.suite.GetId().GetValue()
 }
 
-// Type returns whether the CentralizedSuite holds a Suite.
-func (*Suite) Type() CentralizedSuiteType {
-	return SuiteType
-}
-
 // Tests returns the tests for the Suite.
 func (s *Suite) Tests() []string {
 	tests := make([]string, 0, len(s.suite.GetTests()))
@@ -40,12 +35,12 @@ func (s *Suite) Tests() []string {
 
 // Suites returns an empty list since this is not a SuiteSet.
 func (s *Suite) Suites() []string {
-	return nil
+	return []string{}
 }
 
 // SuiteSets returns an empty list since this is not a SuiteSet.
 func (s *Suite) SuiteSets() []string {
-	return nil
+	return []string{}
 }
 
 // NewSuite returns constructs a suite object from an api.Suite Protobuf.

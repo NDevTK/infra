@@ -17,9 +17,6 @@ func TestNewSuiteSet(t *testing.T) {
 	if s.ID() != "example_suite_set" {
 		t.Errorf("NewSuiteSet() SuiteSet ID got: %q want %q", s.ID(), "example_suite")
 	}
-	if s.Type() != SuiteSetType {
-		t.Errorf("NewSuiteSet() SuiteSet Type got: %q want %q", s.Type(), SuiteSetType)
-	}
 	if suiteSets := s.SuiteSets(); len(suiteSets) == 0 {
 		t.Errorf("s.SuiteSets() expect non zero test length, got: %v", len(suiteSets))
 	}

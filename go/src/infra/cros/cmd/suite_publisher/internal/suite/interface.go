@@ -9,14 +9,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
-// CentralizedSuiteType is an enum for the type of a CentralizedSuite.
-type CentralizedSuiteType string
-
-const (
-	SuiteType    CentralizedSuiteType = "Suite"
-	SuiteSetType CentralizedSuiteType = "SuiteSet"
-)
-
 type Metadata struct {
 	BugComponent string
 	Owners       []string
@@ -33,17 +25,16 @@ type CentralizedSuite interface {
 	// hold a Suite or SuiteSet it returns an empty string.
 	ID() string
 
-	// Type returns whether the CentralizedSuite holds a Suite or SuiteSet.
-	Type() CentralizedSuiteType
-
-	// Tests returns the tests for a Suite or empty list if the Type is SuiteSetType.
+	// Tests returns the tests for a Suite or empty list if the interface contains
+	// a SuiteSet.
 	Tests() []string
 
-	// Suites returns the child suites for a SuiteSet or empty list if the Type
-	// is SuiteType.
+	// Suites returns the child suites for a SuiteSet or empty list if the interface
+	// contains a Suite.
 	Suites() []string
 
-	// SuiteSets returns the child suitesets for a SuiteSet or empty list if the Type is SuiteType.
+	// SuiteSets returns the child suitesets for a SuiteSet or empty listif the interface
+	// contains a Suite.
 	SuiteSets() []string
 
 	// Closures takes in map of all known Suites/SuiteSets and generates closure
