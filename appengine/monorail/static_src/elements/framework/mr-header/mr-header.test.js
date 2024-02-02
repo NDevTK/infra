@@ -177,7 +177,7 @@ describe('mr-header', () => {
     // deepInclude once we upgrade Chai.
     // My Projects
     assert.equal(items[1].text, 'chromium');
-    assert.equal(items[1].url, '/p/chromium/issues/list');
+    assert.equal(items[1].url, 'https://bugs.chromium.org/p/chromium/issues/list');
     assert.equal(items[2].text, 'mockskia');
     assert.equal(items[2].url, '/p/mockskia/issues/list');
     assert.equal(items[3].text, 'v8');

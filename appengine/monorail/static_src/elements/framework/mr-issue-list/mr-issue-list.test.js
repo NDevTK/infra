@@ -167,7 +167,7 @@ describe('mr-issue-list', () => {
     element.issues = [{
       summary: 'click me',
       localId: 22,
-      projectName: 'chromium',
+      projectName: 'monkeyrail',
     }];
     element.columns = ['Summary'];
 
@@ -176,7 +176,7 @@ describe('mr-issue-list', () => {
     const rowChild = element.shadowRoot.querySelector('.col-summary');
     rowChild.click();
 
-    sinon.assert.calledWith(element._page, '/p/chromium/issues/detail?id=22');
+    sinon.assert.calledWith(element._page, '/p/monkeyrail/issues/detail?id=22');
     sinon.assert.notCalled(window.open);
   });
 
@@ -184,7 +184,7 @@ describe('mr-issue-list', () => {
     element.issues = [{
       summary: 'click me',
       localId: 24,
-      projectName: 'chromium',
+      projectName: 'monkeyrail',
     }];
     element.columns = ['Summary'];
 
@@ -195,14 +195,14 @@ describe('mr-issue-list', () => {
         {ctrlKey: true, bubbles: true}));
 
     sinon.assert.calledWith(window.open,
-        '/p/chromium/issues/detail?id=24', '_blank', 'noopener');
+        '/p/monkeyrail/issues/detail?id=24', '_blank', 'noopener');
   });
 
   it('meta+click on row opens issue in new tab', async () => {
     element.issues = [{
       summary: 'click me',
       localId: 24,
-      projectName: 'chromium',
+      projectName: 'monkeyrail',
     }];
     element.columns = ['Summary'];
 
@@ -213,14 +213,14 @@ describe('mr-issue-list', () => {
         {metaKey: true, bubbles: true}));
 
     sinon.assert.calledWith(window.open,
-        '/p/chromium/issues/detail?id=24', '_blank', 'noopener');
+        '/p/monkeyrail/issues/detail?id=24', '_blank', 'noopener');
   });
 
   it('mouse wheel click on row opens issue in new tab', async () => {
     element.issues = [{
       summary: 'click me',
       localId: 24,
-      projectName: 'chromium',
+      projectName: 'monkeyrail',
     }];
     element.columns = ['Summary'];
 
@@ -231,7 +231,7 @@ describe('mr-issue-list', () => {
         {button: 1, bubbles: true}));
 
     sinon.assert.calledWith(window.open,
-        '/p/chromium/issues/detail?id=24', '_blank', 'noopener');
+        '/p/monkeyrail/issues/detail?id=24', '_blank', 'noopener');
   });
 
   it('right click on row does not navigate', async () => {

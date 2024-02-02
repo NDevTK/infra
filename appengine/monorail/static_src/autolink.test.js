@@ -90,7 +90,7 @@ describe('autolink', () => {
           actualRun,
           [{
             tag: 'a',
-            href: '/p/chromium/issues/detail?id=1234',
+            href: 'https://bugs.chromium.org/p/chromium/issues/detail?id=1234',
             css: '',
             title: 'Issue 1234',
             content: str,
@@ -125,7 +125,7 @@ describe('autolink', () => {
           actualRun,
           [{
             tag: 'a',
-            href: '/p/chromium/issues/detail?id=1234',
+            href: 'https://bugs.chromium.org/p/chromium/issues/detail?id=1234',
             css: '',
             title: 'Issue 1234',
             content: str,
@@ -199,7 +199,7 @@ describe('autolink', () => {
             {content: 'bugs='},
             {
               tag: 'a',
-              href: '/p/chromium/issues/detail?id=123',
+              href: 'https://bugs.chromium.org/p/chromium/issues/detail?id=123',
               css: '',
               title: 'ma',
               content: '123',
@@ -277,7 +277,7 @@ describe('autolink', () => {
           [
             {
               tag: 'a',
-              href: '/p/chromium/issues/detail?id=123',
+              href: 'https://bugs.chromium.org/p/chromium/issues/detail?id=123',
               css: '',
               title: 'summ',
               content: 'Fixed : 123',
@@ -691,7 +691,7 @@ describe('autolink', () => {
             {
               content: 'crbug.com/99',
               tag: 'a',
-              href: '/p/chromium/issues/detail?id=99',
+              href: 'https://bugs.chromium.org/p/chromium/issues/detail?id=99',
               title: '',
               css: 'strike-through',
             },
@@ -743,7 +743,7 @@ describe('autolink', () => {
             {
               content: '456',
               tag: 'a',
-              href: '/p/chromium/issues/detail?id=456',
+              href: 'https://bugs.chromium.org/p/chromium/issues/detail?id=456',
               title: '',
               css: 'strike-through',
             },

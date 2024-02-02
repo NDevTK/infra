@@ -16,6 +16,7 @@ PROJECT_REDIRECT_MAP = {
     'gerrit': 'https://issues.gerritcodereview.com',
     'skia': 'http://issues.skia.org',
     'fuchsia': 'https://issues.fuchsia.dev',
+    'chromium': 'https://issues.chromium.org',
 }
 
 MAX_MONORAIL_ISSUE_ID = 10000000
