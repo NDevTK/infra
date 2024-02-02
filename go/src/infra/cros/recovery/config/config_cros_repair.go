@@ -1504,6 +1504,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Audit cellular modem",
+				"Update cellular sim labels if missing",
+				"Update cellular modem labels if missing",
 				"Audit cellular network connection",
 				"Collect var/log/messages from DUT",
 				"Collect var/log/net.log from DUT",
@@ -1543,6 +1545,37 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:   "cros_update_cellular_sim_labels",
 			RunControl: RunControl_RUN_ONCE,
+		},
+		"Update cellular modem labels if missing": {
+			Docs: []string{
+				"Audits and updates cellular modem labels only if they're not currently populated.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"has_cellular_info",
+				"cros_imei_empty",
+			},
+			Dependencies: []string{
+				"Cellular modem is up",
+				"Update cellular modem labels",
+			},
+			ExecName: "sample_pass",
+		},
+		"Update cellular sim labels if missing": {
+			Docs: []string{
+				"Audits and updates cellular SIM labels only if none are populated.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"has_cellular_info",
+				"Is not starfish device",
+				"cros_sim_info_empty",
+			},
+			Dependencies: []string{
+				"Cellular modem is up",
+				"Update cellular sim labels",
+			},
+			ExecName: "sample_pass",
 		},
 		"Verify tpm_fwver is updated correctly": {
 			Docs: []string{

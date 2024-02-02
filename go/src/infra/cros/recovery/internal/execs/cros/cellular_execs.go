@@ -30,6 +30,8 @@ func init() {
 	execs.Register("cros_has_modemmanager_job", hasModemManagerJobExec)
 	execs.Register("cros_modemmanager_running", modemManagerRunningExec)
 	execs.Register("cros_modem_state_not_in", modemStateNotInExec)
+	execs.Register("cros_sim_info_empty", simInfoEmptyExec)
+	execs.Register("cros_imei_empty", modemIMEImptyExec)
 	execs.Register("cros_restart_modemmanager", restartModemManagerExec)
 	execs.Register("set_cellular_modem_state", setCellularModemStateExec)
 	execs.Register("has_cellular_info", hasCellularInfoExec)
@@ -225,6 +227,19 @@ func auditCellularConnectionExec(ctx context.Context, info *execs.ExecInfo) erro
 	return nil
 }
 
+// modemIMEImptyExec verifies that the modem IMEI has not been populated yet.
+func modemIMEImptyExec(ctx context.Context, info *execs.ExecInfo) error {
+	c := info.GetChromeos().GetCellular()
+	if c == nil {
+		return errors.Reason("imei empty: cellular data is not present in dut info").Err()
+	}
+
+	if c.GetModemInfo().GetImei() != "" {
+		return errors.Reason("imei empty: cellular modem info already populated").Err()
+	}
+	return nil
+}
+
 // updateCellularModemLabelsExec sets the cellular modem labels in swarming to match those available on the DUT.
 func updateCellularModemLabelsExec(ctx context.Context, info *execs.ExecInfo) error {
 	c := info.GetChromeos().GetCellular()
@@ -289,6 +304,19 @@ func hasOnlyOneSIMProfileExec(ctx context.Context, info *execs.ExecInfo) error {
 		if len(s.GetProfileInfos()) > 1 {
 			return errors.Reason("audit cellular sim labels: expected <= 1 profiles for each SIM, got %d", len(s.ProfileInfos)).Err()
 		}
+	}
+	return nil
+}
+
+// simInfoEmptyExec verifies that the device SIM info has not been populated.
+func simInfoEmptyExec(ctx context.Context, info *execs.ExecInfo) error {
+	c := info.GetChromeos().GetCellular()
+	if c == nil {
+		return errors.Reason("sim info empty: cellular data is not present in dut info").Err()
+	}
+
+	if len(c.GetSimInfos()) != 0 {
+		return errors.Reason("sim info empty: SIM info already populated, found %d SIMs", len(c.GetSimInfos())).Err()
 	}
 	return nil
 }
