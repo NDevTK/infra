@@ -38,11 +38,6 @@ const (
 	SuiteSchedulerIniURL = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/suite_scheduler.ini?format=text"
 	LabIniURL            = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/lab_config.ini?format=text"
 
-	SuSchCfgPath = "configparser/generated/suite_scheduler.cfg"
-	LabCfgPath   = "configparser/generated/lab_config.cfg"
-	SuSchIniPath = "configparser/generated/suite_scheduler.ini"
-	LabIniPath   = "configparser/generated/lab_config.ini"
-
 	StagingProjectID  = "google.com:suite-scheduler-staging"
 	BuildsPubSubTopic = "kron-builds"
 	EventsPubSubTopic = "kron-events"

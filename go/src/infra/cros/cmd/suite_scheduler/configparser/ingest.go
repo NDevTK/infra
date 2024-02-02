@@ -178,10 +178,6 @@ func FetchSchedulerConfigs(path string, labConfigs *LabConfigs) (*SuiteScheduler
 		if err != nil {
 			return nil, err
 		}
-		err := common.WriteToFile("configparser/generated/suite_scheduler.ini", schedulerBytes)
-		if err != nil {
-			return nil, err
-		}
 
 	}
 
