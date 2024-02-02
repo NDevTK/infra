@@ -7,6 +7,8 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	// "infra/libs/skylab/inventory"
 	// "infra/libs/skylab/request"
 	// "infra/libs/skylab/worker"
@@ -15,14 +17,17 @@ import (
 	"github.com/gogo/protobuf/jsonpb"
 
 	// "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+
 	// "go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	// "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/auth"
 	// "go.chromium.org/luci/buildbucket"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
+
 	// "go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	// "go.chromium.org/luci/lucictx"
@@ -122,6 +127,7 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	suitemd := &testapi.SuiteMetadata{
 		TargetRequirements: targs,
 		Pool:               cmd.CtpV2Req.GetPool(),
+		ExecutionMetadata:  executionMetadata(cmd.CtpV2Req),
 	}
 
 	internalStruct.SuiteInfo = &testapi.SuiteInfo{
@@ -332,4 +338,41 @@ func NewTranslateRequestCmd() *TranslateRequestCmd {
 	abstractCmd := interfaces.NewAbstractCmd(TranslateRequestType)
 	abstractSingleCmdByNoExecutor := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: abstractCmd}
 	return &TranslateRequestCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
+}
+
+func executionMetadata(req *api.CTPv2Request) *api.ExecutionMetadata {
+	ta := req.GetSuiteRequest().GetTestArgs()
+	args := &testapi.ExecutionMetadata{}
+	things := []*testapi.Arg{}
+
+	// ta will often be a comma deliminated string such as:
+	// "foo=bar,zoo=mar"
+	// Split on the comma, then split again on the =
+	// Lazy parsing the `=`; as KV support is weak at best.
+	// Users are responsible for clean args.
+	for _, kv := range strings.Split(ta, " ") {
+		k := ""
+		v := ""
+		for _, innerkv := range strings.Split(kv, "=") {
+			if k == "resultdb_settings" {
+				continue
+			} else if k == "" {
+				k = innerkv
+			} else if v == "" {
+				v = innerkv
+			} else {
+				fmt.Println("too many values to unpack, skipping ", innerkv)
+				k = ""
+				v = ""
+			}
+		}
+		kvproto := &testapi.Arg{
+			Flag:  k,
+			Value: v,
+		}
+		things = append(things, kvproto)
+	}
+
+	args.Args = things
+	return args
 }

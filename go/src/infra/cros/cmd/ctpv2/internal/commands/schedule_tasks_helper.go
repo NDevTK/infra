@@ -235,6 +235,7 @@ func createCftTestRequest(ctx context.Context, hwDef *testapi.SwarmingDefinition
 					TestCaseIds: testCaseIds,
 				},
 			},
+			ExecutionMetadata: suiteInfo.GetSuiteMetadata().GetExecutionMetadata(),
 		},
 	}
 
