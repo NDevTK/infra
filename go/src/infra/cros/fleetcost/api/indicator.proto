@@ -6,6 +6,8 @@ syntax = "proto3";
 
 option go_package = "infra/cros/fleetcost/api;fleetcostpb";
 
+import "google/type/money.proto";
+
 // Each Indicator refers to cost from a particular item, e.g. DUT, servo, servers, operation, space.
 enum IndicatorType {
     INDICATOR_TYPE_UNKNOWN = 0;
@@ -46,7 +48,7 @@ message CostIndicator {
     string board = 3;
     string model = 4;
     string sku = 5;
-    double cost = 6;
+    google.type.Money cost = 6;
     // How frequently will the cost occur.
     CostCadence cost_cadence = 7;
     // Annual burnout rate, e.g. 0.1 meaning 10% of devices need to be replaced per
