@@ -723,8 +723,10 @@ func GetMachineLSEIndexedFieldName(input string) (string, error) {
 		field = "pools"
 	case util.LogicalZoneFilterName:
 		field = "logical_zone"
+	case util.HiveFilterName:
+		field = "hive"
 	default:
-		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are nic/machine/machineprototype/rpm/rpmport/vlan/servo/servotype/zone/rack/switch/man/free/tag/state/os/vdc(virtualdatacenter)/pools/logicalzone", input)
+		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are nic/machine/machineprototype/rpm/rpmport/vlan/servo/servotype/zone/rack/switch/man/free/tag/state/os/vdc(virtualdatacenter)/pools/logicalzone/hive", input)
 	}
 	return field, nil
 }

@@ -138,6 +138,7 @@ var (
 	GPNFilterName                  string = "gpn"
 	AssetType                      string = "assettype"
 	CommittishFilterName           string = "commitsh"
+	HiveFilterName                 string = "hive"
 )
 
 const separator string = "/"

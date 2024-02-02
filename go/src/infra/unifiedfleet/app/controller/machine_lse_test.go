@@ -3057,16 +3057,17 @@ func TestDeleteMachineLSELabstation(t *testing.T) {
 func TestListMachineLSEs(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	machineLSEsWithSwitch := make([]*ufspb.MachineLSE, 0, 2)
+	machineLSEsWithProperties := make([]*ufspb.MachineLSE, 0, 2)
 	machineLSEs := make([]*ufspb.MachineLSE, 0, 4)
 	for i := 0; i < 4; i++ {
 		machineLSE := mockDutMachineLSE(fmt.Sprintf("machineLSE-%d", i))
 		if i%2 == 0 {
 			machineLSE.GetChromeosMachineLse().GetDeviceLse().NetworkDeviceInterface = &ufspb.SwitchInterface{Switch: "switch-1"}
+			machineLSE.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = "hive-1"
 		}
 		resp, _ := inventory.CreateMachineLSE(ctx, machineLSE)
 		if i%2 == 0 {
-			machineLSEsWithSwitch = append(machineLSEsWithSwitch, resp)
+			machineLSEsWithProperties = append(machineLSEsWithProperties, resp)
 		}
 		machineLSEs = append(machineLSEs, resp)
 	}
@@ -3080,7 +3081,13 @@ func TestListMachineLSEs(t *testing.T) {
 		Convey("List MachineLSEs - filter switch - happy path with filter", func() {
 			resp, _, _ := ListMachineLSEs(ctx, 5, "", "switch=switch-1", false, false)
 			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, machineLSEsWithSwitch)
+			So(resp, ShouldResembleProto, machineLSEsWithProperties)
+		})
+
+		Convey("List MachineLSEs - filter hive - happy path with filter", func() {
+			resp, _, _ := ListMachineLSEs(ctx, 5, "", "hive=hive-1", false, false)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, machineLSEsWithProperties)
 		})
 
 		Convey("ListMachineLSEs - Full listing - happy path", func() {
@@ -3088,6 +3095,7 @@ func TestListMachineLSEs(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(resp, ShouldResembleProto, machineLSEs)
 		})
+
 		Convey("List machineLSEs - list machine lses with free slots", func() {
 			for i := 0; i < 8; i++ {
 				machineLSE1 := &ufspb.MachineLSE{
