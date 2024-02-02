@@ -8,6 +8,7 @@ package chromeos.fleetcost;
 
 import "google/api/annotations.proto";
 import "google/protobuf/any.proto";
+import "infra/cros/fleetcost/api/indicator.proto";
 
 option go_package = "infra/cros/fleetcost/api;fleetcostpb";
 
@@ -25,6 +26,13 @@ service FleetCost {
   rpc PingUFS(PingUFSRequest) returns (PingUFSResponse) {
     option (google.api.http) = {
       post: "/v1/ping-ufs"
+    };
+  }
+
+  // CreateCostIndicator creates a new cost indicator.
+  rpc CreateCostIndicator(CreateCostIndicatorRequest) returns (CreateCostIndicatorResponse) {
+    option (google.api.http) = {
+      post: "/v1/create-cost-indicator"
     };
   }
 }
@@ -53,4 +61,14 @@ message PingUFSResponse {
   string ufs_error = 3;
   // ufs_hostname is the hostname of the UFS instance that we contacted.
   string ufs_hostname = 4;
+}
+
+// CreateCostIndicatorRequest creates a new cost indicator.
+message CreateCostIndicatorRequest {
+  CostIndicator cost_indicator = 1;
+}
+
+// CreateCostIndicatorResponse contains the newly created CostIndicator.
+message CreateCostIndicatorResponse {
+  CostIndicator cost_indicator = 1;
 }
