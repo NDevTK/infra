@@ -11,6 +11,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import duration_pb2 as google_dot_protobuf_dot_duration__pb2
 from go.chromium.org.luci.buildbucket.proto import project_config_pb2 as go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_project__config__pb2
 
 
@@ -20,9 +21,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z4go.chromium.org/luci/buildbucket/proto;buildbucketpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n;go.chromium.org/luci/buildbucket/proto/service_config.proto\x12\x0b\x62uildbucket\x1a;go.chromium.org/luci/buildbucket/proto/project_config.proto\"\xd0\x03\n\x0bSettingsCfg\x12/\n\x08swarming\x18\x01 \x01(\x0b\x32\x1d.buildbucket.SwarmingSettings\x12+\n\x06logdog\x18\x02 \x01(\x0b\x32\x1b.buildbucket.LogDogSettings\x12/\n\x08resultdb\x18\x04 \x01(\x0b\x32\x1d.buildbucket.ResultDBSettings\x12\x33\n\nexperiment\x18\x05 \x01(\x0b\x32\x1f.buildbucket.ExperimentSettings\x12\'\n\x04\x63ipd\x18\x06 \x01(\x0b\x32\x19.buildbucket.CipdSettings\x12!\n\x19known_public_gerrit_hosts\x18\x03 \x03(\t\x12-\n\x08\x62\x61\x63kends\x18\x07 \x03(\x0b\x32\x1b.buildbucket.BackendSetting\x12I\n\x11swarming_backends\x18\x08 \x03(\x0b\x32..buildbucket.SettingsCfg.SwarmingBackendsEntry\x1a\x37\n\x15SwarmingBackendsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xcd\x03\n\x0e\x42\x61\x63kendSetting\x12\x0e\n\x06target\x18\x01 \x01(\t\x12\x10\n\x08hostname\x18\x02 \x01(\t\x12\x15\n\tpubsub_id\x18\x03 \x01(\tB\x02\x18\x01\x12L\n\x12\x62uild_sync_setting\x18\x04 \x01(\x0b\x32,.buildbucket.BackendSetting.BuildSyncSettingB\x02\x18\x01\x12\x39\n\tfull_mode\x18\x05 \x01(\x0b\x32$.buildbucket.BackendSetting.FullModeH\x00\x12\x39\n\tlite_mode\x18\x06 \x01(\x0b\x32$.buildbucket.BackendSetting.LiteModeH\x00\x1a\x41\n\x10\x42uildSyncSetting\x12\x0e\n\x06shards\x18\x01 \x01(\x05\x12\x1d\n\x15sync_interval_seconds\x18\x02 \x01(\x05\x1ag\n\x08\x46ullMode\x12\x11\n\tpubsub_id\x18\x01 \x01(\t\x12H\n\x12\x62uild_sync_setting\x18\x02 \x01(\x0b\x32,.buildbucket.BackendSetting.BuildSyncSetting\x1a\n\n\x08LiteModeB\x06\n\x04Mode\"\x8c\x05\n\x10SwarmingSettings\x12\x15\n\rmilo_hostname\x18\x02 \x01(\t\x12<\n\rglobal_caches\x18\x04 \x03(\x0b\x32%.buildbucket.BuilderConfig.CacheEntry\x12<\n\ruser_packages\x18\x05 \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12>\n\x0f\x62\x62\x61gent_package\x18\x08 \x01(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12>\n\x0fkitchen_package\x18\x07 \x01(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12I\n\x1a\x61lternative_agent_packages\x18\t \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12G\n\x18\x62\x62\x61gent_utility_packages\x18\n \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x1a\xc4\x01\n\x07Package\x12\x14\n\x0cpackage_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x16\n\x0eversion_canary\x18\x03 \x01(\t\x12/\n\x08\x62uilders\x18\x04 \x01(\x0b\x32\x1d.buildbucket.BuilderPredicate\x12\x0e\n\x06subdir\x18\x05 \x01(\t\x12\x1a\n\x12omit_on_experiment\x18\x06 \x03(\t\x12\x1d\n\x15include_on_experiment\x18\x07 \x03(\tJ\x04\x08\x01\x10\x02J\x04\x08\x06\x10\x07\"\"\n\x0eLogDogSettings\x12\x10\n\x08hostname\x18\x01 \x01(\t\"\xe3\x01\n\x12\x45xperimentSettings\x12?\n\x0b\x65xperiments\x18\x01 \x03(\x0b\x32*.buildbucket.ExperimentSettings.Experiment\x1a\x8b\x01\n\nExperiment\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x15\n\rdefault_value\x18\x02 \x01(\x05\x12\x15\n\rminimum_value\x18\x03 \x01(\x05\x12/\n\x08\x62uilders\x18\x04 \x01(\x0b\x32\x1d.buildbucket.BuilderPredicate\x12\x10\n\x08inactive\x18\x05 \x01(\x08\"8\n\x10\x42uilderPredicate\x12\r\n\x05regex\x18\x01 \x03(\t\x12\x15\n\rregex_exclude\x18\x02 \x03(\t\"$\n\x10ResultDBSettings\x12\x10\n\x08hostname\x18\x01 \x01(\t\"\x99\x01\n\x0c\x43ipdSettings\x12\x0e\n\x06server\x18\x01 \x01(\t\x12\x30\n\x06source\x18\x02 \x01(\x0b\x32 .buildbucket.CipdSettings.Source\x1aG\n\x06Source\x12\x14\n\x0cpackage_name\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t\x12\x16\n\x0eversion_canary\x18\x04 \x01(\tB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
+  serialized_pb=b'\n;go.chromium.org/luci/buildbucket/proto/service_config.proto\x12\x0b\x62uildbucket\x1a\x1egoogle/protobuf/duration.proto\x1a;go.chromium.org/luci/buildbucket/proto/project_config.proto\"\xd0\x03\n\x0bSettingsCfg\x12/\n\x08swarming\x18\x01 \x01(\x0b\x32\x1d.buildbucket.SwarmingSettings\x12+\n\x06logdog\x18\x02 \x01(\x0b\x32\x1b.buildbucket.LogDogSettings\x12/\n\x08resultdb\x18\x04 \x01(\x0b\x32\x1d.buildbucket.ResultDBSettings\x12\x33\n\nexperiment\x18\x05 \x01(\x0b\x32\x1f.buildbucket.ExperimentSettings\x12\'\n\x04\x63ipd\x18\x06 \x01(\x0b\x32\x19.buildbucket.CipdSettings\x12!\n\x19known_public_gerrit_hosts\x18\x03 \x03(\t\x12-\n\x08\x62\x61\x63kends\x18\x07 \x03(\x0b\x32\x1b.buildbucket.BackendSetting\x12I\n\x11swarming_backends\x18\x08 \x03(\x0b\x32..buildbucket.SettingsCfg.SwarmingBackendsEntry\x1a\x37\n\x15SwarmingBackendsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xa4\x04\n\x0e\x42\x61\x63kendSetting\x12\x0e\n\x06target\x18\x01 \x01(\t\x12\x10\n\x08hostname\x18\x02 \x01(\t\x12\x15\n\tpubsub_id\x18\x03 \x01(\tB\x02\x18\x01\x12L\n\x12\x62uild_sync_setting\x18\x04 \x01(\x0b\x32,.buildbucket.BackendSetting.BuildSyncSettingB\x02\x18\x01\x12\x39\n\tfull_mode\x18\x05 \x01(\x0b\x32$.buildbucket.BackendSetting.FullModeH\x00\x12\x39\n\tlite_mode\x18\x06 \x01(\x0b\x32$.buildbucket.BackendSetting.LiteModeH\x00\x12\x38\n\x15task_creating_timeout\x18\x07 \x01(\x0b\x32\x19.google.protobuf.Duration\x1a\x41\n\x10\x42uildSyncSetting\x12\x0e\n\x06shards\x18\x01 \x01(\x05\x12\x1d\n\x15sync_interval_seconds\x18\x02 \x01(\x05\x1a\x83\x01\n\x08\x46ullMode\x12\x11\n\tpubsub_id\x18\x01 \x01(\t\x12H\n\x12\x62uild_sync_setting\x18\x02 \x01(\x0b\x32,.buildbucket.BackendSetting.BuildSyncSetting\x12\x1a\n\x12RedirectToTaskPage\x18\x03 \x01(\x08\x1a\n\n\x08LiteModeB\x06\n\x04Mode\"\x8c\x05\n\x10SwarmingSettings\x12\x15\n\rmilo_hostname\x18\x02 \x01(\t\x12<\n\rglobal_caches\x18\x04 \x03(\x0b\x32%.buildbucket.BuilderConfig.CacheEntry\x12<\n\ruser_packages\x18\x05 \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12>\n\x0f\x62\x62\x61gent_package\x18\x08 \x01(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12>\n\x0fkitchen_package\x18\x07 \x01(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12I\n\x1a\x61lternative_agent_packages\x18\t \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x12G\n\x18\x62\x62\x61gent_utility_packages\x18\n \x03(\x0b\x32%.buildbucket.SwarmingSettings.Package\x1a\xc4\x01\n\x07Package\x12\x14\n\x0cpackage_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x16\n\x0eversion_canary\x18\x03 \x01(\t\x12/\n\x08\x62uilders\x18\x04 \x01(\x0b\x32\x1d.buildbucket.BuilderPredicate\x12\x0e\n\x06subdir\x18\x05 \x01(\t\x12\x1a\n\x12omit_on_experiment\x18\x06 \x03(\t\x12\x1d\n\x15include_on_experiment\x18\x07 \x03(\tJ\x04\x08\x01\x10\x02J\x04\x08\x06\x10\x07\"\"\n\x0eLogDogSettings\x12\x10\n\x08hostname\x18\x01 \x01(\t\"\xe3\x01\n\x12\x45xperimentSettings\x12?\n\x0b\x65xperiments\x18\x01 \x03(\x0b\x32*.buildbucket.ExperimentSettings.Experiment\x1a\x8b\x01\n\nExperiment\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x15\n\rdefault_value\x18\x02 \x01(\x05\x12\x15\n\rminimum_value\x18\x03 \x01(\x05\x12/\n\x08\x62uilders\x18\x04 \x01(\x0b\x32\x1d.buildbucket.BuilderPredicate\x12\x10\n\x08inactive\x18\x05 \x01(\x08\"8\n\x10\x42uilderPredicate\x12\r\n\x05regex\x18\x01 \x03(\t\x12\x15\n\rregex_exclude\x18\x02 \x03(\t\"$\n\x10ResultDBSettings\x12\x10\n\x08hostname\x18\x01 \x01(\t\"\x99\x01\n\x0c\x43ipdSettings\x12\x0e\n\x06server\x18\x01 \x01(\t\x12\x30\n\x06source\x18\x02 \x01(\x0b\x32 .buildbucket.CipdSettings.Source\x1aG\n\x06Source\x12\x14\n\x0cpackage_name\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t\x12\x16\n\x0eversion_canary\x18\x04 \x01(\tB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
   ,
-  dependencies=[go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_project__config__pb2.DESCRIPTOR,])
+  dependencies=[google_dot_protobuf_dot_duration__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_project__config__pb2.DESCRIPTOR,])
 
 
 
@@ -61,8 +62,8 @@ _SETTINGSCFG_SWARMINGBACKENDSENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=547,
-  serialized_end=602,
+  serialized_start=579,
+  serialized_end=634,
 )
 
 _SETTINGSCFG = _descriptor.Descriptor(
@@ -141,8 +142,8 @@ _SETTINGSCFG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=138,
-  serialized_end=602,
+  serialized_start=170,
+  serialized_end=634,
 )
 
 
@@ -180,8 +181,8 @@ _BACKENDSETTING_BUILDSYNCSETTING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=876,
-  serialized_end=941,
+  serialized_start=966,
+  serialized_end=1031,
 )
 
 _BACKENDSETTING_FULLMODE = _descriptor.Descriptor(
@@ -206,6 +207,13 @@ _BACKENDSETTING_FULLMODE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='RedirectToTaskPage', full_name='buildbucket.BackendSetting.FullMode.RedirectToTaskPage', index=2,
+      number=3, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -218,8 +226,8 @@ _BACKENDSETTING_FULLMODE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=943,
-  serialized_end=1046,
+  serialized_start=1034,
+  serialized_end=1165,
 )
 
 _BACKENDSETTING_LITEMODE = _descriptor.Descriptor(
@@ -242,8 +250,8 @@ _BACKENDSETTING_LITEMODE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1048,
-  serialized_end=1058,
+  serialized_start=1167,
+  serialized_end=1177,
 )
 
 _BACKENDSETTING = _descriptor.Descriptor(
@@ -296,6 +304,13 @@ _BACKENDSETTING = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='task_creating_timeout', full_name='buildbucket.BackendSetting.task_creating_timeout', index=6,
+      number=7, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -313,8 +328,8 @@ _BACKENDSETTING = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=605,
-  serialized_end=1066,
+  serialized_start=637,
+  serialized_end=1185,
 )
 
 
@@ -387,8 +402,8 @@ _SWARMINGSETTINGS_PACKAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1513,
-  serialized_end=1709,
+  serialized_start=1632,
+  serialized_end=1828,
 )
 
 _SWARMINGSETTINGS = _descriptor.Descriptor(
@@ -460,8 +475,8 @@ _SWARMINGSETTINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1069,
-  serialized_end=1721,
+  serialized_start=1188,
+  serialized_end=1840,
 )
 
 
@@ -492,8 +507,8 @@ _LOGDOGSETTINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1723,
-  serialized_end=1757,
+  serialized_start=1842,
+  serialized_end=1876,
 )
 
 
@@ -552,8 +567,8 @@ _EXPERIMENTSETTINGS_EXPERIMENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1848,
-  serialized_end=1987,
+  serialized_start=1967,
+  serialized_end=2106,
 )
 
 _EXPERIMENTSETTINGS = _descriptor.Descriptor(
@@ -583,8 +598,8 @@ _EXPERIMENTSETTINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1760,
-  serialized_end=1987,
+  serialized_start=1879,
+  serialized_end=2106,
 )
 
 
@@ -622,8 +637,8 @@ _BUILDERPREDICATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1989,
-  serialized_end=2045,
+  serialized_start=2108,
+  serialized_end=2164,
 )
 
 
@@ -654,8 +669,8 @@ _RESULTDBSETTINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2047,
-  serialized_end=2083,
+  serialized_start=2166,
+  serialized_end=2202,
 )
 
 
@@ -700,8 +715,8 @@ _CIPDSETTINGS_SOURCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2168,
-  serialized_end=2239,
+  serialized_start=2287,
+  serialized_end=2358,
 )
 
 _CIPDSETTINGS = _descriptor.Descriptor(
@@ -738,8 +753,8 @@ _CIPDSETTINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2086,
-  serialized_end=2239,
+  serialized_start=2205,
+  serialized_end=2358,
 )
 
 _SETTINGSCFG_SWARMINGBACKENDSENTRY.containing_type = _SETTINGSCFG
@@ -757,6 +772,7 @@ _BACKENDSETTING_LITEMODE.containing_type = _BACKENDSETTING
 _BACKENDSETTING.fields_by_name['build_sync_setting'].message_type = _BACKENDSETTING_BUILDSYNCSETTING
 _BACKENDSETTING.fields_by_name['full_mode'].message_type = _BACKENDSETTING_FULLMODE
 _BACKENDSETTING.fields_by_name['lite_mode'].message_type = _BACKENDSETTING_LITEMODE
+_BACKENDSETTING.fields_by_name['task_creating_timeout'].message_type = google_dot_protobuf_dot_duration__pb2._DURATION
 _BACKENDSETTING.oneofs_by_name['Mode'].fields.append(
   _BACKENDSETTING.fields_by_name['full_mode'])
 _BACKENDSETTING.fields_by_name['full_mode'].containing_oneof = _BACKENDSETTING.oneofs_by_name['Mode']

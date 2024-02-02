@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z0go.chromium.org/luci/cv/api/bigquery/v1;bigquery',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n5go.chromium.org/luci/cv/api/bigquery/v1/attempt.proto\x12\x08\x62igquery\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\x03\n\x07\x41ttempt\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x14\n\x0cluci_project\x18\x02 \x01(\t\x12\x14\n\x0c\x63onfig_group\x18\x0b \x01(\t\x12\x14\n\x0c\x63l_group_key\x18\x03 \x01(\t\x12\x1f\n\x17\x65quivalent_cl_group_key\x18\x04 \x01(\t\x12.\n\nstart_time\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\x0egerrit_changes\x18\x07 \x03(\x0b\x32\x16.bigquery.GerritChange\x12\x1f\n\x06\x62uilds\x18\x08 \x03(\x0b\x32\x0f.bigquery.Build\x12\'\n\x06status\x18\t \x01(\x0e\x32\x17.bigquery.AttemptStatus\x12-\n\tsubstatus\x18\n \x01(\x0e\x32\x1a.bigquery.AttemptSubstatus\x12\x1e\n\x16has_custom_requirement\x18\x0c \x01(\x08\"\xf3\x02\n\x0cGerritChange\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0e\n\x06\x63hange\x18\x03 \x01(\x03\x12\x10\n\x08patchset\x18\x04 \x01(\x03\x12$\n\x1c\x65\x61rliest_equivalent_patchset\x18\x05 \x01(\x03\x12\x30\n\x0ctrigger_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x1c\n\x04mode\x18\x07 \x01(\x0e\x32\x0e.bigquery.Mode\x12:\n\rsubmit_status\x18\x08 \x01(\x0e\x32#.bigquery.GerritChange.SubmitStatus\x12\r\n\x05owner\x18\t \x01(\t\"a\n\x0cSubmitStatus\x12\x1d\n\x19SUBMIT_STATUS_UNSPECIFIED\x10\x00\x12\x0b\n\x07PENDING\x10\x01\x12\x0b\n\x07UNKNOWN\x10\x02\x12\x0b\n\x07\x46\x41ILURE\x10\x03\x12\x0b\n\x07SUCCESS\x10\x04\"\xab\x01\n\x05\x42uild\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04host\x18\x02 \x01(\t\x12&\n\x06origin\x18\x03 \x01(\x0e\x32\x16.bigquery.Build.Origin\x12\x10\n\x08\x63ritical\x18\x04 \x01(\x08\"N\n\x06Origin\x12\x16\n\x12ORIGIN_UNSPECIFIED\x10\x00\x12\x10\n\x0cNOT_REUSABLE\x10\x01\x12\x0e\n\nNOT_REUSED\x10\x02\x12\n\n\x06REUSED\x10\x03*J\n\x04Mode\x12\x14\n\x10MODE_UNSPECIFIED\x10\x00\x12\x0b\n\x07\x44RY_RUN\x10\x01\x12\x0c\n\x08\x46ULL_RUN\x10\x02\x12\x11\n\rQUICK_DRY_RUN\x10\x03*v\n\rAttemptStatus\x12\x1e\n\x1a\x41TTEMPT_STATUS_UNSPECIFIED\x10\x00\x12\x0b\n\x07STARTED\x10\x01\x12\x0b\n\x07SUCCESS\x10\x02\x12\x0b\n\x07\x41\x42ORTED\x10\x03\x12\x0b\n\x07\x46\x41ILURE\x10\x04\x12\x11\n\rINFRA_FAILURE\x10\x05*\xe4\x01\n\x10\x41ttemptSubstatus\x12!\n\x1d\x41TTEMPT_SUBSTATUS_UNSPECIFIED\x10\x00\x12\x10\n\x0cNO_SUBSTATUS\x10\x01\x12\x12\n\x0e\x46\x41ILED_TRYJOBS\x10\x02\x12\x0f\n\x0b\x46\x41ILED_LINT\x10\x03\x12\x0e\n\nUNAPPROVED\x10\x04\x12\x15\n\x11PERMISSION_DENIED\x10\x05\x12\x1a\n\x16UNSATISFIED_DEPENDENCY\x10\x06\x12\x11\n\rMANUAL_CANCEL\x10\x07\x12 \n\x1c\x42UILDBUCKET_MISCONFIGURATION\x10\x08\x42\x32Z0go.chromium.org/luci/cv/api/bigquery/v1;bigqueryb\x06proto3'
+  serialized_pb=b'\n5go.chromium.org/luci/cv/api/bigquery/v1/attempt.proto\x12\x08\x62igquery\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\x03\n\x07\x41ttempt\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x14\n\x0cluci_project\x18\x02 \x01(\t\x12\x14\n\x0c\x63onfig_group\x18\x0b \x01(\t\x12\x14\n\x0c\x63l_group_key\x18\x03 \x01(\t\x12\x1f\n\x17\x65quivalent_cl_group_key\x18\x04 \x01(\t\x12.\n\nstart_time\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\x0egerrit_changes\x18\x07 \x03(\x0b\x32\x16.bigquery.GerritChange\x12\x1f\n\x06\x62uilds\x18\x08 \x03(\x0b\x32\x0f.bigquery.Build\x12\'\n\x06status\x18\t \x01(\x0e\x32\x17.bigquery.AttemptStatus\x12-\n\tsubstatus\x18\n \x01(\x0e\x32\x1a.bigquery.AttemptSubstatus\x12\x1e\n\x16has_custom_requirement\x18\x0c \x01(\x08\"\x8d\x03\n\x0cGerritChange\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0e\n\x06\x63hange\x18\x03 \x01(\x03\x12\x10\n\x08patchset\x18\x04 \x01(\x03\x12$\n\x1c\x65\x61rliest_equivalent_patchset\x18\x05 \x01(\x03\x12\x30\n\x0ctrigger_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x1c\n\x04mode\x18\x07 \x01(\x0e\x32\x0e.bigquery.Mode\x12:\n\rsubmit_status\x18\x08 \x01(\x0e\x32#.bigquery.GerritChange.SubmitStatus\x12\x11\n\x05owner\x18\t \x01(\tB\x02\x18\x01\x12\x14\n\x0cis_owner_bot\x18\n \x01(\x08\"a\n\x0cSubmitStatus\x12\x1d\n\x19SUBMIT_STATUS_UNSPECIFIED\x10\x00\x12\x0b\n\x07PENDING\x10\x01\x12\x0b\n\x07UNKNOWN\x10\x02\x12\x0b\n\x07\x46\x41ILURE\x10\x03\x12\x0b\n\x07SUCCESS\x10\x04\"\xab\x01\n\x05\x42uild\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04host\x18\x02 \x01(\t\x12&\n\x06origin\x18\x03 \x01(\x0e\x32\x16.bigquery.Build.Origin\x12\x10\n\x08\x63ritical\x18\x04 \x01(\x08\"N\n\x06Origin\x12\x16\n\x12ORIGIN_UNSPECIFIED\x10\x00\x12\x10\n\x0cNOT_REUSABLE\x10\x01\x12\x0e\n\nNOT_REUSED\x10\x02\x12\n\n\x06REUSED\x10\x03*=\n\x04Mode\x12\x14\n\x10MODE_UNSPECIFIED\x10\x00\x12\x0b\n\x07\x44RY_RUN\x10\x01\x12\x0c\n\x08\x46ULL_RUN\x10\x02\"\x04\x08\x03\x10\x03*v\n\rAttemptStatus\x12\x1e\n\x1a\x41TTEMPT_STATUS_UNSPECIFIED\x10\x00\x12\x0b\n\x07STARTED\x10\x01\x12\x0b\n\x07SUCCESS\x10\x02\x12\x0b\n\x07\x41\x42ORTED\x10\x03\x12\x0b\n\x07\x46\x41ILURE\x10\x04\x12\x11\n\rINFRA_FAILURE\x10\x05*\xe4\x01\n\x10\x41ttemptSubstatus\x12!\n\x1d\x41TTEMPT_SUBSTATUS_UNSPECIFIED\x10\x00\x12\x10\n\x0cNO_SUBSTATUS\x10\x01\x12\x12\n\x0e\x46\x41ILED_TRYJOBS\x10\x02\x12\x0f\n\x0b\x46\x41ILED_LINT\x10\x03\x12\x0e\n\nUNAPPROVED\x10\x04\x12\x15\n\x11PERMISSION_DENIED\x10\x05\x12\x1a\n\x16UNSATISFIED_DEPENDENCY\x10\x06\x12\x11\n\rMANUAL_CANCEL\x10\x07\x12 \n\x1c\x42UILDBUCKET_MISCONFIGURATION\x10\x08\x42\x32Z0go.chromium.org/luci/cv/api/bigquery/v1;bigqueryb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 
@@ -47,16 +47,11 @@ _MODE = _descriptor.EnumDescriptor(
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='QUICK_DRY_RUN', index=3, number=3,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1067,
-  serialized_end=1141,
+  serialized_start=1093,
+  serialized_end=1154,
 )
 _sym_db.RegisterEnumDescriptor(_MODE)
 
@@ -101,8 +96,8 @@ _ATTEMPTSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1143,
-  serialized_end=1261,
+  serialized_start=1156,
+  serialized_end=1274,
 )
 _sym_db.RegisterEnumDescriptor(_ATTEMPTSTATUS)
 
@@ -162,8 +157,8 @@ _ATTEMPTSUBSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1264,
-  serialized_end=1492,
+  serialized_start=1277,
+  serialized_end=1505,
 )
 _sym_db.RegisterEnumDescriptor(_ATTEMPTSUBSTATUS)
 
@@ -171,7 +166,6 @@ AttemptSubstatus = enum_type_wrapper.EnumTypeWrapper(_ATTEMPTSUBSTATUS)
 MODE_UNSPECIFIED = 0
 DRY_RUN = 1
 FULL_RUN = 2
-QUICK_DRY_RUN = 3
 ATTEMPT_STATUS_UNSPECIFIED = 0
 STARTED = 1
 SUCCESS = 2
@@ -224,8 +218,8 @@ _GERRITCHANGE_SUBMITSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=794,
-  serialized_end=891,
+  serialized_start=820,
+  serialized_end=917,
 )
 _sym_db.RegisterEnumDescriptor(_GERRITCHANGE_SUBMITSTATUS)
 
@@ -259,8 +253,8 @@ _BUILD_ORIGIN = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=987,
-  serialized_end=1065,
+  serialized_start=1013,
+  serialized_end=1091,
 )
 _sym_db.RegisterEnumDescriptor(_BUILD_ORIGIN)
 
@@ -444,6 +438,13 @@ _GERRITCHANGE = _descriptor.Descriptor(
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
+      serialized_options=b'\030\001', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='is_owner_bot', full_name='bigquery.GerritChange.is_owner_bot', index=9,
+      number=10, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
@@ -459,7 +460,7 @@ _GERRITCHANGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=520,
-  serialized_end=891,
+  serialized_end=917,
 )
 
 
@@ -512,8 +513,8 @@ _BUILD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=894,
-  serialized_end=1065,
+  serialized_start=920,
+  serialized_end=1091,
 )
 
 _ATTEMPT.fields_by_name['start_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
@@ -559,4 +560,5 @@ _sym_db.RegisterMessage(Build)
 
 
 DESCRIPTOR._options = None
+_GERRITCHANGE.fields_by_name['owner']._options = None
 # @@protoc_insertion_point(module_scope)

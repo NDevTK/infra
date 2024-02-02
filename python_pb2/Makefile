@@ -20,10 +20,12 @@ $(TOOLS)/protoc-gen-prpc-python:
 	echo "Run gclient sync yourself"
 	exit 1
 
+LEGACY_PROTOC = $(INFRA)/cipd/legacy/bin/protoc
+
 regenerate: $(PROTOC) $(TOOLS)/protoc-gen-prpc-python
-	rm -rf ./go
+	rm -rf ./go ./validate
 	python3 ${THIS_DIR}/third_party/validate/update.py
-	$(INFRA)/cipd/legacy/bin/protoc \
+	$(LEGACY_PROTOC) \
 		--proto_path $(INFRA)/go/src \
 		--proto_path ${THIS_DIR}/third_party \
 		--proto_path $(LUCI_GO)/common/proto/googleapis \
@@ -35,6 +37,7 @@ regenerate: $(PROTOC) $(TOOLS)/protoc-gen-prpc-python
 		$(LUCI_GO)/cv/api/bigquery/v1/*.proto \
 		$(LUCI_GO)/cv/api/config/v2/*.proto \
 		$(LUCI_GO)/cv/api/recipe/v1/*.proto \
+		$(LUCI_GO)/cv/api/v1/*.proto \
 		$(LUCI_GO)/resultdb/proto/v1/*.proto \
 		$(LUCI_GO)/scheduler/appengine/messages/config.proto  \
 		$(LUCI_GO)/server/auth/delegation/messages/*.proto  \
@@ -44,7 +47,14 @@ regenerate: $(PROTOC) $(TOOLS)/protoc-gen-prpc-python
 		--plugin=$(TOOLS)/protoc-gen-prpc-python \
 		--python_out ./ \
 		--prpc-python_out .
+	$(LEGACY_PROTOC) \
+		--proto_path ${THIS_DIR}/third_party \
+		${THIS_DIR}/third_party/validate/*.proto \
+		--plugin=$(TOOLS)/protoc-gen-prpc-python \
+		--python_out ./ \
+		--prpc-python_out .
 	python3 _fill_init_py.py go/
+	python3 _fill_init_py.py validate/
 	@git -C $(LUCI_GO) rev-parse HEAD > luci-go.revision
 	@git -C $(LUCI_GO) diff --quiet || echo 'DIRTY: please clean luci-go checkout' >> luci-go.revision
 	@git -C $(LUCI_GO) merge-base --is-ancestor HEAD origin/main || echo "NOT-LANDED: please checkout revision from luci-go's origin/main" >> luci-go.revision
