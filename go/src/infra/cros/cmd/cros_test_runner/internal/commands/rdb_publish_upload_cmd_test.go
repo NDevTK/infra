@@ -262,6 +262,14 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					Id:   &labapi.DutTopology_Id{Value: "0wgtfqin2033834d-ecghcra"},
 					Duts: []*labapi.Dut{dut},
 				},
+				SchedulingMetadata: &artifactpb.SchedulingMetadata{
+					SchedulingArgs: map[string]string{
+						"display_name":      "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq",
+						"analytics_name":    "Bluetooth_Sa_Perbuild",
+						"ctp-fwd-task-name": "Bluetooth_Sa_Perbuild",
+						"qs_account":        "unmanaged_p2",
+					},
+				},
 			},
 			TestRuns: []*artifactpb.TestRun{
 				{
@@ -314,8 +322,13 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				Builder: "test_runner-dev",
 			},
 			AncestorIds: []int64{98, 99},
-			Tags:        []*buildbucketpb.StringPair{{Key: "display_name", Value: "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq"}},
-			CreateTime:  createTime,
+			Tags: []*buildbucketpb.StringPair{
+				{Key: "display_name", Value: "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq"},
+				{Key: "analytics_name", Value: "Bluetooth_Sa_Perbuild"},
+				{Key: "ctp-fwd-task-name", Value: "Bluetooth_Sa_Perbuild"},
+				{Key: "qs_account", Value: "unmanaged_p2"},
+			},
+			CreateTime: createTime,
 			Infra: &bbpb.BuildInfra{Swarming: &bbpb.BuildInfra_Swarming{
 				TaskId:      "taskId1",
 				ParentRunId: "parentId1",

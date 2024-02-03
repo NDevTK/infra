@@ -148,6 +148,9 @@ func constructTestResultFromStateKeeper(
 	// - Secondary execution info
 	populateSecondaryExecutionInfo(ctx, resultProto, sk)
 
+	// - Scheduling metadata
+	populateSchedulingMetadata(ctx, resultProto, build.GetTags())
+
 	// TestRuns
 	populateTestRunsInfo(ctx, resultProto, sk, botDims, build)
 
@@ -386,6 +389,24 @@ func populateSecondaryExecutionInfo(
 		secondaryExecInfos = append(secondaryExecInfos, secondaryExecInfo)
 	}
 	resultProto.TestInvocation.SecondaryExecutionsInfo = secondaryExecInfos
+}
+
+// populateSchedulingMetadata populates scheduling metadata.
+func populateSchedulingMetadata(
+	ctx context.Context,
+	resultProto *artifactpb.TestResult,
+	tags []*buildbucketpb.StringPair) {
+	schedulingArgs := map[string]string{}
+	for _, tag := range tags {
+		schedulingArgs[tag.GetKey()] = tag.Value
+	}
+
+	if len(schedulingArgs) != 0 {
+		resultProto.TestInvocation.SchedulingMetadata =
+			&artifactpb.SchedulingMetadata{
+				SchedulingArgs: schedulingArgs,
+			}
+	}
 }
 
 // populateTestRunsInfo populates test runs info.
