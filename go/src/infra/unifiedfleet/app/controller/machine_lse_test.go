@@ -923,12 +923,6 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, labstationMachinelse2)
 
-			/* TODO(eshwarn): Add back when implement labstation state
-			s, err := state.GetStateRecord(ctx, "hosts/RedLabstation-11")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_DEPLOYED_PRE_SERVING)
-			*/
-
 			// No changes happened in this update
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/RedLabstation-11")
 			So(err, ShouldBeNil)
@@ -1491,13 +1485,6 @@ func TestUpdateMachineLSE(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, labstationMachinelse2)
-
-			/* TODO(eshwarn): Add back when implement labstation state
-			s, err := state.GetStateRecord(ctx, "hosts/RedLabstation-11")
-			So(err, ShouldBeNil)
-			// Sets it back to needs_deloy
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_DEPLOYED_PRE_SERVING)
-			*/
 
 			// No changes happened in this update
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/RedLabstation-11")
