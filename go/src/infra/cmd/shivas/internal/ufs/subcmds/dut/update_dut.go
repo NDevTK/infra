@@ -60,6 +60,7 @@ const (
 	// DUT related UpdateMask paths.
 	poolsPath   = "dut.pools"
 	licensePath = "dut.licenses"
+	hivePath    = "dut.hive"
 
 	// ACS related UpdateMask paths.
 	chameleonsPath           = "dut.chameleon.type"
@@ -130,6 +131,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.logicalZone, "logicalzone", "", "Logical zone. "+cmdhelp.LogicalZoneHelpText)
 		c.Flags.StringVar(&c.dolosHost, "dolos-host", "", "Hostname of the host machine of the Dolos device, usually it's a labstation. Clearing this field will delete the dolos from the DUT. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.dolosSerialCable, "dolos-serial-cable", "", "Serial number from the Dolos cable(the one between Dolos and DUT).")
+		c.Flags.StringVar(&c.hive, "hive", "", "Hive name for the DUT. "+cmdhelp.ClearFieldHelpText)
 
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a deploy task for all the updates.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
@@ -190,6 +192,7 @@ type updateDUT struct {
 	logicalZone              string
 	dolosHost                string
 	dolosSerialCable         string
+	hive                     string
 
 	// Deploy task inputs.
 	forceDeploy bool
@@ -663,6 +666,16 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 				})
 			}
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Licenses = licenses
+		}
+	}
+
+	// Check if hive field is being updated.
+	if c.hive != "" {
+		mask.Paths = append(mask.Paths, hivePath)
+		if c.hive != utils.ClearFieldValue {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
+		} else {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = ""
 		}
 	}
 
