@@ -63,6 +63,7 @@ Gets the ChromeOS DUT and prints the output in user-specified format.`,
 		c.Flags.Var(flag.StringSlice(&c.rpms), "rpm", "Name(s) of a rpm to filter by. Can be specified multiple times.")
 		c.Flags.Var(flag.StringSlice(&c.pools), "pools", "Name(s) of a tag to filter by. Can be specified multiple times.")
 		c.Flags.Var(flag.StringSlice(&c.logicalzones), "logicalzone", "Name(s) of a logical zone to filter by. Can be specified multiple times."+cmdhelp.LogicalZoneHelpText)
+		c.Flags.Var(flag.StringSlice(&c.hive), "hive", "Name(s) of a hive to filter by. Can be specified multiple times.")
 		c.Flags.BoolVar(&c.wantHostInfoStore, "host-info-store", false, "write host info store to stdout")
 
 		return c
@@ -89,6 +90,7 @@ type getDut struct {
 	rpms         []string
 	pools        []string
 	logicalzones []string
+	hive         []string
 
 	pageSize          int
 	keysOnly          bool
@@ -189,6 +191,7 @@ func (c *getDut) formatFilters() []string {
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.StateFilterName, c.states)...)
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.PoolsFilterName, c.pools)...)
 	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.LogicalZoneFilterName, c.logicalzones)...)
+	filters = utils.JoinFilters(filters, utils.PrefixFilters(ufsUtil.HiveFilterName, c.hive)...)
 	return filters
 }
 
