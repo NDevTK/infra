@@ -858,6 +858,16 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			So(err, ShouldNotBeNil)
 		})
 	})
+
+	Convey("UpdateMachineLSE for a DUT - Hive - Success", t, func() {
+		dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-22")
+		dutMachinelse3.Machines = []string{"machine-22"}
+		dutMachinelse3.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = "hive-1"
+		resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+		So(err, ShouldBeNil)
+		So(resp, ShouldNotBeNil)
+		So(resp, ShouldResembleProto, dutMachinelse3)
+	})
 }
 
 func TestUpdateMachineLSELabstation(t *testing.T) {

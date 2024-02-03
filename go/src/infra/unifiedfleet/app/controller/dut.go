@@ -542,6 +542,7 @@ func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufs
 		case "resourceState":
 		case "dut.pools":
 		case "dut.licenses":
+		case "dut.hive":
 		case "dut.servo.port":
 		case "dut.servo.serial":
 		case "dut.servo.setup":
@@ -710,6 +711,8 @@ func processUpdateMachineLSEDUTMask(oldDut, newDut *chromeosLab.DeviceUnderTest,
 		} else {
 			oldDut.Licenses = append(oldDut.GetLicenses(), newDut.GetLicenses()...)
 		}
+	case "dut.hive":
+		oldDut.Hive = newDut.GetHive()
 	case "dut.carrier":
 		oldDut.GetPeripherals().Carrier = newDut.GetPeripherals().GetCarrier()
 	case "dut.starfishSlotMapping":
