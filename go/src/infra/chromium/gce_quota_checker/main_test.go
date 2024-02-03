@@ -16,13 +16,14 @@ import (
 	gceproviderpb "go.chromium.org/luci/gce/api/config/v1"
 )
 
-func generateVMConfig(project string, zone string, amountMax int32, network string) *gceproviderpb.Configs {
+func generateVMConfig(project string, zone string, amountMax int32, network string, machineType string) *gceproviderpb.Configs {
 	attributes := &gceproviderpb.VM{
 		Project: project,
 		NetworkInterface: []*gceproviderpb.NetworkInterface{
 			{Network: network},
 		},
-		Zone: zone,
+		Zone:        zone,
+		MachineType: machineType,
 	}
 	amount := &gceproviderpb.Amount{
 		Max: amountMax,
@@ -37,6 +38,39 @@ func generateVMConfig(project string, zone string, amountMax int32, network stri
 	return configs
 }
 
+func addExternalIP(configs ...*gceproviderpb.Configs) {
+	for _, config := range configs {
+		network := config.Vms[0].Attributes.NetworkInterface[0]
+		network.AccessConfig = []*gceproviderpb.AccessConfig{
+			{},
+		}
+	}
+}
+
+func addDisks(configs *gceproviderpb.Configs, hddGB int64, remoteSSDGB int64, localSSDGB int64) {
+	attributes := configs.Vms[0].Attributes
+	if hddGB > 0 {
+		newDisk := &gceproviderpb.Disk{
+			Size: hddGB,
+		}
+		attributes.Disk = append(attributes.Disk, newDisk)
+	}
+	if remoteSSDGB > 0 {
+		newDisk := &gceproviderpb.Disk{
+			Size: remoteSSDGB,
+			Type: "zones/{{.Zone}}/diskTypes/pd-ssd",
+		}
+		attributes.Disk = append(attributes.Disk, newDisk)
+	}
+	if localSSDGB > 0 {
+		newDisk := &gceproviderpb.Disk{
+			Size: localSSDGB,
+			Type: "zones/{{.Zone}}/diskTypes/local-ssd",
+		}
+		attributes.Disk = append(attributes.Disk, newDisk)
+	}
+}
+
 func writeConfigs(tmpDir string, configs ...*gceproviderpb.Configs) []string {
 	var configPaths []string
 	for i, config := range configs {
@@ -48,18 +82,20 @@ func writeConfigs(tmpDir string, configs ...*gceproviderpb.Configs) []string {
 		configPaths = append(configPaths, configPath)
 	}
 	return configPaths
-
 }
 
 // initMaps creates and returns all the quota maps, with empty quota entries
 // created for all possible regions and networks. This would normally be done
 // for us via the get*Quotas() functions, but those aren't covered in tests
 // here, so need to do this ourselves.
-func initMaps(possibleRegions []string, possibleNetworks []string) (map[string]*regionQuotas, map[string]*quotaVals) {
+func initMaps(possibleRegions []string, possibleNetworks []string, possibleFamilies []string) (map[string]*regionQuotas, map[string]*quotaVals) {
 	quotasPerRegion := make(map[string]*regionQuotas)
 	quotasPerNetwork := make(map[string]*quotaVals)
 	for _, region := range possibleRegions {
 		quotasPerRegion[region] = &regionQuotas{localSSDPerFamilyQuota: make(map[string]*quotaVals)}
+		for _, family := range possibleFamilies {
+			quotasPerRegion[region].localSSDPerFamilyQuota[family] = &quotaVals{}
+		}
 	}
 	for _, network := range possibleNetworks {
 		quotasPerNetwork[network] = &quotaVals{}
@@ -72,13 +108,14 @@ func TestParseCfgFiles(t *testing.T) {
 
 	possibleRegions := []string{"us-east1", "us-west1", "us-central1"}
 	possibleNetworks := []string{"networkA", "networkB"}
+	possibleFamilies := []string{"g1", "n1", "n2", "e2"}
 
 	Convey("test multiple projects", t, func() {
-		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks)
+		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks, possibleFamilies)
 		region, zone := possibleRegions[0], fmt.Sprintf("%s-a", possibleRegions[0])
 		configs := []*gceproviderpb.Configs{
-			generateVMConfig("projectA", zone, 1, possibleNetworks[0]),
-			generateVMConfig("projectB", zone, 10, possibleNetworks[0]),
+			generateVMConfig("projectA", zone, 1, possibleNetworks[0], "g1-small"),
+			generateVMConfig("projectB", zone, 10, possibleNetworks[0], "g1-small"),
 		}
 		configPaths := writeConfigs(t.TempDir(), configs...)
 
@@ -88,15 +125,15 @@ func TestParseCfgFiles(t *testing.T) {
 	})
 
 	Convey("test multiple zones and regions", t, func() {
-		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks)
+		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks, possibleFamilies)
 		region1, region2 := possibleRegions[0], possibleRegions[1]
 		zone1a, zone1b := fmt.Sprintf("%s-a", region1), fmt.Sprintf("%s-b", region1)
 		zone2a, zone2b := fmt.Sprintf("%s-a", region2), fmt.Sprintf("%s-b", region2)
 		configs := []*gceproviderpb.Configs{
-			generateVMConfig("project", zone1a, 1, possibleNetworks[0]),
-			generateVMConfig("project", zone1b, 2, possibleNetworks[0]),
-			generateVMConfig("project", zone2a, 10, possibleNetworks[0]),
-			generateVMConfig("project", zone2b, 20, possibleNetworks[0]),
+			generateVMConfig("project", zone1a, 1, possibleNetworks[0], "g1-small"),
+			generateVMConfig("project", zone1b, 2, possibleNetworks[0], "g1-small"),
+			generateVMConfig("project", zone2a, 10, possibleNetworks[0], "g1-small"),
+			generateVMConfig("project", zone2b, 20, possibleNetworks[0], "g1-small"),
 		}
 		configPaths := writeConfigs(t.TempDir(), configs...)
 
@@ -107,14 +144,14 @@ func TestParseCfgFiles(t *testing.T) {
 	})
 
 	Convey("test networks", t, func() {
-		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks)
+		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks, possibleFamilies)
 		zone := fmt.Sprintf("%s-a", possibleRegions[0])
 		network1, network2 := possibleNetworks[0], possibleNetworks[1]
 		configs := []*gceproviderpb.Configs{
-			generateVMConfig("project", zone, 1, network1),
-			generateVMConfig("project", zone, 1, network1),
-			generateVMConfig("project", zone, 1, network1),
-			generateVMConfig("project", zone, 1, network2),
+			generateVMConfig("project", zone, 1, network1, "g1-small"),
+			generateVMConfig("project", zone, 1, network1, "g1-small"),
+			generateVMConfig("project", zone, 1, network1, "g1-small"),
+			generateVMConfig("project", zone, 1, network2, "g1-small"),
 		}
 		configPaths := writeConfigs(t.TempDir(), configs...)
 
@@ -124,9 +161,93 @@ func TestParseCfgFiles(t *testing.T) {
 		So(quotasPerNetwork[network2].used, ShouldEqual, 1)
 	})
 
-	// TODO: Add test coverage for IP address
+	Convey("test IP addresses", t, func() {
+		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks, possibleFamilies)
+		region1, zone1a := possibleRegions[0], fmt.Sprintf("%s-a", possibleRegions[0])
+		region2, zone2a := possibleRegions[1], fmt.Sprintf("%s-a", possibleRegions[1])
+		network1, network2 := possibleNetworks[0], possibleNetworks[1]
+		configs := []*gceproviderpb.Configs{
+			generateVMConfig("project", zone1a, 1, network1, "g1-small"),
+			generateVMConfig("project", zone1a, 1, network1, "g1-small"),
+			generateVMConfig("project", zone1a, 1, network1, "g1-small"),
+			generateVMConfig("project", zone1a, 10, network2, "g1-small"),
+			generateVMConfig("project", zone2a, 100, network2, "g1-small"),
+		}
+		// Add an "external IP" to all instances but one.
+		addExternalIP(configs[0], configs[1], configs[3], configs[4])
+		configPaths := writeConfigs(t.TempDir(), configs...)
 
-	// TODO: Add test coverage for core count
+		parseCfgFiles("project", configPaths, possibleRegions, quotasPerRegion, quotasPerNetwork)
 
-	// TODO: Add test coverage for HDD and SSD quota
+		So(quotasPerRegion[region1].ipsQuota.used, ShouldEqual, 12)
+		So(quotasPerRegion[region2].ipsQuota.used, ShouldEqual, 100)
+	})
+
+	Convey("test core count", t, func() {
+		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks, possibleFamilies)
+		region1, zone1a := possibleRegions[0], fmt.Sprintf("%s-a", possibleRegions[0])
+		region2, zone2a := possibleRegions[1], fmt.Sprintf("%s-a", possibleRegions[1])
+		network := possibleNetworks[0]
+		configs := []*gceproviderpb.Configs{
+			// N1 in region1: 1x2-core, 2x4-core, 4x8-core = 42 cores
+			generateVMConfig("project", zone1a, 1, network, "n1-standard-2"),
+			generateVMConfig("project", zone1a, 2, network, "n1-standard-4"),
+			generateVMConfig("project", zone1a, 4, network, "n1-standard-8"),
+			// N2 in region1: 2x4-core, 4x8-core = 40 cores
+			generateVMConfig("project", zone1a, 2, network, "n2-standard-4"),
+			generateVMConfig("project", zone1a, 4, network, "n2-standard-8"),
+			// E2 in region1: 8x32-core = 256 cores
+			generateVMConfig("project", zone1a, 8, network, "e2-standard-32"),
+			// G1 in region1: 3x1-core
+			generateVMConfig("project", zone1a, 3, network, "g1-small"),
+			// In region2: 100x8-core N1, 100x8-core N2, 100x8-core E2.
+			generateVMConfig("project", zone2a, 100, network, "n1-standard-8"),
+			generateVMConfig("project", zone2a, 100, network, "n2-standard-8"),
+			generateVMConfig("project", zone2a, 100, network, "e2-standard-8"),
+		}
+		configPaths := writeConfigs(t.TempDir(), configs...)
+
+		parseCfgFiles("project", configPaths, possibleRegions, quotasPerRegion, quotasPerNetwork)
+
+		So(quotasPerRegion[region1].cpusQuota.used, ShouldEqual, 301)
+		So(quotasPerRegion[region1].n2CpusQuota.used, ShouldEqual, 40)
+		So(quotasPerRegion[region2].cpusQuota.used, ShouldEqual, 1600)
+		So(quotasPerRegion[region2].n2CpusQuota.used, ShouldEqual, 800)
+	})
+
+	Convey("test disks", t, func() {
+		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks, possibleFamilies)
+		region1, zone1a := possibleRegions[0], fmt.Sprintf("%s-a", possibleRegions[0])
+		region2, zone2a := possibleRegions[1], fmt.Sprintf("%s-a", possibleRegions[1])
+		network := possibleNetworks[0]
+		configs := []*gceproviderpb.Configs{
+			generateVMConfig("project", zone1a, 1, network, "g1-small"),
+			generateVMConfig("project", zone1a, 10, network, "g1-small"),
+			generateVMConfig("project", zone2a, 100, network, "g1-small"),
+			generateVMConfig("project", zone2a, 100, network, "g1-small"),
+			generateVMConfig("project", zone2a, 100, network, "g1-small"),
+		}
+		// 1 region1 instance with 10GB HDD + 20GB remote SSD + 30GB local SSD
+		addDisks(configs[0], 10, 20, 30)
+		// 10 region1 instances with 100GB HDD + 200GB remote SSD + 300GB local SSD
+		addDisks(configs[1], 100, 200, 300)
+		// 100 region2 instances with 5GB HDD + 0GB remote SSD + 0GB local SSD
+		addDisks(configs[2], 5, 0, 0)
+		// 100 region2 instances with 0GB HDD + 6GB remote SSD + 0GB local SSD
+		addDisks(configs[3], 0, 6, 0)
+		// 100 region2 instances with 0GB HDD + 0GB remote SSD + 7GB local SSD
+		addDisks(configs[4], 0, 0, 7)
+		configPaths := writeConfigs(t.TempDir(), configs...)
+
+		parseCfgFiles("project", configPaths, possibleRegions, quotasPerRegion, quotasPerNetwork)
+
+		So(quotasPerRegion[region1].hddQuota.used, ShouldEqual, 1010)
+		So(quotasPerRegion[region1].remoteSSDQuota.used, ShouldEqual, 2020)
+		So(quotasPerRegion[region1].localSSDPerFamilyQuota["g1"].used, ShouldEqual, 3030)
+
+		So(quotasPerRegion[region2].hddQuota.used, ShouldEqual, 500)
+		So(quotasPerRegion[region2].remoteSSDQuota.used, ShouldEqual, 600)
+		So(quotasPerRegion[region2].localSSDPerFamilyQuota["g1"].used, ShouldEqual, 700)
+	})
+
 }

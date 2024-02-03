@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -126,6 +128,51 @@ func zoneToRegion(zone string, possibleRegions []string) string {
 	}
 	log.Fatalln("Couldn't find region for: ", zone)
 	return zone
+}
+
+// getFamilyAndCoresFromType returns the family (eg: "e2" or "n1") and the
+// core count of the machine type.
+func getFamilyAndCoresFromType(machineType string) (string, int64) {
+	// FIXME: Expand this as new machine types are encountered?
+	if machineType == "g1-small" {
+		return "g1", 1
+	} else if machineType == "e2-medium" {
+		return "e2", 2
+	}
+	// Regex matches e.g. "n1-standard-8" and pulls out "n1" as the family
+	// and "8" as the core count.
+	machineTypeRe := regexp.MustCompile(`^([^-]+)-[^-]+-(\d+)$`)
+	matches := machineTypeRe.FindStringSubmatch(machineType)
+	if len(matches) != 3 {
+		log.Fatalln("Unknown machine type: ", machineType)
+	}
+	cores, err := strconv.Atoi(matches[2])
+	if err != nil {
+		log.Fatalln("Unknown core count in machine type: ", machineType)
+	}
+	return matches[1], int64(cores)
+}
+
+// getDiskStats returns the amount (HDD, remote SSD, local SSD) in GB that the
+// disk will take-up.
+func getDiskStats(disk *gceproviderpb.Disk) (int64, int64, int64) {
+	if disk.Size == 0 {
+		log.Fatalln("Disk doesn't have a size: ", disk)
+	}
+	if disk.Type != "" {
+		parts := strings.Split(disk.Type, "/")
+		diskType := parts[len(parts)-1]
+		if diskType == "local-ssd" {
+			return 0, 0, disk.Size
+		} else if diskType == "pd-ssd" {
+			return 0, disk.Size, 0
+		} else {
+			log.Fatalln("Unknown disk type: ", diskType)
+		}
+
+	}
+	// If no type is specified, safe to assume it's HDD.
+	return disk.Size, 0, 0
 }
 
 func getRegionQuotas(ctx context.Context, project string) (map[string]*regionQuotas, []string) {
@@ -301,11 +348,41 @@ func parseCfgFiles(project string, cfgPaths []string, regionNames []string, quot
 		network, _ = strings.CutPrefix(network, "global/networks/")
 		quotasPerNetwork[network].used += int64(maxInstances)
 
-		// TODO: Get IP address
+		// Get IP address
+		if len(config.Attributes.NetworkInterface[0].AccessConfig) > 1 {
+			log.Fatalln("Unknown access config on ", config.Prefix)
+		} else if len(config.Attributes.NetworkInterface[0].AccessConfig) == 1 {
+			quotasPerRegion[region].ipsQuota.used += int64(maxInstances)
+		}
 
-		// TODO: Get core count
+		// Get core count
+		parts := strings.Split(config.Attributes.MachineType, "/")
+		mt := parts[len(parts)-1]
+		family, cores := getFamilyAndCoresFromType(mt)
+		maxCores := int64(maxInstances) * cores
+		if family == "n2" {
+			quotasPerRegion[region].n2CpusQuota.used += maxCores
+		} else {
+			quotasPerRegion[region].cpusQuota.used += maxCores
+		}
 
-		// TODO: Get disk info
+		// Get disk info
+		var totalHDD, totalRemoteSSD, totalLocalSSD int64
+		for _, disk := range config.Attributes.Disk {
+			hdd, remoteSSD, localSSD := getDiskStats(disk)
+			totalHDD += hdd
+			totalRemoteSSD += remoteSSD
+			totalLocalSSD += localSSD
+		}
+		quotasPerRegion[region].hddQuota.used += int64(maxInstances) * totalHDD
+		quotasPerRegion[region].remoteSSDQuota.used += int64(maxInstances) * totalRemoteSSD
+		// Not all regions/machine types have local SSD quota. So
+		// quotasPerRegion[region].localSSDPerFamilyQuota[family] might
+		// not have an entry initialized if there's no deployment of
+		// local SSDs for that region + family combo.
+		if totalLocalSSD > 0 {
+			quotasPerRegion[region].localSSDPerFamilyQuota[family].used += int64(maxInstances) * totalLocalSSD
+		}
 	}
 }
 
