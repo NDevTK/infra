@@ -156,6 +156,12 @@ export class MrEditIssue extends connectStore(LitElement) {
         type: Object,
       },
       /**
+       * The Name of the currently viewed project.
+       */
+      projectName: {
+        type: String,
+      },
+      /**
        * Whether the issue is currently being updated.
        */
       updatingIssue: {
@@ -218,6 +224,7 @@ export class MrEditIssue extends connectStore(LitElement) {
     this.issueRef = issueV0.viewedIssueRef(state);
     this.comments = issueV0.comments(state);
     this.projectConfig = projectV0.viewedConfig(state);
+    this.projectName = projectV0.viewedProjectName(state);
     this.updatingIssue = issueV0.requests(state).update.requesting;
 
     const error = issueV0.requests(state).update.error;
@@ -353,8 +360,9 @@ export class MrEditIssue extends connectStore(LitElement) {
    */
    get _migratedLink() {
     if (this.migratedType === migratedTypes.BUGANIZER_TYPE) {
+      const link_url = this.projectName === 'chromium' ? 'issues.chromium.org' : 'issuetracker.google.com';
       const link =
-        html`<a href="https://issuetracker.google.com/issues/${this.migratedId}">b/${this.migratedId}</a>`;
+        html`<a href="https://${link_url}/issues/${this.migratedId}">b/${this.migratedId}</a>`;
       return html`<p>This issue has moved to ${link}. Updates should be posted in ${link}.</p>`;
     } else {
       return html`<p>This issue has been migrated to Launch, see link in final comment below.</p>`;

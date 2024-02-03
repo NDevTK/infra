@@ -5,6 +5,7 @@
 import {LitElement, html, css} from 'lit-element';
 
 import {connectStore} from 'reducers/base.js';
+import * as projectV0 from 'reducers/projectV0.js';
 import * as issueV0 from 'reducers/issueV0.js';
 import {SHARED_STYLES} from 'shared/shared-styles.js';
 import {migratedTypes} from 'shared/issue-fields.js';
@@ -65,6 +66,7 @@ export class MrMigratedBanner extends connectStore(LitElement) {
   static get properties() {
     return {
       migratedId: {type: String},
+      projectName: {type: String},
       hidden: {
         type: Boolean,
         reflect: true,
@@ -84,6 +86,7 @@ export class MrMigratedBanner extends connectStore(LitElement) {
   stateChanged(state) {
     this.migratedId = issueV0.migratedId(state);
     this.migratedType = issueV0.migratedType(state);
+    this.projectName = projectV0.viewedProjectName(state);
   }
 
    /** @override */
@@ -100,8 +103,9 @@ export class MrMigratedBanner extends connectStore(LitElement) {
    */
   get _link() {
     if (this.migratedType === migratedTypes.BUGANIZER_TYPE) {
+      const link_url = this.projectName === 'chromium' ? 'issues.chromium.org' : 'issuetracker.google.com';
       const link =
-        html`<a href="https://issuetracker.google.com/issues/${this.migratedId}">b/${this.migratedId}</a>`;
+        html`<a href="https://${link_url}/issues/${this.migratedId}">b/${this.migratedId}</a>`;
       return html`<p>This issue has moved to ${link}. Updates should be posted in ${link}.</p>`;
     } else {
       return html`<p>This issue has been migrated to Launch, see link in final comment below.</p>`;
