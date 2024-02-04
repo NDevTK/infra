@@ -28,13 +28,9 @@ export const REFRESH_TIME_MS = 5 * 60 * 1000;
  * @type {Array<Announcement>} A list of hardcodded announcements for Monorail.
  */
 export const HARDCODED_ANNOUNCEMENTS = [{
-  "messageContent": "The Chromium project will have scheduled downtime " +
-  "from Feb 2 @ 5pm PT to Feb 5, 2024 while we migrate to a new issue " +
-  "tracker. Documentation will be made available on chromium.org " +
-  "once complete. \n\nTo file bugs during downtime, please see: " +
-  "https://g.co/dev/chromium-migration. For all non-critical issues, " +
-  "please wait until the migration is complete to file in Chromium’s new " +
-  "issue tracker.",
+  "messageContent": "The Chromium migration to Google Issue Tracker " +
+  "is complete. Please continue tracking Chromium issues in " +
+  "https://issues.chromium.org.",
   "projects": ["chromium"],
 }];
 
