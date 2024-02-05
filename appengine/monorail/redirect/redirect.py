@@ -77,6 +77,10 @@ def GenerateRedirectApp():
   redirect_app.route('/p/<string:project_name>/issues/entry')(IssueCreate)
   redirect_app.route('/p/<string:project_name>/issues/entry_new')(IssueCreate)
 
+  def IssueWizard(project_name):
+    return flask.redirect('https://issues.chromium.org/issues/wizard')
+  redirect_app.route('/p/<string:project_name>/issues/wizard')(IssueWizard)
+
   return redirect_app
 
 
