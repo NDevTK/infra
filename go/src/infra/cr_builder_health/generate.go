@@ -153,7 +153,7 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
 		"FROM `cr-buildbucket.chrome.builds` as b" + `
 	WHERE
 		b.create_time < @input_date
-		AND b.create_time >= TIMESTAMP_SUB(@input_date, INTERVAL 7 DAY)
+		AND b.create_time >= TIMESTAMP_SUB(@input_date, INTERVAL 90 DAY)
 		AND b.builder.bucket = 'ci'
 		AND b.builder.project IN ('chromium', 'chrome')
 	GROUP BY
