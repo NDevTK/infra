@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "00909732_256ccfcc",
+        "filename": "go/src/infra/chromium/gce_quota_checker/main_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2024-02-05T22:34:10Z",
+      "side": 1,
+      "message": "Can we confirm that there\u0027s no error if we have exactly the cutoff percent?",
+      "range": {
+        "startLine": 265,
+        "startChar": 0,
+        "endLine": 268,
+        "endChar": 53
+      },
+      "revId": "cad23ba8abde0315e4704a884efda45093629d7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
