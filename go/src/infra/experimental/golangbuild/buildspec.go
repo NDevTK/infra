@@ -406,6 +406,11 @@ func (b *buildSpec) wrapTestCmd(ctx context.Context, cmd *exec.Cmd) *exec.Cmd {
 	if b.inputs.NodeVersion != "" {
 		rdbArgs = append(rdbArgs, "-tag", "node_version:"+b.inputs.NodeVersion)
 	}
+	if botID, ok := environ.FromCtx(ctx).Lookup("SWARMING_BOT_ID"); ok {
+		rdbArgs = append(rdbArgs, "-tag", "swarming_bot_id:"+botID)
+	} else {
+		rdbArgs = append(rdbArgs, "-tag", "swarming_bot_id:unknown")
+	}
 
 	// If we don't have an invocation in the build already, create one. This can happen
 	// if the builder isn't defined such that buildbucket creates an invocation for us,
