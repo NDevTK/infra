@@ -20,7 +20,7 @@ is found under [luci-go](https://chromium.googlesource.com/infra/luci/luci-go/+/
 and is intended to support an in-place migration from the Python service located
 here.
 
-* Umbrella bug: [g-issues.chromium.org/issues/40115072](https://g-issues.chromium.org/issues/40115072).
+* Umbrella bug: [issues.chromium.org/issues/40115072](https://issues.chromium.org/issues/40115072).
 * Project review record:
   [crbug.com/chrome-operations/26](https://crbug.com/chrome-operations/26).
 
