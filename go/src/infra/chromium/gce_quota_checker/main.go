@@ -52,6 +52,15 @@ NOTE: need to run 'gcloud auth application-default login' locally first.
 type quotaVals struct {
 	max  int64
 	used int64
+	desc string
+}
+
+func (q quotaVals) GetUsagePercent() float64 {
+	return 100 * float64(q.used) / float64(q.max)
+}
+
+func (q quotaVals) GetDescPretty() string {
+	return fmt.Sprintf("%s at %.2f%% (%d of %d)", q.desc, q.GetUsagePercent(), q.used, q.max)
 }
 
 type regionQuotas struct {
@@ -70,19 +79,20 @@ type regionQuotas struct {
 	localSSDPerFamilyQuota map[string]*quotaVals
 }
 
-func parseFlags() (string, bool, []string) {
+func parseFlags() (string, float64, bool, []string) {
 	gcpProject := flag.String("project", "google.com:chromecompute", "ID of the project to get quota for.")
 	isVerbose := flag.Bool("verbose", false, "Prints full quota usage.")
+	cutoffPercent := flag.Float64("cutoff-percent", 100.0, "Percentage of a quota's consumption to fail on.")
 	flag.Usage = func() {
 		fmt.Printf("%v\n", USAGE)
 		os.Exit(1)
 	}
 	flag.Parse()
 	paths := flag.Args()
-	if len(paths) == 0 {
+	if len(paths) == 0 || *cutoffPercent < 0.0 || *cutoffPercent > 100.0 {
 		flag.Usage()
 	}
-	return *gcpProject, *isVerbose, paths
+	return *gcpProject, *cutoffPercent, *isVerbose, paths
 }
 
 func queryTimeSeriesQuota(ctx context.Context, client *monitoring.MetricClient, quotaName string, project string) *monitoring.TimeSeriesIterator {
@@ -204,24 +214,25 @@ func getRegionQuotas(ctx context.Context, project string) (map[string]*regionQuo
 			log.Fatalln("Error listing regions:", err)
 		}
 		quotas := regionQuotas{localSSDPerFamilyQuota: make(map[string]*quotaVals)}
+		region := *resp.Name
 		for _, quota := range resp.Quotas {
 			switch *quota.Metric {
 			case "N2_CPUS":
-				quotas.n2CpusQuota = quotaVals{max: int64(*quota.Limit)}
+				quotas.n2CpusQuota = quotaVals{max: int64(*quota.Limit), desc: "N2 CPUs in " + region}
 			case "CPUS":
-				quotas.cpusQuota = quotaVals{max: int64(*quota.Limit)}
+				quotas.cpusQuota = quotaVals{max: int64(*quota.Limit), desc: "CPUs in " + region}
 			case "IN_USE_ADDRESSES":
-				quotas.ipsQuota = quotaVals{max: int64(*quota.Limit)}
+				quotas.ipsQuota = quotaVals{max: int64(*quota.Limit), desc: "IPs in " + region}
 			case "INSTANCES":
-				quotas.instancesQuota = quotaVals{max: int64(*quota.Limit)}
+				quotas.instancesQuota = quotaVals{max: int64(*quota.Limit), desc: "Instances in " + region}
 			case "DISKS_TOTAL_GB":
-				quotas.hddQuota = quotaVals{max: int64(*quota.Limit)}
+				quotas.hddQuota = quotaVals{max: int64(*quota.Limit), desc: "HDD in " + region}
 			case "SSD_TOTAL_GB":
-				quotas.remoteSSDQuota = quotaVals{max: int64(*quota.Limit)}
+				quotas.remoteSSDQuota = quotaVals{max: int64(*quota.Limit), desc: "Remote SSDs in " + region}
 			}
 		}
-		quotasPerRegion[*resp.Name] = &quotas
-		regionNames = append(regionNames, *resp.Name)
+		quotasPerRegion[region] = &quotas
+		regionNames = append(regionNames, region)
 	}
 	return quotasPerRegion, regionNames
 }
@@ -262,7 +273,7 @@ func getLocalSSDQuotas(ctx context.Context, project string, quotasPerRegion map[
 		// Points[0] should correspond to the most recent value for the
 		// quota, useful in case the quota limit gets bumped for the
 		// project.
-		regionQuota.localSSDPerFamilyQuota[machineFamily] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value()}
+		regionQuota.localSSDPerFamilyQuota[machineFamily] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value(), desc: "Local SSDs for " + machineFamily + " in " + region}
 	}
 }
 
@@ -310,7 +321,7 @@ func getNetworkQuotas(ctx context.Context, project string) map[string]*quotaVals
 				break
 			}
 		}
-		quotasPerNetwork[networkName] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value()}
+		quotasPerNetwork[networkName] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value(), desc: "Instances in network " + networkName}
 	}
 	return quotasPerNetwork
 }
@@ -386,9 +397,46 @@ func parseCfgFiles(project string, cfgPaths []string, regionNames []string, quot
 	}
 }
 
+func findQuotaErrors(quotasPerRegion map[string]*regionQuotas, quotasPerNetwork map[string]*quotaVals, cutoffPercent float64, isVerbose bool) []string {
+	var quotaErrors []string
+	// Flatten all quotas into a single slice for easier iterating.
+	var allQuotas []quotaVals
+	for _, quota := range quotasPerNetwork {
+		allQuotas = append(allQuotas, *quota)
+	}
+	for _, quotas := range quotasPerRegion {
+		allQuotas = append(
+			allQuotas,
+			quotas.instancesQuota,
+			quotas.ipsQuota,
+			quotas.cpusQuota,
+			quotas.n2CpusQuota,
+			quotas.hddQuota,
+			quotas.remoteSSDQuota,
+		)
+		for _, quota := range quotas.localSSDPerFamilyQuota {
+			allQuotas = append(allQuotas, *quota)
+		}
+	}
+	for _, quota := range allQuotas {
+		percent := quota.GetUsagePercent()
+		desc := quota.GetDescPretty()
+		if percent > cutoffPercent {
+			quotaErrors = append(quotaErrors, desc)
+		}
+		// We're tracking quotas with zero usage (eg: CPUs in obscure
+		// EMEA regions). So filter them out by only printing quotas
+		// with some usage.
+		if isVerbose && percent > 0 {
+			fmt.Println(desc)
+		}
+	}
+	return quotaErrors
+}
+
 func main() {
 	ctx := context.Background()
-	project, _, cfgPaths := parseFlags()
+	project, cutoffPercent, isVerbose, cfgPaths := parseFlags()
 
 	// Query GCE for all relevant quotas for the project.
 	quotasPerRegion, regionNames := getRegionQuotas(ctx, project)
@@ -399,5 +447,16 @@ func main() {
 	// the oroject.
 	parseCfgFiles(project, cfgPaths, regionNames, quotasPerRegion, quotasPerNetwork)
 
-	// TODO: Finish the rest.
+	// Find where used > max for all quotas.
+	quotaErrors := findQuotaErrors(quotasPerRegion, quotasPerNetwork, cutoffPercent, isVerbose)
+	if len(quotaErrors) > 0 {
+		if isVerbose {
+			fmt.Println()
+		}
+		fmt.Fprintf(os.Stderr, "UH OH! One more quotas at or above %.2f\n", cutoffPercent)
+		for _, quotaError := range quotaErrors {
+			fmt.Fprintln(os.Stderr, quotaError)
+		}
+		os.Exit(1)
+	}
 }
