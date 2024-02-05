@@ -10,7 +10,7 @@ it and report a result back.
 *   Deployments:
     *   Prod: [cr-buildbucket.appspot.com](https://cr-buildbucket.appspot.com) [[API](https://cr-buildbucket.appspot.com/rpcexplorer/services/buildbucket.v2.Builds/)]
     *   Dev: [cr-buildbucket-dev.appspot.com](https://cr-buildbucket-dev.appspot.com) [[API](https://cr-buildbucket-dev.appspot.com/rpcexplorer/services/buildbucket.v2.Builds/)]
-*   Bugs: [Infra>LUCI>BuildService>Buildbucket component](https://crbug.com?q=component:Infra>LUCI>BuildService>Buildbucket)
+*   Bugs: [Infra>LUCI>BuildService>Buildbucket](https://g-issues.chromium.org/issues?q=componentid:1456290) component
 *   Contact: luci-team@
 
 ## Rewrite
@@ -20,7 +20,7 @@ is found under [luci-go](https://chromium.googlesource.com/infra/luci/luci-go/+/
 and is intended to support an in-place migration from the Python service located
 here.
 
-* Umbrella bug: [crbug.com/1042991](https://crbug.com/1042991).
+* Umbrella bug: [g-issues.chromium.org/issues/40115072](https://g-issues.chromium.org/issues/40115072).
 * Project review record:
   [crbug.com/chrome-operations/26](https://crbug.com/chrome-operations/26).
 
