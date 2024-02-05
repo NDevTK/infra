@@ -71,6 +71,10 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 			volumes = append(volumes, fmt.Sprintf("%s:%s", dockerSock, dockerSock))
 		}
 	}
+	if _, err := os.Stat(HostServiceAcctCredsDir); err == nil {
+		volumes = append(volumes, fmt.Sprintf("%s:%s", HostServiceAcctCredsDir, HostServiceAcctCredsDir))
+	}
+
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: request.Network,
 		Expose:  expose,
