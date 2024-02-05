@@ -7,14 +7,11 @@ package executors
 import (
 	"context"
 	"fmt"
-	"os"
-	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
@@ -134,25 +131,14 @@ func (ex *InvServiceExecutor) loadDutTopologyCommandExecution(
 	step, ctx := build.StartStep(ctx, "Load DutTopology")
 	defer func() { step.End(err) }()
 
-	hostname := cmd.HostName
-	botPrefix := os.Getenv("DRONE_AGENT_BOT_PREFIX")
-	if botPrefix != "" {
-		var found bool
-		hostname, found = strings.CutPrefix(cmd.HostName, botPrefix)
-		if found {
-			ctx = metadata.AppendToOutgoingContext(ctx, "namespace", "os-partner")
-		} else {
-			err = errors.Annotate(err, "Load dut topology cmd for partner domain err: ").Err()
-			return err
-		}
-	}
-
-	dutTopology, err := ex.GetDUTTopology(ctx, hostname)
+	dutTopology, err := ex.GetDUTTopology(ctx, cmd.HostName)
 	if err != nil {
 		err = errors.Annotate(err, "Load dut topology cmd err: ").Err()
 	}
+
 	common.WriteProtoToStepLog(ctx, step, dutTopology, "Dut Topology")
 	cmd.DutTopology = dutTopology
+
 	return err
 }
 
