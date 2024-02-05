@@ -251,3 +251,44 @@ func TestParseCfgFiles(t *testing.T) {
 	})
 
 }
+
+func TestFindQuotaErrors(t *testing.T) {
+	t.Parallel()
+
+	possibleRegions := []string{"us-east1"}
+	possibleNetworks := []string{"networkA"}
+	possibleFamilies := []string{"n1"}
+
+	Convey("cpu cutoff", t, func() {
+		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks, possibleFamilies)
+
+		// 90 of 100 shouldn't be an error.
+		quotasPerRegion["us-east1"].cpusQuota.max = 100
+		quotasPerRegion["us-east1"].cpusQuota.used = 90
+		quotasPerRegion["us-east1"].cpusQuota.desc = "cpus"
+		So(findQuotaErrors(quotasPerRegion, quotasPerNetwork, 100.0, false), ShouldBeEmpty)
+
+		// 101 of 100 should be an error.
+		quotasPerRegion["us-east1"].cpusQuota.used = 101
+		So(findQuotaErrors(quotasPerRegion, quotasPerNetwork, 100.0, false), ShouldEqual, []string{"cpus at 101.00% (101 of 100)"})
+	})
+
+	Convey("local ssd check", t, func() {
+		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks, possibleFamilies)
+		quotasPerRegion["us-east1"].localSSDPerFamilyQuota["n1"].max = 1000
+		quotasPerRegion["us-east1"].localSSDPerFamilyQuota["n1"].used = 2000
+		quotasPerRegion["us-east1"].localSSDPerFamilyQuota["n1"].desc = "local ssd"
+		So(findQuotaErrors(quotasPerRegion, quotasPerNetwork, 100.0, false), ShouldEqual, []string{"local ssd at 200.00% (2000 of 1000)"})
+	})
+
+	Convey("network check", t, func() {
+		quotasPerRegion, quotasPerNetwork := initMaps(possibleRegions, possibleNetworks, possibleFamilies)
+		quotasPerNetwork["networkA"].max = 100
+		quotasPerNetwork["networkA"].used = 95
+		quotasPerNetwork["networkA"].desc = "networkA"
+		// 100% cut off at 95% usage shouldn't be an error.
+		So(findQuotaErrors(quotasPerRegion, quotasPerNetwork, 100.0, false), ShouldBeEmpty)
+		// 90% cut off at 95% usage should be an error.
+		So(findQuotaErrors(quotasPerRegion, quotasPerNetwork, 90.0, false), ShouldEqual, []string{"networkA at 95.00% (95 of 100)"})
+	})
+}
