@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"infra/experimental/golangbuild/golangbuildpb"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -27,6 +26,8 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
 	sauth "go.chromium.org/luci/server/auth"
+
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 // buildSpec specifies what a single build will begin doing.

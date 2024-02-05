@@ -9,17 +9,19 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"infra/experimental/golangbuild/golangbuildpb"
 	"io"
 	"net/url"
 	"os"
 	"sort"
 	"strings"
 
+	"golang.org/x/exp/maps"
+
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/luciexe/build"
 	"go.chromium.org/luci/swarming/client/swarming"
-	"golang.org/x/exp/maps"
+
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 // prebuiltGo represents a mapping between a Go toolchain version and the prebuilt

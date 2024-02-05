@@ -9,17 +9,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"infra/experimental/golangbuild/golangbuildpb"
 	"io"
 	"strconv"
 	"strings"
 
-	bbpb "go.chromium.org/luci/buildbucket/proto"
-	"go.chromium.org/luci/luciexe/build"
-	resultdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/luciexe/build"
+	resultdbpb "go.chromium.org/luci/resultdb/proto/v1"
+
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 // coordRunner ensures a prebuilt Go toolchain exists (launching a build to build one if

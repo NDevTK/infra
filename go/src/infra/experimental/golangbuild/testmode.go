@@ -12,7 +12,6 @@ import (
 	"errors"
 	"fmt"
 	"hash/crc32"
-	"infra/experimental/golangbuild/golangbuildpb"
 	"io"
 	"io/fs"
 	"os"
@@ -20,11 +19,14 @@ import (
 	"runtime"
 	"strings"
 
-	"go.chromium.org/luci/luciexe/build"
 	"golang.org/x/exp/slices"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/luci/luciexe/build"
+
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 // testRunner runs a non-strict subset of available tests. It requires a prebuilt

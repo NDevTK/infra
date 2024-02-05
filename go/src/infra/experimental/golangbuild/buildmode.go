@@ -7,10 +7,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"infra/experimental/golangbuild/golangbuildpb"
 	"path/filepath"
 
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 // buildRunner ensures a prebuilt toolchain exists for the current platform and the

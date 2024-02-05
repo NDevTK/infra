@@ -8,15 +8,16 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"infra/experimental/golangbuild/golangbuildpb"
 	"io"
 	"path/filepath"
 	"time"
 
+	perfstorage "golang.org/x/perf/storage"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/luciexe/build"
 
-	perfstorage "golang.org/x/perf/storage"
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 // perfRunner runs performance tests and optionally uploads their results to perfdata.golang.org.
