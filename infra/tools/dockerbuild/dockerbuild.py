@@ -366,7 +366,7 @@ def add_argparse_options(parser):
       help='Force download of sources even if a packaged version already '
            'exists in CIPD.')
 
-  subparsers = parser.add_subparsers()
+  subparsers = parser.add_subparsers(required=True, dest='action')
 
   # Subcommand: sources
   subparser = subparsers.add_parser('sources',

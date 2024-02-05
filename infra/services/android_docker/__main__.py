@@ -123,7 +123,9 @@ def main():
       '--device', action='append', dest='devices', default=[],
       help='Serial number of device whose container is to be managed. Defaults '
       'to ALL local devices.')
-  subparsers = parser.add_subparsers()
+  subparsers = parser.add_subparsers(dest='action')
+  if sys.version_info[0] > 2:
+    subparsers.required = True
 
   add_subparser = subparsers.add_parser(
       'add_device', help='Give a container access to its device.'
