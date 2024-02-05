@@ -101,6 +101,12 @@ func sourceForBaseline(ctx context.Context, auth *auth.Authenticator, src *sourc
 	if baseline == "parent" {
 		return sourceForParent(ctx, auth, src)
 	}
+	if baseline == "latest_go_release" {
+		if src.project != "go" {
+			return nil, fmt.Errorf("the latest_go_release baseline is only supported for the go project")
+		}
+		return sourceForLatestGoRelease(ctx, auth, src.branch)
+	}
 	if branch, ok := strings.CutPrefix(baseline, "refs/heads/"); ok {
 		return sourceForBranch(ctx, auth, publicGoHost, src.project, branch)
 	}

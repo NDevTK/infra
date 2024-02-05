@@ -228,6 +228,13 @@ message PerfMode {
   // - A valid git branch for the project, with "refs/heads" prefix.
   // - The string "parent" which indicates that the baseline is the
   //   parent commit of whatever source code is being tested.
+  // - The string "latest_go_release" which indicates the last stable
+  //   release on the branch being tested, or the latest release if the
+  //   branch is the tip branch. Only supported for the go project. For
+  //   example, if the tested branch is release-branch.go1.21
+  //   and the latest release of Go 1.21 is 1.21.7, it will fetch 1.21.7.
+  //   If the latest overall Go release is Go 1.22.1, then for tip, it
+  //   will fetch Go 1.22.1.
   //
   // Baseline is always defined relative to Inputs.Project and the
   // Gitiles host https://go.googlesource.com.

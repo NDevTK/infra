@@ -13,9 +13,11 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"go.chromium.org/luci/auth"
@@ -386,6 +388,14 @@ func runGitOutput(ctx context.Context, stepName string, args ...string) (output 
 
 // sourceForBranch produces a sourceSpec representing the tip of a branch for a project.
 func sourceForBranch(ctx context.Context, auth *auth.Authenticator, host, project, branch string) (*sourceSpec, error) {
+	return sourceForRef(ctx, auth, host, project, branch, fmt.Sprintf("refs/heads/%s", branch))
+}
+
+func sourceForTag(ctx context.Context, auth *auth.Authenticator, host, project, branch, tag string) (*sourceSpec, error) {
+	return sourceForRef(ctx, auth, host, project, branch, fmt.Sprintf("refs/tags/%s", tag))
+}
+
+func sourceForRef(ctx context.Context, auth *auth.Authenticator, host, project, branch, ref string) (*sourceSpec, error) {
 	hc, err := auth.Client()
 	if err != nil {
 		return nil, fmt.Errorf("auth.Client: %w", err)
@@ -394,7 +404,6 @@ func sourceForBranch(ctx context.Context, auth *auth.Authenticator, host, projec
 	if err != nil {
 		return nil, fmt.Errorf("gitiles.NewRESTClient: %w", err)
 	}
-	ref := fmt.Sprintf("refs/heads/%s", branch)
 	log, err := gc.Log(ctx, &gitilespb.LogRequest{
 		Project:    project,
 		Committish: ref,
@@ -404,7 +413,7 @@ func sourceForBranch(ctx context.Context, auth *auth.Authenticator, host, projec
 		return nil, fmt.Errorf("gc.Log: %w", err)
 	}
 	if len(log.Log) == 0 {
-		return nil, fmt.Errorf("no commits found for project %s on branch %s", project, branch)
+		return nil, fmt.Errorf("no commits found for project %s at ref %s", project, ref)
 	}
 	return &sourceSpec{
 		project: project,
@@ -522,4 +531,82 @@ func sourceForParent(ctx context.Context, auth *auth.Authenticator, src *sourceS
 		panic("sourceSpec has both a change and a commit")
 	}
 	panic("no commit or change in sourceSpec")
+}
+
+func sourceForLatestGoRelease(ctx context.Context, auth *auth.Authenticator, goBranch string) (*sourceSpec, error) {
+	releases, err := fetchStableGoReleases(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if len(releases) == 0 {
+		return nil, fmt.Errorf("failed to find a stable Go release at https://go.dev/dl/?mode=json")
+	}
+	var tag string
+	var branch string
+	if goBranch == mainBranch {
+		// Pick the latest release. This is also the name of the tag.
+		tag = releases[0].Version
+		branch = fmt.Sprintf("release-branch.%s", tag[:strings.LastIndex(tag, ".")])
+	} else if branchVersion, ok := strings.CutPrefix(goBranch, "release-branch.go1."); ok {
+		// Figure out what major version we're at.
+		ver, err := strconv.Atoi(branchVersion)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse go branch name: %s", goBranch)
+		}
+		// Look for the latest release of that version.
+		majorVer := fmt.Sprintf("go1.%d", ver)
+		for _, release := range releases {
+			if strings.HasPrefix(release.Version, majorVer) {
+				tag = release.Version
+				break
+			}
+		}
+		if tag == "" {
+			return nil, fmt.Errorf("failed to find a latest release for %s at https://go.dev/dl/?mode=json", majorVer)
+		}
+		branch = goBranch // The release is on the same branch we're testing.
+	} else {
+		return nil, fmt.Errorf("unsupported go branch %s (is it a development branch?)", goBranch)
+	}
+	return sourceForTag(ctx, auth, publicGoHost, "go", branch, tag)
+}
+
+// fetchStableGoReleases returns a list of all current stable Go release versions in descending order of Go version.
+func fetchStableGoReleases(ctx context.Context) (stableReleases []goRelease, err error) {
+	// Get the latest Go releases.
+	req, err := http.NewRequestWithContext(ctx, "GET", "https://go.dev/dl/?mode=json", nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if r := resp.Body.Close(); r != nil && err == nil {
+			err = r
+		}
+	}()
+
+	// Decode the response.
+	var releases []goRelease
+	if err := json.NewDecoder(resp.Body).Decode(&releases); err != nil {
+		return nil, err
+	}
+
+	// Filter down to only stable releases.
+	for _, release := range releases {
+		if !release.Stable {
+			continue
+		}
+		stableReleases = append(stableReleases, release)
+	}
+
+	// N.B. Releases are already listed in descending order by Go version.
+	return stableReleases, nil
+}
+
+type goRelease struct {
+	Version string `json:"version"`
+	Stable  bool   `json:"stable"`
 }
