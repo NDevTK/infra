@@ -237,6 +237,8 @@ func (c *config) getHostConfig(host string) *hostConfig {
 
 func (s *section) parse(tokens []string) error {
 	switch tokens[0] {
+	case "BatchMode":
+		// Ignored, PasswordCallback is nil for all connections.
 	case "Ciphers":
 		s.clientConfig.Ciphers = append(s.clientConfig.Ciphers, tokens[1:]...)
 	case "ConnectTimeout":
