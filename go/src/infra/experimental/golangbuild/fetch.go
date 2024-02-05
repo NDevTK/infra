@@ -19,6 +19,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -642,4 +643,28 @@ func fetchStableGoReleases(ctx context.Context) (stableReleases []goRelease, err
 type goRelease struct {
 	Version string `json:"version"`
 	Stable  bool   `json:"stable"`
+}
+
+// fetchCommitTime fetches and returns the commit time for the sourceSpec.
+func fetchCommitTime(ctx context.Context, auth *auth.Authenticator, commit *bbpb.GitilesCommit) (time.Time, error) {
+	hc, err := auth.Client()
+	if err != nil {
+		return time.Time{}, fmt.Errorf("auth.Client: %w", err)
+	}
+	gc, err := gitiles.NewRESTClient(hc, commit.Host, true)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("gitiles.NewRESTClient: %w", err)
+	}
+	log, err := gc.Log(ctx, &gitilespb.LogRequest{
+		Project:    commit.Project,
+		Committish: commit.Id,
+		PageSize:   1,
+	})
+	if err != nil {
+		return time.Time{}, fmt.Errorf("gc.Log: %w", err)
+	}
+	if len(log.Log) == 0 {
+		return time.Time{}, fmt.Errorf("commit %s not found in repository %s", commit.Id, commit.Project)
+	}
+	return log.Log[0].Committer.Time.AsTime(), nil
 }

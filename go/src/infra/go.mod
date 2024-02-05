@@ -95,6 +95,7 @@ require (
 	golang.org/x/mod v0.12.0
 	golang.org/x/net v0.18.0
 	golang.org/x/oauth2 v0.11.0
+	golang.org/x/perf v0.0.0-20210220033136-40a54f11e909
 	golang.org/x/sync v0.3.0
 	golang.org/x/sys v0.15.0
 	golang.org/x/term v0.15.0

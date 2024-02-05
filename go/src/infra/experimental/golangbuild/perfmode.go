@@ -9,9 +9,14 @@ import (
 	"context"
 	"fmt"
 	"infra/experimental/golangbuild/golangbuildpb"
+	"io"
 	"path/filepath"
+	"time"
 
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/luciexe/build"
+
+	perfstorage "golang.org/x/perf/storage"
 )
 
 // perfRunner runs performance tests and optionally uploads their results to perfdata.golang.org.
@@ -34,12 +39,15 @@ func newPerfRunner(props *golangbuildpb.PerfMode) *perfRunner {
 
 // Run implements the runner interface for perfRunner.
 func (r *perfRunner) Run(ctx context.Context, spec *buildSpec) error {
-	var results []byte
-	var err error
+	var (
+		results    []byte
+		extraAttrs map[string]string
+		err        error
+	)
 	if isGoProject(spec.inputs.Project) {
-		results, err = runGoBenchmarks(ctx, spec, r.props)
+		results, extraAttrs, err = runGoBenchmarks(ctx, spec, r.props)
 	} else {
-		results, err = runSubrepoBenchmarks(ctx, spec, r.props)
+		results, extraAttrs, err = runSubrepoBenchmarks(ctx, spec, r.props)
 	}
 	if err != nil {
 		return err
@@ -54,37 +62,46 @@ func (r *perfRunner) Run(ctx context.Context, spec *buildSpec) error {
 	}
 	topLevelLog(ctx, "benchmark results").Write(formattedResults)
 
-	// TODO(mknyszek): Upload results to perfdata.golang.org.
-	return nil
+	// Prepend extraAttrs. Note: we don't do this before benchstat, because it simplifies the "-ignore" pattern
+	// and also because it more closely matches running benchstat on the output of the command, making it a bit
+	// more reproducible for those that want to run it locally.
+	var buf bytes.Buffer
+	for key, value := range extraAttrs {
+		fmt.Fprintf(&buf, "%s: %s\n", key, value)
+	}
+	buf.Write(results)
+
+	// Upload benchmark results to perfdata.golang.org.
+	return uploadBenchmarkResults(ctx, spec.auth, buf.Bytes())
 }
 
-func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode) ([]byte, error) {
+func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode) ([]byte, map[string]string, error) {
 	// Get a built Go toolchain or build it if necessary. This will be
 	// our experiment toolchain.
 	if err := getGoFromSpec(ctx, spec, false); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Get the baseline Go.
 	gorootBaseline := filepath.Join(spec.workdir, "go_baseline")
 	goBaselineSrc, err := sourceForBaseline(ctx, spec.auth, spec.goSrc, perfProps.Baseline)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if err := getGo(ctx, "get baseline go", gorootBaseline, goBaselineSrc, spec.inputs, false); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Get the tip of the benchmarks repo.
 	benchmarksSrc, err := sourceForBranch(ctx, spec.auth, publicGoHost, "benchmarks", mainBranch)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Fetch the benchmarks repository.
 	benchmarksRoot := filepath.Join(spec.workdir, "benchmarks")
 	if err := fetchRepo(ctx, benchmarksSrc, benchmarksRoot, spec.inputs); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Construct benchmark command.
@@ -96,50 +113,66 @@ func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuil
 		"-repository", "go",
 	)
 
+	var extraAttrs map[string]string
+	if spec.invokedSrc.commit != nil {
+		t, err := fetchCommitTime(ctx, spec.auth, spec.invokedSrc.commit)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to fetch commit time for %s: %w", spec.invokedSrc.asURL(), err)
+		}
+		extraAttrs = map[string]string{
+			"experiment-commit":      spec.invokedSrc.commit.Id,
+			"experiment-commit-time": t.In(time.UTC).Format(time.RFC3339Nano),
+			"baseline-commit":        goBaselineSrc.commit.Id,
+			"benchmarks-commit":      benchmarksSrc.commit.Id,
+			"post-submit":            "true",
+		}
+	}
+
 	// Run benchmarks.
-	return cmdStepOutput(ctx, "go run cmd/bench", benchCmd, false)
+	results, err := cmdStepOutput(ctx, "go run cmd/bench", benchCmd, false)
+	return results, extraAttrs, err
 }
 
-func runSubrepoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode) ([]byte, error) {
+func runSubrepoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode) ([]byte, map[string]string, error) {
 	// Fetch the subrepo at whatever we were triggered on.
 	subrepoExperimentDir := filepath.Join(spec.workdir, spec.inputs.Project)
 	if err := fetchRepo(ctx, spec.subrepoSrc, subrepoExperimentDir, spec.inputs); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Fetch the subrepo at whatever baseline is in the builder configuration.
 	subrepoBaselineSrc, err := sourceForBaseline(ctx, spec.auth, spec.subrepoSrc, perfProps.Baseline)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	subrepoBaselineDir := filepath.Join(spec.workdir, spec.inputs.Project+"_baseline")
 	if err := fetchRepo(ctx, subrepoBaselineSrc, subrepoBaselineDir, spec.inputs); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Pick the baseline Go toolchain we're going to use, which is just the latest release
 	// for the Go branch this builder is building against.
 	goBaselineSrc, err := sourceForLatestGoRelease(ctx, spec.auth, spec.inputs.GoBranch)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Get the baseline Go.
 	gorootBaseline := filepath.Join(spec.workdir, "go_baseline")
 	if err := getGo(ctx, "get baseline go", gorootBaseline, goBaselineSrc, spec.inputs, false); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Get the tip of the benchmarks repo.
 	benchmarksSrc, err := sourceForBranch(ctx, spec.auth, publicGoHost, "benchmarks", mainBranch)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Fetch the benchmarks repository.
 	benchmarksRoot := filepath.Join(spec.workdir, "benchmarks")
 	if err := fetchRepo(ctx, benchmarksSrc, benchmarksRoot, spec.inputs); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Construct benchmark command.
@@ -152,8 +185,26 @@ func runSubrepoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golan
 		"-repository", spec.inputs.Project,
 	)
 
+	// Add extra attributes. These will be added to the results later.
+	var extraAttrs map[string]string
+	if spec.invokedSrc.commit != nil {
+		t, err := fetchCommitTime(ctx, spec.auth, spec.invokedSrc.commit)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to fetch commit time for %s: %w", spec.invokedSrc.asURL(), err)
+		}
+		extraAttrs = map[string]string{
+			"experiment-commit":      spec.invokedSrc.commit.Id,
+			"experiment-commit-time": t.In(time.UTC).Format(time.RFC3339Nano),
+			"baseline-commit":        subrepoBaselineSrc.commit.Id,
+			"toolchain-commit":       goBaselineSrc.commit.Id,
+			"benchmarks-commit":      benchmarksSrc.commit.Id,
+			"post-submit":            "true",
+		}
+	}
+
 	// Run benchmarks.
-	return cmdStepOutput(ctx, "go run cmd/bench", benchCmd, false)
+	results, err := cmdStepOutput(ctx, "go run cmd/bench", benchCmd, false)
+	return results, extraAttrs, err
 }
 
 func sourceForBaseline(ctx context.Context, auth *auth.Authenticator, src *sourceSpec, baseline string) (*sourceSpec, error) {
@@ -167,4 +218,41 @@ func sourceForBaseline(ctx context.Context, auth *auth.Authenticator, src *sourc
 		return sourceForLatestGoRelease(ctx, auth, src.branch)
 	}
 	return sourceForRef(ctx, auth, publicGoHost, src.project, baseline)
+}
+
+func uploadBenchmarkResults(ctx context.Context, auth *auth.Authenticator, results []byte) (err error) {
+	step, ctx := build.StartStep(ctx, "upload benchmark results")
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
+
+	// Log the results we're going to upload before we do anything else.
+	_, err = step.Log("results").Write(results)
+	if err != nil {
+		return err
+	}
+
+	// Create a perfstorage client.
+	hc, err := auth.Client()
+	if err != nil {
+		return fmt.Errorf("auth.Client: %w", err)
+	}
+	client := &perfstorage.Client{BaseURL: "https://perfdata.golang.org", HTTPClient: hc}
+	u := client.NewUpload(ctx)
+	w, err := u.CreateFile("results")
+	if err != nil {
+		_ = u.Abort() // Intentionally ignored. This will usually generate an error, but we don't care.
+		return fmt.Errorf("error creating perfdata file: %w", err)
+	}
+	// Write the results.
+	if _, err := w.Write(results); err != nil {
+		_ = u.Abort() // Intentionally ignored. This will usually generate an error, but we don't care.
+		return fmt.Errorf("error writing perfdata file with contents %q: %w", results, err)
+	}
+	status, err := u.Commit()
+	if err != nil {
+		return fmt.Errorf("error committing perfdata file: %w", err)
+	}
+
+	// Write out the upload ID as a log.
+	_, err = io.WriteString(step.Log("upload_id"), status.UploadID)
+	return err
 }
