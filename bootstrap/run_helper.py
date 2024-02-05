@@ -88,15 +88,11 @@ def boot_venv(script, env_path):
 
 
 def run_py_main_with_venv(args, runpy_path, env_path, package):
-  return run_py_main(args, runpy_path, env_path, package)
+  boot_venv(runpy_path, env_path)
+  return run_py_main(args, runpy_path, package)
 
 
-# TODO: Move venv bootstrap to run_py_main_with_venv
-# and remove env_path argument to run_py_main.
-def run_py_main(args, runpy_path, env_path, package):
-  if env_path:
-    boot_venv(runpy_path, env_path)
-
+def run_py_main(args, runpy_path, package):
   import argparse
   import runpy
   import shlex
