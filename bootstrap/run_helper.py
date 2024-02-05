@@ -87,8 +87,15 @@ def boot_venv(script, env_path):
   os.environ.pop(RUN_PY_RECURSION_BLOCKER, None)
 
 
+def run_py_main_with_venv(args, runpy_path, env_path, package):
+  return run_py_main(args, runpy_path, env_path, package)
+
+
+# TODO: Move venv bootstrap to run_py_main_with_venv
+# and remove env_path argument to run_py_main.
 def run_py_main(args, runpy_path, env_path, package):
-  boot_venv(runpy_path, env_path)
+  if env_path:
+    boot_venv(runpy_path, env_path)
 
   import argparse
   import runpy
