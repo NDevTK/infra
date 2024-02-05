@@ -1,3 +1,5 @@
 module testpkg
 
-go 1.16
+go 1.21
+
+require example.com v1.0.0

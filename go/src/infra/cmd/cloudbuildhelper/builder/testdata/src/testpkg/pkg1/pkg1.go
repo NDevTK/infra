@@ -4,7 +4,13 @@
 
 package pkg1
 
-import "testpkg/pkg2"
+import (
+	"embed"
+	"testpkg/pkg2"
+)
+
+//go:embed all:embedded
+var fs embed.FS
 
 // A exists to make golint happy.
 const A = pkg2.A

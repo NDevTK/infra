@@ -1,0 +1,8 @@
+name: "testing"
+
+inputsdir: .
+
+build:
+  - go_gae_bundle: ${inputsdir}/helloworld/fake-app.yaml
+    go_gae_bundle_as_module: true
+    dest: ${contextdir}/helloworld

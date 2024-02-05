@@ -8,12 +8,12 @@ import (
 	"context"
 	"fmt"
 	"go/build"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 
+	"golang.org/x/mod/modfile"
 	"golang.org/x/tools/go/packages"
 	"gopkg.in/yaml.v2"
 
@@ -22,11 +22,43 @@ import (
 
 	"infra/cmd/cloudbuildhelper/fileset"
 	"infra/cmd/cloudbuildhelper/gitignore"
+	"infra/cmd/cloudbuildhelper/godep"
 )
 
-// runRunBuildStep executes manifest.RunBuildStep.
+// Names of Go sources roots in the bundle for GOPATH and modules mode.
+const (
+	goPathRoot = "_gopath"
+	goModRoot  = "_gomod"
+)
+
+// Locations of files used to track dependencies in modules mode.
+const (
+	bundledGoModPath      = goModRoot + "/go.mod"
+	bundledModulesTxtPath = goModRoot + "/vendor/modules.txt"
+)
+
+// What go dependency mechanisms the bundle should use.
+type bundleMode string
+
+const (
+	bundleUnknown bundleMode = "unknown"
+	bundleGoPath  bundleMode = "GOPATH"
+	bundleModules bundleMode = "modules"
+)
+
+// runGoGAEBundleBuildStep executes manifest.GoGAEBundleBuildStep.
 func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
-	logging.Infof(ctx, "Bundling %q", inv.BuildStep.GoGAEBundle)
+	mode := bundleGoPath
+	if inv.BuildStep.ModulesMode {
+		mode = bundleModules
+	}
+
+	logging.Infof(ctx, "Bundling %q in %s mode", inv.BuildStep.GoGAEBundle, mode)
+
+	// Hybrid bundles aren't allowed.
+	if cur := currentMode(inv.Output); cur != bundleUnknown && cur != mode {
+		return errors.Reason("the bundle is already in %s mode, but being extended using %s mode", cur, mode).Err()
+	}
 
 	yamlPath, err := filepath.Abs(inv.BuildStep.GoGAEBundle)
 	if err != nil {
@@ -60,43 +92,90 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	// it to call its MatchFile method to check build tags.
 	bc := buildContext(mainDir, int(goMinorVer))
 
-	// Load the main package and all its transitive dependencies.
+	// Load the main package and all its transitive dependencies (they are stored
+	// as a graph of packages.Package that can be accessed via pointer chasing
+	// from the loaded root packages.Package).
 	mainPkg, err := loadPackageTree(ctx, bc)
 	if err != nil {
 		return err
 	}
-
-	// We'll copy `mainPkg` directly into its final location in _gopath, but make
-	// the original intended destination point to it as a symlink.
-	goPathDest := filepath.Join(inv.Manifest.ContextDir, "_gopath", "src", mainPkg.PkgPath)
-	linkName, err := relPath(inv.Manifest.ContextDir, inv.BuildStep.Dest)
-	if err != nil {
-		return err
-	}
-	linkTarget, err := relPath(filepath.Dir(inv.BuildStep.Dest), goPathDest)
-	if err != nil {
-		return err
-	}
-	if err := inv.Output.AddSymlink(linkName, linkTarget); err != nil {
-		return errors.Annotate(err, "failed to setup a symlink to location in _gopath").Err()
+	if mode == bundleModules && (mainPkg.Module == nil || !mainPkg.Module.Main) {
+		return errors.Reason("the main package is not a main module").Err()
 	}
 
-	// Respect .gcloudignore files.
+	// In modules mode we should keep track of visited dependencies to build the
+	// `go.mod` and `vendors/modules.txt` files describing packages from non-main
+	// modules.
+	//
+	// If we are bundling multiple GAE apps via multiple GoGAEBundleBuildSteps, we
+	// should keep adding dependencies additively. prepareModDeps(...) loads the
+	// existing godep.Deps state (if any) from inv.Output to keep appending to it.
+	var modDeps *godep.Deps
+	if mode == bundleModules {
+		modDeps, err = prepareModDeps(mainPkg.Module, inv.Output)
+		if err != nil {
+			return errors.Annotate(err, "preparing dependency tracker").Err()
+		}
+	}
+
+	// In modules mode the main module goes into "_gomod" and all other modules
+	// go under "_gomod/vendor" (where Go wants them). In GOPATH mode all packages
+	// should be under a single GOPATH root "_gopath/src".
+	var packageDest func(pkg *packages.Package) (string, error)
+	if mode == bundleModules {
+		packageDest = func(pkg *packages.Package) (string, error) {
+			switch {
+			case pkg.Module == nil:
+				return "", errors.Reason("not in a module").Err()
+			case pkg.Module.Main:
+				var relToMod string
+				switch {
+				case pkg.PkgPath == pkg.Module.Path:
+					relToMod = "."
+				case !strings.HasPrefix(pkg.PkgPath, pkg.Module.Path+"/"):
+					return "", errors.Reason("module %q doesn't match the package import path", pkg.Module.Path).Err()
+				default:
+					relToMod = pkg.PkgPath[len(pkg.Module.Path)+1:]
+				}
+				return filepath.Join(goModRoot, filepath.FromSlash(relToMod)), nil
+			default:
+				return filepath.Join(goModRoot, "vendor", filepath.FromSlash(pkg.PkgPath)), nil
+			}
+		}
+	} else if mode == bundleGoPath {
+		packageDest = func(pkg *packages.Package) (string, error) {
+			return filepath.Join(goPathRoot, "src", filepath.FromSlash(pkg.PkgPath)), nil
+		}
+	} else {
+		panic("impossible")
+	}
+
+	// Respect .gcloudignore files when traversing the GAE app directory to avoid
+	// uploading unnecessary files as "static files". We don't care about any
+	// other directories, since we pick only *.go files from them.
 	excludedByIgnoreFile, err := gitignore.NewExcluder(mainDir, ".gcloudignore")
 	if err != nil {
 		return errors.Annotate(err, "when loading .gcloudignore files").Err()
 	}
 
+	// The directory inside the bundle that should contain the `main` package.
+	mainPkgDestRel, err := packageDest(mainPkg)
+	if err != nil {
+		return errors.Annotate(err, "when finding where to put the main package").Err()
+	}
+	// Absolute path to it in the staging directory.
+	mainPkgDestAbs := filepath.Join(inv.Manifest.ContextDir, mainPkgDestRel)
+
 	// Copy all files that make up "main" package (they can be only at the root
 	// of `mainDir`), and copy all non-go files recursively (they can potentially
 	// be referenced by static_files in app.yaml). We'll deal with Go dependencies
 	// separately.
-	err = inv.addFilesToOutput(ctx, mainDir, goPathDest, func(absPath string, isDir bool) bool {
+	err = inv.addFilesToOutput(ctx, mainDir, mainPkgDestAbs, func(absPath string, isDir bool) bool {
 		switch {
 		case excludedByIgnoreFile(absPath, isDir):
 			return true // respect .gcloudignore exclusions
 		case isDir:
-			return false // do not exclude directories, may have contain static files
+			return false // do not exclude directories, they may contain static files
 		}
 		rel, err := relPath(mainDir, absPath)
 		if err != nil {
@@ -107,7 +186,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		case !isGoSourceFile(rel):
 			return false
 		// Exclude code files not in the mainDir. If they are needed, they'll be
-		// discovered by the next step.
+		// discovered by the next step that traverses Go dependencies.
 		case rel != filepath.Base(rel):
 			return true
 		// For code files in the mainDir, pick up only ones matching the build
@@ -123,6 +202,31 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	})
 	if err != nil {
 		return err
+	}
+
+	// Drop empty .gcloudignore in the main directory. We already skipped ignored
+	// files, but gcloud wants some .gcloudignore anyway, creating the default one
+	// otherwise.
+	if err := inv.Output.AddFromMemory(filepath.Join(mainPkgDestRel, ".gcloudignore"), nil, nil); err != nil {
+		return errors.Annotate(err, "failed to create .gcloudignore").Err()
+	}
+
+	// We moved the main package to be somewhere under "_gomod" or "_gopath" to
+	// make the bundle be a self-contained Go tree. But the authors of the
+	// manifest expect main package files (in particular various GAE YAMLs) be
+	// reachable under their original names. They don't really "know" or care
+	// about "_gomod" and "_gopath". Make a symlink that puts the main directory
+	// to where it is really expected to make YAMLs addressable.
+	linkName, err := relPath(inv.Manifest.ContextDir, inv.BuildStep.Dest)
+	if err != nil {
+		return err
+	}
+	linkTarget, err := relPath(filepath.Dir(inv.BuildStep.Dest), mainPkgDestAbs)
+	if err != nil {
+		return err
+	}
+	if err := inv.Output.AddSymlink(linkName, linkTarget); err != nil {
+		return errors.Annotate(err, "failed to setup a symlink to the main package").Err()
 	}
 
 	// Packages for different go versions may have different files in them due to
@@ -142,7 +246,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		errs++
 	}
 
-	// Copy all transitive dependencies into _gopath/src/<pkg>.
+	// Copy all transitive dependencies into the bundle.
 	logging.Infof(ctx, "Copying transitive dependencies...")
 	packages.Visit([]*packages.Package{mainPkg}, nil, func(pkg *packages.Package) {
 		switch {
@@ -156,12 +260,10 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 			visited++
 		}
 
-		// List of file names to copy into the output. They all must be in the same
-		// directory.
-		filesToAdd := make([]string, 0, len(pkg.GoFiles)+len(pkg.IgnoredFiles)+len(pkg.OtherFiles))
-
-		// All non-go source files (like *.c) go into the tarball as is.
-		filesToAdd = append(filesToAdd, pkg.OtherFiles...)
+		// List of absolute file paths to copy into the output. They all must be in
+		// the same directory (the package directory). At least one *.go file is
+		// expected there.
+		var filesToAdd []string
 
 		// We visit GoFiles and IgnoredFiles because we want to recheck the build
 		// tags using bc.MatchFile: packages.Load *always* uses the current Go
@@ -181,12 +283,17 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		addGoFiles(pkg.GoFiles)
 		addGoFiles(pkg.IgnoredFiles)
 
-		if len(filesToAdd) == 0 || errs != 0 {
+		if errs != 0 {
+			return
+		}
+		if len(filesToAdd) == 0 {
+			logging.Warningf(ctx, "Skipping package %s: no relevant *.go files", pkg.PkgPath)
 			return
 		}
 
-		// Verify all files come from the same directory (since we are placing them
-		// into the same directory in the tarball).
+		// packages.Package doesn't tell the package directory path. Verify all *.go
+		// files we discovered come from the same directory. It is the package
+		// directory we are after.
 		srcDir := filepath.Dir(filesToAdd[0])
 		for _, path := range filesToAdd {
 			if filepath.Dir(path) != srcDir {
@@ -197,15 +304,62 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 			return
 		}
 
-		// Add them all to the tarball if not already there.
-		dstDir := filepath.Join("_gopath", "src", pkg.PkgPath)
+		// Add non-go files, like *.c or files embedded via "go:embed". They must
+		// be under the package directory, but may be in a subdirectory (in case of
+		// "go:embed").
+		addNonGoFile := func(path string) {
+			rel, err := filepath.Rel(srcDir, path)
+			if err != nil {
+				reportErr("Filed to get relative path of %q", path)
+				return
+			}
+			if rel == "." || !filepath.IsLocal(rel) {
+				reportErr("Expected %q to be under %q", path, srcDir)
+				return
+			}
+			filesToAdd = append(filesToAdd, path)
+		}
+		for _, path := range pkg.OtherFiles {
+			addNonGoFile(path)
+		}
+		for _, path := range pkg.EmbedFiles {
+			addNonGoFile(path)
+		}
+		if errs != 0 {
+			return
+		}
+
+		// Decide the destination directory in the bundle based on the module.
+		dstDir, err := packageDest(pkg)
+		if err != nil {
+			reportErr("Cant decide where to put %v: %s", pkg.GoFiles, err)
+			return
+		}
+
+		// Add all discovered files to the tarball.
 		for _, path := range filesToAdd {
-			name := filepath.Base(path)
-			err := inv.Output.AddFromDisk(path, filepath.Join(dstDir, name), nil)
+			name, err := filepath.Rel(srcDir, path)
+			if err != nil {
+				// We verified paths already above.
+				panic(fmt.Sprintf("impossible filepath.Rel error: %s", err))
+			}
+			err = inv.Output.AddFromDisk(path, filepath.Join(dstDir, name), nil)
 			if err != nil {
 				reportErr("Failed to copy %q to the tarball: %s", path, err)
 			} else {
 				copied++
+			}
+		}
+		if errs != 0 {
+			return
+		}
+
+		// In modules mode record this package as a dependency of the main module
+		// to make it show up in the generated go.mod. We don't need to do anything
+		// for packages from the main module: they aren't tracked in go.mod.
+		if mode == bundleModules && !pkg.Module.Main {
+			if err := modDeps.Add(pkg.PkgPath, pkg.Module.Path, pkg.Module.GoVersion); err != nil {
+				reportErr("Error adding %q as a module dependency: %s", pkg.PkgPath, err)
 			}
 		}
 	})
@@ -214,16 +368,50 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	}
 	logging.Infof(ctx, "Visited %d packages and copied %d files", visited, copied)
 
-	// Drop a script that can be used to test sanity of this tarball.
-	envPath := filepath.Join("_gopath", "env")
-	return inv.Output.AddFromMemory(envPath, []byte(envScript), &fileset.File{
+	// Generate go.mod and modules.txt describing bundled dependencies.
+	if mode == bundleModules {
+		logging.Infof(ctx, "Writing %s and %s", bundledGoModPath, bundledModulesTxtPath)
+		state, err := modDeps.Save()
+		if err != nil {
+			return errors.Annotate(err, "generating bundled go.mod").Err()
+		}
+		err = inv.Output.AddFromMemory(bundledGoModPath, state.GoMod, nil)
+		if err != nil {
+			return errors.Annotate(err, "adding bundled go.mod").Err()
+		}
+		err = inv.Output.AddFromMemory(bundledModulesTxtPath, state.ModulesTxt, nil)
+		if err != nil {
+			return errors.Annotate(err, "adding bundled modules.txt").Err()
+		}
+	}
+
+	// Drop a script that can be used to manually test correctness of this bundle:
+	//
+	// $ cd _gomod
+	// $ eval `./goenv`
+	// $ go build -v ./...
+	//
+	// This script isn't supposed to be used for anything important though.
+	var scriptPath string
+	var scriptBody string
+	switch mode {
+	case bundleModules:
+		scriptPath = filepath.Join(goModRoot, "goenv")
+		scriptBody = envScriptModules
+	case bundleGoPath:
+		scriptPath = filepath.Join(goPathRoot, "goenv")
+		scriptBody = envScriptGoPath
+	default:
+		panic("impossible")
+	}
+	return inv.Output.AddFromMemory(scriptPath, []byte(scriptBody), &fileset.File{
 		Executable: true,
 	})
 }
 
 // readRuntime reads `runtime` field in the YAML file.
 func readRuntime(path string) (string, error) {
-	blob, err := ioutil.ReadFile(path)
+	blob, err := os.ReadFile(path)
 	if err != nil {
 		return "", errors.Annotate(err, "failed to read %q", path).Err()
 	}
@@ -266,7 +454,8 @@ func loadPackageTree(ctx context.Context, bc *build.Context) (*packages.Package,
 			packages.NeedFiles |
 			packages.NeedImports |
 			packages.NeedDeps |
-			packages.NeedModule,
+			packages.NeedModule |
+			packages.NeedEmbedFiles,
 		Context: ctx,
 		Logf:    func(format string, args ...interface{}) { logging.Debugf(ctx, format, args...) },
 		Dir:     bc.Dir,
@@ -346,13 +535,73 @@ func isStdlib(bc *build.Context, pkg *packages.Package) bool {
 	}
 }
 
-// envScript spits out a script that modifies Go env vars to point to files
-// in the tarball. Can be used to manually test the tarball's soundness.
-const envScript = `#!/usr/bin/env bash
-cd $(dirname "${BASH_SOURCE[0]}")
+// prepareModDeps loads godep.Deps based on the state in the output.
+func prepareModDeps(main *packages.Module, out *fileset.Set) (*godep.Deps, error) {
+	// Existing go.mod with all dependencies of the main module.
+	mainModPath := filepath.Join(main.Dir, "go.mod")
+	mainModBlob, err := os.ReadFile(mainModPath)
+	if err != nil {
+		return nil, errors.Annotate(err, "reading main module's go.mod").Err()
+	}
+	mainMod, err := modfile.Parse(mainModPath, mainModBlob, nil)
+	if err != nil {
+		return nil, errors.Annotate(err, "parsing main module's go.mod").Err()
+	}
+
+	deps := godep.NewDeps(mainMod)
+
+	// Load the existing state in the bundle, if any, to append to it.
+	if bundleMod, ok := out.File(bundledGoModPath); ok {
+		state := godep.SerializedState{}
+		if state.GoMod, err = bundleMod.ReadAll(); err != nil {
+			return nil, errors.Annotate(err, "reading %q", bundledGoModPath).Err()
+		}
+		modulesTxt, ok := out.File(bundledModulesTxtPath)
+		if !ok {
+			return nil, errors.Reason("unexpectedly missing %q", bundledModulesTxtPath).Err()
+		}
+		if state.ModulesTxt, err = modulesTxt.ReadAll(); err != nil {
+			return nil, errors.Annotate(err, "reading %q", bundledModulesTxtPath).Err()
+		}
+		if err := deps.Load(state); err != nil {
+			return nil, errors.Annotate(err, "loading bundle deps").Err()
+		}
+	}
+
+	return deps, nil
+}
+
+// currentMode returns the bundling mode of the output.
+//
+// It looks at existing files in the output to decide.
+func currentMode(out *fileset.Set) bundleMode {
+	if _, ok := out.File(goPathRoot); ok {
+		return bundleGoPath
+	}
+	if _, ok := out.File(goModRoot); ok {
+		return bundleModules
+	}
+	return bundleUnknown
+}
+
+// envScriptGoPath is a script that modifies Go env vars to point to files
+// in the tarball built for GOPATH mode. Can be used to manually test the
+// tarball's soundness.
+const envScriptGoPath = `#!/usr/bin/env bash
+cd "$(dirname "${BASH_SOURCE[0]}")"
 
 echo "export GOARCH=amd64"
 echo "export GOOS=linux"
 echo "export GO111MODULE=off"
 echo "export GOPATH=$(pwd)"
+`
+
+// envScriptModules is a script that modifies Go env vars to point to files
+// in the tarball built for modules mode. Can be used to manually test the
+// tarball's soundness.
+const envScriptModules = `#!/usr/bin/env bash
+echo "export GOARCH=amd64"
+echo "export GOOS=linux"
+echo "export GO111MODULE=on"
+echo "unset GOPATH"
 `

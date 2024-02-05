@@ -1,0 +1,4 @@
+# example.com v1.0.0
+## explicit; go 1.21
+example.com/another
+example.com/pkg

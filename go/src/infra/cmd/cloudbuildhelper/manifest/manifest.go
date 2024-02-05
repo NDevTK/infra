@@ -8,7 +8,6 @@ package manifest
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path"
@@ -570,18 +569,31 @@ func (s *RunBuildStep) initStep(bs *BuildStep, dirs map[string]string) (err erro
 
 // GoGAEBundleBuildStep can be used to prepare a tarball with Go GAE app source.
 //
-// Given a path to a GAE module yaml (that should reside in a directory with
+// Given a path to a GAE service yaml (that should reside in a directory with
 // some `main` go package), it:
-//   - Copies all files in the modules directory (including all non-go files)
-//     to `_gopath/src/<its import path>`
+//   - Copies all files in the main package directory (including all non-go
+//     files) to `_gopath/src/<its import path>`
 //   - Copies all *.go code with transitive dependencies to `_gopath/src/`.
 //   - Makes `Dest` a symlink pointing to `_gopath/src/<import path>`.
+//
+// If `go_gae_bundle_as_module` is True, it instead:
+//   - Copies all files in the main package directory (including all non-go
+//     files) to `_gomod/<its import path relative to module root>`
+//   - Copies all *.go code with transitive dependencies from the main module
+//     to `_gomod/<import path relative to module root>`.
+//   - Copies all *.go code with transitive dependencies from other modules
+//     to `_gomod/vendor/<import path>`.
+//   - Generates `_gomod/go.mod` and `_gomod/vendor/modules.txt` based on the
+//     original `go.mod` and discovered dependencies.
+//   - Makes `Dest` a symlink pointing to the path created in the first step.
 //
 // This ensures "gcloud app deploy" eventually can upload all *.go files needed
 // to deploy a module.
 type GoGAEBundleBuildStep struct {
 	// GoGAEBundle is path to GAE module YAML.
 	GoGAEBundle string `yaml:"go_gae_bundle,omitempty"`
+	// ModulesMode is an opt-in into bundling as a Go module.
+	ModulesMode bool `yaml:"go_gae_bundle_as_module,omitempty"`
 }
 
 func (s *GoGAEBundleBuildStep) Kind() string { return "go_gae_bundle" }
@@ -613,7 +625,7 @@ func Load(path string) (*Manifest, error) {
 //
 // Does not traverse "extends" links.
 func parse(r io.Reader, cwd string) (*Manifest, error) {
-	body, err := ioutil.ReadAll(r)
+	body, err := io.ReadAll(r)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read the manifest body").Err()
 	}
