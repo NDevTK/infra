@@ -225,7 +225,8 @@ message PerfMode {
   // used for the performance comparison.
   //
   // Baseline must be one of:
-  // - A valid git branch for the project, with "refs/heads" prefix.
+  // - A valid git branch for the project, with "refs/heads/" prefix.
+  // - A valid git tag for the project, with "refs/tags/" prefix.
   // - The string "parent" which indicates that the baseline is the
   //   parent commit of whatever source code is being tested.
   // - The string "latest_go_release" which indicates the last stable

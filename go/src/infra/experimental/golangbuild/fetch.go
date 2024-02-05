@@ -46,9 +46,17 @@ type sourceSpec struct {
 	// project is a project in host. Must not be empty.
 	project string
 
-	// branch is the branch of project that change and/or commit are on. Must not be empty.
-	// branch is derived from and lines up with commit.Ref if commit != nil.
+	// branch is the branch of project that change and/or commit are on. May only
+	// be empty if commit != nil, tag is non-empty, and cherryPick is false.
+	//
+	// branch is derived from and lines up with commit.Ref if commit != nil and
+	// commit.Ref starts with "refs/heads/".
 	branch string
+
+	// tag is the tag referred to by commit. commit.Ref must start with "refs/tags/".
+	// commit must be non-nil and cherryPick must be false. Must be non-empty if
+	// branch is empty.
+	tag string
 
 	// change is a Gerrit CL to fetch. If this is non-nil, commit must be nil.
 	change *bbpb.GerritChange
@@ -83,11 +91,19 @@ func (s *sourceSpec) asMarkdown() string {
 	var linkText string
 	switch {
 	case s.commit != nil && s.change == nil:
-		linkText = fmt.Sprintf("commit %s", s.commit.Id[:7])
+		if s.tag != "" {
+			linkText = fmt.Sprintf("tag %s", s.tag)
+		} else {
+			linkText = fmt.Sprintf("commit %s", s.commit.Id[:7])
+		}
 	case s.commit == nil && s.change != nil:
 		linkText = fmt.Sprintf("change %d", s.change.Change)
 	}
-	return fmt.Sprintf("%s on %s ([%s](%s))", s.project, s.branch, linkText, s.asURL())
+	branchText := ""
+	if s.branch != "" {
+		branchText = " on " + s.branch
+	}
+	return fmt.Sprintf("%s%s ([%s](%s))", s.project, branchText, linkText, s.asURL())
 }
 
 // asSource returns a golangbuildpb.Source for the sourceSpec.
@@ -108,6 +124,20 @@ func (s *sourceSpec) asSource() *golangbuildpb.Source {
 func fetchRepo(ctx context.Context, src *sourceSpec, dst string, inputs *golangbuildpb.Inputs) (err error) {
 	step, ctx := build.StartStep(ctx, "fetch "+src.project)
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
+
+	// Check invariants of src.
+	if src.cherryPick && src.branch == "" {
+		return fmt.Errorf("requested cherry pick, but found no branch for %s", src.asURL())
+	}
+	if src.tag != "" && src.branch != "" {
+		return fmt.Errorf("both tag (%q) and branch (%q) set for %s", src.tag, src.branch, src.asURL())
+	}
+	if src.tag != "" && src.change != nil {
+		return fmt.Errorf("tag (%s) unexpectedly set for gerrit change %s", src.tag, src.asURL())
+	}
+	if src.tag == "" && src.branch == "" {
+		return fmt.Errorf("missing required branch for %s", src.asURL())
+	}
 
 	switch {
 	case src.change != nil && !src.cherryPick:
@@ -388,14 +418,19 @@ func runGitOutput(ctx context.Context, stepName string, args ...string) (output 
 
 // sourceForBranch produces a sourceSpec representing the tip of a branch for a project.
 func sourceForBranch(ctx context.Context, auth *auth.Authenticator, host, project, branch string) (*sourceSpec, error) {
-	return sourceForRef(ctx, auth, host, project, branch, fmt.Sprintf("refs/heads/%s", branch))
+	return sourceForRef(ctx, auth, host, project, fmt.Sprintf("refs/heads/%s", branch))
 }
 
-func sourceForTag(ctx context.Context, auth *auth.Authenticator, host, project, branch, tag string) (*sourceSpec, error) {
-	return sourceForRef(ctx, auth, host, project, branch, fmt.Sprintf("refs/tags/%s", tag))
+func sourceForTag(ctx context.Context, auth *auth.Authenticator, host, project, tag string) (*sourceSpec, error) {
+	return sourceForRef(ctx, auth, host, project, fmt.Sprintf("refs/tags/%s", tag))
 }
 
-func sourceForRef(ctx context.Context, auth *auth.Authenticator, host, project, branch, ref string) (*sourceSpec, error) {
+func sourceForRef(ctx context.Context, auth *auth.Authenticator, host, project, ref string) (*sourceSpec, error) {
+	branch, isBranch := strings.CutPrefix(ref, "refs/heads/")
+	tag, isTag := strings.CutPrefix(ref, "refs/tags/")
+	if !isTag && !isBranch {
+		return nil, fmt.Errorf("invalid ref %q, must be a tag or a branch", ref)
+	}
 	hc, err := auth.Client()
 	if err != nil {
 		return nil, fmt.Errorf("auth.Client: %w", err)
@@ -418,6 +453,7 @@ func sourceForRef(ctx context.Context, auth *auth.Authenticator, host, project, 
 	return &sourceSpec{
 		project: project,
 		branch:  branch,
+		tag:     tag,
 		commit: &bbpb.GitilesCommit{
 			Host:    host,
 			Project: project,
@@ -479,7 +515,8 @@ func sourceForParent(ctx context.Context, auth *auth.Authenticator, src *sourceS
 		}
 		return &sourceSpec{
 			project: src.project,
-			branch:  src.branch,
+			// N.B. Drop tag here. We're getting the parent, and have no idea if that's another tag.
+			branch: src.branch,
 			commit: &bbpb.GitilesCommit{
 				Host:    src.commit.Host,
 				Project: src.commit.Project,
@@ -542,11 +579,8 @@ func sourceForLatestGoRelease(ctx context.Context, auth *auth.Authenticator, goB
 		return nil, fmt.Errorf("failed to find a stable Go release at https://go.dev/dl/?mode=json")
 	}
 	var tag string
-	var branch string
 	if goBranch == mainBranch {
-		// Pick the latest release. This is also the name of the tag.
-		tag = releases[0].Version
-		branch = fmt.Sprintf("release-branch.%s", tag[:strings.LastIndex(tag, ".")])
+		return nil, fmt.Errorf("requested latest Go release for the main branch, but none exists")
 	} else if branchVersion, ok := strings.CutPrefix(goBranch, "release-branch.go1."); ok {
 		// Figure out what major version we're at.
 		ver, err := strconv.Atoi(branchVersion)
@@ -564,11 +598,10 @@ func sourceForLatestGoRelease(ctx context.Context, auth *auth.Authenticator, goB
 		if tag == "" {
 			return nil, fmt.Errorf("failed to find a latest release for %s at https://go.dev/dl/?mode=json", majorVer)
 		}
-		branch = goBranch // The release is on the same branch we're testing.
 	} else {
 		return nil, fmt.Errorf("unsupported go branch %s (is it a development branch?)", goBranch)
 	}
-	return sourceForTag(ctx, auth, publicGoHost, "go", branch, tag)
+	return sourceForTag(ctx, auth, publicGoHost, "go", tag)
 }
 
 // fetchStableGoReleases returns a list of all current stable Go release versions in descending order of Go version.
