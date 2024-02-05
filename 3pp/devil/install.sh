@@ -11,7 +11,6 @@ PREFIX="$1"
 
 # All of devil along with its dependencies in catapult.
 declare -a target_dirs=(
-  ".vpython"
   ".vpython3"
   "common/py_utils"
   "dependency_manager"
