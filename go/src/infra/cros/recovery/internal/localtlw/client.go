@@ -64,6 +64,8 @@ type tlwClient struct {
 	hostToParents map[string]string
 	// Map of version requested and received.
 	versionMap map[string]*tlw.VersionResponse
+	// Indicates that the client runs on a cloudbot
+	isCloudBot bool
 }
 
 // New build new local TLW Access instance.
@@ -72,7 +74,8 @@ func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "new tlw client").Err()
 	}
-	if env.IsCloudBot() {
+	isCloudBot := env.IsCloudBot()
+	if isCloudBot {
 		if err = config.Load(env.DefaultSSHConfigPathOnCloudBot); err != nil {
 			return nil, errors.Annotate(err, "new tlw client").Err()
 		}
@@ -85,6 +88,7 @@ func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
 		hostTypes:     make(map[string]hostType),
 		hostToParents: make(map[string]string),
 		versionMap:    make(map[string]*tlw.VersionResponse),
+		isCloudBot:    isCloudBot,
 	}
 	return c, nil
 }
@@ -120,6 +124,26 @@ func (c *tlwClient) Ping(ctx context.Context, resourceName string, count int) er
 			return nil
 		}
 		return errors.Reason("ping: container %q is down", containerName).Err()
+	} else if c.isCloudBot {
+		cmd, err := formatPingCommand(resourceName, count)
+		if err != nil {
+			return errors.Annotate(err, "ping").Err()
+		}
+		var pingResult *tlw.RunResult
+		cr := make(chan bool, 1)
+		go func() {
+			pingResult = ssh.Run(ctx, c.sshProvider, cloudBotPingServer, "sudo "+strings.Join(cmd[:], " "))
+			cr <- true
+		}()
+		select {
+		case <-cr:
+			if pingResult.ExitCode != 0 {
+				return errors.Reason("ping %s failed: %s", resourceName, pingResult.Stderr).Err()
+			}
+			return nil
+		case <-ctx.Done():
+			return errors.Reason("ping %s timeout", resourceName).Err()
+		}
 	} else {
 		err = ping(resourceName, count)
 		return errors.Annotate(err, "ping").Err()

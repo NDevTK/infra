@@ -12,21 +12,31 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-// ping represent simple network verification by ping by hostname.
-func ping(addr string, count int) error {
+const cloudBotPingServer = "openssh-server"
+
+func formatPingCommand(addr string, count int) ([]string, error) {
 	if addr == "" {
-		return errors.Reason("ping: addr is empty").Err()
+		return nil, errors.Reason("formatPingCommand: addr is empty").Err()
 	}
-	cmd := exec.Command("ping",
+	return []string{"ping",
 		addr,
 		"-c",
 		strconv.Itoa(count), // How many times will ping.
 		"-W",
 		"1", // How long wait for response.
-	)
+	}, nil
+}
+
+// ping represent simple network verification by ping by hostname.
+func ping(addr string, count int) error {
+	pingCmd, err := formatPingCommand(addr, count)
+	if err != nil {
+		return errors.Annotate(err, "ping").Err()
+	}
+	cmd := exec.Command(pingCmd[0], pingCmd[1:]...)
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
-	if err := cmd.Run(); err != nil {
+	if err = cmd.Run(); err != nil {
 		return errors.Annotate(err, stderr.String()).Err()
 	}
 	return nil
