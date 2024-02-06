@@ -427,11 +427,22 @@ func sourceForTag(ctx context.Context, auth *auth.Authenticator, host, project, 
 }
 
 func sourceForRef(ctx context.Context, auth *auth.Authenticator, host, project, ref string) (*sourceSpec, error) {
+	// Determine whether we have a branch or a tag.
 	branch, isBranch := strings.CutPrefix(ref, "refs/heads/")
 	tag, isTag := strings.CutPrefix(ref, "refs/tags/")
 	if !isTag && !isBranch {
 		return nil, fmt.Errorf("invalid ref %q, must be a tag or a branch", ref)
 	}
+	// N.B. CutPrefix returns the original string, if it returns false.
+	// Clear the tag or branch, whichever is not present.
+	if !isTag {
+		tag = ""
+	}
+	if !isBranch {
+		branch = ""
+	}
+
+	// Fetch the commit for the branch or tag.
 	hc, err := auth.Client()
 	if err != nil {
 		return nil, fmt.Errorf("auth.Client: %w", err)
