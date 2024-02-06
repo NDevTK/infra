@@ -10,7 +10,7 @@ it and report a result back.
 *   Deployments:
     *   Prod: [cr-buildbucket.appspot.com](https://cr-buildbucket.appspot.com) [[API](https://cr-buildbucket.appspot.com/rpcexplorer/services/buildbucket.v2.Builds/)]
     *   Dev: [cr-buildbucket-dev.appspot.com](https://cr-buildbucket-dev.appspot.com) [[API](https://cr-buildbucket-dev.appspot.com/rpcexplorer/services/buildbucket.v2.Builds/)]
-*   Bugs: [Infra>LUCI>BuildService>Buildbucket](https://g-issues.chromium.org/issues?q=componentid:1456290) component
+*   Bugs: [Infra>LUCI>BuildService>Buildbucket](https://issues.chromium.org/issues?q=componentid:1456290) component
 *   Contact: luci-team@
 
 ## Rewrite
