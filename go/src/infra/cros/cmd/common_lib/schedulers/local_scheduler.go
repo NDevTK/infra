@@ -8,6 +8,7 @@ import (
 	"context"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/luciexe/build"
 )
 
 // LocalScheduler defines scheduler that doesn't schedule request(s) anywhere.
@@ -28,7 +29,7 @@ func (sc *LocalScheduler) Setup(ctx context.Context) error {
 	return nil
 }
 
-func (sc *LocalScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest) (*buildbucketpb.Build, error) {
+func (sc *LocalScheduler) ScheduleRequest(_ context.Context, _ *buildbucketpb.ScheduleBuildRequest, _ *build.Step) (*buildbucketpb.Build, error) {
 	// no-op
 	return nil, nil
 }

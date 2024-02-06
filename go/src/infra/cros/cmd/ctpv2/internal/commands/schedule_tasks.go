@@ -178,7 +178,7 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 			logging.Infof(ctx, "error while setting up scheduler: %s", err)
 			return nil, errors.Annotate(err, "error while setting up scheduler").Err()
 		}
-		scheduledBuild, err = scheduler.ScheduleRequest(ctx, req)
+		scheduledBuild, err = scheduler.ScheduleRequest(ctx, req, step)
 		if err != nil {
 			logging.Infof(ctx, "error while scheduling req: %s", err)
 			return nil, errors.Annotate(err, "error while generating req:").Err()

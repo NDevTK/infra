@@ -38,7 +38,7 @@ type SchedukeClient struct {
 	local   bool
 }
 
-func NewSchedukeClient(ctx *context.Context, env string, local bool) (*SchedukeClient, error) {
+func NewSchedukeClient(ctx context.Context, env string, local bool) (*SchedukeClient, error) {
 	baseURL := ""
 	if env == PROD {
 		baseURL = SCHEDUKE_PROD
@@ -48,7 +48,7 @@ func NewSchedukeClient(ctx *context.Context, env string, local bool) (*SchedukeC
 		return nil, fmt.Errorf("env must be oneof '%s' '%s'", PROD, STAGING)
 	}
 
-	client := SchedukeClient{ctx: *ctx, baseURL: baseURL, local: local}
+	client := SchedukeClient{ctx: ctx, baseURL: baseURL, local: local}
 	err := client.setUpHTTPClient()
 	return &client, err
 

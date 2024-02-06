@@ -8,6 +8,7 @@ import (
 	"context"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/luciexe/build"
 )
 
 // SchedulerType represents scheduler type
@@ -22,5 +23,5 @@ type SchedulerInterface interface {
 	Setup(context.Context) error
 
 	// ScheduleRequest schedules request
-	ScheduleRequest(context.Context, *buildbucketpb.ScheduleBuildRequest) (*buildbucketpb.Build, error)
+	ScheduleRequest(context.Context, *buildbucketpb.ScheduleBuildRequest, *build.Step) (*buildbucketpb.Build, error)
 }

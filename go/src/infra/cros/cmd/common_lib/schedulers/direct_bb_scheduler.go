@@ -8,6 +8,7 @@ import (
 	"context"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
 )
@@ -36,7 +37,7 @@ func (sc *DirectBBScheduler) Setup(ctx context.Context) error {
 	return nil
 }
 
-func (sc *DirectBBScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest) (*buildbucketpb.Build, error) {
+func (sc *DirectBBScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest, _ *build.Step) (*buildbucketpb.Build, error) {
 	scheduledBuild, err := (*sc.BBClient).ScheduleBuild(ctx, req)
 	if err != nil {
 		return nil, err
