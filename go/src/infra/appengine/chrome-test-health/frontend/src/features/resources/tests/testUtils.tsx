@@ -38,6 +38,8 @@ export interface OptionalContext {
   params?: OptionalParams,
   isTimelineView?: boolean,
   isDirectoryView?: boolean,
+  expandPath?: string,
+  expandTest?: string,
 }
 
 type OptionalParams = {
@@ -52,6 +54,8 @@ type OptionalParams = {
   timelineMetric?: MetricType,
   timelineView?: boolean,
   directoryView?: boolean,
+  expandPath?: string,
+  expandTest?: string,
 }
 
 export function createParams(params? : OptionalParams) : Params {
@@ -67,6 +71,8 @@ export function createParams(params? : OptionalParams) : Params {
     timelineMetric: params?.timelineMetric || MetricType.AVG_CORES,
     timelineView: params?.timelineView || false,
     directoryView: params?.directoryView || false,
+    expandPath: params?.expandPath || '',
+    expandTest: params?.expandTest || '',
   };
 }
 

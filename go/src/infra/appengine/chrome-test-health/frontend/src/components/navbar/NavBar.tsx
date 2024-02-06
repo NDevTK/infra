@@ -40,6 +40,20 @@ function sanitizeComponents(current: string, add: string | null = null): string 
   return newComponents.join(', ');
 }
 
+function createNavButton(to: string, name: string) {
+  return (
+    <Button
+      disableElevation
+      disableRipple
+      sx={{ '&.MuiButtonBase-root:hover': { backgroundColor: 'transparent' } }}
+      component={Link} to={to}
+      variant="contained"
+      color="primary">
+      {name}
+    </Button>
+  );
+}
+
 function NavBar() {
   const componentCtx = useContext(ComponentContext);
   const [components, setComponents] = useState(componentCtx.components?.join(', ') || '');
@@ -119,13 +133,10 @@ function NavBar() {
           }}
         />
         <Divider orientation="vertical" flexItem />
-        <Button disableElevation disableRipple sx={{ "&.MuiButtonBase-root:hover": { backgroundColor: "transparent" } }} component={Link} to="/resources/tests" variant="contained" color="primary">
-          Resources
-        </Button>
+        {createNavButton('/resources/tests', 'Resources')}
+
         <Divider orientation="vertical" flexItem />
-        <Button disableElevation disableRipple sx={{ "&.MuiButtonBase-root:hover": { backgroundColor: "transparent" } }} component={Link} to="/coverage/summary" variant="contained" color="primary">
-          Coverage
-        </Button>
+        {createNavButton('/coverage/summary', 'Coverage')}
         <Divider orientation="vertical" flexItem />
       </Toolbar>
       <Outlet/>

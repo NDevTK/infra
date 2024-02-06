@@ -53,6 +53,8 @@ describe('computeDates', () => {
           timelineMetric: MetricType.AVG_CORES,
           timelineView: timeline as boolean,
           directoryView: false,
+          expandPath: '',
+          expandTest: '',
         })).toEqual(expected);
       });
 });
@@ -78,14 +80,14 @@ function pathNode(
 }
 
 function testNode(
-    id: string,
+    testName: string,
     fileName: string,
     leaf: boolean,
     nodes: Node[] = [],
 ): Test {
   return {
-    id: id,
-    name: id,
+    id: fileName + '/' + testName,
+    name: testName,
     isExpandable: !leaf,
     metrics: new Map(),
     rows: nodes,
@@ -128,7 +130,7 @@ describe('merge_test action', () => {
       ],
     });
     const tests: TestDateMetricData[] = [{
-      testId: '12',
+      testId: 'file/name',
       testName: 'name',
       fileName: 'file',
       metrics: metrics,
@@ -170,7 +172,7 @@ describe('merge_test action', () => {
   it('merge tests into existing state correctly', () => {
     const state: Node[] = [pathNode('foo', DirectoryNodeType.FILENAME, false)];
     const tests: TestDateMetricData[] = [{
-      testId: '12',
+      testId: 'file/name',
       testName: 'name',
       fileName: 'file',
       metrics: metricsMap({
@@ -214,7 +216,7 @@ describe('merge_test action', () => {
       ],
     });
     const tests: TestDateMetricData[] = [{
-      testId: '12',
+      testId: 'file/name',
       testName: 'name',
       fileName: 'file',
       metrics: metrics,
@@ -416,7 +418,7 @@ describe('rebuild_state action', () => {
       metrics: {},
     }];
     const tests: TestDateMetricData[] = [{
-      testId: 'app',
+      testId: '//chrome/app.cc/app',
       testName: 'app',
       fileName: '//chrome/app.cc',
       metrics: {},

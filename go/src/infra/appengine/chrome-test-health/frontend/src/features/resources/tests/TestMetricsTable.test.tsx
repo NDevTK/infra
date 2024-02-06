@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import { MetricType } from '../../../api/resources';
 import { Node, Test } from './TestMetricsContext';
 import { renderWithContext } from './testUtils';
@@ -54,7 +55,7 @@ const tests: Test[] = [{
 
 describe('when rendering the ResourcesTable', () => {
   it('snapshot view', () => {
-    renderWithContext(<TestMetricsTable/>, { data: tests });
+    renderWithContext(<TestMetricsTable expandRowId={[]}/>, { data: tests });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('Test Suite')).toBeInTheDocument();
     expect(screen.getByText('# Runs')).toBeInTheDocument();
@@ -64,7 +65,7 @@ describe('when rendering the ResourcesTable', () => {
     expect(screen.getByText('Avg Cores')).toBeInTheDocument();
   });
   it('timeline view', () => {
-    renderWithContext(<TestMetricsTable/>, { data: tests, params: { timelineView: true }, datesToShow: ['1', '2'] });
+    renderWithContext(<TestMetricsTable expandRowId={[]}/>, { data: tests, params: { timelineView: true }, datesToShow: ['1', '2'] });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('Test Suite')).toBeInTheDocument();
   });
@@ -76,7 +77,7 @@ describe('when rendering the ResourcesTable', () => {
       isExpandable: true,
       rows: [],
     }];
-    renderWithContext(<TestMetricsTable/>, { data: nodes, params: { directoryView: true }, datesToShow: ['1', '2'] });
+    renderWithContext(<TestMetricsTable expandRowId={[]}/>, { data: nodes, params: { directoryView: true }, datesToShow: ['1', '2'] });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('src')).toBeInTheDocument();
     expect(screen.queryByTestId('tablePagination')).toBeNull();
@@ -85,11 +86,64 @@ describe('when rendering the ResourcesTable', () => {
 
 describe('when rendering the ResourcesTable', () => {
   it('should render loading screen', () => {
-    renderWithContext(<TestMetricsTable/>, { data: [], isLoading: true });
+    renderWithContext(<TestMetricsTable expandRowId={[]}/>, { data: [], isLoading: true });
     expect(screen.getByText('Loading...')).toBeInTheDocument();
     expect(screen.getByTestId('loading-bar')).not.toHaveClass(
         'hidden',
     );
+  });
+});
+
+describe('when clicking copylink in ResourcesTable', () => {
+  beforeEach(() => {
+    let clipboardData = '';
+    const mockClipboard = {
+      writeText: jest.fn(
+          (data) => {
+            clipboardData = data;
+          },
+      ),
+      readText: jest.fn(
+          () => {
+            return clipboardData;
+          },
+      ),
+    };
+    Object.assign(navigator, {
+      clipboard: mockClipboard,
+    });
+  });
+  it('should copy link to clipboard', async () => {
+    const nodes: Node[] = [{
+      id: 'pathName/',
+      name: 'src',
+      metrics: mockMetrics,
+      isExpandable: true,
+      rows: [
+        {
+          id: 'v1',
+          name: 'suite',
+          subname: 'builder',
+          metrics: mockMetrics,
+          isExpandable: false,
+          rows: [],
+        },
+        {
+          id: 'v1',
+          name: 'suite',
+          subname: 'builder',
+          metrics: mockMetrics,
+          isExpandable: false,
+          rows: [],
+        },
+      ],
+    }];
+
+    renderWithContext(<TestMetricsTable expandRowId={[]}/>, { data: nodes, params: { directoryView: true } });
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('LinkIcon'));
+    });
+    expect(navigator.clipboard.readText()).toContain('&expp=pathName/');
   });
 });
 

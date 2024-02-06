@@ -3,28 +3,74 @@
 // found in the LICENSE file.
 
 import Paper from '@mui/material/Paper';
-import { useContext } from 'react';
-import { MetricType, SortType } from '../../../api/resources';
+import { useContext, useState } from 'react';
+import { Alert, Button, Snackbar, Tooltip } from '@mui/material';
+import LinkIcon from '@mui/icons-material/Link';
+import { ComponentContext } from '../../../features/components/ComponentContext';
+import { DirectoryNodeType, MetricType, SortType } from '../../../api/resources';
 import { formatNumber, formatTime } from '../../../utils/formatUtils';
 import DataTable, { Column, PaginatorProps, Row } from '../../../components/table/DataTable';
-import { Node, TestMetricsContext } from './TestMetricsContext';
+import { Node, Path, Test, TestMetricsContext } from './TestMetricsContext';
+import styles from './TestMetricsTable.module.css';
+import { createSearchParams } from './TestMetricsSearchParams';
+
+export interface TestMetricsTableProps {
+  expandRowId: string[],
+}
 
 export function getFormatter(metricType: MetricType) {
   return metricType === MetricType.TOTAL_RUNTIME || metricType === MetricType.AVG_RUNTIME ? formatTime : formatNumber;
 }
 
-function TestMetricsTable() {
+function TestMetricsTable(props: TestMetricsTableProps) {
   const { data, lastPage, isLoading, api, params, datesToShow } = useContext(TestMetricsContext);
+  const { components } = useContext(ComponentContext);
+  const [openAlert, setOpenAlert] = useState(false);
 
+  const handleClipboardButtonClick = (expDir: string, expTest: string) => {
+    setOpenAlert(true);
+    const searchParams = createSearchParams(components, {
+      ...params,
+      date: params.date,
+    }, expDir, expTest);
+    navigator.clipboard.writeText(window.location.host + window.location.pathname + '?' + decodeURIComponent(searchParams.toString()));
+  };
+
+  const handleClose = () => {
+    setOpenAlert(false);
+  };
+
+  const createCopyLink = (name: string, parentIds: string, fileName: string) => {
+    return <>
+      {name}
+      <Button
+        size="small"
+        className={styles.clipboard}
+        onClick={() => handleClipboardButtonClick(parentIds, fileName)}
+        style ={{ padding: 0, marginLeft: 15, minWidth: 0 }}
+      >
+        <Tooltip title="Copy link of view to clipboard">
+          <LinkIcon/>
+        </Tooltip>
+      </Button>
+    </>;
+  };
   function constructColumns() {
     const cols: Column[] = [{
       name: 'Test',
       renderer: (_: Column, row: Row<Node>) => {
-        const node = row as Node;
+        const node = row as Path;
         if (node.subname) {
-          return node.name;
+          return { value: node.name };
         } else {
-          return [node.name, 2];
+          if (node.type === DirectoryNodeType.DIRECTORY) {
+            return { value: createCopyLink(node.name, node.id, ''), colSpan: 2 };
+          }
+          if (node.type === DirectoryNodeType.FILENAME) {
+            return { value: createCopyLink(node.name, node.id, node.id), colSpan: 2 };
+          }
+          const fileName = (row as Test).fileName;
+          return { value: createCopyLink(node.name, node.id, fileName), colSpan: 2 };
         }
       },
       align: 'left',
@@ -42,7 +88,7 @@ function TestMetricsTable() {
       name: 'Test Suite',
       renderer: (_: Column, row: Row<Node>) => {
         const node = row as Node;
-        return node.subname ? node.subname : undefined;
+        return node.subname ? { value: node.subname } : undefined;
       },
       align: 'left',
       sx: { width: '20%' },
@@ -54,7 +100,7 @@ function TestMetricsTable() {
           renderer: (col: Column, row: Row<Node>) => {
             const node = row as Node;
             const value = Number(node.metrics.get(col.name)?.get(params.timelineMetric));
-            return getFormatter(params.timelineMetric)(value);
+            return { value: getFormatter(params.timelineMetric)(value) };
           },
           isSortedBy: params.sortIndex === index,
           isSortAscending: params.sortIndex === index ? params.ascending : undefined,
@@ -83,7 +129,7 @@ function TestMetricsTable() {
           renderer: (_: Column, row: Row<Node>) => {
             const node = row as Node;
             const value = Number(node.metrics.get(datesToShow[0])?.get(metricType));
-            return getFormatter(metricType)(value);
+            return { value: getFormatter(metricType)(value) };
           },
           align: 'right',
           isSortedBy: params.sort == sortType,
@@ -120,10 +166,26 @@ function TestMetricsTable() {
       api.updateRowsPerPage(Number(event.target.value));
     },
   };
-
   return (
     <Paper>
-      <DataTable isLoading={isLoading} rows={data} columns={constructColumns()} showPaginator={!params.directoryView} paginatorProps={paginatorProps}/>
+      <DataTable
+        isLoading={isLoading}
+        rows={data}
+        columns={constructColumns()}
+        showPaginator={!params.directoryView}
+        paginatorProps={paginatorProps}
+        initialExpandRowIds={props.expandRowId}
+      />
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleClose} variant='standard' severity="info" sx={{ width: '100%' }}>
+              Link copied to clipboard
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 }

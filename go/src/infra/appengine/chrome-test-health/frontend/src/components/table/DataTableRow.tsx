@@ -11,6 +11,8 @@ export interface DataTableRowProps {
   row: Row<any>,
   depth: number,
   columns: Column[],
+  expandedRowIds?: string[],
+  onTrigger?: (boolean) => void,
 }
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -20,13 +22,16 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 function DataTableRow(props: DataTableRowProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(props.expandedRowIds?.includes(props.row.id));
   const rotate = isOpen ? 'rotate(0deg)' : 'rotate(270deg)';
   const row = props.row;
 
   function handleOpenToggle() {
     if (!isOpen && props.row.onExpand !== undefined) {
       props.row.onExpand(props.row);
+    }
+    if (props.onTrigger !== undefined) {
+      props.onTrigger(!isOpen);
     }
     setIsOpen(!isOpen);
   }
@@ -39,9 +44,9 @@ function DataTableRow(props: DataTableRowProps) {
         {
           props.columns.map((column, index) => {
             const cell = column.renderer(column, row);
-            const contents = Array.isArray(cell) ? cell[0] : cell;
-            const colSpan = Array.isArray(cell) ? cell[1] : undefined;
-            const cellSx = (Array.isArray(cell) && cell.length===3) ? cell[2] : {};
+            const contents = cell?.value;
+            const colSpan = cell?.colSpan ? cell.colSpan : undefined;
+            const cellSx = cell?.sxProps ? cell.sxProps : {};
             if (contents === undefined) {
               return;
             }
@@ -81,7 +86,10 @@ function DataTableRow(props: DataTableRowProps) {
               key={row.id}
               row={row}
               depth={props.depth + 1}
-              columns={props.columns} />
+              columns={props.columns}
+              expandedRowIds={props.expandedRowIds}
+              onTrigger={props.onTrigger}
+            />
           ))}
           {row.footer ?
           <StyledTableRow

@@ -39,6 +39,8 @@ type TestMetricsContextProviderProps = {
   timelineView: boolean,
   timelineMetric: MetricType,
   directoryView: boolean,
+  expandPath: string,
+  expandTest: string,
   children?: React.ReactNode,
 }
 
@@ -91,6 +93,8 @@ export interface Params {
   timelineMetric: MetricType,
   timelineView: boolean,
   directoryView: boolean,
+  expandPath: string,
+  expandTest: string,
 }
 
 export interface Api {
@@ -141,6 +145,8 @@ export const TestMetricsContext = createContext<TestMetricsContextValue>(
         timelineMetric: MetricType.AVG_CORES,
         timelineView: false,
         directoryView: false,
+        expandPath: '',
+        expandTest: '',
       },
       isLoading: false,
     },
@@ -205,7 +211,7 @@ function createFooterLink(parentId: string, components: string[], params: Params
     directoryView: false,
     timelineView: false,
     date: params.date,
-  });
+  }, '', '');
   return (
     <>
       <Link
@@ -219,6 +225,19 @@ function createFooterLink(parentId: string, components: string[], params: Params
       </Link>
     </>
   );
+}
+
+// Given a parent id, generate all possible paths we need to expand
+export function generateIds(parentId: string): string[] {
+  const parentIds: string[] = [];
+  let currentId = '/';
+  parentId.split('/').forEach((dir) => {
+    if (dir !== '') {
+      currentId += '/' + dir;
+      parentIds.push(currentId);
+    }
+  });
+  return parentIds;
 }
 
 export const TestMetricsContextProvider = (props : TestMetricsContextProviderProps) => {
@@ -235,13 +254,15 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
   const [timelineMetric, setTimelineMetric] = useState(props.timelineMetric);
   const [timelineView, setTimelineView] = useState(props.timelineView);
   const [directoryView, setDirectoryView] = useState(props.directoryView);
+  const [expandPath] = useState(props.expandPath);
+  const [expandTest] = useState(props.expandTest);
 
   const params: Params = useMemo(() => ({
     page, rowsPerPage, filter, date, period, sort, ascending, sortIndex,
-    timelineMetric, timelineView, directoryView,
+    timelineMetric, timelineView, directoryView, expandPath, expandTest,
   }), [
     page, rowsPerPage, filter, date, period, sort, ascending, sortIndex,
-    timelineMetric, timelineView, directoryView,
+    timelineMetric, timelineView, directoryView, expandPath, expandTest,
   ]);
 
   const [data, dataDispatch] = useReducer(dataReducer, []);
@@ -308,7 +329,13 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
       // If we're not switching to directory view, we will need to reload
       // the tree with the current loaded/expanded state.
       if (directoryView) {
-        const [directories, filenames] = getLoadedParentIds(data);
+        let [directories, filenames] = getLoadedParentIds(data);
+        if (directories.length === 0 && props.expandPath != undefined) {
+          directories = generateIds(props.expandPath);
+        }
+        if (filenames.length === 0 && props.expandTest != undefined) {
+          filenames = [props.expandTest];
+        }
 
         // The rebuildState callback allows us to dispatch both RPC requests
         // at the same time and merge the data once we get both responses back,
@@ -343,7 +370,16 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
             auth, components, params, ['/', ...directories],
             rebuildState, loadFailure,
         );
-        if (filenames.length > 0) {
+        // Hacky fix to not overload when we're only rebuilding 1 test
+        // This should really be reworked so we can send requests page size
+        // for individual tests.
+        if (filenames.length === 1) {
+          loadTestMetrics(auth, components, {
+            ...params,
+            page: 0,
+            rowsPerPage: 25,
+          }, rebuildState, loadFailure, filenames);
+        } else if (filenames.length > 1) {
           loadTestMetrics(auth, components, {
             ...params,
             page: 0,
@@ -392,6 +428,7 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
     auth, data, directoryView,
     loadPathNode, loadingDispatch, dataDispatch, loadFailure,
     setTimelineView, setDirectoryView, setDatesToShow, setLastPage,
+    props.expandPath, props.expandTest,
   ]);
 
   useEffect(() => {

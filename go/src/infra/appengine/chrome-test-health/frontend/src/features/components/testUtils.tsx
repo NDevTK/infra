@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import { render } from '@testing-library/react';
-import { ComponentContext } from './ComponentContext';
 import { BrowserRouter } from 'react-router-dom';
+import { ComponentContext } from './ComponentContext';
 
 interface OptionalContext {
   components?: string[],

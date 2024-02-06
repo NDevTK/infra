@@ -5,6 +5,7 @@
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
+import { useCallback, useState } from 'react';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -19,6 +20,7 @@ export interface DataTableProps {
   isLoading?: boolean,
   showPaginator?: boolean,
   paginatorProps?: PaginatorProps,
+  initialExpandRowIds?: string[],
 }
 
 export interface PaginatorProps {
@@ -38,10 +40,16 @@ export interface Row<T extends Row<T>> {
   footer?: JSX.Element,
 }
 
+export interface RenderedCell {
+  value: string | JSX.Element
+  colSpan?: number,
+  sxProps?: SxProps<Theme>,
+}
+
 export interface Column {
   name: string,
   // Can return undefined to render no cell, or an optional colSpan
-  renderer: <T extends Row<any>>(column: Column, row: T) => string | [string, number] | [string, number|undefined, SxProps<Theme>] | undefined,
+  renderer: <T extends Row<any>>(column: Column, row: T) => undefined | RenderedCell,
   align: any,
   isSortedBy?: boolean,
   isSortAscending?: boolean,
@@ -85,6 +93,12 @@ function messageRow(colSpan: number, message: string): JSX.Element {
 }
 
 function DataTable(props: DataTableProps) {
+  const [initialExpandedRowIds, setInitialExpandedRowIds] = useState(props.initialExpandRowIds);
+  const clearInitialExpandedRowIds = useCallback((_: boolean) => {
+    if (initialExpandedRowIds !== undefined && initialExpandedRowIds.length > 0) {
+      setInitialExpandedRowIds([]);
+    }
+  }, [initialExpandedRowIds, setInitialExpandedRowIds]);
   return (
     <Paper>
       <LinearProgress sx={{ visibility: props.isLoading ? 'visible' : 'hidden' }} data-testid='loading-bar'/>
@@ -99,30 +113,37 @@ function DataTable(props: DataTableProps) {
           </TableHead>
           <TableBody data-testid="tableBody">
             {
-              props.rows.length > 0 ?
-              props.rows.map(
-                  (row) => <DataTableRow key={row.id} row={row} depth={0} columns={props.columns}/>,
-              ) : messageRow(props.columns.length, props.isLoading ? 'Loading...' : 'No data available' )
+            props.rows.length > 0 ?
+            props.rows.map(
+                (row) =>
+                  <DataTableRow
+                    key={row.id}
+                    row={row}
+                    depth={0}
+                    columns={props.columns}
+                    expandedRowIds={initialExpandedRowIds}
+                    onTrigger={clearInitialExpandedRowIds}
+                  />,
+            ) : messageRow(props.columns.length, props.isLoading ? 'Loading...' : 'No data available' )
             }
           </TableBody>
         </Table>
       </TableContainer>
       {props.showPaginator && props.paginatorProps !== undefined ? (
-          <TablePagination
-            data-testid="tablePagination"
-            component="div"
-            rowsPerPageOptions={props.paginatorProps.rowsPerPageOptions || []}
-            count={props.paginatorProps.count || 0}
-            rowsPerPage={props.paginatorProps.rowsPerPage || 0}
-            page={props.paginatorProps.page || 0}
-            onPageChange={props.paginatorProps.onPageChange}
-            onRowsPerPageChange={props.paginatorProps.onChangeRowsPerPage}
-            showFirstButton
-            sx={{ borderTop: 1, borderColor: 'grey.300' }}
-          />
-      ) : null}
+        <TablePagination
+          data-testid="tablePagination"
+          component="div"
+          rowsPerPageOptions={props.paginatorProps.rowsPerPageOptions || []}
+          count={props.paginatorProps.count || 0}
+          rowsPerPage={props.paginatorProps.rowsPerPage || 0}
+          page={props.paginatorProps.page || 0}
+          onPageChange={props.paginatorProps.onPageChange}
+          onRowsPerPageChange={props.paginatorProps.onChangeRowsPerPage}
+          showFirstButton
+          sx={{ borderTop: 1, borderColor: 'grey.300' }}
+        />
+    ) : null}
     </Paper>
   );
 }
-
 export default DataTable;

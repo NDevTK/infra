@@ -11,14 +11,14 @@ const columns: Column[] = [
     name: 'Test',
     align: 'left',
     renderer: (_: Column, _row: Row<any>) => {
-      return '';
+      return { value: '' };
     },
   },
   {
     name: 'Test2',
     align: 'left',
     renderer: (_: Column, _row: Row<any>) => {
-      return '';
+      return { value: '' };
     },
   },
 ];
@@ -129,5 +129,122 @@ describe('when rendering the DataTableRow', () => {
       fireEvent.click(screen.getByTestId('clickButton-testId'));
     });
     expect(screen.getByTestId('footerTestId')).toBeInTheDocument();
+  });
+  it('should render renderedCell', async () => {
+    const columns: Column[] = [
+      {
+        name: 'Test',
+        align: 'left',
+        renderer: (_: Column, _row: Row<any>) => {
+          return { value: <div key ="1" data-testid="renderedCell">Test</div>, colSpan: 2 };
+        },
+      },
+    ];
+    const test: Row<any> = {
+      id: 'testId',
+      isExpandable: true,
+      rows: [
+        {
+          id: 'v1',
+          isExpandable: false,
+          rows: [],
+        },
+      ],
+    };
+    render(
+        <table>
+          <tbody>
+            <DataTableRow row={test} depth={0} columns={columns}/>
+          </tbody>
+        </table>,
+    );
+    expect(screen.getByTestId('renderedCell')).toBeInTheDocument();
+  });
+  it('should load all expandedRowIds post render', async () => {
+    const columns: Column[] = [
+      {
+        name: 'Test',
+        align: 'left',
+        renderer: (_: Column, _row: Row<any>) => {
+          return { value: <div key ="1" data-testid="cellControlsTestId">Test</div>, colSpan: 2 };
+        },
+      },
+    ];
+    const test: Row<any> = {
+      id: 'testId',
+      isExpandable: true,
+      rows: [
+        {
+          id: 'v1',
+          isExpandable: true,
+          rows: [
+            {
+              id: 'v2',
+              isExpandable: false,
+              rows: [],
+            },
+          ],
+        },
+      ],
+    };
+    const expandedRowIds = ['testId', 'v1'];
+    render(
+        <table>
+          <tbody>
+            <DataTableRow
+              row={test}
+              depth={0}
+              columns={columns}
+              expandedRowIds={expandedRowIds}
+              onTrigger={() => {/* */}}
+            />
+          </tbody>
+        </table>,
+    );
+    expect(screen.getByTestId('tablerow-v2')).toBeInTheDocument();
+  });
+  it('should correctly executed onTrigger function', async () => {
+    const columns: Column[] = [
+      {
+        name: 'Test',
+        align: 'left',
+        renderer: (_: Column, _row: Row<any>) => {
+          return { value: <div key ="1" data-testid="cellControlsTestId">Test</div>, colSpan: 2 };
+        },
+      },
+    ];
+    const test: Row<any> = {
+      id: 'testId',
+      isExpandable: true,
+      rows: [
+        {
+          id: 'v1',
+          isExpandable: false,
+          rows: [],
+        },
+      ],
+    };
+    const expandedRowIds = ['testId'];
+    let triggered = false;
+    render(
+        <table>
+          <tbody>
+            <DataTableRow
+              row={test}
+              depth={0}
+              columns={columns}
+              expandedRowIds={expandedRowIds}
+              onTrigger={() => {
+                triggered = true;
+              }}
+            />
+          </tbody>
+        </table>,
+    );
+    expect(triggered).toBeFalsy();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('clickButton-testId'));
+    });
+    expect(triggered).toBeTruthy();
   });
 });

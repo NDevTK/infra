@@ -121,6 +121,11 @@ function fixFetchTestMetricsResponse(resp: FetchTestMetricsResponse) {
       test.variants.forEach((variant) => fixMetricsDateMap(variant.metrics));
     }
   });
+  // We need to append last page for bulk requests because they don't have
+  // lastPage
+  if (resp.lastPage === undefined) {
+    resp.lastPage = false;
+  }
 }
 
 function fixMetricsDateMap(map: MetricsDateMap) {

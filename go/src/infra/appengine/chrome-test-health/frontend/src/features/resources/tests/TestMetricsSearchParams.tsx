@@ -19,8 +19,10 @@ export const TIMELINE_VIEW = 'tl';
 export const TIMELINE_VIEW_METRIC = 'tlm';
 export const DIRECTORY_VIEW = 'dir';
 export const SORT_INDEX = 'sidx';
+export const EXPAND_PATH = 'expp';
+export const EXPAND_TEST = 'expt';
 
-export function createSearchParams(components: string[], params: Params) {
+export function createSearchParams(components: string[], params: Params, expPath: string, expTest: string) {
   const search = new URLSearchParams();
   // Unfortunately, having two search params objects in the dom tree seems to
   // create a race condition as they overwrite each other's parameters, even
@@ -55,6 +57,12 @@ export function createSearchParams(components: string[], params: Params) {
     search.delete(TIMELINE_VIEW_METRIC);
     search.delete(SORT_INDEX);
   }
+  if (expPath !== '' && expPath !== undefined) {
+    search.set(EXPAND_PATH, expPath);
+  }
+  if (expTest !== '' && expTest !== undefined) {
+    search.set(EXPAND_TEST, expTest);
+  }
   return search;
 }
 
@@ -65,7 +73,7 @@ function TestMetricsSearchParams() {
   const [, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    setSearchParams(createSearchParams(components, params));
+    setSearchParams(createSearchParams(components, params, '', ''));
   }, [setSearchParams, params, components]);
 
   return (<></>);

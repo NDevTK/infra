@@ -28,7 +28,7 @@ function SummaryTable() {
       name: 'Directories/Files',
       renderer: (_: Column, row: Row<Node>) => {
         const node = row as Node;
-        return node.name;
+        return { value: node.name };
       },
       align: 'left',
       sx: { width: '30%' },
@@ -45,7 +45,7 @@ function SummaryTable() {
           const node = row as Node;
           const metricData = node.metrics.get(metricType);
 
-          if (metricData === undefined) return '--';
+          if (metricData === undefined) return { value: '--' };
 
           const perc = metricData.percentageCovered.toFixed(2);
           const covered = metricData.covered;
@@ -53,7 +53,7 @@ function SummaryTable() {
 
           const value = `${perc}% (${covered}/${total})`;
           const sxProps: SxProps<Theme> = { backgroundColor: colorPallete(metricData.percentageCovered) } as SxProps<Theme>;
-          return [value, undefined, sxProps];
+          return { value: value, sxProps: sxProps };
         },
         align: 'left',
         isSortedBy: isSorted,

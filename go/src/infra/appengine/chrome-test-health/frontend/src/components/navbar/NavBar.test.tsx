@@ -99,9 +99,9 @@ describe('when rendering the navbar', () => {
 
   it('should render navigation correctly', () => {
     renderWithComponents(
-      <NavBar/>,
+        <NavBar/>,
     );
     expect(screen.getByText('Coverage')).toBeInTheDocument();
     expect(screen.getByText('Resources')).toBeInTheDocument();
-  })
+  });
 });

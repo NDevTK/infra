@@ -4,13 +4,15 @@
 
 import { Box } from '@mui/material';
 import TestMetricsTable from '../../features/resources/tests/TestMetricsTable';
-import { TestMetricsContextProvider } from '../../features/resources/tests/TestMetricsContext';
+import { TestMetricsContextProvider, generateIds } from '../../features/resources/tests/TestMetricsContext';
 import TestMetricsToolbar from '../../features/resources/tests/TestMetricsToolbar';
 import TestMetricsSearchParams, {
   ASCENDING,
   DATE,
   DIRECTORY_VIEW,
   FILTER,
+  EXPAND_PATH,
+  EXPAND_TEST,
   PAGE,
   PERIOD,
   ROWS_PER_PAGE,
@@ -23,7 +25,7 @@ import { MetricType, Period, SortType } from '../../api/resources';
 
 function TestsPage() {
   const params = new URLSearchParams(window.location.search);
-  const props = {
+  const testPageProps = {
     page: Number(params.get(PAGE)) || 0,
     rowsPerPage: Number(
         params.get(ROWS_PER_PAGE) || localStorage.getItem(ROWS_PER_PAGE),
@@ -40,12 +42,14 @@ function TestsPage() {
       String(params.get(TIMELINE_VIEW_METRIC)) as MetricType : MetricType.AVG_CORES,
     timelineView: params.get(TIMELINE_VIEW) === 'true',
     directoryView: params.get(DIRECTORY_VIEW) === 'true',
+    expandPath: params.get(EXPAND_PATH) || '',
+    expandTest: params.get(EXPAND_TEST) || '',
   };
   return (
-    <TestMetricsContextProvider {...props}>
+    <TestMetricsContextProvider {...testPageProps}>
       <TestMetricsToolbar/>
       <Box sx={{ margin: '10px 20px' }}>
-        <TestMetricsTable/>
+        <TestMetricsTable expandRowId={generateIds(testPageProps.expandPath)}/>
       </Box>
       <TestMetricsSearchParams/>
     </TestMetricsContextProvider>

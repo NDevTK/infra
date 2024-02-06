@@ -20,6 +20,8 @@ import TestMetricsSearchParams, {
   DIRECTORY_VIEW,
   SORT_INDEX,
   TIMELINE_VIEW_METRIC,
+  EXPAND_PATH,
+  EXPAND_TEST,
 } from './TestMetricsSearchParams';
 
 describe('when rendering the ResourcesSearchParams', () => {
@@ -36,6 +38,8 @@ describe('when rendering the ResourcesSearchParams', () => {
       timelineMetric: MetricType.AVG_CORES,
       timelineView: true,
       directoryView: false,
+      expandPath: 'dir',
+      expandTest: 'test',
     };
 
     await act(async () => {
@@ -57,6 +61,8 @@ describe('when rendering the ResourcesSearchParams', () => {
     expect(searchParams.get(TIMELINE_VIEW_METRIC)).toBe('AVG_CORES');
     expect(searchParams.get(DIRECTORY_VIEW)).toBe('false');
     expect(searchParams.get(SORT_INDEX)).toBe('0');
+    expect(searchParams.get(EXPAND_PATH)).toBeNull(),
+    expect(searchParams.get(EXPAND_TEST)).toBeNull(),
     expect(global.localStorage.getItem(ROWS_PER_PAGE)).toEqual('25');
   });
 
@@ -73,6 +79,8 @@ describe('when rendering the ResourcesSearchParams', () => {
       timelineMetric: MetricType.AVG_CORES,
       timelineView: false,
       directoryView: true,
+      expandPath: 'dir',
+      expandTest: 'test',
     };
 
     await act(async () => {

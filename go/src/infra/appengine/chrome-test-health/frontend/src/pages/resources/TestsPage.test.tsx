@@ -45,6 +45,8 @@ describe('when rendering the TestsPage', () => {
           sortIndex: 0,
           timelineView: false,
           directoryView: false,
+          expandPath: '',
+          expandTest: '',
         }),
     );
     // Adding this check here to verify dates are correct
@@ -57,7 +59,8 @@ describe('when rendering the TestsPage', () => {
       return mockContext(props);
     });
     window.location.search = 'https://localhost/?placeholder'+
-    '=placeholder&p=10&rows=500&filter=filter&period=1&sort=2&asc=true&sidx=2&tl=true&dir=true';
+    '=placeholder&p=10&rows=500&filter=filter&period=1&'+
+    'sort=2&asc=true&sidx=2&tl=true&dir=true&expp=path&expt=test';
     renderWithBrowserRouter(<TestsPage/>);
     expect(mockContext).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -70,6 +73,8 @@ describe('when rendering the TestsPage', () => {
           sortIndex: 2,
           timelineView: true,
           directoryView: true,
+          expandPath: 'path',
+          expandTest: 'test',
         }),
     );
     // Adding this check here to verify dates are correct

@@ -126,7 +126,7 @@ export function getLoadedParentIds(
 
 function createTestNode(test: TestDateMetricData): Test {
   return {
-    id: test.testId,
+    id: test.fileName + '/' + test.testName,
     name: test.testName,
     fileName: test.fileName,
     metrics: createMetricsMap(test.metrics),

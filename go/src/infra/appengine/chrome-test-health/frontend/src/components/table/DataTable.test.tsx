@@ -45,14 +45,14 @@ const columns: Column[] = [
     name: 'Test',
     align: 'left',
     renderer: (_: Column, _1: Row<any>) => {
-      return '';
+      return { value: '' };
     },
   },
   {
     name: 'Test2',
     align: 'left',
     renderer: (_: Column, _1: Row<any>) => {
-      return '';
+      return { value: '' };
     },
   },
 ];
