@@ -16,7 +16,9 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 
 	"infra/cros/cmd/suite_publisher/internal/bqsuites"
-	"infra/cros/cmd/suite_publisher/internal/parse"
+	"infra/cros/cmd/suite_publisher/internal/closures"
+
+	csuite "go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/test/suite/centralizedsuite"
 )
 
 const (
@@ -137,8 +139,10 @@ func (s *suitePublisher) publishSuites(ctx context.Context, bqClient *bigquery.C
 	if err := s.validate(); err != nil {
 		return err
 	}
-
-	suites, err := parse.ReadSuitesAndSuiteSets(s.suiteProtoPath, s.suiteSetProtoPath)
+	mappingsLoader := csuite.NewCustomFileLoader(
+		[]string{s.suiteSetProtoPath}, []string{s.suiteProtoPath},
+	)
+	mappings, err := mappingsLoader.Load()
 	if err != nil {
 		return err
 	}
@@ -150,24 +154,25 @@ func (s *suitePublisher) publishSuites(ctx context.Context, bqClient *bigquery.C
 		CrosMilestone: s.milestone,
 		CrosVersion:   s.version,
 	}
-	for _, s := range suites {
-		LogOut("Publishing %s\n", s.ID())
-		p := &bqsuites.PublishInfo{
-			Suite: s,
+	for _, centralizedSuite := range mappings {
+		LogOut("Publishing %s\n", centralizedSuite.ID())
+		publishInfo := &bqsuites.PublishInfo{
+			Suite: centralizedSuite,
 			Build: build,
 		}
-		if err := bqsuites.PublishSuite(ctx, inserter, p); err != nil {
+		if err := bqsuites.PublishSuite(ctx, inserter, publishInfo); err != nil {
 			return err
 		}
-		c := s.Closures(suites)
-		var closures []*bqsuites.ClosurePublishInfo
-		for _, closure := range c {
-			closures = append(closures, &bqsuites.ClosurePublishInfo{
+		closures := closures.Closures(centralizedSuite, mappings)
+		var closurePublishInfo []*bqsuites.ClosurePublishInfo
+		for _, closure := range closures {
+			info := &bqsuites.ClosurePublishInfo{
 				Closure: closure,
 				Build:   build,
-			})
+			}
+			closurePublishInfo = append(closurePublishInfo, info)
 		}
-		if err := bqsuites.PublishSuiteClosures(ctx, closureInserter, closures); err != nil {
+		if err := bqsuites.PublishSuiteClosures(ctx, closureInserter, closurePublishInfo); err != nil {
 			return err
 		}
 	}

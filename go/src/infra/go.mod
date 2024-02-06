@@ -79,6 +79,7 @@ require (
 	go.chromium.org/chromiumos/config/go v0.0.0-20230102123018-be9aaedc3af8
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20240117203213-273a2bfa2e7e
 	go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20231007100511-92819ae43f85
+	go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/test/suite v0.0.0-00010101000000-000000000000
 	go.chromium.org/luci v0.0.0-20230103053340-8a57daa72e32
 	go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace v0.46.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.46.1
@@ -257,5 +258,6 @@ exclude github.com/sergi/go-diff v1.2.0
 replace (
 	go.chromium.org/chromiumos/config/go => ../go.chromium.org/chromiumos/config/go
 	go.chromium.org/chromiumos/infra/proto/go => ../go.chromium.org/chromiumos/infra/proto/go
+	go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/test/suite => ../../../../../chromiumos/src/platform/dev/src/chromiumos/test/suite
 	go.chromium.org/luci => ../go.chromium.org/luci
 )
