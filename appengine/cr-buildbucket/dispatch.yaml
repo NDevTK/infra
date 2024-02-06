@@ -21,9 +21,9 @@ dispatch:
   - url: "*/auth/api/v1/server/client_id"
     service: default-go
 
-  # Only serve it on default service.
+  # Serve the build redirection on default-go.
   - url: "*/build/*"
-    service: default
+    service: default-go
 
   # Global config validation is implemented in Go, so serve it from there.
   - url: "*/api/config/*"
