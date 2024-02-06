@@ -35,6 +35,13 @@ service FleetCost {
       post: "/v1/create-cost-indicator"
     };
   }
+
+  // ListCostIndicators creates a new cost indicator.
+  rpc ListCostIndicators(ListCostIndicatorsRequest) returns (ListCostIndicatorsResponse) {
+    option (google.api.http) = {
+      post: "/v1/list-cost-indicators"
+    };
+  }
 }
 
 // PingRequest intentionally contains nothing.
@@ -71,4 +78,15 @@ message CreateCostIndicatorRequest {
 // CreateCostIndicatorResponse contains the newly created CostIndicator.
 message CreateCostIndicatorResponse {
   CostIndicator cost_indicator = 1;
+}
+
+// ListCostIndicatorsRequest lists the cost indicators.
+message ListCostIndicatorsRequest {
+  // TODO(gregorynisbet): Add filters here.
+  int32 pageSize = 1;
+}
+
+// ListCostIndicatorsResponse lists cost indicators
+message ListCostIndicatorsResponse {
+  repeated CostIndicator cost_indicator = 1;
 }

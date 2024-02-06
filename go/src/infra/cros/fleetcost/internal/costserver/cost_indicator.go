@@ -15,3 +15,7 @@ import (
 func (f *FleetCostFrontend) CreateCostIndicator(_ context.Context, _ *fleetcostpb.CreateCostIndicatorRequest) (*fleetcostpb.CreateCostIndicatorResponse, error) {
 	return nil, errors.Reason("not yet implemented").Err()
 }
+
+func (f *FleetCostFrontend) ListCostIndicators(_ context.Context, _ *fleetcostpb.ListCostIndicatorsRequest) (*fleetcostpb.ListCostIndicatorsResponse, error) {
+	return nil, errors.Reason("not yet implemented").Err()
+}
