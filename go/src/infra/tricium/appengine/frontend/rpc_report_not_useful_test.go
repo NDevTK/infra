@@ -64,8 +64,9 @@ func TestReportNotUseful(t *testing.T) {
 			response, err := server.ReportNotUseful(ctx, request)
 			So(err, ShouldBeNil)
 			So(response, ShouldResemble, &tricium.ReportNotUsefulResponse{
-				Owner:             "yiwzhang@google.com",
-				MonorailComponent: "Infra>LUCI>BuildService>PreSubmit>Tricium",
+				Owner:                   "yiwzhang@google.com",
+				MonorailComponent:       "Infra>LUCI>BuildService>PreSubmit>Tricium",
+				IssueTrackerComponentId: 1456522,
 			})
 			So(ds.Get(ctx, feedback), ShouldBeNil)
 			So(feedback.NotUsefulReports, ShouldEqual, 1)
@@ -102,14 +103,16 @@ func TestReportNotUseful(t *testing.T) {
 			response, err := server.ReportNotUseful(ctx, request)
 			So(err, ShouldBeNil)
 			So(response, ShouldResemble, &tricium.ReportNotUsefulResponse{
-				Owner:             "yiwzhang@google.com",
-				MonorailComponent: "Infra>LUCI>BuildService>PreSubmit>Tricium",
+				Owner:                   "yiwzhang@google.com",
+				MonorailComponent:       "Infra>LUCI>BuildService>PreSubmit>Tricium",
+				IssueTrackerComponentId: 1456522,
 			})
 			response, err = server.ReportNotUseful(ctx, request)
 			So(err, ShouldBeNil)
 			So(response, ShouldResemble, &tricium.ReportNotUsefulResponse{
-				Owner:             "yiwzhang@google.com",
-				MonorailComponent: "Infra>LUCI>BuildService>PreSubmit>Tricium",
+				Owner:                   "yiwzhang@google.com",
+				MonorailComponent:       "Infra>LUCI>BuildService>PreSubmit>Tricium",
+				IssueTrackerComponentId: 1456522,
 			})
 			So(ds.Get(ctx, feedback), ShouldBeNil)
 			So(feedback.NotUsefulReports, ShouldEqual, 2)
@@ -131,8 +134,9 @@ func TestReportNotUseful(t *testing.T) {
 			response, err := server.ReportNotUseful(ctx, &tricium.ReportNotUsefulRequest{CommentId: commentID})
 			So(err, ShouldBeNil)
 			So(response, ShouldResemble, &tricium.ReportNotUsefulResponse{
-				Owner:             "gbiv@chromium.org",
-				MonorailComponent: "Infra>LUCI>BuildService>PreSubmit>Tricium",
+				Owner:                   "gbiv@chromium.org",
+				MonorailComponent:       "Infra>LUCI>BuildService>PreSubmit>Tricium",
+				IssueTrackerComponentId: 1456522,
 			})
 		})
 	})

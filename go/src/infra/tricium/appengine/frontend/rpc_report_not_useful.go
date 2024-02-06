@@ -69,25 +69,32 @@ func reportNotUseful(c context.Context, commentID string) (*tricium.ReportNotUse
 //
 // Looks up hard-coded bug owner and component information. This is intended to
 // be a temporary hack until there is another way to specify bug filing
-// information; see crbug.com/1201312.
+// information; see https://issues.chromium.org/40762296.
 func responseForComment(comment *track.Comment) *tricium.ReportNotUsefulResponse {
-	const comp = "Infra>LUCI>BuildService>PreSubmit>Tricium"
+	resp := &tricium.ReportNotUsefulResponse{
+		Owner:             "yiwzhang@google.com",
+		MonorailComponent: "Infra>LUCI>BuildService>PreSubmit>Tricium",
+		// component for Tricium service:
+		// https://issues.chromium.org/components/1456522
+		IssueTrackerComponentId: 1456522,
+	}
 	switch name := comment.Analyzer; {
 	case name == "Analyze" || strings.HasPrefix(name, "FuchsiaTricium"):
-		return &tricium.ReportNotUsefulResponse{Owner: "maruel@google.com", MonorailComponent: comp}
+		resp.Owner = "olivernewman@google.com"
 	case name == "ClangTidy" || name == "ChromiumTryLinuxClangTidyRel":
-		return &tricium.ReportNotUsefulResponse{Owner: "gbiv@chromium.org", MonorailComponent: comp}
+		resp.Owner = "gbiv@chromium.org"
 	case name == "ChromiumosWrapper" || name == "ChromeosInfraTricium":
-		return &tricium.ReportNotUsefulResponse{Owner: "bmgordon@google.com", MonorailComponent: comp}
+		resp.Owner = "bmgordon@google.com"
 	case name == "Metrics" || name == "ChromiumTryTriciumMetricsAnalysis":
-		return &tricium.ReportNotUsefulResponse{Owner: "isherman@chromium.org", MonorailComponent: "Internals>Metrics>Tricium"}
+		resp.Owner = "isherman@chromium.org"
+		resp.MonorailComponent = "Internals>Metrics>Tricium"
+		resp.IssueTrackerComponentId = 1456158
 	case name == "OilpanAnalyzer" || name == "ChromiumTryTriciumOilpanAnalysis":
-		return &tricium.ReportNotUsefulResponse{Owner: "yukiy@chromium.org", MonorailComponent: comp}
+		resp.Owner = "yukiy@chromium.org"
 	case name == "PDFiumWrapper" || name == "PdfiumTryPdfiumAnalysis":
-		return &tricium.ReportNotUsefulResponse{Owner: "nigi@chromium.org", MonorailComponent: comp}
-	default:
-		return &tricium.ReportNotUsefulResponse{Owner: "yiwzhang@google.com", MonorailComponent: comp}
+		resp.Owner = "nigi@chromium.org"
 	}
+	return resp
 }
 
 func getCommentByID(c context.Context, id string) (*track.Comment, error) {

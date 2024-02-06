@@ -221,14 +221,14 @@ message ReportNotUsefulRequest {
 }
 
 message ReportNotUsefulResponse {
-  // The below fields are not used yet until https://crbug.com/865200
-  // is resolved.
-
   // Email address of the owner of the analyzer.
   string owner = 1;
 
   // Monorail bug component of the analyzer being.
-  string monorail_component = 2;
+  string monorail_component = 2 [deprecated=true];
+
+  // ID of the chromium issue tracker component for the analyzer.
+  int64 issue_tracker_component_id = 3;
 }
 
 enum State {
