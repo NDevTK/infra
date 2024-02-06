@@ -387,6 +387,8 @@ chromium_genfiles(
         "platform": "lacros",
         "sync_generated_files": True,
         "gen_repo_branch": "main",
+        # Generated files will end up in out/lacros-Debug/gen.
+        "gen_repo_out_dir": "lacros-Debug",
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "lacros",
     },
@@ -400,6 +402,8 @@ chromium_genfiles(
         "platform": "linux",
         "sync_generated_files": True,
         "gen_repo_branch": "main",
+        # Generated files will end up in out/linux-Debug/gen.
+        "gen_repo_out_dir": "linux-Debug",
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "linux",
     },
