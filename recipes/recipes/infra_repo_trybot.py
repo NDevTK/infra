@@ -52,9 +52,11 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
   patch_root = project.split('/')[-1]
   internal = (patch_root == 'infra_internal')
   co = api.infra_checkout.checkout(
-      gclient_config_name=patch_root, patch_root=patch_root,
+      gclient_config_name=patch_root,
+      patch_root=patch_root,
       internal=internal,
-      generate_env_with_system_python=True,
+      # infra_internal is fully migrated to py3.
+      generate_env_with_system_python=not internal,
       go_version_variant=go_version_variant)
   co.commit_change()
   co.gclient_runhooks()

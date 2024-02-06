@@ -199,10 +199,12 @@ def RunSteps(api):
       go_version_variant = 'legacy'
       break
 
+  internal = project_name == 'infra_internal'
   co = api.infra_checkout.checkout(
       gclient_config_name=gclient_config,
-      internal=(project_name == 'infra_internal'),
-      generate_env_with_system_python=True,
+      internal=internal,
+      # infra_internal is fully migrated to py3.
+      generate_env_with_system_python=not internal,
       go_version_variant=go_version_variant)
   co.gclient_runhooks()
 
