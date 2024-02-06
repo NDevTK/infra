@@ -3968,6 +3968,48 @@ func TestUpdateAudioboxJackpluggerStates(t *testing.T) {
 	})
 }
 
+func TestUpdateDolosInfoFromRecovery(t *testing.T) {
+	ctx := testingContext()
+	Convey("Update dolos info from recovery", t, func() {
+		Convey("update info successful path", func() {
+			p := &chromeosLab.Peripherals{
+				Dolos: &chromeosLab.Dolos{
+					Hostname:        "fake-dolos-host",
+					SerialCable:     "fake-dolos-cable-serial",
+					HwMajorRevision: chromeosLab.DolosHWMajorRevision_DOLOS_V1,
+				},
+			}
+			updateRecoveryPeripheralDolos(ctx, p, &ufsAPI.ChromeOsRecoveryData_LabData{
+				Dolos: &ufsAPI.ChromeOsRecoveryData_Dolos{
+					SerialUsb: "fake-dolos-usb-serial",
+					FwVersion: "fake-dolos-fw-version",
+				},
+			})
+			So(p.GetDolos().GetHostname(), ShouldEqual, "fake-dolos-host")
+			So(p.GetDolos().GetSerialCable(), ShouldEqual, "fake-dolos-cable-serial")
+			So(p.GetDolos().GetSerialUsb(), ShouldEqual, "fake-dolos-usb-serial")
+			So(p.GetDolos().GetFwVersion(), ShouldEqual, "fake-dolos-fw-version")
+			So(p.GetDolos().GetHwMajorRevision(), ShouldEqual, chromeosLab.DolosHWMajorRevision_DOLOS_V1)
+		})
+		Convey("update info when dolos doesn't exists", func() {
+			p := &chromeosLab.Peripherals{
+				Dolos: &chromeosLab.Dolos{},
+			}
+			updateRecoveryPeripheralDolos(ctx, p, &ufsAPI.ChromeOsRecoveryData_LabData{
+				Dolos: &ufsAPI.ChromeOsRecoveryData_Dolos{
+					SerialUsb: "fake-dolos-usb-serial",
+					FwVersion: "fake-dolos-fw-version",
+				},
+			})
+			So(p.GetDolos().GetHostname(), ShouldEqual, "")
+			So(p.GetDolos().GetSerialCable(), ShouldEqual, "")
+			So(p.GetDolos().GetSerialUsb(), ShouldEqual, "")
+			So(p.GetDolos().GetFwVersion(), ShouldEqual, "")
+			So(p.GetDolos().GetHwMajorRevision(), ShouldEqual, chromeosLab.DolosHWMajorRevision_DOLOS_UNSPECIFIED)
+		})
+	})
+}
+
 func TestUpdateMachineLSEDevboard(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
