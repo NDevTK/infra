@@ -22,6 +22,30 @@
       },
       "revId": "b07a0ced2946449b3da79efe2e642cc60f961b27",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5cedd816_a33c5785",
+        "filename": "go/src/infra/unifiedfleet/api/v1/rpc/fleet.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 1876,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-02-06T19:56:24Z",
+      "side": 1,
+      "message": "Removed it as it\u0027s uncertain how this info will be input into UFS yet at this point.",
+      "parentUuid": "a73bb9fe_48253664",
+      "range": {
+        "startLine": 1876,
+        "startChar": 4,
+        "endLine": 1876,
+        "endChar": 67
+      },
+      "revId": "b07a0ced2946449b3da79efe2e642cc60f961b27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
