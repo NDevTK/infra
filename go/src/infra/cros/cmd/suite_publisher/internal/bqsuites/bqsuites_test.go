@@ -7,11 +7,13 @@ import (
 	"errors"
 	"testing"
 
+	"infra/cros/cmd/suite_publisher/test"
+
 	"cloud.google.com/go/bigquery"
 	"github.com/google/go-cmp/cmp"
+	csuite "go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/test/suite/centralizedsuite"
 
-	"infra/cros/cmd/suite_publisher/internal/suite"
-	"infra/cros/cmd/suite_publisher/test"
+	"infra/cros/cmd/suite_publisher/internal/closures"
 )
 
 func TestSavePublishInfo(t *testing.T) {
@@ -27,7 +29,7 @@ func TestSavePublishInfo(t *testing.T) {
 	}{
 		{
 			publishInfo: &PublishInfo{
-				Suite: suite.NewSuite(test.ExampleSuite()),
+				Suite: csuite.NewSuite(test.ExampleSuite()),
 				Build: BuildInfo{
 					BuildTarget:   "example_build_target",
 					CrosVersion:   "15755.0.0",
@@ -53,7 +55,7 @@ func TestSavePublishInfo(t *testing.T) {
 		},
 		{
 			publishInfo: &PublishInfo{
-				Suite: suite.NewSuiteSet(test.ExampleSuiteSet()),
+				Suite: csuite.NewSuiteSet(test.ExampleSuiteSet()),
 				Build: BuildInfo{
 					BuildTarget:   "example_build_target_2",
 					CrosVersion:   "15754.0.0",
@@ -79,7 +81,7 @@ func TestSavePublishInfo(t *testing.T) {
 		},
 		{
 			publishInfo: &PublishInfo{
-				Suite: suite.NewSuiteSet(test.ExampleSuiteSet()),
+				Suite: csuite.NewSuiteSet(test.ExampleSuiteSet()),
 				Build: BuildInfo{
 					BuildTarget:   "example_build_target_2",
 					CrosVersion:   "15754.0.0",
@@ -132,7 +134,7 @@ func TestSaveSuiteClosure(t *testing.T) {
 	}{
 		{
 			closure: ClosurePublishInfo{
-				Closure: &suite.SuiteClosure{
+				Closure: &closures.SuiteClosure{
 					ID:    "test_1",
 					Child: "test_2",
 					Depth: 1,

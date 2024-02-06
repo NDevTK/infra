@@ -1,25 +1,26 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package suite
+package closures
 
 import (
+	"infra/cros/cmd/suite_publisher/test"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/cmd/suite_publisher/test"
+	csuite "go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/test/suite/centralizedsuite"
 )
 
 func TestClosures(t *testing.T) {
 	for _, tc := range []struct {
-		suites map[string]CentralizedSuite
-		id     string
-		want   []*SuiteClosure
+		mappings csuite.Mappings
+		id       string
+		want     []*SuiteClosure
 	}{
 		{
-			suites: map[string]CentralizedSuite{
-				"example_suite": NewSuite(test.ExampleSuite()),
+			mappings: csuite.Mappings{
+				"example_suite": csuite.NewSuite(test.ExampleSuite()),
 			},
 			id: "example_suite",
 			want: []*SuiteClosure{
@@ -31,10 +32,10 @@ func TestClosures(t *testing.T) {
 			},
 		},
 		{
-			suites: map[string]CentralizedSuite{
-				"example_suite":       NewSuite(test.ExampleSuite()),
-				"example_suite_set":   NewSuiteSet(test.ExampleSuiteSet()),
-				"example_suite_set_b": NewSuiteSet(test.ExampleSuiteSetB()),
+			mappings: csuite.Mappings{
+				"example_suite":       csuite.NewSuite(test.ExampleSuite()),
+				"example_suite_set":   csuite.NewSuiteSet(test.ExampleSuiteSet()),
+				"example_suite_set_b": csuite.NewSuiteSet(test.ExampleSuiteSetB()),
 			},
 			id: "example_suite_set",
 			want: []*SuiteClosure{
@@ -61,8 +62,8 @@ func TestClosures(t *testing.T) {
 			},
 		},
 	} {
-		s := tc.suites[tc.id]
-		got := s.Closures(tc.suites)
+		s := tc.mappings[tc.id]
+		got := Closures(s, tc.mappings)
 		if diff := cmp.Diff(got, tc.want); diff != "" {
 			t.Errorf("closures mismatch (-got +want):\n%s\n\n", diff)
 			for _, closure := range got {
