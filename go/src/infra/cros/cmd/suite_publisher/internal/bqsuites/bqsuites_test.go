@@ -7,12 +7,38 @@ import (
 	"errors"
 	"testing"
 
+	"infra/cros/cmd/suite_publisher/test"
+
 	"cloud.google.com/go/bigquery"
 	"github.com/google/go-cmp/cmp"
+	csuite "go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/test/suite/centralizedsuite"
 
-	"infra/cros/cmd/suite_publisher/internal/suite"
-	"infra/cros/cmd/suite_publisher/test"
+	"infra/cros/cmd/suite_publisher/internal/closures"
 )
+
+var strScliceSetComparer = sliceSetComparer[string]()
+
+func sliceSetComparer[X comparable](opts ...cmp.Option) cmp.Option {
+	return cmp.Comparer(func(a, b []X) bool {
+		if len(a) != len(b) {
+			return false
+		}
+		setA := make(map[X]bool)
+		for _, item := range a {
+			setA[item] = true
+		}
+		setB := make(map[X]bool)
+		for _, item := range b {
+			setB[item] = true
+		}
+		for key := range setA {
+			if ok := setB[key]; !ok {
+				return false
+			}
+		}
+		return true
+	})
+}
 
 func TestSavePublishInfo(t *testing.T) {
 	type wantInfo struct {
@@ -27,7 +53,7 @@ func TestSavePublishInfo(t *testing.T) {
 	}{
 		{
 			publishInfo: &PublishInfo{
-				Suite: suite.NewSuite(test.ExampleSuite()),
+				Suite: csuite.NewSuite(test.ExampleSuite()),
 				Build: BuildInfo{
 					BuildTarget:   "example_build_target",
 					CrosVersion:   "15755.0.0",
@@ -53,7 +79,7 @@ func TestSavePublishInfo(t *testing.T) {
 		},
 		{
 			publishInfo: &PublishInfo{
-				Suite: suite.NewSuiteSet(test.ExampleSuiteSet()),
+				Suite: csuite.NewSuiteSet(test.ExampleSuiteSet()),
 				Build: BuildInfo{
 					BuildTarget:   "example_build_target_2",
 					CrosVersion:   "15754.0.0",
@@ -79,7 +105,7 @@ func TestSavePublishInfo(t *testing.T) {
 		},
 		{
 			publishInfo: &PublishInfo{
-				Suite: suite.NewSuiteSet(test.ExampleSuiteSet()),
+				Suite: csuite.NewSuiteSet(test.ExampleSuiteSet()),
 				Build: BuildInfo{
 					BuildTarget:   "example_build_target_2",
 					CrosVersion:   "15754.0.0",
@@ -112,7 +138,7 @@ func TestSavePublishInfo(t *testing.T) {
 			if gotDedupeID != tc.want.dedupeID {
 				t.Errorf("Save() got dedupeID: %q, want: %q", gotDedupeID, tc.want.dedupeID)
 			}
-			if diff := cmp.Diff(gotValues, tc.want.values); diff != "" {
+			if diff := cmp.Diff(gotValues, tc.want.values, strScliceSetComparer); diff != "" {
 				t.Errorf("Save() got values mismatch (-got +want):\n%s", diff)
 			}
 		})
@@ -132,7 +158,7 @@ func TestSaveSuiteClosure(t *testing.T) {
 	}{
 		{
 			closure: ClosurePublishInfo{
-				Closure: &suite.SuiteClosure{
+				Closure: &closures.SuiteClosure{
 					ID:    "test_1",
 					Child: "test_2",
 					Depth: 1,
