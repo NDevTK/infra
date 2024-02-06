@@ -24,17 +24,6 @@ TAGGED_RELEASE = (
     'https://api.github.com/repos/zephyrproject-rtos/sdk-ng/releases/tags/v%s')
 
 
-def do_latest():
-  releases = json.load(urllib.request.urlopen(RELEASES))
-  latest = packaging.version.parse('0')
-  for r in releases:
-    if r['prerelease']:
-      continue
-    latest = max(latest, packaging.version.parse(
-        r['tag_name'][1:]))  # Strip leading 'v'
-  print(latest)
-
-
 _PLATFORMS = {
     'linux-amd64': 'linux-x86_64',
     'linux-arm64': 'linux-aarch64',
@@ -44,13 +33,42 @@ _PLATFORMS = {
 }
 
 
+def _get_extension(platform):
+  return '.7z' if 'windows' in platform else '.tar.xz'
+
+
+def _get_filename(version, platform):
+  extension = _get_extension(platform)
+  return f'zephyr-sdk-{version}_{_PLATFORMS[platform]}{extension}'
+
+
+def do_latest(platform):
+  if platform not in _PLATFORMS:
+    raise ValueError('unsupported platform {}'.format(platform))
+
+  releases = json.load(urllib.request.urlopen(RELEASES))
+  latest = packaging.version.parse('0')
+  for r in releases:
+    if r['prerelease']:
+      continue
+    # Make sure the release contains an asset for the requested platform.
+    version = r['tag_name'][1:]  # Strip leading 'v'
+    filename = _get_filename(version, platform)
+    found = False
+    for a in r['assets']:
+      if a['name'] == filename:
+        found = True
+        break
+    if found:
+      latest = max(latest, packaging.version.parse(version))
+  print(latest)
+
+
 def get_download_url(version, platform):
   if platform not in _PLATFORMS:
     raise ValueError('unsupported platform {}'.format(platform))
 
-  extension = '.7z' if 'windows' in platform else '.tar.xz'
-
-  name = f'zephyr-sdk-{version}_{_PLATFORMS[platform]}{extension}'
+  name = _get_filename(version, platform)
 
   rsp = json.load(urllib.request.urlopen(TAGGED_RELEASE % version))
   actual_tag = rsp['tag_name'][1:]
@@ -61,7 +79,7 @@ def get_download_url(version, platform):
     if a['name'] == name:
       partial_manifest = {
           'url': [a['browser_download_url']],
-          'ext': extension,
+          'ext': _get_extension(platform),
       }
       print(json.dumps(partial_manifest))
       return
@@ -73,7 +91,7 @@ def main():
   sub = ap.add_subparsers()
 
   latest = sub.add_parser("latest")
-  latest.set_defaults(func=lambda _opts: do_latest())
+  latest.set_defaults(func=lambda _opts: do_latest(os.environ['_3PP_PLATFORM']))
 
   download = sub.add_parser("get_url")
   download.set_defaults(func=lambda _opts: get_download_url(
