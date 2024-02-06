@@ -26,6 +26,7 @@ import "infra/unifiedfleet/api/v1/models/lse_prototype.proto";
 import "infra/unifiedfleet/api/v1/models/secret.proto";
 import "infra/unifiedfleet/api/v1/models/state.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto";
+import "infra/unifiedfleet/api/v1/models/chromeos/lab/dolos.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/modeminfo.proto";
@@ -1870,6 +1871,12 @@ message ChromeOsRecoveryData {
     models.chromeos.lab.PeripheralState state = 2;
   }
 
+  message Dolos {
+    string serial_usb = 1;
+    models.chromeos.lab.DolosHWMajorRevision hw_major_revision = 2;
+    string fw_version = 3;
+  }
+
 message ModemInfo {
   // The device model cellular sub-variant.
   string model_variant = 1;
@@ -1898,7 +1905,8 @@ message ModemInfo {
     // Info on the available cellular modem
     ModemInfo modem_info = 12;
     // Info on the installed SIM cards
-    repeated models.chromeos.lab.SIMInfo sim_infos=13;
+    repeated models.chromeos.lab.SIMInfo sim_infos = 13;
+    Dolos dolos = 14;
   }
 
   // Used for updating back essential configs from repair/deploy task.

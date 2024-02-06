@@ -1997,6 +1997,7 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 					return err
 				}
 				updateRecoveryPeripheralAudioboxJackplugger(ctx, peri, labData)
+				updateRecoveryPeripheralDolos(ctx, peri, labData)
 				dut.RoVpdMap = labData.GetRoVpdMap()
 				dut.Cbi = labData.GetCbi()
 			}
@@ -2172,6 +2173,17 @@ func updateRecoveryPeripheralAudioboxJackplugger(ctx context.Context, p *chromeo
 		cham := p.GetChameleon()
 		cham.AudioboxJackplugger = labData.GetAudioboxJackpluggerState()
 	}
+}
+
+// updateRecoveryPeripheralDolos updates the dolos device info based on recovery data.
+func updateRecoveryPeripheralDolos(ctx context.Context, p *chromeosLab.Peripherals, labData *ufsAPI.ChromeOsRecoveryData_LabData) {
+	dolos := p.GetDolos()
+	if dolos == nil || dolos.GetHostname() == "" {
+		return
+	}
+	dolos.SerialUsb = labData.GetDolos().GetSerialUsb()
+	dolos.FwVersion = labData.GetDolos().GetFwVersion()
+	dolos.HwMajorRevision = labData.GetDolos().GetHwMajorRevision()
 }
 
 // extractServoComponents extracts servo components based on servo-topology.
