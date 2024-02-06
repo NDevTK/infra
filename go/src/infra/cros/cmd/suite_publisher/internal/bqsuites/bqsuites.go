@@ -10,9 +10,12 @@ import (
 	"context"
 	"fmt"
 
+	"infra/cros/cmd/suite_publisher/internal/closures"
+	"infra/cros/cmd/suite_publisher/internal/utils"
+
 	"cloud.google.com/go/bigquery"
 
-	"infra/cros/cmd/suite_publisher/internal/suite"
+	csuite "go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/test/suite/centralizedsuite"
 )
 
 // BuildInfo holds the build and version info that is associated with
@@ -26,12 +29,12 @@ type BuildInfo struct {
 // PublishInfo is the information needed to publish a Suite or SuiteSet
 // to BigQuery.
 type PublishInfo struct {
-	Suite suite.CentralizedSuite
+	Suite csuite.CentralizedSuite
 	Build BuildInfo
 }
 
 type ClosurePublishInfo struct {
-	Closure *suite.SuiteClosure
+	Closure *closures.SuiteClosure
 	Build   BuildInfo
 }
 
@@ -52,9 +55,9 @@ func (p *PublishInfo) Save() (map[string]bigquery.Value, string, error) {
 	if err := saveMetadata(p.Suite.Metadata(), ret); err != nil {
 		return nil, "", err
 	}
-	ret["test_ids"] = p.Suite.Tests()
-	ret["suites"] = p.Suite.Suites()
-	ret["suite_sets"] = p.Suite.SuiteSets()
+	ret["test_ids"] = utils.Keys(p.Suite.Tests())
+	ret["suites"] = utils.Keys(p.Suite.Suites())
+	ret["suite_sets"] = utils.Keys(p.Suite.SuiteSets())
 	dedupeID := fmt.Sprintf("%s.%s.%s", ret["id"], ret["build_target"], ret["cros_version"])
 	return ret, dedupeID, nil
 }
@@ -80,11 +83,11 @@ func (p *ClosurePublishInfo) Save() (map[string]bigquery.Value, string, error) {
 	return ret, "", nil
 }
 
-func saveMetadata(metadata *suite.Metadata, v map[string]bigquery.Value) error {
+func saveMetadata(metadata *csuite.Metadata, v map[string]bigquery.Value) error {
 	if metadata == nil {
 		return fmt.Errorf("expected non-nil metadata")
 	}
-	v["owners"] = metadata.Owners
+	v["owners"] = utils.Keys(metadata.Owners)
 	v["criteria"] = metadata.Criteria
 	v["bug_component"] = metadata.BugComponent
 	return nil
