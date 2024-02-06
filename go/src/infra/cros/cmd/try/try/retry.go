@@ -349,7 +349,10 @@ func getExecStep(recipe string, buildData buildInfo) (pb.RetryStep, error) {
 func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, propsStruct *structpb.Struct) int {
 	originalBuildProps := buildData.GetOutput().GetProperties()
 
-	retrySummary, err := r.getRetrySummary(ctx, r.originalBBID, originalBuildProps, false)
+	// Empty retry summaries are OK, they indicate that the build failed before
+	// it could begin the first step (and thus are almost certainly OK to
+	// retry).
+	retrySummary, err := r.getRetrySummary(ctx, r.originalBBID, originalBuildProps, true)
 	if err != nil {
 		r.LogErr(err.Error())
 		return CmdError
