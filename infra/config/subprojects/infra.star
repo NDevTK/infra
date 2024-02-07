@@ -244,10 +244,11 @@ wheel_tryjob("infra-internal:try/Windows-x64 wheel builder")
 wheel_tryjob("infra-internal:try/Windows-x86 wheel builder")
 
 # Tryjobs for 3pp package builders.
-def tpp_tryjob(builder):
+def tpp_tryjob(builder, experiment_percentage = None):
     luci.cq_tryjob_verifier(
         builder = builder,
         cq_group = "infra",
+        experiment_percentage = experiment_percentage,
         location_filters = [
             cq.location_filter(path_regexp = "3pp/.+"),
         ],
@@ -256,6 +257,7 @@ def tpp_tryjob(builder):
 tpp_tryjob("infra-internal:try/3pp linux-amd64")
 tpp_tryjob("infra-internal:try/3pp linux-arm64")
 tpp_tryjob("infra-internal:try/3pp linux-armv6l")
+tpp_tryjob("infra-internal:try/3pp linux-riscv64", experiment_percentage = 100)
 tpp_tryjob("infra-internal:try/3pp mac-amd64")
 tpp_tryjob("infra-internal:try/3pp mac-arm64")
 tpp_tryjob("infra-internal:try/3pp windows-386")
