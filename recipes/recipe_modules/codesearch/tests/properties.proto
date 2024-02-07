@@ -1,0 +1,14 @@
+// Copyright 2024 The LUCI Authors. All rights reserved.
+// Use of this source code is governed under the Apache License, Version 2.0
+// that can be found in the LICENSE file.
+
+syntax = "proto3";
+
+package recipe_modules.infra.codesearch.tests;
+
+// Properties for codesearch/tests/clone_and_run_clang_tool.py.
+message CloneAndRunClangToolProps {
+  // Value to pass in for the target_architecture kwarg.
+  optional string target_architecture = 1;
+}
+

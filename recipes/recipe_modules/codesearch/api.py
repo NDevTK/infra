@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from typing import Iterable, Optional
+
+from recipe_engine import config_types
 from recipe_engine import recipe_api
 
 
@@ -83,8 +86,19 @@ class CodesearchApi(recipe_api.RecipeApi):
                  'https://chromium.googlesource.com/chromium/src/tools/clang')
     return clang_dir
 
-  def run_clang_tool(self, clang_dir=None, run_dirs=None):
-    """Download and run the clang tool."""
+  def run_clang_tool(
+      self,
+      clang_dir: Optional[config_types.Path] = None,
+      run_dirs: Optional[Iterable[config_types.Path]] = None,
+      target_architecture: Optional[str] = None,
+  ) -> None:
+    """Download and run the clang tool.
+
+    Args:
+      clang_dir: Path to clone clang into.
+      run_dirs: Dirs in which to run the clang tool.
+      target_architecture: If given, the architecture to transpile for.
+    """
     clang_dir = clang_dir or self.m.path['checkout'].join('tools', 'clang')
 
     # Download the clang tool.
@@ -98,11 +112,13 @@ class CodesearchApi(recipe_api.RecipeApi):
             '--output-dir=' + str(translation_unit_dir)
         ])
 
-    # Run the clang tool
+    # Run the clang tool.
     args = [
         '--tool', 'translation_unit', '--tool-path',
         translation_unit_dir.join('bin'), '-p', self.c.out_path, '--all'
     ]
+    if target_architecture is not None:
+      args.extend(['--tool-arg', '-arch', '--tool-arg', target_architecture])
     if run_dirs is None:
       run_dirs = [self.m.context.cwd]
     for run_dir in run_dirs:

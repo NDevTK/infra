@@ -2,19 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from PB.recipe_modules.infra.codesearch.tests.properties import CloneAndRunClangToolProps
 from recipe_engine.post_process import (DropExpectation, StatusSuccess,
-                                        StepSuccess, StepWarning)
+                                        StepCommandContains,
+                                        StepCommandDoesNotContain, StepSuccess,
+                                        StepWarning)
 
 DEPS = [
     'codesearch',
     'recipe_engine/path',
+    'recipe_engine/properties',
 ]
 
+PROPERTIES = CloneAndRunClangToolProps
 
-def RunSteps(api):
+
+def RunSteps(api, properties):
   api.codesearch.set_config('chromium', PROJECT='chromium')
   api.codesearch.clone_clang_tools(api.path['cache'])
-  api.codesearch.run_clang_tool(clang_dir=None, run_dirs=[api.path['cache']])
+
+  target_architecture: Optional[str] = None
+  if properties.HasField("target_architecture"):
+    target_architecture = properties.target_architecture
+  api.codesearch.run_clang_tool(
+      clang_dir=None,
+      run_dirs=[api.path['cache']],
+      target_architecture=target_architecture)
 
 
 def GenTests(api):
@@ -23,6 +36,8 @@ def GenTests(api):
       api.post_process(StepSuccess, 'remove previous instance of clang tools'),
       api.post_process(StepSuccess, 'download translation_unit clang tool'),
       api.post_process(StepSuccess, 'run translation_unit clang tool'),
+      api.post_process(StepCommandDoesNotContain,
+                       'run translation_unit clang tool', ['-arch']),
       api.post_process(StatusSuccess),
       api.post_process(DropExpectation),
   )
@@ -33,6 +48,15 @@ def GenTests(api):
       api.post_process(StepSuccess, 'remove previous instance of clang tools'),
       api.post_process(StepSuccess, 'download translation_unit clang tool'),
       api.post_process(StepWarning, 'run translation_unit clang tool'),
+      api.post_process(StatusSuccess),
+      api.post_process(DropExpectation),
+  )
+
+  yield api.test(
+      'target_architecture_arm64',
+      api.properties(target_architecture='arm64'),
+      api.post_process(StepCommandContains, 'run translation_unit clang tool',
+                       ['--tool-arg', '-arch', '--tool-arg', 'arm64']),
       api.post_process(StatusSuccess),
       api.post_process(DropExpectation),
   )

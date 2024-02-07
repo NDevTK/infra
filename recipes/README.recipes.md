@@ -352,9 +352,9 @@ Args:
 [DEPS](/recipes/recipe_modules/codesearch/__init__.py#5): [depot\_tools/depot\_tools][depot_tools/recipe_modules/depot_tools], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/commit\_position][recipe_engine/recipe_modules/commit_position], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-#### **class [CodesearchApi](/recipes/recipe_modules/codesearch/api.py#8)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [CodesearchApi](/recipes/recipe_modules/codesearch/api.py#11)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
-&mdash; **def [add\_kythe\_metadata](/recipes/recipe_modules/codesearch/api.py#62)(self):**
+&mdash; **def [add\_kythe\_metadata](/recipes/recipe_modules/codesearch/api.py#65)(self):**
 
 Adds inline Kythe metadata to Mojom generated files.
 
@@ -362,7 +362,7 @@ This metadata is used to connect things in the generated file to the thing
 in the Mojom file which generated it. This is made possible by annotations
 added to the generated file by the Mojo compiler.
 
-&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#282)(self, copy, revision, kzip_path=None, ignore=None):**
+&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#298)(self, copy, revision, kzip_path=None, ignore=None):**
 
 Check out the generated files repo and sync the generated files
    into this checkout.
@@ -387,18 +387,18 @@ Args:
   ignore: List of paths that shouldn't be synced.
   revision: A commit hash to be used in the commit message.
 
-&mdash; **def [cleanup\_old\_generated](/recipes/recipe_modules/codesearch/api.py#23)(self, age_days=7):**
+&mdash; **def [cleanup\_old\_generated](/recipes/recipe_modules/codesearch/api.py#26)(self, age_days=7):**
 
 Clean up generated files older than the specified number of days.
 
 Args:
   age_days: Minimum age in days for files to delete (integer).
 
-&mdash; **def [clone\_clang\_tools](/recipes/recipe_modules/codesearch/api.py#77)(self, clone_dir):**
+&mdash; **def [clone\_clang\_tools](/recipes/recipe_modules/codesearch/api.py#80)(self, clone_dir):**
 
 Clone chromium/src clang tools.
 
-&mdash; **def [create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#134)(self, commit_hash, commit_timestamp, commit_position=None):**
+&mdash; **def [create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#150)(self, commit_hash, commit_timestamp, commit_position=None):**
 
 Create the kythe index pack and upload it to google storage.
 
@@ -411,11 +411,16 @@ Args:
 Returns:
   Path to the generated index pack.
 
-&mdash; **def [get\_config\_defaults](/recipes/recipe_modules/codesearch/api.py#18)(self):**
+&mdash; **def [get\_config\_defaults](/recipes/recipe_modules/codesearch/api.py#21)(self):**
 
-&mdash; **def [run\_clang\_tool](/recipes/recipe_modules/codesearch/api.py#86)(self, clang_dir=None, run_dirs=None):**
+&mdash; **def [run\_clang\_tool](/recipes/recipe_modules/codesearch/api.py#89)(self, clang_dir: Optional[config_types.Path]=None, run_dirs: Optional[Iterable[config_types.Path]]=None, target_architecture: Optional[str]=None):**
 
 Download and run the clang tool.
+
+Args:
+  clang_dir: Path to clone clang into.
+  run_dirs: Dirs in which to run the clang tool.
+  target_architecture: If given, the architecture to transpile for.
 ### *recipe_modules* / [docker](/recipes/recipe_modules/docker)
 
 [DEPS](/recipes/recipe_modules/docker/__init__.py#7): [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/service\_account][recipe_engine/recipe_modules/service_account], [recipe\_engine/step][recipe_engine/recipe_modules/step]
@@ -1574,10 +1579,10 @@ The protos are exported via a symlink in
 &mdash; **def [RunSteps](/recipes/recipe_modules/cloudkms/examples/usage.py#13)(api):**
 ### *recipes* / [codesearch:examples/full](/recipes/recipe_modules/codesearch/examples/full.py)
 
-[DEPS](/recipes/recipe_modules/codesearch/examples/full.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [codesearch](#recipe_modules-codesearch), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/codesearch/examples/full.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [codesearch](#recipe_modules-codesearch), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/examples/full.py#52)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/examples/full.py#47)(api):**
 ### *recipes* / [codesearch:tests/checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/tests/checkout_generated_files_repo_and_sync.py)
 
 [DEPS](/recipes/recipe_modules/codesearch/tests/checkout_generated_files_repo_and_sync.py#9): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [codesearch](#recipe_modules-codesearch), [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
@@ -1586,10 +1591,10 @@ The protos are exported via a symlink in
 &mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/checkout_generated_files_repo_and_sync.py#17)(api):**
 ### *recipes* / [codesearch:tests/clone\_and\_run\_clang\_tool](/recipes/recipe_modules/codesearch/tests/clone_and_run_clang_tool.py)
 
-[DEPS](/recipes/recipe_modules/codesearch/tests/clone_and_run_clang_tool.py#8): [codesearch](#recipe_modules-codesearch), [recipe\_engine/path][recipe_engine/recipe_modules/path]
+[DEPS](/recipes/recipe_modules/codesearch/tests/clone_and_run_clang_tool.py#11): [codesearch](#recipe_modules-codesearch), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
 
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/clone_and_run_clang_tool.py#14)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/clone_and_run_clang_tool.py#20)(api, properties):**
 ### *recipes* / [codesearch:tests/configs](/recipes/recipe_modules/codesearch/tests/configs.py)
 
 [DEPS](/recipes/recipe_modules/codesearch/tests/configs.py#7): [codesearch](#recipe_modules-codesearch), [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
