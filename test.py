@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -34,7 +34,7 @@ VPYTHON3_TESTS = [
 ]
 
 def usage():
-  print("""\nUsage: %s <action> [<test names>] [<expect_tests options>]
+  print("""\nUsage: %s <action> [--py3] [<test names>] [<expect_tests options>]
 
   where <action> is one of: list, test, train, debug.
 
@@ -48,6 +48,8 @@ def usage():
     ./test.py test infra --html-report /path/to/report/folder
   Run one given test in the infra package:
     ./test.py test infra/libs/git2/test:*testCommitBogus
+
+  --py3 runs python 3 tests; otherwise python 2 tests are run.
 
   See expect_tests documentation for more details
   """ % sys.argv[0])
@@ -74,30 +76,40 @@ else:
     usage()
     sys.exit(1)
 
-if sys.platform == 'win32':
-  python_bin = os.path.join('ENV', 'Scripts', 'python')
-  expect_tests_path = os.path.join('ENV', 'Scripts', 'expect_tests')
-else:
-  python_bin = os.path.join('ENV', 'bin', 'python')
-  expect_tests_path = os.path.join('ENV', 'bin', 'expect_tests')
-
 command = sys.argv[1]
 args = sys.argv[2:]
 
 modules = []
 flags = []
+py3 = False
 # BUG: this will append everything after the first flag to `flags`. Thus,
 # it fails to catch when (a) someone doesn't pass a directory after
 # "--html-report", nor (b) if they pass multiple directories after that
 # flag.
 for arg in args:
   if arg.startswith('-'):
-    flags.append(arg)
+    if arg == '--py3':
+      py3 = True
+    else:
+      flags.append(arg)
     continue
   if flags:
     flags.append(arg)
   else:
     modules.append(arg)
+
+if py3:
+  python_bin = sys.executable
+  expect_tests_path = os.path.join(
+      os.path.dirname(sys.executable), 'expect_tests')
+else:
+  if sys.platform == 'win32':
+    python_bin = os.path.join('ENV', 'Scripts', 'python')
+    expect_tests_path = os.path.join('ENV', 'Scripts', 'expect_tests')
+  else:
+    python_bin = os.path.join('ENV', 'bin', 'python')
+    expect_tests_path = os.path.join('ENV', 'bin', 'expect_tests')
+
 
 # Set up default list of packages/directories if none have been provided.
 if not modules:
@@ -115,7 +127,8 @@ if not modules:
   # matches GAE environment. Skip this if running tests when testing
   # infra_python CIPD package integrity: the package doesn't have appengine
   # code in it.
-  if os.path.isdir(os.path.join(INFRA_ROOT, 'appengine')):
+  # TODO: appengine tests don't yet work with py3
+  if not py3 and os.path.isdir(os.path.join(INFRA_ROOT, 'appengine')):
     test_gae = sys.platform != 'win32' and sys.maxsize == (2 ** 63) - 1
     if test_gae:
       modules.append('appengine_module')
@@ -137,7 +150,7 @@ if sys.platform == 'win32' and '--force-coverage' not in flags:
 exit_code = 0
 failed_modules = []
 for module in modules:
-  print('Running %s...' % module)
+  print('Running %s...%s' % (module, ' (py3)' if py3 else ''))
   module_flags = flags[:]
   # Remove any test glob, which comes after semicolon (:) and convert to a path.
   module_path = module.split(':')[0].replace('/', os.sep)
@@ -153,13 +166,15 @@ for module in modules:
     failed_modules.append(module)
 
 # Tests to run with vpython3
-for test in VPYTHON3_TESTS:
-  print('Running %s...' % test)
-  cmd = ['vpython3', test]
-  test_exit_code = subprocess.call(cmd)
-  exit_code = test_exit_code or exit_code
-  if test_exit_code:
-    failed_modules.append(test)
+if py3:
+  VPYTHON = 'vpython3' + ('.bat' if sys.platform == 'win32' else '')
+  for test in VPYTHON3_TESTS:
+    print('Running %s... (py3)' % test)
+    cmd = [VPYTHON, test]
+    test_exit_code = subprocess.call(cmd)
+    exit_code = test_exit_code or exit_code
+    if test_exit_code:
+      failed_modules.append(test)
 
 if exit_code:
   print()
