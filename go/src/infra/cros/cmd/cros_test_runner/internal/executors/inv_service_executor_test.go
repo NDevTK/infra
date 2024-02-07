@@ -12,6 +12,7 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"google.golang.org/grpc/metadata"
 
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
@@ -187,6 +188,75 @@ func getMockedGetDutTopology(
 		},
 		),
 	)
+}
+
+func TestGetDUTHostnameAndContextForInventory(t *testing.T) {
+
+	for _, testcase := range []struct {
+		droneAgentBotPrefix string
+		commandHostname     string
+		wantHostname        string
+		wantNamespace       string
+		wantError           bool
+	}{
+		{
+			droneAgentBotPrefix: "crossk-",
+			commandHostname:     "crossk-this-is-good",
+			wantHostname:        "crossk-this-is-good",
+			wantNamespace:       "",
+			wantError:           false,
+		},
+		{
+			droneAgentBotPrefix: "extcro-",
+			commandHostname:     "extcro-this-is-good",
+			wantHostname:        "this-is-good",
+			wantNamespace:       "os-partner",
+			wantError:           false,
+		},
+		{
+			droneAgentBotPrefix: "extcro-",
+			commandHostname:     "extnotcro-this-is-good",
+			wantNamespace:       "",
+			wantError:           true,
+		},
+	} {
+		t.Setenv("DRONE_AGENT_BOT_PREFIX", testcase.droneAgentBotPrefix)
+		ctx := context.Background()
+
+		ctx, hostname, err := getDUTHostnameAndContextForInventory(ctx, testcase.commandHostname)
+		if err != nil {
+			if testcase.wantError {
+				continue
+			}
+			t.Error(err)
+			continue
+		}
+
+		// check altered hostname (minus bot-prefix)
+		if hostname != testcase.wantHostname {
+			t.Errorf("produced hostname does not match, want: %s got: %s", testcase.wantHostname, hostname)
+			continue
+		}
+		if md, found := metadata.FromOutgoingContext(ctx); !found {
+			// okay not to be found if the wanted namespace is blank
+			if testcase.wantNamespace == "" {
+				continue
+			}
+			t.Errorf("metadata not found in outgoing context, want: %s for namespace", testcase.wantNamespace)
+			continue
+		} else {
+			// in this case we should have exactly one namespace populated
+			namespace := md.Get("namespace")
+			if len(namespace) != 1 {
+				t.Errorf("metadata for key namespace does not match expected, got: %s", namespace)
+				continue
+			}
+			if namespace[0] != testcase.wantNamespace {
+				t.Errorf("incorrect metadata for namespace, want: %s, got: %s", testcase.wantNamespace, namespace[0])
+				continue
+			}
+		}
+	}
 }
 
 func getMockedGetDutTopologyRcvMsgSuccess(

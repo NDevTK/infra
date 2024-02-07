@@ -7,11 +7,14 @@ package executors
 import (
 	"context"
 	"fmt"
+	"os"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
@@ -122,6 +125,20 @@ func (ex *InvServiceExecutor) invServiceStartCommandExecution(
 	return nil
 }
 
+func getDUTHostnameAndContextForInventory(ctx context.Context, hostname string) (context.Context, string, error) {
+	botPrefix := os.Getenv("DRONE_AGENT_BOT_PREFIX")
+	if botPrefix != "" && botPrefix != "crossk-" {
+		var found bool
+		hostname, found = strings.CutPrefix(hostname, botPrefix)
+		if found {
+			ctx = metadata.AppendToOutgoingContext(ctx, "namespace", "os-partner")
+		} else {
+			return nil, "", fmt.Errorf("load dut topology cmd for partner domain failed, bot-prefix not found")
+		}
+	}
+	return ctx, hostname, nil
+}
+
 // loadDutTopologyCommandExecution executes the load dut topology command.
 func (ex *InvServiceExecutor) loadDutTopologyCommandExecution(
 	ctx context.Context,
@@ -131,14 +148,17 @@ func (ex *InvServiceExecutor) loadDutTopologyCommandExecution(
 	step, ctx := build.StartStep(ctx, "Load DutTopology")
 	defer func() { step.End(err) }()
 
-	dutTopology, err := ex.GetDUTTopology(ctx, cmd.HostName)
+	ctx, hostname, err := getDUTHostnameAndContextForInventory(ctx, cmd.HostName)
+	if err != nil {
+		err = errors.Annotate(err, "Get dut hostname for lookup err: ").Err()
+	}
+
+	dutTopology, err := ex.GetDUTTopology(ctx, hostname)
 	if err != nil {
 		err = errors.Annotate(err, "Load dut topology cmd err: ").Err()
 	}
-
 	common.WriteProtoToStepLog(ctx, step, dutTopology, "Dut Topology")
 	cmd.DutTopology = dutTopology
-
 	return err
 }
 
