@@ -225,7 +225,7 @@ const redirectProjects = Object.freeze(['pigweed', 'git', 'gerrit', 'skia', 'fuc
 export function generateProjectIssueURL(projectName, subPath, params = {}) {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const noRedirect = urlParams.has('no_tracker_redirect');
+  const noRedirect = urlParams.has('no_tracker_redirect') || urlParams.has('ntr');
   let baseUrl = '';
   if (!noRedirect && redirectProjects.includes(projectName)) {
     // Full url path will trigger backend service call to handle redirect.
