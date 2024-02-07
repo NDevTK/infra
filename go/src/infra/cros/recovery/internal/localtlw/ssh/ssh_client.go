@@ -80,13 +80,10 @@ func (c *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFu
 }
 
 func connectToProxy(ctx context.Context, network string, proxy *proxyConfig) (net.Conn, error) {
-	dialer := &tls.Dialer{
-		// Temporarily hardcoded timeout value.
-		NetDialer: &net.Dialer{Timeout: time.Duration(3) * time.Second},
-		Config:    proxy.GetConfig(),
-	}
+	// Temporarily hardcoded timeout value.
+	dialer := &net.Dialer{Timeout: time.Duration(5) * time.Second}
 	log.Debugf(ctx, "Connecting to host %s", proxy.GetAddr())
-	conn, err := dialer.DialContext(ctx, network, proxy.GetAddr())
+	conn, err := tls.DialWithDialer(dialer, network, proxy.GetAddr(), proxy.GetConfig())
 	if err != nil {
 		log.Warningf(ctx, "Failed to connect to proxy: %v", err)
 		return nil, errors.Annotate(err, "connect to proxy").Err()
@@ -132,6 +129,7 @@ func newProxyClient(ctx context.Context, sshConfig *ssh.ClientConfig, proxy *pro
 	}()
 	select {
 	case <-ctx.Done():
+		conn.Close()
 		return nil, errors.Annotate(ctx.Err(), "new proxy client").Err()
 	case <-done:
 	}
