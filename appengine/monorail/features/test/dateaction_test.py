@@ -20,6 +20,7 @@ from framework import framework_views
 from framework import timestr
 from framework import urls
 from mrproto import tracker_pb2
+from mrproto import project_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers
@@ -145,10 +146,32 @@ class IssueDateActionTaskTest(unittest.TestCase):
             None, None, tracker_pb2.DateAction.NO_ACTION, 'doc', False),
         ]
     self.services.config.StoreConfig('cnxn', self.config)
-    self.project = self.services.project.TestAddProject('proj', project_id=789)
+    self.project = self.services.project.TestAddProject(
+        'proj',
+        project_id=789,
+    )
     self.owner = self.services.user.TestAddUser('owner@example.com', 111)
     self.date_action_user = self.services.user.TestAddUser(
         'date-action-user@example.com', 555)
+
+  def testHandleRequest_ArchivedProject(self):
+    _request, mr = testing_helpers.GetRequestObjects(
+        path=urls.ISSUE_DATE_ACTION_TASK + '.do?issue_id=78901')
+
+    now = int(time.time())
+    self.services.project.TestAddProject(
+        'proj', project_id=6789, state=project_pb2.ProjectState.ARCHIVED)
+    issue = fake.MakeTestIssue(6789, 1, 'summary', 'New', 111, issue_id=78901)
+    self.services.issue.TestAddIssue(issue)
+    issue.field_values = [
+        tracker_bizobj.MakeFieldValue(123, None, None, None, now, None, False)
+    ]
+    self.assertEqual(
+        1, len(self.services.issue.GetCommentsForIssue(mr.cnxn, 78901)))
+
+    self.servlet.HandleRequest(mr)
+    self.assertEqual(
+        1, len(self.services.issue.GetCommentsForIssue(mr.cnxn, 78901)))
 
   def testHandleRequest_IssueHasNoArrivedDates(self):
     _request, mr = testing_helpers.GetRequestObjects(
