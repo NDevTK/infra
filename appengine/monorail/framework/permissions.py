@@ -142,6 +142,12 @@ STANDARD_PERMISSIONS = (STANDARD_ADMIN_PERMISSIONS +
                         STANDARD_COMMENT_PERMISSIONS +
                         STANDARD_OTHER_PERMISSIONS)
 
+ARCHIVED_PROJECT_UNALLOWED_EXTRA_PERMISSIONS = [
+    ADD_ISSUE_COMMENT, COMMIT, CREATE_ISSUE, DELETE_ANY, DELETE_ISSUE,
+    EDIT_ISSUE, EDIT_ISSUE_CC, EDIT_ISSUE_OWNER, EDIT_ISSUE_STATUS,
+    EDIT_ISSUE_SUMMARY
+]
+
 # roles
 SITE_ADMIN_ROLE = 'admin'
 OWNER_ROLE = 'owner'
@@ -480,11 +486,15 @@ def UpdateIssuePermissions(
       _, requested_perm, needed_perm = label.split('-', 2)
       restrictions[requested_perm.lower()].add(needed_perm.lower())
 
-  # Store the user permissions, and the extra permissions of all effective IDs
-  # in the given project.
-  all_perms = set(perms.perm_names)
+  # Store the extra permissions of all effective IDs in the given project.
+  all_extra_perms = set()
   for effective_id in effective_ids:
-    all_perms.update(p.lower() for p in GetExtraPerms(project, effective_id))
+    all_extra_perms.update(
+        p.lower() for p in GetExtraPerms(project, effective_id))
+
+  # Merge the user permissions, and the extra permissions of all effective IDs
+  # in the given project.
+  all_perms = perms.perm_names.union(all_extra_perms)
 
   # And filter them applying the restriction labels.
   filtered_perms = set()
@@ -498,6 +508,15 @@ def UpdateIssuePermissions(
 
   # Add any granted permissions.
   filtered_perms.update(granted_perms)
+
+  # Filter unallowed extra perms for an archvied project.
+  if project and project.state == project_pb2.ProjectState.ARCHIVED:
+    unallowed_extra_perms = [
+        perm for perm in all_extra_perms if perm in list(
+            map(str.lower, ARCHIVED_PROJECT_UNALLOWED_EXTRA_PERMISSIONS))
+    ]
+    for perm in unallowed_extra_perms:
+      filtered_perms.discard(perm)
 
   # The VIEW perm might have been removed due to restrictions, but the issue
   # owner, reporter, cc and approvers can always view an issue.

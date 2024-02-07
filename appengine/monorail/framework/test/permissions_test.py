@@ -1205,6 +1205,7 @@ OWNER_ID = 222
 CC_ID = 333
 OTHER_ID = 444
 APPROVER_ID = 555
+EXTRA_PERMS_USER_ID = 666
 
 
 class IssuePermissionsTest(unittest.TestCase):
@@ -1373,6 +1374,41 @@ class IssuePermissionsTest(unittest.TestCase):
         permissions.USER_PERMISSIONSET, self.PROJECT, self.RESTRICTED_ISSUE,
         {}, ['commit'])
     self.assertIn('view', perms.perm_names)
+
+  def testUpdateIssuePermissions_UnallowedExtraPermsHonorsArchivedProject(self):
+    project = project_pb2.Project()
+    project.extra_perms.append(
+        project_pb2.Project.ExtraPerms(
+            member_id=EXTRA_PERMS_USER_ID,
+            perms=permissions.ARCHIVED_PROJECT_UNALLOWED_EXTRA_PERMISSIONS))
+    project.state = project_pb2.ProjectState.ARCHIVED
+
+    project.committer_ids.append(EXTRA_PERMS_USER_ID)
+    perms = permissions.UpdateIssuePermissions(
+        permissions.COMMITTER_INACTIVE_PERMISSIONSET, project,
+        self.REGULAR_ISSUE, {EXTRA_PERMS_USER_ID})
+    self.assertEqual(
+        permissions.COMMITTER_INACTIVE_PERMISSIONSET.perm_names,
+        perms.perm_names)
+    perms = permissions.UpdateIssuePermissions(
+        permissions.COMMITTER_INACTIVE_PERMISSIONSET, project,
+        self.RESTRICTED_ISSUE, {EXTRA_PERMS_USER_ID})
+    self.assertEqual(
+        permissions.COMMITTER_INACTIVE_PERMISSIONSET.perm_names,
+        perms.perm_names)
+
+    project.committer_ids.clear()
+    project.owner_ids.append(EXTRA_PERMS_USER_ID)
+    perms = permissions.UpdateIssuePermissions(
+        permissions.OWNER_INACTIVE_PERMISSIONSET, project, self.REGULAR_ISSUE,
+        {EXTRA_PERMS_USER_ID})
+    self.assertEqual(
+        permissions.OWNER_INACTIVE_PERMISSIONSET.perm_names, perms.perm_names)
+    perms = permissions.UpdateIssuePermissions(
+        permissions.OWNER_INACTIVE_PERMISSIONSET, project,
+        self.RESTRICTED_ISSUE, {EXTRA_PERMS_USER_ID})
+    self.assertEqual(
+        permissions.OWNER_INACTIVE_PERMISSIONSET.perm_names, perms.perm_names)
 
   def testUpdateIssuePermissions_EditRestrictions(self):
     perms = permissions.UpdateIssuePermissions(
@@ -1557,6 +1593,26 @@ class IssuePermissionsTest(unittest.TestCase):
     self.assertTrue(permissions.CanEditIssue(
         {OTHER_ID}, permissions.OWNER_ACTIVE_PERMISSIONSET,
         self.PROJECT, self.REGULAR_ISSUE))
+
+    # User can not edit issue through extra perms in an archived project.
+    project = project_pb2.Project()
+    project.extra_perms.append(
+        project_pb2.Project.ExtraPerms(
+            member_id=EXTRA_PERMS_USER_ID, perms=[permissions.EDIT_ISSUE]))
+    project.state = project_pb2.ProjectState.ARCHIVED
+
+    project.committer_ids.append(EXTRA_PERMS_USER_ID)
+    self.assertFalse(
+        permissions.CanEditIssue(
+            {EXTRA_PERMS_USER_ID}, permissions.COMMITTER_INACTIVE_PERMISSIONSET,
+            project, self.REGULAR_ISSUE))
+
+    project.committer_ids.clear()
+    project.owner_ids.append(EXTRA_PERMS_USER_ID)
+    self.assertFalse(
+        permissions.CanEditIssue(
+            {EXTRA_PERMS_USER_ID}, permissions.OWNER_INACTIVE_PERMISSIONSET,
+            project, self.REGULAR_ISSUE))
 
   def testCanEditIssue_Restricted(self):
     # Anon users cannot edit restricted issues.
