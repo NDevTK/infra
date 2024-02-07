@@ -27,7 +27,9 @@ const (
 	cmdFieldExecRoot = "exec_root"
 	// cmd deps. string
 	cmdFieldDeps = "deps"
-	// cmd inputs. list
+	// cmd desc. string
+	cmdFieldDesc = "desc"
+	// cmd nputs. list
 	cmdFieldInputs = "inputs"
 	// cmd tool_inputs. list
 	cmdFieldToolInputs = "tool_inputs"
@@ -49,6 +51,7 @@ func packCmd(ctx context.Context, cmd *execute.Cmd, expandedInputs func() []stri
 		cmdFieldDir:        starlark.String(cmd.Dir),
 		cmdFieldExecRoot:   starlark.String(cmd.ExecRoot),
 		cmdFieldDeps:       starlark.String(cmd.Deps),
+		cmdFieldDesc:       starlark.String(cmd.Desc),
 		cmdFieldInputs:     packList(cmd.Inputs),
 		cmdFieldToolInputs: packList(cmd.ToolInputs),
 		cmdFieldExpandedInputs: starlark.NewBuiltin(cmdFieldExpandedInputs, func(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
