@@ -1,0 +1,143 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4b2eff3_eb3951d5",
+        "filename": "go/src/infra/cros/cmd/suite_publisher/internal/bqsuites/bqsuites.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1525322
+      },
+      "writtenOn": "2024-02-07T16:56:26Z",
+      "side": 1,
+      "message": "Why did you change the interface?  It seems we want a slice not a map so even if underlying storage of implementation uses a map to implement a Set seems like still returning a slice at the interface level makes sense.",
+      "range": {
+        "startLine": 58,
+        "startChar": 19,
+        "endLine": 58,
+        "endChar": 31
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "945d55f5_f7c64149",
+        "filename": "go/src/infra/cros/cmd/suite_publisher/internal/utils/utils.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1525322
+      },
+      "writtenOn": "2024-02-07T16:56:26Z",
+      "side": 1,
+      "message": "\u003e ST1000: package comment should be of the form \"Package utils ...\"\n\nPlease fix.",
+      "parentUuid": "474f9200_57c4173c",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 0
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "abd7c8cf_b5e33553",
+        "filename": "go/src/infra/cros/cmd/suite_publisher/internal/utils/utils.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1525322
+      },
+      "writtenOn": "2024-02-07T16:56:26Z",
+      "side": 1,
+      "message": "suggest adding a test.",
+      "range": {
+        "startLine": 7,
+        "startChar": 5,
+        "endLine": 7,
+        "endChar": 69
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ffc0b611_e14a4dde",
+        "filename": "go/src/infra/cros/cmd/suite_publisher/internal/utils/utils.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1525322
+      },
+      "writtenOn": "2024-02-07T16:56:26Z",
+      "side": 1,
+      "message": "can we just use `maps.Copy` here?\n\nhttps://stackoverflow.com/questions/22621754/how-can-i-merge-two-maps-in-go",
+      "range": {
+        "startLine": 10,
+        "startChar": 2,
+        "endLine": 12,
+        "endChar": 3
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db45defa_80103d46",
+        "filename": "go/src/infra/cros/cmd/suite_publisher/internal/utils/utils.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1525322
+      },
+      "writtenOn": "2024-02-07T16:56:26Z",
+      "side": 1,
+      "message": "why not use `maps.Keys` from `golang.org/x/exp/maps`?",
+      "range": {
+        "startLine": 18,
+        "startChar": 5,
+        "endLine": 18,
+        "endChar": 47
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d3c2523_c131cded",
+        "filename": "go/src/infra/go.mod",
+        "patchSetId": 1
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1525322
+      },
+      "writtenOn": "2024-02-07T16:56:26Z",
+      "side": 1,
+      "message": "I think this is for testing only..... need to remove.",
+      "range": {
+        "startLine": 261,
+        "startChar": 1,
+        "endLine": 261,
+        "endChar": 143
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
