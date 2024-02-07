@@ -16,7 +16,7 @@ from recipe_engine import recipe_api
 
 
 # Version of `cloudbuildhelper` to use by default.
-CBH_VERSION = 'git_revision:f00302c4c563370e3c0bd9444d9fab08ad48a5b3'
+CBH_VERSION = 'git_revision:8015449f9f3a91d7266ec61b725dc79e2d670f2e'
 
 
 class CloudBuildHelperApi(recipe_api.RecipeApi):
