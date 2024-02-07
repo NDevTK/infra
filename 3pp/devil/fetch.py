@@ -43,7 +43,7 @@ def get_download_url(sha):
 
 def main():
   ap = argparse.ArgumentParser()
-  sub = ap.add_subparsers()
+  sub = ap.add_subparsers(dest='action', required=True)
 
   latest = sub.add_parser("latest")
   latest.set_defaults(func=do_latest)

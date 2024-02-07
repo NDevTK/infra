@@ -59,7 +59,7 @@ def get_download_url(version):
 
 def main():
   ap = argparse.ArgumentParser()
-  sub = ap.add_subparsers()
+  sub = ap.add_subparsers(dest='action', required=True)
 
   latest = sub.add_parser("latest")
   latest.set_defaults(func=lambda _opts: do_latest())

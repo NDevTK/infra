@@ -185,7 +185,7 @@ def cmd_get_url() -> None:
 
 def _parse_args() -> argparse.Namespace:
   parser = argparse.ArgumentParser()
-  subparsers = parser.add_subparsers()
+  subparsers = parser.add_subparsers(dest='action', required=True)
 
   get_latest_version_parser = subparsers.add_parser('latest')
   get_latest_version_parser.set_defaults(func=cmd_get_latest_version)

@@ -49,7 +49,7 @@ def main():
   ap = argparse.ArgumentParser()
   ap.add_argument('kind', choices=('prebuilt', 'source'))
 
-  sub = ap.add_subparsers()
+  sub = ap.add_subparsers(dest='action', required=True)
 
   latest = sub.add_parser('latest')
   latest.set_defaults(func=lambda _opts: do_latest())
