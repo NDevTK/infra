@@ -205,6 +205,8 @@ func TestBuilder(t *testing.T) {
 					"_gomod/pkg1/pkg1.go",
 					"_gomod/pkg1/vendor.go",
 					"_gomod/pkg2/pkg2.go",
+					"_gomod/static.txt",
+					"_gomod/static/static.txt",
 					"_gomod/vendor/example.com/another/another_a.go",
 					"_gomod/vendor/example.com/pkg/pkg_a.go",
 					"_gomod/vendor/modules.txt",

@@ -385,6 +385,21 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		}
 	}
 
+	// If app.yaml and go.mod are in different directories, copy static files into
+	// the module root to workaround b/323980048. Conflicts are possible (though
+	// unlikely), fail on any.
+	if mode == bundleModules && mainPkg.PkgPath != mainPkg.Module.Path {
+		err := hackStaticFiles(ctx,
+			inv.Output,
+			mainDir,
+			goModRoot,
+			excludedByIgnoreFile,
+		)
+		if err != nil {
+			return errors.Annotate(err, "copying static files into the module root").Err()
+		}
+	}
+
 	// Drop a script that can be used to manually test correctness of this bundle:
 	//
 	// $ cd _gomod
@@ -582,6 +597,58 @@ func currentMode(out *fileset.Set) bundleMode {
 		return bundleModules
 	}
 	return bundleUnknown
+}
+
+// hackStaticFiles copies static non-go files from `src` to `dst`.
+//
+// `src` is an absolute path to a source directory on disk. `dst` is a
+// destination path relative to the fileset root.
+func hackStaticFiles(ctx context.Context, out *fileset.Set, src, dst string, exclude fileset.Excluder) error {
+	conflict := false
+	err := out.AddFromDisk(src, dst, func(absPath string, isDir bool) bool {
+		// Respect .gcloudignore.
+		if exclude(absPath, isDir) {
+			return true
+		}
+		// A path relative to the `src` e.g. "templates/index.html".
+		rel, err := relPath(src, absPath)
+		if err != nil {
+			panic(fmt.Sprintf("impossible: %s", err))
+		}
+		// Keep descending at least one level deeper.
+		if rel == "." {
+			return false
+		}
+		// Skip YAMLs directly in the app directory. Most likely they are appengine
+		// YAMLs and not really static files. Exposing them may cause issues.
+		if filepath.Dir(rel) == "." && filepath.Ext(rel) == ".yaml" {
+			return true
+		}
+		// Skip source code files: they aren't "static files" and we don't want to
+		// confuse the go compiler with unexpected code files in weird places.
+		if isGoSourceFile(rel) {
+			return true
+		}
+		// The matching path in the output should not exist yet.
+		setPath := filepath.Join(dst, rel)
+		if _, ok := out.File(setPath); ok {
+			logging.Errorf(ctx, "Conflict when copying static file into the module root (see b/323980048): %s", rel)
+			conflict = true
+			return true // skip descending this tree
+		}
+		if !isDir {
+			logging.Infof(ctx, "Copying static file into the module root (see b/323980048): %s", rel)
+		}
+		return false
+	})
+	switch {
+	case err != nil:
+		return err
+	case conflict:
+		return errors.Reason("path conflicts, see the log").Err()
+	default:
+		return nil
+	}
 }
 
 // envScriptGoPath is a script that modifies Go env vars to point to files
