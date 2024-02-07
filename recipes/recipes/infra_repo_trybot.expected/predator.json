@@ -293,6 +293,29 @@
   {
     "cmd": [
       "vpython3",
+      "test.py",
+      "--py3",
+      "test",
+      "--verbose"
+    ],
+    "cwd": "[CACHE]/builder/infra",
+    "luci_context": {
+      "realm": {
+        "name": "infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "python tests (py3)"
+  },
+  {
+    "cmd": [
+      "vpython3",
       "test.py"
     ],
     "cwd": "[CACHE]/builder/infra/appengine/predator/app",

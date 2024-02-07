@@ -83,9 +83,12 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
     deferred = []
     if api.platform.arch != 'arm':
       with api.context(cwd=co.path.join(patch_root)):
-        deferred.append(
+        deferred.extend([
             api.defer(api.step, 'python tests',
-                      ['vpython3', 'test.py', 'test', '--verbose']))
+                      ['vpython3', 'test.py', 'test', '--verbose']),
+            api.defer(api.step, 'python tests (py3)',
+                      ['vpython3', 'test.py', '--py3', 'test', '--verbose'])
+        ])
 
       if internal and (api.platform.is_linux or api.platform.is_mac) and any(
           f.startswith('appengine/chromiumdash') for f in files):
