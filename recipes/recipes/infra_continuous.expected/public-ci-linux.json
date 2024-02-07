@@ -176,28 +176,6 @@
   {
     "cmd": [
       "vpython3",
-      "test.py",
-      "--py3",
-      "test"
-    ],
-    "cwd": "[CACHE]/builder/infra",
-    "luci_context": {
-      "realm": {
-        "name": "infra:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "infra python tests (py3)"
-  },
-  {
-    "cmd": [
-      "vpython3",
       "test.py"
     ],
     "cwd": "[CACHE]/builder/infra/appengine/monorail",
