@@ -650,6 +650,41 @@ message HumanMotionRobot {
   string touchhost = 3;
 }
 
+// Dolos holds info about a Dolos device of the DUT.
+message Dolos {
+  // Serial used to identify device over USB
+  string serial_cable = 1;
+  // Serial of the cable_cable
+  string serial_usb = 2;
+
+  enum DolosHWMajorRevision {
+    // Default unset value
+    DOLOS_UNSPECIFIED = 0;
+    DOLOS_V1 = 1;
+  }
+
+  // Hardware revision
+  DolosHWMajorRevision hw_major_revision = 3;
+  // Dolos firmware version
+  string fw_version = 4;
+  // Hostname of the host machine the dolos connected to via USB cable.
+  string hostname = 5;
+
+  // State describes the state of Dolos.
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    // Device and software on it is working as expected.
+    WORKING = 1;
+    // Device is broken or not working as expected.
+    BROKEN = 2;
+    // Device State is not applicable.
+    NOT_APPLICABLE = 3;
+  }
+
+  // State of the device.
+  State state = 6;
+}
+
 // AudioLatencyToolkit holds info about Teensy audio latency toolkit on the DUT
 message AudioLatencyToolkit {
   // Teensy Version
@@ -784,6 +819,9 @@ message ChromeOS {
 
   // Audio Latency Toolkit info.
   AudioLatencyToolkit audio_latency_toolkit = 29;
+
+  // Dolos device info.
+  Dolos dolos = 30;
 }
 
 // TestbedCapability specifies whether the testbed can execute certain tests.

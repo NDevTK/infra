@@ -200,6 +200,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			HumanMotionRobot:    createDUTHumanMotionRobot(p, ds),
 			TestbedCapability:   createTestbedCapability(p.GetCable()),
 			AudioLatencyToolkit: createDUTAudioLatencyToolkit(p, ds),
+			Dolos:               createDUTDolos(p, ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -489,6 +490,18 @@ func createDUTAudioLatencyToolkit(p *ufslab.Peripherals, ds *ufslab.DutState) *t
 	}
 }
 
+func createDUTDolos(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.Dolos {
+	dolos := p.GetDolos()
+	return &tlw.Dolos{
+		Hostname:        dolos.GetHostname(),
+		SerialCable:     dolos.GetSerialCable(),
+		SerialUsb:       dolos.GetSerialUsb(),
+		FwVersion:       dolos.GetFwVersion(),
+		HwMajorRevision: convertDolosHWMajorRevision(dolos.GetHwMajorRevision()),
+		State:           convertDolosState(ds.GetDolosState()),
+	}
+}
+
 func configHasFeature(dc *ufsdevice.Config, hf ufsdevice.Config_HardwareFeature) bool {
 	for _, f := range dc.GetHardwareFeatures() {
 		if f == hf {
@@ -598,6 +611,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.WorkingBluetoothBtpeer = 0
 	state.DutStateReason = string(dut.DutStateReason)
 	state.RepairRequests = convertRepairRequestsToUFS(dut.RepairRequests)
+	state.DolosState = ufslab.PeripheralState_UNKNOWN
 
 	// Update states for present components.
 	if chromeos := dut.GetChromeos(); chromeos != nil {
@@ -650,6 +664,9 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		}
 		if hmr := chromeos.GetHumanMotionRobot(); hmr != nil {
 			state.HmrState = convertHumanMotionRobotStateToUFS(hmr.GetState())
+		}
+		if dolos := chromeos.GetDolos(); dolos != nil {
+			state.DolosState = convertDolosStateToUFS(dolos.GetState())
 		}
 		for _, btph := range chromeos.GetBluetoothPeers() {
 			if btph.GetState() == tlw.BluetoothPeer_WORKING {

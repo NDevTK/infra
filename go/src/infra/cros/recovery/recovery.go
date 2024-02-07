@@ -585,6 +585,10 @@ func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 		if c := dut.GetChromeos().GetHumanMotionRobot(); c.GetName() != "" {
 			return []string{c.GetName()}
 		}
+	case matchPlanName(planName, config.PlanDolos):
+		if dolos := dut.GetChromeos().GetDolos(); dolos.GetHostname() != "" {
+			return []string{dolos.GetHostname()}
+		}
 	}
 	return nil
 }

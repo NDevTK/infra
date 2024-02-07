@@ -479,3 +479,36 @@ func convertSIMProviderToUFS(s tlw.Cellular_NetworkProvider) ufslab.NetworkProvi
 	}
 	return ufslab.NetworkProvider_NETWORK_OTHER
 }
+
+var dolosStates = map[ufslab.PeripheralState]tlw.Dolos_State{
+	ufslab.PeripheralState_WORKING:        tlw.Dolos_WORKING,
+	ufslab.PeripheralState_BROKEN:         tlw.Dolos_BROKEN,
+	ufslab.PeripheralState_NOT_APPLICABLE: tlw.Dolos_NOT_APPLICABLE,
+}
+
+func convertDolosState(s ufslab.PeripheralState) tlw.Dolos_State {
+	if ds, ok := dolosStates[s]; ok {
+		return ds
+	}
+	return tlw.Dolos_STATE_UNSPECIFIED
+}
+
+func convertDolosStateToUFS(ts tlw.Dolos_State) ufslab.PeripheralState {
+	for ufsState, tlwState := range dolosStates {
+		if ts == tlwState {
+			return ufsState
+		}
+	}
+	return ufslab.PeripheralState_UNKNOWN
+}
+
+var dolosHWMajorRevision = map[ufslab.DolosHWMajorRevision]tlw.Dolos_DolosHWMajorRevision{
+	ufslab.DolosHWMajorRevision_DOLOS_V1: tlw.Dolos_DOLOS_V1,
+}
+
+func convertDolosHWMajorRevision(v ufslab.DolosHWMajorRevision) tlw.Dolos_DolosHWMajorRevision {
+	if tv, ok := dolosHWMajorRevision[v]; ok {
+		return tv
+	}
+	return tlw.Dolos_DOLOS_UNSPECIFIED
+}
