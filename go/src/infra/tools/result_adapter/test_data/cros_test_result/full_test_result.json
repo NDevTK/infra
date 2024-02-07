@@ -87,45 +87,45 @@
     "test_runs":[
         {
             "test_case_info":{
-                "test_case_metadata":{
-                    "test_case":{
-                        "id":{
-                            "value":"rlz_CheckPing"
-                        },
-                        "name":"rlz_CheckPing"
-                    },
-                    "test_case_info":{
-                        "owners": [
-                            {
-                                "email": "owner1@test.com"
-                            },
-                            {
-                                "email": "owner2@test.com"
-                            }
-                        ],
-                        "bug_component": {
-                            "value": "b:1234"
-                        },
-                        "criteria": {
-                            "value": "Tauto wrapper for specified tast tests"
-                        },
-                        "requirements": [
-                            {
-                                "value": "requirement 1"
-                            },
-                            {
-                                "value": "requirement 2"
-                            }
-                        ]
-                    }
-                },
                 "test_case_result":{
                     "test_case_id": {
                         "value": "rlz_CheckPing"
                     },
                     "pass":{},
                     "start_time":"2022-09-07T18:53:33.983328614Z",
-                    "duration": "60s"
+                    "duration": "60s",
+                    "test_case_metadata":{
+                        "test_case":{
+                            "id":{
+                                "value":"rlz_CheckPing"
+                            },
+                            "name":"rlz_CheckPing"
+                        },
+                        "test_case_info":{
+                            "owners": [
+                                {
+                                    "email": "owner1@test.com"
+                                },
+                                {
+                                    "email": "owner2@test.com"
+                                }
+                            ],
+                            "bug_component": {
+                                "value": "b:1234"
+                            },
+                            "criteria": {
+                                "value": "Tauto wrapper for specified tast tests"
+                            },
+                            "requirements": [
+                                {
+                                    "value": "requirement 1"
+                                },
+                                {
+                                    "value": "requirement 2"
+                                }
+                            ]
+                        }
+                    }
                 },
                 "display_name":"hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq",
                 "branch":"main",
