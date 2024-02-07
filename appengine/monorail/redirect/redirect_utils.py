@@ -67,6 +67,9 @@ def GetNewIssueParams(params: MultiDict, project_name: str):
 
 
 def GetSearchQuery(project_name, params):
+  if not params:
+    return ''
+
   search_conds = []
 
   # can param is the default search query used in monorail.
