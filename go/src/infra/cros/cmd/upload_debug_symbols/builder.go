@@ -701,7 +701,7 @@ func unpackSplitdebugTarballs(splitdebugPath, breakpadPath, outputDir string) ([
 				} else {
 					// Move the file to the debug Id directory.
 					debugDir := filepath.Join(outputDir, debugId)
-					debugFilePath := filepath.Join(debugDir, breakpadSymName+".debug")
+					debugFilePath := filepath.Join(debugDir, breakpadSymName)
 					if err := os.Rename(destFilePath, debugFilePath); err != nil {
 						return nil, err
 					}
@@ -987,9 +987,9 @@ func generateSplitdebugConfigs(ctx context.Context, symbolFiles []string, retryQ
 	splitdebugTasks := make([]taskConfig, len(tasks))
 	for index, task := range tasks {
 		debugDir := filepath.Dir(task.symbolPath)
-		debugFile := filepath.Join(debugDir, task.debugFile+".debug")
+		debugFile := filepath.Join(debugDir, task.debugFile)
 
-		splitdebugTasks[index] = taskConfig{debugFile, "DEBUG_ONLY", task.debugFile, task.debugId, dryRun, shouldSleep}
+		splitdebugTasks[index] = taskConfig{debugFile, "ELF", task.debugFile, task.debugId, dryRun, shouldSleep}
 	}
 
 	tasks = append(tasks, splitdebugTasks...)

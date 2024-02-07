@@ -485,9 +485,9 @@ func TestUnpackSplitdebugTarballs(t *testing.T) {
 			}
 			// Verify that the breakpad file has an associated splitdebug file.
 			base, _ := strings.CutSuffix(path, ".sym")
-			debugFile := base + ".debug"
+			debugFile := base
 			if _, err := os.Stat(debugFile); err != nil {
-				t.Errorf("error: breakpad file %q missing splitdebug file", path)
+				t.Errorf("error: breakpad file %q missing splitdebug file %q", path, debugFile)
 			}
 
 			expectedSymbolFiles[path] = true
@@ -710,40 +710,40 @@ func TestGenerateSplitdebugConfigs(t *testing.T) {
 			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
 			status:         "FOUND",
 			breakpadPath:   "test1.so.sym",
-			splitdebugPath: "test1.so.debug",
+			splitdebugPath: "test1.so",
 		}, {
 			filename:       "test2.so",
 			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
 			status:         "FOUND",
 			breakpadPath:   "test2.so.sym",
-			splitdebugPath: "test2.so.debug",
+			splitdebugPath: "test2.so",
 		}, {
 			filename:       "test3.so",
 			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
 			status:         "Missing",
 			breakpadPath:   "test3.so.sym",
-			splitdebugPath: "test3.so.debug",
+			splitdebugPath: "test3.so",
 		},
 		{
 			filename:       "test4.so.1",
 			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
 			status:         "MISSING",
 			breakpadPath:   "test4.so.1.sym",
-			splitdebugPath: "test4.so.1.debug",
+			splitdebugPath: "test4.so.1",
 		},
 		{
 			filename:       "test5.so",
 			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
 			status:         "STATUS_UNSPECIFIED",
 			breakpadPath:   "test5.so.sym",
-			splitdebugPath: "test5.so.debug",
+			splitdebugPath: "test5.so",
 		},
 		{
 			filename:       "test6.so",
 			symbol:         "F4F6FA6CCBDEF455039C8DE869C8A2F40",
 			status:         "STATUS_UNSPECIFIED",
 			breakpadPath:   "test6.so.sym",
-			splitdebugPath: "test6.so.debug",
+			splitdebugPath: "test6.so",
 		},
 	}
 
@@ -789,7 +789,7 @@ func TestGenerateSplitdebugConfigs(t *testing.T) {
 		}
 		// Generate two tasks.
 		task := taskConfig{mockPath, "BREAKPAD", response.filename, response.symbol, false, false}
-		splitdebugTask := taskConfig{mockSplitdebugPath, "DEBUG_ONLY", response.filename, response.symbol, false, false}
+		splitdebugTask := taskConfig{mockSplitdebugPath, "ELF", response.filename, response.symbol, false, false}
 
 		if response.status != "FOUND" {
 			expectedTasks[task] = false
