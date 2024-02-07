@@ -80,6 +80,7 @@ var targetOverridebyHwid = map[string]string{
 	"CRAASKANA-QRII C3B-D3E-C4A-D4E-D6A-A6R":     "craask_hdmi",
 	"CRAASKANA-QRII B2B-A2A-B3A-A2D-C4L":         "craask_hdmi",
 	"CRAASKANA-QRII C3B-E3D-C4A-A4H-O6A-A8D":     "craask_hdmi",
+	"CRAASWELL-KKAE B2B-C4C-A2A-A2E-B6A-A63":     "craask_hdmi",
 }
 
 // ecExemptedModels holds a map of models that doesn't have EC firmware.
