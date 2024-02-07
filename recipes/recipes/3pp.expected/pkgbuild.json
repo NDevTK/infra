@@ -477,6 +477,8 @@
       "-target-platform",
       "linux-amd64",
       "-upload",
+      "-cipd-service",
+      "https://chrome-infra-packages-dev.appspot.com/",
       "-spec-pool",
       "[CACHE]/builder/4fe007e88bd1d4a88e88cc231ab4045dbeee1088/support_3pp"
     ],

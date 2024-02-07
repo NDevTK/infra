@@ -917,11 +917,14 @@ class Support3ppApi(recipe_api.RecipeApi):
         platform,
         '-upload'
     ]
-    if self._experimental:
-      args.extend((
-          '-cipd-service',
-          'https://chrome-infra-packages-dev.appspot.com/',
-      ))
+
+    # FIXME(fancl): Temporary mitigation for not able to use
+    # runtime.is_experimental. We should only set cipd-service to dev when
+    # luci.non_production is set.
+    args.extend((
+        '-cipd-service',
+        'https://chrome-infra-packages-dev.appspot.com/',
+    ))
 
     # Sort the package roots and packages.
     # Set doesn't promise to be iterating in insertion order.

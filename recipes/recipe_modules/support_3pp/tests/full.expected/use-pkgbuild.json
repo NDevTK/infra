@@ -219,6 +219,8 @@
       "-target-platform",
       "linux-amd64",
       "-upload",
+      "-cipd-service",
+      "https://chrome-infra-packages-dev.appspot.com/",
       "-spec-pool",
       "[CACHE]/builder/package_repo",
       "p_something/package_repo",
