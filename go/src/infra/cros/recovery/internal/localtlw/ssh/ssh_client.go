@@ -7,7 +7,9 @@ package ssh
 import (
 	"context"
 	"crypto/tls"
+	"math/rand"
 	"net"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 	"golang.org/x/crypto/ssh"
@@ -25,7 +27,8 @@ type SSHClient interface {
 }
 
 const (
-	supportNetwork = "tcp"
+	supportNetwork             = "tcp"
+	numberOfConnectionAttempts = 5
 )
 
 // Implementation of SSHClient.
@@ -76,26 +79,59 @@ func (c *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFu
 	return newForwarder(l, connFunc, errFunc)
 }
 
+func connectToProxy(ctx context.Context, network string, proxy *proxyConfig) (net.Conn, error) {
+	dialer := &tls.Dialer{
+		// Temporarily hardcoded timeout value.
+		NetDialer: &net.Dialer{Timeout: time.Duration(3) * time.Second},
+		Config:    proxy.GetConfig(),
+	}
+	log.Debugf(ctx, "Connecting to host %s", proxy.GetAddr())
+	conn, err := dialer.DialContext(ctx, network, proxy.GetAddr())
+	if err != nil {
+		log.Warningf(ctx, "Failed to connect to proxy: %v", err)
+		return nil, errors.Annotate(err, "connect to proxy").Err()
+	}
+	return conn, nil
+}
+
+func connectToProxyWithRetry(ctx context.Context, network string, proxy *proxyConfig) (net.Conn, error) {
+	waitBetweenRetriesInMillis := rand.Intn(1000)
+	timeToSleep := time.Duration(waitBetweenRetriesInMillis) * time.Millisecond
+	var err error
+	for i := 0; i < numberOfConnectionAttempts; i++ {
+		conn, err := connectToProxy(ctx, network, proxy)
+		if err == nil {
+			return conn, nil
+		}
+		if i < numberOfConnectionAttempts-1 {
+			time.Sleep(timeToSleep)
+			timeToSleep *= 2
+		}
+	}
+	return nil, err
+}
+
 // newProxyClient establishes an authenticated SSH connection to the target host
 // using TLS channel as the underlying transport.
 func newProxyClient(ctx context.Context, sshConfig *ssh.ClientConfig, proxy *proxyConfig) (SSHClient, error) {
 	log.Debugf(ctx, "Proxy config: %+v", *proxy)
-	conn, err := tls.Dial("tcp", proxy.GetAddr(), proxy.GetConfig())
+	conn, err := connectToProxyWithRetry(ctx, supportNetwork, proxy)
 	if err != nil {
 		log.Errorf(ctx, "Error creating a new TLS connection: %s", err)
 		return nil, errors.Annotate(err, "new proxy client").Err()
 	}
+	log.Debugf(ctx, "Connected to host %s", proxy.GetAddr())
 	var c ssh.Conn
 	var chans <-chan ssh.NewChannel
 	var reqs <-chan *ssh.Request
 	done := make(chan bool)
 	go func() {
+		log.Debugf(ctx, "Establishing ssh over TLS: %s", proxy.GetAddr())
 		c, chans, reqs, err = ssh.NewClientConn(conn, proxy.GetAddr(), sshConfig)
 		done <- true
 	}()
 	select {
 	case <-ctx.Done():
-		conn.Close()
 		return nil, errors.Annotate(ctx.Err(), "new proxy client").Err()
 	case <-done:
 	}
