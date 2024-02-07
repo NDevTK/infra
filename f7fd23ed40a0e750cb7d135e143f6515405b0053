@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "98cdf003_a025e886",
+        "filename": "go/src/infra/cros/cmd/suite_publisher/internal/bqsuites/bqsuites.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1551423
+      },
+      "writtenOn": "2024-02-07T17:57:57Z",
+      "side": 1,
+      "message": "I thought about that but these items should be sets. Lists are meant for things that have order but we should not rely on order. It is up to the client to convert to a list if that is how they want it",
+      "parentUuid": "e4b2eff3_eb3951d5",
+      "range": {
+        "startLine": 58,
+        "startChar": 19,
+        "endLine": 58,
+        "endChar": 31
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "945d55f5_f7c64149",
@@ -38,6 +62,30 @@
       "side": 1,
       "message": "\u003e ST1000: package comment should be of the form \"Package utils ...\"\n\nPlease fix.",
       "parentUuid": "474f9200_57c4173c",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 0
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c966639e_78938cb8",
+        "filename": "go/src/infra/cros/cmd/suite_publisher/internal/utils/utils.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1551423
+      },
+      "writtenOn": "2024-02-07T17:57:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "945d55f5_f7c64149",
       "range": {
         "startLine": 1,
         "startChar": 0,
@@ -71,6 +119,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "06b63aec_48e9d17a",
+        "filename": "go/src/infra/cros/cmd/suite_publisher/internal/utils/utils.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1551423
+      },
+      "writtenOn": "2024-02-07T17:57:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "abd7c8cf_b5e33553",
+      "range": {
+        "startLine": 7,
+        "startChar": 5,
+        "endLine": 7,
+        "endChar": 69
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ffc0b611_e14a4dde",
@@ -84,6 +156,30 @@
       "writtenOn": "2024-02-07T16:56:26Z",
       "side": 1,
       "message": "can we just use `maps.Copy` here?\n\nhttps://stackoverflow.com/questions/22621754/how-can-i-merge-two-maps-in-go",
+      "range": {
+        "startLine": 10,
+        "startChar": 2,
+        "endLine": 12,
+        "endChar": 3
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3d815917_8ac88b83",
+        "filename": "go/src/infra/cros/cmd/suite_publisher/internal/utils/utils.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1551423
+      },
+      "writtenOn": "2024-02-07T17:57:57Z",
+      "side": 1,
+      "message": "The mapsThe maps package is not available in infra because they are using an earlier go version, this is what I originally tried",
+      "parentUuid": "ffc0b611_e14a4dde",
       "range": {
         "startLine": 10,
         "startChar": 2,
@@ -117,6 +213,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5aca371_e80ed5e1",
+        "filename": "go/src/infra/cros/cmd/suite_publisher/internal/utils/utils.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1551423
+      },
+      "writtenOn": "2024-02-07T17:57:57Z",
+      "side": 1,
+      "message": "The maps package is not available in infra because they are using an earlier go version, this is what I originally tried",
+      "parentUuid": "db45defa_80103d46",
+      "range": {
+        "startLine": 18,
+        "startChar": 5,
+        "endLine": 18,
+        "endChar": 47
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0d3c2523_c131cded",
@@ -130,6 +250,30 @@
       "writtenOn": "2024-02-07T16:56:26Z",
       "side": 1,
       "message": "I think this is for testing only..... need to remove.",
+      "range": {
+        "startLine": 261,
+        "startChar": 1,
+        "endLine": 261,
+        "endChar": 143
+      },
+      "revId": "f7fd23ed40a0e750cb7d135e143f6515405b0053",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82a2c252_364dd470",
+        "filename": "go/src/infra/go.mod",
+        "patchSetId": 1
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1551423
+      },
+      "writtenOn": "2024-02-07T17:57:57Z",
+      "side": 1,
+      "message": "I will once the other CL merges but I am intentionally keeping this for now because this package does no exist yet",
+      "parentUuid": "0d3c2523_c131cded",
       "range": {
         "startLine": 261,
         "startChar": 1,
