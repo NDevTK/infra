@@ -16,6 +16,10 @@ func lastRunFile() (string, error) {
 	return "/var/lib/puppet_last_run_summary.yaml", nil
 }
 
+func puppetCertPath() (string, error) {
+	return "/etc/puppetlabs/puppet/ssl/certs", nil
+}
+
 func puppetConfFile() (string, error) {
 	confPaths := []string{"/etc/puppetlabs/puppet/puppet.conf", "/etc/puppet/puppet.conf"}
 	for _, filePath := range confPaths {

@@ -6,18 +6,23 @@ package puppet
 
 import (
 	"context"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v2"
 
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
-	"gopkg.in/yaml.v2"
+	"go.chromium.org/luci/common/tsmon/types"
 )
 
 var (
@@ -51,6 +56,9 @@ var (
 	isCanary = metric.NewBool("puppet/is_canary",
 		"Whether Puppet installs canary versions of CIPD packages on this machine",
 		nil)
+	certExpiry = metric.NewInt("puppet/cert_expiry",
+		"Time until the agent cert expires",
+		&types.MetricMetadata{Units: types.Seconds})
 )
 
 type lastRunData struct {
@@ -71,6 +79,13 @@ func Register() {
 			logging.Warningf(c, "Failed to get puppet last_run_summary.yaml path: %v", err)
 		} else if err = updateLastRunStats(c, path); err != nil {
 			logging.Warningf(c, "Failed to update puppet metrics: %v", err)
+		}
+
+		if path, err := puppetCertPath(); err != nil {
+			logging.Warningf(c, "Failed to get puppet cert file: %v", err)
+			certExpiry.Set(c, 0)
+		} else if err = updateCertExpiry(c, path); err != nil {
+			logging.Warningf(c, "Failed to update puppet cert expiry: %v", err)
 		}
 
 		if path, err := puppetConfFile(); err != nil {
@@ -120,6 +135,44 @@ func updateLastRunStats(c context.Context, path string) error {
 		}
 	}
 
+	return nil
+}
+
+func updateCertExpiry(c context.Context, path string) error {
+	var expiryTime int64
+
+	defer func() {
+		certExpiry.Set(c, expiryTime)
+	}()
+
+	hostName, err := os.Hostname()
+	if err != nil {
+		return err
+	}
+
+	matches, _ := filepath.Glob(filepath.Join(path, hostName+"*.pem"))
+
+	if len(matches) == 0 {
+		return fmt.Errorf("cert not found for %s at %s", hostName, path)
+	}
+	certFilePath := matches[0]
+
+	data, err := os.ReadFile(certFilePath)
+	if err != nil {
+		return fmt.Errorf("error reading puppet cert at %s: %w", certFilePath, err)
+	}
+
+	block, _ := pem.Decode(data)
+	if block == nil {
+		return fmt.Errorf("error parsing certificate PEM at %s", certFilePath)
+	}
+
+	cert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return fmt.Errorf("error parsing certificate at %s: %w", certFilePath, err)
+	}
+
+	expiryTime = cert.NotAfter.Unix() - clock.Now(c).Unix()
 	return nil
 }
 

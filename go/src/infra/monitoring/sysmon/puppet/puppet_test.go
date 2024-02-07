@@ -6,16 +6,33 @@ package puppet
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
-	"go.chromium.org/luci/common/clock/testclock"
-	"go.chromium.org/luci/common/tsmon"
-
 	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/clock/testclock"
+	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/tsmon"
 )
+
+const validCert = `
+-----BEGIN CERTIFICATE-----
+MIICEDCCAXkCFHrEhtWbYRk3IpQ4n7iho79PNOZLMA0GCSqGSIb3DQEBCwUAMEcx
+CzAJBgNVBAYTAlVTMQswCQYDVQQIDAJDQTEPMA0GA1UECgwGR29vZ2xlMRowGAYD
+VQQDDBFjZXJ0LWZhY3RvcnktdGVzdDAeFw0yMjAyMjMyMDM5MzdaFw0yMzAyMjMy
+MDM5MzdaMEcxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJDQTEPMA0GA1UECgwGR29v
+Z2xlMRowGAYDVQQDDBFjZXJ0LWZhY3RvcnktdGVzdDCBnzANBgkqhkiG9w0BAQEF
+AAOBjQAwgYkCgYEAvxeA5upd6BIGUTouRmf+/9yc3GIvzAOCp1aSNQTimQT8aaZs
+9YWEg1YeLUsb5p5sSQk+lnVbShOk7BeSTlCtL1Nps3uCfh5J6yCUhykRGJvYEfDY
+nF38mX4q6MuC+DrBcVECCTt4HnmA7saAV5zDY7zYqTXZf8CjCYT9h9qQmQMCAwEA
+ATANBgkqhkiG9w0BAQsFAAOBgQCjW0TGqW4tjBZNtPMk31EGwYrrPFQ4KbUJOYvT
+pE4Z7oIshI06JZB+DJsuyFUVcTWVafCUmiuqBHjVKlajY0Aa8vFJ/hXKDR4FSgTv
+NHxMXl29/1NC0bGuiQl3C/8foLAMBUT6Bg0tgBVFN9t8ADNVWb/Mr+o7SS4f8Fr0
+QmR8MA==
+-----END CERTIFICATE-----`
 
 func TestMetrics(t *testing.T) {
 	c := context.Background()
@@ -23,7 +40,7 @@ func TestMetrics(t *testing.T) {
 	c, _ = testclock.UseTime(c, time.Unix(1440132466, 0).Add(123450*time.Millisecond))
 
 	Convey("Puppet last_run_summary.yaml metrics", t, func() {
-		file, err := ioutil.TempFile("", "sysmon-puppet-test")
+		file, err := os.CreateTemp("", "sysmon-puppet-test")
 		So(err, ShouldBeNil)
 
 		defer file.Close()
@@ -145,7 +162,7 @@ func TestMetrics(t *testing.T) {
 		})
 
 		Convey("with a present file", func() {
-			file, err := ioutil.TempFile("", "sysmon-puppet-test")
+			file, err := os.CreateTemp("", "sysmon-puppet-test")
 			So(err, ShouldBeNil)
 
 			Convey("with environment=canary", func() {
@@ -165,7 +182,7 @@ func TestMetrics(t *testing.T) {
 		})
 
 		Convey("with a present file", func() {
-			file, err := ioutil.TempFile("", "sysmon-puppet-test")
+			file, err := os.CreateTemp("", "sysmon-puppet-test")
 			So(err, ShouldBeNil)
 
 			Convey("containing a valid number", func() {
@@ -193,6 +210,49 @@ func TestMetrics(t *testing.T) {
 				file.Sync()
 				So(updateExitStatus(c, []string{"does not exist", file.Name()}), ShouldBeNil)
 				So(exitStatus.Get(c), ShouldEqual, 42)
+			})
+		})
+	})
+
+	Convey("Puppet cert_expiry metric", t, func() {
+		Convey("with no file found", func() {
+			So(updateCertExpiry(c, "not_a_path"), ShouldErrLike, "cert not found")
+			So(certExpiry.Get(c), ShouldEqual, 0)
+		})
+
+		Convey("with valid and invalid cert contents", func() {
+			dir, err := os.MkdirTemp("", "test_cert_expiry")
+			So(err, ShouldBeNil)
+			defer os.RemoveAll(dir)
+			fqdnHost, _ := os.Hostname()
+
+			Convey("with invalid certificate, parsing err", func() {
+				testCertInvalid := filepath.Join(dir, fqdnHost+".pem")
+				f, err := os.Create(testCertInvalid)
+				So(err, ShouldBeNil)
+
+				_, err = f.WriteString("invalid cert contents")
+				So(err, ShouldBeNil)
+				err = f.Sync()
+				So(err, ShouldBeNil)
+
+				So(updateCertExpiry(c, dir), ShouldErrLike, "error parsing certificate")
+				So(certExpiry.Get(c), ShouldEqual, 0)
+			})
+
+			Convey("with valid certificate", func() {
+				testCert := filepath.Join(dir, fqdnHost+".pem")
+				f, err := os.Create(testCert)
+				So(err, ShouldBeNil)
+
+				_, err = f.WriteString(validCert)
+				So(err, ShouldBeNil)
+				err = f.Sync()
+				So(err, ShouldBeNil)
+
+				So(updateCertExpiry(c, dir), ShouldBeNil)
+				// Clock time 2015-08-21, certificate notAfter 2023-02-23
+				So(certExpiry.Get(c), ShouldEqual, 237052188)
 			})
 		})
 	})

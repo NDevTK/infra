@@ -6,8 +6,9 @@ package puppet
 
 import (
 	"fmt"
-	"golang.org/x/sys/windows/registry"
 	"os"
+
+	"golang.org/x/sys/windows/registry"
 )
 
 var (
@@ -20,6 +21,14 @@ func lastRunFile() (string, error) {
 		return "", err
 	}
 	return appdata + `\PuppetLabs\puppet\var\state\last_run_summary.yaml`, nil
+}
+
+func puppetCertPath() (string, error) {
+	appdata, err := commonAppdataPath()
+	if err != nil {
+		return "", err
+	}
+	return appdata + `\PuppetLabs\puppet\etc\puppet\ssl\certs`, nil
 }
 
 func puppetConfFile() (string, error) {
