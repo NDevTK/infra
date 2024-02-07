@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/assert/structuraldiff"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
@@ -92,6 +93,6 @@ func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, a
 	}
 	fleetCostClient := fleetcostpb.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.Ping(ctx, &fleetcostpb.PingRequest{})
-	fmt.Printf("%#v\n", resp)
+	fmt.Printf("%s\n", structuraldiff.DebugDump(resp))
 	return err
 }
