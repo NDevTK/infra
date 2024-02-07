@@ -21,6 +21,7 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 	if isRepair {
 		actions = append(actions,
 			"Set state: repair_failed",
+			"Enable verbose network logging for cellular DUTs",
 			"Collect logs and crashinfo",
 		)
 	}
@@ -34,8 +35,6 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 		actions = append(actions, "Verify access to cache")
 	}
 	actions = append(actions,
-		"Enable verbose network logging for cellular DUTs",
-		"Collect logs and crashinfo",
 		"Read bootId",
 		"Verify internal storage",
 		"Set dev_boot_usb is enabled",
@@ -77,7 +76,11 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 		"Is crosid readbable",
 		"Update special device labels",
 		"Collect dmesg logs from DUT",
-		"Disable verbose network logging for cellular DUTs",
+	)
+	if isRepair {
+		actions = append(actions, "Disable verbose network logging for cellular DUTs")
+	}
+	actions = append(actions,
 		"Verify bootId and compare",
 		"Validate chromebook X label",
 		"All repair-requests resolved",
