@@ -20,10 +20,14 @@ import (
 
 const (
 	// Higher integer value means lower priority.
-	noAccountPriority    int64 = 10
-	poolDimensionKey           = "label-pool"
-	quotaAccountTagKey         = "qs_account"
-	suiteSchedulerTagKey       = "analytics_name"
+	noAccountPriority  int64 = 10
+	poolDimensionKey         = "label-pool"
+	quotaAccountTagKey       = "qs_account"
+	// SchedukeTaskRequestKey is the key all Scheduke tasks are launched with.
+	// Scheduke supports batch task creation, but we send individually for now, so
+	// we use this key.
+	SchedukeTaskRequestKey int64 = 1
+	suiteSchedulerTagKey         = "analytics_name"
 )
 
 var (
@@ -103,7 +107,9 @@ func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*
 	}
 
 	return &schedukepb.KeyedTaskRequestEvents{
-		Events: map[int64]*schedukepb.TaskRequestEvent{1: schedukeTask},
+		Events: map[int64]*schedukepb.TaskRequestEvent{
+			SchedukeTaskRequestKey: schedukeTask,
+		},
 	}, nil
 }
 

@@ -6,12 +6,17 @@ package schedulers
 
 import (
 	"context"
+	"fmt"
+	"time"
 
+	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
 )
+
+const schedukePollingWait = 30 * time.Second
 
 // SchedukeScheduler defines a scheduler that schedules request(s) through
 // Scheduke.
@@ -26,29 +31,51 @@ func NewSchedukeSchedulerr() *SchedukeScheduler {
 	return &SchedukeScheduler{AbstractScheduler: absSched}
 }
 
-func (sc *SchedukeScheduler) Setup(ctx context.Context) error {
-	//if sc.schedukeClient == nil {
-	//	// TODO: pipe in env
-	//	var env string
-	//	var local bool
-	//	client, err := common.NewSchedukeClient(ctx, env, local)
-	//	if err != nil {
-	//		return err
-	//	}
-	//	sc.schedukeClient = client
-	//}
+func (s *SchedukeScheduler) Setup(ctx context.Context) error {
+	if s.schedukeClient == nil {
+		c, err := common.NewSchedukeClient(ctx, false, false)
+		if err != nil {
+			return err
+		}
+		s.schedukeClient = c
+	}
 	return nil
 }
 
-func (sc *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest, step *build.Step) (*buildbucketpb.Build, error) {
-	//schedukeReq, err := common.ScheduleBuildReqToSchedukeReq(req)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//createTaskResponse, err := (*sc.schedukeClient).ScheduleExecution(schedukeReq)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//// TODO: loop to get BBID, update build state via step
-	return nil, nil
+func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest, step *build.Step) (*buildbucketpb.Build, error) {
+	schedukeReq, err := common.ScheduleBuildReqToSchedukeReq(req)
+	if err != nil {
+		return nil, err
+	}
+	createTaskResponse, err := s.schedukeClient.ScheduleExecution(schedukeReq)
+	if err != nil {
+		return nil, err
+	}
+	// Scheduke supports batch task creation, but we send individually for now.
+	taskID, ok := createTaskResponse.Ids[common.SchedukeTaskRequestKey]
+	if !ok {
+		return nil, fmt.Errorf("no task ID returned from Scheduke for request %v", schedukeReq)
+	}
+	step.SetSummaryMarkdown(fmt.Sprintf("task %d scheduled in Scheduke (no BB link yet)", taskID))
+	for {
+		taskStateResponse, err := s.schedukeClient.GetBBIDs([]int64{taskID})
+		if err != nil {
+			return nil, err
+		}
+		states := taskStateResponse.GetTasks()
+		if len(states) != 1 || states[0].GetTaskStateId() != taskID {
+			return nil, fmt.Errorf("polling Scheduke for state of task %d returned the wrong information: %v", taskID, taskStateResponse)
+		}
+		taskWithState := states[0]
+		switch s := taskWithState.GetState(); s {
+		case schedukepb.TaskState_LAUNCHED:
+			// Step status will be updated by the caller (CTPv2).
+			return &buildbucketpb.Build{Id: taskWithState.Bbid}, nil
+		case schedukepb.TaskState_EXPIRED:
+			step.SetSummaryMarkdown(fmt.Sprintf("task %d expired in Scheduke", taskID))
+			return nil, fmt.Errorf("request %v (scheduke task %d) expired without launching", req, taskID)
+		}
+
+		time.Sleep(schedukePollingWait)
+	}
 }

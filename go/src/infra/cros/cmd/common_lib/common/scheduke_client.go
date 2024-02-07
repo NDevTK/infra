@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	schedukeapi "go.chromium.org/chromiumos/config/go/test/scheduling"
@@ -22,14 +23,12 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-var SCHEDUKE_PROD = "https://front-door-4vl5zcgwzq-wl.a.run.app"
-var SCHEDUKE_STAGING = "https://front-door-usoglgosrq-wl.a.run.app"
-
-var PROD = "prod"
-var STAGING = "staging"
-
-var SCHEDUKE_EXECUTION_ENDPOINT = "/tasks/add"
-var SCHEDUKE_GET_EXECUTION_ENDPOINT = "/tasks"
+var (
+	schedukeProdURL              = "https://front-door-4vl5zcgwzq-wl.a.run.app"
+	schedukeShadowModeURL        = "https://front-door-usoglgosrq-wl.a.run.app"
+	schedukeExecutionEndpoint    = "tasks/add"
+	schedukeGetExecutionEndpoint = "tasks"
+)
 
 type SchedukeClient struct {
 	client  *http.Client
@@ -38,14 +37,10 @@ type SchedukeClient struct {
 	local   bool
 }
 
-func NewSchedukeClient(ctx context.Context, env string, local bool) (*SchedukeClient, error) {
-	baseURL := ""
-	if env == PROD {
-		baseURL = SCHEDUKE_PROD
-	} else if env == STAGING {
-		baseURL = SCHEDUKE_STAGING
-	} else {
-		return nil, fmt.Errorf("env must be oneof '%s' '%s'", PROD, STAGING)
+func NewSchedukeClient(ctx context.Context, shadowMode, local bool) (*SchedukeClient, error) {
+	baseURL := schedukeProdURL
+	if shadowMode {
+		baseURL = schedukeShadowModeURL
 	}
 
 	client := SchedukeClient{ctx: ctx, baseURL: baseURL, local: local}
@@ -125,7 +120,7 @@ func (s *SchedukeClient) parseGetIdsResponse(response *http.Response) (*scheduke
 
 // ScheduleExecution will schedule TR executions via scheduke.
 func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEvents) (*schedukeapi.CreateTaskStatesResponse, error) {
-	endpoint, err := url.JoinPath(s.baseURL, SCHEDUKE_EXECUTION_ENDPOINT)
+	endpoint, err := url.JoinPath(s.baseURL, schedukeExecutionEndpoint)
 	if err != nil {
 		return nil, errors.Annotate(err, "url.joinpath").Err()
 	}
@@ -168,14 +163,12 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) 
 }
 
 // GetBBIDs will call scheduke to attempt to get BBIDs for the given tasks.
-func (s *SchedukeClient) GetBBIDs(ids []string) (*schedukeapi.ReadTaskStatesResponse, error) {
-	base := fmt.Sprintf("%s=%s", "ids", strings.Join(ids, ","))
-
-	endpoint, err := url.JoinPath(s.baseURL, SCHEDUKE_GET_EXECUTION_ENDPOINT)
+func (s *SchedukeClient) GetBBIDs(ids []int64) (*schedukeapi.ReadTaskStatesResponse, error) {
+	endpoint, err := url.JoinPath(s.baseURL, schedukeGetExecutionEndpoint)
 	if err != nil {
 		return nil, errors.Annotate(err, "url.joinpath").Err()
 	}
-	withIds := fmt.Sprintf("%s?%s", endpoint, base)
+	withIds := fmt.Sprintf("%s?%s", endpoint, idsParam(ids))
 
 	r, err := s.makeRequest(http.MethodGet, withIds, nil)
 	if err != nil {
@@ -183,5 +176,13 @@ func (s *SchedukeClient) GetBBIDs(ids []string) (*schedukeapi.ReadTaskStatesResp
 	}
 
 	return s.parseGetIdsResponse(r)
+}
 
+// idsParam converts a list of BBIDs to the "ids" param for a GetBBIDs request.
+func idsParam(bbIDs []int64) string {
+	s := make([]string, len(bbIDs))
+	for i, num := range bbIDs {
+		s[i] = strconv.FormatInt(num, 10)
+	}
+	return fmt.Sprintf("ids=%s", strings.Join(s, ","))
 }
