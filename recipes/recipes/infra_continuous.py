@@ -301,17 +301,14 @@ def run_python_tests(api, checkout, project_name):
 
     if ((api.platform.is_linux or api.platform.is_mac) and
         project_name == 'infra'):
-      cwd = checkout.path.join(project_name, 'appengine', 'monorail')
-      with api.context(cwd=cwd):
-        deferred.append(
-            api.defer(api.step, 'monorail python tests',
-                      ['vpython3', 'test.py']))
-
-      if ((api.platform.is_linux or api.platform.is_mac) and
-          project_name == 'infra'):
-        cwd = checkout.path.join(project_name, 'appengine', 'predator', 'app')
+      for app in ['monorail', 'predator', 'findit']:
+        cwd = checkout.path.join(project_name, 'appengine', app)
+        if app == 'predator':
+          cwd = cwd.join('app')
         with api.context(cwd=cwd):
-          api.step('predator python tests', ['vpython3', 'test.py'])
+          deferred.append(
+              api.defer(api.step, '%s python tests' % app,
+                        ['vpython3', 'test.py']))
 
     # Validate ccompute configs.
     if api.platform.is_linux and project_name == 'infra_internal':

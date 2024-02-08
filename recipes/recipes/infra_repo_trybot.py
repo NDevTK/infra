@@ -109,19 +109,16 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
               )
           )
 
-      if (api.platform.is_linux or api.platform.is_mac) and any(
-          f.startswith('appengine/monorail') for f in files):
-        cwd = api.path['checkout'].join('appengine', 'monorail')
-        with api.context(cwd=cwd):
-          deferred.append(
-              api.defer(api.step, 'monorail python3 tests',
-                        ['vpython3', 'test.py']))
-
-      if (api.platform.is_linux or api.platform.is_mac) and any(
-          f.startswith('appengine/predator') for f in files):
-        cwd = api.path['checkout'].join('appengine', 'predator', 'app')
-        with api.context(cwd=cwd):
-          api.step('predator python3 tests', ['vpython3', 'test.py'])
+      if api.platform.is_linux or api.platform.is_mac:
+        for app in ['monorail', 'predator', 'findit']:
+          if any(f.startswith('appengine/%s' % app) for f in files):
+            cwd = api.path['checkout'].join('appengine', app)
+            if app == 'predator':
+              cwd = cwd.join('app')
+            with api.context(cwd=cwd):
+              deferred.append(
+                  api.defer(api.step, '%s python3 tests' % app,
+                            ['vpython3', 'test.py']))
 
     if not internal and api.platform.is_linux and api.platform.bits == 64:
       deferred.append(
@@ -257,6 +254,8 @@ def GenTests(api):
   yield (test('monorail') + diff('appengine/monorail/foo.py'))
 
   yield (test('predator') + diff('appengine/predator/foo.py'))
+
+  yield (test('findit') + diff('appengine/findit/foo.py'))
 
   yield (
     test('only_cipd_build') +
