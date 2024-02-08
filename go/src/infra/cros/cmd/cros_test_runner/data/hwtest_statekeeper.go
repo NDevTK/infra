@@ -40,6 +40,7 @@ type HwTestStateKeeper struct {
 	TestQueue      *list.List
 	PostTestQueue  *list.List
 	PublishQueue   *list.List
+	GenericQueue   *list.List
 
 	// Dictionaries
 	Injectables        *common.InjectableStorage
@@ -96,6 +97,7 @@ func NewHwTestStateKeeper() *HwTestStateKeeper {
 		TestQueue:                list.New(),
 		PostTestQueue:            list.New(),
 		PublishQueue:             list.New(),
+		GenericQueue:             list.New(),
 		Injectables:              common.NewInjectableStorage(),
 		ContainerInstances:       make(map[string]interfaces.ContainerInterface),
 		ContainerImages:          make(map[string]*api.ContainerImageInfo),

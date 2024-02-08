@@ -335,6 +335,13 @@ func (cfg *CommandConfig) GetCommand(
 		}
 		cmd = commands.NewGenericPublishCmd(exec)
 
+	case commands.GenericServiceCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewGenericServiceCmd(exec)
+
 	case commands.ParseDutTopologyCmdType:
 		cmd = commands.NewParseDutTopologyCmd()
 

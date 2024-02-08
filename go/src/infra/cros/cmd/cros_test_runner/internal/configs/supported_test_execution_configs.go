@@ -69,6 +69,7 @@ var ContainerReadLogs_ContainerExecutor = &common_configs.CommandExecutorPairedC
 var GenericProvision_GenericProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericProvisionCmdType, ExecutorType: executors.GenericProvisionExecutorType}
 var GenericTests_GenericTestsExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericTestsCmdType, ExecutorType: executors.GenericTestsExecutorType}
 var GenericPublish_GenericPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericPublishCmdType, ExecutorType: executors.GenericPublishExecutorType}
+var GenericService_GenericServiceExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericServiceCmdType, ExecutorType: executors.GenericServiceExecutorType}
 var ParseDutTopology_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ParseDutTopologyCmdType, ExecutorType: common_executors.NoExecutorType}
 
 var RequiredCmdExecPairMap = map[*common_configs.CommandExecutorPairedConfig]*common_configs.CommandExecutorPairedConfig{}
@@ -382,6 +383,9 @@ func generateTaskConfigs(inputV2 *skylab_test_runner.CrosTestRunnerRequest) *com
 			mainConfigs = append(mainConfigs,
 				GetCmdExecPair(GcloudAuth_CtrExecutor, task.Required),
 				GetCmdExecPair(GenericPublish_GenericPublishExecutor, task.Required))
+		case *skylab_test_runner.CrosTestRunnerRequest_Task_Generic:
+			mainConfigs = append(mainConfigs,
+				GetCmdExecPair(GenericService_GenericServiceExecutor, task.Required))
 		default:
 		}
 	}

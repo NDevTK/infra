@@ -66,6 +66,9 @@ const (
 	TestsExecutionCmdType   interfaces.CommandType = "TestsExecution"
 	GenericTestsCmdType     interfaces.CommandType = "GenericTests"
 
+	// Generic Service related commands
+	GenericServiceCmdType interfaces.CommandType = "GenericService"
+
 	// Publish service related commands
 	GenericPublishCmdType interfaces.CommandType = "GenericPublish"
 

@@ -28,6 +28,7 @@ const (
 	GenericProvisionExecutorType interfaces.ExecutorType = "GenericProvisionExecutor"
 	GenericTestsExecutorType     interfaces.ExecutorType = "GenericTestsExecutor"
 	GenericPublishExecutorType   interfaces.ExecutorType = "GenericPublishExecutor"
+	GenericServiceExecutorType   interfaces.ExecutorType = "GenericServiceExecutor"
 
 	// For testing purpose only
 	NoExecutorType interfaces.ExecutorType = "NoExecutor"
