@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "79184533_a8cdb8b1",
+        "filename": "go/src/infra/build/siso/build/ninjabuild/step_def.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 461,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-08T05:53:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9931aad0_2e9725f2",
+      "range": {
+        "startLine": 461,
+        "startChar": 6,
+        "endLine": 461,
+        "endChar": 16
+      },
+      "revId": "9300c99a5c87b125c926b8fc352d1031e911b95a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eebfef5d_82705966",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-02-08T04:24:37Z",
       "side": 1,
       "message": "nit: input\n```suggestion\n\t\t\tclog.Infof(ctx, \"input %s is phony, but exists\", in)\n```",
+      "range": {
+        "startLine": 465,
+        "startChar": 20,
+        "endLine": 465,
+        "endChar": 26
+      },
+      "revId": "9300c99a5c87b125c926b8fc352d1031e911b95a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0f142870_2d7b14b7",
+        "filename": "go/src/infra/build/siso/build/ninjabuild/step_def.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 465,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-08T05:53:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eebfef5d_82705966",
       "range": {
         "startLine": 465,
         "startChar": 20,
