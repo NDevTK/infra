@@ -7,6 +7,7 @@ import collections
 import errno
 import os
 import sys
+import tempfile
 import unittest
 
 try:
@@ -43,6 +44,9 @@ class TestFlock(unittest.TestCase):
   @unittest.skipIf(sys.platform == 'win32', 'Requires not windows')
   def setUp(self):
     super(TestFlock, self).setUp()
+    # Ensure one-time initialization of tempfile.tempdir has happened
+    # before mocking os module failures.
+    tempfile.gettempdir()
 
   @contextlib.contextmanager
   def _assert_reached(self):
