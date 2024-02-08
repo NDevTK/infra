@@ -457,8 +457,12 @@ func fixInputs(ctx context.Context, stepDef *StepDef, inputs, excludes []string)
 	newInputs := make([]string, 0, len(inputs))
 	for _, in := range inputs {
 		if stepDef.globals.phony[in] {
-			clog.Infof(ctx, "inputs %s is phony", in)
-			continue
+			_, err := stepDef.globals.hashFS.Stat(ctx, stepDef.globals.path.ExecRoot, in)
+			if err != nil {
+				clog.Infof(ctx, "inputs %s is phony", in)
+				continue
+			}
+			clog.Infof(ctx, "inputs %s is phony, but exists", in)
 		}
 		newInputs = append(newInputs, in)
 	}
