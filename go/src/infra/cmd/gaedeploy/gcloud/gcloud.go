@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -76,6 +77,11 @@ func List(ctx context.Context, appID, module string) (Modules, error) {
 	// Convert to our preferred format.
 	out := Modules{}
 	for _, e := range listing {
+		// Workaround b/324455197.
+		if strings.HasPrefix(e.ID, "ah-builtin-") {
+			continue
+		}
+
 		vers := out[e.Service]
 		if vers == nil {
 			vers = Versions{}

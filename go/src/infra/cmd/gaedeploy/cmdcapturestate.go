@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
@@ -259,6 +260,9 @@ func listVersions(ctx context.Context, client *appengine.VersionsClient, req *ap
 			return listing, nil
 		case err != nil:
 			return nil, err
+		// Workaround for b/324455197.
+		case strings.HasPrefix(item.Id, "ah-builtin-"):
+			continue
 		default:
 			listing = append(listing, item)
 		}
