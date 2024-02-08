@@ -582,6 +582,9 @@ func sourceForParent(ctx context.Context, auth *auth.Authenticator, src *sourceS
 	panic("no commit or change in sourceSpec")
 }
 
+// sourceForLatestGoRelease produces a sourceSpec corresponding to the latest
+// stable release cut from goBranch. If goBranch is the main branch, it means
+// to use the latest stable release.
 func sourceForLatestGoRelease(ctx context.Context, auth *auth.Authenticator, goBranch string) (*sourceSpec, error) {
 	releases, err := fetchStableGoReleases(ctx)
 	if err != nil {
@@ -592,7 +595,8 @@ func sourceForLatestGoRelease(ctx context.Context, auth *auth.Authenticator, goB
 	}
 	var tag string
 	if goBranch == mainBranch {
-		return nil, fmt.Errorf("requested latest Go release for the main branch, but none exists")
+		// Pick the latest release. This is also the name of the tag.
+		tag = releases[0].Version
 	} else if branchVersion, ok := strings.CutPrefix(goBranch, "release-branch.go1."); ok {
 		// Figure out what major version we're at.
 		ver, err := strconv.Atoi(branchVersion)
