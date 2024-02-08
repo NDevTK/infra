@@ -80,10 +80,8 @@ func (c *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFu
 }
 
 func connectToProxy(ctx context.Context, network string, proxy *proxyConfig) (net.Conn, error) {
-	// Temporarily hardcoded timeout value.
-	dialer := &net.Dialer{Timeout: time.Duration(5) * time.Second}
-	log.Debugf(ctx, "Connecting to host %s", proxy.GetAddr())
-	conn, err := tls.DialWithDialer(dialer, network, proxy.GetAddr(), proxy.GetConfig())
+	log.Debugf(ctx, "Establishing TLS connection to %s", proxy.GetAddr())
+	conn, err := tls.Dial(network, proxy.GetAddr(), proxy.GetConfig())
 	if err != nil {
 		log.Warningf(ctx, "Failed to connect to proxy: %v", err)
 		return nil, errors.Annotate(err, "connect to proxy").Err()
@@ -95,29 +93,45 @@ func connectToProxyWithRetry(ctx context.Context, network string, proxy *proxyCo
 	waitBetweenRetriesInMillis := rand.Intn(1000)
 	timeToSleep := time.Duration(waitBetweenRetriesInMillis) * time.Millisecond
 	var err error
+	var conn net.Conn
+	done := make(chan bool)
 	for i := 0; i < numberOfConnectionAttempts; i++ {
-		conn, err := connectToProxy(ctx, network, proxy)
+		if i > 0 {
+			log.Debugf(ctx, "Retrying TLS connection")
+		}
+		go func() {
+			conn, err = connectToProxy(ctx, network, proxy)
+			done <- true
+		}()
+		select {
+		case <-ctx.Done():
+			return nil, errors.Annotate(ctx.Err(), "connect to proxy with retry").Err()
+		case <-done:
+		}
 		if err == nil {
-			return conn, nil
+			break
 		}
 		if i < numberOfConnectionAttempts-1 {
 			time.Sleep(timeToSleep)
-			timeToSleep *= 2
 		}
 	}
-	return nil, err
+	return conn, err
 }
 
 // newProxyClient establishes an authenticated SSH connection to the target host
 // using TLS channel as the underlying transport.
 func newProxyClient(ctx context.Context, sshConfig *ssh.ClientConfig, proxy *proxyConfig) (SSHClient, error) {
+	var conn net.Conn
+	var err error
 	log.Debugf(ctx, "Proxy config: %+v", *proxy)
-	conn, err := connectToProxyWithRetry(ctx, supportNetwork, proxy)
+	tlsCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	conn, err = connectToProxyWithRetry(tlsCtx, supportNetwork, proxy)
 	if err != nil {
 		log.Errorf(ctx, "Error creating a new TLS connection: %s", err)
 		return nil, errors.Annotate(err, "new proxy client").Err()
 	}
-	log.Debugf(ctx, "Connected to host %s", proxy.GetAddr())
+	log.Debugf(ctx, "Connected to proxy %s", proxy.GetAddr())
 	var c ssh.Conn
 	var chans <-chan ssh.NewChannel
 	var reqs <-chan *ssh.Request
