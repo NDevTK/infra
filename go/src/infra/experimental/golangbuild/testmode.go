@@ -103,7 +103,6 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 	}
 	gorootSrc := filepath.Join(spec.goroot, "src")
 
-	hasImprovedDistTestCompileOnly := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"
 	if spec.inputs.CompileOnly {
 		// If compiling any one port fails, keep going and report all at the end.
 		g := new(errgroup.Group)
@@ -113,10 +112,6 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 			i, p := i, p
 			portContext := addPortEnv(ctx, p, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/len(ports))))
 			testCmd := spec.wrapTestCmd(ctx, spec.distTestCmd(portContext, gorootSrc, "", nil, true))
-			if !hasImprovedDistTestCompileOnly {
-				// TODO(when Go 1.20 stops being supported): Delete this non-'dist test' path.
-				testCmd = spec.wrapTestCmd(ctx, spec.goCmd(portContext, gorootSrc, spec.goTestArgs("std", "cmd")...))
-			}
 			g.Go(func() error {
 				testErrors[i] = cmdStepRun(portContext, fmt.Sprintf("compile %s port", p), testCmd, false)
 				return nil
@@ -129,30 +124,6 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 	if len(ports) != 1 || !proto.Equal(ports[0], spec.inputs.Target) {
 		return infraErrorf("testing multiple ports is only supported in CompileOnly mode")
 	}
-
-	// We have two paths, unfortunately: a simple one for Go 1.21+ that uses dist test -json,
-	// and a two-step path for Go 1.20 and older that uses go test -json and dist test (without JSON).
-	hasDistTestJSON := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"
-	if !hasDistTestJSON {
-		if shard != noSharding {
-			return fmt.Errorf("test sharding is not supported for Go version 1.20 and earlier")
-		}
-		// TODO(when Go 1.20 stops being supported): Delete this path.
-		//
-		// To have structured all.bash output on 1.20/1.19 release branches without dist test -json,
-		// we divide Go tests into two parts:
-		//   - the large remaining set with structured output support (uploaded to ResultDB)
-		//   - a small set of unstructured tests (this part is fully eliminated in Go 1.21!)
-		// While maintaining the property that their union doesn't fall short of all.bash.
-		jsonOnPart := spec.wrapTestCmd(ctx, spec.goCmd(ctx, gorootSrc, spec.goTestArgs("std", "cmd")...))
-		if err := cmdStepRun(ctx, "run std and cmd tests", jsonOnPart, false); err != nil {
-			return err
-		}
-		const allButStdCmd = "!^go_test:.+$" // Pattern that works in Go 1.20 and 1.19.
-		jsonOffPart := spec.distTestCmd(ctx, gorootSrc, allButStdCmd, nil, false)
-		return cmdStepRun(ctx, "run various dist tests", jsonOffPart, false)
-	}
-	// Go 1.21+ path.
 
 	// Determine what tests to run.
 	//
@@ -173,7 +144,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 		}
 	}
 
-	// Invoke go tool dist test.
+	// Invoke go tool dist test (with -json flag).
 	testCmd := spec.wrapTestCmd(ctx, spec.distTestCmd(ctx, gorootSrc, "", tests, true))
 	if err := cmdStepRun(ctx, "go tool dist test -json", testCmd, false); err != nil {
 		return attachTestsFailed(err)
@@ -405,15 +376,6 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 			continue
 		case p.GOOS == "android":
 			// TODO(go.dev/issue/61762): Add misc-compile coverage for the GOOS=android ports (Android).
-			continue
-		case spec.inputs.GoBranch == "release-branch.go1.20" && p.GOOS == "openbsd" && p.GOARCH == "mips64":
-			// The openbsd/mips64 port is marked broken at tip as of 2023-08-10.
-			// It's not marked as broken in cmd/dist on release-branch.go1.20,
-			// but it still fails to compile a number of golang.org/x repos.
-			// So treat it as a broken port for our purposes since its negative signal
-			// is not actionable until known issues with the port at tip are resolved.
-			//
-			// TODO(go.dev/issue/61546, go.dev/issue/58110): If the port gets fixed, drop this case.
 			continue
 		}
 		ports = append(ports, &golangbuildpb.Port{Goos: p.GOOS, Goarch: p.GOARCH})

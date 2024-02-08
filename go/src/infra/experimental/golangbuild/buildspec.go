@@ -11,7 +11,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"time"
 
 	clouddatastore "cloud.google.com/go/datastore"
 	"google.golang.org/api/option"
@@ -261,25 +260,10 @@ func addPortEnv(ctx context.Context, target *golangbuildpb.Port, extraEnv ...str
 func (b *buildSpec) goTestArgs(patterns ...string) []string {
 	args := []string{"test", "-json"}
 	if b.inputs.CompileOnly {
-		hasGoIssue15513Fix := b.inputs.GoBranch != "release-branch.go1.20" && b.inputs.GoBranch != "release-branch.go1.19"
-		if !hasGoIssue15513Fix { // TODO: Delete after 1.20 drops off.
-			// In Go 1.20 and older, go test -c did not support multiple packages,
-			// so use the next best thing of -exec=true to not run the test binary.
-			// Note that 'true' here refers not to a boolean value, but a binary
-			// (e.g., /usr/bin/true) that ignores parameters and exits with code 0.
-			return append(append(args, "-exec=true"), patterns...)
-		}
 		return append(append(args, "-c", "-o", os.DevNull), patterns...)
 	}
 	if !b.inputs.LongTest {
 		args = append(args, "-short")
-	}
-	if b.inputs.LongTest && isGoProject(b.inputs.Project) { // TODO(dmitshur): Delete after 1.20 drops off.
-		const (
-			goTestDefaultTimeout = 10 * time.Minute // Default value taken from Go 1.20.
-			scale                = 5                // An approximation of GO_TEST_TIMEOUT_SCALE.
-		)
-		args = append(args, "-timeout="+(goTestDefaultTimeout*scale).String())
 	}
 	if b.inputs.RaceMode {
 		args = append(args, "-race")
