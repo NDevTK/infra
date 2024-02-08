@@ -4,6 +4,7 @@
 
 import os
 import subprocess
+import sys
 import unittest
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +33,7 @@ def run_vpython(script):
   """
   try:
     return 0, subprocess.check_output([
-        'vpython3',
+        'vpython3' + ('.bat' if sys.platform == 'win32' else ''),
         '-vpython-log-level',
         'debug',
         '-vpython-spec',
