@@ -260,7 +260,7 @@ func TestParseSource(t *testing.T) {
 						Source: &Spec_Create_Source{
 							Method: &Spec_Create_Source_Git{
 								Git: &GitSource{
-									Repo:       "https://chromium.googlesource.com/external/github.com/ninja-build/ninja",
+									Repo:       "https://chromium.googlesource.com/external/github.com/ninja-build/Ninja",
 									TagPattern: "v%s",
 								},
 							},
@@ -275,7 +275,7 @@ func TestParseSource(t *testing.T) {
 		err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
 		So(err, ShouldBeNil)
 		So(p.Source, ShouldEqual, &stdenv.SourceGit{
-			URL: "https://chromium.googlesource.com/external/github.com/ninja-build/ninja",
+			URL: "https://chromium.googlesource.com/external/github.com/ninja-build/Ninja",
 			Ref: "commit",
 
 			CIPDName: "pkg_prefix/src_prefix/git/github.com/ninja-build/ninja",

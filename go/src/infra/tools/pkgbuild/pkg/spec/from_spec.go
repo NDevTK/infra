@@ -271,6 +271,7 @@ func gitCachePath(url string) string {
 	url = strings.TrimPrefix(url, "https://chromium.googlesource.com/external/")
 	url = strings.TrimPrefix(url, "https://")
 	url = strings.TrimPrefix(url, "http://")
+	url = strings.ToLower(url)
 	return path.Clean(url)
 }
 
