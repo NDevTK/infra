@@ -8,6 +8,8 @@ import (
 	"context"
 	"testing"
 
+	"go.chromium.org/luci/common/testing/assert/structuraldiff"
+
 	fleetcostpb "infra/cros/fleetcost/api"
 	"infra/cros/fleetcost/internal/costserver/controller"
 	"infra/cros/fleetcost/internal/costserver/models"
@@ -39,5 +41,52 @@ func TestPutCostIndicator(t *testing.T) {
 
 	if result.CostIndicator.GetName() != "a" {
 		t.Errorf("unexpected result: %v", result)
+	}
+}
+
+func TestGetCostIndicator(t *testing.T) {
+	t.Parallel()
+
+	tf := testsupport.NewFixtureWithData(context.Background(), t)
+
+	costIndicator, err := controller.GetCostIndicator(tf.Ctx, &models.CostIndicator{
+		ID: "fake-cost-indicator",
+	})
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+
+	want := &models.CostIndicator{
+		ID: "fake-cost-indicator",
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Name:  "a",
+			Board: "e",
+		},
+	}
+
+	if diff := structuraldiff.DebugCompare(costIndicator, want).String(); diff != "" {
+		t.Errorf("unexpected diff (-want +got): %s", diff)
+	}
+}
+
+func TestListCostIndicator(t *testing.T) {
+	t.Parallel()
+
+	tf := testsupport.NewFixtureWithData(context.Background(), t)
+
+	costIndicators, err := controller.ListCostIndicators(tf.Ctx, 1)
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+
+	want := []*fleetcostpb.CostIndicator{
+		{
+			Name:  "a",
+			Board: "e",
+		},
+	}
+
+	if diff := structuraldiff.DebugCompare(costIndicators, want).String(); diff != "" {
+		t.Errorf("unexpected diff: %s", diff)
 	}
 }

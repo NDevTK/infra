@@ -9,6 +9,7 @@ import (
 
 	"go.chromium.org/luci/gae/service/datastore"
 
+	fleetcostpb "infra/cros/fleetcost/api"
 	"infra/cros/fleetcost/internal/costserver/models"
 )
 
@@ -23,4 +24,16 @@ func GetCostIndicator(ctx context.Context, costIndicator *models.CostIndicator) 
 		return nil, err
 	}
 	return costIndicator, nil
+}
+
+// ListCostIndicators lists the cost indicators in the database, up to a limit (not yet implemented).
+func ListCostIndicators(ctx context.Context, limit int) ([]*fleetcostpb.CostIndicator, error) {
+	var out []*fleetcostpb.CostIndicator
+	query := datastore.NewQuery(models.CostIndicatorKind)
+	if err := datastore.Run(ctx, query, func(entity *models.CostIndicator) {
+		out = append(out, entity.CostIndicator)
+	}); err != nil {
+		return nil, err
+	}
+	return out, nil
 }
