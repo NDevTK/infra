@@ -9,6 +9,7 @@ package args
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -767,8 +768,14 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		for _, sd := range g.Params.GetSoftwareDependencies() {
 			if b := sd.GetChromeosBuild(); b != "" {
 				builderNameSliced := strings.Split(strings.Split(b, "/")[0], "-")
+				excludedPostfixes := []string{"main"}
+				excludedPrefixes := []string{"staging", "dev"}
+				// Strip postfixes that aren't included in build_target
+				if slices.Contains(excludedPostfixes, builderNameSliced[len(builderNameSliced)-1]) {
+					builderNameSliced = builderNameSliced[:len(builderNameSliced)-1]
+				}
 				// Strip prefixes that aren't included in build_target
-				if builderNameSliced[0] == "staging" || builderNameSliced[0] == "dev" {
+				if slices.Contains(excludedPrefixes, builderNameSliced[0]) {
 					builderNameSliced = builderNameSliced[1:]
 				}
 				buildTargetInferred = strings.Join(builderNameSliced[0:len(builderNameSliced)-1], "-")
