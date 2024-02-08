@@ -21,13 +21,19 @@ main() {
 
   test -f "$fleetcost" || die 'cannot find fleetcost binary'
 
-  "$fleetcost" ping --help
+  test_suite
+
   case "$?" in
     2) : "do nothing" ;;
     *) die "unexpected status $?"
   esac
 }
 
-
+test_suite() {
+  "$fleetcost" ping -http                  || die 'test 1: ping'
+  "$fleetcost" ping-ufs -http              || die 'test 2: ping-ufs'
+  "$fleetcost" create-ci -http -name "some-name" || die 'test 3: create-ci'
+  "$fleetcost" get-ci -http -name "some-name"    || die 'test 4: get-ci'
+}
 
 main "$@"
