@@ -30,6 +30,7 @@ from framework import jsonfeed
 from framework import permissions
 from framework import timestr
 from framework import urls
+from mrproto import project_pb2
 from mrproto import tracker_pb2
 from tracker import tracker_bizobj
 from tracker import tracker_views
@@ -115,6 +116,9 @@ class IssueDateActionTask(notify_helpers.NotifyTaskBase):
     issue_id = mr.GetPositiveIntParam('issue_id')
     issue = self.services.issue.GetIssue(mr.cnxn, issue_id, use_cache=False)
     project = self.services.project.GetProject(mr.cnxn, issue.project_id)
+    # Do not ping if the project is archived.
+    if project and project.state == project_pb2.ProjectState.ARCHIVED:
+      return
     hostport = framework_helpers.GetHostPort(project_name=project.project_name)
     config = self.services.config.GetProjectConfig(mr.cnxn, issue.project_id)
     pings = self._CalculateIssuePings(issue, config)
