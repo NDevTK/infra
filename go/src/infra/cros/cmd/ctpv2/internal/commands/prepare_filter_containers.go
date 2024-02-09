@@ -194,16 +194,31 @@ func gcsInfo(req *testapi.CTPRequest) (string, string, error) {
 }
 
 func getFirstBoardFromLegacy(targs []*testapi.ScheduleTargets) string {
+	board := ""
+	variant := ""
+
 	if len(targs) == 0 || len(targs[0].GetTargets()) == 0 {
-		return ""
+		return board
 	}
+
 	// TODO (azrahman): add support for multi-dut.
-	switch hw := targs[0].GetTargets()[0].HwTarget.Target.(type) {
+	currentTarg := targs[0].GetTargets()[0]
+
+	switch hw := currentTarg.HwTarget.Target.(type) {
 	case *testapi.HWTarget_LegacyHw:
-		return hw.LegacyHw.Board
-	default:
-		return ""
+		board = hw.LegacyHw.Board
 	}
+
+	// If there is a variant, combine it with the board name.
+	switch sw := currentTarg.SwTarget.SwTarget.(type) {
+	case *testapi.SWTarget_LegacySw:
+		variant = sw.LegacySw.GetVariant()
+	}
+	if variant != "" {
+		return fmt.Sprintf("%s-%s", board, variant)
+	}
+
+	return board
 }
 
 func getFirstGcsPathFromLegacy(schedTargs []*testapi.ScheduleTargets) string {
