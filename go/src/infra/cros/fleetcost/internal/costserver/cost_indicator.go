@@ -7,15 +7,22 @@ package costserver
 import (
 	"context"
 
-	"go.chromium.org/luci/common/errors"
-
 	fleetcostpb "infra/cros/fleetcost/api"
 	"infra/cros/fleetcost/internal/costserver/controller"
+	"infra/cros/fleetcost/internal/costserver/models"
 )
 
 // CreateCostIndicator creates a cost indicator.
-func (f *FleetCostFrontend) CreateCostIndicator(_ context.Context, _ *fleetcostpb.CreateCostIndicatorRequest) (*fleetcostpb.CreateCostIndicatorResponse, error) {
-	return nil, errors.Reason("not yet implemented").Err()
+func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fleetcostpb.CreateCostIndicatorRequest) (*fleetcostpb.CreateCostIndicatorResponse, error) {
+	// TODO(gregorynisbet): Do some kind of input validation here.
+	costIndicator := request.GetCostIndicator()
+	entity := models.NewCostIndicator(costIndicator)
+	if err := controller.PutCostIndicator(ctx, entity); err != nil {
+		return nil, err
+	}
+	return &fleetcostpb.CreateCostIndicatorResponse{
+		CostIndicator: costIndicator,
+	}, nil
 }
 
 // ListCostIndicators lists the cost indicators in the database satisfying the request.

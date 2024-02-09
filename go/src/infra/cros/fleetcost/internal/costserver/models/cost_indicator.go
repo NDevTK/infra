@@ -21,3 +21,11 @@ type CostIndicator struct {
 
 // Silence staticcheck warning about unused field.
 var _ = CostIndicator{}._kind
+
+// NewCostIndicator makes a cost indicator from an object extracted from a request.
+func NewCostIndicator(costIndicator *fleetcostpb.CostIndicator) *CostIndicator {
+	return &CostIndicator{
+		ID:            costIndicator.GetName(),
+		CostIndicator: costIndicator,
+	}
+}

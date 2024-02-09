@@ -6,6 +6,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -15,6 +16,9 @@ import (
 
 // PutCostIndicator puts a cost indicator into the database.
 func PutCostIndicator(ctx context.Context, costIndicator *models.CostIndicator) error {
+	if costIndicator == nil {
+		return errors.New("costIndicator cannot be nil")
+	}
 	return datastore.Put(ctx, costIndicator)
 }
 

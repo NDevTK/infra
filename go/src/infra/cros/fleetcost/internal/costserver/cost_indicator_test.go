@@ -17,7 +17,7 @@ func TestCreateCostIndicator(t *testing.T) {
 	tf := testsupport.NewFixture(context.Background(), t)
 
 	_, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostpb.CreateCostIndicatorRequest{})
-	if err == nil {
-		t.Error("err is unexpectedly nil")
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
 	}
 }
