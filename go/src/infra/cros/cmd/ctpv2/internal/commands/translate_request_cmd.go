@@ -7,12 +7,11 @@ package commands
 import (
 	"context"
 	"fmt"
-	"strings"
-
 	// "infra/libs/skylab/inventory"
 	// "infra/libs/skylab/request"
 	// "infra/libs/skylab/worker"
 	"net/http"
+	"strings"
 
 	"github.com/gogo/protobuf/jsonpb"
 
@@ -20,14 +19,12 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-
 	// "go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	// "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/auth"
 	// "go.chromium.org/luci/buildbucket"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
-
 	// "go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	// "go.chromium.org/luci/lucictx"

@@ -53,6 +53,7 @@ const (
 	// that reqs don't timeout due to this.
 
 	CtpRequestUIDTemplate = "TestPlanRuns/%d/%s"
+	DutPoolQuota          = "DUT_POOL_QUOTA"
 )
 
 // GenerateTrv2Req generates ScheduleBuildRequest.
@@ -85,7 +86,7 @@ func GenerateArgs(ctx context.Context, hwDef *testapi.SwarmingDefinition, testCa
 	suiteName := suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
 
 	cmd := *createCommand(ctx, suiteName)
-	labels, err := createLabels(hwDef)
+	labels, err := createLabels(hwDef, suiteInfo)
 	if err != nil {
 		return nil, errors.Annotate(err, "error while creating labels: ").Err()
 	}
@@ -318,7 +319,7 @@ func createProvisionableDimensions() ([]string, error) {
 }
 
 // createLabels creates labels.
-func createLabels(hwDef *testapi.SwarmingDefinition) (*inventory.SchedulableLabels, error) {
+func createLabels(hwDef *testapi.SwarmingDefinition, suiteInfo *testapi.SuiteInfo) (*inventory.SchedulableLabels, error) {
 	labels := &inventory.SchedulableLabels{}
 
 	// TODO (azrahman): Revisit this.
@@ -342,27 +343,13 @@ func createLabels(hwDef *testapi.SwarmingDefinition) (*inventory.SchedulableLabe
 	labels.Board = &board
 	labels.Model = &model
 
-	// TODO (azrahman): Adding hardcoded pool for now; get it from input
-	labels.CriticalPools = append(labels.CriticalPools, inventory.SchedulableLabels_DUT_POOL_QUOTA)
-
-	// Not doing it for now.
-	// 3. Add pool (input)
-	// Critical/selfserve?
-
-	// if p := g.Params.GetScheduling().GetPool(); p != nil {
-	// 	switch v := p.(type) {
-	// 	case *test_platform.Request_Params_Scheduling_ManagedPool_:
-	// 		pool, ok := poolMap[v.ManagedPool]
-	// 		if !ok {
-	// 			return nil, errors.Reason("unknown managed pool %s", v.ManagedPool.String()).Err()
-	// 		}
-	// 		inv.CriticalPools = append(inv.CriticalPools, pool)
-	// 	case *test_platform.Request_Params_Scheduling_UnmanagedPool:
-	// 		inv.SelfServePools = append(inv.SelfServePools, v.UnmanagedPool)
-	// 	default:
-	// 		panic(fmt.Sprintf("unhandled scheduling type %#v", p))
-	// 	}
-	// }
+	if suiteInfo.GetSuiteMetadata().GetPool() == "" || suiteInfo.GetSuiteMetadata().GetPool() == DutPoolQuota {
+		labels.CriticalPools = append(labels.CriticalPools, inventory.SchedulableLabels_DUT_POOL_QUOTA)
+	} else if suiteInfo.GetSuiteMetadata().GetPool() != "" {
+		labels.SelfServePools = append(labels.SelfServePools, suiteInfo.GetSuiteMetadata().GetPool())
+	} else {
+		return nil, fmt.Errorf("no pool specified")
+	}
 
 	// TODO (azrahman): revisit this.
 	// 4. Add device stability?
