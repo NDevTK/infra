@@ -1,9 +1,9 @@
-# Contacting troopers
+# Contacting Infra Troopers
 
 This page can be found at: [g.co/bugatrooper](https://g.co/bugatrooper)
 
 Have an issue with a piece of build infrastructure?
-Our troopers are here to help. Learn more about Troopering at:
+Our troopers are here to help. Learn more about troopering at:
 [go/trooper](http://go/trooper)
 
 Oncall hours: we cover working hours in the Pacific timezone:
@@ -16,11 +16,11 @@ there's no guarantee.
 If you are contacting a trooper to see if there is an issue with a service,
 visit the [ChOps Status Dashboard](https://chopsdash.appspot.com) first.
 If the "Current Status" of the service shows red/yellow, that means there is a known
-disruption or outage, and the Trooper is already aware. No need to contact us further!
+disruption or outage, and the trooper is already aware. No need to contact us further!
 
-The primary way to contact a trooper is via [crbug.com](https://crbug.com) using
+The primary way to contact a trooper is via [issues.chromium.org](https://issues.chromium.org/issues?q=status:open) using
 the templates and priorities established below. If you need to find the current
-trooper, check [build.chromium.org](https://build.chromium.org), or
+trooper for a specific service, check [build.chromium.org](https://build.chromium.org), or
 [vi/chrome_infra](http://vi/chrome_infra) (internal link). If crbug.com is down
 and you are unable to file a bug, please contact the team on
 [infra-dev@chromium.org](mailto:infra-dev@chromium.org).
@@ -36,13 +36,16 @@ handled by the Systems team, please follow their
 
 For fastest response, please use the provided templates:
 
-*   **[General requests]**: for most cases.
+*   **[go/luci-bug]**: general requests for most cases.
+*   [go/buildbucket-bug]: for Buildbucket.
+*   [go/swarming-bug]: for Swarming.
+*   [go/luci-cv-bug]: for CV.
 *   Permission/ACL requests:
     *   [Git repos]: file a bug at [go/fix-chrome-git] for read/write access to
-        specific git repos
-    *   [Buildbucket BQ access]: ChOps Foundation trooper can handle this
+        specific git repos.
+    *   [Buildbucket BQ access]: Task Orchestration trooper will handle this.
     *   [Google Storage, CIPD, other]: chops-security team will handle these
-        requests
+        requests.
 *   [Machine restart requests]: if a machine appears to be offline and you
     know that it's managed by the Labs team.
 *   [Mobile device restart requests]: if a mobile device appears to be offline
@@ -53,70 +56,32 @@ as well as the builder name (Builder: win-archive-rel) when applicable.
 
 ## Priority Levels
 
-Priorities are set using the `Pri=N` label. Use the following as your guideline:
+Priorities are set using the `Priority=N` label. Use the following as your guideline:
 
-*   **Pri-0**: Immediate attention desired. The owner will stop everything they
+*   **P0**: Immediate attention desired. The owner will stop everything they
     are doing and investigate.
     *   These reserved for massive outages, release blocking or multi-developer
         blocking productivity issues.
     *   Examples: CQ no longer committing changes.
-*   **Pri-1**: Respond within 24 hours, resolution within 1 week
-    *   These are non-P0 blocking issues that need attention from a Trooper
+*   **P1**: Respond within 24 hours, resolution within 1 week
+    *   These are non-P0 blocking issues that need attention from a trooper
     *   Examples: disk full on device, device offline, pending time high issues.
-*   **Pri-2**: Respond within 1 week, resolution is variable, depending on the issue
-    *   These are non-blocking issues or requests that need attention from a Trooper
+*   **P2**: Respond within 1 week, resolution is variable, depending on the issue
+    *   These are non-blocking issues or requests that need attention from a trooper
     *   Examples: Non-blocking bugs or feature improvement suggestions
-*   **Pri-3**: Non-urgent. It is ok to wait or unassign.
+*   **P3**: Non-urgent. It is ok to wait or unassign.
     *   These are non-urgent issues or nice to have changes.
     *   Examples: Large change that will require major infrastructure changes or
         something that is a moonshot.
 
-## Life of a Request
-
-Status will be tracked using the Status field, with the 'owner' field unset.
-The trooper queue relies on the 'owner' field being unset to track issues
-properly, with troopers setting the owners field for particularly long-running
-issues.  Please do not assign issues to the trooper directly, doing so may
-actually increase the time taken to respond to an issue. Behind the scenes, our
-Troopers will review and triage the bug, as-needed, to corresponding Chrome
-Operations teams to be addressed.
-
-All requests should contain the “Infra-Troopers” label such that we can properly
-triage the request and to indicate that this is user-filed.
-
-*   Untriaged: Your issue will show up in the queue to the trooper as untriaged.
-    Once they acknowledge the bug, the status will change.
-*   Available: Trooper has ack'ed, if not Pri-0, this means they have not started working on it.
-*   Assigned:
-    *   Trooper has triaged and determined there is a suitable owner and
-        appropriately assigned.
-    *   If that owner is YOU this indicates that they need more information from you
-        in order to proceed.  Please provide the information, and then unset
-        'owner' so the issue shows up in the queue again.
-*   Started: Your issue is being handled, either by the Trooper or other owner.
-*   Fixed: The trooper believes the issue is resolved and no further action is required on their part.
-
-## Service Hours
-
-Troopers provide full time coverage during local business hours and the expected response times outlined above during the work day. Other times support is provided best-effort.
 
 ## More Information
 
-View the [current trooper queue].
-
-Other available team trooper queues within Chrome Operations.
-
-* [Browser Build trooper queue]
-* [Foundation trooper queue]
-* [LUCI Tests trooper queue]
-* [Source trooper queue]
-* [Workflow trooper queue]
-
 Common Non-Trooper Requests:
 
-*   [Contact a Git Admin](https://bugs.chromium.org/p/chromium/issues/entry?template=Infra-Git)
-*   [File Chrome OS infra bug](https://bugs.chromium.org/p/chromium/issues/entry?template=Defect%20report%20from%20developer&components=Infra>ChromeOS&labels=Restrict-View-Google&summary=%5BBrief%20description%20of%20problem%5D)
-*   [Check the Chrome OS on-call channel](http://go/crosoncall) (internal)
+*   [Contact a Git Admin (go/git-admin-bug)](http://go/git-admin-bug)
+*   [File Chrome OS infra bug (go/cros-infra-bug)](http://go/cros-infra-bug)
+*   [Check the Chrome OS on-call channel (go/crosoncall)](http://go/crosoncall) (internal)
 
 [#ops]: https://chromium.slack.com/messages/CGM8DQ3ST/
 [chops-hangout channel]: http://go/chops-hangout
@@ -124,9 +89,9 @@ Common Non-Trooper Requests:
 [Mobile device restart requests]: http://go/chrome-labs-fixit-bug
 [Git repos]: http://go/fix-chrome-git
 [Buildbucket BQ access]: https://bugs.chromium.org/p/chromium/issues/entry?labels=Restrict-View-Google%2CFoundation-Troopers&components=Infra>LUCI>BuildService>Buildbucket&summary=%5BBrief%20description%20of%20problem%5D&comment=Name%20of%20service%20account%20which%20needs%20BQ%20Viewer%20permission%3A%20%0AName%20of%20BQ%20datasets%3A%20cr-buildbucket.%24your_project.builds%0A%0ANote%3A%20we%20don't%20grant%20BQ%20Job%20User%20permissions%20on%20cr-buildbucket%3B%20BQ%20queries%20should%20be%20done%20via%20your%20own%20cloud%20project.
-[Google Storage, CIPD, other]: https://bugs.chromium.org/p/chromium/issues/entry?template=Build%20Infrastructure&labels=Restrict-View-Google&components=Infra%3ESecurity&summary=%5BBrief%20description%20of%20problem%5D&comment=Please%20provide%20the%20details%20for%20your%20request%20here.%0A%0ASet%20Pri-0%20iff%20it%20requires%20immediate%20attention,%20Pri-1%20if%20resolution%20within%20a%20few%20hours%20is%20acceptable,%20and%20Pri-2%20if%20it%20just%20needs%20to%20be%20handled%20today.
-[General requests]: https://bugs.chromium.org/p/chromium/issues/entry?template=Build%20Infrastructure&labels=Restrict-View-Google,Infra-Troopers&summary=%5BBrief%20description%20of%20problem%5D&comment=Please%20provide%20the%20details%20for%20your%20request%20here.%0A%0ASet%20Pri-0%20if%20it%20requires%20immediate%20attention,%20Pri-1%20if%20it%20needs%20to%20looked%20at%20within%2024%20hours,%20and%20Pri-2%20if%20it%20needs%20to%20be%20reviewed%20this%20week.
-[current trooper queue]: https://bugs.chromium.org/p/chromium/issues/list?can=2&q=Infra%3DTroopers+-has%3Aowner+OR+owner%3Ame+Infra%3DTroopers+OR+Infra%3DTroopers+Pri%3D0&sort=-modified&groupby=pri&colspec=ID+Component+Status+Owner+Summary+Blocking+BlockedOn+Opened+Modified&x=m&y=releaseblock&cells=ids
+[Google Storage, CIPD, other]: http://go/chopssec-crbug
+[go/luci-bug]: http://go/luci-bug
+[current infra trooper queue]: https://issues.chromium.org/issues?q=componentid:1456370%20status:new
 [Browser Build trooper queue]: https://bugs.chromium.org/p/chromium/issues/list?q=Browser%3DBuild-Troopers&can=2
 [LUCI Tests trooper queue]: https://bugs.chromium.org/p/chromium/issues/list?q=TFS%3DTroopers+OR+Ops-Alerts%3DTFS+OR+TFS%3DTroopers+Pri%3D0+OR+Ops-Alerts%3DTFS+Pri%3D0&can=2
 [Foundation trooper queue]: https://bugs.chromium.org/p/chromium/issues/list?can=2&q=Foundation%3DTroopers+-has%3Aowner+OR+owner%3Ame+Foundation%3DTroopers+OR+Foundation%3DTroopers+Pri%3D0&sort=-modified&groupby=pri&colspec=ID+Component+Status+Owner+Summary+Blocking+BlockedOn+Opened+Modified&x=m&y=releaseblock&cells=ids
@@ -134,3 +99,7 @@ Common Non-Trooper Requests:
 [Workflow trooper queue]: https://bugs.chromium.org/p/chromium/issues/list?q=Workflow%3DTroopers+OR+Ops-Alerts%3DWorkflow+OR+Workflow%3DTroopers+Pri%3D0+OR+Ops-Alerts%3DWorkflow+Pri%3D0&can=2
 [go/bug-a-trooper]: http://go/bug-a-trooper
 [go/fix-chrome-git]: http://go/fix-chrome-git
+[infra trooper oncall]: http://oncall/peepsi-wranglers
+[go/buildbucket-bug]: http://go/buildbucket-bug
+[go/swarming-bug]: http://go/swarming-bug
+[go/luci-cv-bug]: http://go/luci-cv-bug
