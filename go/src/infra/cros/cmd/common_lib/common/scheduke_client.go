@@ -7,7 +7,6 @@ package common
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,7 +19,9 @@ import (
 	schedukeapi "go.chromium.org/chromiumos/config/go/test/scheduling"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -56,13 +57,10 @@ func (s *SchedukeClient) setUpHTTPClient() error {
 		return nil
 	}
 
-	o := auth.Options{
-		Method: auth.LUCIContextMethod,
-		Scopes: []string{
-			auth.OAuthScopeEmail,
-		},
-	}
-	a := auth.NewAuthenticator(s.ctx, auth.SilentLogin, o)
+	a := auth.NewAuthenticator(s.ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
+		UseIDTokens: true,
+		Audience:    schedukeProdURL,
+	}))
 	c, err := a.Client()
 	if err == nil {
 		s.client = c
@@ -92,8 +90,9 @@ func (s *SchedukeClient) parseSchedukeRequestResponse(response *http.Response) (
 	if response.StatusCode != http.StatusOK {
 		return nil, errors.Reason("Scheduke server responsonse was not OK: %s", body).Err()
 	}
-	var result *schedukeapi.CreateTaskStatesResponse
-	if err := json.Unmarshal(body, &result); err != nil {
+
+	result := &schedukeapi.CreateTaskStatesResponse{}
+	if err := proto.Unmarshal(body, result); err != nil {
 		return nil, errors.Annotate(err, "unmarshal response").Err()
 	}
 	return result, nil
@@ -111,8 +110,8 @@ func (s *SchedukeClient) parseGetIdsResponse(response *http.Response) (*scheduke
 	if response.StatusCode != http.StatusOK {
 		return nil, errors.Reason("Scheduke server responsonse was not OK: %s", body).Err()
 	}
-	var result *schedukeapi.ReadTaskStatesResponse
-	if err := json.Unmarshal(body, &result); err != nil {
+	result := &schedukeapi.ReadTaskStatesResponse{}
+	if err := proto.Unmarshal(body, result); err != nil {
 		return nil, errors.Annotate(err, "unmarshal response").Err()
 	}
 	return result, nil
@@ -149,9 +148,10 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) 
 			return nil, err
 		}
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", t))
-		if method == http.MethodPost {
-			req.Header.Set("Content-Type", "application/json")
-		}
+	}
+
+	if method == http.MethodPost {
+		req.Header.Set("Content-Type", "application/json")
 	}
 
 	r, err := s.client.Do(req)
