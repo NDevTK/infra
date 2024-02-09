@@ -14,6 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/logging/gologger"
 
+	"infra/cmd/cloudbuildhelper/bundledesc"
 	"infra/cmd/cloudbuildhelper/fileset"
 	"infra/cmd/cloudbuildhelper/manifest"
 
@@ -132,7 +133,7 @@ func TestBuilder(t *testing.T) {
 			err := os.WriteFile(filepath.FromSlash("testdata/src/testpkg/helloworld/static/ignored"), nil, 0600)
 			So(err, ShouldBeNil)
 
-			buildBundle := func(manifestPath string) ([]string, map[string]fileset.File) {
+			buildBundle := func(manifestPath string) ([]string, map[string]*fileset.File) {
 				m, err := manifest.Load(manifestPath)
 				So(err, ShouldBeNil)
 				m.ContextDir = tmpDir
@@ -142,11 +143,12 @@ func TestBuilder(t *testing.T) {
 				So(err, ShouldBeNil)
 
 				files := make([]string, 0, out.Len())
-				byName := make(map[string]fileset.File, out.Len())
+				byName := make(map[string]*fileset.File, out.Len())
 				for _, f := range out.Files() {
 					if !f.Directory {
 						files = append(files, f.Path)
-						byName[f.Path] = f
+						cpy := f
+						byName[f.Path] = &cpy
 					}
 				}
 
@@ -157,6 +159,7 @@ func TestBuilder(t *testing.T) {
 				files, byName := buildBundle(filepath.FromSlash("testdata/src/testpkg/gaebundle_gopath.yaml"))
 
 				So(files, ShouldResemble, []string{
+					".cloudbuildhelper.json",
 					"_gopath/goenv",
 					"_gopath/src/example.com/another/another_a.go",
 					"_gopath/src/example.com/pkg/pkg_a.go",
@@ -178,16 +181,29 @@ func TestBuilder(t *testing.T) {
 					"helloworld",
 				})
 
-				So(byName["helloworld"], ShouldResemble, fileset.File{
+				So(byName["helloworld"], ShouldResemble, &fileset.File{
 					Path:          "helloworld",
 					SymlinkTarget: "_gopath/src/testpkg/helloworld",
 				})
+
+				desc, err := byName[".cloudbuildhelper.json"].ReadAll()
+				So(err, ShouldBeNil)
+				So(string(desc), ShouldEqual, fmt.Sprintf(`{
+  "format_version": "%s",
+  "go_gae_bundles": [
+    {
+      "app_yaml": "_gopath/src/testpkg/helloworld/fake-app.yaml"
+    }
+  ]
+}`, bundledesc.FormatVersion))
+
 			})
 
 			Convey("Modules bundle", func() {
 				files, byName := buildBundle(filepath.FromSlash("testdata/src/testpkg/gaebundle_modules.yaml"))
 
 				So(files, ShouldResemble, []string{
+					".cloudbuildhelper.json",
 					"_gomod/go.mod",
 					"_gomod/goenv",
 					"_gomod/helloworld/.gcloudignore",
@@ -213,10 +229,21 @@ func TestBuilder(t *testing.T) {
 					"helloworld",
 				})
 
-				So(byName["helloworld"], ShouldResemble, fileset.File{
+				So(byName["helloworld"], ShouldResemble, &fileset.File{
 					Path:          "helloworld",
 					SymlinkTarget: "_gomod/helloworld",
 				})
+
+				desc, err := byName[".cloudbuildhelper.json"].ReadAll()
+				So(err, ShouldBeNil)
+				So(string(desc), ShouldEqual, fmt.Sprintf(`{
+  "format_version": "%s",
+  "go_gae_bundles": [
+    {
+      "app_yaml": "_gomod/helloworld/fake-app.yaml"
+    }
+  ]
+}`, bundledesc.FormatVersion))
 			})
 		})
 	})

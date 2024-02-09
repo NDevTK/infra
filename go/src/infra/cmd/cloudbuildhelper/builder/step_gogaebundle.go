@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
+	"infra/cmd/cloudbuildhelper/bundledesc"
 	"infra/cmd/cloudbuildhelper/fileset"
 	"infra/cmd/cloudbuildhelper/gitignore"
 	"infra/cmd/cloudbuildhelper/godep"
@@ -165,6 +166,20 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	}
 	// Absolute path to it in the staging directory.
 	mainPkgDestAbs := filepath.Join(inv.Manifest.ContextDir, mainPkgDestRel)
+
+	// Record where we are going to put the app YAML inside the tarball.
+	err = bundledesc.Modify(inv.Output, func(desc *bundledesc.Description) error {
+		desc.GoGAEBundles = append(desc.GoGAEBundles, bundledesc.GoGAEBundle{
+			AppYAML: fmt.Sprintf("%s/%s",
+				filepath.ToSlash(mainPkgDestRel),
+				filepath.Base(yamlPath),
+			),
+		})
+		return nil
+	})
+	if err != nil {
+		return errors.Annotate(err, "updating bundle description").Err()
+	}
 
 	// Copy all files that make up "main" package (they can be only at the root
 	// of `mainDir`), and copy all non-go files recursively (they can potentially
