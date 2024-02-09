@@ -22,6 +22,30 @@
       },
       "revId": "ce69a15c4f44cb1fde6ec3abfb76f58aa88871ed",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba3a0f77_b9eae101",
+        "filename": "go/src/infra/cros/fleetcost/t/integration_tests",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-02-09T21:59:16Z",
+      "side": 1,
+      "message": "It should be `pingufs` but interestingly they both work because of spelling correction in the subcommands library. Fixed.",
+      "parentUuid": "189e596f_b514b650",
+      "range": {
+        "startLine": 34,
+        "startChar": 15,
+        "endLine": 34,
+        "endChar": 23
+      },
+      "revId": "ce69a15c4f44cb1fde6ec3abfb76f58aa88871ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
