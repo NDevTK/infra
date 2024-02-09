@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "189e596f_b514b650",
+        "filename": "go/src/infra/cros/fleetcost/t/integration_tests",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2024-02-09T21:57:25Z",
+      "side": 1,
+      "message": "Should this be \"ping-ufs\" or \"pingufs\"?\n\nhttps://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/cros/fleetcost/internal/commands/ping_ufs_command.go suggests latter",
+      "range": {
+        "startLine": 34,
+        "startChar": 15,
+        "endLine": 34,
+        "endChar": 23
+      },
+      "revId": "ce69a15c4f44cb1fde6ec3abfb76f58aa88871ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
