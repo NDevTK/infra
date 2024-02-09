@@ -179,10 +179,12 @@ func createFreeformDims(hwDef *testapi.SwarmingDefinition) []string {
 }
 
 // findGcsPath finds gcs path for provided board.
-func findGcsPath(suiteInfo *testapi.SuiteInfo, board string) string {
+func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, id string) string {
 	for _, target := range suiteInfo.GetSuiteMetadata().GetTargetRequirements() {
 		hwDef := target.GetHwRequirements().GetHwDefinition()[0]
-		if hwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget() == board {
+		swDef := target.GetSwRequirements()[0].GetVariant()
+		// TODO DEREK: MOVE THIS OVER TO NEW PROTO ONCE IT ROLLS
+		if hwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget() == board && id == swDef {
 			return target.GetSwRequirements()[0].GetGcsPath()
 		}
 	}
@@ -201,7 +203,7 @@ func createCftTestRequest(ctx context.Context, hwDef *testapi.SwarmingDefinition
 		ModelName:   modelName,
 	}
 
-	gcsPath := findGcsPath(suiteInfo, buildTarget)
+	gcsPath := findGcsPath(suiteInfo, buildTarget, hwDef.GetProvisionInfo()[0].GetIdentifier())
 	if gcsPath == "" {
 		logging.Infof(ctx, "GcsPath was not found for build target: %s", buildTarget)
 		return nil, fmt.Errorf("GcsPath was not found for build target: %s", buildTarget)
