@@ -125,6 +125,8 @@ func updateLastRunStats(c context.Context, path string) error {
 	}
 
 	count, exist := data.Events["failure"]
+	count += data.Resources["failed"]
+	count += data.Resources["failed_to_restart"]
 	failure.Set(c, !exist || count > 0)
 
 	for k, v := range data.Time {

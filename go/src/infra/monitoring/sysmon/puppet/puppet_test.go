@@ -135,20 +135,48 @@ func TestMetrics(t *testing.T) {
 			So(age.Get(c), ShouldEqual, 123.45)
 		})
 
-		Convey("metrics successful run", func() {
-			file.Write([]byte(`---
+		Convey("metrics failed run, no events", func() {
+			_, err := file.Write([]byte(`---
+  resources:
+    failed: 0
+    failed_to_restart: 0
+    out_of_sync: 4`))
+			So(err, ShouldBeNil)
+			So(file.Sync(), ShouldBeNil)
+			So(updateLastRunStats(c, file.Name()), ShouldBeNil)
+			So(failure.Get(c), ShouldBeTrue)
+		})
+		Convey("metrics successful run without resources", func() {
+			_, err := file.Write([]byte(`---
   events:
     failure: 0
     success: 2
     total: 2`))
-			file.Sync()
+			So(err, ShouldBeNil)
+			So(file.Sync(), ShouldBeNil)
 			So(updateLastRunStats(c, file.Name()), ShouldBeNil)
 			So(failure.Get(c), ShouldBeFalse)
 		})
 
+		Convey("metrics failed run, resource failures", func() {
+			_, err := file.Write([]byte(`---
+  resources:
+    failed: 1
+    failed_to_restart: 1
+  events:
+    failure: 0
+    success: 1
+    total: 1`))
+			So(err, ShouldBeNil)
+			So(file.Sync(), ShouldBeNil)
+			So(updateLastRunStats(c, file.Name()), ShouldBeNil)
+			So(failure.Get(c), ShouldBeTrue)
+		})
+
 		Convey("metrics with completely failed run", func() {
-			file.Write([]byte(`---`))
-			file.Sync()
+			_, err := file.Write([]byte(`---`))
+			So(err, ShouldBeNil)
+			So(file.Sync(), ShouldBeNil)
 			So(updateLastRunStats(c, file.Name()), ShouldBeNil)
 			So(failure.Get(c), ShouldBeTrue)
 		})
