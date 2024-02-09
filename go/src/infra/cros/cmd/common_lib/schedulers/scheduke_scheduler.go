@@ -11,6 +11,7 @@ import (
 
 	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
@@ -47,10 +48,14 @@ func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucke
 	if err != nil {
 		return nil, err
 	}
+
+	logging.Infof(ctx, "Sending Request to Scheduke: %s", schedukeReq)
 	createTaskResponse, err := s.schedukeClient.ScheduleExecution(schedukeReq)
 	if err != nil {
 		return nil, err
 	}
+	logging.Infof(ctx, "Got reply from Scheduke: %s", createTaskResponse)
+
 	// Scheduke supports batch task creation, but we send individually for now.
 	taskID, ok := createTaskResponse.Ids[common.SchedukeTaskRequestKey]
 	if !ok {

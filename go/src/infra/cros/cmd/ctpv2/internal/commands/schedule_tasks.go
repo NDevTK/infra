@@ -104,6 +104,8 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 		cmd.Scheduler = schedulers.NewDirectBBScheduler()
 	} else if sk.Scheduler == api.SchedulerInfo_PRINT_REQUEST_ONLY {
 		cmd.Scheduler = schedulers.NewLocalScheduler()
+	} else if sk.Scheduler == api.SchedulerInfo_SCHEDUKE {
+		cmd.Scheduler = schedulers.NewSchedukeSchedulerr()
 	}
 	return nil
 }
