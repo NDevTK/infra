@@ -316,13 +316,13 @@ describe('allowRemovedRestrictions', () => {
       assert.isNotNull(element.querySelector('.legacy-edit'));
     });
 
-    it('shows buganizer link when migrated to buganizer', async () => {
+    it('shows issue link when migrated off monorail', async () => {
       element.migratedId = '1234';
       element.migratedType = migratedTypes.BUGANIZER_TYPE
       await element.updateComplete;
 
       const link = element.querySelector('.migrated-banner a');
-      assert.include(link.textContent, 'b/1234');
+      assert.include(link.textContent, 'crbug.com/1234');
     });
 
     it('shows launch banner when migrated to launch', async () => {

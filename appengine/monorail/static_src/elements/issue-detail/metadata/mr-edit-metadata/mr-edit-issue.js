@@ -360,9 +360,11 @@ export class MrEditIssue extends connectStore(LitElement) {
    */
    get _migratedLink() {
     if (this.migratedType === migratedTypes.BUGANIZER_TYPE) {
-      const link_url = this.projectName === 'chromium' ? 'issues.chromium.org' : 'issuetracker.google.com';
+      const linkUrl =
+        this.projectName === 'chromium' ?
+          'issues.chromium.org' : 'issuetracker.google.com';
       const link =
-        html`<a href="https://${link_url}/issues/${this.migratedId}">b/${this.migratedId}</a>`;
+        html`<a href="https://${linkUrl}/issues/${this.migratedId}">crbug.com/${this.migratedId}</a>`;
       return html`<p>This issue has moved to ${link}. Updates should be posted in ${link}.</p>`;
     } else {
       return html`<p>This issue has been migrated to Launch, see link in final comment below.</p>`;
