@@ -28,7 +28,7 @@ type SSHClient interface {
 
 const (
 	supportNetwork             = "tcp"
-	numberOfConnectionAttempts = 5
+	numberOfConnectionAttempts = 3
 )
 
 // Implementation of SSHClient.
@@ -89,30 +89,37 @@ func connectToProxy(ctx context.Context, network string, proxy *proxyConfig) (ne
 	return conn, nil
 }
 
+func connectToProxyWithContext(ctx context.Context, network string, proxy *proxyConfig) (net.Conn, error) {
+	var err error
+	var conn net.Conn
+	done := make(chan bool)
+	tlsCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	go func() {
+		conn, err = connectToProxy(tlsCtx, network, proxy)
+		done <- true
+	}()
+	select {
+	case <-ctx.Done():
+		return nil, errors.Annotate(ctx.Err(), "connect to proxy with retry").Err()
+	case <-done:
+	}
+	return conn, err
+}
+
 func connectToProxyWithRetry(ctx context.Context, network string, proxy *proxyConfig) (net.Conn, error) {
 	waitBetweenRetriesInMillis := rand.Intn(1000)
 	timeToSleep := time.Duration(waitBetweenRetriesInMillis) * time.Millisecond
 	var err error
 	var conn net.Conn
-	done := make(chan bool)
 	for i := 0; i < numberOfConnectionAttempts; i++ {
-		if i > 0 {
-			log.Debugf(ctx, "Retrying TLS connection")
-		}
-		go func() {
-			conn, err = connectToProxy(ctx, network, proxy)
-			done <- true
-		}()
-		select {
-		case <-ctx.Done():
-			return nil, errors.Annotate(ctx.Err(), "connect to proxy with retry").Err()
-		case <-done:
-		}
+		conn, err = connectToProxyWithContext(ctx, network, proxy)
 		if err == nil {
 			break
 		}
 		if i < numberOfConnectionAttempts-1 {
 			time.Sleep(timeToSleep)
+			log.Debugf(ctx, "Retrying TLS connection")
 		}
 	}
 	return conn, err
@@ -124,9 +131,7 @@ func newProxyClient(ctx context.Context, sshConfig *ssh.ClientConfig, proxy *pro
 	var conn net.Conn
 	var err error
 	log.Debugf(ctx, "Proxy config: %+v", *proxy)
-	tlsCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
-	defer cancel()
-	conn, err = connectToProxyWithRetry(tlsCtx, supportNetwork, proxy)
+	conn, err = connectToProxyWithRetry(ctx, supportNetwork, proxy)
 	if err != nil {
 		log.Errorf(ctx, "Error creating a new TLS connection: %s", err)
 		return nil, errors.Annotate(err, "new proxy client").Err()
