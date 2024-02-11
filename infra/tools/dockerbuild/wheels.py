@@ -1731,6 +1731,8 @@ SPECS.update({
         Universal('Markdown', '3.0.1'),
         Universal('Markdown', '3.3.4', pyversions=['py3']),
         Universal('Markdown', '3.4.1', pyversions=['py3']),
+        Universal('Paste', '2.0.2', pyversions=['py3']),
+        Universal('Paste', '3.7.1', pyversions=['py3']),
         Universal('PySocks', '1.7.1', pyversions=['py3']),
         Universal('SecretStorage', '3.1.2', pyversions=['py3']),
         Universal('WebOb', '1.8.6'),

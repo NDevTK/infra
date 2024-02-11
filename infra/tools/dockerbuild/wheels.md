@@ -312,6 +312,32 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+## **Paste-py3**
+
+### 2.0.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/paste-py3"
+  version: "version:2.0.2"
+>
+```
+
+
+* *universal*
+
+### 3.7.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/paste-py3"
+  version: "version:3.7.1"
+>
+```
+
+
+* *universal*
+
 ## **PeakUtils**
 
 ### 1.0.3
