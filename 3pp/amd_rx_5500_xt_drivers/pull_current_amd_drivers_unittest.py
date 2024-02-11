@@ -439,7 +439,7 @@ class CmdGetCheckoutUnittest(fake_filesystem_unittest.TestCase):
         status_code=200, content=byte_string)
     with mock.patch.dict(os.environ, {'_3PP_VERSION': '2.3.4'}, clear=True):
       pcad.cmd_checkout(self.args)
-    with open(os.path.join(self.checkout_path, 'amd_driver_2.3.4.exe'),
+    with open(os.path.join(self.checkout_path, 'raw_source_0.exe'),
               'rb') as infile:
       self.assertEqual(infile.read(), byte_string)
 

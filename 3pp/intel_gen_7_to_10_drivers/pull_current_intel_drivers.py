@@ -300,7 +300,9 @@ def main() -> int:
   download_page_url_suffix = (
       '/content/www/us/en/download/776137/'
       'intel-7th-10th-gen-processor-graphics-windows.html')
-  file_name_base = 'intel_gen_7_to_10_driver'
+  # We use the same naming scheme as what get_url produces for consistency
+  # across different driver types. This simplifies use in automation slightly.
+  file_name_base = 'raw_source_0'
   file_extension = '.exe'
   args = _parse_args()
   url = BASE_URL + download_page_url_suffix

@@ -299,7 +299,9 @@ def _parse_args() -> argparse.Namespace:
 def main() -> int:
   download_page_url_suffix = ('/content/www/us/en/download/785597/'
                               'intel-arc-iris-xe-graphics-windows.html')
-  file_name_base = 'intel_arc_and_xe_driver'
+  # We use the same naming scheme as what get_url produces for consistency
+  # across different driver types. This simplifies use in automation slightly.
+  file_name_base = 'raw_source_0'
   file_extension = '.exe'
   args = _parse_args()
   url = BASE_URL + download_page_url_suffix

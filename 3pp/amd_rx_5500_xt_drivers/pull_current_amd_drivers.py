@@ -204,7 +204,9 @@ def cmd_checkout(args: argparse.Namespace) -> None:
         (requested_driver_version, actual_version))
 
   driver_binary = _get_driver_binary(soup, DRIVER_PAGE_URL)
-  filename = f'amd_driver_{actual_version}.exe'
+  # We use the same naming scheme as what get_url produces for consistency
+  # across different driver types. This simplifies use in automation slightly.
+  filename = 'raw_source_0.exe'
   with open(os.path.join(args.checkout_path, filename), 'wb') as outfile:
     outfile.write(driver_binary)
 
