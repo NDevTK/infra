@@ -117,8 +117,8 @@ func GenerateArgs(ctx context.Context, hwDef *testapi.SwarmingDefinition, testCa
 		ProvisionableDimensions:          provisionableDims,
 		ProvisionableDimensionExpiration: time.Minute,
 		SwarmingTags:                     createSwarmingTags(),
-		SwarmingPool:                     "DUT_POOL_QUOTA", // TODO (azrahman): Get this from input.
-		TestRunnerRequest:                nil,              // Always nil for CFT.
+		SwarmingPool:                     suiteInfo.GetSuiteMetadata().GetPool(),
+		TestRunnerRequest:                nil, // Always nil for CFT.
 		CFTTestRunnerRequest:             cftTestRequest,
 		CFTIsEnabled:                     true,           // Always true
 		Timeout:                          DefaultTimeout, // TODO (azrahman): Get this from input.
