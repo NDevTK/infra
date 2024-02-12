@@ -30,12 +30,88 @@ class TestRedirectUtils(unittest.TestCase):
     self.assertEqual(expected, get)
 
   @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
-  def testNewIssueParamsWithComponent(self, fake_redirectProjectTemplate):
+  def testNewIssueRedirectWithTemplateParam(self, fake_redirectProjectTemplate):
     fake_redirectProjectTemplate.return_value = '1', '2'
     params = werkzeug.datastructures.MultiDict(
-        [('summary', 'this is a summary'), ('owner', 'test@google.com')])
+        [
+            ('template', 'test'), ('summary', 'this is a summary'),
+            ('owner', 'test@google.com')
+        ])
     expected = 'component=1&template=2&title=this+is+a+summary&assignee=test'
 
+    get = redirect_utils.GetNewIssueParams(params, 'project')
+    self.assertEqual(expected, get)
+
+  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  def testNewIssueRedirectWithComponentsParam(
+      self, fake_redirectProjectTemplate):
+    fake_redirectProjectTemplate.return_value = '1', None
+    params = werkzeug.datastructures.MultiDict(
+        [
+            ('components', 'test'), ('summary', 'this is a summary'),
+            ('owner', 'test@google.com')
+        ])
+    expected = 'component=1&title=this+is+a+summary&assignee=test'
+
+    get = redirect_utils.GetNewIssueParams(params, 'project')
+    self.assertEqual(expected, get)
+
+  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  def testNewIssueRedirectWithComponentsParam(
+      self, fake_redirectProjectTemplate):
+    fake_redirectProjectTemplate.return_value = '1', None
+    params = werkzeug.datastructures.MultiDict(
+        [
+            ('components', 'test'), ('summary', 'this is a summary'),
+            ('owner', 'test@google.com')
+        ])
+    expected = 'component=1&title=this+is+a+summary&assignee=test'
+
+    get = redirect_utils.GetNewIssueParams(params, 'project')
+    self.assertEqual(expected, get)
+
+  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  def testNewIssueRedirectWithMutipleComponentsParam(
+      self, fake_redirectProjectTemplate):
+
+    def mock_redirect(_, arg):
+      if arg == 'comp1':
+        return 1, None
+      elif arg == 'comp2':
+        return 2, None
+      return None, None
+
+    fake_redirectProjectTemplate.side_effect = mock_redirect
+    params = werkzeug.datastructures.MultiDict(
+        [
+            ('components', 'comp2, comp1'), ('summary', 'this is a summary'),
+            ('owner', 'test@google.com')
+        ])
+    expected = 'component=2&title=this+is+a+summary&assignee=test'
+
+    get = redirect_utils.GetNewIssueParams(params, 'project')
+    self.assertEqual(expected, get)
+
+  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  def testNewIssueRedirectWithAllParam(self, fake_redirectProjectTemplate):
+
+    def mock_redirect(_, arg):
+      if arg == 'tmp1':
+        return 111, 222
+      elif arg == 'comp1':
+        return 1, None
+      elif arg == 'comp2':
+        return 2, None
+      return None, None
+
+    fake_redirectProjectTemplate.side_effect = mock_redirect
+    params = werkzeug.datastructures.MultiDict(
+        [
+            ('template', 'tmp1'), ('components', 'comp1, comp2'),
+            ('summary', 'this is a summary'), ('owner', 'test@google.com')
+        ])
+    expected = (
+      'component=111&template=222&title=this+is+a+summary&assignee=test')
     get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 

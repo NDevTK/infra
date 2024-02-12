@@ -39,15 +39,31 @@ def GetRedirectURL(project_name):
 def GetNewIssueParams(params: MultiDict, project_name: str):
   new_issue_params = {}
 
-  # Get component and template id.
-  template_name = params.get('template', type=str, default='default')
-  redirect_component_id, redirect_template_id = (
-    redirect_project_template.RedirectProjectTemplate.Get(
-    project_name, template_name))
-  if redirect_component_id:
-    new_issue_params['component'] = redirect_component_id
-  if redirect_template_id:
-    new_issue_params['template'] = redirect_template_id
+  # Get buganizer component and template id based on template param.
+  template_name = params.get('template', type=str)
+  if template_name:
+    redirect_component_id, redirect_template_id = (
+        redirect_project_template.RedirectProjectTemplate.Get(
+            project_name, template_name))
+    if redirect_component_id:
+      new_issue_params['component'] = redirect_component_id
+    if redirect_template_id:
+      new_issue_params['template'] = redirect_template_id
+
+  # Get components param.
+  if 'components' in params:
+    components_str = params.get('components', type=str)
+    components = [component.strip() for component in components_str.split(",")]
+    # Get buganizer component id base on components param if no component exist.
+    # The redirect is base on first value on the list.
+    if components and not new_issue_params.get('component'):
+      component = components[0]
+      redirect_component_id, _ = (
+          redirect_project_template.RedirectProjectTemplate.Get(
+              project_name, component))
+      if redirect_component_id:
+        new_issue_params['component'] = redirect_component_id
+      # TODO(b/283983843): set up the components customfiled while redirect.
 
   if params.get('summary', type=str):
     new_issue_params['title'] = params.get('summary', type=str)
@@ -62,7 +78,6 @@ def GetNewIssueParams(params: MultiDict, project_name: str):
   if params.get('owner', type=str):
     new_issue_params['assignee'] = params.get('owner', type=str).split('@')[0]
 
-  # TODO(b/283983843): redirect when custom field settled. (components)
   return urllib.parse.urlencode(new_issue_params)
 
 
