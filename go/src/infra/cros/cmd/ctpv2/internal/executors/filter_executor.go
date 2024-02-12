@@ -73,10 +73,75 @@ func (ex *FilterExecutor) filterExecutionCommandExecution(
 	return err
 }
 
+func executeTestFinderAdaptor(ctx context.Context, conn *grpc.ClientConn, filterReq *testapi.InternalTestplan) (*testapi.InternalTestplan, error) {
+	// Create new client.
+	TFServiceClient := api.NewTestFinderServiceClient(conn)
+	if TFServiceClient == nil {
+		return nil, fmt.Errorf("filterServiceClient is nil")
+	}
+
+	logging.Infof(ctx, "Executing Test-Finder Adaptor")
+
+	// 32MB stream size as the internal proot can get somewhat large.
+	maxRecvSizeOption := grpc.MaxCallRecvMsgSize(32 * 10e6)
+	maxSendSizeOption := grpc.MaxCallSendMsgSize(32 * 10e6)
+
+	req, _ := toTestFinderRequest(filterReq)
+
+	// Call the TF client.
+	findTestResp, err := TFServiceClient.FindTests(ctx, req, maxRecvSizeOption, maxSendSizeOption)
+	if err != nil {
+		return nil, errors.Annotate(err, "filter grpc execution failure: ").Err()
+	}
+
+	logging.Infof(ctx, "Backfilling results")
+	err = fillTestCasesIntoTestPlan(ctx, filterReq, findTestResp)
+	if err != nil {
+		return nil, errors.Annotate(err, "Error in translated TestFinder: ").Err()
+	}
+	return filterReq, nil
+}
+
+func toTestFinderRequest(testPlan *api.InternalTestplan) (*api.CrosTestFinderRequest, error) {
+	testSuite, ok := testPlan.GetSuiteInfo().GetSuiteRequest().GetSuiteRequest().(*api.SuiteRequest_TestSuite)
+	if !ok {
+		return nil, errors.New("SuiteRequest is not TestSuite")
+	}
+	return &api.CrosTestFinderRequest{
+		TestSuites:       []*api.TestSuite{testSuite.TestSuite},
+		MetadataRequired: true,
+	}, nil
+}
+
+func fillTestCasesIntoTestPlan(ctx context.Context, testPlan *api.InternalTestplan, resp *api.CrosTestFinderResponse) error {
+	if len(resp.GetTestSuites()) == 0 {
+		return nil
+	}
+
+	// Only need to check the [0] index; as test-finder only populates that.
+	metadataList, ok := resp.GetTestSuites()[0].Spec.(*api.TestSuite_TestCasesMetadata)
+	if !ok {
+		return errors.New("no test cases metadata in the response")
+	}
+
+	for _, metadata := range metadataList.TestCasesMetadata.GetValues() {
+		testPlan.TestCases = append(testPlan.TestCases, tfToCTPTestCase(metadata))
+	}
+	return nil
+}
+
+func tfToCTPTestCase(metadata *api.TestCaseMetadata) *api.CTPTestCase {
+	return &api.CTPTestCase{
+		Name:     metadata.GetTestCase().GetName(),
+		Metadata: metadata,
+	}
+}
+
 // ExecuteTests invokes the run tests endpoint of cros-test.
 func (ex *FilterExecutor) ExecuteFilter(
 	ctx context.Context,
 	filterReq *testapi.InternalTestplan) (*testapi.InternalTestplan, error) {
+
 	if filterReq == nil {
 		return nil, fmt.Errorf("Cannot execute filter for nil filter request.")
 	}
@@ -104,6 +169,18 @@ func (ex *FilterExecutor) ExecuteFilter(
 	}
 	logging.Infof(ctx, "Connected with filter service.")
 
+	// If the filter is test-finder, build a test-finder command and run that instead. Translate both ways.
+	// This is to ensure full backwards compatibility with everything including LTS.
+	filter := ex.ContainerInfo.Request.GetContainer().GetContainer().(*testapi.Template_Generic)
+	if filter.Generic.GetBinaryName() == "cros-test-finder" {
+		filterResp, err := executeTestFinderAdaptor(ctx, conn, filterReq)
+		if err != nil {
+			return nil, errors.Annotate(err, "test finder adaptor filter err: ").Err()
+		}
+		logging.Infof(ctx, "Filter Adaptor Success?")
+		return filterResp, nil
+	}
+
 	// Create new client.
 	filterServiceClient := api.NewGenericFilterServiceClient(conn)
 	if filterServiceClient == nil {
@@ -119,5 +196,3 @@ func (ex *FilterExecutor) ExecuteFilter(
 
 	return findTestResp, nil
 }
-
-// Good: 9dd496c5cdda3d25752f320a7c2906b8a9f3be27af078dd2f356692ac76d36a9

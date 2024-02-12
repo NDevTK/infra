@@ -172,8 +172,10 @@ func executeFiltersInLuciBuild(
 		ContainerInfoMap:      contInfoMap,
 	}
 
+	nFilters := getTotalFilters(ctx, req, GetDefaultFilters(ctx, req.GetSuiteRequest()), common.DefaultKoffeeFilterNames)
+	logging.Infof(ctx, "nfilters: %s", nFilters)
 	// Generate config
-	ctpv2Config := configs.NewCtpv2ExecutionConfig(getTotalFilters(req, GetDefaultFilters(ctx, req.GetSuiteRequest()), common.DefaultKoffeeFilterNames), configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)
+	ctpv2Config := configs.NewCtpv2ExecutionConfig(nFilters, configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)
 	err = ctpv2Config.GenerateConfig(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "error during generating filter configs: ").Err()
@@ -188,8 +190,10 @@ func executeFiltersInLuciBuild(
 	return sk.CtpV2Response, nil
 }
 
-func getTotalFilters(req *api.CTPRequest, defaultKarbonFilterNames []string, defaultKoffeeFilterNames []string) int {
+func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultKarbonFilterNames []string, defaultKoffeeFilterNames []string) int {
 	filterSet := map[string]bool{}
+	logging.Infof(ctx, "n defaultKarbonFilterNames: %s", len(defaultKarbonFilterNames))
+	logging.Infof(ctx, "Given Karbon: %s And Koffee: %s", defaultKarbonFilterNames, defaultKoffeeFilterNames)
 
 	for _, filterName := range defaultKarbonFilterNames {
 		filterSet[filterName] = true
@@ -200,11 +204,11 @@ func getTotalFilters(req *api.CTPRequest, defaultKarbonFilterNames []string, def
 	}
 
 	for _, filter := range req.GetKarbonFilters() {
-		filterSet[filter.GetContainer().GetName()] = true
+		filterSet[filter.GetContainerInfo().GetContainer().GetName()] = true
 	}
 
 	for _, filter := range req.GetKoffeeFilters() {
-		filterSet[filter.GetContainer().GetName()] = true
+		filterSet[filter.GetContainerInfo().GetContainer().GetName()] = true
 	}
 
 	return len(filterSet)
@@ -215,9 +219,9 @@ func GetDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) []string
 	defaultKarbonFilters := common.DefaultKarbonFilterNames
 	suiteName := strings.ToLower(suiteReq.GetTestSuite().GetName())
 	if strings.HasPrefix(suiteName, "3d") || strings.HasPrefix(suiteName, "ddd") {
-		defaultKarbonFilters = append(defaultKarbonFilters, "ttcp-demo")
+		defaultKarbonFilters = append(defaultKarbonFilters, common.TtcpContainerName)
 	} else {
-		defaultKarbonFilters = append(defaultKarbonFilters, "legacy_hw_filter")
+		defaultKarbonFilters = append(defaultKarbonFilters, common.LegacyHWContainerName)
 	}
 	return defaultKarbonFilters
 }

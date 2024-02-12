@@ -9,6 +9,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"strings"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -100,6 +102,16 @@ func (cmd *PrepareFilterContainersInfoCmd) updateLocalTestStateKeeper(
 	return nil
 }
 
+func getBuildFromGCSPath(gcsPath string) int {
+	g := strings.Split(gcsPath, "/")
+	R := g[len(g)-1]
+	Major := strings.Split(R, "-")
+	RN := Major[1]
+
+	build, _ := strconv.Atoi(strings.Split(RN, ".")[0])
+	return build
+}
+
 // Execute executes the command.
 func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	var err error
@@ -116,6 +128,8 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	build := getBuildFromGCSPath(gcsPath)
+
 	buildContainerMetadata, err := common.FetchImageData(ctx, board, gcsPath)
 	if err != nil {
 		return errors.Annotate(err, "failed to fetch container image data: ").Err()
@@ -137,17 +151,24 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	// -- Create ctp filters from default and input filters --
 
 	ctpFilters := make([]*api.CTPFilter, 0)
+	common.SetDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest())
 
-	karbonFilters, err := common.ConstructCtpFilters(ctx, common.DefaultKarbonFilterNames, finalMetadataMap, cmd.CtpReq.GetKarbonFilters())
+	karbonFilters, err := common.ConstructCtpFilters(ctx, common.DefaultKarbonFilterNames, finalMetadataMap, cmd.CtpReq.GetKarbonFilters(), build)
 	if err != nil {
+		logging.Infof(ctx, "Err in karbonFilters.")
+
 		return errors.Annotate(err, "failed to create karbon filters: ").Err()
 	}
+	logging.Infof(ctx, "Past karbonFilters. %s", karbonFilters)
+
 	ctpFilters = append(ctpFilters, karbonFilters...)
 
-	koffeeFilters, err := common.ConstructCtpFilters(ctx, common.DefaultKoffeeFilterNames, finalMetadataMap, cmd.CtpReq.GetKoffeeFilters())
+	koffeeFilters, err := common.ConstructCtpFilters(ctx, common.DefaultKoffeeFilterNames, finalMetadataMap, cmd.CtpReq.GetKoffeeFilters(), build)
 	if err != nil {
 		return errors.Annotate(err, "failed to create koffee filters: ").Err()
 	}
+	logging.Infof(ctx, "Past koffeeFilters. %s", ctpFilters)
+
 	ctpFilters = append(ctpFilters, koffeeFilters...)
 
 	filterData, err := json.MarshalIndent(ctpFilters, "", "\t")
@@ -159,12 +180,13 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	}
 	step.Log("Final Ctp filters list").Write(filterData)
 
+	step.Log("CTPv2 Build").Write([]byte(fmt.Sprintf("%v", build)))
 	// -- Create container info queue --
 
 	containerInfoList := list.New()
 
 	for _, filter := range ctpFilters {
-		containerInfoList.PushBack(CtpFilterToContainerInfo(filter))
+		containerInfoList.PushBack(CtpFilterToContainerInfo(filter, build))
 	}
 	step.Log("Container Info queue").Write(common.ListToJson(containerInfoList))
 
@@ -231,7 +253,7 @@ func getFirstGcsPathFromLegacy(schedTargs []*testapi.ScheduleTargets) string {
 	}
 	switch sw := targs[0].SwTargets[0].SwTarget.(type) {
 	case *testapi.SWTarget_LegacySw:
-		return sw.LegacySw.GcsPath
+		return sw.LegacySw.GetGcsPath()
 	default:
 		return ""
 	}
@@ -241,37 +263,31 @@ func createContainerImagesInfoMap(ctx context.Context, req *testapi.CTPRequest, 
 	// In case of any overlap of container metadata between input and build metadata,
 	// the input metadata will be prioritized.
 	for _, filter := range req.GetKarbonFilters() {
-		buildContMetadata[filter.GetContainer().GetName()] = filter.GetContainer()
+		buildContMetadata[filter.GetContainerInfo().GetContainer().GetName()] = filter.GetContainerInfo().GetContainer()
 	}
 
 	for _, filter := range req.GetKoffeeFilters() {
-		buildContMetadata[filter.GetContainer().GetName()] = filter.GetContainer()
+		buildContMetadata[filter.GetContainerInfo().GetContainer().GetName()] = filter.GetContainerInfo().GetContainer()
 	}
 
 	return buildContMetadata
 }
 
 // CtpFilterToContainerInfo creates container info from provided ctp filter.
-func CtpFilterToContainerInfo(ctpFilter *api.CTPFilter) *data.ContainerInfo {
-	contName := ctpFilter.GetContainer().GetName()
+func CtpFilterToContainerInfo(ctpFilter *api.CTPFilter, build int) *data.ContainerInfo {
+	contName := ctpFilter.GetContainerInfo().GetContainer().GetName()
 	// TODO (azrahman): remove this once container creation is more generic.
-	if contName == "ttcp-demo" {
+	if contName == common.TtcpContainerName {
 		return &data.ContainerInfo{
 			ImageKey:  contName,
 			Request:   common.CreateTTCPContainerRequest(ctpFilter),
-			ImageInfo: ctpFilter.GetContainer(),
-		}
-	} else if contName == "cros-test-finder" {
-		return &data.ContainerInfo{
-			ImageKey:  contName,
-			Request:   common.CreateTFContainerRequest(ctpFilter),
-			ImageInfo: ctpFilter.GetContainer(),
+			ImageInfo: ctpFilter.GetContainerInfo().GetContainer(),
 		}
 	} else {
 		return &data.ContainerInfo{
 			ImageKey:  contName,
-			Request:   common.CreateContainerRequest(ctpFilter),
-			ImageInfo: ctpFilter.GetContainer(),
+			Request:   common.CreateContainerRequest(ctpFilter, build),
+			ImageInfo: ctpFilter.GetContainerInfo().GetContainer(),
 		}
 	}
 }

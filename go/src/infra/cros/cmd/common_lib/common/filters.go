@@ -8,6 +8,7 @@ import (
 	"container/list"
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"golang.org/x/exp/slices"
@@ -16,94 +17,160 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 )
 
-// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
-var DefaultKarbonFilterNames = []string{"provision-filter", "cros-test-finder"}
+var (
+	TtcpContainerName       = "cros-ddd-filter" // ttcp-demo
+	LegacyHWContainerName   = "cros-legacy-hw-filter"
+	ProvisionContainerName  = "provision-filter"
+	TestFinderContainerName = "cros-test-finder"
 
-// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
-var DefaultKoffeeFilterNames = []string{}
+	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
+	DefaultKarbonFilterNames = []string{ProvisionContainerName, TestFinderContainerName}
+
+	// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
+	DefaultKoffeeFilterNames = []string{}
+
+	// Default shas for backwards compatibility
+	defaultLegacyHWSha  = "1c8aafae0f09f9aab393adbf0f5e220699850d6115486fcb56b4e6855fc9b76b"
+	defaultTTCPSha      = "4c5af419e9ded8b270f9ebfea6cd8686f360c3aefc13c8bfe11ab3ee7d66eeee"
+	defaultProvisionSha = "71fda39158eb8bcb94b8c288f0c0e8c7039d2b209c8282105ed2e93e6ce1b743"
+
+	prodShas = map[string]string{
+		TtcpContainerName:      defaultTTCPSha,
+		LegacyHWContainerName:  defaultLegacyHWSha,
+		ProvisionContainerName: defaultProvisionSha}
+
+	binaryLookup = map[string]string{
+		LegacyHWContainerName:   "legacy_hw_filter",
+		TtcpContainerName:       "solver_service",
+		ProvisionContainerName:  "provision-filter",
+		TestFinderContainerName: "test_finder_filter",
+	}
+)
 
 // SetDefaultFilters sets/appends proper default filters
 func SetDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) {
 	suiteName := strings.ToLower(suiteReq.GetTestSuite().GetName())
 	if strings.HasPrefix(suiteName, "3d") || strings.HasPrefix(suiteName, "ddd") {
-		DefaultKarbonFilterNames = append(DefaultKarbonFilterNames, "ttcp-demo")
+		DefaultKarbonFilterNames = append(DefaultKarbonFilterNames, TtcpContainerName)
 	} else {
-		DefaultKarbonFilterNames = append(DefaultKarbonFilterNames, "legacy_hw_filter")
+		DefaultKarbonFilterNames = append(DefaultKarbonFilterNames, LegacyHWContainerName)
 	}
 }
 
 // GetDefaultFilters constructs ctp filters for provided default filters.
-func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo) ([]*api.CTPFilter, error) {
+func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int) ([]*api.CTPFilter, error) {
 	defaultFilters := make([]*api.CTPFilter, 0)
 
+	logging.Infof(ctx, "Inside Default Filters: %s", defaultFilterNames)
 	for _, filterName := range defaultFilterNames {
-		ctpFilter, err := CreateCTPFilterWithContainerName(filterName, contMetadataMap)
-		if err != nil {
-			return nil, errors.Annotate(err, "failed to create default filter: ").Err()
+		// Attempt to map the filter from the known container metadata.
+		ctpFilter, err := CreateCTPFilterWithContainerName(filterName, contMetadataMap, build)
+		if err == nil {
+			defaultFilters = append(defaultFilters, ctpFilter)
+			continue
 		}
-		defaultFilters = append(defaultFilters, ctpFilter)
+
+		logging.Infof(ctx, "Inside backwards compat check.")
+		// Test-Finder must always come from the contMetadataMap. Thus if we do not have the "filter" version,
+		// We will setup to run the legacy test-finder.
+		if filterName == TestFinderContainerName {
+			TFFilter, err := CreateCTPFilterWithContainerName(TestFinderContainerName, contMetadataMap, build)
+			if err != nil {
+				return nil, errors.Annotate(err, "failed to create test-finder default filter").Err()
+			}
+			defaultFilters = append(defaultFilters, TFFilter)
+			continue
+		}
+
+		// Otherwise, build the other default filters off prod containers.
+		digest, ok := prodShas[filterName]
+		if ok {
+			logging.Infof(ctx, "Making default container for: %s", filterName)
+			ctpFilter, err = CreateCTPDefaultWithContainerName(filterName, digest, build)
+			if err != nil {
+				return nil, errors.Annotate(err, "failed to create default default filter: ").Err()
+			}
+			defaultFilters = append(defaultFilters, ctpFilter)
+			continue
+		}
+		return nil, errors.Annotate(err, "failed to create default filter: ").Err()
 	}
 
 	return defaultFilters, nil
 }
 
-// GetNonDefaultFilters constructs ctp filters for provided non-default filters.
-func GetNonDefaultFilters(ctx context.Context, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, filtersToAdd []*api.CTPFilter) ([]*api.CTPFilter, error) {
-	nonDefaultFilters := make([]*api.CTPFilter, 0)
-
-	for _, filter := range filtersToAdd {
-		if slices.Contains(defaultFilterNames, filter.GetContainer().GetName()) {
-			// skip default filters as they should be constructed separately.
-			continue
-		}
-		ctpFilter, err := CreateCTPFilterWithContainerName(filter.GetContainer().GetName(), contMetadataMap)
-		if err != nil {
-			return nil, errors.Annotate(err, "failed to create non default filter: ").Err()
-		}
-		nonDefaultFilters = append(nonDefaultFilters, ctpFilter)
+func CreateCTPDefaultWithContainerName(name string, digest string, build int) (*api.CTPFilter, error) {
+	c := &buildapi.ContainerImageInfo{
+		Repository: &buildapi.GcrRepository{
+			Hostname: "us-docker.pkg.dev",
+			Project:  "cros-registry/test-services",
+		},
+		Name:   name,
+		Digest: fmt.Sprintf("sha256:%s", digest),
+		Tags:   []string{"prod"},
 	}
 
-	return nonDefaultFilters, nil
+	binaryName := binaryName(name, build)
+
+	return &api.CTPFilter{ContainerInfo: &api.ContainerInfo{Container: c, BinaryName: binaryName}}, nil
+
 }
 
 // CreateCTPFilterWithContainerName creates ctp filter for provided container name through provided container metadata.
-func CreateCTPFilterWithContainerName(name string, contMetadataMap map[string]*buildapi.ContainerImageInfo) (*api.CTPFilter, error) {
+func CreateCTPFilterWithContainerName(name string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int) (*api.CTPFilter, error) {
 	if _, ok := contMetadataMap[name]; !ok {
 		return nil, errors.Reason("could not find container image info for %s in provided map", name).Err()
 	}
-
-	return &api.CTPFilter{Container: contMetadataMap[name]}, nil
+	binaryName := binaryName(name, build)
+	return &api.CTPFilter{ContainerInfo: &api.ContainerInfo{Container: contMetadataMap[name], BinaryName: binaryName}}, nil
 }
 
 // ConstructCtpFilters constructs default and non-default ctp filters.
-func ConstructCtpFilters(ctx context.Context, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, filtersToAdd []*api.CTPFilter) ([]*api.CTPFilter, error) {
+func ConstructCtpFilters(ctx context.Context, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, filtersToAdd []*api.CTPFilter, build int) ([]*api.CTPFilter, error) {
 	filters := make([]*api.CTPFilter, 0)
 
 	// Add default filters
-	defFilters, err := GetDefaultFilters(ctx, defaultFilterNames, contMetadataMap)
+	logging.Infof(ctx, "Inside ConstructCtpFilters.")
+
+	for _, filter := range filtersToAdd {
+		// Only add non-default containers.
+		if !slices.Contains(defaultFilterNames, filter.GetContainerInfo().GetContainer().GetName()) {
+			defaultFilterNames = append(defaultFilterNames, filter.GetContainerInfo().GetContainer().GetName())
+		}
+	}
+
+	defFilters, err := GetDefaultFilters(ctx, defaultFilterNames, contMetadataMap, build)
 	if err != nil {
 		return filters, errors.Annotate(err, "failed to get default filters: ").Err()
 	}
+	logging.Infof(ctx, "After GetDefaultFilters. %s", defFilters)
 
 	filters = append(filters, defFilters...)
-
-	// Add non-default  filters
-	nonDefFilters, err := GetNonDefaultFilters(ctx, defaultFilterNames, contMetadataMap, filtersToAdd)
-	if err != nil {
-		return filters, errors.Annotate(err, "failed to get non-default filters: ").Err()
-	}
-
-	filters = append(filters, nonDefFilters...)
 
 	return filters, nil
 }
 
+func binaryName(name string, build int) string {
+	if name == TestFinderContainerName && needBackwardsCompatibility(build) {
+		return "cros-test-finder"
+	}
+
+	binName, ok := binaryLookup[name]
+	// If no name is found, then assume the container name is the same as the binary.
+	// TODO expose the binary name and connect it from the input request.
+	if !ok {
+		return name
+	}
+	return binName
+}
+
 // CreateContainerRequest creates container request from provided ctp filter.
-func CreateContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_runner.ContainerRequest {
+func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *skylab_test_runner.ContainerRequest {
 	return &skylab_test_runner.ContainerRequest{
-		DynamicIdentifier: requestedFilter.GetContainer().GetName(),
+		DynamicIdentifier: requestedFilter.GetContainerInfo().GetContainer().GetName(),
 		Container: &api.Template{
 			Container: &api.Template_Generic{
 				Generic: &api.GenericTemplate{
@@ -115,39 +182,18 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_runner.
 						"server", "-port", "0",
 					},
 					// TODO (azrahman): Get binary name from new field of CTPFilter proto.
-					BinaryName: requestedFilter.GetContainer().GetName(),
+					BinaryName: requestedFilter.GetContainerInfo().GetBinaryName(),
 				},
 			},
 		},
 		// TODO (azrahman): figure this out (not being used right now).
-		ContainerImageKey: requestedFilter.GetContainer().GetName(),
+		ContainerImageKey: requestedFilter.GetContainerInfo().GetContainer().GetName(),
 		Network:           "host",
 	}
 }
 
-// CreateTFContainerRequest creates container request from provided ctp filter.
-func CreateTFContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_runner.ContainerRequest {
-	return &skylab_test_runner.ContainerRequest{
-		DynamicIdentifier: requestedFilter.GetContainer().GetName(),
-		Container: &api.Template{
-			Container: &api.Template_Generic{
-				Generic: &api.GenericTemplate{
-					// TODO (azrahman): Finalize the format of the this dir. Ideally, it should be /tmp/<container_name>.
-					// So keeping it as comment for now.
-					//DockerArtifactDir: fmt.Sprintf("/tmp/%s", filter.GetContainer().GetName()),
-					DockerArtifactDir: "/tmp/filters",
-					BinaryArgs: []string{
-						"server", "-port", "0",
-					},
-					// TODO (azrahman): Get binary name from new field of CTPFilter proto.
-					BinaryName: "test_finder_filter",
-				},
-			},
-		},
-		// TODO (azrahman): figure this out (not being used right now).
-		ContainerImageKey: requestedFilter.GetContainer().GetName(),
-		Network:           "host",
-	}
+func needBackwardsCompatibility(build int) bool {
+	return build < 15769
 }
 
 // CreateTTCPContainerRequest creates container request from provided ctp filter.
@@ -155,7 +201,7 @@ func CreateTFContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_runne
 // work for all containers.
 func CreateTTCPContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_runner.ContainerRequest {
 	return &skylab_test_runner.ContainerRequest{
-		DynamicIdentifier: requestedFilter.GetContainer().GetName(),
+		DynamicIdentifier: requestedFilter.GetContainerInfo().GetContainer().GetName(),
 		Container: &api.Template{
 			Container: &api.Template_Generic{
 				Generic: &api.GenericTemplate{
@@ -175,7 +221,7 @@ func CreateTTCPContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_run
 			},
 		},
 		// TODO (azrahman): figure this out (not being used right now).
-		ContainerImageKey: requestedFilter.GetContainer().GetName(),
+		ContainerImageKey: requestedFilter.GetContainerInfo().GetContainer().GetName(),
 		Network:           "host",
 	}
 }
