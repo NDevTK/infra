@@ -3762,6 +3762,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Create log collection info",
 				"Collect logs from DUT on /var/log/*",
+				"Collect logs from DUT on /sys/fs/pstore/*",
 				"Collect dmesg",
 				"Collect crash dumps",
 			},
@@ -3773,8 +3774,7 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"We collect any pre-existing logs before executing repairs on ",
 				"the DUT. Any failures with this initial log collection are ",
-				"not critical, and we will proceed with the actual DUT repair ",
-				"immediately after this.",
+				"not critical.",
 			},
 			Conditions: []string{
 				"Device is SSHable",
@@ -3789,6 +3789,28 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Collect logs from DUT on /sys/fs/pstore/*": {
+			Docs: []string{
+				"We collect kernel persistent storage file system before ",
+				"executing repairs on the DUT. Any failures with this initial ",
+				"log collection are not critical.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_copy_to_logs",
+			ExecExtraArgs: []string{
+				"src_host_type:dut",
+				"src_path:/sys/fs/pstore",
+				"src_type:dir",
+				"use_host_dir:true",
+				"dest_suffix:prior_pstore",
+			},
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Collect var/log/messages from DUT": {
 			Docs: []string{
@@ -3980,6 +4002,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Collect crash dumps": {
 			Docs: []string{
@@ -3997,6 +4020,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Create log collection info": {
 			Docs: []string{
@@ -4010,7 +4034,8 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"info_file:log_collection_info",
 			},
-			RunControl: RunControl_RUN_ONCE,
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Confirm log collection info does not exist": {
 			Docs: []string{
