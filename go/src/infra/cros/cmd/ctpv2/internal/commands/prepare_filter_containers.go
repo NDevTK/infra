@@ -248,10 +248,8 @@ func getFirstGcsPathFromLegacy(schedTargs []*testapi.ScheduleTargets) string {
 	if len(targs) == 0 {
 		return ""
 	}
-	if len(targs[0].SwTargets) == 0 {
-		return ""
-	}
-	switch sw := targs[0].SwTargets[0].SwTarget.(type) {
+
+	switch sw := targs[0].SwTarget.SwTarget.(type) {
 	case *testapi.SWTarget_LegacySw:
 		return sw.LegacySw.GetGcsPath()
 	default:
