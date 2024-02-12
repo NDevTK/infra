@@ -29,6 +29,7 @@ func newApplication(authOpts auth.Options) *cli.Application {
 			try.GetCmdRetry(),
 			try.GetCmdFirmware(authOpts),
 			try.GetCmdChromiumOSSDK(authOpts),
+			try.GetCmdCreatePreMPKeys(authOpts),
 			authcli.SubcommandInfo(authOpts, "auth-info", false),
 			authcli.SubcommandLogin(authOpts, "auth-login", false),
 			authcli.SubcommandLogout(authOpts, "auth-logout", false),
