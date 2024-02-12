@@ -37,6 +37,7 @@ type gnTargetInfo struct {
 	Args    []string `json:"args"`
 	Sources []string `json:"sources"`
 	Script  string   `json:"script"`
+	Deps    []string `json:"deps"`
 }
 
 // gnTarget stores a singular target's name and JSON information parsed from a GN targets file.

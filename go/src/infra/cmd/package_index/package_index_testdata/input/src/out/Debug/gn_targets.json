@@ -5,13 +5,31 @@
     "sources": ["//test.tq"],
     "outputs": ["//out/Debug/gen/test.tq.h"]
   },
-  "//:ts": {
+  "//test:ts": {
     "args": [
       "--tsconfig_output_location",
-      "gen/third_party/devtools-frontend/src/ts-tsconfig.json"
+      "gen/third_party/devtools-frontend/src/test-tsconfig.json"
     ],
-    "sources": ["//test.ts", "//imported.ts"],
-    "outputs": ["//out/Debug/test.js", "//out/Debug/imported.js"],
+    "sources": ["//test.ts"],
+    "outputs": ["//out/Debug/test.js"],
+    "deps": ["//imported-indirection:ts"],
+    "script": "//third_party/devtools-frontend/src/third_party/typescript/ts_library.py"
+  },
+  "//imported-indirection:ts": {
+    "args": [
+    ],
+    "sources": ["//ignored.png"],
+    "outputs": [],
+    "deps": ["//imported:ts"],
+    "script": "//third_party/devtools-frontend/src/third_party/node/node.py"
+  },
+  "//imported:ts": {
+    "args": [
+      "--tsconfig_output_location",
+      "gen/third_party/devtools-frontend/src/imported-tsconfig.json"
+    ],
+    "sources": ["//imported.ts"],
+    "outputs": ["//out/Debug/imported.js"],
     "script": "//third_party/devtools-frontend/src/third_party/typescript/ts_library.py"
   },
   "//:test_mojom__generator": {

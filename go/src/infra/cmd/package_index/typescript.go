@@ -15,7 +15,6 @@ import (
 )
 
 type tsTarget struct {
-	imports     []string
 	args        []string
 	rootDir     string
 	outDir      string
@@ -46,10 +45,10 @@ func getTSConfig(target gnTargetInfo, ctx context.Context, rootDir, outDir strin
 	return "", errNotSupported
 }
 
-func newTSTarget(ctx context.Context, gnTargetDict map[string]gnTargetInfo,
+func newTSTarget(ctx context.Context,
 	targetName string, hashMap *FileHashMap, rootDir, outDir, corpus,
 	buildConfig string) (*tsTarget, error) {
-	target := gnTargetDict[targetName]
+	target := gnTargetsMap[targetName]
 	tsconfig, err := getTSConfig(target, ctx, rootDir, outDir)
 	if err != nil {
 		return nil, err
@@ -65,9 +64,46 @@ func newTSTarget(ctx context.Context, gnTargetDict map[string]gnTargetInfo,
 		tsconfig:    tsconfig,
 	}
 	m.target = target
-	m.args = gnTargetDict[m.targetName].Args
-	m.imports = []string{}
+	m.args = gnTargetsMap[m.targetName].Args
 	return m, nil
+}
+
+func (m *tsTarget) getImportedFiles() []string {
+	dependencies := make(map[string][]string)
+	var queue []string
+	queue = append(queue, m.target.Deps...)
+
+	for len(queue) > 0 {
+		front := queue[0]
+		if dependencies[front] == nil {
+			target := gnTargetsMap[front]
+			if isTSTargetInfo(target) {
+				dependencies[front] = target.Sources
+			}
+			queue = append(queue, target.Deps...)
+		}
+		queue = queue[1:]
+	}
+
+	var importedFiles []string
+	for t := range dependencies {
+		importedFiles = append(importedFiles, dependencies[t]...)
+	}
+	return importedFiles
+}
+
+func (m *tsTarget) convertGnPaths(paths []string) ([]string, error) {
+	var converted []string
+	for _, src := range paths {
+		gn, err := convertGnPath(m.ctx, src, m.outDir)
+		if err != nil {
+			return nil, err
+		}
+		p := filepath.Join(m.outDir, gn)
+		converted = append(converted, convertPathToForwardSlashes(p))
+	}
+
+	return converted, nil
 }
 
 func (m *tsTarget) getUnit() (*kpb.CompilationUnit, error) {
@@ -79,21 +115,22 @@ func (m *tsTarget) getUnit() (*kpb.CompilationUnit, error) {
 	}
 	sourceFiles = append(sourceFiles, convertPathToForwardSlashes(tsconfig))
 
-	for _, src := range m.target.Sources {
-		gn, err := convertGnPath(m.ctx, src, m.outDir)
-		if err != nil {
-			return nil, err
-		}
-		p := filepath.Join(m.outDir, gn)
-		sourceFiles = append(sourceFiles, convertPathToForwardSlashes(p))
+	convertedSourceFiles, err := m.convertGnPaths(m.target.Sources)
+	if err != nil {
+		return nil, err
 	}
+	sourceFiles = append(sourceFiles, convertedSourceFiles...)
 
 	unitProto.Argument = append(unitProto.Argument, "@@"+convertPathToForwardSlashes(tsconfig))
-
 	unitProto.SourceFile = sourceFiles
 	unitProto.VName = &kpb.VName{Corpus: m.corpus, Language: "typescript"}
 
-	for _, requiredFile := range sourceFiles {
+	importedFiles, err := m.convertGnPaths(m.getImportedFiles())
+	if err != nil {
+		return nil, err
+	}
+
+	for _, requiredFile := range append(sourceFiles, importedFiles...) {
 		p, err := filepath.Abs(filepath.Join(m.rootDir, requiredFile))
 		if err != nil {
 			return nil, err
@@ -142,10 +179,14 @@ func tsTargetProcessor(ctx context.Context, rootPath, outDir, corpus,
 		return nil, errNotSupported
 	}
 
-	return newTSTarget(ctx, gnTargetsMap, t.targetName, hashMaps,
+	return newTSTarget(ctx, t.targetName, hashMaps,
 		rootPath, outDir, corpus, buildConfig)
 }
 
+func isTSTargetInfo(t gnTargetInfo) bool {
+	return t.Script == "//third_party/devtools-frontend/src/third_party/typescript/ts_library.py"
+}
+
 func isTSTarget(t *gnTarget) bool {
-	return t.targetInfo.Script == "//third_party/devtools-frontend/src/third_party/typescript/ts_library.py"
+	return isTSTargetInfo(t.targetInfo)
 }
