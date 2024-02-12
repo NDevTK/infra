@@ -183,11 +183,16 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 	return tests, nil
 }
 
+// fetchSubrepoAndRunTests fetches a target golang.org/x repository,
+// discovers modules inside to test,
+// fetches their dependencies and tests the modules.
+//
+// It returns an infrastructure error if used on the main Go repository.
 func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []*golangbuildpb.Port) (err error) {
 	step, ctx := build.StartStep(ctx, "run tests")
 	defer endStep(step, &err)
 
-	if spec.inputs.Project == "go" {
+	if isGoProject(spec.inputs.Project) {
 		return infraErrorf("fetchSubrepoAndRunTests called for a main Go repo builder")
 	}
 
@@ -205,6 +210,11 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []*gola
 	modules, err := repoToModules(ctx, spec, repoDir)
 	if err != nil {
 		return err
+	} else if len(modules) == 0 {
+		// No modules to test were discovered. Return early to avoid needing to handle this
+		// case of having nothing to test below and to avoid having meaningless empty steps
+		// in the "Steps & Logs" section.
+		return nil
 	}
 	// Fetch module dependencies ahead of time, to mark temporary network errors as an infra
 	// failures and because 'go test' may not have network access (see spec.inputs.NoNetwork).
@@ -285,6 +295,13 @@ func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (module
 		}
 		return nil
 	}); err != nil {
+		return nil, err
+	}
+	moduleList := fmt.Sprint(modules)
+	if len(modules) == 0 {
+		moduleList = "(no modules to test discovered)"
+	}
+	if _, err := io.WriteString(step.Log("modules"), moduleList); err != nil {
 		return nil, err
 	}
 
