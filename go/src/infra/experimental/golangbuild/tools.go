@@ -118,7 +118,9 @@ golang/benchstat/${platform} latest
 `
 	}
 
-	io.WriteString(step.Log("ensure file"), cipdDeps)
+	if _, err := io.WriteString(step.Log("ensure file"), cipdDeps); err != nil {
+		return "", err
+	}
 
 	// Store in the named cache specified in Inputs. This is shared across
 	// builder types, allowing reuse across builds if the dependencies
@@ -138,7 +140,9 @@ golang/benchstat/${platform} latest
 
 	toolsRoot = filepath.Join(luciExe.GetCacheDir(), cache)
 
-	io.WriteString(step.Log("tools root"), toolsRoot)
+	if _, err := io.WriteString(step.Log("tools root"), toolsRoot); err != nil {
+		return "", err
+	}
 
 	// Install packages.
 	cmd := exec.CommandContext(ctx, "cipd",

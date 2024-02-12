@@ -179,7 +179,9 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 	if len(tests) == 0 {
 		testList = "(no tests selected)"
 	}
-	io.WriteString(step.Log("tests"), testList)
+	if _, err := io.WriteString(step.Log("tests"), testList); err != nil {
+		return nil, err
+	}
 	return tests, nil
 }
 
@@ -411,7 +413,9 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 	if len(ports) == 0 {
 		portList = "(no ports selected)"
 	}
-	io.WriteString(step.Log("ports"), portList)
+	if _, err := io.WriteString(step.Log("ports"), portList); err != nil {
+		return nil, err
+	}
 	return ports, nil
 }
 
