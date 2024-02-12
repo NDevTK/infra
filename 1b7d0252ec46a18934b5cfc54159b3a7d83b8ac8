@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01e4fb6c_b46c2cf8",
+        "filename": "go/src/infra/cros/cmd/try/try/create_premp_keys.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1516607
+      },
+      "writtenOn": "2024-02-12T18:02:00Z",
+      "side": 1,
+      "message": "\u003e \n\u003e Import order is not sorted.\n\u003e Run `golangci-lint run --fix cros/cmd/try/try` to fix this.\n\nPlease fix.",
+      "parentUuid": "a10ba31f_bbaefae5",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 0
+      },
+      "revId": "1b7d0252ec46a18934b5cfc54159b3a7d83b8ac8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
