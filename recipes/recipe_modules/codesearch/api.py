@@ -117,8 +117,40 @@ class CodesearchApi(recipe_api.RecipeApi):
         '--tool', 'translation_unit', '--tool-path',
         translation_unit_dir.join('bin'), '-p', self.c.out_path, '--all'
     ]
+
     if target_architecture is not None:
-      args.extend(['--tool-arg', '-arch', '--tool-arg', target_architecture])
+      # We want to tell clang the target architecture, but that needs to pass
+      # through a few layers of wrapper scripts. It's a little confusing, so
+      # let's work backward to understand it.
+      #
+      # 1.  Ultimately, we want to call `clang` with `--target=${ARCH}` (where
+      #     `${ARCH}` stands for our target architecture).
+      #
+      # 2.  But we aren't calling `clang` directly. `clang` gets invoked by
+      #     Chromium's `translation_unit` tool. That tool has a flag,
+      #     `--extra-arg`, whose values get forwarded to `clang`. So we need to
+      #     call `translation_unit`  with `--extra-arg=--target=${ARCH}`.
+      #
+      # 3.  But we aren't calling `translation_unit` directly, either. We're
+      #     calling it via Chromium's `run_script.py` wrapper. That wrapper has
+      #     another flag, `--tool-arg`, whose values get forwarded to
+      #     `translation_unit`. Thus, we need to call `run_script.py` with
+      #     `--tool-arg=--extra-arg=--target=${ARCH}.`
+      #
+      # Also, notice that we're sending CLI flags whose values start with
+      # dashes, and therefore look like flags themselves. In order for these
+      # flags to be parsed correctly, we need to send them as `key=value`, like
+      # `--tool-arg=--extra-arg`, not `--tool-arg --extra-arg`.
+      #
+      # The next few lines aren't the most succinct way to append that flag, but
+      # hopefully it's clearer than a one-liner.
+      clang_flag = f'--target={target_architecture}'
+      translation_unit_flag = f'--extra-arg={clang_flag}'
+      run_script_flag = f'--tool-arg={translation_unit_flag}'
+      assert (run_script_flag ==
+              f'--tool-arg=--extra-arg=--target={target_architecture}')
+      args.append(run_script_flag)
+
     if run_dirs is None:
       run_dirs = [self.m.context.cwd]
     for run_dir in run_dirs:

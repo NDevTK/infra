@@ -56,7 +56,7 @@ def GenTests(api):
       'target_architecture_arm64',
       api.properties(target_architecture='arm64'),
       api.post_process(StepCommandContains, 'run translation_unit clang tool',
-                       ['--tool-arg', '-arch', '--tool-arg', 'arm64']),
+                       ['--tool-arg=--extra-arg=--target=arm64']),
       api.post_process(StatusSuccess),
       api.post_process(DropExpectation),
   )
