@@ -45,7 +45,6 @@ from tracker import tracker_helpers
 from tracker import tracker_views
 from mrproto import tracker_pb2
 
-
 class NotifyIssueChangeTask(notify_helpers.NotifyTaskBase):
   """JSON servlet that notifies appropriate users after an issue change."""
 
@@ -90,6 +89,10 @@ class NotifyIssueChangeTask(notify_helpers.NotifyTaskBase):
     # the stale issue defect (monorail:2514) is 100% resolved.
     issue = self.services.issue.GetIssue(mr.cnxn, issue_id, use_cache=False)
     project = self.services.project.GetProject(mr.cnxn, issue.project_id)
+    response = notify_helpers.CheckAndHandleForArchivedProject(project, params)
+    if response:
+      return response
+
     config = self.services.config.GetProjectConfig(mr.cnxn, issue.project_id)
 
     if issue.is_spam:
@@ -279,11 +282,16 @@ class NotifyBlockingChangeTask(notify_helpers.NotifyTaskBase):
     tasks = []
     if send_email:
       for upstream_issue in upstream_issues:
-        one_issue_email_tasks = self._ProcessUpstreamIssue(
-            mr.cnxn, upstream_issue,
-            upstream_projects[upstream_issue.project_id],
-            upstream_configs[upstream_issue.project_id],
-            issue, omit_ids, hostport, commenter_view)
+        project = upstream_projects[upstream_issue.project_id]
+        response = notify_helpers.CheckAndHandleForArchivedProject(
+            project, params)
+        if response:
+          continue
+        else:
+          one_issue_email_tasks = self._ProcessUpstreamIssue(
+              mr.cnxn, upstream_issue, project,
+              upstream_configs[upstream_issue.project_id], issue, omit_ids,
+              hostport, commenter_view)
         tasks.extend(one_issue_email_tasks)
 
     notified = notify_helpers.AddAllEmailTasks(tasks)
@@ -397,6 +405,10 @@ class NotifyBulkChangeTask(notify_helpers.NotifyTaskBase):
     # now, all issue must be in the same project.
     project_id = issues[0].project_id
     project = self.services.project.GetProject(mr.cnxn, project_id)
+    response = notify_helpers.CheckAndHandleForArchivedProject(project, params)
+    if response:
+      return response
+
     config = self.services.config.GetProjectConfig(mr.cnxn, project_id)
     issues = [issue for issue in issues if not issue.is_spam]
     anon_perms = permissions.GetPermissions(None, set(), project)
@@ -756,6 +768,10 @@ class NotifyApprovalChangeTask(notify_helpers.NotifyTaskBase):
     issue, approval_value = self.services.issue.GetIssueApproval(
         mr.cnxn, issue_id, approval_id, use_cache=False)
     project = self.services.project.GetProject(mr.cnxn, issue.project_id)
+    response = notify_helpers.CheckAndHandleForArchivedProject(project, params)
+    if response:
+      return response
+
     config = self.services.config.GetProjectConfig(mr.cnxn, issue.project_id)
 
     approval_fd = tracker_bizobj.FindFieldDefByID(approval_id, config)
@@ -940,6 +956,10 @@ class NotifyRulesDeletedTask(notify_helpers.NotifyTaskBase):
     logging.info('deleted filter rules params are %r', params)
 
     project = self.services.project.GetProject(mr.cnxn, project_id)
+    response = notify_helpers.CheckAndHandleForArchivedProject(project, params)
+    if response:
+      return response
+
     emails_by_id = self.services.user.LookupUserEmails(
         mr.cnxn, project.owner_ids, ignore_missed=True)
 

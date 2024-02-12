@@ -31,6 +31,7 @@ from framework import permissions
 from framework import template_helpers
 from framework import urls
 from mrproto import tracker_pb2
+from mrproto import project_pb2
 from search import query2ast
 from search import searchpipeline
 from tracker import tracker_bizobj
@@ -111,6 +112,15 @@ def _EnqueueOutboundEmail(message_dict):
   cloud_tasks_helpers.create_task(
       task, queue=features_constants.QUEUE_OUTBOUND_EMAIL)
 
+
+def CheckAndHandleForArchivedProject(project, params):
+  if project and project.state == project_pb2.ProjectState.ARCHIVED:
+    # Don't send email for an archived project.
+    return {
+        'params': params,
+        'notified': [],
+    }
+  return None
 
 def AddAllEmailTasks(tasks):
   """Add one GAE task for each email to be sent."""

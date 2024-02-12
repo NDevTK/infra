@@ -16,10 +16,12 @@ import unittest
 from google.appengine.ext import testbed
 
 from features import notify
+from features import notify_helpers
 from features import notify_reasons
 from framework import emailfmt
 from framework import urls
 from mrproto import tracker_pb2
+from mrproto import project_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers
@@ -106,6 +108,32 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     result = task.HandleRequest(mr)
     self.VerifyParams(result, params)
 
+  @mock.patch('features.notify_helpers.AddAllEmailTasks')
+  def testNotifyIssueChangeTask_ArchivedProject(self, _AddAllEmailTasksMock):
+    project = self.services.project.TestAddProject(
+        'archived-project',
+        owner_ids=[1, 3],
+        state=project_pb2.ProjectState.ARCHIVED)
+    issue = MakeTestIssue(
+        project.project_id, local_id=3, owner_id=3, reporter_id=1)
+    self.services.issue.TestAddIssue(issue)
+    task = notify.NotifyIssueChangeTask(services=self.services)
+    params = {
+        'send_email': 1,
+        'issue_id': issue.issue_id,
+        'seq': 0,
+        'commenter_id': 2
+    }
+    mr = testing_helpers.MakeMonorailRequest(
+        user_info={'user_id': 1},
+        params=params,
+        method='POST',
+        services=self.services)
+    result = task.HandleRequest(mr)
+    self.VerifyParams(result, params)
+    _AddAllEmailTasksMock.assert_not_called()
+
+
   @mock.patch('framework.cloud_tasks_helpers.create_task')
   def testNotifyIssueChangeTask_Spam(self, _create_task_mock):
     issue = MakeTestIssue(
@@ -140,6 +168,36 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
         services=self.services)
     result = task.HandleRequest(mr)
     self.VerifyParams(result, params)
+
+  @mock.patch('features.notify_helpers.AddAllEmailTasks')
+  def testNotifyBlockingChangeTask_ArchivedProject(self, _AddAllEmailTasksMock):
+    project = self.services.project.TestAddProject(
+        'archived-project',
+        owner_ids=[1, 3],
+        state=project_pb2.ProjectState.ARCHIVED)
+    issue = MakeTestIssue(
+        project.project_id, local_id=3, owner_id=3, reporter_id=1)
+    self.services.issue.TestAddIssue(issue)
+    issue2 = MakeTestIssue(
+        project_id=12345, local_id=2, owner_id=2, reporter_id=1)
+    self.services.issue.TestAddIssue(issue2)
+    task = notify.NotifyBlockingChangeTask(services=self.services)
+    params = {
+        'send_email': 1,
+        'issue_id': issue2.issue_id,
+        'seq': 0,
+        'delta_blocker_iids': str(issue.issue_id),
+        'commenter_id': 1,
+        'hostport': 'bugs.chromium.org'
+    }
+    mr = testing_helpers.MakeMonorailRequest(
+        user_info={'user_id': 1},
+        params=params,
+        method='POST',
+        services=self.services)
+    result = task.HandleRequest(mr)
+    self.VerifyParams(result, params)
+    _AddAllEmailTasksMock.assert_called_once_with([])
 
   def testNotifyBlockingChangeTask_Spam(self):
     issue2 = MakeTestIssue(
@@ -190,6 +248,33 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
       # Full email for members
       if 'member' in body['to']:
         self.assertNotIn(u'\u2026', body['from_addr'])
+
+  @mock.patch('features.notify_helpers.AddAllEmailTasks')
+  def testNotifyBulkChangeTask_ArchivedProject(self, _AddAllEmailTasksMock):
+    project = self.services.project.TestAddProject(
+        'archived-project',
+        owner_ids=[1, 3],
+        state=project_pb2.ProjectState.ARCHIVED)
+    issue = MakeTestIssue(
+        project.project_id, local_id=3, owner_id=3, reporter_id=1)
+    issue.cc_ids = [3]
+    self.services.issue.TestAddIssue(issue)
+    task = notify.NotifyBulkChangeTask(services=self.services)
+    params = {
+        'send_email': 1,
+        'seq': 0,
+        'issue_ids': '%d' % (issue.issue_id),
+        'old_owner_ids': '1',
+        'commenter_id': 1
+    }
+    mr = testing_helpers.MakeMonorailRequest(
+        user_info={'user_id': 1},
+        params=params,
+        method='POST',
+        services=self.services)
+    result = task.HandleRequest(mr)
+    self.VerifyParams(result, params)
+    _AddAllEmailTasksMock.assert_not_called()
 
   @mock.patch('framework.cloud_tasks_helpers.create_task')
   def testNotifyBulkChangeTask_AlsoNotify(self, create_task_mock):
@@ -570,6 +655,143 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
         self, ['user@example.com', 'TL@example.com', 'approvalTL@example.com'],
         result['notified'])
 
+  @mock.patch('features.notify_helpers.AddAllEmailTasks')
+  def testNotifyApprovalChangeTask_ArchivedProject(self, _AddAllEmailTasksMock):
+    config = self.services.config.GetProjectConfig('cnxn', 12345)
+    config.field_defs = [
+        # issue's User field with any_comment is notified.
+        tracker_bizobj.MakeFieldDef(
+            121, 12345, 'TL', tracker_pb2.FieldTypes.USER_TYPE, '', '', False,
+            False, False, None, None, None, False, '', None,
+            tracker_pb2.NotifyTriggers.ANY_COMMENT, 'no_action',
+            'TL, notified on everything', False),
+        # issue's User field with never is not notified.
+        tracker_bizobj.MakeFieldDef(
+            122, 12345, 'silentTL', tracker_pb2.FieldTypes.USER_TYPE, '', '',
+            False, False, False, None, None, None, False, '', None,
+            tracker_pb2.NotifyTriggers.NEVER, 'no_action',
+            'TL, notified on nothing', False),
+        # approval's User field with any_comment is notified.
+        tracker_bizobj.MakeFieldDef(
+            123,
+            12345,
+            'otherapprovalTL',
+            tracker_pb2.FieldTypes.USER_TYPE,
+            '',
+            '',
+            False,
+            False,
+            False,
+            None,
+            None,
+            None,
+            False,
+            '',
+            None,
+            tracker_pb2.NotifyTriggers.ANY_COMMENT,
+            'no_action',
+            'TL on the approvers team',
+            False,
+            approval_id=3),
+        # another approval's User field with any_comment is not notified.
+        tracker_bizobj.MakeFieldDef(
+            124,
+            12345,
+            'otherapprovalTL',
+            tracker_pb2.FieldTypes.USER_TYPE,
+            '',
+            '',
+            False,
+            False,
+            False,
+            None,
+            None,
+            None,
+            False,
+            '',
+            None,
+            tracker_pb2.NotifyTriggers.ANY_COMMENT,
+            'no_action',
+            'TL on another approvers team',
+            False,
+            approval_id=4),
+        tracker_bizobj.MakeFieldDef(
+            3, 12345, 'Goat-Approval', tracker_pb2.FieldTypes.APPROVAL_TYPE, '',
+            '', False, False, False, None, None, None, False, '', None,
+            tracker_pb2.NotifyTriggers.NEVER, 'no_action',
+            'Get Approval from Goats', False)
+    ]
+    self.services.config.StoreConfig('cnxn', config)
+
+    # Custom user_type field TLs
+    self.services.user.TestAddUser('TL@example.com', 111)
+    self.services.user.TestAddUser('silentTL@example.com', 222)
+    self.services.user.TestAddUser('approvalTL@example.com', 333)
+    self.services.user.TestAddUser('otherapprovalTL@example.com', 444)
+
+    # Approvers
+    self.services.user.TestAddUser('approver_old@example.com', 777)
+    self.services.user.TestAddUser('approver_new@example.com', 888)
+    self.services.user.TestAddUser('approver_still@example.com', 999)
+    self.services.user.TestAddUser('approver_group@example.com', 666)
+    self.services.user.TestAddUser('group_mem1@example.com', 661)
+    self.services.user.TestAddUser('group_mem2@example.com', 662)
+    self.services.user.TestAddUser('group_mem3@example.com', 663)
+    self.services.usergroup.TestAddGroupSettings(
+        666, 'approver_group@example.com')
+    self.services.usergroup.TestAddMembers(666, [661, 662, 663])
+    canary_phase = tracker_pb2.Phase(name='Canary', phase_id=1, rank=1)
+    approval_values = [
+        tracker_pb2.ApprovalValue(
+            approval_id=3, approver_ids=[888, 999, 666, 661])
+    ]
+    project = self.services.project.TestAddProject(
+        'archived-project',
+        owner_ids=[1, 3],
+        state=project_pb2.ProjectState.ARCHIVED)
+    issue = MakeTestIssue(
+        project.project_id, local_id=3, owner_id=3, reporter_id=1)
+    issue.phases = [canary_phase]
+    issue.approval_values = approval_values
+    issue.field_values = [
+        tracker_bizobj.MakeFieldValue(121, None, None, 111, None, None, False),
+    ]
+    self.services.issue.TestAddIssue(issue)
+
+    amend = tracker_bizobj.MakeApprovalApproversAmendment([888], [777])
+
+    comment = tracker_pb2.IssueComment(
+        project_id=12345,
+        user_id=999,
+        issue_id=issue.issue_id,
+        amendments=[amend],
+        timestamp=1234567890,
+        content='just a comment.')
+    attach = tracker_pb2.Attachment(
+        attachment_id=4567,
+        filename='sploot.jpg',
+        mimetype='image/png',
+        gcs_object_id='/pid/attachments/abcd',
+        filesize=(1024 * 1023))
+    comment.attachments.append(attach)
+    self.services.issue.TestAddComment(comment, issue.local_id)
+    self.services.issue.TestAddAttachment(attach, comment.id, issue.issue_id)
+
+    task = notify.NotifyApprovalChangeTask(services=self.services)
+    params = {
+        'send_email': 1,
+        'issue_id': issue.issue_id,
+        'approval_id': 3,
+        'comment_id': comment.id,
+    }
+    mr = testing_helpers.MakeMonorailRequest(
+        user_info={'user_id': 1},
+        params=params,
+        method='POST',
+        services=self.services)
+    task.HandleRequest(mr)
+    _AddAllEmailTasksMock.assert_not_called()
+
   def testNotifyApprovalChangeTask_GetApprovalEmailRecipients(self):
     task = notify.NotifyApprovalChangeTask(services=self.services)
     issue = fake.MakeTestIssue(789, 1, 'summary', 'New', 111)
@@ -631,6 +853,24 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     self.assertTrue('/p/proj/adminRules' in body)
     six.assertCountEqual(
         self, ['cow@test.com', 'owner1@test.com'], result['notified'])
+
+  @mock.patch('features.notify_helpers.AddAllEmailTasks')
+  def testNotifyRulesDeletedTask_ArchivedProject(self, _AddAllEmailTasksMock):
+    project = self.services.project.TestAddProject(
+        'archived-project',
+        owner_ids=[1, 3],
+        state=project_pb2.ProjectState.ARCHIVED)
+    self.services.user.TestAddUser('owner1@test.com', 777)
+    self.services.user.TestAddUser('cow@test.com', 888)
+    task = notify.NotifyRulesDeletedTask(services=self.services)
+    params = {
+        'project_id': project.project_id,
+        'filter_rules': 'if green make yellow,if orange make blue'
+    }
+    mr = testing_helpers.MakeMonorailRequest(
+        params=params, method='POST', services=self.services)
+    task.HandleRequest(mr)
+    _AddAllEmailTasksMock.assert_not_called()
 
   def testOutboundEmailTask_Normal(self):
     """We can send an email."""
