@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eee39688_7edb3a10",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2024-02-12T17:45:35Z",
+      "side": 1,
+      "message": "https://ci.chromium.org/ui/p/chromeos/builders/staging/staging-key-manager/b8756278513824641969/overview",
+      "revId": "40f2d863ce8d588332d8f216467223e7af75705c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
