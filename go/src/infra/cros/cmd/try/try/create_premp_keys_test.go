@@ -12,6 +12,9 @@ import (
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
 	bb "infra/cros/lib/buildbucket"
+
+	bapipb "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestValidate_createPreMPKeysRun(t *testing.T) {
@@ -76,6 +79,23 @@ func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
 	}
 	ret := r.Run(nil, nil, nil)
 	assert.IntsEqual(t, ret, Success)
+
+	properties, err := bb.ReadStructFromFile(propsFile.Name())
+	assert.NilError(t, err)
+
+	// Check that the requests are populated correctly.
+	createPreMPKeysRequests := properties.GetFields()["create_premp_keys_requests"].GetListValue()
+	jsonRequest, err := createPreMPKeysRequests.GetValues()[0].GetStructValue().MarshalJSON()
+	assert.NilError(t, err)
+	var createPreMPKeysRequest bapipb.CreatePreMPKeysRequest
+	err = protojson.Unmarshal([]byte(jsonRequest), &createPreMPKeysRequest)
+	assert.NilError(t, err)
+
+	assert.StringsEqual(
+		t,
+		createPreMPKeysRequest.BuildTarget.Name,
+		tc.buildTarget,
+	)
 }
 
 func TestCreatePreMPKeys_dryrun(t *testing.T) {

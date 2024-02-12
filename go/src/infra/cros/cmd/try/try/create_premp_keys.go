@@ -5,6 +5,7 @@ package try
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -13,8 +14,12 @@ import (
 	bb "infra/cros/lib/buildbucket"
 
 	"github.com/maruel/subcommands"
+
+	bapipb "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
+	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // TODO(b/318522770): Use the production builder.
@@ -65,7 +70,23 @@ func (f *createPreMPKeysRun) Run(_ subcommands.Application, _ []string, _ subcom
 		return CmdError
 	}
 
-	// TODO(b/318522770): Set create_premp_keys_requests input property.
+	// Set `create_premp_keys_requests` property.
+	createPreMPKeysRequest := protojson.Format(&bapipb.CreatePreMPKeysRequest{
+		BuildTarget: &pb.BuildTarget{
+			Name: f.buildTarget,
+		},
+	})
+	var request interface{}
+	if err := json.Unmarshal([]byte(createPreMPKeysRequest), &request); err != nil {
+		f.LogErr(err.Error())
+		return CmdError
+	}
+	if err := bb.SetProperty(propsStruct, "create_premp_keys_requests", []interface{}{request}); err != nil {
+		f.LogErr(err.Error())
+		return CmdError
+	}
+
+	// TODO(b/318522770) Support other fields of CreatePreMPKeysRequest.
 
 	var propsFile *os.File
 	if f.propsFile != nil {
