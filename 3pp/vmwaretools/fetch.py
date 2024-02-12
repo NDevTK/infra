@@ -13,11 +13,13 @@ import urllib.request
 _PLATFORMS = {
     'windows-386': 'x86',
     'windows-amd64': 'x64',
+    'windows-arm64': 'arm',
 }
 
 _PLATFORMS_ALT = {
     'windows-386': 'i386',
     'windows-amd64': 'x86_64',
+    'windows-arm64': 'arm',
 }
 
 _EXTENSION = {
@@ -27,7 +29,7 @@ _EXTENSION = {
 
 def do_latest():
   request = urllib.request.urlopen(
-      'https://packages.vmware.com/tools/esx/latest/windows/')
+      'https://packages.vmware.com/tools/releases/latest/windows/')
   latest = re.findall(r'HREF=".*-(\d+.\d+.\d+-\d+).iso"',
                       request.read().decode('utf-8'))[0]
   print(latest)
@@ -41,7 +43,7 @@ def get_download_url(version, platform):
   extension = _EXTENSION[platform.split('-')[0]]
   platform = _PLATFORMS[platform]
 
-  base_url = f'https://packages.vmware.com/tools/esx/latest/windows/{platform}/'
+  base_url = f'https://packages.vmware.com/tools/releases/latest/windows/{platform}/'
   request = urllib.request.urlopen(base_url)
   file_name = re.findall(rf'HREF="(.*-{version}-{platform_alt}{extension})"',
                          request.read().decode('utf-8'))[0]
