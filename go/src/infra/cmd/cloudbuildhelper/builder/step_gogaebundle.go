@@ -15,13 +15,13 @@ import (
 
 	"golang.org/x/mod/modfile"
 	"golang.org/x/tools/go/packages"
-	"gopkg.in/yaml.v2"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cmd/cloudbuildhelper/bundledesc"
 	"infra/cmd/cloudbuildhelper/fileset"
+	"infra/cmd/cloudbuildhelper/gaeapp"
 	"infra/cmd/cloudbuildhelper/gitignore"
 	"infra/cmd/cloudbuildhelper/godep"
 )
@@ -65,15 +65,20 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to convert the path %q to absolute", inv.BuildStep.GoGAEBundle).Err()
 	}
+	yamlBlob, err := os.ReadFile(yamlPath)
+	if err != nil {
+		return errors.Annotate(err, "failed to read %q", yamlPath).Err()
+	}
+	appYaml, err := gaeapp.LoadAppYAML(yamlBlob)
+	if err != nil {
+		return errors.Annotate(err, "failed to parse %q", yamlPath).Err()
+	}
 
 	// Read go runtime version from the YAML to know what Go build flags to use.
 	//
 	// It is either e.g. "go113" for GAE Standard or "go1.13" or just "go" for
 	// GAE Flex.
-	runtime, err := readRuntime(yamlPath)
-	if err != nil {
-		return err
-	}
+	runtime := appYaml.Runtime
 	logging.Infof(ctx, "Runtime is %q", runtime)
 	if runtime != "go" && !strings.HasPrefix(runtime, "go1") {
 		return errors.Reason("%q is not a supported go runtime", runtime).Err()
@@ -437,23 +442,6 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	return inv.Output.AddFromMemory(scriptPath, []byte(scriptBody), &fileset.File{
 		Executable: true,
 	})
-}
-
-// readRuntime reads `runtime` field in the YAML file.
-func readRuntime(path string) (string, error) {
-	blob, err := os.ReadFile(path)
-	if err != nil {
-		return "", errors.Annotate(err, "failed to read %q", path).Err()
-	}
-
-	var appYaml struct {
-		Runtime string `yaml:"runtime"`
-	}
-	if err := yaml.Unmarshal(blob, &appYaml); err != nil {
-		return "", errors.Annotate(err, "file %q is not a valid YAML", path).Err()
-	}
-
-	return appYaml.Runtime, nil
 }
 
 // buildContext returns a build.Context targeting linux-amd64.
