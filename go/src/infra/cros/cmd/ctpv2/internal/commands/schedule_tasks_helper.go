@@ -181,11 +181,11 @@ func createFreeformDims(hwDef *testapi.SwarmingDefinition) []string {
 // findGcsPath finds gcs path for provided board.
 func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, id string) string {
 	for _, target := range suiteInfo.GetSuiteMetadata().GetTargetRequirements() {
+		// This is [0] indexed because MO will always reduce it to 1 item.
 		hwDef := target.GetHwRequirements().GetHwDefinition()[0]
-		swDef := target.GetSwRequirements()[0].GetVariant()
-		// TODO DEREK: MOVE THIS OVER TO NEW PROTO ONCE IT ROLLS
+		swDef := target.GetSwRequirement().GetVariant()
 		if hwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget() == board && id == swDef {
-			return target.GetSwRequirements()[0].GetGcsPath()
+			return target.GetSwRequirement().GetGcsPath()
 		}
 	}
 

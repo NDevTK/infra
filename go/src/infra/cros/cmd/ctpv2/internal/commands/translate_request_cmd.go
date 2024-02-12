@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+
 	// "infra/libs/skylab/inventory"
 	// "infra/libs/skylab/request"
 	// "infra/libs/skylab/worker"
@@ -19,12 +20,14 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+
 	// "go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	// "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/auth"
 	// "go.chromium.org/luci/buildbucket"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
+
 	// "go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	// "go.chromium.org/luci/lucictx"
@@ -296,14 +299,14 @@ func targetRequirements(req *testapi.CTPRequest) []*testapi.TargetRequirements {
 			var hwDefs []*testapi.SwarmingDefinition
 			hwDefs = append(hwDefs, buildcrosDut(hw.LegacyHw))
 
-			legacysw := legacyswpoper(targ.SwTargets)
+			legacysw := legacyswpoper(targ.SwTarget)
 
 			builtTarget := &testapi.TargetRequirements{
 				HwRequirements: &testapi.HWRequirements{
 					HwDefinition: hwDefs,
 				},
 
-				SwRequirements: legacysw,
+				SwRequirement: legacysw,
 			}
 			targs = append(targs, builtTarget)
 		}
@@ -311,15 +314,12 @@ func targetRequirements(req *testapi.CTPRequest) []*testapi.TargetRequirements {
 	return targs
 }
 
-func legacyswpoper(sws []*testapi.SWTarget) []*testapi.LegacySW {
-	var legsws []*testapi.LegacySW
-	for _, swTarg := range sws {
-		switch sw := swTarg.SwTarget.(type) {
-		case *testapi.SWTarget_LegacySw:
-			legsws = append(legsws, sw.LegacySw)
-		}
+func legacyswpoper(sws *testapi.SWTarget) *testapi.LegacySW {
+	switch sw := sws.SwTarget.(type) {
+	case *testapi.SWTarget_LegacySw:
+		return sw.LegacySw
 	}
-	return legsws
+	return nil
 }
 
 func buildcrosDut(hw *testapi.LegacyHW) *testapi.SwarmingDefinition {
