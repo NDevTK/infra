@@ -1,10 +1,10 @@
 # Contacting Infra Troopers
 
-This page can be found at: [g.co/bugatrooper](https://g.co/bugatrooper)
+This page can be found at: [go/bugatrooper]
 
 Have an issue with a piece of build infrastructure?
 Our troopers are here to help. Learn more about troopering at:
-[go/trooper](http://go/trooper)
+[go/trooper]
 
 Oncall hours: we cover working hours in the Pacific timezone:
 + 1600 - 0000 UTC (900 - 1700 MTV)
@@ -14,23 +14,23 @@ those regions may provide assistance on mailing lists for urgent issues, but
 there's no guarantee.
 
 If you are contacting a trooper to see if there is an issue with a service,
-visit the [ChOps Status Dashboard](https://chopsdash.appspot.com) first.
+visit the [ChOps Status Dashboard] first.
 If the "Current Status" of the service shows red/yellow, that means there is a known
 disruption or outage, and the trooper is already aware. No need to contact us further!
 
-The primary way to contact a trooper is via [issues.chromium.org](https://issues.chromium.org/issues?q=status:open) using
+The primary way to contact a trooper is via [issues.chromium.org] using
 the templates and priorities established below. If you need to find the current
-trooper for a specific service, check [build.chromium.org](https://build.chromium.org), or
-[vi/chrome_infra](http://vi/chrome_infra) (internal link). If crbug.com is down
+trooper for a specific service, check [build.chromium.org], or
+[vi/chrome_infra] (internal link). If crbug.com is down
 and you are unable to file a bug, please contact the team on
-[infra-dev@chromium.org](mailto:infra-dev@chromium.org).
+[infra-dev@chromium.org].
 
 Small or non-urgent questions can also be posted in the [#ops] Chromium slack
 channel or the [chops-hangout channel] (internal).
 
 If you know your issue is with the physical hardware, or otherwise should be
 handled by the Systems team, please follow their
-[Rules of Engagement](http://shortn/_x6Y10rxpKG) (internal).
+[Rules of Engagement] (internal).
 
 ## Bug Templates
 
@@ -79,27 +79,31 @@ Priorities are set using the `Priority=N` label. Use the following as your guid
 
 Common Non-Trooper Requests:
 
-*   [Contact a Git Admin (go/git-admin-bug)](http://go/git-admin-bug)
-*   [File Chrome OS infra bug (go/cros-infra-bug)](http://go/cros-infra-bug)
-*   [Check the Chrome OS on-call channel (go/crosoncall)](http://go/crosoncall) (internal)
+*   [Contact a Git Admin (go/git-admin-bug)]
+*   [File Chrome OS infra bug (go/cros-infra-bug)]
+*   [Check the Chrome OS on-call channel (go/crosoncall)] (internal)
 
+<!-- links are sorted by order of apparition -->
+[go/bugatrooper]: http://go/bugatrooper
+[go/trooper]: http://go/trooper
+[ChOps Status Dashboard]: https://chopsdash.appspot.com
+[issues.chromium.org]: https://issues.chromium.org/issues?q=status:open
+[build.chromium.org]: https://build.chromium.org
+[vi/chrome_infra]: http://vi/chrome_infra
+[infra-dev@chromium.org]: mailto:infra-dev@chromium.org
 [#ops]: https://chromium.slack.com/messages/CGM8DQ3ST/
 [chops-hangout channel]: http://go/chops-hangout
-[Machine restart requests]: http://go/chrome-labs-fixit-bug
-[Mobile device restart requests]: http://go/chrome-labs-fixit-bug
-[Git repos]: http://go/fix-chrome-git
-[Buildbucket BQ access]: https://bugs.chromium.org/p/chromium/issues/entry?labels=Restrict-View-Google%2CFoundation-Troopers&components=Infra>LUCI>BuildService>Buildbucket&summary=%5BBrief%20description%20of%20problem%5D&comment=Name%20of%20service%20account%20which%20needs%20BQ%20Viewer%20permission%3A%20%0AName%20of%20BQ%20datasets%3A%20cr-buildbucket.%24your_project.builds%0A%0ANote%3A%20we%20don't%20grant%20BQ%20Job%20User%20permissions%20on%20cr-buildbucket%3B%20BQ%20queries%20should%20be%20done%20via%20your%20own%20cloud%20project.
-[Google Storage, CIPD, other]: http://go/chopssec-crbug
+[Rules of Engagement]: http://shortn/_rMn0A4rYuy
 [go/luci-bug]: http://go/luci-bug
-[current infra trooper queue]: https://issues.chromium.org/issues?q=componentid:1456370%20status:new
-[Browser Build trooper queue]: https://bugs.chromium.org/p/chromium/issues/list?q=Browser%3DBuild-Troopers&can=2
-[LUCI Tests trooper queue]: https://bugs.chromium.org/p/chromium/issues/list?q=TFS%3DTroopers+OR+Ops-Alerts%3DTFS+OR+TFS%3DTroopers+Pri%3D0+OR+Ops-Alerts%3DTFS+Pri%3D0&can=2
-[Foundation trooper queue]: https://bugs.chromium.org/p/chromium/issues/list?can=2&q=Foundation%3DTroopers+-has%3Aowner+OR+owner%3Ame+Foundation%3DTroopers+OR+Foundation%3DTroopers+Pri%3D0&sort=-modified&groupby=pri&colspec=ID+Component+Status+Owner+Summary+Blocking+BlockedOn+Opened+Modified&x=m&y=releaseblock&cells=ids
-[Source trooper queue]: https://bugs.chromium.org/p/chromium/issues/list?q=Source%3DTroopers+OR+Ops-Alerts%3DSource+OR+Source%3DTroopers+Pri%3D0+OR+Ops-Alerts%3DSource+Pri%3D0&can=2
-[Workflow trooper queue]: https://bugs.chromium.org/p/chromium/issues/list?q=Workflow%3DTroopers+OR+Ops-Alerts%3DWorkflow+OR+Workflow%3DTroopers+Pri%3D0+OR+Ops-Alerts%3DWorkflow+Pri%3D0&can=2
-[go/bug-a-trooper]: http://go/bug-a-trooper
-[go/fix-chrome-git]: http://go/fix-chrome-git
-[infra trooper oncall]: http://oncall/peepsi-wranglers
 [go/buildbucket-bug]: http://go/buildbucket-bug
 [go/swarming-bug]: http://go/swarming-bug
 [go/luci-cv-bug]: http://go/luci-cv-bug
+[Git repos]: http://go/fix-chrome-git
+[go/fix-chrome-git]: http://go/fix-chrome-git
+[Buildbucket BQ access]: https://bugs.chromium.org/p/chromium/issues/entry?labels=Restrict-View-Google%2CFoundation-Troopers&components=Infra>LUCI>BuildService>Buildbucket&summary=%5BBrief%20description%20of%20problem%5D&comment=Name%20of%20service%20account%20which%20needs%20BQ%20Viewer%20permission%3A%20%0AName%20of%20BQ%20datasets%3A%20cr-buildbucket.%24your_project.builds%0A%0ANote%3A%20we%20don't%20grant%20BQ%20Job%20User%20permissions%20on%20cr-buildbucket%3B%20BQ%20queries%20should%20be%20done%20via%20your%20own%20cloud%20project.
+[Google Storage, CIPD, other]: http://go/chopssec-crbug
+[Machine restart requests]: http://go/chrome-labs-fixit-bug
+[Mobile device restart requests]: http://go/chrome-labs-fixit-bug
+[Contact a Git Admin (go/git-admin-bug)]: http://go/git-admin-bug
+[File Chrome OS infra bug (go/cros-infra-bug)]: http://go/cros-infra-bug
+[Check the Chrome OS on-call channel (go/crosoncall)]: http://go/crosoncall
