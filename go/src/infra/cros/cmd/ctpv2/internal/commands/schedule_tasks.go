@@ -246,7 +246,7 @@ func FindBuildName(suiteInfo *api.SuiteInfo, board string) string {
 	for _, target := range suiteInfo.GetSuiteMetadata().GetTargetRequirements() {
 		hwDef := target.GetHwRequirements().GetHwDefinition()[0]
 		if hwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget() == board {
-			return target.GetSwRequirements()[0].GetBuild()
+			return target.GetSwRequirement().GetBuild()
 		}
 	}
 
