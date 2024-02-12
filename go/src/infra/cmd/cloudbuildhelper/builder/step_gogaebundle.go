@@ -9,7 +9,9 @@ import (
 	"fmt"
 	"go/build"
 	"os"
+	"path"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -173,12 +175,13 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	mainPkgDestAbs := filepath.Join(inv.Manifest.ContextDir, mainPkgDestRel)
 
 	// Record where we are going to put the app YAML inside the tarball.
+	appYamlBundlePath := fmt.Sprintf("%s/%s",
+		filepath.ToSlash(mainPkgDestRel),
+		filepath.Base(yamlPath),
+	)
 	err = bundledesc.Modify(inv.Output, func(desc *bundledesc.Description) error {
 		desc.GoGAEBundles = append(desc.GoGAEBundles, bundledesc.GoGAEBundle{
-			AppYAML: fmt.Sprintf("%s/%s",
-				filepath.ToSlash(mainPkgDestRel),
-				filepath.Base(yamlPath),
-			),
+			AppYAML: appYamlBundlePath,
 		})
 		return nil
 	})
@@ -405,18 +408,39 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		}
 	}
 
-	// If app.yaml and go.mod are in different directories, copy static files into
-	// the module root to workaround b/323980048. Conflicts are possible (though
-	// unlikely), fail on any.
+	// In modules mode GAE considers the root of the **go module** to be the
+	// application root. This is different from GOPATH mode, where the main
+	// package directory (the one with app.yaml) is the application root.
+	//
+	// The application root is significant in two ways:
+	//   1. It is cwd of the server process. This is important if the server loads
+	//      any files at runtime (e.g. HTML templates) from cwd.
+	//   2. It is the root path used when evaluating static files patterns in
+	//      app.yaml.
+	//
+	// All our existing app YAMLs are written for GOPATH mode. And arguably this
+	// is their truly correct form (they look just like one would expect, e.g.
+	// like Python GAE YAMLs, with no spooky action at a distance). So here we
+	// rewrite paths in them to be relatively to the module root to make them
+	// compatible with modules mode.
+	//
+	// Note the GAE team considers this discrepancy between modes "Working as
+	// Intended": b/323980048.
 	if mode == bundleModules && mainPkg.PkgPath != mainPkg.Module.Path {
-		err := hackStaticFiles(ctx,
-			inv.Output,
-			mainDir,
-			goModRoot,
-			excludedByIgnoreFile,
-		)
+		if !strings.HasPrefix(mainPkg.PkgPath, mainPkg.Module.Path+"/") {
+			panic("impossible at this point, already checked")
+		}
+		relToMod := mainPkg.PkgPath[len(mainPkg.Module.Path)+1:]
+		if err := adjustYAMLPaths(ctx, appYaml, relToMod); err != nil {
+			return errors.Annotate(err, "adjusting %s", appYamlBundlePath).Err()
+		}
+		blob, err := appYaml.Save()
 		if err != nil {
-			return errors.Annotate(err, "copying static files into the module root").Err()
+			return errors.Annotate(err, "formatting %s", appYamlBundlePath).Err()
+		}
+		logging.Infof(ctx, "Adjusted %s to use correct paths:\n%s", appYamlBundlePath, blob)
+		if err := inv.Output.AddFromMemory(appYamlBundlePath, blob, nil); err != nil {
+			return errors.Annotate(err, "rewriting %s", appYamlBundlePath).Err()
 		}
 	}
 
@@ -602,56 +626,56 @@ func currentMode(out *fileset.Set) bundleMode {
 	return bundleUnknown
 }
 
-// hackStaticFiles copies static non-go files from `src` to `dst`.
-//
-// `src` is an absolute path to a source directory on disk. `dst` is a
-// destination path relative to the fileset root.
-func hackStaticFiles(ctx context.Context, out *fileset.Set, src, dst string, exclude fileset.Excluder) error {
-	conflict := false
-	err := out.AddFromDisk(src, dst, func(absPath string, isDir bool) bool {
-		// Respect .gcloudignore.
-		if exclude(absPath, isDir) {
-			return true
-		}
-		// A path relative to the `src` e.g. "templates/index.html".
-		rel, err := relPath(src, absPath)
-		if err != nil {
-			panic(fmt.Sprintf("impossible: %s", err))
-		}
-		// Keep descending at least one level deeper.
-		if rel == "." {
-			return false
-		}
-		// Skip YAMLs directly in the app directory. Most likely they are appengine
-		// YAMLs and not really static files. Exposing them may cause issues.
-		if filepath.Dir(rel) == "." && filepath.Ext(rel) == ".yaml" {
-			return true
-		}
-		// Skip source code files: they aren't "static files" and we don't want to
-		// confuse the go compiler with unexpected code files in weird places.
-		if isGoSourceFile(rel) {
-			return true
-		}
-		// The matching path in the output should not exist yet.
-		setPath := filepath.Join(dst, rel)
-		if _, ok := out.File(setPath); ok {
-			logging.Errorf(ctx, "Conflict when copying static file into the module root (see b/323980048): %s", rel)
-			conflict = true
-			return true // skip descending this tree
-		}
-		if !isDir {
-			logging.Infof(ctx, "Copying static file into the module root (see b/323980048): %s", rel)
-		}
-		return false
-	})
-	switch {
-	case err != nil:
-		return err
-	case conflict:
-		return errors.Reason("path conflicts, see the log").Err()
-	default:
-		return nil
+var pathElemReg = regexp.MustCompile(`^[a-zA-Z0-9\-._]*$`)
+
+// adjustYAMLPaths prepends the given path to all static paths in the YAML.
+func adjustYAMLPaths(ctx context.Context, app *gaeapp.AppYAML, p string) error {
+	// Here `p` is some relative Go package name. It should be a simple
+	// slash-separated clean path without any funny shell escape symbols
+	// (including spaces). Check this to be sure.
+	if p != path.Clean(p) {
+		return errors.Reason("unexpected format of the app path %q", p).Err()
 	}
+	for _, part := range strings.Split(p, "/") {
+		if part == "" || part == "." || part == ".." || !pathElemReg.MatchString(part) {
+			return errors.Reason("unexpected format of the app path %q", p).Err()
+		}
+	}
+
+	// The default server binary inside the GAE container is named "main" and
+	// it is in PATH. If the service just launches this binary, we can change
+	// the current directory it runs from (`entrypoint` is passed to a shell, so
+	// we can just use "cd <dir> && main ...").
+	//
+	// If the service is doing something else (this is very rate) don't mess with
+	// it, we don't know if it can run from a different directory.
+	if app.Entrypoint == "" {
+		app.Entrypoint = "main"
+	}
+	if app.Entrypoint == "main" || strings.HasPrefix(app.Entrypoint, "main ") {
+		app.Entrypoint = fmt.Sprintf("cd %s && %s", p, app.Entrypoint)
+	} else {
+		logging.Warningf(ctx, "Unrecognized \"entrypoint\", leaving it as is: %s", app.Entrypoint)
+	}
+
+	// Attempt to "relocate" all static paths. Unfortunately some of them are
+	// regexps, and "relocating" them 100% correctly is hard (if they use some
+	// weird expressions involving "^"). Let's just hope there are no non-trivial
+	// regexps there...
+	prefix := p + "/"
+	for _, h := range app.Handlers {
+		if h.StaticDir != "" {
+			h.StaticDir = prefix + h.StaticDir
+		}
+		if h.StaticFiles != "" {
+			h.StaticFiles = prefix + h.StaticFiles
+		}
+		if h.Upload != "" {
+			h.Upload = regexp.QuoteMeta(prefix) + strings.TrimPrefix(h.Upload, "^")
+		}
+	}
+
+	return nil
 }
 
 // envScriptGoPath is a script that modifies Go env vars to point to files

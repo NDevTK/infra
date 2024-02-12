@@ -1,1 +1,24 @@
 runtime: go111
+
+entrypoint: >
+  main
+  -auth-service-host ${AUTH_SERVICE_HOST}
+
+handlers:
+- url: /robots.txt
+  static_files: frontend/static/robots.txt
+  upload: frontend/static/robots.txt
+- url: /static
+  secure: always
+  static_dir: frontend/static
+- url: /ui/immutable
+  secure: always
+  static_dir: ui/out/immutable
+  expiration: 7d
+- url: /(root_sw\.js(\.map)?)$
+  secure: always
+  static_files: ui/out/\1
+  upload: ui/out/root_sw\.js(\.map)?$
+- url: /.*
+  script: auto
+  secure: always

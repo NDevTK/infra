@@ -221,8 +221,6 @@ func TestBuilder(t *testing.T) {
 					"_gomod/pkg1/pkg1.go",
 					"_gomod/pkg1/vendor.go",
 					"_gomod/pkg2/pkg2.go",
-					"_gomod/static.txt",
-					"_gomod/static/static.txt",
 					"_gomod/vendor/example.com/another/another_a.go",
 					"_gomod/vendor/example.com/pkg/pkg_a.go",
 					"_gomod/vendor/modules.txt",
@@ -244,6 +242,31 @@ func TestBuilder(t *testing.T) {
     }
   ]
 }`, bundledesc.FormatVersion))
+
+				appYaml, err := byName["_gomod/helloworld/fake-app.yaml"].ReadAll()
+				So(err, ShouldBeNil)
+				So(string(appYaml), ShouldEqual, `entrypoint: |
+    cd helloworld && main -auth-service-host ${AUTH_SERVICE_HOST}
+handlers:
+    - static_files: helloworld/frontend/static/robots.txt
+      upload: helloworld/frontend/static/robots.txt
+      url: /robots.txt
+    - secure: always
+      static_dir: helloworld/frontend/static
+      url: /static
+    - expiration: 7d
+      secure: always
+      static_dir: helloworld/ui/out/immutable
+      url: /ui/immutable
+    - secure: always
+      static_files: helloworld/ui/out/\1
+      upload: helloworld/ui/out/root_sw\.js(\.map)?$
+      url: /(root_sw\.js(\.map)?)$
+    - script: auto
+      secure: always
+      url: /.*
+runtime: go111
+`)
 			})
 		})
 	})
