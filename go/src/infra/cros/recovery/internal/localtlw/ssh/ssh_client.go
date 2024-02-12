@@ -93,6 +93,9 @@ func connectToProxyWithContext(ctx context.Context, network string, proxy *proxy
 	var err error
 	var conn net.Conn
 	done := make(chan bool)
+	if deadline, ok := ctx.Deadline(); ok {
+		log.Debugf(ctx, "Remaining time util timeout: %+v", time.Until(deadline))
+	}
 	tlsCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	go func() {
