@@ -12,6 +12,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
+	"go.chromium.org/luci/gae/impl/memory"
+	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
@@ -38,6 +40,11 @@ func main() {
 	}
 
 	server.Main(nil, mods, func(srv *server.Server) error {
+		if srv.Options.CloudProject == "" {
+			const appID = "dev~fleet-cost-dev"
+			srv.Context = memory.UseWithAppID(srv.Context, appID)
+			datastore.GetTestable(srv.Context).Consistent(true)
+		}
 		ufsHostname := getUFSName(srv.Options.CloudProject)
 		t, err := auth.GetRPCTransport(srv.Context, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
 		if err != nil {
