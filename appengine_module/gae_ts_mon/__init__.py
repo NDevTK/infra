@@ -20,8 +20,8 @@ if six.PY2:  # pragma: no cover
   if third_party_dir not in sys.path:  # pragma: no cover
     sys.path.insert(0, third_party_dir)
 
-  # Add the gae_ts_mon/protobuf directory into the path for the google package, so
-  # "import google.protobuf" works.
+  # Add the gae_ts_mon/protobuf directory into the path for the google package,
+  # so "import google.protobuf" works.
   protobuf_dir = os.path.join(os.path.dirname(__file__), 'protobuf')
   google.__path__.append(os.path.join(protobuf_dir, 'google'))
   sys.path.insert(0, protobuf_dir)
@@ -47,10 +47,6 @@ from .config import initialize_prod
 from .instrument_endpoint import instrument as instrument_endpoint
 from .config import instrument_wsgi_application
 from .config import reset_for_unittest
-try:
-  from infra_libs.ts_mon.handlers import TSMonJSHandler
-except ImportError: # pragma: no cover
-  TSMonJSHandler = None
 
 # The remaining lines are copied from infra_libs/ts_mon/__init__.py.
 from infra_libs.ts_mon.common.distribution import Distribution

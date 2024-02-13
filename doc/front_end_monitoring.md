@@ -42,7 +42,7 @@ You'll also need to set up the server-side proxy handler. For Python, subclass
 the handler like this:
 
 ```python
-from gae_ts_mon.handlers import TSMonJSHandler
+from gae_ts_mon.handlers import TSMonJSFlaskHandler
 
 
 # For now, metrics need to be declared twice, once client side and once server side.
@@ -53,10 +53,10 @@ RUTABAGA_LATENCY_METRIC = ts_mon.CumulativeDistributionMetric(
   field_spec=[ts_mon.IntegerField('status')])
 
 
-class YourAppTSMonJSHandler(TSMonJSHandler):
+class YourAppTSMonJSHandler(TSMonJSFlaskHandler):
 
-  def __init__(self, request=None, response=None):
-    super(YourAppTSMonJSHandler, self).__init__(request, response)
+  def __init__(self, services=None):
+    super(YourAppTSMonJSHandler, self).__init__(flask=flask, services=services)
     self.register_metrics([RUTABAGA_LATENCY_METRIC])
 
   def xsrf_is_valid(self, _body):
