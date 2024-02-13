@@ -22,3 +22,4 @@ define_views "chrome" "create_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL
 define_views "angle" "create_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY) AND ((project = \"angle\" AND bucket=\"ci\") OR (project = \"chromium\" AND bucket=\"ci\"))"
 define_views "fuchsia" "create_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY) AND project IN ('fuchsia', 'turquoise', 'cobalt-analytics')"
 define_views "chromeos" "create_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY) AND project IN ('chromeos')"
+define_views "devtools_frontend" "create_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY) AND project IN ('devtools-frontend')"
