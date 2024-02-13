@@ -15,7 +15,10 @@ package commands
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"os"
+	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -56,12 +59,39 @@ const (
 	DutPoolQuota          = "DUT_POOL_QUOTA"
 )
 
+type TrV2ReqHelper struct {
+	// Top Level Variables
+	trReqHWDef *testapi.SwarmingDefinition
+	testCases  []*testapi.CTPTestCase
+	suiteInfo  *testapi.SuiteInfo
+	shardNum   int
+	build      *build.State
+
+	// Other fields often used several times throughout.
+	suiteName        string
+	pool             string
+	board            string
+	variant          string
+	boardWVaraint    string
+	currBBID         int64
+	model            string
+	provisionInfo    string
+	analyticsName    string
+	parentRequestUID string
+	currSwarmingID   string
+	gcsArtifactPath  string
+	builderStr       string
+}
+
 // GenerateTrv2Req generates ScheduleBuildRequest.
-func GenerateTrv2Req(ctx context.Context, hwDef *testapi.SwarmingDefinition, testCases []*testapi.CTPTestCase, build *build.State, suiteInfo *testapi.SuiteInfo, canOutliveParent bool) (*buildbucketpb.ScheduleBuildRequest, error) {
-	var err error
+func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2ReqHelper) (*buildbucketpb.ScheduleBuildRequest, error) {
+	populateHelper(ctx, trHelper)
 
 	// Create bb request
-	reqArgs, _ := GenerateArgs(ctx, hwDef, testCases, build, suiteInfo)
+	reqArgs, err := GenerateArgs(ctx, trHelper)
+	if err != nil {
+		return nil, errors.Annotate(err, "error while creating req: ").Err()
+	}
 	req, err := reqArgs.NewBBRequest(common.TestRunnerBuilderID())
 	if err != nil {
 		return nil, err
@@ -81,53 +111,102 @@ func GenerateTrv2Req(ctx context.Context, hwDef *testapi.SwarmingDefinition, tes
 	return req, nil
 }
 
-// GenerateArgs generates args for the builder request.
-func GenerateArgs(ctx context.Context, hwDef *testapi.SwarmingDefinition, testCases []*testapi.CTPTestCase, build *build.State, suiteInfo *testapi.SuiteInfo) (*request.Args, error) {
-	suiteName := suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
+func pool(suiteInfo *testapi.SuiteInfo) string {
+	if suiteInfo.GetSuiteMetadata().GetPool() != "" {
+		return suiteInfo.GetSuiteMetadata().GetPool()
+	}
+	return DutPoolQuota
+}
 
-	cmd := *createCommand(ctx, suiteName)
-	labels, err := createLabels(hwDef, suiteInfo)
+func populateHelper(ctx context.Context, trHelper *TrV2ReqHelper) error {
+	trHelper.suiteName = trHelper.suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
+	trHelper.board = strings.ToLower(getBuildTargetfromHwDef(trHelper.trReqHWDef))
+	trHelper.model = strings.ToLower(getModelTargetfromHwDef(trHelper.trReqHWDef))
+	trHelper.pool = pool(trHelper.suiteInfo)
+	logging.Infof(ctx, "POOL FOUND: %s", trHelper.suiteInfo)
+	trHelper.variant = getVariantFromHwDef(trHelper.trReqHWDef)
+
+	trHelper.boardWVaraint = trHelper.board
+	if trHelper.variant != "" {
+		trHelper.boardWVaraint = fmt.Sprintf("%s-%s", trHelper.board, trHelper.variant)
+
+	}
+	trHelper.currBBID = trHelper.build.Build().GetId()
+
+	trHelper.gcsArtifactPath = findGcsPath(trHelper.suiteInfo, trHelper.board, trHelper.variant)
+	if trHelper.gcsArtifactPath == "" {
+		logging.Infof(ctx, "GcsPath was not found for build target: %s", trHelper.boardWVaraint)
+		return fmt.Errorf("GcsPath was not found for build target: %s", trHelper.boardWVaraint)
+	}
+
+	trHelper.builderStr = getBuildFromGcsPath(trHelper.gcsArtifactPath)
+
+	trHelper.parentRequestUID = fmt.Sprintf(CtpRequestUIDTemplate, trHelper.currBBID, trHelper.suiteName)
+	trHelper.currSwarmingID = os.Getenv("SWARMING_TASK_ID")
+	if trHelper.currSwarmingID == "" {
+		logging.Infof(ctx, "SWARMING_TASK_ID NOT FOUND")
+	}
+
+	trHelper.analyticsName = trHelper.suiteInfo.GetSuiteRequest().GetAnalyticsName()
+
+	return nil
+}
+
+// GenerateArgs generates args for the builder request.
+func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, error) {
+	if trHelper.build == nil {
+		return nil, fmt.Errorf("No Build Object set in helper.")
+	}
+	args := request.Args{
+		Cmd:               *createCommand(ctx, trHelper.suiteName),
+		SwarmingPool:      trHelper.pool,
+		Dimensions:        createFreeformDims(trHelper.trReqHWDef),
+		ParentTaskID:      trHelper.currSwarmingID,
+		ParentRequestUID:  trHelper.parentRequestUID,
+		Priority:          10,
+		TestRunnerRequest: nil,            // Always nil for CFT.
+		CFTIsEnabled:      true,           // Always true
+		Timeout:           DefaultTimeout, // TODO (azrahman): Get this from input.
+		Experiments:       trHelper.build.Build().GetInput().Experiments,
+		GerritChanges:     trHelper.build.Build().GetInput().GerritChanges,
+		ResultsConfig:     nil, // TODO (azrahman): Investigate if we need this.
+	}
+
+	labels, err := createLabels(trHelper)
 	if err != nil {
 		return nil, errors.Annotate(err, "error while creating labels: ").Err()
 	}
+	args.SchedulableLabels = labels
+
 	secondaryLabels, err := createSecondaryLabels()
 	if err != nil {
 		return nil, errors.Annotate(err, "error while creating secondary labels: ").Err()
 	}
-	freeformDims := createFreeformDims(hwDef)
-	currBbid := build.Build().GetId()
-	currSwarmingId := os.Getenv("SWARMING_TASK_ID")
-	if currSwarmingId == "" {
-		logging.Warningf(ctx, "SWARMING_TASK_ID not set. So child builds won't have this.")
-	}
-	parentRequestUID := fmt.Sprintf(CtpRequestUIDTemplate, currBbid, suiteName)
+	args.SecondaryDevicesLabels = secondaryLabels
+
 	// TODO (azrahman): Should we even use provisionable dims for scheduling?
 	provisionableDims, _ := createProvisionableDimensions()
+	args.ProvisionableDimensions = provisionableDims
+	args.ProvisionableDimensionExpiration = time.Minute
 
-	cftTestRequest, _ := createCftTestRequest(ctx, hwDef, testCases, suiteInfo, parentRequestUID, currBbid, currSwarmingId)
-
-	args := &request.Args{
-		Cmd:                              cmd,
-		SchedulableLabels:                labels,
-		SecondaryDevicesLabels:           secondaryLabels,
-		Dimensions:                       freeformDims,
-		ParentTaskID:                     currSwarmingId,
-		ParentRequestUID:                 parentRequestUID,
-		Priority:                         10, // TODO (azrahman): Not required for scheduke. Hard coding it for now.
-		ProvisionableDimensions:          provisionableDims,
-		ProvisionableDimensionExpiration: time.Minute,
-		SwarmingTags:                     createSwarmingTags(),
-		SwarmingPool:                     suiteInfo.GetSuiteMetadata().GetPool(),
-		TestRunnerRequest:                nil, // Always nil for CFT.
-		CFTTestRunnerRequest:             cftTestRequest,
-		CFTIsEnabled:                     true,           // Always true
-		Timeout:                          DefaultTimeout, // TODO (azrahman): Get this from input.
-		Experiments:                      build.Build().GetInput().Experiments,
-		GerritChanges:                    build.Build().GetInput().GerritChanges,
-		ResultsConfig:                    nil, // TODO (azrahman): Investigate if we need this.
+	provInfo := findProvisionInfo(ctx, trHelper)
+	if provInfo == nil {
+		return nil, fmt.Errorf("No provision info found!!")
 	}
 
-	return args, nil
+	cftTestRequest, err := createCftTestRequest(ctx, trHelper, provInfo)
+	if err != nil {
+		return nil, err
+	}
+	args.CFTTestRunnerRequest = cftTestRequest
+
+	tags, err := createSwarmingTags(trHelper)
+	if err != nil {
+		return nil, errors.Annotate(err, "error while creating tags: ").Err()
+	}
+	args.SwarmingTags = tags
+
+	return &args, nil
 }
 
 // generateReqName generates request name.
@@ -169,48 +248,97 @@ func createCommand(ctx context.Context, suiteName string) *worker.Command {
 }
 
 // createFreeformDims creates free form dims from swarming def.
-func createFreeformDims(hwDef *testapi.SwarmingDefinition) []string {
+func createFreeformDims(TRRequesthwDef *testapi.SwarmingDefinition) []string {
 	freeformDims := []string{"dut_state:ready"}
-	if hwDef.GetDutInfo().GetChromeos().GetHwid() != "" {
-		freeformDims = append(freeformDims, fmt.Sprintf("hwid:%s", hwDef.GetDutInfo().GetChromeos().GetHwid()))
+	if TRRequesthwDef.GetDutInfo().GetChromeos().GetHwid() != "" {
+		freeformDims = append(freeformDims, fmt.Sprintf("hwid:%s", TRRequesthwDef.GetDutInfo().GetChromeos().GetHwid()))
 	}
 
+	for _, v := range TRRequesthwDef.GetSwarmingLabels() {
+		freeformDims = append(freeformDims, v)
+	}
 	return freeformDims
 }
 
 // findGcsPath finds gcs path for provided board.
-func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, id string) string {
-	for _, target := range suiteInfo.GetSuiteMetadata().GetTargetRequirements() {
-		// This is [0] indexed because MO will always reduce it to 1 item.
-		hwDef := target.GetHwRequirements().GetHwDefinition()[0]
-		swDef := target.GetSwRequirement().GetVariant()
-		if hwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget() == board && id == swDef {
-			return target.GetSwRequirement().GetGcsPath()
+// This is based on the given board + id; then looping through the suite metadata to find
+// the target which matched these. We then will return the GCS path from there.
+func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, variant string) string {
+	for _, suiteTarget := range suiteInfo.GetSuiteMetadata().GetTargetRequirements() {
+		// This is [0] indexed because we are ignoring multi-dut today.
+
+		suiteDef := suiteTarget.GetHwRequirements().GetHwDefinition()
+		if len(suiteDef) == 0 {
+			return ""
+		}
+
+		suiteHwDef := suiteDef[0]
+		suiteSwDef := suiteTarget.GetSwRequirement()
+		if getBuildTargetfromHwDef(suiteHwDef) == board && suiteSwDef.GetVariant() == variant {
+			return suiteSwDef.GetGcsPath()
 		}
 	}
-
 	return ""
+
+}
+
+func findProvisionInfo(ctx context.Context, trHelper *TrV2ReqHelper) []*testapi.ProvisionInfo {
+	logging.Infof(ctx, "looking for provision info for board: %s, variant: %s", trHelper.board, trHelper.variant)
+	logging.Infof(ctx, "looking for provision info for suiteMD: %s", trHelper.suiteInfo.GetSuiteMetadata())
+
+	for _, suiteTarget := range trHelper.suiteInfo.GetSuiteMetadata().GetTargetRequirements() {
+		// This is [0] indexed because we are ignoring multi-dut today.
+
+		suiteDef := suiteTarget.GetHwRequirements().GetHwDefinition()
+		if len(suiteDef) == 0 {
+			return nil
+		}
+
+		suiteHwDef := suiteDef[0]
+		logging.Infof(ctx, "looking for provision info for suiteInfo: %s", getBuildTargetfromHwDef(suiteHwDef))
+
+		suiteSwDef := suiteTarget.GetSwRequirement()
+		logging.Infof(ctx, "looking for provision info for suiteInfo: %s", suiteSwDef)
+
+		if getBuildTargetfromHwDef(suiteHwDef) == trHelper.board && suiteSwDef.GetVariant() == trHelper.variant {
+			return suiteHwDef.GetProvisionInfo()
+		}
+	}
+	return nil
+
+}
+
+func getBuildTargetfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string {
+	return TRRequesthwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget()
+}
+
+func getModelTargetfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string {
+	return TRRequesthwDef.GetDutInfo().GetChromeos().GetDutModel().GetModelName()
+}
+func getBuildTargetWVariantfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string {
+	if getVariantFromHwDef(TRRequesthwDef) == "" {
+		return getBuildTargetfromHwDef(TRRequesthwDef)
+	}
+	return fmt.Sprintf("%s-%s", getBuildTargetfromHwDef(TRRequesthwDef), getVariantFromHwDef(TRRequesthwDef))
 }
 
 // createCftTestRequest creates cft test request.
-func createCftTestRequest(ctx context.Context, hwDef *testapi.SwarmingDefinition, testCases []*testapi.CTPTestCase, suiteInfo *testapi.SuiteInfo, parentRequestUID string, currBbid int64, currSwarmingId string) (*skylab_test_runner.CFTTestRequest, error) {
+func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper, provInfo []*testapi.ProvisionInfo) (*skylab_test_runner.CFTTestRequest, error) {
 	deadline := timestamppb.New(time.Now().Add(2 * time.Hour))
 
-	buildTarget := hwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget()
-	modelName := hwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget()
 	dutModel := &labapi.DutModel{
-		BuildTarget: buildTarget,
-		ModelName:   modelName,
+		BuildTarget: trHelper.board,
+		ModelName:   trHelper.model,
 	}
 
-	gcsPath := findGcsPath(suiteInfo, buildTarget, hwDef.GetProvisionInfo()[0].GetIdentifier())
-	if gcsPath == "" {
-		logging.Infof(ctx, "GcsPath was not found for build target: %s", buildTarget)
-		return nil, fmt.Errorf("GcsPath was not found for build target: %s", buildTarget)
-	}
-	containerGcsPath := gcsPath + common.ContainerMetadataPath
+	containerGcsPath := trHelper.gcsArtifactPath + common.ContainerMetadataPath
 
 	tempRootDir := os.Getenv("TEMPDIR")
+
+	// Just here to prevent race conditions of shards fighting over a file.
+	rand.Seed(time.Now().UnixNano())
+	tempRootDir = path.Join(tempRootDir, strconv.Itoa(rand.Int()))
+
 	localFilePath, err := common.DownloadGcsFileToLocal(ctx, containerGcsPath, tempRootDir)
 	if err != nil {
 		logging.Infof(ctx, "error while downloading gcs file to local: %s", err)
@@ -227,52 +355,43 @@ func createCftTestRequest(ctx context.Context, hwDef *testapi.SwarmingDefinition
 	companionDuts := []*skylab_test_runner.CFTTestRequest_Device{}
 
 	testCaseIds := []*testapi.TestCase_Id{}
-	for _, testCase := range testCases {
+	for _, testCase := range trHelper.testCases {
 		testCaseIds = append(testCaseIds, testCase.GetMetadata().GetTestCase().GetId())
 	}
 	testSuites := []*testapi.TestSuite{
 		{
-			Name: suiteInfo.GetSuiteRequest().GetTestSuite().GetName(),
+			Name: trHelper.suiteName,
 			Spec: &testapi.TestSuite_TestCaseIds{
 				TestCaseIds: &testapi.TestCaseIdList{
 					TestCaseIds: testCaseIds,
 				},
 			},
-			ExecutionMetadata: suiteInfo.GetSuiteMetadata().GetExecutionMetadata(),
+			ExecutionMetadata: trHelper.suiteInfo.GetSuiteMetadata().GetExecutionMetadata(),
 		},
 	}
 
-	suiteName := suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
-
 	keyvals := make(map[string]string)
-	// TODO (azrahman): look into how to set these properly
-	keyvals["suite"] = suiteName                            // suite name
-	keyvals["label"] = fmt.Sprintf("%s-shard-0", suiteName) // test name
-	keyvals["build"] = getBuildFromGcsPath(gcsPath)         // Required for rdb-publish
-	keyvals["build_target"] = buildTarget
-	keyvals["parent_job_id"] = currSwarmingId
-	// keyvals["fwrw_build"] = "" // NewInput?
-	// keyvals["fwro_build"] = "" // NewInput?
+	keyvals["suite"] = trHelper.suiteName // suite name
 
-	provisionState := &testapi.ProvisionState{
+	// TODO (dbeckett) we need the int of the shard # passed into the gofunc.
+	keyvals["label"] = fmt.Sprintf("%s-shard-0", trHelper.suiteName) // test name
+	keyvals["build"] = trHelper.builderStr                           // Required for rdb-publish
+	keyvals["build_target"] = trHelper.board
+	keyvals["parent_job_id"] = trHelper.currSwarmingID
 
-		SystemImage: &testapi.ProvisionState_SystemImage{
-			SystemImagePath: &goconfig.StoragePath{
-				HostType: goconfig.StoragePath_GS,
-				Path:     gcsPath,
-			},
-		},
-		ProvisionMetadata: nil,
+	provisionState, err := buildProvisionState(provInfo)
+	if err != nil {
+		return nil, err
 	}
 
 	cftTestRequest := &skylab_test_runner.CFTTestRequest{
 		Deadline:         deadline,
-		ParentRequestUid: parentRequestUID,
-		ParentBuildId:    currBbid,
+		ParentRequestUid: trHelper.parentRequestUID,
+		ParentBuildId:    trHelper.currBBID,
 		PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
 			DutModel:             dutModel,
 			ProvisionState:       provisionState,
-			ContainerMetadataKey: buildTarget,
+			ContainerMetadataKey: trHelper.boardWVaraint,
 		},
 		CompanionDuts:                companionDuts,
 		ContainerMetadata:            containerMetadata,
@@ -321,7 +440,7 @@ func createProvisionableDimensions() ([]string, error) {
 }
 
 // createLabels creates labels.
-func createLabels(hwDef *testapi.SwarmingDefinition, suiteInfo *testapi.SuiteInfo) (*inventory.SchedulableLabels, error) {
+func createLabels(trHelper *TrV2ReqHelper) (*inventory.SchedulableLabels, error) {
 	labels := &inventory.SchedulableLabels{}
 
 	// TODO (azrahman): Revisit this.
@@ -338,17 +457,16 @@ func createLabels(hwDef *testapi.SwarmingDefinition, suiteInfo *testapi.SuiteInf
 	// Sol: 1) handle it ctpv2 via test_finder
 
 	// 2. Add buildTarget and model (Possible from middle out response)
-	// inv.Board, inv.Model
+	// inv., inv.Model
 	// TODO (azrahman): Handle non chromeos type.
-	board := strings.ToLower(hwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget())
-	model := strings.ToLower(hwDef.GetDutInfo().GetChromeos().GetDutModel().GetModelName())
-	labels.Board = &board
-	labels.Model = &model
 
-	if suiteInfo.GetSuiteMetadata().GetPool() == "" || suiteInfo.GetSuiteMetadata().GetPool() == DutPoolQuota {
+	labels.Board = &trHelper.board
+	labels.Model = &trHelper.model
+
+	if trHelper.pool == "" || trHelper.pool == DutPoolQuota {
 		labels.CriticalPools = append(labels.CriticalPools, inventory.SchedulableLabels_DUT_POOL_QUOTA)
-	} else if suiteInfo.GetSuiteMetadata().GetPool() != "" {
-		labels.SelfServePools = append(labels.SelfServePools, suiteInfo.GetSuiteMetadata().GetPool())
+	} else if trHelper.pool != "" {
+		labels.SelfServePools = append(labels.SelfServePools, trHelper.pool)
 	} else {
 		return nil, fmt.Errorf("no pool specified")
 	}
@@ -386,36 +504,67 @@ func createSecondaryLabels() ([]*inventory.SchedulableLabels, error) {
 }
 
 // createSwarmingTags creates swarming tags.
-func createSwarmingTags() []string {
-
+func createSwarmingTags(trHelper *TrV2ReqHelper) ([]string, error) {
 	tags := []string{}
-	// TODO(azrahman): remove this hardcoded qs account.
-	tags = append(tags, "qs_account:"+"pupr")
-	// tags := []string{
-	// 	"luci_project:" + g.WorkerConfig.LuciProject,
-	// 	"log_location:" + cmd.LogDogAnnotationURL,
-	// }
-	// // CTP "builds" triggered by `led` don't have a buildbucket ID.
-	// if g.ParentBuildID != 0 {
-	// 	tags = append(tags, "parent_buildbucket_id:"+strconv.FormatInt(g.ParentBuildID, 10))
-	// }
-	// tags = append(tags, "display_name:"+g.displayName(ctx, kv))
-	// if qa := g.Params.GetScheduling().GetQsAccount(); qa != "" {
-	// 	tags = append(tags, "qs_account:"+qa)
-	// }
 
-	// var reservedTags = map[string]bool{
-	// 	"qs_account":   true,
-	// 	"luci_project": true,
-	// 	"log_location": true,
-	// }
+	qsAccount := trHelper.suiteInfo.GetSuiteMetadata().GetSchedulerInfo().GetQsAccount()
+	if qsAccount == "" {
+		return tags, fmt.Errorf("no qs_account supplied")
+	}
+	tags = append(tags, "qs_account:"+qsAccount)
+
+	tags = append(tags, "label-board:"+trHelper.boardWVaraint)
+	if trHelper.model != "" {
+		tags = append(tags, "label-model:"+trHelper.model)
+	}
+
+	tags = append(tags, "label-pool:"+trHelper.pool)
+
+	if trHelper.suiteName != "" {
+		tags = append(tags, "label-suite:"+trHelper.suiteName)
+	}
+
+	if trHelper.currSwarmingID != "" {
+		tags = append(tags, "parent_task_id:"+trHelper.currSwarmingID)
+	}
+
+	// TODO should we un-hardcode this?
+	tags = append(tags, "luci_project:"+"chromeos")
+
+	if trHelper.analyticsName != "" {
+		tags = append(tags, "analytics_name:"+trHelper.analyticsName)
+		tags = append(tags, "ctp-fwd-task-name:"+trHelper.analyticsName)
+	}
+
+	tags = append(tags, "build:"+trHelper.builderStr)
+
+	if trHelper.currBBID != 0 {
+		tags = append(tags, fmt.Sprintf("parent_buildbucket_id:%v", trHelper.currBBID))
+	} else {
+		tags = append(tags, "parent_buildbucket_id:0")
+
+	}
+	// TODO(dbeckett) THESE BELOW:
+	reprName := fmt.Sprintf("shard-%v", trHelper.shardNum)
+	tags = append(tags, "display_name:"+makeDisplayName(trHelper.builderStr, trHelper.suiteName, reprName))
+	tags = append(tags, "log_location:"+getLogLocation())
 
 	// tags = append(tags, removeReservedTags(g.Params.GetDecorations().GetTags())...)
 	// // Add primary/secondary DUTs board/model info in swarming tags for
 	// // multi-DUTs result reporting purpose.
 	// tags = append(tags, g.multiDutsTags()...)
 
-	return tags
+	return tags, nil
+
+}
+
+// TODO (azrahaman)
+func getLogLocation() string {
+	return ""
+}
+
+func makeDisplayName(buildStr string, suite string, TRName string) string {
+	return fmt.Sprintf("%s/%s/%s", buildStr, suite, TRName)
 }
 
 // func (g *Generator) multiDutsTags() []string {
@@ -447,3 +596,42 @@ func createSwarmingTags() []string {
 // 	}
 // 	return tags
 // }
+
+// This method is currently incomplete, its basically just taking the gcs path from the given info.
+// it will migrate to the dynamic TRv2 stuff in the near future.
+func buildProvisionState(provInfo []*testapi.ProvisionInfo) (*testapi.ProvisionState, error) {
+	if len(provInfo) == 0 {
+		return nil, fmt.Errorf("No Provision Info items given")
+	}
+	gcsPath := provInfo[0].GetInstallRequest().GetImagePath().GetPath()
+	if gcsPath == "" {
+		return nil, fmt.Errorf("No gcs path found found")
+	}
+
+	provisionState := &testapi.ProvisionState{
+
+		SystemImage: &testapi.ProvisionState_SystemImage{
+			SystemImagePath: &goconfig.StoragePath{
+				HostType: goconfig.StoragePath_GS,
+				Path:     gcsPath,
+			},
+		},
+		ProvisionMetadata: nil,
+	}
+	return provisionState, nil
+}
+
+// For now, lets assume the ID is the variantID; and not used for other non-variant ID purpose.
+// It might be better to move this to a dedicated field in the SwarmingDefinition level. That way the provsionID can be used
+// for user defined fields.
+func getVariantFromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string {
+	t := TRRequesthwDef.GetProvisionInfo()
+	if len(t) == 0 {
+		return ""
+	}
+	return t[0].GetIdentifier()
+}
+
+func suiteName(suiteInfo *testapi.SuiteInfo) string {
+	return suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
+}

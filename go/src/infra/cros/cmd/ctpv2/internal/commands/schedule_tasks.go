@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	TestStepNameTemplate = "request %s-%s.hw.%s"
+	TestStepNameTemplate = "request %s-%s.hw.%s-shard-%v"
 )
 
 // ScheduleTasksCmd represents scheduling task(s) cmd.
@@ -126,29 +126,19 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	for i, trReq := range cmd.MiddledOutResp.TrReqs {
 		wg.Add(1)
 		logging.Infof(ctx, "scheduling task %d...", i)
-		go ScheduleTask(ctx, trReq, cmd.BuildState, cmd.MiddledOutResp.SuiteInfo, wg, cmd.Scheduler)
+		go ScheduleTask(ctx, trReq, cmd.BuildState, cmd.MiddledOutResp.SuiteInfo, wg, cmd.Scheduler, i)
 	}
 	wg.Wait()
 
 	return nil
 }
 
-func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.State, suiteInfo *api.SuiteInfo, wg *sync.WaitGroup, scheduler interfaces.SchedulerInterface) (*buildbucketpb.ScheduleBuildRequest, error) {
+func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.State, suiteInfo *api.SuiteInfo, wg *sync.WaitGroup, scheduler interfaces.SchedulerInterface, shardNum int) (*buildbucketpb.ScheduleBuildRequest, error) {
 	defer wg.Done()
-	// '0'ed index because we should always have one hw here. It supports multiple
-	// MO should reduce it down to 1 always. The len check is done at MO step.
-	hwDef := trReq.Req.GetHwDefinition()[0]
-	testCases := trReq.Tcs
-	board := strings.ToLower(hwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget())
-	suiteName := suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
-	// TODO (azrhaman): consider using board-model-variant-build rather
-	// than board-build in the request step name.
-	//model := strings.ToLower(hwDef.GetDutInfo().GetChromeos().GetDutModel().GetModelName())
-	//boardModelVariant := fmt.Sprintf("%s-%s", board, model)
 
-	var err error
-	step, ctx := build.StartStep(ctx, fmt.Sprintf(TestStepNameTemplate, board, FindBuildName(suiteInfo, board), suiteName))
-	defer func() { step.End(err) }()
+	if trReq.Req == nil {
+		return nil, nil
+	}
 
 	if len(trReq.Req.GetHwDefinition()) == 0 {
 		return nil, nil
@@ -156,6 +146,27 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 	if len(trReq.Tcs) == 0 {
 		return nil, nil
 	}
+
+	// '0'ed index because we should always have one hw here. It supports multiple
+	// MO should reduce it down to 1 always. The len check is done at MO step.
+	TrReqhwDef := trReq.Req.GetHwDefinition()[0]
+	testCases := trReq.Tcs
+	board := strings.ToLower(getBuildTargetfromHwDef(TrReqhwDef))
+	variant := strings.ToLower(getVariantFromHwDef(TrReqhwDef))
+	model := strings.ToLower(getModelTargetfromHwDef(TrReqhwDef))
+	suiteName := suiteName(suiteInfo)
+
+	builderString := board
+	if model != "" {
+		builderString = fmt.Sprintf("%s-%s", builderString, model)
+	}
+	if variant != "" {
+		builderString = fmt.Sprintf("%s-%s", builderString, variant)
+	}
+
+	var err error
+	step, ctx := build.StartStep(ctx, fmt.Sprintf(TestStepNameTemplate, builderString, FindBuildName(suiteInfo, board), suiteName, shardNum))
+	defer func() { step.End(err) }()
 
 	builderId := common.TestRunnerBuilderID()
 
@@ -166,7 +177,16 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 
 	// Generate req
 	var scheduledBuild *buildbucketpb.Build
-	req, err := GenerateTrv2Req(ctx, hwDef, testCases, buildState, suiteInfo, true)
+
+	helper := &TrV2ReqHelper{
+		trReqHWDef: TrReqhwDef,
+		testCases:  testCases,
+		build:      buildState,
+		suiteInfo:  suiteInfo,
+		shardNum:   shardNum,
+	}
+
+	req, err := GenerateTrv2Req(ctx, true, helper)
 	if err != nil {
 		logging.Infof(ctx, "error while generating req: %s", err)
 		return nil, errors.Annotate(err, "error while generating req:").Err()
@@ -244,6 +264,7 @@ func NewScheduleTasksCmd() *ScheduleTasksCmd {
 // FindBuildName finds build name from suite info.
 func FindBuildName(suiteInfo *api.SuiteInfo, board string) string {
 	for _, target := range suiteInfo.GetSuiteMetadata().GetTargetRequirements() {
+		// [0] is bc multi-dut
 		hwDef := target.GetHwRequirements().GetHwDefinition()[0]
 		if hwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget() == board {
 			return target.GetSwRequirement().GetBuild()

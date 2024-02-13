@@ -130,6 +130,8 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 		ExecutionMetadata:  executionMetadata(cmd.CtpReq),
 	}
 
+	suitemd.SchedulerInfo = generateSchedulerInfo(cmd.CtpReq)
+
 	internalStruct.SuiteInfo = &testapi.SuiteInfo{
 		SuiteMetadata: suitemd,
 		SuiteRequest:  cmd.CtpReq.GetSuiteRequest(),
@@ -338,6 +340,10 @@ func NewTranslateRequestCmd() *TranslateRequestCmd {
 	abstractCmd := interfaces.NewAbstractCmd(TranslateRequestType)
 	abstractSingleCmdByNoExecutor := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: abstractCmd}
 	return &TranslateRequestCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
+}
+
+func generateSchedulerInfo(req *api.CTPRequest) *api.SchedulerInfo {
+	return req.GetSchedulerInfo()
 }
 
 func executionMetadata(req *api.CTPRequest) *api.ExecutionMetadata {

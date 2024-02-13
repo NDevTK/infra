@@ -29,10 +29,12 @@ func TestCreateLabels(t *testing.T) {
 	testBoard := "board1"
 	testModel := "model3"
 	testPool := "swimming"
-	hw := buildDutTestProto(testBoard, testModel)
-	s := &testapi.SuiteInfo{SuiteMetadata: &testapi.SuiteMetadata{Pool: testPool}}
-
-	foo, err := createLabels(hw, s)
+	trHelper := &TrV2ReqHelper{
+		pool:  testPool,
+		board: testBoard,
+		model: testModel,
+	}
+	foo, err := createLabels(trHelper)
 	if err != nil {
 		t.Fatalf("error building labels")
 	}
@@ -53,8 +55,8 @@ func TestCreateLabels(t *testing.T) {
 	}
 
 	// Test no pool
-	s = &testapi.SuiteInfo{SuiteMetadata: &testapi.SuiteMetadata{}}
-	foo, err = createLabels(hw, s)
+	trHelper.pool = ""
+	foo, err = createLabels(trHelper)
 	if err != nil {
 		t.Fatalf("error building labels")
 	}
@@ -69,8 +71,8 @@ func TestCreateLabels(t *testing.T) {
 	}
 
 	// Test setting quota.
-	s = &testapi.SuiteInfo{SuiteMetadata: &testapi.SuiteMetadata{Pool: DutPoolQuota}}
-	foo, err = createLabels(hw, s)
+	trHelper.pool = DutPoolQuota
+	foo, err = createLabels(trHelper)
 	if err != nil {
 		t.Fatalf("error building labels")
 	}
