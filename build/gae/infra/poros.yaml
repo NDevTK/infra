@@ -11,4 +11,5 @@ build:
   # This packages all Go code, including the frontend code from
   # static
   - go_gae_bundle: ${inputsdir}/app.yaml
+    go_gae_bundle_as_module: True
     dest: ${contextdir}/poros

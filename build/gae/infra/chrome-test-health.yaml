@@ -11,4 +11,5 @@ build:
       - ${contextdir}/static
 
   - go_gae_bundle: ${contextdir}/app.yaml
+    go_gae_bundle_as_module: True
     dest: ${contextdir}/appengine
