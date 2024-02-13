@@ -12,8 +12,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-git/go-git/v5/plumbing/format/gitignore"
+
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
-	"gopkg.in/src-d/go-git.v4/plumbing/format/gitignore"
 
 	"infra/appengine/rubber-stamper/config"
 	"infra/appengine/rubber-stamper/internal/gerrit"
