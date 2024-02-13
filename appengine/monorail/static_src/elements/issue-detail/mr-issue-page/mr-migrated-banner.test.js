@@ -43,13 +43,13 @@ describe('mr-migrated-banner', () => {
     assert.isFalse(element.hasAttribute('hidden'));
   });
 
-  it('shows bugnizer link when migrate to bugnizer', async () => {
+  it('shows issue link when migrated off monorail', async () => {
     element.migratedId = '1234';
     element.migratedType = migratedTypes.BUGANIZER_TYPE
     await element.updateComplete;
 
     const link = element.shadowRoot.querySelector('a');
-    assert.include(link.textContent, 'b/1234');
+    assert.include(link.textContent, 'crbug.com/1234');
   });
 
   it('shows launch link when migrate to launch', async () => {
