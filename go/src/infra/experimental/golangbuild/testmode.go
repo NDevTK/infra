@@ -318,8 +318,8 @@ func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (module
 		//
 		// Sort modules by increasing nested-ness, and do this
 		// in reverse order for all but the first (root) module.
-		slices.SortFunc(modules, func(a, b module) bool {
-			return strings.Count(a.RootDir, string(filepath.Separator)) < strings.Count(b.RootDir, string(filepath.Separator))
+		slices.SortFunc(modules, func(a, b module) int {
+			return strings.Count(a.RootDir, string(filepath.Separator)) - strings.Count(b.RootDir, string(filepath.Separator))
 		})
 		for i := len(modules) - 1; i >= 1; i-- {
 			randomDir, err := os.MkdirTemp(spec.workdir, "nestedmod")
