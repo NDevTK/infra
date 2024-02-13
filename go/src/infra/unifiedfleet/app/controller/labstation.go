@@ -148,6 +148,9 @@ func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			}
 		}
 
+		// Update the machinelse from machine. (Should be a NOP, but fixes any bad machinelse zone/rack/realm settings)
+		setOutputField(ctx, machine, machinelse)
+
 		_, err = inventory.BatchUpdateMachineLSEs(ctx, []*ufspb.MachineLSE{machinelse})
 		if err != nil {
 			logging.Errorf(ctx, "Failed to BatchUpdate ChromeOSMachineLSEDUTs %s", err)
