@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package common_test
+package common_builders_test
 
 import (
 	"testing"
@@ -14,14 +14,14 @@ import (
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
-	"infra/cros/cmd/common_lib/common"
+	builders "infra/cros/cmd/common_lib/common_builders"
 )
 
 func TestCrosTestRunnerRequestBuilder(t *testing.T) {
-	builder := common.CrosTestRunnerRequestBuilder{}
+	builder := builders.CrosTestRunnerRequestBuilder{}
 
 	Convey("Empty CftTestRequest All Skipped", t, func() {
-		constructor := &common.CftCrosTestRunnerRequestConstructor{
+		constructor := &builders.CftCrosTestRunnerRequestConstructor{
 			Cft: &skylab_test_runner.CFTTestRequest{
 				StepsConfig: &tpcommon.CftStepsConfig{
 					ConfigType: &tpcommon.CftStepsConfig_HwTestConfig{
@@ -53,7 +53,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 	})
 
 	Convey("Build Params and StartRequest", t, func() {
-		constructor := &common.CftCrosTestRunnerRequestConstructor{
+		constructor := &builders.CftCrosTestRunnerRequestConstructor{
 			Cft: &skylab_test_runner.CFTTestRequest{
 				ParentRequestUid: "parent",
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
@@ -108,7 +108,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 	})
 
 	Convey("Builds Tasks", t, func() {
-		constructor := &common.CftCrosTestRunnerRequestConstructor{
+		constructor := &builders.CftCrosTestRunnerRequestConstructor{
 			Cft: &skylab_test_runner.CFTTestRequest{
 				ParentRequestUid: "parent",
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
@@ -153,7 +153,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 	})
 
 	Convey("Builds Tasks with Companions", t, func() {
-		constructor := &common.CftCrosTestRunnerRequestConstructor{
+		constructor := &builders.CftCrosTestRunnerRequestConstructor{
 			Cft: &skylab_test_runner.CFTTestRequest{
 				ParentRequestUid: "parent",
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{

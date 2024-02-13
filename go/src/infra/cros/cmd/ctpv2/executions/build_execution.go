@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/common_builders"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/protos"
 	"infra/cros/cmd/ctpv2/data"
@@ -48,6 +49,13 @@ func LuciBuildExecution() {
 			ctrCipdInfo := ctrCipdInfoReader(ctx)
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
+			if input.Ctpv2Request == nil {
+				logging.Infof(ctx, "missing CtpV2Request")
+				logging.Infof(ctx, "translating v1 request to v2")
+				logging.Infof(ctx, "v1: %v", input.Requests)
+				input.Ctpv2Request = common_builders.NewCTPV2FromV1(ctx, input.Requests).BuildRequest()
+				logging.Infof(ctx, "v2: %v", input.Ctpv2Request)
+			}
 			resp := &steps.CTPv2BinaryBuildOutput{}
 			_, err := executeCtpRequests(ctx, input.Ctpv2Request, ctrCipdInfo.GetVersion().GetCipdLabel(), st)
 			// TODO (azrahman): add compressed result for upstream

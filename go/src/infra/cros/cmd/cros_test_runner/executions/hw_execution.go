@@ -24,6 +24,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/common_builders"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/configs"
@@ -58,8 +59,8 @@ func HwExecution() {
 				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
 			} else if input.CftTestRequest.TranslateTrv2Request {
 				// If the request is a CrosTestRunner non-dynamic request with translation flag...
-				builder := &common.CrosTestRunnerRequestBuilder{}
-				constructor := &common.CftCrosTestRunnerRequestConstructor{
+				builder := &common_builders.CrosTestRunnerRequestBuilder{}
+				constructor := &common_builders.CftCrosTestRunnerRequestConstructor{
 					Cft: input.CftTestRequest,
 				}
 				crosTestRunnerRequest := builder.Build(constructor)
