@@ -69,7 +69,7 @@ WITH
       FROM `luci-analysis.internal.clustered_failures` cf
       WHERE
         partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-        AND project in ("chrome", "chromeos", "chromium", "turquoise", "fuchsia") -- TODO: should only query the LUCI Analysis projects relevant to the tree rather than all of them.
+        AND project in ("chrome", "chromeos", "chromium", "turquoise", "fuchsia", "devtools-frontend") -- TODO: should only query the LUCI Analysis projects relevant to the tree rather than all of them.
       GROUP BY project, cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time)
       )
   WHERE r.is_included
@@ -89,11 +89,11 @@ changepoint_analysis_unexpected_realtime AS(
     FROM (
         SELECT cp.*
         FROM luci-analysis.internal.test_variant_segments cp
-        WHERE cp.project IN ("chrome", "chromeos", "chromium", "turquoise", "fuchsia") AND has_recent_unexpected_results = 1
+        WHERE cp.project IN ("chrome", "chromeos", "chromium", "turquoise", "fuchsia", "devtools-frontend") AND has_recent_unexpected_results = 1
         UNION ALL
         SELECT cp.*
         FROM luci-analysis.internal.test_variant_segment_updates cp
-        WHERE cp.project IN ("chrome", "chromeos", "chromium", "turquoise", "fuchsia") AND has_recent_unexpected_results = 1
+        WHERE cp.project IN ("chrome", "chromeos", "chromium", "turquoise", "fuchsia", "devtools-frontend") AND has_recent_unexpected_results = 1
       ) merged
     GROUP BY project, test_id, variant_hash, ref_hash
 ),

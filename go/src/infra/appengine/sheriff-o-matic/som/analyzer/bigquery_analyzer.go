@@ -88,6 +88,10 @@ const angleFailuresQuery = selectFromWhere + `
 "angle" in UNNEST(SheriffRotations)
 `
 
+const devtoolsFrontendFailuresQuery = selectFromWhere + `
+"devtools_frontend" in UNNEST(SheriffRotations)
+`
+
 func chromeBrowserFilterFunc(tree string) func(r failureRow) bool {
 	return func(r failureRow) bool {
 		return sliceContains(r.SheriffRotations, tree)
@@ -219,6 +223,9 @@ func generateSQLQuery(ctx context.Context, tree string, appID string) (string, e
 	}
 	if tree == "angle" {
 		return fmt.Sprintf(angleFailuresQuery, appID, "angle"), nil
+	}
+	if tree == "devtools_frontend" {
+		return fmt.Sprintf(devtoolsFrontendFailuresQuery, appID, "devtools_frontend"), nil
 	}
 	return "", fmt.Errorf("invalid tree %q", tree)
 }

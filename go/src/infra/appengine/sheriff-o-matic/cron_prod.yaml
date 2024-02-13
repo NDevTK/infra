@@ -75,3 +75,8 @@ cron:
   url: /_cron/analyze/dawn
   schedule: every 5 minutes
   target: analyzer
+
+- description: Update Devtools Frontend alerts
+  url: /_cron/analyze/devtools_frontend
+  schedule: every 5 minutes
+  target: analyzer
