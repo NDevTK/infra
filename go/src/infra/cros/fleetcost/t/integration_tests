@@ -24,16 +24,16 @@ main() {
   test_suite
 
   case "$?" in
-    2) : "do nothing" ;;
+    0) : "do nothing" ;;
     *) die "unexpected status $?"
   esac
 }
 
 test_suite() {
-  "$fleetcost" ping -http                  || die 'test 1: ping'
-  "$fleetcost" pingufs -http              || die 'test 2: ping-ufs'
+  "$fleetcost" ping -http                        || die 'test 1: ping'
+  "$fleetcost" pingufs -http                     || die 'test 2: ping-ufs'
   "$fleetcost" create-ci -http -name "some-name" || die 'test 3: create-ci'
-  "$fleetcost" get-ci -http -name "some-name"    || die 'test 4: get-ci'
+  "$fleetcost" get-ci -http                      || die 'test 4: get-ci'
 }
 
 main "$@"
