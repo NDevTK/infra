@@ -236,7 +236,9 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 			}
 			for k, v := range schedulingArgs {
 				if _, ok := requestedArgs[k]; ok {
-					tags = AppendTags(tags, k, v)
+					// Converts tag key properly since some might contain
+					// hyphens.
+					tags = AppendTags(tags, convertTagKey(k), v)
 				}
 			}
 		}

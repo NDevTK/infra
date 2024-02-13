@@ -109,6 +109,13 @@ func normalizePath(p string) string {
 	return path.Clean(strings.ReplaceAll(p, "\\", "/"))
 }
 
+// convertTagKey converts the tag key to match the format
+// "^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*$".
+func convertTagKey(key string) string {
+	lowerKey := strings.ToLower(key)
+	return strings.ReplaceAll(lowerKey, "-", "_")
+}
+
 // processArtifacts walks the files in artifactDir then returns a map from normalized relative path to full path.
 func processArtifacts(artifactDir string) (normPathToFullPath map[string]string, err error) {
 	normPathToFullPath = map[string]string{}
