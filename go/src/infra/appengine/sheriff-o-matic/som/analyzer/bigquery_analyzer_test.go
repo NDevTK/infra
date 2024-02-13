@@ -1684,6 +1684,8 @@ func TestGetFilterFuncForTree(t *testing.T) {
 		So(err, ShouldBeNil)
 		_, err = getFilterFuncForTree("dawn")
 		So(err, ShouldBeNil)
+		_, err = getFilterFuncForTree("chromiumos")
+		So(err, ShouldBeNil)
 		_, err = getFilterFuncForTree("another")
 		So(err, ShouldNotBeNil)
 	})

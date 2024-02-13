@@ -21,6 +21,11 @@ cron:
   schedule: every 5 minutes
   target: analyzer
 
+- description: Update ChromeOS on Chrome CI alerts
+  url: /_cron/analyze/chromiumos
+  schedule: every 5 minutes
+  target: analyzer
+
 - description: Update ChromeOS Alerts
   url: /_cron/analyze/chromeos
   schedule: every 5 minutes
