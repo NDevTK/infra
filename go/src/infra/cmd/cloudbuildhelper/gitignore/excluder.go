@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gopkg.in/src-d/go-git.v4/plumbing/format/gitignore"
+	"github.com/go-git/go-git/v5/plumbing/format/gitignore"
 
 	"go.chromium.org/luci/common/errors"
 

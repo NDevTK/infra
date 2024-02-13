@@ -11,9 +11,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/go-git/go-git/v5/plumbing/format/gitignore"
+
 	"go.chromium.org/luci/common/logging"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
-	"gopkg.in/src-d/go-git.v4/plumbing/format/gitignore"
 
 	"infra/appengine/rubber-stamper/config"
 	"infra/appengine/rubber-stamper/internal/gerrit"
