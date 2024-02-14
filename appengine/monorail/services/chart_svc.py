@@ -199,14 +199,11 @@ class ChartService(object):
         'Stats.id = IssueSnapshot.status_id', []))
       cols = ['Stats.status', 'COUNT(IssueSnapshot.issue_id)']
       group_by = ['Stats.status']
-    elif group_by == 'owner':
-      cols = ['IssueSnapshot.owner_id', 'COUNT(IssueSnapshot.issue_id)']
-      group_by = ['IssueSnapshot.owner_id']
     elif not group_by:
       cols = ['IssueSnapshot.issue_id']
     else:
       raise ValueError('`group_by` must be label, component, ' \
-        'open, status, owner or None.')
+        'open, status, or None.')
 
     if query_left_joins:
       left_joins.extend(query_left_joins)

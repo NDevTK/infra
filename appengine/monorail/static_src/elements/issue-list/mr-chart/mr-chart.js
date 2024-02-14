@@ -91,7 +91,6 @@ const queryParamsHaveChanged = createObjectComparisonFunc(subscribedQuery);
  */
 const groupByMapping = {
   'open': {display: 'Is open', value: 'open'},
-  'owner': {display: 'Owner', value: 'owner'},
   'comonent': {display: 'Component', value: 'component'},
   'status': {display: 'Status', value: 'status'},
 };
@@ -407,7 +406,7 @@ export default class MrChart extends LitElement {
    */
   async _constructDropdownMenu() {
     const response = await this._getLabelPrefixes();
-    let dropdownOptions = ['None', 'Component', 'Is open', 'Status', 'Owner'];
+    let dropdownOptions = ['None', 'Component', 'Is open', 'Status'];
     dropdownOptions = dropdownOptions.concat(response);
     const dropdownHTML = dropdownOptions.map((str) => html`
       <option class='menu' @click=${this._setGroupBy}>
@@ -729,7 +728,6 @@ export default class MrChart extends LitElement {
       case 'Is open':
         this.groupBy = {value: 'open'};
         break;
-      case 'Owner':
       case 'Component':
       case 'Status':
         this.groupBy = {value: e.target.text.toLowerCase()};

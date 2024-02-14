@@ -103,6 +103,16 @@ class ChartServiceTest(unittest.TestCase):
     """Make sure the `group_by` argument is checked."""
     project = fake.Project(project_id=789)
     perms = permissions.USER_PERMISSIONSET
+
+    # rutabaga mox call
+    search_helpers.GetPersonalAtRiskLabelIDs(
+        self.cnxn, None, self.config_service, [10, 20], project,
+        perms).AndReturn([91, 81])
+    self.services.chart._QueryToWhere(
+        mox.IgnoreArg(), mox.IgnoreArg(), mox.IgnoreArg(), mox.IgnoreArg(),
+        mox.IgnoreArg(), mox.IgnoreArg()).AndReturn(([], [], []))
+
+    # owner mox call
     search_helpers.GetPersonalAtRiskLabelIDs(self.cnxn, None,
         self.config_service, [10, 20], project,
         perms).AndReturn([91, 81])
@@ -115,6 +125,15 @@ class ChartServiceTest(unittest.TestCase):
       self.services.chart.QueryIssueSnapshots(self.cnxn, self.services,
           unixtime=1514764800, effective_ids=[10, 20], project=project,
           perms=perms, group_by='rutabaga', label_prefix='rutabaga')
+    with self.assertRaises(ValueError):
+      self.services.chart.QueryIssueSnapshots(
+          self.cnxn,
+          self.services,
+          unixtime=1514764800,
+          effective_ids=[10, 20],
+          project=project,
+          perms=perms,
+          group_by='owner')
     self.mox.VerifyAll()
 
   def testQueryIssueSnapshots_NoLabelPrefix(self):
@@ -326,36 +345,6 @@ class ChartServiceTest(unittest.TestCase):
     self.services.chart.QueryIssueSnapshots(self.cnxn, self.services,
         unixtime=1514764800, effective_ids=[10, 20], project=project,
         perms=perms, hotlist=hotlist)
-    self.mox.VerifyAll()
-
-  def testQueryIssueSnapshots_Owner(self):
-    """Test a burndown query from a regular user grouping by owner."""
-    project = fake.Project(project_id=789)
-    perms = permissions.PermissionSet(['BarPerm'])
-    search_helpers.GetPersonalAtRiskLabelIDs(self.cnxn, None,
-        self.config_service, [10, 20], project,
-        perms).AndReturn([91, 81])
-    cols = [
-      'IssueSnapshot.owner_id',
-      'COUNT(IssueSnapshot.issue_id)',
-    ]
-    left_joins = self.defaultLeftJoins
-    where = self.defaultWheres
-    group_by = ['IssueSnapshot.owner_id']
-    stmt, stmt_args = self.services.chart._BuildSnapshotQuery(cols, where,
-        left_joins, group_by, shard_id=0)
-
-    self.services.chart._QueryToWhere(mox.IgnoreArg(), mox.IgnoreArg(),
-        mox.IgnoreArg(), mox.IgnoreArg(), mox.IgnoreArg(),
-        mox.IgnoreArg()).AndReturn(([], [], []))
-    self.cnxn.Execute(stmt, stmt_args, shard_id=0).AndReturn([])
-
-    self._verifySQL(cols, left_joins, where, group_by)
-
-    self.mox.ReplayAll()
-    self.services.chart.QueryIssueSnapshots(self.cnxn, self.services,
-        unixtime=1514764800, effective_ids=[10, 20], project=project,
-        perms=perms, group_by='owner')
     self.mox.VerifyAll()
 
   def testQueryIssueSnapshots_NoGroupBy(self):

@@ -1561,23 +1561,6 @@ class IssuesServicerTest(unittest.TestCase):
     mockSnapshotCountsQuery.assert_called_once_with(self.project, 1531334109,
         'status', label_prefix='', query=None, canned_query=None, hotlist=None)
 
-  @patch('businesslogic.work_env.WorkEnv.SnapshotCountsQuery')
-  def testSnapshotCounts_GroupByOwner(self, mockSnapshotCountsQuery):
-    """Tests grouping by status with a query."""
-    request = issues_pb2.IssueSnapshotRequest(
-        timestamp=1531334109, project_name='proj', group_by='owner')
-    mc = monorailcontext.MonorailContext(
-        self.services, cnxn=self.cnxn, requester='owner@example.com')
-    mockSnapshotCountsQuery.return_value = ({111: 100}, [], True)
-
-    response = self.CallWrapped(self.issues_svcr.IssueSnapshot, mc, request)
-
-    self.assertEqual(1, len(response.snapshot_count))
-    self.assertEqual('owner@example.com', response.snapshot_count[0].dimension)
-    self.assertEqual(100, response.snapshot_count[0].count)
-    mockSnapshotCountsQuery.assert_called_once_with(self.project, 1531334109,
-        'owner', label_prefix='', query=None, canned_query=None, hotlist=None)
-
   @patch('businesslogic.work_env.WorkEnv.GetHotlist')
   @patch('businesslogic.work_env.WorkEnv.SnapshotCountsQuery')
   def testSnapshotCounts_WithHotlist(self, mockSnapshotCountsQuery,

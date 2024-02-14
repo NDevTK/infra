@@ -584,19 +584,11 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
           project, request.timestamp, request.group_by,
           label_prefix=request.label_prefix, query=query,
           canned_query=canned_query, hotlist=hotlist)
-    if request.group_by == 'owner':
-      # Map user ids to emails.
-      snapshot_counts = [
-          issues_pb2.IssueSnapshotCount(
-              dimension=self.services.user.GetUser(mc.cnxn, key).email,
-              count=result)
-          for key, result in sorted(results.items(), key=sorting.Python2Key)
-      ]
-    else:
-      snapshot_counts = [
-          issues_pb2.IssueSnapshotCount(dimension=key, count=result)
-          for key, result in sorted(results.items(), key=sorting.Python2Key)
-      ]
+
+    snapshot_counts = [
+        issues_pb2.IssueSnapshotCount(dimension=key, count=result)
+        for key, result in sorted(results.items(), key=sorting.Python2Key)
+    ]
     response = issues_pb2.IssueSnapshotResponse()
     response.snapshot_count.extend(snapshot_counts)
     response.unsupported_field.extend(unsupported_fields)
