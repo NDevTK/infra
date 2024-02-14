@@ -121,7 +121,11 @@ func (cmd *MiddleOutRequestCmd) Execute(ctx context.Context) error {
 	//common.WriteProtoToStepLog(ctx, step, cmd.InternalTestPlan, "Middle out input")
 
 	// TODO (dbeckett/Aziz) figure out how to properly make this
-	cfg := distroCfg{isUnitTest: true, unitTestDevices: 5, maxInShard: 1000}
+	pool := cmd.InternalTestPlan.GetSuiteInfo().GetSuiteMetadata().GetPool()
+	if pool == "" {
+		pool = "DUT_POOL_QUOTA"
+	}
+	cfg := distroCfg{maxInShard: 150, pool: pool}
 
 	trReqs, err := middleOut(ctx, cmd.InternalTestPlan, cfg)
 	if err != nil {
@@ -174,6 +178,7 @@ type kv struct {
 }
 
 type distroCfg struct {
+	pool            string
 	isUnitTest      bool
 	unitTestDevices int
 	maxInShard      int
@@ -447,6 +452,7 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 	}
 
 	if solverData.cfg.unitTestDevices == 0 {
+		logging.Infof(ctx, "Looking for lab devices")
 		swarmingServ, err := common.CreateNewSwarmingService(context.Background())
 		if err != nil {
 			logging.Infof(ctx, fmt.Sprintf("error found while creating new swarming service: %s", err))
@@ -458,12 +464,14 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 			wg.Add(1)
 			go func(hwInfoInput *hwInfo) {
 				defer wg.Done()
-				dims := CreateDims(hwInfoInput)
+				dims := CreateDims(hwInfoInput, solverData.cfg.pool)
 				botCount, err := common.GetBotCount(ctx, dims, swarmingServ)
 				if err != nil {
 					logging.Infof(ctx, fmt.Sprintf("error found in GetBOTcount: %s", err))
 				}
 				hwInfoInput.labLoading = &loading{value: int(botCount)}
+				logging.Infof(ctx, "Found for lab devices: %v", botCount)
+
 			}(hwInfoObj)
 		}
 		wg.Wait()
@@ -471,7 +479,7 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 }
 
 // CreateDims creates dims list from hwInfo object.
-func CreateDims(hwInfo *hwInfo) []string {
+func CreateDims(hwInfo *hwInfo, pool string) []string {
 	if hwInfo == nil || hwInfo.req == nil || len(hwInfo.req.HwDefinition) < 1 {
 		return []string{}
 	}
@@ -491,6 +499,9 @@ func CreateDims(hwInfo *hwInfo) []string {
 			}
 			if dutModel.GetModelName() != "" {
 				dims = append(dims, fmt.Sprintf("label-model:%s", strings.ToLower(dutModel.GetModelName())))
+			}
+			if pool != "" {
+				dims = append(dims, fmt.Sprintf("label-pool:%s", pool))
 			}
 		}
 
