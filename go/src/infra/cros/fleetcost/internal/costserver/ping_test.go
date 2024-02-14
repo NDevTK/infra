@@ -8,6 +8,9 @@ import (
 	"context"
 	"testing"
 
+	"go.chromium.org/luci/common/testing/assert"
+	"go.chromium.org/luci/common/testing/assert/should"
+
 	fleetcostpb "infra/cros/fleetcost/api"
 	testsupport "infra/cros/fleetcost/internal/costserver/testsupport"
 )
@@ -19,7 +22,8 @@ func TestPing(t *testing.T) {
 	ctx := context.Background()
 	tf := testsupport.NewFixture(ctx, t)
 
-	_, err := tf.Frontend.Ping(tf.Ctx, &fleetcostpb.PingRequest{})
+	response, err := tf.Frontend.Ping(tf.Ctx, &fleetcostpb.PingRequest{})
+	assert.Assert(t, response, should.Equal(&fleetcostpb.PingResponse{}))
 	if err != nil {
 		t.Error(err)
 	}
