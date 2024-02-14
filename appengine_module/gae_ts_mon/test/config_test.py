@@ -8,14 +8,22 @@ import os
 
 import gae_ts_mon
 import mock
-import webapp2
+import six
+
+import flask
+# webapp2 won't be available in Chrome Infra Python3 SDK.
+try:
+  import webapp2
+except ImportError:  # pragma: no cover
+  webapp2 = None
+else:  # pragma: no cover
+  from infra_libs.ts_mon import instrument_webapp2  # pylint: disable=ungrouped-imports
 
 from .test_support import test_case
 
 from infra_libs.ts_mon import config
 from infra_libs.ts_mon import shared
 from infra_libs.ts_mon import instrument_flask
-from infra_libs.ts_mon import instrument_webapp2
 from infra_libs.ts_mon.common import http_metrics
 from infra_libs.ts_mon.common import interface
 from infra_libs.ts_mon.common import monitors
@@ -35,7 +43,10 @@ class InitializeTest(test_case.TestCase):
         new=self.mock_state).start()
     mock.patch('infra_libs.ts_mon.common.monitors.HttpsMonitor',
                autospec=True).start()
-    self.app = webapp2.WSGIApplication()
+    if webapp2:  # pragma: no cover
+      self.app = webapp2.WSGIApplication()
+    else:  # pragma: no cover
+      self.app = flask.Flask('test_app')
 
   def tearDown(self):
     config.reset_for_unittest()
@@ -76,9 +87,12 @@ class InitializeTest(test_case.TestCase):
       config.initialize(app=None, is_local_unittest=False)
 
   def test_sets_monitor_dev(self):
-    config.initialize(self.app, is_local_unittest=False)
-    self.assertFalse(monitors.HttpsMonitor.called)
-    self.assertIsInstance(self.mock_state.global_monitor, monitors.DebugMonitor)
+    # This tests the dev appserver behavior and is not applicable for py3.
+    if six.PY2:  # pragma: no cover
+      config.initialize(self.app, is_local_unittest=False)
+      self.assertFalse(monitors.HttpsMonitor.called)
+      self.assertIsInstance(self.mock_state.global_monitor,
+                            monitors.DebugMonitor)
 
   def test_initialize_with_enabled_fn(self):
     is_enabled_fn = mock.Mock()
@@ -146,9 +160,10 @@ class InstrumentWSGIApplicationTest(test_case.TestCase):
     super(InstrumentWSGIApplicationTest, self).setUp()
 
   def testWithWebapp2(self):
-    app = webapp2.WSGIApplication()
-    config.instrument_wsgi_application(app, time_fn=None)
-    self.assertTrue(instrument_webapp2._is_instrumented(app))
+    if webapp2:  # pragma: no cover
+      app = webapp2.WSGIApplication()
+      config.instrument_wsgi_application(app, time_fn=None)
+      self.assertTrue(instrument_webapp2._is_instrumented(app))
 
   def testWithFlask(self):
     app = flask.Flask('test_app')

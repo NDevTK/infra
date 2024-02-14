@@ -1,0 +1,5 @@
+[run]
+include = ../*
+omit =
+     ../instrument_endpoint.py
+     ../instrument_webapp2.py

@@ -78,14 +78,14 @@ def report_memory(handler):
   min_delta = 0.5
 
   def dispatch_and_report(*args, **kwargs):
-    if six.PY2:
+    if six.PY2:  # pragma: no cover
       before = apiruntime.runtime.memory_usage().current()
     else:  # pragma: no cover
       before = apiruntime.runtime.memory_usage().current
     try:
       return handler(*args, **kwargs)
     finally:
-      if six.PY2:
+      if six.PY2:  # pragma: no cover
         after = apiruntime.runtime.memory_usage().current()
       else:  # pragma: no cover
         after = apiruntime.runtime.memory_usage().current

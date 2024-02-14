@@ -9,6 +9,7 @@ import os
 
 import gae_ts_mon
 import mock
+import six
 
 from google.appengine.api.runtime import runtime
 from .test_support import test_case
@@ -105,5 +106,7 @@ class ReportMemoryTest(test_case.TestCase):
         return request
 
       with mock.patch.object(runtime, 'memory_usage') as m:
+        if six.PY3:  # pragma: no cover
+          m.return_value.current = 10
         handler('input params')
         m.assert_called()

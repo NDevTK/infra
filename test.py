@@ -26,12 +26,22 @@ WIN_ENABLED_PACKAGES = [
   'packages/infra_libs/infra_libs/ts_mon',
 ]
 
+# Test shared GAE code and individual GAE apps only on 64-bit Posix. This
+# matches GAE environment.
+TEST_GAE = sys.platform != 'win32' and sys.maxsize == (2**63) - 1
+
 # Tests to run under vpython3. These should not be part of any
 # of the py2 modules listed below, and must contain their own
 # __main__ implementation.
 VPYTHON3_TESTS = [
     'infra/tools/dockerbuild/test/smoke_test.py',
 ]
+
+if TEST_GAE and os.path.isdir(os.path.join(INFRA_ROOT, 'appengine_module')):
+  VPYTHON3_TESTS += [
+      'appengine_module/gae_ts_mon/test/test.py',
+  ]
+
 
 def usage():
   print("""\nUsage: %s <action> [--py3] [<test names>] [<expect_tests options>]
@@ -123,14 +133,12 @@ if not modules:
     modules.extend(['infra'])
     modules.extend(get_modules_with_coveragerc('packages'))
 
-  # Test shared GAE code and individual GAE apps only on 64-bit Posix. This
-  # matches GAE environment. Skip this if running tests when testing
-  # infra_python CIPD package integrity: the package doesn't have appengine
-  # code in it.
-  # TODO: appengine tests don't yet work with py3
+  # Skip GAE tests when testing infra_python CIPD package integrity: the
+  # package doesn't have appengine code in it.
+  #
+  # For py3, these tests run via their own test.py rather than expect_tests.
   if not py3 and os.path.isdir(os.path.join(INFRA_ROOT, 'appengine')):
-    test_gae = sys.platform != 'win32' and sys.maxsize == (2 ** 63) - 1
-    if test_gae:
+    if TEST_GAE:
       modules.append('appengine_module')
       modules.extend(get_modules_with_coveragerc('appengine'))
 

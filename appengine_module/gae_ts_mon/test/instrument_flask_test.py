@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import flask
 import mock
+import six
 import werkzeug
 
 from google.appengine.api.runtime import runtime
@@ -110,7 +111,7 @@ class InstrumentFlaskTest(test_case.TestCase):
 
     with self.assertRaises(Exception) as e:
       self.app.test_client().get('/uncaught_exception')
-    self.assertTrue('an exception' in e.exception)
+    self.assertTrue('an exception' in str(e.exception))
     self.validate_http_metrics('/uncaught_exception', 500, '')
 
   @parameterized.expand([
@@ -283,6 +284,8 @@ class AssignTaskNumTest(test_case.TestCase):
 
   def test_success(self):
     with mock.patch.object(runtime, 'memory_usage') as m:
+      if six.PY3:  # pragma: no cover
+        m.return_value.current = 10
       resp = self.app.test_client().get(
           shared.CRON_REQUEST_PATH_TASKNUM_ASSIGNER,
           headers={'X-Appengine-Cron': 'true'})
@@ -291,6 +294,8 @@ class AssignTaskNumTest(test_case.TestCase):
 
   def test_unauthorized(self):
     with mock.patch.object(runtime, 'memory_usage') as m:
+      if six.PY3:  # pragma: no cover
+        m.return_value.current = 10
       resp = self.app.test_client().get(
           shared.CRON_REQUEST_PATH_TASKNUM_ASSIGNER)
       self.assertEqual(resp.status_code, 403)

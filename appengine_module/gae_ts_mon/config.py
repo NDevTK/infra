@@ -25,7 +25,7 @@ try:
 except ImportError:  # pragma: no cover
   webapp2 = None
 else:
-  from infra_libs.ts_mon import instrument_webapp2  # pylint: disable=ungrouped-imports
+  from infra_libs.ts_mon import instrument_webapp2  # pylint: disable=ungrouped-imports # pragma: no cover
 
 from google.appengine.api import modules
 from google.appengine.api.app_identity import app_identity
@@ -77,10 +77,10 @@ def initialize(
     is_local_unittest=None):
   """Instruments webapp2 `app` with gae_ts_mon metrics.
 
-  Instruments all the endpoints in `app` with basic metrics. This method should 
-  not be used anymore. Please switch to initialize_adhoc(), or initialise_prod() 
-  if the App has migrated away from the shared prodx-mon-chrome-infra service 
-  account (crbug.com/1322775). 
+  Instruments all the endpoints in `app` with basic metrics. This method should
+  not be used anymore. Please switch to initialize_adhoc(), or initialise_prod()
+  if the App has migrated away from the shared prodx-mon-chrome-infra service
+  account (crbug.com/1322775).
 
   Args:
     app (webapp2 app): the app to instrument.
@@ -215,7 +215,7 @@ def initialize_adhoc(app,
 def instrument_wsgi_application(app, time_fn=time.time):
   """Instrument a given WSGI app."""
   if webapp2 is not None and isinstance(app, webapp2.WSGIApplication):
-    return instrument_webapp2.instrument(app, time_fn)
+    return instrument_webapp2.instrument(app, time_fn)  # pragma: no cover
 
   if flask is not None and isinstance(app, flask.Flask):
     return instrument_flask.instrument(app, time_fn)

@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import
 import google  # provided by GAE
-import imp
 import os
 import six
 import sys
@@ -29,7 +28,12 @@ if six.PY2:  # pragma: no cover
 # Pretend that we are the infra_libs.ts_mon package, so users can use the same
 # import lines in gae and non-gae code.
 if 'infra_libs' not in sys.modules:  # pragma: no cover
-  sys.modules['infra_libs'] = imp.new_module('infra_libs')
+  if six.PY2:
+    import imp
+    sys.modules['infra_libs'] = imp.new_module('infra_libs')
+  else:
+    import types
+    sys.modules['infra_libs'] = types.ModuleType('infra_libs')
 
 sys.modules['infra_libs'].ts_mon = sys.modules[__package__]
 sys.modules['infra_libs.ts_mon'] = sys.modules[__package__]

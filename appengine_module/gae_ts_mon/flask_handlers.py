@@ -4,7 +4,7 @@
 
 try:
   import html
-except ImportError:
+except ImportError:  # pragma: no cover
   import cgi as html
 import json
 import logging
@@ -171,7 +171,7 @@ class TSMonJSFlaskHandler(object):
     self.response.data = 'Ok.'
     return self.response
 
-  def xsrf_is_valid(self, _body):
+  def xsrf_is_valid(self, _body):  # pragma: no cover
     """Takes a request body and returns whether the included XSRF token
     is valid.
 
