@@ -63,11 +63,10 @@ func SetDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) {
 // GetDefaultFilters constructs ctp filters for provided default filters.
 func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int) ([]*api.CTPFilter, error) {
 	defaultFilters := make([]*api.CTPFilter, 0)
-
 	logging.Infof(ctx, "Inside Default Filters: %s", defaultFilterNames)
 	for _, filterName := range defaultFilterNames {
 		// Attempt to map the filter from the known container metadata.
-		ctpFilter, err := CreateCTPFilterWithContainerName(filterName, contMetadataMap, build)
+		ctpFilter, err := CreateCTPFilterWithContainerName(filterName, contMetadataMap, build, true)
 		if err == nil {
 			defaultFilters = append(defaultFilters, ctpFilter)
 			continue
@@ -77,7 +76,7 @@ func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMet
 		// Test-Finder must always come from the contMetadataMap. Thus if we do not have the "filter" version,
 		// We will setup to run the legacy test-finder.
 		if filterName == TestFinderContainerName {
-			TFFilter, err := CreateCTPFilterWithContainerName(TestFinderContainerName, contMetadataMap, build)
+			TFFilter, err := CreateCTPFilterWithContainerName(TestFinderContainerName, contMetadataMap, build, false)
 			if err != nil {
 				return nil, errors.Annotate(err, "failed to create test-finder default filter").Err()
 			}
@@ -119,8 +118,21 @@ func CreateCTPDefaultWithContainerName(name string, digest string, build int) (*
 
 }
 
+func defaultName(name string) bool {
+	for _, defName := range binaryLookup {
+		if name == defName {
+			return true
+		}
+	}
+	return false
+}
+
 // CreateCTPFilterWithContainerName creates ctp filter for provided container name through provided container metadata.
-func CreateCTPFilterWithContainerName(name string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int) (*api.CTPFilter, error) {
+func CreateCTPFilterWithContainerName(name string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int, buildCheck bool) (*api.CTPFilter, error) {
+	// This error will be caught and pushed into the default prod container flow.
+	if defaultName(name) && buildCheck && needBackwardsCompatibility(build) {
+		return nil, fmt.Errorf("incompatible metadata build")
+	}
 	if _, ok := contMetadataMap[name]; !ok {
 		return nil, errors.Reason("could not find container image info for %s in provided map", name).Err()
 	}
@@ -193,7 +205,7 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *skylab_t
 }
 
 func needBackwardsCompatibility(build int) bool {
-	return build < 15769
+	return build < 15777
 }
 
 // CreateTTCPContainerRequest creates container request from provided ctp filter.
