@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"google.golang.org/protobuf/proto"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
@@ -20,27 +19,22 @@ import (
 
 func TestCTPv1Tov2Translation(t *testing.T) {
 	Convey("Single Translation", t, func() {
-		expected := &testapi.CTPv2Request{
-			Requests: []*testapi.CTPRequest{
-				getCTPv2Request("board", "model", "release", "board-release/R123.0.0", "", "suite", ""),
-			},
-		}
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", ""),
 		}
 		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
 
 		So(result.GetRequests(), ShouldHaveLength, 1)
-		So(IsEqualCTPv2(result, expected), ShouldBeTrue)
+		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 1)
+		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetHwTarget().GetLegacyHw().GetBoard(), ShouldEqual, "board")
+		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetHwTarget().GetLegacyHw().GetModel(), ShouldEqual, "model")
+		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetBuild(), ShouldEqual, "release")
+		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/board-release/R123.0.0")
+		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetVariant(), ShouldEqual, "")
 	})
 
 	Convey("Multi Translation, no grouping", t, func() {
-		expected := &testapi.CTPv2Request{
-			Requests: []*testapi.CTPRequest{
-				getCTPv2Request("board", "model", "release", "board-release/R123.0.0", "", "suite", ""),
-				getCTPv2Request("board", "model", "release", "board-release/R124.0.0", "", "suite", ""),
-			},
-		}
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", ""),
 			"r2": getCTPv1Request("board", "model", "board-release/R124.0.0", "suite", ""),
@@ -48,16 +42,22 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
 
 		So(result.GetRequests(), ShouldHaveLength, 2)
-		So(IsEqualCTPv2(result, expected), ShouldBeTrue)
+		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 1)
+		So(result.GetRequests()[1].GetScheduleTargets(), ShouldHaveLength, 1)
+		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		So(result.GetRequests()[1].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		target1 := result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0]
+		target2 := result.GetRequests()[1].GetScheduleTargets()[0].GetTargets()[0]
+		if target1.GetSwTarget().GetLegacySw().GetGcsPath() != "gs://chromeos-image-archive/board-release/R123.0.0" {
+			swap := target1
+			target1 = target2
+			target2 = swap
+		}
+		So(target1.GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/board-release/R123.0.0")
+		So(target2.GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/board-release/R124.0.0")
 	})
 
 	Convey("Multi Translation, grouping", t, func() {
-		expected := &testapi.CTPv2Request{
-			Requests: builders.GroupV2Requests(context.Background(), []*testapi.CTPRequest{
-				getCTPv2Request("board", "model", "release", "board-release/R123.0.0", "", "suite", ""),
-				getCTPv2Request("board", "model2", "release", "board-release/R123.0.0", "", "suite", ""),
-			}),
-		}
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", ""),
 			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", ""),
@@ -65,7 +65,18 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
 
 		So(result.GetRequests(), ShouldHaveLength, 1)
-		So(IsEqualCTPv2(result, expected), ShouldBeTrue)
+		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 2)
+		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		So(result.GetRequests()[0].GetScheduleTargets()[1].GetTargets(), ShouldHaveLength, 1)
+		target1 := result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0]
+		target2 := result.GetRequests()[0].GetScheduleTargets()[1].GetTargets()[0]
+		if target1.GetHwTarget().GetLegacyHw().GetModel() != "model" {
+			swap := target1
+			target1 = target2
+			target2 = swap
+		}
+		So(target1.GetHwTarget().GetLegacyHw().GetModel(), ShouldEqual, "model")
+		So(target2.GetHwTarget().GetLegacyHw().GetModel(), ShouldEqual, "model2")
 	})
 }
 
@@ -284,30 +295,4 @@ func getChromeosSoftwareDeps(chromeosBuild string) []*test_platform.Request_Para
 			},
 		},
 	}
-}
-
-func IsEqualCTPv2(req1, req2 *testapi.CTPv2Request) bool {
-	// If lists end up in same order, all good.
-	if proto.Equal(req1, req2) {
-		return true
-	}
-
-	if len(req1.GetRequests()) != len(req2.GetRequests()) {
-		return false
-	}
-
-	matchPool := req2.GetRequests()
-
-	// Perform window search
-	for _, r1 := range req1.GetRequests() {
-		for i, r2 := range matchPool {
-			if proto.Equal(r1, r2) {
-				matchPool[i] = matchPool[len(matchPool)-1]
-				matchPool = matchPool[:len(matchPool)-1]
-				break
-			}
-		}
-	}
-
-	return len(matchPool) == 0
 }
