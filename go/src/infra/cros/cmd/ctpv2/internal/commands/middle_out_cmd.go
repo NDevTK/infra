@@ -169,6 +169,7 @@ type hwInfo struct {
 	numInCurrentShard int
 	hwValue           uint64
 	provValue         uint64
+	labDevices        int64
 }
 
 // Kv structs are useful for gobased sorting.
@@ -270,8 +271,9 @@ func createTrRequests(distro map[uint64][][]string, solverData *middleOutData) (
 				shardedtcs = append(shardedtcs, lltc)
 			}
 			trReq := &data.TrRequest{
-				Req: solverData.flatHWUUIDMap[k].req,
-				Tcs: shardedtcs,
+				Req:        solverData.flatHWUUIDMap[k].req,
+				Tcs:        shardedtcs,
+				LabDevices: solverData.flatHWUUIDMap[k].labDevices,
 			}
 			TrRequests = append(TrRequests, trReq)
 		}
@@ -464,12 +466,20 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 			wg.Add(1)
 			go func(hwInfoInput *hwInfo) {
 				defer wg.Done()
-				dims := CreateDims(hwInfoInput, solverData.cfg.pool)
+				dims := CreateDims(hwInfoInput, solverData.cfg.pool, true)
+				dimsExcludingReady := CreateDims(hwInfoInput, solverData.cfg.pool, false)
+
 				botCount, err := common.GetBotCount(ctx, dims, swarmingServ)
 				if err != nil {
 					logging.Infof(ctx, fmt.Sprintf("error found in GetBOTcount: %s", err))
 				}
+				totalBotCount, err := common.GetBotCount(ctx, dimsExcludingReady, swarmingServ)
+				if err != nil {
+					logging.Infof(ctx, fmt.Sprintf("error found in GetBOTcount: %s", err))
+				}
+
 				hwInfoInput.labLoading = &loading{value: int(botCount)}
+				hwInfoInput.labDevices = totalBotCount
 				logging.Infof(ctx, "Found for lab devices: %v", botCount)
 
 			}(hwInfoObj)
@@ -479,12 +489,16 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 }
 
 // CreateDims creates dims list from hwInfo object.
-func CreateDims(hwInfo *hwInfo, pool string) []string {
+func CreateDims(hwInfo *hwInfo, pool string, readycheck bool) []string {
 	if hwInfo == nil || hwInfo.req == nil || len(hwInfo.req.HwDefinition) < 1 {
 		return []string{}
 	}
 
-	deafultDims := []string{"dut_state:ready"}
+	deafultDims := []string{}
+	if readycheck {
+		deafultDims = append(deafultDims, "dut_state:ready")
+	}
+
 	dims := ConvertSwarmingLabelsToDims(deafultDims, hwInfo.req.HwDefinition[0].GetSwarmingLabels())
 
 	// Add labels from dut info

@@ -186,7 +186,7 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 		shardNum:   shardNum,
 	}
 
-	req, err := GenerateTrv2Req(ctx, true, helper)
+	req, err := GenerateTrv2Req(ctx, true, helper, trReq.LabDevices)
 	if err != nil {
 		logging.Infof(ctx, "error while generating req: %s", err)
 		return nil, errors.Annotate(err, "error while generating req:").Err()

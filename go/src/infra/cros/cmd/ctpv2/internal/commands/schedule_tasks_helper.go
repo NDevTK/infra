@@ -84,8 +84,16 @@ type TrV2ReqHelper struct {
 }
 
 // GenerateTrv2Req generates ScheduleBuildRequest.
-func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2ReqHelper) (*buildbucketpb.ScheduleBuildRequest, error) {
+func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2ReqHelper, numdevices int64) (*buildbucketpb.ScheduleBuildRequest, error) {
 	populateHelper(ctx, trHelper)
+	err := populateHelper(ctx, trHelper)
+	if err != nil {
+		return nil, errors.Annotate(err, "unable to build up context: ").Err()
+	}
+	if numdevices == 0 {
+		logging.Infof(ctx, "NO devices, rejecting task.")
+		return nil, fmt.Errorf("bot params rejected")
+	}
 
 	// Create bb request
 	reqArgs, err := GenerateArgs(ctx, trHelper)
