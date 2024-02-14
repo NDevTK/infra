@@ -578,6 +578,9 @@ message Peripherals {
 
     // WiFi 7 (IEEE 802.11be) support.
     WIFI_ROUTER_FEATURE_IEEE_802_11_BE = 9;
+
+    // The CPU is fast enough to support a double bridge over veth.
+    WIFI_ROUTER_FEATURE_DOUBLE_BRIDGE_OVER_VETH = 10;
   }
 
   // WifiRouterFeatures that are supported by all wifi routers in the testbed.
