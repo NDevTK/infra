@@ -7,6 +7,7 @@ package executors
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -88,6 +89,8 @@ func executeTestFinderAdaptor(ctx context.Context, conn *grpc.ClientConn, filter
 
 	req, _ := toTestFinderRequest(filterReq)
 
+	logging.Infof(ctx, "Custom TF Adaptor Request: %s", req)
+
 	// Call the TF client.
 	findTestResp, err := TFServiceClient.FindTests(ctx, req, maxRecvSizeOption, maxSendSizeOption)
 	if err != nil {
@@ -103,16 +106,24 @@ func executeTestFinderAdaptor(ctx context.Context, conn *grpc.ClientConn, filter
 }
 
 func toTestFinderRequest(testPlan *api.InternalTestplan) (*api.CrosTestFinderRequest, error) {
-	testSuite, ok := testPlan.GetSuiteInfo().GetSuiteRequest().GetSuiteRequest().(*api.SuiteRequest_TestSuite)
+	centralizedSuitesPrefix := "centralizedsuite:"
+	// TODO... switch
+	requestedSuite, ok := testPlan.GetSuiteInfo().GetSuiteRequest().GetSuiteRequest().(*api.SuiteRequest_TestSuite)
 	if !ok {
 		return nil, errors.New("SuiteRequest is not TestSuite")
 	}
+	testSuite := requestedSuite.TestSuite
+	if testSuite != nil && strings.HasPrefix(testSuite.Name, centralizedSuitesPrefix) {
+		return &api.CrosTestFinderRequest{
+			CentralizedSuite: strings.TrimPrefix(testSuite.Name, centralizedSuitesPrefix),
+			MetadataRequired: true,
+		}, nil
+	}
 	return &api.CrosTestFinderRequest{
-		TestSuites:       []*api.TestSuite{testSuite.TestSuite},
+		TestSuites:       []*api.TestSuite{testSuite},
 		MetadataRequired: true,
 	}, nil
 }
-
 func fillTestCasesIntoTestPlan(ctx context.Context, testPlan *api.InternalTestplan, resp *api.CrosTestFinderResponse) error {
 	if len(resp.GetTestSuites()) == 0 {
 		return nil
