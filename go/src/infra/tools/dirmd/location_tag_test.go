@@ -10,6 +10,7 @@ import (
 	dirmdpb "infra/tools/dirmd/proto"
 
 	"go.chromium.org/luci/resultdb/pbutil"
+	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -77,11 +78,27 @@ func TestLocationTag(t *testing.T) {
 						"feature", "read-later",
 						"monorail_component", "Some>Component",
 						"team_email", "team-email@chromium.org"),
+					BugComponent: &resultpb.BugComponent{
+						System: &resultpb.BugComponent_Monorail{
+							Monorail: &resultpb.MonorailComponent{
+								Project: "chromium",
+								Value:   "Some>Component",
+							},
+						},
+					},
 				},
 				"subdir_with_owners": {
 					Tags: pbutil.StringPairs(
 						"monorail_component", "Some>Component",
 						"team_email", "team-email@chromium.org"),
+					BugComponent: &resultpb.BugComponent{
+						System: &resultpb.BugComponent_Monorail{
+							Monorail: &resultpb.MonorailComponent{
+								Project: "chromium",
+								Value:   "Some>Component",
+							},
+						},
+					},
 				},
 			},
 			Files: map[string]*sinkpb.LocationTags_File{
@@ -90,6 +107,13 @@ func TestLocationTag(t *testing.T) {
 						"monorail_component", "Some>File>Component",
 						"public_buganizer_component", "123456",
 					),
+					BugComponent: &resultpb.BugComponent{
+						System: &resultpb.BugComponent_IssueTracker{
+							IssueTracker: &resultpb.IssueTrackerComponent{
+								ComponentId: 123456,
+							},
+						},
+					},
 				},
 			},
 		}

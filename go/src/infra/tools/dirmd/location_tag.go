@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package dirmd
 
@@ -41,23 +41,60 @@ func createTag(md *dirmdpb.Metadata) []*resultpb.StringPair {
 	return tags
 }
 
+func extractBugComponent(md *dirmdpb.Metadata) *resultpb.BugComponent {
+	if md.GetBuganizerPublic().GetComponentId() != 0 {
+		return &resultpb.BugComponent{
+			System: &resultpb.BugComponent_IssueTracker{
+				IssueTracker: &resultpb.IssueTrackerComponent{
+					ComponentId: md.BuganizerPublic.ComponentId,
+				},
+			},
+		}
+	}
+	if md.GetBuganizer().GetComponentId() != 0 {
+		return &resultpb.BugComponent{
+			System: &resultpb.BugComponent_IssueTracker{
+				IssueTracker: &resultpb.IssueTrackerComponent{
+					ComponentId: md.Buganizer.ComponentId,
+				},
+			},
+		}
+	}
+	if md.GetMonorail().GetComponent() != "" && md.GetMonorail().GetProject() != "" {
+		return &resultpb.BugComponent{
+			System: &resultpb.BugComponent_Monorail{
+				Monorail: &resultpb.MonorailComponent{
+					Project: md.Monorail.Project,
+					Value:   md.Monorail.Component,
+				},
+			},
+		}
+	}
+
+	return nil
+}
+
 // ToLocationTags converts all dir metadata to test location tags.
 func ToLocationTags(mapping *Mapping) (*sinkpb.LocationTags_Repo, error) {
 	dirs := map[string]*sinkpb.LocationTags_Dir{}
 	for k, md := range mapping.Dirs {
 		tags := createTag(md)
+		component := extractBugComponent(md)
 
 		dirs[k] = &sinkpb.LocationTags_Dir{
-			Tags: tags,
+			Tags:         tags,
+			BugComponent: component,
 		}
 	}
 
 	files := map[string]*sinkpb.LocationTags_File{}
 	for k, md := range mapping.Files {
 		tags := createTag(md)
+		component := extractBugComponent(md)
 
 		files[k] = &sinkpb.LocationTags_File{
-			Tags: tags,
+			Tags:         tags,
+			BugComponent: component,
 		}
 	}
 	return &sinkpb.LocationTags_Repo{
