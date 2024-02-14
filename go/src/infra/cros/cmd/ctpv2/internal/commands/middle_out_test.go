@@ -973,6 +973,48 @@ func TestSorting(t *testing.T) {
 	}
 }
 
+func TestHarness(t *testing.T) {
+	hv := harness("tauto.1.3.4.5.6.sdfs")
+	if hv != "tauto" {
+		t.Fatalf("incorrect harness found :%s expected: tauto", hv)
+	}
+	hv = harness("sdfs")
+	if hv != "unknown" {
+		t.Fatalf("incorrect harness found :%s expected: unknown", hv)
+	}
+}
+func TestSharding(t *testing.T) {
+	tests := []string{"tast.1", "tast.2", "tast.3", "tast.4", "tast.5", "tauto.1", "tauto.2", "tauto.3", "tauto.4", "tauto.5", "gtest.1", "gtest.2", "gtest.3", "gtest.4", "gtest.5"}
+	maxShardLength := 3
+	shards := shard(tests, maxShardLength)
+
+	if len(shards) != 6 {
+		t.Fatalf("expected 6 shars, got :%v", len(shards))
+	}
+	for _, shard := range shards {
+
+		hName := ""
+		if len(shard) > maxShardLength {
+			t.Fatalf("shard length exceeded max specified, got: %v", len(shard))
+		}
+		if len(shard) < 2 {
+			t.Fatalf("Should be atleast items in each shard, got: %v", len(shard))
+		}
+		for _, test := range shard {
+			harnessFound := harness(test)
+			if hName == "" {
+				hName = harnessFound
+			} else {
+				if hName != harnessFound {
+					t.Fatalf("mixed harnesses found in shard: %s", shard)
+				}
+			}
+
+		}
+
+	}
+}
+
 func getBuildTarget(target *api.HWRequirements) string {
 	return target.HwDefinition[0].GetDutInfo().GetChromeos().DutModel.BuildTarget
 }

@@ -416,11 +416,38 @@ func allItemsIn(item1 []string, item2 []string) bool {
 
 // shard will device the list into a list of lists where each item in the list length of maxInShard
 // eg: [1,2,3,4], maxInShard=2 --> [[1,2], [3,4]]
-func shard(tests []string, maxInShard int) (shards [][]string) {
-	for maxInShard < len(tests) {
-		tests, shards = tests[maxInShard:], append(shards, tests[0:maxInShard:maxInShard])
+func shard(alltests []string, maxInShard int) (shards [][]string) {
+	harnessBuckets := make(map[string][]string)
+	for _, test := range alltests {
+		h := harness(test)
+		_, ok := harnessBuckets[h]
+
+		if !ok {
+			harnessBuckets[h] = []string{test}
+		} else {
+			harnessBuckets[h] = append(harnessBuckets[h], test)
+		}
 	}
-	return append(shards, tests)
+
+	for _, tests := range harnessBuckets {
+
+		for maxInShard < len(tests) {
+			tests, shards = tests[maxInShard:], append(shards, tests[0:maxInShard:maxInShard])
+		}
+		shards = append(shards, tests)
+	}
+	return shards
+}
+
+// extracts the harness out of the test name.
+func harness(t string) string {
+	v := strings.Split(t, ".")
+	// if there is less than 2 parts to the name, then its not a known test format.
+	// so just return "unknown"
+	if len(v) < 2 {
+		return "unknown"
+	}
+	return v[0]
 }
 
 // TODO (azrahman@; integrate with swarming API)
