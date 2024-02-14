@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "38c32cfc_b076d554",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/ping_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2024-02-14T21:11:25Z",
+      "side": 1,
+      "message": "\u003e cannot infer T (/b/s/w/ir/cache/builder/infra/go/src/go.chromium.org/luci/common/testing/assert/assert.go:146:13)\n\nPlease fix.",
+      "parentUuid": "41e329ef_57d5f07e",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 0
+      },
+      "revId": "c7c23ce568ec25e728fb40e79a1701d06c9fef6e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
