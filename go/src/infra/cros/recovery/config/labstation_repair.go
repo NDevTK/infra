@@ -32,6 +32,7 @@ func LabstationRepairConfig() *Configuration {
 					"Reboot labstation if uptime longer than 7 days",
 					// TODO(b/245824583): remove this action once the bug fixed.
 					"Cleanup bluetooth",
+					"Is crosid readable",
 					"Update inventory info",
 					"dut_state_ready",
 				},
@@ -440,6 +441,31 @@ func LabstationRepairConfig() *Configuration {
 						RunControl:             RunControl_ALWAYS_RUN,
 						AllowFailAfterRecovery: true,
 						MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+					"Is crosid present": {
+						Docs: []string{
+							"Verify if crosid cli is present on the ChromeOS",
+						},
+						ExecName: "cros_run_command",
+						ExecExtraArgs: []string{
+							"host:",
+							"command:which crosid",
+						},
+					},
+					"Is crosid readable": {
+						Docs: []string{
+							"Verify crosid cli is responsive.",
+						},
+						Conditions: []string{
+							"Device is SSHable",
+							"Is crosid present",
+						},
+						ExecName: "cros_run_command",
+						ExecExtraArgs: []string{
+							"host:",
+							"command:crosid",
+						},
+						AllowFailAfterRecovery: true,
 					},
 				},
 			},

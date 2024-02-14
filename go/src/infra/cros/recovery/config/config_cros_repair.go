@@ -73,7 +73,7 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 		"Backup CBI",
 		"Check CBI",
 		"Update provisioned info",
-		"Is crosid readbable",
+		"Is crosid readable",
 		"Update special device labels",
 		"Collect dmesg logs from DUT",
 	)
@@ -4155,7 +4155,7 @@ func crosRepairActions() map[string]*Action {
 				"command:which crosid",
 			},
 		},
-		"Is crosid readbable": {
+		"Is crosid readable": {
 			Docs: []string{
 				"Verify crosid cli is responsive.",
 			},
