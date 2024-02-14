@@ -547,8 +547,10 @@ func createSwarmingTags(trHelper *TrV2ReqHelper) ([]string, error) {
 	// TODO(dbeckett) THESE BELOW:
 	reprName := fmt.Sprintf("shard-%v", trHelper.shardNum)
 	tags = append(tags, "display_name:"+makeDisplayName(trHelper.builderStr, trHelper.suiteName, reprName))
-	tags = append(tags, "log_location:"+getLogLocation())
-
+	ll := getLogLocation()
+	if ll != "" {
+		tags = append(tags, "log_location:"+ll)
+	}
 	// tags = append(tags, removeReservedTags(g.Params.GetDecorations().GetTags())...)
 	// // Add primary/secondary DUTs board/model info in swarming tags for
 	// // multi-DUTs result reporting purpose.
