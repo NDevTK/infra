@@ -21,7 +21,7 @@ import (
 
 const (
 	defaultProject      = "cros-test-analytics"
-	defaultDataset      = "testmetadata"
+	defaultDataset      = "testinfo"
 	defaultTable        = "centralized_suites"
 	defaultClosureTable = "centralized_suite_closures"
 )
@@ -159,7 +159,10 @@ func (s *suitePublisher) publishSuites(ctx context.Context, bqClient *bigquery.C
 		if err := bqsuites.PublishSuite(ctx, inserter, p); err != nil {
 			return err
 		}
-		c := s.Closures(suites)
+		c, err := s.Closures(suites)
+		if err != nil {
+			return err
+		}
 		var closures []*bqsuites.ClosurePublishInfo
 		for _, closure := range c {
 			closures = append(closures, &bqsuites.ClosurePublishInfo{

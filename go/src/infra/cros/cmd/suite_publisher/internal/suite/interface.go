@@ -40,7 +40,7 @@ type CentralizedSuite interface {
 	// Closures takes in map of all known Suites/SuiteSets and generates closure
 	// relationships to be uploaded to database for efficient queries, only generates
 	// closures for the CentralizedSuite not for all Suites/SuiteSets in suites arg.
-	Closures(suites map[string]CentralizedSuite) []*SuiteClosure
+	Closures(suites map[string]CentralizedSuite) ([]*SuiteClosure, error)
 }
 
 func convertMetadata(metadata *api.Metadata) *Metadata {

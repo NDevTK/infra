@@ -62,7 +62,10 @@ func TestClosures(t *testing.T) {
 		},
 	} {
 		s := tc.suites[tc.id]
-		got := s.Closures(tc.suites)
+		got, err := s.Closures(tc.suites)
+		if err != nil {
+			t.Fatal(err)
+		}
 		if diff := cmp.Diff(got, tc.want); diff != "" {
 			t.Errorf("closures mismatch (-got +want):\n%s\n\n", diff)
 			for _, closure := range got {
