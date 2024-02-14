@@ -23,6 +23,30 @@
       },
       "revId": "c7c23ce568ec25e728fb40e79a1701d06c9fef6e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7dd9ab43_c7eeb2e4",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/ping_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-02-14T21:12:23Z",
+      "side": 1,
+      "message": "I think this is a bug in typecheck. I ran a dry CQ run and the test compiled and the type was successfully inferred.\n\nI\u0027ll talk about this with the core folks and fix typecheck or figure out a good next step.",
+      "parentUuid": "38c32cfc_b076d554",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 0
+      },
+      "revId": "c7c23ce568ec25e728fb40e79a1701d06c9fef6e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
