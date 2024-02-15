@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -9,87 +9,7 @@ Reused across infra/run.py and infra_internal/run.py.
 """
 
 import os
-import signal
 import sys
-
-
-def is_in_venv(env_path):
-  """True if already running in virtual env."""
-  abs_prefix = os.path.abspath(sys.prefix)
-  abs_env_path = os.path.abspath(env_path)
-  if abs_prefix == abs_env_path:
-    return True
-  # Ordinarily os.path.abspath(sys.prefix) == env_path is enough. But it doesn't
-  # work when virtual env is deployed as CIPD package. CIPD uses symlinks to
-  # stage files into installation root. When booting venv, something (python
-  # binary itself?) resolves the symlink ENV/bin/python to the target, making
-  # sys.prefix look like "<root>/.cipd/.../ENV". Note that "<root>/ENV" is not
-  # a symlink itself, but "<root>/ENV/bin/python" is.
-  if sys.platform == 'win32':
-    # TODO(vadimsh): Make it work for Win32 too.
-    return False
-  try:
-    return os.path.samefile(
-        os.path.join(abs_prefix, 'bin', 'python'),
-        os.path.join(abs_env_path, 'bin', 'python'))
-  except OSError:
-    return False
-
-
-def boot_venv(script, env_path):
-  """Reexecs the top-level script in a virtualenv (if necessary)."""
-  RUN_PY_RECURSION_BLOCKER = 'RUN_PY_RECURSION'
-
-  if not is_in_venv(env_path):
-    if RUN_PY_RECURSION_BLOCKER in os.environ:
-      sys.stderr.write('TOO MUCH RECURSION IN RUN.PY\n')
-      sys.exit(-1)
-
-    # not in the venv
-    if sys.platform.startswith('win'):
-      python = os.path.join(env_path, 'Scripts', 'python.exe')
-    else:
-      python = os.path.join(env_path, 'bin', 'python')
-    if os.path.exists(python):
-      os.environ[RUN_PY_RECURSION_BLOCKER] = "1"
-      os.environ.pop('PYTHONPATH', None)
-
-      args = [python, script] + sys.argv[1:]
-      if sys.platform == 'win32':
-        # On Windows, os.execv spawns a child process and exits immediately with
-        # status zero, without waiting for it to finish. This confuses the
-        # recipe engine, which loses the stdout of the process and reports that
-        # the step has finished successfully as soon as the child process
-        # spawns, regardless of whether the child process fails.
-        #
-        # Our alternative implementation below waits on the child process, and
-        # exits with its return status, solving both of the above problems. It
-        # also works better when running from the console, as you don't get an
-        # immediate return back to the command prompt along with interleaved
-        # output from the child.
-        #
-        # This is a well-known Windows Python issue going back to at least 2001.
-        # See https://bugs.python.org/issue19124 for more details.
-        signal.signal(signal.SIGBREAK, signal.SIG_IGN)
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
-        signal.signal(signal.SIGTERM, signal.SIG_IGN)
-        os._exit(os.spawnv(os.P_WAIT, python, args))
-      else:
-        os.execv(python, args)
-      sys.stderr.write('Exec is busted :(\n')
-      sys.exit(-1)  # should never reach
-
-    print('You must use the virtualenv in ENV for scripts in the infra repo.')
-    print('Running `gclient runhooks` will create this environment for you.')
-    sys.exit(1)
-
-  # In case some poor script ends up calling run.py, don't explode them.
-  os.environ.pop(RUN_PY_RECURSION_BLOCKER, None)
-
-
-def run_py_main_with_venv(args, runpy_path, env_path, package):
-  boot_venv(runpy_path, env_path)
-  return run_py_main(args, runpy_path, package)
 
 
 def run_py_main(args, runpy_path, package):
