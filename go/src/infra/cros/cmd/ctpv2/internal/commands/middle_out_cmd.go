@@ -170,6 +170,7 @@ type hwInfo struct {
 	hwValue           uint64
 	provValue         uint64
 	labDevices        int64
+	shardHarness      string
 }
 
 // Kv structs are useful for gobased sorting.
@@ -223,12 +224,16 @@ func newMiddleOutData() *middleOutData {
 
 }
 
+func getName(tc *api.CTPTestCase) string {
+	return tc.GetMetadata().GetTestCase().GetId().GetValue()
+}
+
 // middleOut creates TRRequest(S) from a ctpv2 internal test plan.
 func middleOut(ctx context.Context, resp *api.InternalTestplan, cfg distroCfg) ([]*data.TrRequest, error) {
 	solverData := newMiddleOutData()
 	solverData.cfg = cfg
 	for _, tc := range resp.GetTestCases() {
-		tcUUID := tc.GetName()
+		tcUUID := getName(tc)
 		// Drop all of the HW fluff in the TC for memory sakes.
 		tcForMap := &api.CTPTestCase{
 			Name:     tc.GetName(),
@@ -246,6 +251,7 @@ func middleOut(ctx context.Context, resp *api.InternalTestplan, cfg distroCfg) (
 				}
 			}
 			solverData.hwToTCMap[hash] = append(solverData.hwToTCMap[hash], tcUUID)
+
 		}
 	}
 
@@ -298,7 +304,12 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 		// Its either "you can take all these tests" or we get a new pod.
 		shards := shard(tcs, solverData.cfg.maxInShard)
 		for _, shardedtc := range shards {
-			selectedDevice, expandCurrentShard := getDevices(solverData, len(shardedtc), hwHash)
+
+			harness := ""
+			if len(shardedtc) > 0 {
+				harness = getHarness(shardedtc[0])
+			}
+			selectedDevice, expandCurrentShard := getDevices(solverData, len(shardedtc), hwHash, harness)
 			assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc)
 		}
 	}
@@ -327,6 +338,7 @@ func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurr
 		// If the shard is not full, mark it as such.
 		if len(shardedtc) != solverData.cfg.maxInShard {
 			solverData.flatHWUUIDMap[selectedDevice].numInCurrentShard += len(shardedtc)
+			solverData.flatHWUUIDMap[selectedDevice].shardHarness = getHarness(shardedtc[0])
 		}
 	}
 }
@@ -419,7 +431,7 @@ func allItemsIn(item1 []string, item2 []string) bool {
 func shard(alltests []string, maxInShard int) (shards [][]string) {
 	harnessBuckets := make(map[string][]string)
 	for _, test := range alltests {
-		h := harness(test)
+		h := getHarness(test)
 		_, ok := harnessBuckets[h]
 
 		if !ok {
@@ -436,11 +448,12 @@ func shard(alltests []string, maxInShard int) (shards [][]string) {
 		}
 		shards = append(shards, tests)
 	}
+
 	return shards
 }
 
 // extracts the harness out of the test name.
-func harness(t string) string {
+func getHarness(t string) string {
 	v := strings.Split(t, ".")
 	// if there is less than 2 parts to the name, then its not a known test format.
 	// so just return "unknown"
@@ -640,7 +653,7 @@ func flattenList(ctx context.Context, allHw []*api.HWRequirements) map[uint64]*h
 // getDevices finds a device from the devicepool + hwEquivalenceMap to satsify the need for the test
 // It will first look for a matching device with a non-full shard that fits,
 // otherwise it will look for a device with the most availability in the lab.
-func getDevices(solverData *middleOutData, numTests int, hwHash uint64) (selectedDevice uint64, append bool) {
+func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness string) (selectedDevice uint64, append bool) {
 	// This is a pretty expensive approach to sharding:
 	// We will always check all devices to see if they have room in a non-empty shard.
 	// So even when we fully fill a device, or it hasn't been touched, we still check it.
@@ -650,6 +663,10 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64) (selecte
 		// if the shard is empty, we need to use the labloading process block
 		// not the shard filler.
 		if solverData.flatHWUUIDMap[device].numInCurrentShard < 1 {
+			continue
+		}
+
+		if solverData.flatHWUUIDMap[device].shardHarness != harness {
 			continue
 		}
 

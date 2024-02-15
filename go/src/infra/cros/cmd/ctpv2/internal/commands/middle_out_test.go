@@ -351,16 +351,22 @@ func TestSharedDeviceLabLoadingDifferentProvision(t *testing.T) {
 		maxInShard:      2}
 	solverData.flatHWUUIDMap = flatUUIDLoadingMap
 	solverData.hwEquivalenceMap = newEq
+
+	devices := solverData.hwEquivalenceMap[HwHash1]
+	for _, device := range devices {
+		solverData.flatHWUUIDMap[device].shardHarness = "tast"
+	}
+
 	populateLabAvalability(makeCtx(), solverData)
 
-	selectedDevice, expandCurrentShard := getDevices(solverData, 2, HwHash1)
+	selectedDevice, expandCurrentShard := getDevices(solverData, 2, HwHash1, "tast")
 
 	flatUUIDLoadingMap[selectedDevice].numInCurrentShard = 1
 	if expandCurrentShard {
 		t.Fatalf("First test should go into new shard and did not")
 	}
 
-	selectedDevice2, expandCurrentShard := getDevices(solverData, 1, HwHash1)
+	selectedDevice2, expandCurrentShard := getDevices(solverData, 1, HwHash1, "tast")
 
 	if selectedDevice != selectedDevice2 {
 		t.Fatalf("Shard was not filled when it should have been")
@@ -376,10 +382,9 @@ func TestSharedDeviceLabLoadingDifferentProvision(t *testing.T) {
 		}
 	}
 
-	_, expandCurrentShard = getDevices(solverData, 1, HwHash1)
+	_, expandCurrentShard = getDevices(solverData, 1, HwHash1, "tast")
 
 	if expandCurrentShard {
-
 		t.Fatalf("Should not be same shard.")
 	}
 
@@ -835,26 +840,40 @@ func TestGetDevices(t *testing.T) {
 	solverData.flatHWUUIDMap = flatUUIDLoadingMap
 	solverData.hwEquivalenceMap = newEq
 	populateLabAvalability(makeCtx(), solverData)
+	devices := solverData.hwEquivalenceMap[HwHash1]
+	for _, device := range devices {
+		solverData.flatHWUUIDMap[device].shardHarness = "tast"
+	}
 
-	selectedDevice, expandCurrentShard := getDevices(solverData, 1, HwHash1)
+	selectedDevice, expandCurrentShard := getDevices(solverData, 1, HwHash1, "tast")
 
 	flatUUIDLoadingMap[selectedDevice].numInCurrentShard = 1
 	if expandCurrentShard {
 		t.Fatalf("First test should go into new shard and did not")
 	}
 
-	selectedDevice2, expandCurrentShard := getDevices(solverData, 1, HwHash1)
+	selectedDevice2, expandCurrentShard := getDevices(solverData, 1, HwHash1, "tast")
 
 	if selectedDevice != selectedDevice2 {
 		t.Fatalf("Shard was not filled when it should have been")
 	}
 
 	// Shard is full, so reset it and remove 1 from lab loading.
+	flatUUIDLoadingMap[selectedDevice].labLoading.value--
+
+	selectedDevice3, expandCurrentShard := getDevices(solverData, 1, HwHash1, "tauto")
+
+	if selectedDevice == selectedDevice3 || expandCurrentShard {
+		// fmt.Print(selectedDevice3)
+		t.Fatalf("Device which had tast tests was assigned a tauto.")
+	}
+
+	// Shard is full, so reset it and remove 1 from lab loading.
 	flatUUIDLoadingMap[selectedDevice].numInCurrentShard = 0
 	flatUUIDLoadingMap[selectedDevice].labLoading.value--
 
-	selectedDevice3, expandCurrentShard := getDevices(solverData, 1, HwHash1)
-	if selectedDevice3 == selectedDevice2 {
+	selectedDevice4, expandCurrentShard := getDevices(solverData, 1, HwHash1, "tast")
+	if selectedDevice4 == selectedDevice2 {
 		t.Fatalf("New shard should be on different device for balancing")
 	}
 	if expandCurrentShard {
@@ -877,8 +896,6 @@ func validateDistro(finalAssignments map[uint64][][]string, flatUUIDLoadingMap m
 				hwCount[hw] = 1
 			}
 			if len(innerTcs) > cfg.maxInShard {
-
-				fmt.Println("shard size bad", innerTcs, cfg.maxInShard)
 				return false, "Shard size exceeded"
 			}
 			flatTcs = append(flatTcs, innerTcs...)
@@ -974,22 +991,23 @@ func TestSorting(t *testing.T) {
 }
 
 func TestHarness(t *testing.T) {
-	hv := harness("tauto.1.3.4.5.6.sdfs")
+	hv := getHarness("tauto.1.3.4.5.6.sdfs")
 	if hv != "tauto" {
 		t.Fatalf("incorrect harness found :%s expected: tauto", hv)
 	}
-	hv = harness("sdfs")
+	hv = getHarness("sdfs")
 	if hv != "unknown" {
 		t.Fatalf("incorrect harness found :%s expected: unknown", hv)
 	}
 }
+
 func TestSharding(t *testing.T) {
 	tests := []string{"tast.1", "tast.2", "tast.3", "tast.4", "tast.5", "tauto.1", "tauto.2", "tauto.3", "tauto.4", "tauto.5", "gtest.1", "gtest.2", "gtest.3", "gtest.4", "gtest.5"}
 	maxShardLength := 3
 	shards := shard(tests, maxShardLength)
 
 	if len(shards) != 6 {
-		t.Fatalf("expected 6 shars, got :%v", len(shards))
+		t.Fatalf("expected 6 shard, got: %v", len(shards))
 	}
 	for _, shard := range shards {
 
@@ -1001,7 +1019,7 @@ func TestSharding(t *testing.T) {
 			t.Fatalf("Should be atleast items in each shard, got: %v", len(shard))
 		}
 		for _, test := range shard {
-			harnessFound := harness(test)
+			harnessFound := getHarness(test)
 			if hName == "" {
 				hName = harnessFound
 			} else {
