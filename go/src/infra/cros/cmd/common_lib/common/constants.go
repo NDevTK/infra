@@ -20,7 +20,7 @@ const (
 	GceMachineTypeN18                      = "n1-standard-8"
 	GceMinCpuPlatform                      = "Intel Haswell"
 	DockerImageCacheServer                 = "us-docker.pkg.dev/cros-registry/test-services/cacheserver:prod"
-	LroSleepTime                           = 5 * time.Second
+	LroTimeout                             = 1 * time.Minute
 	GcsPublishTestArtifactsDir             = "/tmp/gcs-publish-test-artifacts/"
 	TKOPublishTestArtifactsDir             = "/tmp/tko-publish-test-artifacts/"
 	CpconPublishTestArtifactsDir           = "/tmp/cpcon-publish-test-artifacts/"

@@ -211,7 +211,8 @@ func (ex *CrosVMProvisionExecutor) LeaseDutVM(
 		return nil, errors.Annotate(err, "vm-provision lease failure: ").Err()
 	}
 
-	opResp, err := common.ProcessLro(ctx, vmProvisionOp)
+	// TODO: Fix this to use common.WaitLro
+	opResp, err := common.ProcessDoneLro(ctx, vmProvisionOp)
 	if err != nil {
 		return nil, errors.Annotate(err, "vm-provision lro failure: ").Err()
 	}
@@ -297,7 +298,8 @@ func (ex *CrosVMProvisionExecutor) ReleaseDutVM(
 		return nil, errors.Annotate(err, "vm-provision release failure: ").Err()
 	}
 
-	opResp, err := common.ProcessLro(ctx, vmProvisionOp)
+	// TODO: Fix this to use common.WaitLro
+	opResp, err := common.ProcessDoneLro(ctx, vmProvisionOp)
 	if err != nil {
 		return nil, errors.Annotate(err, "vm-provision lro failure: ").Err()
 	}

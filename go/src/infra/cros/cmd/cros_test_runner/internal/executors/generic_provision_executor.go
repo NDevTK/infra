@@ -8,8 +8,8 @@ import (
 	"context"
 	"fmt"
 
+	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -59,7 +59,7 @@ func (ex *GenericProvisionExecutor) genericProvisionHandler(
 
 	common.WriteProtoToStepLog(ctx, step, cmd.ProvisionRequest, "provision service request")
 
-	client, err := ex.ConnectToService(ctx, cmd.ProvisionRequest.GetServiceAddress())
+	client, lroClient, err := ex.ConnectToService(ctx, cmd.ProvisionRequest.GetServiceAddress())
 	if err != nil {
 		err = fmt.Errorf("error connecting to provision service, %s", err)
 		return
@@ -73,7 +73,7 @@ func (ex *GenericProvisionExecutor) genericProvisionHandler(
 	}
 	cmd.StartUpResp = startUpResp
 
-	installResp, err := ex.Install(ctx, client, cmd.ProvisionRequest.GetInstallRequest())
+	installResp, err := ex.Install(ctx, client, lroClient, cmd.ProvisionRequest.GetInstallRequest())
 	if err != nil {
 		return
 	}
@@ -94,7 +94,7 @@ func (ex *GenericProvisionExecutor) genericProvisionHandler(
 // ConnectToService connects to the GenericProvisionService attached to the server address.
 func (ex *GenericProvisionExecutor) ConnectToService(
 	ctx context.Context,
-	endpoint *labapi.IpEndpoint) (api.GenericProvisionServiceClient, error) {
+	endpoint *labapi.IpEndpoint) (api.GenericProvisionServiceClient, longrunning.OperationsClient, error) {
 	var err error
 	step, ctx := build.StartStep(ctx, "Establish Connection")
 	defer func() { step.End(err) }()
@@ -108,7 +108,7 @@ func (ex *GenericProvisionExecutor) ConnectToService(
 			"error during connecting with provision server at %s: %s",
 			address,
 			err.Error())
-		return nil, err
+		return nil, nil, err
 	}
 	logging.Infof(ctx, "Connected with provision service.")
 
@@ -116,10 +116,16 @@ func (ex *GenericProvisionExecutor) ConnectToService(
 	provisionClient := api.NewGenericProvisionServiceClient(conn)
 	if provisionClient == nil {
 		err = fmt.Errorf("ProvisionServiceClient is nil")
-		return nil, err
+		return nil, nil, err
 	}
 
-	return provisionClient, err
+	lroClient := longrunning.NewOperationsClient(conn)
+	if lroClient == nil {
+		err = fmt.Errorf("OperationsClient is nil")
+		return nil, nil, err
+	}
+
+	return provisionClient, lroClient, err
 }
 
 // Startup invokces the StartUp endpoint of the GenericProvisionServiceClient
@@ -127,7 +133,7 @@ func (ex *GenericProvisionExecutor) Startup(
 	ctx context.Context,
 	client api.GenericProvisionServiceClient,
 	req *api.ProvisionStartupRequest,
-) (resp *testapi.ProvisionStartupResponse, err error) {
+) (resp *api.ProvisionStartupResponse, err error) {
 	step, ctx := build.StartStep(ctx, "Start Up")
 	defer func() { step.End(err) }()
 
@@ -162,8 +168,9 @@ func (ex *GenericProvisionExecutor) Startup(
 func (ex *GenericProvisionExecutor) Install(
 	ctx context.Context,
 	client api.GenericProvisionServiceClient,
+	lroClient longrunning.OperationsClient,
 	req *api.InstallRequest,
-) (resp *testapi.InstallResponse, err error) {
+) (resp *api.InstallResponse, err error) {
 	step, ctx := build.StartStep(ctx, "Install")
 	defer func() { step.End(err) }()
 
@@ -184,13 +191,13 @@ func (ex *GenericProvisionExecutor) Install(
 		return
 	}
 
-	opResp, err := common.ProcessLro(ctx, provisionOp)
+	opResp, err := common.WaitLro(ctx, lroClient, provisionOp)
 	if err != nil {
 		err = errors.Annotate(err, "provision lro failure: ").Err()
 		return
 	}
 
-	resp = &testapi.InstallResponse{}
+	resp = &api.InstallResponse{}
 	if err = opResp.UnmarshalTo(resp); err != nil {
 		err = errors.Annotate(err, "provision lro response unmarshalling failed: ").Err()
 		return

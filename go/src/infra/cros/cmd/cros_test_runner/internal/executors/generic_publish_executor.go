@@ -133,7 +133,8 @@ func (ex *GenericPublishExecutor) Publish(
 		return
 	}
 
-	opResp, err := common.ProcessLro(ctx, PublishOp)
+	// TODO: Fix this to use common.WaitLro
+	opResp, err := common.ProcessDoneLro(ctx, PublishOp)
 	if err != nil {
 		err = errors.Annotate(err, "publish lro failure: ").Err()
 		return

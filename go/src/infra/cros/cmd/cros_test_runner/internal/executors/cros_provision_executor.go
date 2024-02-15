@@ -184,7 +184,8 @@ func (ex *CrosProvisionExecutor) Install(
 		return nil, errors.Annotate(err, "provision install failure: ").Err()
 	}
 
-	opResp, err := common.ProcessLro(ctx, provisionOp)
+	// TODO: Fix this to use common.WaitLro
+	opResp, err := common.ProcessDoneLro(ctx, provisionOp)
 	if err != nil {
 		return nil, errors.Annotate(err, "provision lro failure: ").Err()
 	}

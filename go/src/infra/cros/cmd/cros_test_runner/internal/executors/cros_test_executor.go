@@ -180,7 +180,8 @@ func (ex *CrosTestExecutor) ExecuteTests(
 		return nil, errors.Annotate(err, "test execution failure: ").Err()
 	}
 
-	opResp, err := common.ProcessLro(ctx, testExecOp)
+	// TODO: Fix this to use common.WaitLro
+	opResp, err := common.ProcessDoneLro(ctx, testExecOp)
 	if err != nil {
 		return nil, errors.Annotate(err, "test execution lro failure: ").Err()
 	}

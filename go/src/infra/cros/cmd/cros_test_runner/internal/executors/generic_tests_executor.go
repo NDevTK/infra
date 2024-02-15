@@ -135,7 +135,8 @@ func (ex *GenericTestsExecutor) RunTests(
 		return
 	}
 
-	opResp, err := common.ProcessLro(ctx, runTestsOp)
+	// TODO: Fix this to use common.WaitLro
+	opResp, err := common.ProcessDoneLro(ctx, runTestsOp)
 	if err != nil {
 		err = errors.Annotate(err, "run tests lro failure: ").Err()
 		return

@@ -430,7 +430,8 @@ func (ex *CrosPublishExecutor) Publish(
 		return nil, errors.Annotate(err, "publish failure: ").Err()
 	}
 
-	opResp, err := common.ProcessLro(ctx, publishOp)
+	// TODO: Fix this to use common.WaitLro
+	opResp, err := common.ProcessDoneLro(ctx, publishOp)
 	if err != nil {
 		return nil, errors.Annotate(err, "publish lro failure: ").Err()
 	}
