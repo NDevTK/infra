@@ -18,12 +18,14 @@ INFRA_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # Allowlist of packages to test on Windows.
 WIN_ENABLED_PACKAGES = [
-  'infra/libs/decorators',
-  'infra/libs/service_utils',
-
   'packages/infra_libs/infra_libs/infra_types',
   'packages/infra_libs/infra_libs/logs',
   'packages/infra_libs/infra_libs/ts_mon',
+]
+
+WIN_ENABLED_PACKAGES_PY3_ONLY = [
+    'infra/libs/decorators',
+    'infra/libs/service_utils',
 ]
 
 # Test shared GAE code and individual GAE apps only on 64-bit Posix. This
@@ -129,8 +131,14 @@ if not modules:
       p for p in WIN_ENABLED_PACKAGES
       if os.path.isdir(os.path.join(INFRA_ROOT, p))
     ])
+    if py3:
+      modules.extend([
+          p for p in WIN_ENABLED_PACKAGES_PY3_ONLY
+          if os.path.isdir(os.path.join(INFRA_ROOT, p))
+      ])
   else:
-    modules.extend(['infra'])
+    if py3:
+      modules.extend(['infra'])
     modules.extend(get_modules_with_coveragerc('packages'))
 
   # Skip GAE tests when testing infra_python CIPD package integrity: the
