@@ -5,8 +5,9 @@
 package frontend
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/registration"
@@ -74,15 +75,19 @@ func TestUpdateAssetInfoHelper(t *testing.T) {
 			So(err, ShouldBeNil)
 			// Update buildtarget for the asset
 			err = updateAssetInfoHelper(ctx, &ufspb.AssetInfo{
-				AssetTag:    "test-tag1",
-				Model:       "test-model",
-				BuildTarget: "test-target",
+				AssetTag:      "test-tag1",
+				Model:         "test-model",
+				BuildTarget:   "test-target",
+				HasWifiBt:     true,
+				WifiBluetooth: "test-wifichip",
 			})
 			So(err, ShouldBeNil)
 			// Machine should reflect the change
 			m2, err := registration.GetMachine(ctx, "test-tag1")
 			So(err, ShouldBeNil)
 			So(m2.GetChromeosMachine().GetBuildTarget(), ShouldEqual, "test-target")
+			So(m2.GetChromeosMachine().GetWifiBluetooth(), ShouldEqual, "test-wifichip")
+			So(m2.GetChromeosMachine().GetHasWifiBt(), ShouldBeTrue)
 		})
 		Convey("Update asset info - Machine avoids HWID, phase, sku and mac", func() {
 			l1 := &ufspb.Location{

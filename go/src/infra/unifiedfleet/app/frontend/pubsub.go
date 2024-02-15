@@ -145,6 +145,8 @@ func updateMachineHelper(ctx context.Context, asset *ufspb.Asset) error {
 		machine.GetChromeosMachine().IsCbx = asset.GetInfo().GetIsCbx()
 		machine.GetChromeosMachine().CbxFeatureType = asset.GetInfo().GetCbxFeatureType()
 		machine.GetChromeosMachine().IsMixedX = asset.GetInfo().GetIsMixedX()
+		machine.GetChromeosMachine().HasWifiBt = asset.GetInfo().GetHasWifiBt()
+		machine.GetChromeosMachine().WifiBluetooth = asset.GetInfo().GetWifiBluetooth()
 		hc.LogMachineChanges(oldMachineCopy, machine)
 		if _, err := registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine}); err != nil {
 			return errors.Annotate(err, "updateMachineHelper - Failed to update machine %s", machine.GetName()).Err()
@@ -256,6 +258,14 @@ func updateAssetInfoFromHart(ufsAssetInfo, hartAssetInfo *ufspb.AssetInfo) *ufsp
 		updated = true
 		// Update isMixedX status if it's changed
 		ufsAssetInfo.IsMixedX = hartAssetInfo.GetIsMixedX()
+	}
+	if ufsAssetInfo.GetHasWifiBt() != hartAssetInfo.GetHasWifiBt() {
+		updated = true
+		ufsAssetInfo.HasWifiBt = hartAssetInfo.GetHasWifiBt()
+	}
+	if ufsAssetInfo.GetWifiBluetooth() != hartAssetInfo.GetWifiBluetooth() {
+		updated = true
+		ufsAssetInfo.WifiBluetooth = hartAssetInfo.GetWifiBluetooth()
 	}
 	// Avoid write to DB if nothing was updated
 	if updated {

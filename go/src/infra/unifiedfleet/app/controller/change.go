@@ -177,6 +177,8 @@ func (hc *HistoryClient) LogAssetInfoChanges(resName string, oldInfo, newInfo *u
 	hc.changes = append(hc.changes, logCommon(resName, "asset.info.is_cbx", oldInfo.GetIsCbx(), newInfo.GetIsCbx())...)
 	hc.changes = append(hc.changes, logCommon(resName, "asset.info.cbx_feature_type", oldInfo.GetCbxFeatureType(), newInfo.GetCbxFeatureType())...)
 	hc.changes = append(hc.changes, logCommon(resName, "asset.info.is_mixed_x", oldInfo.GetIsMixedX(), newInfo.GetIsMixedX())...)
+	hc.changes = append(hc.changes, logCommon(resName, "asset.info.has_wifi_bt", oldInfo.GetHasWifiBt(), newInfo.GetHasWifiBt())...)
+	hc.changes = append(hc.changes, logCommon(resName, "asset.info.wifi_bluetooth", oldInfo.GetWifiBluetooth(), newInfo.GetWifiBluetooth())...)
 }
 
 // LogMachineChanges logs the change of the given machine.
@@ -894,6 +896,8 @@ func logChromeOSMachine(resourceName string, oldData, newData *ufspb.ChromeOSMac
 	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.is_cbx", oldData.GetIsCbx(), newData.GetIsCbx())...)
 	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.cbx_feature_type", oldData.GetCbxFeatureType(), newData.GetCbxFeatureType())...)
 	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.is_mixed_x", oldData.GetIsMixedX(), newData.GetIsMixedX())...)
+	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.has_wifi_bt", oldData.GetHasWifiBt(), newData.GetHasWifiBt())...)
+	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.wifi_bluetooth", oldData.GetWifiBluetooth(), newData.GetWifiBluetooth())...)
 	return changes
 }
 
