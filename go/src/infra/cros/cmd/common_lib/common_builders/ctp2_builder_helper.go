@@ -119,7 +119,9 @@ func buildTestSuite(v1 *test_platform.Request) *testapi.TestSuite {
 	testSuite := &testapi.TestSuite{
 		TotalShards: testplan.TotalShards,
 	}
-	if len(testplan.GetSuite()) > 0 {
+	if len(testplan.GetSuite()) == 0 {
+		testSuite.Name = "adhoc"
+	} else {
 		testSuite.Name = testplan.GetSuite()[0].GetName()
 	}
 
