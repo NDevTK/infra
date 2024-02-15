@@ -144,6 +144,10 @@ message ChromeOSMachine {
     ChassisXBrandType cbx_feature_type = 14;
     // Whether the SKU contains both CBX and non-CBX devices
     bool is_mixed_x = 15;
+    // If the DUT has bluetooth
+    bool has_wifi_bt = 16;
+    // The wifichip string of the DUT
+    string wifi_bluetooth = 17;
 }
 
 // ChromeOSDeviceType refers to the different types of

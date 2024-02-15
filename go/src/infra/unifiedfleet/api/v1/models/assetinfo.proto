@@ -38,6 +38,8 @@ message AssetInfo {
   bool is_cbx = 18;
   ChassisXBrandType cbx_feature_type = 19;
   bool is_mixed_x = 20;
+  bool has_wifi_bt = 21;
+  string wifi_bluetooth = 22;
 }
 
 message AssetInfoRequest {
