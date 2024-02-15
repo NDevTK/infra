@@ -34,7 +34,7 @@ var (
 
 	// Default shas for backwards compatibility
 	defaultLegacyHWSha  = "695ae7d6eabe82ba197c8a5c0db6b4292cd3ec940b3bdfaf85378d5ac3910e2b"
-	defaultTTCPSha      = "4c5af419e9ded8b270f9ebfea6cd8686f360c3aefc13c8bfe11ab3ee7d66eeee"
+	defaultTTCPSha      = "9e614cdff50502ad2d3649c261c006f2329585053a75c2a6517b268e8e4fbda7"
 	defaultProvisionSha = "0010028a54f3d72c41a93b0f1248dbe9061f25a488efd8d113f73d05b4052c2f"
 
 	prodShas = map[string]string{
@@ -66,7 +66,7 @@ func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMet
 	logging.Infof(ctx, "Inside Default Filters: %s", defaultFilterNames)
 	for _, filterName := range defaultFilterNames {
 		// Attempt to map the filter from the known container metadata.
-		ctpFilter, err := CreateCTPFilterWithContainerName(filterName, contMetadataMap, build, true)
+		ctpFilter, err := CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, true)
 		if err == nil {
 			defaultFilters = append(defaultFilters, ctpFilter)
 			continue
@@ -76,7 +76,7 @@ func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMet
 		// Test-Finder must always come from the contMetadataMap. Thus if we do not have the "filter" version,
 		// We will setup to run the legacy test-finder.
 		if filterName == TestFinderContainerName {
-			TFFilter, err := CreateCTPFilterWithContainerName(TestFinderContainerName, contMetadataMap, build, false)
+			TFFilter, err := CreateCTPFilterWithContainerName(ctx, TestFinderContainerName, contMetadataMap, build, false)
 			if err != nil {
 				return nil, errors.Annotate(err, "failed to create test-finder default filter").Err()
 			}
@@ -118,9 +118,12 @@ func CreateCTPDefaultWithContainerName(name string, digest string, build int) (*
 
 }
 
-func defaultName(name string) bool {
-	for _, defName := range binaryLookup {
-		if name == defName {
+func defaultName(ctx context.Context, name string) bool {
+	logging.Infof(ctx, "checking name: ", name)
+	for fn, defName := range binaryLookup {
+		logging.Infof(ctx, "checking name: ", name)
+
+		if name == defName || name == fn {
 			return true
 		}
 	}
@@ -128,9 +131,9 @@ func defaultName(name string) bool {
 }
 
 // CreateCTPFilterWithContainerName creates ctp filter for provided container name through provided container metadata.
-func CreateCTPFilterWithContainerName(name string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int, buildCheck bool) (*api.CTPFilter, error) {
+func CreateCTPFilterWithContainerName(ctx context.Context, name string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int, buildCheck bool) (*api.CTPFilter, error) {
 	// This error will be caught and pushed into the default prod container flow.
-	if defaultName(name) && buildCheck && needBackwardsCompatibility(build) {
+	if defaultName(ctx, name) && buildCheck && needBackwardsCompatibility(build) {
 		return nil, fmt.Errorf("incompatible metadata build")
 	}
 	if _, ok := contMetadataMap[name]; !ok {
