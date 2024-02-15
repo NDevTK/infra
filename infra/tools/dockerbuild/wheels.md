@@ -4578,6 +4578,20 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+## **immutabledict-py3**
+
+### 4.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/immutabledict-py3"
+  version: "version:4.1.0"
+>
+```
+
+
+* *universal*
+
 ## **importlab-py3**
 
 ### 0.6.1
@@ -7844,6 +7858,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pylint-py3"
   version: "version:2.17.7"
+>
+```
+
+
+* *universal*
+
+### 3.0.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pylint-py3"
+  version: "version:3.0.3"
 >
 ```
 
