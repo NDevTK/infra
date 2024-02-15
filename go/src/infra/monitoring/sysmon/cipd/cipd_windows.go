@@ -5,7 +5,7 @@
 package cipd
 
 var versionDirs = []string{
-	"C:\\infra-python",
+	"C:\\infra-python3",
 	"C:\\infra-tools", // luci-auth cipd version file is here
 	"C:\\infra-tools\\.versions",
 }

@@ -10,7 +10,7 @@ package cipd
 var versionDirs = []string{
 	"/opt/cq-canary",
 	"/opt/cq-stable",
-	"/opt/infra-python",
+	"/opt/infra-python3",
 	"/opt/infra-tools", // luci-auth cipd version file is here
 	"/opt/infra-tools/.versions",
 }
