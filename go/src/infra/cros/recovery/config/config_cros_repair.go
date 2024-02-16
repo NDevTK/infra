@@ -1926,6 +1926,7 @@ func crosRepairActions() map[string]*Action {
 				"Read Cr50 PHASE",
 				"Read Cr50 key ID",
 				"Read if audio loopback present",
+				"Read dlm_sku_id",
 			},
 			ExecName: "sample_pass",
 		},
@@ -2006,6 +2007,16 @@ func crosRepairActions() map[string]*Action {
 				"dut_has_device_sku",
 			},
 			ExecName: "sample_fail",
+		},
+		"Read dlm_sku_id": {
+			Docs: []string{
+				"Update the dlm_sku_id label from the device if not present in inventory data.",
+			},
+			Conditions: []string{
+				"Is a Chromebook",
+			},
+			ExecName:               "cros_update_dlm_sku_id",
+			AllowFailAfterRecovery: true,
 		},
 		"Validate chromebook X label": {
 			Docs: []string{
