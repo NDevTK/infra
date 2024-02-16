@@ -54,9 +54,9 @@ var SetStableVersionCmd = &subcommands.Command{
 		// )
 
 		r.Flags.StringVar(&r.hostname, "hostname", "", `the hostname (used by itself)`)
-		r.Flags.StringVar(&r.os, "os", "", `the OS version to set (no change if empty)`)
-		r.Flags.StringVar(&r.fw, "fw", "", `the firmware version to set (no change if empty)`)
-		r.Flags.StringVar(&r.fwImage, "fwImage", "", `the firmware image version to set (no change if empty)`)
+		r.Flags.StringVar(&r.os, "os", "", `the OS version (aka crosVersion) to set (no change if empty)`)
+		r.Flags.StringVar(&r.fw, "fw", "", `the firmware version (aka firmwareVersion) to set (no change if empty)`)
+		r.Flags.StringVar(&r.fwImage, "fwImage", "", `the firmware image version (aka faftVersion) to set (no change if empty)`)
 		return r
 	},
 }
@@ -313,13 +313,13 @@ func (c *setStableVersionRun) validateHostnameArgs() error {
 		return errors.Reason("Please provide -hostname of DUT").Err()
 	}
 	if c.os == "" {
-		return errors.Reason("Please provide -os").Err()
+		return errors.Reason("Please provide the OS version (aka crosVersion) -os").Err()
 	}
 	if c.fw == "" {
-		return errors.Reason("Please provide -fw").Err()
+		return errors.Reason("Please provide the firmware version (aka firmwareVersion) -fw").Err()
 	}
 	if c.fwImage == "" {
-		return errors.Reason("Please provide -fwImage").Err()
+		return errors.Reason("Please provide the firmware image version (aka faftVersion) -fwImage").Err()
 	}
 	return nil
 }
