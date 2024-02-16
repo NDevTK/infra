@@ -208,7 +208,7 @@ class WinISOCustomization(customization.Customization):
           package.tags['orig'] = orig_tag
           package.tags['build_url'] = build_url
           if package.WhichOneof('dest') == 'cipd_src':
-            self._source.upload_package(package, iso_dir)
+            self._source.upload_package(package, iso_dir, dir_contents=True)
           else:
             self._source.upload_package(package, compressed_archive)
       finally:

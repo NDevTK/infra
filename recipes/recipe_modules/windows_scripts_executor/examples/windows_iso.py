@@ -38,6 +38,9 @@ def RunSteps(api, config):
   custs = api.windows_scripts_executor.filter_executable_customizations(custs)
   api.windows_scripts_executor.download_all_packages(custs)
   api.path.mock_add_paths('[CLEANUP]/gen_iso/workdir/gen_iso.iso', 'FILE')
+  api.path.mock_add_paths('[CLEANUP]/gen_iso/workdir/staging', 'DIRECTORY')
+  api.path.mock_add_paths('[CLEANUP]/gen_iso/workdir/staging/tdr', 'DIRECTORY')
+  api.path.mock_add_paths('[CLEANUP]/gen_iso/workdir/staging/tfl', 'FILE')
   api.path.mock_add_paths(
       '[CACHE]/Pkgs/CIPDPkgs/resolved-instance_id-of-latest----------'
       '/infra/chrome/windows/wallpapers/windows-amd64', 'DIRECTORY')

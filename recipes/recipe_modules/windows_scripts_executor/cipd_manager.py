@@ -117,19 +117,33 @@ class CIPDManager:
     """
     return CIPD_URL.format(cipd_src.package, cipd_src.platform, cipd_src.refs)
 
-  def upload_package(self, dest, source):
+  def upload_package(self, dest, source, dir_contents=False):
     """ upload_package uploads the given package at source to dest.
 
     Args:
       * dest: dest.Dest proto object representing the object to be uploaded
       * source: path on the disk to the package to be uploaded
+      * dir_contents: if true and source is a dir. Uploads the contents of the
+        directory instead of the dorectory.
     """
     if self.m.path.exists(source):
-      root, filename = self.m.path.split(source)
+      root = source
+      if self.m.path.isfile(source) or not dir_contents:
+        root, _ = self.m.path.split(source)
       name = '{}/{}'.format(dest.cipd_src.package, dest.cipd_src.platform)
       pkg = self.m.cipd.PackageDefinition(name, root)
       if self.m.path.isdir(source):
-        pkg.add_dir(root.join(filename))
+        if dir_contents:
+          # Add the contents of the directory
+          contents = self.m.file.listdir('Collect the files', source)
+          for c in contents:  #pragma: no cover
+            if self.m.path.isdir(c):
+              pkg.add_dir(c)
+            else:
+              pkg.add_file(c)
+        else:
+          #Add the directory as the whole
+          pkg.add_dir(source)
       else:
         pkg.add_file(root.join(filename))  # pragma: no cover
       self.m.cipd.create_from_pkg(

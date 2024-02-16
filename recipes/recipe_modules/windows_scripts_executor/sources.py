@@ -136,7 +136,7 @@ class Source:
 
     raise SourceException('Cannot get url for {}'.format(artifact))
 
-  def upload_package(self, dest, source):
+  def upload_package(self, dest, source, **kwargs):
     """ upload_package uploads a given package to the given destination
 
     Args:
@@ -146,7 +146,7 @@ class Source:
     if dest.WhichOneof('dest') == 'gcs_src':
       self._gcs.upload_package(dest, source)
     if dest and dest.WhichOneof('dest') == 'cipd_src':
-      self._cipd.upload_package(dest, source)
+      self._cipd.upload_package(dest, source, **kwargs)
 
   # TODO(anushruth): Cover this test path
   def exists(self, src):  # pragma: no cover
