@@ -69,26 +69,6 @@ func TestValidateMapping(t *testing.T) {
 
 	bbClient := bbpb.NewMockBuildsClient(ctrl)
 
-	// Not every test case will call SearchBuilds, because it is only called
-	// when there are TemplateParameters to check, but expect at least one call.
-	bbClient.EXPECT().
-		SearchBuilds(gomock.AssignableToTypeOf(ctx), &bbpb.SearchBuildsRequest{
-			Predicate: &bbpb.BuildPredicate{
-				Builder: &bbpb.BuilderID{
-					Project: "chromeos",
-					Bucket:  "postsubmit",
-					Builder: "amd64-generic-postsubmit",
-				},
-				Status: bbpb.Status_SUCCESS,
-				Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},
-			},
-			PageSize: 1,
-		}).
-		Return(&bbpb.SearchBuildsResponse{
-			Builds: []*bbpb.Build{{Id: 123}},
-		}, nil).
-		MinTimes(1)
-
 	// If the validator is calling cros-test-finder, it uses a temp dir on the
 	// host to write the request and read the response, and binds this temp dir
 	// to a location on the container. Note that the temp dir created here is
@@ -460,24 +440,6 @@ func TestValidateMappingErrors(t *testing.T) {
 
 	bbClient := bbpb.NewMockBuildsClient(ctrl)
 
-	bbClient.EXPECT().
-		SearchBuilds(gomock.AssignableToTypeOf(ctx), &bbpb.SearchBuildsRequest{
-			Predicate: &bbpb.BuildPredicate{
-				Builder: &bbpb.BuilderID{
-					Project: "chromeos",
-					Bucket:  "postsubmit",
-					Builder: "amd64-generic-postsubmit",
-				},
-				Status: bbpb.Status_SUCCESS,
-				Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},
-			},
-			PageSize: 1,
-		}).
-		Return(&bbpb.SearchBuildsResponse{
-			Builds: []*bbpb.Build{{Id: 123}},
-		}, nil).
-		MinTimes(1)
-
 	// If the validator is calling cros-test-finder, it uses a temp dir on the
 	// host to write the request and read the response, and binds this temp dir
 	// to a location on the container. Note that the temp dir created here is
@@ -816,39 +778,6 @@ func TestValidateMappingErrors(t *testing.T) {
 			},
 			"./testdata/good_dirmd",
 			"setting TemplateParameters has no effect",
-		},
-		{
-			"test criteria empty",
-			&dirmd.Mapping{
-				Dirs: map[string]*dirmdpb.Metadata{
-					"a/b": {
-						Chromeos: &chromeos.ChromeOS{
-							Cq: &chromeos.ChromeOS_CQ{
-								SourceTestPlans: []*plan.SourceTestPlan{
-									{
-										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
-											{
-												Host:    "chromium.googlesource.com",
-												Project: "testrepo",
-												Path:    "templated.star",
-												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
-													SuiteName: "mysuiteA",
-													TagCriteria: &api.TestSuite_TestCaseTagCriteria{
-														Tags:        []string{"group:mygroupA"},
-														TagExcludes: []string{"informational"},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"./testdata/good_dirmd",
-			"no test cases found for test suite",
 		},
 		{
 			"program TemplateParameter outside of overlay",

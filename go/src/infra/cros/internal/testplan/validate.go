@@ -378,7 +378,9 @@ func (v *validator) validateTagCriteriaTemplateParameters(
 		return fmt.Errorf("file %q is not templated, setting TemplateParameters has no effect", file)
 	}
 
-	return v.checkTagCriteriaNonEmpty(ctx, templateParameters)
+	// checkTagCriteriaNonEmpty is currently disabled b/c of Docker flakes.
+	// TODO(b/325551310): Re-enable after flakes arefixed.
+	return nil
 }
 
 var overlayRegex = regexp.MustCompile(`overlay-(\w+)(-private)?`)
