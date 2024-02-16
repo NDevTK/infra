@@ -112,4 +112,7 @@ enum Zone {
   ZONE_SFP_9 = 31; // "sfp_9" // Zone for SfP assets for partner // Testhaus ID:9;
   ZONE_SFP_10 = 32; // "sfp_10" // Zone for SfP assets for partner // Testhaus ID:10;
   ZONE_SFP_13 = 33; // "sfp_13" // Zone for SfP assets for partner // Testhaus ID:13;
+  ZONE_SFP_14 = 34; // "sfp_14" // Zone for SfP assets for partner // Testhaus ID:14;
+  ZONE_SFP_15 = 35; // "sfp_15" // Zone for SfP assets for partner // Testhaus ID:15;
+  ZONE_SFP_16 = 36; // "sfp_16" // Zone for SfP assets for partner // Testhaus ID:16;
 }
