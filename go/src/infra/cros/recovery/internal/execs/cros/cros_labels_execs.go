@@ -10,6 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros/vpd"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
@@ -21,6 +22,29 @@ const (
 	crosIDSkuCmd                = "crosid -f SKU"
 	cmdAudioLatencyToolkitCheck = "lsusb -vv -d 16c0: | grep \"Teensyduino\""
 )
+
+// updateDlmSkuIdExec updates device's SKU label if not present in inventory
+// or keep it the same if the info.GetDut() already has the value for
+// dlm_sku_id label.
+func updateDlmSkuIDInvExec(ctx context.Context, info *execs.ExecInfo) error {
+	// If sku is present, skip
+	if info.GetChromeos().GetDlmSkuId() != "" {
+		log.Debugf(ctx, "DlmSkuId already present. Skipping update.")
+		return nil
+	}
+
+	const dlmSkuVpdKey = "dlm_sku_id"
+	dlmSkuIDLabelOutput, err := vpd.Read(ctx, info.DefaultHostAccess(), info.GetExecTimeout(), dlmSkuVpdKey)
+	if err != nil {
+		return errors.Annotate(err, "update dlm_sku_id label").Err()
+	}
+	if dlmSkuIDLabelOutput == "" {
+		return errors.Reason("vpd key %q: has empty value", dlmSkuVpdKey).Err()
+	}
+	log.Debugf(ctx, "DlmSkuId found: %q.", dlmSkuIDLabelOutput)
+	info.GetChromeos().DlmSkuId = dlmSkuIDLabelOutput
+	return nil
+}
 
 // updateDeviceSKUExec updates device's SKU label if not present in inventory
 // or keep it the same if the info.GetDut() already has the value for SKU label.
@@ -113,6 +137,7 @@ func updateAudioLatencyToolkitStateExec(ctx context.Context, info *execs.ExecInf
 
 func init() {
 	execs.Register("cros_update_device_sku", updateDeviceSKUExec)
+	execs.Register("cros_update_dlm_sku_id", updateDlmSkuIDInvExec)
 	execs.Register("cros_is_audio_loopback_state_working", isAudioLoopBackStateWorkingExec)
 	execs.Register("cros_update_audio_loopback_state_label", updateAudioLoopbackLabelExec)
 	execs.Register("cros_update_audio_latency_toolkit_state", updateAudioLatencyToolkitStateExec)
