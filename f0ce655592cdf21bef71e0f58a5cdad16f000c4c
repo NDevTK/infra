@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "210cbf2b_7d0ebbcd",
+        "filename": "doc/users/contacting_troopers.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2024-02-16T17:32:49Z",
+      "side": 1,
+      "message": "It\u0027s hard to understand what these highlighted sentences mean. Can you also explain why the audiences, who are looking for ways to contact troopers, need to know this information? Is this to help them understand why we ask them not to assign issues to the trooper directly?",
+      "range": {
+        "startLine": 77,
+        "startChar": 0,
+        "endLine": 80,
+        "endChar": 7
+      },
+      "revId": "f0ce655592cdf21bef71e0f58a5cdad16f000c4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b8c6421_2cd5b007",
+        "filename": "doc/users/contacting_troopers.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2024-02-16T17:32:49Z",
+      "side": 1,
+      "message": "While this may be true for browser infra troopers, I\u0027m not sure if this is true for other troopers, listed in this doc. Can you elaborate more on the reason behind these statements?",
+      "range": {
+        "startLine": 80,
+        "startChar": 9,
+        "endLine": 83,
+        "endChar": 33
+      },
+      "revId": "f0ce655592cdf21bef71e0f58a5cdad16f000c4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9266cd08_d13370da",
+        "filename": "doc/users/contacting_troopers.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2024-02-16T17:32:49Z",
+      "side": 1,
+      "message": "These are not true for Source and TOD troopers, afaik. If the audiences of this doc is for browser builder infra, then can we clarify that in the head of this doc?",
+      "range": {
+        "startLine": 85,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 80
+      },
+      "revId": "f0ce655592cdf21bef71e0f58a5cdad16f000c4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8274b48_5729148b",
+        "filename": "doc/users/contacting_troopers.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2024-02-16T17:32:49Z",
+      "side": 1,
+      "message": "This feels just a general sense of what the statuses mean in issue trackers. I don\u0027t think these actually provide more useful info than the below sentences, which I also don\u0027t know if anyone would find useful.\n- \"new\" indicates that it\u0027s a new issue. Someone will triage it.\n- \"assigned\" indicates someone has been assigned.\n- \"fixed\" means it has been fixed.\n\nIs this necessary information in this doc, which provides information about how to contact troopers?",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 96,
+        "endChar": 27
+      },
+      "revId": "f0ce655592cdf21bef71e0f58a5cdad16f000c4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2c625bc_12c7e642",
+        "filename": "doc/users/contacting_troopers.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2024-02-16T17:32:49Z",
+      "side": 1,
+      "message": "It may be good to elaborate more on what local means here. How about something like below.\n```\nMost trooper teams shift schedules for their local business hours only.\nTo find the exact shift schedules, visit the oncall calendar in ....\n```",
+      "range": {
+        "startLine": 100,
+        "startChar": 43,
+        "endLine": 100,
+        "endChar": 48
+      },
+      "revId": "f0ce655592cdf21bef71e0f58a5cdad16f000c4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
