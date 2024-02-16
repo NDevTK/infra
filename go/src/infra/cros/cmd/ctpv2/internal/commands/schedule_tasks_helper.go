@@ -22,7 +22,6 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	goconfig "go.chromium.org/chromiumos/config/go"
@@ -32,11 +31,9 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
-	"go.chromium.org/luci/buildbucket"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
@@ -105,16 +102,16 @@ func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2R
 		return nil, err
 	}
 
-	bbCtx := lucictx.GetBuildbucket(ctx)
+	// bbCtx := lucictx.GetBuildbucket(ctx)
 
-	if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" && bbCtx.GetScheduleBuildToken() != buildbucket.DummyBuildbucketToken {
-		ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
+	// if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" && bbCtx.GetScheduleBuildToken() != buildbucket.DummyBuildbucketToken {
+	// 	ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
 
-		// Decide if the child can outlive its parent or not.
-		if canOutliveParent {
-			req.CanOutliveParent = buildbucketpb.Trinary_YES
-		}
-	}
+	// 	// // Decide if the child can outlive its parent or not.
+	// 	// if canOutliveParent {
+	// 	// 	req.CanOutliveParent = buildbucketpb.Trinary_YES
+	// 	// }
+	// }
 
 	return req, nil
 }
@@ -208,7 +205,9 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 	}
 	args.CFTTestRunnerRequest = cftTestRequest
 
-	tags, err := createSwarmingTags(trHelper)
+	logging.Infof(ctx, "trhelper: %s", trHelper.currBBID)
+
+	tags, err := createSwarmingTags(ctx, trHelper)
 	if err != nil {
 		return nil, errors.Annotate(err, "error while creating tags: ").Err()
 	}
@@ -512,12 +511,13 @@ func createSecondaryLabels() ([]*inventory.SchedulableLabels, error) {
 }
 
 // createSwarmingTags creates swarming tags.
-func createSwarmingTags(trHelper *TrV2ReqHelper) ([]string, error) {
+func createSwarmingTags(ctx context.Context, trHelper *TrV2ReqHelper) ([]string, error) {
 	tags := []string{}
 
 	qsAccount := trHelper.suiteInfo.GetSuiteMetadata().GetSchedulerInfo().GetQsAccount()
 	if qsAccount == "" {
-		return tags, fmt.Errorf("no qs_account supplied")
+		qsAccount = "unmanaged_p2"
+		logging.Infof(ctx, "no qsAccount given, defaulting to unmanaged_p2.")
 	}
 	tags = append(tags, "qs_account:"+qsAccount)
 
@@ -550,8 +550,8 @@ func createSwarmingTags(trHelper *TrV2ReqHelper) ([]string, error) {
 		tags = append(tags, fmt.Sprintf("parent_buildbucket_id:%v", trHelper.currBBID))
 	} else {
 		tags = append(tags, "parent_buildbucket_id:0")
-
 	}
+
 	// TODO(dbeckett) THESE BELOW:
 	reprName := fmt.Sprintf("shard-%v", trHelper.shardNum)
 	tags = append(tags, "display_name:"+makeDisplayName(trHelper.builderStr, trHelper.suiteName, reprName))

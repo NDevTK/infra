@@ -200,6 +200,15 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 			logging.Infof(ctx, "error while setting up scheduler: %s", err)
 			return nil, errors.Annotate(err, "error while setting up scheduler").Err()
 		}
+		// Spit out the request
+		requestData, err := json.MarshalIndent(req, "", "  ")
+		if err != nil {
+			logging.Infof(
+				ctx,
+				"error during writing request data to log: %s",
+				err.Error())
+		}
+		step.Log("BB Request").Write(requestData)
 		scheduledBuild, err = scheduler.ScheduleRequest(ctx, req, step)
 		if err != nil {
 			logging.Infof(ctx, "error while scheduling req: %s", err)
@@ -209,16 +218,6 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 			step.SetSummaryMarkdown(fmt.Sprintf("[latest attempt](%s)", common.BBUrl(builderId, scheduledBuild.Id)))
 		}
 	}
-
-	// Spit out the request
-	requestData, err := json.MarshalIndent(req, "", "  ")
-	if err != nil {
-		logging.Infof(
-			ctx,
-			"error during writing request data to log: %s",
-			err.Error())
-	}
-	step.Log("BB Request").Write(requestData)
 
 	// Monitor here
 	loopSleepInterval := 30 * time.Second
