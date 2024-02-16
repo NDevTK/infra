@@ -134,8 +134,10 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to fetch container image data: ").Err()
 	}
-
+	logging.Infof(ctx, "ctpreq:", cmd.CtpReq)
 	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpReq, buildContainerMetadata)
+	logging.Infof(ctx, "FINALMAP:", finalMetadataMap)
+
 	cmd.ContainerMetadataMap = finalMetadataMap
 
 	// Write to log
@@ -151,9 +153,9 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	// -- Create ctp filters from default and input filters --
 
 	ctpFilters := make([]*api.CTPFilter, 0)
-	common.SetDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest())
+	defK := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest())
 
-	karbonFilters, err := common.ConstructCtpFilters(ctx, common.DefaultKarbonFilterNames, finalMetadataMap, cmd.CtpReq.GetKarbonFilters(), build)
+	karbonFilters, err := common.ConstructCtpFilters(ctx, defK, finalMetadataMap, cmd.CtpReq.GetKarbonFilters(), build)
 	if err != nil {
 		logging.Infof(ctx, "Err in karbonFilters.")
 
@@ -260,15 +262,20 @@ func getFirstGcsPathFromLegacy(schedTargs []*testapi.ScheduleTargets) string {
 func createContainerImagesInfoMap(ctx context.Context, req *testapi.CTPRequest, buildContMetadata map[string]*buildapi.ContainerImageInfo) map[string]*buildapi.ContainerImageInfo {
 	// In case of any overlap of container metadata between input and build metadata,
 	// the input metadata will be prioritized.
+	bcm := make(map[string]*buildapi.ContainerImageInfo)
+	for k, v := range buildContMetadata {
+		bcm[k] = v
+	}
+
 	for _, filter := range req.GetKarbonFilters() {
-		buildContMetadata[filter.GetContainerInfo().GetContainer().GetName()] = filter.GetContainerInfo().GetContainer()
+		bcm[filter.GetContainerInfo().GetContainer().GetName()] = filter.GetContainerInfo().GetContainer()
 	}
 
 	for _, filter := range req.GetKoffeeFilters() {
-		buildContMetadata[filter.GetContainerInfo().GetContainer().GetName()] = filter.GetContainerInfo().GetContainer()
+		bcm[filter.GetContainerInfo().GetContainer().GetName()] = filter.GetContainerInfo().GetContainer()
 	}
 
-	return buildContMetadata
+	return bcm
 }
 
 // CtpFilterToContainerInfo creates container info from provided ctp filter.

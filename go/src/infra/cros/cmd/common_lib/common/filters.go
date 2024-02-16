@@ -50,14 +50,19 @@ var (
 	}
 )
 
-// SetDefaultFilters sets/appends proper default filters
-func SetDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) {
+// MakeDefaultFilters sets/appends proper default filters
+func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) []string {
+	filters := []string{}
+	for _, filter := range DefaultKarbonFilterNames {
+		filters = append(filters, filter)
+	}
 	suiteName := strings.ToLower(suiteReq.GetTestSuite().GetName())
 	if strings.HasPrefix(suiteName, "3d") || strings.HasPrefix(suiteName, "ddd") {
-		DefaultKarbonFilterNames = append(DefaultKarbonFilterNames, TtcpContainerName)
+		filters = append(filters, TtcpContainerName)
 	} else {
-		DefaultKarbonFilterNames = append(DefaultKarbonFilterNames, LegacyHWContainerName)
+		filters = append(filters, LegacyHWContainerName)
 	}
+	return filters
 }
 
 // GetDefaultFilters constructs ctp filters for provided default filters.

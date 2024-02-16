@@ -224,12 +224,15 @@ func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultKarbonFilt
 
 // GetDefaultFilters sets/appends proper default filters
 func GetDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) []string {
-	defaultKarbonFilters := common.DefaultKarbonFilterNames
+	filters := []string{}
+	for _, filter := range common.DefaultKarbonFilterNames {
+		filters = append(filters, filter)
+	}
 	suiteName := strings.ToLower(suiteReq.GetTestSuite().GetName())
 	if strings.HasPrefix(suiteName, "3d") || strings.HasPrefix(suiteName, "ddd") {
-		defaultKarbonFilters = append(defaultKarbonFilters, common.TtcpContainerName)
+		filters = append(filters, common.TtcpContainerName)
 	} else {
-		defaultKarbonFilters = append(defaultKarbonFilters, common.LegacyHWContainerName)
+		filters = append(filters, common.LegacyHWContainerName)
 	}
-	return defaultKarbonFilters
+	return filters
 }

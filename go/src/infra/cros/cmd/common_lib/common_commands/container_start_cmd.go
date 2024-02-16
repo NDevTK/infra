@@ -176,9 +176,10 @@ func (cmd *ContainerStartCmd) extractDepsFromFilterStateKeeper(
 			"Container NOT found in the map with key %s. Error: %s", imagePath, err)
 		cmd.SkipStartingContainer = false
 	} else if contInfoFromMap != nil {
-		logging.Infof(ctx, "Container found in the map with key %s", imagePath)
+		logging.Infof(ctx, "Container found in the map with key %s %s %s", imagePath, contInfoFromMap, contInfoFromMap.ServiceEndpoint)
 		cmd.SkipStartingContainer = true
 		cmd.containerInfo = contInfoFromMap
+		cmd.Endpoint = contInfoFromMap.ServiceEndpoint
 		contInfo.ServiceEndpoint = contInfoFromMap.ServiceEndpoint
 	}
 
