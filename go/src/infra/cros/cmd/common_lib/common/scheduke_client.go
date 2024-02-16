@@ -29,6 +29,7 @@ var (
 	schedukeShadowModeURL        = "https://front-door-usoglgosrq-wl.a.run.app"
 	schedukeExecutionEndpoint    = "tasks/add"
 	schedukeGetExecutionEndpoint = "tasks"
+	maxHTTPRetries               = 5
 )
 
 type SchedukeClient struct {
@@ -154,12 +155,38 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) 
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	r, err := s.client.Do(req)
+	r, err := sendRequestWithRetries(s.client, req)
 	if err != nil {
 		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
 	return r, nil
 
+}
+
+type clientThatSendsRequests interface {
+	Do(*http.Request) (resp *http.Response, err error)
+}
+
+// sendRequestWithRetries sends the given request with the given HTTP client,
+// retrying if any HTTP errors are returned. Retry count is controlled by
+// maxHTTPRetries.
+func sendRequestWithRetries(c clientThatSendsRequests, req *http.Request) (*http.Response, error) {
+	var (
+		retries int
+		resp    *http.Response
+		err     error
+	)
+	for retries < maxHTTPRetries {
+		resp, err = c.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		if resp.StatusCode == http.StatusOK {
+			return resp, err
+		}
+		retries += 1
+	}
+	return resp, err
 }
 
 // GetBBIDs will call scheduke to attempt to get BBIDs for the given tasks.
