@@ -226,8 +226,9 @@ var hwTestPlans = []*test_api_v1.HWTestPlan{
 						},
 					},
 				},
-				Critical:  &wrapperspb.BoolValue{Value: true},
-				RunViaCft: true,
+				Critical:               &wrapperspb.BoolValue{Value: true},
+				RunViaCft:              true,
+				EnableAutotestSharding: true,
 			},
 			{
 				TestSuites: []*testpb.TestSuite{
@@ -263,8 +264,8 @@ var hwTestPlans = []*test_api_v1.HWTestPlan{
 						},
 					},
 				},
-				Critical:  &wrapperspb.BoolValue{Value: true},
-				RunViaCft: true,
+				Critical:               &wrapperspb.BoolValue{Value: true},
+				EnableAutotestSharding: true,
 			},
 			{
 				TestSuites: []*testpb.TestSuite{
@@ -1030,10 +1031,11 @@ func TestToCTP1(t *testing.T) {
 								DisplayName: "cq-builderA-asan.hw.asan-suite",
 								Critical:    wrapperspb.Bool(true),
 							},
-							Suite:       "asan-suite",
-							SkylabBoard: "boardA",
-							Pool:        "DUT_POOL_QUOTA",
-							RunViaCft:   true,
+							Suite:                  "asan-suite",
+							SkylabBoard:            "boardA",
+							Pool:                   "DUT_POOL_QUOTA",
+							RunViaCft:              true,
+							EnableAutotestSharding: true,
 						},
 					},
 				},

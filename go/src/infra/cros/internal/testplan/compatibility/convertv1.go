@@ -462,6 +462,8 @@ type suiteInfo struct {
 	totalShards int64
 	// optional, if true then run test suites in this rule via CFT workflow.
 	runViaCft bool
+	// optional, if true then autotest tests will be sharded.
+	enableAutotestSharding bool
 }
 
 // getBuildTarget returns the build target for the suiteInfo. If boardVariant is
@@ -692,18 +694,19 @@ func coverageRuleToSuiteInfo(
 				suiteInfos = append(
 					suiteInfos,
 					&suiteInfo{
-						program:      chosenProgram,
-						companions:   companions,
-						design:       design,
-						pool:         pool,
-						suite:        id.Value,
-						tagCriteria:  nil,
-						environment:  hw,
-						critical:     critical,
-						boardVariant: boardVariant,
-						profile:      profile,
-						licenses:     licenses,
-						runViaCft:    rule.RunViaCft,
+						program:                chosenProgram,
+						companions:             companions,
+						design:                 design,
+						pool:                   pool,
+						suite:                  id.Value,
+						tagCriteria:            nil,
+						environment:            hw,
+						critical:               critical,
+						boardVariant:           boardVariant,
+						profile:                profile,
+						licenses:               licenses,
+						runViaCft:              rule.RunViaCft,
+						enableAutotestSharding: rule.EnableAutotestSharding,
 					})
 			}
 		case *testpb.TestSuite_TestCaseTagCriteria_:
@@ -729,19 +732,20 @@ func coverageRuleToSuiteInfo(
 
 			suiteInfos = append(suiteInfos,
 				&suiteInfo{
-					program:      chosenProgram,
-					companions:   companions,
-					design:       design,
-					pool:         pool,
-					suite:        suite.GetName(),
-					tagCriteria:  suite.GetTestCaseTagCriteria(),
-					environment:  env,
-					critical:     critical,
-					boardVariant: boardVariant,
-					profile:      profile,
-					totalShards:  suite.GetTotalShards(),
-					licenses:     licenses,
-					runViaCft:    rule.GetRunViaCft(),
+					program:                chosenProgram,
+					companions:             companions,
+					design:                 design,
+					pool:                   pool,
+					suite:                  suite.GetName(),
+					tagCriteria:            suite.GetTestCaseTagCriteria(),
+					environment:            env,
+					critical:               critical,
+					boardVariant:           boardVariant,
+					profile:                profile,
+					totalShards:            suite.GetTotalShards(),
+					licenses:               licenses,
+					runViaCft:              rule.GetRunViaCft(),
+					enableAutotestSharding: rule.GetEnableAutotestSharding(),
 				})
 		default:
 			return nil, fmt.Errorf("TestSuite spec type %T is not supported", spec)
@@ -1051,10 +1055,11 @@ func ToCTP1(
 							Value: suiteInfo.critical,
 						},
 					},
-					RunViaCft:   suiteInfo.runViaCft,
-					TagCriteria: suiteInfo.tagCriteria,
-					TotalShards: suiteInfo.totalShards,
-					Companions:  suiteInfo.companions,
+					RunViaCft:              suiteInfo.runViaCft,
+					EnableAutotestSharding: suiteInfo.enableAutotestSharding,
+					TagCriteria:            suiteInfo.tagCriteria,
+					TotalShards:            suiteInfo.totalShards,
+					Companions:             suiteInfo.companions,
 				}
 
 				if _, found := hwTests[displayName]; found {
