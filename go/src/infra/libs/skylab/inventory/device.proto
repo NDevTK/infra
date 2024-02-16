@@ -143,7 +143,7 @@ message Shard {
 //
 // Keep sorted by field name.
 //
-// NEXT TAG: 40
+// NEXT TAG: 41
 message SchedulableLabels {
   // Whether this device supports ARC execution environment.
   optional bool arc = 20;
@@ -229,6 +229,9 @@ message SchedulableLabels {
 
   // crbug.com/994200: this matches to label "sku" in autotest.
   optional string hwid_sku = 27;
+
+  // Example: 2931
+  optional string dlm_sku_id = 40;
 
   // The set of software licenses assigned to the device.
   repeated License licenses = 34;
