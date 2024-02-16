@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ff55f389_e09f42bf",
+        "filename": "doc/users/contacting_troopers.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2024-02-16T18:14:51Z",
+      "side": 1,
+      "message": "How about replacing this whole section with the following. I don\u0027t think `Life of a Request` tells what this section actually tells. Asking audiences not to assign the bug by themselves seems to be the only useful information in this section, I think.\n\n```\n## Don\u0027t assign the bug by yourself\n\nBugs are managed automatically, and new bugs will be assigned to the current\ntrooper automatically. Unless you have specific reasons, please do not set\nthe assignee by yourself. Doing so will typically slow down bug triage process.\n```",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 75,
+        "endChar": 20
+      },
+      "revId": "f0ce655592cdf21bef71e0f58a5cdad16f000c4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e6222306_3bc7dc3d",
         "filename": "doc/users/contacting_troopers.md",
         "patchSetId": 1
