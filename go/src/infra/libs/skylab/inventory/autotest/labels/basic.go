@@ -68,6 +68,10 @@ func basicConverter(ls *inventory.SchedulableLabels) []string {
 		lv := "variant:" + v
 		labels = append(labels, lv)
 	}
+	if v := ls.GetDlmSkuId(); v != "" {
+		lv := "dlm-sku-id:" + v
+		labels = append(labels, lv)
+	}
 	return labels
 }
 
@@ -81,6 +85,8 @@ func basicReverter(ls *inventory.SchedulableLabels, labels []string) []string {
 			*ls.Model = v
 		case "device-sku":
 			*ls.Sku = v
+		case "dlm-sku-id":
+			*ls.DlmSkuId = v
 		case "sku":
 			*ls.HwidSku = v
 		case "brand-code":

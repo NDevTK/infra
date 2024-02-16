@@ -40,6 +40,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 		Cr50RoVersion: new(string),
 		Cr50RwKeyid:   new(string),
 		Cr50RwVersion: new(string),
+		DlmSkuId:      new(string),
 		EcType:        new(SchedulableLabels_ECType),
 		HwidSku:       new(string),
 		Model:         new(string),

@@ -84,6 +84,7 @@ os_type: 2
 model: "modelval"
 sku: "skuval"
 hwid_sku: "eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB"
+dlm_sku_id: "12345"
 brand: "HOMH"
 ec_type: 1
 cr50_ro_keyid: "a"
@@ -245,6 +246,7 @@ os_type: 2
 model: "modelval"
 sku: "skuval"
 hwid_sku: "eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB"
+dlm_sku_id: "12345"
 brand: "HOMH"
 ec_type: 1
 cr50_ro_keyid: "a"
@@ -376,6 +378,7 @@ var fullDimensions = Dimensions{
 	"label-graphics":                {"graphicsval"},
 	"label-hangout_app":             {"True"},
 	"label-hwid_sku":                {"eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB"},
+	"label-dlm_sku_id":              {"12345"},
 	"label-hmr_state":               {"WORKING"},
 	"label-hotwording":              {"True"},
 	"label-huddly":                  {"True"},

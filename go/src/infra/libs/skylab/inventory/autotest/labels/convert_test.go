@@ -103,6 +103,7 @@ os_type: 2
 model: "modelval"
 sku: "skuval"
 hwid_sku: "eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB"
+dlm_sku_id: "12345"
 brand: "HOMH"
 ec_type: 1
 cts_cpu: 1
@@ -237,6 +238,7 @@ var fullLabels = []string{
 	"cts_cpu_x86",
 	"detachablebase",
 	"device-sku:skuval",
+	"dlm-sku-id:12345",
 	"ec:cros",
 	"fingerprint",
 	"flashrom",
@@ -734,6 +736,7 @@ os_type: 2
 model: "modelval"
 sku: "skuval"
 hwid_sku: "eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB"
+dlm_sku_id: "12345"
 brand: "HOMH"
 ec_type: 1
 cts_cpu: 1
@@ -868,6 +871,7 @@ var fullLabelsSpecial = []string{
 	"cts_cpu_x86",
 	"detachablebase",
 	"device-sku:skuval",
+	"dlm-sku-id:12345",
 	"ec:cros",
 	"fingerprint",
 	"flashrom",

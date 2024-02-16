@@ -30,6 +30,9 @@ func basicConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 	if v := ls.GetHwidSku(); v != "" {
 		dims["label-hwid_sku"] = []string{v}
 	}
+	if v := ls.GetDlmSkuId(); v != "" {
+		dims["label-dlm_sku_id"] = []string{v}
+	}
 	if v := ls.GetBrand(); v != "" {
 		dims["label-brand"] = []string{v}
 	}
@@ -74,6 +77,7 @@ func basicReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 	d = assignLastStringValueAndDropKey(d, ls.Model, "label-model")
 	d = assignLastStringValueAndDropKey(d, ls.Sku, "label-sku")
 	d = assignLastStringValueAndDropKey(d, ls.HwidSku, "label-hwid_sku")
+	d = assignLastStringValueAndDropKey(d, ls.DlmSkuId, "label-dlm_sku_id")
 	d = assignLastStringValueAndDropKey(d, ls.Brand, "label-brand")
 	d = assignLastStringValueAndDropKey(d, ls.Platform, "label-platform")
 	d = assignLastStringValueAndDropKey(d, ls.ReferenceDesign, "label-reference_design")
