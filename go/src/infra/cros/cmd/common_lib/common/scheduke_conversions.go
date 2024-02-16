@@ -9,6 +9,7 @@ import (
 	"compress/zlib"
 	"encoding/base64"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -81,6 +82,16 @@ func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*
 	if !ok {
 		return nil, fmt.Errorf("no deadline found on ScheduleBuildRequest %v", bbReq)
 	}
+	parentBBIDStr := cftReq.GetStructValue().GetFields()["parentBuildId"].GetStringValue()
+	var parentBBID int64
+	// Fail softly if parentBuildId field is not set on the request, as Scheduke
+	// only uses this for metadata/logging.
+	if parentBBIDStr != "" {
+		parentBBID, err = strconv.ParseInt(parentBBIDStr, 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid parent BBID found on ScheduleBuildRequest %v", bbReq)
+		}
+	}
 	deadline, err := timeFromTimestampPBString(deadlineStruct.GetStringValue())
 	if err != nil {
 		return nil, fmt.Errorf("error parsing deadline for ScheduleBuildRequest %v: %w", bbReq, err)
@@ -101,7 +112,7 @@ func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*
 		MaxExecutionMinutes:      30,
 		QsAccount:                qsAccount,
 		Pool:                     pool,
-		Bbid:                     0, // Unneeded outside of shadow mode.
+		Bbid:                     parentBBID,
 		Asap:                     asap,
 		ScheduleBuildRequestJson: compressedReqJSON,
 	}
