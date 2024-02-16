@@ -1,5 +1,5 @@
 create {
-  platform_re: ".*-arm.*|.*-mips.*"
+  platform_re: ".*-arm.*|.*-mips.*|.*-riscv.*"
   unsupported: true
   source {
     cpe_base_address: "cpe:/a:gnu:binutils:-"

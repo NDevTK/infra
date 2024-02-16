@@ -54,6 +54,9 @@ case $_3PP_PLATFORM in
   linux-armv6l)
     TARGET=linux-armv4
     ;;
+  linux-riscv64)
+    TARGET=linux64-riscv64
+    ;;
   linux-*)
     TARGET="linux-${CROSS_TRIPLE%%-*}"
     ;;

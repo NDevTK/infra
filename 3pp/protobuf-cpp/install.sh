@@ -11,6 +11,11 @@ PREFIX="$1"
 
 export CXXFLAGS+=" -fPIC"
 
+# On RISC-V, some runtime functions are in libatomic instead of libc.
+if [[ $_3PP_PLATFORM == "linux-riscv64" ]]; then
+  export LDFLAGS+=" -latomic"
+fi
+
 PROTOC_OPT=
 if [[ $_3PP_PLATFORM != $_3PP_TOOL_PLATFORM ]]; then  # cross compiling
   BUILD_PROTOC=`which protoc`

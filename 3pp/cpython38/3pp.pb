@@ -69,7 +69,7 @@ create {
 }
 
 create {
-  platform_re: "linux-arm.*|linux-mips.*"
+  platform_re: "linux-arm.*|linux-mips.*|linux-riscv.*"
   build {
     tool: "build_support/pip_bootstrap@2@pip20.3.4.setuptools44.1.1.wheel0.37.1.chromium4"
     tool: "tools/autoconf"

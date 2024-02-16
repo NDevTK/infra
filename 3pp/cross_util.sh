@@ -22,7 +22,13 @@
       # This is because the docker images currently set an alternative for `cc`
       # and `gcc` in /usr/bin to be the xcompile gcc. None of the other tools in
       # /usr/bin are switched though...
-      if command -v gcc-10 > /dev/null; then
+      if command -v gcc-13 > /dev/null; then
+        export CC=gcc-13
+      elif command -v gcc-12 > /dev/null; then
+        export CC=gcc-12
+      elif command -v gcc-11 > /dev/null; then
+        export CC=gcc-11
+      elif command -v gcc-10 > /dev/null; then
         export CC=gcc-10
       elif command -v gcc-9 > /dev/null; then
         export CC=gcc-9

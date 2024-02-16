@@ -14,6 +14,7 @@ PREFIX="$1"
 # There is no clean way to disable this configure check, so instead
 # we intentionally break pkg-config.
 export PKG_CONFIG_LIBDIR=/invalid
+export CFLAGS+=" -I/usr/include/tirpc"
 
 ./configure --disable-shared \
   --prefix "$PREFIX" \

@@ -22,6 +22,11 @@ else
   CMAKE_DEPS_PREFIX="${DEPS_PREFIX}"
 fi
 
+# On RISC-V, some runtime functions are in libatomic instead of libc.
+if [[ $_3PP_PLATFORM == "linux-riscv64" ]]; then
+  export LDFLAGS+=" -latomic"
+fi
+
 # Use the cmake in path to bootstrap cmak'ing cmake!
 # Force CMAKE_CXX_STANDARD to 14 because C++17 is buggy on gcc10.
 # See also: https://github.com/scikit-build/cmake-python-distributions/issues/221

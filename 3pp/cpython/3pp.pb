@@ -37,6 +37,11 @@ create {
 }
 
 create {
+  platform_re: "linux-riscv.*"
+  unsupported: true
+}
+
+create {
   platform_re: "mac-.*"
   source {
     patch_dir: "patches"

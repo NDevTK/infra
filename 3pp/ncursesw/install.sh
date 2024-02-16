@@ -22,6 +22,8 @@ if [[ $_3PP_TOOL_PLATFORM == mac-amd64 ]]; then
   export BUILD_CC="cc -arch x86_64"
 fi
 
+export CXXFLAGS+=" -std=c++14"
+
 # The "ncurses" package, by default, uses a fixed-path location for terminal
 # information. This is not relocatable, so we need to disable it. Instead, we
 # will compile ncurses with a set of hand-picked custom terminal information

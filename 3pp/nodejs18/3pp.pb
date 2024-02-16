@@ -1,5 +1,5 @@
 create {
-  platform_re: "linux-armv6l|linux-mips.*"
+  platform_re: "linux-armv6l|linux-mips.*|linux-riscv.*"
   unsupported: true
 }
 

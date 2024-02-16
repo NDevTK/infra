@@ -18,4 +18,10 @@ create {
   }
 }
 
+# Need to update to 3.3 or later for RISC-V support.
+create {
+  platform_re: "linux-riscv.*"
+  unsupported: true
+}
+
 upload { pkg_prefix: "static_libs" }

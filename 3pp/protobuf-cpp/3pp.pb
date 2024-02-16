@@ -17,7 +17,7 @@ create {
 }
 
 create {
-  platform_re: "linux-arm.*|linux-mips.*"
+  platform_re: "linux-arm.*|linux-mips.*|linux-riscv.*"
 
   build {
     # Depend on the host protoc for cross-compiling

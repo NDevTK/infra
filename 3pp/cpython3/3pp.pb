@@ -64,7 +64,7 @@ create {
 }
 
 create {
-  platform_re: "linux-arm.*|linux-mips.*"
+  platform_re: "linux-arm.*|linux-mips.*|linux-riscv.*"
   build {
     tool: "build_support/pip_bootstrap"
     tool: "tools/autoconf"

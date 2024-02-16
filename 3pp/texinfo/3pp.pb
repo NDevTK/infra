@@ -1,5 +1,5 @@
 create {
-  platform_re: ".*-arm.*|.*-mips.*"
+  platform_re: ".*-arm.*|.*-mips.*|.*-riscv.*"
   unsupported: true
 }
 

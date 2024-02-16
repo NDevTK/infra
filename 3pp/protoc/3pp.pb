@@ -1,6 +1,6 @@
 create {
   # We will need to switch to building from source to support these platforms.
-  platform_re: "linux-armv6l|linux-mips.*"
+  platform_re: "linux-armv6l|linux-mips.*|linux-riscv.*"
   unsupported: true
 }
 
