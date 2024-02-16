@@ -706,6 +706,7 @@ message AudioLatencyToolkit {
 }
 
 // Chrome OS specific DUT details
+// NEXT TAG: 32
 message ChromeOS {
   reserved 1;
   // Board name of the DUT.
@@ -753,6 +754,8 @@ message ChromeOS {
   DUTAudio audio = 10;
   // Stock-keeping unit of the DUT.
   string device_sku = 11;
+  // DLM SKU ID of the DUT
+  string dlm_sku_id = 31;
 
   // Physical parts of DUT.
   // Internal storage info.
