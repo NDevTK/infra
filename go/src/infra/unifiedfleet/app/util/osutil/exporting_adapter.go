@@ -331,6 +331,11 @@ func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
 	}
 }
 
+func setDlmSkuId(l *inventory.SchedulableLabels, machine *ufspb.Machine) {
+	dlmSkuId := machine.GetChromeosMachine().GetDlmSkuId()
+	l.DlmSkuId = &dlmSkuId
+}
+
 func setHwidData(l *inventory.SchedulableLabels, h *ufspb.HwidData) {
 	sku := h.GetSku()
 	l.HwidSku = &sku
@@ -712,6 +717,7 @@ func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.DeviceUnd
 	setManufacturingConfig(labels, data.GetManufacturingConfig())
 	setHwidData(labels, data.GetHwidData())
 	setCbx(labels, machine)
+	setDlmSkuId(labels, machine)
 
 	id := machine.GetName()
 	hostname := lse.GetName()

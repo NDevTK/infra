@@ -63,6 +63,7 @@ var machine = ufspb.Machine{
 			BuildTarget: "coral",
 			Model:       "test_model",
 			Sku:         "test_variant",
+			DlmSkuId:    "12345",
 		},
 	},
 }
@@ -478,6 +479,7 @@ common {
 		cr50_ro_keyid: "prod"
 		ec_type: EC_TYPE_CHROME_OS
 		hwid_sku: "test_sku"
+		dlm_sku_id: "12345"
 		licenses: {
 			type: 1
 			identifier: "my-windows-identifier-A001"
