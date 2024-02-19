@@ -48,13 +48,14 @@ SWIGWIN_URL = 'http://ixpeering.dl.sourceforge.net/project/swig/swigwin/swigwin-
 
 def do_latest():
   tags = json.load(urllib.request.urlopen(TAGS))
-  latest = packaging.version.parse('0')
+  latest = '0'
   for t in tags:
     # Skip any prereleases, which will have a '-' in the name.
     if '-' in t['name']:
       continue
-    v = packaging.version.parse(t['name'][1:])  # Strip leading 'v'
-    latest = max(latest, v)
+    latest = max(
+        (latest, t['name'][1:]),  # Strip leading 'v'
+        key=packaging.version.parse)
   print(latest)
 
 

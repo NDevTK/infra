@@ -47,7 +47,7 @@ def do_latest(platform):
     raise ValueError('unsupported platform {}'.format(platform))
 
   releases = json.load(urllib.request.urlopen(RELEASES))
-  latest = packaging.version.parse('0')
+  latest = '0'
   for r in releases:
     if r['prerelease']:
       continue
@@ -60,7 +60,7 @@ def do_latest(platform):
         found = True
         break
     if found:
-      latest = max(latest, packaging.version.parse(version))
+      latest = max((latest, version), key=packaging.version.parse)
   print(latest)
 
 

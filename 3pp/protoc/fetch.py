@@ -69,12 +69,13 @@ PROTOC_PLATFORMS = {
 
 def do_latest():
   releases = json.load(urllib.request.urlopen(RELEASES))
-  latest = packaging.version.parse('0')
+  latest = '0'
   for r in releases:
     if r['prerelease']:
       continue
-    latest = max(latest, packaging.version.parse(
-        r['tag_name'][1:]))  # Strip leading 'v'
+    latest = max(
+        (latest, r['tag_name'][1:]),  # Strip leading 'v'
+        key=packaging.version.parse)
   print(latest)
 
 
