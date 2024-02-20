@@ -27,8 +27,8 @@ type SSHClient interface {
 }
 
 const (
-	supportNetwork             = "tcp"
-	numberOfConnectionAttempts = 3
+	supportNetwork       = "tcp"
+	tlsConnectionTimeout = 3 * time.Second
 )
 
 // Implementation of SSHClient.
@@ -79,48 +79,43 @@ func (c *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFu
 	return newForwarder(l, connFunc, errFunc)
 }
 
-func connectToProxy(ctx context.Context, network string, proxy *proxyConfig) (net.Conn, error) {
-	log.Debugf(ctx, "Establishing TLS connection to %s", proxy.GetAddr())
-	conn, err := tls.Dial(network, proxy.GetAddr(), proxy.GetConfig())
+func connectToProxyWithTimeout(ctx context.Context, network string, proxy *proxyConfig) (*tls.Conn, error) {
+	log.Debugf(ctx, "Establishing TLS connection to %q", proxy.GetAddr())
+	rawConn, err := net.DialTimeout(network, proxy.GetAddr(), tlsConnectionTimeout)
 	if err != nil {
 		log.Warningf(ctx, "Failed to connect to proxy: %v", err)
-		return nil, errors.Annotate(err, "connect to proxy").Err()
+		return nil, errors.Annotate(err, "connect to proxy with timeout").Err()
+	}
+	log.Debugf(ctx, "Established raw connection to proxy: %q", proxy.GetAddr())
+	conn := tls.Client(rawConn, proxy.GetConfig())
+	tlsCtx, cancel := context.WithTimeout(ctx, tlsConnectionTimeout)
+	defer cancel()
+	log.Debugf(ctx, "Running handshake")
+	if err = conn.HandshakeContext(tlsCtx); err != nil {
+		rawConn.Close()
+		return nil, errors.Annotate(err, "connect to proxy with timeout").Err()
 	}
 	return conn, nil
 }
 
-func connectToProxyWithContext(ctx context.Context, network string, proxy *proxyConfig) (net.Conn, error) {
-	var err error
-	var conn net.Conn
-	done := make(chan bool)
-	if deadline, ok := ctx.Deadline(); ok {
-		log.Debugf(ctx, "Remaining time util timeout: %+v", time.Until(deadline))
-	}
-	tlsCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
-	defer cancel()
-	go func() {
-		conn, err = connectToProxy(tlsCtx, network, proxy)
-		done <- true
-	}()
-	select {
-	case <-ctx.Done():
-		return nil, errors.Annotate(ctx.Err(), "connect to proxy with retry").Err()
-	case <-done:
-	}
-	return conn, err
-}
-
 func connectToProxyWithRetry(ctx context.Context, network string, proxy *proxyConfig) (net.Conn, error) {
-	waitBetweenRetriesInMillis := rand.Intn(1000)
-	timeToSleep := time.Duration(waitBetweenRetriesInMillis) * time.Millisecond
 	var err error
 	var conn net.Conn
-	for i := 0; i < numberOfConnectionAttempts; i++ {
-		conn, err = connectToProxyWithContext(ctx, network, proxy)
+	curAttempt, maxAttempts := 0, 3
+	waitBetweenRetriesInMillis := 5 + rand.Intn(1000)
+	for curAttempt < maxAttempts {
+		conn, err = connectToProxyWithTimeout(ctx, network, proxy)
 		if err == nil {
 			break
 		}
-		if i < numberOfConnectionAttempts-1 {
+		timeToSleep := time.Duration(waitBetweenRetriesInMillis) * time.Millisecond
+		if deadline, ok := ctx.Deadline(); ok {
+			remainingTime := time.Until(deadline).Round(time.Millisecond)
+			maxAttempts = int(remainingTime / (tlsConnectionTimeout + timeToSleep))
+			log.Debugf(ctx, "Remaining time until timeout: %s", remainingTime)
+		}
+		curAttempt++
+		if curAttempt < maxAttempts {
 			time.Sleep(timeToSleep)
 			log.Debugf(ctx, "Retrying TLS connection")
 		}
@@ -139,13 +134,13 @@ func newProxyClient(ctx context.Context, sshConfig *ssh.ClientConfig, proxy *pro
 		log.Errorf(ctx, "Error creating a new TLS connection: %s", err)
 		return nil, errors.Annotate(err, "new proxy client").Err()
 	}
-	log.Debugf(ctx, "Connected to proxy %s", proxy.GetAddr())
+	log.Debugf(ctx, "Established TLS connection to proxy %q", proxy.GetAddr())
 	var c ssh.Conn
 	var chans <-chan ssh.NewChannel
 	var reqs <-chan *ssh.Request
 	done := make(chan bool)
 	go func() {
-		log.Debugf(ctx, "Establishing ssh over TLS: %s", proxy.GetAddr())
+		log.Debugf(ctx, "Establishing ssh over TLS: %q", proxy.GetAddr())
 		c, chans, reqs, err = ssh.NewClientConn(conn, proxy.GetAddr(), sshConfig)
 		done <- true
 	}()
