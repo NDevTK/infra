@@ -251,7 +251,8 @@ func attachLUCIBisectionTestAnalysesResults(c context.Context, failures []*messa
 		}
 		// Attach test analyses to tests.
 		for i, analysis := range testAnalyses {
-			if analysis == nil {
+			// AnalysisID must not be zero, otherwise it suggests no bisection found for this test failure.
+			if analysis == nil || analysis.AnalysisId == 0 {
 				continue
 			}
 			tests[i].LUCIBisectionResult = &step.LUCIBisectionTestAnalysis{
