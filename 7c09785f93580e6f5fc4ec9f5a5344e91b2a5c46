@@ -22,6 +22,30 @@
       },
       "revId": "7c09785f93580e6f5fc4ec9f5a5344e91b2a5c46",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "81ee3638_5b101648",
+        "filename": "doc/users/contacting_troopers.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2024-02-20T19:49:22Z",
+      "side": 1,
+      "message": "Fixed",
+      "parentUuid": "20a584d2_abf077d9",
+      "range": {
+        "startLine": 107,
+        "startChar": 4,
+        "endLine": 107,
+        "endChar": 61
+      },
+      "revId": "7c09785f93580e6f5fc4ec9f5a5344e91b2a5c46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
