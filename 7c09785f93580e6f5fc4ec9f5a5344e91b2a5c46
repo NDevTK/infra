@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "20a584d2_abf077d9",
+        "filename": "doc/users/contacting_troopers.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2024-02-20T18:25:01Z",
+      "side": 1,
+      "message": "The actual link-text includes (go/cros-infra-bug)`. as shown on L130.\n\nPlease remove the go-link text from the link text in both L106 and L107, or keep them in the text. If you\u0027d like to keep the current, then add `http://` to the go-link. Otherwise, GoB will render it as https://chromium.googlesource.com/....../go/cros-infra-bug.",
+      "range": {
+        "startLine": 107,
+        "startChar": 4,
+        "endLine": 107,
+        "endChar": 61
+      },
+      "revId": "7c09785f93580e6f5fc4ec9f5a5344e91b2a5c46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
