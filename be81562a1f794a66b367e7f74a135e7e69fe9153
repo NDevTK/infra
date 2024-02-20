@@ -83,6 +83,75 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "875e47ff_85ea8716",
+        "filename": "go/src/infra/build/siso/scandeps/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-02-20T06:56:39Z",
+      "side": 1,
+      "message": "done indicates if it has already been computed or not.\nok indicates if the hmap was successfully parsed or not.\n```suggestion\n\t// done indicates if it has already been computed or not.\n\tdone bool\n\t// ok indicates if the hmap was successfully parsed or not.\n\tok   bool\n\tm    map[string]string\n```",
+      "range": {
+        "startLine": 208,
+        "startChar": 0,
+        "endLine": 210,
+        "endChar": 0
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3066d9cb_d061a1fb",
+        "filename": "go/src/infra/build/siso/scandeps/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-02-20T06:56:39Z",
+      "side": 1,
+      "message": "```suggestion\n// getHmap returns hmap and success flag. If the same hamp has been computed,\n// the results are returned from cache.\nfunc (fsys *filesystem) getHmap(ctx context.Context, execRoot, fname string) (map[string]string, bool) {\n```",
+      "range": {
+        "startLine": 213,
+        "startChar": 24,
+        "endLine": 213,
+        "endChar": 31
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4823eb36_d18a9e32",
+        "filename": "go/src/infra/build/siso/scandeps/fsview.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-02-20T06:56:39Z",
+      "side": 1,
+      "message": "```suggestion\n// getHmap returns hmap excluding files that aren\u0027t under execRoot.\nfunc (fv *fsview) getHmap(ctx context.Context, hmap string) (map[string]string, bool) {\n```",
+      "range": {
+        "startLine": 320,
+        "startChar": 18,
+        "endLine": 320,
+        "endChar": 25
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8b99e429_03a43abe",
         "filename": "go/src/infra/build/siso/scandeps/scan.go",
         "patchSetId": 1
@@ -100,6 +169,52 @@
         "startChar": 18,
         "endLine": 335,
         "endChar": 25
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83de8653_c5315e62",
+        "filename": "go/src/infra/build/siso/scandeps/scandeps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-02-20T06:56:39Z",
+      "side": 1,
+      "message": "```suggestion\n\t// Dirs are include directories (search paths) or hmap paths.\n```",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 48
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "95335ca2_046fd451",
+        "filename": "go/src/infra/build/siso/scandeps/scandeps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-02-20T06:56:39Z",
+      "side": 1,
+      "message": "If `scanner.addHmap` failed, should it just continue rather than falling back to `acanner.addDir`?",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 90,
+        "endChar": 0
       },
       "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
