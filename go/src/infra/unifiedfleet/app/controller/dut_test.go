@@ -3686,6 +3686,7 @@ func TestUpdateRecoveryData(t *testing.T) {
 						SerialNumber: "serialNumber",
 						HwID:         "hwID",
 						DeviceSku:    "deviceSku",
+						DlmSkuId:     "12345",
 					},
 					LabData: &ufsAPI.ChromeOsRecoveryData_LabData{},
 				},
@@ -3725,6 +3726,7 @@ func TestUpdateRecoveryData(t *testing.T) {
 			So(machine.GetSerialNumber(), ShouldEqual, "serialNumber")
 			So(machine.GetChromeosMachine().GetHwid(), ShouldEqual, "hwID")
 			So(machine.GetChromeosMachine().GetSku(), ShouldEqual, "deviceSku")
+			So(machine.GetChromeosMachine().GetDlmSkuId(), ShouldEqual, "12345")
 			lse, err = GetMachineLSE(ctx, dutName)
 			So(err, ShouldBeNil)
 			So(lse.GetResourceState(), ShouldEqual, ufspb.State_STATE_READY)

@@ -392,14 +392,16 @@ func updateRecoveryMachineHelper(ctx context.Context, machine *ufspb.Machine, du
 
 	if machine.GetSerialNumber() == dutData.GetSerialNumber() &&
 		machine.GetChromeosMachine().GetHwid() == dutData.GetHwID() &&
-		machine.GetChromeosMachine().GetSku() == dutData.GetDeviceSku() {
-		logging.Warningf(ctx, "nothing to update: old serial number %q, old hwid %q, old device-sku %q", dutData.GetSerialNumber(), dutData.GetHwID(), dutData.GetDeviceSku())
+		machine.GetChromeosMachine().GetSku() == dutData.GetDeviceSku() &&
+		machine.GetChromeosMachine().GetDlmSkuId() == dutData.GetDlmSkuId() {
+		logging.Warningf(ctx, "nothing to update: old serial number %q, old hwid %q, old device-sku %q, old dlm-sku-id", dutData.GetSerialNumber(), dutData.GetHwID(), dutData.GetDeviceSku(), dutData.GetDlmSkuId())
 		return nil
 	}
 
 	machine.SerialNumber = dutData.GetSerialNumber()
 	machine.GetChromeosMachine().Hwid = dutData.GetHwID()
 	machine.GetChromeosMachine().Sku = dutData.GetDeviceSku()
+	machine.GetChromeosMachine().DlmSkuId = dutData.GetDlmSkuId()
 	if _, err := registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine}); err != nil {
 		return errors.Annotate(err, "Unable to update dut dutData for %s", machine.Name).Err()
 	}

@@ -519,6 +519,7 @@ func getUFSDutDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_DutData {
 		HwID:         dut.GetChromeos().GetHwid(),
 		// TODO: update logic if required by b/184391605
 		DeviceSku: dut.GetChromeos().GetDeviceSku(),
+		DlmSkuId:  dut.GetChromeos().GetDlmSkuId(),
 	}
 	return dutData
 }

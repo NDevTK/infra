@@ -962,10 +962,12 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 	const serialNumber = "serialNumber"
 	const hwID = "hwID"
 	const deviceSku = "deviceSku"
+	const dlmSkuId = "12345"
 	dutData := &ufsAPI.ChromeOsRecoveryData_DutData{
 		SerialNumber: serialNumber,
 		HwID:         hwID,
 		DeviceSku:    deviceSku,
+		DlmSkuId:     dlmSkuId,
 	}
 	Convey("UpdateRecoveryDutData for an OS machine", t, func() {
 		Convey("Update a non-OS machine", func() {
@@ -999,6 +1001,7 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 			So(req.GetSerialNumber(), ShouldBeEmpty)
 			So(req.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
 			So(req.GetChromeosMachine().GetSku(), ShouldBeEmpty)
+			So(req.GetChromeosMachine().GetDlmSkuId(), ShouldBeEmpty)
 
 			asset, err = registration.GetAsset(ctx, machineName)
 			So(err, ShouldBeNil)
@@ -1020,6 +1023,7 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 			So(req.GetSerialNumber(), ShouldBeEmpty)
 			So(req.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
 			So(req.GetChromeosMachine().GetSku(), ShouldBeEmpty)
+			So(req.GetChromeosMachine().GetDlmSkuId(), ShouldBeEmpty)
 			asset := &ufspb.Asset{
 				Name: machineName,
 				Info: &ufspb.AssetInfo{
@@ -1041,6 +1045,7 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 			So(req.GetSerialNumber(), ShouldEqual, serialNumber)
 			So(req.GetChromeosMachine().GetHwid(), ShouldEqual, hwID)
 			So(req.GetChromeosMachine().GetSku(), ShouldEqual, deviceSku)
+			So(req.GetChromeosMachine().GetDlmSkuId(), ShouldEqual, dlmSkuId)
 
 			asset, err = registration.GetAsset(ctx, machineName)
 			So(err, ShouldBeNil)
