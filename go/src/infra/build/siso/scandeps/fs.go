@@ -31,6 +31,8 @@ type filesystem struct {
 
 	dircache sync.Map // dir -> base -> bool
 
+	hmaps sync.Map // hmap path -> *hmapresult
+
 	// shard by maphash to reduce lock contention
 	symtab  [256]sync.Map  // for incname, macros
 	pathtab [4096]sync.Map // for pathname
@@ -199,4 +201,38 @@ func (fsys *filesystem) setFile(execRoot, fname string, sr *scanResult) {
 	v, _ := fsys.files.LoadOrStore(filepath.Base(fname), new(sync.Map))
 	m := v.(*sync.Map)
 	m.Store(filepath.ToSlash(filepath.Join(execRoot, fname)), sr)
+}
+
+type hmapresult struct {
+	mu   sync.Mutex
+	done bool
+	ok   bool
+	m    map[string]string
+}
+
+func (fsys *filesystem) getHmap(ctx context.Context, execRoot, fname string) (map[string]string, bool) {
+	clog.Infof(ctx, "check hmap %s", fname)
+	v, _ := fsys.hmaps.LoadOrStore(filepath.ToSlash(filepath.Join(execRoot, fname)), new(hmapresult))
+	hr := v.(*hmapresult)
+	hr.mu.Lock()
+	defer hr.mu.Unlock()
+	defer func() { hr.done = true }()
+	if hr.done {
+		clog.Infof(ctx, "check hmap %s: reuse ok=%t", fname, hr.ok)
+		return hr.m, hr.ok
+	}
+	buf, err := fsys.hashfs.ReadFile(ctx, execRoot, fname)
+	if err != nil {
+		clog.Warningf(ctx, "missing hmap %s: %v", fname, err)
+		return nil, false
+	}
+	m, err := ParseHeaderMap(ctx, buf)
+	if err != nil {
+		clog.Warningf(ctx, "failed to parse hmap %s: %v", fname, err)
+		return nil, false
+	}
+	clog.Infof(ctx, "hmap %s %d => %v", fname, len(buf), m)
+	hr.m = m
+	hr.ok = true
+	return hr.m, hr.ok
 }

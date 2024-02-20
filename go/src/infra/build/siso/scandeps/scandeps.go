@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"hash/maphash"
+	"strings"
 	"time"
 
 	log "github.com/golang/glog"
@@ -83,6 +84,9 @@ func (s *ScanDeps) Scan(ctx context.Context, execRoot string, req Request) ([]st
 		scanner.addSource(ctx, s)
 	}
 	for _, dir := range req.Dirs {
+		if strings.HasSuffix(dir, ".hmap") && scanner.addHmap(ctx, dir) {
+			continue
+		}
 		scanner.addDir(ctx, dir)
 	}
 
