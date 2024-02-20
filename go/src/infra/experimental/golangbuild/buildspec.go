@@ -54,13 +54,7 @@ type buildSpec struct {
 }
 
 func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]struct{}, st *build.State, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
-	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
-		Scopes: append([]string{
-			"https://www.googleapis.com/auth/userinfo.email",
-			"https://www.googleapis.com/auth/gerritcodereview",
-		}, sauth.CloudOAuthScopes...),
-	})
-	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
+	authenticator := createAuthenticator(ctx)
 
 	// Build the sourceSpec we were invoked with.
 	gitilesCommit := st.Build().GetInput().GetGitilesCommit()
@@ -196,45 +190,49 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 }
 
 func (b *buildSpec) setEnv(ctx context.Context) context.Context {
+	return setupEnv(ctx, b.inputs, b.builderName, b.goroot, b.gopath, b.gocacheDir)
+}
+
+func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, goroot, gopath, gocacheDir string) context.Context {
 	env := environ.FromCtx(ctx)
-	env.Load(b.inputs.Env)
-	env.Set("GOOS", b.inputs.Target.Goos)
-	env.Set("GOARCH", b.inputs.Target.Goarch)
-	env.Set("GOHOSTOS", b.inputs.Host.Goos)
-	env.Set("GOHOSTARCH", b.inputs.Host.Goarch)
+	env.Load(inputs.Env)
+	env.Set("GOOS", inputs.Target.Goos)
+	env.Set("GOARCH", inputs.Target.Goarch)
+	env.Set("GOHOSTOS", inputs.Host.Goos)
+	env.Set("GOHOSTARCH", inputs.Host.Goarch)
 	env.Set("GOROOT_BOOTSTRAP", filepath.Join(toolsRoot(ctx), "go_bootstrap"))
-	env.Set("GOPATH", b.gopath) // Explicitly set to an empty per-build directory, to avoid reusing the implicit default one.
+	env.Set("GOPATH", gopath) // Explicitly set to an empty per-build directory, to avoid reusing the implicit default one.
 	env.Set("GOBIN", "")
 	env.Set("GOROOT", "")           // Clear GOROOT because it's possible someone has one set locally, e.g. for luci-go development.
 	env.Set("GOTOOLCHAIN", "local") // golangbuild scope includes selecting the exact Go toolchain version, so always use that local one.
-	env.Set("GOCACHE", b.gocacheDir)
-	env.Set("GO_BUILDER_NAME", b.builderName)
-	if b.inputs.LongTest {
+	env.Set("GOCACHE", gocacheDir)
+	env.Set("GO_BUILDER_NAME", builderName)
+	if inputs.LongTest {
 		env.Set("GO_TEST_SHORT", "0") // Tell 'dist test' to operate in longtest mode. See go.dev/issue/12508.
 	}
 	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
 	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot(ctx), "bin"), os.PathListSeparator, env.Get("PATH")))
 
-	if b.inputs.Host.Goos == "windows" {
+	if inputs.Host.Goos == "windows" {
 		env.Set("GOBUILDEXIT", "1") // On Windows, emit exit codes from .bat scripts. See go.dev/issue/9799.
 		ccPath := filepath.Join(toolsRoot(ctx), "cc/windows/gcc64/bin")
-		if b.inputs.Target.Goarch == "386" { // Not obvious whether this should check host or target. As of writing they never differ.
+		if inputs.Target.Goarch == "386" { // Not obvious whether this should check host or target. As of writing they never differ.
 			ccPath = filepath.Join(toolsRoot(ctx), "cc/windows/gcc32/bin")
 		}
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, ccPath))
 	}
-	if b.inputs.Target.Goarch == "wasm" {
+	if inputs.Target.Goarch == "wasm" {
 		// Add go_*_wasm_exec and the appropriate Wasm runtime to PATH.
-		env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.goroot, "misc/wasm"), os.PathListSeparator, env.Get("PATH")))
+		env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(goroot, "misc/wasm"), os.PathListSeparator, env.Get("PATH")))
 		switch {
-		case b.inputs.Target.Goos == "js":
+		case inputs.Target.Goos == "js":
 			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot(ctx), "nodejs/bin"), os.PathListSeparator, env.Get("PATH")))
-		case b.inputs.Target.Goos == "wasip1" && env.Get("GOWASIRUNTIME") == "wasmtime",
-			b.inputs.Target.Goos == "wasip1" && env.Get("GOWASIRUNTIME") == "wazero":
+		case inputs.Target.Goos == "wasip1" && env.Get("GOWASIRUNTIME") == "wasmtime",
+			inputs.Target.Goos == "wasip1" && env.Get("GOWASIRUNTIME") == "wazero":
 			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot(ctx), env.Get("GOWASIRUNTIME")), os.PathListSeparator, env.Get("PATH")))
 		}
 	}
-	if b.inputs.ClangVersion != "" {
+	if inputs.ClangVersion != "" {
 		// Set up clang (and other LLVM tools, like llvm-symbolizer) in PATH. Then, set CC to clang to actually use it.
 		clangBin := filepath.Join(toolsRoot(ctx), "clang", "bin")
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, clangBin))
@@ -467,4 +465,14 @@ func refToBranch(ref string) string {
 // For the moment, we develop security fixes in a project named golang/go-private.
 func isGoProject(name string) bool {
 	return name == "go" || name == "golang/go-private"
+}
+
+func createAuthenticator(ctx context.Context) *auth.Authenticator {
+	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
+		Scopes: append([]string{
+			"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/gerritcodereview",
+		}, sauth.CloudOAuthScopes...),
+	})
+	return auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
 }

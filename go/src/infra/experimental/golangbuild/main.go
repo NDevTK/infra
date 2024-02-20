@@ -135,6 +135,19 @@
 //     behavior.
 //   - luci.best_effort_platform: set by LUCI on less-supported platforms.
 //     Affects which tools are downloaded from CIPD.
+//
+// ## Set up gomote environment locally
+//
+// If golangbuild is invoked with GOMOTE_SETUP=<project>/<bucket>/<builder>, then the luciexe
+// protocol will be bypassed, and it will set up that builder's tools and environment in the
+// current working directory. Then, it will interpret all command-line arguments as another
+// command to execute.
+//
+// This is used during gomote setup as a wrapper for the buildlet, but can also be used locally
+// to partially replicate an environment for a builder. For example, the following command will
+// replicate the environment for gotip-linux-amd64 and drop you into a shell:
+//
+//	GOMOTE_SETUP=golang/ci-workers/gotip-linux-amd64-test_only golangbuild bash
 package main
 
 import (
@@ -151,6 +164,15 @@ import (
 )
 
 func main() {
+	// If we're just performing setup for a gomote, skip the luciexe protocol stuff.
+	if builderName := os.Getenv("GOMOTE_SETUP"); builderName != "" {
+		if err := gomoteSetup(context.Background(), builderName, os.Args[1:]); err != nil {
+			fmt.Fprintf(os.Stderr, "error: gomote setup: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
 	inputs := new(golangbuildpb.Inputs)
 	var writeOutputProps func(*golangbuildpb.Outputs)
 	build.Main(inputs, &writeOutputProps, nil, func(ctx context.Context, args []string, st *build.State) error {
