@@ -766,6 +766,11 @@ luci.bucket(
         ),
     ],
     dynamic = True,
+    # TODO(yuanjunh): Make it non-public to test /build redirection.
+    # Delete it after the testing.
+    acls = [
+        acl.entry(acl.BUILDBUCKET_READER, groups = ["googlers"]),
+    ],
 )
 
 luci.task_backend(
