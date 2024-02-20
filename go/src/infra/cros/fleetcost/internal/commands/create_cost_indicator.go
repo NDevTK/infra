@@ -7,10 +7,12 @@ package commands
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/http"
 	"time"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/genproto/googleapis/type/money"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -33,6 +35,22 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.name, "name", "", "name of cost indicator")
+		c.Flags.Func("typ", "name of cost indicator", func(string) error {
+			return errors.New("not yet implemented")
+		})
+		c.Flags.StringVar(&c.board, "board", "", "board")
+		c.Flags.StringVar(&c.model, "model", "", "model")
+		c.Flags.StringVar(&c.sku, "sku", "", "sku")
+		c.Flags.Func("cost", "cost", func(string) error {
+			return errors.New("not yet implemented")
+		})
+		c.Flags.Func("cadence", "cost-cadence", func(string) error {
+			return errors.New("not yet implemented")
+		})
+		c.Flags.Float64Var(&c.burnoutRate, "burnout", math.NaN(), "device burnout rate")
+		c.Flags.Func("location", "where the device is located", func(string) error {
+			return errors.New("not yet implemented")
+		})
 		return c
 	},
 }
@@ -42,6 +60,15 @@ type createCostIndicatorCommand struct {
 	authFlags   authcli.Flags
 	commonFlags site.CommonFlags
 	name        string
+	typ         fleetcostpb.IndicatorType
+	board       string
+	model       string
+	sku         string
+	cost        *money.Money
+	costCadence fleetcostpb.CostCadence
+	burnoutRate float64
+	location    fleetcostpb.Location
+	description string
 }
 
 // Run is the main entrypoint to the create-ci.
@@ -93,7 +120,15 @@ func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 	}
 	fleetCostClient := fleetcostpb.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.CreateCostIndicator(ctx, &fleetcostpb.CreateCostIndicatorRequest{CostIndicator: &fleetcostpb.CostIndicator{
-		Name: c.name,
+		Name:        c.name,
+		Type:        c.typ,
+		Board:       c.board,
+		Model:       c.model,
+		Cost:        c.cost,
+		CostCadence: c.costCadence,
+		BurnoutRate: c.burnoutRate,
+		Location:    c.location,
+		Description: c.description,
 	}})
 	fmt.Printf("%#v\n", resp)
 	return err
