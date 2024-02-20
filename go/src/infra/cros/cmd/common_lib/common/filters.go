@@ -33,7 +33,7 @@ var (
 	DefaultKoffeeFilterNames = []string{}
 
 	// Default shas for backwards compatibility
-	defaultLegacyHWSha  = "695ae7d6eabe82ba197c8a5c0db6b4292cd3ec940b3bdfaf85378d5ac3910e2b"
+	defaultLegacyHWSha  = "a40e76e81f20dc54e26acea67bb9a00ebd0a64552276d4d3931715668798fffd"
 	defaultTTCPSha      = "9e614cdff50502ad2d3649c261c006f2329585053a75c2a6517b268e8e4fbda7"
 	defaultProvisionSha = "0010028a54f3d72c41a93b0f1248dbe9061f25a488efd8d113f73d05b4052c2f"
 
@@ -213,7 +213,7 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *skylab_t
 }
 
 func needBackwardsCompatibility(build int) bool {
-	return build < 15777
+	return build < 15789
 }
 
 // CreateTTCPContainerRequest creates container request from provided ctp filter.

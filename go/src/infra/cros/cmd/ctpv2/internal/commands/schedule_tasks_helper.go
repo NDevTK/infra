@@ -327,7 +327,7 @@ func getBuildTargetWVariantfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition)
 
 // createCftTestRequest creates cft test request.
 func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper, provInfo []*testapi.ProvisionInfo) (*skylab_test_runner.CFTTestRequest, error) {
-	deadline := timestamppb.New(time.Now().Add(2 * time.Hour))
+	deadline := timestamppb.New(time.Now().Add(19 * time.Hour))
 
 	dutModel := &labapi.DutModel{
 		BuildTarget: trHelper.board,
