@@ -8,7 +8,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"slices"
 	"time"
@@ -22,7 +24,9 @@ import (
 	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
+	"go.chromium.org/luci/luciexe/build"
 	"go.chromium.org/luci/provenance/api/snooperpb/v1"
 	"go.chromium.org/luci/provenance/client"
 
@@ -30,28 +34,13 @@ import (
 )
 
 type Application struct {
+	// Input properties defined in proto for pkgbuild recipe
+	// This can be both passed from command-line flags or proto message if
+	// luciexe is enabled.
+	*Input
+
+	// Logging level for pkgbuild
 	LoggingLevel logging.Level
-
-	// Target CIPD platform for packages.
-	TargetPlatform string
-
-	// Storage directory for build and cache packages.
-	StorageDir string
-	// Spec pool directory for finding 3pp specs.
-	SpecPoolDir string
-
-	// If not empty, statistics data will be stored.
-	StatisticsDir string
-
-	// CIPD service URL for downloading and uploading packages.
-	CIPDService string
-	// TODO(fancl): If true, upload packages to CIPD service.
-	Upload bool
-	// The prefix to use for uploading built packages.
-	CIPDPackagePrefix string
-
-	// Snoopy service URL for reporting artifact hash.
-	SnoopyService string
 
 	// Display help message
 	Help bool
@@ -72,13 +61,11 @@ func (a *Application) Parse(args []string) error {
 	fs.StringVar(&a.TargetPlatform, "target-platform", a.TargetPlatform, "Target CIPD platform.")
 
 	fs.StringVar(&a.StorageDir, "storage-dir", a.StorageDir, "Required; Local storage directory for build and cache packages.")
-	fs.StringVar(&a.SpecPoolDir, "spec-pool", a.SpecPoolDir, "Required; Spec pool directory for finding 3pp specs.")
+	fs.StringVar(&a.SpecPool, "spec-pool", a.SpecPool, "Required; Spec pool directory for finding 3pp specs.")
 
-	fs.StringVar(&a.StatisticsDir, "statistics-dir", a.StatisticsDir, "If statistics-dir is not empty, statistics data will be stored. This may slow down the build.")
-
-	fs.StringVar(&a.CIPDService, "cipd-service", a.CIPDService, "CIPD service URL for downloading and uploading packages.")
+	fs.StringVar(&a.CipdService, "cipd-service", a.CipdService, "CIPD service URL for downloading and uploading packages.")
 	fs.BoolVar(&a.Upload, "upload", a.Upload, "If upload is true, packages will be uploaded to CIPD.")
-	fs.StringVar(&a.CIPDPackagePrefix, "cipd-package-prefix", a.CIPDPackagePrefix, "Required; The prefix to use for uploading built packages.")
+	fs.StringVar(&a.CipdPackagePrefix, "cipd-package-prefix", a.CipdPackagePrefix, "Required; The prefix to use for uploading built packages.")
 
 	fs.StringVar(&a.SnoopyService, "snoopy-service", a.SnoopyService, "Snoopy service URL for reporting artifact hash.")
 
@@ -99,12 +86,12 @@ func (a *Application) Parse(args []string) error {
 		return nil
 	}
 
-	if a.StorageDir == "" || a.SpecPoolDir == "" {
+	if a.StorageDir == "" || a.SpecPool == "" {
 		fs.Usage()
 		return fmt.Errorf("storage-dir and spec-pool are required")
 	}
 
-	if a.CIPDPackagePrefix == "" {
+	if a.CipdPackagePrefix == "" {
 		fs.Usage()
 		return fmt.Errorf("cipd-package-prefix is required")
 	}
@@ -123,13 +110,13 @@ func (a *Application) Parse(args []string) error {
 // NewBuilder creates the PackageBuilder used for building packages based on
 // the configuration and platform.
 func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
-	vpythonSpecPath := filepath.Join(a.SpecPoolDir, ".vpython3")
+	vpythonSpecPath := filepath.Join(a.SpecPool, ".vpython3")
 	if _, err := os.Stat(vpythonSpecPath); err != nil {
 		return nil, errors.Annotate(err, "failed to find vpython3 specs").Err()
 	}
 	specLoaderCfg := spec.DefaultSpecLoaderConfig(vpythonSpecPath)
-	specLoaderCfg.CIPDPackagePrefix = a.CIPDPackagePrefix
-	loader, err := spec.NewSpecLoader(a.SpecPoolDir, specLoaderCfg)
+	specLoaderCfg.CIPDPackagePrefix = a.CipdPackagePrefix
+	loader, err := spec.NewSpecLoader(a.SpecPool, specLoaderCfg)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to load specs").Err()
 	}
@@ -145,9 +132,23 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 
 	builder := workflow.NewBuilder(plats, a.PackageManager, ap)
 	builder.SetPreExecuteHook(func(ctx context.Context, pkg actions.Package) error {
-		return cipdPackage(pkg).download(ctx, a.CIPDService)
+		return cipdPackage(pkg).download(ctx, a.CipdService)
 	})
-	// TODO: set executor to luciexe.
+	builder.SetExecutor(func(ctx context.Context, cfg *workflow.ExecutionConfig, drv *core.Derivation) error {
+		step, ctx := startStep(ctx, fmt.Sprintf("build %s", drv.Name))
+		return step.With(func() error {
+			cmd := exec.CommandContext(ctx, drv.Args[0], drv.Args[1:]...)
+			cmd.Path = drv.Args[0]
+			cmd.Dir = cfg.WorkingDir
+			cmd.Stdin = cfg.Stdin
+			cmd.Stdout = io.MultiWriter(step.Stdout(), cfg.Stdout)
+			cmd.Stderr = io.MultiWriter(step.Stderr(), cfg.Stderr)
+			cmd.Env = append(slices.Clone(drv.Env), "out="+cfg.OutputDir)
+
+			logging.Infof(ctx, "command: %+v", cmd)
+			return cmd.Run()
+		})
+	})
 
 	return &PackageBuilder{
 		Packages: a.PackageManager,
@@ -157,7 +158,7 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 			Target: target,
 		},
 
-		CIPDService: a.CIPDService,
+		CipdService: a.CipdService,
 		CIPDHost:    platform.CurrentPlatform(),
 		CIPDTarget:  a.TargetPlatform,
 		SpecLoader:  loader,
@@ -207,10 +208,9 @@ func (a *Application) tryUploadOne(ctx context.Context, reporter cipdReporter, t
 	cipdPkg := cipdPackage(pkg)
 
 	// Package is available in cipd
-	if err := cipdPkg.check(ctx, a.CIPDService); err == nil {
+	if err := cipdPkg.check(ctx, a.CipdService); err == nil {
 		// TODO(fancl): add tags and refs
-		cipdPkg.setTags(ctx, a.CIPDService, nil)
-		return nil
+		return cipdPkg.setTags(ctx, a.CipdService, nil)
 	} else if !errors.Is(err, errPackgeNotExist) {
 		return err
 	}
@@ -222,7 +222,7 @@ func (a *Application) tryUploadOne(ctx context.Context, reporter cipdReporter, t
 	defer cipdPkg.Handler.DecRef()
 
 	// TODO(fancl): add tags and refs
-	name, iid, err := cipdPkg.upload(ctx, tmp, a.CIPDService, nil)
+	name, iid, err := cipdPkg.upload(ctx, tmp, a.CipdService, nil)
 	if err != nil {
 		return errors.Annotate(err, "failed to upload package").Err()
 	}
@@ -258,7 +258,7 @@ type PackageBuilder struct {
 	Packages  core.PackageManager
 	Platforms generators.Platforms
 
-	CIPDService string
+	CipdService string
 	CIPDHost    string
 	CIPDTarget  string
 	SpecLoader  *spec.SpecLoader
@@ -306,7 +306,7 @@ func (b *PackageBuilder) BuildAll(ctx context.Context, skipUploaded bool) ([]act
 	if skipUploaded {
 		// Check if package has been built and available in cipd.
 		for _, pkg := range pkgs {
-			if err := cipdPackage(pkg).check(ctx, b.CIPDService); err != nil {
+			if err := cipdPackage(pkg).check(ctx, b.CipdService); err != nil {
 				if errors.Is(err, errPackgeNotExist) {
 					newPkgs = append(newPkgs, pkg)
 				} else {
@@ -325,4 +325,47 @@ func (b *PackageBuilder) BuildAll(ctx context.Context, skipUploaded bool) ([]act
 	}
 
 	return pkgs, nil
+}
+
+const envEnableLuciexe = "PKGBUILD_ENABLE_LUCIEXE"
+
+type step struct {
+	b *build.Step
+}
+
+func startStep(ctx context.Context, name string) (*step, context.Context) {
+	if environ.FromCtx(ctx).Get(envEnableLuciexe) != "" {
+		b, ctx := build.StartStep(ctx, name)
+		return &step{b: b}, ctx
+	}
+
+	logging.Infof(ctx, "================================================================================")
+	logging.Infof(ctx, "executing step: %s", name)
+	return &step{}, ctx
+}
+
+func (s *step) End(err error) {
+	if s.b != nil {
+		s.b.End(err)
+	}
+}
+
+func (s *step) Stdout() io.Writer {
+	if s.b != nil {
+		return s.b.Log("stdout")
+	}
+	return io.Discard
+}
+
+func (s *step) Stderr() io.Writer {
+	if s.b != nil {
+		return s.b.Log("stderr")
+	}
+	return io.Discard
+}
+
+func (s *step) With(f func() error) error {
+	err := f()
+	s.End(err)
+	return err
 }

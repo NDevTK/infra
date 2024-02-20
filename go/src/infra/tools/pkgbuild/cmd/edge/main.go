@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/stdenv"
@@ -24,25 +25,35 @@ func main() {
 	ctx := context.Background()
 	actions.NewReexecRegistry().Intercept(ctx)
 
-	if err := Main(ctx); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-}
-
-func Main(ctx context.Context) error {
 	ctx = gologger.StdConfig.Use(ctx)
 	ctx = logging.SetLevel(ctx, logging.Error)
 
-	app := Application{
-		LoggingLevel:   logging.Error,
-		TargetPlatform: platform.CurrentPlatform(),
-		CIPDService:    chromeinfra.CIPDServiceURL,
-		Upload:         false,
-		SnoopyService:  "http://localhost:11000",
+	app := &Application{
+		LoggingLevel: logging.Error,
+		Input: &Input{
+			TargetPlatform: platform.CurrentPlatform(),
+			CipdService:    chromeinfra.CIPDServiceURL,
+			Upload:         false,
+			SnoopyService:  "http://localhost:11000",
+		},
 	}
-	if err := app.Parse(os.Args[1:]); err != nil {
-		return errors.Annotate(err, "failed to parse options").Err()
+
+	if os.Getenv(envEnableLuciexe) != "" {
+		build.Main(app.Input, nil, nil, func(ctx context.Context, userArgs []string, state *build.State) error {
+			return Main(ctx, app, userArgs)
+		})
+	} else {
+		if err := Main(ctx, app, os.Args[1:]); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+}
+
+func Main(ctx context.Context, app *Application, args []string) error {
+	if err := app.Parse(args); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to parse options: %s\n", err)
+		os.Exit(1)
 	}
 	ctx = logging.SetLevel(ctx, app.LoggingLevel)
 
