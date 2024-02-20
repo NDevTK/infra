@@ -20,6 +20,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "5db67dbb_4648e56e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-20T08:20:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f3888deb_bc56d7cb",
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "31220a73_f507d738",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -48,6 +66,30 @@
       "writtenOn": "2024-02-20T06:42:31Z",
       "side": 1,
       "message": "Add comment to explain this field?",
+      "range": {
+        "startLine": 209,
+        "startChar": 0,
+        "endLine": 209,
+        "endChar": 1
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4f4383a_fadd2ff2",
+        "filename": "go/src/infra/build/siso/scandeps/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-20T08:20:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "464fc9bb_25cb09ea",
       "range": {
         "startLine": 209,
         "startChar": 0,
@@ -104,6 +146,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6775f183_96557792",
+        "filename": "go/src/infra/build/siso/scandeps/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-20T08:20:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cfe1ff9c_bfabfc48",
+      "range": {
+        "startLine": 210,
+        "startChar": 0,
+        "endLine": 210,
+        "endChar": 1
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c49c6077_28064a01",
+        "filename": "go/src/infra/build/siso/scandeps/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-20T08:20:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "875e47ff_85ea8716",
+      "range": {
+        "startLine": 208,
+        "startChar": 0,
+        "endLine": 210,
+        "endChar": 0
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3066d9cb_d061a1fb",
@@ -127,6 +217,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0889cccf_fb2d71f0",
+        "filename": "go/src/infra/build/siso/scandeps/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-20T08:20:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3066d9cb_d061a1fb",
+      "range": {
+        "startLine": 213,
+        "startChar": 24,
+        "endLine": 213,
+        "endChar": 31
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4823eb36_d18a9e32",
@@ -140,6 +254,30 @@
       "writtenOn": "2024-02-20T06:56:39Z",
       "side": 1,
       "message": "```suggestion\n// getHmap returns hmap excluding files that aren\u0027t under execRoot.\nfunc (fv *fsview) getHmap(ctx context.Context, hmap string) (map[string]string, bool) {\n```",
+      "range": {
+        "startLine": 320,
+        "startChar": 18,
+        "endLine": 320,
+        "endChar": 25
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee9cc4c0_ea44eab4",
+        "filename": "go/src/infra/build/siso/scandeps/fsview.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-20T08:20:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4823eb36_d18a9e32",
       "range": {
         "startLine": 320,
         "startChar": 18,
@@ -174,6 +312,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "99281f31_37ecd5ef",
+        "filename": "go/src/infra/build/siso/scandeps/scan.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-20T08:20:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8b99e429_03a43abe",
+      "range": {
+        "startLine": 335,
+        "startChar": 18,
+        "endLine": 335,
+        "endChar": 25
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "83de8653_c5315e62",
@@ -197,6 +359,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "265f36be_f20c6161",
+        "filename": "go/src/infra/build/siso/scandeps/scandeps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-20T08:20:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "83de8653_c5315e62",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 48
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "95335ca2_046fd451",
@@ -210,6 +396,30 @@
       "writtenOn": "2024-02-20T06:56:39Z",
       "side": 1,
       "message": "If `scanner.addHmap` failed, should it just continue rather than falling back to `acanner.addDir`?",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 90,
+        "endChar": 0
+      },
+      "revId": "be81562a1f794a66b367e7f74a135e7e69fe9153",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a2e7c106_82bdea56",
+        "filename": "go/src/infra/build/siso/scandeps/scandeps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-02-20T08:20:05Z",
+      "side": 1,
+      "message": "yeah, in case if it is a directory ending with .hmap?",
+      "parentUuid": "95335ca2_046fd451",
       "range": {
         "startLine": 87,
         "startChar": 0,
