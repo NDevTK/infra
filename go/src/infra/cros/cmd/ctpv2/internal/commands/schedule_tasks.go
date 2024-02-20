@@ -122,6 +122,13 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Schedule tasks")
 	defer func() { step.End(err) }()
 
+	if len(cmd.MiddledOutResp.TrReqs) == 0 {
+		logging.Infof(ctx, "no test found in middle-out response")
+		step.SetSummaryMarkdown("enumeration error: no test found")
+		err = fmt.Errorf("enumeration error: no test found")
+		return err
+	}
+
 	wg := &sync.WaitGroup{}
 	for i, trReq := range cmd.MiddledOutResp.TrReqs {
 		wg.Add(1)
@@ -141,10 +148,8 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 	}
 
 	if len(trReq.Req.GetHwDefinition()) == 0 {
-		return nil, nil
-	}
-	if len(trReq.Tcs) == 0 {
-		return nil, nil
+		logging.Infof(ctx, "no hw def is found in req")
+		return nil, fmt.Errorf("no hw def is found so, rejecting task")
 	}
 
 	// '0'ed index because we should always have one hw here. It supports multiple
@@ -168,6 +173,21 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 	step, ctx := build.StartStep(ctx, fmt.Sprintf(TestStepNameTemplate, builderString, FindBuildName(suiteInfo, board), suiteName, shardNum))
 	defer func() { step.End(err) }()
 
+	// Input validations
+	if len(trReq.Tcs) == 0 {
+		logging.Infof(ctx, "no test is found in req")
+		step.SetSummaryMarkdown("no test-cases found to run")
+		err = fmt.Errorf("no test is found so, rejecting task")
+		return nil, err
+	}
+
+	if trReq.LabDevices == 0 {
+		logging.Infof(ctx, "no suitable device found to run tests so, rejecting task")
+		step.SetSummaryMarkdown("bot params rejected")
+		err = fmt.Errorf("bot params rejected")
+		return nil, err
+	}
+
 	builderId := common.TestRunnerBuilderID()
 
 	bbClient, err := newBBClient(ctx)
@@ -186,7 +206,7 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 		shardNum:   shardNum,
 	}
 
-	req, err := GenerateTrv2Req(ctx, true, helper, trReq.LabDevices)
+	req, err := GenerateTrv2Req(ctx, true, helper)
 	if err != nil {
 		logging.Infof(ctx, "error while generating req: %s", err)
 		return nil, errors.Annotate(err, "error while generating req:").Err()
