@@ -250,12 +250,12 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 			responses := make([]*bisectionpb.BatchGetTestAnalysesResponse, 3)
 			numTestAnalyses := []int{100, 100, 1} // First call returns 100 test analyses, second call returns 100, third call returns 1.
 			for i, num := range numTestAnalyses {
-				for j := 0; j < num; j++ {
+				for j := 1; j < num+1; j++ {
 					if responses[i] == nil {
 						responses[i] = &bisectionpb.BatchGetTestAnalysesResponse{TestAnalyses: []*bisectionpb.TestAnalysis{}}
 					}
 					responses[i].TestAnalyses = append(responses[i].TestAnalyses, &bisectionpb.TestAnalysis{
-						AnalysisId: int64(j + 100*i), // AnalysisId is 0..99, 100..199, 200.
+						AnalysisId: int64(j + 100*i), // AnalysisId is 1..100, 101..200, 201.
 						Status:     3,
 					})
 				}
@@ -266,7 +266,7 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 			So(err, ShouldBeNil)
 			for i, b := range bf {
 				So(b.Reason.Raw.(*analyzer.BqFailure).Tests[0].LUCIBisectionResult, ShouldResemble, &step.LUCIBisectionTestAnalysis{
-					AnalysisID: fmt.Sprint(i),
+					AnalysisID: fmt.Sprint(i + 1),
 					Status:     bisectionpb.AnalysisStatus(3).String(),
 				})
 			}
