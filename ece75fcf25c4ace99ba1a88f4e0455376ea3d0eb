@@ -39,6 +39,30 @@
       },
       "revId": "ece75fcf25c4ace99ba1a88f4e0455376ea3d0eb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c6314ad_8ae6d6b0",
+        "filename": "go/src/infra/cros/cmd/common_lib/common/filters.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2024-02-21T16:31:59Z",
+      "side": 1,
+      "message": "\u003e nit: capitalize, e.g. HwPlaceHolder\n\u003e ```suggestion\n\u003e \tHwPlaceHolder \u003d \"HWPLACEHOLDER\"\n\u003e ```\n\nintentionally lower case to keep usage within the file",
+      "parentUuid": "33f454cd_26d60f97",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 29,
+        "endChar": 14
+      },
+      "revId": "ece75fcf25c4ace99ba1a88f4e0455376ea3d0eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
