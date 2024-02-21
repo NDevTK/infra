@@ -47,6 +47,10 @@ type Input struct {
 	buildProperties *structpb.Struct
 	// buildRequestedProperties are the properties requested when the build was scheduled.
 	buildRequestedProperties *structpb.Struct
+	// ledEditedProperties are the properties that were modified by led.
+	ledEditedProperties *structpb.Struct
+	// ledRemovedProperties are the properties that were removed by led.
+	ledRemovedProperties []string
 	// shadowBuild indicates whether the build is a shadow build i.e. an lead real build
 	shadowBuild bool
 	// polymorphic changes the behavior to support polymoprhic builders by prioritizing build
@@ -130,6 +134,10 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 	propsToParse["$bootstrap/trigger"] = triggerProperties
 	casRecipeBundle := &apipb.CASReference{}
 	propsToParse[ledcmd.CASRecipeBundleProperty] = casRecipeBundle
+	ledEditedProperties := &structpb.Struct{}
+	propsToParse["led_edited_properties"] = ledEditedProperties
+	var ledRemovedProperties []string
+	propsToParse["led_removed_properties"] = &ledRemovedProperties
 
 	if err := exe.ParseProperties(properties, propsToParse); err != nil {
 		return nil, errors.Annotate(err, "failed to parse properties").Err()
@@ -146,6 +154,9 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 
 	if casRecipeBundle.Digest == nil {
 		casRecipeBundle = nil
+	}
+	if len(ledEditedProperties.Fields) == 0 {
+		ledEditedProperties = nil
 	}
 
 	commits := []*buildbucketpb.GitilesCommit{}
@@ -170,6 +181,8 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 		changes:                  changes,
 		buildProperties:          properties,
 		buildRequestedProperties: requestedProperties,
+		ledEditedProperties:      ledEditedProperties,
+		ledRemovedProperties:     ledRemovedProperties,
 		shadowBuild:              shadowBuild,
 		polymorphic:              o.Polymorphic,
 		propertiesOptional:       o.PropertiesOptional,

@@ -1441,6 +1441,86 @@ func TestUpdateBuild(t *testing.T) {
 
 		})
 
+		Convey("applies led property edits", func() {
+			config := &BootstrapConfig{
+				buildProperties: jsonToStruct(`{
+					"foo": "build-requested-foo-value",
+					"bar": "build-bar-value",
+					"baz": "build-baz-value"
+				}`),
+				builderProperties: jsonToStruct(`{
+					"foo": "builder-foo-value"
+				}`),
+				buildRequestedProperties: jsonToStruct(`{
+					"foo": "build-requested-foo-value"
+				}`),
+				ledEditedProperties: jsonToStruct(`{
+					"foo": "led-foo-value",
+					"bar": "led-bar-value",
+					"baz": "led-baz-value"
+				}`),
+			}
+			exe := &BootstrappedExe{
+				Source: &BootstrappedExe_Cipd{
+					Cipd: &Cipd{
+						Server:           "fake-cipd-server",
+						Package:          "fake-cipd-package",
+						RequestedVersion: "fake-cipd-ref",
+						ActualVersion:    "fake-cipd-instance-id",
+					},
+				},
+				Cmd: []string{"fake-exe"},
+			}
+			build := &buildbucketpb.Build{
+				Input: &buildbucketpb.Build_Input{},
+			}
+
+			err := config.UpdateBuild(build, exe)
+
+			So(err, ShouldBeNil)
+			So(build.Input.Properties.Fields["foo"], ShouldResembleProtoJSON, `"led-foo-value"`)
+			So(build.Input.Properties.Fields["bar"], ShouldResembleProtoJSON, `"led-bar-value"`)
+			So(build.Input.Properties.Fields["baz"], ShouldResembleProtoJSON, `"led-baz-value"`)
+		})
+
+		Convey("removes properties removed by led", func() {
+			config := &BootstrapConfig{
+				buildProperties: jsonToStruct(`{
+					"foo": "build-requested-foo-value",
+					"bar": "build-bar-value",
+					"baz": "build-baz-value"
+				}`),
+				builderProperties: jsonToStruct(`{
+					"foo": "builder-foo-value"
+				}`),
+				buildRequestedProperties: jsonToStruct(`{
+					"foo": "build-requested-foo-value"
+				}`),
+				ledRemovedProperties: []string{"foo", "bar", "baz"},
+			}
+			exe := &BootstrappedExe{
+				Source: &BootstrappedExe_Cipd{
+					Cipd: &Cipd{
+						Server:           "fake-cipd-server",
+						Package:          "fake-cipd-package",
+						RequestedVersion: "fake-cipd-ref",
+						ActualVersion:    "fake-cipd-instance-id",
+					},
+				},
+				Cmd: []string{"fake-exe"},
+			}
+			build := &buildbucketpb.Build{
+				Input: &buildbucketpb.Build_Input{},
+			}
+
+			err := config.UpdateBuild(build, exe)
+
+			So(err, ShouldBeNil)
+			So(build.Input.Properties.Fields, ShouldNotContainKey, "foo")
+			So(build.Input.Properties.Fields, ShouldNotContainKey, "bar")
+			So(build.Input.Properties.Fields, ShouldNotContainKey, "baz")
+		})
+
 	})
 
 }

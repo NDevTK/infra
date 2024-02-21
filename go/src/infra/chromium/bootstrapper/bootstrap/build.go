@@ -96,6 +96,10 @@ type BootstrapConfig struct {
 	// builderProperties is the properties read from the builder's
 	// properties file.
 	builderProperties *structpb.Struct
+	// ledEditedProperties is the properties that were edited using led.
+	ledEditedProperties *structpb.Struct
+	// ledRemovedProperties is the properties that were removed using led.
+	ledRemovedProperties []string
 	// Information detailing the source of the loaded config
 	configSource *ConfigSource
 	// skipAnalysisReasons are reasons that the bootstrapped executable
@@ -144,6 +148,8 @@ func (b *BuildBootstrapper) GetBootstrapConfig(ctx context.Context, input *Input
 
 	config.buildProperties = input.buildProperties
 	config.buildRequestedProperties = input.buildRequestedProperties
+	config.ledEditedProperties = input.ledEditedProperties
+	config.ledRemovedProperties = input.ledRemovedProperties
 
 	return config, nil
 }
@@ -513,6 +519,7 @@ func convertGerritHostToGitilesHost(host string) string {
 //
 // The build's properties will be combined from multiple sources, with earlier source in the list
 // taking priority:
+//   - Properties set/removed by led
 //   - The properties requested at the time the build is scheduled.
 //   - The $build/chromium_bootstrap property will be set with information about the bootstrapping
 //     process that the bootstrapped executable can use to ensure it operates in a manner that is
@@ -543,6 +550,10 @@ func (c *BootstrapConfig) UpdateBuild(build *buildbucketpb.Build, bootstrappedEx
 		updateProperties(c.buildProperties)
 		updateProperties(c.builderProperties)
 		updateProperties(c.buildRequestedProperties)
+	}
+	updateProperties(c.ledEditedProperties)
+	for _, prop := range c.ledRemovedProperties {
+		delete(properties.Fields, prop)
 	}
 
 	commits := []*buildbucketpb.GitilesCommit{}

@@ -140,6 +140,8 @@ func TestInput(t *testing.T) {
 					}
 				}`)
 				So(input.casRecipeBundle, ShouldBeNil)
+				So(input.ledEditedProperties, ShouldBeNil)
+				So(input.ledRemovedProperties, ShouldBeNil)
 				// Make sure the build wasn't modified
 				So(build.Input.Properties.Fields, ShouldContainKey, "$bootstrap/properties")
 				So(build.Input.Properties.Fields, ShouldContainKey, "$bootstrap/exe")
@@ -360,6 +362,41 @@ func TestInput(t *testing.T) {
 				So(input.buildProperties.Fields, ShouldNotContainKey, "led_cas_recipe_bundle")
 				// Make sure the build wasn't modified
 				So(build.Input.Properties.Fields, ShouldContainKey, "led_cas_recipe_bundle")
+			})
+
+			Convey("with ledEditedProperties set if build has led_edited_properties property", func() {
+				build.Input.Properties.Fields["led_edited_properties"] = structpb.NewStructValue(jsonToStruct(`{
+					"foo": "led-foo-value",
+					"bar": "led-bar-value"
+				}`))
+
+				input, err := opts.NewInput(build)
+
+				So(err, ShouldBeNil)
+				So(input.ledEditedProperties, ShouldResembleProtoJSON, `{
+					"foo": "led-foo-value",
+					"bar": "led-bar-value"
+				}`)
+				So(input.buildProperties.Fields, ShouldNotContainKey, "led_edited_properties")
+				// Make sure the build wasn't modified
+				So(build.Input.Properties.Fields, ShouldContainKey, "led_edited_properties")
+			})
+
+			Convey("with ledRemovedProperties set if build has led_removed_properties property", func() {
+				build.Input.Properties.Fields["led_removed_properties"] = structpb.NewListValue(&structpb.ListValue{
+					Values: []*structpb.Value{
+						structpb.NewStringValue("foo"),
+						structpb.NewStringValue("bar"),
+					},
+				})
+
+				input, err := opts.NewInput(build)
+
+				So(err, ShouldBeNil)
+				So(input.ledRemovedProperties, ShouldResemble, []string{"foo", "bar"})
+				So(input.buildProperties.Fields, ShouldNotContainKey, "led_removed_properties")
+				// Make sure the build wasn't modified
+				So(build.Input.Properties.Fields, ShouldContainKey, "led_removed_properties")
 			})
 		})
 
