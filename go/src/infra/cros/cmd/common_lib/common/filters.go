@@ -26,8 +26,9 @@ var (
 	ProvisionContainerName  = "provision-filter"
 	TestFinderContainerName = "cros-test-finder"
 
+	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
-	DefaultKarbonFilterNames = []string{ProvisionContainerName, TestFinderContainerName}
+	DefaultKarbonFilterNames = []string{TestFinderContainerName, hwPlaceHolder, ProvisionContainerName}
 
 	// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
 	DefaultKoffeeFilterNames = []string{}
@@ -50,18 +51,26 @@ var (
 	}
 )
 
-// MakeDefaultFilters sets/appends proper default filters
+// MakeDefaultFilters sets/appends proper default filters; in their required order.
 func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) []string {
+	suiteName := strings.ToLower(suiteReq.GetTestSuite().GetName())
+	hwFilter := ""
+	if strings.HasPrefix(suiteName, "3d") || strings.HasPrefix(suiteName, "ddd") {
+		hwFilter = TtcpContainerName
+	} else {
+		hwFilter = LegacyHWContainerName
+	}
+
 	filters := []string{}
 	for _, filter := range DefaultKarbonFilterNames {
-		filters = append(filters, filter)
+		if filter == hwPlaceHolder {
+			filters = append(filters, hwFilter)
+		} else {
+			filters = append(filters, filter)
+
+		}
 	}
-	suiteName := strings.ToLower(suiteReq.GetTestSuite().GetName())
-	if strings.HasPrefix(suiteName, "3d") || strings.HasPrefix(suiteName, "ddd") {
-		filters = append(filters, TtcpContainerName)
-	} else {
-		filters = append(filters, LegacyHWContainerName)
-	}
+
 	return filters
 }
 
@@ -201,8 +210,8 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *skylab_t
 					BinaryArgs: []string{
 						"server", "-port", "0",
 					},
-					// TODO (azrahman): Get binary name from new field of CTPFilter proto.
-					BinaryName: requestedFilter.GetContainerInfo().GetBinaryName(),
+					BinaryName:        requestedFilter.GetContainerInfo().GetBinaryName(),
+					AdditionalVolumes: []string{"/creds/service_accounts/:/creds/service_accounts/"},
 				},
 			},
 		},
