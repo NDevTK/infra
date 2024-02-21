@@ -156,17 +156,20 @@ func FetchImageData(ctx context.Context, board string, gcsPath string) (map[stri
 
 	catOut, err := cat.Output()
 	if err != nil {
-		return nil, err
+		logging.Infof(ctx, "error while downloading container metadata: %s", err)
+		return nil, errors.Annotate(err, "error while downloading container metadata: ").Err()
 	}
 
 	metadata := &api.ContainerMetadata{}
 	err = protojson.Unmarshal(catOut, metadata)
 	if err != nil {
-		return nil, fmt.Errorf("unable to unmarshal metadata: %s", err)
+		logging.Infof(ctx, "error while downloading metadata: %s", err)
+		return nil, errors.Annotate(err, "unable to unmarshal metadata: ").Err()
 	}
 
 	imagesMap, ok := metadata.Containers[board]
 	if !ok {
+		logging.Infof(ctx, fmt.Sprintf("provided board %s not found in container images map", board))
 		return nil, fmt.Errorf("provided board %s not found in container images map", board)
 	}
 
