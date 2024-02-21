@@ -9,7 +9,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 	"sync"
 	"time"
 
@@ -180,7 +179,7 @@ func executeFiltersInLuciBuild(
 		ContainerInfoMap:      contInfoMap,
 	}
 
-	nFilters := getTotalFilters(ctx, req, GetDefaultFilters(ctx, req.GetSuiteRequest()), common.DefaultKoffeeFilterNames)
+	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest()), common.DefaultKoffeeFilterNames)
 	logging.Infof(ctx, "nfilters: %s", nFilters)
 	// Generate config
 	ctpv2Config := configs.NewCtpv2ExecutionConfig(nFilters, configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)
@@ -220,19 +219,4 @@ func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultKarbonFilt
 	}
 
 	return len(filterSet)
-}
-
-// GetDefaultFilters sets/appends proper default filters
-func GetDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) []string {
-	filters := []string{}
-	for _, filter := range common.DefaultKarbonFilterNames {
-		filters = append(filters, filter)
-	}
-	suiteName := strings.ToLower(suiteReq.GetTestSuite().GetName())
-	if strings.HasPrefix(suiteName, "3d") || strings.HasPrefix(suiteName, "ddd") {
-		filters = append(filters, common.TtcpContainerName)
-	} else {
-		filters = append(filters, common.LegacyHWContainerName)
-	}
-	return filters
 }
