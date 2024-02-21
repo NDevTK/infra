@@ -37,16 +37,16 @@ def RunSteps(api, config):
   custs = api.windows_scripts_executor.process_customizations(custs, {})
   custs = api.windows_scripts_executor.filter_executable_customizations(custs)
   api.windows_scripts_executor.download_all_packages(custs)
-  api.path.mock_add_paths('[CLEANUP]/gen_iso/workdir/gen_iso.iso', 'FILE')
-  api.path.mock_add_paths('[CLEANUP]/gen_iso/workdir/staging', 'DIRECTORY')
-  api.path.mock_add_paths('[CLEANUP]/gen_iso/workdir/staging/tdr', 'DIRECTORY')
-  api.path.mock_add_paths('[CLEANUP]/gen_iso/workdir/staging/tfl', 'FILE')
-  api.path.mock_add_paths(
+  api.path.mock_add_file('[CLEANUP]/gen_iso/workdir/gen_iso.iso')
+  api.path.mock_add_directory('[CLEANUP]/gen_iso/workdir/staging')
+  api.path.mock_add_directory('[CLEANUP]/gen_iso/workdir/staging/tdr')
+  api.path.mock_add_file('[CLEANUP]/gen_iso/workdir/staging/tfl')
+  api.path.mock_add_directory(
       '[CACHE]/Pkgs/CIPDPkgs/resolved-instance_id-of-latest----------'
-      '/infra/chrome/windows/wallpapers/windows-amd64', 'DIRECTORY')
-  api.path.mock_add_paths(
+      '/infra/chrome/windows/wallpapers/windows-amd64')
+  api.path.mock_add_directory(
       '[CACHE]/Pkgs/CIPDPkgs/resolved-instance_id-of-latest----------'
-      '/infra/chrome/nopompt_boot/windows-amd64', 'DIRECTORY')
+      '/infra/chrome/nopompt_boot/windows-amd64')
   api.windows_scripts_executor.execute_customizations(custs)
 
 

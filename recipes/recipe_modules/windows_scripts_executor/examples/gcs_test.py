@@ -40,12 +40,10 @@ def RunSteps(api, config):
   # check if we need to execute these customizations
   custs = api.windows_scripts_executor.filter_executable_customizations(custs)
   api.windows_scripts_executor.download_all_packages(custs)
-  api.path.mock_add_paths('[CACHE]\\Pkgs\\GCSPkgs\\WinTools\\net\\ping.exe',
-                          'FILE')
+  api.path.mock_add_file('[CACHE]\\Pkgs\\GCSPkgs\\WinTools\\net\\ping.exe')
   # mock existence of the image pulled from GCS
-  api.path.mock_add_paths(
-      '[CACHE]\\Pkgs\\GCSPkgs\\chrome-gce-images\\WIB-WIM\\ffaa037563.zip',
-      'FILE')
+  api.path.mock_add_file(
+      '[CACHE]\\Pkgs\\GCSPkgs\\chrome-gce-images\\WIB-WIM\\ffaa037563.zip')
   api.windows_scripts_executor.execute_customizations(custs)
   # mock existence of image created using copype
   api.path.mock_add_paths('[CLEANUP]\\{}\\workdir\\'.format(customization) +

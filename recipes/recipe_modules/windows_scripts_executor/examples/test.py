@@ -40,17 +40,17 @@ def RunSteps(api, config):
   custs = api.windows_scripts_executor.process_customizations(custs, {})
   api.windows_scripts_executor.download_all_packages(custs)
   # mock cipd packages to avoid spooking add_file execution
-  api.path.mock_add_paths(
+  api.path.mock_add_directory(
       '[CACHE]\\Pkgs\\CIPDPkgs\\' +
       'resolved-instance_id-of-latest----------\\' +
       'infra_internal\\labs\\drivers\\microsoft\\' +
-      'windows_adk\\winpe\\winpe-dot3svc\\windows-amd64', 'DIRECTORY')
+      'windows_adk\\winpe\\winpe-dot3svc\\windows-amd64')
   # mock cipd packages to avoid spooking add_file execution
-  api.path.mock_add_paths(
+  api.path.mock_add_directory(
       '[CACHE]\\Pkgs\\CIPDPkgs\\' +
       'resolved-instance_id-of-latest----------\\' +
       'infra_internal\\labs\\drivers\\microsoft\\' +
-      'windows_adk\\winpe\\winpe-wmi\\windows-amd64', 'DIRECTORY')
+      'windows_adk\\winpe\\winpe-wmi\\windows-amd64')
   api.windows_scripts_executor.execute_customizations(custs)
   # mock existence of customization output to trigger upload
   api.path.mock_add_paths('[CLEANUP]\\{}\\workdir\\'.format(cust_name) +

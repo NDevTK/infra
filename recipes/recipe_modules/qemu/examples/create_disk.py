@@ -17,9 +17,9 @@ def RunSteps(api):
   # test good cases for both create_empty_disk and create_disk
   api.qemu.create_disk('fat_disk', 'fat', 20480)
   # mock existence of cache directory
-  api.path.mock_add_paths(api.path['cache'], 'DIRECTORY')
+  api.path.mock_add_directory(api.path['cache'])
   # mock cleanup to be a file
-  api.path.mock_add_paths(api.path['cleanup'], 'FILE')
+  api.path.mock_add_file(api.path['cleanup'])
   api.qemu.create_disk('ext4_disk', 'ext4', 20480,
                        {api.path['cache']: 'got_cache/i_need_it'})
 
