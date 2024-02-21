@@ -41,6 +41,7 @@ type buildSpec struct {
 	goroot             string
 	gopath             string
 	gocacheDir         string
+	goplscacheDir      string
 	priority           int32
 	golangbuildVersion string
 
@@ -180,6 +181,7 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 		goroot:             filepath.Join(cwd, "goroot"),
 		gopath:             filepath.Join(cwd, "gopath"),
 		gocacheDir:         filepath.Join(cwd, "gocache"),
+		goplscacheDir:      filepath.Join(cwd, "goplscache"),
 		priority:           st.Build().GetInfra().GetSwarming().GetPriority(),
 		golangbuildVersion: st.Build().GetExe().GetCipdVersion(),
 		inputs:             inputs,
@@ -192,10 +194,10 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 }
 
 func (b *buildSpec) setEnv(ctx context.Context) context.Context {
-	return setupEnv(ctx, b.inputs, b.builderName, b.goroot, b.gopath, b.gocacheDir)
+	return setupEnv(ctx, b.inputs, b.builderName, b.goroot, b.gopath, b.gocacheDir, b.goplscacheDir)
 }
 
-func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, goroot, gopath, gocacheDir string) context.Context {
+func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, goroot, gopath, gocacheDir, goplscacheDir string) context.Context {
 	env := environ.FromCtx(ctx)
 	env.Load(inputs.Env)
 	env.Set("GOOS", inputs.Target.Goos)
@@ -208,6 +210,7 @@ func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, go
 	env.Set("GOROOT", "")           // Clear GOROOT because it's possible someone has one set locally, e.g. for luci-go development.
 	env.Set("GOTOOLCHAIN", "local") // golangbuild scope includes selecting the exact Go toolchain version, so always use that local one.
 	env.Set("GOCACHE", gocacheDir)
+	env.Set("GOPLSCACHE", goplscacheDir)
 	env.Set("GO_BUILDER_NAME", builderName)
 	if inputs.LongTest {
 		env.Set("GO_TEST_SHORT", "0") // Tell 'dist test' to operate in longtest mode. See go.dev/issue/12508.
