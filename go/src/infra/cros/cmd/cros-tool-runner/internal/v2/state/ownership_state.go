@@ -4,7 +4,10 @@
 
 package state
 
-import "log"
+import (
+	"log"
+	"sync"
+)
 
 // OwnershipRecorder is the interface to manage ownership state in the server.
 // If an entity (container/network) is started/created by the server, the server
@@ -26,8 +29,8 @@ type OwnershipRecorder interface {
 	// GetIdsToClearOwnership returns current IDs in reverse order of
 	// declarations. The IDs can be used to recycle entities.
 	GetIdsToClearOwnership() []string
-	// GetMapping returns a copy of name to ID mapping.
-	GetMapping() map[string]string
+	// GetMapping returns name to ID mapping.
+	GetMapping() *sync.Map
 	// Clear reset the state.
 	Clear()
 	// GetIdForOwner returns a copy of ID mapping to name.
@@ -39,66 +42,79 @@ type OwnershipRecorder interface {
 // the current state.
 type ownershipState struct {
 	history []string
-	mapping map[string]string
+	mapping sync.Map
 }
 
 // newOwnershipState returns an instance of ownershipState.
 func newOwnershipState() OwnershipRecorder {
-	return &ownershipState{history: make([]string, 0), mapping: make(map[string]string)}
+	return &ownershipState{history: make([]string, 0), mapping: sync.Map{}}
 }
 
 func (o *ownershipState) RecordOwnership(name string, id string) {
 	o.history = append(o.history, name)
-	if val, ok := o.mapping[name]; ok {
+	if val, ok := o.mapping.Load(name); ok {
 		log.Printf("warning: updating name %s ownership id from %s to %s", name, val, id)
 	}
-	o.mapping[name] = id
+	o.mapping.Store(name, id)
 }
 
 func (o *ownershipState) HasOwnership(name string, id string) bool {
-	if val, ok := o.mapping[name]; ok {
+	if val, ok := o.mapping.Load(name); ok {
 		return id == val
 	}
 	return false
 }
 
 func (o *ownershipState) RemoveOwnership(name string) {
-	delete(o.mapping, name)
+	o.mapping.Delete(name)
 	log.Printf("warning: name %s ownership has been removed", name)
 }
 
 func (o *ownershipState) GetIdsToClearOwnership() []string {
 	size := len(o.history)
-	result := make([]string, len(o.mapping))
-	cloneMapping := make(map[string]string, len(o.mapping))
-	for k, v := range o.mapping {
-		cloneMapping[k] = v
-	}
+	var result []string
+	cloneMapping := sync.Map{}
 
-	index := 0
+	o.mapping.Range(func(k, v interface{}) bool {
+		vm, ok := v.(string)
+		if ok {
+			cloneMapping.Store(k, vm)
+		} else {
+			cloneMapping.Store(k, v)
+		}
+
+		return true
+	})
+
 	for i := range o.history {
 		name := o.history[size-i-1]
-		if val, ok := cloneMapping[name]; ok {
-			result[index] = val
-			index++
-			delete(cloneMapping, name)
+		if val, ok := cloneMapping.Load(name); ok {
+			strVal, ok := val.(string)
+			if ok {
+				result = append(result, strVal)
+				cloneMapping.Delete(name)
+			}
+
 		}
 	}
 	return result
 }
 
-func (o *ownershipState) GetMapping() map[string]string {
-	return o.mapping
+func (o *ownershipState) GetMapping() *sync.Map {
+	return &o.mapping
 }
 
 func (o *ownershipState) Clear() {
 	o.history = make([]string, 0)
-	o.mapping = make(map[string]string)
+	o.mapping = sync.Map{}
 }
 
 func (o *ownershipState) GetIdForOwner(name string) string {
-	if val, ok := o.mapping[name]; ok {
-		return val
+	if val, ok := o.mapping.Load(name); ok {
+		strVal, ok := val.(string)
+		if ok {
+			return strVal
+		}
 	}
 	return ""
 }
