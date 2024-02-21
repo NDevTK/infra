@@ -67,8 +67,9 @@ func (pkg cipdPackage) upload(ctx context.Context, workdir, cipdService string, 
 	if cipd == nil || cipd.Name == "" {
 		return "", "", nil
 	}
+	name = cipd.Name
 
-	step, ctx := startStep(ctx, fmt.Sprintf("creating cipd package %s:%s with %s", cipd.Name, pkg.derivationTag(), cipd.Version))
+	step, ctx := startStep(ctx, fmt.Sprintf("creating cipd package %s:%s with %s", name, pkg.derivationTag(), cipd.Version))
 	if err := step.With(func() error {
 		// If .cipd file already exists, assume it has been uploaded.
 		out := filepath.Join(workdir, pkg.DerivationID+".cipd")
@@ -88,7 +89,7 @@ func (pkg cipdPackage) upload(ctx context.Context, workdir, cipdService string, 
 
 		return nil
 	}); err != nil {
-		return "", "", nil
+		return "", "", err
 	}
 
 	return
