@@ -1,0 +1,86 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "966dd14e_47575c6f",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs/validate_faft.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-02-21T17:02:31Z",
+      "side": 1,
+      "message": "the order of imports need to be \n\n1) golang internal packages\n2) external packages\n3)",
+      "revId": "3442b9391dfb0a1a0dc03c23f57823d3eac9b9da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd852aa7_ef88b496",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs/validate_faft.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-02-21T17:02:31Z",
+      "side": 1,
+      "message": "\u003e \n\u003e Import order is not sorted.\n\u003e Run `golangci-lint run --fix cmd/stable_version2/internal/cmd/validateconfig/querygs` to fix this.\n\nPlease fix.",
+      "parentUuid": "8dab13fe_bd51703f",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 0
+      },
+      "revId": "3442b9391dfb0a1a0dc03c23f57823d3eac9b9da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "329bd94e_517a3f9e",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs/validate_faft.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-02-21T17:02:31Z",
+      "side": 1,
+      "message": "\u003e \n\u003e Import order is not sorted.\n\u003e Run `golangci-lint run --fix cmd/stable_version2/internal/cmd/validateconfig/querygs` to fix this.\n\nPlease fix.",
+      "parentUuid": "a54e6716_cd646a69",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 0
+      },
+      "revId": "3442b9391dfb0a1a0dc03c23f57823d3eac9b9da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f4facd39_59d68013",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs/validate_faft.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-02-21T17:02:31Z",
+      "side": 1,
+      "message": "please print the testing path if we received error. (a separate message)",
+      "revId": "3442b9391dfb0a1a0dc03c23f57823d3eac9b9da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
