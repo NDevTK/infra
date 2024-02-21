@@ -4183,7 +4183,6 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Delete whitelabel_tag from vpd",
 			},
-			AllowFailAfterRecovery: true,
 		},
 		"Delete whitelabel_tag from vpd": {
 			Docs: []string{
