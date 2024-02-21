@@ -29,6 +29,10 @@ dispatch:
   - url: "*/log/*"
     service: default-go
 
+  # Serve the auth openid related redirection on default-go.
+  - url: "*/auth/openid/*"
+    service: default-go
+
   # Global config validation is implemented in Go, so serve it from there.
   - url: "*/api/config/*"
     service: default-go
