@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f23f2784_9a4d8d94",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-02-21T18:45:39Z",
+      "side": 1,
+      "message": "Consider adding \"For go.dev/issue/65845.\" here.",
+      "revId": "5041d21859ddea43cc6abd49539983c36d2ea12a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8bed434_f0e21e9f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-02-21T18:45:39Z",
+      "side": 1,
+      "message": "Thanks.",
+      "revId": "5041d21859ddea43cc6abd49539983c36d2ea12a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82c3b662_f9328ddd",
+        "filename": "go/src/infra/experimental/golangbuild/golangbuildpb/params.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-02-21T18:45:39Z",
+      "side": 1,
+      "message": "\u0027indicates\u0027. Maybe also add \"optionally\" since it\u0027s fine to leave it unset as the zero value when scaling isn\u0027t needed (the common case).",
+      "range": {
+        "startLine": 52,
+        "startChar": 22,
+        "endLine": 52,
+        "endChar": 32
+      },
+      "revId": "5041d21859ddea43cc6abd49539983c36d2ea12a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "efe7938c_8f9a68e9",
+        "filename": "go/src/infra/experimental/golangbuild/golangbuildpb/params.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-02-21T18:45:39Z",
+      "side": 1,
+      "message": "Consider briefly mentioning where the 10 minute constant comes from, similarly to how it was done in a comment [here](https://cs.opensource.google/go/x/build/+/master:cmd/coordinator/buildstatus.go;l\u003d1187-1190;drc\u003d498808697e0db626ec196a9a5290f5f121fa056a). It\u0027s unlikely the go command will change its default value often, but if it does we\u0027ll need to manually maintain it here.",
+      "revId": "5041d21859ddea43cc6abd49539983c36d2ea12a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
