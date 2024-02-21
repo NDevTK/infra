@@ -10,7 +10,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"time"
 
 	clouddatastore "cloud.google.com/go/datastore"
 	"google.golang.org/api/option"
@@ -238,6 +240,10 @@ func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, go
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, clangBin))
 		env.Set("CC", "clang")
 	}
+	if inputs.TestTimeoutScale != 0 {
+		// Set the test timeout scale, which is understood by `go tool dist`.
+		env.Set("GO_TEST_TIMEOUT_SCALE", strconv.Itoa(int(inputs.TestTimeoutScale)))
+	}
 
 	return env.SetInCtx(ctx)
 }
@@ -265,6 +271,10 @@ func (b *buildSpec) goTestArgs(patterns ...string) []string {
 	}
 	if b.inputs.RaceMode {
 		args = append(args, "-race")
+	}
+	if b.inputs.TestTimeoutScale != 0 {
+		timeout := time.Duration(b.inputs.TestTimeoutScale) * (10 * time.Minute)
+		args = append(args, fmt.Sprintf("-timeout=%s", timeout))
 	}
 	return append(args, patterns...)
 }

@@ -49,6 +49,19 @@ message Inputs {
   // RaceMode controls whether the build runs with the race detector enabled.
   bool race_mode = 4;
 
+  // TestTimeoutScale optionally indicates what to scale test timeouts by.
+  //
+  // This sets the GO_TEST_TIMEOUT_SCALE environment variable for `go tool dist`.
+  // It also sets the -timeout flag to `go test` as 10 minutes, multiplied by the
+  // timeout scale. 10 minutes here comes from the default value of the -timeout
+  // flag that `go test` picks. This value is unlikely to change, but if it does,
+  // golangbuild and this documentation must be updated to match.
+  //
+  // If this value is zero, the default timeouts from go tool dist and go test
+  // will be used. This value always overrides GO_TEST_TIMEOUT_SCALE if it's set
+  // in Env.
+  int64 test_timeout_scale = 31;
+
   // NoNetwork controls whether the build disables network access during test execution.
   //
   // It's meant to catch tests that accidentally need internet without realizing it,
