@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -358,5 +359,44 @@ func TestDependencyInjectionFullTest(t *testing.T) {
 		So(testRequest.ServiceAddress.Address, ShouldEqual, endpoint.Address)
 		So(testRequest.ServiceAddress.Port, ShouldEqual, endpoint.Port)
 		So(testRequest.TestRequest.TestSuites, ShouldHaveLength, len(req.Params.TestSuites))
+	})
+}
+
+func TestGenericContainerOutputAsDependency(t *testing.T) {
+	storage := common.NewInjectableStorage()
+	devboardServer, _ := anypb.New(&labapi.IpEndpoint{
+		Address: "localhost",
+		Port:    12345,
+	})
+	genericContainerOutput := &api.GenericStopResponse{
+		Message: &testapi.GenericMessage{
+			Values: map[string]*anypb.Any{
+				"devboard-server": devboardServer,
+			},
+		},
+	}
+	err := storage.Set("user-container_stop", genericContainerOutput)
+	if err != nil {
+		t.Fatalf("%s", err)
+	}
+
+	Convey("Anypb dep", t, func() {
+		testRequest := &skylab_test_runner.TestRequest{
+			TestRequest: &api.CrosTestRequest{
+				Primary:  &api.CrosTestRequest_Device{},
+				Metadata: &anypb.Any{},
+			},
+			DynamicDeps: []*skylab_test_runner.DynamicDep{
+				{
+					Key:   "testRequest.primary.devboardServer",
+					Value: "user-container_stop.message.values.devboard-server",
+				},
+			},
+		}
+
+		err = common.InjectDependencies(testRequest, storage, testRequest.DynamicDeps)
+		So(err, ShouldBeNil)
+		So(testRequest.TestRequest.Primary.DevboardServer.Address, ShouldEqual, "localhost")
+		So(testRequest.TestRequest.Primary.DevboardServer.Port, ShouldEqual, 12345)
 	})
 }

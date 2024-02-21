@@ -189,7 +189,7 @@ func InjectDependencies(receiver protoreflect.ProtoMessage, storage *InjectableS
 	}
 	for _, dep := range deps {
 		if err := Inject(receiver, dep.Key, storage, dep.Value); err != nil {
-			return fmt.Errorf("Failed to load dependency, %s", err)
+			return fmt.Errorf("Failed to inject dependency, %s", err)
 		}
 	}
 
@@ -256,12 +256,16 @@ func getType(obj interface{}) reflect.Type {
 func unmarshalInterfaceProtoMapToProto(proto_map map[string]interface{}, proto protoreflect.ProtoMessage) error {
 	json_bytes, err := json.Marshal(proto_map)
 	if err != nil {
-		return err
+		return errors.Annotate(err, "failed to marshal to json").Err()
 	}
 
-	err = protojson.Unmarshal(json_bytes, proto)
+	unmarshaller := protojson.UnmarshalOptions{
+		DiscardUnknown: true,
+		AllowPartial:   true,
+	}
+	err = unmarshaller.Unmarshal(json_bytes, proto)
 	if err != nil {
-		return err
+		return errors.Annotate(err, "failed to unmarshal to proto").Err()
 	}
 
 	return nil
