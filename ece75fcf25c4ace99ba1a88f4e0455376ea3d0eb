@@ -63,6 +63,30 @@
       },
       "revId": "ece75fcf25c4ace99ba1a88f4e0455376ea3d0eb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d17927a_307cacc7",
+        "filename": "go/src/infra/cros/cmd/common_lib/common/filters.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2024-02-21T16:38:10Z",
+      "side": 1,
+      "message": "ack",
+      "parentUuid": "6c6314ad_8ae6d6b0",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 29,
+        "endChar": 14
+      },
+      "revId": "ece75fcf25c4ace99ba1a88f4e0455376ea3d0eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
