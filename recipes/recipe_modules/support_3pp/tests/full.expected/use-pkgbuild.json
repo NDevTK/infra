@@ -210,6 +210,9 @@
   {
     "cmd": [
       "[START_DIR]/_pkgbuild/edge",
+      "--output",
+      "[CLEANUP]/tmp_tmp_2/sub_build.pb",
+      "--",
       "-logging-level",
       "info",
       "-cipd-package-prefix",
@@ -227,11 +230,22 @@
       "p_something/something"
     ],
     "env": {
-      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "MAC_CHROMIUM_TMPDIR": "[CLEANUP]/tmp_tmp_3",
+      "PKGBUILD_ENABLE_LUCIEXE": "1",
+      "TEMP": "[CLEANUP]/tmp_tmp_3",
+      "TEMPDIR": "[CLEANUP]/tmp_tmp_3",
+      "TMP": "[CLEANUP]/tmp_tmp_3",
+      "TMPDIR": "[CLEANUP]/tmp_tmp_3"
     },
     "name": "experimental pkgbuild.build packages",
+    "stdin": "\u0012\u00002\u0006\b\ufffd\u00af\ufffd\u0005:\u0006\b\ufffd\u00af\ufffd\u0005`\u0002",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@step.sub_build@{@@@",
+      "@@@STEP_LOG_LINE@step.sub_build@  \"status\": \"SUCCESS\"@@@",
+      "@@@STEP_LOG_LINE@step.sub_build@}@@@",
+      "@@@STEP_LOG_END@step.sub_build@@@"
     ]
   },
   {

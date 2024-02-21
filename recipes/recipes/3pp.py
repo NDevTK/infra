@@ -9,6 +9,9 @@ import hashlib
 from recipe_engine.recipe_api import Property
 from recipe_engine.config import ConfigList, ConfigGroup, Single, List
 
+from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
+from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
+
 
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
@@ -209,6 +212,9 @@ def GenTests(api):
          api.buildbucket.ci_build(experiments=['security.snoopy']))
 
   yield (api.test('pkgbuild') + defaults() + api.properties(use_pkgbuild=True) +
+         api.step_data(
+             'experimental pkgbuild.build packages',
+             api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS))) +
          api.buildbucket.ci_build(experiments=['security.snoopy']))
 
   pkgs = sorted(dict(

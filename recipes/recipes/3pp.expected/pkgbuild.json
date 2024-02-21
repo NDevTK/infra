@@ -468,6 +468,9 @@
   {
     "cmd": [
       "[START_DIR]/_pkgbuild/edge",
+      "--output",
+      "[CLEANUP]/tmp_tmp_2/sub_build.pb",
+      "--",
       "-logging-level",
       "info",
       "-cipd-package-prefix",
@@ -483,7 +486,13 @@
       "[CACHE]/builder/4fe007e88bd1d4a88e88cc231ab4045dbeee1088/support_3pp"
     ],
     "env": {
-      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "MAC_CHROMIUM_TMPDIR": "[CLEANUP]/tmp_tmp_3",
+      "PKGBUILD_ENABLE_LUCIEXE": "1",
+      "TEMP": "[CLEANUP]/tmp_tmp_3",
+      "TEMPDIR": "[CLEANUP]/tmp_tmp_3",
+      "TMP": "[CLEANUP]/tmp_tmp_3",
+      "TMPDIR": "[CLEANUP]/tmp_tmp_3"
     },
     "luci_context": {
       "realm": {
@@ -498,8 +507,13 @@
       }
     },
     "name": "experimental pkgbuild.build packages",
+    "stdin": "\b\ufffd\ufffd\u066e\ufffd|\u0012\u0016\n\u0007project\u0012\u0002ci\u001a\u0007builder\"/user:luci-scheduler@appspot.gserviceaccount.com2\u0006\b\ufffd\u00af\ufffd\u0005:\u0006\b\ufffd\u00af\ufffd\u0005`\u0002zr\u0012_\n\u0019chromium.googlesource.com\u0012\u0007project\u001a(2d72510e447ab60a9728aeea2362d8be2cbd7789\"\u000frefs/heads/main2\u000fsecurity.snoopy\ufffd\u0001-\u0012\u0002 \u001e*'\u0012%invocations/build:8945511751514863184",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@step.sub_build@{@@@",
+      "@@@STEP_LOG_LINE@step.sub_build@  \"status\": \"SUCCESS\"@@@",
+      "@@@STEP_LOG_LINE@step.sub_build@}@@@",
+      "@@@STEP_LOG_END@step.sub_build@@@"
     ]
   },
   {

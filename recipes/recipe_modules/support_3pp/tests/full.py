@@ -6,6 +6,9 @@ from recipe_engine import post_process
 from recipe_engine.config import List
 from recipe_engine.recipe_api import Property
 
+from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
+from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
+
 from RECIPE_MODULES.infra.support_3pp.resolved_spec import PACKAGE_EPOCH
 
 PYTHON_VERSION_COMPATIBILITY = "PY3"
@@ -564,10 +567,14 @@ def GenTests(api):
       + api.step_data(
           mk_name("load package specs", "read '3pp.pb'"),
           api.file.read_text(load_spec))
+      + api.step_data(
+          'experimental pkgbuild.build packages',
+          api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS)))
       + api.post_process(
           post_process.MustRun,
           mk_name("experimental pkgbuild"))
   )
+
   yield (api.test('use-pkgbuild-experimental')
       + api.properties(GOOS='linux', GOARCH='amd64', use_pkgbuild=True, experimental=True)
       + api.step_data(
@@ -579,6 +586,9 @@ def GenTests(api):
       + api.step_data(
           mk_name("load package specs", "read '3pp.pb'"),
           api.file.read_text(load_spec))
+      + api.step_data(
+          'experimental pkgbuild.build packages',
+          api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS)))
       + api.post_process(
           post_process.MustRun,
           mk_name("experimental pkgbuild"))

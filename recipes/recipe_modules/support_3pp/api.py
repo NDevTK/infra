@@ -904,7 +904,6 @@ class Support3ppApi(recipe_api.RecipeApi):
 
     platform = platform or platform_for_host(self.m)
     args = [
-        base_dir.join('edge'),
         '-logging-level',
         'info',
         '-cipd-package-prefix',
@@ -932,4 +931,9 @@ class Support3ppApi(recipe_api.RecipeApi):
       args.extend(('-spec-pool', d))
     args.extend(sorted(packages))
 
-    self.m.step('build packages', args)
+    with self.m.context(env={'PKGBUILD_ENABLE_LUCIEXE': '1'}):
+      self.m.step.sub_build(
+          'build packages',
+          [base_dir.join('edge'), '--'] + args,
+          self.m.buildbucket.build,
+      )
