@@ -293,6 +293,7 @@ func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.Bu
 	chipset := buildMetadata.GetChipset()
 	if chipset != nil {
 		newTags = AppendTags(newTags, "wifi_chip", chipset.GetWifiChip())
+		newTags = AppendTags(newTags, "wifi_router_models", chipset.GetWifiRouterModels())
 	}
 
 	kernel := buildMetadata.GetKernel()

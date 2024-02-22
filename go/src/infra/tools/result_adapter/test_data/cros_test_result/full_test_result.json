@@ -19,7 +19,8 @@
                         "hwid_sku":"katsu_MT8183_0B"
                     },
                     "chipset":{
-                        "wifi_chip":"marvell"
+                        "wifi_chip":"marvell",
+                        "wifi_router_models":"gale"
                     },
                     "cellular":{
                         "carrier":"CARRIER_ESIM"

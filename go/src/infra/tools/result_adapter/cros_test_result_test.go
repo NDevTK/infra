@@ -406,6 +406,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("task_id", "59f0e13fe7af0710"),
 						pbutil.StringPair("label_pool", "DUT_POOL_QUOTA"),
 						pbutil.StringPair("wifi_chip", "marvell"),
+						pbutil.StringPair("wifi_router_models", "gale"),
 						pbutil.StringPair("kernel_version", "5.4.151-16902-g93699f4e73de"),
 						pbutil.StringPair("hwid_sku", "katsu_MT8183_0B"),
 						pbutil.StringPair("carrier", "CARRIER_ESIM"),
