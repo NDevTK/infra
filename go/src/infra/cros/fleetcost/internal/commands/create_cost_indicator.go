@@ -22,6 +22,7 @@ import (
 
 	"infra/cmdsupport/cmdlib"
 	fleetcostpb "infra/cros/fleetcost/api"
+	"infra/cros/fleetcost/api/utils"
 	"infra/cros/fleetcost/internal/site"
 )
 
@@ -35,8 +36,13 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.name, "name", "", "name of cost indicator")
-		c.Flags.Func("typ", "name of cost indicator", func(string) error {
-			return errors.New("not yet implemented")
+		c.Flags.Func("type", "name of cost indicator", func(name string) error {
+			if typ := utils.ToIndicatorType(name); typ != fleetcostpb.IndicatorType_INDICATOR_TYPE_UNKNOWN {
+				return errors.Reason("type %s is invalid", name).Err()
+			} else {
+				c.typ = typ
+			}
+			return nil
 		})
 		c.Flags.StringVar(&c.board, "board", "", "board")
 		c.Flags.StringVar(&c.model, "model", "", "model")
