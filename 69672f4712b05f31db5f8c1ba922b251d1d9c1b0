@@ -40,6 +40,30 @@
       },
       "revId": "69672f4712b05f31db5f8c1ba922b251d1d9c1b0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a795a919_348e9306",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs/validate_faft.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1605807
+      },
+      "writtenOn": "2024-02-22T19:46:10Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "97c16871_edcea677",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 0
+      },
+      "revId": "69672f4712b05f31db5f8c1ba922b251d1d9c1b0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
