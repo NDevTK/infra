@@ -465,7 +465,24 @@ func LabstationRepairConfig() *Configuration {
 							"host:",
 							"command:crosid",
 						},
+						RecoveryActions: []string{
+							"Remove whitelabel_tag VPD field",
+						},
 						AllowFailAfterRecovery: true,
+					},
+					"Remove whitelabel_tag VPD field": {
+						// See b/325495298 for context of why we need this.
+						Docs: []string{
+							"Remove whitelabel_tag field from VPD cache.",
+						},
+						Conditions: []string{
+							"Device is SSHable",
+						},
+						ExecName: "cros_run_command",
+						ExecExtraArgs: []string{
+							"host:",
+							"command:vpd -d whitelabel_tag",
+						},
 					},
 				},
 			},

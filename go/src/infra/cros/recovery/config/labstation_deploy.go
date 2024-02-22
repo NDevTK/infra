@@ -20,6 +20,7 @@ func LabstationDeployConfig() *Configuration {
 					"check_host_info",
 					"Device is SSHable",
 					"Update inventory info",
+					"Remove whitelabel_tag VPD field if necessary",
 					"Installed OS is stable",
 					"Remove reboot requests from host",
 					"Update provisioned info",
@@ -122,6 +123,30 @@ func LabstationDeployConfig() *Configuration {
 						},
 						ExecName:   "rpm_power_cycle",
 						RunControl: RunControl_ALWAYS_RUN,
+					},
+					"VPD cache has whitelabel_tag field": {
+						Docs: []string{
+							"Check if unwanted whitelabel_tag field in VPD cache.",
+						},
+						ExecName: "cros_run_command",
+						ExecExtraArgs: []string{
+							"host:",
+							"command:vpd -l | grep whitelabel_tag",
+						},
+					},
+					"Remove whitelabel_tag VPD field if necessary": {
+						// See b/325495298 for context of why we need this.
+						Docs: []string{
+							"Remove whitelabel_tag field from VPD cache when the field exists.",
+						},
+						Conditions: []string{
+							"VPD cache has whitelabel_tag field",
+						},
+						ExecName: "cros_run_command",
+						ExecExtraArgs: []string{
+							"host:",
+							"command:vpd -d whitelabel_tag",
+						},
 					},
 				},
 			},

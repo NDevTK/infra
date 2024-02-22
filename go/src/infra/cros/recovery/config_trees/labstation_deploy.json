@@ -85,6 +85,32 @@
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
+          "name": "Remove whitelabel_tag VPD field if necessary",
+          "exec_name": "cros_run_command",
+          "docs": [
+            "Remove whitelabel_tag field from VPD cache when the field exists."
+          ],
+          "conditions": [
+            {
+              "name": "VPD cache has whitelabel_tag field",
+              "exec_name": "cros_run_command",
+              "docs": [
+                "Check if unwanted whitelabel_tag field in VPD cache."
+              ],
+              "exec_args": [
+                "host:",
+                "command:vpd -l | grep whitelabel_tag"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "exec_args": [
+            "host:",
+            "command:vpd -d whitelabel_tag"
+          ],
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
           "name": "Installed OS is stable",
           "exec_name": "cros_is_on_stable_version",
           "docs": [
