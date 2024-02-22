@@ -1,0 +1,11 @@
+name: cros/botsregulator
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/cros/botsregulator/cmd/botsregulator/Dockerfile
+deterministic: true
+
+sources:
+  - ../../../../go/src/infra/cros/botsregulator
+
+build:
+  - go_binary: infra/cros/botsregulator/cmd/botsregulator
