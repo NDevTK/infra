@@ -233,6 +233,10 @@ func populatePrimaryBuildMetadata(
 		chipsetInfo.WifiChip = wifiChip
 	}
 
+	if wifiRouterModels := getSingleTagValue(botDims, "label-wifi_router_models"); wifiRouterModels != "" {
+		chipsetInfo.WifiRouterModels = wifiRouterModels
+	}
+
 	// - Kernel info
 	kernalInfo := &artifactpb.BuildMetadata_Kernel{}
 	buildMetadata.Kernel = kernalInfo
