@@ -279,6 +279,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
     "env": {
+      "CGO_ENABLED": "0",
       "GOARCH": "386",
       "GOFLAGS": "-mod=readonly",
       "GOROOT": "[CACHE]/builder/golang/go",
@@ -323,6 +324,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
     "env": {
+      "CGO_ENABLED": "0",
       "GOARCH": "386",
       "GOFLAGS": "-mod=readonly",
       "GOROOT": "[CACHE]/builder/golang/go",

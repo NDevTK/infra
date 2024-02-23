@@ -81,10 +81,15 @@ def RunSteps(
         if run_lint:
           api.infra_checkout.apply_golangci_lint(co, luci_go)
         else:
-          api.step('go build', ['go', 'build', './...'])
-          api.step(
-              'go test',
-              api.resultdb.wrap([adapter, 'go', '--', 'go', 'test', '-json', './...']))
+          # All luci-go production packages are built without cgo,
+          # so run the CI build and test the same way.
+          with api.context(env={'CGO_ENABLED': '0'}):
+            api.step('go build', ['go', 'build', './...'])
+            api.step(
+                'go test',
+                api.resultdb.wrap(
+                    [adapter, 'go', '--', 'go', 'test', '-json', './...']))
+          # The race detector requires CGO.
           if not api.platform.is_win:
             # Windows bots do not have gcc installed at the moment.
             api.step('go test -race', ['go', 'test', '-race', './...'])
