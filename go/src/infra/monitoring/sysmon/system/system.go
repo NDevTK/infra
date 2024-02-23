@@ -185,7 +185,10 @@ func init() {
 
 	cpuTimes, err := cpu.Times(false)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to get initial CPU times: %s", err))
+		if cgoEnabled || runtime.GOOS != "darwin" {
+			panic(fmt.Sprintf("Failed to get initial CPU times: %s", err))
+		}
+		return
 	}
 	lastCPUTimes = cpuTimes[0]
 }
@@ -226,6 +229,10 @@ func Register() {
 }
 
 func updateCPUMetrics(c context.Context) error {
+	if !cgoEnabled && runtime.GOOS == "darwin" {
+		panic("CGO_ENABLED=1 is required for sysmon on Mac")
+	}
+
 	cpuCounts, err := cpu.Counts(true)
 	if err != nil {
 		return err

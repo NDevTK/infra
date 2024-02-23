@@ -82,12 +82,16 @@ def _get_adapter_path():
   return os.path.join(ADAPTER_DIR, adapter_fname)
 
 
-def _print_and_run(command: list[str]) -> int:
+def _print_and_run(command: list[str],
+                   capture_stdout: bool = False) -> (int, bytes):
   print(f'$ {" ".join(command)}')
-  ret = subprocess.Popen(command).wait()
-  if ret:
-    print(f'## {" ".join(command)} had exit code {ret}')
-  return ret
+  p = subprocess.run(
+      command, stdout=subprocess.PIPE if capture_stdout else None)
+  if capture_stdout:
+    sys.stdout.buffer.write(p.stdout)  # pass through stdout
+  if p.returncode:
+    print(f'## {" ".join(command)} had exit code {p.returncode}')
+  return (p.returncode, p.stdout)
 
 
 def _run_vet(package_root):
@@ -107,7 +111,7 @@ def _run_vet(package_root):
 
   # TODO: adapt results of go vet to resultdb.
 
-  return _print_and_run(command)
+  return _print_and_run(command)[0]
 
 
 def run_tests(package_root):
@@ -118,7 +122,7 @@ def run_tests(package_root):
   Returns:
     0 if all tests pass..
   """
-  command = ['go', 'test', f'{package_root}/...']
+  command = ['go', 'test', '-v', f'{package_root}/...']
 
   prev_env = os.environ.copy()
   if _use_resultdb():
@@ -127,7 +131,27 @@ def run_tests(package_root):
     os.environ['GOCONVEY_REPORTER'] = 'silent'
     command = [_get_adapter_path(), 'go', '--'] + command
   try:
-    return _print_and_run(command)
+    # First run all tests with CGO disabled.
+    os.environ['CGO_ENABLED'] = '0'
+    (res, output) = _print_and_run(command, capture_stdout=True)
+    # Look for tests which were marked skipped because they require CGO.
+    rerun_tests = []
+    rerun_next = False
+    for line in output.splitlines():
+      line = line.decode('utf-8')
+      if 'Requires CGO_ENABLED=1' in line:
+        rerun_next = True
+      elif rerun_next and line.startswith(('ok', 'fail')):
+        rerun_tests.append(line.split('\t')[1])
+        rerun_next = False
+    if rerun_tests:
+      # Re-run skipped CGO tests with CGO enabled.
+      os.environ['CGO_ENABLED'] = '1'
+      print('Re-running tests requiring CGO: %r' % rerun_tests)
+      del command[-1]
+      command.extend(rerun_tests)
+      res = _print_and_run(command)[0] or res
+    return res
   finally:
     os.environ.clear()
     os.environ.update(prev_env)
@@ -139,7 +163,7 @@ def _run_build(package_root):
   Returns:
     0 if everything builds.
   """
-  return _print_and_run(['go', 'build', f'{package_root}/...'])
+  return _print_and_run(['go', 'build', f'{package_root}/...'])[0]
 
 
 def run_all(package_root):

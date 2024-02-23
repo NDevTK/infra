@@ -24,6 +24,10 @@ func TestMetrics(t *testing.T) {
 	})
 
 	Convey("CPU", t, func() {
+		if !cgoEnabled && runtime.GOOS == "darwin" {
+			t.Skip("Requires CGO_ENABLED=1 on Mac")
+		}
+
 		So(updateCPUMetrics(c), ShouldBeNil)
 		So(cpuCount.Get(c), ShouldBeGreaterThan, 0)
 
