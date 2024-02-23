@@ -20,7 +20,6 @@ type FilterStateKeeper struct {
 	interfaces.StateKeeper
 
 	CtpReq                  *testapi.CTPRequest
-	CtpV2Response           *testapi.CTPv2Response
 	InitialInternalTestPlan *testapi.InternalTestplan
 	TestPlanStates          []*testapi.InternalTestplan
 	Scheduler               testapi.SchedulerInfo_Scheduler
@@ -36,8 +35,7 @@ type FilterStateKeeper struct {
 	ContainerInfoMap     *ContainerInfoMap
 
 	// Tools and their related dependencies
-	Ctr                   *crostoolrunner.CrosToolRunner
-	DockerKeyFileLocation string
+	Ctr *crostoolrunner.CrosToolRunner
 
 	MiddledOutResp *MiddleOutResponse
 }

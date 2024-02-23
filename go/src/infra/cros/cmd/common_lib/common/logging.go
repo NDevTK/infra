@@ -6,6 +6,7 @@ package common
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path"
@@ -31,10 +32,32 @@ func WriteProtoToStepLog(ctx context.Context, step *build.Step, proto proto.Mess
 	bytes, err := marshaller.Marshal(proto)
 	if err != nil {
 		logging.Infof(ctx, "%s: %q", fmt.Sprintf("Marshalling %q failed:", logText), err.Error())
+		return
 	}
 	_, err = outputLog.Write(bytes)
 	if err != nil {
 		logging.Infof(ctx, "%s: %q", fmt.Sprintf("Writing %q failed:", logText), err.Error())
+		return
+	}
+}
+
+// WriteAnyObjectToStepLog writes provided obj to build step.
+func WriteAnyObjectToStepLog(ctx context.Context, step *build.Step, obj any, logText string) {
+	if step == nil || obj == nil {
+		return
+	}
+
+	jsonBytes, err := json.MarshalIndent(obj, "", "  ")
+	if err != nil {
+		logging.Infof(ctx, "%s: %q", fmt.Sprintf("Marshalling %q failed:", logText), err.Error())
+		return
+	}
+
+	outputLog := step.Log(logText)
+	_, err = outputLog.Write(jsonBytes)
+	if err != nil {
+		logging.Infof(ctx, "%s: %q", fmt.Sprintf("Writing %q failed:", logText), err.Error())
+		return
 	}
 }
 

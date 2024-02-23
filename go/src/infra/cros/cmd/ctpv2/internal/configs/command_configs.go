@@ -40,6 +40,9 @@ func (cfg *CommandConfig) GetCommand(
 
 	// Get cmd based on cmd type.
 	switch cmdType {
+	case commands.TranslateV1toV2RequestType:
+		cmd = commands.NewTranslateV1toV2Cmd()
+
 	case commands.TranslateRequestType:
 		cmd = commands.NewTranslateRequestCmd()
 

@@ -7,30 +7,18 @@ package commands
 import (
 	"context"
 	"fmt"
-
-	// "infra/libs/skylab/inventory"
-	// "infra/libs/skylab/request"
-	// "infra/libs/skylab/worker"
 	"net/http"
 	"strings"
 
 	"github.com/gogo/protobuf/jsonpb"
 
-	// "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-
-	// "go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	// "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/auth"
-	// "go.chromium.org/luci/buildbucket"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
-
-	// "go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
-	// "go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/interfaces"
@@ -143,124 +131,6 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	}
 
 	cmd.InternalTestPlan = internalStruct
-
-	// // -- Test out TRv2 Scheduling --
-	// deadline := timestamppb.New(time.Now().Add(2 * time.Hour))
-	// parentRequestUID := "TestPlanRuns/8771381664436235537/drallion-cq.hw.bvt-tast-cq"
-	// var parentBuildId int64 = 8771381664436235537
-
-	// buildTarget := "zork"
-	// modelName := "morphius"
-	// dutModel := &labapi.DutModel{
-	// 	BuildTarget: buildTarget,
-	// 	ModelName:   modelName,
-	// }
-	// companionDuts := []*skylab_test_runner.CFTTestRequest_Device{}
-	// containerMetadata := &api.ContainerMetadata{}
-	// testSuites := []*testapi.TestSuite{}
-	// kv := map[string]string{}
-
-	// cftTestRequest := &skylab_test_runner.CFTTestRequest{
-	// 	Deadline:         deadline,
-	// 	ParentRequestUid: parentRequestUID,
-	// 	ParentBuildId:    parentBuildId,
-	// 	PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
-	// 		DutModel:             dutModel,
-	// 		ProvisionState:       nil,
-	// 		ContainerMetadataKey: buildTarget,
-	// 	},
-	// 	CompanionDuts:                companionDuts,
-	// 	ContainerMetadata:            containerMetadata,
-	// 	TestSuites:                   testSuites,
-	// 	DefaultTestExecutionBehavior: test_platform.Request_Params_NON_CRITICAL,
-	// 	AutotestKeyvals:              kv,
-	// 	RunViaTrv2:                   true,
-	// 	StepsConfig:                  nil,
-	// }
-
-	// // -- Create request
-	// cmd1 := &worker.Command{
-	// 	ClientTest:      false,
-	// 	Deadline:        time.Now().Add(2 * time.Hour),
-	// 	Keyvals:         kv,
-	// 	OutputToIsolate: true,
-	// 	TaskName:        "foo",
-	// 	TestArgs:        "bar",
-	// }
-	// labels := &inventory.SchedulableLabels{}
-	// dims := []string{"label-board:zork", "label-model:morphius", "dut_state:ready"}
-	// args := request.Args{
-	// 	Cmd:                              *cmd1,
-	// 	SchedulableLabels:                labels,
-	// 	SecondaryDevicesLabels:           []*inventory.SchedulableLabels{},
-	// 	Dimensions:                       dims,
-	// 	ParentTaskID:                     "645cad975ff6cf11",
-	// 	ParentRequestUID:                 parentRequestUID,
-	// 	Priority:                         10,
-	// 	ProvisionableDimensions:          []string{},
-	// 	ProvisionableDimensionExpiration: 2 * time.Hour,
-	// 	StatusTopic:                      "",
-	// 	SwarmingTags:                     dims,
-	// 	SwarmingPool:                     "DUT_POOL_QUOTA",
-	// 	TestRunnerRequest:                nil,
-	// 	CFTTestRunnerRequest:             cftTestRequest,
-	// 	CFTIsEnabled:                     true,
-	// 	Timeout:                          2 * time.Hour,
-	// 	Experiments:                      nil,
-	// 	GerritChanges:                    nil,
-	// }
-
-	// builderId := &buildbucketpb.BuilderID{
-	// 	Project: "chromeos",
-	// 	Bucket:  "test_runner",
-	// 	Builder: "test_runner",
-	// }
-
-	// req1, err := args.NewBBRequest(builderId)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// // Check if there's a parent build for the task to be launched.
-	// // If a ScheduleBuildToken can be found in the Buildbucket section of LUCI_CONTEXT,
-	// // it will be the token for the parent build.
-	// // Attaching the token to the ScheduleBuild request will enable Buildbucket to
-	// // track the parent/child build relationship between the build with the token
-	// // and this new build.
-	// bbCtx := lucictx.GetBuildbucket(ctx)
-	// // Do not attach the buildbucket token if it's empty or the build is a led build.
-	// // Because led builds are not real Buildbucket builds and they don't have
-	// // real buildbucket tokens, so we cannot make them  any builds's parent,
-	// // even for the builds they scheduled.
-	// if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" && bbCtx.GetScheduleBuildToken() != buildbucket.DummyBuildbucketToken {
-	// 	ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
-
-	// 	// Decide if the child can outlive its parent or not.
-	// 	// For details see https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/buildbucket/proto/builds_service.proto;l=458;drc=79232ce0a0af1f7ab9ae78efa9ab3931a520d2bc.
-	// 	if req1.GetCanOutliveParent() == buildbucketpb.Trinary_UNSET {
-	// 		// We do not want test_runner runs to outrun parent CTP.
-	// 		req1.CanOutliveParent = buildbucketpb.Trinary_YES
-	// 		if req1.GetSwarming().GetParentRunId() != "" {
-	// 			req1.CanOutliveParent = buildbucketpb.Trinary_YES
-	// 		}
-	// 	}
-	// }
-
-	// bbClient, err := newBBClient(ctx)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// resp, err := bbClient.ScheduleBuild(ctx, req1)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// logging.Infof(ctx, "buildbucket id: %d", resp.Id)
-
-	// time.Sleep(5 * time.Minute)
-
-	// // --------  End testing -------
 
 	return err
 }

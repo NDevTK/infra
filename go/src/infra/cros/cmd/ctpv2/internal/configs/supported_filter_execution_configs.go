@@ -14,6 +14,7 @@ import (
 )
 
 // All currently supported command-executor pairs.
+var TranslateV1toV2Request_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TranslateV1toV2RequestType, ExecutorType: common_executors.NoExecutorType}
 var TranslateRequest_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TranslateRequestType, ExecutorType: common_executors.NoExecutorType}
 var PrepareFilterContainers_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.PrepareFilterContainersCmdType, ExecutorType: common_executors.NoExecutorType}
 var ExecuteFilter_FilterExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.FilterExecutionCmdType, ExecutorType: executors.FilterExecutorType}
@@ -70,8 +71,9 @@ func GeneratePreConfigs(ctx context.Context) *common_configs.Configs {
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
 	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
 
-	// Start CTR and do GcloudAuth
+	// Translate v1 to v2, Start CTR and do GcloudAuth
 	mainConfigs = append(mainConfigs,
+		TranslateV1toV2Request_NoExecutor,
 		CtrStartAsync_CtrExecutor,
 		GcloudAuth_CtrExecutor)
 

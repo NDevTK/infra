@@ -36,7 +36,7 @@ func (cmd *GcloudAuthCmd) ExtractDependencies(ctx context.Context,
 		err = cmd.extractDepsFromHwTestStateKeeper(ctx, sk)
 	case *data.LocalTestStateKeeper:
 		err = cmd.extractDepsFromLocalTestStateKeeper(ctx, sk)
-	case *ctpv2_data.FilterStateKeeper:
+	case *ctpv2_data.PrePostFilterStateKeeper:
 		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
@@ -79,7 +79,7 @@ func (cmd *GcloudAuthCmd) extractDepsFromLocalTestStateKeeper(
 
 func (cmd *GcloudAuthCmd) extractDepsFromFilterStateKeeper(
 	ctx context.Context,
-	sk *ctpv2_data.FilterStateKeeper) error {
+	sk *ctpv2_data.PrePostFilterStateKeeper) error {
 
 	if sk.DockerKeyFileLocation == "" {
 		return fmt.Errorf("Cmd %q missing dependency: DockerKeyFileLocation", cmd.GetCommandType())

@@ -219,3 +219,18 @@ func DownloadGcsFileToLocal(ctx context.Context, gcsPath string, tempRootDir str
 
 	return localFilePath, nil
 }
+
+// GetMajorBuildFromGCSPath parses the major build from gcs path
+func GetMajorBuildFromGCSPath(gcsPath string) string {
+	if gcsPath == "" {
+		return ""
+	}
+	g := strings.Split(gcsPath, "/")
+	R := g[len(g)-1]
+	Major := strings.Split(R, "-")
+	if len(Major) <= 2 {
+		return R
+	}
+
+	return strings.Join(Major[:2], "-")
+}

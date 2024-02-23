@@ -10,10 +10,13 @@ import (
 	"slices"
 	"strings"
 
+	"google.golang.org/protobuf/proto"
+
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/protobuf/proto"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 const (
@@ -47,7 +50,8 @@ func GroupV2Requests(ctx context.Context, v2s []*testapi.CTPRequest) []*testapi.
 		}
 		// Translator only supplies singular length schedule targets,
 		// and only care about checking the primary target's gcspath when grouping.
-		build := v2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()
+		gcsPath := v2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()
+		build := common.GetMajorBuildFromGCSPath(gcsPath)
 		if build == "" || v2.SuiteRequest == nil {
 			continue
 		}
