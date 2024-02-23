@@ -141,7 +141,7 @@ def run_tests(package_root):
       line = line.decode('utf-8')
       if 'Requires CGO_ENABLED=1' in line:
         rerun_next = True
-      elif rerun_next and line.startswith(('ok', 'fail')):
+      elif rerun_next and line.startswith(('ok', 'FAIL')):
         rerun_tests.append(line.split('\t')[1])
         rerun_next = False
     if rerun_tests:
