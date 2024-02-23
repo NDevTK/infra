@@ -7,6 +7,8 @@ package utils
 import (
 	"testing"
 
+	"google.golang.org/genproto/googleapis/type/money"
+
 	"go.chromium.org/luci/common/testing/typed"
 
 	fleetcostpb "infra/cros/fleetcost/api"
@@ -60,6 +62,126 @@ func TestToIndicatorType(t *testing.T) {
 
 			got := tt.output
 			want := ToIndicatorType(tt.input)
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
+
+// TestToUSD checks converting a command line value to USD.
+func TestToUSD(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name   string
+		input  string
+		output *money.Money
+	}{
+		{
+			name:   "empty",
+			input:  "",
+			output: nil,
+		},
+		{
+			name:  "one dollar",
+			input: "1",
+			output: &money.Money{
+				CurrencyCode: "USD",
+				Units:        1,
+			},
+		},
+		{
+			name:  "$1.2 as decimal",
+			input: "1.2",
+			output: &money.Money{
+				CurrencyCode: "USD",
+				Units:        1,
+				Nanos:        20 * (10 * 1000 * 1000),
+			},
+		},
+		{
+			name:  "$1.20 as decimal",
+			input: "1.20",
+			output: &money.Money{
+				CurrencyCode: "USD",
+				Units:        1,
+				Nanos:        20 * (10 * 1000 * 1000),
+			},
+		},
+		{
+			name:  "$1.02 as decimal",
+			input: "1.02",
+			output: &money.Money{
+				CurrencyCode: "USD",
+				Units:        1,
+				Nanos:        2 * (10 * 1000 * 1000),
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := tt.output
+			want := ToUSD(tt.input)
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
+
+// TestToCostCadence checks the output of the indicator type.
+func TestToCostCadence(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name   string
+		input  string
+		output fleetcostpb.CostCadence
+	}{
+		{
+			name:   "empty",
+			input:  "",
+			output: fleetcostpb.CostCadence_COST_CADENCE_UNKNOWN,
+		},
+		{
+			name:   "daily",
+			input:  "daily",
+			output: fleetcostpb.CostCadence_COST_CADENCE_DAILY,
+		},
+		{
+			name:   "daily uppercase",
+			input:  "daily",
+			output: fleetcostpb.CostCadence_COST_CADENCE_DAILY,
+		},
+		{
+			name:   "daily mixed case",
+			input:  "DaiLy",
+			output: fleetcostpb.CostCadence_COST_CADENCE_DAILY,
+		},
+		{
+			name:   "dut with prefix",
+			input:  "COST_CADENCE_DAILY",
+			output: fleetcostpb.CostCadence_COST_CADENCE_DAILY,
+		},
+		{
+			name:   "daily with wrong prefix is unknown",
+			input:  "TYPE_DAILY",
+			output: fleetcostpb.CostCadence_COST_CADENCE_UNKNOWN,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			want := tt.output
+			got := ToCostCadence(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}

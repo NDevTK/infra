@@ -47,8 +47,13 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.Flags.StringVar(&c.board, "board", "", "board")
 		c.Flags.StringVar(&c.model, "model", "", "model")
 		c.Flags.StringVar(&c.sku, "sku", "", "sku")
-		c.Flags.Func("cost", "cost", func(string) error {
-			return errors.New("not yet implemented")
+		c.Flags.Func("cost", "cost", func(value string) error {
+			cost := utils.ToUSD(value)
+			if cost == nil {
+				return errors.Reason("cost %q is invalid", value).Err()
+			}
+			c.cost = cost
+			return nil
 		})
 		c.Flags.Func("cadence", "cost-cadence", func(string) error {
 			return errors.New("not yet implemented")
