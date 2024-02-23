@@ -128,8 +128,9 @@ class CIPDManager:
     """
     if self.m.path.exists(source):
       root = source
+      filename = ''
       if self.m.path.isfile(source) or not dir_contents:
-        root, _ = self.m.path.split(source)
+        root, filename = self.m.path.split(source)
       name = '{}/{}'.format(dest.cipd_src.package, dest.cipd_src.platform)
       pkg = self.m.cipd.PackageDefinition(name, root)
       if self.m.path.isdir(source):
@@ -143,7 +144,7 @@ class CIPDManager:
               pkg.add_file(c)
         else:
           #Add the directory as the whole
-          pkg.add_dir(source)
+          pkg.add_dir(root.join(filename))
       else:
         pkg.add_file(root.join(filename))  # pragma: no cover
       self.m.cipd.create_from_pkg(
