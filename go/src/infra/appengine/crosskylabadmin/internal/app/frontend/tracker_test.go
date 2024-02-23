@@ -261,6 +261,7 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		defer validate()
 		tqt := tq.GetTestable(tf.C)
 		tqt.CreateQueue(repairLabstationQ)
+		// Since b/304808268 was fixed, needs_repair bots should NOT be ignored and a log message should be emitted.
 		bot1 := BotForDUT("dut_1", "needs_repair", "label-os_type:OS_TYPE_LABSTATION;label-pool:labstation_main;id:lab_1")
 		bot2 := BotForDUT("dut_2", "ready", "label-os_type:OS_TYPE_LABSTATION;label-pool:servo_verification;id:lab_2")
 		bots := []*swarmingv2.BotInfo{bot1, bot2}
@@ -280,9 +281,33 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		}
 		sort.Strings(repairPaths)
 		expectedPaths := []string{
-			"/internal/task/labstation_repair/lab_1",
 			"/internal/task/labstation_repair/lab_2",
 		}
 		So(repairPaths, ShouldResemble, expectedPaths)
+	})
+
+	Convey("Handling empty bots", t, func() {
+		tf, validate := newTestFixture(t)
+		defer validate()
+		tqt := tq.GetTestable(tf.C)
+		tqt.CreateQueue(repairLabstationQ)
+		bot1 := BotForDUT("dut_1", "needs_repair", "label-os_type:OS_TYPE_LABSTATION;label-pool:labstation_main;id:lab_1")
+		bot2 := BotForDUT("dut_2", "needs_repair", "label-os_type:OS_TYPE_LABSTATION;label-pool:servo_verification;id:lab_2")
+		bots := []*swarmingv2.BotInfo{bot1, bot2}
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
+			gomock.Any(), gomock.Eq(config.Get(tf.C).Swarming.BotPool), gomock.Any(),
+		).AnyTimes().Return(bots, nil)
+		expectDefaultPerBotRefresh(tf)
+		_, err := tf.Tracker.PushRepairJobsForLabstations(tf.C, &fleet.PushRepairJobsForLabstationsRequest{})
+		So(err, ShouldBeNil)
+
+		tasks := tqt.GetScheduledTasks()
+		repairTasks, ok := tasks[repairLabstationQ]
+		So(ok, ShouldBeTrue)
+		var repairPaths []string
+		for _, v := range repairTasks {
+			repairPaths = append(repairPaths, v.Path)
+		}
+		So(repairPaths, ShouldBeEmpty)
 	})
 }

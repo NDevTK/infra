@@ -355,6 +355,16 @@ func identifyLabstationsForRepair(ctx context.Context, bots []*swarmingv2.BotInf
 			continue
 		}
 
+		state, err := util.ExtractSingleValuedDimension(dims, clients.DutStateDimensionKey)
+		if err != nil {
+			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
+			continue
+		}
+		if state != "ready" && state != "repair_failed" {
+			logging.Warningf(ctx, "state %q for bot %q is not elegible for manual repair", state, b.BotId)
+			continue
+		}
+
 		botIDs = append(botIDs, id)
 	}
 	return botIDs
