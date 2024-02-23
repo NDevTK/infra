@@ -344,7 +344,7 @@ def RunSteps(api, inputs):
       build_map = api.buildbucket.collect_builds(
           [i for i in blds],
           step_name='waiting for builds to complete',
-          timeout=7200)
+          timeout=21600)
       for build_id, build in build_map.items():
         # Collect all 4 terminal build status
         if build.status == common_pb2.Status.FAILURE:
