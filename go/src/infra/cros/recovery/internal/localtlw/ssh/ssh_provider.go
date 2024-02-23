@@ -6,6 +6,10 @@ package ssh
 
 import (
 	"context"
+
+	"golang.org/x/time/rate"
+
+	"infra/cros/recovery/internal/log"
 )
 
 // SSHProvider provide access to SSH client manager.
@@ -23,20 +27,28 @@ type SSHProvider interface {
 type sshProviderImpl struct {
 	username string // overrides SSH config username
 	config   Config
+	limiter  *rate.Limiter
 }
 
 // NewProvider creates new provider for use.
 //
 //	clientConfig: SSH configuration to configure the new clients.
 //	tlsConfig: Optional TLS configuration to establish SSH connections over TLS channel.
-func NewProvider(config Config) SSHProvider {
+func NewProvider(config Config, limiter *rate.Limiter) SSHProvider {
 	return &sshProviderImpl{
-		config: config,
+		config:  config,
+		limiter: limiter,
 	}
 }
 
 // Get provides SSH client for requested host.
 func (c *sshProviderImpl) Get(ctx context.Context, addr string) (SSHClient, error) {
+	if c.limiter != nil && !c.limiter.Allow() {
+		log.Debugf(ctx, "Connection rate is limited to 1 connection per %v ms", 1000/c.limiter.Limit())
+		if err := c.limiter.Wait(ctx); err != nil {
+			return nil, err
+		}
+	}
 	return NewClient(ctx, addr, c.username, c.config)
 }
 
@@ -61,5 +73,6 @@ func (c *sshProviderImpl) Clone() SSHProvider {
 	return &sshProviderImpl{
 		username: c.username,
 		config:   c.config,
+		limiter:  c.limiter,
 	}
 }
