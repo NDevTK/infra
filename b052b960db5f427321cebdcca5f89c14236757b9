@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d10f9ee_6262ae7a",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs/validate_faft.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1605807
+      },
+      "writtenOn": "2024-02-23T20:03:59Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "8cfeda68_c922a668",
+      "revId": "b052b960db5f427321cebdcca5f89c14236757b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8a88e5b5_8b9b86bc",
@@ -31,6 +49,24 @@
       "writtenOn": "2024-02-23T01:32:08Z",
       "side": 1,
       "message": "Use `logging.Errorf` instead of `fmt.Printf` in here, as the logging can print timestamp, source code location and other info that useful for debugging.\n\nSo in here it should look like `logging.Errorf(ctx, \"The firmware file is not present on the path %q and failed with %v\\n\", path, err)`\n\nIn order to do that you\u0027ll need to change the function to take `context.Context` as function args and also modify the caller to pass context into here.",
+      "revId": "b052b960db5f427321cebdcca5f89c14236757b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "46857abe_485da9d3",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs/validate_faft.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1605807
+      },
+      "writtenOn": "2024-02-23T20:03:59Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "8a88e5b5_8b9b86bc",
       "revId": "b052b960db5f427321cebdcca5f89c14236757b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
