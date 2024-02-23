@@ -16,6 +16,24 @@
       "message": "You also need to pass ctx to this call since the modified `validateFaft` takes two args now.\n\nSo it should looks like `got, err :\u003d r.validateFaft(ctx, uc.in)`",
       "revId": "8badda8796b0029185c63cecf27f6307d2a71186",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4729e5ac_9c209e88",
+        "filename": "go/src/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs/validate_faft_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1605807
+      },
+      "writtenOn": "2024-02-23T21:18:53Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "de4f7074_13d49b23",
+      "revId": "8badda8796b0029185c63cecf27f6307d2a71186",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
