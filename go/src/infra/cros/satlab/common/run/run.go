@@ -56,6 +56,8 @@ type Run struct {
 	// Any configs related to results upload for this test run.
 	AddedDims map[string]string
 	Tags      map[string]string
+
+	UploadToCpcon bool
 }
 
 // TriggerRun triggers the Run with the given information
@@ -128,6 +130,10 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 	opt := site.GetAuthOption(ctx)
 
 	if tp.Cft != nil {
+		// append the args to the first suite if a suite exists
+		if len(tp.Cft.Suite) > 0 {
+			tp.Cft.Suite[0].TestArgs = c.TestArgs
+		}
 		res = append(res, &builder.CTPBuilder{
 			Image:               c.Image,
 			Board:               c.Board,
@@ -143,6 +149,7 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 			TimeoutMins:         c.setTimeout(),
 			CTPBuildTags:        tags,
 			TRV2:                c.TRV2,
+			CpconPublish:        c.UploadToCpcon,
 		})
 	}
 

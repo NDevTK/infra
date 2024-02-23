@@ -6,9 +6,11 @@ package rpc_services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"infra/cros/satlab/common/run"
+	"infra/cros/satlab/common/site"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 )
@@ -32,8 +34,10 @@ func (s *SatlabRpcServiceServer) RunStorageQual(
 		return nil, errors.New("bug id is empty")
 	}
 
+	testArgs := fmt.Sprintf("buildartifactsurl=gs://%s/%s-release/R%s-%s/ bug_id=%s", site.GetGCSPartnerBucket(), in.GetBoard(), in.GetMilestone(), in.GetBuild(), bugId)
 	r := &run.Run{
 		Suite:     in.GetSuite(),
+		TestArgs:  testArgs,
 		Model:     in.GetModel(),
 		Board:     in.GetBoard(),
 		Milestone: in.GetMilestone(),
@@ -43,8 +47,11 @@ func (s *SatlabRpcServiceServer) RunStorageQual(
 		Tags: map[string]string{
 			BUG_ID: bugId,
 		},
-		TRV2:  true,
-		Local: true,
+		TRV2:          true,
+		CFT:           true,
+		Local:         true,
+		TimeoutMins:   site.MaxIshCTPTimeoutMins,
+		UploadToCpcon: true,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
