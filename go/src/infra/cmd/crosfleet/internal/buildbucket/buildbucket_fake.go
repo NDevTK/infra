@@ -27,6 +27,7 @@ type ScheduleParams struct {
 
 func (p *ScheduleParams) matches(in *buildbucketpb.ScheduleBuildRequest) bool {
 	if p.BuilderName != in.Builder.Builder {
+		fmt.Printf("builder does not match\n")
 		return false
 	}
 	reqTags := map[string]string{}
@@ -37,6 +38,7 @@ func (p *ScheduleParams) matches(in *buildbucketpb.ScheduleBuildRequest) bool {
 	for key, value := range p.Tags {
 		reqValue, ok := reqTags[key]
 		if !ok || reqValue != value {
+			fmt.Printf("tag %s does not match\n", key)
 			return false
 		}
 	}
@@ -144,8 +146,10 @@ func hasProp(props map[string]interface{}, prop string, value interface{}) bool 
 }
 
 func hasProps(expectedProps map[string]interface{}, props map[string]interface{}) bool {
+	fmt.Printf("checking props now... %v have %v", expectedProps, props)
 	for k, v := range expectedProps {
 		if !hasProp(props, k, v) {
+			fmt.Printf("does not have prop %s with value %s\n", k, v)
 			return false
 		}
 	}
