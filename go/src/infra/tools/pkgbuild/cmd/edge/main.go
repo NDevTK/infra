@@ -9,6 +9,8 @@ import (
 	"os"
 	"time"
 
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/common/errors"
@@ -39,7 +41,9 @@ func main() {
 	}
 
 	if os.Getenv(envEnableLuciexe) != "" {
-		build.Main(app.Input, nil, nil, func(ctx context.Context, userArgs []string, state *build.State) error {
+		var input Input
+		build.Main(&input, nil, nil, func(ctx context.Context, userArgs []string, state *build.State) error {
+			proto.Merge(app.Input, &input) // Merge with default values
 			return Main(ctx, app, userArgs)
 		})
 	} else {
