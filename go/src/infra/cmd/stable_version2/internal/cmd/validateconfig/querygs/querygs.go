@@ -14,12 +14,12 @@ import (
 	"unicode"
 
 	"github.com/golang/protobuf/jsonpb"
+
+	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
 
 	gslib "infra/cmd/stable_version2/internal/gs"
-
-	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 )
 
 // BoardModel is a combined build target and model. It is used for models that aren't present
@@ -186,7 +186,7 @@ func (r *Reader) ValidateConfig(ctx context.Context, sv *labPlatform.StableVersi
 	for _, item := range sv.GetFaft() {
 		bt := item.GetKey().GetBuildTarget().GetName()
 		model := item.GetKey().GetModelId().GetValue()
-		if path, err := r.validateFaft(item.GetVersion()); err != nil {
+		if path, err := r.validateFaft(ctx, item.GetVersion()); err != nil {
 			out.InvalidFaftVersions = append(out.InvalidFaftVersions, &VersionMismatch{bt, model, path, ""})
 		}
 	}
