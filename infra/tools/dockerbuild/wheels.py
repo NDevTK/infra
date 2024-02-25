@@ -1735,6 +1735,7 @@ SPECS.update({
         Universal('Paste', '3.7.1', pyversions=['py3']),
         Universal('PySocks', '1.7.1', pyversions=['py3']),
         Universal('SecretStorage', '3.1.2', pyversions=['py3']),
+        Universal('WebOb', '1.5.0'),
         Universal('WebOb', '1.8.6'),
         Universal('WebTest', '2.0.35'),
         Universal('Werkzeug', '0.15.2'),

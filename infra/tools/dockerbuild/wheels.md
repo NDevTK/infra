@@ -490,6 +490,18 @@ wheel: <
 
 ## **WebOb**
 
+### 1.5.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/webob-py2_py3"
+  version: "version:1.5.0"
+>
+```
+
+
+* *universal*
+
 ### 1.8.6
 
 ```protobuf
