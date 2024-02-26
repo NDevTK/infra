@@ -12,10 +12,8 @@ import (
 
 	"github.com/maruel/subcommands"
 
-	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/errors"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
@@ -53,22 +51,6 @@ func (c *pingUFSCommand) Run(a subcommands.Application, args []string, env subco
 	return 0
 }
 
-func (c *pingUFSCommand) getSecureClient(ctx context.Context, host string) (*http.Client, error) {
-	authOptions, err := c.authFlags.Options()
-	if err != nil {
-		return nil, errors.Annotate(err, "ping").Err()
-	}
-	if authOptions.UseIDTokens && authOptions.Audience == "" {
-		authOptions.Audience = "https://" + host
-	}
-	authenticator := auth.NewAuthenticator(ctx, auth.InteractiveLogin, authOptions)
-	httpClient, err := authenticator.Client()
-	if err != nil {
-		return nil, errors.Annotate(err, "ping").Err()
-	}
-	return httpClient, nil
-}
-
 func (c *pingUFSCommand) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	host, err := c.commonFlags.Host()
 	if err != nil {
@@ -77,7 +59,7 @@ func (c *pingUFSCommand) innerRun(ctx context.Context, a subcommands.Application
 	var httpClient *http.Client
 	if !c.commonFlags.HTTP() {
 		var err error
-		httpClient, err = c.getSecureClient(ctx, host)
+		httpClient, err = getSecureClient(ctx, host, c.authFlags)
 		if err != nil {
 			return err
 		}

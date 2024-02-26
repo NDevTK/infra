@@ -14,7 +14,6 @@ import (
 	"github.com/maruel/subcommands"
 	"google.golang.org/genproto/googleapis/type/money"
 
-	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
@@ -92,22 +91,6 @@ func (c *createCostIndicatorCommand) Run(a subcommands.Application, args []strin
 	return 0
 }
 
-func (c *createCostIndicatorCommand) getSecureClient(ctx context.Context, host string) (*http.Client, error) {
-	authOptions, err := c.authFlags.Options()
-	if err != nil {
-		return nil, errors.Annotate(err, "create-ci").Err()
-	}
-	if authOptions.UseIDTokens && authOptions.Audience == "" {
-		authOptions.Audience = "https://" + host
-	}
-	authenticator := auth.NewAuthenticator(ctx, auth.InteractiveLogin, authOptions)
-	httpClient, err := authenticator.Client()
-	if err != nil {
-		return nil, errors.Annotate(err, "create-ci").Err()
-	}
-	return httpClient, nil
-}
-
 func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	host, err := c.commonFlags.Host()
 	if err != nil {
@@ -116,7 +99,7 @@ func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 	var httpClient *http.Client
 	if !c.commonFlags.HTTP() {
 		var err error
-		httpClient, err = c.getSecureClient(ctx, host)
+		httpClient, err = getSecureClient(ctx, host, c.authFlags)
 		if err != nil {
 			return err
 		}
