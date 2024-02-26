@@ -169,7 +169,7 @@ func targetRequirements(req *testapi.CTPRequest) []*testapi.TargetRequirements {
 			// There will only be one set by the translation; but other filters might
 			// expand this as they see fit.
 			var hwDefs []*testapi.SwarmingDefinition
-			hwDefs = append(hwDefs, buildcrosDut(hw.LegacyHw))
+			hwDefs = append(hwDefs, buildHwDef(hw.LegacyHw))
 
 			legacysw := legacyswpoper(targ.SwTarget)
 
@@ -194,7 +194,7 @@ func legacyswpoper(sws *testapi.SWTarget) *testapi.LegacySW {
 	return nil
 }
 
-func buildcrosDut(hw *testapi.LegacyHW) *testapi.SwarmingDefinition {
+func buildHwDef(hw *testapi.LegacyHW) *testapi.SwarmingDefinition {
 	dut := &labapi.Dut{}
 
 	Cros := &labapi.Dut_ChromeOS{DutModel: &labapi.DutModel{
@@ -203,7 +203,7 @@ func buildcrosDut(hw *testapi.LegacyHW) *testapi.SwarmingDefinition {
 	}}
 	dut.DutType = &labapi.Dut_Chromeos{Chromeos: Cros}
 
-	return &testapi.SwarmingDefinition{DutInfo: dut}
+	return &testapi.SwarmingDefinition{DutInfo: dut, Variant: hw.GetVariant()}
 }
 
 func NewTranslateRequestCmd() *TranslateRequestCmd {

@@ -157,7 +157,7 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 	TrReqhwDef := trReq.Req.GetHwDefinition()[0]
 	testCases := trReq.Tcs
 	board := strings.ToLower(getBuildTargetfromHwDef(TrReqhwDef))
-	variant := strings.ToLower(getVariantFromHwDef(TrReqhwDef))
+	variant := strings.ToLower(TrReqhwDef.GetVariant())
 	model := strings.ToLower(getModelTargetfromHwDef(TrReqhwDef))
 	suiteName := suiteName(suiteInfo)
 

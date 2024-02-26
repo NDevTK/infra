@@ -125,7 +125,7 @@ func populateHelper(ctx context.Context, trHelper *TrV2ReqHelper) error {
 	trHelper.model = strings.ToLower(getModelTargetfromHwDef(trHelper.trReqHWDef))
 	trHelper.pool = pool(trHelper.suiteInfo)
 	logging.Infof(ctx, "POOL FOUND: %s", trHelper.suiteInfo)
-	trHelper.variant = getVariantFromHwDef(trHelper.trReqHWDef)
+	trHelper.variant = trHelper.trReqHWDef.GetVariant()
 
 	trHelper.boardWVaraint = trHelper.board
 	if trHelper.variant != "" {
@@ -274,10 +274,9 @@ func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, variant string) str
 		if len(suiteDef) == 0 {
 			return ""
 		}
-
-		suiteHwDef := suiteDef[0]
 		suiteSwDef := suiteTarget.GetSwRequirement()
-		if getBuildTargetfromHwDef(suiteHwDef) == board && suiteSwDef.GetVariant() == variant {
+		suiteHwDef := suiteDef[0]
+		if getBuildTargetfromHwDef(suiteHwDef) == board && suiteHwDef.GetVariant() == variant {
 			return suiteSwDef.GetGcsPath()
 		}
 	}
@@ -303,7 +302,7 @@ func findProvisionInfo(ctx context.Context, trHelper *TrV2ReqHelper) []*testapi.
 		suiteSwDef := suiteTarget.GetSwRequirement()
 		logging.Infof(ctx, "looking for provision info for suiteInfo: %s", suiteSwDef)
 
-		if getBuildTargetfromHwDef(suiteHwDef) == trHelper.board && suiteSwDef.GetVariant() == trHelper.variant {
+		if getBuildTargetfromHwDef(suiteHwDef) == trHelper.board && suiteHwDef.GetVariant() == trHelper.variant {
 			return suiteHwDef.GetProvisionInfo()
 		}
 	}
@@ -319,10 +318,10 @@ func getModelTargetfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string 
 	return TRRequesthwDef.GetDutInfo().GetChromeos().GetDutModel().GetModelName()
 }
 func getBuildTargetWVariantfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string {
-	if getVariantFromHwDef(TRRequesthwDef) == "" {
+	if TRRequesthwDef.GetVariant() == "" {
 		return getBuildTargetfromHwDef(TRRequesthwDef)
 	}
-	return fmt.Sprintf("%s-%s", getBuildTargetfromHwDef(TRRequesthwDef), getVariantFromHwDef(TRRequesthwDef))
+	return fmt.Sprintf("%s-%s", getBuildTargetfromHwDef(TRRequesthwDef), TRRequesthwDef.GetVariant())
 }
 
 // createCftTestRequest creates cft test request.
@@ -625,17 +624,6 @@ func buildProvisionState(provInfo []*testapi.ProvisionInfo) (*testapi.ProvisionS
 		ProvisionMetadata: nil,
 	}
 	return provisionState, nil
-}
-
-// For now, lets assume the ID is the variantID; and not used for other non-variant ID purpose.
-// It might be better to move this to a dedicated field in the SwarmingDefinition level. That way the provsionID can be used
-// for user defined fields.
-func getVariantFromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string {
-	t := TRRequesthwDef.GetProvisionInfo()
-	if len(t) == 0 {
-		return ""
-	}
-	return t[0].GetIdentifier()
 }
 
 func suiteName(suiteInfo *testapi.SuiteInfo) string {

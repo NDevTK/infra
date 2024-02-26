@@ -219,6 +219,7 @@ func buildTarget(
 					Board:              softwareAttributes.GetBuildTarget().GetName(),
 					Model:              hardwareAttributes.GetModel(),
 					SwarmingDimensions: freeformAttributes.GetSwarmingDimensions(),
+					Variant:            GetVariant(softwareDeps),
 				},
 			},
 		},
@@ -227,7 +228,6 @@ func buildTarget(
 				LegacySw: &testapi.LegacySW{
 					Build:     GetBuildType(softwareDeps),
 					GcsPath:   getImageGcsPath(softwareDeps),
-					Variant:   GetVariant(softwareDeps),
 					KeyValues: mapSoftwareDeps(softwareDeps),
 				},
 			},

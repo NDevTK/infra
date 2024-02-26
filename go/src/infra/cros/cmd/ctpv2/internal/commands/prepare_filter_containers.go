@@ -234,13 +234,9 @@ func getFirstBoardFromLegacy(targs []*testapi.ScheduleTargets) string {
 	switch hw := currentTarg.HwTarget.Target.(type) {
 	case *testapi.HWTarget_LegacyHw:
 		board = hw.LegacyHw.Board
+		variant = hw.LegacyHw.GetVariant()
 	}
 
-	// If there is a variant, combine it with the board name.
-	switch sw := currentTarg.SwTarget.SwTarget.(type) {
-	case *testapi.SWTarget_LegacySw:
-		variant = sw.LegacySw.GetVariant()
-	}
 	if variant != "" {
 		return fmt.Sprintf("%s-%s", board, variant)
 	}
