@@ -9436,6 +9436,20 @@ wheel: <
 
 * *universal*
 
+## **tenacity-py3**
+
+### 8.2.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tenacity-py3"
+  version: "version:8.2.3"
+>
+```
+
+
+* *universal*
+
 ## **tensorboard-py3**
 
 ### 2.5.0

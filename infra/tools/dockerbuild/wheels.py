@@ -2174,6 +2174,7 @@ SPECS.update({
         Universal('tabulate', '0.8.9', pyversions=['py3']),
         Universal('tabulate', '0.8.10', pyversions=['py3']),
         Universal('tempora', '1.11'),
+        Universal('tenacity', '8.2.3', pyversions=['py3']),
         Universal('tensorboard', '2.5.0', pyversions=['py3']),
         Universal('tensorboard', '2.6.0', pyversions=['py3']),
         Universal('tensorboard', '2.7.0', pyversions=['py3']),
