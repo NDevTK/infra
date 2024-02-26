@@ -7,7 +7,9 @@ syntax = "proto3";
 package chromeos.fleetcost;
 
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/any.proto";
+import "google/protobuf/field_mask.proto";
 import "infra/cros/fleetcost/api/indicator.proto";
 
 option go_package = "infra/cros/fleetcost/api;fleetcostpb";
@@ -40,6 +42,13 @@ service FleetCost {
   rpc ListCostIndicators(ListCostIndicatorsRequest) returns (ListCostIndicatorsResponse) {
     option (google.api.http) = {
       post: "/v1/list-cost-indicators"
+    };
+  }
+
+  // UpdateCostIndicator updates an existing cost indicator.
+  rpc UpdateCostIndicator(UpdateCostIndicatorRequest) returns (UpdateCostIndicatorResponse) {
+    option (google.api.http) = {
+      post: "/v1/create-cost-indicator"
     };
   }
 }
@@ -89,4 +98,17 @@ message ListCostIndicatorsRequest {
 // ListCostIndicatorsResponse lists cost indicators
 message ListCostIndicatorsResponse {
   repeated CostIndicator cost_indicator = 1;
+}
+
+// UpdateCostIndicatorRequest updates a cost indicator.
+message UpdateCostIndicatorRequest {
+  CostIndicator cost_indicator = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The list of fields to be updated.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// UpdateCostIndicatorResponse contains a CostIndicator.
+message UpdateCostIndicatorResponse {
+  CostIndicator cost_indicator = 1;
 }
