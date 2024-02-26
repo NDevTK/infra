@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/site"
@@ -34,7 +35,10 @@ func (s *SatlabRpcServiceServer) RunStorageQual(
 		return nil, errors.New("bug id is empty")
 	}
 
-	testArgs := fmt.Sprintf("buildartifactsurl=gs://%s/%s-release/R%s-%s/ bug_id=%s", site.GetGCSPartnerBucket(), in.GetBoard(), in.GetMilestone(), in.GetBuild(), bugId)
+	// test run ID is generated at time of the test request and used to group all trv2 executions within a request
+	testRunId := time.Now().UTC().UnixMilli()
+
+	testArgs := fmt.Sprintf("buildartifactsurl=gs://%s/%s-release/R%s-%s/ bug_id=%s qual_run_id=%d", site.GetGCSPartnerBucket(), in.GetBoard(), in.GetMilestone(), in.GetBuild(), bugId, testRunId)
 	r := &run.Run{
 		Suite:     in.GetSuite(),
 		TestArgs:  testArgs,

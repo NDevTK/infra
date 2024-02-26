@@ -7,6 +7,7 @@ package executors
 import (
 	"context"
 	"fmt"
+	"os"
 
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -305,6 +306,10 @@ func (ex *CrosPublishExecutor) cpconPublishStartCommandExecution(
 	step, ctx := build.StartStep(ctx, "cpcon-publish service start")
 	defer func() { step.End(err) }()
 
+	var addnEnvironment []string
+	if hostname := os.Getenv("HOSTNAME"); hostname != "" {
+		addnEnvironment = append(addnEnvironment, fmt.Sprintf("PUBLISH_HOSTNAME=%s", hostname))
+	}
 	publishClient, err := ex.Start(
 		ctx,
 		&api.Template{
@@ -314,6 +319,7 @@ func (ex *CrosPublishExecutor) cpconPublishStartCommandExecution(
 					DockerArtifactDir: "/tmp/cpcon-publish",
 					BinaryArgs:        []string{"server", "--port", "0"},
 					AdditionalVolumes: []string{"/creds/service_accounts:/keys/", cmd.CpconPublishSrcDir + ":" + common.CpconPublishTestArtifactsDir},
+					Env:               addnEnvironment,
 				},
 			},
 		},
