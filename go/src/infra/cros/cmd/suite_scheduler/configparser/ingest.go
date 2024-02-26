@@ -30,10 +30,19 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 	}
 
 	for _, config := range configs {
-
 		targetOptions, err := GetTargetOptions(config, lab)
 		if err != nil {
 			return nil, err
+		}
+
+		// If the config targets firmware suites then skip ingesting the config.
+		if config.FirmwareEcRo != nil || config.FirmwareEcRw != nil || config.FirmwareRo != nil || config.FirmwareRw != nil {
+			continue
+		}
+
+		// If the config targets multi-dut suites then skip ingesting the config.
+		if config.TargetOptions.MultiDutsBoardsList != nil || config.TargetOptions.MultiDutsModelsList != nil {
+			continue
 		}
 
 		// Cache the calculated target options.
@@ -87,17 +96,19 @@ func IngestLabConfigs(labConfig *infrapb.LabConfig) *LabConfigs {
 		}
 	}
 
-	for _, board := range labConfig.AndroidBoards {
-		entry := &BoardEntry{
-			isAndroid: true,
-			board:     board,
-		}
-		tempConfig.Boards[Board(board.Name)] = entry
+	// TODO: When Multi-dut testing is supported we can uncomment this. We are
+	// removing it so that it does not get mixed in with regular boards for now.
+	// for _, board := range labConfig.AndroidBoards {
+	// 	entry := &BoardEntry{
+	// 		isAndroid: true,
+	// 		board:     board,
+	// 	}
+	// 	tempConfig.Boards[Board(board.Name)] = entry
 
-		for _, model := range board.Models {
-			tempConfig.Models[Model(model)] = entry
-		}
-	}
+	// 	for _, model := range board.Models {
+	// 		tempConfig.Models[Model(model)] = entry
+	// 	}
+	// }
 
 	return tempConfig
 }

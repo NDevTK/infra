@@ -70,8 +70,9 @@ type configParserCommand struct {
 	startTime int64
 
 	// Format Flags
-	asCtpRequest bool
-	nameOnly     bool
+	asCtpRequest         bool
+	nameOnly             bool
+	buildTargetExpansion bool
 }
 
 // setFlags adds also CLI flags to the subcommand.
@@ -117,6 +118,7 @@ func (c *configParserCommand) setFlags() {
 
 	c.Flags.BoolVar(&c.asCtpRequest, "ctp-request", false, "Configs will be returned as the CTP Requests they would generate.")
 	c.Flags.BoolVar(&c.nameOnly, "name-only", false, "Only the name of the config will be returned.")
+	c.Flags.BoolVar(&c.buildTargetExpansion, "csv-request-mapping", false, "Output the configs in a CSV format showing their config > CTP request mapping. Format is config,buildTarget,board,model")
 
 }
 
@@ -129,7 +131,8 @@ func GetConfigParserCommand(authOpts auth.Options) *subcommands.Command {
 			"\n\t- suite-scheduler configs { -daily | -weekly | -fortnightly } [ -day | -hour | -configName | -contains | -board | -model | -variant ]" +
 			"\n\t- suite-scheduler configs -hours-ahead [ -start-time | -board | -model | -variant | -configName | -contains ]" +
 			"\n\t- suite-scheduler configs [ -configName | -contains | -board | -model | -variant ]\n" +
-			"The flags -output-path, -config-input-path, -lab-input-path, -ctp-request, and -name-only can be used with any command."),
+			"The flags -output-path, -config-input-path, -lab-input-path, -ctp-request, and -name-only can be used with any command." +
+			"\n-csv-request-mapping currently is only supported with the -new-build top level filter."),
 		CommandRun: func() subcommands.CommandRun {
 			cmd := &configParserCommand{}
 			cmd.authFlags = authcli.Flags{}
@@ -140,9 +143,9 @@ func GetConfigParserCommand(authOpts auth.Options) *subcommands.Command {
 	}
 }
 
-// isSingularTopLevelFilter takes an array of bools and ensures that only one
+// isSingleBool takes an array of bools and ensures that only one
 // is set as true.
-func isSingularTopLevelFilter(bools []bool) bool {
+func isSingleBool(bools []bool) bool {
 	count := 0
 
 	for _, b := range bools {
@@ -169,7 +172,7 @@ func (c *configParserCommand) validate() error {
 	// GENERAL RULES
 
 	// Only one top-level filter flag can be given for any CLI invocation.
-	if !isSingularTopLevelFilter([]bool{c.newBuild, c.daily, c.weekly, c.fortnightly, c.nextNHours != common.DefaultHoursAhead}) {
+	if !isSingleBool([]bool{c.newBuild, c.daily, c.weekly, c.fortnightly, c.nextNHours != common.DefaultHoursAhead}) {
 		return fmt.Errorf("only one type of top-level filter can be provided")
 	}
 
@@ -207,10 +210,9 @@ func (c *configParserCommand) validate() error {
 		}
 	}
 
-	// CTP request changes the format and thus this rule eliminates a large
-	// amount of proto transformation that would otherwise be thrown away.
-	if c.asCtpRequest && c.nameOnly {
-		return fmt.Errorf("-ctp-request and -name-only cannot be provided together")
+	// Ensure that only one formatting flag is provided.
+	if !isSingleBool([]bool{c.asCtpRequest, c.nameOnly, c.buildTargetExpansion}) {
+		return fmt.Errorf("only one of -ctp-request, -name-only, -csv-request-mapping or can be provided")
 	}
 
 	if c.nextNHours != common.DefaultHoursAhead {
@@ -272,7 +274,6 @@ func increaseTimeByAnHour(currTime common.SuSchTime) common.SuSchTime {
 	}
 
 	// Handle the new week boundary
-
 	if currTime.FortnightDay > 13 {
 		currTime.FortnightDay = 0
 	}
@@ -579,7 +580,6 @@ func ctpRequestFormat(configs CLIConfigList, configTargetOptions map[string]conf
 }
 
 func suiteSchedulerConfigFormat(configs CLIConfigList, includeTimestamp bool) ([]byte, error) {
-
 	var outputMap any
 
 	if includeTimestamp {
@@ -595,6 +595,49 @@ func suiteSchedulerConfigFormat(configs CLIConfigList, includeTimestamp bool) ([
 	return json.MarshalIndent(outputMap, "", jsonMarshallIndent)
 }
 
+// buildTargetExpansion outputs the mapping of potential
+func buildTargetExpansion(configs CLIConfigList, configTargetOptions map[string]configparser.TargetOptions) ([]byte, error) {
+	header := "config,buildTarget,board,model\n"
+	retBytes := []byte{}
+	retBytes = append(retBytes, []byte(header)...)
+
+	// To have a unified formatting configs are in time slotted. This pulls the
+	// lists out.
+	for _, configList := range configs {
+		for _, config := range configList {
+			if _, ok := configTargetOptions[config.Name]; !ok {
+				return nil, fmt.Errorf("config %s is not tracked in the target options cache", config.Name)
+			}
+
+			for _, item := range configTargetOptions[config.Name] {
+				// Build targets are in the form of board<variant>.
+				buildTargets := configparser.GetBuildTargets(item, item.VariantsOnly)
+
+				for _, buildTarget := range buildTargets {
+					// NOTE: Skipping CTPV2Demo since the CTPv2 logic is
+					// slightly different in LegacySuSch.
+					if config.Name != "CTPV2Demo" {
+						// Manually place None as the empty value in the CSV to
+						// be feature equivalent with python (Allows for better
+						// comparison with legacy).
+						if len(item.Models) == 0 {
+							row := fmt.Sprintf("%s,%s,%s,%s\n", config.Name, buildTarget, item.Board, "None")
+							retBytes = append(retBytes, []byte(row)...)
+						}
+
+						for _, model := range item.Models {
+							row := fmt.Sprintf("%s,%s,%s,%s\n", config.Name, buildTarget, item.Board, model)
+							retBytes = append(retBytes, []byte(row)...)
+						}
+					}
+				}
+
+			}
+		}
+	}
+	return retBytes, nil
+}
+
 // formatOutput will strip or transform the configs according to the user given
 // flags.
 func (c *configParserCommand) formatOutput(configs CLIConfigList, configTargetOptions map[string]configparser.TargetOptions) ([]byte, error) {
@@ -607,6 +650,8 @@ func (c *configParserCommand) formatOutput(configs CLIConfigList, configTargetOp
 		return nameOnlyFormat(configs, includeTimestamp)
 	} else if c.asCtpRequest {
 		return ctpRequestFormat(configs, configTargetOptions, includeTimestamp)
+	} else if c.buildTargetExpansion {
+		return buildTargetExpansion(configs, configTargetOptions)
 	} else {
 		return suiteSchedulerConfigFormat(configs, includeTimestamp)
 	}

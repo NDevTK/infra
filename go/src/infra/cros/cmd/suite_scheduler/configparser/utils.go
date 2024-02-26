@@ -83,15 +83,10 @@ func getBoardsList(targets TargetOptions, labBoards map[Board]*BoardEntry, board
 // given config filters.
 //
 // The rules are as follows:
-//   - AnyModel (differing from v1 SuSch this function will not be called if this is true)
+//   - AnyModel (if false and no models are provided add all models of target boards)
 //   - ModelsList (explicitly add models)
 //   - ExcludeModels (add ALL non excluded models)
-//
-// NOTE: The `any_model` flag in SuSch does not influence which models are added
-// to be tracked. This logic is confusing and has been removed in V1.5. Instead
-// we will just honor the flag later at scheduling time and omit the
-// `label-model` tag so that swarming handles model selection.
-func getModelsList(targets TargetOptions, labModels map[Model]*BoardEntry, labBoards map[Board]*BoardEntry, modelsList, excludeModelsList []string) (TargetOptions, error) {
+func getModelsList(targets TargetOptions, labModels map[Model]*BoardEntry, labBoards map[Board]*BoardEntry, modelsList, excludeModelsList []string, AnyModel bool) (TargetOptions, error) {
 	// If models provided, add to list.
 	if len(modelsList) != 0 {
 		for _, model := range modelsList {
@@ -131,8 +126,18 @@ func getModelsList(targets TargetOptions, labModels map[Model]*BoardEntry, labBo
 				target.Models = append(target.Models, model)
 			}
 		}
-	}
+	} else if len(modelsList) == 0 && !AnyModel {
+		// Iterate through board targets and add models all models since none
+		// are excluded.
+		for boardName, target := range targets {
+			// Ensure the board exists in the lab configuration.
+			if _, ok := labBoards[boardName]; !ok {
+				return nil, fmt.Errorf("target list is tracking a board not seen in the lab configurations")
+			}
 
+			target.Models = append(target.Models, labBoards[boardName].board.Models...)
+		}
+	}
 	return targets, nil
 }
 
@@ -216,28 +221,53 @@ func getVariantsList(targets TargetOptions, labBoards map[Board]*BoardEntry, var
 // the config.
 func GetTargetOptions(config *infrapb.SchedulerConfig, lab *LabConfigs) (TargetOptions, error) {
 	targets := TargetOptions{}
+	var err error
 
-	// Add boards to targets list
-	targets, err := getBoardsList(targets, lab.Boards, config.TargetOptions.BoardsList, config.TargetOptions.ExcludeBoards)
-	if err != nil {
-		return nil, err
+	// If ModelsList and (ExcludeBoards and ExcludeVariants) are provided, skip
+	// adding the excludes as the modelsLists field takes precedence. This is
+	// because the getModelsList adds the required board if not found. Not
+	// including this edge case checker leads to us adding all boards/models
+	// which weren't excluded explicitly.
+	modelsListOnly := len(config.TargetOptions.ModelsList) > 0 && len(config.TargetOptions.ExcludeBoards) > 0 && len(config.TargetOptions.ExcludeVariants) > 0
+
+	// If skip variants is set to off (default value for bool) but no other
+	// variant includes are provided then we should act as if it was set to
+	// true. This functionally sets the default value to true.
+	defaultSkipVariants := !config.TargetOptions.SkipVariants && len(config.TargetOptions.VariantsList) == 0 && len(config.TargetOptions.ExcludeVariants) == 0
+
+	// In the cases where only a variantsList is provided we don't want to
+	// target non-variant buildTargets.
+	variantsOnly := len(config.TargetOptions.BoardsList) == 0 && len(config.TargetOptions.VariantsList) > 0
+
+	if !modelsListOnly {
+		// Add boards to targets list
+		targets, err = getBoardsList(targets, lab.Boards, config.TargetOptions.BoardsList, config.TargetOptions.ExcludeBoards)
+		if err != nil {
+			return nil, err
+		}
+
+		// If we aren't skipping variants then begin adding the variants to the
+		// list.
+		if !config.TargetOptions.SkipVariants || defaultSkipVariants {
+			targets, err = getVariantsList(targets, lab.Boards, config.TargetOptions.VariantsList, config.TargetOptions.ExcludeVariants)
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	// If any model is given then do not add models to the target options list.
 	if !config.TargetOptions.AnyModel {
-		targets, err = getModelsList(targets, lab.Models, lab.Boards, config.TargetOptions.ModelsList, config.TargetOptions.ExcludeModels)
+		targets, err = getModelsList(targets, lab.Models, lab.Boards, config.TargetOptions.ModelsList, config.TargetOptions.ExcludeModels, config.TargetOptions.AnyModel)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	// If we aren't skipping variants then begin adding the variants to the
-	// list.
-	if !config.TargetOptions.SkipVariants {
-		targets, err = getVariantsList(targets, lab.Boards, config.TargetOptions.VariantsList, config.TargetOptions.ExcludeVariants)
-		if err != nil {
-			return nil, err
-		}
+	// Apply the calculated variantsOnly value to each target as they all share
+	// the same value in one config.
+	for _, target := range targets {
+		target.VariantsOnly = variantsOnly
 	}
 
 	return targets, nil
@@ -248,15 +278,22 @@ func GetTargetOptions(config *infrapb.SchedulerConfig, lab *LabConfigs) (TargetO
 // variants then this will return a single value. If there are variants in the
 // target option then this will return a list of all combinations using the
 // above syntax. Models are not considered when generating the BuildTarget
-func GetBuildTargets(target TargetOption) []BuildTarget {
+func GetBuildTargets(target *TargetOption, variantsOnly bool) []BuildTarget {
 	buildTargets := []BuildTarget{}
 
+	// If variantsOnly is false then add the board sans variant to the build
+	// target list.
+	if !variantsOnly {
+		buildTargets = append(buildTargets, BuildTarget(target.Board))
+	}
+
+	// If the target has variants then build a build target for each variant
+	// name. Typical form is board-<variant> name, but some exceptions apply
+	// (64,_li, etc).
 	if len(target.Variants) > 0 {
 		for _, variant := range target.Variants {
 			buildTargets = append(buildTargets, BuildTarget(fmt.Sprintf("%s%s", target.Board, variant)))
 		}
-	} else {
-		buildTargets = append(buildTargets, BuildTarget(target.Board))
 	}
 	return buildTargets
 }

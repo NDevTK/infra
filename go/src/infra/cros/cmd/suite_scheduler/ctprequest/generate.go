@@ -192,18 +192,29 @@ func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model, buildTarget,
 // configuration.
 // FIX(b/321095387): This needs to build all CTPRequests and not require that
 // the targets are passed in.
+// TODO: Needs the build milestone and version passed in for proper CTP Requests
+// to work.
 func BuildAllCTPRequests(config *infrapb.SchedulerConfig, targets configparser.TargetOptions) CTPRequests {
 	requests := CTPRequests{}
+
 	for _, target := range targets {
-		if len(target.Models) > 0 {
-			for _, model := range target.Models {
-				request := BuildCTPRequest(config, string(target.Board), model, "", "", "")
+		buildTargets := configparser.GetBuildTargets(target, target.VariantsOnly)
+		for _, buildTarget := range buildTargets {
+			// If only variants are being targeted then skip the base board
+			// target option
+			if target.VariantsOnly && buildTarget == configparser.BuildTarget(target.Board) {
+				continue
+			}
+
+			if len(target.Models) > 0 {
+				for _, model := range target.Models {
+					request := BuildCTPRequest(config, string(target.Board), model, string(buildTarget), "", "")
+					requests = append(requests, request)
+				}
+			} else {
+				request := BuildCTPRequest(config, string(target.Board), "", string(buildTarget), "", "")
 				requests = append(requests, request)
 			}
-		} else {
-			request := BuildCTPRequest(config, string(target.Board), "", "", "", "")
-			requests = append(requests, request)
-
 		}
 	}
 

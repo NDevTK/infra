@@ -44,9 +44,10 @@ type (
 // TargetOption is a struct which contains all information for a targeted piece
 // of hardware to be tested.
 type TargetOption struct {
-	Board    string
-	Models   []string
-	Variants []string
+	Board        string
+	Models       []string
+	Variants     []string
+	VariantsOnly bool
 }
 
 // LabConfigs is a wrapper to provide quick access to boards and models in the lab.

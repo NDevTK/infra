@@ -294,7 +294,6 @@ func fetchTriggeredConfigs(buildPackages []*builds.BuildPackage, suiteSchedulerC
 // buildCTPRequests iterates through all the provided BuildPackages and
 // generates BuildBucket CTP requests for all triggered configs.
 func buildCTPRequests(buildPackages []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) error {
-
 	// Iterate through the wrapped builds and insert CTP request and their
 	// associated metrics events into the package.
 	for _, wrappedBuild := range buildPackages {
