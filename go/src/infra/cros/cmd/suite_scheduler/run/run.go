@@ -27,6 +27,7 @@ import (
 	"infra/cros/cmd/suite_scheduler/ctprequest"
 	"infra/cros/cmd/suite_scheduler/metrics"
 	"infra/cros/cmd/suite_scheduler/pubsub"
+	"infra/cros/cmd/suite_scheduler/totmanager"
 )
 
 // fetchTriggeredDailyEvents returns all DAILY configs which are triggered at
@@ -278,10 +279,23 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 	}
 }
 
-func fetchTriggeredConfigs(buildPackages []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) {
+// fetchTriggeredNewBuildConfigs attaches all configs to the builds which
+// triggered their run.
+func fetchTriggeredNewBuildConfigs(buildPackages []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) error {
 	for _, build := range buildPackages {
 		configs := suiteSchedulerConfigs.FetchNewBuildConfigsByBuildTarget(configparser.BuildTarget(build.Build.BuildTarget))
 		for _, config := range configs {
+			// If the build's milestone did not match the config's targeted
+			// branches then do not add this config to the build's to run list.
+			targeted, err := totmanager.IsTargetedBranch(int(build.Build.Milestone), config.Branches)
+			if err != nil {
+				return err
+			}
+			if !targeted {
+				common.Stdout.Printf("Config %s did not match milestone %d for buildTarget %s\n", config.Name, build.Build.Milestone, build.Build.BuildTarget)
+				continue
+			}
+
 			request := &builds.ConfigDetails{
 				Config: config,
 			}
@@ -289,6 +303,8 @@ func fetchTriggeredConfigs(buildPackages []*builds.BuildPackage, suiteSchedulerC
 			build.Requests = append(build.Requests, request)
 		}
 	}
+
+	return nil
 }
 
 // buildCTPRequests iterates through all the provided BuildPackages and
@@ -388,7 +404,10 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	// release team to determine if this is required.
 	// https://chromium.googlesource.com/chromiumos/infra/proto/+/refs/heads/main/src/chromiumos/build_report.proto#197
 	common.Stdout.Println("Gathering all configs triggered from retrieved build images.")
-	fetchTriggeredConfigs(releaseBuilds, suiteSchedulerConfigs)
+	err = fetchTriggeredNewBuildConfigs(releaseBuilds, suiteSchedulerConfigs)
+	if err != nil {
+		return err
+	}
 
 	common.Stdout.Println("Filtering out SuSch configs not on migration allowlist.")
 	releaseBuilds = filterConfigs(releaseBuilds)

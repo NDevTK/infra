@@ -20,6 +20,7 @@ import (
 	"infra/cros/cmd/suite_scheduler/metrics"
 	"infra/cros/cmd/suite_scheduler/pubsub"
 	"infra/cros/cmd/suite_scheduler/run"
+	"infra/cros/cmd/suite_scheduler/totmanager"
 )
 
 type runCommand struct {
@@ -56,6 +57,10 @@ func (c *runCommand) validate() error {
 		return fmt.Errorf("-new-builds or -timed-events must be specified")
 	}
 
+	if totmanager.GetTot() == 0 {
+		return fmt.Errorf("totmanager was not initialized")
+	}
+
 	return nil
 }
 
@@ -90,6 +95,16 @@ func endRun() error {
 func (c *runCommand) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	common.Stdout.Println("Validating flags")
 	err := c.validate()
+	if err != nil {
+		common.Stderr.Println(err)
+		return 1
+	}
+
+	// Initialize the ToT Manager at the start of the run. If this isn't
+	// initialized then no builds will be targeted as ToT will be set to 0 by
+	// default.
+	common.Stdout.Printf("Initializing ToTManager")
+	err = totmanager.InitTotManager()
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
