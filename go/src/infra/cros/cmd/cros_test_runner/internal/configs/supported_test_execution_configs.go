@@ -15,8 +15,8 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
 
 // All currently supported command-executor pairs.
@@ -94,7 +94,7 @@ func GetCmdExecPair(pair_base *common_configs.CommandExecutorPairedConfig, requi
 }
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
-func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *skylab_test_runner.CrosTestRunnerRequest, isAndroidProvisionRequired bool) *common_configs.Configs {
+func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *api.CrosTestRunnerDynamicRequest, isAndroidProvisionRequired bool) *common_configs.Configs {
 	platform := common.GetBotProvider()
 	if inputV2 != nil {
 		return hwConfigsForPlatformV2(cftHwStepsConfig, inputV2, platform)
@@ -252,7 +252,7 @@ func GeneratePreLocalConfigs(ctx context.Context) *common_configs.Configs {
 }
 
 // hwConfigsForPlatformV2 generates the command/executor pair configs for the CrosTestRunnerRequest.
-func hwConfigsForPlatformV2(cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *skylab_test_runner.CrosTestRunnerRequest, platform common.SwarmingBotProvider) *common_configs.Configs {
+func hwConfigsForPlatformV2(cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *api.CrosTestRunnerDynamicRequest, platform common.SwarmingBotProvider) *common_configs.Configs {
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
 	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
 
@@ -362,7 +362,7 @@ func GenerateLocalConfigs(ctx context.Context, sk *data.LocalTestStateKeeper) *c
 	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }
 
-func generateTaskConfigs(inputV2 *skylab_test_runner.CrosTestRunnerRequest) *common_configs.Configs {
+func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest) *common_configs.Configs {
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
 
 	for _, task := range inputV2.GetOrderedTasks() {
@@ -371,19 +371,19 @@ func generateTaskConfigs(inputV2 *skylab_test_runner.CrosTestRunnerRequest) *com
 				GetCmdExecPair(ContainerStart_ContainerExecutor, task.Required))
 		}
 		switch task.Task.(type) {
-		case *skylab_test_runner.CrosTestRunnerRequest_Task_Provision:
+		case *api.CrosTestRunnerDynamicRequest_Task_Provision:
 			mainConfigs = append(mainConfigs,
 				GetCmdExecPair(GenericProvision_GenericProvisionExecutor, task.Required))
-		case *skylab_test_runner.CrosTestRunnerRequest_Task_PreTest:
-		case *skylab_test_runner.CrosTestRunnerRequest_Task_Test:
+		case *api.CrosTestRunnerDynamicRequest_Task_PreTest:
+		case *api.CrosTestRunnerDynamicRequest_Task_Test:
 			mainConfigs = append(mainConfigs,
 				GetCmdExecPair(GenericTests_GenericTestsExecutor, task.Required))
-		case *skylab_test_runner.CrosTestRunnerRequest_Task_PostTest:
-		case *skylab_test_runner.CrosTestRunnerRequest_Task_Publish:
+		case *api.CrosTestRunnerDynamicRequest_Task_PostTest:
+		case *api.CrosTestRunnerDynamicRequest_Task_Publish:
 			mainConfigs = append(mainConfigs,
 				GetCmdExecPair(GcloudAuth_CtrExecutor, task.Required),
 				GetCmdExecPair(GenericPublish_GenericPublishExecutor, task.Required))
-		case *skylab_test_runner.CrosTestRunnerRequest_Task_Generic:
+		case *api.CrosTestRunnerDynamicRequest_Task_Generic:
 			mainConfigs = append(mainConfigs,
 				GetCmdExecPair(GenericService_GenericServiceExecutor, task.Required))
 		default:

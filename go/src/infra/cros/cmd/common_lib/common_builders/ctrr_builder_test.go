@@ -37,11 +37,11 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 		}
 		request := builder.Build(constructor)
 
-		expected := &skylab_test_runner.CrosTestRunnerRequest{
-			StartRequest: &skylab_test_runner.CrosTestRunnerRequest_Build{
-				Build: &skylab_test_runner.BuildMode{},
+		expected := &api.CrosTestRunnerDynamicRequest{
+			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
+				Build: &api.BuildMode{},
 			},
-			Params: &skylab_test_runner.CrosTestRunnerParams{
+			Params: &api.CrosTestRunnerParams{
 				TestSuites: []*api.TestSuite{},
 				Keyvals:    make(map[string]string),
 			},
@@ -83,13 +83,13 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 		}
 		request := builder.Build(constructor)
 
-		expected := &skylab_test_runner.CrosTestRunnerRequest{
-			StartRequest: &skylab_test_runner.CrosTestRunnerRequest_Build{
-				Build: &skylab_test_runner.BuildMode{
+		expected := &api.CrosTestRunnerDynamicRequest{
+			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
+				Build: &api.BuildMode{
 					ParentRequestUid: "parent",
 				},
 			},
-			Params: &skylab_test_runner.CrosTestRunnerParams{
+			Params: &api.CrosTestRunnerParams{
 				TestSuites: []*api.TestSuite{
 					{
 						Name: "test1",
@@ -128,13 +128,13 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 		}
 		request := builder.Build(constructor)
 
-		expected := &skylab_test_runner.CrosTestRunnerRequest{
-			StartRequest: &skylab_test_runner.CrosTestRunnerRequest_Build{
-				Build: &skylab_test_runner.BuildMode{
+		expected := &api.CrosTestRunnerDynamicRequest{
+			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
+				Build: &api.BuildMode{
 					ParentRequestUid: "parent",
 				},
 			},
-			Params: &skylab_test_runner.CrosTestRunnerParams{
+			Params: &api.CrosTestRunnerParams{
 				TestSuites: []*api.TestSuite{
 					{
 						Name: "test1",
@@ -190,13 +190,13 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 		}
 		request := builder.Build(constructor)
 
-		expected := &skylab_test_runner.CrosTestRunnerRequest{
-			StartRequest: &skylab_test_runner.CrosTestRunnerRequest_Build{
-				Build: &skylab_test_runner.BuildMode{
+		expected := &api.CrosTestRunnerDynamicRequest{
+			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
+				Build: &api.BuildMode{
 					ParentRequestUid: "parent",
 				},
 			},
-			Params: &skylab_test_runner.CrosTestRunnerParams{
+			Params: &api.CrosTestRunnerParams{
 				TestSuites: []*api.TestSuite{
 					{
 						Name: "test1",

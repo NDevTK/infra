@@ -15,7 +15,6 @@ import (
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -197,8 +196,8 @@ func binaryName(name string, build int) string {
 }
 
 // CreateContainerRequest creates container request from provided ctp filter.
-func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *skylab_test_runner.ContainerRequest {
-	return &skylab_test_runner.ContainerRequest{
+func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *api.ContainerRequest {
+	return &api.ContainerRequest{
 		DynamicIdentifier: requestedFilter.GetContainerInfo().GetContainer().GetName(),
 		Container: &api.Template{
 			Container: &api.Template_Generic{
@@ -228,8 +227,8 @@ func needBackwardsCompatibility(build int) bool {
 // CreateTTCPContainerRequest creates container request from provided ctp filter.
 // TODO (azrahman): Merge this into a generic container request creator that will
 // work for all containers.
-func CreateTTCPContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_runner.ContainerRequest {
-	return &skylab_test_runner.ContainerRequest{
+func CreateTTCPContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerRequest {
+	return &api.ContainerRequest{
 		DynamicIdentifier: requestedFilter.GetContainerInfo().GetContainer().GetName(),
 		Container: &api.Template{
 			Container: &api.Template_Generic{

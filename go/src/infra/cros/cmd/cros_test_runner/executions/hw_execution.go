@@ -14,6 +14,7 @@ import (
 	"os"
 	"strings"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	api_common "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
@@ -56,7 +57,7 @@ func HwExecution() {
 			var err error
 			if input.CrosTestRunnerRequest != nil {
 				// If the request is a CrosTestRunner dynamic request...
-				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
 			} else if input.CftTestRequest.TranslateTrv2Request {
 				// If the request is a CrosTestRunner non-dynamic request with translation flag...
 				builder := &common_builders.CrosTestRunnerRequestBuilder{}
@@ -178,7 +179,7 @@ func executeHwTests(
 func executeHwTestsV2(
 	ctx context.Context,
 	cft *skylab_test_runner.CFTTestRequest,
-	req *skylab_test_runner.CrosTestRunnerRequest,
+	req *api.CrosTestRunnerDynamicRequest,
 	ctrCipdVersion string,
 	gsRoot string,
 	buildState *build.State) (*skylab_test_runner.Result, error) {
@@ -251,7 +252,7 @@ func executeHwTestsV2(
 
 // populateRequestQueues parses through the OrderedTasks of a CrosTestRunnerRequest
 // to populate corresponding queues of requests.
-func populateRequestQueues(sk *data.HwTestStateKeeper, req *skylab_test_runner.CrosTestRunnerRequest) {
+func populateRequestQueues(sk *data.HwTestStateKeeper, req *api.CrosTestRunnerDynamicRequest) {
 	if req != nil {
 		for _, taskRequest := range req.OrderedTasks {
 			for _, containerRequest := range taskRequest.OrderedContainerRequests {
@@ -259,15 +260,15 @@ func populateRequestQueues(sk *data.HwTestStateKeeper, req *skylab_test_runner.C
 			}
 
 			switch typedRequest := taskRequest.Task.(type) {
-			case *skylab_test_runner.CrosTestRunnerRequest_Task_Provision:
+			case *api.CrosTestRunnerDynamicRequest_Task_Provision:
 				sk.ProvisionQueue.PushBack(typedRequest.Provision)
-			case *skylab_test_runner.CrosTestRunnerRequest_Task_PreTest:
+			case *api.CrosTestRunnerDynamicRequest_Task_PreTest:
 				sk.PreTestQueue.PushBack(typedRequest.PreTest)
-			case *skylab_test_runner.CrosTestRunnerRequest_Task_Test:
+			case *api.CrosTestRunnerDynamicRequest_Task_Test:
 				sk.TestQueue.PushBack(typedRequest.Test)
-			case *skylab_test_runner.CrosTestRunnerRequest_Task_PostTest:
+			case *api.CrosTestRunnerDynamicRequest_Task_PostTest:
 				sk.PostTestQueue.PushBack(typedRequest.PostTest)
-			case *skylab_test_runner.CrosTestRunnerRequest_Task_Publish:
+			case *api.CrosTestRunnerDynamicRequest_Task_Publish:
 				sk.PublishQueue.PushBack(typedRequest.Publish)
 			default:
 			}

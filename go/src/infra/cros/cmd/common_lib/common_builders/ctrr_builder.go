@@ -12,21 +12,21 @@ import (
 // CrosTestRunnerRequestBuilder wraps the construction of a CrosTestRunnerRequest
 // and contains the top-level object that gets built.
 type CrosTestRunnerRequestBuilder struct {
-	crosTestRunnerRequest *skylab_test_runner.CrosTestRunnerRequest
+	crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest
 }
 
 // CrosTestRunnerRequestConstructor defines the interface by which
 // concrete constructors may define how to construct the CrosTestRunnerRequest
 // from varying internal objects.
 type CrosTestRunnerRequestConstructor interface {
-	ConstructStartRequest(*skylab_test_runner.CrosTestRunnerRequest)
-	ConstructParams(*skylab_test_runner.CrosTestRunnerRequest)
-	ConstructOrderedTasks(*skylab_test_runner.CrosTestRunnerRequest)
+	ConstructStartRequest(*api.CrosTestRunnerDynamicRequest)
+	ConstructParams(*api.CrosTestRunnerDynamicRequest)
+	ConstructOrderedTasks(*api.CrosTestRunnerDynamicRequest)
 }
 
 // Build initializes the CrosTestRunnerRequest, constructs each top-level field
 // using a given constructor, then returns the resulting construction.
-func (builder *CrosTestRunnerRequestBuilder) Build(constructor CrosTestRunnerRequestConstructor) *skylab_test_runner.CrosTestRunnerRequest {
+func (builder *CrosTestRunnerRequestBuilder) Build(constructor CrosTestRunnerRequestConstructor) *api.CrosTestRunnerDynamicRequest {
 	builder.initializeBuilder()
 
 	constructor.ConstructStartRequest(builder.crosTestRunnerRequest)
@@ -39,12 +39,12 @@ func (builder *CrosTestRunnerRequestBuilder) Build(constructor CrosTestRunnerReq
 // initializeBuilder sets the CrosTestRunnerRequest to a default empty
 // state in which important high-level fields are safe to reference.
 func (builder *CrosTestRunnerRequestBuilder) initializeBuilder() {
-	builder.crosTestRunnerRequest = &skylab_test_runner.CrosTestRunnerRequest{
-		Params: &skylab_test_runner.CrosTestRunnerParams{
+	builder.crosTestRunnerRequest = &api.CrosTestRunnerDynamicRequest{
+		Params: &api.CrosTestRunnerParams{
 			TestSuites: []*api.TestSuite{},
 			Keyvals:    make(map[string]string),
 		},
-		OrderedTasks: []*skylab_test_runner.CrosTestRunnerRequest_Task{},
+		OrderedTasks: []*api.CrosTestRunnerDynamicRequest_Task{},
 	}
 }
 
@@ -58,9 +58,9 @@ type CftCrosTestRunnerRequestConstructor struct {
 
 // ConstructStartRequest builds a CrosTestRunnerRequest_StartRequest from
 // a CftTestRequest.
-func (constructor *CftCrosTestRunnerRequestConstructor) ConstructStartRequest(crosTestRunnerRequest *skylab_test_runner.CrosTestRunnerRequest) {
-	crosTestRunnerRequest.StartRequest = &skylab_test_runner.CrosTestRunnerRequest_Build{
-		Build: &skylab_test_runner.BuildMode{
+func (constructor *CftCrosTestRunnerRequestConstructor) ConstructStartRequest(crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest) {
+	crosTestRunnerRequest.StartRequest = &api.CrosTestRunnerDynamicRequest_Build{
+		Build: &api.BuildMode{
 			ParentBuildId:    constructor.Cft.GetParentBuildId(),
 			ParentRequestUid: constructor.Cft.GetParentRequestUid(),
 		},
@@ -69,8 +69,8 @@ func (constructor *CftCrosTestRunnerRequestConstructor) ConstructStartRequest(cr
 
 // ConstructParams builds a CrosTestRunnerParams from
 // a CftTestRequest.
-func (constructor *CftCrosTestRunnerRequestConstructor) ConstructParams(crosTestRunnerRequest *skylab_test_runner.CrosTestRunnerRequest) {
-	params := &skylab_test_runner.CrosTestRunnerParams{
+func (constructor *CftCrosTestRunnerRequestConstructor) ConstructParams(crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest) {
+	params := &api.CrosTestRunnerParams{
 		Keyvals:           constructor.Cft.GetAutotestKeyvals(),
 		ContainerMetadata: constructor.Cft.GetContainerMetadata(),
 		TestSuites:        constructor.Cft.GetTestSuites(),
@@ -91,8 +91,8 @@ func (constructor *CftCrosTestRunnerRequestConstructor) ConstructParams(crosTest
 
 // ConstructOrderedTasks builds a slice of CrosTestRunnerRequest_Task from
 // a CftTestRequest.
-func (constructor *CftCrosTestRunnerRequestConstructor) ConstructOrderedTasks(crosTestRunnerRequest *skylab_test_runner.CrosTestRunnerRequest) {
-	orderedTasks := &[]*skylab_test_runner.CrosTestRunnerRequest_Task{}
+func (constructor *CftCrosTestRunnerRequestConstructor) ConstructOrderedTasks(crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest) {
+	orderedTasks := &[]*api.CrosTestRunnerDynamicRequest_Task{}
 
 	constructor.buildPrimaryDutProvision(orderedTasks)
 	constructor.buildCompanionDutProvisions(orderedTasks)

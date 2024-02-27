@@ -14,7 +14,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
 	"infra/cros/cmd/common_lib/common"
 )
@@ -68,7 +67,7 @@ func TestDependencyInjectionBasic(t *testing.T) {
 	})
 
 	Convey("test injection", t, func() {
-		original_proto := &skylab_test_runner.ContainerRequest{
+		original_proto := &api.ContainerRequest{
 			DynamicIdentifier: "cros-provision",
 			Container: &api.Template{
 				Container: &api.Template_CrosProvision{
@@ -78,7 +77,7 @@ func TestDependencyInjectionBasic(t *testing.T) {
 				},
 			},
 			ContainerImageKey: "cros-provision",
-			DynamicDeps: []*skylab_test_runner.DynamicDep{
+			DynamicDeps: []*api.DynamicDep{
 				{
 					Key:   "crosProvision.inputRequest.dut",
 					Value: "dut_primary",
@@ -245,11 +244,11 @@ func TestDependencyInjectionArrayOverride(t *testing.T) {
 
 func TestDependencyInjectionFullTest(t *testing.T) {
 	storage := common.NewInjectableStorage()
-	req := &skylab_test_runner.CrosTestRunnerRequest{
-		StartRequest: &skylab_test_runner.CrosTestRunnerRequest_Build{
-			Build: &skylab_test_runner.BuildMode{},
+	req := &api.CrosTestRunnerDynamicRequest{
+		StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
+			Build: &api.BuildMode{},
 		},
-		Params: &skylab_test_runner.CrosTestRunnerParams{},
+		Params: &api.CrosTestRunnerParams{},
 	}
 	err := storage.Set("req", req)
 	if err != nil {
@@ -332,10 +331,10 @@ func TestDependencyInjectionFullTest(t *testing.T) {
 				Name: "Test3",
 			},
 		}
-		testRequest := &skylab_test_runner.TestRequest{
+		testRequest := &api.TestTask{
 			ServiceAddress: &labapi.IpEndpoint{},
 			TestRequest:    &testapi.CrosTestRequest{},
-			DynamicDeps: []*skylab_test_runner.DynamicDep{
+			DynamicDeps: []*api.DynamicDep{
 				{
 					Key:   "serviceAddress",
 					Value: "cros-test",
@@ -346,9 +345,9 @@ func TestDependencyInjectionFullTest(t *testing.T) {
 				},
 			},
 		}
-		req.OrderedTasks = []*skylab_test_runner.CrosTestRunnerRequest_Task{
+		req.OrderedTasks = []*api.CrosTestRunnerDynamicRequest_Task{
 			{
-				Task: &skylab_test_runner.CrosTestRunnerRequest_Task_Test{
+				Task: &api.CrosTestRunnerDynamicRequest_Task_Test{
 					Test: testRequest,
 				},
 			},
@@ -381,12 +380,12 @@ func TestGenericContainerOutputAsDependency(t *testing.T) {
 	}
 
 	Convey("Anypb dep", t, func() {
-		testRequest := &skylab_test_runner.TestRequest{
+		testRequest := &api.TestTask{
 			TestRequest: &api.CrosTestRequest{
 				Primary:  &api.CrosTestRequest_Device{},
 				Metadata: &anypb.Any{},
 			},
-			DynamicDeps: []*skylab_test_runner.DynamicDep{
+			DynamicDeps: []*api.DynamicDep{
 				{
 					Key:   "testRequest.primary.devboardServer",
 					Value: "user-container_stop.message.values.devboard-server",

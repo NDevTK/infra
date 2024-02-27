@@ -9,8 +9,8 @@ import (
 	"sync"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/common_lib/common"
@@ -19,7 +19,7 @@ import (
 // ContainerInfo represents all container related info.
 type ContainerInfo struct {
 	ImageKey        string
-	Request         *skylab_test_runner.ContainerRequest
+	Request         *api.ContainerRequest
 	ImageInfo       *buildapi.ContainerImageInfo
 	ServiceEndpoint *labapi.IpEndpoint
 }

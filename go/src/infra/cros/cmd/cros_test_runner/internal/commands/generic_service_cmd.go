@@ -12,8 +12,8 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -23,7 +23,7 @@ type GenericServiceCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	GenericRequest *skylab_test_runner.GenericRequest
+	GenericRequest *api.GenericTask
 	Identifier     string
 
 	// Updates
@@ -58,7 +58,7 @@ func (cmd *GenericServiceCmd) instantiateWithHwTestStateKeeper(
 	sk *data.HwTestStateKeeper) (err error) {
 
 	if err := common_commands.Instantiate_PopFromQueue(sk.GenericQueue, func(element any) {
-		cmd.GenericRequest = element.(*skylab_test_runner.GenericRequest)
+		cmd.GenericRequest = element.(*api.GenericTask)
 	}); err != nil {
 		return fmt.Errorf("cmd %s missing dependency: GenericRequest, %s", cmd.GetCommandType(), err)
 	}

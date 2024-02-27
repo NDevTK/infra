@@ -15,6 +15,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	configpb "go.chromium.org/chromiumos/config/go"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labpb "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -110,7 +111,7 @@ func parseTime(s string) time.Time {
 }
 
 // GetValueFromRequestKeyvals gets value from provided keyvals based on key.
-func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.CFTTestRequest, ctrrReq *skylab_test_runner.CrosTestRunnerRequest, key string) string {
+func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.CFTTestRequest, ctrrReq *api.CrosTestRunnerDynamicRequest, key string) string {
 	if cftReq == nil && ctrrReq == nil {
 		return ""
 	}

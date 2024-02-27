@@ -16,7 +16,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -182,7 +182,7 @@ func Inject(receiver protoreflect.ProtoMessage, injection_point string, storage 
 }
 
 // InjectDependencies handles loading the storage's injectables and injecting the dependencies into the receiver.
-func InjectDependencies(receiver protoreflect.ProtoMessage, storage *InjectableStorage, deps []*skylab_test_runner.DynamicDep) error {
+func InjectDependencies(receiver protoreflect.ProtoMessage, storage *InjectableStorage, deps []*api.DynamicDep) error {
 	err := storage.LoadInjectables()
 	if err != nil {
 		return fmt.Errorf("Failed to load dependency, %s", err)

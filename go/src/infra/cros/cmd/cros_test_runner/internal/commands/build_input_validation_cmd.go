@@ -11,6 +11,7 @@ import (
 	"infra/cros/cmd/cros_test_runner/data"
 
 	"github.com/gogo/protobuf/jsonpb"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -23,7 +24,7 @@ type BuildInputValidationCmd struct {
 
 	// Deps
 	CftTestRequest        *skylab_test_runner.CFTTestRequest
-	CrosTestRunnerRequest *skylab_test_runner.CrosTestRunnerRequest
+	CrosTestRunnerRequest *api.CrosTestRunnerDynamicRequest
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.

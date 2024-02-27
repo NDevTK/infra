@@ -10,14 +10,14 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 func TestPopQueueInstantiation_BadCast(t *testing.T) {
 	Convey("Bad Type Cast", t, func() {
 		queue := list.New()
-		queue.PushBack(&skylab_test_runner.TestRequest{
-			DynamicDeps: []*skylab_test_runner.DynamicDep{
+		queue.PushBack(&api.TestTask{
+			DynamicDeps: []*api.DynamicDep{
 				{
 					Key:   "key",
 					Value: "value",
@@ -25,7 +25,7 @@ func TestPopQueueInstantiation_BadCast(t *testing.T) {
 			},
 		})
 		err := common_commands.Instantiate_PopFromQueue(queue, func(element any) {
-			_ = element.(*skylab_test_runner.ProvisionRequest)
+			_ = element.(*api.ProvisionTask)
 		})
 		So(err, ShouldNotBeNil)
 	})
@@ -34,17 +34,17 @@ func TestPopQueueInstantiation_BadCast(t *testing.T) {
 func TestPopQueueInstantiation_GoodCast(t *testing.T) {
 	Convey("Good Type Cast", t, func() {
 		queue := list.New()
-		queue.PushBack(&skylab_test_runner.TestRequest{
-			DynamicDeps: []*skylab_test_runner.DynamicDep{
+		queue.PushBack(&api.TestTask{
+			DynamicDeps: []*api.DynamicDep{
 				{
 					Key:   "key",
 					Value: "value",
 				},
 			},
 		})
-		var testRequest *skylab_test_runner.TestRequest
+		var testRequest *api.TestTask
 		err := common_commands.Instantiate_PopFromQueue(queue, func(element any) {
-			testRequest = element.(*skylab_test_runner.TestRequest)
+			testRequest = element.(*api.TestTask)
 		})
 		So(err, ShouldBeNil)
 		So(testRequest, ShouldNotBeNil)

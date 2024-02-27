@@ -12,7 +12,7 @@ import (
 	"infra/cros/cmd/common_lib/common"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 func TestGenerateHwConfigs(t *testing.T) {
@@ -30,16 +30,16 @@ func TestGenerateHwConfigs(t *testing.T) {
 
 	Convey("GenerateHwConfigs with CrosTestRunnerRequest", t, func() {
 		ctx := context.Background()
-		req := &skylab_test_runner.CrosTestRunnerRequest{
-			OrderedTasks: []*skylab_test_runner.CrosTestRunnerRequest_Task{
+		req := &api.CrosTestRunnerDynamicRequest{
+			OrderedTasks: []*api.CrosTestRunnerDynamicRequest_Task{
 				{
-					OrderedContainerRequests: []*skylab_test_runner.ContainerRequest{
+					OrderedContainerRequests: []*api.ContainerRequest{
 						{
 							DynamicIdentifier: "container",
 						},
 					},
-					Task: &skylab_test_runner.CrosTestRunnerRequest_Task_Provision{
-						Provision: &skylab_test_runner.ProvisionRequest{},
+					Task: &api.CrosTestRunnerDynamicRequest_Task_Provision{
+						Provision: &api.ProvisionTask{},
 					},
 				},
 			},

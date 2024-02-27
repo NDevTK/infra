@@ -12,8 +12,8 @@ import (
 	"infra/cros/cmd/cros_test_runner/data"
 	ctpv2_data "infra/cros/cmd/ctpv2/data"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -26,7 +26,7 @@ type ContainerStartCmd struct {
 	containerInfo *ctpv2_data.ContainerInfo
 
 	// Deps
-	ContainerRequest *skylab_test_runner.ContainerRequest
+	ContainerRequest *api.ContainerRequest
 	ContainerImage   string
 
 	// Updates
@@ -74,7 +74,7 @@ func (cmd *ContainerStartCmd) instantiateWithHwTestStateKeeper(
 	if sk.ContainerQueue.Len() < 1 {
 		return fmt.Errorf("cmd %q missing dependency: ContainerRequest", cmd.GetCommandType())
 	}
-	cmd.ContainerRequest = sk.ContainerQueue.Remove(sk.ContainerQueue.Front()).(*skylab_test_runner.ContainerRequest)
+	cmd.ContainerRequest = sk.ContainerQueue.Remove(sk.ContainerQueue.Front()).(*api.ContainerRequest)
 
 	return nil
 }

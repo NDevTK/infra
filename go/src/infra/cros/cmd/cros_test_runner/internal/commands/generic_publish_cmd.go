@@ -12,8 +12,8 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -23,7 +23,7 @@ type GenericPublishCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	PublishRequest *skylab_test_runner.PublishRequest
+	PublishRequest *api.PublishTask
 	Identifier     string
 
 	// Updates
@@ -56,7 +56,7 @@ func (cmd *GenericPublishCmd) instantiateWithHwTestStateKeeper(
 	sk *data.HwTestStateKeeper) (err error) {
 
 	if err := common_commands.Instantiate_PopFromQueue(sk.PublishQueue, func(element any) {
-		cmd.PublishRequest = element.(*skylab_test_runner.PublishRequest)
+		cmd.PublishRequest = element.(*api.PublishTask)
 	}); err != nil {
 		return fmt.Errorf("cmd %s missing dependency: PublishRequest, %s", cmd.GetCommandType(), err)
 	}

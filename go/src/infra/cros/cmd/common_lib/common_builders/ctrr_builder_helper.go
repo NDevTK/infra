@@ -40,7 +40,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) addDevicesInfoToKeyvals(
 
 // buildPrimaryDutProvision attempts to use the PrimaryDut from CftTestRequest
 // to construct a cros-dut and provision task request.
-func (constructor *CftCrosTestRunnerRequestConstructor) buildPrimaryDutProvision(orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task) {
+func (constructor *CftCrosTestRunnerRequestConstructor) buildPrimaryDutProvision(orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
 	if !constructor.Cft.GetStepsConfig().GetHwTestConfig().GetSkipStartingDutService() {
 		AppendDutTask(orderedTasks, BuildCrosDutRequest(common.PrimaryDevice))
 	}
@@ -54,7 +54,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildPrimaryDutProvision
 
 // buildCompanionDutProvisions attempts to use the CompanionDuts from CftTestRequest
 // to construct multiple cros-dut and provision task requests.
-func (constructor *CftCrosTestRunnerRequestConstructor) buildCompanionDutProvisions(orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task) {
+func (constructor *CftCrosTestRunnerRequestConstructor) buildCompanionDutProvisions(orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
 	deviceIds := map[string]struct{}{}
 	for _, dut := range constructor.Cft.GetCompanionDuts() {
 		deviceId := "companionDevice_" + dut.GetDutModel().GetBuildTarget()
@@ -85,7 +85,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildCompanionDutProvisi
 }
 
 // buildTestExecution attempts to construct a Test task request.
-func (constructor *CftCrosTestRunnerRequestConstructor) buildTestExecution(orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task) {
+func (constructor *CftCrosTestRunnerRequestConstructor) buildTestExecution(orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
 	if !constructor.Cft.GetStepsConfig().GetHwTestConfig().GetSkipTestExecution() {
 		isCqRun := common.IsCqRun(constructor.Cft.GetTestSuites())
 		platform := common.GetBotProvider()
@@ -96,7 +96,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildTestExecution(order
 }
 
 // buildPublishes attempts to construct out each publish task request.
-func (constructor *CftCrosTestRunnerRequestConstructor) buildPublishes(orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task) {
+func (constructor *CftCrosTestRunnerRequestConstructor) buildPublishes(orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
 	if !constructor.Cft.GetStepsConfig().GetHwTestConfig().GetSkipAllResultPublish() {
 		constructor.buildRdbPublish(orderedTasks)
 		constructor.buildGcsPublish(orderedTasks)
@@ -105,7 +105,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildPublishes(orderedTa
 }
 
 // buildRdbPublish attempts to construct a RdbPublish task.
-func (constructor *CftCrosTestRunnerRequestConstructor) buildRdbPublish(orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task) {
+func (constructor *CftCrosTestRunnerRequestConstructor) buildRdbPublish(orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
 	if !constructor.Cft.GetStepsConfig().GetHwTestConfig().GetSkipRdbPublish() {
 		rdbPublishMetadata, _ := anypb.New(&testapi_metadata.PublishRdbMetadata{
 			Sources: &testapi_metadata.PublishRdbMetadata_Sources{
@@ -116,7 +116,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildRdbPublish(orderedT
 		})
 		AppendPublishTask(orderedTasks,
 			BuildPublishContainerRequest("rdb-publish", api.CrosPublishTemplate_PUBLISH_RDB, nil),
-			BuildPublishRequest(common.RdbPublishTestArtifactDir, rdbPublishMetadata, []*skylab_test_runner.DynamicDep{
+			BuildPublishRequest(common.RdbPublishTestArtifactDir, rdbPublishMetadata, []*api.DynamicDep{
 				{
 					Key:   "serviceAddress",
 					Value: "rdb-publish",
@@ -135,7 +135,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildRdbPublish(orderedT
 }
 
 // buildRdbPublish attempts to construct a GcsPublish task.
-func (constructor *CftCrosTestRunnerRequestConstructor) buildGcsPublish(orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task) {
+func (constructor *CftCrosTestRunnerRequestConstructor) buildGcsPublish(orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
 	if !constructor.Cft.GetStepsConfig().GetHwTestConfig().GetSkipGcsPublish() {
 		gcsPublishMetadata, _ := anypb.New(&api.PublishGcsMetadata{
 			GcsPath: &_go.StoragePath{
@@ -143,13 +143,13 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildGcsPublish(orderedT
 			},
 		})
 		AppendPublishTask(orderedTasks,
-			BuildPublishContainerRequest("gcs-publish", api.CrosPublishTemplate_PUBLISH_GCS, []*skylab_test_runner.DynamicDep{
+			BuildPublishContainerRequest("gcs-publish", api.CrosPublishTemplate_PUBLISH_GCS, []*api.DynamicDep{
 				{
 					Key:   "crosPublish.publishSrcDir",
 					Value: "env-TEMPDIR",
 				},
 			}),
-			BuildPublishRequest(common.GcsPublishTestArtifactsDir, gcsPublishMetadata, []*skylab_test_runner.DynamicDep{
+			BuildPublishRequest(common.GcsPublishTestArtifactsDir, gcsPublishMetadata, []*api.DynamicDep{
 				{
 					Key:   "serviceAddress",
 					Value: "gcs-publish",
@@ -164,12 +164,12 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildGcsPublish(orderedT
 }
 
 // buildRdbPublish attempts to construct a CpconPublish task.
-func (constructor *CftCrosTestRunnerRequestConstructor) buildCpconPublish(orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task) {
+func (constructor *CftCrosTestRunnerRequestConstructor) buildCpconPublish(orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
 	if constructor.Cft.GetStepsConfig().GetHwTestConfig().GetRunCpconPublish() {
 		cpconMetadata, _ := anypb.New(&api.PublishTkoMetadata{})
 		AppendPublishTask(orderedTasks,
 			BuildPublishContainerRequest("cpcon-publish", api.CrosPublishTemplate_PUBLISH_CPCON, nil),
-			BuildPublishRequest(common.CpconPublishTestArtifactsDir, cpconMetadata, []*skylab_test_runner.DynamicDep{
+			BuildPublishRequest(common.CpconPublishTestArtifactsDir, cpconMetadata, []*api.DynamicDep{
 				{
 					Key:   "serviceAddress",
 					Value: "cpcon-publish",
@@ -185,8 +185,8 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildCpconPublish(ordere
 
 // BuildCrosDutRequest is a helper function to construct a ContainerRequest
 // with the CrosDut template, using a deviceId to dynamically execute it.
-func BuildCrosDutRequest(deviceId string) *skylab_test_runner.ContainerRequest {
-	return &skylab_test_runner.ContainerRequest{
+func BuildCrosDutRequest(deviceId string) *api.ContainerRequest {
+	return &api.ContainerRequest{
 		DynamicIdentifier: common.CrosDut + "-" + deviceId,
 		Container: &api.Template{
 			Container: &api.Template_CrosDut{
@@ -194,7 +194,7 @@ func BuildCrosDutRequest(deviceId string) *skylab_test_runner.ContainerRequest {
 			},
 		},
 		ContainerImageKey: common.CrosDut,
-		DynamicDeps: []*skylab_test_runner.DynamicDep{
+		DynamicDeps: []*api.DynamicDep{
 			{
 				Key:   "crosDut.cacheServer",
 				Value: common.PrimaryDevice + ".dut.cacheServer.address",
@@ -209,7 +209,7 @@ func BuildCrosDutRequest(deviceId string) *skylab_test_runner.ContainerRequest {
 
 // BuildProvisionRequest takes a Cft device to construct a ProvisionRequest.
 // Checks provision state to determine install request.
-func BuildProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRequest_Device) *skylab_test_runner.ProvisionRequest {
+func BuildProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRequest_Device) *api.ProvisionTask {
 	var installRequest *api.InstallRequest
 	var serviceAddress string
 	if IsAndroidProvisionState(device.GetProvisionState()) {
@@ -227,10 +227,10 @@ func BuildProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRe
 			Metadata:      crosProvisionMetadata,
 		}
 	}
-	return &skylab_test_runner.ProvisionRequest{
+	return &api.ProvisionTask{
 		ServiceAddress: &labapi.IpEndpoint{},
 		InstallRequest: installRequest,
-		DynamicDeps: []*skylab_test_runner.DynamicDep{
+		DynamicDeps: []*api.DynamicDep{
 			{
 				Key:   "serviceAddress",
 				Value: serviceAddress,
@@ -242,7 +242,7 @@ func BuildProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRe
 
 // BuildProvisionContainerRequest constructs a ContainerRequest for a certain deviceId
 // with variations for android devices.
-func BuildProvisionContainerRequest(deviceId string, isAndroid bool) *skylab_test_runner.ContainerRequest {
+func BuildProvisionContainerRequest(deviceId string, isAndroid bool) *api.ContainerRequest {
 	var container *api.Template
 	var imageKey string
 	var key string
@@ -275,11 +275,11 @@ func BuildProvisionContainerRequest(deviceId string, isAndroid bool) *skylab_tes
 			},
 		}
 	}
-	return &skylab_test_runner.ContainerRequest{
+	return &api.ContainerRequest{
 		DynamicIdentifier: imageKey + "-" + deviceId,
 		Container:         container,
 		ContainerImageKey: imageKey,
-		DynamicDeps: []*skylab_test_runner.DynamicDep{
+		DynamicDeps: []*api.DynamicDep{
 			{
 				Key:   key + ".inputRequest.dut",
 				Value: deviceId + ".dut",
@@ -305,12 +305,12 @@ func IsAndroidProvisionState(state *api.ProvisionState) bool {
 
 // BuildTestContainerRequest constructs a ContainerRequest
 // with the parameters for cros-test.
-func BuildTestContainerRequest(isCqRun bool, platform common.SwarmingBotProvider) *skylab_test_runner.ContainerRequest {
+func BuildTestContainerRequest(isCqRun bool, platform common.SwarmingBotProvider) *api.ContainerRequest {
 	key := common.CrosTest
 	if isCqRun && platform == common.BotProviderGce {
 		key = "cros-test-cq-light"
 	}
-	return &skylab_test_runner.ContainerRequest{
+	return &api.ContainerRequest{
 		DynamicIdentifier: common.CrosTest,
 		Container: &api.Template{
 			Container: &api.Template_CrosTest{
@@ -323,11 +323,11 @@ func BuildTestContainerRequest(isCqRun bool, platform common.SwarmingBotProvider
 
 // BuildTestRequest constructs a TestRequest using
 // default dependencies.
-func BuildTestRequest() *skylab_test_runner.TestRequest {
-	return &skylab_test_runner.TestRequest{
+func BuildTestRequest() *api.TestTask {
+	return &api.TestTask{
 		ServiceAddress: &labapi.IpEndpoint{},
 		TestRequest:    &api.CrosTestRequest{},
-		DynamicDeps: []*skylab_test_runner.DynamicDep{
+		DynamicDeps: []*api.DynamicDep{
 			{
 				Key:   "serviceAddress",
 				Value: common.CrosTest,
@@ -350,8 +350,8 @@ func BuildTestRequest() *skylab_test_runner.TestRequest {
 
 // BuildPublishContainerRequest constructs a ContainerRequest for cros-publish
 // using parameters marking the publish type.
-func BuildPublishContainerRequest(identifier string, publishType api.CrosPublishTemplate_PublishType, deps []*skylab_test_runner.DynamicDep) *skylab_test_runner.ContainerRequest {
-	return &skylab_test_runner.ContainerRequest{
+func BuildPublishContainerRequest(identifier string, publishType api.CrosPublishTemplate_PublishType, deps []*api.DynamicDep) *api.ContainerRequest {
+	return &api.ContainerRequest{
 		DynamicIdentifier: identifier,
 		Container: &api.Template{
 			Container: &api.Template_CrosPublish{
@@ -366,8 +366,8 @@ func BuildPublishContainerRequest(identifier string, publishType api.CrosPublish
 }
 
 // BuildPublishRequest constructs a PublishRequest with provided dependencies.
-func BuildPublishRequest(artifactPath string, metadata *anypb.Any, deps []*skylab_test_runner.DynamicDep) *skylab_test_runner.PublishRequest {
-	return &skylab_test_runner.PublishRequest{
+func BuildPublishRequest(artifactPath string, metadata *anypb.Any, deps []*api.DynamicDep) *api.PublishTask {
+	return &api.PublishTask{
 		ServiceAddress: &labapi.IpEndpoint{},
 		PublishRequest: &api.PublishRequest{
 			ArtifactDirPath: &_go.StoragePath{
@@ -382,11 +382,11 @@ func BuildPublishRequest(artifactPath string, metadata *anypb.Any, deps []*skyla
 // AppendDutTask takes a DutContainer request and appends it
 // to orderedTasks.
 func AppendDutTask(
-	orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task,
-	containerRequest *skylab_test_runner.ContainerRequest) {
+	orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task,
+	containerRequest *api.ContainerRequest) {
 
-	*orderedTasks = append(*orderedTasks, &skylab_test_runner.CrosTestRunnerRequest_Task{
-		OrderedContainerRequests: []*skylab_test_runner.ContainerRequest{
+	*orderedTasks = append(*orderedTasks, &api.CrosTestRunnerDynamicRequest_Task{
+		OrderedContainerRequests: []*api.ContainerRequest{
 			containerRequest,
 		},
 	})
@@ -395,15 +395,15 @@ func AppendDutTask(
 // AppendProvisionTask takes a provision container request and
 // a provision request and appends it to orderedTasks.
 func AppendProvisionTask(
-	orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task,
-	containerRequest *skylab_test_runner.ContainerRequest,
-	provisionRequest *skylab_test_runner.ProvisionRequest) {
+	orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task,
+	containerRequest *api.ContainerRequest,
+	provisionRequest *api.ProvisionTask) {
 
-	*orderedTasks = append(*orderedTasks, &skylab_test_runner.CrosTestRunnerRequest_Task{
-		OrderedContainerRequests: []*skylab_test_runner.ContainerRequest{
+	*orderedTasks = append(*orderedTasks, &api.CrosTestRunnerDynamicRequest_Task{
+		OrderedContainerRequests: []*api.ContainerRequest{
 			containerRequest,
 		},
-		Task: &skylab_test_runner.CrosTestRunnerRequest_Task_Provision{
+		Task: &api.CrosTestRunnerDynamicRequest_Task_Provision{
 			Provision: provisionRequest,
 		},
 	})
@@ -412,15 +412,15 @@ func AppendProvisionTask(
 // AppendTestTask takes a test container request and
 // a test request and appends it to orderedTasks.
 func AppendTestTask(
-	orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task,
-	containerRequest *skylab_test_runner.ContainerRequest,
-	testRequest *skylab_test_runner.TestRequest) {
+	orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task,
+	containerRequest *api.ContainerRequest,
+	testRequest *api.TestTask) {
 
-	*orderedTasks = append(*orderedTasks, &skylab_test_runner.CrosTestRunnerRequest_Task{
-		OrderedContainerRequests: []*skylab_test_runner.ContainerRequest{
+	*orderedTasks = append(*orderedTasks, &api.CrosTestRunnerDynamicRequest_Task{
+		OrderedContainerRequests: []*api.ContainerRequest{
 			containerRequest,
 		},
-		Task: &skylab_test_runner.CrosTestRunnerRequest_Task_Test{
+		Task: &api.CrosTestRunnerDynamicRequest_Task_Test{
 			Test: testRequest,
 		},
 	})
@@ -429,17 +429,17 @@ func AppendTestTask(
 // AppendPublishTask takes a publish container request and
 // a publish request and appends it to orderedTasks.
 func AppendPublishTask(
-	orderedTasks *[]*skylab_test_runner.CrosTestRunnerRequest_Task,
-	containerRequest *skylab_test_runner.ContainerRequest,
-	publishRequest *skylab_test_runner.PublishRequest,
+	orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task,
+	containerRequest *api.ContainerRequest,
+	publishRequest *api.PublishTask,
 	required bool) {
 
-	*orderedTasks = append(*orderedTasks, &skylab_test_runner.CrosTestRunnerRequest_Task{
+	*orderedTasks = append(*orderedTasks, &api.CrosTestRunnerDynamicRequest_Task{
 		Required: required,
-		OrderedContainerRequests: []*skylab_test_runner.ContainerRequest{
+		OrderedContainerRequests: []*api.ContainerRequest{
 			containerRequest,
 		},
-		Task: &skylab_test_runner.CrosTestRunnerRequest_Task_Publish{
+		Task: &api.CrosTestRunnerDynamicRequest_Task_Publish{
 			Publish: publishRequest,
 		},
 	})

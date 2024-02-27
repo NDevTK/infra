@@ -12,6 +12,7 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
@@ -23,7 +24,7 @@ type GenericProvisionCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	ProvisionRequest *skylab_test_runner.ProvisionRequest
+	ProvisionRequest *api.ProvisionTask
 	Identifier       string
 	TargetDevice     string
 
@@ -58,7 +59,7 @@ func (cmd *GenericProvisionCmd) instantiateWithHwTestStateKeeper(
 	sk *data.HwTestStateKeeper) (err error) {
 
 	if err := common_commands.Instantiate_PopFromQueue(sk.ProvisionQueue, func(element any) {
-		cmd.ProvisionRequest = element.(*skylab_test_runner.ProvisionRequest)
+		cmd.ProvisionRequest = element.(*api.ProvisionTask)
 	}); err != nil {
 		return fmt.Errorf("cmd %s missing dependency: ProvisionRequest, %s", cmd.GetCommandType(), err)
 	}
