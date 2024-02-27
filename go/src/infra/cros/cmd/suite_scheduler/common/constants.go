@@ -38,6 +38,8 @@ const (
 	SuiteSchedulerIniURL = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/suite_scheduler.ini?format=text"
 	LabIniURL            = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/lab_config.ini?format=text"
 
+	TotFileURL = "https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/main/chromeos/config/chromeos_version.sh?format=text"
+
 	StagingProjectID  = "google.com:suite-scheduler-staging"
 	BuildsPubSubTopic = "kron-builds"
 	EventsPubSubTopic = "kron-events"
