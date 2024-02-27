@@ -19,7 +19,7 @@ import (
 
 // Pseudo-immutable package variables.
 var (
-	runID     *suschpb.UID
+	runID     string
 	startTime *timestamppb.Timestamp
 	endTime   *timestamppb.Timestamp
 )
@@ -27,23 +27,21 @@ var (
 // SetSuiteSchedulerRunID sets the package variable for the runID. Since we cannot set a
 // compile-time constant for a uuid, this setter incorporates logic to make it pseudo-immutable.
 func SetSuiteSchedulerRunID(id string) error {
-	if runID != nil {
-		return fmt.Errorf("suite scheduler runId already set to %s", runID.String())
+	if runID != "" {
+		return fmt.Errorf("suite scheduler runId already set to %s", runID)
 	}
 
-	runID = &suschpb.UID{}
-
 	if id == common.DefaultString {
-		runID.Id = uuid.NewString()
+		runID = uuid.NewString()
 	} else {
-		runID.Id = id
+		runID = id
 	}
 
 	return nil
 }
 
 // GetRunID returns the package level runID
-func GetRunID() *suschpb.UID {
+func GetRunID() string {
 	return runID
 }
 
@@ -83,11 +81,11 @@ func GetEndTime() *timestamppb.Timestamp {
 
 // GenerateRunMessage returns a SchedulingMetric for the current SuiteScheduler
 // run.
-func GenerateRunMessage() *suschpb.SchedulingRun {
+func GenerateRunMessage() *suschpb.Run {
 
 	// TODO(b/309683890): remove suite array fields from proto.
-	return &suschpb.SchedulingRun{
-		RunUid:    runID,
+	return &suschpb.Run{
+		RunUuid:   runID,
 		StartTime: startTime,
 		EndTime:   endTime,
 	}

@@ -16,7 +16,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	v15 "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
@@ -188,7 +188,7 @@ func publishBuilds(builds []*builds.BuildPackage) error {
 		if err != nil {
 			return err
 		}
-		common.Stdout.Printf("Published %s build %s to Pub/Sub", build.Build.BuildTarget, build.Build.BuildUid.Id)
+		common.Stdout.Printf("Published %s build %s to Pub/Sub", build.Build.BuildTarget, build.Build.BuildUuid)
 	}
 	common.Stdout.Printf("Done publishing %d builds to pub sub", len(builds))
 
@@ -196,7 +196,7 @@ func publishBuilds(builds []*builds.BuildPackage) error {
 }
 
 // publishEvent sends the event message to Pub/Sub.
-func publishEvent(client pubsub.PublishClient, event *v15.SchedulingEvent) error {
+func publishEvent(client pubsub.PublishClient, event *suschpb.Event) error {
 	data, err := protojson.Marshal(event)
 	if err != nil {
 		return err
@@ -218,19 +218,19 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 
 	// Batch Schedule all requests in the provided build.
 	buildRequest.ShouldAck = true
-	common.Stdout.Printf("Scheduling %d requests to CTP for build %s of board %s", len(buildRequest.Requests), buildRequest.Build.BuildUid, buildRequest.Build.Board)
+	common.Stdout.Printf("Scheduling %d requests to CTP for build %s of board %s", len(buildRequest.Requests), buildRequest.Build.BuildUuid, buildRequest.Build.Board)
 	for _, request := range buildRequest.Requests {
 		for _, event := range request.Events {
 
-			response, err := schedulerClient.Schedule(event.CtpRequest, buildRequest.Build.BuildUid.Id, event.Event.EventUid.Id, event.Event.ConfigName)
+			response, err := schedulerClient.Schedule(event.CtpRequest, buildRequest.Build.BuildUuid, event.Event.EventUuid, event.Event.ConfigName)
 			if err != nil {
 				common.Stderr.Println(err)
-				event.Event.Decision = &v15.SchedulingDecision{
-					Type:         v15.DecisionType_UNKNOWN,
+				event.Event.Decision = &suschpb.SchedulingDecision{
+					Type:         suschpb.DecisionType_UNKNOWN,
 					Scheduled:    false,
 					FailedReason: err.Error(),
 				}
-				common.Stdout.Printf("Event %s failed to scheduled for unknown reason", event.Event.EventUid.Id)
+				common.Stdout.Printf("Event %s failed to scheduled for unknown reason", event.Event.EventUuid)
 
 				buildRequest.ShouldAck = false
 				// TODO: Decide if we want to fast fail on one error or keep going
@@ -239,23 +239,22 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 
 			// TODO(b/309683890): Add better support for failure/infra_failure/cancelled.
 			if response.Status == buildbucketpb.Status_SCHEDULED {
-				event.Event.Decision = &v15.SchedulingDecision{
-					Type:      v15.DecisionType_SCHEDULED,
+				event.Event.Decision = &suschpb.SchedulingDecision{
+					Type:      suschpb.DecisionType_SCHEDULED,
 					Scheduled: true,
 				}
 
-				// TODO(b/309683890): update the metric proto to just use 1 bbid
-				event.Event.Bbids = []int64{response.Id}
+				event.Event.Bbid = response.Id
 
-				common.Stdout.Printf("Event %s scheduled at http://go/bbid/%d using buildId %s", event.Event.EventUid.Id, response.Id, buildRequest.Build.BuildUid.Id)
+				common.Stdout.Printf("Event %s scheduled at http://go/bbid/%d using buildId %s", event.Event.EventUuid, response.Id, buildRequest.Build.BuildUuid)
 			} else {
-				event.Event.Decision = &v15.SchedulingDecision{
-					Type:         v15.DecisionType_UNKNOWN,
+				event.Event.Decision = &suschpb.SchedulingDecision{
+					Type:         suschpb.DecisionType_UNKNOWN,
 					Scheduled:    false,
 					FailedReason: buildbucketpb.Status_name[int32(response.Status.Number())],
 				}
 
-				common.Stdout.Printf("Event %s failed to scheduled for unknown reason", event.Event.EventUid.Id)
+				common.Stdout.Printf("Event %s failed to scheduled for unknown reason", event.Event.EventUuid)
 
 				// TODO: decide on if we should nack the message on one failure or
 				// not.
@@ -274,7 +273,7 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 	if buildRequest.ShouldAck {
 		buildRequest.Message.Nack()
 	} else {
-		common.Stderr.Printf("Nacking build message for build %s because one or more failed\n", buildRequest.Build.BuildUid.Id)
+		common.Stderr.Printf("Nacking build message for build %s because one or more failed\n", buildRequest.Build.BuildUuid)
 		buildRequest.Message.Nack()
 	}
 }
@@ -341,7 +340,7 @@ func buildCTPRequests(buildPackages []*builds.BuildPackage, suiteSchedulerConfig
 				event := builds.EventWrapper{
 					CtpRequest: ctpRequest,
 				}
-				event.Event, err = metrics.GenerateEventMessage(requests.Config, nil, nil)
+				event.Event, err = metrics.GenerateEventMessage(requests.Config, nil, 0)
 				if err != nil {
 					return err
 				}

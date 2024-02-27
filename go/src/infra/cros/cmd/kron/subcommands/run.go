@@ -118,7 +118,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 		common.Stderr.Println(err)
 		return 1
 	}
-	common.Stdout.Printf("runID: %s\n", metrics.GetRunID().Id)
+	common.Stdout.Printf("runID: %s\n", metrics.GetRunID())
 
 	// Start the clock for the run metrics
 	err = metrics.SetStartTime()

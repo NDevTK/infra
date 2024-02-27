@@ -137,7 +137,7 @@ func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool, buildID,
 		Tags: []*bb.StringPair{
 			{
 				Key:   "kron-run",
-				Value: metrics.GetRunID().Id,
+				Value: metrics.GetRunID(),
 			},
 			{
 				Key:   "build-id",

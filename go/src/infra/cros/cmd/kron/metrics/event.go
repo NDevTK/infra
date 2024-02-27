@@ -17,22 +17,18 @@ import (
 )
 
 // GenerateEventMessage builds a metric event.
-func GenerateEventMessage(config *infrapb.SchedulerConfig, schedulingDecision *suschpb.SchedulingDecision, bbids []int64) (*suschpb.SchedulingEvent, error) {
-	if runID == nil {
-		return nil, fmt.Errorf("runID cannot be nil")
+func GenerateEventMessage(config *infrapb.SchedulerConfig, schedulingDecision *suschpb.SchedulingDecision, bbid int64) (*suschpb.Event, error) {
+	if runID == "" {
+		return nil, fmt.Errorf("runID cannot be empty")
 	}
 
-	return &suschpb.SchedulingEvent{
-		RunUid: runID,
-		EventUid: &suschpb.UID{
-			Id: uuid.NewString(),
-		},
+	return &suschpb.Event{
+		RunUuid:    runID,
+		EventUuid:  uuid.NewString(),
 		ConfigName: config.Name,
 		SuiteName:  config.Suite,
 		EventTime:  timestamppb.Now(),
 		Decision:   schedulingDecision,
-
-		// TODO(b/309683890): Update proto to hold a singular BBID.
-		Bbids: bbids,
+		Bbid:       bbid,
 	}, nil
 }
