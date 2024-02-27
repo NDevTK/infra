@@ -188,3 +188,58 @@ func TestToCostCadence(t *testing.T) {
 		})
 	}
 }
+
+// TestToLocation checks converting a string to a location.
+func TestToLocation(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name   string
+		input  string
+		output fleetcostpb.Location
+	}{
+		{
+			name:   "empty",
+			input:  "",
+			output: fleetcostpb.Location_LOCATION_UNKNOWN,
+		},
+		{
+			name:   "all",
+			input:  "all",
+			output: fleetcostpb.Location_LOCATION_ALL,
+		},
+		{
+			name:   "all uppercase",
+			input:  "ALL",
+			output: fleetcostpb.Location_LOCATION_ALL,
+		},
+		{
+			name:   "all mixed case",
+			input:  "AlL",
+			output: fleetcostpb.Location_LOCATION_ALL,
+		},
+		{
+			name:   "all with prefix",
+			input:  "LOCATION_ALL",
+			output: fleetcostpb.Location_LOCATION_ALL,
+		},
+		{
+			name:   "all with wrong prefix is unknown",
+			input:  "TYPE_ALL",
+			output: fleetcostpb.Location_LOCATION_UNKNOWN,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			want := tt.output
+			got := ToLocation(tt.input)
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}

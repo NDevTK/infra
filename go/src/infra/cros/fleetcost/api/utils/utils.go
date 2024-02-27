@@ -56,6 +56,12 @@ func ToCostCadence(x string) fleetcostpb.CostCadence {
 	return fleetcostpb.CostCadence(out)
 }
 
+// ToLocation converts a string to a location.
+func ToLocation(x string) fleetcostpb.Location {
+	out, _ := lookupValue(fleetcostpb.Location_value, x, "LOCATION")
+	return fleetcostpb.Location(out)
+}
+
 var errNotFound error = errors.New("item not found")
 
 func lookupValue(m map[string]int32, key string, prefix string) (int32, error) {
