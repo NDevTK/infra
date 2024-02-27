@@ -61,7 +61,7 @@ func TestToIndicatorType(t *testing.T) {
 			t.Parallel()
 
 			got := tt.output
-			want := ToIndicatorType(tt.input)
+			want, _ := ToIndicatorType(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
@@ -126,7 +126,7 @@ func TestToUSD(t *testing.T) {
 			t.Parallel()
 
 			got := tt.output
-			want := ToUSD(tt.input)
+			want, _ := ToUSD(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
@@ -181,7 +181,7 @@ func TestToCostCadence(t *testing.T) {
 			t.Parallel()
 
 			want := tt.output
-			got := ToCostCadence(tt.input)
+			got, _ := ToCostCadence(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
@@ -236,7 +236,7 @@ func TestToLocation(t *testing.T) {
 			t.Parallel()
 
 			want := tt.output
-			got := ToLocation(tt.input)
+			got, _ := ToLocation(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
