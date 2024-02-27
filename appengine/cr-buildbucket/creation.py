@@ -179,6 +179,10 @@ class BuildRequest(_BuildRequestBase):
     bp.infra.buildbucket.requested_properties.CopyFrom(sbr.properties)
     bp.infra.buildbucket.requested_dimensions.extend(sbr.dimensions)
 
+    # Populate the hostname since there are still few v1 builds and Milo needs
+    # this field.
+    bp.infra.buildbucket.hostname = app_identity.get_default_version_hostname()
+
     bp.infra.buildbucket.experiment_reasons.update(exp_reasons)
 
     bp.infra.logdog.project = bp.builder.project

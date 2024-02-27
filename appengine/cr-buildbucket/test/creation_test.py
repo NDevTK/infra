@@ -242,6 +242,7 @@ class CreationTest(testing.AppengineTestCase):
     self.assertEqual(build.created_by, auth.get_current_identity())
 
     infra = model.BuildInfra.key_for(build.key).get().parse()
+    self.assertEqual(infra.buildbucket.hostname, 'buildbucket.example.com')
     self.assertEqual(infra.logdog.hostname, 'logs.example.com')
     self.assertIn(
         build_pb2.BuildInfra.Swarming.CacheEntry(
