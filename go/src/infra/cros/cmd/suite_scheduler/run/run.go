@@ -380,11 +380,6 @@ func NewBuilds(authOpts *authcli.Flags) error {
 		return err
 	}
 
-	// TODO(b/319273876): Remove slow migration logic upon completion of
-	// transition.
-	common.Stdout.Println("Filtering out builds not on migration allowlist.")
-	filteredBuilds := filterBuilds(releaseBuilds)
-
 	// Build the list of all configs triggered by the ingested build images.
 	//
 	// TODO(TBD): For in run events, determine if we need to squash the
@@ -393,13 +388,13 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	// release team to determine if this is required.
 	// https://chromium.googlesource.com/chromiumos/infra/proto/+/refs/heads/main/src/chromiumos/build_report.proto#197
 	common.Stdout.Println("Gathering all configs triggered from retrieved build images.")
-	fetchTriggeredConfigs(filteredBuilds, suiteSchedulerConfigs)
+	fetchTriggeredConfigs(releaseBuilds, suiteSchedulerConfigs)
 
 	common.Stdout.Println("Filtering out SuSch configs not on migration allowlist.")
-	filteredBuilds = filterConfigs(filteredBuilds)
+	releaseBuilds = filterConfigs(releaseBuilds)
 
 	// Build CTP Requests for all triggered configs.
-	err = buildCTPRequests(filteredBuilds, suiteSchedulerConfigs)
+	err = buildCTPRequests(releaseBuilds, suiteSchedulerConfigs)
 	if err != nil {
 		return err
 	}
@@ -407,29 +402,29 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	// TODO(b/319273876): Remove slow migration logic upon completion of
 	// transition. Right now only the CFTNewBuild config on brya is
 	// supported. Below checks ensure only one request can launch per run.
-	if len(filteredBuilds) == 0 {
+	if len(releaseBuilds) == 0 {
 		return fmt.Errorf("no builds")
 	}
 
 	// TODO(b/319273876): For earliest stage of migration only launch 1 request.
 	// Once we begin Acking messages from the chromeos build pipeline we can let
 	// all requests flow through.
-	filteredBuilds = filteredBuilds[:1]
+	releaseBuilds = releaseBuilds[:1]
 
-	if len(filteredBuilds) > 1 {
-		return fmt.Errorf("too many builds %d", len(filteredBuilds))
+	if len(releaseBuilds) > 1 {
+		return fmt.Errorf("too many builds %d", len(releaseBuilds))
 	}
 
-	if len(filteredBuilds[0].Requests) == 0 {
+	if len(releaseBuilds[0].Requests) == 0 {
 		return fmt.Errorf("no configs")
 	}
 
-	if len(filteredBuilds[0].Requests[0].Events) == 0 {
+	if len(releaseBuilds[0].Requests[0].Events) == 0 {
 		return fmt.Errorf("no requests")
 	}
 
-	if len(filteredBuilds[0].Requests) > 1 {
-		return fmt.Errorf("too many requests %d", len(filteredBuilds[0].Requests))
+	if len(releaseBuilds[0].Requests) > 1 {
+		return fmt.Errorf("too many requests %d", len(releaseBuilds[0].Requests))
 	}
 
 	// Initialize an authenticated BuildBucket client for scheduling.
@@ -452,7 +447,7 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	// Schedule all requests via BuildBucket in parallel.
 	// TODO(b/319273876): Remove slow migration logic upon completion of
 	// transition.
-	for _, wrappedBuild := range filteredBuilds {
+	for _, wrappedBuild := range releaseBuilds {
 		wg.Add(1)
 		go scheduleBatchViaBB(wrappedBuild, schedulerClient, publishClient, &wg)
 	}
