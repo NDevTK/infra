@@ -16,7 +16,7 @@ import (
 	"path/filepath"
 	"time"
 
-	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 )
 
 // Create a common STDOUT/ERR type so that the full project can standardize
@@ -59,10 +59,10 @@ var KronDayToTimeDay = map[time.Weekday]int{
 }
 
 // IsTimedEvent returns if the given config is a timed event or a build event type.
-func IsTimedEvent(config *infrapb.SchedulerConfig) bool {
-	return config.LaunchCriteria.LaunchProfile == infrapb.SchedulerConfig_LaunchCriteria_DAILY ||
-		config.LaunchCriteria.LaunchProfile == infrapb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY ||
-		config.LaunchCriteria.LaunchProfile == infrapb.SchedulerConfig_LaunchCriteria_WEEKLY
+func IsTimedEvent(config *suschpb.SchedulerConfig) bool {
+	return config.LaunchCriteria.LaunchProfile == suschpb.SchedulerConfig_LaunchCriteria_DAILY ||
+		config.LaunchCriteria.LaunchProfile == suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY ||
+		config.LaunchCriteria.LaunchProfile == suschpb.SchedulerConfig_LaunchCriteria_WEEKLY
 }
 
 // ReadLocalFile reads a file at the given path into memory and returns it's contents.

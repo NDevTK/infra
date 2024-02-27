@@ -8,7 +8,7 @@ package configparser
 import (
 	"fmt"
 
-	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/kron/common"
 )
@@ -22,7 +22,7 @@ type (
 
 	HourMap map[common.Hour]ConfigList
 
-	ConfigList []*infrapb.SchedulerConfig
+	ConfigList []*suschpb.SchedulerConfig
 
 	/*
 	 * LabConfig based types
@@ -59,14 +59,14 @@ type LabConfigs struct {
 // BoardEntry is a wrapper on the infrapb Board type.
 type BoardEntry struct {
 	isAndroid bool
-	board     *infrapb.Board
+	board     *suschpb.Board
 }
 
 func (b *BoardEntry) isAndroidBoard() bool {
 	return b.isAndroid
 }
 
-func (b *BoardEntry) GetBoard() *infrapb.Board {
+func (b *BoardEntry) GetBoard() *suschpb.Board {
 	return b.board
 }
 
@@ -92,7 +92,7 @@ type SuiteSchedulerConfigs struct {
 	configTargets map[string]TargetOptions
 
 	// This map provides a quick direct access option for fetching configs by name.
-	configMap map[TestPlanName]*infrapb.SchedulerConfig
+	configMap map[TestPlanName]*suschpb.SchedulerConfig
 
 	// The following maps correspond to the specific set of TimedEvents the
 	// configuration is of.
@@ -103,7 +103,7 @@ type SuiteSchedulerConfigs struct {
 
 // addConfigToNewBuildMap takes a newBuild configuration and inserts it into the
 // appropriate tracking lists.
-func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *infrapb.SchedulerConfig, lab *LabConfigs, targetOptions TargetOptions) {
+func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *suschpb.SchedulerConfig, lab *LabConfigs, targetOptions TargetOptions) {
 
 	// Fetch all build buildTargets which can trigger this configuration.
 	buildTargets := GetBuildTargetsForAllTargets(targetOptions)
@@ -129,7 +129,7 @@ func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *infrapb.Scheduler
 
 // addConfigToDailyMap takes a daily configuration and inserts it into the
 // appropriate tracking lists.
-func (s *SuiteSchedulerConfigs) addConfigToDailyMap(config *infrapb.SchedulerConfig) error {
+func (s *SuiteSchedulerConfigs) addConfigToDailyMap(config *suschpb.SchedulerConfig) error {
 	configHour := common.Hour(config.LaunchCriteria.Hour)
 	err := isHourCompliant(configHour)
 	if err != nil {
@@ -153,7 +153,7 @@ func (s *SuiteSchedulerConfigs) addConfigToDailyMap(config *infrapb.SchedulerCon
 
 // addConfigToWeeklyMap takes a weekly configuration and inserts it into the
 // appropriate tracking lists.
-func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *infrapb.SchedulerConfig) error {
+func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *suschpb.SchedulerConfig) error {
 	configDay := common.Day(config.LaunchCriteria.Day)
 	err := isDayCompliant(configDay, false)
 	if err != nil {
@@ -187,7 +187,7 @@ func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *infrapb.SchedulerCo
 
 // addConfigToFortnightlyMap takes a fortnightly configuration and inserts it into the
 // appropriate tracking lists.
-func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *infrapb.SchedulerConfig) error {
+func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *suschpb.SchedulerConfig) error {
 	configDay := common.Day(config.LaunchCriteria.Day)
 	err := isDayCompliant(configDay, true)
 	if err != nil {

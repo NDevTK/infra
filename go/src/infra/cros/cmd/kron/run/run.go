@@ -16,7 +16,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	suschpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
+	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
@@ -196,7 +196,7 @@ func publishBuilds(builds []*builds.BuildPackage) error {
 }
 
 // publishEvent sends the event message to Pub/Sub.
-func publishEvent(client pubsub.PublishClient, event *suschpb.Event) error {
+func publishEvent(client pubsub.PublishClient, event *kronpb.Event) error {
 	data, err := protojson.Marshal(event)
 	if err != nil {
 		return err
@@ -225,8 +225,8 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 			response, err := schedulerClient.Schedule(event.CtpRequest, buildRequest.Build.BuildUuid, event.Event.EventUuid, event.Event.ConfigName)
 			if err != nil {
 				common.Stderr.Println(err)
-				event.Event.Decision = &suschpb.SchedulingDecision{
-					Type:         suschpb.DecisionType_UNKNOWN,
+				event.Event.Decision = &kronpb.SchedulingDecision{
+					Type:         kronpb.DecisionType_UNKNOWN,
 					Scheduled:    false,
 					FailedReason: err.Error(),
 				}
@@ -239,8 +239,8 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 
 			// TODO(b/309683890): Add better support for failure/infra_failure/cancelled.
 			if response.Status == buildbucketpb.Status_SCHEDULED {
-				event.Event.Decision = &suschpb.SchedulingDecision{
-					Type:      suschpb.DecisionType_SCHEDULED,
+				event.Event.Decision = &kronpb.SchedulingDecision{
+					Type:      kronpb.DecisionType_SCHEDULED,
 					Scheduled: true,
 				}
 
@@ -248,8 +248,8 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 
 				common.Stdout.Printf("Event %s scheduled at http://go/bbid/%d using buildId %s", event.Event.EventUuid, response.Id, buildRequest.Build.BuildUuid)
 			} else {
-				event.Event.Decision = &suschpb.SchedulingDecision{
-					Type:         suschpb.DecisionType_UNKNOWN,
+				event.Event.Decision = &kronpb.SchedulingDecision{
+					Type:         kronpb.DecisionType_UNKNOWN,
 					Scheduled:    false,
 					FailedReason: buildbucketpb.Status_name[int32(response.Status.Number())],
 				}

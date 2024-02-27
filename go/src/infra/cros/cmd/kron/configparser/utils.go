@@ -8,7 +8,7 @@ package configparser
 import (
 	"fmt"
 
-	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/kron/common"
 )
@@ -152,7 +152,7 @@ func getModelsList(targets TargetOptions, labModels map[Model]*BoardEntry, labBo
 // NOTE: Some configs may provide no board options and instead add targeted
 // boards via the variants options. This logic is non-intuitive and
 // may be removed later.
-func getVariantsList(targets TargetOptions, labBoards map[Board]*BoardEntry, variantsList, excludeVariantsList []*infrapb.BoardVariant) (TargetOptions, error) {
+func getVariantsList(targets TargetOptions, labBoards map[Board]*BoardEntry, variantsList, excludeVariantsList []*suschpb.BoardVariant) (TargetOptions, error) {
 	if len(variantsList) != 0 {
 		for _, variant := range variantsList {
 			if _, ok := targets[Board(variant.Board)]; !ok {
@@ -219,7 +219,7 @@ func getVariantsList(targets TargetOptions, labBoards map[Board]*BoardEntry, var
 
 // GetTargetOptions adds all board(-variant)/models combinations specified by
 // the config.
-func GetTargetOptions(config *infrapb.SchedulerConfig, lab *LabConfigs) (TargetOptions, error) {
+func GetTargetOptions(config *suschpb.SchedulerConfig, lab *LabConfigs) (TargetOptions, error) {
 	targets := TargetOptions{}
 	var err error
 

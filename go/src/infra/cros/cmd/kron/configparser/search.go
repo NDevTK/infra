@@ -7,7 +7,7 @@ package configparser
 import (
 	"fmt"
 
-	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/kron/common"
 )
@@ -186,7 +186,7 @@ func (s *SuiteSchedulerConfigs) FetchFortnightlyByDayHour(day common.Day, hour c
 
 // FetchConfigByName returns the config with the name provided. If it does not
 // exist then an error is returned.
-func (s *SuiteSchedulerConfigs) FetchConfigByName(name string) *infrapb.SchedulerConfig {
+func (s *SuiteSchedulerConfigs) FetchConfigByName(name string) *suschpb.SchedulerConfig {
 	if val, ok := s.configMap[TestPlanName(name)]; ok {
 		return val
 	}

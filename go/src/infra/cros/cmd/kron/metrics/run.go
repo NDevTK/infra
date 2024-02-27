@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	suschpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
+	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 
 	"infra/cros/cmd/kron/common"
 )
@@ -81,10 +81,10 @@ func GetEndTime() *timestamppb.Timestamp {
 
 // GenerateRunMessage returns a SchedulingMetric for the current SuiteScheduler
 // run.
-func GenerateRunMessage() *suschpb.Run {
+func GenerateRunMessage() *kronpb.Run {
 
 	// TODO(b/309683890): remove suite array fields from proto.
-	return &suschpb.Run{
+	return &kronpb.Run{
 		RunUuid:   runID,
 		StartTime: startTime,
 		EndTime:   endTime,

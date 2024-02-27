@@ -12,17 +12,17 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	suschpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
-	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 )
 
 // GenerateEventMessage builds a metric event.
-func GenerateEventMessage(config *infrapb.SchedulerConfig, schedulingDecision *suschpb.SchedulingDecision, bbid int64) (*suschpb.Event, error) {
+func GenerateEventMessage(config *suschpb.SchedulerConfig, schedulingDecision *kronpb.SchedulingDecision, bbid int64) (*kronpb.Event, error) {
 	if runID == "" {
 		return nil, fmt.Errorf("runID cannot be empty")
 	}
 
-	return &suschpb.Event{
+	return &kronpb.Event{
 		RunUuid:    runID,
 		EventUuid:  uuid.NewString(),
 		ConfigName: config.Name,

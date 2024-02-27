@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/protobuf/encoding/protojson"
 
-	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/kron/common"
 )
@@ -20,10 +20,10 @@ import (
 func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerConfigs, error) {
 	configDS := &SuiteSchedulerConfigs{
 		configList:     ConfigList{},
-		newBuildList:   []*infrapb.SchedulerConfig{},
+		newBuildList:   []*suschpb.SchedulerConfig{},
 		newBuildMap:    map[BuildTarget]ConfigList{},
 		configTargets:  map[string]TargetOptions{},
-		configMap:      map[TestPlanName]*infrapb.SchedulerConfig{},
+		configMap:      map[TestPlanName]*suschpb.SchedulerConfig{},
 		dailyMap:       map[common.Hour]ConfigList{},
 		weeklyMap:      map[common.Day]HourMap{},
 		fortnightlyMap: map[common.Day]HourMap{},
@@ -51,19 +51,19 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 		// Add the configuration to the map which holds stores information on
 		// its LaunchProfile type
 		switch config.LaunchCriteria.LaunchProfile {
-		case infrapb.SchedulerConfig_LaunchCriteria_NEW_BUILD:
+		case suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD:
 			configDS.addConfigToNewBuildMap(config, lab, targetOptions)
-		case infrapb.SchedulerConfig_LaunchCriteria_DAILY:
+		case suschpb.SchedulerConfig_LaunchCriteria_DAILY:
 			err := configDS.addConfigToDailyMap(config)
 			if err != nil {
 				return nil, err
 			}
-		case infrapb.SchedulerConfig_LaunchCriteria_WEEKLY:
+		case suschpb.SchedulerConfig_LaunchCriteria_WEEKLY:
 			err := configDS.addConfigToWeeklyMap(config)
 			if err != nil {
 				return nil, err
 			}
-		case infrapb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY:
+		case suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY:
 			err := configDS.addConfigToFortnightlyMap(config)
 			if err != nil {
 				return nil, err
@@ -78,7 +78,7 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 
 // IngestLabConfigs takes in all of the raw Lab configs and ingests
 // them into a more usage structure.
-func IngestLabConfigs(labConfig *infrapb.LabConfig) *LabConfigs {
+func IngestLabConfigs(labConfig *suschpb.LabConfig) *LabConfigs {
 	tempConfig := &LabConfigs{
 		Models: map[Model]*BoardEntry{},
 		Boards: map[Board]*BoardEntry{},
@@ -115,8 +115,8 @@ func IngestLabConfigs(labConfig *infrapb.LabConfig) *LabConfigs {
 
 // BytesToLabProto takes a JSON formatted string and transforms it into an
 // infrapb.LabConfig object.
-func BytesToLabProto(configsBuffer []byte) (*infrapb.LabConfig, error) {
-	configs := &infrapb.LabConfig{}
+func BytesToLabProto(configsBuffer []byte) (*suschpb.LabConfig, error) {
+	configs := &suschpb.LabConfig{}
 
 	err := protojson.Unmarshal(configsBuffer, configs)
 	if err != nil {
@@ -128,8 +128,8 @@ func BytesToLabProto(configsBuffer []byte) (*infrapb.LabConfig, error) {
 
 // BytesToSchedulerProto takes a JSON formatted string and transforms it into an
 // infrapb.SchedulerCfg object.
-func BytesToSchedulerProto(configsBuffer []byte) (*infrapb.SchedulerCfg, error) {
-	configs := &infrapb.SchedulerCfg{}
+func BytesToSchedulerProto(configsBuffer []byte) (*suschpb.SchedulerCfg, error) {
+	configs := &suschpb.SchedulerCfg{}
 
 	err := protojson.Unmarshal(configsBuffer, configs)
 	if err != nil {

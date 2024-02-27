@@ -20,8 +20,8 @@ import (
 
 	buildPB "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	suschpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_scheduler/v15"
-	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/metrics"
@@ -96,7 +96,7 @@ func extractBoardAndVariant(buildTarget string) (string, string, error) {
 
 // transformReportToKronBuild takes a build report and returns all relevant
 // builds in a Kron parsable form.
-func transformReportToKronBuild(report *buildPB.BuildReport) (*suschpb.Build, error) {
+func transformReportToKronBuild(report *buildPB.BuildReport) (*kronpb.Build, error) {
 	milestone, version, err := extractMilestoneAndVersion(report.Config.Versions)
 	if err != nil {
 		return nil, fmt.Errorf("%d: %w", report.GetBuildbucketId(), err)
@@ -112,7 +112,7 @@ func transformReportToKronBuild(report *buildPB.BuildReport) (*suschpb.Build, er
 		return nil, fmt.Errorf("%d: %w", report.GetBuildbucketId(), err)
 	}
 
-	return &suschpb.Build{
+	return &kronpb.Build{
 		BuildUuid:   uuid.NewString(),
 		RunUuid:     metrics.GetRunID(),
 		CreateTime:  timestamppb.Now(),
@@ -190,17 +190,17 @@ type handler struct {
 }
 
 type EventWrapper struct {
-	Event      *suschpb.Event
+	Event      *kronpb.Event
 	CtpRequest *requestpb.Request
 }
 
 type ConfigDetails struct {
-	Config *infrapb.SchedulerConfig
+	Config *suschpb.SchedulerConfig
 	Events []*EventWrapper
 }
 
 type BuildPackage struct {
-	Build     *suschpb.Build
+	Build     *kronpb.Build
 	Message   *cloudPubsub.Message
 	Requests  []*ConfigDetails
 	ShouldAck bool

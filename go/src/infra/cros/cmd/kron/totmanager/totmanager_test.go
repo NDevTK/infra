@@ -7,7 +7,7 @@ package totmanager
 import (
 	"testing"
 
-	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	suchpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/internal/chromeosversion"
 )
@@ -28,7 +28,7 @@ func TestIsTargetedBranch(t *testing.T) {
 		ChromeBranch: 100,
 	}
 
-	totTest, err := IsTargetedBranch(100, []suschpb.Branch{suschpb.Branch_CANARY})
+	totTest, err := IsTargetedBranch(100, []suchpb.Branch{suchpb.Branch_CANARY})
 	if err != nil {
 		t.Error(err)
 		return
@@ -38,7 +38,7 @@ func TestIsTargetedBranch(t *testing.T) {
 		return
 	}
 
-	devTest, err := IsTargetedBranch(99, []suschpb.Branch{suschpb.Branch_DEV})
+	devTest, err := IsTargetedBranch(99, []suchpb.Branch{suchpb.Branch_DEV})
 	if err != nil {
 		t.Error(err)
 		return
@@ -48,7 +48,7 @@ func TestIsTargetedBranch(t *testing.T) {
 		return
 	}
 
-	betaTest, err := IsTargetedBranch(98, []suschpb.Branch{suschpb.Branch_BETA})
+	betaTest, err := IsTargetedBranch(98, []suchpb.Branch{suchpb.Branch_BETA})
 	if err != nil {
 		t.Error(err)
 		return
@@ -58,7 +58,7 @@ func TestIsTargetedBranch(t *testing.T) {
 		return
 	}
 
-	stableTest, err := IsTargetedBranch(97, []suschpb.Branch{suschpb.Branch_STABLE})
+	stableTest, err := IsTargetedBranch(97, []suchpb.Branch{suchpb.Branch_STABLE})
 	if err != nil {
 		t.Error(err)
 		return
@@ -68,7 +68,7 @@ func TestIsTargetedBranch(t *testing.T) {
 		return
 	}
 
-	multiTest1, err := IsTargetedBranch(100, []suschpb.Branch{suschpb.Branch_CANARY, suschpb.Branch_STABLE})
+	multiTest1, err := IsTargetedBranch(100, []suchpb.Branch{suchpb.Branch_CANARY, suchpb.Branch_STABLE})
 	if err != nil {
 		t.Error(err)
 		return
@@ -78,7 +78,7 @@ func TestIsTargetedBranch(t *testing.T) {
 		return
 	}
 
-	multiTest2, err := IsTargetedBranch(97, []suschpb.Branch{suschpb.Branch_CANARY, suschpb.Branch_STABLE})
+	multiTest2, err := IsTargetedBranch(97, []suchpb.Branch{suchpb.Branch_CANARY, suchpb.Branch_STABLE})
 	if err != nil {
 		t.Error(err)
 		return
@@ -88,7 +88,7 @@ func TestIsTargetedBranch(t *testing.T) {
 		return
 	}
 
-	multiTest3, err := IsTargetedBranch(98, []suschpb.Branch{suschpb.Branch_CANARY, suschpb.Branch_STABLE})
+	multiTest3, err := IsTargetedBranch(98, []suchpb.Branch{suchpb.Branch_CANARY, suchpb.Branch_STABLE})
 	if err != nil {
 		t.Error(err)
 		return

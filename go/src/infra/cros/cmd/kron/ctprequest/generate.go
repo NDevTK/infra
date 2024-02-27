@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	infrapb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/kron/configparser"
 )
@@ -35,16 +35,16 @@ const (
 )
 
 // priorityMap returns the proper swarming priority value for the given launch profile type.
-var priorityMap = map[infrapb.SchedulerConfig_LaunchCriteria_LaunchProfile]int64{
-	infrapb.SchedulerConfig_LaunchCriteria_NEW_BUILD:   PostBuild,
-	infrapb.SchedulerConfig_LaunchCriteria_DAILY:       Daily,
-	infrapb.SchedulerConfig_LaunchCriteria_WEEKLY:      Weekly,
-	infrapb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY: Fortnightly,
+var priorityMap = map[suschpb.SchedulerConfig_LaunchCriteria_LaunchProfile]int64{
+	suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD:   PostBuild,
+	suschpb.SchedulerConfig_LaunchCriteria_DAILY:       Daily,
+	suschpb.SchedulerConfig_LaunchCriteria_WEEKLY:      Weekly,
+	suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY: Fortnightly,
 }
 
 // getSwarmingDimensions reads the configs runOptions dimensions and formats
 // them how the CTP request expects them.
-func getSwarmingDimensions(config *infrapb.SchedulerConfig) []string {
+func getSwarmingDimensions(config *suschpb.SchedulerConfig) []string {
 	dims := []string{}
 
 	for _, dim := range config.RunOptions.Dimensions {
@@ -56,7 +56,7 @@ func getSwarmingDimensions(config *infrapb.SchedulerConfig) []string {
 }
 
 // getSchedulingFields transforms SuSch SchedulerConfig_PoolOptions into ctp SchedulerConfig_LaunchCriteria_LaunchProfile.
-func getSchedulingFields(PoolOptions *infrapb.SchedulerConfig_PoolOptions, launchType infrapb.SchedulerConfig_LaunchCriteria_LaunchProfile) *requestpb.Request_Params_Scheduling {
+func getSchedulingFields(PoolOptions *suschpb.SchedulerConfig_PoolOptions, launchType suschpb.SchedulerConfig_LaunchCriteria_LaunchProfile) *requestpb.Request_Params_Scheduling {
 
 	schedParams := &requestpb.Request_Params_Scheduling{
 		QsAccount: PoolOptions.QsAccount,
@@ -88,7 +88,7 @@ func getTimeoutSeconds(timeoutMins int32) int64 {
 	return int64(timeoutMins) * 60
 }
 
-func getTags(board, model, build string, config *infrapb.SchedulerConfig) []string {
+func getTags(board, model, build string, config *suschpb.SchedulerConfig) []string {
 	tags := []string{
 		fmt.Sprintf("build:%s", build),
 		fmt.Sprintf("label-pool:%s", config.PoolOptions.Pool),
@@ -126,7 +126,7 @@ func getRetryParams(retry bool) *requestpb.Request_Params_Retry {
 
 }
 
-func getTestPlan(config *infrapb.SchedulerConfig) *requestpb.Request_TestPlan {
+func getTestPlan(config *suschpb.SchedulerConfig) *requestpb.Request_TestPlan {
 	testPlan := &requestpb.Request_TestPlan{
 		Suite: []*requestpb.Request_Suite{
 			{
@@ -144,7 +144,7 @@ func formBuildImage(buildTarget, buildMilestone, buildVersion string) string {
 
 // BuildCTPRequest takes information from a SuSch config and builds the
 // corresponding CTP request.
-func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model, buildTarget, buildMilestone, buildVersion string) *requestpb.Request {
+func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget, buildMilestone, buildVersion string) *requestpb.Request {
 	buildImage := formBuildImage(buildTarget, buildMilestone, buildVersion)
 
 	request := &requestpb.Request{
@@ -194,7 +194,7 @@ func BuildCTPRequest(config *infrapb.SchedulerConfig, board, model, buildTarget,
 // the targets are passed in.
 // TODO: Needs the build milestone and version passed in for proper CTP Requests
 // to work.
-func BuildAllCTPRequests(config *infrapb.SchedulerConfig, targets configparser.TargetOptions) CTPRequests {
+func BuildAllCTPRequests(config *suschpb.SchedulerConfig, targets configparser.TargetOptions) CTPRequests {
 	requests := CTPRequests{}
 
 	for _, target := range targets {
