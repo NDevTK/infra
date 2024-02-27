@@ -59,8 +59,9 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 			return nil
 		})
 		c.Flags.Float64Var(&c.burnoutRate, "burnout", math.NaN(), "device burnout rate")
-		c.Flags.Func("location", "where the device is located", func(string) error {
-			return errors.New("not yet implemented")
+		c.Flags.Func("location", "where the device is located", func(value string) error {
+			c.location = utils.ToLocation(value)
+			return nil
 		})
 		return c
 	},
