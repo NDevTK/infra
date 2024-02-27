@@ -54,8 +54,9 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 			c.cost = cost
 			return nil
 		})
-		c.Flags.Func("cadence", "cost-cadence", func(string) error {
-			return errors.New("not yet implemented")
+		c.Flags.Func("cadence", "cost-cadence", func(value string) error {
+			c.costCadence = utils.ToCostCadence(value)
+			return nil
 		})
 		c.Flags.Float64Var(&c.burnoutRate, "burnout", math.NaN(), "device burnout rate")
 		c.Flags.Func("location", "where the device is located", func(string) error {
