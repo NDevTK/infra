@@ -5,13 +5,12 @@
     "sources": ["//test.tq"],
     "outputs": ["//out/Debug/gen/test.tq.h"]
   },
-  "//test:ts": {
+  "//:test_indexer_tsconfig": {
     "args": [
       "--tsconfig_output_location",
       "gen/third_party/devtools-frontend/src/test-tsconfig.json"
     ],
-    "sources": ["//test.ts"],
-    "outputs": ["//out/Debug/test.js"],
+    "outputs": ["//out/Debug/gen/third_party/devtools-frontend/src/test-tsconfig.json"],
     "deps": ["//imported-indirection:ts"],
     "script": "//third_party/devtools-frontend/src/third_party/typescript/ts_library.py"
   },
@@ -28,8 +27,8 @@
       "--tsconfig_output_location",
       "gen/third_party/devtools-frontend/src/imported-tsconfig.json"
     ],
-    "sources": ["//imported.ts"],
-    "outputs": ["//out/Debug/imported.js"],
+    "sources": ["//test.ts", "//imported.ts"],
+    "outputs": ["//out/Debug/test.js", "//out/Debug/imported.js"],
     "script": "//third_party/devtools-frontend/src/third_party/typescript/ts_library.py"
   },
   "//:test_mojom__generator": {

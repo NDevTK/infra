@@ -26,6 +26,7 @@ unit {
             digest: "2ea5dbe50671d309e5bf21d00b5ade2ee6bd808a30995dad7b4d6be5d171f28d"
         }
     }
+    source_file: "src/imported.ts"
     required_input {
         v_name {
             corpus: "chromium-test"

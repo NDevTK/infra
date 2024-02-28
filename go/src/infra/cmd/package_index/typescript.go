@@ -121,16 +121,17 @@ func (m *tsTarget) getUnit() (*kpb.CompilationUnit, error) {
 	}
 	sourceFiles = append(sourceFiles, convertedSourceFiles...)
 
-	unitProto.Argument = append(unitProto.Argument, "@@"+convertPathToForwardSlashes(tsconfig))
-	unitProto.SourceFile = sourceFiles
-	unitProto.VName = &kpb.VName{Corpus: m.corpus, Language: "typescript"}
-
 	importedFiles, err := m.convertGnPaths(m.getImportedFiles())
 	if err != nil {
 		return nil, err
 	}
+	sourceFiles = append(sourceFiles, importedFiles...)
 
-	for _, requiredFile := range append(sourceFiles, importedFiles...) {
+	unitProto.Argument = append(unitProto.Argument, "@@"+convertPathToForwardSlashes(tsconfig))
+	unitProto.SourceFile = sourceFiles
+	unitProto.VName = &kpb.VName{Corpus: m.corpus, Language: "typescript"}
+
+	for _, requiredFile := range sourceFiles {
 		p, err := filepath.Abs(filepath.Join(m.rootDir, requiredFile))
 		if err != nil {
 			return nil, err
@@ -166,8 +167,20 @@ func (m *tsTarget) getFiles() ([]string, error) {
 		}
 		dataFiles = append(dataFiles, filepath.Join(m.rootDir, m.outDir, gn))
 	}
-	dataFiles = append(dataFiles, m.tsconfig)
 
+	importedFiles, err := m.convertGnPaths(m.getImportedFiles())
+	if err != nil {
+		return nil, err
+	}
+	for _, importedFile := range importedFiles {
+		p, err := filepath.Abs(filepath.Join(m.rootDir, importedFile))
+		if err != nil {
+			return nil, err
+		}
+		dataFiles = append(dataFiles, p)
+	}
+
+	dataFiles = append(dataFiles, m.tsconfig)
 	return dataFiles, nil
 }
 
@@ -175,7 +188,7 @@ func tsTargetProcessor(ctx context.Context, rootPath, outDir, corpus,
 	buildConfig string, hashMaps *FileHashMap, t *gnTarget) (
 	GnTargetInterface, error) {
 
-	if !isTSTarget(t) {
+	if !strings.HasSuffix(t.targetName, "indexer_tsconfig") || !isTSTarget(t) {
 		return nil, errNotSupported
 	}
 
