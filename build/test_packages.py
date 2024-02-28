@@ -89,8 +89,7 @@ def run(
     packages):
   """Deploys build *.cipd package locally and runs tests against them.
 
-  Used to verify the packaged code works when installed as CIPD package, it is
-  important for infra_python package that has non-trivial structure.
+  Used to verify the packaged code works when installed as CIPD package.
 
   Args:
     package_out_dir: where to search for built packages.

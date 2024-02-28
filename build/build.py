@@ -133,11 +133,6 @@ class PackageDef(collections.namedtuple(
     return self.pkg_def.get('disabled', False)
 
   @property
-  def uses_python_env(self):
-    """Returns True if 'uses_python_env' in the YAML file is set."""
-    return bool(self.pkg_def.get('uses_python_env'))
-
-  @property
   def update_latest_ref(self):
     """Returns True if 'update_latest_ref' in the YAML file is set.
 
@@ -524,43 +519,6 @@ def get_env_dot_py():
     return 'mobile_env.py'
   else:
     return 'env.py'
-
-
-def run_host_python2(script, args):
-  """Invokes a python script via the root python interpreter.
-
-  Escapes virtualenv if finds itself running with VIRTUAL_ENV env var set.
-
-  Raises:
-    BuildException if couldn't find a proper python binary.
-    subprocess.CalledProcessError on non zero exit code.
-  """
-  environ = os.environ.copy()
-
-  venv = environ.pop('VIRTUAL_ENV', None)
-  # VIRTUAL_ENV cannot be relied upon to determine whether a virtual environment
-  # is being used. Find the host python from the PATH regardlessly.
-  path = environ['PATH'].split(os.pathsep)
-  if venv:
-    path = [p for p in path if not p.startswith(venv+os.sep)]
-  environ['PATH'] = os.pathsep.join(path)
-  # Popen doesn't use new env['PATH'] to search for binaries. Do it ourselves.
-  for p in path:
-    candidate = os.path.join(p, 'python' + EXE_SUFFIX)
-    if os.path.exists(candidate):
-      python_exe = candidate
-      break
-  else:
-    raise BuildException(
-        'Could\'n find python%s in %s' % (EXE_SUFFIX, environ['PATH']))
-
-  print('Running %s %s' % (script, ' '.join(args)))
-  print('  via %s' % python_exe)
-  print('  in  %s' % os.getcwd())
-  subprocess.check_call(
-      args=['python', '-u', script] + list(args),
-      executable=python_exe,
-      env=environ)
 
 
 def find_cipd():
@@ -1314,7 +1272,6 @@ def run(
     tags,
     service_account_json,
     json_output,
-    want_refresh_python,
 ):
   """Rebuilds python and Go universes and CIPD packages.
 
@@ -1331,7 +1288,6 @@ def run(
     tags: a list of tags to attach to uploaded package instances.
     service_account_json: path to *.json service account credential.
     json_output: path to *.json file to write info about built packages to.
-    want_refresh_python: want a refreshed python ENV.
 
   Returns:
     0 on success, 1 or error.
@@ -1430,12 +1386,7 @@ def run(
 
   # Build the world.
   if build:
-    should_refresh_python = (
-        want_refresh_python and
-        any(p.uses_python_env for p in packages_to_visit) and
-        not is_cross_compiling())
-
-    build_infra(go_workspace, packages_to_visit, should_refresh_python)
+    build_infra(go_workspace, packages_to_visit)
 
   # Package it.
   failed = []
@@ -1451,13 +1402,6 @@ def run(
         info = build_pkg(
             cipd_exe, pkg_def, out_file, package_vars, sign_id=sign_id)
       if upload:
-        if pkg_def.uses_python_env and not builder:
-          print(
-              'Not uploading %s, since it uses a system Python enviornment '
-              'and that enviornment is only valid on builders.' %
-              (pkg_def.name,))
-          continue
-
         on_change_tags, pkg_path = pkg_def.on_change_info(package_vars)
         if on_change_tags:
           existed_pkg = search_pkg(cipd_exe, pkg_path, service_url,
@@ -1513,21 +1457,12 @@ def run(
   return 1 if failed else 0
 
 
-def build_infra(go_workspace, pkg_defs, should_refresh_python):
+def build_infra(go_workspace, pkg_defs):
   """Builds infra.git multiverse.
 
   Args:
     pkg_defs: list of PackageDef instances for packages being built.
   """
-  if should_refresh_python:
-    print_title('Making sure python virtual environment is fresh')
-    run_host_python2(
-        script=os.path.join(ROOT, 'bootstrap', 'bootstrap.py'),
-        args=[
-            '--deps_file',
-            os.path.join(ROOT, 'bootstrap', 'deps.pyl'),
-            os.path.join(ROOT, 'ENV'),
-        ])
   # Build all necessary go binaries.
   build_go_code(go_workspace, MODULE_MAP, pkg_defs)
 
@@ -1595,8 +1530,7 @@ def main(
       action='store_false',
       dest='refresh_python',
       default=True,
-      help=('skip freshening the python env. ' +
-            'Only use if you know the env is clean.'))
+      help=('no-op (deprecated)'))
   args = parser.parse_args(args)
   if not args.build and not args.upload:
     parser.error('--no-rebuild doesn\'t make sense without --upload')
@@ -1618,7 +1552,6 @@ def main(
       args.tags or [],
       args.service_account_json,
       args.json_output,
-      args.refresh_python,
   )
 
 

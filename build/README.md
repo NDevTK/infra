@@ -2,13 +2,8 @@ Overview
 --------
 
 Scripts and files in this directory describe how to build CIPD packages from
-the source code in infra.git repo.
-
-There are two flavors of packages:
-
-* Packages with executables compiled from Go code.
-* Single giant package with all python code and archived virtual environment
-  needed to run it.
+the source code in infra.git repo. These packages are typically executables
+compiled from Go code, but may also bundle Python scripts or arbitrary files.
 
 
 Package definition
@@ -211,7 +206,6 @@ Build script
 
 [build.py](build.py) script does the following:
 
-* Ensures python virtual environment directory (ENV) is up to date.
 * Rebuilds all necessary Go code from scratch and installs binaries into
   `GOBIN`.
 * Enumerates `packages/` directory for package definition files, builds and
@@ -224,20 +218,20 @@ artifacts are installed in `GOBIN` (which is go/bin).
 
 You can also pass one or more *.yaml file names to build only specific packages:
 
-    build.py infra_python cipd_client
+    build.py bbagent cipd_client
 
 
 Verifying a package
 -------------------
 
 To install a built package locally use cipd client binary (it is built by
-build.py as well). For example, to rebuild and install infra_python.cipd into
+build.py as well). For example, to rebuild and install bbagent.cipd into
 ./install_dir, run:
 
     cd infra.git/
     rm -rf install_dir
-    ./build/build.py infra_python
-    ./go/bin/cipd pkg-deploy -root=install_dir build/out/infra_python.cipd
+    ./build/build.py bbagent
+    ./go/bin/cipd pkg-deploy -root=install_dir build/out/bbagent.cipd
     cd install_dir
 
 
@@ -257,10 +251,10 @@ Basically test_package.py does the following:
 * Runs `python test/<name>.py` with cwd == installation directory.
 * If test returns 0, considers it success, otherwise - failure.
 
-Thus to test that infra_python.cipd package works, one can do the following:
+Thus to test that bbagent.cipd package works, one can do the following:
 
-    ./build/build.py infra_python
-    ./build/test_packages.py infra_python
+    ./build/build.py bbagent
+    ./build/test_packages.py bbagent
 
 test_packages.py is used on CI builders to verify packages look good before
 uploading them.
