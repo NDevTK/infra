@@ -216,24 +216,38 @@ func setFakeROVPDSkuNumberExec(ctx context.Context, info *execs.ExecInfo) error 
 
 // updateROVPDToInvExec reads RO_VPD values from the resource listed in roVPDKeys into the inventory.
 func updateROVPDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
-	ha := info.DefaultHostAccess()
+	argsMap := info.GetActionArgs(ctx)
+	if argsMap.AsBool(ctx, "clear_data", false) {
+		log.Infof(ctx, "RO vpd key data is cleared upon data clear request!")
+		info.GetChromeos().RoVpdMap = make(map[string]string)
+	}
 	if info.GetChromeos().GetRoVpdMap() == nil {
 		info.GetChromeos().RoVpdMap = make(map[string]string)
 	}
+	allowOverride := argsMap.AsBool(ctx, "allow_override", true)
+	ha := info.DefaultHostAccess()
 	for _, key := range roVPDKeys {
 		value, err := vpd.ReadRO(ctx, ha, time.Minute, key)
 		if err != nil {
 			// Not all devices have all RO vpd keys.
-			log.Infof(ctx, "failed to read RO vpd key %q: %v", key, err)
+			log.Debugf(ctx, "failed to read RO vpd key %q: %v", key, err)
 			continue
 		}
 		if value == "" {
-			log.Infof(ctx, "RO vpd key %q value is empty!", key)
+			log.Debugf(ctx, "RO vpd key %q value is empty!", key)
 			continue
 		}
+		if oldValue, ok := info.GetChromeos().RoVpdMap[key]; ok {
+			log.Debugf(ctx, "RO vpd key %q values old:%q, new: %q!", key, oldValue, value)
+			if !allowOverride {
+				log.Infof(ctx, "Skip override for key %q due to action settings!", key)
+				continue
+			}
+		}
 		info.GetChromeos().RoVpdMap[key] = value
+		log.Infof(ctx, "RO vpd key %q updated with value:%q!", key, value)
 	}
-	log.Infof(ctx, "recorded RO_VPD values successfully")
+	log.Debugf(ctx, "recorded RO_VPD values successfully")
 	return nil
 }
 
