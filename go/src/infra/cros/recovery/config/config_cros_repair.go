@@ -1927,6 +1927,7 @@ func crosRepairActions() map[string]*Action {
 				"Read Cr50 key ID",
 				"Read if audio loopback present",
 				"Read dlm_sku_id",
+				"Update RO_VPD from DUT to Inventory",
 			},
 			ExecName: "sample_pass",
 		},
@@ -3158,6 +3159,20 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
+		"Repair by Reboot": {
+			Docs: []string{
+				"Do simple reboot of the DUT force to update DUT cache seetings.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			Dependencies: []string{
+				"Simple reboot",
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
 		"Flash AP (FW) with GBB 0x18 by servo": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash AP to the DUT by servo",
@@ -3617,12 +3632,25 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Read RO_VPD from DUT": {
 			Docs: []string{
-				"Record data that is present in RO_VPD from the following keys: wifi_sar.",
+				"Record data that is present in RO_VPD of DUT to inventory.",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
 			ExecName: "cros_update_ro_vpd_inventory",
+		},
+		"Update RO_VPD from DUT to Inventory": {
+			Docs: []string{
+				"Record data that is present in RO_VPD of DUT to inventory.",
+				"Skip update values if already known by inventory.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_update_ro_vpd_inventory",
+			ExecExtraArgs: []string{
+				"allow_override:false",
+			},
 		},
 		"Verify RO_VPD data on DUT": {
 			Docs: []string{
@@ -4180,9 +4208,27 @@ func crosRepairActions() map[string]*Action {
 				"command:crosid",
 			},
 			RecoveryActions: []string{
+				// First we try to reboot something already recoverd but not applied yet as required reboot.
+				"Repair by Reboot",
 				"Quick provision OS",
-				"Delete whitelabel_tag from vpd",
+				"Remove whitelabel_tag from vpd and reboot",
 			},
+		},
+		"Remove whitelabel_tag from vpd and reboot": {
+			Docs: []string{
+				"Remove whitelabel_tag from vpd and reboot to apply change.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+				"Is a Chromebook",
+			},
+			Dependencies: []string{
+				"Delete whitelabel_tag from vpd",
+				"Simple reboot",
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Delete whitelabel_tag from vpd": {
 			Docs: []string{
