@@ -270,7 +270,7 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 	// it to after the DB Insertion would take place. To solve the issue of
 	// failed schedules, we could implement a backfill feature
 	if buildRequest.ShouldAck {
-		buildRequest.Message.Nack()
+		buildRequest.Message.Ack()
 	} else {
 		common.Stderr.Printf("Nacking build message for build %s because one or more failed\n", buildRequest.Build.BuildUuid)
 		buildRequest.Message.Nack()

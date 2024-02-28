@@ -189,10 +189,6 @@ func (r *ReceiveWithTimer) ingestMessage(ctx context.Context, msg *pubsub.Messag
 		msg.Nack()
 		return
 	}
-
-	// TODO(b/315340446): remove blanket nack-ing once we are able to store the
-	// messages in long term storage.
-	msg.Nack()
 }
 
 // PullMessages does a streaming pull of all messages in the release pubsub

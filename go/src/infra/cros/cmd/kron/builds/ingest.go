@@ -159,7 +159,7 @@ func (h *handler) processPSMessage(msg *cloudPubsub.Message) error {
 	if !(buildReport.Type == buildPB.BuildReport_BUILD_TYPE_RELEASE && buildReport.Status.Value.String() == "SUCCESS") {
 		// TODO(b/315340446): Switch to ACK() once we have this sending
 		// information to long term storage.
-		msg.Nack()
+		msg.Ack()
 		return nil
 	}
 
