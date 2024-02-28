@@ -18,7 +18,7 @@ import (
 )
 
 func TestCrosTestRunnerRequestBuilder(t *testing.T) {
-	builder := builders.CrosTestRunnerRequestBuilder{}
+	builder := &builders.CrosTestRunnerRequestBuilder{}
 
 	Convey("Empty CftTestRequest All Skipped", t, func() {
 		constructor := &builders.CftCrosTestRunnerRequestConstructor{

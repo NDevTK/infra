@@ -20,6 +20,7 @@ import (
 	"infra/libs/skylab/worker"
 
 	goconfig "go.chromium.org/chromiumos/config/go"
+	gobuildapi "go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -696,10 +697,51 @@ func buildProvisionState(softwareDeps []*test_platform.Request_Params_SoftwareDe
 				Path:     imagePath,
 			},
 		},
+		Firmware:          buildFirmwareConfig(builds, imageBucket),
 		ProvisionMetadata: provisionMetadata,
 	}
 
 	return provisionState, nil
+}
+
+// buildFirmwareConfig parses out the firmware config from the available builds
+// `firmwareRO` and `firmwareRW` fields.
+// `firmwareRO` maps to the MainRoPayload and the EcRoPayload for firmware configs.
+// `firmwareRW` maps to the MainRwPayload for the firmware configs.
+func buildFirmwareConfig(builds *builds, imageBucket string) *gobuildapi.FirmwareConfig {
+	firmwarePathFormat := "gs://%s/%s/firmware_from_source.tar.bz2"
+	if (builds.FirmwareRO == "" || builds.FirmwareRO == "None") && (builds.FirmwareRW == "" || builds.FirmwareRW == "None") {
+		return nil
+	}
+
+	var ro *gobuildapi.FirmwarePayload
+	var rw *gobuildapi.FirmwarePayload
+	if builds.FirmwareRO != "" && builds.FirmwareRO != "None" {
+		ro = &gobuildapi.FirmwarePayload{
+			FirmwareImage: &gobuildapi.FirmwarePayload_FirmwareImagePath{
+				FirmwareImagePath: &goconfig.StoragePath{
+					HostType: goconfig.StoragePath_GS,
+					Path:     fmt.Sprintf(firmwarePathFormat, imageBucket, builds.FirmwareRO),
+				},
+			},
+		}
+	}
+	if builds.FirmwareRW != "" && builds.FirmwareRW != "None" {
+		rw = &gobuildapi.FirmwarePayload{
+			FirmwareImage: &gobuildapi.FirmwarePayload_FirmwareImagePath{
+				FirmwareImagePath: &goconfig.StoragePath{
+					HostType: goconfig.StoragePath_GS,
+					Path:     fmt.Sprintf(firmwarePathFormat, imageBucket, builds.FirmwareRW),
+				},
+			},
+		}
+	}
+
+	return &gobuildapi.FirmwareConfig{
+		MainRoPayload: ro,
+		EcRoPayload:   ro,
+		MainRwPayload: rw,
+	}
 }
 
 // buildAndroidProvisionMetadata constructs the provision metadata for Android Provisioning
@@ -839,7 +881,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 	}
 	// TODO(cdelagarza): Remove once plumbing is complete for the translation boolean
 	runViaTrv2 := g.Params.GetRunViaTrv2()
-	shouldTranslate := false
+	shouldTranslate := g.Params.GetTranslateTrv2Request()
 	if kv["suite"] == "tfc-demo" {
 		runViaTrv2 = true
 		shouldTranslate = true

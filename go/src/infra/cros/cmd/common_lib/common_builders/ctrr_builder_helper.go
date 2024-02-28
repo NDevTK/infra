@@ -45,11 +45,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildPrimaryDutProvision
 		AppendDutTask(orderedTasks, BuildCrosDutRequest(common.PrimaryDevice))
 	}
 
-	if !constructor.Cft.GetStepsConfig().GetHwTestConfig().GetSkipProvision() {
-		AppendProvisionTask(orderedTasks,
-			BuildProvisionContainerRequest(common.PrimaryDevice, IsAndroidProvisionState(constructor.Cft.GetPrimaryDut().GetProvisionState())),
-			BuildProvisionRequest(common.PrimaryDevice, constructor.Cft.GetPrimaryDut()))
-	}
+	constructor.buildProvision(common.PrimaryDevice, constructor.Cft.GetPrimaryDut(), orderedTasks)
 }
 
 // buildCompanionDutProvisions attempts to use the CompanionDuts from CftTestRequest
@@ -76,10 +72,26 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildCompanionDutProvisi
 			AppendDutTask(orderedTasks, BuildCrosDutRequest(deviceId))
 		}
 
-		if !constructor.Cft.GetStepsConfig().GetHwTestConfig().GetSkipProvision() {
+		constructor.buildProvision(deviceId, dut, orderedTasks)
+	}
+}
+
+// buildProvision checks for each possible type of provision that might occur
+// and calls into the corresponding provision builder function.
+func (constructor *CftCrosTestRunnerRequestConstructor) buildProvision(
+	deviceId string,
+	dut *skylab_test_runner.CFTTestRequest_Device,
+	orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
+
+	if !constructor.Cft.GetStepsConfig().GetHwTestConfig().GetSkipProvision() {
+		AppendProvisionTask(orderedTasks,
+			BuildProvisionContainerRequest(deviceId, IsAndroidProvisionState(dut.GetProvisionState())),
+			BuildProvisionRequest(deviceId, dut))
+
+		if ContainsFwProvisionState(dut.GetProvisionState()) {
 			AppendProvisionTask(orderedTasks,
-				BuildProvisionContainerRequest(deviceId, IsAndroidProvisionState(dut.GetProvisionState())),
-				BuildProvisionRequest(deviceId, dut))
+				BuildFwProvisionContainerRequest(deviceId),
+				BuildFwProvisionRequest(deviceId, dut))
 		}
 	}
 }
@@ -240,6 +252,64 @@ func BuildProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRe
 	}
 }
 
+// BuildFwProvisionRequest creates a generic provision request using the FirmwareConfig
+// within the device's provided provision state as part of the install request.
+func BuildFwProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRequest_Device) *api.ProvisionTask {
+	startUpMetadata, _ := anypb.New(&api.FirmwareProvisionStartupMetadata{})
+	installMetadata, _ := anypb.New(&api.FirmwareProvisionInstallMetadata{
+		FirmwareConfig: device.GetProvisionState().GetFirmware(),
+	})
+	return &api.ProvisionTask{
+		ServiceAddress: &labapi.IpEndpoint{},
+		StartupRequest: &api.ProvisionStartupRequest{
+			Metadata: startUpMetadata,
+		},
+		InstallRequest: &api.InstallRequest{
+			Metadata: installMetadata,
+		},
+		DynamicDeps: []*api.DynamicDep{
+			{
+				Key:   "serviceAddress",
+				Value: common.FwProvision + "-" + deviceId,
+			},
+			{
+				Key:   "startupRequest.dut",
+				Value: deviceId + ".dut",
+			},
+			{
+				Key:   "startupRequest.dutServer",
+				Value: common.CrosDut + "-" + deviceId,
+			},
+		},
+		Target: deviceId,
+	}
+}
+
+// BuildFwProvisionContainerRequest creates a container request for a certain deviceId,
+// specifically geared towards supported cros-fw-provisions.
+func BuildFwProvisionContainerRequest(deviceId string) *api.ContainerRequest {
+	return &api.ContainerRequest{
+		DynamicIdentifier: common.FwProvision + "-" + deviceId,
+		ContainerImageKey: common.FwProvision,
+		Container: &api.Template{
+			Container: &api.Template_Generic{
+				Generic: &api.GenericTemplate{
+					BinaryName: "cros-fw-provision",
+					BinaryArgs: []string{
+						"server",
+						"-port", "0",
+					},
+					DockerArtifactDir: "/tmp/cros-fw-provision",
+					AdditionalVolumes: []string{
+						"/creds:/creds",
+					},
+				},
+			},
+		},
+		DynamicDeps: []*api.DynamicDep{},
+	}
+}
+
 // BuildProvisionContainerRequest constructs a ContainerRequest for a certain deviceId
 // with variations for android devices.
 func BuildProvisionContainerRequest(deviceId string, isAndroid bool) *api.ContainerRequest {
@@ -301,6 +371,12 @@ func IsAndroidProvisionState(state *api.ProvisionState) bool {
 		return false
 	}
 	return true
+}
+
+// ContainsFwProvisionState checks if there is fw provision info in the
+// provision state.
+func ContainsFwProvisionState(state *api.ProvisionState) bool {
+	return state != nil && state.Firmware != nil
 }
 
 // BuildTestContainerRequest constructs a ContainerRequest
