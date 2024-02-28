@@ -356,7 +356,7 @@ func buildCTPRequests(buildPackages []*builds.BuildPackage, suiteSchedulerConfig
 // NewBuilds fetches all builds from the release Pub/Sub queue, finds all
 // triggered NEW_BUILD configs, then builds their respective CTP requests for
 // BB.
-func NewBuilds(authOpts *authcli.Flags) error {
+func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	// Ingest lab configs into memory.
 	// TODO(b/319273179): Implement option to pass in a local config as to bypass
 	// network reliance.
@@ -375,12 +375,17 @@ func NewBuilds(authOpts *authcli.Flags) error {
 		return err
 	}
 
+	projectID := common.StagingProjectID
+	if isProd {
+		projectID = common.ProdProjectID
+	}
+
 	// Get build information
 	// TODO(b/315340446): Inside this client we need to not ACK the builds until
 	// we can launch the BB task. This may require that we do a lot of heavy
 	// lifting in the callback but overall it would be safer.
 	common.Stdout.Println("Fetching builds from Pub/Sub.")
-	releaseBuilds, err := builds.IngestBuildsFromPubSub()
+	releaseBuilds, err := builds.IngestBuildsFromPubSub(projectID, common.BuildsSubscription)
 	if err != nil {
 		return err
 
@@ -446,15 +451,15 @@ func NewBuilds(authOpts *authcli.Flags) error {
 	}
 
 	// Initialize an authenticated BuildBucket client for scheduling.
-	common.Stdout.Printf("Initializing BuildBucket scheduling client prod: %t dryrun: %t", false, false)
-	schedulerClient, err := buildbucket.InitScheduler(context.Background(), authOpts, false, false)
+	common.Stdout.Printf("Initializing BuildBucket scheduling client prod: %t dryrun: %t", isProd, dryRun)
+	schedulerClient, err := buildbucket.InitScheduler(context.Background(), authOpts, isProd, dryRun)
 	if err != nil {
 		return err
 	}
 
 	// Initialize the Pub/Sub client for event message publishing.
 	common.Stdout.Printf("Initializing client for pub sub topic %s", common.EventsPubSubTopic)
-	publishClient, err := pubsub.InitPublishClient(context.Background(), common.StagingProjectID, common.EventsPubSubTopic)
+	publishClient, err := pubsub.InitPublishClient(context.Background(), projectID, common.EventsPubSubTopic)
 	if err != nil {
 		return err
 	}

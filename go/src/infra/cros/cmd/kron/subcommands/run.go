@@ -28,6 +28,7 @@ type runCommand struct {
 	authFlags   authcli.Flags
 	runID       string
 	prod        bool
+	dryRun      bool
 	newBuilds   bool
 	timedEvents bool
 }
@@ -42,11 +43,12 @@ func (c *runCommand) setFlags() {
 	c.Flags.StringVar(&c.runID, "run-id", common.DefaultString, "Used to manually set the runID. Should only be used by the recipe builder.")
 
 	c.Flags.BoolVar(&c.prod, "prod", false, "Run using prod environments.")
+	c.Flags.BoolVar(&c.dryRun, "dry-run", false, "Do not send the builds to BB.")
 
 	// TODO(b/319464677): Implement a backfill run command
 
 	c.Flags.BoolVar(&c.newBuilds, "new-builds", false, "Check for new build images and launch NEW_BUILD type suites.")
-	c.Flags.BoolVar(&c.prod, "timed-events", false, "Launch TIMED_EVENT suites which are eligible to be triggered.")
+	c.Flags.BoolVar(&c.timedEvents, "timed-events", false, "Launch TIMED_EVENT suites which are eligible to be triggered.")
 
 }
 
@@ -136,7 +138,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	// Launch execution path for NEW_BUILD type configs
 	if c.newBuilds {
 		common.Stdout.Println("Launching NEW_BUILDS")
-		err := run.NewBuilds(&c.authFlags)
+		err := run.NewBuilds(&c.authFlags, c.prod, c.dryRun)
 		if err != nil {
 			// Stop run timer and publish the message to pubsub
 			endRunErr := endRun()

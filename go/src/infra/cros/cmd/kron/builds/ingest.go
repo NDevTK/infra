@@ -28,9 +28,6 @@ import (
 	"infra/cros/cmd/kron/pubsub"
 )
 
-const projectID = "google.com:suite-scheduler-staging"
-const subscriptionName = "chromeos-builds-all"
-
 // extractMilestoneAndVersion returns the milestone and platform version from
 // the build report's versions lists.
 func extractMilestoneAndVersion(versions []*buildPB.BuildReport_BuildConfig_Version) (int64, string, error) {
@@ -209,7 +206,7 @@ type BuildPackage struct {
 // IngestBuildsFromPubSub connects to pubsub ingests all new build information
 // from the releases Pub/Sub stream. Once read, all builds will be written into
 // long term storage.
-func IngestBuildsFromPubSub() ([]*BuildPackage, error) {
+func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage, error) {
 	psHandler := handler{
 		buildsChan: make(chan *BuildPackage),
 	}

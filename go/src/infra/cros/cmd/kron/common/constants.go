@@ -40,7 +40,12 @@ const (
 
 	TotFileURL = "https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/main/chromeos/config/chromeos_version.sh?format=text"
 
-	StagingProjectID  = "google.com:suite-scheduler-staging"
+	StagingProjectID = "google.com:suite-scheduler-staging"
+	ProdProjectID    = "google.com:suite-scheduler"
+
+	BuildsSubscription        = "chromeos-builds-all"
+	BuildsSubscriptionTesting = "chromeos-builds-testing"
+
 	BuildsPubSubTopic = "kron-builds"
 	EventsPubSubTopic = "kron-events"
 	RunsPubSubTopic   = "kron-runs"
