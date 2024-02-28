@@ -8,7 +8,6 @@ package run
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -426,7 +425,8 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	// transition. Right now only the CFTNewBuild config on brya is
 	// supported. Below checks ensure only one request can launch per run.
 	if len(releaseBuilds) == 0 {
-		return fmt.Errorf("no builds")
+		common.Stderr.Println("No builds found")
+		return nil
 	}
 
 	// TODO(b/319273876): For earliest stage of migration only launch 1 request.
@@ -435,19 +435,23 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	releaseBuilds = releaseBuilds[:1]
 
 	if len(releaseBuilds) > 1 {
-		return fmt.Errorf("too many builds %d", len(releaseBuilds))
+		common.Stderr.Printf("too many builds %d", len(releaseBuilds))
+		return nil
 	}
 
 	if len(releaseBuilds[0].Requests) == 0 {
-		return fmt.Errorf("no configs")
+		common.Stderr.Printf("no configs")
+		return nil
 	}
 
 	if len(releaseBuilds[0].Requests[0].Events) == 0 {
-		return fmt.Errorf("no requests")
+		common.Stderr.Printf("no requests")
+		return nil
 	}
 
 	if len(releaseBuilds[0].Requests) > 1 {
-		return fmt.Errorf("too many requests %d", len(releaseBuilds[0].Requests))
+		common.Stderr.Printf("too many requests %d", len(releaseBuilds[0].Requests))
+		return nil
 	}
 
 	// Initialize an authenticated BuildBucket client for scheduling.
