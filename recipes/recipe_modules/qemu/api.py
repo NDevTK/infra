@@ -145,8 +145,8 @@ class QEMUAPI(recipe_api.RecipeApi):
             failures += 'Cannot parse {}: {}'.format(op.decode('utf-8'), err)
         if len(tokens) != 2:
           failures += 'Unsure about {}'.format(op.decode('utf-8'))
-      # bump up the size by 25% to ensure that all files can be copied
-      total_size += (total_size // 4)
+      # bump up the size by 100% to ensure that all files can be copied
+      total_size += total_size
       min_size = max(total_size, min_size)
       # Write back the logs to the list step
       calculations += 'Total size for disk: {}'.format(total_size)
