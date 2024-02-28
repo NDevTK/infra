@@ -1,0 +1,52 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is purely used for local development. Do not deploy the service
+# in any way using this.
+version: '3.9'
+
+services:
+  device_lease_service:
+    container_name: device_lease_service
+    build:
+      context: .
+      dockerfile: ./cmd/device_lease_service/docker/Dockerfile
+    command: ["-cloud-project", "fleet-device-manager-dev",
+      "-auth-service-host", "chrome-infra-auth-dev.appspot.com",
+      "-grpc-addr", ":50051",
+      "-http-addr", ":8800",
+      "-admin-addr", ":8900",
+      "-token-cache-dir", "/tokens"]
+    user: ${CURRENT_UID:?"Please run as follows 'CURRENT_UID=$(id -u):$(id -g) docker-compose up'"}
+    environment:
+      DB_USER: postgres
+      DB_PASS: password
+      DB_HOST: device_manager_db
+      DB_PORT: 5432
+      DB_NAME: device_manager_db
+      DATABASE_URL: "host=device_manager_db user=postgres password=password dbname=device_manager_db sslmode=disable"
+    ports:
+      - "8800:8800"
+      - "8900:8900"
+      - "50051:50051"
+    volumes:
+      - ~/.config/chrome_infra/auth:/tokens
+    depends_on:
+      - device_manager_db
+    stdin_open: true
+    tty: true
+  device_manager_db:
+    container_name: device_manager_db
+    image: postgres:12
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: device_manager_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}

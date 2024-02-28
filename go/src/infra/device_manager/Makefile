@@ -17,8 +17,11 @@ For the main Device Lease service:
   gen: regenerate all go bindings
   build: build the Device Lease service image
   dev: run the Device Lease service locally
-  push-image: build and push the latest image to the ${GCP_PROJECT} project
 
+For running the service using Docker:
+  build-docker-compose: build the Device Lease service stack with Docker Compose
+  docker-service: build and run the Device Lease service as a Docker container
+  docker-db: build and run the Postgres db as a Docker container
 endef
 
 .PHONY: help
@@ -40,37 +43,36 @@ cover:
 build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o device-lease-service $(PROJECT_PATH)/cmd/device_lease_service
 
-# Run service locally
+# Run service locally as a binary
 .PHONY: dev
 dev: build
 	./device-lease-service \
 	--auth-service-host=${LUCI_AUTH_SERVICE} \
 	--grpc-addr=":50051" \
 	--http-addr=":8800" \
-	--admin-addr=":8900"
+	--admin-addr=":8900" \
+	--db-host='localhost' \
+	--db-port='5432' \
+	--db-name='device_manager_db' \
+	--db-user='postgres' \
+	--db-password-secret="devsecret://cGFzc3dvcmQ"
 
-# Build Docker service
-.PHONY: build-docker
-build-docker: build
-	docker build --tag=gcr.io/${GCP_PROJECT}/device-lease-service:latest --file=./cmd/device_lease_service/docker/Dockerfile .
+# Build Docker compose service
+.PHONY: build-docker-compose
+build-docker-compose: build
+	docker compose -f docker-compose.dev.yml build --no-cache
 
-# Push Docker image to GCP
-.PHONY: push-image
-push-image: build-docker
-	docker push gcr.io/${GCP_PROJECT}/device-lease-service:latest
 
-# Run Docker service locally
-.PHONY: dev-docker
-dev-docker: build-docker
-	docker run --rm --interactive --tty --user $(id -u):$(id -g) \
-	-p 50051:50051 \
-	-p 8800:8800 \
-	-p 8900:8900 \
-	-v ~/.config/chrome_infra/auth:/tokens \
-	gcr.io/${GCP_PROJECT}/device-lease-service:latest \
-		-cloud-project ${GCP_PROJECT} \
-		-auth-service-host=${LUCI_AUTH_SERVICE} \
-		-grpc-addr :50051 \
-		-http-addr :8800 \
-		-admin-addr :8900 \
-		-token-cache-dir /tokens
+# Run Docker service locally using Docker Compose
+.PHONY: docker-service
+docker-service: build-docker-compose
+	CURRENT_UID="$(id -u):$(id -g)" \
+	docker compose -f docker-compose.dev.yml up \
+	device_lease_service
+
+# Run Docker Postgres db locally using Docker Compose
+.PHONY: docker-db
+docker-db:
+	CURRENT_UID="$(id -u):$(id -g)" \
+	docker compose -f docker-compose.dev.yml up \
+	device_manager_db
