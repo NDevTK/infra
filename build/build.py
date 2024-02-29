@@ -1525,12 +1525,6 @@ def main(
   parser.add_argument(
       '--tags', metavar='KEY:VALUE', type=str, dest='tags', nargs='*',
       help='tags to attach to uploaded package instances')
-  parser.add_argument(
-      '--no-freshen-python-env',
-      action='store_false',
-      dest='refresh_python',
-      default=True,
-      help=('no-op (deprecated)'))
   args = parser.parse_args(args)
   if not args.build and not args.upload:
     parser.error('--no-rebuild doesn\'t make sense without --upload')
