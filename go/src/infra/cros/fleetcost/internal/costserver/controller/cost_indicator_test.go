@@ -21,7 +21,7 @@ func TestPutCostIndicator(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	err := controller.PutCostIndicator(tf.Ctx, &models.CostIndicator{
+	err := controller.PutCostIndicator(tf.Ctx, &models.CostIndicatorEntity{
 		ID: "fake-cost-indicator",
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Name:  "a",
@@ -32,7 +32,7 @@ func TestPutCostIndicator(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	result, err := controller.GetCostIndicator(tf.Ctx, &models.CostIndicator{
+	result, err := controller.GetCostIndicator(tf.Ctx, &models.CostIndicatorEntity{
 		ID: "fake-cost-indicator",
 	})
 	if err != nil {
@@ -49,14 +49,14 @@ func TestGetCostIndicator(t *testing.T) {
 
 	tf := testsupport.NewFixtureWithData(context.Background(), t)
 
-	costIndicator, err := controller.GetCostIndicator(tf.Ctx, &models.CostIndicator{
+	costIndicator, err := controller.GetCostIndicator(tf.Ctx, &models.CostIndicatorEntity{
 		ID: "fake-cost-indicator",
 	})
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	want := &models.CostIndicator{
+	want := &models.CostIndicatorEntity{
 		ID: "fake-cost-indicator",
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Name:  "a",

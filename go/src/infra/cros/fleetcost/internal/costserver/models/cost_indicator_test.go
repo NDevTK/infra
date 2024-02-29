@@ -20,7 +20,7 @@ func TestCostIndicatorSimple(t *testing.T) {
 	t.Parallel()
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	if err := datastore.Put(tf.Ctx, &models.CostIndicator{
+	if err := datastore.Put(tf.Ctx, &models.CostIndicatorEntity{
 		ID: "a",
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Name:  "a",
@@ -30,7 +30,7 @@ func TestCostIndicatorSimple(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	if err := datastore.Get(tf.Ctx, &models.CostIndicator{
+	if err := datastore.Get(tf.Ctx, &models.CostIndicatorEntity{
 		ID: "a",
 	}); err != nil {
 		t.Errorf("unexpected error: %s", err)

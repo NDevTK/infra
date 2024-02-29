@@ -15,26 +15,26 @@ import (
 )
 
 // PutCostIndicator puts a cost indicator into the database.
-func PutCostIndicator(ctx context.Context, costIndicator *models.CostIndicator) error {
-	if costIndicator == nil {
-		return errors.New("costIndicator cannot be nil")
+func PutCostIndicator(ctx context.Context, entity *models.CostIndicatorEntity) error {
+	if entity == nil {
+		return errors.New("cost indicator entity cannot be nil")
 	}
-	return datastore.Put(ctx, costIndicator)
+	return datastore.Put(ctx, entity)
 }
 
 // GetCostIndicator extracts a cost indicator from the database.
-func GetCostIndicator(ctx context.Context, costIndicator *models.CostIndicator) (*models.CostIndicator, error) {
-	if err := datastore.Get(ctx, costIndicator); err != nil {
+func GetCostIndicator(ctx context.Context, entity *models.CostIndicatorEntity) (*models.CostIndicatorEntity, error) {
+	if err := datastore.Get(ctx, entity); err != nil {
 		return nil, err
 	}
-	return costIndicator, nil
+	return entity, nil
 }
 
 // ListCostIndicators lists the cost indicators in the database, up to a limit (not yet implemented).
 func ListCostIndicators(ctx context.Context, limit int) ([]*fleetcostpb.CostIndicator, error) {
 	var out []*fleetcostpb.CostIndicator
 	query := datastore.NewQuery(models.CostIndicatorKind)
-	if err := datastore.Run(ctx, query, func(entity *models.CostIndicator) {
+	if err := datastore.Run(ctx, query, func(entity *models.CostIndicatorEntity) {
 		out = append(out, entity.CostIndicator)
 	}); err != nil {
 		return nil, err

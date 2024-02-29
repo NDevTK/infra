@@ -12,7 +12,7 @@ import (
 
 const CostIndicatorKind = "CostIndicatorKind"
 
-type CostIndicator struct {
+type CostIndicatorEntity struct {
 	_kind         string                     `gae:"$kind,CostIndicatorKind"`
 	ID            string                     `gae:"$id"`
 	Extra         datastore.PropertyMap      `gae:",extra"`
@@ -20,11 +20,11 @@ type CostIndicator struct {
 }
 
 // Silence staticcheck warning about unused field.
-var _ = CostIndicator{}._kind
+var _ = CostIndicatorEntity{}._kind
 
-// NewCostIndicator makes a cost indicator from an object extracted from a request.
-func NewCostIndicator(costIndicator *fleetcostpb.CostIndicator) *CostIndicator {
-	return &CostIndicator{
+// NewCostIndicatorEntity makes a cost indicator entity from an object extracted from a request.
+func NewCostIndicatorEntity(costIndicator *fleetcostpb.CostIndicator) *CostIndicatorEntity {
+	return &CostIndicatorEntity{
 		ID:            costIndicator.GetName(),
 		CostIndicator: costIndicator,
 	}

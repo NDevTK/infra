@@ -17,7 +17,7 @@ import (
 func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fleetcostpb.CreateCostIndicatorRequest) (*fleetcostpb.CreateCostIndicatorResponse, error) {
 	// TODO(gregorynisbet): Do some kind of input validation here.
 	costIndicator := request.GetCostIndicator()
-	entity := models.NewCostIndicator(costIndicator)
+	entity := models.NewCostIndicatorEntity(costIndicator)
 	if err := controller.PutCostIndicator(ctx, entity); err != nil {
 		return nil, err
 	}
