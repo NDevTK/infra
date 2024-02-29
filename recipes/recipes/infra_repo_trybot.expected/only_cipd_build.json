@@ -449,8 +449,7 @@
   {
     "cmd": [
       "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--no-freshen-python-env"
+      "[CACHE]/builder/infra/build/build.py"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {

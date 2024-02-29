@@ -569,11 +569,9 @@ Essentially a shim around scripts in
 https://chromium.googlesource.com/infra/infra.git/+/main/build/
 and its internal counterpart.
 
-&mdash; **def [build\_without\_env\_refresh](/recipes/recipe_modules/infra_cipd/api.py#63)(self, sign_id=None):**
+&mdash; **def [build](/recipes/recipe_modules/infra_cipd/api.py#63)(self, sign_id=None):**
 
 Builds packages.
-
-Prevents build.py from refreshing the python ENV.
 
 &emsp; **@contextlib.contextmanager**<br>&mdash; **def [context](/recipes/recipe_modules/infra_cipd/api.py#23)(self, path_to_repo, goos=None, goarch=None):**
 
@@ -587,15 +585,15 @@ Arguments:
 
 Doesn't support nesting.
 
-&mdash; **def [tags](/recipes/recipe_modules/infra_cipd/api.py#118)(self, git_repo_url, revision):**
+&mdash; **def [tags](/recipes/recipe_modules/infra_cipd/api.py#114)(self, git_repo_url, revision):**
 
 Returns tags to be attached to uploaded CIPD packages.
 
-&mdash; **def [test](/recipes/recipe_modules/infra_cipd/api.py#83)(self):**
+&mdash; **def [test](/recipes/recipe_modules/infra_cipd/api.py#79)(self):**
 
 Tests previously built packages integrity.
 
-&mdash; **def [upload](/recipes/recipe_modules/infra_cipd/api.py#90)(self, tags, step_test_data=None):**
+&mdash; **def [upload](/recipes/recipe_modules/infra_cipd/api.py#86)(self, tags, step_test_data=None):**
 
 Uploads previously built packages.
 ### *recipe_modules* / [infra\_system](/recipes/recipe_modules/infra_system)
@@ -1718,7 +1716,7 @@ Pushes a trivial CL to Gerrit to verify git authentication works on LUCI.
 
 &mdash; **def [build\_main](/recipes/recipes/infra_continuous.py#218)(api, checkout, buildername, project_name, repo_url, rev):**
 
-&mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#290)(api, checkout, project_name):**
+&mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#289)(api, checkout, project_name):**
 ### *recipes* / [infra\_frontend\_tester](/recipes/recipes/infra_frontend_tester.py)
 
 [DEPS](/recipes/recipes/infra_frontend_tester.py#9): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/nodejs][recipe_engine/recipe_modules/nodejs], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]

@@ -292,7 +292,6 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--no-freshen-python-env",
       "--builder",
       "infra-packager-mac-64"
     ],

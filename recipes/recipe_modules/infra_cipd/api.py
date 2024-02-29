@@ -60,15 +60,11 @@ class InfraCIPDApi(recipe_api.RecipeApi):
       raise Exception('must be run under infra_cipd.context')
     return self._cur_ctx[1]
 
-  def build_without_env_refresh(self, sign_id=None):
-    """Builds packages.
-
-    Prevents build.py from refreshing the python ENV.
-    """
+  def build(self, sign_id=None):
+    """Builds packages."""
     args = [
         'vpython3',
         self._ctx_path_to_repo.join('build', 'build.py'),
-        '--no-freshen-python-env',
         '--builder',
         self.m.buildbucket.builder_name,
     ]

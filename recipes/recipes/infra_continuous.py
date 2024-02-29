@@ -264,10 +264,9 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
         with api.infra_cipd.context(
             checkout.path.join(project_name), goos, goarch):
           if api.platform.is_mac:
-            api.infra_cipd.build_without_env_refresh(
-                api.properties.get('signing_identity'))
+            api.infra_cipd.build(api.properties.get('signing_identity'))
           else:
-            api.infra_cipd.build_without_env_refresh()
+            api.infra_cipd.build()
           if 'test' in options:
             api.infra_cipd.test()
           if is_packager:

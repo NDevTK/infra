@@ -226,7 +226,6 @@
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
-      "--no-freshen-python-env",
       "--builder",
       "infra-packager-win-64"
     ],
@@ -327,7 +326,6 @@
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
-      "--no-freshen-python-env",
       "--builder",
       "infra-packager-win-64"
     ],
@@ -432,7 +430,6 @@
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
-      "--no-freshen-python-env",
       "--builder",
       "infra-packager-win-64"
     ],

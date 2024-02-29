@@ -31,10 +31,9 @@ def RunSteps(api):
       goos=api.properties.get('goos'),
       goarch=api.properties.get('goarch')):
     if api.platform.is_mac:
-      api.infra_cipd.build_without_env_refresh(
-          api.properties.get('signing_identity'))
+      api.infra_cipd.build(api.properties.get('signing_identity'))
     else:
-      api.infra_cipd.build_without_env_refresh()
+      api.infra_cipd.build()
     api.infra_cipd.test()
     if not api.properties.get('no_buildnumbers'):
       api.infra_cipd.upload(api.infra_cipd.tags(url, rev))

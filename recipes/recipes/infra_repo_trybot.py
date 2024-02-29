@@ -179,7 +179,6 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
       api.step('cipd - build packages', [
           'vpython3',
           co.path.join(patch_root, 'build', 'build.py'),
-          '--no-freshen-python-env'
       ])
       api.step(
           'cipd - test packages integrity',
