@@ -13,7 +13,9 @@ import (
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/logging"
 
+	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
 )
 
@@ -60,8 +62,20 @@ func (s *Server) ExtendLease(ctx context.Context, r *api.ExtendLeaseRequest) (*a
 	return nil, status.Errorf(codes.Unimplemented, "ExtendLease is not implemented")
 }
 
+// GetDevice takes a GetDeviceRequest and returns a corresponding device.
 func (s *Server) GetDevice(ctx context.Context, r *api.GetDeviceRequest) (*api.Device, error) {
-	return nil, status.Errorf(codes.Unimplemented, "GetDevice is not implemented")
+	logging.Debugf(ctx, "GetDevice: received GetDeviceRequest %v", r)
+	db := database.ConnectDB(ctx, s.dbConfig)
+	if r.Name == "" {
+		return nil, status.Errorf(codes.Internal, "GetDevice: request has no device name")
+	}
+
+	device, err := controller.GetDevice(ctx, db, r.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "GetDevice: failed to get Device %s: %s", r.Name, err)
+	}
+	logging.Debugf(ctx, "GetDevice: received Device %v", device)
+	return device, nil
 }
 
 func (s *Server) ListDevices(ctx context.Context, r *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
