@@ -8,9 +8,13 @@ import (
 	"context"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/device_manager/internal/database"
 )
 
 // Prove that Server implements pb.DeviceLeaseServiceServer by instantiating a Server.
@@ -20,6 +24,9 @@ var _ api.DeviceLeaseServiceServer = (*Server)(nil)
 type Server struct {
 	api.UnimplementedDeviceLeaseServiceServer
 
+	// database config
+	dbConfig database.DatabaseConfig
+
 	// retry defaults
 	initialRetryBackoff time.Duration
 	maxRetries          int
@@ -28,6 +35,17 @@ type Server struct {
 // NewServer returns a new Server.
 func NewServer() *Server {
 	return &Server{}
+}
+
+// InstallServices takes a DeviceLeaseServiceServer and exposes it to a LUCI
+// prpc.Server.
+func InstallServices(s *Server, srv grpc.ServiceRegistrar) {
+	api.RegisterDeviceLeaseServiceServer(srv, s)
+}
+
+// SetDBConfig sets the database password location string for the server.
+func SetDBConfig(server *Server, dbconf database.DatabaseConfig) {
+	server.dbConfig = dbconf
 }
 
 func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*api.LeaseDeviceResponse, error) {
