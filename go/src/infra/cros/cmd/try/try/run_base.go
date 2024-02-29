@@ -60,12 +60,12 @@ type tryRunBase struct {
 
 // addBranchFlag creates a `-branch` command-line flag to specify the branch.
 func (t *tryRunBase) addBranchFlag(defaultValue string) {
-	t.Flags.StringVar(&t.branch, "branch", defaultValue, "specify the branch on which to run the builder")
+	t.Flags.StringVar(&t.branch, "branch", defaultValue, "Specify the branch on which to run the builder.")
 }
 
 // addProductionFlag creates a `-production` command-line flag for a try subcommand.
 func (t *tryRunBase) addProductionFlag() {
-	t.Flags.BoolVar(&t.production, "production", false, "run a production builder instead of a staging builder")
+	t.Flags.BoolVar(&t.production, "production", false, "Run a production builder instead of a staging builder.")
 }
 
 // addPatchesFlag creates a `-gerrit-patches` command-line flag for a try subcommand.

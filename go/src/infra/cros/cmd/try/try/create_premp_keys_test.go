@@ -41,6 +41,7 @@ func TestValidate_createPreMPKeysRun(t *testing.T) {
 type createPreMPKeysTestConfig struct {
 	buildTarget string
 	dryrun      bool
+	production  bool
 }
 
 func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
@@ -58,6 +59,10 @@ func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
 	}
 	expectedBucket := "chromeos/staging"
 	expectedBuilder := "staging-key-manager"
+	if tc.production {
+		expectedBucket = "chromeos/staging"
+		expectedBuilder = "staging-key-manager"
+	}
 	f.CommandRunners = append(
 		f.CommandRunners,
 		*fakeLEDGetBuilderRunner(expectedBucket, expectedBuilder, true),
@@ -72,8 +77,9 @@ func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
 
 	r := createPreMPKeysRun{
 		tryRunBase: tryRunBase{
-			cmdRunner: f,
-			dryrun:    tc.dryrun,
+			cmdRunner:  f,
+			dryrun:     tc.dryrun,
+			production: tc.production,
 		},
 		propsFile:   propsFile,
 		buildTarget: tc.buildTarget,
@@ -107,7 +113,15 @@ func TestCreatePreMPKeys_dryrun(t *testing.T) {
 	})
 }
 
-func TestCreatePreMPKeys_success(t *testing.T) {
+func TestCreatePreMPKeys_production_success(t *testing.T) {
+	t.Parallel()
+	doCreatePreMPKeysTest(t, &createPreMPKeysTestConfig{
+		buildTarget: "atlas",
+		production:  true,
+	})
+}
+
+func TestCreatePreMPKeys_staging_success(t *testing.T) {
 	t.Parallel()
 	doCreatePreMPKeysTest(t, &createPreMPKeysTestConfig{
 		buildTarget: "atlas",

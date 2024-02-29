@@ -22,9 +22,6 @@ import (
 	bb "infra/cros/lib/buildbucket"
 )
 
-// TODO(b/318522770): Use the production builder.
-const keyManagerBuilderName = "chromeos/staging/staging-key-manager"
-
 func GetCmdCreatePreMPKeys(authOpts auth.Options) *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "create_premp_keys --board BOARD [flags]",
@@ -34,20 +31,21 @@ func GetCmdCreatePreMPKeys(authOpts auth.Options) *subcommands.Command {
 			c.cmdRunner = cmd.RealCommandRunner{}
 			c.tryRunBase.authOpts = authOpts
 			c.addDryrunFlag()
-			c.Flags.StringVar(&c.buildTarget, "build_target", "", "build targets to create keys for")
+			c.addProductionFlag()
+			c.Flags.StringVar(&c.buildTarget, "build_target", "", "Build target to create keys for.")
 			return c
 		},
 	}
 }
 
-// firmwareRun tracks relevant info for a given `try firmware` run.
+// createPreMPKeysRun tracks relevant info for a given `try create_premp_keys` run.
 type createPreMPKeysRun struct {
 	tryRunBase
 	propsFile   *os.File
 	buildTarget string
 }
 
-// Run provides the logic for a `try firmware` command run.
+// Run provides the logic for a `try create_premp_keys` command run.
 func (f *createPreMPKeysRun) Run(_ subcommands.Application, _ []string, _ subcommands.Env) int {
 	f.stdoutLog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
 	f.stderrLog = log.New(os.Stderr, "", log.LstdFlags|log.Lmicroseconds)
@@ -64,6 +62,7 @@ func (f *createPreMPKeysRun) Run(_ subcommands.Application, _ []string, _ subcom
 		return CmdError
 	}
 
+	keyManagerBuilderName := getKeyManagerBuilderFullName(f.production)
 	propsStruct, err := f.bbClient.GetBuilderInputProps(ctx, keyManagerBuilderName)
 	if err != nil {
 		f.LogErr(err.Error())
@@ -107,14 +106,14 @@ func (f *createPreMPKeysRun) Run(_ subcommands.Application, _ []string, _ subcom
 	}
 	f.bbAddArgs = append(f.bbAddArgs, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
-	if err := f.runKeyManagerBuilder(ctx); err != nil {
+	if err := f.runKeyManagerBuilder(ctx, keyManagerBuilderName); err != nil {
 		f.LogErr(err.Error())
 		return CmdError
 	}
 	return Success
 }
 
-// validate validates firmware-specific args for the command.
+// validate validates args for the command.
 func (f *createPreMPKeysRun) validate(ctx context.Context) error {
 	if f.buildTarget == "" {
 		return errors.New("must provide a build target with --build_target")
@@ -125,8 +124,22 @@ func (f *createPreMPKeysRun) validate(ctx context.Context) error {
 	return nil
 }
 
-// runFWBuilder creates a firmware build via `bb add`, and reports it to the user.
-func (f *createPreMPKeysRun) runKeyManagerBuilder(ctx context.Context) error {
+// getKeyManagerBuilderFullName gets the full name of the builder.
+func getKeyManagerBuilderFullName(staging bool) string {
+	var bucket, stagingPrefix string
+	if staging {
+		bucket = "staging"
+		stagingPrefix = "staging-"
+	} else {
+		// TODO(b/318522770): Support the production builder, once it exists.
+		bucket = "staging"
+		stagingPrefix = "staging-"
+	}
+	return fmt.Sprintf("chromeos/%s/%skey-manager", bucket, stagingPrefix)
+}
+
+// runKeyManagerBuilder creates a key-manager build via `bb add`, and reports it to the user.
+func (f *createPreMPKeysRun) runKeyManagerBuilder(ctx context.Context, keyManagerBuilderName string) error {
 	_, err := f.bbClient.BBAdd(ctx, f.dryrun, append([]string{keyManagerBuilderName}, f.bbAddArgs...)...)
 	return err
 }
