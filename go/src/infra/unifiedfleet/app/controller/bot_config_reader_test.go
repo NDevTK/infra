@@ -418,6 +418,35 @@ func TestParseSecurityConfig(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(resp.Ownership, ShouldBeNil)
 		})
+		Convey("updates asset tables on subsequent runs", func() {
+			// First parse security configs
+			ParseSecurityConfig(ctx, mockSecurityConfig("test{100,102}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
+
+			// Add a machine entry after parsing security configs
+			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test100-1", "test100"))
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+
+			// Machine entry should not have ownership data
+			resp, err = registration.GetMachine(ctx, "test100-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldBeNil)
+
+			// Prase security configs again as a subsequent dumper job
+			ParseSecurityConfig(ctx, mockSecurityConfig("test{100,102}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
+
+			// Machine entry should now have ownership data
+			resp, err = registration.GetMachine(ctx, "test100-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+			So(resp.Ownership.Pools, ShouldContain, "abc")
+			So(resp.Ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+			So(resp.Ownership.Customer, ShouldEqual, "customer")
+			So(resp.Ownership.SecurityLevel, ShouldEqual, "trusted")
+			So(resp.Ownership.Builders, ShouldResemble, []string{"builder"})
+		})
 	})
 }
 

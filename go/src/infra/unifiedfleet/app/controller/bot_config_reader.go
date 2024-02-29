@@ -351,7 +351,7 @@ func getConfigAndGitTilesClient(ctx context.Context) (*config.OwnershipConfig, e
 func updateBotConfigForBotIds(ctx context.Context, botsMap map[string]*ufspb.OwnershipData) error {
 	var errs errors.MultiError
 	for botId, ownershipData := range botsMap {
-		updated, assetType, err := isBotOwnershipUpdated(ctx, botId, ownershipData)
+		updated, assetType, err := isBotOwnershipUpdated(ctx, botId, ownershipData, false)
 		if err != nil && status.Code(err) != codes.NotFound {
 			logging.Debugf(ctx, "Failed to check if ownership is updated %s - %v", botId, err)
 			errs = append(errs, err)
@@ -373,11 +373,17 @@ func updateBotConfigForBotIds(ctx context.Context, botsMap map[string]*ufspb.Own
 }
 
 // Checks if the bot ownership is updated from the last time we read the configs.
-func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufspb.OwnershipData) (bool, string, error) {
+func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufspb.OwnershipData, isPrefix bool) (bool, string, error) {
 	entity, err := inventory.GetOwnershipData(ctx, botId)
 	// Update ownership for bot if it does not exist in the ownership table or if there is error in retrieving the entity
 	if err != nil {
 		return true, "", err
+	}
+	// If we don't know the asset type for a bot, try to update the data unless it is a bot prefix
+	// This is to handle the case where a bot entry gets added to the starlark files before UFS
+	if strings.TrimSpace(entity.AssetType) == "" && !isPrefix {
+		logging.Infof(ctx, "Found a botId %s with ownership data but no asset type", botId)
+		return true, entity.AssetType, err
 	}
 	p, err := entity.GetProto()
 	if err != nil {
@@ -476,7 +482,7 @@ func findAndUpdateOwnershipForAsset(ctx context.Context, botId string, ownership
 func updateBotConfigForBotIdPrefix(ctx context.Context, botIdPrefixesMap map[string]*ufspb.OwnershipData) error {
 	var errs errors.MultiError
 	for prefix, ownershipData := range botIdPrefixesMap {
-		updated, assetType, err := isBotOwnershipUpdated(ctx, prefix, ownershipData)
+		updated, assetType, err := isBotOwnershipUpdated(ctx, prefix, ownershipData, true)
 		if err != nil && status.Code(err) != codes.NotFound {
 			logging.Debugf(ctx, "Failed to check if ownership is updated for prefix %s - %v", prefix, err)
 			errs = append(errs, err)
