@@ -274,10 +274,14 @@ func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, variant string) str
 		if len(suiteDef) == 0 {
 			return ""
 		}
-		suiteSwDef := suiteTarget.GetSwRequirement()
 		suiteHwDef := suiteDef[0]
 		if getBuildTargetfromHwDef(suiteHwDef) == board && suiteHwDef.GetVariant() == variant {
-			return suiteSwDef.GetGcsPath()
+			provInfos := suiteHwDef.GetProvisionInfo()
+			for _, provInfo := range provInfos {
+				if provInfo.GetType() == testapi.ProvisionInfo_CROS {
+					return provInfo.GetInstallRequest().GetImagePath().GetPath()
+				}
+			}
 		}
 	}
 	return ""
