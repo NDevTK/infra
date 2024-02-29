@@ -19,12 +19,17 @@ import (
 	"infra/device_manager/internal/model"
 )
 
+// Generic request options
+type RequestOpts struct {
+	CloudProject string
+}
+
 // LeaseDevice leases a device specified by the request.
 //
 // The function executes as a transaction. It attempts to create a lease record
 // with an available device. Then it updates the Device's state to LEASED
 // and publishes to a PubSub stream. The transaction is then committed.
-func LeaseDevice(ctx context.Context, db *sql.DB, r *api.LeaseDeviceRequest, device *api.Device) (*api.LeaseDeviceResponse, error) {
+func LeaseDevice(ctx context.Context, db *sql.DB, opts RequestOpts, r *api.LeaseDeviceRequest, device *api.Device) (*api.LeaseDeviceResponse, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, errors.New("LeaseDevice: failed to start database transaction")
@@ -54,7 +59,7 @@ func LeaseDevice(ctx context.Context, db *sql.DB, r *api.LeaseDeviceRequest, dev
 		DeviceType:    device.GetType().String(),
 		DeviceState:   api.DeviceState_DEVICE_STATE_LEASED.String(),
 	}
-	err = UpdateDevice(ctx, tx, updatedDevice)
+	err = UpdateDevice(ctx, tx, updatedDevice, opts.CloudProject)
 	if err != nil {
 		logging.Errorf(ctx, "LeaseDevice: failed to update device state %s", err)
 		return nil, err

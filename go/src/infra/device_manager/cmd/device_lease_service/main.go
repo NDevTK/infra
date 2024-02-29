@@ -80,6 +80,7 @@ func main() {
 			DBPasswordSecret: *dbPasswordSecret,
 		}
 		frontend.SetDBConfig(deviceLeaseServer, dbConfig)
+		frontend.SetCloudProject(deviceLeaseServer, srv.Options.CloudProject)
 		frontend.InstallServices(deviceLeaseServer, srv)
 
 		logging.Infof(srv.Context, "main: initialization finished")

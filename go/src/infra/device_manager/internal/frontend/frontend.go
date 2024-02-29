@@ -26,6 +26,9 @@ var _ api.DeviceLeaseServiceServer = (*Server)(nil)
 type Server struct {
 	api.UnimplementedDeviceLeaseServiceServer
 
+	// server options
+	cloudProject string
+
 	// database config
 	dbConfig database.DatabaseConfig
 
@@ -50,10 +53,22 @@ func SetDBConfig(server *Server, dbconf database.DatabaseConfig) {
 	server.dbConfig = dbconf
 }
 
+// SetCloudProject sets the cloud project string value for the server.
+func SetCloudProject(server *Server, cp string) {
+	if cp == "" {
+		server.cloudProject = "fleet-device-manager-dev"
+	} else {
+		server.cloudProject = cp
+	}
+}
+
 // LeaseDevice takes a LeaseDeviceRequest and leases a corresponding device.
 func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*api.LeaseDeviceResponse, error) {
 	logging.Debugf(ctx, "LeaseDevice: received LeaseDeviceRequest %v", r)
 
+	opts := controller.RequestOpts{
+		CloudProject: s.cloudProject,
+	}
 	db := database.ConnectDB(ctx, s.dbConfig)
 
 	// Check idempotency of lease. Return if there is an existing unexpired lease.
@@ -78,7 +93,7 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	if !controller.IsDeviceAvailable(ctx, device.GetState()) {
 		return nil, status.Errorf(codes.Unavailable, "LeaseDevice: device %s is unavailable for lease", deviceID)
 	}
-	return controller.LeaseDevice(ctx, db, r, device)
+	return controller.LeaseDevice(ctx, db, opts, r, device)
 }
 
 func (s *Server) ReleaseDevice(ctx context.Context, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {

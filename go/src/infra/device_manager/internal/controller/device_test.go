@@ -142,7 +142,7 @@ func TestUpdateDevice(t *testing.T) {
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
 				DeviceState:   "DEVICE_STATE_LEASED",
-			})
+			}, "test-project")
 			So(err, ShouldBeNil)
 		})
 	})

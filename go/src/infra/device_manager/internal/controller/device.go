@@ -10,12 +10,24 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"time"
+
+	"cloud.google.com/go/pubsub"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	schedulingAPI "go.chromium.org/chromiumos/config/go/test/scheduling"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/server/auth"
 
 	"infra/device_manager/internal/model"
+)
+
+const (
+	deviceEventsPubsubTopic string = "device-events-v1"
 )
 
 // GetDevice gets a Device from the database based on deviceName.
@@ -41,7 +53,7 @@ func GetDevice(ctx context.Context, db *sql.DB, deviceName string) (*api.Device,
 }
 
 // UpdateDevice updates a Device in a transaction.
-func UpdateDevice(ctx context.Context, tx *sql.Tx, device model.Device) error {
+func UpdateDevice(ctx context.Context, tx *sql.Tx, device model.Device, cloudProject string) error {
 	err := model.UpdateDevice(ctx, tx, device)
 	if err != nil {
 		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s: %s", device.ID, err)
@@ -49,7 +61,52 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device model.Device) error {
 	}
 	logging.Debugf(ctx, "UpdateDevice: updated Device %s successfully", device.ID)
 
-	// Send PubSub event
+	// Send message to PubSub Device events stream
+	logging.Debugf(ctx, "getting rpc credentials")
+	creds, err := auth.GetPerRPCCredentials(ctx, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
+	if err != nil {
+		return errors.Annotate(err, "UpdateDevice: failed to get AsSelf credentails").Err()
+	}
+	client, err := pubsub.NewClient(
+		ctx, cloudProject,
+		option.WithGRPCDialOption(grpc.WithPerRPCCredentials(creds)),
+	)
+	if err != nil {
+		logging.Errorf(ctx, "UpdateDevice: cannot set up PubSub client: %s", err)
+		return err
+	}
+
+	logging.Debugf(ctx, "checking topic existence")
+	topic := client.Topic(deviceEventsPubsubTopic)
+	ok, err := topic.Exists(ctx)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return fmt.Errorf("UpdateDevice: topic %s not found", deviceEventsPubsubTopic)
+	}
+
+	logging.Debugf(ctx, "marshaling message")
+	var msg []byte
+	msg, err = proto.Marshal(&schedulingAPI.DeviceEvent{
+		EventTime:   time.Now().Unix(),
+		DeviceId:    device.ID,
+		DeviceReady: false,
+	})
+	if err != nil {
+		return fmt.Errorf("proto.Marshal err: %w", err)
+	}
+
+	rsp := topic.Publish(ctx, &pubsub.Message{
+		Data: msg,
+	})
+
+	_, err = rsp.Get(ctx)
+	if err != nil {
+		logging.Debugf(ctx, "UpdateDevice: failed to publish to PubSub %s", err)
+	}
+
+	topic.Stop()
 
 	return nil
 }
