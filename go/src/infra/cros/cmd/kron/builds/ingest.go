@@ -15,6 +15,7 @@ import (
 
 	cloudPubsub "cloud.google.com/go/pubsub"
 	"github.com/google/uuid"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -197,10 +198,27 @@ type ConfigDetails struct {
 }
 
 type BuildPackage struct {
-	Build     *kronpb.Build
-	Message   *cloudPubsub.Message
-	Requests  []*ConfigDetails
-	ShouldAck bool
+	Build    *kronpb.Build
+	Message  *cloudPubsub.Message
+	Requests []*ConfigDetails
+}
+
+// publishBuilds uploads each build information proto to a pubsub queue
+// to later be sent to BigQuery.
+func publishBuild(build *BuildPackage, client pubsub.PublishClient) error {
+	common.Stdout.Printf("Publishing build %s for build target %s and milestone %d to pub sub", build.Build.BuildUuid, build.Build.BuildTarget, build.Build.Milestone)
+	data, err := protojson.Marshal(build.Build)
+	if err != nil {
+		return err
+	}
+
+	err = client.PublishMessage(context.Background(), data)
+	if err != nil {
+		return err
+	}
+	common.Stdout.Printf("Published build %s for build target %s and milestone %d to pub sub", build.Build.BuildUuid, build.Build.BuildTarget, build.Build.Milestone)
+
+	return nil
 }
 
 // IngestBuildsFromPubSub connects to pubsub ingests all new build information
@@ -213,6 +231,12 @@ func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage
 
 	builds := []*BuildPackage{}
 
+	common.Stdout.Printf("Initializing client for pub sub topic %s", common.BuildsPubSubTopic)
+	client, err := pubsub.InitPublishClient(context.Background(), common.StagingProjectID, common.BuildsPubSubTopic)
+	if err != nil {
+		return nil, err
+	}
+
 	// Spin up a goroutine to handle the incoming messages to the channel
 	// buffer.
 	// NOTE: non-buffered channels in GO require that a ready consumer is
@@ -221,12 +245,27 @@ func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage
 	// deadlock.
 	var wait sync.WaitGroup
 	wait.Add(1)
-	go func(builds *[]*BuildPackage, wg *sync.WaitGroup, buildsChan chan *BuildPackage) {
+	go func(builds *[]*BuildPackage, wg *sync.WaitGroup, buildsChan chan *BuildPackage, client pubsub.PublishClient) {
 		defer wg.Done()
 		for build := range buildsChan {
+			//  We need to publish the messages here to pubsub.
+			if err := publishBuild(build, client); err != nil {
+				// If we failed to republish the message then we should nack the
+				// build to be ingested again.
+				build.Message.Nack()
+				continue
+			}
+
 			*builds = append(*builds, build)
+
+			// Ack the message once it has been correctly republished to our
+			// metrics for analysis.
+			// TODO: when we store build information in psql we will need move
+			// where this ack call is made.
+			build.Message.Ack()
+
 		}
-	}(&builds, &wait, psHandler.buildsChan)
+	}(&builds, &wait, psHandler.buildsChan, client)
 
 	// Initialize the custom pubsub receiver. This custom handler implements a
 	// timeout feature which will stop the pubsub Receive() call once no more
