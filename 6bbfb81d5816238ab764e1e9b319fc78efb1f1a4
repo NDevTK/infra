@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6120fe79_62d2f85b",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_multiout_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2024-02-29T08:52:07Z",
+      "side": 1,
+      "message": "Could you elaborate about that in comment then?",
+      "parentUuid": "1f35840e_600745cf",
+      "range": {
+        "startLine": 45,
+        "startChar": 15,
+        "endLine": 45,
+        "endChar": 23
+      },
+      "revId": "6bbfb81d5816238ab764e1e9b319fc78efb1f1a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "eea707a5_d7647494",
         "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_MultiOut_Remote/build/config/siso/main.star",
         "patchSetId": 2
