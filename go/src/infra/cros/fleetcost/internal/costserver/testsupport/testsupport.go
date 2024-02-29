@@ -44,7 +44,7 @@ func NewFixture(ctx context.Context, t *testing.T) *Fixture {
 // NewFixtureWithData returns a fixture with test data.
 func NewFixtureWithData(ctx context.Context, t *testing.T) *Fixture {
 	tf := NewFixture(ctx, t)
-	err := controller.PutCostIndicator(tf.Ctx, &models.CostIndicatorEntity{
+	err := controller.PutCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{
 		ID: "fake-cost-indicator",
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Name:  "a",
