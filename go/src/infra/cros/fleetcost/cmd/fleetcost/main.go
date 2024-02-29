@@ -32,6 +32,7 @@ func getApplication() *cli.Application {
 			commands.PingUFSCommand,
 			commands.GetCostIndicatorCommand,
 			commands.CreateCostIndicatorCommand,
+			commands.UpdateCostIndicatorCommand,
 			subcommands.Section("Authentication"),
 			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
 			authcli.SubcommandLogin(site.DefaultAuthOptions, "login", false),
