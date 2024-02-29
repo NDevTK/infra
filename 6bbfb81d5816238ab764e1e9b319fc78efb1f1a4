@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd7212db_b20c3b4c",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_multiout_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2024-02-29T04:45:59Z",
+      "side": 1,
+      "message": "What do you mean by this Multi?",
+      "range": {
+        "startLine": 45,
+        "startChar": 15,
+        "endLine": 45,
+        "endChar": 23
+      },
+      "revId": "6bbfb81d5816238ab764e1e9b319fc78efb1f1a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eea707a5_d7647494",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_MultiOut_Remote/build/config/siso/main.star",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2024-02-29T04:45:59Z",
+      "side": 1,
+      "message": "trailing tabs?",
+      "revId": "6bbfb81d5816238ab764e1e9b319fc78efb1f1a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
