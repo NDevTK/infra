@@ -5,6 +5,8 @@
 package models
 
 import (
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleetcostpb "infra/cros/fleetcost/api"
@@ -21,6 +23,17 @@ type CostIndicatorEntity struct {
 
 // Silence staticcheck warning about unused field.
 var _ = CostIndicatorEntity{}._kind
+
+// Clone produces a deep copy of a cost indicator.
+//
+// This method intentionally takes a non-pointer receiver to perform a
+// shallow copy, and then replaces a field to perform a deep copy.
+//
+// I don't actually know whether I also need to copy the datastore.PropertyMap.
+func (indicator CostIndicatorEntity) Clone() *CostIndicatorEntity {
+	indicator.CostIndicator = proto.Clone(indicator.CostIndicator).(*fleetcostpb.CostIndicator)
+	return &indicator
+}
 
 // NewCostIndicatorEntity makes a cost indicator entity from an object extracted from a request.
 func NewCostIndicatorEntity(costIndicator *fleetcostpb.CostIndicator) *CostIndicatorEntity {
