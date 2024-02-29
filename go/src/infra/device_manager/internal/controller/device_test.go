@@ -6,6 +6,7 @@ package controller
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"regexp"
 	"testing"
@@ -15,6 +16,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	. "go.chromium.org/luci/common/testing/assertions"
+
+	"infra/device_manager/internal/model"
 )
 
 func TestGetDevice(t *testing.T) {
@@ -93,6 +96,71 @@ func TestGetDevice(t *testing.T) {
 	})
 }
 
+func TestUpdateDevice(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("UpdateDevice", t, func() {
+		Convey("UpdateDevice: valid update", func() {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			mock.ExpectBegin()
+
+			var txOpts *sql.TxOptions
+			tx, err := db.BeginTx(ctx, txOpts)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub db transaction", err)
+			}
+
+			mock.ExpectExec(regexp.QuoteMeta(`
+				UPDATE
+					"Devices"
+				SET
+					device_address=COALESCE($2, device_address),
+					device_type=COALESCE($3, device_type),
+					device_state=COALESCE($4, device_state)
+				WHERE
+					id=$1;`)).
+				WithArgs("test-device-1", "2.2.2.2:2", "DEVICE_TYPE_VIRTUAL", "DEVICE_STATE_LEASED").
+				WillReturnResult(sqlmock.NewResult(1, 1))
+
+			err = UpdateDevice(ctx, tx, model.Device{
+				ID:            "test-device-1",
+				DeviceAddress: "2.2.2.2:2",
+				DeviceType:    "DEVICE_TYPE_VIRTUAL",
+				DeviceState:   "DEVICE_STATE_LEASED",
+			})
+			So(err, ShouldBeNil)
+		})
+	})
+}
+
+func TestIsDeviceAvailable(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("IsDeviceAvailable", t, func() {
+		Convey("IsDeviceAvailable: device is available", func() {
+			rsp := IsDeviceAvailable(ctx, api.DeviceState_DEVICE_STATE_AVAILABLE)
+			So(rsp, ShouldEqual, true)
+		})
+		Convey("IsDeviceAvailable: device is not available", func() {
+			rsp := IsDeviceAvailable(ctx, api.DeviceState_DEVICE_STATE_LEASED)
+			So(rsp, ShouldEqual, false)
+		})
+	})
+}
+
 func TestConvertDeviceAddressToAPIFormat(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -117,6 +185,28 @@ func TestConvertDeviceAddressToAPIFormat(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err, ShouldErrLike, "port abc is not convertible to integer")
 			So(addr, ShouldResembleProto, &api.DeviceAddress{})
+		})
+	})
+}
+
+func TestConvertDeviceAddressToDBFormat(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("convertAPIDeviceAddressToDBFormat", t, func() {
+		Convey("convertAPIDeviceAddressToDBFormat: valid address", func() {
+			addr := convertAPIDeviceAddressToDBFormat(ctx, &api.DeviceAddress{
+				Host: "1.1.1.1",
+				Port: 1,
+			})
+			So(addr, ShouldEqual, "1.1.1.1:1")
+		})
+		Convey("convertAPIDeviceAddressToDBFormat: ipv6 address", func() {
+			addr := convertAPIDeviceAddressToDBFormat(ctx, &api.DeviceAddress{
+				Host: "1:2:3",
+				Port: 1,
+			})
+			So(addr, ShouldEqual, "[1:2:3]:1")
 		})
 	})
 }
