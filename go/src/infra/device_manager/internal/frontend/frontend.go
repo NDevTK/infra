@@ -50,8 +50,35 @@ func SetDBConfig(server *Server, dbconf database.DatabaseConfig) {
 	server.dbConfig = dbconf
 }
 
+// LeaseDevice takes a LeaseDeviceRequest and leases a corresponding device.
 func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*api.LeaseDeviceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "LeaseDevice is not implemented")
+	logging.Debugf(ctx, "LeaseDevice: received LeaseDeviceRequest %v", r)
+
+	db := database.ConnectDB(ctx, s.dbConfig)
+
+	// Check idempotency of lease. Return if there is an existing unexpired lease.
+	rsp, err := controller.CheckLeaseIdempotency(ctx, db, r.GetIdempotencyKey())
+	if err != nil {
+		return nil, err
+	}
+	if rsp.GetDeviceLease() != nil {
+		return rsp, nil
+	}
+
+	// Parse hardware requirements. Initial iteration will take a deviceID and
+	// search for the device to lease.
+	deviceLabels := r.GetHardwareDeviceReqs().GetSchedulableLabels()
+	deviceID := deviceLabels["device_id"].GetValues()[0] // assumes only leasing one device
+	device, err := controller.GetDevice(ctx, db, deviceID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "LeaseDevice: failed to find Device %s: %s", deviceID, err)
+	}
+	logging.Debugf(ctx, "LeaseDevice: found Device %s: %v", deviceID, device)
+
+	if !controller.IsDeviceAvailable(ctx, device.GetState()) {
+		return nil, status.Errorf(codes.Unavailable, "LeaseDevice: device %s is unavailable for lease", deviceID)
+	}
+	return controller.LeaseDevice(ctx, db, r, device)
 }
 
 func (s *Server) ReleaseDevice(ctx context.Context, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {

@@ -6,6 +6,7 @@ package model
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"regexp"
 	"testing"
@@ -25,6 +26,7 @@ func TestGetDeviceByName(t *testing.T) {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 			}
 			defer func() {
+				mock.ExpectClose()
 				err = db.Close()
 				if err != nil {
 					t.Fatalf("failed to close db: %s", err)
@@ -62,6 +64,7 @@ func TestGetDeviceByName(t *testing.T) {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 			}
 			defer func() {
+				mock.ExpectClose()
 				err = db.Close()
 				if err != nil {
 					t.Fatalf("failed to close db: %s", err)
@@ -83,6 +86,56 @@ func TestGetDeviceByName(t *testing.T) {
 			device, err := GetDeviceByName(ctx, db, "test-device-2")
 			So(err, ShouldNotBeNil)
 			So(device, ShouldEqual, Device{})
+		})
+	})
+}
+
+func TestUpdateDevice(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("UpdateDevice", t, func() {
+		Convey("UpdateDevice: valid update", func() {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			mock.ExpectBegin()
+
+			var txOpts *sql.TxOptions
+			tx, err := db.BeginTx(ctx, txOpts)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub db transaction", err)
+			}
+
+			mock.ExpectPrepare(regexp.QuoteMeta(`
+				UPDATE
+					"Devices"
+				SET
+					device_address=COALESCE($2, device_address),
+					device_type=COALESCE($3, device_type),
+					device_state=COALESCE($4, device_state)
+				WHERE
+					id=$1;`)).
+				ExpectExec().
+				WithArgs("test-device-1", "2.2.2.2:2", "DEVICE_TYPE_VIRTUAL", "DEVICE_STATE_LEASED").
+				WillReturnResult(sqlmock.NewResult(1, 1))
+
+			err = UpdateDevice(ctx, tx, Device{
+				ID:            "test-device-1",
+				DeviceAddress: "2.2.2.2:2",
+				DeviceType:    "DEVICE_TYPE_VIRTUAL",
+				DeviceState:   "DEVICE_STATE_LEASED",
+			})
+			So(err, ShouldBeNil)
 		})
 	})
 }
