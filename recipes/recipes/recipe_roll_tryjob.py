@@ -252,7 +252,7 @@ class RecipesRepo(object):
       `RecipeTrainingFailure` if the training produces an uncaught exception.
     """
     try:
-      cmd = [
+      return self._api.step(step_name, [
           'python3',
           self._root.join(self.recipes_py),
           '-O',
@@ -260,16 +260,9 @@ class RecipesRepo(object):
           'test',
           'train',
           '--no-docs',
-      ]
-      return self._api.step(step_name, cmd)
+      ])
     except self._api.step.StepFailure:
-      # Train recipes again as py3 tests only compare the on-disk expectation
-      # files for PY2+3 recipes.
-      # TODO(crbug.com/1147793): Remove it after Py3 migration is fully done.
-      try:
-        return self._api.step(step_name + ' (py3 retrain)', cmd)
-      except self._api.step.StepFailure:
-        raise RecipeTrainingFailure('failed to train recipes')
+      raise RecipeTrainingFailure('failed to train recipes')
 
 
 def _find_footer(api, repo_id):
@@ -578,14 +571,12 @@ def GenTests(api):
   yield (
       test('find_manual_roll_missing', status='FAILURE') +
       api.step_data('train recipes at upstream CL', retcode=1) +
-      api.step_data('train recipes at upstream CL (py3 retrain)', retcode=1) +
       api.post_check(lambda check, steps: check(MANUAL_CHANGE_FOOTER in steps[
           'MISSING FOOTER IN CL MESSAGE'].step_text)))
 
   yield (
       test('find_manual_roll_wrong', NONTRIVIAL_ROLL_FOOTER, status='FAILURE') +
       api.step_data('train recipes at upstream CL', retcode=1) +
-      api.step_data('train recipes at upstream CL (py3 retrain)', retcode=1) +
       api.post_check(lambda check, steps: check(MANUAL_CHANGE_FOOTER in steps[
           'WRONG FOOTER IN CL MESSAGE'].step_text)))
 
@@ -608,10 +599,7 @@ def GenTests(api):
   yield (test('trivial_roll_upstream_main_broken') + api.step_data(
       'find last non-crashing upstream revision'
       '.train recipes at upstream main',
-      retcode=1) + api.step_data(
-          'find last non-crashing upstream revision'
-          '.train recipes at upstream main (py3 retrain)',
-          retcode=1))
+      retcode=1))
 
   # The current upstream main causes a crash in the downstream repo, but the
   # trivial CL fixes that.
@@ -619,9 +607,6 @@ def GenTests(api):
       'find last non-crashing upstream revision'
       '.train recipes at upstream main',
       retcode=1) + api.step_data(
-          'find last non-crashing upstream revision'
-          '.train recipes at upstream main (py3 retrain)',
-          retcode=1) + api.step_data(
               'find last non-crashing upstream revision'
               '.get upstream base revision',
               stdout=api.raw_io.output_text('deadbeef')) +
@@ -634,10 +619,7 @@ def GenTests(api):
       api.step_data(
           'find last non-crashing upstream revision'
           '.train recipes at upstream main',
-          retcode=1) + api.step_data(
-              'find last non-crashing upstream revision'
-              '.train recipes at upstream main (py3 retrain)',
-              retcode=1)
+          retcode=1)
       # Checkout fails -> we've hit the beginning of the upstream repo's git
       # history without finding a working commit.
       + api.step_data(
