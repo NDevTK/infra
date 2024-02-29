@@ -753,6 +753,7 @@ func validateListMachineLSEFilters(filterMap map[string][]interface{}) error {
 		case "nic":
 		case "pools":
 		case "logical_zone":
+		case "hive":
 			continue
 		default:
 			return errors.Reason("Cannot filter on %s", field).Err()
