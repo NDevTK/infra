@@ -111,6 +111,7 @@ func buildSuiteRequest(v1 *test_platform.Request) *testapi.SuiteRequest {
 		TestArgs:        getTestArgs(v1),
 		AnalyticsName:   getAnalyticsName(v1),
 		MaxInShard:      v1.GetTestPlan().GetMaxInShard(),
+		DddSuite:        IsDDDSuite(v1),
 	}
 }
 
@@ -276,6 +277,12 @@ func getSchedulingPool(v1 *test_platform.Request) string {
 // getAnalyticsName parses the v1 request tags for the analytics_name.
 func getAnalyticsName(v1 *test_platform.Request) string {
 	return getTag(v1.GetParams().GetDecorations().GetTags(), AnalyticsName)
+}
+
+// IsDDDSuite will return if the suite is to run in ddd.
+// TODO (b:327505895): For now, use the ddd prefix, but long term will move to a proper flag.
+func IsDDDSuite(v1 *test_platform.Request) bool {
+	return strings.HasPrefix(getAnalyticsName(v1), "ddd")
 }
 
 // GetBuildType parses the software dependency's ChromeosBuild

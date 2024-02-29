@@ -6,6 +6,7 @@ package common_builders_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -20,7 +21,7 @@ import (
 func TestCTPv1Tov2Translation(t *testing.T) {
 	Convey("Single Translation", t, func() {
 		requests := map[string]*test_platform.Request{
-			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", ""),
+			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", ""),
 		}
 		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
 
@@ -36,8 +37,8 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 
 	Convey("Multi Translation, no grouping", t, func() {
 		requests := map[string]*test_platform.Request{
-			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", ""),
-			"r2": getCTPv1Request("board", "model", "board-release/R124.0.0", "suite", ""),
+			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", ""),
+			"r2": getCTPv1Request("board", "model", "board-release/R124.0.0", "suite", "", ""),
 		}
 		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
 
@@ -59,8 +60,8 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 
 	Convey("Multi Translation, grouping", t, func() {
 		requests := map[string]*test_platform.Request{
-			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", ""),
-			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", ""),
+			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", ""),
+			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", ""),
 		}
 		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
 
@@ -195,7 +196,7 @@ func TestCTP2Grouping(t *testing.T) {
 	})
 }
 
-func getCTPv1Request(board, model, build, suite, testArgs string) *test_platform.Request {
+func getCTPv1Request(board, model, build, suite, testArgs string, analyticsName string) *test_platform.Request {
 	return &test_platform.Request{
 		TestPlan: &test_platform.Request_TestPlan{
 			Suite: []*test_platform.Request_Suite{
@@ -209,6 +210,8 @@ func getCTPv1Request(board, model, build, suite, testArgs string) *test_platform
 			Decorations: &test_platform.Request_Params_Decorations{
 				Tags: []string{
 					"label-pool:schedukeTest",
+
+					fmt.Sprintf("analytics_name:%s", analyticsName),
 				},
 			},
 			Scheduling: &test_platform.Request_Params_Scheduling{
@@ -294,5 +297,20 @@ func getChromeosSoftwareDeps(chromeosBuild string) []*test_platform.Request_Para
 				ChromeosBuild: chromeosBuild,
 			},
 		},
+	}
+}
+
+// isDDDSuite will return if the suite is to run in ddd.
+// For now, use the ddd prefix, but long term will move to a proper flag.
+func TestIsDDDSuite(t *testing.T) {
+	requests := map[string]*test_platform.Request{
+		"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "ddd_meme"),
+		"r2": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "not_ddd_suite"),
+	}
+	if builders.IsDDDSuite(requests["r1"]) != true {
+		t.Fatalf("Incorrectly determined if a request was for 3d")
+	}
+	if builders.IsDDDSuite(requests["r2"]) != false {
+		t.Fatalf("Incorrectly determined if a request was for 3d")
 	}
 }
