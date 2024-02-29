@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleetcostpb "infra/cros/fleetcost/api"
+	"infra/cros/fleetcost/internal/costserver/maskutils"
 	"infra/cros/fleetcost/internal/costserver/models"
 )
 
@@ -40,4 +41,18 @@ func ListCostIndicators(ctx context.Context, limit int) ([]*fleetcostpb.CostIndi
 		return nil, err
 	}
 	return out, nil
+}
+
+// UpdateCostIndicatorEntity extracts a cost indicator entity from the database and updates it.
+func UpdateCostIndicatorEntity(ctx context.Context, entity *models.CostIndicatorEntity, fields []string) (*models.CostIndicatorEntity, error) {
+	oldEntity := entity.Clone()
+	newEntity := entity
+	if err := datastore.Get(ctx, oldEntity); err != nil {
+		return nil, err
+	}
+	maskutils.UpdateCostIndicatorProto(oldEntity.CostIndicator, newEntity.CostIndicator, fields)
+	if err := datastore.Put(ctx, oldEntity); err != nil {
+		return nil, err
+	}
+	return oldEntity, nil
 }

@@ -8,7 +8,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"go.chromium.org/luci/common/testing/assert/structuraldiff"
+	"go.chromium.org/luci/common/testing/typed"
 
 	fleetcostpb "infra/cros/fleetcost/api"
 	"infra/cros/fleetcost/internal/costserver/controller"
@@ -88,5 +91,45 @@ func TestListCostIndicator(t *testing.T) {
 
 	if diff := structuraldiff.DebugCompare(costIndicators, want).String(); diff != "" {
 		t.Errorf("unexpected diff: %s", diff)
+	}
+}
+
+// TestUpdateCostIndicatorHappyPath tests updating a cost indicator that already exists.
+//
+// Note that when updating the record, we provide an argument that
+func TestUpdateCostIndicatorHappyPath(t *testing.T) {
+	t.Parallel()
+
+	tf := testsupport.NewFixture(context.Background(), t)
+
+	if err := controller.PutCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{
+		ID: "fake-cost-indicator",
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Name:  "fake-cost-indicator",
+			Board: "old-board",
+		},
+	}); err != nil {
+		t.Fatalf("failed to insert cost indicator: %s", err)
+	}
+
+	got, err := controller.UpdateCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{
+		ID: "fake-cost-indicator",
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Name:  "fake-cost-indicator",
+			Board: "new-board",
+		},
+	}, []string{"name", "board"})
+	if err != nil {
+		t.Errorf("unexpected error: %q", err)
+	}
+
+	if diff := typed.Got(got).Want(&models.CostIndicatorEntity{
+		ID: "fake-cost-indicator",
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Name:  "fake-cost-indicator",
+			Board: "new-board",
+		},
+	}).Options(cmp.AllowUnexported(*got)).Diff(); diff != "" {
+		t.Errorf("unexpected diff (-want +got): %s", diff)
 	}
 }
