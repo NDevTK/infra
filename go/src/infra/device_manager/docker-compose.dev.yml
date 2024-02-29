@@ -17,11 +17,15 @@ services:
       "-grpc-addr", ":50051",
       "-http-addr", ":8800",
       "-admin-addr", ":8900",
+      "-db-host", "device_manager_db",
+      "-db-port", "5432",
+      "-db-name", "device_manager_db",
+      "-db-user", "postgres",
+      "-db-password-secret", "devsecret://cGFzc3dvcmQ",
       "-token-cache-dir", "/tokens"]
-    user: ${CURRENT_UID:?"Please run as follows 'CURRENT_UID=$(id -u):$(id -g) docker-compose up'"}
+    user: ${CURRENT_UID}
     environment:
       DB_USER: postgres
-      DB_PASS: password
       DB_HOST: device_manager_db
       DB_PORT: 5432
       DB_NAME: device_manager_db
