@@ -13,7 +13,9 @@ import (
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/logging"
 
+	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
 )
 
@@ -24,8 +26,8 @@ var _ api.DeviceLeaseServiceServer = (*Server)(nil)
 type Server struct {
 	api.UnimplementedDeviceLeaseServiceServer
 
-	// database config
-	dbConfig database.DatabaseConfig
+	// database client
+	dbClient database.Client
 
 	// retry defaults
 	initialRetryBackoff time.Duration
@@ -43,9 +45,17 @@ func InstallServices(s *Server, srv grpc.ServiceRegistrar) {
 	api.RegisterDeviceLeaseServiceServer(srv, s)
 }
 
-// SetDBConfig sets the database password location string for the server.
-func SetDBConfig(server *Server, dbconf database.DatabaseConfig) {
-	server.dbConfig = dbconf
+// SetUpDBClient sets up a reusable database client for the server
+func SetUpDBClient(ctx context.Context, server *Server, dbconf database.DatabaseConfig) error {
+	db, err := database.ConnectDB(ctx, dbconf)
+	if err != nil {
+		return status.Errorf(codes.Internal, "SetUpDBClient: could not set up DB client: %s", err)
+	}
+
+	server.dbClient.Conn = db
+	server.dbClient.Config = dbconf
+
+	return nil
 }
 
 func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*api.LeaseDeviceResponse, error) {
@@ -60,8 +70,19 @@ func (s *Server) ExtendLease(ctx context.Context, r *api.ExtendLeaseRequest) (*a
 	return nil, status.Errorf(codes.Unimplemented, "ExtendLease is not implemented")
 }
 
+// GetDevice takes a GetDeviceRequest and returns a corresponding device.
 func (s *Server) GetDevice(ctx context.Context, r *api.GetDeviceRequest) (*api.Device, error) {
-	return nil, status.Errorf(codes.Unimplemented, "GetDevice is not implemented")
+	logging.Debugf(ctx, "GetDevice: received GetDeviceRequest %v", r)
+	if r.Name == "" {
+		return nil, status.Errorf(codes.Internal, "GetDevice: request has no device name")
+	}
+
+	device, err := controller.GetDevice(ctx, s.dbClient.Conn, r.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "GetDevice: failed to get Device %s: %s", r.Name, err)
+	}
+	logging.Debugf(ctx, "GetDevice: received Device %v", device)
+	return device, nil
 }
 
 func (s *Server) ListDevices(ctx context.Context, r *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
