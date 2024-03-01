@@ -6,7 +6,6 @@ package costserver
 
 import (
 	"context"
-	"errors"
 
 	fleetcostpb "infra/cros/fleetcost/api"
 	"infra/cros/fleetcost/internal/costserver/controller"
@@ -39,5 +38,12 @@ func (f *FleetCostFrontend) ListCostIndicators(ctx context.Context, request *fle
 
 // UpdateCostIndicator updates a CostIndicator.
 func (f *FleetCostFrontend) UpdateCostIndicator(ctx context.Context, request *fleetcostpb.UpdateCostIndicatorRequest) (*fleetcostpb.UpdateCostIndicatorResponse, error) {
-	return nil, errors.New("not yet implemented")
+	entity := models.NewCostIndicatorEntity(request.GetCostIndicator())
+	out, err := controller.UpdateCostIndicatorEntity(ctx, entity, request.GetUpdateMask().GetPaths())
+	if err != nil {
+		return nil, err
+	}
+	return &fleetcostpb.UpdateCostIndicatorResponse{
+		CostIndicator: out.CostIndicator,
+	}, nil
 }
