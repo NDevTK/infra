@@ -379,31 +379,6 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 		return nil
 	}
 
-	// TODO(b/319273876): For earliest stage of migration only launch 1 request.
-	// Once we begin Acking messages from the chromeos build pipeline we can let
-	// all requests flow through.
-	releaseBuilds = releaseBuilds[:1]
-
-	if len(releaseBuilds) > 1 {
-		common.Stderr.Printf("too many builds %d", len(releaseBuilds))
-		return nil
-	}
-
-	if len(releaseBuilds[0].Requests) == 0 {
-		common.Stderr.Printf("no configs")
-		return nil
-	}
-
-	if len(releaseBuilds[0].Requests[0].Events) == 0 {
-		common.Stderr.Printf("no requests")
-		return nil
-	}
-
-	if len(releaseBuilds[0].Requests) > 1 {
-		common.Stderr.Printf("too many requests %d", len(releaseBuilds[0].Requests))
-		return nil
-	}
-
 	// Initialize an authenticated BuildBucket client for scheduling.
 	common.Stdout.Printf("Initializing BuildBucket scheduling client prod: %t dryrun: %t", isProd, dryRun)
 	schedulerClient, err := buildbucket.InitScheduler(context.Background(), authOpts, isProd, dryRun)
