@@ -28,6 +28,8 @@ var roVPDKeys = []string{
 	"customization_id",
 	"custom_label_tag",
 	"whitelabel_tag",
+	"bluetooth_mac0",
+	"wifi_mac0",
 }
 
 const (
