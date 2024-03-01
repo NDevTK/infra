@@ -166,34 +166,6 @@ func TimedEvents() error {
 	return nil
 }
 
-// publishBuilds uploads each build information proto to a pubsub queue
-// to later be sent to BigQuery.
-func publishBuilds(builds []*builds.BuildPackage) error {
-	common.Stdout.Printf("Initializing client for pub sub topic %s", common.BuildsPubSubTopic)
-	client, err := pubsub.InitPublishClient(context.Background(), common.StagingProjectID, common.BuildsPubSubTopic)
-	if err != nil {
-		return err
-	}
-
-	common.Stdout.Printf("Publishing %d builds to pub sub", len(builds))
-	for _, build := range builds {
-
-		data, err := protojson.Marshal(build.Build)
-		if err != nil {
-			return err
-		}
-
-		err = client.PublishMessage(context.Background(), data)
-		if err != nil {
-			return err
-		}
-		common.Stdout.Printf("Published %s build %s to Pub/Sub", build.Build.BuildTarget, build.Build.BuildUuid)
-	}
-	common.Stdout.Printf("Done publishing %d builds to pub sub", len(builds))
-
-	return nil
-}
-
 // publishEvent sends the event message to Pub/Sub.
 func publishEvent(client pubsub.PublishClient, event *kronpb.Event) error {
 	data, err := protojson.Marshal(event)
@@ -216,7 +188,6 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 	defer wg.Done()
 
 	// Batch Schedule all requests in the provided build.
-	buildRequest.ShouldAck = true
 	common.Stdout.Printf("Scheduling %d requests to CTP for build %s of board %s", len(buildRequest.Requests), buildRequest.Build.BuildUuid, buildRequest.Build.Board)
 	for _, request := range buildRequest.Requests {
 		for _, event := range request.Events {
@@ -230,10 +201,6 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 					FailedReason: err.Error(),
 				}
 				common.Stdout.Printf("Event %s failed to scheduled for unknown reason", event.Event.EventUuid)
-
-				buildRequest.ShouldAck = false
-				// TODO: Decide if we want to fast fail on one error or keep going
-				// on.
 			}
 
 			// TODO(b/309683890): Add better support for failure/infra_failure/cancelled.
@@ -264,16 +231,6 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 				common.Stderr.Println(err)
 			}
 		}
-	}
-
-	// TODO(b/319276542 | b/319464677): Consider removing the Ack/Nack logic here and moving
-	// it to after the DB Insertion would take place. To solve the issue of
-	// failed schedules, we could implement a backfill feature
-	if buildRequest.ShouldAck {
-		buildRequest.Message.Ack()
-	} else {
-		common.Stderr.Printf("Nacking build message for build %s because one or more failed\n", buildRequest.Build.BuildUuid)
-		buildRequest.Message.Nack()
 	}
 }
 
@@ -391,13 +348,6 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	}
 
 	// TODO(b/315340446): Write build info to long term storage(database)
-
-	// Write all build information to pubsub
-	common.Stdout.Println("Publishing fetched builds information to Pub/Sub.")
-	err = publishBuilds(releaseBuilds)
-	if err != nil {
-		return err
-	}
 
 	// Build the list of all configs triggered by the ingested build images.
 	//
