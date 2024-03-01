@@ -12,7 +12,20 @@ var (
 	//
 	// A map was used here to reduce on search complexity.
 	allowedConfigs = map[string]bool{
-		"CFTNewBuild": true,
+		"CFTNewBuild":                      true,
+		"Camera_Libcamera_HAL":             true,
+		"SyncOffloadsPerBuild":             true,
+		"ShimlessRMANormalPerBuild":        true,
+		"ShimlessRMANodeLockedPerBuild":    true,
+		"CbxDisabledPerBuild":              true,
+		"LauncherImageSearchPerbuildTFC":   true,
+		"AppCompatSmokecanary":             true,
+		"InputsAppCompatArcPerbuildTFC":    true,
+		"InputsAppCompatCitrixPerbuildTFC": true,
+		"NBR_WIFI":                         true,
+		"NBR_WIFI_VARIANTS":                true,
+		"kernel_wifi__performance__perbuild__wificell__wifi_perf_openwrt__tfc":       true,
+		"kernel_wifi__performance__perbuild__wificell__wifi_perf_openwrt_flaky__tfc": true,
 	}
 )
 
