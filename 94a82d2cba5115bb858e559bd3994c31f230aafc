@@ -16,6 +16,24 @@
       "message": "Nit: name publishBuild\n```suggestion\n// publishBuild uploads each build information proto to a pubsub queue\n```",
       "revId": "94a82d2cba5115bb858e559bd3994c31f230aafc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9edb574a_8fa62059",
+        "filename": "go/src/infra/cros/cmd/kron/builds/ingest.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1456797
+      },
+      "writtenOn": "2024-03-01T00:10:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6949112e_4caca03a",
+      "revId": "94a82d2cba5115bb858e559bd3994c31f230aafc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
