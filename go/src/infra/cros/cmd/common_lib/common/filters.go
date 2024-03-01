@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"golang.org/x/exp/slices"
 
@@ -33,9 +32,9 @@ var (
 	DefaultKoffeeFilterNames = []string{}
 
 	// Default shas for backwards compatibility
-	defaultLegacyHWSha  = "bfbfca7d383b8ac97fe5c7d242c3a0df3273e7ce14af4363b5aef15def1d3be7"
+	defaultLegacyHWSha  = "a40e76e81f20dc54e26acea67bb9a00ebd0a64552276d4d3931715668798fffd"
 	defaultTTCPSha      = "4c5af419e9ded8b270f9ebfea6cd8686f360c3aefc13c8bfe11ab3ee7d66eeee"
-	defaultProvisionSha = "5b371d7c0bfb44a90e1bf3591eca32bb38ef15a6112d87e9b5a4fd46d352fc8d"
+	defaultProvisionSha = "79878b6cdcde1edbe5abb64c7a7286148b4da0959510e4334b89691edbd1a422"
 
 	prodShas = map[string]string{
 		TtcpContainerName:      defaultTTCPSha,
@@ -52,9 +51,8 @@ var (
 
 // MakeDefaultFilters sets/appends proper default filters; in their required order.
 func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) []string {
-	suiteName := strings.ToLower(suiteReq.GetTestSuite().GetName())
 	hwFilter := ""
-	if strings.HasPrefix(suiteName, "3d") || strings.HasPrefix(suiteName, "ddd") {
+	if suiteReq.GetDddSuite() {
 		hwFilter = TtcpContainerName
 	} else {
 		hwFilter = LegacyHWContainerName
