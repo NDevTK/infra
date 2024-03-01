@@ -11,8 +11,13 @@ import (
 	"regexp"
 	"testing"
 
+	"cloud.google.com/go/pubsub"
+	"cloud.google.com/go/pubsub/pstest"
 	"github.com/DATA-DOG/go-sqlmock"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	. "go.chromium.org/luci/common/testing/assertions"
@@ -100,6 +105,42 @@ func TestUpdateDevice(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
+	// Set up fake PubSub server
+	srv := pstest.NewServer()
+	defer func() {
+		err := srv.Close()
+		if err != nil {
+			t.Logf("failed to close fake pubsub server: %s", err)
+		}
+	}()
+
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatalf("could not start fake pubsub server")
+	}
+	defer func() {
+		err = conn.Close()
+		if err != nil {
+			t.Logf("failed to close fake pubsub connection: %s", err)
+		}
+	}()
+
+	psClient, err := pubsub.NewClient(ctx, "project", option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("could not connect to fake pubsub server")
+	}
+	defer func() {
+		err = psClient.Close()
+		if err != nil {
+			t.Logf("failed to close fake pubsub client: %s", err)
+		}
+	}()
+
+	_, err = psClient.CreateTopic(ctx, deviceEventsPubsubTopic)
+	if err != nil {
+		t.Fatalf("failed to create fake pubsub topic")
+	}
+
 	Convey("UpdateDevice", t, func() {
 		Convey("UpdateDevice: valid update", func() {
 			db, mock, err := sqlmock.New()
@@ -134,7 +175,7 @@ func TestUpdateDevice(t *testing.T) {
 				WithArgs("test-device-1", "2.2.2.2:2", "DEVICE_TYPE_VIRTUAL", "DEVICE_STATE_LEASED").
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
-			err = UpdateDevice(ctx, tx, model.Device{
+			err = UpdateDevice(ctx, tx, psClient, model.Device{
 				ID:            "test-device-1",
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
