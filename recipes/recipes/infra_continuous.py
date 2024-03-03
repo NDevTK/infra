@@ -200,11 +200,13 @@ def RunSteps(api):
       break
 
   internal = project_name == 'infra_internal'
+  is_packager = 'packager' in buildername
   co = api.infra_checkout.checkout(
       gclient_config_name=gclient_config,
       internal=internal,
       # infra_internal is fully migrated to py3.
-      generate_env_with_system_python=not internal,
+      # infra/ENV is needed for running python tests, but not for packagers.
+      generate_env_with_system_python=not internal and not is_packager,
       go_version_variant=go_version_variant)
   co.gclient_runhooks()
 
