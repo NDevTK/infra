@@ -26,7 +26,7 @@ var (
 
 	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
-	DefaultKarbonFilterNames = []string{TestFinderContainerName, hwPlaceHolder, ProvisionContainerName}
+	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder}
 
 	// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
 	DefaultKoffeeFilterNames = []string{}
@@ -219,7 +219,9 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *api.Cont
 }
 
 func needBackwardsCompatibility(build int) bool {
-	return build < 15789
+	// TODO (dbeckett/azrahamn): set this to the proper build # once the compatibility
+	// changes land in the OS src tree and have assigned build #s.
+	return build < 16000
 }
 
 // CreateTTCPContainerRequest creates container request from provided ctp filter.

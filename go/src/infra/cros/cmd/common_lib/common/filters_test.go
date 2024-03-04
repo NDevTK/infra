@@ -49,7 +49,7 @@ func TestGetDefaultFilters(t *testing.T) {
 	}
 	fmt.Println(contMetadataMap)
 
-	filters, err := GetDefaultFilters(ctx, []string{"container1", TestFinderContainerName, LegacyHWContainerName}, contMetadataMap, 15900)
+	filters, err := GetDefaultFilters(ctx, []string{"container1", TestFinderContainerName, LegacyHWContainerName}, contMetadataMap, 16005)
 	if err != nil {
 		t.Fatalf("got err: %s", err)
 	}
@@ -76,6 +76,7 @@ func TestGetDefaultFilters(t *testing.T) {
 
 	// this hits the backwards compatibility check
 	if filters[1].GetContainerInfo().GetBinaryName() != "test_finder_filter" {
+		fmt.Println(filters)
 		t.Fatal("TestFinderContainerName incorrect binary_name")
 
 	}
@@ -84,7 +85,6 @@ func TestGetDefaultFilters(t *testing.T) {
 		t.Fatal("No container1 found in default filters (or is out of order).")
 	}
 	if filters[0].GetContainerInfo().GetContainer().GetDigest() != "foo" {
-		fmt.Println(filters[1])
 		t.Fatal("container1 has incorrect sha")
 	}
 
