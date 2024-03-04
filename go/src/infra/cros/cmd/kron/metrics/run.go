@@ -52,7 +52,7 @@ func SetStartTime() error {
 		return fmt.Errorf("suite scheduler startTime already set to %s", startTime.String())
 	}
 
-	startTime = timestamppb.Now()
+	startTime = common.TimestamppbNowWithoutNanos()
 
 	return nil
 }
@@ -69,7 +69,7 @@ func SetEndTime() error {
 		return fmt.Errorf("suite scheduler endTime already set to %s", endTime.String())
 	}
 
-	endTime = timestamppb.Now()
+	endTime = common.TimestamppbNowWithoutNanos()
 
 	return nil
 }
@@ -82,8 +82,6 @@ func GetEndTime() *timestamppb.Timestamp {
 // GenerateRunMessage returns a SchedulingMetric for the current SuiteScheduler
 // run.
 func GenerateRunMessage() *kronpb.Run {
-
-	// TODO(b/309683890): remove suite array fields from proto.
 	return &kronpb.Run{
 		RunUuid:   runID,
 		StartTime: startTime,

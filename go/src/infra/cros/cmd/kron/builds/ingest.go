@@ -17,7 +17,6 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	buildPB "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -113,7 +112,7 @@ func transformReportToKronBuild(report *buildPB.BuildReport) (*kronpb.Build, err
 	return &kronpb.Build{
 		BuildUuid:   uuid.NewString(),
 		RunUuid:     metrics.GetRunID(),
-		CreateTime:  timestamppb.Now(),
+		CreateTime:  common.TimestamppbNowWithoutNanos(),
 		Bbid:        report.GetBuildbucketId(),
 		BuildTarget: report.Config.Target.Name,
 		Milestone:   milestone,

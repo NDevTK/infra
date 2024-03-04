@@ -16,6 +16,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 )
 
@@ -161,4 +163,15 @@ func TimeToKronTime(time time.Time) KronTime {
 	}
 
 	return retTime
+}
+
+// TimestamppbNowWithoutNanos returns the current time in timestamppb.Timestamp
+// format but with a 0 value for nanoseconds. Nanos need to be set to 0 because
+// PLX cannot support sub second precision when time format RFC 3339 is used.
+func TimestamppbNowWithoutNanos() *timestamppb.Timestamp {
+
+	ret := timestamppb.Now()
+	ret.Nanos = 0
+
+	return ret
 }

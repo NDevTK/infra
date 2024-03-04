@@ -10,10 +10,11 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+
+	"infra/cros/cmd/kron/common"
 )
 
 // GenerateEventMessage builds a metric event.
@@ -27,7 +28,7 @@ func GenerateEventMessage(config *suschpb.SchedulerConfig, schedulingDecision *k
 		EventUuid:  uuid.NewString(),
 		ConfigName: config.Name,
 		SuiteName:  config.Suite,
-		EventTime:  timestamppb.Now(),
+		EventTime:  common.TimestamppbNowWithoutNanos(),
 		Decision:   schedulingDecision,
 		Bbid:       bbid,
 	}, nil
