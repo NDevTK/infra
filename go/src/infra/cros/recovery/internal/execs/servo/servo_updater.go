@@ -36,10 +36,11 @@ const (
 	// latestFirmwareVersionCMD = "realpath /usr/share/servo_updater/firmware/%s.bin"
 
 	// Commands to update FW for servo. Always reboot servo after update.
-	fwUpdateCmdTail         = `-b %s -s %s -c %s --reboot`
-	fwUpdateCmd             = `servo_updater ` + fwUpdateCmdTail
-	fwUpdateForContainerCmd = `python /update_servo_firmware.py ` + fwUpdateCmdTail
-	fwUpdateForceCmdTail    = ` --force `
+	fwUpdateCmdTail              = `-b %s -s %s -c %s --reboot`
+	fwUpdateCmd                  = `servo_updater ` + fwUpdateCmdTail
+	fwUpdateForContainerCmd      = `python /update_servo_firmware.py ` + fwUpdateCmdTail
+	fwUpdateForceCmdTail         = ` --force `
+	fwUpdateAllowRollbackCmdTail = ` --allow-rollback `
 
 	// fwUpdaterTimeout is the max time it allows for the firmware update command to execute before fail.
 	fwUpdaterTimeout = 2 * time.Minute
@@ -145,6 +146,9 @@ func createServoDeviceFwUpdateCmd(useContainer bool, device *tlw.ServoTopologyIt
 	cmd = fmt.Sprintf(cmd, device.Type, device.Serial, normalizeChannel(channel))
 	if forceUpdate {
 		cmd += fwUpdateForceCmdTail
+	} else {
+		// In cases FW is newer, downgrade it.
+		cmd += fwUpdateAllowRollbackCmdTail
 	}
 	return cmd
 }
