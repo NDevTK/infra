@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb0a4e4c_d6200fa9",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_multiout_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-03-04T00:44:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6120fe79_62d2f85b",
+      "range": {
+        "startLine": 45,
+        "startChar": 15,
+        "endLine": 45,
+        "endChar": 23
+      },
+      "revId": "6bbfb81d5816238ab764e1e9b319fc78efb1f1a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eea707a5_d7647494",
