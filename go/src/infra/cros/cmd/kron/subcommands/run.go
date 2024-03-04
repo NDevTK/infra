@@ -67,7 +67,7 @@ func (c *runCommand) validate() error {
 }
 
 // endRun ends the timer and publishes the message to pubsub.
-func endRun() error {
+func endRun(isProd bool) error {
 	err := metrics.SetEndTime()
 	if err != nil {
 		return err
@@ -80,7 +80,12 @@ func endRun() error {
 		return err
 	}
 
-	client, err := pubsub.InitPublishClient(context.Background(), common.StagingProjectID, common.RunsPubSubTopic)
+	projectID := common.StagingProjectID
+	if isProd {
+		projectID = common.ProdProjectID
+	}
+
+	client, err := pubsub.InitPublishClient(context.Background(), projectID, common.RunsPubSubTopic)
 	if err != nil {
 		return err
 	}
@@ -126,7 +131,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	err = metrics.SetStartTime()
 	if err != nil {
 		// Stop run timer and publish the message to pubsub
-		endRunErr := endRun()
+		endRunErr := endRun(c.prod)
 		if endRunErr != nil {
 			common.Stderr.Println(err)
 		}
@@ -141,7 +146,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 		err := run.NewBuilds(&c.authFlags, c.prod, c.dryRun)
 		if err != nil {
 			// Stop run timer and publish the message to pubsub
-			endRunErr := endRun()
+			endRunErr := endRun(c.prod)
 			if endRunErr != nil {
 				common.Stderr.Println(err)
 			}
@@ -158,7 +163,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 		err := run.TimedEvents()
 		if err != nil {
 			// Stop run timer and publish the message to pubsub
-			endRunErr := endRun()
+			endRunErr := endRun(c.prod)
 			if endRunErr != nil {
 				common.Stderr.Println(err)
 			}
@@ -170,7 +175,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	}
 
 	// Stop run timer and publish the message to pubsub
-	endRunErr := endRun()
+	endRunErr := endRun(c.prod)
 	if endRunErr != nil {
 		common.Stderr.Println(err)
 		return 1

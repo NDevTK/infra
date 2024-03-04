@@ -153,13 +153,14 @@ func (h *handler) processPSMessage(msg *cloudPubsub.Message) error {
 		return err
 	}
 	if err := validateReport(&buildReport); err != nil {
-		return err
+		// Ack the invalid report because it will just sit in the queue otherwise.
+		msg.Ack()
+		common.Stderr.Println(err)
+		return nil
 	}
 
 	// Check for a successful release build. Ignore all types of reports.
 	if !(buildReport.Type == buildPB.BuildReport_BUILD_TYPE_RELEASE && buildReport.Status.Value.String() == "SUCCESS") {
-		// TODO(b/315340446): Switch to ACK() once we have this sending
-		// information to long term storage.
 		msg.Ack()
 		return nil
 	}
@@ -231,8 +232,8 @@ func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage
 
 	builds := []*BuildPackage{}
 
-	common.Stdout.Printf("Initializing client for pub sub topic %s", common.BuildsPubSubTopic)
-	client, err := pubsub.InitPublishClient(context.Background(), common.StagingProjectID, common.BuildsPubSubTopic)
+	common.Stdout.Printf("Initializing client for pub sub topic %s on project %s", common.BuildsPubSubTopic, projectID)
+	client, err := pubsub.InitPublishClient(context.Background(), projectID, common.BuildsPubSubTopic)
 	if err != nil {
 		return nil, err
 	}

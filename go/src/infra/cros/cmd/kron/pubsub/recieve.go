@@ -199,9 +199,9 @@ func (r *ReceiveWithTimer) PullMessages() error {
 	go r.idleTimer.Start(r.cancel)
 
 	// Blocking pull all messages in the feed.
-	common.Stdout.Printf("Begin receiving from Pub/Sub Subscription %s\n", r.subscription.ID())
+	common.Stdout.Printf("Begin receiving from Pub/Sub Subscription %s on project %s\n", r.subscription.ID(), r.client.Project())
 	err := r.subscription.Receive(r.ctx, r.ingestMessage)
-	common.Stdout.Printf("Done receiving from Pub/Sub Subscription %s\n", r.subscription.ID())
+	common.Stdout.Printf("Done receiving from Pub/Sub Subscription %s on project %s\n", r.subscription.ID(), r.client.Project())
 	if err != nil {
 		return err
 	}

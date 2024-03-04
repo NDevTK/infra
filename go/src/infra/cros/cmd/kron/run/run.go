@@ -212,7 +212,7 @@ func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient build
 
 				event.Event.Bbid = response.Id
 
-				common.Stdout.Printf("Event %s scheduled at http://go/bbid/%d using buildId %s", event.Event.EventUuid, response.Id, buildRequest.Build.BuildUuid)
+				common.Stdout.Printf("Event %s for config %s scheduled at http://go/bbid/%d using buildId %s, buildTarget %s on milestone %d", event.Event.EventUuid, event.Event.ConfigName, response.Id, buildRequest.Build.BuildUuid, buildRequest.Build.BuildTarget, buildRequest.Build.Milestone)
 			} else {
 				event.Event.Decision = &kronpb.SchedulingDecision{
 					Type:         kronpb.DecisionType_UNKNOWN,
@@ -247,9 +247,10 @@ func fetchTriggeredNewBuildConfigs(buildPackages []*builds.BuildPackage, suiteSc
 				return err
 			}
 			if !targeted {
-				common.Stdout.Printf("Config %s did not match milestone %d for buildTarget %s\n", config.Name, build.Build.Milestone, build.Build.BuildTarget)
+				common.Stdout.Printf("Config %s did not match milestone %d for buildTarget %s on build %s\n", config.Name, build.Build.Milestone, build.Build.BuildTarget, build.Build.BuildUuid)
 				continue
 			}
+			common.Stdout.Printf("Config %s matched with build %s for buildTarget %s and milestone %d", config.Name, build.Build.BuildUuid, build.Build.BuildTarget, build.Build.Milestone)
 
 			request := &builds.ConfigDetails{
 				Config: config,
