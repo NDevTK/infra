@@ -39,7 +39,7 @@ func servoVerifyV3Exec(ctx context.Context, info *execs.ExecInfo) error {
 // servoVerifyV4Exec verifies whether the servo attached to the servo
 // host is of type V4 or V4p1.
 func servoVerifyV4Exec(ctx context.Context, info *execs.ExecInfo) error {
-	sType, err := WrappedServoType(ctx, info)
+	sType, err := servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo())
 	if err != nil {
 		log.Debugf(ctx, "Servo Verify V4: could not determine the servo type")
 		return errors.Annotate(err, "servo verify v4").Err()
@@ -54,7 +54,7 @@ func servoVerifyV4Exec(ctx context.Context, info *execs.ExecInfo) error {
 // servoVerifyV4Exec verifies whether the servo attached to the servo
 // host is of type V4p1.
 func servoVerifyV4p1Exec(ctx context.Context, info *execs.ExecInfo) error {
-	sType, err := WrappedServoType(ctx, info)
+	sType, err := servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo())
 	if err != nil {
 		log.Debugf(ctx, "Servo Verify V4p1: could not determine the servo type")
 		return errors.Annotate(err, "servo verify v4p1").Err()
@@ -88,7 +88,7 @@ func servoVerifyV4p1BySerialNumberExec(ctx context.Context, info *execs.ExecInfo
 func servoVerifyServoMicroExec(ctx context.Context, info *execs.ExecInfo) error {
 	args := info.GetActionArgs(ctx)
 	reverse := args.AsBool(ctx, "reverse", false)
-	sType, err := WrappedServoType(ctx, info)
+	sType, err := servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo())
 	if err != nil {
 		log.Debugf(ctx, "Servo Verify Servo Micro: could not determine the servo type")
 		return errors.Annotate(err, "servo verify servo micro").Err()
@@ -111,7 +111,7 @@ func servoVerifyServoMicroExec(ctx context.Context, info *execs.ExecInfo) error 
 func servoVerifyC2D2Exec(ctx context.Context, info *execs.ExecInfo) error {
 	args := info.GetActionArgs(ctx)
 	reverse := args.AsBool(ctx, "reverse", false)
-	sType, err := WrappedServoType(ctx, info)
+	sType, err := servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo())
 	if err != nil {
 		log.Debugf(ctx, "Servo Verify C2D2: could not determine the servo type.")
 		return errors.Annotate(err, "servo verify C2D2").Err()
@@ -149,7 +149,7 @@ func servoIsDualSetupConfiguredExec(ctx context.Context, info *execs.ExecInfo) e
 // servoVerifyDualSetupExec verifies whether the servo attached to the
 // servo host actually exhibits dual setup.
 func servoVerifyDualSetupExec(ctx context.Context, info *execs.ExecInfo) error {
-	sType, err := WrappedServoType(ctx, info)
+	sType, err := servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo())
 	if err != nil {
 		return errors.Annotate(err, "servo verify dual setup").Err()
 	}
@@ -172,7 +172,7 @@ func servoVerifyServoCCDExec(ctx context.Context, info *execs.ExecInfo) error {
 		}
 	}
 	if actionMap.AsBool(ctx, "read_servod", true) {
-		if sType, err := WrappedServoType(ctx, info); err != nil {
+		if sType, err := servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo()); err != nil {
 			return errors.Annotate(err, "servo verify servo ccd").Err()
 		} else if sType.IsCCD() {
 			log.Debugf(ctx, "Servo Verify servo CCD: established from servod response: %q", sType.String())
@@ -184,7 +184,7 @@ func servoVerifyServoCCDExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // mainDeviceIsGSCExec checks whether or not the servo device is CR50 or TI50.
 func mainDeviceIsGSCExec(ctx context.Context, info *execs.ExecInfo) error {
-	sType, err := WrappedServoType(ctx, info)
+	sType, err := servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo())
 	if err != nil {
 		return errors.Annotate(err, "main devices is gsc").Err()
 	}
@@ -208,7 +208,7 @@ func mainDeviceIsCCDExec(ctx context.Context, info *execs.ExecInfo) error {
 		}
 	}
 	if actionMap.AsBool(ctx, "read_servod", true) {
-		if sType, err := WrappedServoType(ctx, info); err != nil {
+		if sType, err := servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo()); err != nil {
 			return errors.Annotate(err, "main devices is ccd").Err()
 		} else if sType.IsMainDeviceCCD() {
 			log.Debugf(ctx, "Main CCD device established from servod response: %q", sType.String())
@@ -246,7 +246,7 @@ func servoTypeRegexMatchExec(ctx context.Context, info *execs.ExecInfo) error {
 		}
 	}
 	if actionMap.AsBool(ctx, "read_servod", true) {
-		if sType, err := WrappedServoType(ctx, info); err != nil {
+		if sType, err := servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo()); err != nil {
 			return errors.Annotate(err, "servo verify servo ccd").Err()
 		} else {
 			if err := regexMatch(sType.String()); err == nil {
@@ -283,7 +283,7 @@ func servoHasDebugHeaderExec(ctx context.Context, info *execs.ExecInfo) error {
 		}
 	}
 	if actionMap.AsBool(ctx, "read_servod", true) {
-		if sType, err := WrappedServoType(ctx, info); err != nil {
+		if sType, err := servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo()); err != nil {
 			return errors.Annotate(err, "servo verify servo ccd").Err()
 		} else {
 			components := sType.ExtractComponents(true)

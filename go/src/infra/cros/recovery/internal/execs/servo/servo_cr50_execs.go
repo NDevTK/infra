@@ -10,6 +10,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"golang.org/x/exp/slices"
 
+	components_servo "infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
@@ -72,7 +73,7 @@ func servoCCDExpectedHaveFactoryResetExec(ctx context.Context, info *execs.ExecI
 		return nil
 	}
 	// For Cr50 device, we want CCD to be the main servo device for CCD to be open
-	sType, err := WrappedServoType(ctx, info)
+	sType, err := components_servo.WrappedServoType(ctx, info.NewServod(), info.GetChromeos().GetServo())
 	if err != nil {
 		return errors.Annotate(err, "servo ccd expect have factory reset").Err()
 	}

@@ -13,7 +13,6 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/servo/topology"
 	"infra/cros/recovery/internal/log"
@@ -27,24 +26,6 @@ func IsContainerizedServoHost(ctx context.Context, servoHost *tlw.ServoHost) boo
 	}
 	log.Debugf(ctx, "Servo uses servod container with the name: %s", servoHost.ContainerName)
 	return true
-}
-
-// WrappedServoType returns the type of servo device.
-//
-// This function first looks up the servo type using the servod
-// control. If that does not work, it looks up the dut information for
-// the servo host.
-func WrappedServoType(ctx context.Context, info *execs.ExecInfo) (*servo.ServoType, error) {
-	servoType, err := servo.GetServoType(ctx, info.NewServod())
-	if err != nil {
-		log.Debugf(ctx, "Wrapped Servo Type: Could not read the servo type from servod.")
-		if st := info.GetChromeos().GetServo().GetServodType(); st != "" {
-			servoType = servo.NewServoType(st)
-		} else {
-			return nil, errors.Reason("wrapped servo type: could not determine the servo type from servod control as well DUT Info.").Err()
-		}
-	}
-	return servoType, nil
 }
 
 // ResetUsbkeyAuthorized resets usb-key detected under labstation.

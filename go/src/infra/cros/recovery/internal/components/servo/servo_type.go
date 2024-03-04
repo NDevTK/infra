@@ -11,6 +11,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/tlw"
 )
 
 const (
@@ -178,4 +180,22 @@ func GetServoType(ctx context.Context, servod components.Servod) (*ServoType, er
 		return nil, errors.Reason("get servo type: servo type is empty").Err()
 	}
 	return NewServoType(servoType), nil
+}
+
+// WrappedServoType returns the type of servo device.
+//
+// This function first looks up the servo type using the servod
+// control. If that does not work, it looks up the dut information for
+// the servo host.
+func WrappedServoType(ctx context.Context, servod components.Servod, servoHost *tlw.ServoHost) (*ServoType, error) {
+	servoType, err := GetServoType(ctx, servod)
+	if err != nil {
+		log.Debugf(ctx, "Wrapped Servo Type: Could not read the servo type from servod.")
+		if st := servoHost.GetServodType(); st != "" {
+			servoType = NewServoType(st)
+		} else {
+			return nil, errors.Reason("wrapped servo type: could not determine the servo type from servod control as well DUT Info.").Err()
+		}
+	}
+	return servoType, nil
 }

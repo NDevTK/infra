@@ -40,9 +40,17 @@ func RecoveryModeRequiredPDOff(ctx context.Context, run components.Runner, servo
 		expectBattery, _ = p.HasBattery()
 	}
 	if !expectBattery {
+		log.Debugf(ctx, "The DUT does not have a battery, so recovery mode does not required PD:snk!")
+		return false, nil
+	}
+	if sType, err := servo.WrappedServoType(ctx, servod, dut.GetChromeos().GetServo()); err != nil {
+		return false, errors.Annotate(err, "require sink mode in recovery").Err()
+	} else if sType.IsMicro() {
+		log.Debugf(ctx, "DUT uses servo_micro, so recovery mode does not required PD:snk!")
 		return false, nil
 	}
 	if pdControlSupported, err := servo.ServoSupportsBuiltInPDControl(ctx, servod); err != nil {
+		log.Debugf(ctx, "Servo does not support PD, so recovery mode does not required PD:snk!")
 		return false, errors.Annotate(err, "require sink mode in recovery").Err()
 	} else if !pdControlSupported {
 		log.Debugf(ctx, "Require Sink Mode in Recovery: power delivery is no tsupported on this servo, snk mode is not needed for recovery.")
