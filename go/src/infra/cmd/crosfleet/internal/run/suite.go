@@ -110,7 +110,7 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx contex
 		printer:     c.printer,
 		cmdName:     suiteCmdName,
 		bbClient:    ctpBBClient,
-		testPlan:    testPlanForSuites(args, c.testCommonFlags.tagIncludes, c.testCommonFlags.tagExcludes, c.testCommonFlags.testNameExcludes, c.testCommonFlags.testNameExcludes),
+		testPlan:    testPlanForSuites(args, c.testCommonFlags.tagIncludes, c.testCommonFlags.tagExcludes, c.testCommonFlags.testNameExcludes, c.testCommonFlags.testNameExcludes, c.enableAutotestSharding),
 		cliFlags:    &c.testCommonFlags,
 	}
 
@@ -128,7 +128,7 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx contex
 }
 
 // testPlanForSuites constructs a Test Platform test plan for the given tests.
-func testPlanForSuites(suiteNames []string, tagIncludes []string, tagExcludes []string, testNameIncludes []string, testNameExcludes []string) *test_platform.Request_TestPlan {
+func testPlanForSuites(suiteNames []string, tagIncludes []string, tagExcludes []string, testNameIncludes []string, testNameExcludes []string, enableAutotestSharding bool) *test_platform.Request_TestPlan {
 	testPlan := test_platform.Request_TestPlan{}
 	for _, suiteName := range suiteNames {
 		suiteRequest := &test_platform.Request_Suite{Name: suiteName}
@@ -144,6 +144,7 @@ func testPlanForSuites(suiteNames []string, tagIncludes []string, tagExcludes []
 		}
 		testPlan.TagCriteria = testCaseTagCriteria
 	}
+	testPlan.EnableAutotestSharding = enableAutotestSharding
 	return &testPlan
 }
 

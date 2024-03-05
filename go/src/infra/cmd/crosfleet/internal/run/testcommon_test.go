@@ -175,7 +175,7 @@ missing test arg`,
 		"both PublicBuilderBucket and PublicBuilder should be specified",
 		"suite",
 	},
-	{ // No errors raised
+	{ // One errors raised
 		testCommonFlags{
 			board:       "sample-board",
 			models:      []string{"model1", "model2"},
@@ -187,6 +187,20 @@ missing test arg`,
 		},
 		[]string{"sample-suite-name"},
 		"cannot run non-cft with tag_criteria args",
+		"test",
+	},
+	{ // One errors raised
+		testCommonFlags{
+			board:                  "sample-board",
+			models:                 []string{"model1", "model2"},
+			repeats:                6,
+			pool:                   "sample-pool",
+			release:                "sample-release",
+			priority:               255,
+			enableAutotestSharding: true,
+		},
+		[]string{"sample-suite-name"},
+		"cannot run non-cft with autotest sharding",
 		"test",
 	},
 }

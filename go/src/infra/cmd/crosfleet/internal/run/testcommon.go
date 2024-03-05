@@ -60,39 +60,40 @@ const (
 // testCommonFlags contains parameters common to the "run
 // test", "run suite", and "run testplan" subcommands.
 type testCommonFlags struct {
-	board                string
-	secondaryBoards      []string
-	models               []string
-	secondaryModels      []string
-	pool                 string
-	bucket               string
-	image                string
-	secondaryImages      []string
-	release              string
-	qsAccount            string
-	releaseRetryUrgent   bool
-	maxRetries           int
-	repeats              int
-	priority             int64
-	timeoutMins          int
-	addedDims            map[string]string
-	provisionLabels      map[string]string
-	addedTags            map[string]string
-	keyvals              map[string]string
-	exitEarly            bool
-	lacrosPath           string
-	secondaryLacrosPaths []string
-	cft                  bool
-	scheduke             bool
-	testHarness          string
-	publicBuilderBucket  string
-	publicBuilder        string
-	luciProject          string
-	trv2                 bool
-	tagIncludes          []string
-	tagExcludes          []string
-	testNameIncludes     []string
-	testNameExcludes     []string
+	enableAutotestSharding bool
+	board                  string
+	secondaryBoards        []string
+	models                 []string
+	secondaryModels        []string
+	pool                   string
+	bucket                 string
+	image                  string
+	secondaryImages        []string
+	release                string
+	qsAccount              string
+	releaseRetryUrgent     bool
+	maxRetries             int
+	repeats                int
+	priority               int64
+	timeoutMins            int
+	addedDims              map[string]string
+	provisionLabels        map[string]string
+	addedTags              map[string]string
+	keyvals                map[string]string
+	exitEarly              bool
+	lacrosPath             string
+	secondaryLacrosPaths   []string
+	cft                    bool
+	scheduke               bool
+	testHarness            string
+	publicBuilderBucket    string
+	publicBuilder          string
+	luciProject            string
+	trv2                   bool
+	tagIncludes            []string
+	tagExcludes            []string
+	testNameIncludes       []string
+	testNameExcludes       []string
 }
 
 type fleetValidationResults struct {
@@ -138,6 +139,7 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.StringVar(&c.lacrosPath, "lacros-path", "", "Optional GCS path pointing to a lacros artifact.")
 	f.Var(luciflag.CommaList(&c.secondaryLacrosPaths), "secondary-lacros-paths", "Comma-separated list of lacros paths(empty string can be used to skip lacros provision for a particular DUT, e.g. -secondary-lacros-paths $path1,,$path2) for secondary DUTs to run tests against, if provided it need to align with boards in secondary-boards args.")
 	f.BoolVar(&c.cft, "cft", true, "Run via CFT.")
+	f.BoolVar(&c.enableAutotestSharding, "enable-autotest-sharding", false, "Enable autotest sharding for autotest suite.")
 	f.BoolVar(&c.scheduke, "scheduke", false, "Schedule via Scheduke.")
 	f.StringVar(&c.publicBuilder, "public-builder", "", "Public CTP Builder on which the tests are scheduled.")
 	f.StringVar(&c.publicBuilderBucket, "public-builder-bucket", "", "Bucket for the Public CTP Builder on which the tests are scheduled.")
@@ -202,6 +204,10 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, args []string, mainArgTy
 	// trv2 should be false for non-cft.
 	if !c.cft && c.trv2 {
 		errors = append(errors, fmt.Sprintf("cannot run non-cft test case via trv2"))
+	}
+	// trv2 should be false for non-cft.
+	if !c.cft && c.enableAutotestSharding {
+		errors = append(errors, fmt.Sprintf("cannot run non-cft with autotest sharding"))
 	}
 	// cft should be true for tag_criteria based test plan.
 	if !c.cft && (len(c.tagIncludes) > 0 || len(c.tagExcludes) > 0 || len(c.testNameIncludes) > 0 || len(c.testNameExcludes) > 0) {
