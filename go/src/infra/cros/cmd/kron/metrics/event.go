@@ -18,7 +18,7 @@ import (
 )
 
 // GenerateEventMessage builds a metric event.
-func GenerateEventMessage(config *suschpb.SchedulerConfig, schedulingDecision *kronpb.SchedulingDecision, bbid int64) (*kronpb.Event, error) {
+func GenerateEventMessage(config *suschpb.SchedulerConfig, schedulingDecision *kronpb.SchedulingDecision, bbid int64, buildUUID string) (*kronpb.Event, error) {
 	if runID == "" {
 		return nil, fmt.Errorf("runID cannot be empty")
 	}
@@ -31,5 +31,6 @@ func GenerateEventMessage(config *suschpb.SchedulerConfig, schedulingDecision *k
 		EventTime:  common.TimestamppbNowWithoutNanos(),
 		Decision:   schedulingDecision,
 		Bbid:       bbid,
+		BuildUuid:  buildUUID,
 	}, nil
 }

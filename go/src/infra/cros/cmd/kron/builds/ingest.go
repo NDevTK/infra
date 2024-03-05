@@ -74,8 +74,11 @@ func extractBoardAndVariant(buildTarget string) (string, string, error) {
 	// amd64-generic is a unique board which has a hyphen in its board name. If
 	// more boards begin to follow this pattern we may want to turn this into a
 	// tracking list.
-	if buildTarget == "amd64-generic" {
+	if buildTarget == "amd64-generic" || buildTarget == "fizz-labstation" {
 		board = buildTarget
+	} else if !strings.Contains(buildTarget, "-") && strings.HasSuffix(buildTarget, "64") {
+		board = buildTarget[:len(buildTarget)-2]
+		variant = "64"
 	} else {
 		before, after, didCut := strings.Cut(buildTarget, "-")
 		board = before

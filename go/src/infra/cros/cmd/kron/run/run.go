@@ -297,7 +297,7 @@ func buildCTPRequests(buildPackages []*builds.BuildPackage, suiteSchedulerConfig
 				event := builds.EventWrapper{
 					CtpRequest: ctpRequest,
 				}
-				event.Event, err = metrics.GenerateEventMessage(requests.Config, nil, 0)
+				event.Event, err = metrics.GenerateEventMessage(requests.Config, nil, 0, wrappedBuild.Build.BuildUuid)
 				if err != nil {
 					return err
 				}
