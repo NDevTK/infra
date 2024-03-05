@@ -10,6 +10,7 @@ import (
 	"errors"
 	"time"
 
+	"cloud.google.com/go/pubsub"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -24,7 +25,7 @@ import (
 // The function executes as a transaction. It attempts to create a lease record
 // with an available device. Then it updates the Device's state to LEASED
 // and publishes to a PubSub stream. The transaction is then committed.
-func LeaseDevice(ctx context.Context, db *sql.DB, r *api.LeaseDeviceRequest, device *api.Device) (*api.LeaseDeviceResponse, error) {
+func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *api.LeaseDeviceRequest, device *api.Device) (*api.LeaseDeviceResponse, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, errors.New("LeaseDevice: failed to start database transaction")
@@ -54,7 +55,7 @@ func LeaseDevice(ctx context.Context, db *sql.DB, r *api.LeaseDeviceRequest, dev
 		DeviceType:    device.GetType().String(),
 		DeviceState:   api.DeviceState_DEVICE_STATE_LEASED.String(),
 	}
-	err = UpdateDevice(ctx, tx, updatedDevice)
+	err = UpdateDevice(ctx, tx, psClient, updatedDevice)
 	if err != nil {
 		logging.Errorf(ctx, "LeaseDevice: failed to update device state %s", err)
 		return nil, err
