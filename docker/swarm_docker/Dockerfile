@@ -13,6 +13,11 @@ RUN /usr/bin/apt-get -y install curl file jq lsb-release lsof openssh-client psm
 RUN /usr/bin/apt-get -y install $ARCH_PACKAGES
 RUN /usr/bin/apt-get -y install $KVM_PACKAGES
 
+# Install these packages here rather than as part of install-build-deps.sh since
+# the DEBIAN_FRONTEND=noninteractive env var doesn't appear to apply to
+# install-build-deps.sh and the package ends up waiting on user input.
+RUN /usr/bin/apt-get -y install keyboard-configuration tzdata
+
 # Dependencies required for testing and development.
 RUN /bin/mkdir /tmp/setup-deps
 RUN curl -L \
