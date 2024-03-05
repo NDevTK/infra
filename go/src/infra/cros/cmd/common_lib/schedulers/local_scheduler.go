@@ -24,7 +24,7 @@ func NewLocalScheduler() *LocalScheduler {
 	return &LocalScheduler{AbstractScheduler: absSched}
 }
 
-func (sc *LocalScheduler) Setup(ctx context.Context) error {
+func (sc *LocalScheduler) Setup() error {
 	// no-op
 	return nil
 }

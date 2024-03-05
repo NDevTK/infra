@@ -215,7 +215,7 @@ func ScheduleTask(ctx context.Context, trReq *data.TrRequest, buildState *build.
 			logging.Infof(ctx, "empty scheduler")
 			return nil, fmt.Errorf("empty scheduler")
 		}
-		err = scheduler.Setup(ctx)
+		err = scheduler.Setup()
 		if err != nil {
 			logging.Infof(ctx, "error while setting up scheduler: %s", err)
 			return nil, errors.Annotate(err, "error while setting up scheduler").Err()

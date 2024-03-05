@@ -32,7 +32,8 @@ func NewSchedukeScheduler() *SchedukeScheduler {
 	return &SchedukeScheduler{AbstractScheduler: absSched}
 }
 
-func (s *SchedukeScheduler) Setup(ctx context.Context) error {
+func (s *SchedukeScheduler) Setup() error {
+	ctx := context.Background()
 	if s.schedukeClient == nil {
 		c, err := common.NewSchedukeClient(ctx, false, false)
 		if err != nil {

@@ -20,7 +20,7 @@ type SchedulerInterface interface {
 	GetSchedulerType() SchedulerType
 
 	// Setup sets up the scheduler
-	Setup(context.Context) error
+	Setup() error
 
 	// ScheduleRequest schedules request
 	ScheduleRequest(context.Context, *buildbucketpb.ScheduleBuildRequest, *build.Step) (*buildbucketpb.Build, error)
