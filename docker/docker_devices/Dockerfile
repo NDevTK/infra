@@ -8,11 +8,6 @@ RUN /usr/bin/apt-get -y install curl file iputils-ping jq locales lsb-release \
       lsof net-tools netcat-openbsd parted psmisc python3 rsync sshpass sudo \
       udev usbutils wget
 
-# Install tzdata here rather than as part of install-build-deps.sh since the
-# DEBIAN_FRONTEND=noninteractive env var doesn't appear to apply to
-# install-build-deps.sh and the package ends up waiting on user input.
-RUN /usr/bin/apt-get -y install tzdata
-
 # Every Chrome test today should be using the hermetic JDK fetched as part of
 # a Chrome checkout. However, prior to crrev.com/c/2660219, some tests were
 # depending on a JDK insalled in the system. And since pinpoint is still testing
@@ -34,7 +29,7 @@ RUN /usr/bin/wget -O- \
         > /tmp/setup-deps/install-build-deps.py
 RUN /bin/chmod a+x /tmp/setup-deps/install-build-deps.py
 # This will also install the Android dependencies.
-RUN /tmp/setup-deps/install-build-deps.py --android --no-chromeos-fonts
+RUN /tmp/setup-deps/install-build-deps.py --android --no-chromeos-fonts --no-prompt
 
 # Cleanup to shrink image sizes.
 RUN /usr/bin/find /var/lib/apt/lists /tmp /var/tmp /usr/share/info \

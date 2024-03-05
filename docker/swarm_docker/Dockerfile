@@ -13,11 +13,6 @@ RUN /usr/bin/apt-get -y install curl file jq lsb-release lsof openssh-client psm
 RUN /usr/bin/apt-get -y install $ARCH_PACKAGES
 RUN /usr/bin/apt-get -y install $KVM_PACKAGES
 
-# Install tzdata here rather than as part of install-build-deps.sh since the
-# DEBIAN_FRONTEND=noninteractive env var doesn't appear to apply to
-# install-build-deps.sh and the package ends up waiting on user input.
-RUN /usr/bin/apt-get -y install tzdata
-
 # Dependencies required for testing and development.
 RUN /bin/mkdir /tmp/setup-deps
 RUN curl -L \
@@ -25,7 +20,7 @@ RUN curl -L \
       | base64 -d \
       > /tmp/setup-deps/install-build-deps.py
 RUN /bin/chmod a+x /tmp/setup-deps/install-build-deps.py
-RUN /tmp/setup-deps/install-build-deps.py
+RUN /tmp/setup-deps/install-build-deps.py --no-prompt
 
 # Cleanup to shrink image sizes.
 RUN /usr/bin/find /var/lib/apt/lists /tmp /var/tmp /usr/share/info \
