@@ -50,7 +50,7 @@ func isBeta(milestone int) bool {
 }
 
 func isStable(milestone int) bool {
-	return milestone == GetTot()-3
+	return milestone > 0 && milestone <= GetTot()-3
 }
 
 // IsTargetedBranch checks to see if the given milestone is targeted by the

@@ -68,6 +68,16 @@ func TestIsTargetedBranch(t *testing.T) {
 		return
 	}
 
+	ltsTest, err := IsTargetedBranch(94, []suchpb.Branch{suchpb.Branch_STABLE})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if !ltsTest {
+		t.Errorf("expected %t got %t for stableTest", true, stableTest)
+		return
+	}
+
 	multiTest1, err := IsTargetedBranch(100, []suchpb.Branch{suchpb.Branch_CANARY, suchpb.Branch_STABLE})
 	if err != nil {
 		t.Error(err)
