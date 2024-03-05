@@ -33,7 +33,7 @@ var (
 
 	// Default shas for backwards compatibility
 	defaultLegacyHWSha  = "a40e76e81f20dc54e26acea67bb9a00ebd0a64552276d4d3931715668798fffd"
-	defaultTTCPSha      = "4c5af419e9ded8b270f9ebfea6cd8686f360c3aefc13c8bfe11ab3ee7d66eeee"
+	defaultTTCPSha      = "0ac820d0c425156e8b4b5be6e383b38fb9d78e1519939e7e83fabd50e6b8700a"
 	defaultProvisionSha = "79878b6cdcde1edbe5abb64c7a7286148b4da0959510e4334b89691edbd1a422"
 
 	prodShas = map[string]string{
