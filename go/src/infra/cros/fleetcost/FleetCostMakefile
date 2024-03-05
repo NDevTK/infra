@@ -21,9 +21,12 @@ lecture-user:
 
 # Run the static analysis tools and the tests and build the binaries.
 # This is intended to be an efficient inner loop for a developer.
+#
+# staticcheck is not a standard tool. It is convenient but not required.
+# Use it *first* if the user has it, otherwise use `go vet` and friends.
 .PHONY: binaries
 binaries:
-	staticcheck ./...
+	if which staticcheck; then staticcheck ./...; else true; fi
 	go vet ./...
 	go test ./...
 	$(RM) $(GARBAGE)
