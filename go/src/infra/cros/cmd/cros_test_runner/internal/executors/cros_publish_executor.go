@@ -307,7 +307,7 @@ func (ex *CrosPublishExecutor) cpconPublishStartCommandExecution(
 	defer func() { step.End(err) }()
 
 	var addnEnvironment []string
-	if hostname := os.Getenv("HOSTNAME"); hostname != "" {
+	if hostname := os.Getenv("DRONE_AGENT_HIVE"); hostname != "" {
 		addnEnvironment = append(addnEnvironment, fmt.Sprintf("PUBLISH_HOSTNAME=%s", hostname))
 	}
 	publishClient, err := ex.Start(
