@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ListRange, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 import { TreeNode } from './tree_node';
@@ -48,9 +54,7 @@ export interface VirtualTreeNodeActions<T extends TreeNodeData> {
  */
 export interface VirtualTreeProps<T extends TreeNodeData> {
   /* Data Options */
-  root: readonly TreeNodeData[];
-  onNodeSelect?: (treeNodeData: T) => void;
-  onNodeToggle?: (treeNodeData: T) => void;
+  root: readonly T[];
 
   /* Renderers */
   collapseIcon?: React.ReactNode;
@@ -63,10 +67,6 @@ export interface VirtualTreeProps<T extends TreeNodeData> {
   ) => JSX.Element;
   isTreeCollapsed?: boolean;
   disableVirtualization?: boolean;
-  // boolean accessor for activeSelection property of the TreeData which enables
-  // rendering of the selected nodes in viewport. If multiple are matched, the
-  // first match will rendered in the viewport.
-  setActiveSelectionFn?: (treeNodeData: T) => boolean;
 
   /**
    * Node ids that are marked as selected.
@@ -83,10 +83,25 @@ export interface VirtualTreeProps<T extends TreeNodeData> {
   searchActiveIndex?: number;
 
   /**
-   * Callback function which returns total search matches when search matches
-   * are found.
+   * Toggle the scroll to the active index.
    */
-  onSearchMatchFound?: (totalSearchMatches: number) => void;
+  scrollToggle?: boolean;
+
+  /**
+   * Callback function which returns total search matches when search matches
+   * are found. activeIndex is -1 when no search matches are found.
+   */
+  onSearchMatchFound?: (
+    activeIndex: number,
+    totalSearchMatches: number,
+  ) => void;
+  onNodeSelect?: (treeNodeData: T) => void;
+  onNodeToggle?: (treeNodeData: T) => void;
+
+  // boolean accessor for activeSelection property of the TreeData which enables
+  // rendering of the selected nodes in viewport. If multiple are matched, the
+  // first match will rendered in the viewport.
+  setActiveSelectionFn?: (treeNodeData: T) => boolean;
 }
 
 /**
@@ -96,6 +111,7 @@ export function VirtualTree<T extends TreeNodeData>({
   root,
   searchOptions,
   searchActiveIndex,
+  scrollToggle,
   itemContent,
   collapseIcon,
   expandIcon,
@@ -107,16 +123,10 @@ export function VirtualTree<T extends TreeNodeData>({
   onNodeSelect,
   onNodeToggle,
 }: VirtualTreeProps<T>) {
-  // Map GcsObjectNode id to TreeData<T>.
-  const idToTreeDataMap = useRef<Map<string, TreeData<T>>>(new Map());
   // Index of the first visible tree node in the view port.
   const firstVisibleIndex = useRef<number>(-1);
   // Index of the last visible tree node in the view port.
   const lastVisibleIndex = useRef<number>(-1);
-  // List of all the tree data nodes.
-  const allTreeDataList = useRef<Array<TreeData<T>>>(new Array<TreeData<T>>());
-  // Store the initial selection nodeId.
-  const shouldRenderInitialSelectionRef = useRef(true);
   // Indicates if the node toggle is in progress the tree browser.
   const isNodeToggleInProgressRef = useRef(false);
   // reference to virtuoso component.
@@ -143,34 +153,44 @@ export function VirtualTree<T extends TreeNodeData>({
     lastVisibleIndex.current = endIndex;
   };
 
+  const { allTreeDataList, idToTreeDataMap } = useMemo(() => {
+    const allTreeDataList = generateTreeDataList(
+      root as T[],
+      new Array<TreeData<T>>(),
+      INITIAL_TREE_LEVEL,
+      undefined,
+    );
+
+    // Map ObjectNode id to TreeData<T>.
+    const idToTreeDataMap: Map<string, TreeData<T>> = new Map(
+      allTreeDataList.map((treeData) => [treeData.id.toString(), treeData]),
+    );
+
+    return { allTreeDataList, idToTreeDataMap };
+  }, [root]);
+
   // Callback that scrolls the specific entry at index into view, specialized
   // for variable sized lists
   const scrollEntryIntoViewIfExists = useCallback(
-    (searchActiveRowId: number) => {
-      if (searchActiveRowId < 0) {
-        return;
-      }
-
-      const treeNode = openTreeDataList[searchActiveRowId];
-      if (treeNode) {
-        activeSelectionRef.current = treeNode.id;
-      }
+    (index: number, treeNode: TreeData<T> | undefined) => {
+      if (!treeNode) return;
+      activeSelectionRef.current = treeNode.id;
 
       if (
         !isWithinIndexRange(
-          searchActiveRowId,
+          index,
           firstVisibleIndex.current,
           lastVisibleIndex.current,
         )
       ) {
         virtuosoRef.current?.scrollToIndex({
-          index: searchActiveRowId,
+          index,
           align: 'center',
           behavior: 'auto',
         });
       }
     },
-    [openTreeDataList],
+    [],
   );
 
   /**
@@ -182,11 +202,11 @@ export function VirtualTree<T extends TreeNodeData>({
       closedTreeNodeIdToSubTreeIds.current.values(),
     ).flat();
     setOpenTreeDataList(
-      allTreeDataList.current.filter(
+      allTreeDataList.filter(
         (treeData: TreeData<T>) => !allClosedSubTree.includes(treeData.id),
       ),
     );
-  }, []);
+  }, [allTreeDataList]);
 
   /**
    * Expands the list of nodes provided.
@@ -208,12 +228,12 @@ export function VirtualTree<T extends TreeNodeData>({
   const expandAllNodes = useCallback(() => {
     const nodesToBeExpanded = new Array<TreeData<T>>();
     for (const key of closedTreeNodeIdToSubTreeIds.current.keys()) {
-      if (idToTreeDataMap.current.has(key)) {
-        nodesToBeExpanded.push(idToTreeDataMap.current.get(key) as TreeData<T>);
+      if (idToTreeDataMap.has(key)) {
+        nodesToBeExpanded.push(idToTreeDataMap.get(key) as TreeData<T>);
       }
     }
     expandNodes(nodesToBeExpanded);
-  }, [expandNodes]);
+  }, [expandNodes, idToTreeDataMap]);
 
   /**
    * Collapses the list of nodes provided.
@@ -221,11 +241,7 @@ export function VirtualTree<T extends TreeNodeData>({
   const collapseNodes = useCallback(
     (treeDataList: Array<TreeData<T>>) => {
       for (const treeData of treeDataList) {
-        const subTreeDataIdList = getSubTreeData(
-          treeData,
-          [],
-          idToTreeDataMap.current,
-        );
+        const subTreeDataIdList = getSubTreeData(treeData, [], idToTreeDataMap);
         closedTreeNodeIdToSubTreeIds.current.set(
           treeData.id,
           subTreeDataIdList,
@@ -234,7 +250,7 @@ export function VirtualTree<T extends TreeNodeData>({
       }
       updateOpenTreeDataList();
     },
-    [updateOpenTreeDataList],
+    [idToTreeDataMap, updateOpenTreeDataList],
   );
 
   // TODO(b/289439478): fine tune the Fusion View UI for treeBrowser section.
@@ -242,35 +258,37 @@ export function VirtualTree<T extends TreeNodeData>({
    * Collapse all nodes in the tree.
    */
   const collapseAllNodes = useCallback(() => {
-    const allRootNodes = allTreeDataList.current.filter(
-      (treeNode: TreeData<T>) => treeNode.level === 0,
+    const allRootNodes = allTreeDataList.filter(
+      (treeNode: TreeData<T>) => !treeNode.isLeafNode,
     );
     collapseNodes(allRootNodes);
-  }, [collapseNodes]);
+  }, [allTreeDataList, collapseNodes]);
 
   /**
    * Retrieves all the matching search term in the open tree list. Since
    * the virtual tree is not completely rendered, this method returns all
    * the matching search term nodes to scroll into.
    */
-  const getSearchMatches = useCallback(() => {
-    const searchMatches: SearchTreeMatch[] = [];
-    if (!searchOptions) return searchMatches;
+  const getSearchMatches = useCallback(
+    (treeDataList: TreeData<T>[]) => {
+      const searchMatches: SearchTreeMatch[] = [];
+      if (!searchOptions) return searchMatches;
 
-    // Dont trigger the search match if the pattern or expanded tree is empty.
-    if (!searchOptions.pattern || openTreeDataList.length === 0)
+      // Dont trigger the search match if the pattern or expanded tree is empty.
+      if (!searchOptions.pattern || treeDataList.length === 0)
+        return searchMatches;
+
+      // Split the search term into non empty regexps so the tree can be searched
+      // in the exact order specified by the search path.
+      const searchFlag = searchOptions.ignoreCase ? 'i' : '';
+      const searchRegexps = getValidRegexps(searchOptions.pattern, searchFlag);
+      root.forEach((node) =>
+        depthFirstSearch(node, searchRegexps, /* index= */ 0, searchMatches),
+      );
       return searchMatches;
-
-    // Split the search term into non empty regexps so the tree can be searched
-    // in the exact order specified by the search path.
-    const searchFlag = searchOptions.ignoreCase ? 'i' : '';
-    const searchRegexps = getValidRegexps(searchOptions.pattern, searchFlag);
-    root.forEach((node) =>
-      depthFirstSearch(node, searchRegexps, /* index= */ 0, searchMatches),
-    );
-    return searchMatches;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(searchOptions), openTreeDataList]);
+    },
+    [root, searchOptions],
+  );
 
   // Finds the row Id of the selected search index, this is used to scroll to
   // and highlight the currently active entry.
@@ -280,7 +298,8 @@ export function VirtualTree<T extends TreeNodeData>({
         (treeNode: TreeData<T>) =>
           treeNode.id === searchMatchesRef.current.at(index)?.nodeId,
       );
-      scrollEntryIntoViewIfExists(searchActiveRowId);
+      const treeNode = openTreeDataList.at(searchActiveRowId);
+      scrollEntryIntoViewIfExists(searchActiveRowId, treeNode);
     },
     [openTreeDataList, scrollEntryIntoViewIfExists],
   );
@@ -302,32 +321,45 @@ export function VirtualTree<T extends TreeNodeData>({
     onNodeSelect?.(treeData.data);
   };
 
-  // Scrolls node into view marked for active selection.
-  const renderInitialSelection = useCallback(() => {
-    const node = openTreeDataList.find(
-      (treeData) => treeData.id === activeSelectionRef.current,
-    );
-    if (node) {
-      const scrollNodeIndex = openTreeDataList.findIndex(
-        (treeData) => treeData.id === node.id,
-      );
-      shouldRenderInitialSelectionRef.current = false;
-      virtuosoRef.current?.scrollToIndex({
-        index: scrollNodeIndex,
-        align: 'center',
-        behavior: 'auto',
-      });
-    }
-  }, [openTreeDataList]);
+  // Figure out the first visible index within the search matches.
+  // If none is visible in the current window, reset to 0.
+  // If there are no matches it returns -1 as invalid.
+  const getFirstVisibleSearchMatchIndex = useCallback(
+    (searchMatches: SearchTreeMatch[], treeDataList: TreeData<T>[]): number => {
+      if (searchMatches.length === 0) {
+        return -1;
+      }
+
+      const start = firstVisibleIndex.current;
+      const end = lastVisibleIndex.current;
+      for (let i = start; i <= end; i++) {
+        const treeData = treeDataList.at(i);
+        const index = searchMatches.findIndex(
+          (match) => match.nodeId === treeData?.id,
+        );
+
+        if (index >= 0) return index;
+      }
+
+      // Reset the index to 0 since none of the matches are in the current window.
+      return 0;
+    },
+    [],
+  );
 
   // Updates the parent component with the search matches and scroll
   // to the first search term if search term is valid.
-  const searchTree = useCallback(() => {
-    // Reset the node states every time pattern changes to avoid staleness.
-    searchMatchesRef.current = [];
-    searchMatchesRef.current = getSearchMatches();
-    onSearchMatchFound?.(searchMatchesRef.current.length);
-  }, [getSearchMatches, onSearchMatchFound]);
+  const searchTree = useCallback(
+    (treeDataList: TreeData<T>[]) => {
+      // Reset the node states every time pattern changes to avoid staleness.
+      searchMatchesRef.current = [];
+      const matches = getSearchMatches(treeDataList);
+      const index = getFirstVisibleSearchMatchIndex(matches, treeDataList);
+      searchMatchesRef.current = matches;
+      onSearchMatchFound?.(index, matches.length);
+    },
+    [getSearchMatches, getFirstVisibleSearchMatchIndex, onSearchMatchFound],
+  );
 
   const getValidRegexps = (pattern: string, flag: string): RegExp[] => {
     if (pattern.length === 0) return [];
@@ -371,40 +403,23 @@ export function VirtualTree<T extends TreeNodeData>({
       // searchMatched.
       searchMatchesRef.current = [];
     }
-    searchTree();
-  }, [
-    searchOptions?.pattern,
-    searchOptions?.ignoreCase,
-    searchOptions,
-    expandAllNodes,
-    searchTree,
-  ]);
+    searchTree(allTreeDataList);
+  }, [searchOptions, expandAllNodes, searchTree, allTreeDataList]);
 
   /**
-   * Recomputes the all tree data list every time the root node
-   * changes.
+   * Computes all tree data list on initial render.
    */
   useEffect(() => {
-    if (root.length === 0) return;
-
-    allTreeDataList.current = generateTreeDataList(
-      root as T[],
-      new Array<TreeData<T>>(),
-      INITIAL_TREE_LEVEL,
-      undefined,
-    );
-    allTreeDataList.current.forEach((treeData: TreeData<T>) =>
-      idToTreeDataMap.current.set(treeData.id.toString(), treeData),
-    );
-
-    // set activeSelection node
-    allTreeDataList.current.forEach((treeData) => {
+    // Scroll to the active selection on initial render.
+    for (const [index, treeData] of allTreeDataList.entries()) {
       if (setActiveSelectionFn?.(treeData.data)) {
-        activeSelectionRef.current = treeData.id;
+        scrollEntryIntoViewIfExists(index, treeData);
+        break;
       }
-    });
-    setOpenTreeDataList(allTreeDataList.current);
-  }, [root, setActiveSelectionFn]);
+    }
+
+    setOpenTreeDataList(allTreeDataList);
+  }, [allTreeDataList, scrollEntryIntoViewIfExists, setActiveSelectionFn]);
 
   /**
    * Updates the search state of the tree everytime the open tree data or
@@ -419,18 +434,9 @@ export function VirtualTree<T extends TreeNodeData>({
       return;
     }
 
-    // Avoid rendering of initial selection on every re-render.
-    if (shouldRenderInitialSelectionRef.current) {
-      renderInitialSelection();
-    }
     if (!searchOptions?.pattern) return;
-    searchTree();
-  }, [
-    openTreeDataList,
-    renderInitialSelection,
-    searchOptions?.pattern,
-    searchTree,
-  ]);
+    searchTree(openTreeDataList);
+  }, [openTreeDataList, searchOptions?.pattern, searchTree]);
 
   useEffect(() => {
     if (isTreeCollapsed) {
@@ -449,7 +455,12 @@ export function VirtualTree<T extends TreeNodeData>({
 
     navigateToSearchMatch(searchActiveIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigateToSearchMatch, searchActiveIndex, searchMatchesRef.current]);
+  }, [
+    navigateToSearchMatch,
+    searchActiveIndex,
+    searchMatchesRef.current,
+    scrollToggle,
+  ]);
 
   // Check if the default node renderer needs to be overridden by user provided
   // custom node renderer.
