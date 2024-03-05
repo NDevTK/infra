@@ -294,7 +294,7 @@ func TestResultConfig(t *testing.T) {
 func TestExperiment2s(t *testing.T) {
 	Convey("Given a request with testargs", t, func() {
 		inv := basicInvocation()
-		inv.TestArgs = "foo=bar zoo=topia"
+		inv.TestArgs = "foo=bar zoo=topia=="
 		setTestName(inv, "foo-name")
 		var params test_platform.Request_Params
 		var dummyWorkerConfig = &config.Config_SkylabWorker{}
@@ -306,7 +306,7 @@ func TestExperiment2s(t *testing.T) {
 		}
 		k2 := &testapi.Arg{
 			Flag:  "zoo",
-			Value: "topia",
+			Value: "topia==",
 		}
 
 		things = append(things, k1)

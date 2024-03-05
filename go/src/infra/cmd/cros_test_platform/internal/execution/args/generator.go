@@ -444,15 +444,15 @@ func (g *Generator) testargsforCFT() *testapi.ExecutionMetadata {
 	args := &testapi.ExecutionMetadata{}
 	things := []*testapi.Arg{}
 
-	// ta will often be a comma deliminated string such as:
-	// "foo=bar,zoo=mar"
-	// Split on the comma, then split again on the =
+	// ta will often be a space deliminated string such as:
+	// "foo=bar zoo=mar"
+	// Split on the space, then split again on the =
 	// Lazy parsing the `=`; as KV support is weak at best.
 	// Users are responsible for clean args.
 	for _, kv := range strings.Split(ta, " ") {
 		k := ""
 		v := ""
-		for _, innerkv := range strings.Split(kv, "=") {
+		for _, innerkv := range strings.SplitN(kv, "=", 2) {
 			if k == "" {
 				k = innerkv
 			} else if v == "" {
