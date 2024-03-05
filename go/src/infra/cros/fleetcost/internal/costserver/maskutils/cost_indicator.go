@@ -11,8 +11,13 @@ import (
 // UpdateCostIndicatorProto updates the cost indicator proto.
 //
 // The fieldmask argument is probably an expression of the form request.GetFieldMask().GetPaths().
+//
+// Between the source and destinations the names must match OR one or both must be empty.
 func UpdateCostIndicatorProto(dst *fleetcostpb.CostIndicator, src *fleetcostpb.CostIndicator, fieldmask []string) {
 	if dst == nil {
+		return
+	}
+	if !compatibleNames(dst.GetName(), src.GetName()) {
 		return
 	}
 	for _, field := range fieldmask {
@@ -23,8 +28,9 @@ func UpdateCostIndicatorProto(dst *fleetcostpb.CostIndicator, src *fleetcostpb.C
 // updateCostIndicatorField updates a single field in a cost indicator proto.
 func updateCostIndicatorField(dst *fleetcostpb.CostIndicator, src *fleetcostpb.CostIndicator, field string) {
 	switch field {
+	// The field "name" is specifically prohibited from being updated using a mask.
 	case "name":
-		dst.Name = src.GetName()
+		return
 	case "type":
 		dst.Type = src.GetType()
 	case "board":
@@ -42,4 +48,14 @@ func updateCostIndicatorField(dst *fleetcostpb.CostIndicator, src *fleetcostpb.C
 	case "description":
 		dst.Description = src.GetDescription()
 	}
+}
+
+// compatibleNames checks to see that the right name is an acceptable candidate to assign to the left.
+//
+// This condition fails precisely when the left and right name are nonempty and also not equal to each other.
+func compatibleNames(leftName string, rightName string) bool {
+	if leftName == "" || rightName == "" {
+		return true
+	}
+	return leftName == rightName
 }

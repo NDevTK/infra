@@ -12,40 +12,86 @@ import (
 	fleetcostpb "infra/cros/fleetcost/api"
 )
 
+// TestUpdateCostIndicatorProtoHappyPath tests the happy path where the two protos are compatible
+// and some-but-not-all of the fields are capable of being updated.
+func TestUpdateCostIndicatorProtoHappyPath(t *testing.T) {
+	t.Parallel()
+
+	dst := &fleetcostpb.CostIndicator{
+		Name:  "wombat",
+		Board: "woof",
+		Model: "aaaaa",
+	}
+	src := &fleetcostpb.CostIndicator{
+		Name:  "wombat",
+		Board: "the noise that wombats make",
+		Model: "bbbbb",
+	}
+
+	UpdateCostIndicatorProto(dst, src, []string{"board"})
+
+	if dst.GetBoard() != "the noise that wombats make" {
+		t.Error("update cost failed to update board")
+	}
+	if dst.GetModel() != "aaaaa" {
+		t.Errorf("model is unexpectedly %q", dst.GetModel())
+	}
+}
+
+// TestUpdateCostIndicatorProto is a table-driven test for testing UpdateCostIndicatorProto edge cases.
 func TestUpdateCostIndicatorProto(t *testing.T) {
 	t.Parallel()
 	cases := []struct {
 		name      string
-		src       *fleetcostpb.CostIndicator
 		dst       *fleetcostpb.CostIndicator
+		src       *fleetcostpb.CostIndicator
 		fieldmask []string
 		output    *fleetcostpb.CostIndicator
 	}{
 		{
 			name:      "empty",
-			src:       nil,
 			dst:       nil,
+			src:       nil,
 			fieldmask: nil,
 			output:    nil,
 		},
 		{
-			name:      "empty with nontrivial fieldmask",
-			src:       nil,
+			name:      "empty with name fieldmask",
 			dst:       nil,
+			src:       nil,
 			fieldmask: []string{"name"},
 			output:    nil,
 		},
 		{
-			name: "name only",
-			src: &fleetcostpb.CostIndicator{
-				Name: "platypus",
-			},
+			name: "compatible name happy path",
 			dst: &fleetcostpb.CostIndicator{
-				Name: "warthog",
+				Name:  "platypus",
+				Board: "old-board",
 			},
-			fieldmask: []string{"name"},
+			src: &fleetcostpb.CostIndicator{
+				Name:  "platypus",
+				Board: "new-board",
+			},
+			fieldmask: []string{"board"},
 			output: &fleetcostpb.CostIndicator{
-				Name: "platypus",
+				Name:  "platypus",
+				Board: "new-board",
+			},
+		},
+		{
+			name: "compatible name wildcard name",
+			dst: &fleetcostpb.CostIndicator{
+				Name:  "platypus",
+				Board: "old-board",
+			},
+			src: &fleetcostpb.CostIndicator{
+				Name:  "platypus",
+				Board: "new-board",
+			},
+			fieldmask: []string{"board"},
+			output: &fleetcostpb.CostIndicator{
+				Name:  "platypus",
+				Board: "new-board",
 			},
 		},
 	}
