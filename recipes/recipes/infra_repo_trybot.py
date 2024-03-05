@@ -12,7 +12,6 @@ DEPS = [
     'depot_tools/depot_tools',
     'depot_tools/osx_sdk',
     'infra_checkout',
-    'infra_system',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/defer',
@@ -44,6 +43,10 @@ PROPERTIES = {
 }
 
 
+def should_run_python_tests(api):
+  return api.platform.arch != 'arm'
+
+
 def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project = cl.project
@@ -56,7 +59,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
       patch_root=patch_root,
       internal=internal,
       # infra_internal is fully migrated to py3.
-      generate_env_with_system_python=not internal,
+      generate_py2_env=not internal and should_run_python_tests(api),
       go_version_variant=go_version_variant)
   co.commit_change()
   co.gclient_runhooks()
@@ -81,7 +84,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
   # Don't run Python or recipes tests if only "go/..." was touched.
   if not is_pure_go_change:
     deferred = []
-    if api.platform.arch != 'arm':
+    if should_run_python_tests(api):
       with api.context(cwd=co.path.join(patch_root)):
         deferred.append(
             api.defer(api.step, 'python tests',

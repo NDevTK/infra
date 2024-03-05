@@ -172,6 +172,14 @@ INFRA_INTERNAL_REPO = 'https://chrome-internal.googlesource.com/infra/infra_inte
 INFRA_REPO = 'https://chromium.googlesource.com/infra/infra'
 
 
+def should_run_python_tests(api, builder_name):
+  # Do not run python tests on packager builders, since most of them are
+  # irrelevant to the produced packages. Relevant portion of tests will be run
+  # from api.infra_cipd.test() below, when testing packages that pack python
+  # code.
+  return api.platform.arch != 'arm' and 'packager' not in builder_name
+
+
 def RunSteps(api):
   buildername: str = api.buildbucket.builder_name
   if buildername.startswith((
@@ -200,13 +208,12 @@ def RunSteps(api):
       break
 
   internal = project_name == 'infra_internal'
-  is_packager = 'packager' in buildername
   co = api.infra_checkout.checkout(
       gclient_config_name=gclient_config,
       internal=internal,
       # infra_internal is fully migrated to py3.
-      # infra/ENV is needed for running python tests, but not for packagers.
-      generate_env_with_system_python=not internal and not is_packager,
+      generate_py2_env=(not internal and
+                        should_run_python_tests(api, buildername)),
       go_version_variant=go_version_variant)
   co.gclient_runhooks()
 
@@ -220,11 +227,7 @@ def RunSteps(api):
 def build_main(api, checkout, buildername, project_name, repo_url, rev):
   is_packager = 'packager' in buildername
 
-  # Do not run python tests on packager builders, since most of them are
-  # irrelevant to the produced packages. Relevant portion of tests will be run
-  # from api.infra_cipd.test() below, when testing packages that pack python
-  # code.
-  if api.platform.arch != 'arm' and not is_packager:
+  if should_run_python_tests(api, buildername):
     run_python_tests(api, checkout, project_name)
 
   # Some third_party go packages on OSX rely on cgo and thus a configured

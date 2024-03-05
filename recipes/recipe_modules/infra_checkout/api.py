@@ -13,11 +13,12 @@ from recipe_engine import recipe_api
 class InfraCheckoutApi(recipe_api.RecipeApi):
   """Stateless API for using public infra gclient checkout."""
 
-  def checkout(self, gclient_config_name,
+  def checkout(self,
+               gclient_config_name,
                patch_root=None,
                path=None,
                internal=False,
-               generate_env_with_system_python=False,
+               generate_py2_env=False,
                go_version_variant=None,
                **kwargs):
     """Fetches infra gclient checkout into a given path OR named_cache.
@@ -33,14 +34,9 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
           layout is assumed, else infra_internal.
           This has an effect on named_cache default and inside which repo's
           go corner the ./go/env.py command is run.
-      * generate_env_with_system_python uses the bot "infra_system" python to
-        generate infra.git's ENV. This is needed for bots which build the
-        "infra/infra_python/${platform}" CIPD packages because they incorporate
-        the checkout's VirtualEnv inside the package. This, in turn, results in
-        the CIPD package containing absolute paths to the Python that was used
-        to create it. In order to enable this madness to work, we ensure that
-        the Python is a system Python, which resides at a fixed path. No effect
-        on arm64 because the arm64 bots have no such python available.
+      * generate_py2_env uses the "infra/3pp/tools/cpython" package to create
+          the infra/ENV python 2.7 virtual environment. This is only needed in
+          specific situations such as running tests for python 2.7 GAE apps.
       * go_version_variant can be set go "legacy" or "bleeding_edge" to force
         the builder to use a non-default Go version. What exact Go versions
         correspond to "legacy" and "bleeding_edge" and default is defined in
@@ -61,18 +57,19 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
     path = path or self.m.path['cache'].join('builder')
     self.m.file.ensure_directory('ensure builder dir', path)
 
-    # arm64 bots don't have this system python stuff
-    if generate_env_with_system_python and (
-        self.m.platform.arch == 'arm' and self.m.platform.bits == 64):
-      generate_env_with_system_python = False
-
     with self.m.context(cwd=path):
       self.m.gclient.set_config(gclient_config_name)
-      if generate_env_with_system_python:
-        sys_py = self.m.path.join(self.m.infra_system.sys_bin_path, 'python')
+      if generate_py2_env:
+        py2_pkg = path.join('cpython')
+        self.m.cipd.ensure(
+            py2_pkg,
+            self.m.cipd.EnsureFile().add_package(
+                'infra/3pp/tools/cpython/${platform}',
+                'version:2@2.7.18.chromium.47'))
+        py2_bin = self.m.path.abspath(py2_pkg.join('bin').join('python'))
         if self.m.platform.is_win:
-          sys_py += '.exe'
-        self.m.gclient.c.solutions[0].custom_vars['infra_env_python'] = sys_py
+          py2_bin += '.exe'
+        self.m.gclient.c.solutions[0].custom_vars['infra_env_python'] = py2_bin
 
       bot_update_step = self.m.bot_update.ensure_checkout(
           patch_root=patch_root, **kwargs)

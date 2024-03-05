@@ -1,15 +1,38 @@
 [
   {
     "cmd": [
+      "git",
+      "config",
+      "--global",
+      "core.symlinks",
+      "true"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "set symlinks"
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
       "--json-output",
       "/path/to/tmp/json",
       "ensure-directory",
       "--mode",
       "0o777",
-      "[CACHE]/builder"
+      "[CACHE]\\builder"
     ],
     "infra_step": true,
     "luci_context": {
@@ -28,19 +51,60 @@
   },
   {
     "cmd": [
+      "cipd.bat",
+      "ensure",
+      "-root",
+      "[CACHE]\\builder\\cpython",
+      "-ensure-file",
+      "infra/3pp/tools/cpython/${platform} version:2@2.7.18.chromium.47",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]\\builder",
+    "luci_context": {
+      "realm": {
+        "name": "infra:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@2.7.18\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/cpython/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
+      "RECIPE_MODULE[depot_tools::bot_update]\\resources\\bot_update.py",
       "--spec-path",
-      "cache_dir = '[CACHE]/git'\nsolutions = [{'custom_vars': {'infra_env_python': '/opt/infra-system/bin/python'}, 'deps_file': '.DEPS.git', 'managed': True, 'name': 'infra', 'url': 'https://chromium.googlesource.com/infra/infra.git'}]",
+      "cache_dir = '[CACHE]\\\\git'\nsolutions = [{'custom_vars': {'infra_env_python': '[CACHE]\\\\builder\\\\cpython\\\\bin\\\\python.exe'}, 'deps_file': '.DEPS.git', 'managed': True, 'name': 'infra', 'url': 'https://chromium.googlesource.com/infra/infra.git'}]",
       "--patch_root",
       "infra",
       "--revision_mapping_file",
       "{\"got_revision\": \"infra\"}",
       "--git-cache-dir",
-      "[CACHE]/git",
+      "[CACHE]\\git",
       "--cleanup-dir",
-      "[CLEANUP]/bot_update",
+      "[CLEANUP]\\bot_update",
       "--output_json",
       "/path/to/tmp/json",
       "--revision",
@@ -48,7 +112,7 @@
       "--refs",
       "refs/heads/main"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CACHE]\\builder",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/ci/builder/8945511751514863184",
       "GIT_BACKENDINFO": "1",
@@ -56,10 +120,10 @@
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
       "GIT_HTTP_LOW_SPEED_TIME": "1800",
       "GIT_SSH_COMMAND": "ssh -o SendEnv=GIT_DAPPER_TRACE -o SendEnv=GIT_BACKENDINFO",
-      "GIT_TRACE2_EVENT": "[CLEANUP]/trace2-event",
-      "GIT_TRACE_CURL": "[CLEANUP]/trace-curl",
+      "GIT_TRACE2_EVENT": "[CLEANUP]\\trace2-event",
+      "GIT_TRACE_CURL": "[CLEANUP]\\trace-curl",
       "GIT_TRACE_CURL_NO_DATA": "1",
-      "GIT_TRACE_PACKET": "[CLEANUP]/trace-packet"
+      "GIT_TRACE_PACKET": "[CLEANUP]\\trace-packet"
     },
     "env_suffixes": {
       "DEPOT_TOOLS_UPDATE": [
@@ -125,10 +189,10 @@
     "cmd": [
       "vpython3",
       "-u",
-      "RECIPE_REPO[depot_tools]/gclient.py",
+      "RECIPE_REPO[depot_tools]\\gclient.py",
       "runhooks"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CACHE]\\builder",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/ci/builder/8945511751514863184",
       "GOFLAGS": "-mod=readonly",
@@ -156,10 +220,10 @@
   {
     "cmd": [
       "python3",
-      "[CACHE]/builder/infra/go/bootstrap.py",
+      "[CACHE]\\builder\\infra\\go\\bootstrap.py",
       "/path/to/tmp/json"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CACHE]\\builder",
     "env": {
       "GOFLAGS": "-mod=readonly",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
@@ -182,16 +246,16 @@
       "@@@STEP_TEXT@Using go 1.66.6@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"env\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"GOROOT\": \"[CACHE]/builder/golang/go\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"GOROOT\": \"[CACHE]\\\\builder\\\\golang\\\\go\"@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
       "@@@STEP_LOG_LINE@json.output@  \"env_prefixes\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"PATH\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"[CACHE]/builder/golang/go\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"[CACHE]\\\\builder\\\\golang\\\\go\"@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
       "@@@STEP_LOG_LINE@json.output@  \"env_suffixes\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"PATH\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"[CACHE]/builder/infra/go/bin\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"[CACHE]\\\\builder\\\\infra\\\\go\\\\bin\"@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
       "@@@STEP_LOG_LINE@json.output@  \"go_version\": \"1.66.6\"@@@",
@@ -205,20 +269,20 @@
       "test",
       "infra/..."
     ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
       "GOFLAGS": "-mod=readonly",
-      "GOROOT": "[CACHE]/builder/golang/go",
+      "GOROOT": "[CACHE]\\builder\\golang\\go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/golang/go"
+        "[CACHE]\\builder\\golang\\go"
       ]
     },
     "env_suffixes": {
       "PATH": [
-        "[CACHE]/builder/infra/go/bin"
+        "[CACHE]\\builder\\infra\\go\\bin"
       ]
     },
     "luci_context": {
@@ -241,20 +305,20 @@
       "test",
       "infra/..."
     ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
       "GOFLAGS": "-mod=readonly",
-      "GOROOT": "[CACHE]/builder/golang/go",
+      "GOROOT": "[CACHE]\\builder\\golang\\go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/builder/golang/go"
+        "[CACHE]\\builder\\golang\\go"
       ]
     },
     "env_suffixes": {
       "PATH": [
-        "[CACHE]/builder/infra/go/bin"
+        "[CACHE]\\builder\\infra\\go\\bin"
       ]
     },
     "luci_context": {
@@ -278,7 +342,7 @@
       "test",
       "infra"
     ],
-    "cwd": "[CACHE]/builder/infra",
+    "cwd": "[CACHE]\\builder\\infra",
     "luci_context": {
       "realm": {
         "name": "infra:ci"
@@ -296,9 +360,9 @@
   {
     "cmd": [
       "python3",
-      "RECIPE[infra::infra_checkout:examples/ci].resources/dirs.py"
+      "RECIPE[infra::infra_checkout:examples/ci].resources\\dirs.py"
     ],
-    "cwd": "[CACHE]/builder",
+    "cwd": "[CACHE]\\builder",
     "luci_context": {
       "realm": {
         "name": "infra:ci"

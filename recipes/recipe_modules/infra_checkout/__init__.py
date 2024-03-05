@@ -20,5 +20,4 @@ DEPS = [
     'depot_tools/gerrit',
     'depot_tools/git',
     'depot_tools/presubmit',
-    'infra_system',
 ]
