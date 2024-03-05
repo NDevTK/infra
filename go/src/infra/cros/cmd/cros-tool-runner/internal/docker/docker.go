@@ -292,10 +292,17 @@ func envvars() []string {
 	if swarmingTaskID == "" {
 		swarmingTaskID = "none"
 	}
-	return []string{
+	envs := []string{
 		"--env", fmt.Sprintf("BUILD_BUCKET_ID=%s", bbid),
 		"--env", fmt.Sprintf("SWARMING_TASK_ID=%s", swarmingTaskID),
 	}
+	// cloudbots environment variables
+	for _, env := range os.Environ() {
+		if strings.HasPrefix(env, "CLOUDBOTS-") {
+			envs = append(envs, "--env", env)
+		}
+	}
+	return envs
 }
 
 func (d *Docker) logRunTime(ctx context.Context, service string, imageName string) {
