@@ -89,6 +89,10 @@ type testCommonFlags struct {
 	publicBuilder        string
 	luciProject          string
 	trv2                 bool
+	tagIncludes          []string
+	tagExcludes          []string
+	testNameIncludes     []string
+	testNameExcludes     []string
 }
 
 type fleetValidationResults struct {
@@ -139,6 +143,14 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.StringVar(&c.publicBuilderBucket, "public-builder-bucket", "", "Bucket for the Public CTP Builder on which the tests are scheduled.")
 	f.StringVar(&c.luciProject, "luci-project", "", "LUCI project which the bucket and builder are associated with")
 	f.BoolVar(&c.trv2, "trv2", false, "Run via Trv2.")
+	f.Var(luciflag.CommaList(&c.tagIncludes), "tag-includes", `Comma-separated list of tags for listing tests to be run(only tests matching ALL of the tags)
+		Tags must match exactly (i.e. no regexp, wildcard, etc. allowed).`)
+	f.Var(luciflag.CommaList(&c.tagExcludes), "tag-excludes", `Comma-separated list of tags that should exclude tests tagged with any of these tags during a CTP run
+	Tags must match exactly (i.e. no regexp, wildcard, etc. allowed).`)
+	f.Var(luciflag.CommaList(&c.testNameIncludes), "test-name-includes", `Comma-separated list of tests to be run(only tests matching ALL of the tags.
+		Test names allow usage of wildcard.`)
+	f.Var(luciflag.CommaList(&c.testNameExcludes), "test-name-excludes", `Comma-separated list of tests that should be excluded from execution. These tests will be skipped during the run.
+	Test names allow usage of wildcard.`)
 
 	if mainArgType == testCmdName {
 		f.StringVar(&c.testHarness, "harness", "", "Test harness to run tests on (e.g. tast, tauto, etc.).")
@@ -190,6 +202,10 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, args []string, mainArgTy
 	// trv2 should be false for non-cft.
 	if !c.cft && c.trv2 {
 		errors = append(errors, fmt.Sprintf("cannot run non-cft test case via trv2"))
+	}
+	// cft should be true for tag_criteria based test plan.
+	if !c.cft && (len(c.tagIncludes) > 0 || len(c.tagExcludes) > 0 || len(c.testNameIncludes) > 0 || len(c.testNameExcludes) > 0) {
+		errors = append(errors, fmt.Sprintf("cannot run non-cft with tag_criteria args"))
 	}
 	if c.image != "" && c.release != "" {
 		errors = append(errors, "cannot specify both image and release branch")

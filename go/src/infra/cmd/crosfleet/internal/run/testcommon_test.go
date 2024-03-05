@@ -175,6 +175,20 @@ missing test arg`,
 		"both PublicBuilderBucket and PublicBuilder should be specified",
 		"suite",
 	},
+	{ // No errors raised
+		testCommonFlags{
+			board:       "sample-board",
+			models:      []string{"model1", "model2"},
+			repeats:     6,
+			pool:        "sample-pool",
+			release:     "sample-release",
+			priority:    255,
+			tagIncludes: []string{"tag1"},
+		},
+		[]string{"sample-suite-name"},
+		"cannot run non-cft with tag_criteria args",
+		"test",
+	},
 }
 
 func TestValidateArgs(t *testing.T) {

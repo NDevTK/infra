@@ -21,6 +21,7 @@ import (
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/maruel/subcommands"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -109,7 +110,7 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx contex
 		printer:     c.printer,
 		cmdName:     suiteCmdName,
 		bbClient:    ctpBBClient,
-		testPlan:    testPlanForSuites(args),
+		testPlan:    testPlanForSuites(args, c.testCommonFlags.tagIncludes, c.testCommonFlags.tagExcludes, c.testCommonFlags.testNameExcludes, c.testCommonFlags.testNameExcludes),
 		cliFlags:    &c.testCommonFlags,
 	}
 
@@ -127,11 +128,21 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx contex
 }
 
 // testPlanForSuites constructs a Test Platform test plan for the given tests.
-func testPlanForSuites(suiteNames []string) *test_platform.Request_TestPlan {
+func testPlanForSuites(suiteNames []string, tagIncludes []string, tagExcludes []string, testNameIncludes []string, testNameExcludes []string) *test_platform.Request_TestPlan {
 	testPlan := test_platform.Request_TestPlan{}
 	for _, suiteName := range suiteNames {
 		suiteRequest := &test_platform.Request_Suite{Name: suiteName}
 		testPlan.Suite = append(testPlan.Suite, suiteRequest)
+	}
+
+	if len(tagIncludes) > 0 || len(tagExcludes) > 0 || len(testNameIncludes) > 0 || len(testNameExcludes) > 0 {
+		testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{
+			Tags:             tagIncludes,
+			TagExcludes:      tagExcludes,
+			TestNames:        testNameIncludes,
+			TestNameExcludes: testNameExcludes,
+		}
+		testPlan.TagCriteria = testCaseTagCriteria
 	}
 	return &testPlan
 }

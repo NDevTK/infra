@@ -204,6 +204,8 @@ func TestSuiteDedupeNoModels_NoRun(t *testing.T) {
 			release:     "R112-15357.0.0",
 			board:       "drallion",
 			pool:        "DUT_POOL_QUOTA",
+			cft:         true,
+			tagIncludes: []string{"tag1"},
 		},
 	}
 	ctx := context.Background()
@@ -358,6 +360,7 @@ func getInputProps(t *testing.T, model string) *structpb.Struct {
 							"name": "drallion",
 						},
 					},
+					"runViaCft": true,
 					"softwareDependencies": []interface{}{
 						map[string]interface{}{
 							"chromeosBuildGcsBucket": "chromeos-image-archive",
@@ -378,6 +381,9 @@ func getInputProps(t *testing.T, model string) *structpb.Struct {
 						map[string]interface{}{
 							"name": "bvt-installer",
 						},
+					},
+					"tagCriteria": map[string]interface{}{
+						"tags": []interface{}{"tag1"},
 					},
 				},
 			},
@@ -420,6 +426,8 @@ func TestSuiteDedupeModels_NoRun(t *testing.T) {
 			board:       "drallion",
 			models:      []string{"drallion", "drallion360"},
 			pool:        "DUT_POOL_QUOTA",
+			cft:         true,
+			tagIncludes: []string{"tag1"},
 		},
 	}
 	ctx := context.Background()
