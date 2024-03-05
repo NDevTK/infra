@@ -240,6 +240,9 @@ func middleOut(ctx context.Context, resp *api.InternalTestplan, cfg distroCfg) (
 			Metadata: tc.GetMetadata(),
 		}
 		solverData.tcUUIDMap[tcUUID] = tcForMap
+		// tc.HwRequirements example:
+		// [[hw1] && [hw2] && [hw3]]
+		// OR [[hw1 || hw2] && [hw3 || hw4]]
 		for _, hw := range tc.HwRequirements {
 			// Note: Each `hw` is still a repeated list of HW *options* for the test.
 			hash := addHWtohwUUIDMap(solverData.hwUUIDMap, hw)
@@ -299,6 +302,7 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 		// Find the TCS that require this class, and assign them devices.
 		hwHash := hwS.key
 		tcs := solverData.hwToTCMap[hwHash]
+
 		// Currently we will not try anymore than basic sharding.
 		// As in, we won't attempt to "fill" a pod, then spill over.
 		// Its either "you can take all these tests" or we get a new pod.
@@ -311,6 +315,7 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 			}
 			selectedDevice, expandCurrentShard := getDevices(solverData, len(shardedtc), hwHash, harness)
 			assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc)
+
 		}
 	}
 
@@ -659,6 +664,7 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 	// So even when we fully fill a device, or it hasn't been touched, we still check it.
 	// First, try to fill a non-empty shard
 	devices := solverData.hwEquivalenceMap[hwHash]
+
 	for _, device := range devices {
 		// if the shard is empty, we need to use the labloading process block
 		// not the shard filler.
@@ -670,7 +676,12 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 			continue
 		}
 
-		if solverData.flatHWUUIDMap[device].numInCurrentShard+numTests <= solverData.cfg.maxInShard {
+		// Only assign it into a shard if there is actually devices.
+		// There are cases where a test requires a device which doesn't exist (to later be rejected)
+		// But in these examples, its viewed as an "open shard", so we toss other tests with overlapping eq classes
+		// into the shard; resulting in those tests being skipped.
+		// Instead, when we put the `0` check, we will not put the test in the shard; and grab a different (existing) device.
+		if (solverData.flatHWUUIDMap[device].numInCurrentShard+numTests <= solverData.cfg.maxInShard) && solverData.flatHWUUIDMap[device].labLoading.value > 0 {
 			selectedDevice = device
 			return selectedDevice, true
 		}
