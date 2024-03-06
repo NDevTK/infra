@@ -84,5 +84,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "pretty-bytes": "^6.1.1"
   }
 }
