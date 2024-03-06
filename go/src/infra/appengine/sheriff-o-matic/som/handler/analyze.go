@@ -227,10 +227,14 @@ func attachLUCIBisectionTestAnalysesResults(c context.Context, failures []*messa
 		}
 		tests := f.Reason.Raw.(*analyzer.BqFailure).Tests
 		for i := range tests {
-			// Skip non-deterministically failing tests.
+			// Skip test with no ref hash.
+			if tests[i].RefHash == "" {
+				continue
+			}
+			// Skip test with no changepoint analysis and non-deterministically failing tests.
 			// Because there won't be a bisection for test that is not failing deterministically.
 			// This is an optimization to reduce the call volume to Bisection.
-			if tests[i].CurCounts.UnexpectedResults != tests[i].CurCounts.TotalResults {
+			if tests[i].CurCounts.TotalResults == 0 || tests[i].CurCounts.UnexpectedResults != tests[i].CurCounts.TotalResults {
 				continue
 			}
 			// Append pointer to the test. Bisection result will be attached using this pointer.
