@@ -26,12 +26,17 @@ type DatabaseConfig struct {
 	DBPasswordSecret string
 }
 
+type Client struct {
+	Conn   *sql.DB
+	Config DatabaseConfig
+}
+
 // ConnectDB creates a connection to the database using a TCP socket.
 func ConnectDB(ctx context.Context, dbConfig DatabaseConfig) (*sql.DB, error) {
 	// Use a TCP socket.
 	db, err := connectTCPSocket(ctx, dbConfig)
 	if err != nil {
-		logging.Errorf(ctx, "connectTCPSocket: unable to connect: %s", err)
+		logging.Errorf(ctx, "ConnectDB: unable to connect: %s", err)
 		return nil, err
 	}
 

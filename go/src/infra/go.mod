@@ -19,6 +19,7 @@ require (
 	cloud.google.com/go/secretmanager v1.11.5
 	cloud.google.com/go/storage v1.38.0
 	cloud.google.com/go/trace v1.10.5
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Microsoft/go-winio v0.6.1
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/StackExchange/wmi v1.2.1

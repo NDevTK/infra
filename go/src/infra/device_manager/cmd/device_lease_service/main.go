@@ -79,7 +79,10 @@ func main() {
 			DBUser:           *dbUser,
 			DBPasswordSecret: *dbPasswordSecret,
 		}
-		frontend.SetDBConfig(deviceLeaseServer, dbConfig)
+		err := frontend.SetUpDBClient(srv.Context, deviceLeaseServer, dbConfig)
+		if err != nil {
+			return err
+		}
 		frontend.InstallServices(deviceLeaseServer, srv)
 
 		logging.Infof(srv.Context, "main: initialization finished")
