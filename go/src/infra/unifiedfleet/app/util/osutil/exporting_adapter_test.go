@@ -64,6 +64,7 @@ var machine = ufspb.Machine{
 			Model:       "test_model",
 			Sku:         "test_variant",
 			DlmSkuId:    "12345",
+			HasWifiBt:   true,
 		},
 	},
 }
@@ -373,7 +374,6 @@ var data = ufspb.ChromeOSDeviceData{
 		GpuFamily:  "test_gpu",
 		Graphics:   device.Config_GRAPHICS_GLE,
 		HardwareFeatures: []device.Config_HardwareFeature{
-			device.Config_HARDWARE_FEATURE_BLUETOOTH,
 			device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD,
 			device.Config_HARDWARE_FEATURE_FINGERPRINT,
 			device.Config_HARDWARE_FEATURE_TOUCHSCREEN,

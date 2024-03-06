@@ -255,8 +255,6 @@ func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
 		switch f {
 		case device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD:
 			c.Detachablebase = &trueValue
-		case device.Config_HARDWARE_FEATURE_BLUETOOTH:
-			c.Bluetooth = &trueValue
 		case device.Config_HARDWARE_FEATURE_FINGERPRINT:
 			c.Fingerprint = &trueValue
 		case device.Config_HARDWARE_FEATURE_FLASHROM:
@@ -331,9 +329,16 @@ func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
 	}
 }
 
-func setDlmSkuId(l *inventory.SchedulableLabels, machine *ufspb.Machine) {
-	dlmSkuId := machine.GetChromeosMachine().GetDlmSkuId()
-	l.DlmSkuId = &dlmSkuId
+func setConfigsFromMachine(l *inventory.SchedulableLabels, machine *ufspb.Machine) {
+	// Setup sku from DLM
+	dlmSkuID := machine.GetChromeosMachine().GetDlmSkuId()
+	l.DlmSkuId = &dlmSkuID
+
+	c := l.GetCapabilities()
+	// Setup bluetooth
+	if machine.GetChromeosMachine().GetHasWifiBt() {
+		c.Bluetooth = &trueValue
+	}
 }
 
 func setHwidData(l *inventory.SchedulableLabels, h *ufspb.HwidData) {
@@ -717,7 +722,8 @@ func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.DeviceUnd
 	setManufacturingConfig(labels, data.GetManufacturingConfig())
 	setHwidData(labels, data.GetHwidData())
 	setCbx(labels, machine)
-	setDlmSkuId(labels, machine)
+	// Bluetooth config will be overwritten here by DLM configs
+	setConfigsFromMachine(labels, machine)
 
 	id := machine.GetName()
 	hostname := lse.GetName()
