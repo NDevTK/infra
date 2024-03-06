@@ -30,11 +30,17 @@ func TestValidate_createPreMPKeysRun(t *testing.T) {
 			bbClient:  bb.NewClient(cmdRunner, nil, nil),
 		},
 		buildTarget: "atlas",
+		bug:         1337,
 	}
 	assert.NilError(t, f.validate(ctx))
 
 	// No build target provided.
 	f.buildTarget = ""
+	assert.NonNilError(t, f.validate(ctx))
+
+	// No bug provided.
+	f.buildTarget = "atlas"
+	f.bug = 0
 	assert.NonNilError(t, f.validate(ctx))
 }
 
@@ -60,8 +66,8 @@ func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
 	expectedBucket := "chromeos/staging"
 	expectedBuilder := "staging-key-manager"
 	if tc.production {
-		expectedBucket = "chromeos/staging"
-		expectedBuilder = "staging-key-manager"
+		expectedBucket = "chromeos/release"
+		expectedBuilder = "key-manager"
 	}
 	f.CommandRunners = append(
 		f.CommandRunners,
@@ -83,6 +89,7 @@ func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
 		},
 		propsFile:   propsFile,
 		buildTarget: tc.buildTarget,
+		bug:         4201337,
 	}
 	ret := r.Run(nil, nil, nil)
 	assert.IntsEqual(t, ret, Success)
@@ -91,8 +98,7 @@ func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
 	assert.NilError(t, err)
 
 	// Check that the requests are populated correctly.
-	createPreMPKeysRequests := properties.GetFields()["create_premp_keys_requests"].GetListValue()
-	jsonRequest, err := createPreMPKeysRequests.GetValues()[0].GetStructValue().MarshalJSON()
+	jsonRequest, err := properties.GetFields()["create_premp_keys_request"].GetStructValue().MarshalJSON()
 	assert.NilError(t, err)
 	var createPreMPKeysRequest bapipb.CreatePreMPKeysRequest
 	err = protojson.Unmarshal([]byte(jsonRequest), &createPreMPKeysRequest)
@@ -102,6 +108,13 @@ func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
 		t,
 		createPreMPKeysRequest.BuildTarget.Name,
 		tc.buildTarget,
+	)
+
+	bugId := properties.GetFields()["bug"].GetNumberValue()
+	assert.IntsEqual(
+		t,
+		int(bugId),
+		4201337,
 	)
 }
 

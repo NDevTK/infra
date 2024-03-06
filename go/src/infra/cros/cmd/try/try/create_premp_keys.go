@@ -33,6 +33,7 @@ func GetCmdCreatePreMPKeys(authOpts auth.Options) *subcommands.Command {
 			c.addDryrunFlag()
 			c.addProductionFlag()
 			c.Flags.StringVar(&c.buildTarget, "build_target", "", "Build target to create keys for.")
+			c.Flags.IntVar(&c.bug, "bug", 0, "bug ID to associate with this key creation, e.g. 318522770.")
 			return c
 		},
 	}
@@ -43,6 +44,7 @@ type createPreMPKeysRun struct {
 	tryRunBase
 	propsFile   *os.File
 	buildTarget string
+	bug         int
 }
 
 // Run provides the logic for a `try create_premp_keys` command run.
@@ -62,7 +64,7 @@ func (f *createPreMPKeysRun) Run(_ subcommands.Application, _ []string, _ subcom
 		return CmdError
 	}
 
-	keyManagerBuilderName := getKeyManagerBuilderFullName(f.production)
+	keyManagerBuilderName := getKeyManagerBuilderFullName(!f.production)
 	propsStruct, err := f.bbClient.GetBuilderInputProps(ctx, keyManagerBuilderName)
 	if err != nil {
 		f.LogErr(err.Error())
@@ -80,7 +82,11 @@ func (f *createPreMPKeysRun) Run(_ subcommands.Application, _ []string, _ subcom
 		f.LogErr(err.Error())
 		return CmdError
 	}
-	if err := bb.SetProperty(propsStruct, "create_premp_keys_requests", []interface{}{request}); err != nil {
+	if err := bb.SetProperty(propsStruct, "create_premp_keys_request", request); err != nil {
+		f.LogErr(err.Error())
+		return CmdError
+	}
+	if err := bb.SetProperty(propsStruct, "bug", f.bug); err != nil {
 		f.LogErr(err.Error())
 		return CmdError
 	}
@@ -118,6 +124,9 @@ func (f *createPreMPKeysRun) validate(ctx context.Context) error {
 	if f.buildTarget == "" {
 		return errors.New("must provide a build target with --build_target")
 	}
+	if f.bug == 0 {
+		return errors.New("--bug is required.")
+	}
 	if err := f.tryRunBase.validate(); err != nil {
 		return err
 	}
@@ -131,9 +140,7 @@ func getKeyManagerBuilderFullName(staging bool) string {
 		bucket = "staging"
 		stagingPrefix = "staging-"
 	} else {
-		// TODO(b/318522770): Support the production builder, once it exists.
-		bucket = "staging"
-		stagingPrefix = "staging-"
+		bucket = "release"
 	}
 	return fmt.Sprintf("chromeos/%s/%skey-manager", bucket, stagingPrefix)
 }
