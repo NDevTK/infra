@@ -28,7 +28,7 @@ func puppetCertPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return appdata + `\PuppetLabs\puppet\etc\puppet\ssl\certs`, nil
+	return appdata + `\PuppetLabs\puppet\etc\ssl\certs`, nil
 }
 
 func puppetConfFile() (string, error) {
