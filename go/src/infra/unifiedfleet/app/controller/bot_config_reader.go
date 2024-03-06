@@ -381,13 +381,25 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 	}
 	// If we don't know the asset type for a bot, try to update the data unless it is a bot prefix
 	// This is to handle the case where a bot entry gets added to the starlark files before UFS
-	if strings.TrimSpace(entity.AssetType) == "" && !isPrefix {
+	assetType := strings.TrimSpace(entity.AssetType)
+	if assetType == "" && !isPrefix {
 		logging.Infof(ctx, "Found a botId %s with ownership data but no asset type", botId)
-		return true, entity.AssetType, err
+		return true, assetType, nil
 	}
+
+	// If we have assetType, check if the asset table has the ownershipdata.
+	// It is possible that due to a cornercase scenario ownershipdata can be redacted when updating an asset.
+	emptyAssetData, err := isOwnershipEmptyInBotTable(ctx, botId, assetType)
+	if emptyAssetData || err != nil {
+		if emptyAssetData {
+			logging.Infof(ctx, "Found a botId %s with empty ownership data and assetType %s", botId, assetType)
+		}
+		return true, assetType, err
+	}
+
 	p, err := entity.GetProto()
 	if err != nil {
-		return true, entity.AssetType, err
+		return true, assetType, err
 	}
 	pm := p.(*ufspb.OwnershipData)
 	if isOwnershipFieldUpdated(pm.GetCustomer(), newOwnership.GetCustomer()) ||
@@ -398,7 +410,7 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 		isOwnershipArrayFieldUpdated(pm.GetBuilders(), newOwnership.GetBuilders()) {
 		diff := cmp.Diff(pm, newOwnership, protocmp.Transform())
 		logging.Debugf(ctx, "Found ownership diff for bot  %s - %s", botId, diff)
-		return true, entity.AssetType, nil
+		return true, assetType, nil
 	}
 	return false, "", nil
 }
@@ -422,6 +434,33 @@ func isOwnershipFieldUpdated(oldVal string, newVal string) bool {
 		return true
 	}
 	return false
+}
+
+// Checks if the asset table entry has ownership data
+func isOwnershipEmptyInBotTable(ctx context.Context, botId string, assetType string) (bool, error) {
+	switch assetType {
+	case inventory.AssetTypeMachine:
+		host, err := registration.GetMachine(ctx, botId)
+		if err != nil {
+			return false, err
+		}
+		return host.GetOwnership() == nil, nil
+	case inventory.AssetTypeMachineLSE:
+		host, err := inventory.GetMachineLSE(ctx, botId)
+		if err != nil {
+			return false, err
+		}
+		return host.GetOwnership() == nil, nil
+	case inventory.AssetTypeVM:
+		host, err := inventory.GetVM(ctx, botId)
+		if err != nil {
+			return false, err
+		}
+		return host.GetOwnership() == nil, nil
+	// we should not hit this code path as assettype is expected to be set, but setting a default that ownership is non-empty.
+	default:
+		return false, nil
+	}
 }
 
 // Updates the ownership for the given assetType and name

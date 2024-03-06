@@ -446,6 +446,22 @@ func TestParseSecurityConfig(t *testing.T) {
 			So(resp.Ownership.Customer, ShouldEqual, "customer")
 			So(resp.Ownership.SecurityLevel, ShouldEqual, "trusted")
 			So(resp.Ownership.Builders, ShouldResemble, []string{"builder"})
+
+			// Clear machine entry ownership data
+			registration.UpdateMachineOwnership(ctx, "test100-1", nil)
+			resp, err = registration.GetMachine(ctx, "test100-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldBeNil)
+
+			// Prase security configs again as a subsequent dumper job
+			ParseSecurityConfig(ctx, mockSecurityConfig("test{100,102}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
+
+			// Machine entry should again have ownership data
+			resp, err = registration.GetMachine(ctx, "test100-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
 		})
 	})
 }
