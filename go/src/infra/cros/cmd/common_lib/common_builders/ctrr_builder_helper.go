@@ -224,12 +224,25 @@ func BuildCrosDutRequest(deviceId string) *api.ContainerRequest {
 func BuildProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRequest_Device) *api.ProvisionTask {
 	var installRequest *api.InstallRequest
 	var serviceAddress string
+	var startupRequest *api.ProvisionStartupRequest
+	var deps []*api.DynamicDep
 	if IsAndroidProvisionState(device.GetProvisionState()) {
 		serviceAddress = common.AndroidProvision + "-" + deviceId
 		installRequest = &api.InstallRequest{
 			PreventReboot: false,
 			Metadata:      device.GetProvisionState().GetProvisionMetadata(),
 		}
+		startupRequest = &api.ProvisionStartupRequest{}
+		deps = append(deps, []*api.DynamicDep{
+			{
+				Key:   "startupRequest.dut",
+				Value: deviceId + ".dut",
+			},
+			{
+				Key:   "startupRequest.dutServer",
+				Value: common.CrosDut + "-" + deviceId,
+			},
+		}...)
 	} else {
 		serviceAddress = common.CrosProvision + "-" + deviceId
 		crosProvisionMetadata, _ := anypb.New(&api.CrOSProvisionMetadata{})
@@ -241,13 +254,12 @@ func BuildProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRe
 	}
 	return &api.ProvisionTask{
 		ServiceAddress: &labapi.IpEndpoint{},
+		StartupRequest: startupRequest,
 		InstallRequest: installRequest,
-		DynamicDeps: []*api.DynamicDep{
-			{
-				Key:   "serviceAddress",
-				Value: serviceAddress,
-			},
-		},
+		DynamicDeps: append(deps, &api.DynamicDep{
+			Key:   "serviceAddress",
+			Value: serviceAddress,
+		}),
 		Target: deviceId,
 	}
 }
@@ -316,6 +328,7 @@ func BuildProvisionContainerRequest(deviceId string, isAndroid bool) *api.Contai
 	var container *api.Template
 	var imageKey string
 	var key string
+	var deps []*api.DynamicDep
 	if isAndroid {
 		key = "androidProvision"
 		imageKey = common.AndroidProvision
@@ -344,12 +357,7 @@ func BuildProvisionContainerRequest(deviceId string, isAndroid bool) *api.Contai
 				},
 			},
 		}
-	}
-	return &api.ContainerRequest{
-		DynamicIdentifier: imageKey + "-" + deviceId,
-		Container:         container,
-		ContainerImageKey: imageKey,
-		DynamicDeps: []*api.DynamicDep{
+		deps = []*api.DynamicDep{
 			{
 				Key:   key + ".inputRequest.dut",
 				Value: deviceId + ".dut",
@@ -358,7 +366,13 @@ func BuildProvisionContainerRequest(deviceId string, isAndroid bool) *api.Contai
 				Key:   key + ".inputRequest.dutServer",
 				Value: common.CrosDut + "-" + deviceId,
 			},
-		},
+		}
+	}
+	return &api.ContainerRequest{
+		DynamicIdentifier: imageKey + "-" + deviceId,
+		Container:         container,
+		ContainerImageKey: imageKey,
+		DynamicDeps:       deps,
 	}
 }
 
