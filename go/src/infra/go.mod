@@ -41,7 +41,7 @@ require (
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/glog v1.1.2
 	github.com/golang/mock v1.6.0
-	github.com/golang/protobuf v1.5.3
+	github.com/golang/protobuf v1.5.4
 	github.com/google/cel-go v0.7.3
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-containerregistry v0.6.0
@@ -113,7 +113,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240213162025-012b6fc9bca9
 	google.golang.org/grpc v1.61.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools v2.2.0+incompatible
