@@ -250,6 +250,11 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 		args = append(args, d.ExecCommand...)
 	}
 
+	// Add cloudbots related args such as env var, volume.
+	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbot-") {
+		args = append(args, cloudbotsDockerArgs()...)
+	}
+
 	cmd := exec.Command("docker", args...)
 	if d.LogFileDir != "" {
 		log.Printf("Attempting to gather metrics")
@@ -292,17 +297,28 @@ func envvars() []string {
 	if swarmingTaskID == "" {
 		swarmingTaskID = "none"
 	}
-	envs := []string{
+	return []string{
 		"--env", fmt.Sprintf("BUILD_BUCKET_ID=%s", bbid),
 		"--env", fmt.Sprintf("SWARMING_TASK_ID=%s", swarmingTaskID),
+	}
+}
+
+// cloudbotsDockerArgs returns cloudbots args such as env vars, volumes.
+func cloudbotsDockerArgs() []string {
+	args := []string{
+		"--env", fmt.Sprintf("SWARMING_BOT_ID=%s", os.Getenv("SWARMING_BOT_ID")),
 	}
 	// cloudbots environment variables
 	for _, env := range os.Environ() {
 		if strings.HasPrefix(env, "CLOUDBOTS-") {
-			envs = append(envs, "--env", env)
+			args = append(args, "--env", env)
 		}
 	}
-	return envs
+	// cloudbots host files
+	if v, found := os.LookupEnv("CLOUDBOTS_CA_CERTIFICATE"); found {
+		args = append(args, "-v", fmt.Sprintf("%s:%s", v, v))
+	}
+	return args
 }
 
 func (d *Docker) logRunTime(ctx context.Context, service string, imageName string) {
