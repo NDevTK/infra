@@ -499,9 +499,9 @@ func GetBotoPath() string {
 // DefaultCTPTimeoutMins is the default build timeout.
 const DefaultCTPTimeoutMins = 360
 
-// MaxIshCTPTimeoutMins is a "maximum" timeout that in reality is just a large
-// number since we can't know exact timeouts on our builders.
-const MaxIshCTPTimeoutMins = 2370
+// MaxIshCTPTimeoutMins is the maximum timeout (minus one minute) that can
+// be scheduled as a CTP execution.
+const MaxIshCTPTimeoutMins = 4319
 
 // GetTestRunnerSwarmingPool determines which Partner Swarming Pool for test runner,
 // based on the environment.
