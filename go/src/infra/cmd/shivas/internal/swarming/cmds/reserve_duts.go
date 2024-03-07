@@ -68,10 +68,7 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 		return errors.Reason("at least one hostname has to be provided").Err()
 	}
 	if c.comment == "" {
-		user, err := user.Current()
-		if err == nil && user != nil {
-			c.comment = fmt.Sprintf("Reserved by %s", user.Username)
-		}
+		return errors.Reason("please specify the reason in the comment").Err()
 	}
 	if err := c.initConfig(); err != nil {
 		return err
@@ -91,7 +88,6 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 	}
 	c.session = fmt.Sprintf("admin-session:%s", c.session)
 	for _, host := range args {
-		// TODO(crbug/1128496): update state directly in the UFS without creating the swarming task
 		if url, _, err := c.scheduleReserveBuilder(ctx, bc, e, host); err != nil {
 			fmt.Fprintf(a.GetErr(), "%s: fail with %s\n", host, err)
 		} else {
@@ -106,6 +102,17 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string) (string, int64, error) {
 	// TODO(b/229896419): refactor to hide labpack.Params struct.
 	v := buildbucket.CIPDProd
+	tags := []string{
+		c.session,
+		"task:reserve",
+		parisClientTag,
+		fmt.Sprintf("version:%s", v),
+		fmt.Sprintf("comment:%s", c.comment),
+		"qs_account:unmanaged_p0",
+	}
+	if user, err := user.Current(); err == nil && user != nil && user.Username != "" {
+		tags = append(tags, fmt.Sprintf("user:%s", user.Username))
+	}
 	p := &buildbucket.Params{
 		UnitName:     host,
 		TaskName:     string(buildbucket.Custom),
@@ -117,14 +124,7 @@ func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket
 		NoMetrics:        false,
 		UpdateInventory:  true,
 		Configuration:    c.config,
-		ExtraTags: []string{
-			c.session,
-			"task:reserve",
-			parisClientTag,
-			fmt.Sprintf("version:%s", v),
-			fmt.Sprintf("comment:%s", c.comment),
-			"qs_account:unmanaged_p0",
-		},
+		ExtraTags:        tags,
 	}
 	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p, "shivas")
 	return url, taskID, errors.Annotate(err, "scheduleReserveBuilder").Err()
