@@ -52,8 +52,11 @@ func CreateStepWithStatus(
 		step.End(build.AttachStatus(stepErr, bbpb.Status_FAILURE, nil))
 	}()
 
-	if isFailure {
+	if summary != "" {
 		step.SetSummaryMarkdown(summary)
+	}
+
+	if isFailure {
 		stepErr = fmt.Errorf("%s: %s", stepName, summary)
 	}
 

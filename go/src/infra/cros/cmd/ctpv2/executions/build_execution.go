@@ -125,7 +125,8 @@ func executeRequests(
 	}
 
 	// Execute Ctpv2 Reqs
-	executeCtpv2Reqs(ctx, sk.CtpV2Request, buildState, ctr)
+	resultsMap := executeCtpv2Reqs(ctx, sk.CtpV2Request, buildState, ctr)
+	sk.AllTestResults = resultsMap
 
 	// Execute post configs
 	err = ctpv2PostConfig.Execute(ctx)
@@ -137,29 +138,56 @@ func executeRequests(
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	ctpv2Req *api.CTPv2Request, buildState *build.State, ctr *crostoolrunner.CrosToolRunner) {
+	ctpv2Req *api.CTPv2Request, buildState *build.State, ctr *crostoolrunner.CrosToolRunner) map[string][]*data.TestResults {
+	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
 	defer func() { step.End(err) }()
 
+	resultsChan := make(chan map[string][]*data.TestResults)
 	wg := &sync.WaitGroup{}
 	contInfoMap := data.NewContainerInfoMap()
+	suiteCounter := map[string]int{}
 	for _, ctpReq := range ctpv2Req.GetRequests() {
+		suiteName := ctpReq.GetSuiteRequest().GetTestSuite().GetName()
+		suiteDisplayName := suiteName
+		if _, ok := suiteCounter[suiteName]; !ok {
+			suiteCounter[suiteName] = 0
+		} else {
+			// we have seen this suite before
+			suiteCounter[suiteName]++
+			suiteNum := suiteCounter[suiteName]
+			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
+		}
 		wg.Add(1)
-		// TODO (azrahman): handle errors through channels
-		go executeFiltersInLuciBuild(ctx, ctpReq, buildState, wg, ctr, contInfoMap)
+		go executeFiltersInLuciBuild(ctx, ctpReq, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName)
 	}
-	wg.Wait()
+	go func() {
+		wg.Wait()
+		close(resultsChan) // Close the channel when all workers are done
+	}()
+
+	// Read results
+	for suiteResultsMap := range resultsChan {
+		if len(suiteResultsMap) == 0 {
+			continue
+		}
+		for k, v := range suiteResultsMap {
+			resultsMap[k] = v
+		}
+	}
+	common.WriteAnyObjectToStepLog(ctx, step, resultsMap, "consolidated suite results")
+	return resultsMap
 }
 
 func executeFiltersInLuciBuild(
 	ctx context.Context,
 	req *api.CTPRequest,
 	buildState *build.State,
-	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap) error {
+	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string) error {
 	defer wg.Done()
 	var err error
-	step, ctx := build.StartStep(ctx, req.GetSuiteRequest().GetTestSuite().GetName())
+	step, ctx := build.StartStep(ctx, suiteDisplayName)
 	defer func() { step.End(err) }()
 
 	executorCfg := configs.NewExecutorConfig(ctr, nil)
@@ -180,16 +208,28 @@ func executeFiltersInLuciBuild(
 	ctpv2Config := configs.NewCtpv2ExecutionConfig(nFilters, configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)
 	err = ctpv2Config.GenerateConfig(ctx)
 	if err != nil {
-		return errors.Annotate(err, "error during generating filter configs: ").Err()
+		// Do not return err as we want to collect the testResults
+		err = errors.Annotate(err, "error during generating filter configs: ").Err()
+		logging.Infof(ctx, err.Error())
 	}
 
 	// Execute config
 	err = ctpv2Config.Execute(ctx)
 	if err != nil {
-		return errors.Annotate(err, "error during executing hw test configs: ").Err()
+		// Do not return err as we want to collect the testResults
+		err = errors.Annotate(err, "error during executing hw test configs: ").Err()
+		logging.Infof(ctx, err.Error())
 	}
 
-	return nil
+	resultsList := []*data.TestResults{}
+	for _, v := range sk.SuiteTestResults {
+		resultsList = append(resultsList, v)
+	}
+
+	// Send the result via channel
+	results <- map[string][]*data.TestResults{suiteDisplayName: resultsList}
+
+	return err
 }
 
 func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultKarbonFilterNames []string, defaultKoffeeFilterNames []string) int {

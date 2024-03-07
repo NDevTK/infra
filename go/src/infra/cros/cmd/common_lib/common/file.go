@@ -6,7 +6,10 @@ package common
 
 import (
 	"bufio"
+	"bytes"
+	"compress/zlib"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"io/fs"
@@ -396,4 +399,20 @@ func ReadProtoJSONFile(ctx context.Context, filePath string, outputProto proto.M
 	}
 
 	return nil
+}
+
+func Decompress(from string) ([]byte, error) {
+	bs, err := base64.StdEncoding.DecodeString(from)
+	if err != nil {
+		return nil, errors.Annotate(err, "decompress").Err()
+	}
+	reader, err := zlib.NewReader(bytes.NewReader(bs))
+	if err != nil {
+		return nil, errors.Annotate(err, "decompress").Err()
+	}
+	bs, err = io.ReadAll(reader)
+	if err != nil {
+		return nil, errors.Annotate(err, "decompress").Err()
+	}
+	return bs, nil
 }

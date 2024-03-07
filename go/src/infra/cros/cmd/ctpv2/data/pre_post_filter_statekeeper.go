@@ -20,6 +20,9 @@ type PrePostFilterStateKeeper struct {
 	CtpV1Requests map[string]*test_platform.Request
 	CtpV2Request  *api.CTPv2Request
 
+	// Results
+	AllTestResults map[string][]*TestResults
+
 	// Tools and their related dependencies
 	Ctr                   *crostoolrunner.CrosToolRunner
 	DockerKeyFileLocation string

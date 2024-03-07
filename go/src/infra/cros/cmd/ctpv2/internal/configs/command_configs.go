@@ -55,6 +55,9 @@ func (cfg *CommandConfig) GetCommand(
 	case commands.ScheduleTasksCmdType:
 		cmd = commands.NewScheduleTasksCmd()
 
+	case commands.SummarizeCmdType:
+		cmd = commands.NewSummarizeCmd()
+
 	case commands.FilterExecutionCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {

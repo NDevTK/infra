@@ -164,13 +164,14 @@ type loading struct {
 }
 
 type hwInfo struct {
-	req               *api.HWRequirements
-	labLoading        *loading
-	numInCurrentShard int
-	hwValue           uint64
-	provValue         uint64
-	labDevices        int64
-	shardHarness      string
+	req                *api.HWRequirements
+	labLoading         *loading
+	numInCurrentShard  int
+	hwValue            uint64
+	provValue          uint64
+	labDevices         int64
+	shardHarness       string
+	dimsExcludingReady []string
 }
 
 // Kv structs are useful for gobased sorting.
@@ -280,9 +281,11 @@ func createTrRequests(distro map[uint64][][]string, solverData *middleOutData) (
 				shardedtcs = append(shardedtcs, lltc)
 			}
 			trReq := &data.TrRequest{
-				Req:        solverData.flatHWUUIDMap[k].req,
-				Tcs:        shardedtcs,
-				LabDevices: solverData.flatHWUUIDMap[k].labDevices,
+				Req: solverData.flatHWUUIDMap[k].req,
+				Tcs: shardedtcs,
+				DevicesInfo: &data.DevicesInfo{LabDevicesCount: solverData.flatHWUUIDMap[k].labDevices,
+					Dims: solverData.flatHWUUIDMap[k].dimsExcludingReady,
+				},
 			}
 			TrRequests = append(TrRequests, trReq)
 		}
@@ -525,6 +528,7 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 
 				hwInfoInput.labLoading = &loading{value: int(botCount)}
 				hwInfoInput.labDevices = totalBotCount
+				hwInfoInput.dimsExcludingReady = dimsExcludingReady
 				logging.Infof(ctx, "Found for lab devices: %v", botCount)
 
 			}(hwInfoObj)

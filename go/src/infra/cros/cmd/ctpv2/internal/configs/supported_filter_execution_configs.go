@@ -18,6 +18,7 @@ var TranslateV1toV2Request_NoExecutor = &common_configs.CommandExecutorPairedCon
 var TranslateRequest_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TranslateRequestType, ExecutorType: common_executors.NoExecutorType}
 var PrepareFilterContainers_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.PrepareFilterContainersCmdType, ExecutorType: common_executors.NoExecutorType}
 var ExecuteFilter_FilterExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.FilterExecutionCmdType, ExecutorType: executors.FilterExecutorType}
+var Summarize_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.SummarizeCmdType, ExecutorType: common_executors.NoExecutorType}
 
 var CtrStartAsync_CtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.CtrServiceStartAsyncCmdType, ExecutorType: common_executors.CtrExecutorType}
 var CtrStop_CtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.CtrServiceStopCmdType, ExecutorType: common_executors.CtrExecutorType}
@@ -91,6 +92,7 @@ func GeneratePostConfigs(ctx context.Context) *common_configs.Configs {
 
 	// Stop Ctr
 	mainConfigs = append(mainConfigs,
+		Summarize_NoExecutor,
 		CtrStop_CtrExecutor)
 
 	cleanupConfigs = append(cleanupConfigs,

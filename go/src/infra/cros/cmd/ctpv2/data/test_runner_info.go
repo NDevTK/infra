@@ -10,9 +10,14 @@ import "go.chromium.org/chromiumos/config/go/test/api"
 // Where it will be 1 request that contains 1 --> many tests.
 // This request will be built up to contain all needed information to make a Tr(v2) request.
 type TrRequest struct {
-	Req        *api.HWRequirements
-	Tcs        []*api.CTPTestCase
-	LabDevices int64
+	Req         *api.HWRequirements
+	Tcs         []*api.CTPTestCase
+	DevicesInfo *DevicesInfo
+}
+
+type DevicesInfo struct {
+	Dims            []string
+	LabDevicesCount int64
 }
 
 type MiddleOutResponse struct {
