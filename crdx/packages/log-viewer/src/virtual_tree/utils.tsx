@@ -42,7 +42,7 @@ export function generateTreeDataList<T extends TreeNodeData>(
   root: readonly T[],
   treeDataList: Array<TreeData<T>>,
   level: number,
-  parent: TreeData<T> | undefined,
+  parent?: TreeData<T>,
 ): Array<TreeData<T>> {
   const copiedTree = copyTree(root);
   const createdTreeDataList = createTreeData(copiedTree);
@@ -62,6 +62,12 @@ function createTreeData<T extends TreeNodeData>(tree: T[]) {
   return createTreeDataHelper(tree, [], 0);
 }
 
+function isLeafNode<T extends TreeNodeData>(node: T, level: number) {
+  // Mark as a leaf node if the node doesn't have any children and it is not
+  // the root node.
+  return node.children.length === 0 && level !== 0;
+}
+
 function createTreeDataHelper<T extends TreeNodeData>(
   tree: T[],
   treeDataList: TreeData<T>[],
@@ -74,7 +80,8 @@ function createTreeDataHelper<T extends TreeNodeData>(
       data: node as T,
       children: new Array<TreeData<T>>(),
       level,
-      isLeafNode: node.children.length === 0,
+
+      isLeafNode: isLeafNode(node, level),
       isOpen: true,
       parent: undefined,
     });
@@ -137,7 +144,7 @@ function getTreeData<T extends TreeNodeData>(
         idToTreeData.get(nodeData.id! as string),
       ) || new Array<TreeData<T>>(),
     level,
-    isLeafNode: node.children.length === 0,
+    isLeafNode: isLeafNode(node, level),
     isOpen: true,
     parent,
   };
