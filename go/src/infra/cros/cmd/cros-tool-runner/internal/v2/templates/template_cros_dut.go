@@ -48,6 +48,12 @@ func (p *crosDutProcessor) Process(request *api.StartTemplatedContainerRequest) 
 		Volume:  []string{volume},
 		Env:     additionalEnvs(),
 	}
+	// Add cloudbots related options
+	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbot-") {
+		cloudbotsOptions := cloudbotsAdditionalOptions()
+		additionalOptions.Volume = append(additionalOptions.Volume, cloudbotsOptions.Volume...)
+		additionalOptions.Env = append(additionalOptions.Env, cloudbotsOptions.Env...)
+	}
 	startCommand := []string{
 		"cros-dut",
 		"-dut_address", TemplateUtils.endpointToAddress(t.DutAddress),
@@ -76,4 +82,24 @@ func additionalEnvs() []string {
 		env = append(env, fmt.Sprintf("SWARMING_TASK_ID=%s", swarmingTaskID))
 	}
 	return env
+}
+
+func cloudbotsAdditionalOptions() *api.StartContainerRequest_Options {
+	o := &api.StartContainerRequest_Options{
+		Volume: []string{},
+		Env: []string{
+			fmt.Sprintf("SWARMING_BOT_ID=%s", os.Getenv("SWARMING_BOT_ID")),
+		},
+	}
+	// cloudbots environment variables
+	for _, env := range os.Environ() {
+		if strings.HasPrefix(env, "CLOUDBOTS-") {
+			o.Env = append(o.Env, env)
+		}
+	}
+	// cloudbots host files
+	if v, found := os.LookupEnv("CLOUDBOTS_CA_CERTIFICATE"); found {
+		o.Volume = append(o.Volume, fmt.Sprintf("%s:%s", v, v))
+	}
+	return o
 }
