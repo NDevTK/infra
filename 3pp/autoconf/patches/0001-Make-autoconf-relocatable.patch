@@ -1,6 +1,6 @@
-From b262ac668d8cc7933d37896e2072f646b24570d9 Mon Sep 17 00:00:00 2001
+From 820a35935045cc3fe0e40ae42de30787790e9035 Mon Sep 17 00:00:00 2001
 From: Robert Iannucci <iannucci@chromium.org>
-Date: Fri, 21 Sep 2018 23:05:26 -0700
+Date: Fri, 16 Feb 2024 13:49:48 -0800
 Subject: [PATCH] Make autoconf relocatable.
 
 This is the package definition for the autoconf tools and includes a patch to
@@ -19,34 +19,45 @@ The patch was made by doing `make install` on the base package, looking for
 absolute paths and then changing the sources so the absolute paths no longer
 showed up in the output of `make install`.
 ---
- bin/autoconf.as   |  2 +-
+ bin/autoconf.as   |  6 ++++--
  bin/autoheader.in |  6 ++++--
  bin/autom4te.in   | 11 ++++++++---
  bin/autoreconf.in | 10 ++++++----
- bin/autoscan.in   | 11 ++++++++---
+ bin/autoscan.in   |  8 +++++---
  bin/autoupdate.in | 12 +++++++++---
  bin/ifnames.in    |  4 +++-
  lib/autom4te.in   |  4 ----
- 8 files changed, 39 insertions(+), 21 deletions(-)
+ man/autoconf.1    |  4 ++--
+ man/autoheader.1  |  4 ++--
+ man/autom4te.1    |  4 ++--
+ man/autoreconf.1  |  4 ++--
+ man/autoscan.1    |  4 ++--
+ man/autoupdate.1  |  4 ++--
+ man/ifnames.1     |  4 ++--
+ 15 files changed, 53 insertions(+), 36 deletions(-)
 
 diff --git a/bin/autoconf.as b/bin/autoconf.as
-index aa85394..44f02cc 100644
+index 1407739..007892f 100644
 --- a/bin/autoconf.as
 +++ b/bin/autoconf.as
-@@ -84,7 +84,7 @@ exit_missing_arg='
+@@ -89,8 +89,10 @@ exit_missing_arg='
  # restore font-lock: '
  
  # Variables.
 -: ${AUTOM4TE='@bindir@/@autom4te-name@'}
+-: ${trailer_m4='@pkgdatadir@/autoconf/trailer.m4'}
 +: ${AUTOM4TE='@autom4te-name@'}
++: ${PREFIX_BIN=`dirname "$0"`}
++: ${PREFIX=`dirname $PREFIX_BIN`}
++: ${trailer_m4="$PREFIX/share/autoconf/autoconf/trailer.m4"}
  autom4te_options=
  outfile=
  verbose=false
 diff --git a/bin/autoheader.in b/bin/autoheader.in
-index d81a313..5b17c63 100644
+index 1cbf509..baff717 100644
 --- a/bin/autoheader.in
 +++ b/bin/autoheader.in
-@@ -28,7 +28,9 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+@@ -32,7 +32,9 @@ use warnings FATAL => 'all';
  
  BEGIN
  {
@@ -57,20 +68,20 @@ index d81a313..5b17c63 100644
    unshift @INC, "$pkgdatadir";
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-@@ -50,7 +52,7 @@ use strict;
- use vars qw ($config_h %verbatim %symbol);
+@@ -54,7 +56,7 @@ use Autom4te::XFile;
+ our ($config_h, %symbol, %verbatim);
  
  # Lib files.
 -my $autom4te = $ENV{'AUTOM4TE'} || '@bindir@/@autom4te-name@';
 +my $autom4te = $ENV{'AUTOM4TE'} || '@autom4te-name@';
- local $config_h;
  my $config_h_in;
  my @prepend_include;
+ my @include;
 diff --git a/bin/autom4te.in b/bin/autom4te.in
-index 11773c9..9180608 100644
+index 7ebe419..e6b3875 100644
 --- a/bin/autom4te.in
 +++ b/bin/autom4te.in
-@@ -24,7 +24,9 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+@@ -28,7 +28,9 @@ use warnings FATAL => 'all';
  
  BEGIN
  {
@@ -81,9 +92,9 @@ index 11773c9..9180608 100644
    unshift @INC, $pkgdatadir;
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-@@ -43,8 +45,11 @@ use Autom4te::XFile;
- use File::Basename;
- use strict;
+@@ -47,8 +49,11 @@ use Autom4te::FileUtils;
+ use Autom4te::General;
+ use Autom4te::XFile;
  
 +my $PREFIX = dirname(dirname(__FILE__));
 +my $SHARE_DIR = "$PREFIX/share/autoconf";
@@ -94,21 +105,21 @@ index 11773c9..9180608 100644
  
  # $LANGUAGE{LANGUAGE} -- Automatic options for LANGUAGE.
  my %language;
-@@ -332,7 +337,7 @@ sub parse_args ()
+@@ -335,7 +340,7 @@ sub parse_args ()
  
    # Process the arguments for real this time.
    my @trace;
 -  my @prepend_include;
 +  my @prepend_include = ($SHARE_DIR);
-   parse_WARNINGS;
+   my @warnings;
+ 
    getopt
-     (
 diff --git a/bin/autoreconf.in b/bin/autoreconf.in
-index acf25d4..503dced 100644
+index ec391a6..2d57329 100644
 --- a/bin/autoreconf.in
 +++ b/bin/autoreconf.in
-@@ -26,7 +26,9 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
- 
+@@ -32,7 +32,9 @@ use warnings FATAL => 'all';
+ my $buildauxdir;
  BEGIN
  {
 -  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
@@ -117,25 +128,25 @@ index acf25d4..503dced 100644
 +  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || "$PREFIX/share/autoconf";
    unshift @INC, $pkgdatadir;
  
-   # Override SHELL.  On DJGPP SHELL may not be set to a shell
-@@ -106,9 +108,9 @@ Written by David J. MacKenzie and Akim Demaille.
+   $buildauxdir = $ENV{'autom4te_buildauxdir'} || $pkgdatadir . '/build-aux';
+@@ -117,9 +119,9 @@ Written by David J. MacKenzie and Akim Demaille.
  ";
  
  # Lib files.
--my $autoconf   = $ENV{'AUTOCONF'}   || '@bindir@/@autoconf-name@';
--my $autoheader = $ENV{'AUTOHEADER'} || '@bindir@/@autoheader-name@';
--my $autom4te   = $ENV{'AUTOM4TE'}   || '@bindir@/@autom4te-name@';
-+my $autoconf   = $ENV{'AUTOCONF'}   || '@autoconf-name@';
-+my $autoheader = $ENV{'AUTOHEADER'} || '@autoheader-name@';
-+my $autom4te   = $ENV{'AUTOM4TE'}   || '@autom4te-name@';
- my $automake   = $ENV{'AUTOMAKE'}   || 'automake';
- my $aclocal    = $ENV{'ACLOCAL'}    || 'aclocal';
- my $libtoolize = $ENV{'LIBTOOLIZE'} || 'libtoolize';
+-my $autoconf    = $ENV{'AUTOCONF'}    || '@bindir@/@autoconf-name@';
+-my $autoheader  = $ENV{'AUTOHEADER'}  || '@bindir@/@autoheader-name@';
+-my $autom4te    = $ENV{'AUTOM4TE'}    || '@bindir@/@autom4te-name@';
++my $autoconf    = $ENV{'AUTOCONF'}    || '@autoconf-name@';
++my $autoheader  = $ENV{'AUTOHEADER'}  || '@autoheader-name@';
++my $autom4te    = $ENV{'AUTOM4TE'}    || '@autom4te-name@';
+ my $automake    = $ENV{'AUTOMAKE'}    || 'automake';
+ my $aclocal     = $ENV{'ACLOCAL'}     || 'aclocal';
+ my $libtoolize  = $ENV{'LIBTOOLIZE'}  || 'libtoolize';
 diff --git a/bin/autoscan.in b/bin/autoscan.in
-index a67c48d..88d5907 100644
+index b89fd1a..80968f1 100644
 --- a/bin/autoscan.in
 +++ b/bin/autoscan.in
-@@ -25,7 +25,9 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+@@ -30,7 +30,9 @@ use warnings FATAL => 'all';
  
  BEGIN
  {
@@ -146,17 +157,7 @@ index a67c48d..88d5907 100644
    unshift @INC, $pkgdatadir;
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-@@ -44,6 +46,9 @@ use File::Basename;
- use File::Find;
- use strict;
- 
-+my $PREFIX = dirname(dirname(__FILE__));
-+my $SHARE_DIR = "$PREFIX/share/autoconf"
-+
- use vars qw(@cfiles @makefiles @shfiles @subdirs %printed);
- 
- # The kind of the words we are looking for.
-@@ -91,10 +96,10 @@ my $configure_scan = 'configure.scan';
+@@ -95,10 +97,10 @@ my %needed_macros =
  my $log;
  
  # Autoconf and lib files.
@@ -170,12 +171,12 @@ index a67c48d..88d5907 100644
  # $help
  # -----
 diff --git a/bin/autoupdate.in b/bin/autoupdate.in
-index 9737d49..5038bb6 100644
+index c86203a..1866dcb 100644
 --- a/bin/autoupdate.in
 +++ b/bin/autoupdate.in
-@@ -24,9 +24,12 @@
- eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
-     if 0;
+@@ -29,9 +29,12 @@ use 5.006;
+ use strict;
+ use warnings FATAL => 'all';
  
 +
  BEGIN
@@ -187,9 +188,9 @@ index 9737d49..5038bb6 100644
    unshift @INC, $pkgdatadir;
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-@@ -45,12 +48,15 @@ use Autom4te::XFile;
- use File::Basename;
- use strict;
+@@ -50,12 +53,15 @@ use Autom4te::FileUtils;
+ use Autom4te::General;
+ use Autom4te::XFile;
  
 +my $PREFIX = dirname(dirname(__FILE__));
 +my $SHARE_DIR = "$PREFIX/share/autoconf";
@@ -206,10 +207,10 @@ index 9737d49..5038bb6 100644
  # m4.
  my $m4 = $ENV{"M4"} || '@M4@';
 diff --git a/bin/ifnames.in b/bin/ifnames.in
-index ba2cd05..6098807 100644
+index b04947f..50ac4b4 100644
 --- a/bin/ifnames.in
 +++ b/bin/ifnames.in
-@@ -31,7 +31,9 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+@@ -35,7 +35,9 @@ use warnings FATAL => 'all';
  
  BEGIN
  {
@@ -221,10 +222,10 @@ index ba2cd05..6098807 100644
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
 diff --git a/lib/autom4te.in b/lib/autom4te.in
-index a560501..8fa65b4 100644
+index 9e86c9f..ce069a7 100644
 --- a/lib/autom4te.in
 +++ b/lib/autom4te.in
-@@ -106,7 +106,6 @@ end-language: "Autoreconf-preselections"
+@@ -115,7 +115,6 @@ end-language: "Autoreconf-preselections"
  # This intermediate language is used by aclocal to build aclocal.m4.
  
  begin-language: "Autoconf-without-aclocal-m4"
@@ -232,7 +233,7 @@ index a560501..8fa65b4 100644
  args: --cache=autom4te.cache
  args: autoconf/autoconf.m4f
  args: acsite.m4?
-@@ -133,7 +132,6 @@ end-language: "Autoconf"
+@@ -142,7 +141,6 @@ end-language: "Autoconf"
  ## -------- ##
  
  begin-language: "Autotest"
@@ -240,7 +241,7 @@ index a560501..8fa65b4 100644
  args: autotest/autotest.m4f
  args: package.m4?
  args: local.at?
-@@ -147,7 +145,6 @@ end-language: "Autotest"
+@@ -156,7 +154,6 @@ end-language: "Autotest"
  ## ---- ##
  
  begin-language: "M4sh"
@@ -248,14 +249,97 @@ index a560501..8fa65b4 100644
  args: m4sugar/m4sh.m4f
  args: --mode 777
  args: --language M4sugar
-@@ -159,7 +156,6 @@ end-language: "M4sh"
+@@ -168,6 +165,5 @@ end-language: "M4sh"
  ## ------- ##
  
  begin-language: "M4sugar"
 -args: --prepend-include '@pkgdatadir@'
  args: m4sugar/m4sugar.m4f
- args: --warnings syntax
  end-language: "M4sugar"
+diff --git a/man/autoconf.1 b/man/autoconf.1
+index dcf6762..50d94bb 100644
+--- a/man/autoconf.1
++++ b/man/autoconf.1
+@@ -1,5 +1,5 @@
+-.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.47.17.
+-.TH AUTOCONF "1" "January 2021" "GNU Autoconf 2.71" "User Commands"
++.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.49.3.
++.TH AUTOCONF "1" "February 2024" "GNU Autoconf 2.71" "User Commands"
+ .SH NAME
+ autoconf \- Generate configuration scripts
+ .SH SYNOPSIS
+diff --git a/man/autoheader.1 b/man/autoheader.1
+index d90418b..52dcfdf 100644
+--- a/man/autoheader.1
++++ b/man/autoheader.1
+@@ -1,5 +1,5 @@
+-.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.47.17.
+-.TH AUTOHEADER "1" "January 2021" "GNU Autoconf 2.71" "User Commands"
++.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.49.3.
++.TH AUTOHEADER "1" "February 2024" "GNU Autoconf 2.71" "User Commands"
+ .SH NAME
+ autoheader \- Create a template header for configure
+ .SH SYNOPSIS
+diff --git a/man/autom4te.1 b/man/autom4te.1
+index c7902d2..25071e2 100644
+--- a/man/autom4te.1
++++ b/man/autom4te.1
+@@ -1,5 +1,5 @@
+-.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.47.17.
+-.TH AUTOM4TE "1" "January 2021" "GNU Autoconf 2.71" "User Commands"
++.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.49.3.
++.TH AUTOM4TE "1" "February 2024" "GNU Autoconf 2.71" "User Commands"
+ .SH NAME
+ autom4te \- Generate files and scripts thanks to M4
+ .SH SYNOPSIS
+diff --git a/man/autoreconf.1 b/man/autoreconf.1
+index a0970b1..f58102b 100644
+--- a/man/autoreconf.1
++++ b/man/autoreconf.1
+@@ -1,5 +1,5 @@
+-.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.47.17.
+-.TH AUTORECONF "1" "January 2021" "GNU Autoconf 2.71" "User Commands"
++.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.49.3.
++.TH AUTORECONF "1" "February 2024" "GNU Autoconf 2.71" "User Commands"
+ .SH NAME
+ autoreconf \- Update generated configuration files
+ .SH SYNOPSIS
+diff --git a/man/autoscan.1 b/man/autoscan.1
+index cae6400..26aa1a5 100644
+--- a/man/autoscan.1
++++ b/man/autoscan.1
+@@ -1,5 +1,5 @@
+-.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.47.17.
+-.TH AUTOSCAN "1" "January 2021" "GNU Autoconf 2.71" "User Commands"
++.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.49.3.
++.TH AUTOSCAN "1" "February 2024" "GNU Autoconf 2.71" "User Commands"
+ .SH NAME
+ autoscan \- Generate a preliminary configure.ac
+ .SH SYNOPSIS
+diff --git a/man/autoupdate.1 b/man/autoupdate.1
+index 0b18ca5..4b36931 100644
+--- a/man/autoupdate.1
++++ b/man/autoupdate.1
+@@ -1,5 +1,5 @@
+-.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.47.17.
+-.TH AUTOUPDATE "1" "January 2021" "GNU Autoconf 2.71" "User Commands"
++.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.49.3.
++.TH AUTOUPDATE "1" "February 2024" "GNU Autoconf 2.71" "User Commands"
+ .SH NAME
+ autoupdate \- Update a configure.ac to a newer Autoconf
+ .SH SYNOPSIS
+diff --git a/man/ifnames.1 b/man/ifnames.1
+index 0bb65d8..ca768eb 100644
+--- a/man/ifnames.1
++++ b/man/ifnames.1
+@@ -1,5 +1,5 @@
+-.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.47.17.
+-.TH IFNAMES "1" "January 2021" "GNU Autoconf 2.71" "User Commands"
++.\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.49.3.
++.TH IFNAMES "1" "February 2024" "GNU Autoconf 2.71" "User Commands"
+ .SH NAME
+ ifnames \- Extract CPP conditionals from a set of files
+ .SH SYNOPSIS
 -- 
-2.18.0
+2.44.0.278.ge034bb2e1d-goog
 
