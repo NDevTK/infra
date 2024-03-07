@@ -921,12 +921,19 @@ func generateSplitdebugConfigs(ctx context.Context, symbolFiles []string, retryQ
 		return nil, err
 	}
 
-	splitdebugTasks := make([]taskConfig, len(tasks))
-	for index, task := range tasks {
+	splitdebugTasks := make([]taskConfig, 0, len(tasks))
+	for _, task := range tasks {
 		debugDir := filepath.Dir(task.symbolPath)
 		debugFile := filepath.Join(debugDir, task.debugFile)
 
-		splitdebugTasks[index] = taskConfig{debugFile, "ELF", task.debugFile, task.debugId, dryRun, shouldSleep}
+		if _, err := os.Stat(debugFile); errors.Is(err, os.ErrNotExist) {
+			// A breakpad file exists but the splitdebug file is
+			// missing, most likely because it didn't have a build
+			// ID and the name didn't match the breakpad file.
+			continue
+		}
+
+		splitdebugTasks = append(splitdebugTasks, taskConfig{debugFile, "ELF", task.debugFile, task.debugId, dryRun, shouldSleep})
 	}
 
 	tasks = append(tasks, splitdebugTasks...)
