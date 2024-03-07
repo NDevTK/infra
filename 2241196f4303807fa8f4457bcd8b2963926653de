@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3c932623_9cc11733",
+        "filename": "go/src/infra/device_manager/internal/controller/device.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1530597
+      },
+      "writtenOn": "2024-03-07T21:24:49Z",
+      "side": 1,
+      "message": "Don\u0027t need the parenthesis if it is only one.",
+      "revId": "2241196f4303807fa8f4457bcd8b2963926653de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
