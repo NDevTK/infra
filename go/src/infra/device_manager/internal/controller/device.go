@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net"
 	"strconv"
 
@@ -39,6 +40,27 @@ func GetDevice(ctx context.Context, db *sql.DB, deviceName string) (*api.Device,
 	return deviceProto, nil
 }
 
+// UpdateDevice updates a Device in a transaction.
+func UpdateDevice(ctx context.Context, tx *sql.Tx, device model.Device) error {
+	// TODO (b/328662436): Collect metrics
+
+	err := model.UpdateDevice(ctx, tx, device)
+	if err != nil {
+		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s: %s", device.ID, err)
+		return err
+	}
+	logging.Debugf(ctx, "UpdateDevice: updated Device %s successfully", device.ID)
+
+	// Send PubSub event
+
+	return nil
+}
+
+// IsDeviceAvailable checks if a device state is available.
+func IsDeviceAvailable(ctx context.Context, state api.DeviceState) bool {
+	return state == api.DeviceState_DEVICE_STATE_AVAILABLE
+}
+
 // convertDeviceAddressToAPIFormat takes a net address string and converts it.
 //
 // The format is defined by the DeviceAddress proto. It does a basic split of
@@ -58,6 +80,14 @@ func convertDeviceAddressToAPIFormat(ctx context.Context, addr string) (*api.Dev
 		Host: host,
 		Port: int32(port),
 	}, nil
+}
+
+// convertAPIDeviceAddressToDBFormat takes a DeviceAddress and converts it to string.
+//
+// The format is defined by the DeviceAddress proto. It does a basic join of
+// Host and Port using the net package.
+func convertAPIDeviceAddressToDBFormat(ctx context.Context, addr *api.DeviceAddress) string {
+	return net.JoinHostPort(addr.GetHost(), fmt.Sprint(addr.GetPort()))
 }
 
 // convertDeviceTypeToAPIFormat takes a string and converts it to DeviceType.
