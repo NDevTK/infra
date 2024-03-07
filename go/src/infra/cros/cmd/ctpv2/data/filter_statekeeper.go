@@ -7,6 +7,7 @@ package data
 import (
 	"container/list"
 
+	"cloud.google.com/go/bigquery"
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/luciexe/build"
@@ -15,7 +16,7 @@ import (
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
-// PreLocalTestStateKeeper represents all the data pre local test execution flow requires.
+// FilterStateKeeper represents all the data pre local test execution flow requires.
 type FilterStateKeeper struct {
 	interfaces.StateKeeper
 
@@ -39,4 +40,7 @@ type FilterStateKeeper struct {
 	Ctr *crostoolrunner.CrosToolRunner
 
 	MiddledOutResp *MiddleOutResponse
+
+	// BQ Client for writing CTP level task info to.
+	BQClient *bigquery.Client
 }

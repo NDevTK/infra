@@ -11,6 +11,7 @@ import (
 	"log"
 	"sync"
 
+	"cloud.google.com/go/bigquery"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/logging"
@@ -44,10 +45,14 @@ func LuciBuildExecution() {
 			log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
 			logging.Infof(ctx, "have input %v", input)
 			ctrCipdInfo := ctrCipdInfoReader(ctx)
+			bqClient := common.CtpAnalyticsBQClient(ctx)
+			if bqClient != nil {
+				defer bqClient.Close()
+			}
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
 			resp := &steps.CTPv2BinaryBuildOutput{}
-			_, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st)
+			_, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient)
 			// TODO (azrahman): add compressed result for upstream
 			// if resp != nil {
 			// 	m, _ := proto.Marshal(resp)
@@ -74,7 +79,8 @@ func executeRequests(
 	ctx context.Context,
 	input *steps.CTPv2BinaryBuildInput,
 	ctrCipdVersion string,
-	buildState *build.State) (*api.CTPv2Response, error) {
+	buildState *build.State,
+	BQClient *bigquery.Client) (*api.CTPv2Response, error) {
 
 	// Validation
 	if ctrCipdVersion == "" {
@@ -104,6 +110,7 @@ func executeRequests(
 		Ctr:                   ctr,
 		CtpV1Requests:         input.GetRequests(),
 		CtpV2Request:          input.GetCtpv2Request(),
+		BQClient:              BQClient,
 	}
 
 	ctpv2PreConfig := configs.NewCtpv2ExecutionConfig(0, configs.Ctpv2PreExecutionConfigType, cmdCfg, sk)
@@ -125,7 +132,7 @@ func executeRequests(
 	}
 
 	// Execute Ctpv2 Reqs
-	resultsMap := executeCtpv2Reqs(ctx, sk.CtpV2Request, buildState, ctr)
+	resultsMap := executeCtpv2Reqs(ctx, sk.CtpV2Request, buildState, ctr, BQClient)
 	sk.AllTestResults = resultsMap
 
 	// Execute post configs
@@ -138,7 +145,7 @@ func executeRequests(
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	ctpv2Req *api.CTPv2Request, buildState *build.State, ctr *crostoolrunner.CrosToolRunner) map[string][]*data.TestResults {
+	ctpv2Req *api.CTPv2Request, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client) map[string][]*data.TestResults {
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
@@ -160,7 +167,7 @@ func executeCtpv2Reqs(ctx context.Context,
 			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
 		}
 		wg.Add(1)
-		go executeFiltersInLuciBuild(ctx, ctpReq, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName)
+		go executeFiltersInLuciBuild(ctx, ctpReq, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient)
 	}
 	go func() {
 		wg.Wait()
@@ -184,7 +191,7 @@ func executeFiltersInLuciBuild(
 	ctx context.Context,
 	req *api.CTPRequest,
 	buildState *build.State,
-	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string) error {
+	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client) error {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
@@ -200,6 +207,7 @@ func executeFiltersInLuciBuild(
 		BuildState:         buildState,
 		Scheduler:          req.GetSchedulerInfo().GetScheduler(),
 		ContainerInfoMap:   contInfoMap,
+		BQClient:           BQClient,
 	}
 
 	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest()), common.DefaultKoffeeFilterNames)

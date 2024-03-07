@@ -5,6 +5,7 @@
 package data
 
 import (
+	"cloud.google.com/go/bigquery"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 
@@ -26,4 +27,7 @@ type PrePostFilterStateKeeper struct {
 	// Tools and their related dependencies
 	Ctr                   *crostoolrunner.CrosToolRunner
 	DockerKeyFileLocation string
+
+	// BQ Client for writing CTP level task info to.
+	BQClient *bigquery.Client
 }
