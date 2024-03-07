@@ -295,6 +295,7 @@ This module uses the following named caches:
   * `windows_sdk` - Cache for `depot_tools/windows_sdk`. Only on Windows.
 """
 
+import contextlib
 import hashlib
 import itertools
 import posixpath
@@ -313,6 +314,7 @@ from .exceptions import BadParse, DuplicatePackage, UnsupportedPackagePlatform
 
 from . import create
 from . import cipd_spec
+from . import run_script
 
 from PB.recipe_modules.infra.support_3pp.spec import Spec
 
@@ -931,9 +933,10 @@ class Support3ppApi(recipe_api.RecipeApi):
       args.extend(('-spec-pool', d))
     args.extend(sorted(packages))
 
-    with self.m.context(env={'PKGBUILD_ENABLE_LUCIEXE': '1'}):
-      self.m.step.sub_build(
-          'build packages',
-          [base_dir.join('edge'), '--'] + args,
-          self.m.buildbucket.build,
-      )
+    with run_script.get_sdk(self.m, platform):
+      with self.m.context(env={'PKGBUILD_ENABLE_LUCIEXE': '1'}):
+        self.m.step.sub_build(
+            'build packages',
+            [base_dir.join('edge'), '--'] + args,
+            self.m.buildbucket.build,
+        )

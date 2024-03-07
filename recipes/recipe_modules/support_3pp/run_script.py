@@ -5,7 +5,7 @@
 """Defines the utility function for running a script; understands how to run
 bash scripts on all host platforms (including windows)."""
 
-from contextlib import contextmanager
+from contextlib import nullcontext
 
 from .workdir import Workdir
 
@@ -50,6 +50,15 @@ _WINDOWS_SDK_PLATFORM = {
     'windows-amd64': 'x64',
     'windows-arm64': 'arm64',
 }
+
+
+def get_sdk(api, platform):
+  sdk = nullcontext() # no sdk
+  if platform.startswith('mac-'):
+    sdk = api.osx_sdk('mac')
+  if platform.startswith('windows-'):
+    sdk = api.windows_sdk(target_arch=_WINDOWS_SDK_PLATFORM[platform])
+  return sdk
 
 
 def run_script(api, *args, **kwargs):
@@ -119,17 +128,7 @@ def run_script(api, *args, **kwargs):
           stdout=stdout,
           step_test_data=step_test_data)
 
-  @contextmanager
-  def no_sdk():
-    yield
-  sdk = no_sdk()
-  if not no_toolchain:
-    if compile_platform.startswith('mac-'):
-      sdk = api.osx_sdk('mac')
-    if compile_platform.startswith('windows-'):
-      sdk = api.windows_sdk(target_arch=_WINDOWS_SDK_PLATFORM[compile_platform])
-
-  with sdk:
+  with get_sdk(api, compile_platform):
     if interpreter == 'bash':
       cmd = ['bash'] + list(args)
 
