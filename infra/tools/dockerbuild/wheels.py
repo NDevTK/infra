@@ -209,7 +209,7 @@ def _NumPyTppLibs(w):
     return [
         TppLib(
             'infra/3pp/static_libs/openblas',
-            'version:2@0.3.24.chromium.1',
+            'version:2@0.3.26.chromium.2',
             setup_cb=_NumPySetup)
     ]
   return []
@@ -234,7 +234,7 @@ _LATEST_NUMPY = SourceOrPrebuilt(
     tpp_libs_cb=_NumPyTppLibs,
     env_cb=_NumPyEnv,
     patches=('cpu-dispatch',),
-    patch_version='chromium.3',
+    patch_version='chromium.4',
     pyversions=['py3'],
 )
 
@@ -1004,6 +1004,7 @@ SPECS.update({
                 'linux-arm64-py3.8': ['manylinux2014_aarch64'],
                 'linux-arm64-py3.11': ['manylinux2014_aarch64']
             },
+            patch_version='chromium.1',
         ),
         SourceOrPrebuilt(
             'pandas',
@@ -1065,6 +1066,7 @@ SPECS.update({
                 'linux-armv6-py3.8',
             ],
             pyversions=['py3'],
+            patch_version='chromium.1',
         ),
         SourceOrPrebuilt(
             'psutil',

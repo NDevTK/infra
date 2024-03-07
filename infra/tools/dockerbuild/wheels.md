@@ -5848,12 +5848,12 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
-### 1.23.5.chromium.3
+### 1.23.5.chromium.4
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.23.5.chromium.3"
+  version: "version:1.23.5.chromium.4"
 >
 ```
 
@@ -6006,12 +6006,12 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
-### 4.8.1.78
+### 4.8.1.78.chromium.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/opencv_python/${vpython_platform}"
-  version: "version:4.8.1.78"
+  version: "version:4.8.1.78.chromium.1"
 >
 ```
 
@@ -6342,12 +6342,12 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
-### 1.5.3
+### 1.5.3.chromium.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/pandas/${vpython_platform}"
-  version: "version:1.5.3"
+  version: "version:1.5.3.chromium.1"
 >
 ```
 
