@@ -10,7 +10,6 @@
   * [docker](#recipe_modules-docker)
   * [infra_checkout](#recipe_modules-infra_checkout)
   * [infra_cipd](#recipe_modules-infra_cipd)
-  * [infra_system](#recipe_modules-infra_system)
   * [omahaproxy](#recipe_modules-omahaproxy)
   * [powershell](#recipe_modules-powershell)
   * [qemu](#recipe_modules-qemu)
@@ -55,7 +54,6 @@
   * [infra_continuous](#recipes-infra_continuous)
   * [infra_frontend_tester](#recipes-infra_frontend_tester)
   * [infra_repo_trybot](#recipes-infra_repo_trybot)
-  * [infra_system:examples/full](#recipes-infra_system_examples_full)
   * [luci_go](#recipes-luci_go)
   * [luci_py](#recipes-luci_py)
   * [powershell:examples/test](#recipes-powershell_examples_test)
@@ -591,16 +589,6 @@ Tests previously built packages integrity.
 &mdash; **def [upload](/recipes/recipe_modules/infra_cipd/api.py#86)(self, tags, step_test_data=None):**
 
 Uploads previously built packages.
-### *recipe_modules* / [infra\_system](/recipes/recipe_modules/infra_system)
-
-[DEPS](/recipes/recipe_modules/infra_system/__init__.py#10): [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform]
-
-
-#### **class [InfraSystemApi](/recipes/recipe_modules/infra_system/api.py#10)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
-
-API for interacting with a provisioned infrastructure system.
-
-&emsp; **@property**<br>&mdash; **def [sys\_bin\_path](/recipes/recipe_modules/infra_system/api.py#17)(self):**
 ### *recipe_modules* / [omahaproxy](/recipes/recipe_modules/omahaproxy)
 
 [DEPS](/recipes/recipe_modules/omahaproxy/__init__.py#3): [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/url][recipe_engine/recipe_modules/url]
@@ -1745,12 +1733,6 @@ This function runs UI tests in the `luci-go` project.
 &mdash; **def [RunSteps](/recipes/recipes/infra_repo_trybot.py#50)(api, go_version_variant, run_lint, skip_python_tests):**
 
 &mdash; **def [should\_run\_python\_tests](/recipes/recipes/infra_repo_trybot.py#46)(api):**
-### *recipes* / [infra\_system:examples/full](/recipes/recipe_modules/infra_system/examples/full.py)
-
-[DEPS](/recipes/recipe_modules/infra_system/examples/full.py#7): [infra\_system](#recipe_modules-infra_system), [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/step][recipe_engine/recipe_modules/step]
-
-
-&mdash; **def [RunSteps](/recipes/recipe_modules/infra_system/examples/full.py#15)(api):**
 ### *recipes* / [luci\_go](/recipes/recipes/luci_go.py)
 
 [DEPS](/recipes/recipes/luci_go.py#11): [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/tricium][recipe_engine/recipe_modules/tricium]
