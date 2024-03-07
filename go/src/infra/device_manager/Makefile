@@ -76,3 +76,10 @@ docker-db:
 	CURRENT_UID="$(id -u):$(id -g)" \
 	docker compose -f docker-compose.dev.yml up \
 	device_manager_db
+
+# Run Docker PubSub locally using Docker Compose
+.PHONY: docker-pubsub
+docker-pubsub:
+	CURRENT_UID="$(id -u):$(id -g)" \
+	docker compose -f docker-compose.dev.yml up \
+	pubsub

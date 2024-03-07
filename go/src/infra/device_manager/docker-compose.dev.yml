@@ -30,6 +30,7 @@ services:
       DB_PORT: 5432
       DB_NAME: device_manager_db
       DATABASE_URL: "host=device_manager_db user=postgres password=password dbname=device_manager_db sslmode=disable"
+      # PUBSUB_EMULATOR_HOST: pubsub:8085 # uncomment to enable pubsub emulator
     ports:
       - "8800:8800"
       - "8900:8900"
@@ -51,6 +52,14 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+  pubsub:
+    container_name: pubsub
+    stdin_open: true
+    tty: true
+    ports:
+      - "8085:8085"
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk
+    command: gcloud beta emulators pubsub start --host-port=0.0.0.0:8085
 
 volumes:
   pgdata: {}
