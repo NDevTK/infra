@@ -34,6 +34,23 @@
       "parentUuid": "47a98337_a77d2ef2",
       "revId": "6466115050906bac9b6529fbf800ac7c06305501",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f6014de_22495111",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2024-03-08T04:20:30Z",
+      "side": 1,
+      "message": "Honestly, I\u0027m a bit concerned about this. We don\u0027t want builds going out with bad symbols. We\u0027ve been generally adding more errors to the symbol creation \u0026 upload process, not less. We recently (late 2022) had an OMG because symbol creation started failing and we didn\u0027t notice.\n\nWhat I\u0027m saying is, we\u0027d rather fail the build than ship a build that didn\u0027t upload symbols.\n\nWhy is this only happening occasionally? That sounds like a problem with the builder being flaky rather than an expected error.\n\nIf there\u0027s a specific list of files that never create debug files, can we just allowlist those?",
+      "revId": "6466115050906bac9b6529fbf800ac7c06305501",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
