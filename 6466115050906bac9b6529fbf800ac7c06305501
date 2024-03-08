@@ -69,6 +69,24 @@
       "parentUuid": "3f6014de_22495111",
       "revId": "6466115050906bac9b6529fbf800ac7c06305501",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ed6f13e_e835526b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1267126
+      },
+      "writtenOn": "2024-03-08T05:35:55Z",
+      "side": 1,
+      "message": "I recognize your concern. The problem is that we\u0027re joining two different tarballs based on the build ID and the file name. It would be better to go to the source, and when we generate the debug_breakpad.tar.xz file we generate another tarball that has both the breakpad symbols (the .sym files) and the splitdebug files (the .debug files) right next to each other. A significant chunk of this code could be deleted (the elf parsing logic for example!) because we could know that the .debug file was run through `dump_syms` to generate the .sym file. If we had that we can simply iterate through every directory (e.g. `zip/28BCCBD0FFEA923100000000000000000/`) and upload the `zip.sym` file and the `zip.debug` file with the appropriate upload_type.\n\nThis CL is needed to avoid errors while uploading symbols if the splitdebug file is missing because the joining logic is faulty, because the build ID was missing _and_ the file name was different, or it was a duplicate name so we couldn\u0027t be sure. I\u0027d like to take up generating the other tarball, but I think that\u0027s in chromite code?",
+      "parentUuid": "415ae0ea_10a8ce14",
+      "revId": "6466115050906bac9b6529fbf800ac7c06305501",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
