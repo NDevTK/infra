@@ -5,13 +5,8 @@ vars = {
   "external_github": "https://chromium.googlesource.com/external/github.com",
 
   # This can be used to override the python used for generating the ENV python
-  # environment. Unfortunately, some bots need this as they are attempting to
-  # build the "infra/infra_python/${platform}" package which includes
-  # a virtualenv which needs to point to a fixed, pre-deployed, python
-  # interpreter on the system.
-  #
-  # This package is an awful way to distribute software, so if you see an
-  # opportunity to kill it, please do so.
+  # environment. This is only needed when developing or testing python 2.7
+  # appengine apps.
   "infra_env_python": "disabled",
   #
   # This is used during the transition phase of moving infra repos to git
