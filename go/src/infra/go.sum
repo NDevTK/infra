@@ -214,10 +214,10 @@ github.com/aws/aws-sdk-go v1.30.15/go.mod h1:5zCpMtNQVjRREroY7sYe8lOMRSxkhG6MZve
 github.com/aws/aws-sdk-go-v2 v0.18.0/go.mod h1:JWVYvqSMppoMJC0x5wdwiImzgXTI9FuZwxzkQq9wy+g=
 github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1 h1:vi3GIvERCScL5YaOGY6Vsf/KWh7/XB9iIJebXkAEGqM=
 github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1/go.mod h1:k9FlPXDUqPDWgAALgLoRbx+8gKcZ9/NXGfee4xJKe6c=
-github.com/bazelbuild/remote-apis v0.0.0-20230719205137-cb8058798964 h1:m1T9GuTAN/StD9KsAqLUmo17uyLbzZv/9GSkBMuIZV8=
-github.com/bazelbuild/remote-apis v0.0.0-20230719205137-cb8058798964/go.mod h1:ry8Y6CkQqCVcYsjPOlLXDX2iRVjOnjogdNwhvHmRcz8=
-github.com/bazelbuild/remote-apis-sdks v0.0.0-20231013183727-8e8b43c05b97 h1:Xyt2RU2GW9TBK1yMjRrwQsPeC+rbCoA1FMCJVnJboFU=
-github.com/bazelbuild/remote-apis-sdks v0.0.0-20231013183727-8e8b43c05b97/go.mod h1:E6OuuTP51pswhFFf0TwNQeYQjJ6+xt3nnx4QSzYpvbg=
+github.com/bazelbuild/remote-apis v0.0.0-20240215191509-9ff14cecffe5 h1:fm5Ceq2rIwkGYaaw40jjd8y1x0iOuKRnvxdoipWr2JA=
+github.com/bazelbuild/remote-apis v0.0.0-20240215191509-9ff14cecffe5/go.mod h1:ry8Y6CkQqCVcYsjPOlLXDX2iRVjOnjogdNwhvHmRcz8=
+github.com/bazelbuild/remote-apis-sdks v0.0.0-20240304155856-a108ad8bbbf4 h1:NfREL48UrRz0A/D23Dobk62+RDVfU4BKNNmWuZtVA9k=
+github.com/bazelbuild/remote-apis-sdks v0.0.0-20240304155856-a108ad8bbbf4/go.mod h1:WnAUH+TlX9cjTclBQ/6Eco2YPpjd4cz0nZq2FvrHu6Q=
 github.com/beorn7/perks v0.0.0-20160804104726-4c0e84591b9a/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
