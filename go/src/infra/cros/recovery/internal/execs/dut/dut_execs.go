@@ -14,6 +14,7 @@ import (
 	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/scopes"
 	"infra/cros/recovery/tlw"
 	ufsProto "infra/unifiedfleet/api/v1/models"
 )
@@ -76,6 +77,47 @@ func resetDutStateReasonExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// isDutStateReasonEmptyExec checks if dut-state-reason is empty.
+func isDutStateReasonEmptyExec(ctx context.Context, info *execs.ExecInfo) error {
+	if d := info.GetDut(); d != nil {
+		if len(d.DutStateReason) == 0 {
+			return nil
+		}
+		return errors.Reason("dut state reason is empty: reason %q specified", d.DutStateReason).Err()
+	}
+	return errors.Reason("dut state reason is empty: dut not found").Err()
+}
+
+// setDutStateReasonFromTaskTagsExec set data from task tags as a dut-state-reason.
+func setDutStateReasonFromTaskTagsExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetDut() == nil {
+		return errors.Reason("set dut state reason from task tags: dut not found").Err()
+	}
+	actionArgs := info.GetActionArgs(ctx)
+	tagName := actionArgs.AsString(ctx, "tag_name", "")
+	if tagName == "" {
+		return errors.Reason("set dut state reason from task tags: tag is not specified or empty").Err()
+	}
+	rawTags, ok := scopes.GetParam(ctx, scopes.ParamKeySwarmingTaskTags)
+	if !ok {
+		log.Debugf(ctx, "Set dut state reason from task tags: scope is empty")
+		return nil
+	}
+	tags, ok := rawTags.(map[string]string)
+	if !ok {
+		return errors.Reason("set dut state reason from task tags: task tags not found").Err()
+	}
+	for k, v := range tags {
+		if k == tagName {
+			if cv := strings.TrimSpace(v); cv != "" {
+				info.GetDut().DutStateReason = tlw.DutStateReason(cv)
+				break
+			}
+		}
+	}
+	return nil
+}
+
 // setDutStateReasonExec set dut-state-reason for DUT.
 //
 // By default `allow_override` flag is set to true.
@@ -96,6 +138,8 @@ func init() {
 	execs.Register("dut_has_name", hasDutNameActionExec)
 	execs.Register("dut_regex_name_match", regexNameMatchExec)
 	execs.Register("dut_set_state", setDutStateExec)
-	execs.Register("dut_reset_state_reason", resetDutStateReasonExec)
 	execs.Register("dut_set_state_reason", setDutStateReasonExec)
+	execs.Register("dut_reset_state_reason", resetDutStateReasonExec)
+	execs.Register("dut_state_reason_is_empty", isDutStateReasonEmptyExec)
+	execs.Register("dut_state_reason_set_from_tags", setDutStateReasonFromTaskTagsExec)
 }
