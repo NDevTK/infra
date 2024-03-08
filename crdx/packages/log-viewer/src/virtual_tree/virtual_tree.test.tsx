@@ -293,6 +293,7 @@ describe('<VirtualTree />', () => {
   describe('when using search with default nodes', () => {
     let pattern = 'dir';
     const onSearchMatchFoundMockFn = jest.fn();
+    const defaultActiveIndex = 0;
 
     it('should highlight search matches', () => {
       render(
@@ -308,6 +309,7 @@ describe('<VirtualTree />', () => {
 
       expect(searchedNodes).toHaveLength(4);
       expect(onSearchMatchFoundMockFn).toHaveBeenCalledWith(
+        defaultActiveIndex,
         /* totalMatches= */ 4,
       );
 
@@ -333,7 +335,10 @@ describe('<VirtualTree />', () => {
       const searchedNodes = screen.queryAllByText('dir1', { exact: false });
 
       expect(searchedNodes).toHaveLength(totalMatches);
-      expect(onSearchMatchFoundMockFn).toHaveBeenCalledWith(totalMatches);
+      expect(onSearchMatchFoundMockFn).toHaveBeenCalledWith(
+        defaultActiveIndex,
+        totalMatches,
+      );
       expect(searchedNodes[0].parentElement).toHaveStyle({
         'background-color': `${SEARCH_MATCHED_BACKGROUND_COLOR}`,
       });
@@ -349,7 +354,7 @@ describe('<VirtualTree />', () => {
         />,
       );
 
-      expect(onSearchMatchFoundMockFn).toHaveBeenCalledWith(0);
+      expect(onSearchMatchFoundMockFn).toHaveBeenCalledWith(-1, 0);
     });
 
     it('should highlight search matches with active index', () => {
@@ -367,6 +372,7 @@ describe('<VirtualTree />', () => {
 
       expect(searchedNodes).toHaveLength(4);
       expect(onSearchMatchFoundMockFn).toHaveBeenCalledWith(
+        defaultActiveIndex,
         /* totalMatches= */ 4,
       );
 
