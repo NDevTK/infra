@@ -23,7 +23,10 @@ export CFLAGS="${CFLAGS} -fPIC"
 make install -j $(nproc)
 
 # Some programs (like python) expect to be able to `#include <ffi.h>`, so
-# create those symlinks.
-mkdir $PREFIX/include
-(cd $PREFIX/include && ln -s ../lib/libffi*/include/*.h ./)
-(cd $PREFIX/lib && ln -s ../lib64/* ./)
+# create those symlinks. The newer libffi used by riscv64 does this during
+# `make install`.
+if [[ $_3PP_PLATFORM != "linux-riscv64" ]]; then
+  mkdir $PREFIX/include
+  (cd $PREFIX/include && ln -s ../lib/libffi*/include/*.h ./)
+  (cd $PREFIX/lib && ln -s ../lib64/* ./)
+fi

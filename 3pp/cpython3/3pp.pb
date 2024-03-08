@@ -75,6 +75,12 @@ create {
   }
 }
 
+# Has some linking issue with nsl.
+create {
+  platform_re: "linux-riscv.*"
+  unsupported: true
+}
+
 create {
   platform_re: "windows-.*"
   source { script { name: "fetch.py" } }

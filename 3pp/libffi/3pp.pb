@@ -1,5 +1,5 @@
 create {
-  platform_re: "linux-.*"
+  platform_re: "linux-amd64|linux-arm.*"
   source {
     url {
       download_url: "https://github.com/libffi/libffi/archive/v3.2.1.tar.gz"
@@ -9,6 +9,22 @@ create {
     unpack_archive: true
     cpe_base_address: "cpe:/a:libffi_project:libffi"
   }
+}
+
+create {
+  platform_re: "linux-riscv.*"
+  source {
+    url {
+      download_url: "https://github.com/libffi/libffi/archive/v3.4.4.tar.gz"
+      version: "3.4.4"
+    }
+    unpack_archive: true
+    cpe_base_address: "cpe:/a:libffi_project:libffi"
+  }
+}
+
+create {
+  platform_re: "linux-.*"
   build {
     tool: "tools/autoconf"
     tool: "tools/automake"
@@ -16,12 +32,6 @@ create {
     tool: "tools/texinfo"
     tool: "tools/sed"
   }
-}
-
-# Need to update to 3.3 or later for RISC-V support.
-create {
-  platform_re: "linux-riscv.*"
-  unsupported: true
 }
 
 upload { pkg_prefix: "static_libs" }
