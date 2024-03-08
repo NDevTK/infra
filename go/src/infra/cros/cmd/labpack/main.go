@@ -118,12 +118,15 @@ func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.
 	// Update input with default values.
 	// If any identifier is provided by the client, we use it as is.
 	if input.GetSwarmingTaskId() == "" && input.GetBbid() == "" {
-		input.SwarmingTaskId = state.Build().GetInfra().GetSwarming().GetTaskId()
+		input.SwarmingTaskId = state.Build().GetInfra().GetBackend().GetTask().GetId().GetId()
+		if input.SwarmingTaskId == "" {
+			// Fall back to build.Infra.Swarming.TaskId.
+			// TODO(b/40949135): remove this after the swarming -> backend migration
+			// completes.
+			input.SwarmingTaskId = state.Build().GetInfra().GetSwarming().GetTaskId()
+		}
 		if bbid := state.Build().GetId(); bbid > int64(0) {
 			input.Bbid = fmt.Sprintf("%d", bbid)
-		} else if bbid := state.Build().GetInfra().GetBackend().GetTask().GetId().GetId(); bbid != "" {
-			// TODO(b/297262498): Remove block if bug closed. As block above should work for us.
-			input.Bbid = bbid
 		}
 	}
 	var metrics metrics.Metrics
