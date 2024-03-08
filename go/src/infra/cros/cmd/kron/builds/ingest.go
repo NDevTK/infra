@@ -197,6 +197,8 @@ type EventWrapper struct {
 
 type ConfigDetails struct {
 	Config *suschpb.SchedulerConfig
+	// NOTE: Events is a list because multiple requests can be made if the
+	// config targets multiple models for the given build target.
 	Events []*EventWrapper
 }
 

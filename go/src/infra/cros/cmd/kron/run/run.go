@@ -145,6 +145,10 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 		return nil
 	}
 
+	// CTP is bottlenecked by it's drone count. To combat this, combine tests
+	// requests into one large CTP request.
+	ctpRequests := combineCTPRequests(releaseBuilds)
+
 	// Initialize an authenticated BuildBucket client for scheduling.
 	common.Stdout.Printf("Initializing BuildBucket scheduling client prod: %t dryrun: %t", isProd, dryRun)
 	schedulerClient, err := buildbucket.InitScheduler(context.Background(), authOpts, isProd, dryRun)
@@ -163,11 +167,9 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	var wg sync.WaitGroup
 
 	// Schedule all requests via BuildBucket in parallel.
-	// TODO(b/319273876): Remove slow migration logic upon completion of
-	// transition.
-	for _, wrappedBuild := range releaseBuilds {
+	for configName, request := range ctpRequests {
 		wg.Add(1)
-		go scheduleBatchViaBB(wrappedBuild, schedulerClient, publishClient, &wg)
+		go scheduleBatchViaBB(request, configName, schedulerClient, publishClient, &wg)
 	}
 
 	common.Stdout.Println("Waiting for batched requests to finish scheduling...")

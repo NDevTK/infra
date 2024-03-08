@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/cmd/kron/builds"
 	"infra/cros/cmd/kron/metrics"
 )
 
@@ -41,7 +42,7 @@ var (
 
 // Scheduler interface type describes the BB API functionality connection.
 type Scheduler interface {
-	Schedule(ctpRequest *requestpb.Request, buildID, eventID, configName string) (*bb.Build, error)
+	Schedule(requests []*builds.EventWrapper, configName string) (*bb.Build, error)
 }
 
 // client implements the Scheduler interface.
@@ -74,24 +75,107 @@ func InitScheduler(ctx context.Context, authOpts *authcli.Flags, isProd, dryRun 
 	}, nil
 }
 
-// ctpToBBRequest transforms the CTP request into a BuildBucket serviceable
-// scheduling request.
-func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool, buildID, eventID, configName string) (*bb.ScheduleBuildRequest, error) {
-	// Tag the entry in the requests map with the name of the suite.
-	// NOTE: requests is used as opposed to request because I have seen no
-	// evidence to indicate that the singular field is actively supported.
-	suiteNameKey := ctpRequest.TestPlan.Suite[0].Name
+// mergeRequests merge all CTP requests into one CTP recipe input properties object.
+func mergeRequests(requests []*builds.EventWrapper) *ctppb.CrosTestPlatformProperties {
+	ctpRequestInputProps := &ctppb.CrosTestPlatformProperties{
+		Requests: map[string]*requestpb.Request{},
+	}
 
-	// Create a struct of the CTP recipes properties with the single request
-	// entry being passed in.
-	recipeProto := &ctppb.CrosTestPlatformProperties{
-		Requests: map[string]*requestpb.Request{
-			suiteNameKey: ctpRequest,
+	// Add all CTP Test Requests to the input properties struct mapped by their
+	// unique request metadata.
+	for _, request := range requests {
+		key := fmt.Sprintf("%s.%s.%s", request.CtpRequest.Params.SoftwareAttributes.BuildTarget.Name, request.Event.ConfigName, request.Event.SuiteName)
+		if _, ok := ctpRequestInputProps.Requests[key]; ok {
+			// If the key is duplicated for some reason then add the eventUuid
+			// to differentiate.
+			key = fmt.Sprintf("%s.%s", key, request.Event.EventUuid)
+
+		}
+		ctpRequestInputProps.Requests[key] = request.CtpRequest
+	}
+
+	return ctpRequestInputProps
+}
+
+// generateBBRequest creates a BuildBucket Request proto with proper metadata in
+// the tags.
+func generateBBRequest(suiteName, configName string, dryRun bool, builder *bb.BuilderID, properties *structpb.Struct, requests []*builds.EventWrapper) (*bb.ScheduleBuildRequest, error) {
+	// Generate the BuildBucket request.
+	schedulerRequest := &bb.ScheduleBuildRequest{
+		Builder:    builder,
+		Properties: properties,
+		DryRun:     dryRun,
+		// These tags will appear on the Milo UI and will help us search for
+		// builds in plx.
+		Tags: []*bb.StringPair{
+			{
+				Key:   "kron-run",
+				Value: metrics.GetRunID(),
+			},
+			{
+				Key:   "suite",
+				Value: suiteName,
+			},
+			{
+				Key:   "user_agent",
+				Value: "kron",
+			},
+			{
+				Key:   "suite-scheduler-config",
+				Value: configName,
+			},
 		},
 	}
 
+	// Add all image, buildUuid, and eventUuid fields per test request.
+	for _, request := range requests {
+		image := ""
+		for _, dep := range request.CtpRequest.Params.SoftwareDependencies {
+
+			// The SoftwareDependencies proto type includes many types of deps,
+			// so search for one which can provide the image value.
+			if dep.GetChromeosBuild() != "" {
+				image = dep.GetChromeosBuild()
+				break
+			}
+		}
+
+		// A CTP request cannot function with a nil image value so throw an
+		// error here.
+		if image == "" {
+			return nil, fmt.Errorf("no ChromeOS build found")
+		}
+
+		schedulerRequest.Tags = append(schedulerRequest.Tags,
+			&bb.StringPair{
+				Key:   "build-id",
+				Value: request.Event.BuildUuid,
+			})
+		schedulerRequest.Tags = append(schedulerRequest.Tags,
+			&bb.StringPair{
+				Key:   "event-id",
+				Value: request.Event.EventUuid,
+			})
+		schedulerRequest.Tags = append(schedulerRequest.Tags,
+			&bb.StringPair{
+				Key:   "label-image",
+				Value: image,
+			})
+	}
+
+	return schedulerRequest, nil
+
+}
+
+// ctpToBBRequest transforms the CTP request into a BuildBucket serviceable
+// scheduling request.
+func ctpToBBRequest(requests []*builds.EventWrapper, isProd, dryRun bool, configName string) (*bb.ScheduleBuildRequest, error) {
+	// Create a struct of the CTP recipes properties with the single request
+	// entry being passed in.
+	ctpRequestInputProps := mergeRequests(requests)
+
 	// Transform the properties proto into a json string.
-	msgJSON, err := protojson.Marshal(recipeProto)
+	msgJSON, err := protojson.Marshal(ctpRequestInputProps)
 	if err != nil {
 		return nil, err
 	}
@@ -116,68 +200,26 @@ func ctpToBBRequest(ctpRequest *requestpb.Request, isProd, dryRun bool, buildID,
 		builder = &ctpBuilderIDProd
 	}
 
-	// Get the chromeOS image for display in the BB tags
-	image := ""
-	for _, dep := range ctpRequest.Params.SoftwareDependencies {
-		if dep.GetChromeosBuild() != "" {
-			image = dep.GetChromeosBuild()
-			break
-		}
-	}
-	if image == "" {
-		return nil, fmt.Errorf("no ChromeOS build found")
-	}
+	// Since we combine requests of the same SuSch config, they will all share
+	// the same suite value. Pull the first one for simplicity.
+	suiteName := requests[0].CtpRequest.TestPlan.Suite[0].Name
 
-	schedulerRequest := &bb.ScheduleBuildRequest{
-		Builder:    builder,
-		Properties: properties,
-		DryRun:     dryRun,
-		// These tags will appear on the Milo UI and will help us search for
-		// builds in plx.
-		Tags: []*bb.StringPair{
-			{
-				Key:   "kron-run",
-				Value: metrics.GetRunID(),
-			},
-			{
-				Key:   "build-id",
-				Value: buildID,
-			},
-			{
-				Key:   "event-id",
-				Value: eventID,
-			},
-			{
-				Key:   "suite",
-				Value: suiteNameKey,
-			},
-			{
-				Key:   "user_agent",
-				Value: "kron",
-			},
-			{
-				Key:   "label-image",
-				Value: image,
-			},
-			{
-				Key:   "suite-scheduler-config",
-				Value: configName,
-			},
-		},
+	// Generate the BuildBucket request.
+	schedulerRequest, err := generateBBRequest(suiteName, configName, dryRun, builder, properties, requests)
+	if err != nil {
+		return nil, err
 	}
 
 	return schedulerRequest, nil
 }
 
-// Schedule takes in a CTP request and schedules it via the BuildBucket API.
-func (c *client) Schedule(ctpRequest *requestpb.Request, buildID, eventID, configName string) (*bb.Build, error) {
-	schedulerRequest, err := ctpToBBRequest(ctpRequest, c.isProd, c.dryRun, buildID, eventID, configName)
+// Schedule takes in a batch of EventWrappers and schedules it via the BuildBucket API.
+func (c *client) Schedule(requests []*builds.EventWrapper, configName string) (*bb.Build, error) {
+	schedulerRequest, err := ctpToBBRequest(requests, c.isProd, c.dryRun, configName)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO(b/317084435): Handle any case where the returned status of the build is
-	// a terminal "failure" status code. E.g. Failed or unspecified.
 	build, err := c.buildBucketClient.ScheduleBuild(c.ctx, schedulerRequest)
 	if err != nil {
 		return nil, err

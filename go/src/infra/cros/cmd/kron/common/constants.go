@@ -49,4 +49,8 @@ const (
 	BuildsPubSubTopic = "kron-builds"
 	EventsPubSubTopic = "kron-events"
 	RunsPubSubTopic   = "kron-runs"
+
+	// MultirequestSize is the maximum number of tests requests that we can
+	// combine per CTP builder run.
+	MultirequestSize = 25
 )

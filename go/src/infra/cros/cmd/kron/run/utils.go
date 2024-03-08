@@ -123,59 +123,6 @@ func publishEvent(client pubsub.PublishClient, event *kronpb.Event) error {
 	return nil
 }
 
-// scheduleBatchViaBB batch schedules all CTP requests for the given build and
-// handles their response.
-func scheduleBatchViaBB(buildRequest *builds.BuildPackage, schedulerClient buildbucket.Scheduler, publishClient pubsub.PublishClient, wg *sync.WaitGroup) {
-	// Release the WaitGroups lock on this function.
-	defer wg.Done()
-
-	// Batch Schedule all requests in the provided build.
-	common.Stdout.Printf("Scheduling %d requests to CTP for build %s of board %s", len(buildRequest.Requests), buildRequest.Build.BuildUuid, buildRequest.Build.Board)
-	for _, request := range buildRequest.Requests {
-		for _, event := range request.Events {
-
-			response, err := schedulerClient.Schedule(event.CtpRequest, buildRequest.Build.BuildUuid, event.Event.EventUuid, event.Event.ConfigName)
-			if err != nil {
-				common.Stderr.Println(err)
-				event.Event.Decision = &kronpb.SchedulingDecision{
-					Type:         kronpb.DecisionType_UNKNOWN,
-					Scheduled:    false,
-					FailedReason: err.Error(),
-				}
-				common.Stdout.Printf("Event %s failed to scheduled for unknown reason", event.Event.EventUuid)
-			}
-
-			// TODO(b/309683890): Add better support for failure/infra_failure/cancelled.
-			if response.Status == buildbucketpb.Status_SCHEDULED {
-				event.Event.Decision = &kronpb.SchedulingDecision{
-					Type:      kronpb.DecisionType_SCHEDULED,
-					Scheduled: true,
-				}
-
-				event.Event.Bbid = response.Id
-
-				common.Stdout.Printf("Event %s for config %s scheduled at http://go/bbid/%d using buildId %s, buildTarget %s on milestone %d", event.Event.EventUuid, event.Event.ConfigName, response.Id, buildRequest.Build.BuildUuid, buildRequest.Build.BuildTarget, buildRequest.Build.Milestone)
-			} else {
-				event.Event.Decision = &kronpb.SchedulingDecision{
-					Type:         kronpb.DecisionType_UNKNOWN,
-					Scheduled:    false,
-					FailedReason: buildbucketpb.Status_name[int32(response.Status.Number())],
-				}
-
-				common.Stdout.Printf("Event %s failed to scheduled for unknown reason", event.Event.EventUuid)
-
-				// TODO: decide on if we should nack the message on one failure or
-				// not.
-			}
-
-			err = publishEvent(publishClient, event.Event)
-			if err != nil {
-				common.Stderr.Println(err)
-			}
-		}
-	}
-}
-
 // fetchTriggeredNewBuildConfigs attaches all configs to the builds which
 // triggered their run.
 func fetchTriggeredNewBuildConfigs(buildPackages []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) error {
@@ -250,4 +197,94 @@ func buildCTPRequests(buildPackages []*builds.BuildPackage, suiteSchedulerConfig
 		}
 	}
 	return nil
+}
+
+// combineCTPRequests fetches all CTP Requests from inside the puck packages and
+// groups them by SuSch config.
+func combineCTPRequests(releaseBuilds []*builds.BuildPackage) map[string][]*builds.EventWrapper {
+	configMap := map[string][]*builds.EventWrapper{}
+
+	// Iterate through all CTP Requests
+	for _, build := range releaseBuilds {
+		for _, request := range build.Requests {
+			if _, ok := configMap[request.Config.Name]; !ok {
+				configMap[request.Config.Name] = []*builds.EventWrapper{}
+			}
+
+			configMap[request.Config.Name] = append(configMap[request.Config.Name], request.Events...)
+		}
+	}
+
+	return configMap
+}
+
+// sendBatch sends the request batch to the BuildBucket client, attaches the
+// scheduling responses to the events, and finally publishes all events to
+// Pub/Sub.
+func sendBatch(configName string, schedulerClient buildbucket.Scheduler, publishClient pubsub.PublishClient, requestBatch []*builds.EventWrapper) {
+	// Schedule the builds.
+	// TODO(b/309683890): Add better support for failure/infra_failure/cancelled.
+	response, err := schedulerClient.Schedule(requestBatch, configName)
+	if err != nil {
+		for _, sentEvent := range requestBatch {
+			sentEvent.Event.Decision = &kronpb.SchedulingDecision{
+				Type:         kronpb.DecisionType_UNKNOWN,
+				Scheduled:    false,
+				FailedReason: err.Error(),
+			}
+			common.Stderr.Printf("Event %s failed to schedule: %s", sentEvent.Event.EventUuid, err)
+		}
+	}
+
+	// Populate scheduling status field.
+	for _, request := range requestBatch {
+		if response.Status == buildbucketpb.Status_SCHEDULED {
+			request.Event.Decision = &kronpb.SchedulingDecision{
+				Type:      kronpb.DecisionType_SCHEDULED,
+				Scheduled: true,
+			}
+
+			request.Event.Bbid = response.Id
+
+			common.Stdout.Printf("Event %s for config %s scheduled at http://go/bbid/%d using buildId %s", request.Event.EventUuid, request.Event.ConfigName, response.Id, request.Event.BuildUuid)
+		} else {
+			request.Event.Decision = &kronpb.SchedulingDecision{
+				Type:         kronpb.DecisionType_UNKNOWN,
+				Scheduled:    false,
+				FailedReason: buildbucketpb.Status_name[int32(response.Status.Number())],
+			}
+
+			common.Stdout.Printf("Event %s failed to schedule for unknown reason", request.Event.EventUuid)
+		}
+
+		// Publish the events that just got sent.
+		err = publishEvent(publishClient, request.Event)
+		if err != nil {
+			common.Stderr.Println(err)
+		}
+	}
+}
+
+// scheduleBatchViaBB batches the requests according to common.MultirequestSize
+// and sends it off to be scheduled via BuildBucket.
+func scheduleBatchViaBB(requests []*builds.EventWrapper, configName string, schedulerClient buildbucket.Scheduler, publishClient pubsub.PublishClient, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	batchRequestList := []*builds.EventWrapper{}
+	for _, request := range requests {
+		if len(batchRequestList) == common.MultirequestSize {
+			// Schedule the builds.
+			sendBatch(configName, schedulerClient, publishClient, batchRequestList)
+
+			//  Reset the running batch.
+			batchRequestList = []*builds.EventWrapper{}
+		}
+
+		batchRequestList = append(batchRequestList, request)
+	}
+
+	// Send the remaining requests when
+	// len(batchRequestList) % common.MultirequestSize != 0
+	sendBatch(configName, schedulerClient, publishClient, batchRequestList)
+
 }
