@@ -1,6 +1,6 @@
 {
   "name": "@chopsui/log-viewer",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "React and MUI based log data viewer.",
   "keywords": [
     "chopsui",
@@ -84,5 +84,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "pretty-bytes": "^6.1.1"
   }
 }
