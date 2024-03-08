@@ -7,6 +7,7 @@ package cros
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -27,7 +28,8 @@ const (
 	// Remove the firmware related files we created before.
 	removeFirmwareFileCmd = `rm -rf /tmp/verify_firmware`
 	// Firmware tarball filename in GS.
-	firmwareTarName = "firmware_from_source.tar.bz2"
+	firmwareTarSuffix = ".tar.bz2"
+	firmwareTarName   = "firmware_from_source" + firmwareTarSuffix
 	// Default mode for chromeos-firmwareupdate when install firmware image.
 	defaultFirmwareImageUpdateMode = "recovery"
 )
@@ -153,6 +155,7 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		return errors.Annotate(err, "update firmware image").Err()
 	}
 	actionArgs := info.GetActionArgs(ctx)
+	// With b/328679244 the version can contains the file name also.
 	imageName := actionArgs.AsString(ctx, "version_name", sv.FwImage)
 	log.Debugf(ctx, "Used fw image name: %s", imageName)
 	gsBucket := actionArgs.AsString(ctx, "gs_bucket", gsCrOSImageBucket)
@@ -162,13 +165,16 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 	fwDownloadDir := actionArgs.AsString(ctx, "fw_download_dir", defaultFwFolderPath(info.GetDut()))
 	log.Debugf(ctx, "Used fw image path: %s", gsImagePath)
 	// Requesting convert GC path to caches service path.
-	// Example: `http://Addr:8082/download/chromeos-image-archive/board-firmware/R99-XXXXX.XX.0`
-	downloadPath, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, gsImagePath)
+	// Example: `http://Addr:8082/download/my-bucket/board-firmware/RXX-XXXXX.XX.0/xyz.tar.bz2`
+	downloadFilename, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, gsImagePath)
 	if err != nil {
 		return errors.Annotate(err, "update firmware image").Err()
 	}
-	fwFileName := actionArgs.AsString(ctx, "fw_filename", firmwareTarName)
-	downloadFilename := fmt.Sprintf("%s/%s", downloadPath, fwFileName)
+	// Apply file name only if it was not specified before.
+	if !strings.HasSuffix(downloadFilename, firmwareTarSuffix) {
+		fwFileName := actionArgs.AsString(ctx, "fw_filename", firmwareTarName)
+		downloadFilename = fmt.Sprintf("%s/%s", downloadFilename, fwFileName)
+	}
 	run := info.DefaultRunner()
 	req := &firmware.InstallFirmwareImageRequest{
 		DownloadImagePath:           downloadFilename,
