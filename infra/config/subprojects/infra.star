@@ -81,7 +81,7 @@ def try_builder(
 ci_builder(name = "infra-continuous-jammy-64", os = "Ubuntu-22.04", tree_closing = True, properties = {
     "go_version_variant": "bleeding_edge",
 })
-ci_builder(name = "infra-continuous-focal-arm64", os = "Ubuntu-20.04", cpu = "arm64", console_category = "linux|20.04|ARM", pool = "luci.flex.ci", properties = {
+ci_builder(name = "infra-continuous-jammy-arm64", os = "Ubuntu-22.04", cpu = "arm64", console_category = "linux|22.04|ARM", pool = "luci.flex.ci", properties = {
     "go_version_variant": "bleeding_edge",
 })
 
