@@ -6,7 +6,7 @@ Lots of infrastructure, building, and testing code is built using Python. Chrome
 Operations supports the deployment, management, and augmentation of basic Python
 installation on infrastructure systems.
 
-Chrome Operations currently supports **Python 2.7** on Windows, Linux, and Mac
+Chrome Operations currently supports **Python 3.8** on Windows, Linux, and Mac
 OSX.
 
 ## Python Packages and VirtualEnv
@@ -78,8 +78,8 @@ using hermetic deployable Python bundles built on top of CIPD, using
 Python bundles are installed on and used in various parts of the system:
 
 * A system-level bundle is deployed for system foundation software.
-    * On Windows, this is installed at: `C:\infra-system\bin\python.exe`
-    * On Mac and Linux, this is installed at: `/opt/infra-system/bin/python`
+    * On Windows, this is installed at: `C:\infra-python3\bin\python3.exe`
+    * On Mac and Linux, this is installed at: `/opt/infra-python3/bin/python3`
 * A Python bundle is used per-build to run the Recipe Engine and its associated
   software, including building and testing code.
     * On LUCI, this is installed in the `luci-config` Swarming Task Template.
