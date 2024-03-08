@@ -15,6 +15,8 @@ func CrosAuditStorageConfig() *Configuration {
 				CriticalActions: []string{
 					"Set state: needs_repair",
 					"Device is SSHable",
+					// Just to be sure that audit executed on good OS version.
+					"DUT has correct cros image version",
 					"Audit storage (SMART only)",
 					"Audit device storage using badblocks",
 				},

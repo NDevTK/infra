@@ -12426,7 +12426,7 @@
           "exec_args": [
             "state:needs_repair"
           ],
-          "run_control": "RUN_ONCE"
+          "run_control": "ALWAYS_RUN"
         },
         {
           "name": "Device is SSHable",

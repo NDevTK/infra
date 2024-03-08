@@ -40,6 +40,7 @@ func auditBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
 		log.Debugf(ctx, "Audit Battery Exec: setting dut state to %s", string(dutstate.NeedsReplacement))
 		info.GetDut().State = dutstate.NeedsReplacement
 		info.GetDut().DutStateReason = tlw.DutStateReasonBatteryCapacityTooLow
+		return errors.Reason("audit battery: bad battery deteceted").Err()
 	}
 	return nil
 }

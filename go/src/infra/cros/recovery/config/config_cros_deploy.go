@@ -65,26 +65,6 @@ func deployActions() map[string]*Action {
 				"Install OS in DEV mode, with force to DEV-mode with test firmware",
 			},
 		},
-		"DUT has correct cros image version": {
-			Docs: []string{
-				"Check whether the cros image version on the device is match expected.",
-			},
-			Conditions: []string{
-				"Is it first deployment task",
-				"Recovery version has OS image path",
-				"Has a stable-version service",
-			},
-			Dependencies: []string{
-				"Device is SSHable",
-			},
-			ExecName: "cros_is_on_stable_version",
-			RecoveryActions: []string{
-				"Quick provision OS",
-				"Install OS in DEV mode, with force to DEV-mode",
-				"Install OS in DEV mode with fresh image",
-				"Install OS in DEV mode, with force to DEV-mode with test firmware",
-			},
-		},
 		"DUT has expected dev firmware": {
 			Docs: []string{
 				"Verify that FW on the DUT has dev keys.",
@@ -233,18 +213,6 @@ func deployActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
-		"Is it first deployment task": {
-			Docs: []string{
-				"Check if deployment check not need to be run.",
-				"If HWID or serial-number already collected from DUT then we already test it before.",
-			},
-			Conditions: []string{
-				"Is HWID known",
-				"Is serial-number known",
-			},
-			ExecName:   "sample_fail",
-			RunControl: RunControl_ALWAYS_RUN,
-		},
 		"Deployment checks": {
 			Docs: []string{
 				"Run some special checks as part of deployment.",
@@ -332,43 +300,6 @@ func deployActions() map[string]*Action {
 				"Recovery version has OS image path",
 			},
 			Dependencies: []string{
-				"Install OS in DEV mode by USB-drive",
-			},
-			ExecName: "sample_pass",
-		},
-		"Install OS in DEV mode with fresh image": {
-			Docs: []string{
-				"Download fresh usb image and Install OS from it in DEV-mode.",
-			},
-			Conditions: []string{
-				"Is servod running",
-				"Is a Chromebook",
-				"Is servo USB key detected",
-				"Recovery version has OS image path",
-			},
-			Dependencies: []string{
-				"Download stable image to USB-key",
-				"Install OS in DEV mode by USB-drive",
-			},
-			ExecName: "sample_pass",
-		},
-		"Install OS in DEV mode, with force to DEV-mode with test firmware": {
-			Docs: []string{
-				"Second attempt to install image in DEV mode",
-			},
-			Conditions: []string{
-				"Is servod running",
-				"Is a Chromebook",
-				"Is servo USB key detected",
-				"Recovery version has OS image path",
-				"Recovery version has firmware image path",
-			},
-			Dependencies: []string{
-				"Flash EC (FW) by servo",
-				"Sleep 60 seconds",
-				"Disable software write protection via servo",
-				"Flash AP (FW) with GBB 0x18 by servo",
-				"Sleep 60 seconds",
 				"Install OS in DEV mode by USB-drive",
 			},
 			ExecName: "sample_pass",

@@ -602,27 +602,26 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 	}
 	if bbArgs.AuditMode == auditModeRW {
 		if out, err := runBadBlocksCheck(ctx, mainStorage, bbArgs); err != nil {
-			if out != "" {
-				if components.SSHErrorInternal.In(err) {
-					log.Debugf(ctx, "Check Bad Blocks: RW bad blocks check command returned a negative error code, not setting needs replacement state for storage device.")
-				} else {
-					bbArgs.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
-					bbArgs.Dut.State = dutstate.NeedsReplacement
-					bbArgs.Dut.DutStateReason = tlw.DutStateReasonInternalStorageFailureFromBadblocksCheck
-				}
+			if components.SSHErrorInternal.In(err) {
+				log.Debugf(ctx, "Check Bad Blocks: RW bad blocks check command returned a negative error code, not setting needs replacement state for storage device.")
+			} else if out != "" {
+				bbArgs.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+				bbArgs.Dut.State = dutstate.NeedsReplacement
+				log.Infof(ctx, "DUT state changed to: %q", bbArgs.Dut.State.String())
+				bbArgs.Dut.DutStateReason = tlw.DutStateReasonInternalStorageFailureFromBadblocksCheck
+				return errors.Annotate(err, "audit storage badblocks: bad blocks detected").Err()
 			}
 			return errors.Annotate(err, "audit storage badblocks").Err()
 		}
 	} else if bbArgs.AuditMode == auditModeRO {
 		if out, err := runBadBlocksCheck(ctx, mainStorage, bbArgs); err != nil {
-			if out != "" {
-				if components.SSHErrorInternal.In(err) {
-					log.Debugf(ctx, "Check Bad Blocks: RO bad blocks check command returned a negative error code, not setting needs replacement state for storage device.")
-				} else {
-					bbArgs.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
-					bbArgs.Dut.State = dutstate.NeedsReplacement
-					bbArgs.Dut.DutStateReason = tlw.DutStateReasonInternalStorageFailureFromBadblocksCheck
-				}
+			if components.SSHErrorInternal.In(err) {
+				log.Debugf(ctx, "Check Bad Blocks: RO bad blocks check command returned a negative error code, not setting needs replacement state for storage device.")
+			} else if out != "" {
+				bbArgs.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+				bbArgs.Dut.State = dutstate.NeedsReplacement
+				bbArgs.Dut.DutStateReason = tlw.DutStateReasonInternalStorageFailureFromBadblocksCheck
+				return errors.Annotate(err, "audit storage badblocks: bad blocks detected").Err()
 			}
 			return errors.Annotate(err, "audit storage badblocks").Err()
 		}
