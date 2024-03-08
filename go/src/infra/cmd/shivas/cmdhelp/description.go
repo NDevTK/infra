@@ -213,7 +213,7 @@ It is possible to update the underlying asset using -zone, -rack, -model or -boa
 
 [MCSV Mode]
 The file may have multiple or one dut csv record.
-The header format and sequence should be: [name,asset,model,board,servo_host,servo_port,servo_serial,rpm_host,rpm_outlet,pools]
+The header format and sequence should be: [name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,pools]
 Example mcsv format:
 name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,pools
 dut-1,asset-1,eve,eve,servo-1,9998,ServoXdw,REGULAR,rpm-1,23,"CTS QUOTA"
