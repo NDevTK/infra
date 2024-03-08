@@ -87,6 +87,24 @@
       "parentUuid": "415ae0ea_10a8ce14",
       "revId": "6466115050906bac9b6529fbf800ac7c06305501",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43a7f757_0c532b8e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1300299
+      },
+      "writtenOn": "2024-03-08T19:12:56Z",
+      "side": 1,
+      "message": "I understand that libEGL_mesa.so doesn\u0027t have a build ID and that\u0027s a known issue. That\u0027s fine and we should make sure builds keep working in the meantime while b/319294855 is being fixed. I\u0027m just wondering if we\u0027re opening ourselves up to more errors creeping in over time.\n\nThat is, should the code be something more like \n```\n  allowlist :\u003d []string{\"libEGL_mesa.so\"}\n...\n\n  if _, err :\u003d os.Stat(debugFile); errors.Is(err, os.ErrNotExist) {\n    if !slices.Contains(allowlist, debugFile) {\n      return nil, errors.Format(\"Could not find expected debug file %s\", debugFile)\n    }\n    // explanation\n    continue\n  }\n```\n\n?\n\nThat way new errors can\u0027t creep in unexpectedly. We won\u0027t, say, find out that .debug generation failed completely and we didn\u0027t upload any .debug files.  \n\n\u003e It would be better to go to the source, and when we generate the debug_breakpad.tar.xz file we generate another tarball that has both the breakpad symbols (the .sym files) and the splitdebug files (the .debug files) right next to each other. \n\nI have no objections, but I agree we need to get the builds running again in the meantime.",
+      "parentUuid": "4ed6f13e_e835526b",
+      "revId": "6466115050906bac9b6529fbf800ac7c06305501",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
