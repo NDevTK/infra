@@ -675,6 +675,13 @@ func TestGenerateSplitdebugConfigs(t *testing.T) {
 			breakpadPath:   "test6.so.sym",
 			splitdebugPath: "test6.so",
 		},
+		{
+			filename:     "test7.so",
+			symbol:       "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:       "STATUS_UNSPECIFIED",
+			breakpadPath: "test7.so.sym",
+			// No splitdebugPath, no expected splitdebug upload task
+		},
 	}
 
 	// Make the expected request body.
@@ -705,11 +712,14 @@ func TestGenerateSplitdebugConfigs(t *testing.T) {
 		if err != nil && !os.IsExist(err) {
 			t.Error("error: " + err.Error())
 		}
-		// Create a mock splitdebug file.
+
 		mockSplitdebugPath := filepath.Join(localDir, response.splitdebugPath)
-		err = ioutil.WriteFile(mockSplitdebugPath, buildFakeELFWithNote(response.symbol), 0644)
-		if err != nil {
-			t.Error("error: " + err.Error())
+		// Create a mock splitdebug file.
+		if response.splitdebugPath != "" {
+			err = ioutil.WriteFile(mockSplitdebugPath, buildFakeELFWithNote(response.symbol), 0644)
+			if err != nil {
+				t.Error("error: " + err.Error())
+			}
 		}
 		// Create a mock breakpad file.
 		mockPath := filepath.Join(localDir, response.breakpadPath)
@@ -723,7 +733,9 @@ func TestGenerateSplitdebugConfigs(t *testing.T) {
 
 		if response.status != "FOUND" {
 			expectedTasks[task] = false
-			expectedTasks[splitdebugTask] = false
+			if response.splitdebugPath != "" {
+				expectedTasks[splitdebugTask] = false
+			}
 		}
 		mockPaths = append(mockPaths, mockPath)
 	}
