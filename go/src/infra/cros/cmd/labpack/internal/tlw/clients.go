@@ -21,8 +21,13 @@ import (
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
+type AccessData struct {
+	// Swarming tags specified at task scheduling.
+	TaskTags map[string]string
+}
+
 // NewAccess creates TLW Access for recovery engine.
-func NewAccess(ctx context.Context, in *lab.LabpackInput) (context.Context, tlw.Access, error) {
+func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData) (context.Context, tlw.Access, error) {
 	hc, err := httpClient(ctx)
 	if err != nil {
 		return ctx, nil, errors.Annotate(err, "create tlw access: create http client").Err()
@@ -51,6 +56,9 @@ func NewAccess(ctx context.Context, in *lab.LabpackInput) (context.Context, tlw.
 	}
 	params[scopes.ParamKeySwarmingTaskID] = in.SwarmingTaskId
 	params[scopes.ParamKeyBuildbucketID] = in.Bbid
+	if ad != nil && len(ad.TaskTags) > 0 {
+		params[scopes.ParamKeySwarmingTaskTags] = ad.TaskTags
+	}
 	ctx = scopes.WithParams(ctx, params)
 	// TODO(otabek@): Replace with access to F20 services.
 	access, err := recovery.NewLocalTLWAccess(ic, csac)

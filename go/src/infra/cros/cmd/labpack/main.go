@@ -115,6 +115,10 @@ func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.
 		lg.Debugf("main run internal: failed to marshal proto. Error: %s", err)
 		return err
 	}
+	ad := &tlw.AccessData{
+		TaskTags: make(map[string]string),
+	}
+
 	// Update input with default values.
 	// If any identifier is provided by the client, we use it as is.
 	if input.GetSwarmingTaskId() == "" && input.GetBbid() == "" {
@@ -127,6 +131,12 @@ func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.
 		}
 		if bbid := state.Build().GetId(); bbid > int64(0) {
 			input.Bbid = fmt.Sprintf("%d", bbid)
+		}
+		for _, p := range state.Build().GetTags() {
+			lg.Debugf("Swarming tag: %q=%q found!", p.GetKey(), p.GetValue())
+			if p.GetKey() != "" && p.GetValue() != "" {
+				ad.TaskTags[p.GetKey()] = p.GetValue()
+			}
 		}
 	}
 	var metrics metrics.Metrics
@@ -142,7 +152,7 @@ func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.
 		}
 	}
 	lg.Infof("Starting task execution...")
-	if err := internalRun(ctx, input, metrics, lg, logRoot); err != nil {
+	if err := internalRun(ctx, input, metrics, lg, ad, logRoot); err != nil {
 		res.Success = false
 		res.FailReason = err.Error()
 		resultErrors = append(resultErrors, err)
@@ -276,7 +286,7 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 }
 
 // internalRun main entry point to execution received request.
-func internalRun(ctx context.Context, in *lab.LabpackInput, metrics metrics.Metrics, lg logger.Logger, logRoot string) (err error) {
+func internalRun(ctx context.Context, in *lab.LabpackInput, metrics metrics.Metrics, lg logger.Logger, ad *tlw.AccessData, logRoot string) (err error) {
 	defer func() {
 		// Catching the panic here as luciexe just set a step as fail and but not exit execution.
 		lg.Debugf("Checking if there is a panic!")
@@ -289,7 +299,7 @@ func internalRun(ctx context.Context, in *lab.LabpackInput, metrics metrics.Metr
 		in.InventoryNamespace = ufsUtil.OSNamespace
 	}
 	ctx = setupContextNamespace(ctx, in.InventoryNamespace)
-	ctx, access, err := tlw.NewAccess(ctx, in)
+	ctx, access, err := tlw.NewAccess(ctx, in, ad)
 	if err != nil {
 		return errors.Annotate(err, "internal run").Err()
 	}

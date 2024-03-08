@@ -12,6 +12,7 @@ const (
 	ParamKeyStableVersionServicePath = "stable_version_service_path"
 	ParamKeyInventoryServicePath     = "inventory_service_path"
 	ParamKeySwarmingTaskID           = "swarming_task_id"
+	ParamKeySwarmingTaskTags         = "swarming_task_tags"
 	ParamKeyBuildbucketID            = "buildbucket_id"
 )
 
