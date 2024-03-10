@@ -200,6 +200,7 @@ func (ex *CrosPublishExecutor) rdbPublishUploadCommandExecution(
 		CurrentInvocationId: cmd.CurrentInvocationId,
 		TestResult:          cmd.TestResultForRdb,
 		Sources:             cmd.Sources,
+		BaseVariant:         cmd.BaseVariant,
 	})
 	if err != nil {
 		return errors.Annotate(err, "Creating publish rdb metadata err: ").Err()

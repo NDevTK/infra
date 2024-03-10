@@ -80,6 +80,7 @@ type HwTestStateKeeper struct {
 	TkoPublishSrcDir    string
 	CpconPublishSrcDir  string
 	TestResultForRdb    *artifactpb.TestResult
+	BaseVariant         map[string]string
 
 	// Build related
 	SkylabResult *skylab_test_runner.Result

@@ -32,6 +32,7 @@ type RdbPublishUploadCmd struct {
 	CurrentInvocationId string
 	TesthausUrl         string
 	Sources             *testapi_metadata.PublishRdbMetadata_Sources
+	BaseVariant         map[string]string
 
 	// Either constructed TestResultForRdb is required,
 	TestResultForRdb *artifactpb.TestResult
@@ -97,9 +98,15 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 		}
 	}
 
+	if sk.BaseVariant == nil {
+		logging.Infof(ctx, "Since BaseVariant is not provided, cmd will try to construct it.")
+		sk.BaseVariant = constructBaseVariantFromStateKeeper(ctx, sk)
+	}
+
 	cmd.CurrentInvocationId = sk.CurrentInvocationId
 	cmd.TestResultForRdb = sk.TestResultForRdb
 	cmd.TesthausUrl = sk.TesthausUrl
+	cmd.BaseVariant = sk.BaseVariant
 
 	var err error
 	if sk.CrosTestRunnerRequest != nil {
@@ -118,6 +125,35 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	cmd.TestResponses = sk.TestResponses
 
 	return nil
+}
+
+// constructBaseVariantFromStateKeeper constructs the base variant of test
+// results within an invocation. If there are duplicate keys, the variant value
+// given by the test command always wins.
+func constructBaseVariantFromStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) map[string]string {
+	baseVariant := make(map[string]string)
+
+	// Buildbucket tags
+	build := sk.BuildState.Build()
+	if build != nil {
+		for _, tag := range build.GetTags() {
+			if tag.GetKey() == "label-board" {
+				baseVariant["board"] = tag.GetValue()
+			} else if tag.GetKey() == "label-model" {
+				baseVariant["model"] = tag.GetValue()
+			}
+		}
+	}
+
+	// Autotest keyval from CFT test request
+	buildTarget := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "build_target")
+	if buildTarget != "" {
+		baseVariant["build_target"] = buildTarget
+	}
+
+	return baseVariant
 }
 
 func constructTestResultFromStateKeeper(
