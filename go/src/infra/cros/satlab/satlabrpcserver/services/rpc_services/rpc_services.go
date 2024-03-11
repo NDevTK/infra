@@ -1672,3 +1672,42 @@ func (s *SatlabRpcServiceServer) GetChildTasksCountByStatus(
 		TaskCount: taskCounts,
 	}, nil
 }
+
+// CancelJobs handles the request that users want to cancel jobs.
+func (s *SatlabRpcServiceServer) AbortJobs(ctx context.Context, in *pb.AbortJobsRequest) (*pb.AbortJobsResponse, error) {
+	tags := []string{}
+
+	if len(in.GetIds()) == 0 {
+		return nil, errors.New("id can not be empty")
+	}
+
+	ids := strings.Join(in.GetIds(), "|")
+	tags = append(tags, fmt.Sprintf("buildbucket_build_id:%s", ids))
+
+	pool := ""
+	// Fine tune filters to get only CTP builds when search is for suite or testplan
+	if in.JobType == pb.Job_SUITE || in.JobType == pb.Job_TESTPLAN {
+		pool = site.GetCTPSwarmingPool()
+	} else if in.JobType == pb.Job_TEST {
+		pool = site.GetTestRunnerSwarmingPool()
+	}
+
+	if pool == "" {
+		return nil, errors.New("Pool can not be empty")
+	}
+
+	tags = append(tags, fmt.Sprintf("pool:%s", pool))
+
+	req := services.CancelTasksRequest{
+		Tags:  tags,
+		Start: in.CreatedTimeGt,
+		End:   in.CreatedTimeLt,
+	}
+
+	err := s.swarmingService.CancelTasks(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AbortJobsResponse{}, nil
+}

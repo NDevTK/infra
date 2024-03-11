@@ -125,6 +125,20 @@ func (mr *MockISwarmingServiceMockRecorder) ListBots(ctx, in interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBots", reflect.TypeOf((*MockISwarmingService)(nil).ListBots), ctx, in)
 }
 
+// CancelTasks mocks base method
+func (m *MockISwarmingService) CancelTasks(ctx context.Context, req CancelTasksRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CancelTasks", ctx, req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CancelTasks indicates an expected call of CancelTasks
+func (mr *MockISwarmingServiceMockRecorder) CancelTasks(ctx context.Context, req CancelTasksRequest) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CancelTasks", reflect.TypeOf((*MockISwarmingService)(nil).CancelTasks), ctx, req)
+}
+
 // MockTasksClient is a mock of TasksClient interface.
 type MockTasksClient struct {
 	ctrl     *gomock.Controller

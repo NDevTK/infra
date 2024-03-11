@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
@@ -64,6 +65,12 @@ type JobsIterator struct {
 	Jobs   []*pb.Job
 }
 
+type CancelTasksRequest struct {
+	Tags  []string
+	Start *timestamp.Timestamp
+	End   *timestamp.Timestamp
+}
+
 // ISwarmingService is the interface provides different services.
 type ISwarmingService interface {
 	// GetBot get the bot information from swarming API.
@@ -83,12 +90,19 @@ type ISwarmingService interface {
 
 	// CountTasks returns the count of swarming tasks for given tags and filters.
 	CountTasks(ctx context.Context, in *swarmingapi.TasksCountRequest) (*swarmingapi.TasksCount, error)
+
+	// CancelTasks cancels a subset of pending tasks based on the tags.
+	CancelTasks(ctx context.Context, req CancelTasksRequest) error
 }
 
 type TasksClient interface {
 	ListTasks(ctx context.Context, in *swarmingapi.TasksWithPerfRequest, opts ...grpc.CallOption) (*swarmingapi.TaskListResponse, error)
+
 	// CountTasks returns the count of swarming tasks for given tags and filters.
 	CountTasks(ctx context.Context, in *swarmingapi.TasksCountRequest, opts ...grpc.CallOption) (*swarmingapi.TasksCount, error)
+
+	// CancelTasks cancels a subset of pending tasks based on the tags.
+	CancelTasks(ctx context.Context, in *swarmingapi.TasksCancelRequest, opts ...grpc.CallOption) (*swarmingapi.TasksCancelResponse, error)
 }
 
 // SwarmingService is the implementation of ISwarmingService
@@ -249,4 +263,33 @@ func (s *SwarmingService) CountTasks(ctx context.Context, in *swarmingapi.TasksC
 	subCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 	return s.tasksClient.CountTasks(subCtx, in)
+}
+
+// CancelTasks cancels a subset of pending tasks based on the tags.
+func (s *SwarmingService) CancelTasks(ctx context.Context, req CancelTasksRequest) error {
+	cursor := ""
+	for {
+		r := &swarmingapi.TasksCancelRequest{
+			Limit:       20,
+			Cursor:      cursor,
+			Tags:        req.Tags,
+			KillRunning: true,
+			Start:       req.Start,
+			End:         req.End,
+		}
+		logging.Infof(ctx, "Cancel tasks req: %v", req)
+		resp, err := s.tasksClient.CancelTasks(ctx, r)
+		if err != nil {
+			logging.Errorf(ctx, "Cancel tasks failed, got an error: %v", err)
+			return err
+		}
+		logging.Infof(ctx, "Cancel tasks response: %v", resp)
+
+		cursor = resp.GetCursor()
+		if cursor == "" {
+			break
+		}
+	}
+
+	return nil
 }

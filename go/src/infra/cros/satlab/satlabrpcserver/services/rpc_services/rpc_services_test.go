@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"reflect"
 	"strings"
@@ -2226,4 +2227,39 @@ func TestListTasksWithChildTaskStatusShouldSuccess(t *testing.T) {
 			Jobs:          expectedData.Jobs,
 		})
 	})
+}
+
+func Test_AbortJobsShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	// Create a mock data
+	s := createMockServer(t)
+
+	os.Setenv(site.CTPSwarmingPoolEnv, "pool")
+	defer os.Unsetenv(site.CTPSwarmingPoolEnv)
+	start := timestamppb.Now()
+	end := timestamppb.Now()
+
+	tags := []string{}
+	tags = append(tags, fmt.Sprintf("buildbucket_build_id:%s", "task-1|task-2"))
+	tags = append(tags, fmt.Sprintf("pool:%s", site.GetCTPSwarmingPool()))
+	reqCancelTasks := services.CancelTasksRequest{
+		Tags:  tags,
+		Start: start,
+		End:   end,
+	}
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().CancelTasks(ctx, reqCancelTasks).Return(nil).AnyTimes()
+
+	req := &pb.AbortJobsRequest{
+		Ids:           []string{"task-1", "task-2"},
+		JobType:       pb.Job_SUITE,
+		CreatedTimeGt: start,
+		CreatedTimeLt: end,
+	}
+	_, err := s.AbortJobs(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: {%v}", err)
+	}
 }
