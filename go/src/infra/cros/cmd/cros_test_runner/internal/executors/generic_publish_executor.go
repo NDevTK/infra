@@ -51,8 +51,8 @@ func (ex *GenericPublishExecutor) genericPublishHandler(
 	ctx context.Context,
 	cmd *commands.GenericPublishCmd) (err error) {
 	stepName := "Publish service"
-	if cmd.Identifier != "" {
-		stepName = fmt.Sprintf("%s: %s", stepName, cmd.Identifier)
+	if cmd.PublishRequest.DynamicIdentifier != "" {
+		stepName = fmt.Sprintf("%s: %s", stepName, cmd.PublishRequest.DynamicIdentifier)
 	}
 	step, ctx := build.StartStep(ctx, stepName)
 	defer func() { step.End(err) }()

@@ -322,8 +322,8 @@ func populatePrimaryDutInfo(
 	isSkylab := true
 	testDuts := sk.Devices
 	if len(testDuts) > 0 {
-		primaryDutInfo.Dut = testDuts[common.PrimaryDevice].GetDut()
-		isSkylab = !strings.HasPrefix(testDuts[common.PrimaryDevice].GetDut().GetId().GetValue(), "satlab-")
+		primaryDutInfo.Dut = testDuts[common.Primary].GetDut()
+		isSkylab = !strings.HasPrefix(testDuts[common.Primary].GetDut().GetId().GetValue(), "satlab-")
 	}
 
 	primaryDut := sk.CftTestRequest.GetPrimaryDut()

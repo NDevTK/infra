@@ -118,10 +118,9 @@ func (cmd *GenericServiceCmd) extractDepsFromHwTestStateKeeper(
 		return fmt.Errorf("cmd %q failed injecting dependencies, %s", cmd.GetCommandType(), err)
 	}
 
-	for _, dep := range cmd.GenericRequest.DynamicDeps {
-		if dep.Key == "serviceAddress" {
-			cmd.Identifier = dep.GetValue()
-		}
+	cmd.Identifier = cmd.GenericRequest.GetDynamicIdentifier()
+	if cmd.Identifier == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing preferred dependency: DynamicIdentifier (required for dynamic referencing)", cmd.GetCommandType())
 	}
 
 	return nil
@@ -131,19 +130,37 @@ func (cmd *GenericServiceCmd) updateHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
+	taskIdentifier := common.NewTaskIdentifier(cmd.GenericRequest.DynamicIdentifier)
 	if cmd.StartResp != nil {
-		if err := sk.Injectables.Set(cmd.Identifier+"_start", cmd.StartResp); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_start")
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("start"), cmd.StartResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("start"))
 		}
 	}
 	if cmd.RunResp != nil {
-		if err := sk.Injectables.Set(cmd.Identifier+"_run", cmd.RunResp); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_run")
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("run"), cmd.RunResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("run"))
 		}
 	}
 	if cmd.StopResp != nil {
-		if err := sk.Injectables.Set(cmd.Identifier+"_stop", cmd.StopResp); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_stop")
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("stop"), cmd.StopResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("stop"))
+		}
+	}
+
+	// Upload request objects to storage
+	if cmd.GenericRequest.StartRequest != nil {
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("start"), cmd.GenericRequest.StartRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("start"))
+		}
+	}
+	if cmd.GenericRequest.RunRequest != nil {
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("run"), cmd.GenericRequest.RunRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("run"))
+		}
+	}
+	if cmd.GenericRequest.StopRequest != nil {
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("stop"), cmd.GenericRequest.StopRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("stop"))
 		}
 	}
 

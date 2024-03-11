@@ -5,7 +5,7 @@
 package common_builders
 
 import (
-	"fmt"
+	"strconv"
 	"strings"
 
 	"google.golang.org/protobuf/types/known/anypb"
@@ -42,10 +42,10 @@ func (constructor *CftCrosTestRunnerRequestConstructor) addDevicesInfoToKeyvals(
 // to construct a cros-dut and provision task request.
 func (constructor *CftCrosTestRunnerRequestConstructor) buildPrimaryDutProvision(orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
 	if !constructor.Cft.GetStepsConfig().GetHwTestConfig().GetSkipStartingDutService() {
-		AppendDutTask(orderedTasks, BuildCrosDutRequest(common.PrimaryDevice))
+		AppendDutTask(orderedTasks, BuildCrosDutRequest(common.NewPrimaryDeviceIdentifier()))
 	}
 
-	constructor.buildProvision(common.PrimaryDevice, constructor.Cft.GetPrimaryDut(), orderedTasks)
+	constructor.buildProvision(common.NewPrimaryDeviceIdentifier(), constructor.Cft.GetPrimaryDut(), orderedTasks)
 }
 
 // buildCompanionDutProvisions attempts to use the CompanionDuts from CftTestRequest
@@ -53,21 +53,21 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildPrimaryDutProvision
 func (constructor *CftCrosTestRunnerRequestConstructor) buildCompanionDutProvisions(orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
 	deviceIds := map[string]struct{}{}
 	for _, dut := range constructor.Cft.GetCompanionDuts() {
-		deviceId := "companionDevice_" + dut.GetDutModel().GetBuildTarget()
-		if _, ok := deviceIds[deviceId]; ok {
+		deviceId := common.NewCompanionDeviceIdentifier(dut.GetDutModel().GetBuildTarget())
+		if _, ok := deviceIds[deviceId.Id]; ok {
 			// deviceId already exists, try postfixing
 			// Standard within swarming when there are duplicate boards
 			// is to postfix with `_2`. (e.g. `brya | brya_2`)
 			postfix := 2
 			for {
-				if _, ok := deviceIds[fmt.Sprintf("%s_%d", deviceId, postfix)]; !ok {
-					deviceId = fmt.Sprintf("%s_%d", deviceId, postfix)
+				if _, ok := deviceIds[deviceId.AddPostfix(strconv.Itoa(postfix)).Id]; !ok {
+					deviceId = deviceId.AddPostfix(strconv.Itoa(postfix))
 					break
 				}
 				postfix += 1
 			}
 		}
-		deviceIds[deviceId] = struct{}{}
+		deviceIds[deviceId.Id] = struct{}{}
 		if !constructor.Cft.GetStepsConfig().GetHwTestConfig().GetSkipStartingDutService() {
 			AppendDutTask(orderedTasks, BuildCrosDutRequest(deviceId))
 		}
@@ -79,7 +79,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildCompanionDutProvisi
 // buildProvision checks for each possible type of provision that might occur
 // and calls into the corresponding provision builder function.
 func (constructor *CftCrosTestRunnerRequestConstructor) buildProvision(
-	deviceId string,
+	deviceId *common.DeviceIdentifier,
 	dut *skylab_test_runner.CFTTestRequest_Device,
 	orderedTasks *[]*api.CrosTestRunnerDynamicRequest_Task) {
 
@@ -127,11 +127,11 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildRdbPublish(orderedT
 			TestResult: &artifact.TestResult{},
 		})
 		AppendPublishTask(orderedTasks,
-			BuildPublishContainerRequest("rdb-publish", api.CrosPublishTemplate_PUBLISH_RDB, nil),
-			BuildPublishRequest(common.RdbPublishTestArtifactDir, rdbPublishMetadata, []*api.DynamicDep{
+			BuildPublishContainerRequest(common.RdbPublish, api.CrosPublishTemplate_PUBLISH_RDB, nil),
+			BuildPublishRequest(common.NewTaskIdentifier(common.RdbPublish).Id, common.RdbPublishTestArtifactDir, rdbPublishMetadata, []*api.DynamicDep{
 				{
 					Key:   "serviceAddress",
-					Value: "rdb-publish",
+					Value: common.RdbPublish,
 				},
 				{
 					Key:   "publishRequest.metadata.currentInvocationId",
@@ -139,7 +139,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildRdbPublish(orderedT
 				},
 				{
 					Key:   "publishRequest.metadata.testResult",
-					Value: "rdb-test-result",
+					Value: common.NewTaskIdentifier(common.CrosTest).GetRpcResponse("rdbTestResult"),
 				},
 			}),
 			false)
@@ -155,16 +155,16 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildGcsPublish(orderedT
 			},
 		})
 		AppendPublishTask(orderedTasks,
-			BuildPublishContainerRequest("gcs-publish", api.CrosPublishTemplate_PUBLISH_GCS, []*api.DynamicDep{
+			BuildPublishContainerRequest(common.GcsPublish, api.CrosPublishTemplate_PUBLISH_GCS, []*api.DynamicDep{
 				{
 					Key:   "crosPublish.publishSrcDir",
 					Value: "env-TEMPDIR",
 				},
 			}),
-			BuildPublishRequest(common.GcsPublishTestArtifactsDir, gcsPublishMetadata, []*api.DynamicDep{
+			BuildPublishRequest(common.NewTaskIdentifier(common.GcsPublish).Id, common.GcsPublishTestArtifactsDir, gcsPublishMetadata, []*api.DynamicDep{
 				{
 					Key:   "serviceAddress",
-					Value: "gcs-publish",
+					Value: common.GcsPublish,
 				},
 				{
 					Key:   "publishRequest.metadata.gcsPath.path",
@@ -180,11 +180,11 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildCpconPublish(ordere
 	if constructor.Cft.GetStepsConfig().GetHwTestConfig().GetRunCpconPublish() {
 		cpconMetadata, _ := anypb.New(&api.PublishTkoMetadata{})
 		AppendPublishTask(orderedTasks,
-			BuildPublishContainerRequest("cpcon-publish", api.CrosPublishTemplate_PUBLISH_CPCON, nil),
-			BuildPublishRequest(common.CpconPublishTestArtifactsDir, cpconMetadata, []*api.DynamicDep{
+			BuildPublishContainerRequest(common.CpconPublish, api.CrosPublishTemplate_PUBLISH_CPCON, nil),
+			BuildPublishRequest(common.NewTaskIdentifier(common.CpconPublish).Id, common.CpconPublishTestArtifactsDir, cpconMetadata, []*api.DynamicDep{
 				{
 					Key:   "serviceAddress",
-					Value: "cpcon-publish",
+					Value: common.CpconPublish,
 				},
 				{
 					Key:   "publishRequest.metadata.jobName",
@@ -197,9 +197,9 @@ func (constructor *CftCrosTestRunnerRequestConstructor) buildCpconPublish(ordere
 
 // BuildCrosDutRequest is a helper function to construct a ContainerRequest
 // with the CrosDut template, using a deviceId to dynamically execute it.
-func BuildCrosDutRequest(deviceId string) *api.ContainerRequest {
+func BuildCrosDutRequest(deviceId *common.DeviceIdentifier) *api.ContainerRequest {
 	return &api.ContainerRequest{
-		DynamicIdentifier: common.CrosDut + "-" + deviceId,
+		DynamicIdentifier: deviceId.GetCrosDutServer(),
 		Container: &api.Template{
 			Container: &api.Template_CrosDut{
 				CrosDut: &api.CrosDutTemplate{},
@@ -209,11 +209,11 @@ func BuildCrosDutRequest(deviceId string) *api.ContainerRequest {
 		DynamicDeps: []*api.DynamicDep{
 			{
 				Key:   "crosDut.cacheServer",
-				Value: common.PrimaryDevice + ".dut.cacheServer.address",
+				Value: common.NewPrimaryDeviceIdentifier().GetDevice("dut", "cacheServer", "address"),
 			},
 			{
 				Key:   "crosDut.dutAddress",
-				Value: deviceId + ".dutServer",
+				Value: deviceId.GetDevice("dutServer"),
 			},
 		},
 	}
@@ -221,13 +221,14 @@ func BuildCrosDutRequest(deviceId string) *api.ContainerRequest {
 
 // BuildProvisionRequest takes a Cft device to construct a ProvisionRequest.
 // Checks provision state to determine install request.
-func BuildProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRequest_Device) *api.ProvisionTask {
+func BuildProvisionRequest(deviceId *common.DeviceIdentifier, device *skylab_test_runner.CFTTestRequest_Device) *api.ProvisionTask {
 	var installRequest *api.InstallRequest
 	var serviceAddress string
 	var startupRequest *api.ProvisionStartupRequest
 	var deps []*api.DynamicDep
+	var dynamicIdentifier string
 	if IsAndroidProvisionState(device.GetProvisionState()) {
-		serviceAddress = common.AndroidProvision + "-" + deviceId
+		serviceAddress = common.NewTaskIdentifier(common.AndroidProvision).AddDeviceId(deviceId).Id
 		installRequest = &api.InstallRequest{
 			PreventReboot: false,
 			Metadata:      device.GetProvisionState().GetProvisionMetadata(),
@@ -236,37 +237,42 @@ func BuildProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRe
 		deps = append(deps, []*api.DynamicDep{
 			{
 				Key:   "startupRequest.dut",
-				Value: deviceId + ".dut",
+				Value: deviceId.GetDevice("dut"),
 			},
 			{
 				Key:   "startupRequest.dutServer",
-				Value: common.CrosDut + "-" + deviceId,
+				Value: deviceId.GetCrosDutServer(),
 			},
 		}...)
+		dynamicIdentifier = common.NewTaskIdentifier(common.AndroidProvision).AddDeviceId(deviceId).Id
 	} else {
-		serviceAddress = common.CrosProvision + "-" + deviceId
+		serviceAddress = common.NewTaskIdentifier(common.CrosProvision).AddDeviceId(deviceId).Id
 		crosProvisionMetadata, _ := anypb.New(&api.CrOSProvisionMetadata{})
 		installRequest = &api.InstallRequest{
 			ImagePath:     device.GetProvisionState().GetSystemImage().GetSystemImagePath(),
 			PreventReboot: false,
 			Metadata:      crosProvisionMetadata,
 		}
+		dynamicIdentifier = common.NewTaskIdentifier(common.CrosProvision).AddDeviceId(deviceId).Id
 	}
 	return &api.ProvisionTask{
 		ServiceAddress: &labapi.IpEndpoint{},
 		StartupRequest: startupRequest,
 		InstallRequest: installRequest,
-		DynamicDeps: append(deps, &api.DynamicDep{
-			Key:   "serviceAddress",
-			Value: serviceAddress,
-		}),
-		Target: deviceId,
+		DynamicDeps: append([]*api.DynamicDep{
+			{
+				Key:   "serviceAddress",
+				Value: serviceAddress,
+			},
+		}, deps...),
+		Target:            deviceId.Id,
+		DynamicIdentifier: dynamicIdentifier,
 	}
 }
 
 // BuildFwProvisionRequest creates a generic provision request using the FirmwareConfig
 // within the device's provided provision state as part of the install request.
-func BuildFwProvisionRequest(deviceId string, device *skylab_test_runner.CFTTestRequest_Device) *api.ProvisionTask {
+func BuildFwProvisionRequest(deviceId *common.DeviceIdentifier, device *skylab_test_runner.CFTTestRequest_Device) *api.ProvisionTask {
 	startUpMetadata, _ := anypb.New(&api.FirmwareProvisionStartupMetadata{})
 	installMetadata, _ := anypb.New(&api.FirmwareProvisionInstallMetadata{
 		FirmwareConfig: device.GetProvisionState().GetFirmware(),
@@ -282,26 +288,27 @@ func BuildFwProvisionRequest(deviceId string, device *skylab_test_runner.CFTTest
 		DynamicDeps: []*api.DynamicDep{
 			{
 				Key:   "serviceAddress",
-				Value: common.FwProvision + "-" + deviceId,
+				Value: common.NewTaskIdentifier(common.FwProvision).AddDeviceId(deviceId).Id,
 			},
 			{
 				Key:   "startupRequest.dut",
-				Value: deviceId + ".dut",
+				Value: deviceId.GetDevice("dut"),
 			},
 			{
 				Key:   "startupRequest.dutServer",
-				Value: common.CrosDut + "-" + deviceId,
+				Value: deviceId.GetCrosDutServer(),
 			},
 		},
-		Target: deviceId,
+		Target:            deviceId.Id,
+		DynamicIdentifier: common.NewTaskIdentifier(common.FwProvision).Id,
 	}
 }
 
 // BuildFwProvisionContainerRequest creates a container request for a certain deviceId,
 // specifically geared towards supported cros-fw-provisions.
-func BuildFwProvisionContainerRequest(deviceId string) *api.ContainerRequest {
+func BuildFwProvisionContainerRequest(deviceId *common.DeviceIdentifier) *api.ContainerRequest {
 	return &api.ContainerRequest{
-		DynamicIdentifier: common.FwProvision + "-" + deviceId,
+		DynamicIdentifier: common.NewTaskIdentifier(common.FwProvision).AddDeviceId(deviceId).Id,
 		ContainerImageKey: common.FwProvision,
 		Container: &api.Template{
 			Container: &api.Template_Generic{
@@ -324,13 +331,11 @@ func BuildFwProvisionContainerRequest(deviceId string) *api.ContainerRequest {
 
 // BuildProvisionContainerRequest constructs a ContainerRequest for a certain deviceId
 // with variations for android devices.
-func BuildProvisionContainerRequest(deviceId string, isAndroid bool) *api.ContainerRequest {
+func BuildProvisionContainerRequest(deviceId *common.DeviceIdentifier, isAndroid bool) *api.ContainerRequest {
 	var container *api.Template
 	var imageKey string
-	var key string
 	var deps []*api.DynamicDep
 	if isAndroid {
-		key = "androidProvision"
 		imageKey = common.AndroidProvision
 		container = &api.Template{
 			Container: &api.Template_Generic{
@@ -348,7 +353,6 @@ func BuildProvisionContainerRequest(deviceId string, isAndroid bool) *api.Contai
 			},
 		}
 	} else {
-		key = "crosProvision"
 		imageKey = common.CrosProvision
 		container = &api.Template{
 			Container: &api.Template_CrosProvision{
@@ -359,17 +363,17 @@ func BuildProvisionContainerRequest(deviceId string, isAndroid bool) *api.Contai
 		}
 		deps = []*api.DynamicDep{
 			{
-				Key:   key + ".inputRequest.dut",
-				Value: deviceId + ".dut",
+				Key:   "crosProvision.inputRequest.dut",
+				Value: deviceId.GetDevice("dut"),
 			},
 			{
-				Key:   key + ".inputRequest.dutServer",
-				Value: common.CrosDut + "-" + deviceId,
+				Key:   "crosProvision.inputRequest.dutServer",
+				Value: deviceId.GetCrosDutServer(),
 			},
 		}
 	}
 	return &api.ContainerRequest{
-		DynamicIdentifier: imageKey + "-" + deviceId,
+		DynamicIdentifier: common.NewTaskIdentifier(imageKey).AddDeviceId(deviceId).Id,
 		Container:         container,
 		ContainerImageKey: imageKey,
 		DynamicDeps:       deps,
@@ -435,6 +439,7 @@ func BuildTestRequest() *api.TestTask {
 				Value: common.CompanionDevices,
 			},
 		},
+		DynamicIdentifier: common.NewTaskIdentifier(common.CrosTest).Id,
 	}
 }
 
@@ -456,7 +461,7 @@ func BuildPublishContainerRequest(identifier string, publishType api.CrosPublish
 }
 
 // BuildPublishRequest constructs a PublishRequest with provided dependencies.
-func BuildPublishRequest(artifactPath string, metadata *anypb.Any, deps []*api.DynamicDep) *api.PublishTask {
+func BuildPublishRequest(dynamicId, artifactPath string, metadata *anypb.Any, deps []*api.DynamicDep) *api.PublishTask {
 	return &api.PublishTask{
 		ServiceAddress: &labapi.IpEndpoint{},
 		PublishRequest: &api.PublishRequest{
@@ -465,7 +470,8 @@ func BuildPublishRequest(artifactPath string, metadata *anypb.Any, deps []*api.D
 				Path:     artifactPath},
 			Metadata: metadata,
 		},
-		DynamicDeps: deps,
+		DynamicDeps:       deps,
+		DynamicIdentifier: dynamicId,
 	}
 }
 

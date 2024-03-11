@@ -50,8 +50,8 @@ func (ex *GenericServiceExecutor) GenericServiceHandler(
 	ctx context.Context,
 	cmd *commands.GenericServiceCmd) (err error) {
 	stepName := "generic service"
-	if cmd.Identifier != "" {
-		stepName = fmt.Sprintf("%s: %s", stepName, cmd.Identifier)
+	if cmd.GenericRequest.DynamicIdentifier != "" {
+		stepName = fmt.Sprintf("%s: %s", stepName, cmd.GenericRequest.DynamicIdentifier)
 	}
 	step, ctx := build.StartStep(ctx, stepName)
 	defer func() { step.End(err) }()

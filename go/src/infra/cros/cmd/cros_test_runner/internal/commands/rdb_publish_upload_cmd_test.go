@@ -379,7 +379,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				},
 			},
 			Devices: map[string]*testapi.CrosTestRequest_Device{
-				common.PrimaryDevice: {
+				common.Primary: {
 					Dut: dut,
 				},
 			},

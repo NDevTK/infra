@@ -96,10 +96,9 @@ func (cmd *GenericPublishCmd) extractDepsFromHwTestStateKeeper(
 		return fmt.Errorf("cmd %q failed injecting dependencies, %s", cmd.GetCommandType(), err)
 	}
 
-	for _, dep := range cmd.PublishRequest.DynamicDeps {
-		if dep.Key == "serviceAddress" {
-			cmd.Identifier = dep.GetValue()
-		}
+	cmd.Identifier = cmd.PublishRequest.GetDynamicIdentifier()
+	if cmd.Identifier == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing preferred dependency: DynamicIdentifier (required for dynamic referencing)", cmd.GetCommandType())
 	}
 
 	return nil
@@ -129,9 +128,17 @@ func (cmd *GenericPublishCmd) updateHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
+	taskIdentifier := common.NewTaskIdentifier(cmd.PublishRequest.DynamicIdentifier)
 	if cmd.PublishResp != nil {
-		if err := sk.Injectables.Set(cmd.Identifier+"_publish", cmd.PublishResp); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_publish")
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("publish"), cmd.PublishResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("publish"))
+		}
+	}
+
+	// Upload request objects to storage
+	if cmd.PublishRequest.PublishRequest != nil {
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("publish"), cmd.PublishRequest.PublishRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("publish"))
 		}
 	}
 

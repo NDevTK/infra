@@ -51,8 +51,8 @@ func (ex *GenericTestsExecutor) genericTestsHandler(
 	ctx context.Context,
 	cmd *commands.GenericTestsCmd) (err error) {
 	stepName := "Test Execution service"
-	if cmd.Identifier != "" {
-		stepName = fmt.Sprintf("%s: %s", stepName, cmd.Identifier)
+	if cmd.TestRequest.DynamicIdentifier != "" {
+		stepName = fmt.Sprintf("%s: %s", stepName, cmd.TestRequest.DynamicIdentifier)
 	}
 	step, ctx := build.StartStep(ctx, stepName)
 	defer func() { step.End(err) }()

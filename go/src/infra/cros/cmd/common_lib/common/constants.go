@@ -61,13 +61,24 @@ const (
 
 // Constants relating to dynamic dependency storage.
 const (
-	CrosProvision         = "cros-provision"
-	AndroidProvision      = "android-provision"
-	FwProvision           = "cros-fw-provision"
-	CrosDut               = "cros-dut"
-	CrosTest              = "cros-test"
-	CrosPublish           = "cros-publish"
-	PrimaryDevice         = "primaryDevice"
-	CompanionDevices      = "companionDevices"
-	CompanionDevicePrefix = "companionDevice_"
+	// Base task identifiers and image metadata keys.
+	CrosProvision    = "cros-provision"
+	AndroidProvision = "android-provision"
+	FwProvision      = "cros-fw-provision"
+	CrosDut          = "cros-dut"
+	CrosTest         = "cros-test"
+	CrosPublish      = "cros-publish"
+	RdbPublish       = "rdb-publish"
+	GcsPublish       = "gcs-publish"
+	CpconPublish     = "cpcon-publish"
+
+	// Device base identifiers.
+	Primary   = "primary"
+	Companion = "companion"
+)
+
+var (
+	PrimaryDevice            = NewPrimaryDeviceIdentifier().GetDevice()
+	CompanionDevices         = NewCompanionDeviceIdentifier("all").GetDevice()
+	CompanionDevicesMetadata = NewCompanionDeviceIdentifier("all").GetDeviceMetadata()
 )

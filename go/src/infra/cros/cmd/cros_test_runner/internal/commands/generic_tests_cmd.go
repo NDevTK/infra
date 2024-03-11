@@ -116,10 +116,9 @@ func (cmd *GenericTestsCmd) extractDepsFromHwTestStateKeeper(
 		return fmt.Errorf("cmd %q failed injecting dependencies, %s", cmd.GetCommandType(), err)
 	}
 
-	for _, dep := range cmd.TestRequest.DynamicDeps {
-		if dep.Key == "serviceAddress" {
-			cmd.Identifier = dep.GetValue()
-		}
+	cmd.Identifier = cmd.TestRequest.GetDynamicIdentifier()
+	if cmd.Identifier == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing preferred dependency: DynamicIdentifier (required for dynamic referencing)", cmd.GetCommandType())
 	}
 
 	return nil
@@ -129,21 +128,26 @@ func (cmd *GenericTestsCmd) updateHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
+	taskIdentifier := common.NewTaskIdentifier(cmd.TestRequest.DynamicIdentifier)
 	if cmd.TestResponses != nil {
-		if err := sk.Injectables.Set(cmd.Identifier+"_runTests", cmd.TestResponses); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_runTests")
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("runTests"), cmd.TestResponses); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("runTests"))
 		}
 		sk.TestResponses = cmd.TestResponses
-		if err := sk.Injectables.Set("test-response", sk.TestResponses); err != nil {
-			logging.Infof(ctx, "Warning: failed to set 'test-response' into the InjectableStorage, %s", err)
-		}
 		rdbTestResult, err := constructTestResultFromStateKeeper(ctx, sk)
 		if err != nil {
 			return errors.Annotate(err, "Cmd %q failed to construct update: TestResultForRdb", cmd.GetCommandType()).Err()
 		}
 		sk.TestResultForRdb = rdbTestResult
-		if err := sk.Injectables.Set("rdb-test-result", sk.TestResultForRdb); err != nil {
-			logging.Infof(ctx, "Warning: failed to set 'rdb-test-result' into the InjectableStorage, %s", err)
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("rdbTestResult"), sk.TestResultForRdb); err != nil {
+			logging.Infof(ctx, "Warning: failed to set %s into the InjectableStorage, %s", taskIdentifier.GetRpcResponse("rdbTestResult"), err)
+		}
+	}
+
+	// Upload request objects to storage
+	if cmd.TestRequest.TestRequest != nil {
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("test"), cmd.TestRequest.TestRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("test"))
 		}
 	}
 

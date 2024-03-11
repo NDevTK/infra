@@ -6,6 +6,7 @@ package commands_test
 
 import (
 	"context"
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"testing"
@@ -57,7 +58,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 			GcsUrl:         "some/url",
 			TesthausUrl:    "some/url",
 			ProvisionResponses: map[string][]*api.InstallResponse{
-				"primaryDevice": {
+				common.NewPrimaryDeviceIdentifier().Id: {
 					{Status: api.InstallResponse_STATUS_SUCCESS},
 				},
 			},
@@ -140,7 +141,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 			GcsUrl:      "some/url",
 			TesthausUrl: "some/url",
 			ProvisionResponses: map[string][]*api.InstallResponse{
-				"primaryDevice": {
+				common.NewPrimaryDeviceIdentifier().Id: {
 					{Status: api.InstallResponse_STATUS_SUCCESS},
 				},
 			},

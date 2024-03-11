@@ -6,6 +6,7 @@ package commands_test
 
 import (
 	"context"
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -76,7 +77,7 @@ func TestProvisionInstallCmd_UpdateSK(t *testing.T) {
 		cmd.ProvisionResp = wantProvisionResp
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
-		So(sk.ProvisionResponses["primaryDevice"][0], ShouldEqual, wantProvisionResp)
+		So(sk.ProvisionResponses[common.NewPrimaryDeviceIdentifier().Id][0], ShouldEqual, wantProvisionResp)
 	})
 }
 

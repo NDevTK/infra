@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 
@@ -132,12 +133,13 @@ func (cmd *ProvisionInstallCmd) updateHwTestStateKeeper(
 	sk *data.HwTestStateKeeper) error {
 
 	if cmd.ProvisionResp != nil {
-		responses := sk.ProvisionResponses["primaryDevice"]
+		primaryDeviceId := common.NewPrimaryDeviceIdentifier().Id
+		responses := sk.ProvisionResponses[primaryDeviceId]
 		if responses == nil {
 			responses = []*testapi.InstallResponse{}
 		}
 		responses = append(responses, cmd.ProvisionResp)
-		sk.ProvisionResponses["primaryDevice"] = responses
+		sk.ProvisionResponses[primaryDeviceId] = responses
 	}
 
 	return nil

@@ -10,6 +10,7 @@ import (
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
+	"strconv"
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -111,7 +112,7 @@ func (cmd *ParseDutTopologyCmd) Execute(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("Failed to match primaryDevice, %s", err)
 		}
-		cmd.appendDevice("primaryDevice", info)
+		cmd.appendDevice(common.NewPrimaryDeviceIdentifier().Id, info)
 	}
 
 	for _, companionBoard := range cmd.CompanionBoards {
@@ -119,21 +120,21 @@ func (cmd *ParseDutTopologyCmd) Execute(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("Failed to match companionDevice, %s", err)
 		}
-		deviceId := "companionDevice_" + info.Metadata.GetDutModel().GetBuildTarget()
-		if _, ok := cmd.Devices[deviceId]; ok {
+		deviceId := common.NewCompanionDeviceIdentifier(companionBoard)
+		if _, ok := cmd.Devices[deviceId.Id]; ok {
 			// deviceId already exists, try postfixing
 			// Standard within swarming when there are duplicate boards
 			// is to postfix with `_2`. (e.g. `brya | brya_2`)
 			postfix := 2
 			for {
-				if _, ok := cmd.Devices[fmt.Sprintf("%s_%d", deviceId, postfix)]; !ok {
-					deviceId = fmt.Sprintf("%s_%d", deviceId, postfix)
+				if _, ok := cmd.Devices[deviceId.AddPostfix(strconv.Itoa(postfix)).Id]; !ok {
+					deviceId = deviceId.AddPostfix(strconv.Itoa(postfix))
 					break
 				}
 				postfix += 1
 			}
 		}
-		cmd.appendDevice(deviceId, info)
+		cmd.appendDevice(deviceId.Id, info)
 	}
 
 	return nil
@@ -196,30 +197,28 @@ func (cmd *ParseDutTopologyCmd) updateHwTestStateKeeper(
 
 	for deviceId, device := range cmd.Devices {
 		deviceMetadata := cmd.DevicesMetadata[deviceId]
-		if deviceId == "primaryDevice" {
+		deviceIdentifier := common.DeviceIdentifierFromString(deviceId)
+		if strings.HasPrefix(deviceId, common.Primary) {
 			sk.PrimaryDevice = device
 			sk.PrimaryDeviceMetadata = deviceMetadata
 		} else {
 			sk.CompanionDevices = append(sk.CompanionDevices, device)
 			sk.CompanionDevicesMetadata = append(sk.CompanionDevicesMetadata, deviceMetadata)
 		}
-		sk.Devices[deviceId] = device
-		if err := sk.Injectables.Set(deviceId, device); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceId, err)
+		sk.Devices[deviceIdentifier.Id] = device
+		if err := sk.Injectables.Set(deviceIdentifier.GetDevice(), device); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceIdentifier.GetDevice(), err)
 		}
-		if err := sk.Injectables.Set(deviceId+"Metadata", deviceMetadata); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceId+"Metadata", err)
-		}
-		if err := sk.Injectables.Set(deviceId+"ProvisionResponse", &testapi.InstallResponse{}); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceId+"ProvisionResponse", err)
+		if err := sk.Injectables.Set(deviceIdentifier.GetDeviceMetadata(), deviceMetadata); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceIdentifier.GetDeviceMetadata(), err)
 		}
 	}
 
 	sk.DeviceIdentifiers = cmd.DeviceIdentifiers
-	if err := sk.Injectables.Set("companionDevices", sk.CompanionDevices); err != nil {
+	if err := sk.Injectables.Set(common.CompanionDevices, sk.CompanionDevices); err != nil {
 		logging.Infof(ctx, "Warning: cmd %s failed to set companionDevices in the injectable storage, %s", cmd.GetCommandType(), err)
 	}
-	if err := sk.Injectables.Set("companionDevicesMetadata", sk.CompanionDevicesMetadata); err != nil {
+	if err := sk.Injectables.Set(common.CompanionDevicesMetadata, sk.CompanionDevicesMetadata); err != nil {
 		logging.Infof(ctx, "Warning: cmd %s failed to set companionDevicesMetadata in the injectable storage, %s", cmd.GetCommandType(), err)
 	}
 

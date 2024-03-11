@@ -184,9 +184,6 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	if sk.CftTestRequest == nil {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: CftTestRequest", cmd.GetCommandType())
 	}
-	if responses, ok := sk.ProvisionResponses["primaryDevice"]; !ok || len(responses) < 1 {
-		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: ProvisionResp", cmd.GetCommandType())
-	}
 	if sk.TestResponses == nil {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TestResponses", cmd.GetCommandType())
 	}
@@ -208,6 +205,11 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 			}
 		}
 	}
+
+	if len(cmd.ProvisionResps) < 1 {
+		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: ProvisionResps", cmd.GetCommandType())
+	}
+
 	cmd.CftTestRequest = sk.CftTestRequest
 	cmd.TestResponses = sk.TestResponses
 	cmd.GcsUrl = sk.GcsUrl

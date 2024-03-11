@@ -51,8 +51,8 @@ func (ex *GenericProvisionExecutor) genericProvisionHandler(
 	ctx context.Context,
 	cmd *commands.GenericProvisionCmd) (err error) {
 	stepName := "Provision service"
-	if cmd.Identifier != "" {
-		stepName = fmt.Sprintf("%s: %s", stepName, cmd.Identifier)
+	if cmd.ProvisionRequest.DynamicIdentifier != "" {
+		stepName = fmt.Sprintf("%s: %s", stepName, cmd.ProvisionRequest.DynamicIdentifier)
 	}
 	step, ctx := build.StartStep(ctx, stepName)
 	defer func() { step.End(err) }()

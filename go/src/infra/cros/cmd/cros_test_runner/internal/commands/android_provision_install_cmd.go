@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 
@@ -100,12 +101,12 @@ func (cmd *AndroidProvisionInstallCmd) updateAndroidHwTestsStateKeeper(
 	sk *data.HwTestStateKeeper) error {
 
 	if cmd.AndroidProvisionResponse != nil {
-		responses := sk.ProvisionResponses["companionDevice_"+cmd.AndroidCompanionDut.GetAndroid().GetDutModel().GetBuildTarget()]
+		responses := sk.ProvisionResponses[common.NewCompanionDeviceIdentifier(cmd.AndroidCompanionDut.GetAndroid().GetDutModel().GetBuildTarget()).Id]
 		if responses == nil {
 			responses = []*testapi.InstallResponse{}
 		}
 		responses = append(responses, cmd.AndroidProvisionResponse)
-		sk.ProvisionResponses["companionDevice_"+cmd.AndroidCompanionDut.GetAndroid().GetDutModel().GetBuildTarget()] = responses
+		sk.ProvisionResponses[common.NewCompanionDeviceIdentifier(cmd.AndroidCompanionDut.GetAndroid().GetDutModel().GetBuildTarget()).Id] = responses
 	}
 
 	return nil

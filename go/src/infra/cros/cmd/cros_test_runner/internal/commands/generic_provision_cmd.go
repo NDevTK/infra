@@ -119,10 +119,9 @@ func (cmd *GenericProvisionCmd) extractDepsFromHwTestStateKeeper(
 		return fmt.Errorf("cmd %q failed injecting dependencies, %s", cmd.GetCommandType(), err)
 	}
 
-	for _, dep := range cmd.ProvisionRequest.DynamicDeps {
-		if dep.Key == "serviceAddress" {
-			cmd.Identifier = dep.GetValue()
-		}
+	cmd.Identifier = cmd.ProvisionRequest.GetDynamicIdentifier()
+	if cmd.Identifier == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing preferred dependency: DynamicIdentifier (required for dynamic referencing)", cmd.GetCommandType())
 	}
 
 	cmd.TargetDevice = cmd.ProvisionRequest.GetTarget()
@@ -137,6 +136,7 @@ func (cmd *GenericProvisionCmd) updateHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
+	taskIdentifier := common.NewTaskIdentifier(cmd.ProvisionRequest.DynamicIdentifier)
 	if cmd.InstallResp != nil {
 		responses := sk.ProvisionResponses[cmd.TargetDevice]
 		if responses == nil {
@@ -144,22 +144,19 @@ func (cmd *GenericProvisionCmd) updateHwTestStateKeeper(
 		}
 		responses = append(responses, cmd.InstallResp)
 		sk.ProvisionResponses[cmd.TargetDevice] = responses
-		if err := sk.Injectables.Set(cmd.TargetDevice+"ProvisionResponses", responses); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.TargetDevice+"ProvisionResponses", err)
-		}
-		if err := sk.Injectables.Set(cmd.Identifier+"_install", cmd.InstallResp); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_install")
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("install"), cmd.InstallResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("install"))
 		}
 	}
 
 	if cmd.StartUpResp != nil {
-		if err := sk.Injectables.Set(cmd.Identifier+"_startUp", cmd.StartUpResp); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.Identifier+"_startUp")
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("startup"), cmd.StartUpResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("startup"))
 		}
 	}
 
 	if cmd.ProvisionRequest != nil && cmd.ProvisionRequest.GetInstallRequest() != nil {
-		key := cmd.TargetDevice + "Metadata"
+		key := common.DeviceIdentifierFromString(cmd.TargetDevice).GetDeviceMetadata()
 		deviceMetadata := &skylab_test_runner.CFTTestRequest_Device{}
 		if err := common.Inject(deviceMetadata, "", sk.Injectables, key); err != nil {
 			logging.Infof(ctx, "Warning: could not retrieve '%s' from InjectableStorage, %s", key, err)
@@ -172,6 +169,18 @@ func (cmd *GenericProvisionCmd) updateHwTestStateKeeper(
 			if err := sk.Injectables.Set(key, deviceMetadata); err != nil {
 				logging.Infof(ctx, "Warning: failed to set '%s' into the InjectableStorage, %s", key, err)
 			}
+		}
+	}
+
+	// Upload request objects to storage
+	if cmd.ProvisionRequest.StartupRequest != nil {
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("startup"), cmd.ProvisionRequest.StartupRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("startup"))
+		}
+	}
+	if cmd.ProvisionRequest.InstallRequest != nil {
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("install"), cmd.ProvisionRequest.InstallRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("install"))
 		}
 	}
 
