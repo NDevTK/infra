@@ -1,10 +1,5 @@
 create {
-  platform_re: ".*-arm.*|.*-mips.*|.*-riscv.*"
-  unsupported: true
-}
-
-create {
-  platform_re: "linux-.*|mac-.*"
+  platform_re: "linux-amd64|mac-.*"
   source {
     url {
       download_url: "https://ftp.gnu.org/gnu/texinfo/texinfo-6.5.tar.gz"
