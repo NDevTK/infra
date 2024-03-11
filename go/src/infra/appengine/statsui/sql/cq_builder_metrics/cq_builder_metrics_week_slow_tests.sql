@@ -31,7 +31,7 @@ USING
       b.id,
       b.builder.builder,
       b.start_time,
-      b.infra.swarming.task_id
+      b.infra.backend.task.id.id as task_id
     FROM
       `cr-buildbucket.chromium.builds` b,
       `chrome-trooper-analytics.metrics.cq_builders` cq
