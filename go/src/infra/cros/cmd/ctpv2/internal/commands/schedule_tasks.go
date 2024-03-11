@@ -35,6 +35,7 @@ const (
 // getBuildFieldMask is the list of buildbucket fields that are needed.
 var getBuildFieldMask = []string{
 	"id",
+	"infra.backend.task.id.id",
 	"infra.swarming.task_id",
 	// Build details are parsed from the build's output properties.
 	"output.properties",
