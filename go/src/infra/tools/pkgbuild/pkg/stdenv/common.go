@@ -65,18 +65,19 @@ var (
 type Config struct {
 	XcodeDeveloper generators.Generator
 	WinSDK         generators.Generator
-	FindBinary     generators.FindBinaryFunc
 	BuildPlatform  generators.Platform
 
 	// If true, pull docker image(s) during Init. Docker may require gcloud and
 	// other credentials to access private repositories, which are not available
 	// inside the derivation.
 	DockerPullImage bool
+
+	// For mock testing. Required binaries may not available in test environment.
+	FindBinary generators.FindBinaryFunc
 }
 
 func DefaultConfig() *Config {
 	return &Config{
-		FindBinary:      exec.LookPath,
 		BuildPlatform:   generators.CurrentPlatform(),
 		DockerPullImage: true,
 	}
