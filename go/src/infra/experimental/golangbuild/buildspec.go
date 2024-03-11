@@ -173,6 +173,20 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 		}
 	}
 
+	priority := st.Build().GetInfra().GetSwarming().GetPriority()
+	if priority == 0 {
+		beCfg := st.Build().GetInfra().GetBackend().GetConfig()
+		if beCfg != nil {
+			for k, v := range beCfg.AsMap() {
+				if k == "priority" {
+					if p, ok := v.(float64); ok {
+						priority = int32(p)
+					}
+				}
+			}
+		}
+	}
+
 	return &buildSpec{
 		auth:               authenticator,
 		builderName:        st.Build().GetBuilder().GetBuilder(),
@@ -182,7 +196,7 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 		gopath:             filepath.Join(cwd, "gopath"),
 		gocacheDir:         filepath.Join(cwd, "gocache"),
 		goplscacheDir:      filepath.Join(cwd, "goplscache"),
-		priority:           st.Build().GetInfra().GetSwarming().GetPriority(),
+		priority:           priority,
 		golangbuildVersion: st.Build().GetExe().GetCipdVersion(),
 		inputs:             inputs,
 		invocation:         st.Build().GetInfra().GetResultdb().GetInvocation(),
