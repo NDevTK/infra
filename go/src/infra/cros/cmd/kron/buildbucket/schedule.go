@@ -117,6 +117,10 @@ func generateBBRequest(suiteName, configName string, dryRun bool, builder *bb.Bu
 				Value: suiteName,
 			},
 			{
+				Key:   "label-suite",
+				Value: suiteName,
+			},
+			{
 				Key:   "user_agent",
 				Value: "kron",
 			},
