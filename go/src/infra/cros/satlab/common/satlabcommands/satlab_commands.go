@@ -84,7 +84,7 @@ func GetSatlabVersion(ctx context.Context, executor executor.IExecCommander) (st
 	}
 	rawData := strings.Fields(string(out))
 	for _, row := range rawData {
-		if r, ok := strings.CutPrefix(row, "LABEL="); ok {
+		if r, ok := strings.CutPrefix(row, "BUILD_VERSION="); ok {
 			return r, nil
 		}
 	}

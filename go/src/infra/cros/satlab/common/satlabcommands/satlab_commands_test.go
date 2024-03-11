@@ -241,7 +241,7 @@ BUILD_VERSION=R-4.2.3`), nil
 		t.Errorf("unexpected error: %v\n", err)
 	}
 
-	expected := "beta"
+	expected := "R-4.2.3"
 
 	if res != expected {
 		t.Errorf("unexpected result, expected: %v, got %v\n", expected, res)

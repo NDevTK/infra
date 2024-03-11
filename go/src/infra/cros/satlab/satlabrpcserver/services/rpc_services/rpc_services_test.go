@@ -841,7 +841,7 @@ func TestGetVersionInfoShouldSuccess(t *testing.T) {
 	// Create a mock server
 	s := createMockServer(t)
 	s.commandExecutor = &executor.FakeCommander{
-		CmdOutput: "LABEL=output\ndescription:description\nversion:v\ntrack:track",
+		CmdOutput: "BUILD_VERSION=output\ndescription:description\nversion:v\ntrack:track",
 	}
 
 	ctx := context.Background()
@@ -853,7 +853,7 @@ func TestGetVersionInfoShouldSuccess(t *testing.T) {
 	}
 
 	expected := &pb.GetVersionInfoResponse{
-		HostId:          "label=output\ndescription:description\nversion:v\ntrack:track",
+		HostId:          "build_version=output\ndescription:description\nversion:v\ntrack:track",
 		Description:     "description",
 		Track:           "track",
 		ChromeosVersion: "v",
