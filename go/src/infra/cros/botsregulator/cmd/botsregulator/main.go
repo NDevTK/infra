@@ -6,17 +6,27 @@
 package main
 
 import (
+	"context"
+
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
-	"go.chromium.org/luci/server/gaeemulation"
+	scron "go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/module"
+
+	"infra/cros/botsregulator/internal/cron"
 )
 
 func main() {
 	mods := []module.Module{
-		gaeemulation.NewModuleFromFlags(),
+		scron.NewModuleFromFlags(),
 	}
 
-	server.Main(nil, mods, func(*server.Server) error {
+	server.Main(nil, mods, func(srv *server.Server) error {
+		logging.Infof(srv.Context, "Starting server.")
+
+		scron.RegisterHandler("regulate-bots", func(ctx context.Context) error {
+			return cron.Regulate(ctx)
+		})
 		return nil
 	})
 }
