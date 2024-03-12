@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/botsregulator/internal/regulator"
+	"infra/cros/botsregulator/internal/util"
 )
 
 func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
@@ -20,5 +21,12 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 		return err
 	}
 	logging.Infof(ctx, "lses: %v\n", lses)
+
+	hns, err := util.CutHostnames(lses)
+	if err != nil {
+		return err
+	}
+	logging.Infof(ctx, "hostnames: %v\n", hns)
+
 	return nil
 }
