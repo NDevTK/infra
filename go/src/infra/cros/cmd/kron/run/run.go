@@ -149,6 +149,11 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	// requests into one large CTP request.
 	ctpRequests := combineCTPRequests(releaseBuilds)
 
+	// If staging reduce requests to 5 MAX
+	if !isProd {
+		ctpRequests = nil
+	}
+
 	// Initialize an authenticated BuildBucket client for scheduling.
 	common.Stdout.Printf("Initializing BuildBucket scheduling client prod: %t dryrun: %t", isProd, dryRun)
 	schedulerClient, err := buildbucket.InitScheduler(context.Background(), authOpts, isProd, dryRun)

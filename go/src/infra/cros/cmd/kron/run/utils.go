@@ -169,6 +169,7 @@ func buildCTPRequests(buildPackages []*builds.BuildPackage, suiteSchedulerConfig
 			}
 
 			// Get get the branch target which this build matched with.
+			// NOTE: Requested in b/296512042.
 			_, branch, err := totmanager.IsTargetedBranch(int(wrappedBuild.Build.Milestone), requests.Config.Branches)
 			if err != nil {
 				return err
@@ -294,4 +295,31 @@ func scheduleBatchViaBB(requests []*builds.EventWrapper, configName string, sche
 	// len(batchRequestList) % common.MultirequestSize != 0
 	sendBatch(configName, schedulerClient, publishClient, batchRequestList)
 
+}
+
+// limitStagingRequests scrubs outs ctp requests to ensure that only
+// common.StagingMaxRequests maximum requests can be sent to CTP-staging. This
+// limits the pressure that kron places on our staging pools while allowing us a
+// functional staging environment.
+func limitStagingRequests(requestMap map[string][]*builds.EventWrapper) map[string][]*builds.EventWrapper {
+	if requestMap == nil {
+		return nil
+	}
+
+	returnMap := map[string][]*builds.EventWrapper{}
+	count := 0
+	for configName, requestList := range requestMap {
+		returnMap[configName] = []*builds.EventWrapper{}
+
+		for _, request := range requestList {
+			if count == common.StagingMaxRequests {
+				break
+			}
+
+			returnMap[configName] = append(returnMap[configName], request)
+			count += 1
+		}
+	}
+
+	return returnMap
 }

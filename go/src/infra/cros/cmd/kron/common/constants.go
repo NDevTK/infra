@@ -53,4 +53,6 @@ const (
 	// MultirequestSize is the maximum number of tests requests that we can
 	// combine per CTP builder run.
 	MultirequestSize = 25
+
+	StagingMaxRequests = 5
 )

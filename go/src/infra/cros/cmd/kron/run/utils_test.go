@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/kron/builds"
+	"infra/cros/cmd/kron/common"
 )
 
 // TestCombineCTPRequests verifies that combineCTPRequests() is properly
@@ -166,4 +167,139 @@ func TestCombineCTPRequests(t *testing.T) {
 		}
 	}
 
+}
+
+func TestLimitStagingRequestsSingleConfigOverMax(t *testing.T) {
+	mockRequestMap := map[string][]*builds.EventWrapper{
+		"suite1": {
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+		},
+	}
+
+	limitedRequestMap := limitStagingRequests(mockRequestMap)
+
+	requestCount := 0
+
+	for _, requestList := range limitedRequestMap {
+		for range requestList {
+			requestCount += 1
+		}
+	}
+
+	if requestCount != common.StagingMaxRequests {
+		t.Errorf("%d requests expected, got %d", common.StagingMaxRequests, requestCount)
+	}
+}
+func TestLimitStagingRequestsSingleConfigUnderMax(t *testing.T) {
+	mockRequestMap := map[string][]*builds.EventWrapper{
+		"suite1": {
+			{},
+			{},
+			{},
+			{},
+		},
+	}
+
+	limitedRequestMap := limitStagingRequests(mockRequestMap)
+
+	requestCount := 0
+
+	for _, requestList := range limitedRequestMap {
+		for range requestList {
+			requestCount += 1
+		}
+	}
+
+	if requestCount != 4 {
+		t.Errorf("%d requests expected, got %d", 4, requestCount)
+	}
+}
+
+func TestLimitStagingRequestsMultipleConfigsOverMax(t *testing.T) {
+	mockRequestMap := map[string][]*builds.EventWrapper{
+		"suite1": {
+			{},
+			{},
+			{},
+			{},
+		},
+		"suite2": {
+			{},
+			{},
+			{},
+			{},
+		},
+	}
+
+	limitedRequestMap := limitStagingRequests(mockRequestMap)
+
+	requestCount := 0
+
+	suite1Seen := false
+	suite2Seen := false
+	for configName, requestList := range limitedRequestMap {
+		if configName == "suite1" {
+			suite1Seen = true
+		}
+		if configName == "suite2" {
+			suite2Seen = true
+		}
+
+		for range requestList {
+			requestCount += 1
+		}
+	}
+
+	if requestCount != common.StagingMaxRequests {
+		t.Errorf("%d requests expected, got %d", common.StagingMaxRequests, requestCount)
+	}
+
+	if !(suite1Seen && suite2Seen) {
+		t.Errorf("Suite 1 and 2 were expected to be seen. suite1Seen:%t\tsuite2Seen:%t", suite1Seen, suite2Seen)
+	}
+}
+
+func TestLimitStagingRequestsMultipleConfigsUnderMax(t *testing.T) {
+	mockRequestMap := map[string][]*builds.EventWrapper{
+		"suite1": {
+			{},
+			{},
+			{},
+		},
+		"suite2": {
+			{},
+		},
+	}
+
+	limitedRequestMap := limitStagingRequests(mockRequestMap)
+
+	requestCount := 0
+
+	suite1Seen := false
+	suite2Seen := false
+	for configName, requestList := range limitedRequestMap {
+		if configName == "suite1" {
+			suite1Seen = true
+		}
+		if configName == "suite2" {
+			suite2Seen = true
+		}
+
+		for range requestList {
+			requestCount += 1
+		}
+	}
+
+	if requestCount != 4 {
+		t.Errorf("%d requests expected, got %d", 4, requestCount)
+	}
+
+	if !(suite1Seen && suite2Seen) {
+		t.Errorf("Suite 1 and 2 were expected to be seen. suite1Seen:%t\tsuite2Seen:%t", suite1Seen, suite2Seen)
+	}
 }
