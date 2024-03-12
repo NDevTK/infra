@@ -8,6 +8,7 @@ import (
 	"context"
 	"time"
 
+	"cloud.google.com/go/pubsub"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,6 +18,7 @@ import (
 
 	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
+	"infra/device_manager/internal/external"
 )
 
 // Prove that Server implements pb.DeviceLeaseServiceServer by instantiating a Server.
@@ -26,8 +28,9 @@ var _ api.DeviceLeaseServiceServer = (*Server)(nil)
 type Server struct {
 	api.UnimplementedDeviceLeaseServiceServer
 
-	// database client
-	dbClient database.Client
+	// service clients
+	dbClient     database.Client
+	pubSubClient *pubsub.Client
 
 	// retry defaults
 	initialRetryBackoff time.Duration
@@ -58,6 +61,24 @@ func SetUpDBClient(ctx context.Context, server *Server, dbconf database.Database
 	return nil
 }
 
+// SetUpPubSubClient sets up a reusable PubSub client for the server
+func SetUpPubSubClient(ctx context.Context, server *Server, cloudProject string) error {
+	var cp string
+	if cloudProject == "" {
+		cp = "fleet-device-manager-dev"
+	} else {
+		cp = cloudProject
+	}
+
+	client, err := external.NewPubSubClient(ctx, cp)
+	if err != nil {
+		logging.Errorf(ctx, "UpdateDevice: cannot set up PubSub client: %s", err)
+		return err
+	}
+	server.pubSubClient = client
+	return nil
+}
+
 // LeaseDevice takes a LeaseDeviceRequest and leases a corresponding device.
 func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*api.LeaseDeviceResponse, error) {
 	logging.Debugf(ctx, "LeaseDevice: received LeaseDeviceRequest %v", r)
@@ -84,7 +105,7 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	if !controller.IsDeviceAvailable(ctx, device.GetState()) {
 		return nil, status.Errorf(codes.Unavailable, "LeaseDevice: device %s is unavailable for lease", deviceID)
 	}
-	return controller.LeaseDevice(ctx, s.dbClient.Conn, r, device)
+	return controller.LeaseDevice(ctx, s.dbClient.Conn, s.pubSubClient, r, device)
 }
 
 func (s *Server) ReleaseDevice(ctx context.Context, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {
