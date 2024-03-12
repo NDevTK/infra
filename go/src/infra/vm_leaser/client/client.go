@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -28,6 +29,8 @@ type Config struct {
 	vmLeaserServicePort int
 	// Transport credentials
 	creds credentials.TransportCredentials
+	// Authentication options
+	AuthOpts auth.Options
 }
 
 // Client is a VM Leaser client.
@@ -86,11 +89,18 @@ func NewClient(ctx context.Context, c *Config) (*Client, error) {
 		grpc.WithBlock(),
 	}
 
-	auth := auth.NewAuthenticator(ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
-		UseIDTokens: true,
-		Audience:    "https://" + c.vmLeaserServiceEndpoint,
-	}))
-	creds, err := auth.PerRPCCredentials()
+	// TODO (b/329303236: Callers should all pass auth.Options to avoid using
+	// chromeinfra.DefaultAuthOptions() here.
+	var authOpts auth.Options
+	if reflect.DeepEqual(c.AuthOpts, auth.Options{}) {
+		authOpts = chromeinfra.DefaultAuthOptions()
+	} else {
+		authOpts = c.AuthOpts
+	}
+	authOpts.UseIDTokens = true
+	authOpts.Audience = "https://" + c.vmLeaserServiceEndpoint
+	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
+	creds, err := authenticator.PerRPCCredentials()
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +115,7 @@ func NewClient(ctx context.Context, c *Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	email, _ := auth.GetEmail()
+	email, _ := authenticator.GetEmail()
 	return &Client{
 		conn:           conn,
 		VMLeaserClient: api.NewVMLeaserServiceClient(conn),

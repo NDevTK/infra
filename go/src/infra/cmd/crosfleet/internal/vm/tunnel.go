@@ -74,6 +74,7 @@ func (c *tunnelRun) innerRun(a subcommands.Application, env subcommands.Env) err
 		if err != nil {
 			return err
 		}
+		defer vmLeaser.Close()
 
 		vms, err := listLeases(vmLeaser, ctx)
 		if err != nil {

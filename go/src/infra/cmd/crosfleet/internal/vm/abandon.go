@@ -65,6 +65,7 @@ func (c *abandonRun) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return err
 	}
+	defer vmLeaser.Close()
 
 	vms, err := listLeases(vmLeaser, ctx)
 	if err != nil {

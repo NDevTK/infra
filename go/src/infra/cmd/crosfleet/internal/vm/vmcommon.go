@@ -15,7 +15,9 @@ import (
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/auth/client/authcli"
 
+	"infra/cmd/crosfleet/internal/site"
 	croscommon "infra/cros/cmd/common_lib/common"
 	"infra/vm_leaser/client"
 )
@@ -61,23 +63,35 @@ func printVMList(vms []*api.VM, w io.Writer) {
 
 // envFlags contains parameters to config environment for "vm" subcommands.
 type envFlags struct {
-	env string
+	authFlags authcli.Flags
+	env       string
 }
 
 // Registers env flags.
 func (c *envFlags) register(f *flag.FlagSet) {
+	c.authFlags.Register(f, site.DefaultAuthOptions)
 	f.StringVar(&c.env, "env", "prod", "Environment of vm_leaser server. Choose from: prod, staging, local")
 }
 
 // getClientConfig returns vm_leaser client config based on flags.
 func (c *envFlags) getClientConfig() (*client.Config, error) {
+	var conf *client.Config
 	switch c.env {
 	case "prod":
-		return client.ProdConfig(), nil
+		conf = client.ProdConfig()
 	case "staging":
-		return client.StagingConfig(), nil
+		conf = client.StagingConfig()
 	case "local":
-		return client.LocalConfig(), nil
+		conf = client.LocalConfig()
+	default:
+		return nil, fmt.Errorf("invalid environment: %s", c.env)
 	}
-	return nil, fmt.Errorf("invalid environment: %s", c.env)
+
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return nil, err
+	}
+	conf.AuthOpts = authOpts
+
+	return conf, nil
 }
