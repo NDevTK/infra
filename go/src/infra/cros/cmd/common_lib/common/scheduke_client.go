@@ -29,7 +29,6 @@ var (
 	schedukeProdURL              = "https://front-door-4vl5zcgwzq-wl.a.run.app"
 	schedukeExecutionEndpoint    = "tasks/add"
 	schedukeGetExecutionEndpoint = "tasks"
-	schedukeCancelTasksEndpoint  = "tasks/cancel"
 	maxHTTPRetries               = 5
 )
 
@@ -110,20 +109,6 @@ func (s *SchedukeClient) parseGetIdsResponse(response *http.Response) (*scheduke
 		return nil, errors.Annotate(err, "unmarshal response").Err()
 	}
 	return result, nil
-}
-
-func (s *SchedukeClient) parseCancelTasksResponse(response *http.Response) error {
-	defer response.Body.Close()
-
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return errors.Annotate(err, "parsing response").Err()
-	}
-
-	if response.StatusCode != http.StatusOK {
-		return errors.Reason("Scheduke server responsonse was not OK: %s", body).Err()
-	}
-	return nil
 }
 
 // ScheduleExecution will schedule TR executions via scheduke.
@@ -211,22 +196,6 @@ func (s *SchedukeClient) GetBBIDs(ids []int64, dev bool) (*schedukeapi.ReadTaskS
 	}
 
 	return s.parseGetIdsResponse(r)
-}
-
-// CancelTasks calls Scheduke to attempt to cancel the given tasks.
-func (s *SchedukeClient) CancelTasks(ids []int64, dev bool) error {
-	endpoint, err := url.JoinPath(baseSchedukeURL(dev), schedukeCancelTasksEndpoint)
-	if err != nil {
-		return errors.Annotate(err, "url.joinpath").Err()
-	}
-	withIds := fmt.Sprintf("%s?%s", endpoint, idsParam(ids))
-
-	r, err := s.makeRequest(http.MethodPost, withIds, nil)
-	if err != nil {
-		return errors.Annotate(err, "executing HTTP request").Err()
-	}
-
-	return s.parseCancelTasksResponse(r)
 }
 
 // idsParam converts a list of BBIDs to the "ids" param for a GetBBIDs request.

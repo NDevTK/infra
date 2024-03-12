@@ -396,14 +396,7 @@ func ScheduleAndMonitor(ctx context.Context, scheduler interfaces.SchedulerInter
 				break
 			}
 
-			// Cancel build if context is cancelled.
 			if ctx.Err() != nil {
-				// Use a new context since the existing one is cancelled.
-				bbCallContext := context.Background()
-				_, err = bbClient.CancelBuild(bbCallContext, &buildbucketpb.CancelBuildRequest{
-					Id:              b.Id,
-					SummaryMarkdown: "cancelled from CTPv2",
-				})
 				// A timeout while waiting for tests to complete is reported as
 				// aborts when summarizing individual tests' results.
 				// The execute step completes without errors.

@@ -64,9 +64,8 @@ func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucke
 	}
 	step.SetSummaryMarkdown(fmt.Sprintf("task %d scheduled in Scheduke (no BB link yet)", taskID))
 	for {
-		// If context was cancelled, cancel all in-flight builds.
 		if ctx.Err() != nil {
-			return nil, s.schedukeClient.CancelTasks([]int64{taskID}, dev)
+			return nil, nil
 		}
 
 		taskStateResponse, err := s.schedukeClient.GetBBIDs([]int64{taskID}, dev)
