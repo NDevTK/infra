@@ -55,33 +55,38 @@ func isStable(milestone int) bool {
 
 // IsTargetedBranch checks to see if the given milestone is targeted by the
 // passed in branch target list.
-func IsTargetedBranch(milestone int, branches []suschpb.Branch) (bool, error) {
+func IsTargetedBranch(milestone int, branches []suschpb.Branch) (bool, suschpb.Branch, error) {
 	if len(branches) == 0 {
-		return false, fmt.Errorf("empty branch target list passed in to TOTManager")
+		return false, suschpb.Branch_BRANCH_UNSPECIFIED, fmt.Errorf("empty branch target list passed in to TOTManager")
 	}
 
 	for _, branch := range branches {
 		isTargeted := false
+		targetBranch := suschpb.Branch_BRANCH_UNSPECIFIED
 
 		switch branch {
 		case suschpb.Branch_CANARY:
 			isTargeted = isCanary(milestone)
+			targetBranch = suschpb.Branch_CANARY
 		case suschpb.Branch_DEV:
 			isTargeted = isDev(milestone)
+			targetBranch = suschpb.Branch_DEV
 		case suschpb.Branch_BETA:
 			isTargeted = isBeta(milestone)
+			targetBranch = suschpb.Branch_BETA
 		case suschpb.Branch_STABLE:
 			isTargeted = isStable(milestone)
+			targetBranch = suschpb.Branch_STABLE
 		case suschpb.Branch_BRANCH_UNSPECIFIED:
-			return false, fmt.Errorf("branch unspecified not supported")
+			return false, targetBranch, fmt.Errorf("branch unspecified not supported")
 		default:
-			return false, fmt.Errorf("unknown branch enum value received")
+			return false, targetBranch, fmt.Errorf("unknown branch enum value received")
 		}
 
 		if isTargeted {
-			return true, nil
+			return true, targetBranch, nil
 		}
 	}
 
-	return false, nil
+	return false, suschpb.Branch_BRANCH_UNSPECIFIED, nil
 }

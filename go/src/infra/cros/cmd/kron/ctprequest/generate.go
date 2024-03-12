@@ -88,13 +88,15 @@ func getTimeoutSeconds(timeoutMins int32) int64 {
 	return int64(timeoutMins) * 60
 }
 
-func getTags(board, model, build string, config *suschpb.SchedulerConfig) []string {
+func getTags(board, model, build, branchTrigger string, config *suschpb.SchedulerConfig) []string {
 	tags := []string{
 		fmt.Sprintf("build:%s", build),
 		fmt.Sprintf("label-pool:%s", config.PoolOptions.Pool),
 		fmt.Sprintf("ctp-fwd-task-name:%s", config.Name),
+		fmt.Sprintf("label-suite:%s", config.Suite),
 		fmt.Sprintf("suite:%s", config.Suite),
 		fmt.Sprintf("analytics_name:%s", config.AnalyticsName),
+		fmt.Sprintf("branch-trigger:%s", branchTrigger),
 	}
 
 	if board != "" {
@@ -144,7 +146,7 @@ func formBuildImage(buildTarget, buildMilestone, buildVersion string) string {
 
 // BuildCTPRequest takes information from a SuSch config and builds the
 // corresponding CTP request.
-func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget, buildMilestone, buildVersion string) *requestpb.Request {
+func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget, buildMilestone, buildVersion, branchTrigger string) *requestpb.Request {
 	buildImage := formBuildImage(buildTarget, buildMilestone, buildVersion)
 
 	request := &requestpb.Request{
@@ -178,7 +180,7 @@ func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget,
 				MaximumDuration: &durationpb.Duration{Seconds: getTimeoutSeconds(config.RunOptions.TimeoutMins)},
 			},
 			Decorations: &requestpb.Request_Params_Decorations{
-				Tags: getTags(board, model, buildImage, config),
+				Tags: getTags(board, model, buildImage, branchTrigger, config),
 			},
 			RunViaCft: config.RunOptions.RunViaCft,
 		},
@@ -208,11 +210,11 @@ func BuildAllCTPRequests(config *suschpb.SchedulerConfig, targets configparser.T
 
 			if len(target.Models) > 0 {
 				for _, model := range target.Models {
-					request := BuildCTPRequest(config, string(target.Board), model, string(buildTarget), "", "")
+					request := BuildCTPRequest(config, string(target.Board), model, string(buildTarget), "", "", "")
 					requests = append(requests, request)
 				}
 			} else {
-				request := BuildCTPRequest(config, string(target.Board), "", string(buildTarget), "", "")
+				request := BuildCTPRequest(config, string(target.Board), "", string(buildTarget), "", "", "")
 				requests = append(requests, request)
 			}
 		}

@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
 	"infra/cros/cmd/kron/buildbucket"
@@ -131,7 +132,7 @@ func fetchTriggeredNewBuildConfigs(buildPackages []*builds.BuildPackage, suiteSc
 		for _, config := range configs {
 			// If the build's milestone did not match the config's targeted
 			// branches then do not add this config to the build's to run list.
-			targeted, err := totmanager.IsTargetedBranch(int(build.Build.Milestone), config.Branches)
+			targeted, _, err := totmanager.IsTargetedBranch(int(build.Build.Milestone), config.Branches)
 			if err != nil {
 				return err
 			}
@@ -167,16 +168,22 @@ func buildCTPRequests(buildPackages []*builds.BuildPackage, suiteSchedulerConfig
 				return err
 			}
 
+			// Get get the branch target which this build matched with.
+			_, branch, err := totmanager.IsTargetedBranch(int(wrappedBuild.Build.Milestone), requests.Config.Branches)
+			if err != nil {
+				return err
+			}
+
 			// If provided, build a CTP request per model, otherwise leave the model
 			// absent.
 			ctpRequests := []*test_platform.Request{}
 			if len(boardTargetOption.Models) > 0 {
 				// Generate a CTP Request for each board/model combo.
 				for _, model := range boardTargetOption.Models {
-					ctpRequests = append(ctpRequests, ctprequest.BuildCTPRequest(requests.Config, wrappedBuild.Build.Board, model, wrappedBuild.Build.BuildTarget, strconv.FormatInt(wrappedBuild.Build.Milestone, 10), wrappedBuild.Build.Version))
+					ctpRequests = append(ctpRequests, ctprequest.BuildCTPRequest(requests.Config, wrappedBuild.Build.Board, model, wrappedBuild.Build.BuildTarget, strconv.FormatInt(wrappedBuild.Build.Milestone, 10), wrappedBuild.Build.Version, suschpb.Branch_name[int32(branch)]))
 				}
 			} else {
-				ctpRequests = append(ctpRequests, ctprequest.BuildCTPRequest(requests.Config, wrappedBuild.Build.Board, "", wrappedBuild.Build.BuildTarget, strconv.FormatInt(wrappedBuild.Build.Milestone, 10), wrappedBuild.Build.Version))
+				ctpRequests = append(ctpRequests, ctprequest.BuildCTPRequest(requests.Config, wrappedBuild.Build.Board, "", wrappedBuild.Build.BuildTarget, strconv.FormatInt(wrappedBuild.Build.Milestone, 10), wrappedBuild.Build.Version, suschpb.Branch_name[int32(branch)]))
 			}
 
 			// Pair all generated CTP Requests inside an event message to be

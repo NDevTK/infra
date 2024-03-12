@@ -7,7 +7,7 @@ package totmanager
 import (
 	"testing"
 
-	suchpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/internal/chromeosversion"
 )
@@ -28,7 +28,7 @@ func TestIsTargetedBranch(t *testing.T) {
 		ChromeBranch: 100,
 	}
 
-	totTest, err := IsTargetedBranch(100, []suchpb.Branch{suchpb.Branch_CANARY})
+	totTest, branch, err := IsTargetedBranch(100, []suschpb.Branch{suschpb.Branch_CANARY})
 	if err != nil {
 		t.Error(err)
 		return
@@ -37,8 +37,11 @@ func TestIsTargetedBranch(t *testing.T) {
 		t.Errorf("expected %t got %t for TotTest", true, totTest)
 		return
 	}
+	if branch != suschpb.Branch_CANARY {
+		t.Errorf("expected %s got %s", suschpb.Branch_name[int32(suschpb.Branch_CANARY)], suschpb.Branch_name[int32(branch)])
+	}
 
-	devTest, err := IsTargetedBranch(99, []suchpb.Branch{suchpb.Branch_DEV})
+	devTest, branch, err := IsTargetedBranch(99, []suschpb.Branch{suschpb.Branch_DEV})
 	if err != nil {
 		t.Error(err)
 		return
@@ -47,8 +50,11 @@ func TestIsTargetedBranch(t *testing.T) {
 		t.Errorf("expected %t got %t for devTest", true, devTest)
 		return
 	}
+	if branch != suschpb.Branch_DEV {
+		t.Errorf("expected %s got %s", suschpb.Branch_name[int32(suschpb.Branch_DEV)], suschpb.Branch_name[int32(branch)])
+	}
 
-	betaTest, err := IsTargetedBranch(98, []suchpb.Branch{suchpb.Branch_BETA})
+	betaTest, branch, err := IsTargetedBranch(98, []suschpb.Branch{suschpb.Branch_BETA})
 	if err != nil {
 		t.Error(err)
 		return
@@ -57,8 +63,11 @@ func TestIsTargetedBranch(t *testing.T) {
 		t.Errorf("expected %t got %t for betaTest", true, betaTest)
 		return
 	}
+	if branch != suschpb.Branch_BETA {
+		t.Errorf("expected %s got %s", suschpb.Branch_name[int32(suschpb.Branch_BETA)], suschpb.Branch_name[int32(branch)])
+	}
 
-	stableTest, err := IsTargetedBranch(97, []suchpb.Branch{suchpb.Branch_STABLE})
+	stableTest, branch, err := IsTargetedBranch(97, []suschpb.Branch{suschpb.Branch_STABLE})
 	if err != nil {
 		t.Error(err)
 		return
@@ -67,8 +76,11 @@ func TestIsTargetedBranch(t *testing.T) {
 		t.Errorf("expected %t got %t for stableTest", true, stableTest)
 		return
 	}
+	if branch != suschpb.Branch_STABLE {
+		t.Errorf("expected %s got %s", suschpb.Branch_name[int32(suschpb.Branch_STABLE)], suschpb.Branch_name[int32(branch)])
+	}
 
-	ltsTest, err := IsTargetedBranch(94, []suchpb.Branch{suchpb.Branch_STABLE})
+	ltsTest, branch, err := IsTargetedBranch(94, []suschpb.Branch{suschpb.Branch_STABLE})
 	if err != nil {
 		t.Error(err)
 		return
@@ -77,8 +89,11 @@ func TestIsTargetedBranch(t *testing.T) {
 		t.Errorf("expected %t got %t for stableTest", true, stableTest)
 		return
 	}
+	if branch != suschpb.Branch_STABLE {
+		t.Errorf("expected %s got %s", suschpb.Branch_name[int32(suschpb.Branch_STABLE)], suschpb.Branch_name[int32(branch)])
+	}
 
-	multiTest1, err := IsTargetedBranch(100, []suchpb.Branch{suchpb.Branch_CANARY, suchpb.Branch_STABLE})
+	multiTest1, branch, err := IsTargetedBranch(100, []suschpb.Branch{suschpb.Branch_CANARY, suschpb.Branch_STABLE})
 	if err != nil {
 		t.Error(err)
 		return
@@ -87,8 +102,11 @@ func TestIsTargetedBranch(t *testing.T) {
 		t.Errorf("expected %t got %t for multiTest1", true, multiTest1)
 		return
 	}
+	if branch != suschpb.Branch_CANARY {
+		t.Errorf("expected %s got %s", suschpb.Branch_name[int32(suschpb.Branch_CANARY)], suschpb.Branch_name[int32(branch)])
+	}
 
-	multiTest2, err := IsTargetedBranch(97, []suchpb.Branch{suchpb.Branch_CANARY, suchpb.Branch_STABLE})
+	multiTest2, branch, err := IsTargetedBranch(97, []suschpb.Branch{suschpb.Branch_CANARY, suschpb.Branch_STABLE})
 	if err != nil {
 		t.Error(err)
 		return
@@ -97,8 +115,11 @@ func TestIsTargetedBranch(t *testing.T) {
 		t.Errorf("expected %t got %t for multiTest2", true, multiTest2)
 		return
 	}
+	if branch != suschpb.Branch_STABLE {
+		t.Errorf("expected %s got %s", suschpb.Branch_name[int32(suschpb.Branch_STABLE)], suschpb.Branch_name[int32(branch)])
+	}
 
-	multiTest3, err := IsTargetedBranch(98, []suchpb.Branch{suchpb.Branch_CANARY, suchpb.Branch_STABLE})
+	multiTest3, branch, err := IsTargetedBranch(98, []suschpb.Branch{suschpb.Branch_CANARY, suschpb.Branch_STABLE})
 	if err != nil {
 		t.Error(err)
 		return
@@ -106,6 +127,9 @@ func TestIsTargetedBranch(t *testing.T) {
 	if multiTest3 {
 		t.Errorf("expected %t got %t for multiTest3", false, multiTest3)
 		return
+	}
+	if branch != suschpb.Branch_BRANCH_UNSPECIFIED {
+		t.Errorf("expected %s got %s", suschpb.Branch_name[int32(suschpb.Branch_STABLE)], suschpb.Branch_name[int32(branch)])
 	}
 
 }
