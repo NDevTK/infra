@@ -882,10 +882,15 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 	// TODO(cdelagarza): Remove once plumbing is complete for the translation boolean
 	runViaTrv2 := g.Params.GetRunViaTrv2()
 	shouldTranslate := g.Params.GetTranslateTrv2Request()
-	if kv["suite"] == "tfc-demo" {
-		runViaTrv2 = true
-		shouldTranslate = true
+
+	suite := kv["suite"]
+	if !runViaTrv2 {
+		runViaTrv2 = ShouldRunViaTrv2(ctx, suite)
 	}
+	if runViaTrv2 && !shouldTranslate {
+		shouldTranslate = ShouldTranslateTrv2Req(ctx, suite)
+	}
+
 	// TODO(b/220801220): Pass in companion duts info for multi-duts cases.
 	return &skylab_test_runner.CFTTestRequest{
 		Deadline:         deadline,
@@ -905,4 +910,32 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		StepsConfig:                  g.Params.GetTrv2StepsConfig(),
 		TranslateTrv2Request:         shouldTranslate,
 	}, nil
+}
+
+// ShouldRunViaTrv2 decides if the request should run via trv2 flow based on provided suite.
+func ShouldRunViaTrv2(ctx context.Context, suite string) bool {
+	suiteAllowList := []string{"crosier-cq-minimal", "tfc-demo"}
+
+	for _, allowedSuite := range suiteAllowList {
+		if suite == allowedSuite {
+			logging.Infof(ctx, "suite name '%s' is in the runViaTrv2 allowed list.", suite)
+			return true
+		}
+	}
+
+	return false
+}
+
+// ShouldTranslateTrv2Req decides if the trv2 req should be translated.
+func ShouldTranslateTrv2Req(ctx context.Context, suite string) bool {
+	suiteAllowList := []string{"tfc-demo"}
+
+	for _, allowedSuite := range suiteAllowList {
+		if suite == allowedSuite {
+			logging.Infof(ctx, "suite name '%s' is in the translateTrv2Request allowed list.", suite)
+			return true
+		}
+	}
+
+	return false
 }
