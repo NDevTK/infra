@@ -35,8 +35,8 @@ var (
 )
 
 const (
-	cipdVersionGit     = "version:2@2.36.1.chromium.8"
-	cipdVersionCPython = "version:2@3.8.10.chromium.24"
+	cipdVersionGit     = "version:2@2.42.0.chromium.11"
+	cipdVersionCPython = "version:2@3.8.10.chromium.26"
 )
 
 var (

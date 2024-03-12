@@ -66,7 +66,7 @@ def archive(
   # Load .gitmodules
   mods_hash = subprocess.check_output([
       'git', f'--git-dir={git_dir}',
-      'ls-tree', '--format=%(objectname)', commit, '.gitmodules',
+      'ls-tree', '--object-only', commit, '.gitmodules',
   ]).decode().strip()
   if not mods_hash:
     # No submodule available
@@ -116,6 +116,9 @@ def main() -> None:
     sys.exit(1)
 
   output_dir = pathlib.Path(os.environ.get('out'))
+
+  # Log git version
+  subprocess.check_call(['git', '-v'])
 
   with tarfile.open(
       name=output_dir.joinpath('src.tar'), mode='w:',
