@@ -16,7 +16,9 @@ import (
 // to get Ownership and security data needed by Puppet ENC
 // which is stored in the datastore per bot(machine, vm etc).
 func getBotConfigs(ctx context.Context) (retErr error) {
-	// TODO - Imported bot configs should be saved to DataStore
+	defer func() {
+		syncSecurityConfigsTick.Add(ctx, 1, retErr == nil)
+	}()
 	retErr = controller.ImportBotConfigs(ctx)
 	return retErr
 }
