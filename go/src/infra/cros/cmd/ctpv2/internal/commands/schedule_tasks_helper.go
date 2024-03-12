@@ -258,9 +258,18 @@ func createFreeformDims(TRRequesthwDef *testapi.SwarmingDefinition) []string {
 	}
 
 	for _, v := range TRRequesthwDef.GetSwarmingLabels() {
-		freeformDims = append(freeformDims, v)
+		freeformDims = append(freeformDims, formatLabel(v))
 	}
 	return freeformDims
+}
+
+func formatLabel(label string) string {
+
+	if strings.HasPrefix(label, "label") {
+		return label
+	} else {
+		return fmt.Sprintf("label-%s", label)
+	}
 }
 
 // findGcsPath finds gcs path for provided board.
