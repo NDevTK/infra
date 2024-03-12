@@ -35,7 +35,7 @@ func NewSchedukeScheduler() *SchedukeScheduler {
 func (s *SchedukeScheduler) Setup() error {
 	ctx := context.Background()
 	if s.schedukeClient == nil {
-		c, err := common.NewSchedukeClient(ctx, false, false)
+		c, err := common.NewSchedukeClient(ctx, false)
 		if err != nil {
 			return err
 		}
@@ -45,13 +45,13 @@ func (s *SchedukeScheduler) Setup() error {
 }
 
 func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest, step *build.Step) (*buildbucketpb.Build, error) {
-	schedukeReq, err := common.ScheduleBuildReqToSchedukeReq(req)
+	schedukeReq, dev, err := common.ScheduleBuildReqToSchedukeReq(req)
 	if err != nil {
 		return nil, err
 	}
 
 	logging.Infof(ctx, "Sending Request to Scheduke: %s", schedukeReq)
-	createTaskResponse, err := s.schedukeClient.ScheduleExecution(schedukeReq)
+	createTaskResponse, err := s.schedukeClient.ScheduleExecution(schedukeReq, dev)
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +66,10 @@ func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucke
 	for {
 		// If context was cancelled, cancel all in-flight builds.
 		if ctx.Err() != nil {
-			return nil, s.schedukeClient.CancelTasks([]int64{taskID})
+			return nil, s.schedukeClient.CancelTasks([]int64{taskID}, dev)
 		}
 
-		taskStateResponse, err := s.schedukeClient.GetBBIDs([]int64{taskID})
+		taskStateResponse, err := s.schedukeClient.GetBBIDs([]int64{taskID}, dev)
 		if err != nil {
 			return nil, err
 		}

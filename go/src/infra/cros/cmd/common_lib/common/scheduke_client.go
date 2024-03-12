@@ -25,8 +25,8 @@ import (
 )
 
 var (
+	schedukeDevURL               = "https://front-door-2q7tjgq5za-wl.a.run.app"
 	schedukeProdURL              = "https://front-door-4vl5zcgwzq-wl.a.run.app"
-	schedukeShadowModeURL        = "https://front-door-usoglgosrq-wl.a.run.app"
 	schedukeExecutionEndpoint    = "tasks/add"
 	schedukeGetExecutionEndpoint = "tasks"
 	schedukeCancelTasksEndpoint  = "tasks/cancel"
@@ -34,22 +34,15 @@ var (
 )
 
 type SchedukeClient struct {
-	client  *http.Client
-	ctx     context.Context
-	baseURL string
-	local   bool
+	client *http.Client
+	ctx    context.Context
+	local  bool
 }
 
-func NewSchedukeClient(ctx context.Context, shadowMode, local bool) (*SchedukeClient, error) {
-	baseURL := schedukeProdURL
-	if shadowMode {
-		baseURL = schedukeShadowModeURL
-	}
-
-	client := SchedukeClient{ctx: ctx, baseURL: baseURL, local: local}
+func NewSchedukeClient(ctx context.Context, local bool) (*SchedukeClient, error) {
+	client := SchedukeClient{ctx: ctx, local: local}
 	err := client.setUpHTTPClient()
 	return &client, err
-
 }
 
 // httpClient returns an HTTP client with authentication set up.
@@ -134,8 +127,8 @@ func (s *SchedukeClient) parseCancelTasksResponse(response *http.Response) error
 }
 
 // ScheduleExecution will schedule TR executions via scheduke.
-func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEvents) (*schedukeapi.CreateTaskStatesResponse, error) {
-	endpoint, err := url.JoinPath(s.baseURL, schedukeExecutionEndpoint)
+func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEvents, dev bool) (*schedukeapi.CreateTaskStatesResponse, error) {
+	endpoint, err := url.JoinPath(baseSchedukeURL(dev), schedukeExecutionEndpoint)
 	if err != nil {
 		return nil, errors.Annotate(err, "url.joinpath").Err()
 	}
@@ -205,8 +198,8 @@ func sendRequestWithRetries(c clientThatSendsRequests, req *http.Request) (*http
 }
 
 // GetBBIDs will call scheduke to attempt to get BBIDs for the given tasks.
-func (s *SchedukeClient) GetBBIDs(ids []int64) (*schedukeapi.ReadTaskStatesResponse, error) {
-	endpoint, err := url.JoinPath(s.baseURL, schedukeGetExecutionEndpoint)
+func (s *SchedukeClient) GetBBIDs(ids []int64, dev bool) (*schedukeapi.ReadTaskStatesResponse, error) {
+	endpoint, err := url.JoinPath(baseSchedukeURL(dev), schedukeGetExecutionEndpoint)
 	if err != nil {
 		return nil, errors.Annotate(err, "url.joinpath").Err()
 	}
@@ -221,8 +214,8 @@ func (s *SchedukeClient) GetBBIDs(ids []int64) (*schedukeapi.ReadTaskStatesRespo
 }
 
 // CancelTasks calls Scheduke to attempt to cancel the given tasks.
-func (s *SchedukeClient) CancelTasks(ids []int64) error {
-	endpoint, err := url.JoinPath(s.baseURL, schedukeCancelTasksEndpoint)
+func (s *SchedukeClient) CancelTasks(ids []int64, dev bool) error {
+	endpoint, err := url.JoinPath(baseSchedukeURL(dev), schedukeCancelTasksEndpoint)
 	if err != nil {
 		return errors.Annotate(err, "url.joinpath").Err()
 	}
@@ -243,4 +236,11 @@ func idsParam(bbIDs []int64) string {
 		s[i] = strconv.FormatInt(num, 10)
 	}
 	return fmt.Sprintf("ids=%s", strings.Join(s, ","))
+}
+
+func baseSchedukeURL(dev bool) string {
+	if dev {
+		return schedukeDevURL
+	}
+	return schedukeProdURL
 }

@@ -20,6 +20,7 @@ import (
 )
 
 const (
+	schedukeDevPool = "schedukeTest"
 	// Higher integer value means lower priority.
 	noAccountPriority  int64 = 10
 	poolDimensionKey         = "label-pool"
@@ -67,20 +68,21 @@ var (
 )
 
 // ScheduleBuildReqToSchedukeReq converts a Buildbucket ScheduleBuildRequest to
-// a Scheudke request with the given event time.
-func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*schedukepb.KeyedTaskRequestEvents, error) {
+// a Scheudke request with the given event time, and additionally returns a bool
+// indicating whether the request should be sent to Scheduke's dev environment.
+func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*schedukepb.KeyedTaskRequestEvents, bool, error) {
 	bbReqBytes := []byte(protojson.Format(bbReq))
 	compressedReqJSON, err := compressAndEncodeBBReq(bbReqBytes)
 	if err != nil {
-		return nil, fmt.Errorf("error compressing and encoding ScheduleBuildRequest %v: %w", bbReq, err)
+		return nil, false, fmt.Errorf("error compressing and encoding ScheduleBuildRequest %v: %w", bbReq, err)
 	}
 	cftReq, ok := bbReq.GetProperties().GetFields()["cft_test_request"]
 	if !ok {
-		return nil, fmt.Errorf("no cft test request found on ScheduleBuildRequest %v", bbReq)
+		return nil, false, fmt.Errorf("no cft test request found on ScheduleBuildRequest %v", bbReq)
 	}
 	deadlineStruct, ok := cftReq.GetStructValue().GetFields()["deadline"]
 	if !ok {
-		return nil, fmt.Errorf("no deadline found on ScheduleBuildRequest %v", bbReq)
+		return nil, false, fmt.Errorf("no deadline found on ScheduleBuildRequest %v", bbReq)
 	}
 	parentBBIDStr := cftReq.GetStructValue().GetFields()["parentBuildId"].GetStringValue()
 	var parentBBID int64
@@ -89,18 +91,18 @@ func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*
 	if parentBBIDStr != "" {
 		parentBBID, err = strconv.ParseInt(parentBBIDStr, 10, 64)
 		if err != nil {
-			return nil, fmt.Errorf("invalid parent BBID found on ScheduleBuildRequest %v", bbReq)
+			return nil, false, fmt.Errorf("invalid parent BBID found on ScheduleBuildRequest %v", bbReq)
 		}
 	}
 	deadline, err := timeFromTimestampPBString(deadlineStruct.GetStringValue())
 	if err != nil {
-		return nil, fmt.Errorf("error parsing deadline for ScheduleBuildRequest %v: %w", bbReq, err)
+		return nil, false, fmt.Errorf("error parsing deadline for ScheduleBuildRequest %v: %w", bbReq, err)
 	}
 	tags := bbReq.GetTags()
 	qsAccount := qsAccount(tags)
 	periodic := periodic(tags)
 	asap := asap(qsAccount, periodic)
-	dims, pool := dimensionsAndPool(bbReq.GetDimensions())
+	dims, pool, dev := dimensionsAndPool(bbReq.GetDimensions())
 
 	schedukeTask := &schedukepb.TaskRequestEvent{
 		EventTime:                time.Now().UnixMicro(),
@@ -121,7 +123,7 @@ func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*
 		Events: map[int64]*schedukepb.TaskRequestEvent{
 			SchedukeTaskRequestKey: schedukeTask,
 		},
-	}, nil
+	}, dev, nil
 }
 
 // priority derives the approximate Scheduke priority from the given build's
@@ -182,19 +184,23 @@ func asap(qsAccount string, periodic bool) bool {
 }
 
 // dimensionsAndPool converts the given Buildbucket RequestedDimensions to
-// Scheduke SwarmingDimensions, and returns the pool dimension separately.
-func dimensionsAndPool(dims []*buildbucketpb.RequestedDimension) (*schedukepb.SwarmingDimensions, string) {
+// Scheduke SwarmingDimensions, and returns the pool dimension separately, along
+// with a bool indicating whether the request should be sent to Scheduke's dev
+// environment.
+func dimensionsAndPool(dims []*buildbucketpb.RequestedDimension) (*schedukepb.SwarmingDimensions, string, bool) {
 	dimsMap := make(map[string]*schedukepb.DimValues)
 	var pool string
+	var dev bool
 
 	for _, dim := range dims {
 		dimKey := dim.GetKey()
 		dimsMap[dimKey] = &schedukepb.DimValues{Values: strings.Split(dim.GetValue(), "|")}
 		if dimKey == poolDimensionKey {
 			pool = dim.GetValue()
+			dev = pool == schedukeDevPool
 		}
 	}
-	return &schedukepb.SwarmingDimensions{DimsMap: dimsMap}, pool
+	return &schedukepb.SwarmingDimensions{DimsMap: dimsMap}, pool, dev
 }
 
 // compressAndEncodeBBReq compresses the given bytes using zlib and encodes it
