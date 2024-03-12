@@ -377,7 +377,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("branch", "main"),
 						pbutil.StringPair("bug_component", "b:1234"),
 						pbutil.StringPair("build", "R106-15048.0.0"),
-						pbutil.StringPair("buildbucket_builder", "test_runner"),
+						pbutil.StringPair("buildbucket_builder", "test_runner-dev"),
 						pbutil.StringPair("cbx", "true"),
 						pbutil.StringPair("chameleon_type", "V2,V3"),
 						pbutil.StringPair("contacts", "user@google.com"),

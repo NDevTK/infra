@@ -405,7 +405,7 @@ func configBuildbucketTags(tags []*pb.StringPair, buildbucketInfo *artifactpb.Bu
 	buildbucketBuilder := buildbucketInfo.GetBuilder()
 	if buildbucketBuilder != nil {
 		newTags = AppendTags(
-			newTags, "buildbucket_builder", buildbucketBuilder.GetBucket())
+			newTags, "buildbucket_builder", buildbucketBuilder.GetBuilder())
 	}
 
 	return AppendTags(

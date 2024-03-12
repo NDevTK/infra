@@ -68,7 +68,7 @@
                     "builder": {
                         "project": "chromeos",
                         "bucket": "test_runner",
-                        "builder": "test_runner"
+                        "builder": "test_runner-dev"
                     },
                     "ancestor_ids":[
                         8814950840874708945,
