@@ -146,11 +146,55 @@ func fetchTriggeredNewBuildConfigs(buildPackages []*builds.BuildPackage, suiteSc
 				Config: config,
 			}
 
-			build.Requests = append(build.Requests, request)
+			build.TriggeredConfigs = append(build.TriggeredConfigs, request)
 		}
 	}
 
 	return nil
+}
+
+// wrapEvent wraps and returns a package containing a ctp request and it's newly
+// generated event metrics message.
+func wrapEvent(ctpRequest *test_platform.Request, config *suschpb.SchedulerConfig, buildUUID, board, model string) (*builds.EventWrapper, error) {
+	var err error
+	event := &builds.EventWrapper{
+		CtpRequest: ctpRequest,
+	}
+	event.Event, err = metrics.GenerateEventMessage(config, nil, 0, buildUUID, board, model)
+	if err != nil {
+		return nil, err
+	}
+
+	return event, nil
+
+}
+
+// buildPerModelConfigs builds a CTP request per model (if it exists) for the
+// given config.
+func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, build *kronpb.Build, branch string) ([]*builds.EventWrapper, error) {
+	events := []*builds.EventWrapper{}
+	// If provided, build a CTP request per model, otherwise leave the model
+	// field absent.
+	if len(models) > 0 {
+		// Generate a CTP Request for each board/model combo.
+		for _, model := range models {
+			request := ctprequest.BuildCTPRequest(config, build.Board, model, build.BuildTarget, strconv.FormatInt(build.Milestone, 10), build.Version, branch)
+			event, err := wrapEvent(request, config, build.BuildUuid, build.Board, model)
+			if err != nil {
+				return nil, err
+			}
+			events = append(events, event)
+		}
+	} else {
+		request := ctprequest.BuildCTPRequest(config, build.Board, "", build.BuildTarget, strconv.FormatInt(build.Milestone, 10), build.Version, branch)
+		event, err := wrapEvent(request, config, build.BuildUuid, build.Board, "")
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+
+	return events, nil
 }
 
 // buildCTPRequests iterates through all the provided BuildPackages and
@@ -160,48 +204,26 @@ func buildCTPRequests(buildPackages []*builds.BuildPackage, suiteSchedulerConfig
 	// associated metrics events into the package.
 	for _, wrappedBuild := range buildPackages {
 		// Iterate through all
-		for _, requests := range wrappedBuild.Requests {
+		for _, triggeredConfig := range wrappedBuild.TriggeredConfigs {
 			// Fetch the target options requested for the current board on the
 			// current configuration.
-			boardTargetOption, err := suiteSchedulerConfigs.FetchConfigTargetOptionsForBoard(requests.Config.Name, configparser.Board(wrappedBuild.Build.Board))
+			boardTargetOption, err := suiteSchedulerConfigs.FetchConfigTargetOptionsForBoard(triggeredConfig.Config.Name, configparser.Board(wrappedBuild.Build.Board))
 			if err != nil {
 				return err
 			}
 
 			// Get get the branch target which this build matched with.
-			// NOTE: Requested in b/296512042.
-			_, branch, err := totmanager.IsTargetedBranch(int(wrappedBuild.Build.Milestone), requests.Config.Branches)
+			_, branch, err := totmanager.IsTargetedBranch(int(wrappedBuild.Build.Milestone), triggeredConfig.Config.Branches)
 			if err != nil {
 				return err
 			}
 
-			// If provided, build a CTP request per model, otherwise leave the model
-			// absent.
-			ctpRequests := []*test_platform.Request{}
-			if len(boardTargetOption.Models) > 0 {
-				// Generate a CTP Request for each board/model combo.
-				for _, model := range boardTargetOption.Models {
-					ctpRequests = append(ctpRequests, ctprequest.BuildCTPRequest(requests.Config, wrappedBuild.Build.Board, model, wrappedBuild.Build.BuildTarget, strconv.FormatInt(wrappedBuild.Build.Milestone, 10), wrappedBuild.Build.Version, suschpb.Branch_name[int32(branch)]))
-				}
-			} else {
-				ctpRequests = append(ctpRequests, ctprequest.BuildCTPRequest(requests.Config, wrappedBuild.Build.Board, "", wrappedBuild.Build.BuildTarget, strconv.FormatInt(wrappedBuild.Build.Milestone, 10), wrappedBuild.Build.Version, suschpb.Branch_name[int32(branch)]))
+			events, err := buildPerModelConfigs(boardTargetOption.Models, triggeredConfig.Config, wrappedBuild.Build, suschpb.Branch_name[int32(branch)])
+			if err != nil {
+				return err
 			}
 
-			// Pair all generated CTP Requests inside an event message to be
-			// uploaded to pubsub.
-			events := []*builds.EventWrapper{}
-			for _, ctpRequest := range ctpRequests {
-				event := builds.EventWrapper{
-					CtpRequest: ctpRequest,
-				}
-				event.Event, err = metrics.GenerateEventMessage(requests.Config, nil, 0, wrappedBuild.Build.BuildUuid)
-				if err != nil {
-					return err
-				}
-				events = append(events, &event)
-			}
-
-			requests.Events = append(requests.Events, events...)
+			triggeredConfig.Events = append(triggeredConfig.Events, events...)
 		}
 	}
 	return nil
@@ -214,7 +236,7 @@ func combineCTPRequests(releaseBuilds []*builds.BuildPackage) map[string][]*buil
 
 	// Iterate through all CTP Requests
 	for _, build := range releaseBuilds {
-		for _, request := range build.Requests {
+		for _, request := range build.TriggeredConfigs {
 			if _, ok := configMap[request.Config.Name]; !ok {
 				configMap[request.Config.Name] = []*builds.EventWrapper{}
 			}

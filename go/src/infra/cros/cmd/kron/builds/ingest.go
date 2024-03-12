@@ -203,9 +203,9 @@ type ConfigDetails struct {
 }
 
 type BuildPackage struct {
-	Build    *kronpb.Build
-	Message  *cloudPubsub.Message
-	Requests []*ConfigDetails
+	Build            *kronpb.Build
+	Message          *cloudPubsub.Message
+	TriggeredConfigs []*ConfigDetails
 }
 
 // publishBuild uploads each build information proto to a pubsub queue

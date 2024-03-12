@@ -271,13 +271,13 @@ func filterConfigs(buildPackages []*builds.BuildPackage) []*builds.BuildPackage 
 	for _, build := range buildPackages {
 		// Copy the build by value so that we can clear the requests field.
 		tempBuild := *build
-		tempBuild.Requests = []*builds.ConfigDetails{}
+		tempBuild.TriggeredConfigs = []*builds.ConfigDetails{}
 
 		// Iterate through the requests and only add requests to the temp build
 		// if their SuSch config is on the allowlist.
-		for _, request := range build.Requests {
-			if _, ok := allowedConfigs[request.Config.Name]; ok {
-				tempBuild.Requests = append(tempBuild.Requests, request)
+		for _, triggeredConfig := range build.TriggeredConfigs {
+			if _, ok := allowedConfigs[triggeredConfig.Config.Name]; ok {
+				tempBuild.TriggeredConfigs = append(tempBuild.TriggeredConfigs, triggeredConfig)
 				hadAllowedConfig = true
 			}
 		}

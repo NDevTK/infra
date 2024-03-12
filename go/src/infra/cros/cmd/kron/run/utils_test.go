@@ -58,7 +58,7 @@ func TestCombineCTPRequests(t *testing.T) {
 		{
 			Build:   &kron.Build{},
 			Message: &cloudPubsub.Message{},
-			Requests: []*builds.ConfigDetails{
+			TriggeredConfigs: []*builds.ConfigDetails{
 				{
 					Config: &testplans.SchedulerConfig{
 						Name: "TestConfig",
@@ -73,7 +73,7 @@ func TestCombineCTPRequests(t *testing.T) {
 		{
 			Build:   &kron.Build{},
 			Message: &cloudPubsub.Message{},
-			Requests: []*builds.ConfigDetails{
+			TriggeredConfigs: []*builds.ConfigDetails{
 				{
 					Config: &testplans.SchedulerConfig{
 						Name: "TestConfig",
@@ -88,7 +88,7 @@ func TestCombineCTPRequests(t *testing.T) {
 		{
 			Build:   &kron.Build{},
 			Message: &cloudPubsub.Message{},
-			Requests: []*builds.ConfigDetails{
+			TriggeredConfigs: []*builds.ConfigDetails{
 				{
 					Config: &testplans.SchedulerConfig{
 						Name: "TestConfig2",
