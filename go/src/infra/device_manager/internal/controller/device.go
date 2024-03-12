@@ -10,13 +10,20 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"time"
+
+	"cloud.google.com/go/pubsub"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	schedulingAPI "go.chromium.org/chromiumos/config/go/test/scheduling"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/device_manager/internal/model"
 )
+
+const deviceEventsPubSubTopic string = "device-events-v1"
 
 // GetDevice gets a Device from the database based on deviceName.
 func GetDevice(ctx context.Context, db *sql.DB, deviceName string) (*api.Device, error) {
@@ -41,9 +48,8 @@ func GetDevice(ctx context.Context, db *sql.DB, deviceName string) (*api.Device,
 }
 
 // UpdateDevice updates a Device in a transaction.
-func UpdateDevice(ctx context.Context, tx *sql.Tx, device model.Device) error {
+func UpdateDevice(ctx context.Context, tx *sql.Tx, psClient *pubsub.Client, device model.Device) error {
 	// TODO (b/328662436): Collect metrics
-
 	err := model.UpdateDevice(ctx, tx, device)
 	if err != nil {
 		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s: %s", device.ID, err)
@@ -51,8 +57,36 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device model.Device) error {
 	}
 	logging.Debugf(ctx, "UpdateDevice: updated Device %s successfully", device.ID)
 
-	// Send PubSub event
+	// Send message to PubSub Device events stream
+	topic := psClient.Topic(deviceEventsPubSubTopic)
+	defer topic.Stop()
 
+	ok, err := topic.Exists(ctx)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return fmt.Errorf("UpdateDevice: topic %s not found", deviceEventsPubSubTopic)
+	}
+
+	var msg []byte
+	msg, err = proto.Marshal(&schedulingAPI.DeviceEvent{
+		EventTime:   time.Now().Unix(),
+		DeviceId:    device.ID,
+		DeviceReady: IsDeviceAvailable(ctx, convertDeviceStateToAPIFormat(ctx, device.DeviceState)),
+	})
+	if err != nil {
+		return fmt.Errorf("proto.Marshal err: %w", err)
+	}
+
+	rsp := topic.Publish(ctx, &pubsub.Message{
+		Data: msg,
+	})
+
+	_, err = rsp.Get(ctx)
+	if err != nil {
+		logging.Debugf(ctx, "UpdateDevice: failed to publish to PubSub %s", err)
+	}
 	return nil
 }
 
