@@ -5,7 +5,16 @@
 package ninjalog
 
 import (
+	"context"
+	"crypto/rand"
+	"encoding/hex"
+	"fmt"
 	"sort"
+	"time"
+
+	trace "cloud.google.com/go/trace/apiv2"
+	"cloud.google.com/go/trace/apiv2/tracepb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Trace is an entry of trace format.
@@ -57,4 +66,69 @@ func ToTraces(steps [][]Step, pid int) []Trace {
 	}
 	sort.Sort(traceByStart(traces))
 	return traces
+}
+
+func mustHexID(size int) string {
+	buf := make([]byte, size)
+	_, err := rand.Read(buf)
+	if err != nil {
+		panic(err)
+	}
+	return hex.EncodeToString(buf)
+}
+
+// UploadTraceOnCriticalPath uploads build actions included in critical path of build in ninja log to Cloud Trace.
+func UploadTraceOnCriticalPath(ctx context.Context, projectID, traceName string, nlog *NinjaLog) (rerr error) {
+	nlog.Steps = Dedup(nlog.Steps)
+	criticalPath := Flow(nlog.Steps, true)[0]
+
+	c, err := trace.NewClient(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err := c.Close()
+		if rerr == nil {
+			rerr = err
+		}
+	}()
+
+	request := &tracepb.BatchWriteSpansRequest{
+		Name: "projects/" + projectID,
+	}
+	traceID := mustHexID(16)
+
+	now := time.Now()
+
+	rootSpanID := mustHexID(8)
+	request.Spans = append(request.Spans, &tracepb.Span{
+		Name:   "projects/" + projectID + "/traces/" + traceID + "/spans/" + rootSpanID,
+		SpanId: rootSpanID,
+		DisplayName: &tracepb.TruncatableString{
+			Value: traceName,
+		},
+		StartTime: timestamppb.New(now),
+		EndTime:   timestamppb.New(now.Add(criticalPath[len(criticalPath)-1].End)),
+	})
+
+	for _, step := range criticalPath {
+		spanID := mustHexID(8)
+		request.Spans = append(request.Spans, &tracepb.Span{
+			Name:         "projects/" + projectID + "/traces/" + traceID + "/spans/" + spanID,
+			SpanId:       spanID,
+			ParentSpanId: rootSpanID,
+			DisplayName: &tracepb.TruncatableString{
+				Value: step.Out,
+			},
+			StartTime: timestamppb.New(now.Add(step.Start)),
+			EndTime:   timestamppb.New(now.Add(step.End)),
+		})
+	}
+
+	err = c.BatchWriteSpans(ctx, request)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("https://console.cloud.google.com/traces/list?project=%s&tid=%s\n", projectID, traceID)
+	return nil
 }
