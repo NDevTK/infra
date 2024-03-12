@@ -55,6 +55,12 @@ func CmdValidate(authOpts auth.Options) *subcommands.Command {
 		CommandRun: func() subcommands.CommandRun {
 			r := &validateRun{}
 			r.addSharedFlags(authOpts)
+
+			r.Flags.BoolVar(&r.checkTagCriteriaNonEmpty, "checktagcriteria", false, text.Doc(`
+			If enabled, use the cros-test-finder Docker container to check that
+			the TestCaseTagCriteria in TemplateParameters match at least one test.
+			`))
+
 			return r
 		},
 	}
@@ -62,6 +68,7 @@ func CmdValidate(authOpts auth.Options) *subcommands.Command {
 
 type validateRun struct {
 	baseTestPlanRun
+	checkTagCriteriaNonEmpty bool
 }
 
 func (r *validateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -115,6 +122,8 @@ func (r *validateRun) run(a subcommands.Application, args []string, env subcomma
 		return err
 	}
 
-	validator := testplan.NewValidator(gerritClient, bbClient, cmd.RealCommandRunner{})
+	validator := testplan.NewValidator(
+		gerritClient, bbClient, cmd.RealCommandRunner{},
+	).SetCheckTagCriteriaNonEmptyEnabled(r.checkTagCriteriaNonEmpty)
 	return validator.ValidateMapping(ctx, mapping, repoRoot)
 }

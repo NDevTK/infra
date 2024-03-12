@@ -35,22 +35,29 @@ import (
 )
 
 type validator struct {
-	gerritClient gerrit.Client
-	bbClient     bbpb.BuildsClient
-	cmdRunner    cmd.CommandRunner
-	ctfImage     string
-	tmpdirFn     func(string, string) (string, error)
+	gerritClient                    gerrit.Client
+	bbClient                        bbpb.BuildsClient
+	containerRunner                 *docker.ContainerRunner
+	ctfImage                        string
+	tmpdirFn                        func(string, string) (string, error)
+	checkTagCriteriaNonEmptyEnabled bool
 }
 
 // NewValidator returns a validator with default configuration, which can be
 // used to validate ChromeOS test configs in dirmd.Mappings.
 func NewValidator(gerritClient gerrit.Client, bbClient bbpb.BuildsClient, cmdRunner cmd.CommandRunner) *validator {
 	return &validator{
-		gerritClient: gerritClient,
-		bbClient:     bbClient,
-		cmdRunner:    cmdRunner,
-		tmpdirFn:     os.MkdirTemp,
+		gerritClient:                    gerritClient,
+		bbClient:                        bbClient,
+		containerRunner:                 docker.NewContainerRunner(cmdRunner),
+		tmpdirFn:                        os.MkdirTemp,
+		checkTagCriteriaNonEmptyEnabled: false,
 	}
+}
+
+func (v *validator) SetCheckTagCriteriaNonEmptyEnabled(enabled bool) *validator {
+	v.checkTagCriteriaNonEmptyEnabled = enabled
+	return v
 }
 
 // WithTmpdirFn overrides the function the validator uses to create temp dirs;
@@ -229,8 +236,8 @@ func (v *validator) callCrosTestFinder(
 
 	var stderrBuf bytes.Buffer
 	logging.Debugf(ctx, "running image %q", v.ctfImage)
-	if err := docker.RunContainer(
-		ctx, v.cmdRunner,
+	if err := v.containerRunner.RunContainer(
+		ctx,
 		&container.Config{
 			Image: v.ctfImage,
 			Cmd:   strslice.StrSlice{"cros-test-finder"},
@@ -378,8 +385,11 @@ func (v *validator) validateTagCriteriaTemplateParameters(
 		return fmt.Errorf("file %q is not templated, setting TemplateParameters has no effect", file)
 	}
 
-	// checkTagCriteriaNonEmpty is currently disabled b/c of Docker flakes.
-	// TODO(b/325551310): Re-enable after flakes arefixed.
+	if v.checkTagCriteriaNonEmptyEnabled {
+		return v.checkTagCriteriaNonEmpty(ctx, templateParameters)
+	}
+
+	logging.Infof(ctx, "tag criteria non-empty check disabled")
 	return nil
 }
 

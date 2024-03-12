@@ -1,3 +1,6 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 package docker_test
 
 import (
@@ -89,7 +92,7 @@ func TestRunContainer(t *testing.T) {
 		},
 	}
 
-	err := docker.RunContainer(ctx, cmdRunner, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
+	err := docker.NewContainerRunner(cmdRunner).RunContainer(ctx, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
 	if err != nil {
 		t.Fatalf("RunContainer failed: %s", err)
 	}
@@ -124,12 +127,26 @@ func TestRunContainer_WithConfigureDocker(t *testing.T) {
 					"ls", "-l",
 				},
 			},
+			{
+				ExpectedCmd: []string{
+					"docker", "run",
+					"--user", "testuser",
+					"--network", "host",
+					"--mount=source=/tmp/hostdir,target=/usr/local/containerdir,type=bind",
+					"--mount=source=/othersource,target=/othertarget,type=bind,readonly",
+					"testimage",
+					"ls", "-l",
+				},
+			},
 		},
 	}
 
-	err := docker.RunContainer(ctx, cmdRunner, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
-	if err != nil {
-		t.Fatalf("RunContainer failed: %s", err)
+	containerRunner := docker.NewContainerRunner(cmdRunner)
+	for i := 0; i < 2; i += 1 {
+		err := containerRunner.RunContainer(ctx, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
+		if err != nil {
+			t.Fatalf("RunContainer failed: %s", err)
+		}
 	}
 }
 
@@ -147,7 +164,7 @@ func TestRunContainer_CmdError(t *testing.T) {
 	cmdRunner.FailCommand = true
 	cmdRunner.FailError = errors.New("docker cmd failed.")
 
-	err := docker.RunContainer(ctx, cmdRunner, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
+	err := docker.NewContainerRunner(cmdRunner).RunContainer(ctx, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
 	if err == nil {
 		t.Errorf("RunContainer expected to fail")
 	}
@@ -167,7 +184,7 @@ func TestRunContainer_ConfigureDockerError(t *testing.T) {
 	cmdRunner.FailCommand = true
 	cmdRunner.FailError = errors.New("configure-docker cmd failed.")
 
-	err := docker.RunContainer(ctx, cmdRunner, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
+	err := docker.NewContainerRunner(cmdRunner).RunContainer(ctx, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
 	if err == nil {
 		t.Errorf("RunContainer expected to fail")
 	}

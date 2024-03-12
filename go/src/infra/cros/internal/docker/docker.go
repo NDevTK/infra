@@ -13,6 +13,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
@@ -103,24 +104,52 @@ type RuntimeOptions struct {
 	StderrBuf io.Writer
 }
 
+// ContainerRunner runs Docker containers, handling authentication, mounting,
+// etc.
+type ContainerRunner struct {
+	runner          cmd.CommandRunner
+	gcloudMutex     sync.Mutex
+	configuredHosts map[string]bool
+}
+
+// NewContainerRunner returns a ContainerRunner that uses runner to run `docker`
+// commands and other required commands (such as authenticating with `gcloud`).
+func NewContainerRunner(runner cmd.CommandRunner) *ContainerRunner {
+	return &ContainerRunner{
+		runner:          runner,
+		gcloudMutex:     sync.Mutex{},
+		configuredHosts: make(map[string]bool),
+	}
+}
+
 // RunContainer runs a container with `docker run`.
-func RunContainer(
+func (c *ContainerRunner) RunContainer(
 	ctx context.Context,
-	runner cmd.CommandRunner,
 	containerConfig *container.Config,
 	hostConfig *container.HostConfig,
 	containerImageInfo *api.ContainerImageInfo,
 	runtimeOptions *RuntimeOptions,
 ) error {
 	if runtimeOptions.UseConfigureDocker {
-		var stderrBuf bytes.Buffer
-		if err := runner.RunCommand(ctx, io.Discard, &stderrBuf, "", "gcloud", "auth", "configure-docker", containerImageInfo.GetRepository().GetHostname(), "--quiet"); err != nil {
-			logging.Errorf(ctx, "gcloud auth configure-docker failed, stderr: %s", &stderrBuf)
-			return err
+		c.gcloudMutex.Lock()
+		defer c.gcloudMutex.Unlock()
+
+		host := containerImageInfo.GetRepository().GetHostname()
+		if _, configured := c.configuredHosts[host]; !configured {
+			logging.Debugf(ctx, "host %q not configured, running `gcloud auth configure-docker`", host)
+			var stderrBuf bytes.Buffer
+			if err := c.runner.RunCommand(ctx, io.Discard, &stderrBuf, "", "gcloud", "auth", "configure-docker", containerImageInfo.GetRepository().GetHostname(), "--quiet"); err != nil {
+				logging.Errorf(ctx, "gcloud auth configure-docker failed, stderr: %s", &stderrBuf)
+				return err
+			}
+
+			c.configuredHosts[host] = true
+		} else {
+			logging.Debugf(ctx, "host %q already configured", host)
 		}
 	} else {
 		if err := dockerLogin(
-			ctx, runner,
+			ctx, c.runner,
 			fmt.Sprintf(
 				"%s/%s",
 				containerImageInfo.GetRepository().GetHostname(),
@@ -159,5 +188,5 @@ func RunContainer(
 		cmd = "sudo"
 		args = append([]string{"docker"}, args...)
 	}
-	return runner.RunCommand(ctx, runtimeOptions.StdoutBuf, runtimeOptions.StderrBuf, "", cmd, args...)
+	return c.runner.RunCommand(ctx, runtimeOptions.StdoutBuf, runtimeOptions.StderrBuf, "", cmd, args...)
 }

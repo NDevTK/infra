@@ -340,9 +340,8 @@ func runTask(ctx context.Context,
 
 		logging.Infof(ctx, "creating Docker container with command %q", containerConfig.Cmd)
 
-		err = docker.RunContainer(
+		err = docker.NewContainerRunner(dockerCmdRunner).RunContainer(
 			ctx,
-			dockerCmdRunner,
 			containerConfig,
 			hostConfig,
 			containerImageInfo,
