@@ -32,6 +32,7 @@ PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${DEPS}/lib/pkgconfig"
   --prefix="${PREFIX}" \
   --without-default-features \
   --enable-kvm \
+  --enable-pixman \
   --enable-vnc \
   --enable-tools \
   --enable-cap-ng \
