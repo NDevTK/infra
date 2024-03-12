@@ -22,6 +22,30 @@
       },
       "revId": "53e5750e7952ca923f9139b913b4d682f9707007",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "926a31d2_61007cbd",
+        "filename": "crdx/packages/log-viewer/package.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-12T04:17:40Z",
+      "side": 1,
+      "message": "is this expected to be in both projects by default?",
+      "parentUuid": "5a9be8d3_9f58610d",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 89,
+        "endChar": 28
+      },
+      "revId": "53e5750e7952ca923f9139b913b4d682f9707007",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
