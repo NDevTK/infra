@@ -26,6 +26,7 @@ var dutmonMetric = metric.NewInt(
 	field.String("pool"),
 	field.String("status"),
 	field.Bool("is_locked"),
+	field.String("zone"),
 )
 
 // ReportMetrics reports DUT utilization metrics akin to dutmon in Autotest
@@ -48,14 +49,14 @@ func ReportMetrics(ctx context.Context, bis []*swarmingv2.BotInfo) {
 // dimensions are removed, the related metric is not automatically reset. The
 // metric will get reset eventually.
 type bucket struct {
-	board       string
-	model       string
-	pool        string
-	environment string
+	board string
+	model string
+	pool  string
+	zone  string
 }
 
 func (b bucket) String() string {
-	return fmt.Sprintf("board: %s, model: %s, pool: %s, env: %s", b.board, b.model, b.pool, b.environment)
+	return fmt.Sprintf("board: %s, model: %s, pool: %s, zone: %s", b.board, b.model, b.pool, b.zone)
 }
 
 // status is a dynamic DUT dimension.
@@ -97,7 +98,7 @@ func (c counter) Report(ctx context.Context) {
 		for _, s := range allStatuses {
 			// TODO(crbug/929872) Report locked status once DUT leasing is
 			// implemented in Skylab.
-			dutmonMetric.Set(ctx, int64(counts[s]), b.board, b.model, b.pool, string(s), false)
+			dutmonMetric.Set(ctx, int64(counts[s]), b.board, b.model, b.pool, string(s), false, b.zone)
 		}
 	}
 }
@@ -107,6 +108,7 @@ func getBucketForBotInfo(bi *swarmingv2.BotInfo) bucket {
 		board: "[None]",
 		model: "[None]",
 		pool:  "[None]",
+		zone:  "[None]",
 	}
 	for _, d := range bi.Dimensions {
 		switch d.Key {
@@ -116,6 +118,8 @@ func getBucketForBotInfo(bi *swarmingv2.BotInfo) bucket {
 			b.model = summarizeValues(d.Value)
 		case "label-pool":
 			b.pool = getReportPool(d.Value)
+		case "label-zone":
+			b.zone = summarizeValues(d.Value)
 		default:
 			// Ignore other dimensions.
 		}
