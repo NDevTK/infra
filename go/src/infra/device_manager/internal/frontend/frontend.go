@@ -112,8 +112,21 @@ func (s *Server) ReleaseDevice(ctx context.Context, r *api.ReleaseDeviceRequest)
 	return nil, status.Errorf(codes.Unimplemented, "ReleaseDevice is not implemented")
 }
 
+// ExtendLease attempts to extend the lease on a device by ExtendLeaseRequest.
 func (s *Server) ExtendLease(ctx context.Context, r *api.ExtendLeaseRequest) (*api.ExtendLeaseResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "ExtendLease is not implemented")
+	logging.Debugf(ctx, "ExtendLease: received ExtendLeaseRequest %v", r)
+
+	// Check idempotency of ExtendLeaseRequest. Return request if it is a
+	// duplicate.
+	rsp, err := controller.CheckExtensionIdempotency(ctx, s.dbClient.Conn, r.GetIdempotencyKey())
+	if err != nil {
+		return nil, err
+	}
+	if rsp.GetLeaseId() != "" {
+		return rsp, nil
+	}
+
+	return controller.ExtendLease(ctx, s.dbClient.Conn, r)
 }
 
 // GetDevice takes a GetDeviceRequest and returns a corresponding device.

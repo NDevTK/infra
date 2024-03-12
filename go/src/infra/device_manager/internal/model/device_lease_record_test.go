@@ -326,3 +326,52 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 		})
 	})
 }
+
+func TestUpdateDeviceLeaseRecord(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("UpdateDeviceLeaseRecord", t, func() {
+		Convey("UpdateDeviceLeaseRecord: valid update", func() {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			mock.ExpectBegin()
+
+			var txOpts *sql.TxOptions
+			tx, err := db.BeginTx(ctx, txOpts)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub db transaction", err)
+			}
+
+			timeNow := time.Now()
+
+			mock.ExpectExec(regexp.QuoteMeta(`
+				UPDATE
+					"DeviceLeaseRecords"
+				SET
+					expiration_time=COALESCE($2, expiration_time),
+					last_updated_time=COALESCE($3, last_updated_time)
+				WHERE
+					id=$1;`)).
+				WithArgs("test-lease-record-1", timeNow.Add(time.Second*600), timeNow).
+				WillReturnResult(sqlmock.NewResult(1, 1))
+
+			err = UpdateDeviceLeaseRecord(ctx, tx, DeviceLeaseRecord{
+				ID:              "test-lease-record-1",
+				ExpirationTime:  timeNow.Add(time.Second * 600),
+				LastUpdatedTime: timeNow,
+			})
+			So(err, ShouldBeNil)
+		})
+	})
+}

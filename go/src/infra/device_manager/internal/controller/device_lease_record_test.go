@@ -158,3 +158,61 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 		})
 	})
 }
+
+func TestCheckExtensionIdempotency(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("CheckExtensionIdempotency", t, func() {
+		Convey("CheckExtensionIdempotency: valid request", func() {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			timeNow := time.Now()
+			rows := sqlmock.NewRows([]string{
+				"id",
+				"lease_id",
+				"idempotency_key",
+				"extend_duration",
+				"request_time",
+				"expiration_time"}).
+				AddRow(
+					"test-extend-record-1",
+					"test-lease-record-1",
+					"fe20140c-b1aa-4953-90fc-d15677df0c6a",
+					600,
+					timeNow,
+					timeNow.Add(time.Minute*10),
+				)
+
+			mock.ExpectQuery(regexp.QuoteMeta(`
+				SELECT
+					id,
+					lease_id,
+					idempotency_key,
+					extend_duration,
+					request_time,
+					expiration_time
+				FROM "ExtendLeaseRequests"
+				WHERE idempotency_key=$1;`)).
+				WithArgs("fe20140c-b1aa-4953-90fc-d15677df0c6a").
+				WillReturnRows(rows)
+
+			rsp, err := CheckExtensionIdempotency(ctx, db, "fe20140c-b1aa-4953-90fc-d15677df0c6a")
+			So(err, ShouldBeNil)
+			So(rsp, ShouldResemble, &api.ExtendLeaseResponse{
+				LeaseId:        "test-lease-record-1",
+				ExpirationTime: timestamppb.New(timeNow.Add(time.Minute * 10)),
+			})
+		})
+	})
+}

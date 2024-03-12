@@ -182,3 +182,38 @@ func GetDeviceLeaseRecordByIdemKey(ctx context.Context, db *sql.DB, idemKey stri
 	logging.Debugf(ctx, "GetDeviceLeaseRecordByIdemKey: success: %v", record)
 	return record, nil
 }
+
+// UpdateDeviceLeaseRecord updates a lease record in a transaction.
+//
+// UpdateDeviceLeaseRecord uses COALESCE to only update fields with provided
+// values. If there is no value provided, then it will use the current value of
+// the device field in the db.
+func UpdateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, updatedRec DeviceLeaseRecord) error {
+	result, err := tx.ExecContext(ctx, `
+		UPDATE
+			"DeviceLeaseRecords"
+		SET
+			expiration_time=COALESCE($2, expiration_time),
+			last_updated_time=COALESCE($3, last_updated_time)
+		WHERE
+			id=$1;`,
+		updatedRec.ID,
+		updatedRec.ExpirationTime,
+		updatedRec.LastUpdatedTime,
+	)
+	if err != nil {
+		logging.Errorf(ctx, "UpdateDeviceLeaseRecord: failed to update DeviceLeaseRecord %s: %s", updatedRec.ID, err)
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			logging.Errorf(ctx, "UpdateDeviceLeaseRecord: unable to rollback: %v", rollbackErr)
+		}
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		logging.Errorf(ctx, "UpdateDeviceLeaseRecord: error getting rows affected: %s", err)
+	}
+
+	logging.Debugf(ctx, "UpdateDeviceLeaseRecord: DeviceLeaseRecord %s updated successfully (%d row affected)", updatedRec.ID, rowsAffected)
+	return nil
+}
