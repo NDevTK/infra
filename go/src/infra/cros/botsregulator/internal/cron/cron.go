@@ -9,9 +9,12 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/botsregulator/internal/regulator"
 )
 
-func Regulate(ctx context.Context) error {
-	logging.Infof(ctx, "hello from cron!")
+func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
+	r := regulator.NewRegulator(opts)
+	logging.Infof(ctx, "current flags: %+v", r)
 	return nil
 }
