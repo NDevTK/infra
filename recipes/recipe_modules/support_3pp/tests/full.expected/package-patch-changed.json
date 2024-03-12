@@ -177,7 +177,7 @@
       "-t",
       "https://go.repo/tool"
     ],
-    "cwd": "None",
+    "cwd": "[CACHE]/builder/package_repo",
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
@@ -1113,7 +1113,7 @@
       "-t",
       "https://go.repo/tool"
     ],
-    "cwd": "[START_DIR]/3pp/wd/pkg/tool1/linux-amd64/1.5.0-rc1/checkout",
+    "cwd": "[CACHE]/builder/package_repo",
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",

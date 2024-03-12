@@ -5,7 +5,7 @@
       "number",
       "abcdefabcdef63ad814cd1dfffe2fcfc9f81299c"
     ],
-    "cwd": "None",
+    "cwd": "[CACHE]/builder",
     "env": {
       "CHROME_HEADLESS": "1"
     },
@@ -33,7 +33,7 @@
       "number",
       "abcdefabcdef63ad814cd1dfffe2fcfc9f81299c"
     ],
-    "cwd": "None",
+    "cwd": "[CACHE]/builder",
     "env": {
       "CHROME_HEADLESS": "1"
     },

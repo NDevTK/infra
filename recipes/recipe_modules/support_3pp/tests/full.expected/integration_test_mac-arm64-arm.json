@@ -1478,7 +1478,7 @@
       "-t",
       "https://chromium.googlesource.com/external/go.repo/dep"
     ],
-    "cwd": "None",
+    "cwd": "[CACHE]/builder/package_repo",
     "env": {
       "CGO_CFLAGS": "-mmacosx-version-min=11.0",
       "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
@@ -8575,7 +8575,7 @@
       "-t",
       "https://chromium.googlesource.com/external/go.repo/git_tool"
     ],
-    "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
+    "cwd": "[CACHE]/builder/package_repo",
     "env": {
       "CGO_CFLAGS": "-mmacosx-version-min=11.0",
       "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
@@ -12868,7 +12868,7 @@
       "-t",
       "https://go.repo/tool"
     ],
-    "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
+    "cwd": "[CACHE]/builder/package_repo",
     "env": {
       "CGO_CFLAGS": "-mmacosx-version-min=11.0",
       "CGO_LDFLAGS": "-mmacosx-version-min=11.0",

@@ -58,6 +58,9 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
 
     # do a checkout in `builder`
     checkout_path = builder.join('package_repo')
+    # some code still references api.path['checkout'] so assign it to be
+    # consistent.
+    api.path['checkout'] = checkout_path
     pkgs = api.support_3pp.load_packages_from_path(checkout_path)
 
     if 'build_tools/tool' in pkgs:

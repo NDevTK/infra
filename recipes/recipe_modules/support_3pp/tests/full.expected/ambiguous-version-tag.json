@@ -116,7 +116,7 @@
       "-t",
       "https://chromium.googlesource.com/external/go.repo/dep"
     ],
-    "cwd": "None",
+    "cwd": "[CACHE]/builder/package_repo",
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",

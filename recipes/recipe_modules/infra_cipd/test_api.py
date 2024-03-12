@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 from recipe_engine import recipe_test_api
-from recipe_engine.config_types import Path, NamedBasePath
 
 
 class InfraCIPDTestApi(recipe_test_api.RecipeTestApi):
