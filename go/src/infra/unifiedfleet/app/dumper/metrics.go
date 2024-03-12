@@ -66,4 +66,10 @@ var (
 		nil,
 		field.Bool("success"),
 	)
+	syncSecurityConfigsTick = metric.NewCounter(
+		"chromeos/ufs/dumper/sync_security_configs",
+		"sync security configs attempt",
+		nil,
+		field.Bool("success"),
+	)
 )
