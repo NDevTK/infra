@@ -227,6 +227,14 @@ var testDimensionsAndPoolData = []struct {
 				Value: "val1|val2",
 			},
 			{
+				Key:   "bar",
+				Value: "val3",
+			},
+			{
+				Key:   "bar",
+				Value: "val4|val5",
+			},
+			{
 				Key:   "label-pool",
 				Value: "pool1|pool2",
 			},
@@ -234,7 +242,7 @@ var testDimensionsAndPoolData = []struct {
 		wantSchedukeDims: &schedukepb.SwarmingDimensions{
 			DimsMap: map[string]*schedukepb.DimValues{
 				"foo":        {Values: []string{"val"}},
-				"bar":        {Values: []string{"val1", "val2"}},
+				"bar":        {Values: []string{"val1", "val2", "val3", "val4", "val5"}},
 				"label-pool": {Values: []string{"pool1", "pool2"}},
 			},
 		},

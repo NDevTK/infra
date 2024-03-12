@@ -194,7 +194,11 @@ func dimensionsAndPool(dims []*buildbucketpb.RequestedDimension) (*schedukepb.Sw
 
 	for _, dim := range dims {
 		dimKey := dim.GetKey()
-		dimsMap[dimKey] = &schedukepb.DimValues{Values: strings.Split(dim.GetValue(), "|")}
+		theseVals := strings.Split(dim.GetValue(), "|")
+		if dimsMap[dimKey] == nil {
+			dimsMap[dimKey] = &schedukepb.DimValues{Values: nil}
+		}
+		dimsMap[dimKey].Values = append(dimsMap[dimKey].Values, theseVals...)
 		if dimKey == poolDimensionKey {
 			pool = dim.GetValue()
 			dev = pool == schedukeDevPool
