@@ -106,17 +106,3 @@ func TestSendRequestWithRetries(t *testing.T) {
 		})
 	}
 }
-
-func TestBaseSchedukeURL(t *testing.T) {
-	wantProdURL := "https://front-door-4vl5zcgwzq-wl.a.run.app"
-	gotProdURL := baseSchedukeURL(false)
-	if gotProdURL != wantProdURL {
-		t.Errorf("got %v, want %v", gotProdURL, wantProdURL)
-	}
-
-	wantDevURL := "https://front-door-2q7tjgq5za-wl.a.run.app"
-	gotDevURL := baseSchedukeURL(true)
-	if gotDevURL != wantDevURL {
-		t.Errorf("got %v, want %v", gotDevURL, wantDevURL)
-	}
-}

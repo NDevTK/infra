@@ -24,6 +24,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+const schedukeDevPool = "schedukeTest"
+
 var (
 	schedukeDevURL               = "https://front-door-2q7tjgq5za-wl.a.run.app"
 	schedukeProdURL              = "https://front-door-4vl5zcgwzq-wl.a.run.app"
@@ -33,13 +35,19 @@ var (
 )
 
 type SchedukeClient struct {
-	client *http.Client
-	ctx    context.Context
-	local  bool
+	baseURL string
+	client  *http.Client
+	ctx     context.Context
+	local   bool
 }
 
-func NewSchedukeClient(ctx context.Context, local bool) (*SchedukeClient, error) {
-	client := SchedukeClient{ctx: ctx, local: local}
+func NewSchedukeClient(ctx context.Context, pool string, local bool) (*SchedukeClient, error) {
+	baseURL := schedukeProdURL
+	if pool == schedukeDevPool {
+		baseURL = schedukeDevURL
+	}
+
+	client := SchedukeClient{ctx: ctx, local: local, baseURL: baseURL}
 	err := client.setUpHTTPClient()
 	return &client, err
 }
@@ -53,7 +61,7 @@ func (s *SchedukeClient) setUpHTTPClient() error {
 
 	a := auth.NewAuthenticator(s.ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
 		UseIDTokens: true,
-		Audience:    schedukeProdURL,
+		Audience:    s.baseURL,
 	}))
 	c, err := a.Client()
 	if err == nil {
@@ -112,8 +120,8 @@ func (s *SchedukeClient) parseGetIdsResponse(response *http.Response) (*scheduke
 }
 
 // ScheduleExecution will schedule TR executions via scheduke.
-func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEvents, dev bool) (*schedukeapi.CreateTaskStatesResponse, error) {
-	endpoint, err := url.JoinPath(baseSchedukeURL(dev), schedukeExecutionEndpoint)
+func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEvents) (*schedukeapi.CreateTaskStatesResponse, error) {
+	endpoint, err := url.JoinPath(s.baseURL, schedukeExecutionEndpoint)
 	if err != nil {
 		return nil, errors.Annotate(err, "url.joinpath").Err()
 	}
@@ -183,8 +191,8 @@ func sendRequestWithRetries(c clientThatSendsRequests, req *http.Request) (*http
 }
 
 // GetBBIDs will call scheduke to attempt to get BBIDs for the given tasks.
-func (s *SchedukeClient) GetBBIDs(ids []int64, dev bool) (*schedukeapi.ReadTaskStatesResponse, error) {
-	endpoint, err := url.JoinPath(baseSchedukeURL(dev), schedukeGetExecutionEndpoint)
+func (s *SchedukeClient) GetBBIDs(ids []int64) (*schedukeapi.ReadTaskStatesResponse, error) {
+	endpoint, err := url.JoinPath(s.baseURL, schedukeGetExecutionEndpoint)
 	if err != nil {
 		return nil, errors.Annotate(err, "url.joinpath").Err()
 	}
@@ -205,11 +213,4 @@ func idsParam(bbIDs []int64) string {
 		s[i] = strconv.FormatInt(num, 10)
 	}
 	return fmt.Sprintf("ids=%s", strings.Join(s, ","))
-}
-
-func baseSchedukeURL(dev bool) string {
-	if dev {
-		return schedukeDevURL
-	}
-	return schedukeProdURL
 }

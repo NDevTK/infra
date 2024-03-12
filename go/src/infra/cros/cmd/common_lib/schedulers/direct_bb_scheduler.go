@@ -26,7 +26,7 @@ func NewDirectBBScheduler() *DirectBBScheduler {
 	return &DirectBBScheduler{AbstractScheduler: absSched}
 }
 
-func (sc *DirectBBScheduler) Setup() error {
+func (sc *DirectBBScheduler) Setup(_ string) error {
 	ctx := context.Background()
 	if sc.BBClient == nil {
 		client, err := common.NewBBClient(ctx)

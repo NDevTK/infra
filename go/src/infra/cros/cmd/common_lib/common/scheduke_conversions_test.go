@@ -186,7 +186,6 @@ var testDimensionsAndPoolData = []struct {
 	bbDims           []*buildbucketpb.RequestedDimension
 	wantSchedukeDims *schedukepb.SwarmingDimensions
 	wantPool         string
-	wantDev          bool
 }{
 	{
 		bbDims: []*buildbucketpb.RequestedDimension{},
@@ -194,7 +193,6 @@ var testDimensionsAndPoolData = []struct {
 			DimsMap: map[string]*schedukepb.DimValues{},
 		},
 		wantPool: "",
-		wantDev:  false,
 	},
 	{
 		bbDims: []*buildbucketpb.RequestedDimension{
@@ -214,7 +212,6 @@ var testDimensionsAndPoolData = []struct {
 			},
 		},
 		wantPool: "",
-		wantDev:  false,
 	},
 	{
 		bbDims: []*buildbucketpb.RequestedDimension{
@@ -247,7 +244,6 @@ var testDimensionsAndPoolData = []struct {
 			},
 		},
 		wantPool: "pool1|pool2",
-		wantDev:  false,
 	},
 	{
 		bbDims: []*buildbucketpb.RequestedDimension{
@@ -272,7 +268,6 @@ var testDimensionsAndPoolData = []struct {
 			},
 		},
 		wantPool: "baz pool",
-		wantDev:  false,
 	},
 	{
 		bbDims: []*buildbucketpb.RequestedDimension{
@@ -297,7 +292,6 @@ var testDimensionsAndPoolData = []struct {
 			},
 		},
 		wantPool: "schedukeTest",
-		wantDev:  true,
 	},
 }
 
@@ -310,15 +304,12 @@ func TestDimensionsAndPool(t *testing.T) {
 		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.bbDims), func(t *testing.T) {
 			t.Parallel()
-			gotSchedukeDims, gotPool, gotDev := dimensionsAndPool(tt.bbDims)
+			gotSchedukeDims, gotPool := dimensionsAndPool(tt.bbDims)
 			if diff := cmp.Diff(gotSchedukeDims, tt.wantSchedukeDims, cmpOpts); diff != "" {
 				t.Errorf("unexpected diff (%s)", diff)
 			}
 			if gotPool != tt.wantPool {
 				t.Errorf("got %v, want %v", gotPool, tt.wantPool)
-			}
-			if gotDev != tt.wantDev {
-				t.Errorf("got %v, want %v", gotDev, tt.wantDev)
 			}
 		})
 	}

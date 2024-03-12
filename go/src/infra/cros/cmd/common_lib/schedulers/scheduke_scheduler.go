@@ -32,10 +32,10 @@ func NewSchedukeScheduler() *SchedukeScheduler {
 	return &SchedukeScheduler{AbstractScheduler: absSched}
 }
 
-func (s *SchedukeScheduler) Setup() error {
+func (s *SchedukeScheduler) Setup(pool string) error {
 	ctx := context.Background()
 	if s.schedukeClient == nil {
-		c, err := common.NewSchedukeClient(ctx, false)
+		c, err := common.NewSchedukeClient(ctx, pool, false)
 		if err != nil {
 			return err
 		}
@@ -45,13 +45,13 @@ func (s *SchedukeScheduler) Setup() error {
 }
 
 func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest, step *build.Step) (*buildbucketpb.Build, error) {
-	schedukeReq, dev, err := common.ScheduleBuildReqToSchedukeReq(req)
+	schedukeReq, err := common.ScheduleBuildReqToSchedukeReq(req)
 	if err != nil {
 		return nil, err
 	}
 
 	logging.Infof(ctx, "Sending Request to Scheduke: %s", schedukeReq)
-	createTaskResponse, err := s.schedukeClient.ScheduleExecution(schedukeReq, dev)
+	createTaskResponse, err := s.schedukeClient.ScheduleExecution(schedukeReq)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucke
 			return nil, nil
 		}
 
-		taskStateResponse, err := s.schedukeClient.GetBBIDs([]int64{taskID}, dev)
+		taskStateResponse, err := s.schedukeClient.GetBBIDs([]int64{taskID})
 		if err != nil {
 			return nil, err
 		}

@@ -162,7 +162,8 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 		logging.Infof(ctx, "empty scheduler")
 		return fmt.Errorf("empty scheduler")
 	}
-	err = scheduler.Setup()
+	pool := pool(cmd.MiddledOutResp.SuiteInfo)
+	err = scheduler.Setup(pool)
 	if err != nil {
 		logging.Infof(ctx, "error while setting up scheduler: %s", err)
 		return errors.Annotate(err, "error while setting up scheduler").Err()
