@@ -15,7 +15,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -360,6 +359,7 @@ func ScheduleAndMonitor(ctx context.Context, scheduler interfaces.SchedulerInter
 			Id: scheduledBuild.Id,
 		}
 		for {
+
 			// Check Build status.
 			b, err := bbClient.GetBuildStatus(ctx, statusReq)
 			if err != nil {
@@ -396,15 +396,21 @@ func ScheduleAndMonitor(ctx context.Context, scheduler interfaces.SchedulerInter
 				break
 			}
 
-			select {
-			case <-ctx.Done():
+			// Cancel build if context is cancelled.
+			if ctx.Err() != nil {
+				// Use a new context since the existing one is cancelled.
+				bbCallContext := context.Background()
+				_, err = bbClient.CancelBuild(bbCallContext, &buildbucketpb.CancelBuildRequest{
+					Id:              b.Id,
+					SummaryMarkdown: "cancelled from CTPv2",
+				})
 				// A timeout while waiting for tests to complete is reported as
 				// aborts when summarizing individual tests' results.
 				// The execute step completes without errors.
 				return nil
-			case <-clock.After(ctx, loopSleepInterval):
 			}
 
+			time.Sleep(loopSleepInterval)
 		}
 
 	}
