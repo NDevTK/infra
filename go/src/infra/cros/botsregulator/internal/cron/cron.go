@@ -15,6 +15,10 @@ import (
 
 func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	r := regulator.NewRegulator(opts)
-	logging.Infof(ctx, "current flags: %+v", r)
+	lses, err := r.FetchDUTsByHive(ctx)
+	if err != nil {
+		return err
+	}
+	logging.Infof(ctx, "lses: %v\n", lses)
 	return nil
 }
