@@ -23,13 +23,13 @@ func TestReportMetrics(t *testing.T) {
 			ReportMetrics(ctx, []*swarmingv2.BotInfo{
 				{State: "", Dimensions: []*swarmingv2.StringListPair{}},
 			})
-			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "[None]", false), ShouldEqual, 1)
+			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "[None]", "[None]", false), ShouldEqual, 1)
 
-			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "NeedsRepair", false), ShouldEqual, 0)
-			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "Running", false), ShouldEqual, 0)
-			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "RepairFailed", false), ShouldEqual, 0)
-			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "Ready", false), ShouldEqual, 0)
-			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "NeedsReset", false), ShouldEqual, 0)
+			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "[None]", "NeedsRepair", false), ShouldEqual, 0)
+			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "[None]", "Running", false), ShouldEqual, 0)
+			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "[None]", "RepairFailed", false), ShouldEqual, 0)
+			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "[None]", "Ready", false), ShouldEqual, 0)
+			So(dutmonMetric.Get(ctx, "[None]", "[None]", "[None]", "[None]", "NeedsReset", false), ShouldEqual, 0)
 		})
 
 		Convey("ReportMetric for multiple bots with same fields should count up", func() {
@@ -38,9 +38,10 @@ func TestReportMetrics(t *testing.T) {
 				{Key: "label-board", Value: []string{"reef"}},
 				{Key: "label-model", Value: []string{"electro"}},
 				{Key: "label-pool", Value: []string{"some_random_pool"}},
+				{Key: "label-zone", Value: []string{"some_random_zone"}},
 			}}
 			ReportMetrics(ctx, []*swarmingv2.BotInfo{bi, bi, bi})
-			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "Ready", false), ShouldEqual, 3)
+			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "some_random_zone", "Ready", false), ShouldEqual, 3)
 		})
 
 		Convey("ReportMetric should report dut_state as Running when dut_state is ready and task id is not null", func() {
@@ -49,9 +50,10 @@ func TestReportMetrics(t *testing.T) {
 				{Key: "label-board", Value: []string{"reef"}},
 				{Key: "label-model", Value: []string{"electro"}},
 				{Key: "label-pool", Value: []string{"some_random_pool"}},
+				{Key: "label-zone", Value: []string{"some_random_zone"}},
 			}}
 			ReportMetrics(ctx, []*swarmingv2.BotInfo{bi, bi, bi})
-			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "Running", false), ShouldEqual, 3)
+			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "some_random_zone", "Running", false), ShouldEqual, 3)
 		})
 
 		Convey("ReportMetric with managed pool should report pool correctly", func() {
@@ -60,10 +62,11 @@ func TestReportMetrics(t *testing.T) {
 				{Key: "label-board", Value: []string{"reef"}},
 				{Key: "label-model", Value: []string{"electro"}},
 				{Key: "label-pool", Value: []string{"DUT_POOL_CQ"}},
+				{Key: "label-zone", Value: []string{"ZONE_CHROMEOS6"}},
 			}}
 			ReportMetrics(ctx, []*swarmingv2.BotInfo{bi})
-			So(dutmonMetric.Get(ctx, "reef", "electro", "managed:DUT_POOL_CQ", "Ready", false), ShouldEqual, 1)
-			So(dutmonMetric.Get(ctx, "reef", "electro", "DUT_POOL_CQ", "Ready", false), ShouldEqual, 0)
+			So(dutmonMetric.Get(ctx, "reef", "electro", "managed:DUT_POOL_CQ", "ZONE_CHROMEOS6", "Ready", false), ShouldEqual, 1)
+			So(dutmonMetric.Get(ctx, "reef", "electro", "DUT_POOL_CQ", "ZONE_CHROMEOS6", "Ready", false), ShouldEqual, 0)
 		})
 
 		Convey("Multiple calls to ReportMetric keep metric unchanged", func() {
@@ -72,10 +75,11 @@ func TestReportMetrics(t *testing.T) {
 				{Key: "label-board", Value: []string{"reef"}},
 				{Key: "label-model", Value: []string{"electro"}},
 				{Key: "label-pool", Value: []string{"some_random_pool"}},
+				{Key: "label-zone", Value: []string{"some_random_zone"}},
 			}}
 			ReportMetrics(ctx, []*swarmingv2.BotInfo{bi, bi, bi})
 			ReportMetrics(ctx, []*swarmingv2.BotInfo{bi, bi, bi})
-			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "Ready", false), ShouldEqual, 3)
+			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "some_random_zone", "Ready", false), ShouldEqual, 3)
 		})
 
 		Convey("ReportMetric should stop counting bots that disappear", func() {
@@ -84,11 +88,12 @@ func TestReportMetrics(t *testing.T) {
 				{Key: "label-board", Value: []string{"reef"}},
 				{Key: "label-model", Value: []string{"electro"}},
 				{Key: "label-pool", Value: []string{"some_random_pool"}},
+				{Key: "label-zone", Value: []string{"some_random_zone"}},
 			}}
 			ReportMetrics(ctx, []*swarmingv2.BotInfo{bi, bi, bi})
-			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "Ready", false), ShouldEqual, 3)
+			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "some_random_zone", "Ready", false), ShouldEqual, 3)
 			ReportMetrics(ctx, []*swarmingv2.BotInfo{bi})
-			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "Ready", false), ShouldEqual, 1)
+			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "some_random_zone", "Ready", false), ShouldEqual, 1)
 		})
 
 		Convey("ReportMetric should report repair_failed bots as RepairFailed", func() {
@@ -97,9 +102,10 @@ func TestReportMetrics(t *testing.T) {
 				{Key: "label-board", Value: []string{"reef"}},
 				{Key: "label-model", Value: []string{"electro"}},
 				{Key: "label-pool", Value: []string{"some_random_pool"}},
+				{Key: "label-zone", Value: []string{"some_random_zone"}},
 			}}
 			ReportMetrics(ctx, []*swarmingv2.BotInfo{bi})
-			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "RepairFailed", false), ShouldEqual, 1)
+			So(dutmonMetric.Get(ctx, "reef", "electro", "some_random_pool", "some_random_zone", "RepairFailed", false), ShouldEqual, 1)
 		})
 
 	})
