@@ -198,6 +198,7 @@ func (ex *CrosPublishExecutor) rdbPublishUploadCommandExecution(
 	// Create request.
 	rdbMetadata, err := anypb.New(&testapi_metadata.PublishRdbMetadata{
 		CurrentInvocationId: cmd.CurrentInvocationId,
+		TesthausUrl:         cmd.TesthausUrl,
 		TestResult:          cmd.TestResultForRdb,
 		Sources:             cmd.Sources,
 		BaseVariant:         cmd.BaseVariant,
