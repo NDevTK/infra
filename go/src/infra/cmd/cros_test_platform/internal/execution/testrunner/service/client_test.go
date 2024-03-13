@@ -336,6 +336,7 @@ func TestFetchRequest(t *testing.T) {
 				So(gotRequest.Fields.Paths, ShouldContain, "infra.swarming.task_id")
 				So(gotRequest.Fields.Paths, ShouldContain, "output.properties")
 				So(gotRequest.Fields.Paths, ShouldContain, "status")
+				So(gotRequest.Fields.Paths, ShouldContain, "infra.backend.task.id.id")
 			})
 		})
 	})
@@ -453,6 +454,55 @@ func TestCompletedTask(t *testing.T) {
 			Infra: &buildbucket_pb.BuildInfra{
 				Swarming: &buildbucket_pb.BuildInfra_Swarming{
 					TaskId: "foo-swarming-task-id",
+				},
+			},
+			Status: buildbucket_pb.Status_SUCCESS,
+			Output: outputProperty("foo-test-case"),
+		}, nil)
+
+		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+		So(err, ShouldBeNil)
+		Convey("the task results are reported correctly.", func() {
+			res, err := tf.skylab.FetchResults(tf.ctx, task)
+			So(err, ShouldBeNil)
+			So(res, ShouldNotBeNil)
+			So(res.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
+			So(res.Result, ShouldNotBeNil)
+			So(res.Result.GetAutotestResult().GetTestCases(), ShouldHaveLength, 1)
+			So(res.Result.GetAutotestResult().GetTestCases()[0].GetName(), ShouldEqual, "foo-test-case")
+			So(tf.skylab.SwarmingTaskID(task), ShouldEqual, "foo-swarming-task-id")
+		})
+	})
+
+	Convey("When a task is launched and completes - backend build", t, func() {
+		tf, cleanup := newTestFixture(t)
+		defer cleanup()
+
+		tf.bb.EXPECT().ScheduleBuild(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+
+		tf.bb.EXPECT().GetBuildStatus(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{
+			Id:     42,
+			Status: buildbucket_pb.Status_SUCCESS,
+		}, nil)
+
+		tf.bb.EXPECT().GetBuild(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{
+			Id: 42,
+			Infra: &buildbucket_pb.BuildInfra{
+				Backend: &buildbucket_pb.BuildInfra_Backend{
+					Task: &buildbucket_pb.Task{
+						Id: &buildbucket_pb.TaskID{
+							Id: "foo-swarming-task-id",
+						},
+					},
 				},
 			},
 			Status: buildbucket_pb.Status_SUCCESS,

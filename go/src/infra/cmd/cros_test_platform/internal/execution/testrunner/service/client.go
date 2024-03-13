@@ -319,9 +319,6 @@ func (c *clientImpl) LaunchTask(ctx context.Context, args *request.Args) (TaskRe
 		if req.GetCanOutliveParent() == buildbucketpb.Trinary_UNSET {
 			// We do not want test_runner runs to outrun parent CTP.
 			req.CanOutliveParent = buildbucketpb.Trinary_NO
-			if req.GetSwarming().GetParentRunId() != "" {
-				req.CanOutliveParent = buildbucketpb.Trinary_NO
-			}
 		}
 	}
 
@@ -379,7 +376,9 @@ func (c *clientImpl) inheritResultdbInvocation(ctx context.Context, buildId int6
 // getBuildFieldMask is the list of buildbucket fields that are needed.
 var getBuildFieldMask = []string{
 	"id",
+	// TODO(b/40949135): remove after swarming -> backend migration completes.
 	"infra.swarming.task_id",
+	"infra.backend.task.id.id",
 	// Build details are parsed from the build's output properties.
 	"output.properties",
 	// Build status is used to determine whether the build is complete.
@@ -423,7 +422,11 @@ func (c *clientImpl) FetchResults(ctx context.Context, t TaskReference) (*FetchR
 		task.bbStatus = b.Status
 	}
 
-	task.swarmingTaskID = b.GetInfra().GetSwarming().GetTaskId()
+	task.swarmingTaskID = b.GetInfra().GetBackend().GetTask().GetId().GetId()
+	if task.swarmingTaskID == "" {
+		// TODO(b/40949135): remove after swarming -> backend migration completes.
+		task.swarmingTaskID = b.GetInfra().GetSwarming().GetTaskId()
+	}
 
 	lc := bbStatusToLifeCycle[b.Status]
 	if !lifeCyclesWithResults[lc] {
