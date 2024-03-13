@@ -85,7 +85,6 @@ var testBotDimsAndBuildTagsData = []struct {
 			"added-key":   "added-val",
 			"dut_state":   "ready",
 			"label-model": "sample-model",
-			"label-pool":  "DUT_POOL_QUOTA",
 		},
 		map[string]string{
 			"added-key":      "added-val",
@@ -104,7 +103,6 @@ var testBotDimsAndBuildTagsData = []struct {
 		map[string]string{
 			"dut_state":   "ready",
 			"label-board": "sample-board",
-			"label-pool":  "DUT_POOL_QUOTA",
 		},
 		map[string]string{
 			"crosfleet-tool": "lease",
