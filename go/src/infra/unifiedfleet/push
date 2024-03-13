@@ -23,20 +23,32 @@ pushd "$WORKDIR" >/dev/null || (
 ) &>/dev/null
 # }
 cd k8s || (
-	echo "Failed to enter clones respoitory. Exiting."
+	echo "Failed to enter clones repository. Exiting."
 	exit 1
 )
 VERSION_FILE=projects/unified-fleet-system/channels.json
-NEW_IMAGE_TAG=$(cat $VERSION_FILE | awk -F \" '/staging/{print $4; exit}')
-OLD_IMAGE_TAG=$(cat $VERSION_FILE | awk -F \" '/stable/{print $4; exit}')
-sed -E -i "/canary|stable/s,ci-[^\"]*,$NEW_IMAGE_TAG," "$VERSION_FILE"
+DUMPER_NEW_IMAGE_TAG=$(cat $VERSION_FILE | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(obj["images"]["gcr.io/chops-public-images-prod/unified-fleet-system/dumper"]["staging"])')
+DUMPER_OLD_IMAGE_TAG=$(cat $VERSION_FILE | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(obj["images"]["gcr.io/chops-public-images-prod/unified-fleet-system/dumper"]["stable"])')
+SERVICE_NEW_IMAGE_TAG=$(cat $VERSION_FILE | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(obj["images"]["gcr.io/chops-public-images-prod/unified-fleet-system/ufs-service"]["staging"])')
+SERVICE_OLD_IMAGE_TAG=$(cat $VERSION_FILE | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(obj["images"]["gcr.io/chops-public-images-prod/unified-fleet-system/ufs-service"]["stable"])')
+
+NEW_VERSION_FILE=$(cat $VERSION_FILE | python3 -c 'import json,sys;obj=json.load(sys.stdin);\
+        dumper_nit = '\"$DUMPER_NEW_IMAGE_TAG\"';\
+        service_nit = '\"$SERVICE_NEW_IMAGE_TAG\"';\
+        obj["images"]["gcr.io/chops-public-images-prod/unified-fleet-system/dumper"]["canary"] = dumper_nit;\
+        obj["images"]["gcr.io/chops-public-images-prod/unified-fleet-system/dumper"]["stable"] = dumper_nit;\
+        obj["images"]["gcr.io/chops-public-images-prod/unified-fleet-system/ufs-service"]["canary"] = service_nit;\
+        obj["images"]["gcr.io/chops-public-images-prod/unified-fleet-system/ufs-service"]["stable"] = service_nit;\
+        print(json.dumps(obj, indent=2));')
+
+echo "$NEW_VERSION_FILE" > $VERSION_FILE
 
 ./main.star
 git commit -a -F - <<EOF
 UFS: push to prod
 
-dumper => $NEW_IMAGE_TAG
-ufs-service => $NEW_IMAGE_TAG
+dumper => $DUMPER_OLD_IMAGE_TAG to $DUMPER_NEW_IMAGE_TAG
+ufs-service => $SERVICE_OLD_IMAGE_TAG to $SERVICE_NEW_IMAGE_TAG
 
 BUG=None
 TEST=./main.star
@@ -49,13 +61,14 @@ $(git log -1 -p)
 
 EOF
 
-echo "== Are they looks good? [y/n]"
+echo "== Does this look good? [y/n]"
 read -r CONFIRM
 
 if [[ $CONFIRM != "y" ]]; then
-	echo "Aboring the CL and push"
+	echo "Aborting the CL and push"
 	exit 1
 fi
+
 git cl upload --no-squash
 
 popd >/dev/null || (
@@ -64,8 +77,36 @@ popd >/dev/null || (
 )
 
 # Generate the announce email.
-OLD_GIT=${OLD_IMAGE_TAG##*-}
-NEW_GIT=${NEW_IMAGE_TAG##*-}
+DUMPER_OLD_GIT=${DUMPER_OLD_IMAGE_TAG##*-}
+DUMPER_NEW_GIT=${DUMPER_NEW_IMAGE_TAG##*-}
+SERVICE_OLD_GIT=${SERVICE_OLD_IMAGE_TAG##*-}
+SERVICE_NEW_GIT=${SERVICE_NEW_IMAGE_TAG##*-}
+
+VER_CHANGE="$DUMPER_OLD_GIT..$DUMPER_NEW_GIT"
+if [[ "$DUMPER_OLD_GIT" != "$SERVICE_OLD_GIT" ]]
+then
+        VER_CHANGE="dumper: $DUMPER_OLD_GIT..$DUMPER_NEW_GIT ufs-service: $SERVICE_OLD_GIT..$SERVICE_NEW_GIT"
+fi
+
+# Determine the oldest commit between dumper and service
+OLD_COMMIT_LOG=$(git log refs/remotes/origin/main --oneline "$SERVICE_OLD_GIT".."$DUMPER_OLD_GIT" -- . ../cmd/shivas)
+OLD_COMMIT=$DUMPER_OLD_GIT
+if [[ ${#OLD_COMMIT_LOG} -gt 0 ]]
+then
+        OLD_COMMIT=$SERVICE_OLD_GIT
+fi
+
+# Determine the newest commit between dumper and service
+NEW_COMMIT_LOG=$(git log refs/remotes/origin/main --oneline "$SERVICE_NEW_GIT".."$DUMPER_NEW_GIT" -- . ../cmd/shivas)
+NEW_COMMIT=$SERVICE_NEW_GIT
+if [[ ${#NEW_COMMIT_LOG} -gt 0 ]]
+then
+        NEW_COMMIT=$DUMPER_NEW_GIT
+fi
+
+# Get the changelog content
+CONTENT=$(git log refs/remotes/origin/main --oneline "$OLD_COMMIT".."$NEW_COMMIT" -- . ../cmd/shivas)
+
 git fetch origin main &>/dev/null
 cat - <<EOF
 
@@ -77,10 +118,11 @@ cat - <<EOF
 ufs-announce@google.com
 
 == Title:
-UFS & shivas push ($OLD_GIT..$NEW_GIT)
+UFS & shivas push ($VER_CHANGE)
 
 == Content:
 
-$(git log refs/remotes/origin/main --oneline "$OLD_GIT".."$NEW_GIT" -- . ../cmd/shivas)
+$CONTENT
+
 EOF
 rm -rf "$WORKDIR"
