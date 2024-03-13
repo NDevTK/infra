@@ -85,6 +85,7 @@
       "@@@STEP_LOG_LINE@glob_from_git@[CACHE]\\builder\\package_repo\\dir_deps\\dep\\3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob_from_git@[CACHE]\\builder\\package_repo\\dir_fetch\\fetch_and_package\\3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob_from_git@[CACHE]\\builder\\package_repo\\dir_tools\\already_uploaded\\3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]\\builder\\package_repo\\dir_tools\\no_toolchain\\3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob_from_git@[CACHE]\\builder\\package_repo\\dir_tools\\pkg\\3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob_from_git@[CACHE]\\builder\\package_repo\\dir_tools\\pkg_checkout\\3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob_from_git@[CACHE]\\builder\\package_repo\\dir_tools\\pkg_override_and_no_latest\\3pp.pb@@@",
@@ -837,6 +838,82 @@
       }
     },
     "name": "load package specs.Compute hash for 'tools/already_uploaded'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]\\builder\\package_repo\\dir_tools\\no_toolchain\\3pp.pb",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "load package specs.read 'dir_tools\\\\no_toolchain\\\\3pp.pb'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  create {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    source { script { name: \"fetch.py\" } }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    build {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      tool: \"build_tools/tool\"@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      dep:  \"deps/dep\"@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      no_toolchain: true@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  @@@",
+      "@@@STEP_LOG_END@3pp.pb@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "compute_hash",
+      "[START_DIR]",
+      "..\\[CACHE]\\builder\\package_repo\\dir_tools\\no_toolchain"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "load package specs.Compute hash for 'no_toolchain'",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
@@ -2696,7 +2773,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -3802,7 +3879,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -4509,7 +4586,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -5632,7 +5709,7 @@
       "pkg-register",
       "[CACHE]\\3pp_cipd\\3pp\\tools\\pkg\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -6763,7 +6840,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -8842,7 +8919,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -10714,7 +10791,7 @@
       "pkg-register",
       "[CACHE]\\3pp_cipd\\3pp\\build_tools\\tool\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -11933,7 +12010,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -12046,6 +12123,1306 @@
       }
     },
     "name": "building deps/dep.do upload.snoop: report_cipd",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building no_toolchain"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "[CACHE]\\builder\\package_repo\\dir_tools\\no_toolchain\\fetch.py",
+      "latest"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch.py latest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@resolved version: 2.0.0@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "describe",
+      "3pp/no_toolchain/windows-amd64",
+      "-version",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.cipd describe 3pp/no_toolchain/windows-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@tag 'version:2@2.0.0' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\",@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.mkdir -p [workdir]",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building no_toolchain.fetch sources",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building no_toolchain.fetch sources.installing tools",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "pkg-deploy",
+      "[CACHE]\\3pp_cipd\\3pp\\build_tools\\tool\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
+      "-root",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\tools_prefix",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.installing tools.cipd pkg-deploy [CACHE]\\3pp_cipd\\3pp\\build_tools\\tool\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building no_toolchain.fetch sources.installing deps",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "pkg-deploy",
+      "[CACHE]\\3pp_cipd\\3pp\\deps\\deep_dep\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
+      "-root",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\deps_prefix",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.installing deps.cipd pkg-deploy [CACHE]\\3pp_cipd\\3pp\\deps\\deep_dep\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "pkg-deploy",
+      "[CACHE]\\3pp_cipd\\3pp\\deps\\dep\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
+      "-root",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\deps_prefix",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.installing deps.cipd pkg-deploy [CACHE]\\3pp_cipd\\3pp\\deps\\dep\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\checkout"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.mkdir -p [workdir]/checkout/",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "describe",
+      "3pp/sources/script/no_toolchain/windows-amd64",
+      "-version",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.cipd describe 3pp/sources/script/no_toolchain/windows-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@tag 'version:2@2.0.0' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\",@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "[CACHE]\\builder\\package_repo\\dir_tools\\no_toolchain\\fetch.py",
+      "get_url"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.fetch.py get_url",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"ext\": \".test\",@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"name\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"test_source\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  ],@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"url\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"https://some.internet.example.com/no_toolchain\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::url]\\resources\\pycurl.py",
+      "--url",
+      "https://some.internet.example.com/no_toolchain",
+      "--status-json",
+      "/path/to/tmp/json",
+      "--outfile",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\checkout\\test_source"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.GET https://some.internet.example.com/no_toolchain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/script/no_toolchain/windows-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\no_toolchain\\\\windows-amd64\\\\2.0.0\\\\checkout\"}",
+      "-out",
+      "[CLEANUP]\\tmp_tmp_19",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.build 3pp/sources/script/no_toolchain/windows-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/script/no_toolchain/windows-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\script\\no_toolchain\\windows-amd64"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[CLEANUP]\\tmp_tmp_19",
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\script\\no_toolchain\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building no_toolchain.fetch sources.upload source to cipd",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "describe",
+      "3pp/sources/script/no_toolchain/windows-amd64",
+      "-version",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.upload source to cipd.cipd describe 3pp/sources/script/no_toolchain/windows-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_TEXT@tag 'version:2@2.0.0' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\",@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "pkg-register",
+      "[CACHE]\\3pp_cipd\\3pp\\sources\\script\\no_toolchain\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
+      "-tag",
+      "build_id:8945511751514863184",
+      "-tag",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.upload source to cipd.register 3pp/sources/script/no_toolchain/windows-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/script/no_toolchain/windows-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@3pp/sources/script/no_toolchain/windows-amd64@https://chrome-infra-packages.appspot.com/p/3pp/sources/script/no_toolchain/windows-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]\\builder\\package_repo\\dir_deps\\bottom_dep_git",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\checkout\\.3pp\\deps\\bottom_dep_git"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.copy package definition deps/bottom_dep_git",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]\\builder\\package_repo\\dir_deps\\bottom_dep_url",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\checkout\\.3pp\\deps\\bottom_dep_url"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.copy package definition deps/bottom_dep_url",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]\\builder\\package_repo\\dir_deps\\deep_dep",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\checkout\\.3pp\\deps\\deep_dep"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.copy package definition deps/deep_dep",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]\\builder\\package_repo\\dir_build_tools\\tool",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\checkout\\.3pp\\build_tools\\tool"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.copy package definition build_tools/tool",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]\\builder\\package_repo\\dir_deps\\dep",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\checkout\\.3pp\\deps\\dep"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.copy package definition deps/dep",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]\\builder\\package_repo\\dir_tools\\no_toolchain",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\checkout\\.3pp\\no_toolchain"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.fetch sources.copy package definition no_toolchain",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building no_toolchain.run installation",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\out"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.run installation.make output dir",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "bash",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\checkout\\.3pp\\no_toolchain\\install.sh",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\out",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\deps_prefix"
+    ],
+    "cwd": "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\checkout",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "RECIPE_MODULE[infra::support_3pp]\\resources\\win_support",
+        "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\tools_prefix",
+        "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\tools_prefix\\bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.run installation.install.sh [START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\out [START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\deps_prefix",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]\\3pp\\wd\\no_toolchain\\windows-amd64\\2.0.0\\out",
+      "--recursive"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.List files to be packaged",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/no_toolchain/windows-amd64\", \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\no_toolchain\\\\windows-amd64\\\\2.0.0\\\\out\"}",
+      "-out",
+      "[CLEANUP]\\tmp_tmp_20",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.build 3pp/no_toolchain/windows-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/no_toolchain/windows-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[CACHE]\\3pp_cipd\\3pp\\no_toolchain\\windows-amd64"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[CLEANUP]\\tmp_tmp_20",
+      "[CACHE]\\3pp_cipd\\3pp\\no_toolchain\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building no_toolchain.do upload",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@40-chars-fake-of-the-package-instance_id@https://chrome-infra-packages.appspot.com/p/3pp/no_toolchain/windows-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "describe",
+      "3pp/no_toolchain/windows-amd64",
+      "-version",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.do upload.cipd describe 3pp/no_toolchain/windows-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@tag 'version:2@2.0.0' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\",@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd.bat",
+      "pkg-register",
+      "[CACHE]\\3pp_cipd\\3pp\\no_toolchain\\windows-amd64\\40-chars-fake-of-the-package-instance_id",
+      "-ref",
+      "latest",
+      "-tag",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
+      "-tag",
+      "build_id:8945511751514863184",
+      "-tag",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.do upload.register 3pp/no_toolchain/windows-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/no_toolchain/windows-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@3pp/no_toolchain/windows-amd64@https://chrome-infra-packages.appspot.com/p/3pp/no_toolchain/windows-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]\\resources\\fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "file_hash",
+      "[CACHE]\\3pp_cipd\\3pp\\no_toolchain\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.do upload.Compute file hash",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]\\reporter\\snoopy_broker",
+      "-report-cipd",
+      "-digest",
+      "deadbeef",
+      "-pkg-name",
+      "3pp/no_toolchain/windows-amd64",
+      "-iid",
+      "40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]\\tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "windows",
+      "_3PP_CIPD_PACKAGE_NAME": "no_toolchain",
+      "_3PP_PLATFORM": "windows-amd64",
+      "_3PP_TOOL_PLATFORM": "windows-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building no_toolchain.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]
@@ -12486,7 +13863,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/script/tools/pkg/windows-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\tools\\\\pkg\\\\windows-amd64\\\\2.0.0\\\\checkout\"}",
       "-out",
-      "[CLEANUP]\\tmp_tmp_19",
+      "[CLEANUP]\\tmp_tmp_21",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -12572,7 +13949,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]\\tmp_tmp_19",
+      "[CLEANUP]\\tmp_tmp_21",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\script\\tools\\pkg\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -13224,7 +14601,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/tools/pkg/windows-amd64\", \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\tools\\\\pkg\\\\windows-amd64\\\\2.0.0\\\\out\"}",
       "-out",
-      "[CLEANUP]\\tmp_tmp_20",
+      "[CLEANUP]\\tmp_tmp_22",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -13310,7 +14687,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]\\tmp_tmp_20",
+      "[CLEANUP]\\tmp_tmp_22",
       "[CACHE]\\3pp_cipd\\3pp\\tools\\pkg\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -13398,7 +14775,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -13904,7 +15281,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/script/tools/pkg_checkout/windows-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\tools\\\\pkg_checkout\\\\windows-amd64\\\\2.0.0\\\\checkout\"}",
       "-out",
-      "[CLEANUP]\\tmp_tmp_21",
+      "[CLEANUP]\\tmp_tmp_23",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -13990,7 +15367,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]\\tmp_tmp_21",
+      "[CLEANUP]\\tmp_tmp_23",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\script\\tools\\pkg_checkout\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -14642,7 +16019,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/tools/pkg_checkout/windows-amd64\", \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\tools\\\\pkg_checkout\\\\windows-amd64\\\\2.0.0\\\\out\"}",
       "-out",
-      "[CLEANUP]\\tmp_tmp_22",
+      "[CLEANUP]\\tmp_tmp_24",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -14728,7 +16105,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]\\tmp_tmp_22",
+      "[CLEANUP]\\tmp_tmp_24",
       "[CACHE]\\3pp_cipd\\3pp\\tools\\pkg_checkout\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -14816,7 +16193,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -15369,7 +16746,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/script/tools/pkg_timeout/windows-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\tools\\\\pkg_timeout\\\\windows-amd64\\\\2.0.0\\\\checkout\"}",
       "-out",
-      "[CLEANUP]\\tmp_tmp_23",
+      "[CLEANUP]\\tmp_tmp_25",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -15455,7 +16832,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]\\tmp_tmp_23",
+      "[CLEANUP]\\tmp_tmp_25",
       "[CACHE]\\3pp_cipd\\3pp\\sources\\script\\tools\\pkg_timeout\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -16109,7 +17486,7 @@
       "-pkg-def",
       "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/tools/pkg_timeout/windows-amd64\", \"root\": \"[START_DIR]\\\\3pp\\\\wd\\\\tools\\\\pkg_timeout\\\\windows-amd64\\\\2.0.0\\\\out\"}",
       "-out",
-      "[CLEANUP]\\tmp_tmp_24",
+      "[CLEANUP]\\tmp_tmp_26",
       "-hash-algo",
       "sha256",
       "-json-output",
@@ -16195,7 +17572,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "move",
-      "[CLEANUP]\\tmp_tmp_24",
+      "[CLEANUP]\\tmp_tmp_26",
       "[CACHE]\\3pp_cipd\\3pp\\tools\\pkg_timeout\\windows-amd64\\40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
@@ -16283,7 +17660,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "3pp_ecosystem_hash:bc6b2ab938938cc5b6ed615490ca873bcc8b4ad4ae4cf50c10d9f88391c2043b",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",

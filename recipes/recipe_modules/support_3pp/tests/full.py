@@ -355,6 +355,17 @@ def GenTests(api):
   create { verify { test: "verify.py" } }
   '''
 
+  pkgs_dict['dir_tools/no_toolchain'] = '''
+  create {
+    source { script { name: "fetch.py" } }
+    build {
+      tool: "build_tools/tool"
+      dep:  "deps/dep"
+      no_toolchain: true
+    }
+  }
+  '''
+  
   pkgs_dict['dir_tools/windows_experiment'] = r'''
   create {
     platform_re: "linux-.*|mac-.*"

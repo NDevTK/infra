@@ -54,6 +54,8 @@ _WINDOWS_SDK_PLATFORM = {
 
 def get_sdk(api, platform):
   sdk = nullcontext() # no sdk
+  if platform is None:
+    return sdk
   if platform.startswith('mac-'):
     sdk = api.osx_sdk('mac')
   if platform.startswith('windows-'):
@@ -128,7 +130,7 @@ def run_script(api, *args, **kwargs):
           stdout=stdout,
           step_test_data=step_test_data)
 
-  with get_sdk(api, compile_platform):
+  with get_sdk(api, None if no_toolchain else compile_platform):
     if interpreter == 'bash':
       cmd = ['bash'] + list(args)
 
