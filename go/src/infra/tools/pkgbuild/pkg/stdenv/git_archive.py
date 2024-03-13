@@ -117,9 +117,6 @@ def main() -> None:
 
   output_dir = pathlib.Path(os.environ.get('out'))
 
-  # Log git version
-  subprocess.check_call(['git', '-v'])
-
   with tarfile.open(
       name=output_dir.joinpath('src.tar'), mode='w:',
       format=tarfile.PAX_FORMAT, encoding='utf-8') as output:

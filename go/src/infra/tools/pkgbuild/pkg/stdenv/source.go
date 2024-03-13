@@ -46,6 +46,7 @@ func (g *Generator) fetchSource() (generators.Generator, string, error) {
 				{Type: generators.DepsBuildHost, Generator: cpython},
 				{Type: generators.DepsBuildHost, Generator: gitSourceGen},
 			},
+			Env: env,
 		}, "srcs=" + filepath.Join(srcPath, "src.tar"), nil
 	case *SourceURLs:
 		urls := generators.FetchURLs{
