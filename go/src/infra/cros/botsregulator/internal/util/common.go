@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"strings"
 
+	"google.golang.org/protobuf/types/known/emptypb"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
@@ -54,4 +56,17 @@ func CutHostnames(lses []*ufspb.MachineLSE) ([]string, error) {
 		hns[i] = hn
 	}
 	return hns, nil
+}
+
+type Set = map[string]*emptypb.Empty
+
+// NewStringSet creates a Set.
+// We cannot use luci/common/data/stringset/stringset.go here
+// since the types mismatch.
+func NewStringSet(s []string) Set {
+	m := make(Set, len(s))
+	for _, k := range s {
+		m[k] = &emptypb.Empty{}
+	}
+	return m
 }

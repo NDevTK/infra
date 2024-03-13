@@ -14,6 +14,9 @@ import (
 	"infra/cros/botsregulator/internal/util"
 )
 
+// Regulate is BotsRegulator main flow.
+// It fetches available DUTs from UFS based on specific filters
+// and sends out the result to a predefined Bots Provider Interface.
 func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	r := regulator.NewRegulator(opts)
 	lses, err := r.FetchDUTsByHive(ctx)
