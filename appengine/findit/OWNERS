@@ -4,10 +4,6 @@ jsca@chromium.org
 nqmtuan@google.com
 weiweilin@google.com
 
-# CTI members.
-# TODO (crbug.com/1024958): Remove CTI members after Flake Portal and Code Coverage code is removed.
-nodir@chromium.org
-
 # For Flake Portal related changes.
 chanli@chromium.org
 
