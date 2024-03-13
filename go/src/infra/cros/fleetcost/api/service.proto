@@ -48,7 +48,7 @@ service FleetCost {
   // UpdateCostIndicator updates an existing cost indicator.
   rpc UpdateCostIndicator(UpdateCostIndicatorRequest) returns (UpdateCostIndicatorResponse) {
     option (google.api.http) = {
-      post: "/v1/create-cost-indicator"
+      post: "/v1/update-cost-indicator"
     };
   }
 }
