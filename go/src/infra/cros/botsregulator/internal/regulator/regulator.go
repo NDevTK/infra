@@ -9,14 +9,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"net/http"
 
 	"google.golang.org/grpc/metadata"
 
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/grpc/prpc"
-	"go.chromium.org/luci/server/auth"
 
+	"infra/cros/botsregulator/internal/provider"
 	"infra/cros/botsregulator/internal/util"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -38,19 +36,12 @@ func NewRegulator(opts *RegulatorOptions) regulator {
 func (r *regulator) FetchDUTsByHive(ctx context.Context) ([]*ufspb.MachineLSE, error) {
 	md := metadata.Pairs("namespace", r.opts.namespace)
 	ctx = metadata.NewOutgoingContext(ctx, md)
-
-	t, err := auth.GetRPCTransport(ctx, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
+	pc, err := util.RawPRPCClient(ctx, r.opts.ufs)
 	if err != nil {
-		return nil, errors.Annotate(err, "could not create http.RoundTripper").Err()
+		return nil, err
 	}
+	ic := ufsAPI.NewFleetPRPCClient(pc)
 	// TODO(b/328443703): Handle pagination. Current max value: 1000.
-	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
-		C:    &http.Client{Transport: t},
-		Host: r.opts.ufs,
-		Options: &prpc.Options{
-			UserAgent: "bots-regulator/0.1.0",
-		},
-	})
 	res, err := ic.ListMachineLSEs(ctx, &ufsAPI.ListMachineLSEsRequest{
 		Filter: fmt.Sprintf("hive=%s", r.opts.hive),
 		// KeysOnly returns the entities' ID only. It is faster than a full query.
@@ -61,6 +52,21 @@ func (r *regulator) FetchDUTsByHive(ctx context.Context) ([]*ufspb.MachineLSE, e
 	}
 	lses := res.GetMachineLSEs()
 	return lses, nil
+}
+
+// UpdateConfig creates a provider.BPI based on the server running environment.
+// The provider is responsible for the actual implementation in the provider package.
+// Providers currently supported are GCE Provider and Satlab(WIP).
+func (r *regulator) UpdateConfig(ctx context.Context, hns []string) error {
+	bc, err := provider.NewGCEPClient(ctx, r.opts.bpi, r.opts.cfID)
+	if err != nil {
+		return err
+	}
+	err = bc.UpdateConfig(ctx, hns)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // RegulatorOptions refers to the flag options needed

@@ -28,5 +28,9 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	}
 	logging.Infof(ctx, "hostnames: %v\n", hns)
 
+	err = r.UpdateConfig(ctx, hns)
+	if err != nil {
+		return err
+	}
 	return nil
 }
