@@ -22,6 +22,30 @@
       },
       "revId": "4e6d501514cb1df3af7d4a788c9d8f8535d808f2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ba90641_0f57b806",
+        "filename": "go/src/infra/cros/lab_inventory/utilization/utilization.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2024-03-13T17:23:39Z",
+      "side": 0,
+      "message": "This field is not being exported in the TOT version, so I removed it entirely + added a new field.",
+      "parentUuid": "570de81c_d5abd3ae",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 19
+      },
+      "revId": "4e6d501514cb1df3af7d4a788c9d8f8535d808f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
