@@ -151,7 +151,7 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 
 	// If staging reduce requests to 5 MAX
 	if !isProd {
-		ctpRequests = nil
+		ctpRequests = limitStagingRequests(ctpRequests)
 	}
 
 	// Initialize an authenticated BuildBucket client for scheduling.
