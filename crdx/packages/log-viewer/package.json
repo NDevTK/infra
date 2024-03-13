@@ -13,13 +13,14 @@
   },
   "license": "BSD-3-Clause",
   "author": "The Chromium Authors",
-  "module": "dist/log-viewer.es.js",
+  "main": "./dist/index.js",
+  "module": "./dist/log-viewer.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && tsc -p tsconfig.build.json",
     "build-storybook": "storybook build",
     "lint": "eslint ./src",
     "storybook": "storybook dev -p 6006",

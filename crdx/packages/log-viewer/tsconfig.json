@@ -7,7 +7,6 @@
     "target": "ESNext",
     "sourceMap": true,
     "outDir": "dist/",
-    "noEmit": true,
     "isolatedModules": true,
     "strict": true,
     "noUnusedLocals": true,
@@ -21,8 +20,8 @@
     "types": ["vite/client", "@types/jest"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
     "paths": {
       "@/*": ["./src/*"],
       "@root/*": ["./*"],

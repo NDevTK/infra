@@ -28,8 +28,7 @@ export default defineConfig({
     lib: {
       // eslint-disable-next-line no-undef
       entry: resolve(__dirname, 'src/index.ts'),
-      formats: ['es'],
-      fileName: (format) => `log-viewer.${format}.js`,
+      formats: ['es', 'cjs'],
       name: 'log-viewer',
     },
     rollupOptions: {

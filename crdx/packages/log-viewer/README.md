@@ -57,6 +57,14 @@ NPM-link creates a symbolic link for the project in the global NPM repository.
    npm link @chopsui/log-viewer
    ```
 
+3. Ensure that your jest config in your project has the following config:
+
+   ```json
+   moduleDirectories: ['<rootDir>/node_modules', 'node_modules']
+   ```
+
+   This ensures that the library can work with local development environments and jest.
+
    This will use the linked version of the log-viewer from your global npm_modules.
 
 **Clean up after local development:**
