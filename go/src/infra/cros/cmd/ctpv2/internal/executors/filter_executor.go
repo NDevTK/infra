@@ -20,6 +20,8 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 	ctpv2_data "infra/cros/cmd/ctpv2/data"
 	"infra/cros/cmd/ctpv2/internal/commands"
+	"infra/libs/skylab/inventory/autotest/labels"
+	s "infra/libs/skylab/inventory/swarming"
 )
 
 // FilterExecutor represents executor for all filter related commands.
@@ -124,6 +126,7 @@ func toTestFinderRequest(testPlan *api.InternalTestplan) (*api.CrosTestFinderReq
 		MetadataRequired: true,
 	}, nil
 }
+
 func fillTestCasesIntoTestPlan(ctx context.Context, testPlan *api.InternalTestplan, resp *api.CrosTestFinderResponse) error {
 	if len(resp.GetTestSuites()) == 0 {
 		return nil
@@ -142,10 +145,52 @@ func fillTestCasesIntoTestPlan(ctx context.Context, testPlan *api.InternalTestpl
 }
 
 func tfToCTPTestCase(metadata *api.TestCaseMetadata) *api.CTPTestCase {
-	return &api.CTPTestCase{
+	tc := &api.CTPTestCase{
 		Name:     metadata.GetTestCase().GetName(),
 		Metadata: metadata,
 	}
+
+	deps := Converter(tc.GetMetadata().GetTestCase().GetDependencies())
+	if len(deps) != 0 {
+		tc.Metadata.TestCase.Dependencies = deps
+	}
+	return tc
+}
+
+func Converter(deps []*api.TestCase_Dependency) []*api.TestCase_Dependency {
+	convertedDeps := []string{}
+	for _, dep := range deps {
+		f := dep.GetValue()
+		converted := convertDep(f)
+		// If the dep can't be converted, let it flow through naturally. Bot params should handel the case where its invalid
+		if len(converted) == 0 {
+			convertedDeps = append(convertedDeps, f)
+		} else {
+			convertedDeps = append(convertedDeps, converted...)
+		}
+	}
+	finalDeps := []*api.TestCase_Dependency{}
+	for _, dep := range convertedDeps {
+		tcD := &api.TestCase_Dependency{
+			Value: dep,
+		}
+		finalDeps = append(finalDeps, tcD)
+	}
+	return finalDeps
+}
+
+func convertDep(dep string) []string {
+	deps := []string{dep}
+	parsedDeps := labels.Revert(deps)
+
+	depsf := []string{}
+	for k, v := range s.Convert(parsedDeps) {
+		for _, innerv := range v {
+			depsf = append(depsf, fmt.Sprintf("%s:%s", k, innerv))
+
+		}
+	}
+	return depsf
 }
 
 // ExecuteTests invokes the run tests endpoint of cros-test.

@@ -547,7 +547,6 @@ func CreateDims(hwInfo *hwInfo, pool string, readycheck bool) []string {
 	if readycheck {
 		deafultDims = append(deafultDims, "dut_state:ready")
 	}
-
 	dims := ConvertSwarmingLabelsToDims(deafultDims, hwInfo.req.HwDefinition[0].GetSwarmingLabels())
 
 	// Add labels from dut info
@@ -580,7 +579,9 @@ func CreateDims(hwInfo *hwInfo, pool string, readycheck bool) []string {
 func ConvertSwarmingLabelsToDims(defaultDims []string, swarmingLabels []string) []string {
 	dims := defaultDims
 	for _, label := range swarmingLabels {
-		if strings.Contains(label, ":") {
+		if strings.Contains(label, "label-") {
+			dims = append(dims, label)
+		} else if strings.Contains(label, ":") {
 			dims = append(dims, fmt.Sprintf("label-%s", label))
 		} else {
 			dims = append(dims, fmt.Sprintf("label-%s:True", label))
