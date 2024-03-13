@@ -168,7 +168,7 @@ func (c *FakeClient) ScheduleBuild(ctx context.Context, props map[string]interfa
 	return nil, fmt.Errorf("unexpected ScheduleBuild call:\ntags: %+v\nprops: %+v\n", tags, props)
 }
 
-func (c *FakeClient) WaitForBuildStepStart(ctx context.Context, id int64, stepName string) (*buildbucketpb.Build, error) {
+func (c *FakeClient) WaitForBuildStepStart(ctx context.Context, id int64, stepNames ...string) (*buildbucketpb.Build, error) {
 	// Not yet implemented.
 	return nil, fmt.Errorf("WaitForBuildStepStart not yet implemented")
 }

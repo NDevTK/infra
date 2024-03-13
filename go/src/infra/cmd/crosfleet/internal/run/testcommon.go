@@ -41,10 +41,6 @@ const (
 	// containerMetadataURLSuffix is the URL suffix for the container metadata
 	// URL in the ChromeOS image archive.
 	containerMetadataURLSuffix = "metadata/containers.jsonpb"
-	// ctpExecuteStepName is the name of the test-execution step in any
-	// cros_test_platform Buildbucket build. This step is not started until
-	// all request-validation and setup steps are passed.
-	ctpExecuteStepName = "execute"
 	// How long build tags are allowed to be before we trigger a Swarming API
 	// error due to how they store tags in a datastore. Most tags shouldn't be
 	// anywhere close to this limit, but tags that could potentially be very
@@ -56,6 +52,13 @@ const (
 	// Release P0 QS account.
 	releaseP0QSaccount = "release_p0"
 )
+
+// ctExecuteSepNames are the names of the test-execution steps in
+// cros_test_platform Buildbucket builds for CTPv1 and CTPv2.
+var ctpExecuteStepNames = []string{
+	"execute",
+	"ctpv2 sub-build (async)|Suite Executions (async)",
+}
 
 // testCommonFlags contains parameters common to the "run
 // test", "run suite", and "run testplan" subcommands.
@@ -503,7 +506,7 @@ func (l *ctpRunLauncher) confirmCTPBuildsAsync(ctx context.Context, buildLaunchL
 		}
 		waitGroup.Add(1)
 		go func() {
-			updatedBuild, err := l.bbClient.WaitForBuildStepStart(ctx, buildLaunch.Build.Id, ctpExecuteStepName)
+			updatedBuild, err := l.bbClient.WaitForBuildStepStart(ctx, buildLaunch.Build.Id, ctpExecuteStepNames...)
 			mutex.Lock()
 			if updatedBuild != nil {
 				buildLaunch.Build = updatedBuild

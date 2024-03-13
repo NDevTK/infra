@@ -63,7 +63,7 @@ type Client interface {
 	GetBuildsClient() BuildsClient
 	GetBuilderID() *buildbucketpb.BuilderID
 	ScheduleBuild(ctx context.Context, props map[string]interface{}, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error)
-	WaitForBuildStepStart(ctx context.Context, id int64, stepName string) (*buildbucketpb.Build, error)
+	WaitForBuildStepStart(ctx context.Context, id int64, stepNames ...string) (*buildbucketpb.Build, error)
 	GetAllBuildsWithTags(ctx context.Context, tags map[string]string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error)
 	GetBuild(ctx context.Context, ID int64, fields ...string) (*buildbucketpb.Build, error)
 	GetLatestGreenBuild(ctx context.Context) (*buildbucketpb.Build, error)
@@ -169,7 +169,7 @@ func (c *client) ScheduleBuild(ctx context.Context, props map[string]interface{}
 // the given ID, and returns the build once it has started the given step.
 // If the build has a status other than scheduled/started, both the build and
 // a printable error message are returned.
-func (c *client) WaitForBuildStepStart(ctx context.Context, id int64, stepName string) (*buildbucketpb.Build, error) {
+func (c *client) WaitForBuildStepStart(ctx context.Context, id int64, stepNames ...string) (*buildbucketpb.Build, error) {
 	stepStarted := false
 	for {
 		build, err := c.GetBuild(ctx, id)
@@ -184,7 +184,7 @@ func (c *client) WaitForBuildStepStart(ctx context.Context, id int64, stepName s
 			// that the step exists (i.e. the build has reached and started the
 			// step), and ignore the step's current status, since we already
 			// confirmed the build has the overall healthy status "started".
-			if containsStep(build.GetSteps(), stepName) {
+			if containsStep(build.GetSteps(), stepNames) {
 				// Use the stepStarted var to add one more polling interval
 				// to rule out edge cases where the step has started starts and
 				// is briefly green for <10 seconds before quickly failing.
@@ -536,12 +536,14 @@ func idMatch(idToMatch string, idList []string) bool {
 	return false
 }
 
-// containsStep returns true if a step with the given name is found in the
-// given slice of steps.
-func containsStep(steps []*buildbucketpb.Step, stepName string) bool {
+// containsStep returns true if a step with one of the given names is found in
+// the given slice of steps.
+func containsStep(steps []*buildbucketpb.Step, stepNames []string) bool {
 	for _, step := range steps {
-		if step.Name == stepName {
-			return true
+		for _, stepName := range stepNames {
+			if step.Name == stepName {
+				return true
+			}
 		}
 	}
 	return false
