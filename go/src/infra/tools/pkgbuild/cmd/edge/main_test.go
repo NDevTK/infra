@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -38,7 +39,10 @@ func initStdenv(build generators.Platform) {
 		WinSDK:         &generators.ImportTargets{Name: "winsdk_files"},
 		FindBinary: func(bin string) (string, error) {
 			// We don't need to import binaries from host.
-			return filepath.FromSlash(fmt.Sprintf("//bin/%s", bin)), nil
+			if runtime.GOOS == "windows" {
+				return fmt.Sprintf("C:/bin/%s", bin), nil
+			}
+			return fmt.Sprintf("/bin/%s", bin), nil
 		},
 		BuildPlatform: build,
 	}), ShouldBeNil)

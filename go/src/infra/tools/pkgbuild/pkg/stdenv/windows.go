@@ -18,11 +18,14 @@ import (
 func importWindows(cfg *Config, bins ...string) (gs []generators.Generator, err error) {
 	// Import posix utilities from MinGW
 	// We use bash.exe to locate where MinGW is installed.
-	p, err := cfg.FindBinary("bash.exe")
+	bash, err := generators.FromPathBatch("", cfg.FindBinary, "bash.exe")
 	if err != nil {
 		return nil, fmt.Errorf("failed to find MinGW: %w", err)
 	}
-	p = filepath.Dir(p)
+	mingwDir := path.Dir(bash.Targets["bin/bash.exe"].Source)
+	if mingwDir == "" {
+		return nil, fmt.Errorf("failed to determine mingw dir: %v", bash.Targets)
+	}
 
 	g := &generators.ImportTargets{
 		Name:    "posix_import",
@@ -31,7 +34,7 @@ func importWindows(cfg *Config, bins ...string) (gs []generators.Generator, err 
 	for _, bin := range bins {
 		bin = bin + ".exe"
 		g.Targets[path.Join("bin", bin)] = generators.ImportTarget{
-			Source: path.Join(p, bin),
+			Source: path.Join(mingwDir, bin),
 			Mode:   fs.ModeSymlink,
 		}
 	}
