@@ -212,6 +212,19 @@ func populateTestInvocationInfo(
 	}
 }
 
+// getPrimaryDut get the primary Dut if exists. Otherwise, return nil.
+func getPrimaryDut(sk *data.HwTestStateKeeper) *labapi.Dut {
+	if sk == nil {
+		return nil
+	}
+
+	duts := sk.Devices
+	if len(duts) > 0 {
+		return duts[common.Primary].GetDut()
+	}
+	return nil
+}
+
 // populatePrimaryBuildInfo populates primary build info.
 func populatePrimaryBuildInfo(
 	ctx context.Context,
@@ -307,6 +320,15 @@ func populatePrimaryBuildMetadata(
 	if lacrosVersion := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "lacros_version"); lacrosVersion != "" {
 		lacrosInfo.LacrosVersion = lacrosVersion
 	}
+
+	primaryDut := getPrimaryDut(sk)
+	if primaryDut != nil {
+		chromeOSInfo := primaryDut.GetChromeos()
+		if chromeOSInfo != nil {
+			// - Chameleon info
+			buildMetadata.Chameleon = chromeOSInfo.GetChameleon()
+		}
+	}
 }
 
 // populatePrimaryDutInfo populates primary dut info.
@@ -320,17 +342,17 @@ func populatePrimaryDutInfo(
 	primaryExecInfo.DutInfo = primaryDutInfo
 
 	isSkylab := true
-	testDuts := sk.Devices
-	if len(testDuts) > 0 {
-		primaryDutInfo.Dut = testDuts[common.Primary].GetDut()
-		isSkylab = !strings.HasPrefix(testDuts[common.Primary].GetDut().GetId().GetValue(), "satlab-")
+	primaryDut := getPrimaryDut(sk)
+	if primaryDut != nil {
+		primaryDutInfo.Dut = primaryDut
+		isSkylab = !strings.HasPrefix(primaryDut.GetId().GetValue(), "satlab-")
 	}
 
-	primaryDut := sk.CftTestRequest.GetPrimaryDut()
+	requestedPrimaryDut := sk.CftTestRequest.GetPrimaryDut()
 	if sk.PrimaryDeviceMetadata != nil {
-		primaryDut = sk.PrimaryDeviceMetadata
+		requestedPrimaryDut = sk.PrimaryDeviceMetadata
 	}
-	provisionState := primaryDut.GetProvisionState()
+	provisionState := requestedPrimaryDut.GetProvisionState()
 	if provisionState != nil {
 		primaryDutInfo.ProvisionState = provisionState
 	}

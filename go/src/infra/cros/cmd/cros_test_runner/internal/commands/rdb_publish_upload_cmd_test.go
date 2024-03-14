@@ -197,6 +197,12 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					DutModel: &labapi.DutModel{
 						ModelName: "nipperkin",
 					},
+					Chameleon: &labapi.Chameleon{
+						Types: []labapi.Chameleon_Type{
+							labapi.Chameleon_V2,
+							labapi.Chameleon_V3,
+						},
+					},
 				},
 			},
 		}
@@ -221,6 +227,12 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							Firmware: &artifactpb.BuildMetadata_Firmware{},
 							Kernel:   &artifactpb.BuildMetadata_Kernel{},
 							Lacros:   &artifactpb.BuildMetadata_Lacros{},
+							Chameleon: &labapi.Chameleon{
+								Types: []labapi.Chameleon_Type{
+									labapi.Chameleon_V2,
+									labapi.Chameleon_V3,
+								},
+							},
 						},
 					},
 					DutInfo: &artifactpb.DutInfo{
