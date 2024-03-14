@@ -5,6 +5,7 @@
 package costserver
 
 import (
+	"cloud.google.com/go/bigquery"
 	"google.golang.org/grpc"
 
 	fleetcostpb "infra/cros/fleetcost/api"
@@ -22,6 +23,8 @@ type FleetCostFrontend struct {
 	fleetClient ufspb.FleetClient
 	// Debugging information exposed through admin RPCs.
 	ufsHostname string
+	// bqClient is a BigQuery client.
+	bqClient *bigquery.Client
 }
 
 // InstallServices installs services (such as the prpc server) into the frontend.
@@ -45,4 +48,9 @@ func SetUFSClient(costFrontend *FleetCostFrontend, client ufspb.FleetClient) {
 // This is used to populate debugging info in the PingUFS RPC.
 func SetUFSHostname(costFrontend *FleetCostFrontend, ufsHostname string) {
 	costFrontend.ufsHostname = ufsHostname
+}
+
+// SetBQClient sets the bigquery client.
+func SetBQClient(costFrontend *FleetCostFrontend, client *bigquery.Client) {
+	costFrontend.bqClient = client
 }

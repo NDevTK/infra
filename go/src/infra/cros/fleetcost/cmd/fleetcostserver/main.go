@@ -9,6 +9,9 @@ import (
 	"net/http"
 	"strings"
 
+	"cloud.google.com/go/bigquery"
+	"google.golang.org/api/option"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
@@ -61,6 +64,15 @@ func main() {
 		fleetCostFrontend := costserver.NewFleetCostFrontend().(*costserver.FleetCostFrontend)
 		costserver.SetUFSClient(fleetCostFrontend, ufsClient)
 		costserver.SetUFSHostname(fleetCostFrontend, ufsHostname)
+		bqClient, err := bigquery.NewClient(
+			srv.Context,
+			srv.Options.CloudProject,
+			option.WithHTTPClient(httpClient),
+		)
+		if err != nil {
+			return errors.Annotate(err, "setting up bigquery client").Err()
+		}
+		costserver.SetBQClient(fleetCostFrontend, bqClient)
 		costserver.InstallServices(fleetCostFrontend, srv)
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil
