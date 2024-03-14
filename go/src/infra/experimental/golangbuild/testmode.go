@@ -27,6 +27,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/experimental/golangbuild/golangbuildpb"
+	"infra/experimental/golangbuild/testweights"
 )
 
 // testRunner runs a non-strict subset of available tests. It requires a prebuilt
@@ -163,18 +164,23 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 		return nil, err
 	}
 
-	// Parse the output—each line is a test name,
-	// and select ones matching this shard.
+	// Parse the output—each line is a test name.
 	scanner := bufio.NewScanner(bytes.NewReader(listOutput))
 	for scanner.Scan() {
-		name := scanner.Text()
-		if shard.shouldRunTest(name) {
-			tests = append(tests, name)
-		}
+		tests = append(tests, scanner.Text())
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("parsing test list from dist: %w", err)
 	}
+
+	// Determine which tests to run.
+	if _, ok := spec.experiments["golang.shard_by_weight"]; ok {
+		tests = shardTestsByWeight(tests, shard)
+	} else {
+		tests = shardTestsByHash(tests, shard)
+	}
+
+	// Log the tests we're going to run.
 	testList := strings.Join(tests, "\n")
 	if len(tests) == 0 {
 		testList = "(no tests selected)"
@@ -183,6 +189,52 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 		return nil, err
 	}
 	return tests, nil
+}
+
+// shardTestsByHash filters tests down based on shard. The algorithm it
+// uses to do so splits tests across shards by hashing the names and using
+// the hash to index into the set of shards.
+func shardTestsByHash(tests []string, shard testShard) []string {
+	var filtered []string
+	for _, name := range tests {
+		if shard.shouldRunTest(name) {
+			filtered = append(filtered, name)
+		}
+	}
+	return filtered
+}
+
+// shardTestsByWeight filters tests down based on shard. The algorithm it
+// uses involves first identifying long-running ('weighted') tests and
+// dividing them across shards, then picking the shard ID described by shard.
+// It then takes the short tests and shards them by hash. This is intended
+// to strike a balance between sharding reproducibility and build latency by
+// sharding work more evenly.
+func shardTestsByWeight(tests []string, shard testShard) []string {
+	var shortTests []string
+	var longTests []string
+	longWeight := 0
+	for _, name := range tests {
+		if weight := testweights.GoDistTest(name); weight > 1 {
+			longWeight += weight
+			longTests = append(longTests, name)
+		} else {
+			shortTests = append(shortTests, name)
+		}
+	}
+	var shardTotal int
+	target := longWeight / int(shard.nShards)
+	buckets := make([][]string, shard.nShards)
+	i := 0
+	for _, name := range longTests {
+		shardTotal += testweights.GoDistTest(name)
+		buckets[i] = append(buckets[i], name)
+		if i != int(shard.nShards-1) && shardTotal > target {
+			i++
+			shardTotal = 0
+		}
+	}
+	return append(buckets[shard.shardID], shardTestsByHash(shortTests, shard)...)
 }
 
 // fetchSubrepoAndRunTests fetches a target golang.org/x repository,
