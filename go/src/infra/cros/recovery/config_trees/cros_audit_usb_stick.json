@@ -588,6 +588,42 @@
           ],
           "recoveries": [
             {
+              "name": "Recover servo with Power-cycle by smart-hub",
+              "exec_name": "servo_power_cycle_root_servo",
+              "docs": [
+                "Try to power-cycle the servo via smart usbhub to recover it."
+              ],
+              "dependencies": [
+                {
+                  "name": "Device is SSHable",
+                  "exec_name": "cros_ssh",
+                  "docs": [
+                    "Verify that device is reachable by SSH.",
+                    "Limited to 15 seconds."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Set state:NO_SSH",
+                      "exec_name": "servo_set_servo_state",
+                      "exec_args": [
+                        "state:NO_SSH"
+                      ],
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "timeout": "15s",
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_args": [
+                "reset_timeout:60",
+                "wait_timeout:20",
+                "reset_authorized:false"
+              ],
+              "timeout": "2m0s",
+              "run_control": "ALWAYS_RUN"
+            },
+            {
               "name": "Create request to reboot labstation",
               "exec_name": "sample_fail",
               "docs": [
@@ -7688,6 +7724,44 @@
                     }
                   ],
                   "timeout": "15s",
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "recoveries": [
+                {
+                  "name": "Recover servo with Power-cycle by smart-hub",
+                  "exec_name": "servo_power_cycle_root_servo",
+                  "docs": [
+                    "Try to power-cycle the servo via smart usbhub to recover it."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Device is SSHable",
+                      "exec_name": "cros_ssh",
+                      "docs": [
+                        "Verify that device is reachable by SSH.",
+                        "Limited to 15 seconds."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Set state:NO_SSH",
+                          "exec_name": "servo_set_servo_state",
+                          "exec_args": [
+                            "state:NO_SSH"
+                          ],
+                          "run_control": "ALWAYS_RUN"
+                        }
+                      ],
+                      "timeout": "15s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_args": [
+                    "reset_timeout:60",
+                    "wait_timeout:20",
+                    "reset_authorized:false"
+                  ],
+                  "timeout": "2m0s",
                   "run_control": "ALWAYS_RUN"
                 }
               ],

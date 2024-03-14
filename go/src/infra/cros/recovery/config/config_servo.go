@@ -409,6 +409,7 @@ func servoRepairPlan() *Plan {
 					"update_topology:true",
 				},
 				RecoveryActions: []string{
+					"Recover servo with Power-cycle by smart-hub",
 					"Create request to reboot labstation",
 				},
 			},
@@ -1021,6 +1022,9 @@ func servoRepairPlan() *Plan {
 					"file_check:true",
 				},
 				AllowFailAfterRecovery: true,
+				RecoveryActions: []string{
+					"Recover servo with Power-cycle by smart-hub",
+				},
 			},
 			"Is servo_v4(p1) used with type-c connector": {
 				Docs: []string{
@@ -1829,6 +1833,22 @@ func servoRepairPlan() *Plan {
 				ExecTimeout:            &durationpb.Duration{Seconds: 120},
 				RunControl:             RunControl_RUN_ONCE,
 				AllowFailAfterRecovery: true,
+			},
+			"Recover servo with Power-cycle by smart-hub": {
+				Docs: []string{
+					"Try to power-cycle the servo via smart usbhub to recover it.",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+				},
+				ExecName: "servo_power_cycle_root_servo",
+				ExecExtraArgs: []string{
+					"reset_timeout:60",
+					"wait_timeout:20",
+					"reset_authorized:false",
+				},
+				ExecTimeout: &durationpb.Duration{Seconds: 120},
+				RunControl:  RunControl_ALWAYS_RUN,
 			},
 			"Sleep 1s": {
 				ExecName: "sample_sleep",
