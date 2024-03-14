@@ -133,6 +133,8 @@
 //     from outside the repository to catch accidental reads outside of module
 //     boundaries despite the repository not having opted-in to this test
 //     behavior.
+//   - golang.shard_by_weight: Use an alternative test sharding strategy that uses
+//     precomputed weights to achieve a better balance of work across shards.
 //   - luci.best_effort_platform: set by LUCI on less-supported platforms.
 //     Affects which tools are downloaded from CIPD.
 //
