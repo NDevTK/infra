@@ -15,6 +15,7 @@ import (
 	"os/exec"
 	"time"
 
+	"github.com/docker/docker/client"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -33,12 +34,17 @@ var (
 		Name: "drone_docker_invocation_error_count",
 		Help: "Number of docker run errors",
 	})
+	dockerImagesDiskUsage = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "drone_docker_images_disk_usage",
+		Help: "docker images disk usage",
+	})
 )
 
 // Flag options.
 var (
-	address       = flag.String("address", ":9091", "Address of Prometheus metrics HTTP API server exposed by this daemon.")
-	probeInterval = flag.Duration("probe-interval", 1*time.Minute, "The time period between each probe.")
+	address               = flag.String("address", ":9091", "Address of Prometheus metrics HTTP API server exposed by this daemon.")
+	probeInterval         = flag.Duration("probe-interval", 1*time.Minute, "The time period between each probe.")
+	dockerMetricsInterval = flag.Duration("docker-metrics-interval", 5*time.Minute, "The time period between each docker metrics collection.")
 )
 
 func main() {
@@ -71,6 +77,7 @@ func innerMain() error {
 
 	go notifyShutdown(ctx, idleConnsClosed, &svr, 5*time.Minute)
 	go startProber(ctx, *probeInterval)
+	go startDockerMetrics(ctx, *dockerMetricsInterval)
 	log.Println("Started drone-prober and serving Prometheus metrics")
 	http.Handle("/metrics", promhttp.Handler())
 	if err := svr.ListenAndServe(); err != http.ErrServerClosed {
@@ -141,6 +148,46 @@ func runExec(ctx context.Context, cmd *exec.Cmd) (err error) {
 		log.Printf("Command %q failed: stderr %q", cmd.String(), stderr)
 	}
 	return err
+}
+
+// startDockerMetrics in time every interval.
+func startDockerMetrics(ctx context.Context, interval time.Duration) {
+	t := time.NewTimer(interval)
+	for {
+		select {
+		case <-t.C:
+			if err := runDockerMetrics(ctx); err != nil {
+				log.Printf("start run docker metrics failed: err=%q", err)
+			}
+			t.Reset(interval)
+		case <-ctx.Done():
+			if !t.Stop() {
+				<-t.C
+			}
+			return
+		}
+	}
+}
+
+// runDockerMetrics captures the docker metrics.
+func runDockerMetrics(ctx context.Context) error {
+	log.Println("Collecting docker metrics")
+	c, err := client.NewClientWithOpts(client.FromEnv)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := c.Close(); err != nil {
+			log.Printf("error closing docker client: err=%q", err)
+		}
+	}()
+	du, err := c.DiskUsage(ctx)
+	if err != nil {
+		log.Printf("error reading docker disk usage: err=%q", err)
+	} else {
+		dockerImagesDiskUsage.Set(float64(du.LayersSize))
+	}
+	return nil
 }
 
 func notifyShutdown(ctx context.Context, idleConns chan struct{}, svr *http.Server, gracePeriod time.Duration) {
