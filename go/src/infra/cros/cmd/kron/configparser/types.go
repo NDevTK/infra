@@ -83,6 +83,9 @@ type SuiteSchedulerConfigs struct {
 	// Array of all configs. Allows quick access to all new build configurations.
 	newBuildList ConfigList
 
+	// Array of all 3D configs. Allows quick access to all 3D configurations.
+	newBuild3DList ConfigList
+
 	// newBuildMap stores a mapping of build target to relevant NEW_BUILD
 	// configs. Allows for retrieval of configs when searching by build target.
 	newBuildMap map[BuildTarget]ConfigList
@@ -217,4 +220,14 @@ func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *suschpb.Schedu
 	s.configMap[TestPlanName(config.Name)] = config
 
 	return nil
+}
+
+// addConfigToNewBuild3DList takes a 3D configuration and inserts it into the 3D config list.
+func (s *SuiteSchedulerConfigs) addConfigToNewBuild3DList(config *suschpb.SchedulerConfig) {
+	s.newBuild3DList = append(s.newBuild3DList, config)
+	// Add to the array tracking all SuSch configs.
+	s.configList = append(s.configList, config)
+
+	// Add to the direct access map.
+	s.configMap[TestPlanName(config.Name)] = config
 }

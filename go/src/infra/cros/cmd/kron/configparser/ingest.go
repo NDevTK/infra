@@ -22,6 +22,7 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 		configList:     ConfigList{},
 		newBuildList:   []*suschpb.SchedulerConfig{},
 		newBuildMap:    map[BuildTarget]ConfigList{},
+		newBuild3DList: ConfigList{},
 		configTargets:  map[string]TargetOptions{},
 		configMap:      map[TestPlanName]*suschpb.SchedulerConfig{},
 		dailyMap:       map[common.Hour]ConfigList{},
@@ -68,6 +69,8 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 			if err != nil {
 				return nil, err
 			}
+		case suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD_3D:
+			configDS.addConfigToNewBuild3DList(config)
 		default:
 			return nil, fmt.Errorf("unsupported or unknown launch profile encountered in config %s", config.Name)
 		}
