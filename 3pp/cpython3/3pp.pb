@@ -1,6 +1,6 @@
 create {
   verify { test: "python_test.py" }
-  source { patch_version: "chromium.31" }
+  source { patch_version: "chromium.32" }
   package { version_file: ".versions/cpython3.cipd_version" }
 }
 
@@ -52,10 +52,6 @@ create {
     dep: "static_libs/xzutils"
     dep: "static_libs/zlib"
 
-    # On Linux, we need to explicitly build libnsl; on other platforms, it is
-    # part of 'libc'.
-    dep: "static_libs/nsl"
-
     tool: "build_support/pip_bootstrap"
     tool: "tools/autoconf"
     tool: "tools/binutils"
@@ -73,12 +69,6 @@ create {
 
     tool: "tools/cpython3"
   }
-}
-
-# Has some linking issue with nsl.
-create {
-  platform_re: "linux-riscv.*"
-  unsupported: true
 }
 
 create {

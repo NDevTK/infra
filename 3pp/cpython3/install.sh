@@ -29,6 +29,9 @@ SETUP_LOCAL_SKIP=(
   # `crypt` module is deprecated in python3.11 and slated for removal.
   # See peps.python.org/pep-0594/#crypt.
   "_crypt"
+  # `nis` module is deprecated in python3.11 and slated for removal.
+  # See peps.python.org/pep-0594/#nis.
+  "nis"
   # These modules are broken, and seem to reference non-existent symbols
   # at compile time.
   "_testcapi"
@@ -110,12 +113,6 @@ else
 
   # sqlite3 requires -lm (log function).
   WITH_LIBS+=" -lm"
-
-  # On Linux, we will statically compile OpenSSL into the binary, since we
-  # want to be generally system/library agnostic.
-  SETUP_LOCAL_ATTACH+=(
-      "$DEPS_PREFIX/lib/libnsl.a"
-  )
 
   # On Linux, we need to ensure that most symbols from our static-embedded
   # libraries (notably OpenSSL) don't get exported. If they do, they can
