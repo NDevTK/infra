@@ -11,6 +11,7 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/field_mask.proto";
 import "infra/cros/fleetcost/api/indicator.proto";
+import "infra/cros/fleetcost/api/detail.proto";
 
 option go_package = "infra/cros/fleetcost/api;fleetcostpb";
 
@@ -49,6 +50,13 @@ service FleetCost {
   rpc UpdateCostIndicator(UpdateCostIndicatorRequest) returns (UpdateCostIndicatorResponse) {
     option (google.api.http) = {
       post: "/v1/update-cost-indicator"
+    };
+  }
+
+  // GetCostResult gets the cost breakdown for a given device.
+  rpc GetCostResult(GetCostResultRequest) returns (GetCostResultResponse) {
+    option (google.api.http) = {
+      post: "/v1/get-cost-result"
     };
   }
 }
@@ -111,4 +119,16 @@ message UpdateCostIndicatorRequest {
 // UpdateCostIndicatorResponse contains a CostIndicator.
 message UpdateCostIndicatorResponse {
   CostIndicator cost_indicator = 1;
+}
+
+// GetCostResultRequest gets information about the cost of a device.
+message GetCostResultRequest {
+  string device_id = 1;
+  string hostname = 2;
+  bool force_update = 3;
+}
+
+// GetCostResultResponse is the cost detail information obtained by GetCostResult.
+message GetCostResultResponse {
+  CostResult result = 1;
 }
