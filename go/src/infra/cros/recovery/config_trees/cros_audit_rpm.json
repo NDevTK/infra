@@ -329,16 +329,6 @@
           ],
           "conditions": [
             {
-              "name": "Allower power-cycle for servo",
-              "exec_name": "servo_allows_power_cycle_servo",
-              "docs": [
-                "Verify that the power-cycle is allowed for servo in setup.",
-                "Disable power-cycle by usb-hub for servo_v4p1 due to b/243042046",
-                "Exception for Cambrionix usb-hub as part of NPI process testing. (b/273755199)"
-              ],
-              "run_control": "ALWAYS_RUN"
-            },
-            {
               "name": "DUT is not SSHable",
               "exec_name": "sample_fail",
               "docs": [

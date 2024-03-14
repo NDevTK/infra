@@ -1047,16 +1047,6 @@ func servoRepairPlan() *Plan {
 				},
 				AllowFailAfterRecovery: true,
 			},
-			"Allower power-cycle for servo": {
-				Docs: []string{
-					"Verify that the power-cycle is allowed for servo in setup.",
-					"Disable power-cycle by usb-hub for servo_v4p1 due to b/243042046",
-					"Exception for Cambrionix usb-hub as part of NPI process testing. (b/273755199)",
-				},
-				ExecName:      "servo_allows_power_cycle_servo",
-				RunControl:    RunControl_ALWAYS_RUN,
-				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-			},
 			"Is servo_v4(p1) with type-a connector": {
 				Docs: []string{
 					"Verify whether servo V4(p1) device is connect to DUT using Type-A connection.",
@@ -1824,7 +1814,6 @@ func servoRepairPlan() *Plan {
 					"Try to reset(power-cycle) the servo via smart usbhub.",
 				},
 				Conditions: []string{
-					"Allower power-cycle for servo",
 					// We try restart only if we lost network to the dut.
 					"DUT is not SSHable",
 				},
