@@ -349,7 +349,7 @@ func ScheduleAndMonitor(ctx context.Context, scheduler interfaces.SchedulerInter
 		result.BuildUrl = common.BBUrl(builderId, scheduledBuild.GetId())
 		step.SetSummaryMarkdown(fmt.Sprintf("[latest attempt](%s)", common.BBUrl(builderId, scheduledBuild.Id)))
 	} else {
-		return setTopLevelError(ctx, step, result, resultsChan, fmt.Errorf("no bbid found from scheduler: %s", err.Error()))
+		return setTopLevelError(ctx, step, result, resultsChan, fmt.Errorf("no bbid found from scheduler"))
 	}
 
 	// Monitor here
