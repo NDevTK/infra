@@ -12,10 +12,11 @@ DEPS_PREFIX="$2"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-# Determine our Python interpreter version. It will use PEP440's "local
-# version identifier" to specify a local Python version based on our
-# $PATCH_VERSION.
-PY_VERSION="$_3PP_VERSION+${_3PP_PATCH_VERSION}"
+# Transform the patch version into a "git tag" name that will be
+# embedded into the python build info.
+GITTAG_NAME=$(echo -n "$_3PP_PATCH_VERSION" \
+  | tr '[:upper:]' '[:lower:]' | tr -c '.[:alnum:]' '[-*]')
+GITTAG="/bin/echo -n ${GITTAG_NAME}"
 
 # Make sure we don't pick up any modules from the host PYTHONPATH.
 export PYTHONPATH=""
@@ -217,7 +218,7 @@ fi
 # "_sysconfigdata.py" from our current Python, which we need to
 # generate our module list, since it includes our "configure_env"'s
 # CPPFLAGS, LDFLAGS, etc.
-make -j $(nproc) platform
+make -j $(nproc) GITTAG="${GITTAG}" platform
 
 # Generate our static module list, "Modules/Setup.local". Python
 # reads this during build and projects it into its Makefile.
@@ -267,8 +268,8 @@ touch Modules/_blake2/blake2s_impl.c
 # at the end of the linker command for old gcc's (like 4.9, still used on e.g.
 # arm64 as of Nov 2019). This can likely go away when the dockcross base images
 # update to gcc-6 or later.
-make -j $(nproc) python BASEMODLIBS=$BASEMODLIBS
-make install BASEMODLIBS=$BASEMODLIBS
+make -j $(nproc) python BASEMODLIBS=$BASEMODLIBS GITTAG="${GITTAG}"
+make install BASEMODLIBS=$BASEMODLIBS GITTAG="${GITTAG}"
 
 # Augment the Python installation.
 

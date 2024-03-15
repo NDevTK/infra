@@ -50,18 +50,17 @@ class TestPython(unittest.TestCase):
         fd.close()
 
   def test_version(self):
-    output = subprocess.check_output([self.python, '--version'],
+    output = subprocess.check_output([self.python, '-VV'],
                                      stderr=subprocess.STDOUT).decode('utf-8')
-    self.assertTrue(output.startswith('Python '))
+    name, version, buildinfo = output.splitlines()[0].split(' ', maxsplit=2)
+    self.assertEqual(name, 'Python')
+    self.assertEqual(version, os.environ['_3PP_VERSION'])
 
-    expected_version = os.environ['_3PP_VERSION']
     # On windows we don't append the patch version because we actually bundle
     # the official python release, so don't have an opportunity to change the
     # version string.
     if '_3PP_PATCH_VERSION' in os.environ and not self._is_windows:
-      expected_version += '+' + os.environ['_3PP_PATCH_VERSION']
-
-    self.assertEqual(output.lstrip('Python ').strip(), expected_version)
+      self.assertIn(f'({os.environ["_3PP_PATCH_VERSION"]},', buildinfo)
 
   def test_package_import(self):
     for pkg in ('ctypes', 'ssl', 'io', 'binascii', 'hashlib', 'sqlite3'):
