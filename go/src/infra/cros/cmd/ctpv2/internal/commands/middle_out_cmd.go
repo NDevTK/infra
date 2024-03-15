@@ -13,7 +13,9 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
+	"cloud.google.com/go/bigquery"
 	hashstructure "github.com/mitchellh/hashstructure/v2"
 	"google.golang.org/protobuf/proto"
 
@@ -22,6 +24,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
+	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/data"
@@ -36,6 +39,11 @@ type MiddleOutRequestCmd struct {
 
 	// Updates
 	MiddledOutResp *data.MiddleOutResponse
+
+	// BQ client for logging
+	BQClient *bigquery.Client
+	// BuildState
+	BuildState *build.State
 }
 
 // ExtractDependencies (Boiler plate)
@@ -77,8 +85,6 @@ func (cmd *MiddleOutRequestCmd) UpdateStateKeeper(
 	return nil
 }
 
-// (Boiler plate)?
-
 func (cmd *MiddleOutRequestCmd) extractDepsFromFilterStateKeeper(
 	ctx context.Context,
 	sk *data.FilterStateKeeper) error {
@@ -98,6 +104,10 @@ func (cmd *MiddleOutRequestCmd) extractDepsFromFilterStateKeeper(
 		cmd.InternalTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*api.InternalTestplan)
 	}
 
+	if sk.BQClient != nil {
+		cmd.BQClient = sk.BQClient
+	}
+	cmd.BuildState = sk.BuildState
 	return nil
 }
 
@@ -118,7 +128,13 @@ func (cmd *MiddleOutRequestCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Middle Out")
 	defer func() { step.End(err) }()
 
-	//common.WriteProtoToStepLog(ctx, step, cmd.InternalTestPlan, "Middle out input")
+	key := "middleout-execute"
+
+	if cmd.BQClient != nil {
+		analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: analytics.Start}, cmd.InternalTestPlan, cmd.BuildState)
+	}
+	start := time.Now()
+	status := analytics.Success
 
 	// TODO (dbeckett/Aziz) figure out how to properly make this
 	pool := cmd.InternalTestPlan.GetSuiteInfo().GetSuiteMetadata().GetPool()
@@ -129,9 +145,16 @@ func (cmd *MiddleOutRequestCmd) Execute(ctx context.Context) error {
 
 	trReqs, err := middleOut(ctx, cmd.InternalTestPlan, cfg)
 	if err != nil {
+		status = analytics.Fail
+		if cmd.BQClient != nil {
+			analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: status, Duration: float32(time.Now().Sub(start).Seconds())}, cmd.InternalTestPlan, cmd.BuildState)
+		}
+
 		return errors.Annotate(err, "Failed to execute MiddleOPut: ").Err()
 	}
-
+	if cmd.BQClient != nil {
+		analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: status, Duration: float32(time.Now().Sub(start).Seconds())}, cmd.InternalTestPlan, cmd.BuildState)
+	}
 	logging.Infof(
 		ctx,
 		"len of data: %d",

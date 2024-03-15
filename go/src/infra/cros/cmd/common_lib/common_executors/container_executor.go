@@ -8,11 +8,13 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
+	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_commands"
 	"infra/cros/cmd/common_lib/containers"
@@ -49,7 +51,19 @@ func NewContainerExecutor(ctr *crostoolrunner.CrosToolRunner) *ContainerExecutor
 func (ex *ContainerExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
 	switch cmd := cmdInterface.(type) {
 	case *common_commands.ContainerStartCmd:
-		return ex.startContainerCommandExecution(ctx, cmd)
+
+		key := fmt.Sprintf("%s-start", cmd.ContainerRequest.DynamicIdentifier)
+		analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: analytics.Start}, cmd.Req, cmd.BuildState)
+
+		start := time.Now()
+
+		status := analytics.Success
+		err := ex.startContainerCommandExecution(ctx, cmd)
+		if err != nil {
+			status = analytics.Fail
+		}
+		analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: status, Duration: float32(time.Now().Sub(start).Seconds())}, cmd.Req, cmd.BuildState)
+		return err
 	case *common_commands.ContainerCloseLogsCmd:
 		return ex.CloseLogs()
 	case *common_commands.ContainerReadLogsCmd:
