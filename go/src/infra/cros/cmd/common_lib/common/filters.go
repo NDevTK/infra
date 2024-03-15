@@ -27,7 +27,7 @@ var (
 
 	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
-	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder, UseFlagFilterContainerName}
+	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder}
 
 	// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
 	DefaultKoffeeFilterNames = []string{}
