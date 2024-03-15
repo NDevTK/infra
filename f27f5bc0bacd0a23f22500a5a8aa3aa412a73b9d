@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aae2a412_5a376b89",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-15T07:16:02Z",
+      "side": 1,
+      "message": "This is an attempt to get rid of all the useEffects in the class and decouple all the side effects from each other.",
+      "revId": "f27f5bc0bacd0a23f22500a5a8aa3aa412a73b9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
