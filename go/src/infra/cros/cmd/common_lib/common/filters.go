@@ -34,7 +34,7 @@ var (
 
 	// Default shas for backwards compatibility
 	defaultLegacyHWSha      = "a40e76e81f20dc54e26acea67bb9a00ebd0a64552276d4d3931715668798fffd"
-	defaultTTCPSha          = "c0234c254d080bbf77ef098514946da79a4a5dc3c51146c11f5dd43db2021de4"
+	defaultTTCPSha          = "3eefb2c80e9cc946d752bc06501caee3105db8e9f2564f535fc9895bf568d6f0"
 	defaultProvisionSha     = "79878b6cdcde1edbe5abb64c7a7286148b4da0959510e4334b89691edbd1a422"
 	defaultUseFlagFilterSha = "26649b11f6b182307f63429ccfee4462750eeb2d7eb35bb18ef919f13ab310fb"
 	prodShas                = map[string]string{
