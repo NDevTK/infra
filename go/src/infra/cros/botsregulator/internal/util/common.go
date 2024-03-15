@@ -8,6 +8,7 @@ package util
 import (
 	"context"
 	"net/http"
+	"os"
 	"strings"
 
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -69,4 +70,23 @@ func NewStringSet(s []string) Set {
 		m[k] = &emptypb.Empty{}
 	}
 	return m
+}
+
+// Environments supported.
+type environment = int
+
+const (
+	GCP environment = iota
+	Satlab
+)
+
+// GetEnv determines where the server is running.
+// TODO(b/329682593): Support more environments.
+func GetEnv() environment {
+	// K_SERVICE environment variable is set on Cloud Run instances.
+	// 7446b7c04264699f6a1c4990a3126e0769081999:luci/luci-go/server/server.go;l=688
+	if os.Getenv("K_SERVICE") == "" {
+		return Satlab
+	}
+	return GCP
 }

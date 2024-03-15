@@ -58,7 +58,16 @@ func (r *regulator) FetchDUTsByHive(ctx context.Context) ([]*ufspb.MachineLSE, e
 // The provider is responsible for the actual implementation in the provider package.
 // Providers currently supported are GCE Provider and Satlab(WIP).
 func (r *regulator) UpdateConfig(ctx context.Context, hns []string) error {
-	bc, err := provider.NewGCEPClient(ctx, r.opts.bpi, r.opts.cfID)
+	var bc provider.BPI
+	var err error
+	switch util.GetEnv() {
+	case util.GCP:
+		bc, err = provider.NewGCEPClient(ctx, r.opts.bpi, r.opts.cfID)
+	case util.Satlab:
+		err = errors.New("Satlab flow not implemented")
+	default:
+		panic("unrecognized running environment")
+	}
 	if err != nil {
 		return err
 	}
