@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostpb "infra/cros/fleetcost/api/models"
 	"infra/cros/fleetcost/internal/costserver/maskutils"
 	"infra/cros/fleetcost/internal/costserver/models"
 )

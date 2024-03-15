@@ -17,7 +17,7 @@ import (
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/site"
 )
 
@@ -71,8 +71,8 @@ func (c *getCostIndicatorCommand) innerRun(ctx context.Context, a subcommands.Ap
 			PerRPCTimeout: 30 * time.Second,
 		},
 	}
-	fleetCostClient := fleetcostpb.NewFleetCostPRPCClient(prpcClient)
-	resp, err := fleetCostClient.ListCostIndicators(ctx, &fleetcostpb.ListCostIndicatorsRequest{})
+	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
+	resp, err := fleetCostClient.ListCostIndicators(ctx, &fleetcostAPI.ListCostIndicatorsRequest{})
 	fmt.Printf("%#v\n", resp)
 	return err
 }

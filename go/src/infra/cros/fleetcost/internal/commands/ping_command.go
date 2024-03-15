@@ -18,7 +18,7 @@ import (
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/site"
 )
 
@@ -73,8 +73,8 @@ func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, a
 			PerRPCTimeout: 30 * time.Second,
 		},
 	}
-	fleetCostClient := fleetcostpb.NewFleetCostPRPCClient(prpcClient)
-	resp, err := fleetCostClient.Ping(ctx, &fleetcostpb.PingRequest{})
+	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
+	resp, err := fleetCostClient.Ping(ctx, &fleetcostAPI.PingRequest{})
 	fmt.Printf("%s\n", structuraldiff.DebugDump(resp))
 	return err
 }

@@ -10,7 +10,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	testsupport "infra/cros/fleetcost/internal/costserver/testsupport"
 )
 
@@ -22,7 +22,7 @@ func TestPingUFS(t *testing.T) {
 
 	tf.MockUFS.EXPECT().ListMachineLSEs(gomock.Any(), gomock.Any())
 
-	_, err := tf.Frontend.PingUFS(tf.Ctx, &fleetcostpb.PingUFSRequest{})
+	_, err := tf.Frontend.PingUFS(tf.Ctx, &fleetcostAPI.PingUFSRequest{})
 	if err != nil {
 		t.Error(err)
 	}

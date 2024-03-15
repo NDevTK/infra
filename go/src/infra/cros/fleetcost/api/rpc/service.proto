@@ -4,16 +4,16 @@
 
 syntax = "proto3";
 
-package chromeos.fleetcost;
+package fleetcost.api.rpc;
 
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/field_mask.proto";
-import "infra/cros/fleetcost/api/indicator.proto";
-import "infra/cros/fleetcost/api/detail.proto";
+import "infra/cros/fleetcost/api/models/indicator.proto";
+import "infra/cros/fleetcost/api/models/result.proto";
 
-option go_package = "infra/cros/fleetcost/api;fleetcostpb";
+option go_package = "infra/cros/fleetcost/api/rpc;fleetcostpb";
 
 service FleetCost {
   // Ping does not send or receive any information. It just checks that the service is there.
@@ -89,12 +89,12 @@ message PingUFSResponse {
 
 // CreateCostIndicatorRequest creates a new cost indicator.
 message CreateCostIndicatorRequest {
-  CostIndicator cost_indicator = 1;
+  models.CostIndicator cost_indicator = 1;
 }
 
 // CreateCostIndicatorResponse contains the newly created CostIndicator.
 message CreateCostIndicatorResponse {
-  CostIndicator cost_indicator = 1;
+  models.CostIndicator cost_indicator = 1;
 }
 
 // ListCostIndicatorsRequest lists the cost indicators.
@@ -105,12 +105,12 @@ message ListCostIndicatorsRequest {
 
 // ListCostIndicatorsResponse lists cost indicators
 message ListCostIndicatorsResponse {
-  repeated CostIndicator cost_indicator = 1;
+  repeated models.CostIndicator cost_indicator = 1;
 }
 
 // UpdateCostIndicatorRequest updates a cost indicator.
 message UpdateCostIndicatorRequest {
-  CostIndicator cost_indicator = 1 [(google.api.field_behavior) = REQUIRED];
+  models.CostIndicator cost_indicator = 1 [(google.api.field_behavior) = REQUIRED];
 
   // The list of fields to be updated.
   google.protobuf.FieldMask update_mask = 2;
@@ -118,7 +118,7 @@ message UpdateCostIndicatorRequest {
 
 // UpdateCostIndicatorResponse contains a CostIndicator.
 message UpdateCostIndicatorResponse {
-  CostIndicator cost_indicator = 1;
+  models.CostIndicator cost_indicator = 1;
 }
 
 // GetCostResultRequest gets information about the cost of a device.
@@ -130,5 +130,5 @@ message GetCostResultRequest {
 
 // GetCostResultResponse is the cost detail information obtained by GetCostResult.
 message GetCostResultResponse {
-  CostResult result = 1;
+  models.CostResult result = 1;
 }

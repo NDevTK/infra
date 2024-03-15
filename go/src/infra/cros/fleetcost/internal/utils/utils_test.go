@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostpb "infra/cros/fleetcost/api/models"
 )
 
 // TestToIndicatorType checks the output of the indicator type.

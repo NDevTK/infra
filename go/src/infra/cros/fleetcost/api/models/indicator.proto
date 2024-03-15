@@ -4,7 +4,9 @@
 
 syntax = "proto3";
 
-option go_package = "infra/cros/fleetcost/api;fleetcostpb";
+package fleetcost.api.models;
+
+option go_package = "infra/cros/fleetcost/api/models;fleetcostpb";
 
 import "google/type/money.proto";
 

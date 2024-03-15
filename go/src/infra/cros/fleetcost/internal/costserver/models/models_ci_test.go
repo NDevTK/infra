@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/testing/typed"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostpb "infra/cros/fleetcost/api/models"
 	"infra/cros/fleetcost/internal/costserver/models"
 	"infra/cros/fleetcost/internal/costserver/testsupport"
 )

@@ -20,9 +20,10 @@ import (
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
-	fleetcostpb "infra/cros/fleetcost/api"
-	"infra/cros/fleetcost/api/utils"
+	fleetcostpb "infra/cros/fleetcost/api/models"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/site"
+	"infra/cros/fleetcost/internal/utils"
 )
 
 var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
@@ -122,8 +123,8 @@ func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 			PerRPCTimeout: 30 * time.Second,
 		},
 	}
-	fleetCostClient := fleetcostpb.NewFleetCostPRPCClient(prpcClient)
-	resp, err := fleetCostClient.CreateCostIndicator(ctx, &fleetcostpb.CreateCostIndicatorRequest{CostIndicator: &fleetcostpb.CostIndicator{
+	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
+	resp, err := fleetCostClient.CreateCostIndicator(ctx, &fleetcostAPI.CreateCostIndicatorRequest{CostIndicator: &fleetcostpb.CostIndicator{
 		Name:        c.name,
 		Type:        c.typ,
 		Board:       c.board,

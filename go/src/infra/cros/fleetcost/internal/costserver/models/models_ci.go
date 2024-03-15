@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostpb "infra/cros/fleetcost/api/models"
 )
 
 const CostIndicatorKind = "CostIndicatorKind"

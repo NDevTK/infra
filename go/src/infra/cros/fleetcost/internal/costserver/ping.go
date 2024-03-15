@@ -7,10 +7,10 @@ package costserver
 import (
 	"context"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 )
 
 // Ping takes a PingRequest which is empty and returns a PingResponse which is empty.
-func (f *FleetCostFrontend) Ping(context.Context, *fleetcostpb.PingRequest) (*fleetcostpb.PingResponse, error) {
-	return &fleetcostpb.PingResponse{}, nil
+func (f *FleetCostFrontend) Ping(context.Context, *fleetcostAPI.PingRequest) (*fleetcostAPI.PingResponse, error) {
+	return &fleetcostAPI.PingResponse{}, nil
 }

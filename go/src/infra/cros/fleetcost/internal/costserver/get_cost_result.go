@@ -8,10 +8,10 @@ import (
 	"context"
 	"errors"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 )
 
 // GetCostResult gets information about a device.
-func (f *FleetCostFrontend) GetCostResult(ctx context.Context, _ *fleetcostpb.GetCostResultRequest) (*fleetcostpb.GetCostResultResponse, error) {
+func (f *FleetCostFrontend) GetCostResult(ctx context.Context, _ *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
 	return nil, errors.New("not yet implemented")
 }

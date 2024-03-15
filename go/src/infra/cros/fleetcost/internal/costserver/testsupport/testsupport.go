@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostpb "infra/cros/fleetcost/api/models"
 	"infra/cros/fleetcost/internal/costserver"
 	"infra/cros/fleetcost/internal/costserver/controller"
 	"infra/cros/fleetcost/internal/costserver/models"

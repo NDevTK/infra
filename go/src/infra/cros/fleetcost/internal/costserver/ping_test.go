@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	testsupport "infra/cros/fleetcost/internal/costserver/testsupport"
 )
 
@@ -21,11 +21,11 @@ func TestPing(t *testing.T) {
 	ctx := context.Background()
 	tf := testsupport.NewFixture(ctx, t)
 
-	response, err := tf.Frontend.Ping(tf.Ctx, &fleetcostpb.PingRequest{})
+	response, err := tf.Frontend.Ping(tf.Ctx, &fleetcostAPI.PingRequest{})
 	if err != nil {
 		t.Error(err)
 	}
-	if diff := typed.Got(response).Want(&fleetcostpb.PingResponse{}).Diff(); diff != "" {
+	if diff := typed.Got(response).Want(&fleetcostAPI.PingResponse{}).Diff(); diff != "" {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
 	}
 }

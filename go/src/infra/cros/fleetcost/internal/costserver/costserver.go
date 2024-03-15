@@ -8,12 +8,12 @@ import (
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/grpc"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	ufspb "infra/unifiedfleet/api/v1/rpc"
 )
 
 // NewFleetCostFrontend returns a new fleet cost frontend.
-func NewFleetCostFrontend() fleetcostpb.FleetCostServer {
+func NewFleetCostFrontend() fleetcostAPI.FleetCostServer {
 	return &FleetCostFrontend{}
 }
 
@@ -28,8 +28,8 @@ type FleetCostFrontend struct {
 }
 
 // InstallServices installs services (such as the prpc server) into the frontend.
-func InstallServices(costFrontend fleetcostpb.FleetCostServer, srv grpc.ServiceRegistrar) {
-	fleetcostpb.RegisterFleetCostServer(srv, costFrontend)
+func InstallServices(costFrontend fleetcostAPI.FleetCostServer, srv grpc.ServiceRegistrar) {
+	fleetcostAPI.RegisterFleetCostServer(srv, costFrontend)
 }
 
 // SetUFSClient sets the UFS client on a frontend.

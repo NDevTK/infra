@@ -12,7 +12,7 @@ import (
 
 	"google.golang.org/genproto/googleapis/type/money"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostpb "infra/cros/fleetcost/api/models"
 )
 
 // ToIndicatorType converts a string to an indicator.

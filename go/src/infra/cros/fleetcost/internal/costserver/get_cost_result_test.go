@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	testsupport "infra/cros/fleetcost/internal/costserver/testsupport"
 )
 
@@ -16,7 +16,7 @@ func TestGetCostResult(t *testing.T) {
 	t.Parallel()
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	_, err := tf.Frontend.GetCostResult(tf.Ctx, &fleetcostpb.GetCostResultRequest{})
+	_, err := tf.Frontend.GetCostResult(tf.Ctx, &fleetcostAPI.GetCostResultRequest{})
 	if err == nil {
 		t.Error("err should not be nil")
 	}

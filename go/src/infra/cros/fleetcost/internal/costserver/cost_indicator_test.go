@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	fleetcostpb "infra/cros/fleetcost/api"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	testsupport "infra/cros/fleetcost/internal/costserver/testsupport"
 )
 
@@ -16,7 +16,7 @@ func TestCreateCostIndicator(t *testing.T) {
 	t.Parallel()
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	_, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostpb.CreateCostIndicatorRequest{})
+	_, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{})
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
