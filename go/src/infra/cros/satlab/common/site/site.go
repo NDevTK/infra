@@ -25,7 +25,7 @@ import (
 var AppPrefix = "satlab"
 
 // DevCrosAdmService is the dev CrOSSkylabAdmin service.
-const DevCrosAdmService = "staging-skylab-bot-fleet.appspot.com"
+const DevCrosAdmService = "skylab-staging-bot-fleet.appspot.com"
 
 // ProdCrosAdmService is the prod CrOSSkylabAdmin service.
 const ProdCrosAdmService = "chromeos-skylab-bot-fleet.appspot.com"
