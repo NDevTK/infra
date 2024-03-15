@@ -5,14 +5,16 @@ package stdenv
 
 import (
 	"bytes"
-	"os/exec"
+	"context"
+	"io/fs"
 	"path/filepath"
 
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/cipkg/base/workflow"
+	"go.chromium.org/luci/common/exec"
 )
 
-func importDarwin(cfg *Config, bins ...string) (gs []generators.Generator, err error) {
+func importDarwin(ctx context.Context, cfg *Config, bins ...string) (gs []generators.Generator, err error) {
 	// Import posix utilities
 	g, err := generators.FromPathBatch("posix_import", cfg.FindBinary, bins...)
 	if err != nil {
@@ -23,14 +25,14 @@ func importDarwin(cfg *Config, bins ...string) (gs []generators.Generator, err e
 	// Import xcode directory
 	xcode := cfg.XcodeDeveloper
 	if xcode == nil {
-		cmd := exec.Command("xcode-select", "--print-path")
+		cmd := exec.Command(ctx, "xcode-select", "--print-path")
 		out, err := cmd.Output()
 		if err != nil {
 			return nil, err
 		}
 		path := string(bytes.TrimSpace(out))
 
-		cmd = exec.Command(filepath.Join(path, "usr", "bin", "xcodebuild"), "-version")
+		cmd = exec.Command(ctx, filepath.Join(path, "usr", "bin", "xcodebuild"), "-version")
 		out, err = cmd.Output()
 		if err != nil {
 			return nil, err
@@ -40,7 +42,7 @@ func importDarwin(cfg *Config, bins ...string) (gs []generators.Generator, err e
 		xcode = &generators.ImportTargets{
 			Name: "xcode_import",
 			Targets: map[string]generators.ImportTarget{
-				"Developer": {Source: path, Version: ver},
+				"Developer": {Source: path, Mode: fs.ModeSymlink, Version: ver},
 			},
 		}
 	}
@@ -50,21 +52,21 @@ func importDarwin(cfg *Config, bins ...string) (gs []generators.Generator, err e
 	gs = append(gs, &generators.ImportTargets{
 		Name: "darwin_import",
 		Targets: map[string]generators.ImportTarget{
-			"bin/codesign":     {Source: "/usr/bin/codesign"},
-			"bin/xcode-select": {Source: "/usr/bin/xcode-select"},
-			"bin/xcrun":        {Source: "/usr/bin/xcrun"},
-			"bin/hdiutil":      {Source: "/usr/bin/hdiutil"},
-			"bin/pkgbuild":     {Source: "/usr/bin/pkgbuild"},
-			"bin/productbuild": {Source: "/usr/bin/productbuild"},
+			"bin/codesign":     {Source: "/usr/bin/codesign", Mode: fs.ModeSymlink},
+			"bin/xcode-select": {Source: "/usr/bin/xcode-select", Mode: fs.ModeSymlink},
+			"bin/xcrun":        {Source: "/usr/bin/xcrun", Mode: fs.ModeSymlink},
+			"bin/hdiutil":      {Source: "/usr/bin/hdiutil", Mode: fs.ModeSymlink},
+			"bin/pkgbuild":     {Source: "/usr/bin/pkgbuild", Mode: fs.ModeSymlink},
+			"bin/productbuild": {Source: "/usr/bin/productbuild", Mode: fs.ModeSymlink},
 
 			// Using compilers without wrappers require configuring Apple Framework properly, which isn't trivial.
 			// See also: https://github.com/NixOS/nixpkgs/tree/master/pkgs/os-specific/darwin/apple-sdk
-			"bin/cc":      {Source: "/usr/bin/cc"},
-			"bin/c++":     {Source: "/usr/bin/c++"},
-			"bin/clang":   {Source: "/usr/bin/clang"},
-			"bin/clang++": {Source: "/usr/bin/clang++"},
-			"bin/gcc":     {Source: "/usr/bin/gcc"},
-			"bin/g++":     {Source: "/usr/bin/g++"},
+			"bin/cc":      {Source: "/usr/bin/cc", Mode: fs.ModeSymlink},
+			"bin/c++":     {Source: "/usr/bin/c++", Mode: fs.ModeSymlink},
+			"bin/clang":   {Source: "/usr/bin/clang", Mode: fs.ModeSymlink},
+			"bin/clang++": {Source: "/usr/bin/clang++", Mode: fs.ModeSymlink},
+			"bin/gcc":     {Source: "/usr/bin/gcc", Mode: fs.ModeSymlink},
+			"bin/g++":     {Source: "/usr/bin/g++", Mode: fs.ModeSymlink},
 		},
 	})
 

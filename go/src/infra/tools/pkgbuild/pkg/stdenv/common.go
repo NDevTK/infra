@@ -156,13 +156,14 @@ func Init(cfg *Config) error {
 
 	// OS specified
 	gs, err := func() ([]generators.Generator, error) {
+		ctx := context.Background()
 		switch os {
 		case "linux":
 			posixUtils = append(posixUtils, "cpio", "egrep", "fgrep")
 			return importLinux(cfg, posixUtils...)
 		case "darwin":
 			posixUtils = append(posixUtils, "cpio", "egrep", "fgrep")
-			return importDarwin(cfg, posixUtils...)
+			return importDarwin(ctx, cfg, posixUtils...)
 		case "windows":
 			posixUtils = append(posixUtils, "cygpath", "nproc")
 			return importWindows(cfg, posixUtils...)
