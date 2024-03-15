@@ -19,33 +19,36 @@ import (
 )
 
 var (
-	TtcpContainerName       = "cros-ddd-filter" // ttcp-demo
-	LegacyHWContainerName   = "cros-legacy-hw-filter"
-	ProvisionContainerName  = "provision-filter"
-	TestFinderContainerName = "cros-test-finder"
+	TtcpContainerName          = "cros-ddd-filter" // ttcp-demo
+	LegacyHWContainerName      = "cros-legacy-hw-filter"
+	ProvisionContainerName     = "provision-filter"
+	TestFinderContainerName    = "cros-test-finder"
+	UseFlagFilterContainerName = "use_flag_filter"
 
 	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
-	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder}
+	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder, UseFlagFilterContainerName}
 
 	// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
 	DefaultKoffeeFilterNames = []string{}
 
 	// Default shas for backwards compatibility
-	defaultLegacyHWSha  = "a40e76e81f20dc54e26acea67bb9a00ebd0a64552276d4d3931715668798fffd"
-	defaultTTCPSha      = "c0234c254d080bbf77ef098514946da79a4a5dc3c51146c11f5dd43db2021de4"
-	defaultProvisionSha = "79878b6cdcde1edbe5abb64c7a7286148b4da0959510e4334b89691edbd1a422"
-
-	prodShas = map[string]string{
-		TtcpContainerName:      defaultTTCPSha,
-		LegacyHWContainerName:  defaultLegacyHWSha,
-		ProvisionContainerName: defaultProvisionSha}
+	defaultLegacyHWSha      = "a40e76e81f20dc54e26acea67bb9a00ebd0a64552276d4d3931715668798fffd"
+	defaultTTCPSha          = "c0234c254d080bbf77ef098514946da79a4a5dc3c51146c11f5dd43db2021de4"
+	defaultProvisionSha     = "79878b6cdcde1edbe5abb64c7a7286148b4da0959510e4334b89691edbd1a422"
+	defaultUseFlagFilterSha = "26649b11f6b182307f63429ccfee4462750eeb2d7eb35bb18ef919f13ab310fb"
+	prodShas                = map[string]string{
+		TtcpContainerName:          defaultTTCPSha,
+		LegacyHWContainerName:      defaultLegacyHWSha,
+		ProvisionContainerName:     defaultProvisionSha,
+		UseFlagFilterContainerName: defaultUseFlagFilterSha}
 
 	binaryLookup = map[string]string{
-		LegacyHWContainerName:   "legacy_hw_filter",
-		TtcpContainerName:       "solver_service",
-		ProvisionContainerName:  "provision-filter",
-		TestFinderContainerName: "test_finder_filter",
+		LegacyHWContainerName:      "legacy_hw_filter",
+		TtcpContainerName:          "solver_service",
+		ProvisionContainerName:     "provision-filter",
+		TestFinderContainerName:    "test_finder_filter",
+		UseFlagFilterContainerName: "use_flag_filter",
 	}
 )
 
