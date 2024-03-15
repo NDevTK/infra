@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c54c2165_607e5c4e",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 6
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1561572
+      },
+      "writtenOn": "2024-03-15T20:24:11Z",
+      "side": 1,
+      "message": "Can we a color param that can override these colors, with these colors being the defaults? ditto for the other colors in the component below.",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 42
+      },
+      "revId": "56fbee8042a17e9f7f8056f84cf351eaba2cff41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "869385a0_072a6880",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 6
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1561572
+      },
+      "writtenOn": "2024-03-15T20:24:11Z",
+      "side": 1,
+      "message": "I think I recently made some updates to the logs_tree_node in Testhaus, in particular using `Link` from @mui here. Is it worth re-syncing with what Testhaus has?",
+      "range": {
+        "startLine": 99,
+        "startChar": 8,
+        "endLine": 99,
+        "endChar": 19
+      },
+      "revId": "56fbee8042a17e9f7f8056f84cf351eaba2cff41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a000e55e_01b3978a",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 6
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1561572
+      },
+      "writtenOn": "2024-03-15T20:24:11Z",
+      "side": 1,
+      "message": "can font size be a prop as well? With `18px` being a default",
+      "range": {
+        "startLine": 200,
+        "startChar": 47,
+        "endLine": 200,
+        "endChar": 63
+      },
+      "revId": "56fbee8042a17e9f7f8056f84cf351eaba2cff41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
