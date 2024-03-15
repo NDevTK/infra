@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7953d68_b9de6498",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 6
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-15T22:22:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c54c2165_607e5c4e",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 42
+      },
+      "revId": "56fbee8042a17e9f7f8056f84cf351eaba2cff41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "869385a0_072a6880",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e7e116a_14e7f575",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 6
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-15T22:22:48Z",
+      "side": 1,
+      "message": "Oh thanks for the catch I forgot to resync the code.",
+      "parentUuid": "869385a0_072a6880",
+      "range": {
+        "startLine": 99,
+        "startChar": 8,
+        "endLine": 99,
+        "endChar": 19
+      },
+      "revId": "56fbee8042a17e9f7f8056f84cf351eaba2cff41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a000e55e_01b3978a",
@@ -60,6 +108,30 @@
       "writtenOn": "2024-03-15T20:24:11Z",
       "side": 1,
       "message": "can font size be a prop as well? With `18px` being a default",
+      "range": {
+        "startLine": 200,
+        "startChar": 47,
+        "endLine": 200,
+        "endChar": 63
+      },
+      "revId": "56fbee8042a17e9f7f8056f84cf351eaba2cff41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe3b7c6d_5c440a33",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 6
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-15T22:22:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a000e55e_01b3978a",
       "range": {
         "startLine": 200,
         "startChar": 47,
