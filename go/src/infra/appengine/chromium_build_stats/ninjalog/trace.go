@@ -101,6 +101,17 @@ func UploadTraceOnCriticalPath(ctx context.Context, projectID, traceName string,
 	now := time.Now()
 
 	rootSpanID := mustHexID(8)
+	attributeMap := map[string]*tracepb.AttributeValue{}
+	for key, value := range nlog.Metadata.BuildConfigs {
+		attributeMap["build_configs."+key] = &tracepb.AttributeValue{
+			Value: &tracepb.AttributeValue_StringValue{
+				StringValue: &tracepb.TruncatableString{
+					Value: value,
+				},
+			},
+		}
+	}
+
 	request.Spans = append(request.Spans, &tracepb.Span{
 		Name:   "projects/" + projectID + "/traces/" + traceID + "/spans/" + rootSpanID,
 		SpanId: rootSpanID,
@@ -109,6 +120,9 @@ func UploadTraceOnCriticalPath(ctx context.Context, projectID, traceName string,
 		},
 		StartTime: timestamppb.New(now),
 		EndTime:   timestamppb.New(now.Add(criticalPath[len(criticalPath)-1].End)),
+		Attributes: &tracepb.Span_Attributes{
+			AttributeMap: attributeMap,
+		},
 	})
 
 	for _, step := range criticalPath {
