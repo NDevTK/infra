@@ -12,10 +12,14 @@ import (
 	"infra/cros/cmd/cros_test_runner/data"
 	ctpv2_data "infra/cros/cmd/ctpv2/data"
 
+	"cloud.google.com/go/bigquery"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/luciexe/build"
+	"google.golang.org/protobuf/proto"
 )
 
 // ContainerStartCmd represents gcloud auth cmd.
@@ -36,6 +40,11 @@ type ContainerStartCmd struct {
 	// For internal use only
 	// skip starting the container (skips execute)
 	SkipStartingContainer bool
+
+	// For BQ logging
+	Req        *api.InternalTestplan
+	BQClient   *bigquery.Client
+	BuildState *build.State
 }
 
 // Instantiate extracts initial state info from the state keeper.
@@ -159,6 +168,25 @@ func (cmd *ContainerStartCmd) extractDepsFromFilterStateKeeper(
 	if sk.ContainerInfoQueue.Len() < 1 {
 		return fmt.Errorf("cmd %q missing dependency: ContainerRequest", cmd.GetCommandType())
 	}
+
+	if sk.TestPlanStates == nil || len(sk.TestPlanStates) == 0 {
+		if sk.InitialInternalTestPlan != nil {
+			// Set the first state from initial test plan
+			sk.TestPlanStates = append(sk.TestPlanStates, sk.InitialInternalTestPlan)
+			// Set the cmd input test plan
+			cmd.Req = proto.Clone(sk.InitialInternalTestPlan).(*testapi.InternalTestplan)
+		} else {
+			return fmt.Errorf("Cmd %q missing dependency: InputTestPlan", cmd.GetCommandType())
+		}
+	} else {
+		// Get the last test plan state and set it as input test plan for current filter
+		cmd.Req = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*testapi.InternalTestplan)
+	}
+	if sk.BQClient != nil {
+		cmd.BQClient = sk.BQClient
+	}
+	cmd.BuildState = sk.BuildState
+
 	// This cmd will always update the first value in queue.
 	// It's expected that other execution cmd will deque the value later on.
 	contInfo := (sk.ContainerInfoQueue.Front().Value).(*ctpv2_data.ContainerInfo)

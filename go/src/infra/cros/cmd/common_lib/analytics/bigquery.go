@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package common
+package analytics
 
 import (
 	"context"
+	"infra/cros/cmd/ctpv2/data"
 	"strconv"
 	"strings"
 
@@ -18,6 +19,7 @@ import (
 
 const dataset = "analytics"
 const resultsTable = "CTPV2Metrics"
+const taskResultsTable = "CTPV2TaskMetrics"
 
 const saProject = "chromeos-test-platform-data"
 
@@ -39,6 +41,24 @@ type BqData struct {
 	Pool          string
 	Status        string
 	Duration      float32
+}
+
+type TaskData struct {
+	SuiteName     string
+	AnalyticsName string
+	BBID          string
+	Build         string
+	Step          string
+	Freeform      string
+	Pool          string
+	Status        string
+	Duration      float32
+	DisplayName   string
+	TrTaskID      string
+	SchedukeID    string
+	Board         string
+	Model         string
+	Deps          []string
 }
 
 // CtpAnalyticsBQClient will build the client for the CTP BQ tables, using the default CTP SA
@@ -65,7 +85,19 @@ func InsertCTPMetrics(c *bigquery.Client, data []*BqData) error {
 	return nil
 }
 
-// SoftInsertStep inserts a step info to BQ. Do not fail on errors.
+// InsertCTPMetrics will insert the CTP Analytics Data into the CTPv2Metrics Table.
+func InsertCTPTaskMetrics(c *bigquery.Client, data []*TaskData) error {
+	ctx := context.Background()
+	inserter := c.Dataset(dataset).Table(taskResultsTable).Inserter()
+	if err := inserter.Put(ctx, data); err != nil {
+		return err
+	}
+
+	logging.Infof(ctx, "Successfully inserted %v rows to %s", len(data), resultsTable)
+	return nil
+}
+
+// SoftInsertStep insert a step info to BQ. Do not fail on errors.
 func SoftInsertStep(ctx context.Context, BQClient *bigquery.Client, data *BqData) {
 	var rows []*BqData
 	rows = append(rows, data)
@@ -91,6 +123,37 @@ func SoftInsertStepWCtp2Req(ctx context.Context, BQClient *bigquery.Client, data
 
 	if BQClient != nil {
 		err := InsertCTPMetrics(BQClient, rows)
+		if err != nil {
+			logging.Infof(ctx, "ERROR DURING BQ WITE: %s", err)
+
+		}
+	}
+}
+
+// SoftInsertStepWTrReq insert a step info to BQ built from the Trreq. Do not fail on errors.
+func SoftInsertStepWTrReq(ctx context.Context, BQClient *bigquery.Client, data *TaskData, req *data.TrRequest, suiteInfo *api.SuiteInfo, build *build.State) {
+	if req == nil {
+		return
+	}
+	// BBID          string
+	// Build         string
+	// Freeform      string
+	// Pool          string
+	// DisplayName   string
+	// TrTaskID      string
+	// SchedukeID    string
+	// Board         string
+	// Model         string
+	// Deps          []string
+	// data.SuiteName = req.Req
+
+	var rows []*TaskData
+	data.SuiteName = suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
+	data.AnalyticsName = suiteInfo.GetSuiteRequest().GetAnalyticsName()
+	rows = append(rows, data)
+
+	if BQClient != nil {
+		err := InsertCTPTaskMetrics(BQClient, rows)
 		if err != nil {
 			logging.Infof(ctx, "ERROR DURING BQ WITE: %s", err)
 

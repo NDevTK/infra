@@ -11,6 +11,8 @@ import (
 	"log"
 	"sync"
 
+	"infra/cros/cmd/common_lib/analytics"
+
 	"cloud.google.com/go/bigquery"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
@@ -45,7 +47,7 @@ func LuciBuildExecution() {
 			log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
 			logging.Infof(ctx, "have input %v", input)
 			ctrCipdInfo := ctrCipdInfoReader(ctx)
-			bqClient := common.CtpAnalyticsBQClient(ctx)
+			bqClient := analytics.CtpAnalyticsBQClient(ctx)
 			if bqClient != nil {
 				defer bqClient.Close()
 			}
@@ -111,6 +113,7 @@ func executeRequests(
 		CtpV1Requests:         input.GetRequests(),
 		CtpV2Request:          input.GetCtpv2Request(),
 		BQClient:              BQClient,
+		BuildState:            buildState,
 	}
 
 	ctpv2PreConfig := configs.NewCtpv2ExecutionConfig(0, configs.Ctpv2PreExecutionConfigType, cmdCfg, sk)

@@ -8,6 +8,7 @@ import (
 	"cloud.google.com/go/bigquery"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -29,5 +30,6 @@ type PrePostFilterStateKeeper struct {
 	DockerKeyFileLocation string
 
 	// BQ Client for writing CTP level task info to.
-	BQClient *bigquery.Client
+	BQClient   *bigquery.Client
+	BuildState *build.State
 }

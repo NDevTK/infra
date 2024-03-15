@@ -8,10 +8,12 @@ import (
 	"context"
 	"fmt"
 
+	"cloud.google.com/go/bigquery"
 	"google.golang.org/protobuf/proto"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
@@ -28,6 +30,11 @@ type FilterExecutionCmd struct {
 
 	// Updates
 	OutputTestPlan *testapi.InternalTestplan
+
+	BuildState *build.State
+
+	// Logging
+	BQClient *bigquery.Client
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -96,6 +103,10 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 		cmd.InputTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*testapi.InternalTestplan)
 	}
 
+	if sk.BQClient != nil {
+		cmd.BQClient = sk.BQClient
+	}
+	cmd.BuildState = sk.BuildState
 	// TODO (azrahman): remove these custom test plans call once ttcp filter stablized.
 	// Only to be used to test ttcp filter through led.
 	// if cmd.ContainerInfo.GetKey() == "ttcp-demo" {
