@@ -75,7 +75,6 @@ DISABLED_PROJECTS = [
     '\.wheelcache',
     '\.dockerbuild',
     'bootstrap/virtualenv-ext',
-    'go/src/infra/cmd/package_index_cros',
     'go/src/infra/tools/vpython/utils',
 ]
 
