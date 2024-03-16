@@ -27,6 +27,7 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
@@ -329,6 +330,7 @@ var getBuildFields = []string{
 	"status",
 	"tags",
 	"infra.swarming",
+	"infra.backend",
 }
 
 func getSearchBuildsFields() []string {
@@ -346,7 +348,11 @@ func extractBuildData(from *buildbucket_pb.Build) (*Build, error) {
 		Status:  from.GetStatus(),
 	}
 
-	for _, d := range from.GetInfra().GetSwarming().GetBotDimensions() {
+	botDims, err := protoutil.BotDimensions(from)
+	if err != nil {
+		return nil, errors.Annotate(err, "extractBuildData").Err()
+	}
+	for _, d := range botDims {
 		if d.GetKey() == "dut_name" {
 			build.DUTName = d.GetValue()
 			break
