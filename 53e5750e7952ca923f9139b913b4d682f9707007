@@ -70,6 +70,30 @@
       },
       "revId": "53e5750e7952ca923f9139b913b4d682f9707007",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f6be9431_d539d973",
+        "filename": "crdx/packages/log-viewer/package.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-17T23:05:42Z",
+      "side": 1,
+      "message": "if not then probably it should remain here as a dependency. as this will not introduce any conflicts with the main project.",
+      "parentUuid": "0ab95ff1_4d522f5a",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 89,
+        "endChar": 28
+      },
+      "revId": "53e5750e7952ca923f9139b913b4d682f9707007",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
