@@ -11,7 +11,7 @@ copies:
     dst: cpplint.py
 cipd_export: |
   @Subdir python3
-  infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.28
+  infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.32
 data:
   - file: cpplint${exe_suffix}
   - dir: python3
