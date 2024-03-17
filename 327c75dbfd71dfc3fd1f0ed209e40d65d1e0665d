@@ -1,0 +1,157 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5afd62d4_3f0a2caf",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-17T23:04:35Z",
+      "side": 1,
+      "message": "it has a lot of props, I am not sure if memoizing it makes a lot of difference in performance, what was the measured difference?",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6de8cf54_9b6c458c",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-17T23:04:35Z",
+      "side": 1,
+      "message": "nit: just to standardize our usage, please use normal function declarations.",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8c3c192_338ecd03",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-17T23:04:35Z",
+      "side": 1,
+      "message": "nit: return ReactNode is better, also extract a component and call it `NodeText`. also use normal function declaration",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a325f6a_2688687e",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-17T23:04:35Z",
+      "side": 1,
+      "message": "this function can be extracted as well outside this component",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b63d0ba8_90cf33e1",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-17T23:04:35Z",
+      "side": 1,
+      "message": "why do you update the data if the index changes?",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8cb6aff5_e20ec005",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-17T23:04:35Z",
+      "side": 1,
+      "message": "please use `css` property that uses emotion https://emotion.sh/docs/css-prop#use-the-css-prop. Ditto below.",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f173ce1_a7cb88a7",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-17T23:04:35Z",
+      "side": 1,
+      "message": "This can be extracted to it\u0027s own component perhaps called `TreeLeafNode`",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc328719_c51a4d94",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-17T23:04:35Z",
+      "side": 1,
+      "message": "same here, perhaps can be `TreeInternalNode`",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9106e404_7db3ad08",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/types.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1529724
+      },
+      "writtenOn": "2024-03-17T23:04:35Z",
+      "side": 1,
+      "message": "tiny nit: new line here",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
