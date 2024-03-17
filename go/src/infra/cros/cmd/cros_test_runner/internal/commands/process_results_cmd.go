@@ -28,7 +28,7 @@ type ProcessResultsCmd struct {
 	// Deps (all are optional)
 	CftTestRequest  *skylab_test_runner.CFTTestRequest
 	GcsUrl          string
-	TesthausUrl     string
+	TesthausURL     string
 	ProvisionResps  map[string][]*api.InstallResponse
 	TestResponses   *api.CrosTestResponse
 	CurrentDutState dutstate.State // optional
@@ -86,13 +86,13 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Results")
 	defer func() { step.End(build.AttachStatus(err, bbpb.Status_FAILURE, nil)) }()
 
-	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausUrl, common.GetGcsClickableLink(cmd.GcsUrl))
+	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausURL, common.GetGcsClickableLink(cmd.GcsUrl))
 
 	// Default values
 	prejobVerdict := skylab_test_runner.Result_Prejob_Step_VERDICT_UNDEFINED
 	prejobReason := ""
 	isIncomplete := true
-	logData := getLogData(cmd.TesthausUrl, cmd.GcsUrl)
+	logData := getLogData(cmd.TesthausURL, cmd.GcsUrl)
 
 	// Parse provision info
 	var prejob *skylab_test_runner.Result_Prejob = nil
@@ -190,8 +190,8 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	if sk.GcsUrl == "" {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: GcsUrl", cmd.GetCommandType())
 	}
-	if sk.TesthausUrl == "" {
-		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TesthausUrl", cmd.GetCommandType())
+	if sk.TesthausURL == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TesthausURL", cmd.GetCommandType())
 	}
 	if sk.CurrentDutState == "" {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: CurrentDutState", cmd.GetCommandType())
@@ -213,7 +213,7 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	cmd.CftTestRequest = sk.CftTestRequest
 	cmd.TestResponses = sk.TestResponses
 	cmd.GcsUrl = sk.GcsUrl
-	cmd.TesthausUrl = sk.TesthausUrl
+	cmd.TesthausURL = sk.TesthausURL
 	cmd.CurrentDutState = sk.CurrentDutState
 
 	return nil
@@ -278,13 +278,13 @@ func getDefaultAutotestTestCasesResult(ctx context.Context, req *skylab_test_run
 }
 
 // getLogData constructs tasklogdata from provided links.
-func getLogData(testhausUrl string, gcsUrl string) *commonpb.TaskLogData {
+func getLogData(testhausURL string, gcsURL string) *commonpb.TaskLogData {
 	logData := &commonpb.TaskLogData{}
-	if testhausUrl != "" {
-		logData.TesthausUrl = testhausUrl
+	if testhausURL != "" {
+		logData.TesthausUrl = testhausURL
 	}
-	if gcsUrl != "" {
-		logData.GsUrl = gcsUrl
+	if gcsURL != "" {
+		logData.GsUrl = gcsURL
 	}
 
 	return logData

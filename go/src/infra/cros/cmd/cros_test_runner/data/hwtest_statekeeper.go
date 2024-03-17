@@ -74,7 +74,7 @@ type HwTestStateKeeper struct {
 
 	// Publish related
 	GcsUrl              string
-	TesthausUrl         string
+	TesthausURL         string
 	GcsPublishSrcDir    string
 	CurrentInvocationId string
 	TkoPublishSrcDir    string

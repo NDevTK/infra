@@ -139,7 +139,7 @@ func executeHwTests(
 	sk.GcsPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.CpconPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.GcsUrl = gcsurl
-	sk.TesthausUrl = common.GetTesthausUrl(gcsurl)
+	sk.TesthausURL = common.GetTesthausURL(gcsurl)
 	sk.ContainerImages = containerImagesMap
 
 	if sk.CftTestRequest.GetPrimaryDut() != nil {
@@ -155,7 +155,7 @@ func executeHwTests(
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions()))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("gcs-url", gcsurl))
-	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausUrl(gcsurl)))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausURL(gcsurl)))
 
 	// Generate config
 	hwTestConfig := configs.NewTrv2ExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, req.GetStepsConfig())
@@ -222,13 +222,13 @@ func executeHwTestsV2(
 	sk.GcsPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.CpconPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.GcsUrl = gcsurl
-	sk.TesthausUrl = common.GetTesthausUrl(gcsurl)
+	sk.TesthausURL = common.GetTesthausURL(gcsurl)
 	sk.ContainerImages = containerImagesMap
 
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions()))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("gcs-url", gcsurl))
-	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausUrl(gcsurl)))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausURL(gcsurl)))
 
 	populateRequestQueues(sk, req)
 

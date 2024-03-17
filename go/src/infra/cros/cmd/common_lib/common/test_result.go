@@ -132,9 +132,9 @@ func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.
 	return value
 }
 
-// GetTesthausUrl gets testhaus log viewer url.
-func GetTesthausUrl(gcsUrl string) string {
-	return fmt.Sprintf("%s%s", TesthausUrlPrefix, gcsUrl[len("gs://"):])
+// GetTesthausURL gets testhaus log viewer url.
+func GetTesthausURL(gcsUrl string) string {
+	return fmt.Sprintf("%s%s", TesthausURLPrefix, gcsUrl[len("gs://"):])
 }
 
 // GetGcsUrl gets gcs url where all the artifacts will be uploaded.
@@ -147,14 +147,14 @@ func GetGcsUrl(gsRoot string) string {
 }
 
 // GetGcsClickableLink constructs the gcs cliclable link from provided gs url.
-func GetGcsClickableLink(gsUrl string) string {
-	if gsUrl == "" {
+func GetGcsClickableLink(gsURL string) string {
+	if gsURL == "" {
 		return ""
 	}
 	gsPrefix := "gs://"
-	urlSuffix := gsUrl
-	if strings.HasPrefix(gsUrl, gsPrefix) {
-		urlSuffix = gsUrl[len(gsPrefix):]
+	urlSuffix := gsURL
+	if strings.HasPrefix(gsURL, gsPrefix) {
+		urlSuffix = gsURL[len(gsPrefix):]
 	}
 	return fmt.Sprintf("%s%s", GcsUrlPrefix, urlSuffix)
 }

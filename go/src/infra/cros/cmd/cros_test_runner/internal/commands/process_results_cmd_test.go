@@ -56,7 +56,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 		sk := &data.HwTestStateKeeper{
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{ParentBuildId: 12345678},
 			GcsUrl:         "some/url",
-			TesthausUrl:    "some/url",
+			TesthausURL:    "some/url",
 			ProvisionResponses: map[string][]*api.InstallResponse{
 				common.NewPrimaryDeviceIdentifier().Id: {
 					{Status: api.InstallResponse_STATUS_SUCCESS},
@@ -92,7 +92,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 		sk := &data.HwTestStateKeeper{
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{ParentBuildId: 12345678},
 			GcsUrl:         "some/url",
-			TesthausUrl:    "some/url",
+			TesthausURL:    "some/url",
 			TestResponses: &api.CrosTestResponse{
 				TestCaseResults: []*api.TestCaseResult{
 					{
@@ -139,7 +139,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 				},
 			},
 			GcsUrl:      "some/url",
-			TesthausUrl: "some/url",
+			TesthausURL: "some/url",
 			ProvisionResponses: map[string][]*api.InstallResponse{
 				common.NewPrimaryDeviceIdentifier().Id: {
 					{Status: api.InstallResponse_STATUS_SUCCESS},

@@ -193,12 +193,12 @@ func (ex *CrosPublishExecutor) rdbPublishUploadCommandExecution(
 	step, ctx := build.StartStep(ctx, "rdb-publish upload")
 	defer func() { step.End(err) }()
 
-	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausUrl, "")
+	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausURL, "")
 
 	// Create request.
 	rdbMetadata, err := anypb.New(&testapi_metadata.PublishRdbMetadata{
 		CurrentInvocationId: cmd.CurrentInvocationId,
-		TesthausUrl:         cmd.TesthausUrl,
+		TesthausUrl:         cmd.TesthausURL,
 		TestResult:          cmd.TestResultForRdb,
 		Sources:             cmd.Sources,
 		BaseVariant:         cmd.BaseVariant,

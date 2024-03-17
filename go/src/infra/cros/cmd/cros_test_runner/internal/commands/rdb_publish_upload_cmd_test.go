@@ -362,7 +362,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 		sk := &data.HwTestStateKeeper{
 			CurrentInvocationId: "Inv-1234",
-			TesthausUrl:         "www.testhaus.com",
+			TesthausURL:         "www.testhaus.com",
 			BaseVariant: map[string]string{
 				"board":        "asurada",
 				"model":        "hayato",
@@ -429,7 +429,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 	Convey("ProvisionStartCmd extract deps with TestResultForRdb", t, func() {
 		ctx := context.Background()
 		wantInvId := "Inv-1234"
-		wantTesthausUrl := "www.testhaus.com"
+		wantTesthausURL := "www.testhaus.com"
 		wantBaseVariant := map[string]string{
 			"board":        "asurada",
 			"model":        "hayato",
@@ -437,7 +437,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		}
 		sk := &data.HwTestStateKeeper{
 			CurrentInvocationId: wantInvId,
-			TesthausUrl:         wantTesthausUrl,
+			TesthausURL:         wantTesthausURL,
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
 					ProvisionState: &api.ProvisionState{
@@ -458,7 +458,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldBeNil)
 		So(cmd.CurrentInvocationId, ShouldEqual, wantInvId)
-		So(cmd.TesthausUrl, ShouldEqual, wantTesthausUrl)
+		So(cmd.TesthausURL, ShouldEqual, wantTesthausURL)
 		So(cmd.Sources, ShouldResembleProto, &metadata.PublishRdbMetadata_Sources{
 			GsPath:            "gs://some-bucket/builder/build-12345/metadata/sources.jsonpb",
 			IsDeploymentDirty: false,
@@ -469,7 +469,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 	Convey("ProvisionStartCmd extract deps without TestResultForRdb", t, func() {
 		ctx := context.Background()
 		wantInvId := "Inv-1234"
-		wantTesthausUrl := "www.testhaus.com"
+		wantTesthausURL := "www.testhaus.com"
 		wantBaseVariant := map[string]string{
 			"board":        "asurada",
 			"model":        "hayato",
@@ -477,7 +477,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		}
 		sk := &data.HwTestStateKeeper{
 			CurrentInvocationId: wantInvId,
-			TesthausUrl:         wantTesthausUrl,
+			TesthausURL:         wantTesthausURL,
 			BaseVariant:         wantBaseVariant,
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
@@ -489,7 +489,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(cmd.CurrentInvocationId, ShouldEqual, wantInvId)
-		So(cmd.TesthausUrl, ShouldEqual, wantTesthausUrl)
+		So(cmd.TesthausURL, ShouldEqual, wantTesthausURL)
 		So(cmd.BaseVariant, ShouldEqual, wantBaseVariant)
 		So(err, ShouldErrLike, "missing dependency: BuildState")
 	})

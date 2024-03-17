@@ -30,7 +30,7 @@ type RdbPublishUploadCmd struct {
 
 	// Deps
 	CurrentInvocationId string
-	TesthausUrl         string
+	TesthausURL         string
 	Sources             *testapi_metadata.PublishRdbMetadata_Sources
 	BaseVariant         map[string]string
 
@@ -69,8 +69,8 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	if sk.CurrentInvocationId == "" {
 		return fmt.Errorf("Cmd %q missing dependency: CurrentInvocationId", cmd.GetCommandType())
 	}
-	if sk.TesthausUrl == "" {
-		return fmt.Errorf("Cmd %q missing dependency: TesthausUrl", cmd.GetCommandType())
+	if sk.TesthausURL == "" {
+		return fmt.Errorf("Cmd %q missing dependency: TesthausURL", cmd.GetCommandType())
 	}
 	if sk.CftTestRequest == nil {
 		return fmt.Errorf("Cmd %q missing dependency: CftTestRequest", cmd.GetCommandType())
@@ -105,7 +105,7 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 
 	cmd.CurrentInvocationId = sk.CurrentInvocationId
 	cmd.TestResultForRdb = sk.TestResultForRdb
-	cmd.TesthausUrl = sk.TesthausUrl
+	cmd.TesthausURL = sk.TesthausURL
 	cmd.BaseVariant = sk.BaseVariant
 
 	var err error

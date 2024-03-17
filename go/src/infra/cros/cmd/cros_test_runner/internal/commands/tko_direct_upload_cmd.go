@@ -34,7 +34,7 @@ type TkoDirectUploadCmd struct {
 	CftTestRequest   *skylab_test_runner.CFTTestRequest
 	TkoJobName       string // Optional but depends on env var
 	GcsUrl           string // Optional
-	TesthausUrl      string // Optional
+	TesthausURL      string // Optional
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -126,8 +126,8 @@ func (cmd *TkoDirectUploadCmd) uploadTestResultToTKO(ctx context.Context, testRe
 	if cmd.GcsUrl != "" {
 		kvList = append(kvList, fmt.Sprintf("%s=%s", "synchronous_log_data_url", cmd.GcsUrl))
 	}
-	if cmd.TesthausUrl != "" {
-		kvList = append(kvList, fmt.Sprintf("%s=%s", "synchronous_log_data_testhaus_url", cmd.TesthausUrl))
+	if cmd.TesthausURL != "" {
+		kvList = append(kvList, fmt.Sprintf("%s=%s", "synchronous_log_data_testhaus_url", cmd.TesthausURL))
 	}
 	if testResult.GetStartTime() != nil && testResult.GetDuration() != nil {
 		endTime := testResult.GetStartTime().AsTime().Add((testResult.GetDuration().AsDuration())).Unix()
@@ -191,8 +191,8 @@ func (cmd *TkoDirectUploadCmd) extractDepsFromHwTestStateKeeper(ctx context.Cont
 	if sk.GcsUrl == "" {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: GcsUrl", cmd.GetCommandType())
 	}
-	if sk.TesthausUrl == "" {
-		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TesthausUrl", cmd.GetCommandType())
+	if sk.TesthausURL == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TesthausURL", cmd.GetCommandType())
 	}
 	if sk.TestResponses == nil {
 		return fmt.Errorf("Cmd %q missing dependency: HostName", cmd.GetCommandType())

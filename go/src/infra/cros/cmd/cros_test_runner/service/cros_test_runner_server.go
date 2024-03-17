@@ -93,7 +93,7 @@ func (server *CrosTestRunnerServer) ConstructStateKeeper() *data.LocalTestStateK
 	if req.GetLogDataGsRoot() != "" {
 		gcsurl := common.GetGcsUrl(req.GetLogDataGsRoot())
 		sk.GcsUrl = gcsurl
-		sk.TesthausUrl = common.GetTesthausUrl(gcsurl)
+		sk.TesthausURL = common.GetTesthausURL(gcsurl)
 	}
 
 	sk.GcsPublishSrcDir = server.metadata.LogPath
