@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "faa19fd0_b2f7d067",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "It is marginal, removed the memoization.",
+      "parentUuid": "5afd62d4_3f0a2caf",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6de8cf54_9b6c458c",
@@ -31,6 +49,24 @@
       "writtenOn": "2024-03-17T23:04:35Z",
       "side": 1,
       "message": "nit: just to standardize our usage, please use normal function declarations.",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15f5647d_284c3ea1",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6de8cf54_9b6c458c",
       "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -52,6 +88,42 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d28ba1b8_7e83373c",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8c3c192_338ecd03",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "919ff1b9_ba254d74",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8c3c192_338ecd03",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8a325f6a_2688687e",
@@ -65,6 +137,42 @@
       "writtenOn": "2024-03-17T23:04:35Z",
       "side": 1,
       "message": "this function can be extracted as well outside this component",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ff3a325_c7767ed8",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a325f6a_2688687e",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cec1e810_60a9a074",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a325f6a_2688687e",
       "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -86,6 +194,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a91d439_fff134cb",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "Not sure why this is needed as well, perhaps it was when the component was memoized.\n\nAll tests in testhaus pass without this so removing it.",
+      "parentUuid": "b63d0ba8_90cf33e1",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8cb6aff5_e20ec005",
@@ -99,6 +225,24 @@
       "writtenOn": "2024-03-17T23:04:35Z",
       "side": 1,
       "message": "please use `css` property that uses emotion https://emotion.sh/docs/css-prop#use-the-css-prop. Ditto below.",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f730f8aa_fd4750d9",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8cb6aff5_e20ec005",
       "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -120,6 +264,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "20f6b03d_ed278152",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f173ce1_a7cb88a7",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bc328719_c51a4d94",
@@ -137,6 +299,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "529b0c31_9cbb5753",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc328719_c51a4d94",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9106e404_7db3ad08",
@@ -150,6 +330,24 @@
       "writtenOn": "2024-03-17T23:04:35Z",
       "side": 1,
       "message": "tiny nit: new line here",
+      "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a8ad648_6f56f973",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/types.tsx",
+        "patchSetId": 8
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:27:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9106e404_7db3ad08",
       "revId": "327c75dbfd71dfc3fd1f0ed209e40d65d1e0665d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
