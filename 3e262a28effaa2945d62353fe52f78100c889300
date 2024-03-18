@@ -94,6 +94,30 @@
       },
       "revId": "3e262a28effaa2945d62353fe52f78100c889300",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "60bb554b_2adebfc1",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/trace.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2024-03-18T08:33:51Z",
+      "side": 1,
+      "message": "Do you mean to do like this?",
+      "parentUuid": "44c972e1_a8923e6d",
+      "range": {
+        "startLine": 109,
+        "startChar": 12,
+        "endLine": 109,
+        "endChar": 58
+      },
+      "revId": "3e262a28effaa2945d62353fe52f78100c889300",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
