@@ -15,6 +15,26 @@ import (
 	"infra/cros/cmd/kron/common"
 )
 
+// IsFirmware returns if the given config is a firmware config.
+func IsFirmware(config *suschpb.SchedulerConfig) bool {
+	// If the config targets firmware suites then skip ingesting the config.
+	if config.GetFirmwareEcRo() != nil || config.GetFirmwareEcRw() != nil || config.GetFirmwareRo() != nil || config.GetFirmwareRw() != nil || config.GetFirmwareBoardName() != "" {
+		return true
+	}
+
+	return false
+}
+
+// IsMultiDut returns if the given config is a multi-dut config.
+func IsMultiDut(config *suschpb.SchedulerConfig) bool {
+	// If the config targets multi-dut suites then skip ingesting the config.
+	if config.GetTargetOptions().GetMultiDutsBoardsList() != nil || config.GetTargetOptions().GetMultiDutsModelsList() != nil {
+		return true
+	}
+
+	return false
+}
+
 // IngestSuSchConfigs takes in all of the raw Suite Scheduler and Lab configs and ingests
 // them into a more usage structure.
 func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerConfigs, error) {
@@ -37,12 +57,12 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 		}
 
 		// If the config targets firmware suites then skip ingesting the config.
-		if config.FirmwareEcRo != nil || config.FirmwareEcRw != nil || config.FirmwareRo != nil || config.FirmwareRw != nil {
+		if IsFirmware(config) {
 			continue
 		}
 
 		// If the config targets multi-dut suites then skip ingesting the config.
-		if config.TargetOptions.MultiDutsBoardsList != nil || config.TargetOptions.MultiDutsModelsList != nil {
+		if IsMultiDut(config) {
 			continue
 		}
 

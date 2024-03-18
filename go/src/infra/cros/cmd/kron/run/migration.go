@@ -4,7 +4,12 @@
 
 package run
 
-import "infra/cros/cmd/kron/builds"
+import (
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+
+	"infra/cros/cmd/kron/builds"
+	"infra/cros/cmd/kron/configparser"
+)
 
 var (
 	// allowedConfigs is a quick access tool to check if the SuSch config is
@@ -259,6 +264,22 @@ var (
 	}
 )
 
+func isAllowed(config *suschpb.SchedulerConfig) bool {
+	if configparser.IsMultiDut(config) || configparser.IsFirmware(config) {
+		return false
+	}
+
+	if config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD {
+		return true
+	}
+
+	if _, ok := allowedConfigs[config.GetName()]; ok {
+		return true
+	}
+
+	return false
+}
+
 // filterConfigs iterates through the triggered SuSch Configs and scrubs out all
 // configs which are not on the allowlist.
 //
@@ -276,7 +297,7 @@ func filterConfigs(buildPackages []*builds.BuildPackage) []*builds.BuildPackage 
 		// Iterate through the requests and only add requests to the temp build
 		// if their SuSch config is on the allowlist.
 		for _, triggeredConfig := range build.TriggeredConfigs {
-			if _, ok := allowedConfigs[triggeredConfig.Config.Name]; ok {
+			if isAllowed(triggeredConfig.Config) {
 				tempBuild.TriggeredConfigs = append(tempBuild.TriggeredConfigs, triggeredConfig)
 				hadAllowedConfig = true
 			}
