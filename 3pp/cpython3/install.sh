@@ -194,7 +194,6 @@ export CPPFLAGS
 # module list.
 if ! ./configure --prefix "$PREFIX" --host="$CROSS_TRIPLE" \
   --disable-shared --enable-ipv6 \
-  --enable-py-version-override="$PY_VERSION" \
   --with-openssl="$DEPS_PREFIX" --with-libs="$WITH_LIBS" \
   --without-ensurepip \
   $EXTRA_CONFIGURE_ARGS; then
