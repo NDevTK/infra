@@ -16,6 +16,23 @@
       "message": "This is an attempt to get rid of all the useEffects in the class and decouple all the side effects from each other.",
       "revId": "f27f5bc0bacd0a23f22500a5a8aa3aa412a73b9d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa51800b_be72d79f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-18T21:30:00Z",
+      "side": 1,
+      "message": "I tried this patchset on testhaus and it is breaking a few functionalities, mainly on search scrolling and redundant re-renders.\n\nI uploaded a new CL based on this one that includes the fixes, lets continue there:\n\nhttps://chromium-review.googlesource.com/c/infra/infra/+/5375403",
+      "revId": "f27f5bc0bacd0a23f22500a5a8aa3aa412a73b9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
