@@ -8,7 +8,6 @@ import (
 	context "context"
 	io "io"
 	reflect "reflect"
-	time "time"
 
 	types "github.com/docker/docker/api/types"
 	container "github.com/docker/docker/api/types/container"
@@ -72,10 +71,10 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerCommit(arg0, arg1, arg2 i
 }
 
 // ContainerCreate mocks base method.
-func (m *MockContainerAPIClient) ContainerCreate(arg0 context.Context, arg1 *container.Config, arg2 *container.HostConfig, arg3 *network.NetworkingConfig, arg4 *v1.Platform, arg5 string) (container.ContainerCreateCreatedBody, error) {
+func (m *MockContainerAPIClient) ContainerCreate(arg0 context.Context, arg1 *container.Config, arg2 *container.HostConfig, arg3 *network.NetworkingConfig, arg4 *v1.Platform, arg5 string) (container.CreateResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerCreate", arg0, arg1, arg2, arg3, arg4, arg5)
-	ret0, _ := ret[0].(container.ContainerCreateCreatedBody)
+	ret0, _ := ret[0].(container.CreateResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -87,10 +86,10 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerCreate(arg0, arg1, arg2, 
 }
 
 // ContainerDiff mocks base method.
-func (m *MockContainerAPIClient) ContainerDiff(arg0 context.Context, arg1 string) ([]container.ContainerChangeResponseItem, error) {
+func (m *MockContainerAPIClient) ContainerDiff(arg0 context.Context, arg1 string) ([]container.FilesystemChange, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerDiff", arg0, arg1)
-	ret0, _ := ret[0].([]container.ContainerChangeResponseItem)
+	ret0, _ := ret[0].([]container.FilesystemChange)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -321,7 +320,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerResize(arg0, arg1, arg2 i
 }
 
 // ContainerRestart mocks base method.
-func (m *MockContainerAPIClient) ContainerRestart(arg0 context.Context, arg1 string, arg2 *time.Duration) error {
+func (m *MockContainerAPIClient) ContainerRestart(arg0 context.Context, arg1 string, arg2 container.StopOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerRestart", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -394,7 +393,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerStatsOneShot(arg0, arg1 i
 }
 
 // ContainerStop mocks base method.
-func (m *MockContainerAPIClient) ContainerStop(arg0 context.Context, arg1 string, arg2 *time.Duration) error {
+func (m *MockContainerAPIClient) ContainerStop(arg0 context.Context, arg1 string, arg2 container.StopOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerStop", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -452,10 +451,10 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerUpdate(arg0, arg1, arg2 i
 }
 
 // ContainerWait mocks base method.
-func (m *MockContainerAPIClient) ContainerWait(arg0 context.Context, arg1 string, arg2 container.WaitCondition) (<-chan container.ContainerWaitOKBody, <-chan error) {
+func (m *MockContainerAPIClient) ContainerWait(arg0 context.Context, arg1 string, arg2 container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerWait", arg0, arg1, arg2)
-	ret0, _ := ret[0].(<-chan container.ContainerWaitOKBody)
+	ret0, _ := ret[0].(<-chan container.WaitResponse)
 	ret1, _ := ret[1].(<-chan error)
 	return ret0, ret1
 }

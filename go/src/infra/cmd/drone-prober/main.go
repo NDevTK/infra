@@ -15,6 +15,7 @@ import (
 	"os/exec"
 	"time"
 
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -181,7 +182,8 @@ func runDockerMetrics(ctx context.Context) error {
 			log.Printf("error closing docker client: err=%q", err)
 		}
 	}()
-	du, err := c.DiskUsage(ctx)
+	var opts types.DiskUsageOptions
+	du, err := c.DiskUsage(ctx, opts)
 	if err != nil {
 		log.Printf("error reading docker disk usage: err=%q", err)
 	} else {
