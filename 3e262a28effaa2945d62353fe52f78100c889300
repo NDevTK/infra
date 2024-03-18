@@ -70,6 +70,30 @@
       },
       "revId": "3e262a28effaa2945d62353fe52f78100c889300",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44c972e1_a8923e6d",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/trace.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-03-18T07:57:58Z",
+      "side": 1,
+      "message": "\u003e 2) The recipe also may decide to all when the # of targets is too large.\nShould ninjalog parser provide \"all\" target string for this case?\n\nDo you think this is necessary? If so, can you add a TODO?\nWe could treat a build without any `build_targets.*` attribute as targets\u003dall. However, it might be easier to add \"targets.all: true\" explicitly for analysis.",
+      "parentUuid": "018d4e23_1abc32e4",
+      "range": {
+        "startLine": 109,
+        "startChar": 12,
+        "endLine": 109,
+        "endChar": 58
+      },
+      "revId": "3e262a28effaa2945d62353fe52f78100c889300",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
