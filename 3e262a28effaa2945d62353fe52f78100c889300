@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e40c8b09_53b0dcaa",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/trace.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-03-18T07:01:32Z",
+      "side": 1,
+      "message": "The target list can be very large.\n\nFor example, this build has 166 targets. \nhttps://logs.chromium.org/logs/chromium/buildbucket/cr-buildbucket/8753150171484447921/+/u/compile__with_patch_/execution_details#L5556_1\n\nLooking at the document for `tracepb.AttributeValue`, \nhttps://pkg.go.dev/cloud.google.com/go/trace/apiv2/tracepb#Span_Attributes\n\n\u003e The value can be a string up to 256 bytes, a signed 64-bit integer, or the boolean values `true` or `false`. \n\nMy concerns are:\n1) It may exceed the limit when there are many targets.\n2) The recipe also may decide to all when the # of targets is too large. \nShould ninjalog parser provide \"all\" target string for this case?",
+      "range": {
+        "startLine": 109,
+        "startChar": 12,
+        "endLine": 109,
+        "endChar": 58
+      },
+      "revId": "3e262a28effaa2945d62353fe52f78100c889300",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
