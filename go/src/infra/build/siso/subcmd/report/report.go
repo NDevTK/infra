@@ -23,8 +23,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/system/signals"
 
+	"infra/build/siso/hashfs/osfs"
 	"infra/build/siso/o11y/clog"
-	"infra/build/siso/osfs"
 	"infra/build/siso/reapi/digest"
 	"infra/build/siso/ui"
 )
@@ -52,11 +52,13 @@ func Cmd() *subcommands.Command {
 type run struct {
 	subcommands.CommandRunBase
 
-	dir string
+	dir     string
+	osfsopt osfs.Option
 }
 
 func (c *run) init() {
 	c.Flags.StringVar(&c.dir, "C", ".", "ninja running directory")
+	c.osfsopt.RegisterFlags(&c.Flags)
 }
 
 func (c *run) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -90,7 +92,7 @@ func (c *run) run(ctx context.Context) error {
 func (c *run) collect(ctx context.Context) (map[string]digest.Data, error) {
 	report := make(map[string]digest.Data)
 	fsys := os.DirFS(".")
-	osfs := osfs.New("fs")
+	osfs := osfs.New(ctx, "fs", c.osfsopt)
 
 	for _, pat := range []string{"siso*", ".siso*", "args.gn"} {
 		matches, err := fs.Glob(fsys, pat)
@@ -110,7 +112,7 @@ func (c *run) collect(ctx context.Context) (map[string]digest.Data, error) {
 				fname = strings.TrimSuffix(fname, ".redirected")
 				clog.Infof(ctx, "%s -> %s", fname, localFname)
 			}
-			src := osfs.FileSource(localFname)
+			src := osfs.FileSource(localFname, -1)
 			data, err := digest.FromLocalFile(ctx, src)
 			if err != nil {
 				clog.Errorf(ctx, "Error to calculate digest %s: %v", fname, err)
@@ -133,7 +135,7 @@ func (c *run) collect(ctx context.Context) (map[string]digest.Data, error) {
 			return nil
 		}
 		ui.Default.PrintLines(fmt.Sprintf("reading %s", fname))
-		src := osfs.FileSource(fname)
+		src := osfs.FileSource(fname, -1)
 		data, err := digest.FromLocalFile(ctx, src)
 		if err != nil {
 			clog.Errorf(ctx, "Error to calculate digest %s: %v", fname, err)
