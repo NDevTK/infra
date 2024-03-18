@@ -18,6 +18,12 @@ GITTAG_NAME=$(echo -n "$_3PP_PATCH_VERSION" \
   | tr '[:upper:]' '[:lower:]' | tr -c '.[:alnum:]' '[-*]')
 GITTAG="/bin/echo -n ${GITTAG_NAME}"
 
+# The Python build system normally uses git to fill in part of the
+# build id. However, when building from cached source, .git directories
+# are not preserved. Always remove .git in order to get a consistent
+# result.
+rm -rf .git
+
 # Make sure we don't pick up any modules from the host PYTHONPATH.
 export PYTHONPATH=""
 
