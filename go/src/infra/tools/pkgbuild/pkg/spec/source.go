@@ -90,12 +90,8 @@ func (r *DefaultSourceResolver) ResolveScriptSource(hostCipdPlatform, dir string
 	version := strings.TrimSpace(string(out))
 
 	if script.GetUseFetchCheckoutWorkflow() {
-		return
-	}
-
-	if script.GetUseFetchCheckoutWorkflow() {
 		// TODO(fancl): running checkout inside derivation
-		panic("not implemented")
+		return
 	}
 
 	// Get download urls

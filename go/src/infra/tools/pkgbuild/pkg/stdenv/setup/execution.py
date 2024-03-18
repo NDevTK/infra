@@ -128,6 +128,7 @@ class Execution:
   def execute_one_hook(
       self, name: str, ctx: Optional[HookContext] = None) -> bool:
     """Execute hooks until the first one succeeded."""
+    print(f'execute_one_hook: name={name} ctx={ctx} env={self.env}', flush=True)
     try:
       self.current_context = ctx
       return any(itertools.chain(
@@ -140,6 +141,8 @@ class Execution:
   def execute_all_hooks(
       self, name: str, ctx: Optional[HookContext] = None) -> bool:
     """Execute all hooks unless any one failed."""
+    print(
+        f'execute_all_hooks: name={name} ctx={ctx} env={self.env}', flush=True)
     try:
       self.current_context = ctx
       return all(itertools.chain(
@@ -285,6 +288,9 @@ class Execution:
     sys.stdout.flush()
     sys.stderr.flush()
 
+    # Print execution detail
+    print(f'execute_cmd: args={args} env={os.environ}', flush=True)
+
     if not self.execute_one_hook(
         'executeCmd',
         Execution.HookContext.ExecutionCmd(
@@ -305,6 +311,7 @@ class Execution:
     Args:
       name: name of the phase.
     """
+    print(f'execute_phase: name={name} env={self.env}', flush=True)
     py_name = _camel_to_snake(name)
     if name in self.env:
       # If the phase is overridden by environment variable

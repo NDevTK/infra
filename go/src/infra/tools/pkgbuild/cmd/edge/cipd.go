@@ -215,7 +215,7 @@ func (s *step) cipdCommand(arg ...string) *exec.Cmd {
 		cmd = exec.Command(cipd, arg...)
 	}
 	cmd.Stdout = s.Stdout()
-	cmd.Stderr = s.Stderr()
+	cmd.Stderr = s.Stdout()
 
 	return cmd
 }

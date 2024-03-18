@@ -142,7 +142,7 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 			cmd.Dir = cfg.WorkingDir
 			cmd.Stdin = cfg.Stdin
 			cmd.Stdout = io.MultiWriter(step.Stdout(), cfg.Stdout)
-			cmd.Stderr = io.MultiWriter(step.Stderr(), cfg.Stderr)
+			cmd.Stderr = io.MultiWriter(step.Stdout(), cfg.Stderr)
 			cmd.Env = append(slices.Clone(drv.Env), "out="+cfg.OutputDir)
 
 			logging.Infof(ctx, "command: %+v", cmd)
@@ -353,13 +353,6 @@ func (s *step) End(err error) {
 func (s *step) Stdout() io.Writer {
 	if s.b != nil {
 		return s.b.Log("stdout")
-	}
-	return io.Discard
-}
-
-func (s *step) Stderr() io.Writer {
-	if s.b != nil {
-		return s.b.Log("stderr")
 	}
 	return io.Discard
 }
