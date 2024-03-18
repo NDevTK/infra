@@ -77,7 +77,7 @@ func TestValidateMapping(t *testing.T) {
 				Builder: &bbpb.BuilderID{
 					Project: "chromeos",
 					Bucket:  "postsubmit",
-					Builder: "amd64-generic-postsubmit",
+					Builder: "dedede-snapshot",
 				},
 				Status: bbpb.Status_SUCCESS,
 				Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},
@@ -520,7 +520,7 @@ func TestValidateMappingErrors(t *testing.T) {
 				Builder: &bbpb.BuilderID{
 					Project: "chromeos",
 					Bucket:  "postsubmit",
-					Builder: "amd64-generic-postsubmit",
+					Builder: "dedede-snapshot",
 				},
 				Status: bbpb.Status_SUCCESS,
 				Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},

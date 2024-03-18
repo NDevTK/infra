@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/docker"
@@ -41,6 +42,7 @@ type validator struct {
 	ctfImage                        string
 	tmpdirFn                        func(string, string) (string, error)
 	checkTagCriteriaNonEmptyEnabled bool
+	bbMutex                         sync.Mutex
 }
 
 // NewValidator returns a validator with default configuration, which can be
@@ -172,15 +174,26 @@ func (v *validator) validateStarlarkFileExists(ctx context.Context, _, _ string,
 	return nil
 }
 
-// getMostRecentCTFImage returns <name:tag> for the most recent cros-test-finder
-// image produced by amd64-generic-postsubmit.
-func (v *validator) getMostRecentCTFImage(ctx context.Context) (string, error) {
+// ensureCTFImage sets v.ctfImage to the most recent cros-test-finder image
+// produced by dedede-snapshot. If this function has already been called
+// and v.ctfImage is set, this function is a no-op (besides getting the
+// lock to check v.ctfImage).
+func (v *validator) ensureCTFImage(ctx context.Context) error {
+	v.bbMutex.Lock()
+	defer v.bbMutex.Unlock()
+	if v.ctfImage != "" {
+		logging.Debugf(ctx, "CTF image is already set to %q", v.ctfImage)
+		return nil
+	}
+
+	logging.Debugf(ctx, "finding new CTF image")
+
 	bbResp, err := v.bbClient.SearchBuilds(ctx, &bbpb.SearchBuildsRequest{
 		Predicate: &bbpb.BuildPredicate{
 			Builder: &bbpb.BuilderID{
 				Project: "chromeos",
 				Bucket:  "postsubmit",
-				Builder: "amd64-generic-postsubmit",
+				Builder: "dedede-snapshot",
 			},
 			Status: bbpb.Status_SUCCESS,
 			Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},
@@ -189,30 +202,25 @@ func (v *validator) getMostRecentCTFImage(ctx context.Context) (string, error) {
 	})
 
 	if err != nil {
-		return "", fmt.Errorf("SearchBuilds failed: %w", err)
+		return fmt.Errorf("SearchBuilds failed: %w", err)
 	}
 
 	if len(bbResp.Builds) != 1 {
-		return "", fmt.Errorf("expected exactly one build from SearchBuilds, got %q", bbResp)
+		return fmt.Errorf("expected exactly one build from SearchBuilds, got %q", bbResp)
 	}
 
-	return fmt.Sprintf("us-docker.pkg.dev/cros-registry/test-services/cros-test-finder:%d", bbResp.Builds[0].Id), nil
+	v.ctfImage = fmt.Sprintf("us-docker.pkg.dev/cros-registry/test-services/cros-test-finder:%d", bbResp.Builds[0].Id)
+	return nil
 }
 
 // callCrosTestFinder runs cros-test-finder with req as input and returns the
-// response. If v.ctfImage is not set, this function calls getMostRecentCTFImage
-// and sets v.ctfImage (so future calls won't need to call
-// getMostRecentCTFImage).
+// response.
 func (v *validator) callCrosTestFinder(
 	ctx context.Context,
 	req *testpb.CrosTestFinderRequest,
 ) (*testpb.CrosTestFinderResponse, error) {
-	if v.ctfImage == "" {
-		var err error
-		v.ctfImage, err = v.getMostRecentCTFImage(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("failed to find recent cros-test-finder image: %w", err)
-		}
+	if err := v.ensureCTFImage(ctx); err != nil {
+		return nil, err
 	}
 
 	tmpDir, err := v.tmpdirFn("", "ctf*")
