@@ -92,7 +92,7 @@ func pubsubHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err := ninjalog.UploadTraceOnCriticalPath(ctx, appengine.AppID(ctx), "bot build "+strings.Join(info.Metadata.Targets, ","), info); err != nil {
+	if err := ninjalog.UploadTraceOnCriticalPath(ctx, appengine.AppID(ctx), "bot build", info); err != nil {
 		http.Error(w, "failed to upload trace", http.StatusInternalServerError)
 		log.Errorf(ctx, "failed to upload trace: %v", err)
 		return
