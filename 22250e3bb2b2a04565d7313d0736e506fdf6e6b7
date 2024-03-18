@@ -1,0 +1,232 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "386749ea_1c932e5e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "Nice!\n\nI like how simple and transparent this is (i.e., it solves the overhead we faced in [go.dev/issue/49343](https://go.dev/issue/49343)). And it can also scale: if some platform happens to really need sharding tweaking specific only to that platform, it\u0027s possible to generate more raw_{goos}_{goarch}.go files. We probably won\u0027t need to do that, but it\u0027s cool that it can be done easily if truly desired.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 9
+      },
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9d73cab_4bf28c09",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "Thanks. Various minor comments, but this looks great, and I expect the chances of it making a notable improvement are quite good. :)",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b0ccd15_68ec04e1",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "The implementation looks right to me, but if this experiment proves worthwhile to productionize this strategy to become the new the default (which seems quite likely), it might be worth having a simple test to detect if shardTestsByWeight produces parts that don\u0027t add up to the initial input.",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "debb2c1a_4fd30cfa",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "It probably doesn\u0027t matter much, but since this only cares about bucket for the given shard and not subsequent buckets, you could add an early return:\n\n```\nif i \u003e shard.shardID {\n    break\n}\n```\n\nOr even go as far as only gathering the desired bucket content:\n\n```diff\n-buckets :\u003d make([][]string, shard.nShards)\n+var shardBucket []string\n\n-buckets[i] \u003d append(buckets[i], name)\n+if i \u003d\u003d shard.shardID {\n+    shardBucket \u003d append(shardBucket, name)\n+}\n```",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f1408c0_7bb267fc",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "Consider if it\u0027d be slightly simpler/cleaner to instead require the \"go\" binary to be in PATH:\n\n```suggestion\n\tif _, err :\u003d exec.LookPath(\"go\"); err !\u003d nil {\n\t\tlog.Fatalln(\"\u0027go\u0027 command is not found, but it is required:\", err)\n\t}\n```\n\nAnd use it directly below, since `goroot` is not used for anything more than finding and running the go command.",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 2
+      },
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed7ad6a4_70534a70",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "There\u0027s no `testName :\u003d testName` here and in the similar loop with eg.Go(func(){…}) below, maybe that should be added just in case since the go version in go.mod isn\u0027t 1.22+ yet?",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d7987dfe_5f44efb6",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "Consider simplifying by using the `go/format` package. That is, `generateWeightsFile` can write to a `var buf bytes.Buffer` first, call [`format.Source`](https://pkg.go.dev/go/format#Source) on it second, and then atomically write that (a formatted .go file) to a file on disk.",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62108012_8a843c7d",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "(minor) Might be worth handling a non-nil f.Close error by returning it to the caller in this context.",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b40c3115_354e932d",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "(Can\u0027t wait for [go.dev/issue/62244](https://go.dev/issue/62244) to be implemented.)",
+      "range": {
+        "startLine": 180,
+        "startChar": 4,
+        "endLine": 180,
+        "endChar": 49
+      },
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "622e5c23_56992759",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "Whenever an `error` variable is used across a fairly wide set of lines, I suggest giving it a longer name, like `testRunError`. (`err` is great when it\u0027s assigned and used immediately or nearly immediately.)\n\nThe if block on lines 195-198 shadows this `err` with a new `err`, so the assignment on line 196 is a no-op. Making that line `testRunError \u003d ...` makes it easier to read the code and also fixes this.",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc903073_97780f30",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "Is it intentional that \"GOMAXPROCS\u003d16\" is being included here, perhaps because it currently needed to get some race tests not to be skipped? Maybe expand the comment on line 190 to also mention it then.",
+      "range": {
+        "startLine": 191,
+        "startChar": 40,
+        "endLine": 191,
+        "endChar": 55
+      },
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3d211ac_c29179a1",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/gen.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-18T19:36:55Z",
+      "side": 1,
+      "message": "FWIW the weights.go file seems like a better fit for the package comment than gen.go. And at that point maybe even the //go:generate is fine to move there so it\u0027s one fewer file. But it\u0027s also fine as is with the 3 files.",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
