@@ -22,6 +22,52 @@
       },
       "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "222c6929_fc5f31ba",
+        "filename": "go/src/infra/build/siso/hashfs/osfs/osfs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-03-18T08:07:42Z",
+      "side": 1,
+      "message": "Can you add a document for this field?\n```suggestion\n\t// DigestXattrName is xattr name for digest. When it is set, retrieve digest from the xattr.\n\tDigestXattrName string\n```",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 16
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d35e4c2a_6c82a02b",
+        "filename": "go/src/infra/build/siso/hashfs/osfs/osfs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-03-18T08:07:42Z",
+      "side": 1,
+      "message": "Should it fail? or leave a warning log? if DigestXttrName is specified on unsupported platform.",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 0
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
