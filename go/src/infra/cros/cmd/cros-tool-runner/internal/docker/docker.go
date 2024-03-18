@@ -251,7 +251,7 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 	}
 
 	// Add cloudbots related args such as env var, volume.
-	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbot-") {
+	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
 		args = append(args, cloudbotsDockerArgs()...)
 	}
 
@@ -317,6 +317,13 @@ func cloudbotsDockerArgs() []string {
 	// cloudbots host files
 	if v, found := os.LookupEnv("CLOUDBOTS_CA_CERTIFICATE"); found {
 		args = append(args, "-v", fmt.Sprintf("%s:%s", v, v))
+	}
+	hostSSHConfig := "/home/chrome-bot/.ssh/config"
+	cntSSHConfig := "/home/chromeos-test/.ssh/config"
+	if _, err := os.Stat(hostSSHConfig); err != nil {
+		log.Printf("warning: cloudbots .ssh/config file do no exist")
+	} else {
+		args = append(args, "-v", fmt.Sprintf("%s:%s", hostSSHConfig, cntSSHConfig))
 	}
 	return args
 }
