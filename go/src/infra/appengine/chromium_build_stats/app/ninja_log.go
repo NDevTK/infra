@@ -290,7 +290,7 @@ func uploadNinjaLogHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ninjalog.UploadTraceOnCriticalPath(ctx, appengine.AppID(ctx), "user build "+strings.Join(info.Metadata.Targets, ","), info); err != nil {
+	if err := ninjalog.UploadTraceOnCriticalPath(ctx, appengine.AppID(ctx), "user build", info); err != nil {
 		http.Error(w, "failed to upload trace", http.StatusInternalServerError)
 		log.Errorf(ctx, "failed to upload trace: %v", err)
 		return
