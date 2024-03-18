@@ -5,15 +5,18 @@
 package common_builders_test
 
 import (
+	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
+	"infra/cros/cmd/common_lib/common"
 	builders "infra/cros/cmd/common_lib/common_builders"
 )
 
@@ -42,6 +45,9 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 				Build: &api.BuildMode{},
 			},
 			Params: &api.CrosTestRunnerParams{
+				ContainerMetadata: &buildapi.ContainerMetadata{
+					Containers: make(map[string]*buildapi.ContainerImageMap),
+				},
 				TestSuites: []*api.TestSuite{},
 				Keyvals:    make(map[string]string),
 			},
@@ -90,6 +96,9 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 				},
 			},
 			Params: &api.CrosTestRunnerParams{
+				ContainerMetadata: &buildapi.ContainerMetadata{
+					Containers: make(map[string]*buildapi.ContainerImageMap),
+				},
 				TestSuites: []*api.TestSuite{
 					{
 						Name: "test1",
@@ -135,6 +144,9 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 				},
 			},
 			Params: &api.CrosTestRunnerParams{
+				ContainerMetadata: &buildapi.ContainerMetadata{
+					Containers: make(map[string]*buildapi.ContainerImageMap),
+				},
 				TestSuites: []*api.TestSuite{
 					{
 						Name: "test1",
@@ -161,6 +173,11 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 						BuildTarget: "test-board",
 					},
 				},
+				ContainerMetadata: &buildapi.ContainerMetadata{
+					Containers: map[string]*buildapi.ContainerImageMap{
+						"default": {},
+					},
+				},
 				CompanionDuts: []*skylab_test_runner.CFTTestRequest_Device{
 					{
 						DutModel: &labapi.DutModel{
@@ -179,7 +196,8 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 					},
 				},
 				AutotestKeyvals: map[string]string{
-					"fizz": "buzz",
+					"fizz":  "buzz",
+					"build": "Release/R123.0.0-123",
 				},
 				TestSuites: []*api.TestSuite{
 					{
@@ -197,6 +215,15 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 				},
 			},
 			Params: &api.CrosTestRunnerParams{
+				ContainerMetadata: &buildapi.ContainerMetadata{
+					Containers: map[string]*buildapi.ContainerImageMap{
+						"default": {
+							Images: map[string]*buildapi.ContainerImageInfo{
+								"cros-fw-provision": common.CreateTestServicesContainer("cros-fw-provision", common.DefaultCrosFwProvisionSha),
+							},
+						},
+					},
+				},
 				TestSuites: []*api.TestSuite{
 					{
 						Name: "test1",
@@ -204,6 +231,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 				},
 				Keyvals: map[string]string{
 					"fizz":             "buzz",
+					"build":            "Release/R123.0.0-123",
 					"primary-board":    "test-board",
 					"companion-boards": "test-board,test-board,test-board",
 				},
@@ -213,5 +241,6 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 		So(request.GetOrderedTasks(), ShouldHaveLength, 11)
 		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
 		So(request.GetParams(), ShouldResemble, expected.GetParams())
+		So(request.GetParams().GetContainerMetadata().GetContainers()["default"].GetImages()["cros-fw-provision"].GetDigest(), ShouldEqual, fmt.Sprintf("sha256:%s", common.DefaultCrosFwProvisionSha))
 	})
 }

@@ -5,12 +5,14 @@
 package common_builders
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
 	_go "go.chromium.org/chromiumos/config/go"
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
 	"go.chromium.org/chromiumos/config/go/test/artifact"
@@ -539,4 +541,46 @@ func AppendPublishTask(
 			Publish: publishRequest,
 		},
 	})
+}
+
+// PatchContainerMetadata loops through each container info and applies patches
+// to certain containers based on the build version.
+func PatchContainerMetadata(metadata *buildapi.ContainerMetadata, buildStr string) *buildapi.ContainerMetadata {
+	containerMaps := map[string]*buildapi.ContainerImageMap{}
+	buildNumber := ExtractBuildRNumber(buildStr)
+
+	for metadataKey, containerMap := range metadata.GetContainers() {
+		containers := map[string]*buildapi.ContainerImageInfo{}
+		for containerKey, containerInfo := range containerMap.GetImages() {
+			containers[containerKey] = containerInfo
+		}
+
+		if buildNumber < 124 {
+			// R#'s < 124 will be missing cros-fw-provision.
+			// Provide hard-coded sha256 for backwards compatibility.
+			common.AddTestServiceContainerToImages(containers, "cros-fw-provision", common.DefaultCrosFwProvisionSha)
+		}
+
+		containerMaps[metadataKey] = &buildapi.ContainerImageMap{
+			Images: containers,
+		}
+	}
+
+	return &buildapi.ContainerMetadata{
+		Containers: containerMaps,
+	}
+}
+
+// ExtractBuildRNumber takes any build string and extracts
+// the major digits found within the R#.
+// If no R number match found, return -1.
+func ExtractBuildRNumber(buildStr string) int {
+	rNumberRegex := regexp.MustCompile(`R(\d+)`)
+	matches := rNumberRegex.FindStringSubmatch(buildStr)
+	if len(matches) == 0 {
+		return -1
+	}
+	// If there is a match, then there will also be a captured R#.
+	rNum, _ := strconv.Atoi(matches[1])
+	return rNum
 }

@@ -72,7 +72,7 @@ func (constructor *CftCrosTestRunnerRequestConstructor) ConstructStartRequest(cr
 func (constructor *CftCrosTestRunnerRequestConstructor) ConstructParams(crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest) {
 	params := &api.CrosTestRunnerParams{
 		Keyvals:           constructor.Cft.GetAutotestKeyvals(),
-		ContainerMetadata: constructor.Cft.GetContainerMetadata(),
+		ContainerMetadata: PatchContainerMetadata(constructor.Cft.GetContainerMetadata(), constructor.Cft.GetAutotestKeyvals()["build"]),
 		TestSuites:        constructor.Cft.GetTestSuites(),
 	}
 

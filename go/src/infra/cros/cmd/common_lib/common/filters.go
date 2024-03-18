@@ -116,15 +116,7 @@ func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMet
 }
 
 func CreateCTPDefaultWithContainerName(name string, digest string, build int) (*api.CTPFilter, error) {
-	c := &buildapi.ContainerImageInfo{
-		Repository: &buildapi.GcrRepository{
-			Hostname: "us-docker.pkg.dev",
-			Project:  "cros-registry/test-services",
-		},
-		Name:   name,
-		Digest: fmt.Sprintf("sha256:%s", digest),
-		Tags:   []string{"prod"},
-	}
+	c := CreateTestServicesContainer(name, digest)
 
 	binaryName := binaryName(name, build)
 
