@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a6f8c96_cebfb723",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-03-18T08:34:18Z",
+      "side": 1,
+      "message": "do you prefer splitting them?",
+      "parentUuid": "9a1489fc_43a61e8e",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 31
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "bbf3fde4_149f420b",
@@ -64,6 +88,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "62222c2c_fb59775b",
+        "filename": "go/src/infra/build/siso/hashfs/osfs/osfs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-03-18T08:34:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "222c6929_fc5f31ba",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 16
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d35e4c2a_6c82a02b",
@@ -77,6 +125,30 @@
       "writtenOn": "2024-03-18T08:07:42Z",
       "side": 1,
       "message": "Should it fail? or leave a warning log? if DigestXttrName is specified on unsupported platform.",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 0
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c93ae7f5_10013940",
+        "filename": "go/src/infra/build/siso/hashfs/osfs/osfs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-03-18T08:34:18Z",
+      "side": 1,
+      "message": "it\u0027s just performance optimization, and always fallback to normal digest calculation.\nI pefer less error handling.",
+      "parentUuid": "d35e4c2a_6c82a02b",
       "range": {
         "startLine": 54,
         "startChar": 0,
@@ -110,6 +182,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "55c1f805_34b34272",
+        "filename": "go/src/infra/build/siso/hashfs/osfs/osfs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-03-18T08:34:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0a369b1a_51701dba",
+      "range": {
+        "startLine": 175,
+        "startChar": 16,
+        "endLine": 175,
+        "endChar": 26
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "53cf6a2e_5a122b7f",
@@ -133,6 +229,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f5fcc531_1fee4d1d",
+        "filename": "go/src/infra/build/siso/hashfs/osfs/osfs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-03-18T08:34:18Z",
+      "side": 1,
+      "message": "well, I don\u0027t think it makes simpler.\nwe need to pass a pair of src and size in various places.",
+      "parentUuid": "53cf6a2e_5a122b7f",
+      "range": {
+        "startLine": 184,
+        "startChar": 0,
+        "endLine": 189,
+        "endChar": 0
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fa7175e6_3d17f348",
@@ -146,6 +266,30 @@
       "writtenOn": "2024-03-18T08:15:54Z",
       "side": 1,
       "message": "Same here. Does `FileDigestFromXattr` sounds better?\n```suggestion\n// FileDigestFromXattr returns file\u0027s digest via xattr if possible.\nfunc (fs FileSource) FileDigestFromXattr(ctx context.Context) (digest.Digest, error) {\n```",
+      "range": {
+        "startLine": 216,
+        "startChar": 21,
+        "endLine": 216,
+        "endChar": 31
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "75194b7a_63dbf097",
+        "filename": "go/src/infra/build/siso/hashfs/osfs/osfs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-03-18T08:34:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa7175e6_3d17f348",
       "range": {
         "startLine": 216,
         "startChar": 21,
