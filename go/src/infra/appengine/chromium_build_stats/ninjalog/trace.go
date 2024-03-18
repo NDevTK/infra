@@ -10,6 +10,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	trace "cloud.google.com/go/trace/apiv2"
@@ -101,7 +102,15 @@ func UploadTraceOnCriticalPath(ctx context.Context, projectID, traceName string,
 	now := time.Now()
 
 	rootSpanID := mustHexID(8)
-	attributeMap := map[string]*tracepb.AttributeValue{}
+	attributeMap := map[string]*tracepb.AttributeValue{
+		"targets": {
+			Value: &tracepb.AttributeValue_StringValue{
+				StringValue: &tracepb.TruncatableString{
+					Value: strings.Join(nlog.Metadata.getTargets(), ","),
+				},
+			},
+		},
+	}
 	for key, value := range nlog.Metadata.BuildConfigs {
 		attributeMap["build_configs."+key] = &tracepb.AttributeValue{
 			Value: &tracepb.AttributeValue_StringValue{
