@@ -255,7 +255,7 @@ exclude github.com/sergi/go-diff v1.2.0
 
 // Infra modules are included via gclient DEPS.
 replace (
-	go.chromium.org/chromiumos/config/go => ../go.chromium.org/chromiumos/config/go
+	go.chromium.org/chromiumos/config/go => ../go.chromium.org/chromiumos/config/go/src/go.chromium.org/chromiumos/config/go
 	go.chromium.org/chromiumos/infra/proto/go => ../go.chromium.org/chromiumos/infra/proto/go
 	go.chromium.org/luci => ../go.chromium.org/luci
 )
