@@ -22,6 +22,30 @@
       },
       "revId": "3e262a28effaa2945d62353fe52f78100c889300",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfabb07d_5e71a549",
+        "filename": "go/src/infra/appengine/chromium_build_stats/ninjalog/trace.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-03-18T07:04:31Z",
+      "side": 1,
+      "message": "Workaround ideas:\n\n- Truncate the joined targets string when it\u0027s too long.\n- Collect targets only from user builds.\n- Change the attribute format to `build_targets.{target_name}: true` similar to `build_conifgs.*`.",
+      "parentUuid": "e40c8b09_53b0dcaa",
+      "range": {
+        "startLine": 109,
+        "startChar": 12,
+        "endLine": 109,
+        "endChar": 58
+      },
+      "revId": "3e262a28effaa2945d62353fe52f78100c889300",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
