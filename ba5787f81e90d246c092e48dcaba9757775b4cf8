@@ -24,6 +24,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbf3fde4_149f420b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-03-18T08:15:54Z",
+      "side": 1,
+      "message": "Overall, this refactoring looks good to me.",
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "222c6929_fc5f31ba",
@@ -65,6 +82,75 @@
         "startChar": 0,
         "endLine": 57,
         "endChar": 0
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0a369b1a_51701dba",
+        "filename": "go/src/infra/build/siso/hashfs/osfs/osfs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-03-18T08:15:54Z",
+      "side": 1,
+      "message": "Does it make sense to call it `FileDigestFromXattr`?\n```suggestion\n// FileDigestFromXattr returns file\u0027s digest via xattr if possible.\nfunc (fs *OSFS) FileDigestFromXattr(ctx context.Context, name string, size int64) (digest.Digest, error) {\n```",
+      "range": {
+        "startLine": 175,
+        "startChar": 16,
+        "endLine": 175,
+        "endChar": 26
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53cf6a2e_5a122b7f",
+        "filename": "go/src/infra/build/siso/hashfs/osfs/osfs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-03-18T08:15:54Z",
+      "side": 1,
+      "message": "nit:\nIt might be simpler to do size check on FileSource side instead of giving `size` to this function.\n\nThis function can return digest string.",
+      "range": {
+        "startLine": 184,
+        "startChar": 0,
+        "endLine": 189,
+        "endChar": 0
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa7175e6_3d17f348",
+        "filename": "go/src/infra/build/siso/hashfs/osfs/osfs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-03-18T08:15:54Z",
+      "side": 1,
+      "message": "Same here. Does `FileDigestFromXattr` sounds better?\n```suggestion\n// FileDigestFromXattr returns file\u0027s digest via xattr if possible.\nfunc (fs FileSource) FileDigestFromXattr(ctx context.Context) (digest.Digest, error) {\n```",
+      "range": {
+        "startLine": 216,
+        "startChar": 21,
+        "endLine": 216,
+        "endChar": 31
       },
       "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
