@@ -102,6 +102,13 @@ func UploadTraceOnCriticalPath(ctx context.Context, projectID, traceName string,
 
 	rootSpanID := mustHexID(8)
 	attributeMap := map[string]*tracepb.AttributeValue{}
+
+	for _, target := range nlog.Metadata.getTargets() {
+		attributeMap["build_targets."+target] = &tracepb.AttributeValue{
+			Value: &tracepb.AttributeValue_BoolValue{BoolValue: true},
+		}
+	}
+
 	for key, value := range nlog.Metadata.BuildConfigs {
 		attributeMap["build_configs."+key] = &tracepb.AttributeValue{
 			Value: &tracepb.AttributeValue_StringValue{
