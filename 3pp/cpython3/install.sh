@@ -99,7 +99,7 @@ else
   PYTHONEXE=python
   USE_SYSTEM_FFI=
 
-  EXTRA_CONFIGURE_ARGS="--with-fpectl --with-dbmliborder=bdb:gdbm"
+  EXTRA_CONFIGURE_ARGS="--with-dbmliborder=bdb:gdbm"
   # NOTE: This can break building on Mac builder, causing it to freeze
   # during execution.
   #
