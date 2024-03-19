@@ -58,6 +58,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c3fffdb_b7bc36c1",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-03-19T14:38:17Z",
+      "side": 1,
+      "message": "Done, added a test",
+      "parentUuid": "7b0ccd15_68ec04e1",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "debb2c1a_4fd30cfa",
@@ -71,6 +89,24 @@
       "writtenOn": "2024-03-18T19:36:55Z",
       "side": 1,
       "message": "It probably doesn\u0027t matter much, but since this only cares about bucket for the given shard and not subsequent buckets, you could add an early return:\n\n```\nif i \u003e shard.shardID {\n    break\n}\n```\n\nOr even go as far as only gathering the desired bucket content:\n\n```diff\n-buckets :\u003d make([][]string, shard.nShards)\n+var shardBucket []string\n\n-buckets[i] \u003d append(buckets[i], name)\n+if i \u003d\u003d shard.shardID {\n+    shardBucket \u003d append(shardBucket, name)\n+}\n```",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39b52cf0_725ccb1f",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-03-19T14:38:17Z",
+      "side": 1,
+      "message": "Done, I did the latter.",
+      "parentUuid": "debb2c1a_4fd30cfa",
       "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -98,6 +134,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "acce8c7f_28dd419d",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-03-19T14:38:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f1408c0_7bb267fc",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 2
+      },
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ed7ad6a4_70534a70",
@@ -111,6 +171,24 @@
       "writtenOn": "2024-03-18T19:36:55Z",
       "side": 1,
       "message": "There\u0027s no `testName :\u003d testName` here and in the similar loop with eg.Go(func(){…}) below, maybe that should be added just in case since the go version in go.mod isn\u0027t 1.22+ yet?",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aefb697c_24d35182",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-03-19T14:38:17Z",
+      "side": 1,
+      "message": "oof, good catch. man, will I be glad to see this finally available everywhere I work.",
+      "parentUuid": "ed7ad6a4_70534a70",
       "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -132,6 +210,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8fa711c5_7bf3f0f2",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-03-19T14:38:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d7987dfe_5f44efb6",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "62108012_8a843c7d",
@@ -145,6 +241,24 @@
       "writtenOn": "2024-03-18T19:36:55Z",
       "side": 1,
       "message": "(minor) Might be worth handling a non-nil f.Close error by returning it to the caller in this context.",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ed7e9765_b6254f17",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-03-19T14:38:17Z",
+      "side": 1,
+      "message": "now obsolete",
+      "parentUuid": "62108012_8a843c7d",
       "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -189,6 +303,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f6b22bc_0af6f66c",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-03-19T14:38:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "622e5c23_56992759",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dc903073_97780f30",
@@ -214,6 +346,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "bac490f5_3785a4c7",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/computeweights.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-03-19T14:38:17Z",
+      "side": 1,
+      "message": "yup, it is intentional, for more reasons than just that. expanded the comment.",
+      "parentUuid": "dc903073_97780f30",
+      "range": {
+        "startLine": 191,
+        "startChar": 40,
+        "endLine": 191,
+        "endChar": 55
+      },
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "e3d211ac_c29179a1",
         "filename": "go/src/infra/experimental/golangbuild/testweights/gen.go",
         "patchSetId": 1
@@ -225,6 +381,24 @@
       "writtenOn": "2024-03-18T19:36:55Z",
       "side": 1,
       "message": "FWIW the weights.go file seems like a better fit for the package comment than gen.go. And at that point maybe even the //go:generate is fine to move there so it\u0027s one fewer file. But it\u0027s also fine as is with the 3 files.",
+      "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69c36bdb_d647ae03",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/gen.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-03-19T14:38:17Z",
+      "side": 1,
+      "message": "that\u0027s a good point. when I wrote this originally, there was no weights.go. fixed.",
+      "parentUuid": "e3d211ac_c29179a1",
       "revId": "22250e3bb2b2a04565d7313d0736e506fdf6e6b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
