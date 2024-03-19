@@ -173,3 +173,19 @@ func (o BranchOpt) args() []string {
 }
 
 func (o BranchOpt) cloneOptArgs() []string { return o.args() }
+
+type PushOptionOpt struct {
+	val string
+}
+
+// Used to send push options to the server, for example a push-justification for direct git pushes
+func PushOption(val string) *PushOptionOpt {
+	return &PushOptionOpt{val: val}
+}
+
+func (o PushOptionOpt) args() []string {
+	return []string{"--push-option", fmt.Sprint(o.val)}
+
+}
+
+func (o PushOptionOpt) pushRefOptArgs() []string { return o.args() }

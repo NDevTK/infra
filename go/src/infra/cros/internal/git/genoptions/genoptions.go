@@ -124,6 +124,12 @@ var options = []Option{
 		Cmds: []*Command{cloneCmd},
 		Doc:  `Branch specifies the branch to clone from. Must be used in conjunction with SingleBranch`,
 	},
+	{
+		Name: "push-option",
+		Type: reflect.String,
+		Cmds: []*Command{pushRefCmd},
+		Doc:  `Used to send push options to the server, for example a push-justification for direct git pushes`,
+	},
 }
 
 // genInterfaces writes interfaces for each unique Command in options to w.
