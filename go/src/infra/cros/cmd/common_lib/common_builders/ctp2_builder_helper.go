@@ -112,6 +112,7 @@ func buildSuiteRequest(v1 *test_platform.Request) *testapi.SuiteRequest {
 		AnalyticsName:   getAnalyticsName(v1),
 		MaxInShard:      v1.GetTestPlan().GetMaxInShard(),
 		DddSuite:        IsDDDSuite(v1),
+		RetryCount:      GetRetryCount(v1),
 	}
 }
 
@@ -283,6 +284,16 @@ func getAnalyticsName(v1 *test_platform.Request) string {
 // TODO (b:327505895): For now, use the ddd prefix, but long term will move to a proper flag.
 func IsDDDSuite(v1 *test_platform.Request) bool {
 	return strings.HasPrefix(getAnalyticsName(v1), "ddd")
+}
+
+// GetRetryCount returns the retry count from v1 request.
+// By default it will be 0 which means no retry.
+func GetRetryCount(v1 *test_platform.Request) int64 {
+	if v1.GetParams().GetRetry().GetAllow() {
+		return int64(v1.GetParams().GetRetry().GetMax())
+	}
+
+	return 0
 }
 
 // GetBuildType parses the software dependency's ChromeosBuild

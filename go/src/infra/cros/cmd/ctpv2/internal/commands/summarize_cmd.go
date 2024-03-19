@@ -146,6 +146,8 @@ func ProcessResultsMap(ctx context.Context, keys []string, resultMap map[string]
 		defer func() { step.End(err) }()
 
 		resultsList := resultMap[key]
+		// sort by attempt
+		sort.Sort(data.ByAttempt(resultsList))
 		links := []string{}
 
 		for _, result := range resultsList {
@@ -213,8 +215,10 @@ func GroupErrAndNonErrResults(inputMap map[string][]*data.TestResults) ([]string
 					addToMap(errorResultMap, errKey, eachResult)
 				}
 			} else {
+				if _, ok := nonErrorResultMap[eachResult.Key]; !ok {
+					nonErrorResultKeys = append(nonErrorResultKeys, eachResult.Key)
+				}
 				addToMap(nonErrorResultMap, eachResult.Key, eachResult)
-				nonErrorResultKeys = append(nonErrorResultKeys, eachResult.Key)
 			}
 		}
 	}

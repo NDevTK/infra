@@ -40,6 +40,12 @@ func (t *TestResults) GetFailureErr() error {
 	return nil
 }
 
+type ByAttempt []*TestResults
+
+func (a ByAttempt) Len() int           { return len(a) }
+func (a ByAttempt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByAttempt) Less(i, j int) bool { return a[i].Attempt < a[j].Attempt }
+
 type BotParamsRejectedError struct {
 	Key          string
 	RejectedDims []string

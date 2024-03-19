@@ -146,7 +146,7 @@ func fillTestCasesIntoTestPlan(ctx context.Context, testPlan *api.InternalTestpl
 
 func tfToCTPTestCase(metadata *api.TestCaseMetadata) *api.CTPTestCase {
 	tc := &api.CTPTestCase{
-		Name:     metadata.GetTestCase().GetName(),
+		Name:     metadata.GetTestCase().GetId().GetValue(),
 		Metadata: metadata,
 	}
 

@@ -174,7 +174,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	wg := &sync.WaitGroup{}
 	for k, v := range buildMap {
 		wg.Add(1)
-		go ScheduleAndMonitor(ctx, cmd.Scheduler, v, cmd.BuildState, k, wg, resultsChan, suiteName)
+		go ScheduleAndMonitor(ctx, cmd.Scheduler, v, cmd.BuildState, k, wg, resultsChan, suiteName, 0)
 	}
 
 	go func() {
@@ -196,7 +196,11 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 }
 
 type BuildRequest struct {
+	Key                  string
+	shardNum             int
 	ScheduleBuildRequest *buildbucketpb.ScheduleBuildRequest
+	OriginalTrReq        *data.TrRequest
+	SuiteInfo            *api.SuiteInfo
 	err                  error
 }
 
@@ -225,7 +229,7 @@ func GenerateRequests(ctx context.Context, moResp *data.MiddleOutResponse, build
 
 		modifiedKey := fmt.Sprintf("%s-shard-%d", key, shardMap[key])
 
-		buildReq := &BuildRequest{}
+		buildReq := &BuildRequest{Key: modifiedKey, OriginalTrReq: trReq, shardNum: shardMap[key], SuiteInfo: moResp.SuiteInfo}
 		req, err := GenerateReq(ctx, trReq, modifiedKey, buildState, moResp.SuiteInfo, shardMap[key])
 		if err != nil {
 			buildReq.err = err
@@ -309,14 +313,19 @@ func GenerateReq(ctx context.Context, trReq *data.TrRequest, key string, buildSt
 	return req, nil
 }
 
-func ScheduleAndMonitor(ctx context.Context, scheduler interfaces.SchedulerInterface, buildReq *BuildRequest, buildState *build.State, key string, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, suiteName string) error {
+func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerInterface, buildReq *BuildRequest, buildState *build.State, key string, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, suiteName string, retryNum int) error {
 	defer wg.Done()
 	var err error
-	step, ctx := build.StartStep(ctx, key)
+
+	stepName := key
+	if retryNum > 0 {
+		stepName = fmt.Sprintf("%s-retry-%d", key, retryNum)
+	}
+	step, ctx := build.StartStep(rootCtx, stepName)
 	defer func() { step.End(err) }()
 
 	// Construct test results
-	result := &data.TestResults{Key: key, Suite: suiteName}
+	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum}
 
 	if buildReq.err != nil {
 		return setTopLevelError(ctx, step, result, resultsChan, buildReq.err)
@@ -347,54 +356,23 @@ func ScheduleAndMonitor(ctx context.Context, scheduler interfaces.SchedulerInter
 
 	if scheduledBuild != nil && scheduledBuild.GetId() != 0 {
 		result.BuildUrl = common.BBUrl(builderId, scheduledBuild.GetId())
-		step.SetSummaryMarkdown(fmt.Sprintf("[latest attempt](%s)", common.BBUrl(builderId, scheduledBuild.Id)))
+		step.SetSummaryMarkdown(fmt.Sprintf("[latest attempt](%s)", common.BBUrl(builderId, scheduledBuild.GetId())))
 	} else {
 		return setTopLevelError(ctx, step, result, resultsChan, fmt.Errorf("no bbid found from scheduler"))
 	}
 
 	// Monitor here
 	loopSleepInterval := 30 * time.Second
+	statusReq := &buildbucketpb.GetBuildStatusRequest{
+		Id: scheduledBuild.GetId(),
+	}
+	for {
 
-	if scheduledBuild != nil {
-		statusReq := &buildbucketpb.GetBuildStatusRequest{
-			Id: scheduledBuild.Id,
-		}
-		for {
-
-			// Check Build status.
-			b, err := bbClient.GetBuildStatus(ctx, statusReq)
+		buildInfo, err := CheckBuildInfoIfBuildEnded(ctx, statusReq, bbClient)
+		if err != nil || buildInfo == nil {
+			// this means the build didn't end
 			if err != nil {
-				logging.Infof(ctx, "error while getting build status: %s", err)
-			}
-
-			if b != nil && int(b.GetStatus())&int(buildbucketpb.Status_ENDED_MASK) != 0 {
-				logging.Infof(ctx, "bb status: %s", b.GetStatus())
-				if b.GetStatus() != buildbucketpb.Status_SUCCESS {
-					err = fmt.Errorf("test_runner failed")
-				}
-
-				// Get more build info
-				req := &buildbucketpb.GetBuildRequest{
-					Id:   b.Id,
-					Mask: &buildbucketpb.BuildMask{Fields: &field_mask.FieldMask{Paths: getBuildFieldMask}},
-				}
-				buildInfo, err := bbClient.GetBuild(ctx, req)
-				if err != nil {
-					logging.Infof(ctx, "error while getting build info: %s", err)
-				}
-				common.WriteAnyObjectToStepLog(ctx, step, buildInfo, "final build info")
-
-				trResult, err := extractResult(buildInfo)
-				if err != nil {
-					return setTopLevelError(ctx, step, result, resultsChan, fmt.Errorf("error while extracting results from test_runner build %d: %s", buildInfo.Id, err))
-				} else {
-					result.Results = trResult
-				}
-				common.WriteAnyObjectToStepLog(ctx, step, result, "extracted result from trv2")
-
-				// Send the result via channel
-				resultsChan <- result
-				break
+				logging.Infof(ctx, "error while checking build status: %s", err)
 			}
 
 			if ctx.Err() != nil {
@@ -405,10 +383,152 @@ func ScheduleAndMonitor(ctx context.Context, scheduler interfaces.SchedulerInter
 			}
 
 			time.Sleep(loopSleepInterval)
+
+			// we don't wanna fail coz it could be a flake so we continue checking
+			continue
 		}
 
+		// The build ended so we extract results now
+		common.WriteAnyObjectToStepLog(ctx, step, buildInfo, "final build info")
+
+		logging.Infof(ctx, "bb status: %s", buildInfo.GetStatus())
+		if buildInfo.GetStatus() != buildbucketpb.Status_SUCCESS {
+			// setting this for the step to fail
+			err = fmt.Errorf("test_runner failed")
+		}
+
+		trResult, err := extractResult(buildInfo)
+		if err != nil {
+			return setTopLevelError(ctx, step, result, resultsChan, fmt.Errorf("error while extracting results from test_runner build %d: %s", buildInfo.Id, err))
+		} else {
+			result.Results = trResult
+		}
+		common.WriteAnyObjectToStepLog(ctx, step, result, "extracted result from trv2")
+
+		// Retry if qualifies
+		if buildReq.SuiteInfo.GetSuiteRequest().GetRetryCount() > int64(retryNum) {
+			newBuildReq := RetryReqIfQualifies(ctx, trResult, step, buildReq, buildState)
+			if newBuildReq != nil && newBuildReq.ScheduleBuildRequest != nil {
+				// Schedule retry
+				wg.Add(1)
+				go ScheduleAndMonitor(rootCtx, scheduler, newBuildReq, buildState, newBuildReq.Key, wg, resultsChan, suiteName, retryNum+1)
+			}
+		}
+
+		// Send the result via channel
+		resultsChan <- result
+		break
 	}
+
 	return nil
+}
+
+func RetryReqIfQualifies(ctx context.Context, trResult *skylab_test_runner.Result, step *build.Step, buildReq *BuildRequest, buildState *build.State) *BuildRequest {
+	retriableTestsMap := determineRetriablity(trResult)
+	if len(retriableTestsMap) == 0 {
+		logging.Infof(ctx, "no retriable tests found for: %s", buildReq.Key)
+		return nil
+	}
+
+	logging.Infof(ctx, "This req qualified for retry...")
+	common.WriteAnyObjectToStepLog(ctx, step, retriableTestsMap, "retriable test list")
+
+	newBuildReq := GenerateNewBuildReqForRetry(ctx, buildReq, retriableTestsMap)
+	common.WriteAnyObjectToStepLog(ctx, step, newBuildReq, "new build req for retry")
+
+	// Generate a new req
+	req, err := GenerateReq(ctx, newBuildReq.OriginalTrReq, newBuildReq.Key, buildState, newBuildReq.SuiteInfo, newBuildReq.shardNum)
+	if err != nil {
+		newBuildReq.err = err
+		logging.Infof(ctx, "no more retry will take place for %s since trv2 req generation failed: %s", newBuildReq.Key, err)
+	} else {
+		newBuildReq.ScheduleBuildRequest = req
+	}
+
+	return newBuildReq
+}
+
+func CheckBuildInfoIfBuildEnded(ctx context.Context, statusReq *buildbucketpb.GetBuildStatusRequest, bbClient buildbucketpb.BuildsClient) (*buildbucketpb.Build, error) {
+	// Check Build status.
+	b, err := bbClient.GetBuildStatus(ctx, statusReq)
+	if err != nil {
+		logging.Infof(ctx, "error while getting build status: %s", err)
+		return nil, err
+	}
+
+	if b == nil || int(b.GetStatus())&int(buildbucketpb.Status_ENDED_MASK) == 0 {
+		return nil, nil
+	}
+
+	// Get more build info
+	req := &buildbucketpb.GetBuildRequest{
+		Id:   b.Id,
+		Mask: &buildbucketpb.BuildMask{Fields: &field_mask.FieldMask{Paths: getBuildFieldMask}},
+	}
+	buildInfo, err := bbClient.GetBuild(ctx, req)
+	if err != nil {
+		logging.Infof(ctx, "error while getting build info: %s", err)
+		return nil, err
+	}
+
+	return buildInfo, nil
+}
+
+func GenerateNewBuildReqForRetry(ctx context.Context, buildReq *BuildRequest, retriableTests map[string]bool) *BuildRequest {
+	if len(retriableTests) == 0 {
+		return nil
+	}
+
+	// dereference so that we can make changes
+	retryBuildReq := *buildReq
+	retryBuildReq.ScheduleBuildRequest = nil
+	retryBuildReq.err = nil
+
+	testCases := retryBuildReq.OriginalTrReq.Tcs
+	newTcs := []*api.CTPTestCase{}
+	for _, tc := range testCases {
+		// append the retriable tests and ignore others
+		if _, ok := retriableTests[tc.GetName()]; ok {
+			newTcs = append(newTcs, tc)
+		}
+	}
+
+	retryBuildReq.OriginalTrReq.Tcs = newTcs
+	return &retryBuildReq
+}
+
+func determineRetriablity(trResult *skylab_test_runner.Result) map[string]bool {
+	retriableTests := map[string]bool{}
+	// First check if there are valid trResult
+	resultsMap := trResult.GetAutotestResults()
+	if len(resultsMap) > 0 {
+		testCases := resultsMap["original_test"].GetTestCases()
+		for _, testCase := range testCases {
+			if IsTcRetriable(testCase.GetVerdict()) {
+				retriableTests[testCase.GetName()] = true
+			}
+		}
+	}
+
+	return retriableTests
+}
+
+// IsTcRetriable determines if a task result indicates that the test needs to
+// be retried.
+//
+// Panics on unknown verdicts.
+func IsTcRetriable(verdict skylab_test_runner.Result_Autotest_TestCase_Verdict) bool {
+	switch verdict {
+	case skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL,
+		skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR,
+		skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT:
+		return true
+	case skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT,
+		skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:
+		return false
+	default:
+		panic(fmt.Sprintf("IsTcRetriable: unknown verdict %s", verdict.String()))
+	}
 }
 
 func setTopLevelError(ctx context.Context, step *build.Step, result *data.TestResults, resultsChan chan<- *data.TestResults, err error) error {
