@@ -19,41 +19,10 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
-var dutStateWeights = map[string]int{
-	"ready":               1,
-	"needs_repair":        2,
-	"repair_failed":       3,
-	"needs_manual_repair": 4,
-	"needs_deploy":        5,
-	"needs_replacement":   6,
-	"reserved":            7,
-}
-
-var suStateMap = map[int]string{
-	0: "unknown",
-	1: "ready",
-	2: "needs_repair",
-	3: "repair_failed",
-	4: "needs_manual_repair",
-	5: "needs_deploy",
-	6: "needs_replacement",
-	7: "reserved",
-}
-
 var dutToSULabelMap = map[string]string{
 	"label-board": "label-board",
 	"label-model": "label-model",
 	"dut_name":    "label-managed_dut",
-}
-
-func schedulingUnitDutState(states []string) string {
-	record := 0
-	for _, s := range states {
-		if dutStateWeights[s] > record {
-			record = dutStateWeights[s]
-		}
-	}
-	return suStateMap[record]
 }
 
 func joinSingleValueLabel(labels []string) []string {
@@ -131,7 +100,7 @@ func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dime
 		"label-pool":      su.GetPools(),
 		"label-dut_count": {fmt.Sprintf("%d", len(dutsDims))},
 		"label-multiduts": {"True"},
-		"dut_state":       {schedulingUnitDutState(dutLabelValues("dut_state", dutsDims))},
+		"dut_state":       {ufsUtil.SchedulingUnitDutState(dutLabelValues("dut_state", dutsDims))},
 	}
 	if su.GetPrimaryDut() != "" {
 		suDims["label-primary_dut"] = []string{su.GetPrimaryDut()}
