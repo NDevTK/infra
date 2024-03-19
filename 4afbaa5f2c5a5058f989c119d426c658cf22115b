@@ -16,6 +16,24 @@
       "message": "I\u0027ll be happy if this works, I don\u0027t really like the way we had to modify global state before. Have you been able to test this?",
       "revId": "4afbaa5f2c5a5058f989c119d426c658cf22115b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "31bbeec6_2e01a0af",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2024-03-19T03:51:16Z",
+      "side": 1,
+      "message": "I remembered testing DEVELOPER_DIR last year and it works but I don\u0027t have mac to test this CL :/",
+      "parentUuid": "35cfdc07_44459b11",
+      "revId": "4afbaa5f2c5a5058f989c119d426c658cf22115b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
