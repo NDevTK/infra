@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/buildbucket"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
@@ -507,8 +508,7 @@ func FindDimValInRequestedDims(dim string, build *buildbucketpb.Build) string {
 // FindDimValInFinalDims finds the given dimension value in the build's
 // requested dimensions.
 func FindDimValInFinalDims(dim string, build *buildbucketpb.Build) string {
-	provisionedDims := build.GetInfra().GetSwarming().GetBotDimensions()
-	return findKeyValInStringPairs(dim, provisionedDims)
+	return findKeyValInStringPairs(dim, protoutil.MustBotDimensions(build))
 }
 
 // FindTagVal finds the given tag value in the build's tags.
