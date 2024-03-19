@@ -2136,7 +2136,10 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 }
 
 func TestListTasksWithChildTaskStatusShouldSuccess(t *testing.T) {
-	t.Parallel()
+	// Reopen the tree! Make this test non-parallel.
+	// Tree closed on 2024-03-19 at 15:42 America/Los_Angeles time.
+	//
+	// t.Parallel()
 	ctx := context.Background()
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
