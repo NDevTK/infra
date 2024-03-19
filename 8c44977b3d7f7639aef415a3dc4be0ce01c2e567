@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ebd44a95_caac22c4",
+        "filename": "go/src/infra/experimental/golangbuild/testmode_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-19T15:05:43Z",
+      "side": 1,
+      "message": "(nit) In other contexts, the shardID field comes first, nShard field comes second. Seeing them in the other order here is a bit unexpected (but not much). Maybe worth reordering them?\n\n```suggestion\n\t\tshardTests[i] \u003d f(allTests, testShard{shardID: uint32(i), nShards: uint32(n)})\n```",
+      "range": {
+        "startLine": 37,
+        "startChar": 40,
+        "endLine": 37,
+        "endChar": 78
+      },
+      "revId": "8c44977b3d7f7639aef415a3dc4be0ce01c2e567",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15c6b1bb_8c1861f4",
+        "filename": "go/src/infra/experimental/golangbuild/testweights/weights.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-03-19T15:05:43Z",
+      "side": 1,
+      "message": "I assume it\u0027s implicitly clear enough that this package is internal to golangbuild needs, even without an explicit \u0027/internal/\u0027 element in its import path.",
+      "revId": "8c44977b3d7f7639aef415a3dc4be0ce01c2e567",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
