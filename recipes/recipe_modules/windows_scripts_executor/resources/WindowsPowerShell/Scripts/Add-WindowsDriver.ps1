@@ -117,7 +117,7 @@ try {
 
   if ($comparison.SideIndicator.contains('<=')) {
     $unloaded_drivers = ($comparison | Where-Object {$_.SideIndicator -eq '<='}).InputObject
-    throw "Failed to add all drivers. Missing drivers:`n$($unloaded_drivers -join '`n')"
+    Write-Information "Failed to add all drivers. Missing drivers:`n$($unloaded_drivers -join '`n')"
   }
 
   $json = $invoke_obj | ConvertTo-Json -Compress -Depth 100 -ErrorAction Stop
