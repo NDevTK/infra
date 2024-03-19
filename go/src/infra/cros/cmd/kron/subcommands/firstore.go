@@ -89,6 +89,7 @@ func generateFirestoreItemList(configs []*suschpb.SchedulerConfig) ([]*firestore
 
 // Run is the "main()" of the firestore sync command.
 func (c *firestoreCommand) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	common.Stdout.Println("Starting kron firestore-sync run")
 	ctx := context.Background()
 
 	// Get the target ProjectID.
@@ -96,40 +97,52 @@ func (c *firestoreCommand) Run(a subcommands.Application, args []string, env sub
 	if c.isProd {
 		projectID = common.ProdProjectID
 	}
+	common.Stdout.Printf("Connecting to project %s\n", projectID)
 
 	// Initialize the client at the target projectID.
+	common.Stdout.Printf("Initializing firestore client with db name %s\n", common.FirestoreDatabaseName)
 	firestoreClient, err := firestore.InitClient(ctx, projectID, common.FirestoreDatabaseName)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
 	}
+	common.Stdout.Printf("Received connection to %s\n", common.FirestoreDatabaseName)
 
 	// Form the collectionRef for the configs Collection in Firestore.
 	//
 	// NOTE: If the name or structure changes this will ned to be updated.
+	common.Stdout.Printf("Initializing connection to collection %s\n", common.FirestoreConfigCollectionName)
 	configCollection := firestoreClient.Collection(common.FirestoreConfigCollectionName)
+	common.Stdout.Printf("Received connection to %s\n", common.FirestoreConfigCollectionName)
 
+	common.Stdout.Println("Fetching ToT suite scheduler configs.")
 	configs, err := fetchToTConfigs()
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
 	}
+	common.Stdout.Println("Received configs.")
 
 	// Generate the list of items to send to the firestore client.
+	common.Stdout.Println("Converting configs to firestore items.")
 	insertItems, err := generateFirestoreItemList(configs)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
 	}
+	common.Stdout.Printf("Generated %d Firestore items for bulk upsert.\n", len(insertItems))
 
 	// Batch write the config items to firestore.
+	common.Stdout.Println("Sending batch request to Firestore.")
 	writeJobResults, err := firestore.BatchSet(ctx, configCollection, firestoreClient, insertItems)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
 	}
+	common.Stdout.Println("Received batch results from Firestore.")
 
 	// Handle result errors
+	common.Stdout.Println("Checking results for errors.")
 	for _, job := range writeJobResults {
 		if _, err := job.Results(); err != nil {
 			common.Stderr.Println(err)
@@ -137,6 +150,7 @@ func (c *firestoreCommand) Run(a subcommands.Application, args []string, env sub
 
 		}
 	}
+	common.Stdout.Println("Run completed successfully.")
 
 	return 0
 }
