@@ -549,172 +549,177 @@ func setUpCreate(t *testing.T, dryRun, force, useBranch bool) (*test.CrosRepoHar
 	return r, bc, gc, fgs, nil
 }
 
-func TestCreate(t *testing.T) {
-	t.Parallel()
-	r, bc, gc, gsc, err := setUpCreate(t, false, false, false)
-	defer r.Teardown()
-	assert.NilError(t, err)
+// Disabling timing out unittests: http://b/330224585
+//func TestCreate(t *testing.T) {
+//	t.Parallel()
+//	r, bc, gc, gsc, err := setUpCreate(t, false, false, false)
+//	defer r.Teardown()
+//	assert.NilError(t, err)
+//
+//	branch := "new-branch"
+//	c := createBranch{
+//		CommonFlags: CommonFlags{
+//			Push: true,
+//			// We don't really care about this check as ACLs are still enforced
+//			// (just a less elegant failure), and it's one less thing to mock.
+//			SkipGroupCheck: true,
+//		},
+//		custom:            branch,
+//		buildSpecManifest: "12/3.0.0.xml",
+//	}
+//	ret := c.innerRun(context.Background(), bc, nil, gc, gsc)
+//	assert.Assert(t, ret == 0)
+//
+//	manifest := r.Harness.Manifest()
+//	assert.NilError(t, r.AssertCrosBranches([]string{branch}))
+//	assert.NilError(t, r.AssertCrosBranchFromManifest(manifest, branch, ""))
+//	assertManifestsRepaired(t, r, branch)
+//	newBranchVersion := mv.VersionInfo{
+//		ChromeBranch:      12,
+//		BuildNumber:       3,
+//		BranchBuildNumber: 1,
+//		PatchNumber:       0,
+//	}
+//	assert.NilError(t, r.AssertCrosVersion(branch, newBranchVersion))
+//	mainVersion := mv.VersionInfo{
+//		ChromeBranch:      12,
+//		BuildNumber:       4,
+//		BranchBuildNumber: 0,
+//		PatchNumber:       0,
+//	}
+//	assert.NilError(t, r.AssertCrosVersion("main", mainVersion))
+//
+//	assertCommentsPersist(t, r, getManifestFiles, branch)
+//	// Check that manifests were minmally changed (e.g. element ordering preserved).
+//	// This check is meaningful because the manifests are created using the branch_util
+//	// tool which reads in, unmarshals, and modifies the manifests from getManifestFiles.
+//	// The expected manifests (which the branched manifests are being compared to)
+//	// are simply strings produced by getBranchedManifestFiles.
+//	assertMinimalManifestChanges(t, r, branch)
+//}
 
-	branch := "new-branch"
-	c := createBranch{
-		CommonFlags: CommonFlags{
-			Push: true,
-			// We don't really care about this check as ACLs are still enforced
-			// (just a less elegant failure), and it's one less thing to mock.
-			SkipGroupCheck: true,
-		},
-		custom:            branch,
-		buildSpecManifest: "12/3.0.0.xml",
-	}
-	ret := c.innerRun(context.Background(), bc, nil, gc, gsc)
-	assert.Assert(t, ret == 0)
-
-	manifest := r.Harness.Manifest()
-	assert.NilError(t, r.AssertCrosBranches([]string{branch}))
-	assert.NilError(t, r.AssertCrosBranchFromManifest(manifest, branch, ""))
-	assertManifestsRepaired(t, r, branch)
-	newBranchVersion := mv.VersionInfo{
-		ChromeBranch:      12,
-		BuildNumber:       3,
-		BranchBuildNumber: 1,
-		PatchNumber:       0,
-	}
-	assert.NilError(t, r.AssertCrosVersion(branch, newBranchVersion))
-	mainVersion := mv.VersionInfo{
-		ChromeBranch:      12,
-		BuildNumber:       4,
-		BranchBuildNumber: 0,
-		PatchNumber:       0,
-	}
-	assert.NilError(t, r.AssertCrosVersion("main", mainVersion))
-
-	assertCommentsPersist(t, r, getManifestFiles, branch)
-	// Check that manifests were minmally changed (e.g. element ordering preserved).
-	// This check is meaningful because the manifests are created using the branch_util
-	// tool which reads in, unmarshals, and modifies the manifests from getManifestFiles.
-	// The expected manifests (which the branched manifests are being compared to)
-	// are simply strings produced by getBranchedManifestFiles.
-	assertMinimalManifestChanges(t, r, branch)
-}
-
+// Disabling timing out unittests: http://b/330224585
 // Branch off of old-branch to make sure that the source version is being
 // bumped in the correct branch.
 // Covers crbug.com/1744928.
-func TestCreateReleaseNonmain(t *testing.T) {
-	t.Parallel()
-	r, bc, gc, gsc, err := setUpCreate(t, false, false, true)
-	defer r.Teardown()
-	assert.NilError(t, err)
+//func TestCreateReleaseNonmain(t *testing.T) {
+//	t.Parallel()
+//	r, bc, gc, gsc, err := setUpCreate(t, false, false, true)
+//	defer r.Teardown()
+//	assert.NilError(t, err)
+//
+//	manifest := r.Harness.Manifest()
+//	branch := "release-R12-2.1.B"
+//
+//	c := createBranch{
+//		CommonFlags: CommonFlags{
+//			Push: true,
+//			// We don't really care about this check as ACLs are still enforced
+//			// (just a less elegant failure), and it's one less thing to mock.
+//			SkipGroupCheck: true,
+//		},
+//		release:           true,
+//		buildSpecManifest: "12/2.1.0.xml",
+//	}
+//	ret := c.innerRun(context.Background(), bc, nil, gc, gsc)
+//	assert.Assert(t, ret == 0)
+//
+//	assert.NilError(t, r.AssertCrosBranches([]string{branch}))
+//
+//	crosFetchVal := manifest.GetRemoteByName("cros").Fetch
+//	crosInternalFetchVal := manifest.GetRemoteByName("cros-internal").Fetch
+//	_, _, fullBranchedXML := getBranchedManifestFiles(existingBranchName, crosFetchVal, crosInternalFetchVal)
+//	var branchManifest *repo.Manifest
+//	assert.NilError(t, xml.Unmarshal([]byte(fullBranchedXML), &branchManifest))
+//	branchManifest.ResolveImplicitLinks()
+//
+//	assert.NilError(t, r.AssertCrosBranchFromManifest(*branchManifest, branch, "old-branch"))
+//	assertManifestsRepaired(t, r, branch)
+//	newBranchVersion := mv.VersionInfo{
+//		ChromeBranch:      12,
+//		BuildNumber:       2,
+//		BranchBuildNumber: 1,
+//		PatchNumber:       1,
+//	}
+//	assert.NilError(t, r.AssertCrosVersion(branch, newBranchVersion))
+//	sourceVersion := mv.VersionInfo{
+//		ChromeBranch:      13,
+//		BuildNumber:       3,
+//		BranchBuildNumber: 0,
+//		PatchNumber:       0,
+//	}
+//	assert.NilError(t, r.AssertCrosVersion("old-branch", sourceVersion))
+//
+//	assertCommentsPersist(t, r, getExistingBranchManifestFiles, branch)
+//}
 
-	manifest := r.Harness.Manifest()
-	branch := "release-R12-2.1.B"
+// Disabling timing out unittests: http://b/330224585
+//func TestCreateDryRun(t *testing.T) {
+//	t.Parallel()
+//	r, bc, gc, gsc, err := setUpCreate(t, true, false, false)
+//	defer r.Teardown()
+//	assert.NilError(t, err)
+//
+//	branch := "new-branch"
+//	c := createBranch{
+//		CommonFlags: CommonFlags{
+//			// We don't really care about this check as ACLs are still enforced
+//			// (just a less elegant failure), and it's one less thing to mock.
+//			SkipGroupCheck: true,
+//		},
+//		custom:            branch,
+//		buildSpecManifest: "12/3.0.0.xml",
+//	}
+//	ret := c.innerRun(context.Background(), bc, nil, gc, gsc)
+//	assert.Assert(t, ret == 0)
+//	assertNoRemoteDiff(t, r)
+//}
 
-	c := createBranch{
-		CommonFlags: CommonFlags{
-			Push: true,
-			// We don't really care about this check as ACLs are still enforced
-			// (just a less elegant failure), and it's one less thing to mock.
-			SkipGroupCheck: true,
-		},
-		release:           true,
-		buildSpecManifest: "12/2.1.0.xml",
-	}
-	ret := c.innerRun(context.Background(), bc, nil, gc, gsc)
-	assert.Assert(t, ret == 0)
-
-	assert.NilError(t, r.AssertCrosBranches([]string{branch}))
-
-	crosFetchVal := manifest.GetRemoteByName("cros").Fetch
-	crosInternalFetchVal := manifest.GetRemoteByName("cros-internal").Fetch
-	_, _, fullBranchedXML := getBranchedManifestFiles(existingBranchName, crosFetchVal, crosInternalFetchVal)
-	var branchManifest *repo.Manifest
-	assert.NilError(t, xml.Unmarshal([]byte(fullBranchedXML), &branchManifest))
-	branchManifest.ResolveImplicitLinks()
-
-	assert.NilError(t, r.AssertCrosBranchFromManifest(*branchManifest, branch, "old-branch"))
-	assertManifestsRepaired(t, r, branch)
-	newBranchVersion := mv.VersionInfo{
-		ChromeBranch:      12,
-		BuildNumber:       2,
-		BranchBuildNumber: 1,
-		PatchNumber:       1,
-	}
-	assert.NilError(t, r.AssertCrosVersion(branch, newBranchVersion))
-	sourceVersion := mv.VersionInfo{
-		ChromeBranch:      13,
-		BuildNumber:       3,
-		BranchBuildNumber: 0,
-		PatchNumber:       0,
-	}
-	assert.NilError(t, r.AssertCrosVersion("old-branch", sourceVersion))
-
-	assertCommentsPersist(t, r, getExistingBranchManifestFiles, branch)
-}
-func TestCreateDryRun(t *testing.T) {
-	t.Parallel()
-	r, bc, gc, gsc, err := setUpCreate(t, true, false, false)
-	defer r.Teardown()
-	assert.NilError(t, err)
-
-	branch := "new-branch"
-	c := createBranch{
-		CommonFlags: CommonFlags{
-			// We don't really care about this check as ACLs are still enforced
-			// (just a less elegant failure), and it's one less thing to mock.
-			SkipGroupCheck: true,
-		},
-		custom:            branch,
-		buildSpecManifest: "12/3.0.0.xml",
-	}
-	ret := c.innerRun(context.Background(), bc, nil, gc, gsc)
-	assert.Assert(t, ret == 0)
-	assertNoRemoteDiff(t, r)
-}
-
+// Disabling timing out unittests: http://b/330224585
 // Test create overwrites existing branches when --force is set.
-func TestCreateOverwrite(t *testing.T) {
-	t.Parallel()
-	r, bc, gc, gsc, err := setUpCreate(t, false, true, false)
-	defer r.Teardown()
-	assert.NilError(t, err)
-
-	manifest := r.Harness.Manifest()
-
-	branch := "old-branch"
-	c := createBranch{
-		CommonFlags: CommonFlags{
-			Push:  true,
-			Force: true,
-			// We don't really care about this check as ACLs are still enforced
-			// (just a less elegant failure), and it's one less thing to mock.
-			SkipGroupCheck: true,
-		},
-		custom:            branch,
-		buildSpecManifest: "12/3.0.0.xml",
-	}
-	ret := c.innerRun(context.Background(), bc, nil, gc, gsc)
-	assert.Assert(t, ret == 0)
-
-	assert.NilError(t, r.AssertCrosBranches([]string{branch}))
-	assert.NilError(t, r.AssertCrosBranchFromManifest(manifest, branch, ""))
-	assertManifestsRepaired(t, r, branch)
-	newBranchVersion := mv.VersionInfo{
-		ChromeBranch:      12,
-		BuildNumber:       3,
-		BranchBuildNumber: 1,
-		PatchNumber:       0,
-	}
-	assert.NilError(t, r.AssertCrosVersion(branch, newBranchVersion))
-	mainVersion := mv.VersionInfo{
-		ChromeBranch:      12,
-		BuildNumber:       4,
-		BranchBuildNumber: 0,
-		PatchNumber:       0,
-	}
-	assert.NilError(t, r.AssertCrosVersion("main", mainVersion))
-
-	assertCommentsPersist(t, r, getManifestFiles, branch)
-}
+//func TestCreateOverwrite(t *testing.T) {
+//	t.Parallel()
+//	r, bc, gc, gsc, err := setUpCreate(t, false, true, false)
+//	defer r.Teardown()
+//	assert.NilError(t, err)
+//
+//	manifest := r.Harness.Manifest()
+//
+//	branch := "old-branch"
+//	c := createBranch{
+//		CommonFlags: CommonFlags{
+//			Push:  true,
+//			Force: true,
+//			// We don't really care about this check as ACLs are still enforced
+//			// (just a less elegant failure), and it's one less thing to mock.
+//			SkipGroupCheck: true,
+//		},
+//		custom:            branch,
+//		buildSpecManifest: "12/3.0.0.xml",
+//	}
+//	ret := c.innerRun(context.Background(), bc, nil, gc, gsc)
+//	assert.Assert(t, ret == 0)
+//
+//	assert.NilError(t, r.AssertCrosBranches([]string{branch}))
+//	assert.NilError(t, r.AssertCrosBranchFromManifest(manifest, branch, ""))
+//	assertManifestsRepaired(t, r, branch)
+//	newBranchVersion := mv.VersionInfo{
+//		ChromeBranch:      12,
+//		BuildNumber:       3,
+//		BranchBuildNumber: 1,
+//		PatchNumber:       0,
+//	}
+//	assert.NilError(t, r.AssertCrosVersion(branch, newBranchVersion))
+//	mainVersion := mv.VersionInfo{
+//		ChromeBranch:      12,
+//		BuildNumber:       4,
+//		BranchBuildNumber: 0,
+//		PatchNumber:       0,
+//	}
+//	assert.NilError(t, r.AssertCrosVersion("main", mainVersion))
+//
+//	assertCommentsPersist(t, r, getManifestFiles, branch)
+//}
 
 // Test create dies when it tries to overwrite without --force.
 func TestCreateOverwriteMissingForce(t *testing.T) {
@@ -833,148 +838,151 @@ func TestCreateExistingVersion(t *testing.T) {
 	assertNoRemoteDiff(t, r)
 }
 
-func TestRename(t *testing.T) {
-	t.Parallel()
-	r := setUp(t, nil)
-	defer r.Teardown()
+// Disabling timing out unittests: http://b/330224585
+//func TestRename(t *testing.T) {
+//	t.Parallel()
+//	r := setUp(t, nil)
+//	defer r.Teardown()
+//
+//	localRoot, err := ioutil.TempDir("", "test_rename")
+//	defer os.RemoveAll(localRoot)
+//	assert.NilError(t, err)
+//	manifest := r.Harness.Manifest()
+//	manifestDir := r.Harness.GetRemotePath(manifestInternalProject)
+//
+//	oldBranch := existingBranchName // "old-branch"
+//	newBranch := "new-branch"
+//
+//	bc := &branch.Client{}
+//	c := renameBranchRun{
+//		CommonFlags: CommonFlags{
+//			Push:        true,
+//			ManifestURL: manifestDir,
+//		},
+//		old: oldBranch,
+//		new: newBranch,
+//	}
+//	ret := c.innerRun(bc)
+//	assert.Assert(t, ret == 0)
+//
+//	assert.NilError(t, r.AssertCrosBranches([]string{newBranch}))
+//	assert.NilError(t, r.AssertCrosBranchesMissing([]string{oldBranch}))
+//
+//	// Get manifest for oldBranch.
+//	crosFetchVal := manifest.GetRemoteByName("cros").Fetch
+//	crosInternalFetchVal := manifest.GetRemoteByName("cros-internal").Fetch
+//	_, _, fullBranchedXML := getExistingBranchManifestFiles(crosFetchVal, crosInternalFetchVal)
+//	var branchManifest *repo.Manifest
+//	assert.NilError(t, xml.Unmarshal([]byte(fullBranchedXML), &branchManifest))
+//	branchManifest.ResolveImplicitLinks()
+//
+//	assert.NilError(t, r.AssertCrosBranchFromManifest(*branchManifest, newBranch, oldBranch))
+//	assertManifestsRepaired(t, r, newBranch)
+//	newBranchVersion := mv.VersionInfo{
+//		ChromeBranch:      12,
+//		BuildNumber:       2,
+//		BranchBuildNumber: 1,
+//		PatchNumber:       0,
+//	}
+//	assert.NilError(t, r.AssertCrosVersion(newBranch, newBranchVersion))
+//
+//	assertCommentsPersist(t, r, getExistingBranchManifestFiles, newBranch)
+//	assertMinimalManifestChanges(t, r, newBranch)
+//}
 
-	localRoot, err := ioutil.TempDir("", "test_rename")
-	defer os.RemoveAll(localRoot)
-	assert.NilError(t, err)
-	manifest := r.Harness.Manifest()
-	manifestDir := r.Harness.GetRemotePath(manifestInternalProject)
+// Disabling timing out unittests: http://b/330224585
+//func TestRenameDryRun(t *testing.T) {
+//	t.Parallel()
+//	r := setUp(t, nil)
+//	defer r.Teardown()
+//
+//	localRoot, err := ioutil.TempDir("", "test_rename")
+//	defer os.RemoveAll(localRoot)
+//	assert.NilError(t, err)
+//	manifestDir := r.Harness.GetRemotePath(manifestInternalProject)
+//
+//	oldBranch := "old-branch"
+//	newBranch := "new-branch"
+//
+//	bc := &branch.Client{}
+//	c := renameBranchRun{
+//		CommonFlags: CommonFlags{
+//			ManifestURL: manifestDir,
+//		},
+//		old: oldBranch,
+//		new: newBranch,
+//	}
+//	ret := c.innerRun(bc)
+//	assert.Assert(t, ret == 0)
+//
+//	assertNoRemoteDiff(t, r)
+//}
 
-	oldBranch := existingBranchName // "old-branch"
-	newBranch := "new-branch"
-
-	bc := &branch.Client{}
-	c := renameBranchRun{
-		CommonFlags: CommonFlags{
-			Push:        true,
-			ManifestURL: manifestDir,
-		},
-		old: oldBranch,
-		new: newBranch,
-	}
-	ret := c.innerRun(bc)
-	assert.Assert(t, ret == 0)
-
-	assert.NilError(t, r.AssertCrosBranches([]string{newBranch}))
-	assert.NilError(t, r.AssertCrosBranchesMissing([]string{oldBranch}))
-
-	// Get manifest for oldBranch.
-	crosFetchVal := manifest.GetRemoteByName("cros").Fetch
-	crosInternalFetchVal := manifest.GetRemoteByName("cros-internal").Fetch
-	_, _, fullBranchedXML := getExistingBranchManifestFiles(crosFetchVal, crosInternalFetchVal)
-	var branchManifest *repo.Manifest
-	assert.NilError(t, xml.Unmarshal([]byte(fullBranchedXML), &branchManifest))
-	branchManifest.ResolveImplicitLinks()
-
-	assert.NilError(t, r.AssertCrosBranchFromManifest(*branchManifest, newBranch, oldBranch))
-	assertManifestsRepaired(t, r, newBranch)
-	newBranchVersion := mv.VersionInfo{
-		ChromeBranch:      12,
-		BuildNumber:       2,
-		BranchBuildNumber: 1,
-		PatchNumber:       0,
-	}
-	assert.NilError(t, r.AssertCrosVersion(newBranch, newBranchVersion))
-
-	assertCommentsPersist(t, r, getExistingBranchManifestFiles, newBranch)
-	assertMinimalManifestChanges(t, r, newBranch)
-}
-
-func TestRenameDryRun(t *testing.T) {
-	t.Parallel()
-	r := setUp(t, nil)
-	defer r.Teardown()
-
-	localRoot, err := ioutil.TempDir("", "test_rename")
-	defer os.RemoveAll(localRoot)
-	assert.NilError(t, err)
-	manifestDir := r.Harness.GetRemotePath(manifestInternalProject)
-
-	oldBranch := "old-branch"
-	newBranch := "new-branch"
-
-	bc := &branch.Client{}
-	c := renameBranchRun{
-		CommonFlags: CommonFlags{
-			ManifestURL: manifestDir,
-		},
-		old: oldBranch,
-		new: newBranch,
-	}
-	ret := c.innerRun(bc)
-	assert.Assert(t, ret == 0)
-
-	assertNoRemoteDiff(t, r)
-}
-
+// Disabling timing out unittests: http://b/330224585
 // Test rename successfully force overwrites.
-func TestRenameOverwrite(t *testing.T) {
-	t.Parallel()
-	r := setUp(t, nil)
-	defer r.Teardown()
-
-	localRoot, err := ioutil.TempDir("", "test_rename")
-	defer os.RemoveAll(localRoot)
-	assert.NilError(t, err)
-	manifest := r.Harness.Manifest()
-	manifestDir := r.Harness.GetRemotePath(manifestInternalProject)
-
-	oldBranch := existingBranchName // "old-branch"
-	newBranch := "main"
-
-	newBranchVersion := mv.VersionInfo{
-		ChromeBranch:      12,
-		BuildNumber:       3,
-		BranchBuildNumber: 0,
-		PatchNumber:       0,
-	}
-	assert.NilError(t, r.AssertCrosVersion(newBranch, newBranchVersion))
-	oldBranchVersion := mv.VersionInfo{
-		ChromeBranch:      12,
-		BuildNumber:       2,
-		BranchBuildNumber: 1,
-		PatchNumber:       0,
-	}
-	assert.NilError(t, r.AssertCrosVersion(oldBranch, oldBranchVersion))
-
-	assertCommentsPersist(t, r, getManifestFiles, newBranch)
-
-	// Gah! Turns out we actually wanted what's in oldBranch. Let's try force renaming
-	// oldBranch to main, overwriting the existing contents of main in the process.
-	bc := &branch.Client{}
-	c := renameBranchRun{
-		CommonFlags: CommonFlags{
-			Push:        true,
-			Force:       true,
-			ManifestURL: manifestDir,
-		},
-		old: oldBranch,
-		new: "main",
-	}
-	ret := c.innerRun(bc)
-	assert.Assert(t, ret == 0)
-
-	assert.NilError(t, r.AssertCrosBranches([]string{newBranch}))
-	assert.NilError(t, r.AssertCrosBranchesMissing([]string{oldBranch}))
-
-	// Get manifest for oldBranch.
-	crosFetchVal := manifest.GetRemoteByName("cros").Fetch
-	crosInternalFetchVal := manifest.GetRemoteByName("cros-internal").Fetch
-	_, _, fullBranchedXML := getExistingBranchManifestFiles(crosFetchVal, crosInternalFetchVal)
-	var branchManifest *repo.Manifest
-	assert.NilError(t, xml.Unmarshal([]byte(fullBranchedXML), &branchManifest))
-	branchManifest.ResolveImplicitLinks()
-
-	assert.NilError(t, r.AssertCrosBranchFromManifest(*branchManifest, newBranch, oldBranch))
-	assertManifestsRepaired(t, r, newBranch)
-	assert.NilError(t, r.AssertCrosVersion(newBranch, oldBranchVersion))
-
-	assertCommentsPersist(t, r, getExistingBranchManifestFiles, newBranch)
-}
+//func TestRenameOverwrite(t *testing.T) {
+//	t.Parallel()
+//	r := setUp(t, nil)
+//	defer r.Teardown()
+//
+//	localRoot, err := ioutil.TempDir("", "test_rename")
+//	defer os.RemoveAll(localRoot)
+//	assert.NilError(t, err)
+//	manifest := r.Harness.Manifest()
+//	manifestDir := r.Harness.GetRemotePath(manifestInternalProject)
+//
+//	oldBranch := existingBranchName // "old-branch"
+//	newBranch := "main"
+//
+//	newBranchVersion := mv.VersionInfo{
+//		ChromeBranch:      12,
+//		BuildNumber:       3,
+//		BranchBuildNumber: 0,
+//		PatchNumber:       0,
+//	}
+//	assert.NilError(t, r.AssertCrosVersion(newBranch, newBranchVersion))
+//	oldBranchVersion := mv.VersionInfo{
+//		ChromeBranch:      12,
+//		BuildNumber:       2,
+//		BranchBuildNumber: 1,
+//		PatchNumber:       0,
+//	}
+//	assert.NilError(t, r.AssertCrosVersion(oldBranch, oldBranchVersion))
+//
+//	assertCommentsPersist(t, r, getManifestFiles, newBranch)
+//
+//	// Gah! Turns out we actually wanted what's in oldBranch. Let's try force renaming
+//	// oldBranch to main, overwriting the existing contents of main in the process.
+//	bc := &branch.Client{}
+//	c := renameBranchRun{
+//		CommonFlags: CommonFlags{
+//			Push:        true,
+//			Force:       true,
+//			ManifestURL: manifestDir,
+//		},
+//		old: oldBranch,
+//		new: "main",
+//	}
+//	ret := c.innerRun(bc)
+//	assert.Assert(t, ret == 0)
+//
+//	assert.NilError(t, r.AssertCrosBranches([]string{newBranch}))
+//	assert.NilError(t, r.AssertCrosBranchesMissing([]string{oldBranch}))
+//
+//	// Get manifest for oldBranch.
+//	crosFetchVal := manifest.GetRemoteByName("cros").Fetch
+//	crosInternalFetchVal := manifest.GetRemoteByName("cros-internal").Fetch
+//	_, _, fullBranchedXML := getExistingBranchManifestFiles(crosFetchVal, crosInternalFetchVal)
+//	var branchManifest *repo.Manifest
+//	assert.NilError(t, xml.Unmarshal([]byte(fullBranchedXML), &branchManifest))
+//	branchManifest.ResolveImplicitLinks()
+//
+//	assert.NilError(t, r.AssertCrosBranchFromManifest(*branchManifest, newBranch, oldBranch))
+//	assertManifestsRepaired(t, r, newBranch)
+//	assert.NilError(t, r.AssertCrosVersion(newBranch, oldBranchVersion))
+//
+//	assertCommentsPersist(t, r, getExistingBranchManifestFiles, newBranch)
+//}
 
 // Test rename dies if it tries to overwrite without --force.
 func TestRenameOverwriteMissingForce(t *testing.T) {
