@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { SearchTreeMatch, TreeData, TreeNodeData } from './types';
+import { deepOrange, teal, yellow } from '@mui/material/colors';
+
+import {
+  SearchTreeMatch,
+  TreeData,
+  TreeNodeColors,
+  TreeNodeData,
+} from './types';
 
 // Copy from the readonly data source to convert the id field to string
 // from number.
@@ -217,4 +224,20 @@ export function depthFirstSearch<T extends TreeNodeData>(
   node.children.forEach((child) => {
     depthFirstSearch(child, regexps, nextIndex, searchMatches);
   });
+}
+
+/**
+ * Gets background to the node based on the treeData attribute.
+ */
+export function getNodeBackgroundColor(
+  colors?: TreeNodeColors,
+  isDeepLinked?: boolean,
+  isActiveSelection?: boolean,
+  isSearchMatch?: boolean,
+) {
+  if (isDeepLinked) return colors?.deepLinkBackgroundColor ?? teal[100];
+  if (isActiveSelection)
+    return colors?.activeSelectionBackgroundColor ?? deepOrange[300];
+  if (isSearchMatch) return colors?.searchMatchBackgroundColor ?? yellow[400];
+  return '';
 }
