@@ -16,6 +16,24 @@
       "message": "some small nits here is that you can move those components to separate fields and just not export them from index, they will still be importable but at least not directly.\nThat will clean up this file.\nalso create interfaces for the props of those components, and move the props to closer to the definition of the component, ideally right above it.\n\nFinally, to reduce the number of files which are needed with each update if you use hot reload, then you may want to move the utility functions to a file called `utils` in the same directory.",
       "revId": "d488e5b699cd51f7ea7d42a7c3c255bc174ca69b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd86785e_7956b648",
+        "filename": "crdx/packages/log-viewer/src/virtual_tree/logs_tree_node.tsx",
+        "patchSetId": 9
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1505932
+      },
+      "writtenOn": "2024-03-19T17:38:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2c56e657_4c4ebd87",
+      "revId": "d488e5b699cd51f7ea7d42a7c3c255bc174ca69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
