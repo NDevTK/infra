@@ -578,14 +578,8 @@ func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequ
 		return nil, err
 	}
 
-	IPToHostResult, err := dns.IPToHostname(ctx, s.commandExecutor, in.GetAddresses())
-	if err != nil {
-		logging.Errorf(ctx, "gRPC Service error: add_pool: %w", err)
-		return nil, err
-	}
-
-	for _, hostname := range IPToHostResult.Hostnames {
-		if err = addPoolsToDUT(ctx, s.commandExecutor, hostname, []string{in.GetPool()}); err != nil {
+	for _, hostname := range in.GetHostnames() {
+		if err := addPoolsToDUT(ctx, s.commandExecutor, hostname, []string{in.GetPool()}); err != nil {
 			logging.Errorf(ctx, "gRPC Service error: add_pool: %w", err)
 			return nil, err
 		}
@@ -611,24 +605,17 @@ func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePo
 		return nil, err
 	}
 
-	IPHostMap, err := dns.ReadHostsToIPMap(ctx, s.commandExecutor)
-	if err != nil {
-		logging.Errorf(ctx, "gRPC Service error: update_pool: %w", err)
-		return nil, err
-	}
-
 	for _, item := range in.GetItems() {
-		hostname, ok := IPHostMap[item.GetAddress()]
-		if ok && validateUpdatePools(item.GetPools()) {
+		if validateUpdatePools(item.GetPools()) {
 			// According to `shivas` CLI. If we add a pool ("-"). It will remove all pools from the
 			// host.
-			if err = removeAllPoolsFromDUT(ctx, s.commandExecutor, hostname); err != nil {
+			if err := removeAllPoolsFromDUT(ctx, s.commandExecutor, item.GetHostname()); err != nil {
 				logging.Errorf(ctx, "gRPC Service error: update_pool: %w", err)
 				return nil, err
 			}
 
 			// After removing the pools, we can add it the pools that we want to keep
-			if err = addPoolsToDUT(ctx, s.commandExecutor, hostname, item.GetPools()); err != nil {
+			if err := addPoolsToDUT(ctx, s.commandExecutor, item.GetHostname(), item.GetPools()); err != nil {
 				logging.Errorf(ctx, "gRPC Service error: update_pool: %w", err)
 				return nil, err
 			}
