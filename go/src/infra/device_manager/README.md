@@ -112,32 +112,36 @@ This provides a local server that our services can publish and subscribe to.
     `PUBSUB_EMULATOR_HOST`. This lets the `device_lease_service` container
     connect to the emulator container later.
 
-2.  Rebuild the service container by running the following: ```bash make
-    docker-service
+2.  Rebuild the service container by running the following:
+
+```bash
+make docker-service
 
 # This brings up the PubSub emulator service container.
+make docker-pubsub
+```
 
-make docker-pubsub ``` You should now have both of these containers up and
-running. They are now ready to communicate with each other.
+You should now have both of these containers up and running. They are now ready
+to communicate with each other. With the PubSub container running, you can
+create topics. This is necessary to publish messages and subscribe to topics.
 
-1.  With the PubSub container running, you can create topics. This is necessary
-    to publish messages and subscribe to topics.
+In a separate window, run the following:
 
-In a separate window, run the following: ```bash export
-PUBSUB_EMULATOR_HOST=localhost:8085 gcloud config set
-api_endpoint_overrides/pubsub http://$PUBSUB_EMULATOR_HOST/
+```bash
+export PUBSUB_EMULATOR_HOST=localhost:8085 gcloud config set api_endpoint_overrides/pubsub http://$PUBSUB_EMULATOR_HOST/
 
 # Replace device-events-v1 to another topic name of your choice.
-
-gcloud pubsub topics create device-events-v1 ```
+gcloud pubsub topics create device-events-v1
+```
 
 With the topics created, your service should now be able to publish and
 subscribe to them. You can test this by leasing a Device.
 
 These commands will set your local environment variables for your `gcloud` cli
 tool. Which means while you are developing here, you will not be able to access
-your normal PubSub streams unless you clean up and reset your variables.
+your normal PubSub streams unless you clean up and reset your variables. Clean
+up by unsetting and resetting the environment variables we changed.
 
-1.  Clean up by unsetting and resetting the environment variables we changed.
-    `bash unset PUBSUB_EMULATOR_HOST gcloud config set
-    api_endpoint_overrides/pubsub https://pubsub.googleapis.com/`
+```bash
+unset PUBSUB_EMULATOR_HOST gcloud config set api_endpoint_overrides/pubsub https://pubsub.googleapis.com/
+```
