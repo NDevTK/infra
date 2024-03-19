@@ -193,11 +193,13 @@ func UpdateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, updatedRec DeviceL
 		UPDATE
 			"DeviceLeaseRecords"
 		SET
-			expiration_time=COALESCE($2, expiration_time),
-			last_updated_time=COALESCE($3, last_updated_time)
+			released_time=COALESCE($2, expiration_time),
+			expiration_time=COALESCE($3, expiration_time),
+			last_updated_time=COALESCE($4, last_updated_time)
 		WHERE
 			id=$1;`,
 		updatedRec.ID,
+		updatedRec.ReleasedTime,
 		updatedRec.ExpirationTime,
 		updatedRec.LastUpdatedTime,
 	)

@@ -152,6 +152,64 @@ func ExtendLease(ctx context.Context, db *sql.DB, r *api.ExtendLeaseRequest) (*a
 	}, nil
 }
 
+// ReleaseDevice releases the leased device.
+//
+// ReleaseDevice takes a lease ID and releases the device associated. In a
+// transaction, the RPC will update the lease and set the device to be
+// available.
+func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {
+	// TODO (b/328662436): Collect metrics
+	record, err := model.GetDeviceLeaseRecordByID(ctx, db, r.GetLeaseId())
+	if err != nil {
+		return nil, err
+	}
+
+	timeNow := time.Now()
+	if record.ExpirationTime.Before(timeNow) {
+		logging.Debugf(ctx, "ReleaseDevice: leased device was already released")
+		return &api.ReleaseDeviceResponse{
+			LeaseId: r.GetLeaseId(),
+		}, errors.New("ReleaseDevice: lease is already released")
+	}
+
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, errors.New("ReleaseDevice: failed to start database transaction")
+	}
+
+	// Update lease record to mark released time
+	releaseRec := model.DeviceLeaseRecord{
+		ID:              r.GetLeaseId(),
+		ReleasedTime:    timeNow,
+		LastUpdatedTime: timeNow,
+	}
+	err = model.UpdateDeviceLeaseRecord(ctx, tx, releaseRec)
+	if err != nil {
+		logging.Errorf(ctx, "ReleaseDevice: failed to release lease %s: %s", releaseRec.ID, err)
+		return nil, err
+	}
+
+	// Update device lease state to available after release
+	updatedDevice := model.Device{
+		ID:          record.DeviceID,
+		DeviceState: "DEVICE_STATE_AVAILABLE",
+	}
+	err = UpdateDevice(ctx, tx, psClient, updatedDevice)
+	if err != nil {
+		logging.Errorf(ctx, "ReleaseDevice: failed to release device %s: %s", record.DeviceID, err)
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	logging.Debugf(ctx, "ReleaseDevice: released lease %v", releaseRec)
+	return &api.ReleaseDeviceResponse{
+		LeaseId: r.GetLeaseId(),
+	}, nil
+}
+
 // CheckLeaseIdempotency checks if there is a record with the same idempotency key.
 //
 // If there is an unexpired record, it will return the record. If it is expired,

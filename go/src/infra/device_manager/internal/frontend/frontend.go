@@ -108,8 +108,9 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	return controller.LeaseDevice(ctx, s.dbClient.Conn, s.pubSubClient, r, device)
 }
 
+// ReleaseDevice releases the leased device.
 func (s *Server) ReleaseDevice(ctx context.Context, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "ReleaseDevice is not implemented")
+	return controller.ReleaseDevice(ctx, s.dbClient.Conn, s.pubSubClient, r)
 }
 
 // ExtendLease attempts to extend the lease on a device by ExtendLeaseRequest.

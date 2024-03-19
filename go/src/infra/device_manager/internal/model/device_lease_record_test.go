@@ -359,15 +359,21 @@ func TestUpdateDeviceLeaseRecord(t *testing.T) {
 				UPDATE
 					"DeviceLeaseRecords"
 				SET
-					expiration_time=COALESCE($2, expiration_time),
-					last_updated_time=COALESCE($3, last_updated_time)
+					released_time=COALESCE($2, expiration_time),
+					expiration_time=COALESCE($3, expiration_time),
+					last_updated_time=COALESCE($4, last_updated_time)
 				WHERE
 					id=$1;`)).
-				WithArgs("test-lease-record-1", timeNow.Add(time.Second*600), timeNow).
+				WithArgs(
+					"test-lease-record-1",
+					timeNow.Add(time.Second*600),
+					timeNow.Add(time.Second*600),
+					timeNow).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
 			err = UpdateDeviceLeaseRecord(ctx, tx, DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
+				ReleasedTime:    timeNow.Add(time.Second * 600),
 				ExpirationTime:  timeNow.Add(time.Second * 600),
 				LastUpdatedTime: timeNow,
 			})
