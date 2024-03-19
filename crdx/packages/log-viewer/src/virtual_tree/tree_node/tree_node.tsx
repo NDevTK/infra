@@ -11,12 +11,6 @@ import React, { useEffect, useState } from 'react';
 
 import { TreeData, TreeNodeData } from '../types';
 
-// Default collapse icon
-const COLLAPSE_ICON = <ExpandMoreIcon sx={{ fontSize: '18px' }} />;
-
-// Default expand icon
-const EXPAND_ICON = <ChevronRightIcon sx={{ fontSize: '18px' }} />;
-
 // Default active selection background color
 export const ACTIVE_NODE_SELECTION_BACKGROUND_COLOR = deepOrange[300];
 
@@ -104,8 +98,8 @@ export function TreeNode<T extends TreeNodeData>({
             style={{ display: 'flex', alignItems: 'center' }}
           >
             {treeNodeData.isOpen
-              ? collapseIcon || COLLAPSE_ICON
-              : expandIcon || EXPAND_ICON}
+              ? collapseIcon ?? <ExpandMoreIcon sx={{ fontSize: '18px' }} />
+              : expandIcon ?? <ChevronRightIcon sx={{ fontSize: '18px' }} />}
           </div>
           <Typography
             component="span"
