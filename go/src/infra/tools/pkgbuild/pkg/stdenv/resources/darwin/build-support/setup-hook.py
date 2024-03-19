@@ -11,7 +11,7 @@ def setup(exe) -> None:
   import pathlib
 
   def pre_unpack(exe) -> bool:
-    base = pathlib.Path(exe.env['osx_developer_root'])
+    base = pathlib.Path(exe.env['DEVELOPER_DIR'])
     assert base.exists(), f'xcode base: {base} should exists'
     exe.append_to_search_path(Execution.ENV_PATH, base.joinpath('usr', 'bin'))
 

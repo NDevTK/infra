@@ -74,7 +74,7 @@ func importDarwin(ctx context.Context, cfg *Config, bins ...string) (gs []genera
 }
 
 func (g *Generator) generateDarwin(plats generators.Platforms, tmpl *workflow.Generator) error {
-	tmpl.Env.Set("osx_developer_root", "{{.darwin_import}}/Developer")
+	tmpl.Env.Set("DEVELOPER_DIR", "{{.xcode_import}}/Developer")
 
 	// Env GREP added here to skip the configure testing them.
 	// TODO(fancl): Update the specs to include gnu grep in the tools if
