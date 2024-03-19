@@ -190,6 +190,7 @@ func GetRunCommand(authOpts auth.Options) *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "run",
 		LongDesc:  "The run command is used to launch full SuiteScheduler executions.",
+		ShortDesc: "The run command is used to launch full SuiteScheduler executions.",
 		CommandRun: func() subcommands.CommandRun {
 			cmd := &runCommand{}
 			cmd.authFlags = authcli.Flags{}

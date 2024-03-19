@@ -125,6 +125,7 @@ func (c *configParserCommand) setFlags() {
 func GetConfigParserCommand(authOpts auth.Options) *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: "configs <options>",
+		ShortDesc: "The configs command is used to access the config parsing and searching logic available to Kron.",
 		LongDesc: ("The configs command is used to access the config parsing and searching logic available to Kron." +
 			" The accepted usages are:" +
 			"\n\t- kron configs -new-build [ -board | -model | -variant | -configName | -contains ]" +

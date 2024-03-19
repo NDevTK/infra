@@ -26,6 +26,7 @@ func getApplication(authOpts auth.Options) *subcommands.DefaultApplication {
 			subcommands.CmdHelp,
 			kronSubCommands.GetConfigParserCommand(authOpts),
 			kronSubCommands.GetRunCommand(authOpts),
+			kronSubCommands.GetFirestoreCommand(authOpts),
 			authcli.SubcommandInfo(authOpts, "auth-info", false),
 			authcli.SubcommandLogin(authOpts, "auth-login", false),
 			authcli.SubcommandLogout(authOpts, "auth-logout", false),

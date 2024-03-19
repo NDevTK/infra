@@ -50,6 +50,9 @@ const (
 	EventsPubSubTopic = "kron-events"
 	RunsPubSubTopic   = "kron-runs"
 
+	FirestoreDatabaseName         = "suite-scheduler-configs"
+	FirestoreConfigCollectionName = "configs"
+
 	// MultirequestSize is the maximum number of tests requests that we can
 	// combine per CTP builder run.
 	MultirequestSize = 25
