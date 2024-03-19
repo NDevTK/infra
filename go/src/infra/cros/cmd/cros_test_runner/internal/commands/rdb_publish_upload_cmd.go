@@ -20,6 +20,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -161,7 +162,7 @@ func constructTestResultFromStateKeeper(
 	sk *data.HwTestStateKeeper) (*artifactpb.TestResult, error) {
 
 	build := sk.BuildState.Build()
-	botDims := build.GetInfra().GetSwarming().GetBotDimensions()
+	botDims := protoutil.MustBotDimensions(build)
 
 	resultProto := &artifactpb.TestResult{}
 
@@ -383,8 +384,11 @@ func populatePrimaryEnvInfo(
 
 	if testTaskId := getTaskRequestId(build.GetInfra().GetSwarming().GetTaskId()); testTaskId != "" {
 		swarmingInfo.TaskId = testTaskId
+	} else if testTaskId := getTaskRequestId(build.GetInfra().GetBackend().GetTask().GetId().GetId()); testTaskId != "" {
+		swarmingInfo.TaskId = testTaskId
 	}
-	if suiteTaskId := getTaskRequestId(build.GetInfra().GetSwarming().GetParentRunId()); suiteTaskId != "" {
+
+	if suiteTaskId := getTaskRequestId(getSingleTagValue(build.Tags, "parent_task_id")); suiteTaskId != "" {
 		swarmingInfo.SuiteTaskId = suiteTaskId
 	}
 

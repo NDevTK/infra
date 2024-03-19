@@ -281,6 +281,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						"analytics_name":    "Bluetooth_Sa_Perbuild",
 						"ctp-fwd-task-name": "Bluetooth_Sa_Perbuild",
 						"qs_account":        "unmanaged_p2",
+						"parent_task_id":    "parentId1",
 					},
 				},
 			},
@@ -340,6 +341,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				{Key: "analytics_name", Value: "Bluetooth_Sa_Perbuild"},
 				{Key: "ctp-fwd-task-name", Value: "Bluetooth_Sa_Perbuild"},
 				{Key: "qs_account", Value: "unmanaged_p2"},
+				{Key: "parent_task_id", Value: "parentId1"},
 			},
 			CreateTime: createTime,
 			Infra: &bbpb.BuildInfra{Swarming: &bbpb.BuildInfra_Swarming{

@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -153,7 +154,7 @@ func executeHwTests(
 
 	// For demonstration/logging purposes.
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
-	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions()))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", protoutil.MustBotDimensions(buildState.Build())))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("gcs-url", gcsurl))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausURL(gcsurl)))
 
