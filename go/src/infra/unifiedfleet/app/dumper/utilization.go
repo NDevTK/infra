@@ -49,6 +49,10 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
+	idTolseMap := make(map[string]*ufspb.MachineLSE, 0)
+	for _, lse := range lses {
+		idTolseMap[lse.GetName()] = lse
+	}
 	// Get all Machines
 	machines, err := getAllMachines(ctx, false)
 	if err != nil {
@@ -67,7 +71,16 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 	lseInSUnitMap := make(map[string]bool)
 	for _, su := range sUnits {
 		if len(su.GetMachineLSEs()) > 0 {
-			b := getBucketForDevice(nil, nil, env)
+			suLses := make([]*ufspb.MachineLSE, len(su.GetMachineLSEs()))
+			for i, lseID := range su.GetMachineLSEs() {
+				suLses[i] = idTolseMap[lseID]
+			}
+
+			b, err := getBucketForSchedulingUnit(su, suLses, idTomachineMap, env)
+			if err != nil {
+				logging.Warningf(ctx, err.Error())
+				continue
+			}
 			c[b]++
 			for _, lseName := range su.GetMachineLSEs() {
 				lseInSUnitMap[lseName] = true
@@ -79,12 +92,9 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 		if lseInSUnitMap[name] {
 			continue
 		}
-		machines := lse.GetMachines()
-		if n := len(machines); n != 1 {
-			return errors.Reason("report ufs inventory cron handler: %d machines %v associated with %q", n, machines, name).Err()
-		}
-		machine, ok := idTomachineMap[machines[0]]
-		if !ok {
+		machine, err := getMachineForLse(lse, idTomachineMap)
+		if err != nil {
+			logging.Warningf(ctx, err.Error())
 			continue
 		}
 		b := getBucketForDevice(lse, machine, env)
@@ -102,6 +112,18 @@ func (c inventoryCounter) Report(ctx context.Context) {
 	}
 }
 
+func getMachineForLse(lse *ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine) (*ufspb.Machine, error) {
+	machines := lse.GetMachines()
+	if n := len(machines); n != 1 {
+		return nil, errors.Reason("report ufs inventory cron handler: %d machines %v associated with %q", n, machines, lse.GetName()).Err()
+	}
+	machine, ok := idTomachineMap[machines[0]]
+	if !ok {
+		return nil, errors.Reason("report ufs inventory cron handler: machine %s not found for LSE %s", machines[0], lse.GetName()).Err()
+	}
+	return machine, nil
+}
+
 func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env string) bucket {
 	b := bucket{
 		board:       machine.GetChromeosMachine().GetBuildTarget(),
@@ -117,6 +139,87 @@ func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env strin
 		b.pool = getReportPool(labstation.GetPools())
 	}
 	return b
+}
+
+type machineToStringValueFunc func(machine *ufspb.Machine) string
+
+var (
+	machineBoardValueFunc = func(machine *ufspb.Machine) string { return machine.GetChromeosMachine().GetBuildTarget() }
+	machineModelValueFunc = func(machine *ufspb.Machine) string { return machine.GetChromeosMachine().GetModel() }
+)
+
+func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine, env string) (bucket, error) {
+	b := bucket{
+		board:       "[None]",
+		model:       "[None]",
+		pool:        getReportPool(su.GetPools()),
+		environment: env,
+		zone:        "[None]",
+	}
+	// fields from all DUTs
+	if su.GetExposeType() == ufspb.SchedulingUnit_DEFAULT || su.GetExposeType() == ufspb.SchedulingUnit_DEFAULT_PLUS_PRIMARY {
+		board, err := schedulingUnitLabelForLses(lses, idTomachineMap, machineBoardValueFunc)
+		if err != nil {
+			return bucket{}, err
+		}
+		model, err := schedulingUnitLabelForLses(lses, idTomachineMap, machineModelValueFunc)
+		if err != nil {
+			return bucket{}, err
+		}
+		b.board = board
+		b.model = model
+	}
+	// fields from primary
+	var primaryLse *ufspb.MachineLSE
+	for _, lse := range lses {
+		if lse.GetName() == su.GetPrimaryDut() {
+			primaryLse = lse
+			break
+		}
+	}
+	switch su.GetExposeType() {
+	case ufspb.SchedulingUnit_DEFAULT:
+	case ufspb.SchedulingUnit_DEFAULT_PLUS_PRIMARY:
+		if primaryLse == nil {
+			return bucket{}, errors.Reason("Could not find primary MachineLSE %s for scheduling unit %s", su.GetPrimaryDut(), su.GetName()).Err()
+		}
+		b.zone = primaryLse.GetZone()
+	case ufspb.SchedulingUnit_STRICTLY_PRIMARY_ONLY:
+		if primaryLse == nil {
+			return bucket{}, errors.Reason("Could not find primary MachineLSE %s for scheduling unit %s", su.GetPrimaryDut(), su.GetName()).Err()
+		}
+		machine, err := getMachineForLse(primaryLse, idTomachineMap)
+		if err != nil {
+			return bucket{}, err
+		}
+		b.board = machine.GetChromeosMachine().GetBuildTarget()
+		b.model = machine.GetChromeosMachine().GetModel()
+		b.zone = primaryLse.GetZone()
+	}
+	return b, nil
+}
+
+func schedulingUnitLabelForLses(lses []*ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine, f machineToStringValueFunc) (string, error) {
+	machines := make([]*ufspb.Machine, len(lses))
+	for i, lse := range lses {
+		machine, err := getMachineForLse(lse, idTomachineMap)
+		if err != nil {
+			return "", err
+		}
+		machines[i] = machine
+	}
+	labelSet := make(map[string]struct{}) // Set of all label values
+	for _, machine := range machines {
+		machineLabel := f(machine)
+		if len(machineLabel) > 0 {
+			labelSet[machineLabel] = struct{}{}
+		}
+	}
+	labels := make([]string, 0, len(labelSet))
+	for k := range labelSet {
+		labels = append(labels, k)
+	}
+	return summarizeValues(labels), nil
 }
 
 // bucket contains static DUT dimensions.
