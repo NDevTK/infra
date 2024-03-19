@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	runner "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -205,8 +206,7 @@ func (c *testRunnerBuild) ToTestCaseResults() []*analytics.TestCaseResult {
 }
 
 func fetchModelName(b *bbpb.Build) string {
-	botDimensions := b.GetInfra().GetSwarming().GetBotDimensions()
-	for _, d := range botDimensions {
+	for _, d := range protoutil.MustBotDimensions(b) {
 		if d.GetKey() == "label-model" {
 			return d.GetValue()
 		}
