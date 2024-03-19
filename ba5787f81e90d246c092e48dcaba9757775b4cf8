@@ -96,6 +96,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "f88773ce_7052e1cc",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-03-19T02:31:56Z",
+      "side": 1,
+      "message": "\u003e and move real filesystem operations in osfs, not hashfs.\n\nThis refactoring extracts the xattr digest related logics into osfs, which itself looks good to me. \n\n\u003e for better cog integration\n\nCan file a bug so that you can associate this CL as a preparation for CoG integration?",
+      "parentUuid": "01ea6832_a9d730d3",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 31
+      },
+      "revId": "ba5787f81e90d246c092e48dcaba9757775b4cf8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "bbf3fde4_149f420b",
