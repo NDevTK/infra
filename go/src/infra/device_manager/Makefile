@@ -22,6 +22,7 @@ For running the service using Docker:
   build-docker-compose: build the Device Lease service stack with Docker Compose
   docker-service: build and run the Device Lease service as a Docker container
   docker-db: build and run the Postgres db as a Docker container
+  docker-pubsub: build and run the PubSub emulator as a Docker container
 endef
 
 .PHONY: help

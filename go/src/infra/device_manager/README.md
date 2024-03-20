@@ -128,7 +128,8 @@ create topics. This is necessary to publish messages and subscribe to topics.
 In a separate window, run the following:
 
 ```bash
-export PUBSUB_EMULATOR_HOST=localhost:8085 gcloud config set api_endpoint_overrides/pubsub http://$PUBSUB_EMULATOR_HOST/
+export PUBSUB_EMULATOR_HOST=localhost:8085
+gcloud config set api_endpoint_overrides/pubsub http://$PUBSUB_EMULATOR_HOST/
 
 # Replace device-events-v1 to another topic name of your choice.
 gcloud pubsub topics create device-events-v1
