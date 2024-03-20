@@ -301,16 +301,10 @@ func GetBuildTargets(target *TargetOption, variantsOnly bool) []BuildTarget {
 // GetBuildTargetsForAllTargets creates a list of build targets that the configuration is
 // tracking. A build target refers to the build image that should be used by the
 // CTP run. A build target is in the form of board(-<variant>).
-func GetBuildTargetsForAllTargets(targetsOptions TargetOptions) []BuildTarget {
+func GetBuildTargetsForAllTargets(targetOptions TargetOptions) []BuildTarget {
 	buildTargets := []BuildTarget{}
-	for board, target := range targetsOptions {
-		if len(target.Variants) > 0 {
-			for _, variant := range target.Variants {
-				buildTargets = append(buildTargets, BuildTarget(fmt.Sprintf("%s%s", board, variant)))
-			}
-		} else {
-			buildTargets = append(buildTargets, BuildTarget(board))
-		}
+	for _, target := range targetOptions {
+		buildTargets = append(buildTargets, GetBuildTargets(target, target.VariantsOnly)...)
 	}
 
 	return buildTargets
