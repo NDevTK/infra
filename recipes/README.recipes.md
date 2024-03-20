@@ -360,7 +360,7 @@ This metadata is used to connect things in the generated file to the thing
 in the Mojom file which generated it. This is made possible by annotations
 added to the generated file by the Mojo compiler.
 
-&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#330)(self, copy, revision, kzip_path=None, ignore=None):**
+&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#340)(self, copy, revision, kzip_path=None, ignore=None):**
 
 Check out the generated files repo and sync the generated files
    into this checkout.
@@ -396,7 +396,7 @@ Args:
 
 Clone chromium/src clang tools.
 
-&mdash; **def [create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#182)(self, commit_hash, commit_timestamp, commit_position=None):**
+&mdash; **def [create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#182)(self, commit_hash: str, commit_timestamp: int, commit_position: Optional[str]=None, clang_target_arch: Optional[str]=None):**
 
 Create the kythe index pack and upload it to google storage.
 
@@ -405,6 +405,7 @@ Args:
     if None use got_revision.
   commit_timestamp: Timestamp of the commit at which we're creating the
     index pack, in integer seconds since the UNIX epoch.
+  clang_target_arch: Target architecture to cross-compile for.
 
 Returns:
   Path to the generated index pack.
@@ -1584,10 +1585,10 @@ The protos are exported via a symlink in
 &mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/configs.py#13)(api):**
 ### *recipes* / [codesearch:tests/create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py)
 
-[DEPS](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py#9): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [codesearch](#recipe_modules-codesearch), [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
+[DEPS](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py#10): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [codesearch](#recipe_modules-codesearch), [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
 
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py#17)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py#18)(api):**
 ### *recipes* / [cv\_testing/tryjob](/recipes/recipes/cv_testing/tryjob.py)
 
 [DEPS](/recipes/recipes/cv_testing/tryjob.py#11): [recipe\_engine/cq][recipe_engine/recipe_modules/cq], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]

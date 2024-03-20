@@ -179,10 +179,12 @@ class CodesearchApi(recipe_api.RecipeApi):
       return self._PROJECT_OS
     return self._PROJECT_UNSUPPORTED  # pragma: nocover
 
-  def create_and_upload_kythe_index_pack(self,
-                                         commit_hash,
-                                         commit_timestamp,
-                                         commit_position=None):
+  def create_and_upload_kythe_index_pack(
+      self,
+      commit_hash: str,
+      commit_timestamp: int,
+      commit_position: Optional[str] = None,
+      clang_target_arch: Optional[str] = None) -> config_types.Path:
     """Create the kythe index pack and upload it to google storage.
 
     Args:
@@ -190,6 +192,7 @@ class CodesearchApi(recipe_api.RecipeApi):
         if None use got_revision.
       commit_timestamp: Timestamp of the commit at which we're creating the
         index pack, in integer seconds since the UNIX epoch.
+      clang_target_arch: Target architecture to cross-compile for.
 
     Returns:
       Path to the generated index pack.
@@ -199,7 +202,8 @@ class CodesearchApi(recipe_api.RecipeApi):
     index_pack_kythe_base = '%s_%s' % (self.c.PROJECT, self.c.PLATFORM)
     index_pack_kythe_name = '%s.kzip' % index_pack_kythe_base
     index_pack_kythe_path = self.c.out_path.join(index_pack_kythe_name)
-    self._create_kythe_index_pack(index_pack_kythe_path)
+    self._create_kythe_index_pack(
+        index_pack_kythe_path, clang_target_arch=clang_target_arch)
 
     if self.m.tryserver.is_tryserver:  # pragma: no cover
       return index_pack_kythe_path
@@ -235,11 +239,14 @@ class CodesearchApi(recipe_api.RecipeApi):
 
     return index_pack_kythe_path
 
-  def _create_kythe_index_pack(self, index_pack_kythe_path):
+  def _create_kythe_index_pack(self,
+                               index_pack_kythe_path: config_types.Path,
+                               clang_target_arch: Optional[str] = None) -> None:
     """Create the kythe index pack.
 
     Args:
-      index_pack_kythe_path: Path to the Kythe index pack
+      index_pack_kythe_path: Path to the Kythe index pack.
+      clang_target_arch: Target architecture to cross-compile for.
     """
     exec_path = self.m.cipd.ensure_tool("infra/tools/package_index/${platform}",
                                         "latest")
@@ -257,6 +264,9 @@ class CodesearchApi(recipe_api.RecipeApi):
         '--project',
         self.c.PROJECT,
     ]
+
+    if clang_target_arch is not None:
+      args.extend(['--clang_target_arch', clang_target_arch])
 
     if self.c.javac_extractor_output_dir:
       args.extend(['--path_to_java_kzips', self.c.javac_extractor_output_dir])

@@ -4,7 +4,8 @@
 
 from recipe_engine.post_process import (DropExpectation, StatusException,
                                         StatusSuccess, StepCommandContains,
-                                        StepSuccess, SummaryMarkdown)
+                                        StepCommandDoesNotContain, StepSuccess,
+                                        SummaryMarkdown)
 
 DEPS = [
     'codesearch',
@@ -35,7 +36,9 @@ def RunSteps(api):
   api.codesearch.create_and_upload_kythe_index_pack(
       commit_hash=kythe_commit_hash,
       commit_timestamp=1337000000,
-      commit_position=123)
+      commit_position=123,
+      clang_target_arch=api.properties.get('target_architecture', None),
+  )
 
 
 def GenTests(api):
@@ -67,6 +70,21 @@ def GenTests(api):
       'basic_chromiumos',
       api.properties(codesearch_config='chromiumos', project='chromiumos'),
       *GetBasicStepChecks('chromiumos', 'a' * 40),
+      api.post_process(StepCommandDoesNotContain, 'create kythe index pack',
+                       ['--clang_target_arch']),
+      api.post_process(StatusSuccess),
+      api.post_process(DropExpectation),
+  )
+
+  yield api.test(
+      'chromiumos_with_target_architecture',
+      api.properties(
+          codesearch_config='chromiumos',
+          project='chromiumos',
+          target_architecture='arm64'),
+      *GetBasicStepChecks('chromiumos', 'a' * 40),
+      api.post_process(StepCommandContains, 'create kythe index pack',
+                       ['--clang_target_arch', 'arm64']),
       api.post_process(StatusSuccess),
       api.post_process(DropExpectation),
   )
