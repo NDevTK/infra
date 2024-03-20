@@ -141,10 +141,9 @@ if not modules:
       modules.extend(['infra'])
     modules.extend(get_modules_with_coveragerc('packages'))
 
-  # Skip GAE tests when testing infra_python CIPD package integrity: the
-  # package doesn't have appengine code in it.
-  #
-  # For py3, these tests run via their own test.py rather than expect_tests.
+  # Skip py2.7 GAE tests for any builders that don't pull the appengine
+  # directory. For py3, these tests run via their own test.py rather than
+  # expect_tests.
   if not py3 and os.path.isdir(os.path.join(INFRA_ROOT, 'appengine')):
     if TEST_GAE:
       modules.append('appengine_module')
