@@ -23,6 +23,10 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
+	if len(lses) == 0 {
+		logging.Infof(ctx, "no lse found, exiting early")
+		return nil
+	}
 	logging.Infof(ctx, "lses: %v\n", lses)
 
 	hns, err := util.CutHostnames(lses)
