@@ -132,8 +132,7 @@ else
   # We use LDFLAGS_NODIST instead of LDFLAGS so that distutils doesn't use this
   # for building extensions. It would break the build, as gnu_version_script.txt
   # isn't available when we build wheels. It's not necessary there anyway.
-  LDFLAGS_NODIST="${LDFLAGS}"
-  LDFLAGS_NODIST+=" -Wl,--version-script=$SCRIPT_DIR/gnu_version_script.txt"
+  LDFLAGS_NODIST=" -Wl,--version-script=$SCRIPT_DIR/gnu_version_script.txt"
 
   if [[ $_3PP_PLATFORM != $_3PP_TOOL_PLATFORM ]]; then
     # -pthread detection does not work when cross-compiling, but we need this
@@ -192,6 +191,7 @@ sed -i \
 autoconf
 
 export LDFLAGS
+export LDFLAGS_NODIST
 export CPPFLAGS
 # Configure our production Python build with our static configuration
 # environment and generate our basic platform.
@@ -209,7 +209,10 @@ if ! ./configure --prefix "$PREFIX" --host="$CROSS_TRIPLE" \
 fi
 
 
+# These flags have been picked up by configure; unset them so they aren't
+# appended again.
 export LDFLAGS=
+export LDFLAGS_NODIST=
 export CPPFLAGS=
 
 if [ ! $USE_SYSTEM_FFI ]; then

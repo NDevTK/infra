@@ -74,6 +74,19 @@ class TestPython(unittest.TestCase):
     rv = subprocess.call([self.python, '-c', script])
     self.assertEqual(rv, 0)
 
+  def test_no_version_script_in_sysconfig(self):
+    # On Linux, we use a linker version script to restrict the exported
+    # symbols. Verify that this has not leaked into the build flags that
+    # will be used by Python wheels.
+    script = ('import sysconfig\n'
+              'for k, v in sysconfig.get_config_vars().items():\n'
+              '  if (isinstance(v, str) and not k.endswith("_NODIST")\n'
+              '      and k not in ("PY_CORE_LDFLAGS", "BLDSHARED")):\n'
+              '    assert "version-script" not in v, (\n'
+              '      "Found unexpected version-script in %s: %s" % (k, v))')
+    rv = subprocess.call([self.python, '-c', script])
+    self.assertEqual(rv, 0)
+
 
 if __name__ == '__main__':
   platform = os.environ['_3PP_PLATFORM']
