@@ -172,9 +172,9 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	var wg sync.WaitGroup
 
 	// Schedule all requests via BuildBucket in parallel.
-	for configName, request := range ctpRequests {
+	for configName, requestList := range ctpRequests {
 		wg.Add(1)
-		go scheduleBatchViaBB(request, configName, schedulerClient, publishClient, &wg)
+		go scheduleBatchViaBB(requestList, configName, schedulerClient, publishClient, &wg)
 	}
 
 	common.Stdout.Println("Waiting for batched requests to finish scheduling...")

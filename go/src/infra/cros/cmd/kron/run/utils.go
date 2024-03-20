@@ -299,6 +299,10 @@ func sendBatch(configName string, schedulerClient buildbucket.Scheduler, publish
 // and sends it off to be scheduled via BuildBucket.
 func scheduleBatchViaBB(requests []*builds.EventWrapper, configName string, schedulerClient buildbucket.Scheduler, publishClient pubsub.PublishClient, wg *sync.WaitGroup) {
 	defer wg.Done()
+	if len(requests) == 0 {
+		common.Stdout.Println("No requests passed into scheduleBatchViaBB()")
+		return
+	}
 
 	batchRequestList := []*builds.EventWrapper{}
 	for _, request := range requests {
@@ -331,8 +335,11 @@ func limitStagingRequests(requestMap map[string][]*builds.EventWrapper) map[stri
 	returnMap := map[string][]*builds.EventWrapper{}
 	count := 0
 	for configName, requestList := range requestMap {
-		returnMap[configName] = []*builds.EventWrapper{}
+		if count == common.StagingMaxRequests {
+			break
+		}
 
+		returnMap[configName] = []*builds.EventWrapper{}
 		for _, request := range requestList {
 			if count == common.StagingMaxRequests {
 				break
