@@ -11,11 +11,13 @@ import (
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/openid"
+	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
 
 	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/frontend"
+	"infra/device_manager/internal/jobs"
 )
 
 func main() {
@@ -54,7 +56,7 @@ func main() {
 	)
 
 	server.Main(nil, modules, func(srv *server.Server) error {
-		logging.Infof(srv.Context, "main: initializing server")
+		logging.Debugf(srv.Context, "main: initializing server")
 
 		// This allows auth to use Identity tokens.
 		srv.SetRPCAuthMethods([]auth.Method{
@@ -69,7 +71,7 @@ func main() {
 			},
 		})
 
-		logging.Infof(srv.Context, "main: installing Services.")
+		logging.Debugf(srv.Context, "main: installing services")
 
 		deviceLeaseServer := frontend.NewServer()
 		dbConfig := database.DatabaseConfig{
@@ -91,8 +93,9 @@ func main() {
 		}
 
 		frontend.InstallServices(deviceLeaseServer, srv)
+		cron.RegisterHandler("import-ufs-devices", jobs.ImportUFSDevices)
 
-		logging.Infof(srv.Context, "main: initialization finished")
+		logging.Debugf(srv.Context, "main: initialization finished")
 
 		return nil
 	})
