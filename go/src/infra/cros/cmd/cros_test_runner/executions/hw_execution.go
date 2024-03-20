@@ -131,7 +131,7 @@ func executeHwTests(
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	// Create state keeper
-	gcsurl := common.GetGcsUrl(gsRoot)
+	gcsurl := common.GetGcsURL(gsRoot)
 	sk := data.NewHwTestStateKeeper()
 	sk.BuildState = buildState
 	sk.CftTestRequest = req
@@ -139,7 +139,7 @@ func executeHwTests(
 	sk.DockerKeyFileLocation = dockerKeyFile
 	sk.GcsPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.CpconPublishSrcDir = os.Getenv("TEMPDIR")
-	sk.GcsUrl = gcsurl
+	sk.GcsURL = gcsurl
 	sk.TesthausURL = common.GetTesthausURL(gcsurl)
 	sk.ContainerImages = containerImagesMap
 
@@ -213,7 +213,7 @@ func executeHwTestsV2(
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	// Create state keeper
-	gcsurl := common.GetGcsUrl(gsRoot)
+	gcsurl := common.GetGcsURL(gsRoot)
 	sk := data.NewHwTestStateKeeper()
 	sk.BuildState = buildState
 	sk.CrosTestRunnerRequest = req
@@ -222,7 +222,7 @@ func executeHwTestsV2(
 	sk.DockerKeyFileLocation = dockerKeyFile
 	sk.GcsPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.CpconPublishSrcDir = os.Getenv("TEMPDIR")
-	sk.GcsUrl = gcsurl
+	sk.GcsURL = gcsurl
 	sk.TesthausURL = common.GetTesthausURL(gcsurl)
 	sk.ContainerImages = containerImagesMap
 

@@ -81,8 +81,8 @@ func TestGcsPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 	Convey("ProvisionStartCmd extract deps", t, func() {
 		ctx := context.Background()
-		wantGcsUrl := "gs://gcs/url"
-		sk := &data.HwTestStateKeeper{GcsUrl: wantGcsUrl}
+		wantGcsURL := "gs://gcs/url"
+		sk := &data.HwTestStateKeeper{GcsURL: wantGcsURL}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosPublishTemplatedContainer(
@@ -97,6 +97,6 @@ func TestGcsPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldBeNil)
-		So(cmd.GcsUrl, ShouldEqual, wantGcsUrl)
+		So(cmd.GcsURL, ShouldEqual, wantGcsURL)
 	})
 }

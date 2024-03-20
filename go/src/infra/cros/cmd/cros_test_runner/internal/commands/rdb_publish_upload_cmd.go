@@ -38,7 +38,7 @@ type RdbPublishUploadCmd struct {
 	// Either constructed TestResultForRdb is required,
 	TestResultForRdb *artifactpb.TestResult
 	// Or all these are required.
-	GcsUrl        string
+	GcsURL        string
 	TestResponses *testapipb.CrosTestResponse
 }
 
@@ -84,8 +84,8 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 		if sk.BuildState == nil {
 			return fmt.Errorf("Cmd %q missing dependency: BuildState", cmd.GetCommandType())
 		}
-		if sk.GcsUrl == "" {
-			return fmt.Errorf("Cmd %q missing dependency: GcsUrl", cmd.GetCommandType())
+		if sk.GcsURL == "" {
+			return fmt.Errorf("Cmd %q missing dependency: GcsURL", cmd.GetCommandType())
 		}
 		if sk.TestResponses == nil {
 			return fmt.Errorf("Cmd %q missing dependency: TestResponses", cmd.GetCommandType())
@@ -122,7 +122,7 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 		}
 	}
 
-	cmd.GcsUrl = sk.GcsUrl
+	cmd.GcsURL = sk.GcsURL
 	cmd.TestResponses = sk.TestResponses
 
 	return nil
@@ -496,7 +496,7 @@ func populateTestRunsInfo(
 		testCaseInfo := &artifactpb.TestCaseInfo{}
 		testRun.TestCaseInfo = testCaseInfo
 
-		testRun.LogsInfo = []*_go.StoragePath{{HostType: _go.StoragePath_GS, Path: sk.GcsUrl}}
+		testRun.LogsInfo = []*_go.StoragePath{{HostType: _go.StoragePath_GS, Path: sk.GcsURL}}
 
 		// -- TestCaseInfo
 		testCaseInfo.TestCaseResult = testCaseResult

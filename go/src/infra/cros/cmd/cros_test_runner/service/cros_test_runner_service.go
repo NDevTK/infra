@@ -29,7 +29,7 @@ func NewCrosTestRunnerService(execReq *skylab_test_runner.ExecuteRequest, server
 	executeSK.DutTopology = serverSK.DutTopology
 	executeSK.DockerKeyFileLocation = serverSK.DockerKeyFileLocation
 	executeSK.UseDockerKeyDirectly = serverSK.UseDockerKeyDirectly
-	executeSK.GcsUrl = serverSK.GcsUrl
+	executeSK.GcsURL = serverSK.GcsURL
 	executeSK.TesthausURL = serverSK.TesthausURL
 	executeSK.GcsPublishSrcDir = serverSK.GcsPublishSrcDir
 

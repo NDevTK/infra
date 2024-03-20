@@ -397,7 +397,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					Dut: dut,
 				},
 			},
-			GcsUrl:     "gs://some-bucket/builder/build-12345",
+			GcsURL:     "gs://some-bucket/builder/build-12345",
 			BuildState: buildState,
 			DutTopology: &labapi.DutTopology{
 				Id:   &labapi.DutTopology_Id{Value: "0wgtfqin2033834d-ecghcra"},

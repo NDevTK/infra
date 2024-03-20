@@ -24,7 +24,7 @@ type CpconPublishUploadCmd struct {
 	// Deps
 	CpconPublishSrcDir string
 	CpconJobName       string
-	GcsUrl             string
+	GcsURL             string
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -68,10 +68,10 @@ func (cmd *CpconPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	}
 	cmd.CpconPublishSrcDir = sk.CpconPublishSrcDir
 
-	if sk.GcsUrl == "" {
-		return fmt.Errorf("Cmd %q missing dependency: GcsUrl", cmd.GetCommandType())
+	if sk.GcsURL == "" {
+		return fmt.Errorf("Cmd %q missing dependency: GcsURL", cmd.GetCommandType())
 	}
-	cmd.GcsUrl = sk.GcsUrl
+	cmd.GcsURL = sk.GcsURL
 
 	return nil
 }

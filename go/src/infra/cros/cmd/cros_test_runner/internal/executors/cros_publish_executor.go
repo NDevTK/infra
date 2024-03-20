@@ -122,7 +122,7 @@ func (ex *CrosPublishExecutor) gcsPublishUploadCommandExecution(
 	step, ctx := build.StartStep(ctx, "gcs-publish upload")
 	defer func() { step.End(err) }()
 
-	common.AddLinksToStepSummaryMarkdown(step, "", common.GetGcsClickableLink(cmd.GcsUrl))
+	common.AddLinksToStepSummaryMarkdown(step, "", common.GetGcsClickableLink(cmd.GcsURL))
 
 	// Create request.
 	artifactDirPath := &_go.StoragePath{
@@ -130,7 +130,7 @@ func (ex *CrosPublishExecutor) gcsPublishUploadCommandExecution(
 		Path:     common.GcsPublishTestArtifactsDir}
 	gcsPath := &_go.StoragePath{
 		HostType: _go.StoragePath_GS,
-		Path:     cmd.GcsUrl}
+		Path:     cmd.GcsURL}
 	gcsMetadata, err := anypb.New(&testapi.PublishGcsMetadata{GcsPath: gcsPath})
 	if err != nil {
 		return errors.Annotate(err, "Creating publish gcs metadata err: ").Err()
@@ -357,7 +357,7 @@ func (ex *CrosPublishExecutor) cpconPublishUploadCommandExecution(
 	cpconMetadata, err := anypb.New(&testapi.PublishGcsMetadata{
 		GcsPath: &_go.StoragePath{
 			HostType: _go.StoragePath_GS,
-			Path:     cmd.GcsUrl,
+			Path:     cmd.GcsURL,
 		},
 		ServiceAccountCredsFilePath: &_go.StoragePath{
 			HostType: _go.StoragePath_LOCAL,

@@ -73,7 +73,7 @@ type HwTestStateKeeper struct {
 	TestResponses *testapi.CrosTestResponse
 
 	// Publish related
-	GcsUrl              string
+	GcsURL              string
 	TesthausURL         string
 	GcsPublishSrcDir    string
 	CurrentInvocationId string

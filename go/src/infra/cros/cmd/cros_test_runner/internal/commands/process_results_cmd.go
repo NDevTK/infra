@@ -27,7 +27,7 @@ type ProcessResultsCmd struct {
 
 	// Deps (all are optional)
 	CftTestRequest  *skylab_test_runner.CFTTestRequest
-	GcsUrl          string
+	GcsURL          string
 	TesthausURL     string
 	ProvisionResps  map[string][]*api.InstallResponse
 	TestResponses   *api.CrosTestResponse
@@ -86,13 +86,13 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Results")
 	defer func() { step.End(build.AttachStatus(err, bbpb.Status_FAILURE, nil)) }()
 
-	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausURL, common.GetGcsClickableLink(cmd.GcsUrl))
+	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausURL, common.GetGcsClickableLink(cmd.GcsURL))
 
 	// Default values
 	prejobVerdict := skylab_test_runner.Result_Prejob_Step_VERDICT_UNDEFINED
 	prejobReason := ""
 	isIncomplete := true
-	logData := getLogData(cmd.TesthausURL, cmd.GcsUrl)
+	logData := getLogData(cmd.TesthausURL, cmd.GcsURL)
 
 	// Parse provision info
 	var prejob *skylab_test_runner.Result_Prejob = nil
@@ -187,8 +187,8 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	if sk.TestResponses == nil {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TestResponses", cmd.GetCommandType())
 	}
-	if sk.GcsUrl == "" {
-		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: GcsUrl", cmd.GetCommandType())
+	if sk.GcsURL == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: GcsURL", cmd.GetCommandType())
 	}
 	if sk.TesthausURL == "" {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TesthausURL", cmd.GetCommandType())
@@ -212,7 +212,7 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 
 	cmd.CftTestRequest = sk.CftTestRequest
 	cmd.TestResponses = sk.TestResponses
-	cmd.GcsUrl = sk.GcsUrl
+	cmd.GcsURL = sk.GcsURL
 	cmd.TesthausURL = sk.TesthausURL
 	cmd.CurrentDutState = sk.CurrentDutState
 

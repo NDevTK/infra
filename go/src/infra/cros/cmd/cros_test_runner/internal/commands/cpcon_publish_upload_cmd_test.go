@@ -88,9 +88,9 @@ func TestCpconPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 	Convey("ProvisionStartCmd extract deps", t, func() {
 
 		ctx := context.Background()
-		wantGcsUrl := "gs://this-is-a-gcs-path/results"
+		wantGcsURL := "gs://this-is-a-gcs-path/results"
 		sk := &data.HwTestStateKeeper{
-			GcsUrl:             wantGcsUrl,
+			GcsURL:             wantGcsURL,
 			CpconPublishSrcDir: "this/is/a/fake/path",
 		}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -109,7 +109,7 @@ func TestCpconPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldBeNil)
 		So(cmd.CpconJobName, ShouldEqual, fmt.Sprintf("swarming-%s", wantSwarmingTaskId))
-		So(cmd.GcsUrl, ShouldEqual, wantGcsUrl)
+		So(cmd.GcsURL, ShouldEqual, wantGcsURL)
 	})
 
 }

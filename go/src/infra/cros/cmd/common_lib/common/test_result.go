@@ -133,12 +133,12 @@ func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.
 }
 
 // GetTesthausURL gets testhaus log viewer url.
-func GetTesthausURL(gcsUrl string) string {
-	return fmt.Sprintf("%s%s", TesthausURLPrefix, gcsUrl[len("gs://"):])
+func GetTesthausURL(gcsURL string) string {
+	return fmt.Sprintf("%s%s", TesthausURLPrefix, gcsURL[len("gs://"):])
 }
 
-// GetGcsUrl gets gcs url where all the artifacts will be uploaded.
-func GetGcsUrl(gsRoot string) string {
+// GetGcsURL gets gcs url where all the artifacts will be uploaded.
+func GetGcsURL(gsRoot string) string {
 	return fmt.Sprintf(
 		"%s/%s/%s",
 		gsRoot,
@@ -156,7 +156,7 @@ func GetGcsClickableLink(gsURL string) string {
 	if strings.HasPrefix(gsURL, gsPrefix) {
 		urlSuffix = gsURL[len(gsPrefix):]
 	}
-	return fmt.Sprintf("%s%s", GcsUrlPrefix, urlSuffix)
+	return fmt.Sprintf("%s%s", GcsURLPrefix, urlSuffix)
 }
 
 // IsAnyTestFailure returns if there is any failed tests in test results

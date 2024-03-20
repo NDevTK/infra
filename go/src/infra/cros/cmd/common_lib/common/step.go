@@ -16,12 +16,12 @@ import (
 // AddLinksToStepSummaryMarkdown adds provided links to provided step summary.
 func AddLinksToStepSummaryMarkdown(
 	step *build.Step,
-	testHausUrl string,
+	testhausURL string,
 	gcsLink string) {
 
 	links := []string{}
-	if testHausUrl != "" {
-		links = append(links, fmt.Sprintf("* [Testhaus Link](%s)", testHausUrl))
+	if testhausURL != "" {
+		links = append(links, fmt.Sprintf("* [Testhaus Link](%s)", testhausURL))
 	}
 	if gcsLink != "" {
 		links = append(links, fmt.Sprintf("* [Test Artifacts Gcs Link](%s)", gcsLink))

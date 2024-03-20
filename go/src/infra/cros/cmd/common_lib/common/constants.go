@@ -27,7 +27,7 @@ const (
 	RdbPublishTestArtifactDir    = "/tmp/rdb-publish-test-artifacts/"
 	// TODO(b/330067464): Update the default Testhaus URL to the fusion view
 	TesthausURLPrefix                      = "https://cros-test-analytics.appspot.com/p/chromeos/logs/browse/"
-	GcsUrlPrefix                           = "https://pantheon.corp.google.com/storage/browser/"
+	GcsURLPrefix                           = "https://pantheon.corp.google.com/storage/browser/"
 	HwTestCtrInputPropertyName             = "$chromeos/cros_tool_runner"
 	CftServiceMetadataFileName             = ".cftmeta"
 	CftServiceMetadataLineContentSeparator = "="

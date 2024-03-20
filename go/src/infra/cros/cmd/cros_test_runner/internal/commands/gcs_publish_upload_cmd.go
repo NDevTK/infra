@@ -18,7 +18,7 @@ type GcsPublishUploadCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	GcsUrl string
+	GcsURL string
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -46,11 +46,11 @@ func (cmd *GcsPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
-	if sk.GcsUrl == "" {
-		return fmt.Errorf("Cmd %q missing dependency: GcsUrl", cmd.GetCommandType())
+	if sk.GcsURL == "" {
+		return fmt.Errorf("Cmd %q missing dependency: GcsURL", cmd.GetCommandType())
 	}
 
-	cmd.GcsUrl = sk.GcsUrl
+	cmd.GcsURL = sk.GcsURL
 	return nil
 }
 
