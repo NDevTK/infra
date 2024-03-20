@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
 
+	"infra/cros/dutstate"
 	invV1 "infra/libs/skylab/inventory"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/config"
@@ -21,7 +22,18 @@ import (
 	"infra/unifiedfleet/app/util"
 )
 
-type inventoryCounter map[bucket]int
+// inventoryCounter collects number of DUTs per bucket and status.
+// Copied from infra/go/src/infra/cros/lab_inventory/utilization/utilization.go
+type inventoryCounter map[bucket]map[string]int
+
+func (c inventoryCounter) increment(b *bucket, status string) {
+	sc := c[*b]
+	if sc == nil {
+		sc = make(map[string]int)
+		c[*b] = sc
+	}
+	sc[status]++
+}
 
 // suMetric is the metric name for scheduling unit count.
 var suMetric = metric.NewInt(
@@ -33,6 +45,7 @@ var suMetric = metric.NewInt(
 	field.String("pool"),
 	field.String("environment"),
 	field.String("zone"),
+	field.String("status"),
 )
 
 // reportUFSInventoryCronHandler push the ufs duts metrics to tsmon
@@ -81,7 +94,8 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 				logging.Warningf(ctx, err.Error())
 				continue
 			}
-			c[b]++
+			s := schedulingUnitStatusFromLses(suLses)
+			c.increment(b, s)
 			for _, lseName := range su.GetMachineLSEs() {
 				lseInSUnitMap[lseName] = true
 			}
@@ -98,7 +112,8 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 			continue
 		}
 		b := getBucketForDevice(lse, machine, env)
-		c[b]++
+		s := dutstate.ConvertFromUFSState(lse.GetResourceState()).String()
+		c.increment(b, s)
 	}
 	logging.Infof(ctx, "report UFS inventory metrics for %d devices", len(c))
 	c.Report(ctx)
@@ -106,12 +121,18 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 }
 
 func (c inventoryCounter) Report(ctx context.Context) {
-	for b, count := range c {
-		//logging.Infof(ctx, "bucket: %s, number: %d", b.String(), count)
-		suMetric.Set(ctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone)
+	for b, counts := range c {
+		if counts == nil {
+			continue
+		}
+		for status, count := range counts {
+			suMetric.Set(ctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, string(status))
+		}
 	}
 }
 
+// getMachineForLse returns the Machine that's attached to the MachineLSE
+// iff the MachineLSE references exactly one Machine
 func getMachineForLse(lse *ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine) (*ufspb.Machine, error) {
 	machines := lse.GetMachines()
 	if n := len(machines); n != 1 {
@@ -124,8 +145,10 @@ func getMachineForLse(lse *ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Ma
 	return machine, nil
 }
 
-func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env string) bucket {
-	b := bucket{
+// getBucketForDevice instantiates a *bucket for a given MachineLSE and
+// corresponding Machine
+func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env string) *bucket {
+	b := &bucket{
 		board:       machine.GetChromeosMachine().GetBuildTarget(),
 		model:       machine.GetChromeosMachine().GetModel(),
 		pool:        "[None]",
@@ -141,15 +164,21 @@ func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env strin
 	return b
 }
 
-type machineToStringValueFunc func(machine *ufspb.Machine) string
+// machineFieldToValueFunc is a helper type for extracting the DUT fields
+// for a given scheduling unit
+type machineFieldToValueFunc func(machine *ufspb.Machine) string
 
 var (
 	machineBoardValueFunc = func(machine *ufspb.Machine) string { return machine.GetChromeosMachine().GetBuildTarget() }
 	machineModelValueFunc = func(machine *ufspb.Machine) string { return machine.GetChromeosMachine().GetModel() }
 )
 
-func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine, env string) (bucket, error) {
-	b := bucket{
+// getBucketForSchedulingUnit instantiates a *bucket for a given SchedulingUnit
+// and corresponding DUTs.
+// Depending on the ExposeType, the bucket dimensions are based on a combination
+// of the primary DUT values and an aggregate on all DUTs
+func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine, env string) (*bucket, error) {
+	b := &bucket{
 		board:       "[None]",
 		model:       "[None]",
 		pool:        getReportPool(su.GetPools()),
@@ -157,17 +186,24 @@ func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineL
 		zone:        "[None]",
 	}
 	// fields from all DUTs
-	if su.GetExposeType() == ufspb.SchedulingUnit_DEFAULT || su.GetExposeType() == ufspb.SchedulingUnit_DEFAULT_PLUS_PRIMARY {
+	switch su.GetExposeType() {
+	case ufspb.SchedulingUnit_DEFAULT:
+		fallthrough
+	case ufspb.SchedulingUnit_DEFAULT_PLUS_PRIMARY:
 		board, err := schedulingUnitLabelForLses(lses, idTomachineMap, machineBoardValueFunc)
 		if err != nil {
-			return bucket{}, err
+			return nil, err
 		}
 		model, err := schedulingUnitLabelForLses(lses, idTomachineMap, machineModelValueFunc)
 		if err != nil {
-			return bucket{}, err
+			return nil, err
 		}
 		b.board = board
 		b.model = model
+	case ufspb.SchedulingUnit_STRICTLY_PRIMARY_ONLY:
+		// nothing from all DUTs
+	default:
+		return nil, errors.Reason("Unknown SchedulingUnit Expose Type for %s", su.GetName()).Err()
 	}
 	// fields from primary
 	var primaryLse *ufspb.MachineLSE
@@ -179,27 +215,32 @@ func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineL
 	}
 	switch su.GetExposeType() {
 	case ufspb.SchedulingUnit_DEFAULT:
+		// nothing from the primary DUT
 	case ufspb.SchedulingUnit_DEFAULT_PLUS_PRIMARY:
 		if primaryLse == nil {
-			return bucket{}, errors.Reason("Could not find primary MachineLSE %s for scheduling unit %s", su.GetPrimaryDut(), su.GetName()).Err()
+			return nil, errors.Reason("Could not find primary MachineLSE %s for scheduling unit %s", su.GetPrimaryDut(), su.GetName()).Err()
 		}
 		b.zone = primaryLse.GetZone()
 	case ufspb.SchedulingUnit_STRICTLY_PRIMARY_ONLY:
 		if primaryLse == nil {
-			return bucket{}, errors.Reason("Could not find primary MachineLSE %s for scheduling unit %s", su.GetPrimaryDut(), su.GetName()).Err()
+			return nil, errors.Reason("Could not find primary MachineLSE %s for scheduling unit %s", su.GetPrimaryDut(), su.GetName()).Err()
 		}
 		machine, err := getMachineForLse(primaryLse, idTomachineMap)
 		if err != nil {
-			return bucket{}, err
+			return nil, err
 		}
 		b.board = machine.GetChromeosMachine().GetBuildTarget()
 		b.model = machine.GetChromeosMachine().GetModel()
 		b.zone = primaryLse.GetZone()
+	default:
+		return nil, errors.Reason("Unknown SchedulingUnit Expose Type for %s", su.GetName()).Err()
 	}
 	return b, nil
 }
 
-func schedulingUnitLabelForLses(lses []*ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine, f machineToStringValueFunc) (string, error) {
+// schedulingUnitLabelForLses calculates an overall label for a scheduling unit
+// given a list of MachineLSEs
+func schedulingUnitLabelForLses(lses []*ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine, f machineFieldToValueFunc) (string, error) {
 	machines := make([]*ufspb.Machine, len(lses))
 	for i, lse := range lses {
 		machine, err := getMachineForLse(lse, idTomachineMap)
@@ -222,6 +263,17 @@ func schedulingUnitLabelForLses(lses []*ufspb.MachineLSE, idTomachineMap map[str
 	return summarizeValues(labels), nil
 }
 
+// schedulingUnitStatusFromLses calculates a weighted status based on all DUTs
+// to represent the scheduling unit
+func schedulingUnitStatusFromLses(lses []*ufspb.MachineLSE) string {
+	states := make([]string, len(lses))
+	for i, lse := range lses {
+		s := dutstate.ConvertFromUFSState(lse.GetResourceState()).String()
+		states[i] = s
+	}
+	return util.SchedulingUnitDutState(states)
+}
+
 // bucket contains static DUT dimensions.
 //
 // These dimensions do not change often. If all DUTs with a given set of
@@ -235,7 +287,7 @@ type bucket struct {
 	zone        string
 }
 
-func (b bucket) String() string {
+func (b *bucket) String() string {
 	return fmt.Sprintf("board: %s, model: %s, pool: %s, env: %s, zone: %q", b.board, b.model, b.pool, b.environment, b.zone)
 }
 

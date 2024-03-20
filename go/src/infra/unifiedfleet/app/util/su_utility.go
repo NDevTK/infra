@@ -25,6 +25,9 @@ var suStateMap = map[int]string{
 	7: "reserved",
 }
 
+// SchedulingUnitDutState calculates a weighted state based on all DUTs
+// to represent the scheduling unit
+// Copied from infra/go/src/infra/cmd/shivas/utils/schedulingunit/su_utility.go
 func SchedulingUnitDutState(states []string) string {
 	record := 0
 	for _, s := range states {
