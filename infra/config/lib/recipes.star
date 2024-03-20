@@ -10,13 +10,14 @@ load("//lib/infra.star", "infra")
 # Recipes repo ID => (repo URL, name to use in builders).
 _KNOWN_REPOS = {
     "build": ("https://chromium.googlesource.com/chromium/tools/build", "Build"),
+    "chromiumos": ("https://chromium.googlesource.com/chromiumos/infra/recipes", "ChromiumOS"),
     "depot_tools": ("https://chromium.googlesource.com/chromium/tools/depot_tools", "Depot Tools"),
     "fuchsia": ("https://fuchsia.googlesource.com/infra/recipes", "Fuchsia"),
     "infra": ("https://chromium.googlesource.com/infra/infra", "Infra"),
+    "pigweed": ("https://pigweed.googlesource.com/infra/recipes", "Pigweed"),
     "recipe_engine": ("https://chromium.googlesource.com/infra/luci/recipes-py", "Recipe Engine"),
     "skia": ("https://skia.googlesource.com/skia", "Skia"),
     "skiabuildbot": ("https://skia.googlesource.com/buildbot", "Skia Buildbot"),
-    "chromiumos": ("https://chromium.googlesource.com/chromiumos/infra/recipes", "ChromiumOS"),
 }
 
 def _repo_url(proj):

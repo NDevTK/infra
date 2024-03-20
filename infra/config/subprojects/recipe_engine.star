@@ -82,6 +82,7 @@ recipes.roll_trybots(
         "depot_tools",
         "fuchsia",
         "infra",
+        "pigweed",
         # These repos are stuck in the roller. (http://bugs.skia.org/10401)
         #'skia',
         #'skiabuildbot',
