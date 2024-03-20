@@ -155,6 +155,10 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 	if casRecipeBundle.Digest == nil {
 		casRecipeBundle = nil
 	}
+	// When led CAS recipe bundle property is set, it also shows up in led_edited_properties,
+	// this leads to us applying the led CAS recipe bundle property because we reapply
+	// everything in led_edited_properties, so remove it
+	delete(ledEditedProperties.Fields, ledcmd.CASRecipeBundleProperty)
 	if len(ledEditedProperties.Fields) == 0 {
 		ledEditedProperties = nil
 	}
@@ -175,6 +179,9 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 		delete(properties.Fields, k)
 		delete(requestedProperties.GetFields(), k)
 	}
+
+	// The bootstrapped executable doesn't need the led_builder_is_bootstrapped property set
+	delete(properties.Fields, "led_builder_is_bootstrapped")
 
 	input := &Input{
 		commits:                  commits,
