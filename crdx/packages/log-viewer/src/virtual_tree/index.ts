@@ -6,3 +6,5 @@ export * from './virtual_tree';
 export * from './types';
 export * from './utils';
 export * from './indent_border';
+export * from './tree_node/';
+export * from './logs_tree_node/';
