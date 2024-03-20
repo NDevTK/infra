@@ -171,9 +171,11 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		return errors.Annotate(err, "update firmware image").Err()
 	}
 	// Apply file name only if it was not specified before.
+	log.Debugf(ctx, "Adapted fw path for cache service: %s", downloadFilename)
 	if !strings.HasSuffix(downloadFilename, firmwareTarSuffix) {
 		fwFileName := actionArgs.AsString(ctx, "fw_filename", firmwareTarName)
 		downloadFilename = fmt.Sprintf("%s/%s", downloadFilename, fwFileName)
+		log.Debugf(ctx, "New path with specified filepath: %s", downloadFilename)
 	}
 	run := info.DefaultRunner()
 	req := &firmware.InstallFirmwareImageRequest{
