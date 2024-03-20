@@ -84,7 +84,7 @@ func (clangTargets *ClangTargets) populateChannel() {
 }
 
 // ProcessClangTargets processes clang targets from a given compdb file in clangTargets' filePath.
-func (clangTargets *ClangTargets) ProcessClangTargets(ctx context.Context, rootPath, outDir, corpus, buildConfig string,
+func (clangTargets *ClangTargets) ProcessClangTargets(ctx context.Context, rootPath, outDir, corpus, buildConfig, clangTargetArch string,
 	hashMaps *FileHashMap, targetDataOut chan<- string, targetUnitOut chan<- *kpb.CompilationUnit) error {
 	// Parse compdb once.
 	clangTargets.once.Do(clangTargets.populateChannel)
@@ -113,7 +113,7 @@ func (clangTargets *ClangTargets) ProcessClangTargets(ctx context.Context, rootP
 
 	// Process compilation units.
 	for clangInfo := range clangTargetChan {
-		unit, err := getClangUnit(ctx, clangInfo, rootPath, outDir, corpus, buildConfig, hashMaps)
+		unit, err := getClangUnit(ctx, clangInfo, rootPath, outDir, corpus, buildConfig, clangTargetArch, hashMaps)
 		if err != nil {
 			return err
 		}
@@ -180,7 +180,7 @@ func getClangFiles(ctx context.Context, filepathsSet *ConcurrentSet,
 }
 
 // getClangUnit returns the compilation unit for a given clang target.
-func getClangUnit(ctx context.Context, clangInfo *clangUnitInfo, rootPath, outDir, corpus, buildConfig string,
+func getClangUnit(ctx context.Context, clangInfo *clangUnitInfo, rootPath, outDir, corpus, buildConfig, clangTargetArch string,
 	hashMaps *FileHashMap) (*kpb.CompilationUnit, error) {
 	unitProto := &kpb.CompilationUnit{}
 	commandList, err := shellSplit(clangInfo.unit.Command)
@@ -203,6 +203,8 @@ func getClangUnit(ctx context.Context, clangInfo *clangUnitInfo, rootPath, outDi
 				commandList = append(commandList,
 					"-target",
 					"x86_64-apple-darwin20.6.0")
+			} else if clangTargetArch != "" {
+				commandList = append(commandList, "-target", clangTargetArch)
 			}
 			break
 		}

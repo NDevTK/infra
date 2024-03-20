@@ -1,3 +1,7 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package main
 
 import (
@@ -6,8 +10,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/golang/protobuf/ptypes"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	kpb "infra/cmd/package_index/kythe/proto"
 )
@@ -30,6 +34,7 @@ func TestGetClangUtil(t *testing.T) {
 			"out/dir",
 			"corpus",
 			"linux",
+			"",
 			&FileHashMap{})
 		So(err, ShouldBeNil)
 		So(cu, ShouldNotBeNil)
@@ -37,10 +42,33 @@ func TestGetClangUtil(t *testing.T) {
 		details := &kpb.BuildDetails{
 			BuildConfig: "linux",
 		}
-		detail, _ := ptypes.MarshalAny(details)
+		detail, _ := anypb.New(details)
 		detail.TypeUrl = "kythe.io/proto/kythe.proto.BuildDetails"
 		So(cu.Argument, ShouldResemble,
 			[]string{"clang++", "bar", "baz",
+				"-DKYTHE_IS_RUNNING=1", "-w"})
+	})
+	Convey("linux-arm64", t, func() {
+		cu, err := getClangUnit(
+			context.Background(),
+			clangInfo,
+			"rootPath",
+			"out/dir",
+			"corpus",
+			"linux",
+			"arm64",
+			&FileHashMap{})
+		So(err, ShouldBeNil)
+		So(cu, ShouldNotBeNil)
+
+		details := &kpb.BuildDetails{
+			BuildConfig: "linux",
+		}
+		detail, _ := anypb.New(details)
+		detail.TypeUrl = "kythe.io/proto/kythe.proto.BuildDetails"
+		So(cu.Argument, ShouldResemble,
+			[]string{"clang++", "bar", "baz",
+				"-target", "arm64",
 				"-DKYTHE_IS_RUNNING=1", "-w"})
 	})
 	Convey("mac", t, func() {
@@ -51,6 +79,7 @@ func TestGetClangUtil(t *testing.T) {
 			"out/dir",
 			"corpus",
 			"mac",
+			"",
 			&FileHashMap{})
 		So(err, ShouldBeNil)
 		So(cu, ShouldNotBeNil)
@@ -58,7 +87,7 @@ func TestGetClangUtil(t *testing.T) {
 		details := &kpb.BuildDetails{
 			BuildConfig: "linux",
 		}
-		detail, _ := ptypes.MarshalAny(details)
+		detail, _ := anypb.New(details)
 		detail.TypeUrl = "kythe.io/proto/kythe.proto.BuildDetails"
 		So(cu.Argument, ShouldResemble,
 			[]string{"clang++", "bar", "baz",

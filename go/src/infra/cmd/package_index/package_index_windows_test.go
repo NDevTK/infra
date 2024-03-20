@@ -74,19 +74,19 @@ func TestPackageIndexWindows(t *testing.T) {
 		//   \'s for windows runs (assuming no in/out of quotes)
 		// * Json needs \ escaping, so replacing 2 \'s with 1 \ requires replacing
 		//   4 \'s with 2 \'s.
-		origCompDb, err := ioutil.ReadFile(filepath.Join(rootDir, "src", "out", "Debug", "compile_commands_win.json"))
+		origCompDB, err := ioutil.ReadFile(filepath.Join(rootDir, "src", "out", "Debug", "compile_commands_win.json"))
 		if err != nil {
 			t.Fatal(err)
 		}
-		modCompDbContents := regexp.MustCompile(`(?m)\\\\\\\\`).ReplaceAll(origCompDb, []byte("\\\\"))
-		modCompDbPath := filepath.Join(tmpdir, "compile_commands_win_mod.json")
-		err = ioutil.WriteFile(modCompDbPath, modCompDbContents, 0444)
+		modCompDBContents := regexp.MustCompile(`(?m)\\\\\\\\`).ReplaceAll(origCompDB, []byte("\\\\"))
+		modCompDBPath := filepath.Join(tmpdir, "compile_commands_win_mod.json")
+		err = ioutil.WriteFile(modCompDBPath, modCompDBContents, 0444)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		ip := newIndexPack(ctx, outputPath, rootDir, "src/out/Debug", modCompDbPath, gnPath, kzipPath,
-			"chromium-test", "win")
+		ip := newIndexPack(ctx, outputPath, rootDir, "src/out/Debug", modCompDBPath, gnPath, kzipPath,
+			"chromium-test", "win", "")
 
 		// Read expected units and place into a map.
 		unitMap := make(map[unitKey]string)
@@ -147,7 +147,7 @@ func TestPackageIndexWindows(t *testing.T) {
 			dataFileChannel := make(chan string, chanSize)
 
 			// Parse compdb.
-			clangTargets := NewClangTargets(modCompDbPath)
+			clangTargets := NewClangTargets(modCompDBPath)
 			clangTargets.DataWg.Add(numRoutines)
 			clangTargets.UnitWg.Add(numRoutines)
 			clangTargets.KzipDataWg.Add(numRoutines)
@@ -155,7 +155,7 @@ func TestPackageIndexWindows(t *testing.T) {
 				go func() {
 					// Process clang files.
 					err := clangTargets.ProcessClangTargets(ip.ctx, ip.rootPath, ip.outDir, ip.corpus,
-						ip.buildConfig, ip.hashMaps, dataFileChannel, unitProtoChannel)
+						ip.buildConfig, ip.clangTargetArch, ip.hashMaps, dataFileChannel, unitProtoChannel)
 					if err != nil {
 						// See b:227367175 for context.
 						panic(err.Error())

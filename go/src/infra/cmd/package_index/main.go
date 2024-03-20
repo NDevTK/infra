@@ -25,17 +25,18 @@ var chanSize = 1000
 var numRoutines = 32
 
 var (
-	projectFlag       = flag.String("project", "chromium", "Project this kzip should be generated for. This should be set to 'chromium', 'chrome', or 'chromiumos'. Defaults to 'chromium'.")
-	outputFlag        = flag.String("path_to_archive_output", "", "Path to index pack archive to be generated.")
-	compDbFlag        = flag.String("path_to_compdb", "", "Path to the compilation database.")
-	gnFlag            = flag.String("path_to_gn_targets", "", "Path to the gn targets json file.")
-	corpusFlag        = flag.String("corpus", "", "Kythe corpus to use for the vname.")
-	existingKzipsFlag = flag.String("path_to_java_kzips", "", "Path to already generated java kzips which will be included in the final index pack.")
-	buildFlag         = flag.String("build_config", "", "Build config to use in the unit file.")
-	checkoutFlag      = flag.String("checkout_dir", "", "Root of the repository.")
-	outDirFlag        = flag.String("out_dir", "src/out/Debug", "Output directory from which compilation is run.")
-	filepathsFlag     = flag.Bool("keep_filepaths_files", false, "Keep the .filepaths files used for index pack generation.")
-	verboseFlag       = flag.Bool("verbose", false, "Print the details of every file being written to the index pack.")
+	projectFlag         = flag.String("project", "chromium", "Project this kzip should be generated for. This should be set to 'chromium', 'chrome', or 'chromiumos'. Defaults to 'chromium'.")
+	outputFlag          = flag.String("path_to_archive_output", "", "Path to index pack archive to be generated.")
+	compDBFlag          = flag.String("path_to_compdb", "", "Path to the compilation database.")
+	gnFlag              = flag.String("path_to_gn_targets", "", "Path to the gn targets json file.")
+	corpusFlag          = flag.String("corpus", "", "Kythe corpus to use for the vname.")
+	existingKzipsFlag   = flag.String("path_to_java_kzips", "", "Path to already generated java kzips which will be included in the final index pack.")
+	buildFlag           = flag.String("build_config", "", "Build config to use in the unit file.")
+	clangTargetArchFlag = flag.String("clang_target_arch", "", "Target architecture to provide via -target in any clang commands.")
+	checkoutFlag        = flag.String("checkout_dir", "", "Root of the repository.")
+	outDirFlag          = flag.String("out_dir", "src/out/Debug", "Output directory from which compilation is run.")
+	filepathsFlag       = flag.Bool("keep_filepaths_files", false, "Keep the .filepaths files used for index pack generation.")
+	verboseFlag         = flag.Bool("verbose", false, "Print the details of every file being written to the index pack.")
 )
 
 // validateFlags checks that the required flags are present.
@@ -52,7 +53,7 @@ func validateFlags(ctx context.Context) {
 		flagErr = true
 	}
 
-	if *compDbFlag == "" {
+	if *compDBFlag == "" {
 		logging.Errorf(ctx, "path_to_compdb flag required.")
 		flagErr = true
 	}
@@ -100,8 +101,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	ip := newIndexPack(ctx, *outputFlag, rootPath, *outDirFlag, *compDbFlag,
-		*gnFlag, *existingKzipsFlag, *corpusFlag, *buildFlag)
+	ip := newIndexPack(ctx, *outputFlag, rootPath, *outDirFlag, *compDBFlag,
+		*gnFlag, *existingKzipsFlag, *corpusFlag, *buildFlag, *clangTargetArchFlag)
 
 	// Process existing kzips.
 	existingKzipChannel := make(chan string, chanSize)
@@ -133,14 +134,14 @@ func main() {
 	dataFileChannel := make(chan string, chanSize)
 
 	// Process clang targets.
-	clangTargets := NewClangTargets(ip.compDbPath)
+	clangTargets := NewClangTargets(ip.compDBPath)
 	clangTargets.DataWg.Add(numRoutines)
 	clangTargets.KzipDataWg.Add(numRoutines)
 	clangTargets.UnitWg.Add(numRoutines)
 	for i := 0; i < numRoutines; i++ {
 		go func() {
 			err := clangTargets.ProcessClangTargets(ip.ctx, ip.rootPath, ip.outDir, ip.corpus,
-				ip.buildConfig, ip.hashMaps, dataFileChannel, unitProtoChannel)
+				ip.buildConfig, ip.clangTargetArch, ip.hashMaps, dataFileChannel, unitProtoChannel)
 			if err != nil {
 				panic(err)
 			}

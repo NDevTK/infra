@@ -58,14 +58,14 @@ func TestPackageIndexUnix(t *testing.T) {
 		testDir := filepath.Join(cwd, "package_index_testdata")
 		rootDir := filepath.Join(testDir, "input")
 		kzipPath := filepath.Join(rootDir, "src", "out", "Debug", "kzip")
-		compDbPath := filepath.Join(rootDir, "src", "out", "Debug", "compile_commands.json")
+		compDBPath := filepath.Join(rootDir, "src", "out", "Debug", "compile_commands.json")
 		gnPath := filepath.Join(rootDir, "src", "out", "Debug", "gn_targets.json")
 		outputPath := filepath.Join(tmpdir, "out.kzip")
 		if err != nil {
 			t.Fatal(err)
 		}
-		ip := newIndexPack(ctx, outputPath, rootDir, "src/out/Debug", compDbPath, gnPath, kzipPath,
-			"chromium-test", "linux")
+		ip := newIndexPack(ctx, outputPath, rootDir, "src/out/Debug", compDBPath, gnPath, kzipPath,
+			"chromium-test", "linux", "")
 
 		// Read expected units and place into a map.
 		unitMap := make(map[unitKey]string)
@@ -126,7 +126,7 @@ func TestPackageIndexUnix(t *testing.T) {
 			dataFileChannel := make(chan string, chanSize)
 
 			// Parse compdb.
-			clangTargets := NewClangTargets(compDbPath)
+			clangTargets := NewClangTargets(compDBPath)
 			clangTargets.DataWg.Add(numRoutines)
 			clangTargets.UnitWg.Add(numRoutines)
 			clangTargets.KzipDataWg.Add(numRoutines)
@@ -134,7 +134,7 @@ func TestPackageIndexUnix(t *testing.T) {
 				go func() {
 					// Process clang files.
 					err := clangTargets.ProcessClangTargets(ip.ctx, ip.rootPath, ip.outDir, ip.corpus,
-						ip.buildConfig, ip.hashMaps, dataFileChannel, unitProtoChannel)
+						ip.buildConfig, "", ip.hashMaps, dataFileChannel, unitProtoChannel)
 					if err != nil {
 						t.Error(err)
 					}

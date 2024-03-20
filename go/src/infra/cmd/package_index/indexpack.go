@@ -1,3 +1,7 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package main
 
 import (
@@ -13,7 +17,7 @@ type indexPack struct {
 	// The output directory from which compilation was run.
 	outDir string
 	// Path to the compilation database.
-	compDbPath string
+	compDBPath string
 	// Path to a json file contains gn target information, as produced by 'gn desc --format=json'.
 	// See 'gn help desc' for more info.
 	gnTargetsPath string
@@ -25,6 +29,8 @@ type indexPack struct {
 	corpus string
 	// The build config to specify in the unit file, e.g. 'android' or 'windows' (optional)
 	buildConfig string
+	// The target architecture to cross-compile for, to specify in clang commands. (optional)
+	clangTargetArch string
 
 	// Mapping to and from a filename and its content hash.
 	hashMaps *FileHashMap
@@ -34,18 +40,19 @@ type indexPack struct {
 }
 
 // newIndexPack initializes a new indexPack struct.
-func newIndexPack(ctx context.Context, outputFile, rootPath, outDir, compDbPath,
-	gnTargetsPath, existingJavaKzipsPath, corpus, buildConfig string) *indexPack {
+func newIndexPack(ctx context.Context, outputFile, rootPath, outDir, compDBPath,
+	gnTargetsPath, existingJavaKzipsPath, corpus, buildConfig, clangTargetArch string) *indexPack {
 	// Initialize indexPack.
 	ip := &indexPack{
 		outputFile:            outputFile,
 		rootPath:              rootPath,
 		outDir:                outDir,
-		compDbPath:            compDbPath,
+		compDBPath:            compDBPath,
 		gnTargetsPath:         gnTargetsPath,
 		existingJavaKzipsPath: existingJavaKzipsPath,
 		corpus:                corpus,
 		buildConfig:           buildConfig,
+		clangTargetArch:       clangTargetArch,
 		ctx:                   ctx,
 	}
 	ip.hashMaps = NewFileHashMap()
