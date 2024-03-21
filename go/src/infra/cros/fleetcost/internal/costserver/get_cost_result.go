@@ -6,7 +6,8 @@ package costserver
 
 import (
 	"context"
-	"errors"
+
+	"go.chromium.org/luci/common/errors"
 
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 )
