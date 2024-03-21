@@ -105,7 +105,15 @@ else
   # during execution.
   #
   # Maybe look into this if we have time later.
-  EXTRA_CONFIGURE_ARGS="$EXTRA_CONFIGURE_ARGS --enable-optimizations"
+  # Also disable PGO when cross-compiling, since a profile can't be generated.
+  if [[ $_3PP_TOOL_PLATFORM == $_3PP_PLATFORM ]]; then
+    EXTRA_CONFIGURE_ARGS="$EXTRA_CONFIGURE_ARGS --enable-optimizations"
+  else
+    # We still want this flag, which is for some reason only used when
+    # PGO is enabled.
+    CFLAGS_NODIST="-fno-semantic-interposition"
+    LDFLAGS_NODIST="-fno-semantic-interposition"
+  fi
 
   # TODO(iannucci) This assumes we're building for linux under docker (which is
   # currently true).
@@ -189,6 +197,7 @@ autoconf
 export LDFLAGS
 export LDFLAGS_NODIST
 export CPPFLAGS
+export CFLAGS_NODIST
 # Configure our production Python build with our static configuration
 # environment and generate our basic platform.
 #
@@ -210,6 +219,7 @@ fi
 export LDFLAGS=
 export LDFLAGS_NODIST=
 export CPPFLAGS=
+export CFLAGS_NODIST=
 
 if [ ! $USE_SYSTEM_FFI ]; then
   # Tweak Makefile to change LIBFFI_INCLUDEDIR=<TAB>path
@@ -269,7 +279,8 @@ touch Modules/_blake2/blake2s_impl.c
 # at the end of the linker command for old gcc's (like 4.9, still used on e.g.
 # arm64 as of Nov 2019). This can likely go away when the dockcross base images
 # update to gcc-6 or later.
-make -j $(nproc) python BASEMODLIBS=$BASEMODLIBS GITTAG="${GITTAG}"
+make profile-clean-stamp  # Seems to not be parallel-safe
+make -j $(nproc) BASEMODLIBS=$BASEMODLIBS GITTAG="${GITTAG}"
 make install BASEMODLIBS=$BASEMODLIBS GITTAG="${GITTAG}"
 
 # Augment the Python installation.
