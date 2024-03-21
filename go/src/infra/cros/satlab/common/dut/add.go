@@ -525,7 +525,7 @@ func SetDHCPHostFileContent(hostname string, ipaddr string, macaddr string) erro
 		"dhcp",
 		"sh",
 		"-c",
-		"grep -lr " + macaddr + " " + dhcpHostsdir + " | xargs rm",
+		"grep -lr " + macaddr + " " + dhcpHostsdir + " | xargs rm -f",
 	}
 	if err := exec.Command(args[0], args[1:]...).Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "DHCP hosts config cleanup failed for %s\n", macaddr)
