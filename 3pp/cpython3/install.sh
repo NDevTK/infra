@@ -79,6 +79,11 @@ WITH_LIBS="-lpthread"
 # See comment in 3pp/openssl/install.sh for more detail.
 export ac_cv_func_getentropy=0
 
+# Never link against libcrypt, even if it is present, as it will not
+# necessarily be present on the target system.
+export ac_cv_search_crypt=no
+export ac_cv_search_crypt_r=no
+
 if [[ $_3PP_PLATFORM == mac* ]]; then
   PYTHONEXE=python.exe
   USE_SYSTEM_FFI=true
