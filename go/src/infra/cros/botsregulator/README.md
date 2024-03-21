@@ -1,5 +1,18 @@
 # BotsRegulator
+BotsRegulator(BR) is a Cloud Run service with a single cron job flow. BR does not accept incoming request except from this cron job. Periodically, BR retrieves specific UFS DUTs and update a specific GCE Provider config with these DUTs.
 
-[BotsRegulator](https://docs.google.com/document/d/1pI5Ltpeun4sGx3ewAvvoFBLfmcQ75aMMjNPCOd2qT6s/edit?tab=t.0#heading=h.asslwkrxnl0)
+To pass a service account use `-service-account-json` flag.
+
+## Context
+[go/botsregulator](http://go/botsregulator)
 [go/cloudbots-gce](http://go/cloudbots-gce)
 [go/cloudbots](http://go/cloudbots)
+
+## Dev
+gcp project: bots-regulator-dev
+
+## Production
+gcp project: bots-regulator-prod
+
+## Deployment
+Deployment process can be found at [data/cloud-run/projects/bots-regulator](https://source.corp.google.com/h/chromium/infra/infra_superproject/+/main:data/cloud-run/projects/bots-regulator/).
