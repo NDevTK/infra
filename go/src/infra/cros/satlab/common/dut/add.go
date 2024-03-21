@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"regexp"
 	"strings"
 
@@ -15,6 +16,7 @@ import (
 
 	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/dut/shivas"
+	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/site"
@@ -251,6 +253,15 @@ func (c *AddDUT) TriggerRun(
 		if updateErr != nil {
 			return errors.Annotate(updateErr, "add dut").Err()
 		}
+		// Reserve the IP address
+		macaddr, err := GetDUTsMACAddress(c.Address)
+		if err != nil {
+			return errors.Annotate(err, "add dut").Err()
+		}
+		if err = SetDHCPHostFileContent(c.qualifiedHostname, c.Address, macaddr); err != nil {
+			return errors.Annotate(err, "add dut").Err()
+		}
+
 		// Write the content back if we fail at a later step for any reason.
 		defer (func() {
 			// Err refers to the error for the function as a whole.
@@ -474,4 +485,63 @@ func shouldCreateStableVersion(board, model string) bool {
 	localStableVersion := fmt.Sprintf("%s%s-%s.json", site.RecoveryVersionDirectory, board, model)
 	_, err := os.Stat(localStableVersion)
 	return err != nil
+}
+
+// GetDUTsMACAddress extracts the DUT's MAC address from /leases/dnsmasq.leases file.
+func GetDUTsMACAddress(targetIP string) (string, error) {
+	args := []string{
+		paths.DockerPath,
+		"exec",
+		"satlab_remote_access",
+		"cat",
+		"/leases/dnsmasq.leases",
+	}
+	out, err := exec.Command(args[0], args[1:]...).Output()
+	if err != nil {
+		return "", errors.Annotate(err, fmt.Sprintf("read /leases/dnsmasq.leases: running %s", strings.Join(args, " "))).Err()
+	}
+
+	lines := strings.Split(string(out), "\n")
+	for _, line := range lines {
+		parts := strings.Fields(line)
+		if len(parts) >= 3 && parts[2] == targetIP {
+			re := regexp.MustCompile(`([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}`)
+			matches := re.FindStringSubmatch(parts[1])
+			if len(matches) > 0 {
+				return matches[0], nil
+			}
+		}
+	}
+	return "", fmt.Errorf("MAC address not found for IP %s", targetIP)
+}
+
+// SetDHCPHostFileContent sets the contents of the file in dhcp-hostsdir.
+func SetDHCPHostFileContent(hostname string, ipaddr string, macaddr string) error {
+	// clean up any old reservations for the DUT's MAC address
+	dhcpHostsdir := "/var/lib/misc/dhcp_hosts/"
+	args := []string{
+		paths.DockerPath,
+		"exec",
+		"dhcp",
+		"sh",
+		"-c",
+		"grep -lr " + macaddr + " " + dhcpHostsdir + " | xargs rm",
+	}
+	if err := exec.Command(args[0], args[1:]...).Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "DHCP hosts config cleanup failed for %s\n", macaddr)
+	}
+	// prepare and copy the file to dhcp-hostsdir
+	content := macaddr + "," + ipaddr
+	filename, err := misc.MakeTempFile(content)
+	if err != nil {
+		return errors.Annotate(err, "set dhcp host file content").Err()
+	}
+	args = []string{
+		paths.DockerPath,
+		"cp",
+		filename,
+		"dhcp:" + dhcpHostsdir + hostname,
+	}
+	err = exec.Command(args[0], args[1:]...).Run()
+	return errors.Annotate(err, fmt.Sprintf("set dhcp host file content: running %s", strings.Join(args, " "))).Err()
 }

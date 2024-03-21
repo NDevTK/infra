@@ -5,11 +5,16 @@ package dut
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"os/exec"
 
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
@@ -175,9 +180,15 @@ func deleteAllDuts(ctx context.Context, names []string, ufs DeleteClient) ([]str
 			fail = append(fail, dut)
 		} else {
 			success = append(success, dut)
+			fmt.Fprintf(os.Stderr, "The dut %s has been deleted successfully, removing DHCP and DNS entries\n", dut)
+			if err := DeleteDHCPHostReservation(dut); err != nil {
+				fmt.Fprintf(os.Stderr, "Cannot remove DHCP host IP address reservation for %s\n", dut)
+			}
+			if err := DeleteDNSEntry(dut); err != nil {
+				fmt.Fprintf(os.Stderr, "Cannot remove DNS entry IP address reservation for %s\n", dut)
+			}
 		}
 	}
-
 	return success, fail
 }
 
@@ -219,4 +230,30 @@ func deleteAllRacks(ctx context.Context, names []string, ufs DeleteClient) ([]st
 	}
 
 	return success, fail
+}
+
+// DeleteDHCPHostReservation removes the file in dhcp-hostsdir.
+func DeleteDHCPHostReservation(hostname string) error {
+	args := []string{
+		paths.DockerPath,
+		"exec",
+		"dhcp",
+		"rm",
+		"/var/lib/misc/dhcp_hosts/" + hostname,
+	}
+	return exec.Command(args[0], args[1:]...).Run()
+}
+
+// DeleteDNSEntry removes the dns entry from /etc/dut_hosts/hosts.
+func DeleteDNSEntry(hostname string) error {
+	args := []string{
+		paths.DockerPath,
+		"exec",
+		"dns",
+		"sed",
+		"-i",
+		"/" + hostname + "/d",
+		"/etc/dut_hosts/hosts",
+	}
+	return exec.Command(args[0], args[1:]...).Run()
 }
