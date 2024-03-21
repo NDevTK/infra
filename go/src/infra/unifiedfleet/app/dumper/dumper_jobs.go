@@ -73,6 +73,13 @@ var Jobs = []*cron.CronTab{
 		Job:      reportUFSInventoryCronHandler,
 	},
 	{
+		// Report Swarming bots
+		Name:     "ufs.report_bots",
+		Time:     5 * time.Minute,
+		TrigType: cron.EVERY,
+		Job:      reportSwarmingBotsCronHandler,
+	},
+	{
 		// Sync Goldeneye Data
 		Name:     "ufs.sync_goldeneye_devices.sync",
 		Time:     12 * time.Hour,

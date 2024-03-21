@@ -8,7 +8,7 @@ package ufs.config;
 
 option go_package = "infra/unifiedfleet/app/config";
 
-// Next Tag: 27
+// Next Tag: 30
 // Config is the configuration data served by luci-config for this app.
 message Config {
   string luci_config_service = 1 [deprecated=true];
@@ -62,6 +62,9 @@ message Config {
   repeated string partnerACLGroups = 27;
   // Methods which have no restrictions on namespace used
   repeated string partnerRPCAllowlist = 28;
+  // Swarming contains information about the Swarming instance that hosts the
+  // bots managed by this app.
+  Swarming swarming = 29;
 }
 
 message OSNetworkConfig {
@@ -165,4 +168,17 @@ message ExperimentalAPI {
   uint32 GetDutStateACL=9;
   // ListDutStatesACL determines the experimental percentage for the API
   uint32 ListDutStatesACL=10;
+}
+
+// Next Tag: 2
+// Swarming contains information about the Swarming instance for metric
+// collection.
+// Only ChromeOSSkylab bots from chromeos-swarming will be read.
+// Copied from infra/appengine/crosskylabadmin/internal/app/config/config.proto
+message Swarming {
+  // Host is the swarming instance hosting skylab bots.
+  string host = 1;
+
+  // BotPool is the swarming pool containing skylab bots.
+  string bot_pool = 2;
 }
