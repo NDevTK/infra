@@ -1838,9 +1838,6 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Try to power-cycle the servo via smart usbhub to recover it.",
 				},
-				Dependencies: []string{
-					"Device is SSHable",
-				},
 				ExecName: "servo_power_cycle_root_servo",
 				ExecExtraArgs: []string{
 					"reset_timeout:60",
