@@ -54,9 +54,10 @@ var SetStableVersionCmd = &subcommands.Command{
 		// )
 
 		r.Flags.StringVar(&r.hostname, "hostname", "", `the hostname (used by itself)`)
-		r.Flags.StringVar(&r.os, "os", "", `the OS version (aka crosVersion) to set (no change if empty)`)
-		r.Flags.StringVar(&r.fw, "fw", "", `the firmware version (aka firmwareVersion) to set (no change if empty)`)
-		r.Flags.StringVar(&r.fwImage, "fwImage", "", `the firmware image version (aka faftVersion) to set (no change if empty)`)
+		r.Flags.StringVar(&r.os, "os", "", `the OS version (aka crosVersion) to set (used with {-fw & -fwImage} or {-flex})`)
+		r.Flags.StringVar(&r.fw, "fw", "", `the firmware version (aka firmwareVersion) to set (used with -os & -fwImage)`)
+		r.Flags.StringVar(&r.fwImage, "fwImage", "", `the firmware image version (aka faftVersion) to set (used with -os & -fw)`)
+		r.Flags.BoolVar(&r.isFlex, "flex", false, `force to set OS version only (internal users only for ChromeOS Flex)`)
 		return r
 	},
 }
@@ -69,13 +70,13 @@ type setStableVersionRun struct {
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
 
-	board     string
-	model     string
-	hostname  string
-	os        string
-	fw        string
-	fwImage   string
-	isPartner bool
+	board    string
+	model    string
+	hostname string
+	os       string
+	fw       string
+	fwImage  string
+	isFlex   bool
 }
 
 // Run runs the command, prints the error if there is one, and returns an exit status.
@@ -98,19 +99,19 @@ func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Applic
 		FwVersion: c.fw,
 		FwImage:   c.fwImage,
 	}
-	// Board Model flow: SFP EXTERNAL USERS ONLY
+
+	var innerRunStrategy func(context.Context, subcommands.Application, []string, subcommands.Env, *models.RecoveryVersion) error
+
 	if site.IsPartner() {
-		err := c.innerRunBoardModel(ctx, a, args, env, stableVersion)
-		if err != nil {
-			return err
-		}
+		// Board Model flow: SFP EXTERNAL USERS ONLY
+		innerRunStrategy = c.innerRunBoardModel
+	} else {
+		// Hostname flow: INTERNAL USERS ONLY
+		innerRunStrategy = c.innerRunHostname
 	}
-	// Hostname flow: INTERNAL USERS ONLY
-	if !site.IsPartner() {
-		err := c.innerRunHostname(ctx, a, args, env, stableVersion)
-		if err != nil {
-			return err
-		}
+
+	if err := innerRunStrategy(ctx, a, args, env, stableVersion); err != nil {
+		return err
 	}
 	return nil
 }
@@ -289,6 +290,9 @@ func FindMostStableBuild(ctx context.Context, moblabClient MoblabClient, board s
 }
 
 func (c *setStableVersionRun) validateBoardModelArgs() (int, error) {
+	if c.isFlex {
+		return 0, errors.Reason("Please do not use -flex when logged in as a Partner").Err()
+	}
 	if c.board == "" {
 		return 0, errors.Reason("Please provide -board").Err()
 	}
@@ -314,6 +318,13 @@ func (c *setStableVersionRun) validateHostnameArgs() error {
 	}
 	if c.os == "" {
 		return errors.Reason("Please provide the OS version (aka crosVersion) -os").Err()
+	}
+	if c.isFlex {
+		if c.fw != "" || c.fwImage != "" {
+			return errors.Reason("Please do not use -flex with -fw nor -fwImage").Err()
+		}
+		// ChromeOS Flex do not have the fw and the fw_image, so for these cases we need to skip these checks.
+		return nil
 	}
 	if c.fw == "" {
 		return errors.Reason("Please provide the firmware version (aka firmwareVersion) -fw").Err()
