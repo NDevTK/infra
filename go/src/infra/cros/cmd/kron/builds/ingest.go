@@ -9,12 +9,12 @@ package builds
 import (
 	"context"
 	"fmt"
+	"hash/fnv"
 	"strconv"
 	"strings"
 	"sync"
 
 	cloudPubsub "cloud.google.com/go/pubsub"
-	"github.com/google/uuid"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
@@ -94,6 +94,21 @@ func extractBoardAndVariant(buildTarget string) (string, string, error) {
 	return board, variant, nil
 }
 
+// generateBuildUUIDHash returns a hash of the build dimensions for use in the
+// uuid field.
+func generateBuildUUIDHash(buildTarget, board, version string, milestone int) (string, error) {
+	uniqueTarget := fmt.Sprintf("%s,%s,%d,%s", buildTarget, board, milestone, version)
+
+	hasher := fnv.New64a()
+
+	_, err := hasher.Write([]byte(uniqueTarget))
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.FormatUint(hasher.Sum64(), 10), nil
+}
+
 // transformReportToKronBuild takes a build report and returns all relevant
 // builds in a Kron parsable form.
 func transformReportToKronBuild(report *buildPB.BuildReport) (*kronpb.Build, error) {
@@ -112,8 +127,12 @@ func transformReportToKronBuild(report *buildPB.BuildReport) (*kronpb.Build, err
 		return nil, fmt.Errorf("%d: %w", report.GetBuildbucketId(), err)
 	}
 
+	buildHash, err := generateBuildUUIDHash(report.Config.Target.Name, board, version, int(milestone))
+	if err != nil {
+		return nil, err
+	}
 	return &kronpb.Build{
-		BuildUuid:   uuid.NewString(),
+		BuildUuid:   buildHash,
 		RunUuid:     metrics.GetRunID(),
 		CreateTime:  common.TimestamppbNowWithoutNanos(),
 		Bbid:        report.GetBuildbucketId(),
