@@ -22,6 +22,7 @@ import (
 
 func main() {
 	modules := []module.Module{
+		cron.NewModuleFromFlags(),
 		secrets.NewModuleFromFlags(),
 	}
 
