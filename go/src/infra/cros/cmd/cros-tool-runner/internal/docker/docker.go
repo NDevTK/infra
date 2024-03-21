@@ -228,6 +228,10 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 		args = append(args, "-v")
 		args = append(args, v)
 	}
+	// Add cloudbots related args such as env var, volume.
+	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
+		args = append(args, cloudbotsDockerArgs()...)
+	}
 	// Set to automatically remove the container when it exits.
 	args = append(args, "--rm")
 	if d.Network != "" {
@@ -248,11 +252,6 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 	args = append(args, d.RequestedImageName)
 	if len(d.ExecCommand) > 0 {
 		args = append(args, d.ExecCommand...)
-	}
-
-	// Add cloudbots related args such as env var, volume.
-	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
-		args = append(args, cloudbotsDockerArgs()...)
 	}
 
 	cmd := exec.Command("docker", args...)
@@ -310,7 +309,7 @@ func cloudbotsDockerArgs() []string {
 	}
 	// cloudbots environment variables
 	for _, env := range os.Environ() {
-		if strings.HasPrefix(env, "CLOUDBOTS-") {
+		if strings.HasPrefix(env, "CLOUDBOTS_") {
 			args = append(args, "--env", env)
 		}
 	}
