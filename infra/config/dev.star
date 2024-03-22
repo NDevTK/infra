@@ -321,7 +321,10 @@ adhoc_builder(
     },
     schedule = "with 10m interval",
     experiments = {
-        "luci.buildbucket.backend_alt": 50,
+        # TODO(b/325342884): Make it to 0 to test the old swarming pubsub
+        # notification flow when Swarming migrates it to Go. Re-enable it after
+        # the testing is done.
+        "luci.buildbucket.backend_alt": 0,
     },
 )
 
