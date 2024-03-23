@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "236b1ac4_0f099eb5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 24
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1309389
+      },
+      "writtenOn": "2024-03-23T02:36:49Z",
+      "side": 1,
+      "message": "I am wondering if there is a way to break out OpenSSH into two package results from one package definition.\n\nUnlike OpenSSL, OpenSSH does not \"install\" libs and header files. OpenSSH only installs the binary executables. So is it possible to upload a tools package with the normal install bits and a static_libs package with just the libs and headers?\n\nOr should it be broken out into two separate 3pp packages?",
+      "revId": "10c89224e78f7b9dd67589a52f7e76526db53afc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
