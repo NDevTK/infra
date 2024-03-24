@@ -43,8 +43,9 @@ const (
 	StagingProjectID = "google.com:suite-scheduler-staging"
 	ProdProjectID    = "google.com:suite-scheduler"
 
-	BuildsSubscription        = "chromeos-builds-all"
-	BuildsSubscriptionTesting = "chromeos-builds-all-testing"
+	BuildsSubscription          = "chromeos-builds-all"
+	BuildsSubscriptionTesting   = "chromeos-builds-all-testing"
+	BuildsSubscription3dTesting = "chromeos-builds-all-3D-testing"
 
 	BuildsPubSubTopic = "kron-builds"
 	EventsPubSubTopic = "kron-events"
