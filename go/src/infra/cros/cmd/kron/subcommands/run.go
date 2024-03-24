@@ -31,6 +31,7 @@ type runCommand struct {
 	dryRun      bool
 	newBuilds   bool
 	timedEvents bool
+	newBuilds3d bool
 }
 
 // setFlags adds also CLI flags to the subcommand.
@@ -49,14 +50,14 @@ func (c *runCommand) setFlags() {
 
 	c.Flags.BoolVar(&c.newBuilds, "new-builds", false, "Check for new build images and launch NEW_BUILD type suites.")
 	c.Flags.BoolVar(&c.timedEvents, "timed-events", false, "Launch TIMED_EVENT suites which are eligible to be triggered.")
-
+	c.Flags.BoolVar(&c.newBuilds3d, "new-builds-3d", false, "Check for all new builds completion and launch 3d suites")
 }
 
 // validate ensures that the provided flags are being used in an expected
 // manner.
 func (c *runCommand) validate() error {
-	if !c.newBuilds && !c.timedEvents {
-		return fmt.Errorf("-new-builds or -timed-events must be specified")
+	if !c.newBuilds && !c.timedEvents && !c.newBuilds3d {
+		return fmt.Errorf("-new-builds or -timed-events or -new-builds-3d must be specified")
 	}
 
 	if totmanager.GetTot() == 0 {
@@ -172,6 +173,23 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 			return 1
 		}
 		common.Stdout.Println("Done launching TIMED_EVENTS")
+	}
+
+	// Launch execution path for all 3d configs
+	if c.newBuilds3d {
+		common.Stdout.Println("Launching 3d events")
+		err := run.Process3d(&c.authFlags, c.prod, c.dryRun)
+		if err != nil {
+			// Stop run timer and publish the message to pubsub
+			endRunErr := endRun(c.prod)
+			if endRunErr != nil {
+				common.Stderr.Println(err)
+			}
+
+			common.Stderr.Println(err)
+			return 1
+		}
+		common.Stdout.Println("Done launching 3d events")
 	}
 
 	// Stop run timer and publish the message to pubsub
