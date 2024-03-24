@@ -31,11 +31,13 @@ type ReceiveClient interface {
 	initSubscription(subscriptionID string) error
 	ingestMessage(ctx context.Context, msg *pubsub.Message)
 	PullMessages() error
+	PullAllMessagesForProcessing(finalize func()) error
 }
 
 // ReceiveTimer defines an interface with for an auto-decrementing timer.
 type ReceiveTimer interface {
 	Start(parentCtxCancel context.CancelFunc)
+	FinalizeBeforeContextCancel(parentCtxCancel context.CancelFunc, finalize func())
 	Refresh()
 	Decrement(duration time.Duration)
 	checkMillisecondsLeft() int64
@@ -72,6 +74,29 @@ func (t *Timer) Start(parentCtxCancel context.CancelFunc) {
 			// Cancel the parent context controlling this timer.
 			parentCtxCancel()
 			common.Stdout.Println("No time left, cancelling the timer context to end receiving from Pub/Sub")
+			return
+		}
+		time.Sleep(loopDuration)
+	}
+}
+
+// FinalizeBeforeContextCancel starts a busy loop that will auto decrement the timer and executes
+// finalize before cancelling the context.
+func (t *Timer) FinalizeBeforeContextCancel(parentCtxCancel context.CancelFunc, finalize func()) {
+	lastTick := time.Now()
+
+	common.Stdout.Printf("Starting the Pub/Sub timer with a max of %d seconds\n", t.maxSeconds)
+	for {
+		timeSince := time.Since(lastTick)
+		t.Decrement(time.Duration(timeSince))
+		lastTick = time.Now()
+
+		if t.checkMillisecondsLeft() < 0 {
+			common.Stdout.Println("No time left, calling finalize before cancelling the context to end receiving from Pub/Sub")
+			finalize()
+			// Cancel the parent context controlling this timer.
+			parentCtxCancel()
+			common.Stdout.Println("Finalize complete, cancelling the timer context to end receiving from Pub/Sub")
 			return
 		}
 		time.Sleep(loopDuration)
@@ -197,6 +222,26 @@ func (r *ReceiveWithTimer) PullMessages() error {
 	// Begin the timer. When it expires it'll cancel the Receive client's
 	// context ending the blocking receive.
 	go r.idleTimer.Start(r.cancel)
+
+	// Blocking pull all messages in the feed.
+	common.Stdout.Printf("Begin receiving from Pub/Sub Subscription %s on project %s\n", r.subscription.ID(), r.client.Project())
+	err := r.subscription.Receive(r.ctx, r.ingestMessage)
+	common.Stdout.Printf("Done receiving from Pub/Sub Subscription %s on project %s\n", r.subscription.ID(), r.client.Project())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// PullAllMessagesForProcessing pulls all messages from the Pub/Sub Subscription associated
+// with the ReceiveWithTimer instance for processing. It begins a timer, and when it expires,
+// it executes the provided "finalize" function and cancels the Receive client's context,
+// ending the blocking receive operation.
+func (r *ReceiveWithTimer) PullAllMessagesForProcessing(finalize func()) error {
+	// Begin the timer. When it expires it'll execute "finalize" and cancel the Receive
+	// client's context ending the blocking receive.
+	go r.idleTimer.FinalizeBeforeContextCancel(r.cancel, finalize)
 
 	// Blocking pull all messages in the feed.
 	common.Stdout.Printf("Begin receiving from Pub/Sub Subscription %s on project %s\n", r.subscription.ID(), r.client.Project())
