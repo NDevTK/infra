@@ -18,6 +18,7 @@ import (
 	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/configparser"
 	"infra/cros/cmd/kron/ctprequest"
+	"infra/cros/cmd/kron/process3d"
 	"infra/cros/cmd/kron/pubsub"
 )
 
@@ -181,5 +182,39 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	wg.Wait()
 	common.Stdout.Println("NEW_BUILD scheduling completed")
 
+	return nil
+}
+
+// Process3d fetches all builds from the release Pub/Sub queue, checks
+// if all builds have completed, then builds CTP request for all 3d configs and executes them.
+func Process3d(authOpts *authcli.Flags, isProd, dryRun bool) error {
+	// Ingest lab configs into memory.
+	// TODO(b/319273179): Implement option to pass in a local config as to bypass
+	// network reliance.
+	common.Stdout.Println("Fetch lab configs")
+	labConfigs, err := configparser.FetchLabConfigs("")
+	if err != nil {
+		return err
+	}
+
+	// Ingest SuiteScheduler configs into memory.
+	// TODO(b/319273179): Implement option to pass in a local config as to bypass
+	// network reliance.
+	common.Stdout.Println("Fetch SuSch configs")
+	suiteSchedulerConfigs, err := configparser.FetchSchedulerConfigs("", labConfigs)
+	if err != nil {
+		return err
+	}
+	projectID := common.StagingProjectID
+	if isProd {
+		projectID = common.ProdProjectID
+	}
+
+	process3d := process3d.NewProcess3d(projectID, common.BuildsSubscription3dTesting, suiteSchedulerConfigs.FetchAllNewBuild3dConfigs())
+	err = process3d.Process3d()
+	if err != nil {
+		common.Stdout.Println("Error occurred while processing 3d configs")
+		return err
+	}
 	return nil
 }
