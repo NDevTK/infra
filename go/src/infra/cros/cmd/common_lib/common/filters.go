@@ -27,7 +27,7 @@ var (
 
 	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
-	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder}
+	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder, UseFlagFilterContainerName}
 
 	// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
 	DefaultKoffeeFilterNames = []string{}
@@ -36,7 +36,7 @@ var (
 	defaultLegacyHWSha      = "a40e76e81f20dc54e26acea67bb9a00ebd0a64552276d4d3931715668798fffd"
 	defaultTTCPSha          = "3eefb2c80e9cc946d752bc06501caee3105db8e9f2564f535fc9895bf568d6f0"
 	defaultProvisionSha     = "79878b6cdcde1edbe5abb64c7a7286148b4da0959510e4334b89691edbd1a422"
-	defaultUseFlagFilterSha = "26649b11f6b182307f63429ccfee4462750eeb2d7eb35bb18ef919f13ab310fb"
+	defaultUseFlagFilterSha = "5645e85225939ddb3d5b46f6587375884bad2661643c114203d7a2c94c355179"
 	prodShas                = map[string]string{
 		TtcpContainerName:          defaultTTCPSha,
 		LegacyHWContainerName:      defaultLegacyHWSha,

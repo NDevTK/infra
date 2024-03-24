@@ -46,6 +46,11 @@ func (s *SuiteSchedulerConfigs) FetchAllNewBuildConfigs() ConfigList {
 	return s.newBuildList
 }
 
+// FetchAllNewBuildConfigs returns all NEW_BUILD_3d type configs.
+func (s *SuiteSchedulerConfigs) FetchAllNewBuild3dConfigs() ConfigList {
+	return s.newBuild3dList
+}
+
 // FetchNewBuildConfigsByBuildTarget returns all NEW_BUILD configs that are
 // to be triggered by a new image of the given build target.
 func (s *SuiteSchedulerConfigs) FetchNewBuildConfigsByBuildTarget(target BuildTarget) ConfigList {
