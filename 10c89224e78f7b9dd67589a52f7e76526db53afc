@@ -16,6 +16,40 @@
       "message": "I am wondering if there is a way to break out OpenSSH into two package results from one package definition.\n\nUnlike OpenSSL, OpenSSH does not \"install\" libs and header files. OpenSSH only installs the binary executables. So is it possible to upload a tools package with the normal install bits and a static_libs package with just the libs and headers?\n\nOr should it be broken out into two separate 3pp packages?",
       "revId": "10c89224e78f7b9dd67589a52f7e76526db53afc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4cac24f2_3b062b75",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 24
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2024-03-25T00:03:49Z",
+      "side": 1,
+      "message": "Nice!",
+      "revId": "10c89224e78f7b9dd67589a52f7e76526db53afc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7121f319_692ccbbf",
+        "filename": "3pp/openssh/install.sh",
+        "patchSetId": 24
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2024-03-25T00:03:49Z",
+      "side": 1,
+      "message": "The source archive contains `configure`, I\u0027d drop this and also drop the dependencies on autoconf, automake, and libtool.",
+      "revId": "10c89224e78f7b9dd67589a52f7e76526db53afc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
