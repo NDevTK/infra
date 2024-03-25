@@ -50,6 +50,24 @@
       "message": "The source archive contains `configure`, I\u0027d drop this and also drop the dependencies on autoconf, automake, and libtool.",
       "revId": "10c89224e78f7b9dd67589a52f7e76526db53afc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5313c41_23f54445",
+        "filename": "3pp/openssh/install.sh",
+        "patchSetId": 24
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1309389
+      },
+      "writtenOn": "2024-03-25T02:58:47Z",
+      "side": 1,
+      "message": "Done.\n\nI had these from when I was doing a git clone. I want to get back to that, but the tag format for openssh is not common. I was not sure how to approach it.\n\nFor example, V_9_7_P1 is the tag for 9.7p1.",
+      "parentUuid": "7121f319_692ccbbf",
+      "revId": "10c89224e78f7b9dd67589a52f7e76526db53afc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
