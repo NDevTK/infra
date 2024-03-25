@@ -7,12 +7,20 @@ package costserver
 import (
 	"context"
 
-	"go.chromium.org/luci/common/errors"
-
+	// TODO, move shared util to a standalone directory.
+	shivasUtil "infra/cmd/shivas/utils"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
+	"infra/cros/fleetcost/internal/costserver/controller"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
-// GetCostResult gets information about a device.
-func (f *FleetCostFrontend) GetCostResult(ctx context.Context, _ *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
-	return nil, errors.New("not yet implemented")
+// GetCostResult gets cost result of a fleet resource(DUT, scheduling unit).
+func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
+	// Handling OS namespace request only at MVP.
+	ctx = shivasUtil.SetupContext(ctx, ufsUtil.OSNamespace)
+	res, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, req.GetHostname())
+	if err != nil {
+		return nil, err
+	}
+	return &fleetcostAPI.GetCostResultResponse{Result: res}, nil
 }

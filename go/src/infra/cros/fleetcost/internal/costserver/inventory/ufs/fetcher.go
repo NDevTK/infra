@@ -7,24 +7,21 @@ package ufs
 import (
 	"context"
 
+	// UFS and shivas still uses deprecated "github.com/golang/protobuf/proto" package, hence we use the apater here.
 	"google.golang.org/protobuf/protoadapt"
 
-	// UFS and shivas still uses deprecated "github.com/golang/protobuf/proto" package, hence we use the apater here.
 	"go.chromium.org/luci/common/errors"
 
-	// TODO, move shared util to a standalone directory.
 	shivasUtil "infra/cmd/shivas/utils"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
 )
 
-// GetAllChromeosDuts gets all DUTs(MachineLSE) in chromeos namespace.
-func GetAllChromeosDuts(ctx context.Context, ic ufsAPI.FleetClient) ([]*ufspb.MachineLSE, error) {
-	ctx = shivasUtil.SetupContext(ctx, ufsUtil.OSNamespace)
+// GetAllMachineLSEs gets all MachineLSEs.
+func GetAllMachineLSEs(ctx context.Context, ic ufsAPI.FleetClient) ([]*ufspb.MachineLSE, error) {
 	res, err := shivasUtil.BatchList(ctx, ic, listMachineLSEs, []string{}, 0, false, false)
 	if err != nil {
-		return nil, errors.Annotate(err, "get all chromeos duts").Err()
+		return nil, errors.Annotate(err, "get all chromeos machinelses").Err()
 	}
 	lses := make([]*ufspb.MachineLSE, len(res))
 	for i, r := range res {
@@ -33,19 +30,17 @@ func GetAllChromeosDuts(ctx context.Context, ic ufsAPI.FleetClient) ([]*ufspb.Ma
 	return lses, nil
 }
 
-// GetChromeosDut gets a single DUT(MachineLSE) based on hostname in chromeos namespace.
-func GetChromeosDut(ctx context.Context, ic ufsAPI.FleetClient, name string) (*ufspb.MachineLSE, error) {
-	ctx = shivasUtil.SetupContext(ctx, ufsUtil.OSNamespace)
-	res, err := shivasUtil.GetSingleMachineLSE(ctx, ic, name)
+// GetChromeosDeviceData gets a single ChromeosDeviceData based on hostname.
+func GetChromeosDeviceData(ctx context.Context, ic ufsAPI.FleetClient, name string) (*ufspb.ChromeOSDeviceData, error) {
+	res, err := ic.GetChromeOSDeviceData(ctx, &ufsAPI.GetChromeOSDeviceDataRequest{Hostname: name})
 	if err != nil {
-		return nil, errors.Annotate(err, "get chromeos dut").Err()
+		return nil, errors.Annotate(err, "get chromeos device data").Err()
 	}
-	return res.(*ufspb.MachineLSE), nil
+	return res, nil
 }
 
 // GetLabstationDutMapping gets a map of labstation to dut hostnames based on provided labstation hostnames.
 func GetLabstationDutMapping(ctx context.Context, ic ufsAPI.FleetClient, labs []string) (map[string][]string, error) {
-	ctx = shivasUtil.SetupContext(ctx, ufsUtil.OSNamespace)
 	res, err := ic.GetDUTsForLabstation(ctx, &ufsAPI.GetDUTsForLabstationRequest{Hostname: labs})
 	if err != nil {
 		return nil, errors.Annotate(err, "get labstation dut mapping").Err()
