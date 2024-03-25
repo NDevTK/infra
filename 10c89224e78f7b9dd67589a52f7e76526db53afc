@@ -68,6 +68,24 @@
       "parentUuid": "7121f319_692ccbbf",
       "revId": "10c89224e78f7b9dd67589a52f7e76526db53afc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e5d964f_a62b1a59",
+        "filename": "3pp/openssh/install.sh",
+        "patchSetId": 24
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2024-03-25T03:01:48Z",
+      "side": 1,
+      "message": "Got it. Yes, git is preferred, but not always straightforward. I _think_ this is doable though using a combination of tag_pattern and version_join, described in https://source.chromium.org/chromium/infra/infra/+/main:recipes/recipe_modules/support_3pp/spec.proto",
+      "parentUuid": "f5313c41_23f54445",
+      "revId": "10c89224e78f7b9dd67589a52f7e76526db53afc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
