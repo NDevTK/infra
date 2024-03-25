@@ -86,6 +86,24 @@
       "parentUuid": "f5313c41_23f54445",
       "revId": "10c89224e78f7b9dd67589a52f7e76526db53afc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0dd6528_abf83275",
+        "filename": "3pp/openssh/install.sh",
+        "patchSetId": 24
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1309389
+      },
+      "writtenOn": "2024-03-25T03:21:22Z",
+      "side": 1,
+      "message": "Yeah. I want to switch back to doing git clones. This should be easy for hiba source. So I\u0027ll change that one now. Any specific suggestions about matching up `V_9_7_P1` and `9.7p1` are welcome. I was considering:\n\n```\ntag_pattern: \"V_%s\"\nversion_join: \"_\"\n```\n\nbut that would not quite match.\n\n`9.7p1` would be `V_9_7p1`\nor\n`V_9_7_P1` would be `9.7.p1`\n\n\nSeparately, I noticed that UrlSource does not seem to have an option to specify a file signature (e.g. sha256 sum) to ensure the archive is what you expect and not tampered with. Is there a reason to not do that or should it be added?",
+      "parentUuid": "6e5d964f_a62b1a59",
+      "revId": "10c89224e78f7b9dd67589a52f7e76526db53afc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
