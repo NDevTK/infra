@@ -814,3 +814,28 @@ def schedule_in_dynamic_bucket(ctx):
     ))
 
 lucicfg.generator(impl = schedule_in_dynamic_bucket)
+
+# Add a builder running on TaskBackendLite to test.
+luci.builder(
+    name = "fake-on-lite",
+    bucket = "ci",
+    # Technically this executable should have no effect
+    executable = luci.recipe(
+        name = "placeholder",
+        cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
+        use_python3 = True,
+    ),
+    properties = {
+        "status": "SUCCESS",
+        "steps": [
+            {
+                "name": "hello",
+                "fake_step": {
+                    "duration_secs": 90,
+                },
+            },
+        ],
+    },
+    schedule = "triggered",
+    backend_alt = "taskbackendlite",
+)
