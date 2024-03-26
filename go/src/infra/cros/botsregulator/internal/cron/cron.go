@@ -18,7 +18,10 @@ import (
 // It fetches available DUTs from UFS based on specific filters
 // and sends out the result to a predefined Bots Provider Interface.
 func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
-	r := regulator.NewRegulator(opts)
+	r, err := regulator.NewRegulator(ctx, opts)
+	if err != nil {
+		return err
+	}
 	lses, err := r.FetchDUTsByHive(ctx)
 	if err != nil {
 		return err

@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	gcepAPI "go.chromium.org/luci/gce/api/config/v1"
 
+	"infra/cros/botsregulator/internal/clients"
 	"infra/cros/botsregulator/internal/util"
 )
 
@@ -26,7 +27,7 @@ type gcepProvider struct {
 
 // NewGCEPClient returns a new gcepClient instance.
 func NewGCEPClient(ctx context.Context, host string, cfID string) (*gcepProvider, error) {
-	pc, err := util.RawPRPCClient(ctx, host)
+	pc, err := clients.RawPRPCClient(ctx, host)
 	if err != nil {
 		return nil, err
 	}
