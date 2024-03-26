@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "156eb06d_faa35828",
+        "filename": "go/src/infra/cros/cmd/kron/pubsub/recieve.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2024-03-26T22:59:18Z",
+      "side": 1,
+      "message": "based on GVC discussion, should we really be doing this? Or is a check once and move on a safer approach\u003e?",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 26
+      },
+      "revId": "0fcc59bcaadefdb7f0a10aa7dc00ce48181d5741",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
