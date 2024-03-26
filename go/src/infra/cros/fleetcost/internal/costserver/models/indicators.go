@@ -23,10 +23,38 @@ type CostIndicatorEntity struct {
 	ID            string                     `gae:"$id"`
 	Extra         datastore.PropertyMap      `gae:",extra"`
 	CostIndicator *fleetcostpb.CostIndicator `gae:"cost_indicator"`
+	// Indexed fields for improved query performance.
+	Board    string `gae:"board"`
+	Model    string `gae:"model"`
+	Sku      string `gae:"sku"`
+	Type     string `gae:"type"`
+	Location string `gae:"location"`
 }
 
 // Silence staticcheck warning about unused field.
 var _ = CostIndicatorEntity{}._kind
+
+// Save saves an entity.
+func (indicator *CostIndicatorEntity) Save(withMeta bool) (datastore.PropertyMap, error) {
+	// TODO(gregorynisbet): extract normalization logic to helper function.
+	indicator.Board = indicator.CostIndicator.GetBoard()
+	indicator.Model = indicator.CostIndicator.GetModel()
+	indicator.Sku = indicator.CostIndicator.GetSku()
+	if int(indicator.CostIndicator.GetType()) != 0 {
+		indicator.Type = indicator.CostIndicator.GetType().String()
+	}
+	if int(indicator.CostIndicator.GetLocation()) != 0 {
+		indicator.Location = indicator.CostIndicator.GetLocation().String()
+	}
+	return datastore.GetPLS(indicator).Save(withMeta)
+}
+
+// Load loads an entity.
+func (indicator *CostIndicatorEntity) Load(propertyMap datastore.PropertyMap) error {
+	return datastore.GetPLS(indicator).Load(propertyMap)
+}
+
+var _ datastore.PropertyLoadSaver = &CostIndicatorEntity{}
 
 // Clone produces a deep copy of a cost indicator.
 //

@@ -41,6 +41,45 @@ func TestCostIndicatorSimple(t *testing.T) {
 	}
 }
 
+// TestCostIndicatorSimple tests that writing a cost indicator to the database populates the correct fields.
+func TestCostIndicatorIndexedFields(t *testing.T) {
+	t.Parallel()
+
+	tf := testsupport.NewFixture(context.Background(), t)
+
+	oldIndicator := &models.CostIndicatorEntity{
+		ID: "a",
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Name:  "a",
+			Board: "e",
+			Model: "w",
+		},
+	}
+
+	err := datastore.Put(tf.Ctx, oldIndicator)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	item := &models.CostIndicatorEntity{ID: "a"}
+	if err := datastore.Get(tf.Ctx, item); err != nil {
+		t.Error(err)
+	}
+
+	if diff := typed.Got(item).Want(&models.CostIndicatorEntity{
+		ID: "a",
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Name:  "a",
+			Board: "e",
+			Model: "w",
+		},
+		Board: "e",
+		Model: "w",
+	}).Options(cmp.AllowUnexported(models.CostIndicatorEntity{})).Diff(); diff != "" {
+		t.Errorf("unexpected error (-want +got): %s", diff)
+	}
+}
+
 // TestCostIndicatorClone tests cloning a cost indicator
 func TestCostIndicatorClone(t *testing.T) {
 	t.Parallel()
@@ -106,6 +145,7 @@ func TestGetCostIndicator(t *testing.T) {
 			Name:  "a",
 			Board: "e",
 		},
+		Board: "e",
 	}
 
 	if diff := structuraldiff.DebugCompare(costIndicator, want).String(); diff != "" {
@@ -159,6 +199,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 			Name:  "fake-cost-indicator",
 			Board: "new-board",
 		},
+		Board: "new-board",
 	}, []string{"name", "board"})
 	if err != nil {
 		t.Errorf("unexpected error: %q", err)
@@ -170,6 +211,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 			Name:  "fake-cost-indicator",
 			Board: "new-board",
 		},
+		Board: "new-board",
 	}).Options(cmp.AllowUnexported(*got)).Diff(); diff != "" {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
 	}
