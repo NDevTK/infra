@@ -2469,12 +2469,55 @@
   },
   {
     "cmd": [
+      "sw_vers",
+      "-productVersion"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
+    "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "darwin",
+      "MACOSX_DEPLOYMENT_TARGET": "10.10",
+      "_3PP_CIPD_PACKAGE_NAME": "deps/bottom_dep_git",
+      "_3PP_PLATFORM": "mac-amd64",
+      "_3PP_TOOL_PLATFORM": "mac-amd64",
+      "_3PP_VERSION": "1.5.0-rc1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/tools_prefix",
+        "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/tools_prefix/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building deps/bottom_dep_git.run installation.find macOS version",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@Running on '14.4'.@@@"
+    ]
+  },
+  {
+    "cmd": [
       "[CACHE]/osx_sdk/mac_toolchain",
       "install",
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -3676,7 +3719,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -5652,7 +5695,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -6877,7 +6920,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -8108,7 +8151,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -10047,7 +10090,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -10556,7 +10599,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -12084,7 +12127,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -12593,7 +12636,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -13722,7 +13765,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -16702,7 +16745,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -18240,7 +18283,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
@@ -19830,7 +19873,7 @@
       "-kind",
       "mac",
       "-xcode-version",
-      "9f2000",
+      "14c18",
       "-output-dir",
       "[CACHE]/osx_sdk/XCode.app"
     ],
