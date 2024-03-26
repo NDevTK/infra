@@ -1,0 +1,64 @@
+From 2269c645208555a13362d94a2dd12ba26b2b1b1b Mon Sep 17 00:00:00 2001
+From: Brian Ryner <bryner@google.com>
+Date: Fri, 22 Mar 2024 14:31:18 +1100
+Subject: [PATCH] Remove CMake tests that require various device OS SDKs.
+
+---
+ .../RunCMake/CMakePackage/RunCMakeTest.cmake  | 37 -------------------
+ 1 file changed, 37 deletions(-)
+
+diff --git a/Tests/RunCMake/CMakePackage/RunCMakeTest.cmake b/Tests/RunCMake/CMakePackage/RunCMakeTest.cmake
+index 1551b55f67..04a97fa65c 100644
+--- a/Tests/RunCMake/CMakePackage/RunCMakeTest.cmake
++++ b/Tests/RunCMake/CMakePackage/RunCMakeTest.cmake
+@@ -79,47 +79,10 @@ if(APPLE AND CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
+   endif()
+ 
+   apple_export(macos Darwin "${macos_archs}" macosx)
+-  apple_export(ios iOS "arm64" iphoneos)
+-  apple_export(tvos tvOS "arm64" appletvos)
+-  if(enable_visionos)
+-    apple_export(visionos visionOS "arm64" xros)
+-  endif()
+-  apple_export(watchos watchOS "${watch_archs}" watchos)
+-  apple_export(ios-simulator iOS "${macos_archs}" iphonesimulator)
+-  if(select_archs)
+-    foreach(arch IN LISTS macos_archs)
+-      apple_export(ios-simulator-${arch} iOS "${arch}" iphonesimulator)
+-    endforeach()
+-  endif()
+-  apple_export(tvos-simulator tvOS "${tvos_sim_archs}" appletvsimulator)
+-  if(enable_visionos)
+-    apple_export(visionos-simulator visionOS "${macos_archs}" xrsimulator)
+-  endif()
+-  apple_export(watchos-simulator watchOS "${watch_sim_archs}" watchsimulator)
+   apple_export(unsupported-capture Darwin "${macos_archs}" macosx)
+   apple_export(unsupported-fatal Darwin "${macos_archs}" macosx)
+ 
+   apple_import(macos Darwin "${macos_archs}" macosx)
+-  apple_import(ios iOS "arm64" iphoneos)
+-  apple_import(tvos tvOS "arm64" appletvos)
+-  if(enable_visionos)
+-    apple_import(visionos visionOS "arm64" xros)
+-  endif()
+-  apple_import(watchos watchOS "${watch_archs}" watchos)
+-  apple_import(ios-simulator iOS "${macos_archs}" iphonesimulator)
+-  if(RunCMake_GENERATOR STREQUAL "Xcode")
+-    apple_import(ios-simulator-xcode iOS "$(ARCHS_STANDARD)" iphonesimulator)
+-  endif()
+-  if(select_archs)
+-    foreach(arch IN LISTS macos_archs)
+-      apple_import(ios-simulator-${arch} iOS "${arch}" iphonesimulator)
+-    endforeach()
+-  endif()
+-  apple_import(tvos-simulator tvOS "${tvos_sim_archs}" appletvsimulator)
+-  if(enable_visionos)
+-    apple_import(visionos-simulator visionOS "${macos_archs}" xrsimulator)
+-  endif()
+-  apple_import(watchos-simulator watchOS "${watch_sim_archs}" watchsimulator)
+   set(apple_import_no_build 1)
+   apple_import(unsupported-capture Darwin "${macos_archs}" macosx)
+   apple_import(unsupported-fatal-platform Darwin "${macos_archs}" macosx)
+-- 
+2.44.0.396.g6e790dbe36-goog
+
