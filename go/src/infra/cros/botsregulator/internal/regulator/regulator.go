@@ -9,34 +9,44 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/grpc/metadata"
+
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/botsregulator/internal/clients"
 	"infra/cros/botsregulator/internal/provider"
-	"infra/cros/botsregulator/internal/util"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 type regulator struct {
-	opts      *RegulatorOptions
+	bpiClient provider.BPI
 	ufsClient clients.UFSClient
+	opts      *RegulatorOptions
 }
 
 func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, error) {
+	fmt.Printf("opts: %v\n", opts)
 	uc, err := clients.NewUFSClient(ctx, opts.ufs, opts.namespace)
 	if err != nil {
 		return nil, err
 	}
+	bc, err := provider.NewProviderFromEnv(ctx, opts.bpi)
+	if err != nil {
+		return nil, err
+	}
 	return &regulator{
-		opts:      opts,
+		bpiClient: bc,
 		ufsClient: uc,
+		opts:      opts,
 	}, nil
 }
 
 // FetchDUTsByHive fetches the available DUTs from UFS by hive
 // and returns a slice of hostname.
 func (r *regulator) FetchDUTsByHive(ctx context.Context) ([]*ufspb.MachineLSE, error) {
+	md := metadata.Pairs("namespace", r.opts.namespace)
+	ctx = metadata.NewOutgoingContext(ctx, md)
 	// TODO(b/328443703): Handle pagination. Current max value: 1000.
 	res, err := r.ufsClient.ListMachineLSEs(ctx, &ufsAPI.ListMachineLSEsRequest{
 		Filter: fmt.Sprintf("hive=%s", r.opts.hive),
@@ -50,26 +60,7 @@ func (r *regulator) FetchDUTsByHive(ctx context.Context) ([]*ufspb.MachineLSE, e
 	return lses, nil
 }
 
-// UpdateConfig creates a provider.BPI based on the server running environment.
-// The provider is responsible for the actual implementation in the provider package.
-// Providers currently supported are GCE Provider and Satlab(WIP).
+// UpdateConfig is a wrapper around the current provider UpdateConfig method.
 func (r *regulator) UpdateConfig(ctx context.Context, hns []string) error {
-	var bc provider.BPI
-	var err error
-	switch util.GetEnv() {
-	case util.GCP:
-		bc, err = provider.NewGCEPClient(ctx, r.opts.bpi, r.opts.cfID)
-	case util.Satlab:
-		err = errors.New("Satlab flow not implemented")
-	default:
-		panic("unrecognized running environment")
-	}
-	if err != nil {
-		return err
-	}
-	err = bc.UpdateConfig(ctx, hns)
-	if err != nil {
-		return err
-	}
-	return nil
+	return r.bpiClient.UpdateConfig(ctx, hns, r.opts.cfID)
 }

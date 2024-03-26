@@ -19,28 +19,23 @@ import (
 
 // gcepProvider is the GCE Provider implementation of the Provider interface.
 type gcepProvider struct {
-	// GCE Provider configured PRPC client.
-	ic gcepAPI.ConfigurationClient
-	// The prefix of the config to update.
-	cfID string
+	gc clients.GCEPClient
 }
 
 // NewGCEPClient returns a new gcepClient instance.
-func NewGCEPClient(ctx context.Context, host string, cfID string) (*gcepProvider, error) {
-	pc, err := clients.RawPRPCClient(ctx, host)
+func NewGCEPClient(ctx context.Context, host string) (*gcepProvider, error) {
+	gc, err := clients.NewGCEPClient(ctx, host)
 	if err != nil {
 		return nil, err
 	}
-	g := &gcepProvider{
-		ic:   gcepAPI.NewConfigurationPRPCClient(pc),
-		cfID: cfID,
-	}
-	return g, nil
+	return &gcepProvider{
+		gc: gc,
+	}, nil
 }
 
 // get gets GCE Provider specified config.
 func (g *gcepProvider) get(ctx context.Context, configID string) (*gcepAPI.Config, error) {
-	res, err := g.ic.Get(ctx, &gcepAPI.GetRequest{
+	res, err := g.gc.Get(ctx, &gcepAPI.GetRequest{
 		Id: configID,
 	})
 	if err != nil {
@@ -50,9 +45,9 @@ func (g *gcepProvider) get(ctx context.Context, configID string) (*gcepAPI.Confi
 }
 
 // update updates GCE Provider specified config.
-func (g *gcepProvider) update(ctx context.Context, cf *gcepAPI.Config) error {
-	_, err := g.ic.Update(ctx, &gcepAPI.UpdateRequest{
-		Id:     g.cfID,
+func (g *gcepProvider) update(ctx context.Context, cf *gcepAPI.Config, cfID string) error {
+	_, err := g.gc.Update(ctx, &gcepAPI.UpdateRequest{
+		Id:     cfID,
 		Config: cf,
 		UpdateMask: &fieldmaskpb.FieldMask{
 			Paths: []string{"config.duts"},
@@ -66,9 +61,9 @@ func (g *gcepProvider) update(ctx context.Context, cf *gcepAPI.Config) error {
 
 // UpdateConfig is called as BPI.UpdateConfig and
 // is responsible for orchestrating the config update.
-func (g *gcepProvider) UpdateConfig(ctx context.Context, hns []string) error {
+func (g *gcepProvider) UpdateConfig(ctx context.Context, hns []string, cfID string) error {
 	logging.Infof(ctx, "updateConfig: starting GCEP flow for duts: %v", hns)
-	cf, err := g.get(ctx, g.cfID)
+	cf, err := g.get(ctx, cfID)
 	if err != nil {
 		return err
 	}
@@ -77,7 +72,7 @@ func (g *gcepProvider) UpdateConfig(ctx context.Context, hns []string) error {
 	cf.Duts = util.NewStringSet(hns)
 	logging.Infof(ctx, "updateConfig: config.Duts pre-update: %v", cf.Duts)
 
-	err = g.update(ctx, cf)
+	err = g.update(ctx, cf, cfID)
 	if err != nil {
 		return err
 	}

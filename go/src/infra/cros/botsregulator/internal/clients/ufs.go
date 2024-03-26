@@ -8,7 +8,6 @@ import (
 	"context"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
@@ -21,8 +20,6 @@ type UFSClient interface {
 }
 
 func NewUFSClient(ctx context.Context, host, namespace string) (UFSClient, error) {
-	md := metadata.Pairs("namespace", namespace)
-	ctx = metadata.NewOutgoingContext(ctx, md)
 	pc, err := RawPRPCClient(ctx, host)
 	if err != nil {
 		return nil, err
