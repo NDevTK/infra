@@ -32,7 +32,7 @@ func getUFSName(cloudProject string) string {
 	if strings.HasSuffix(cloudProject, "prod") {
 		return "ufs.api.cr.dev"
 	}
-	return "staging.ufs.api.cr.dev"
+	return "ufs.api.cr.dev"
 }
 
 // main starts the fleet cost server.

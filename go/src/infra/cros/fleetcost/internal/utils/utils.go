@@ -21,6 +21,8 @@ func ToIndicatorType(x string) (fleetcostpb.IndicatorType, error) {
 	return fleetcostpb.IndicatorType(out), err
 }
 
+const billion = 1000 * 1000 * 1000
+
 // ToUSD converts a string on the command line to US dollars.
 //
 // Right now, it works by parsing a float. I'm not sure this is great, we
@@ -34,7 +36,6 @@ func ToIndicatorType(x string) (fleetcostpb.IndicatorType, error) {
 // exhort my future self or other readers to replace this function with something
 // better.
 func ToUSD(x string) (*money.Money, error) {
-	const billion = 1000 * 1000 * 1000
 	var val float64
 	if _, err := fmt.Sscanf(x, "%f", &val); err != nil {
 		return nil, fmt.Errorf("invalid number %q", x)
@@ -48,6 +49,10 @@ func ToUSD(x string) (*money.Money, error) {
 		Units:        units,
 		Nanos:        nanos,
 	}, nil
+}
+
+func MoneyToFloat(v *money.Money) float64 {
+	return float64(v.GetUnits()) + float64(v.GetNanos())/billion
 }
 
 // ToCostCadence converts a string to a cost cadence.

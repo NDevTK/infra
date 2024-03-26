@@ -8,7 +8,6 @@ import (
 	"context"
 
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver/controller"
 	"infra/cros/fleetcost/internal/costserver/models"
 )
 
@@ -17,7 +16,7 @@ func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fl
 	// TODO(gregorynisbet): Do some kind of input validation here.
 	costIndicator := request.GetCostIndicator()
 	entity := models.NewCostIndicatorEntity(costIndicator)
-	if err := controller.PutCostIndicatorEntity(ctx, entity); err != nil {
+	if err := models.PutCostIndicatorEntity(ctx, entity); err != nil {
 		return nil, err
 	}
 	return &fleetcostAPI.CreateCostIndicatorResponse{
@@ -27,7 +26,7 @@ func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fl
 
 // ListCostIndicators lists the cost indicators in the database satisfying the request.
 func (f *FleetCostFrontend) ListCostIndicators(ctx context.Context, request *fleetcostAPI.ListCostIndicatorsRequest) (*fleetcostAPI.ListCostIndicatorsResponse, error) {
-	out, err := controller.ListCostIndicators(ctx, 0)
+	out, err := models.ListCostIndicators(ctx, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +38,7 @@ func (f *FleetCostFrontend) ListCostIndicators(ctx context.Context, request *fle
 // UpdateCostIndicator updates a CostIndicator.
 func (f *FleetCostFrontend) UpdateCostIndicator(ctx context.Context, request *fleetcostAPI.UpdateCostIndicatorRequest) (*fleetcostAPI.UpdateCostIndicatorResponse, error) {
 	entity := models.NewCostIndicatorEntity(request.GetCostIndicator())
-	out, err := controller.UpdateCostIndicatorEntity(ctx, entity, request.GetUpdateMask().GetPaths())
+	out, err := models.UpdateCostIndicatorEntity(ctx, entity, request.GetUpdateMask().GetPaths())
 	if err != nil {
 		return nil, err
 	}

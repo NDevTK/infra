@@ -2,5 +2,5 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package controller contains main business logic of the cost service.
-package controller
+// Package ufs handles logical for fetching data from UFS.
+package ufs

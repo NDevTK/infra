@@ -50,7 +50,7 @@ type CLIPrinter struct {
 
 // Register parses the -json flag.
 func (p *CLIPrinter) Register(fl *flag.FlagSet) {
-	fl.BoolVar(&p.json, "json", false, "Format output as JSON.")
+	p.json = false
 	fl.BoolVar(&p.silent, "silent", false, "Don't print any output from command.")
 }
 

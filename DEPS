@@ -28,7 +28,7 @@ deps = {
 
   "luci":
      "{chromium_git}/infra/luci/luci-py@" +
-     "440849275640885b19b8f27a820f83c858275708",
+     "c12ec6e20383a56e89bf0b6ab1326e3864cd8e9a",
 
   # TODO(crbug.com/1415507): remove this once infra_superproject is in
   # OSS codesearch. In the meantime, no need to add a gitlink for this.
@@ -42,15 +42,15 @@ deps = {
 
   "go/src/go.chromium.org/luci":
      "{chromium_git}/infra/luci/luci-go@" +
-     "e359c8ca3ea66229a84d1f804471c496bd8bf791",
+     "5b5f3447ec76987b53070f6a37eaf2b0c2979ccd",
 
   "go/src/go.chromium.org/chromiumos/config":
      "{chromium_git}/chromiumos/config@" +
-     "a10e51b19d30a46709913663ab0bbb502a223904",
+     "35da4359590e0d40f5311534ac0aa28ba4022fdc",
 
   "go/src/go.chromium.org/chromiumos/infra/proto":
      "{chromium_git}/chromiumos/infra/proto@" +
-     "954d226bba27a3172324fb628fed315917ff5b6e",
+     "355c624431d86cf327323f875669b9a36359ea1b",
 
   # Appengine third_party DEPS
   "appengine/third_party/bootstrap":

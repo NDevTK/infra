@@ -103,9 +103,9 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 					prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_PASS
 				} else {
 					prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL
-				}
-				if prejobReason == "" {
-					prejobReason = provisionResp.GetStatus().String()
+					if prejobReason == "" {
+						prejobReason = provisionResp.GetStatus().String()
+					}
 				}
 				stepName := fmt.Sprintf("Provision of %s", dutName)
 				provErr := common.CreateStepWithStatus(ctx, stepName, provisionResp.GetStatus().String(), provisionResp.GetStatus() != api.InstallResponse_STATUS_SUCCESS, true)

@@ -298,8 +298,8 @@ class GetFileDownloadUrlUnittest(unittest.TestCase):
 
 class GetChecksumUnittest(unittest.TestCase):
 
-  def test_success(self):
-    """Tests the happy path/success case when getting the checksum."""
+  def test_success_sha1(self):
+    """Tests the happy path/success case when getting the SHA1 checksum."""
     html = """\
 <body>
 <div id="info-div">
@@ -317,8 +317,34 @@ class GetChecksumUnittest(unittest.TestCase):
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
-    checksum = pcid._get_checksum(soup, 'url', '.zip')
+    checksum, algorithm = pcid._get_checksum(soup, 'url', '.zip')
     self.assertEqual(checksum, '1aff661be1111cfbff9dae54d51ece6ef5562068')
+    self.assertEqual(algorithm, 'sha1')
+
+  def test_success_sha256(self):
+    """Tests the happy path/success case when getting the SHA256 checksum."""
+    html = """\
+<body>
+<div id="info-div">
+  <div id="button-div">
+    <button data-wap data-wap_ref="download-button" data-href="foo.com/driver.zip">
+    </button>
+  </div>
+  <div id="details-div" class="dc-page-available-downloads-hero__details">
+    <ul>
+      <li> Size: 500 MB </li>
+      <li> SHA256: 3960A64C68F6C390FCB237830FA0AC1B4178495E20AF2A54BC7609050CD6FC05 </li>
+    </ul>
+  </div>
+</div>
+</body>
+"""
+    soup = bs4.BeautifulSoup(html, 'html.parser')
+    checksum, algorithm = pcid._get_checksum(soup, 'url', '.zip')
+    self.assertEqual(
+        checksum,
+        '3960a64c68f6c390fcb237830fa0ac1b4178495e20af2a54bc7609050cd6fc05')
+    self.assertEqual(algorithm, 'sha256')
 
   def test_no_details_div(self):
     """Tests behavior when no details div is found."""
@@ -406,8 +432,7 @@ class GetChecksumUnittest(unittest.TestCase):
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
-    with self.assertRaisesRegex(RuntimeError,
-                                'Unable to find SHA1 checksum on url'):
+    with self.assertRaisesRegex(RuntimeError, 'Unable to find checksum on url'):
       pcid._get_checksum(soup, 'url', '.zip')
 
     # Too short.
@@ -428,8 +453,7 @@ class GetChecksumUnittest(unittest.TestCase):
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
-    with self.assertRaisesRegex(RuntimeError,
-                                'Unable to find SHA1 checksum on url'):
+    with self.assertRaisesRegex(RuntimeError, 'Unable to find checksum on url'):
       pcid._get_checksum(soup, 'url', '.zip')
 
     # Too long.
@@ -450,8 +474,7 @@ class GetChecksumUnittest(unittest.TestCase):
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
-    with self.assertRaisesRegex(RuntimeError,
-                                'Unable to find SHA1 checksum on url'):
+    with self.assertRaisesRegex(RuntimeError, 'Unable to find checksum on url'):
       pcid._get_checksum(soup, 'url', '.zip')
 
     # Non-hex.
@@ -472,8 +495,7 @@ class GetChecksumUnittest(unittest.TestCase):
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
-    with self.assertRaisesRegex(RuntimeError,
-                                'Unable to find SHA1 checksum on url'):
+    with self.assertRaisesRegex(RuntimeError, 'Unable to find checksum on url'):
       pcid._get_checksum(soup, 'url', '.zip')
 
 

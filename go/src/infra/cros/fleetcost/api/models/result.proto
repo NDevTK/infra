@@ -8,14 +8,12 @@ package fleetcost.api.models;
 
 option go_package = "infra/cros/fleetcost/api/models;fleetcostpb";
 
-import "google/type/money.proto";
-
 // CostResult is a breakdown of cost for a given device.
 message CostResult {
     // Dedicated cost is the cost for just this device.
-    google.type.Money dedicated_cost = 1;
+    double dedicated_cost = 1;
     // Shared cost is the pro-rated share of fixed costs.
-    google.type.Money shared_cost = 2;
+    double shared_cost = 2;
     // Cloud service cost is the pro-rated share of cloud-service-related costs for the device in question.
-    google.type.Money cloud_service_cost = 3;
+    double cloud_service_cost = 3;
 }

@@ -33,6 +33,7 @@ func getApplication() *cli.Application {
 			commands.GetCostIndicatorCommand,
 			commands.CreateCostIndicatorCommand,
 			commands.UpdateCostIndicatorCommand,
+			commands.GetCostResultCommand,
 			subcommands.Section("Authentication"),
 			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
 			authcli.SubcommandLogin(site.DefaultAuthOptions, "login", false),
