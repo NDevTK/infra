@@ -87,6 +87,9 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 	for _, v := range p.GetChameleonType() {
 		appendDim(dims, "label-chameleon_type", v.String())
 	}
+	for _, v := range p.GetChameleonConnectionTypes() {
+		appendDim(dims, "label-chameleon_connection_types", v.String())
+	}
 
 	if invSState := p.GetServoState(); invSState != inventory.PeripheralState_UNKNOWN {
 		if labSState, ok := lab.PeripheralState_name[int32(invSState)]; ok {
@@ -197,6 +200,14 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		}
 	}
 	delete(d, "label-chameleon_type")
+
+	p.ChameleonConnectionTypes = make([]inventory.Peripherals_ChameleonConnectionType, len(d["label-chameleon_connection_types"]))
+	for i, v := range d["label-chameleon_connection_types"] {
+		if ct, ok := inventory.Peripherals_ChameleonConnectionType_value[v]; ok {
+			p.ChameleonConnectionTypes[i] = inventory.Peripherals_ChameleonConnectionType(ct)
+		}
+	}
+	delete(d, "label-chameleon_connection_types")
 
 	if chamStateName, ok := getLastStringValue(d, "label-chameleon_state"); ok {
 		chamState := inventory.PeripheralState_UNKNOWN

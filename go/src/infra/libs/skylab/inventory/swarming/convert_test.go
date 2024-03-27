@@ -58,8 +58,9 @@ peripherals: {
   mimo: true
   huddly: true
   conductive: true
-  chameleon_type: 2
-  chameleon_type: 5
+  chameleon_type: 9
+  chameleon_connection_types: 3
+  chameleon_connection_types: 4
   chameleon: true
   chameleon_state: 1
   audiobox_jackplugger_state: 1
@@ -220,8 +221,9 @@ peripherals: {
   mimo: true
   huddly: true
   conductive: true
-  chameleon_type: 2
-  chameleon_type: 5
+  chameleon_type: 9
+  chameleon_connection_types: 3
+  chameleon_connection_types: 4
   chameleon: true
   chameleon_state: 1
   audiobox_jackplugger_state: 1
@@ -358,8 +360,11 @@ var fullDimensions = Dimensions{
 	"label-cellular_modem":              {"fake_cellular"},
 	"label-chameleon":                   {"True"},
 	"label-chameleon_type": {
-		"CHAMELEON_TYPE_DP",
-		"CHAMELEON_TYPE_HDMI",
+		"CHAMELEON_TYPE_V2",
+	},
+	"label-chameleon_connection_types": {
+		"CHAMELEON_CONNECTION_TYPE_HDMI",
+		"CHAMELEON_CONNECTION_TYPE_DP",
 	},
 	"label-chameleon_state":         {"WORKING"},
 	"label-chaos_dut":               {"True"},
