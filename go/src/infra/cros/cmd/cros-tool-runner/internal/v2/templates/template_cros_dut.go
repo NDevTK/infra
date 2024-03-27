@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
@@ -93,7 +94,7 @@ func cloudbotsAdditionalOptions() *api.StartContainerRequest_Options {
 	}
 	// cloudbots environment variables
 	for _, env := range os.Environ() {
-		if strings.HasPrefix(env, "CLOUDBOTS-") {
+		if strings.HasPrefix(env, "CLOUDBOTS_") {
 			o.Env = append(o.Env, env)
 		}
 	}
