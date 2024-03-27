@@ -201,6 +201,9 @@ message BluetoothPeer {
   oneof device {
     RaspberryPi raspberry_pi = 1;
   }
+
+  // Remote Power Management for the bluetooth peer device.
+  OSRPM rpm = 2;
 }
 
 // HumanMotionRobot models the whole HMR system
