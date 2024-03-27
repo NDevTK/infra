@@ -239,6 +239,7 @@ func DeleteDHCPHostReservation(hostname string) error {
 		"exec",
 		"dhcp",
 		"rm",
+		"-f",
 		"/var/lib/misc/dhcp_hosts/" + hostname,
 	}
 	return exec.Command(args[0], args[1:]...).Run()

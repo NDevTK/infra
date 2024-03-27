@@ -517,9 +517,23 @@ func GetDUTsMACAddress(targetIP string) (string, error) {
 
 // SetDHCPHostFileContent sets the contents of the file in dhcp-hostsdir.
 func SetDHCPHostFileContent(hostname string, ipaddr string, macaddr string) error {
-	// clean up any old reservations for the DUT's MAC address
 	dhcpHostsdir := "/var/lib/misc/dhcp_hosts/"
+	// Check if dhcp-hostsdir exists and skip the IP reservation if not.
+	// It is needed in order to keep compatibility with older versions of ChromeOS.
 	args := []string{
+		paths.DockerPath,
+		"exec",
+		"dhcp",
+		"test",
+		"-d",
+		dhcpHostsdir,
+	}
+	if err := exec.Command(args[0], args[1:]...).Run(); err != nil {
+		fmt.Fprint(os.Stderr, "DHCP hosts directory does not exist. Skipping IP reservation.\n")
+		return nil
+	}
+	// Clean up any old reservations for the DUT's MAC address.
+	args = []string{
 		paths.DockerPath,
 		"exec",
 		"dhcp",
@@ -530,7 +544,7 @@ func SetDHCPHostFileContent(hostname string, ipaddr string, macaddr string) erro
 	if err := exec.Command(args[0], args[1:]...).Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "DHCP hosts config cleanup failed for %s\n", macaddr)
 	}
-	// prepare and copy the file to dhcp-hostsdir
+	// Prepare and copy the file with a MAC-IP pair to dhcp-hostsdir.
 	content := macaddr + "," + ipaddr
 	filename, err := misc.MakeTempFile(content)
 	if err != nil {
