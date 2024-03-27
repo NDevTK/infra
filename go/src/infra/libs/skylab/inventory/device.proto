@@ -434,7 +434,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 45
+// NEXT TAG: 46
 message Peripherals {
   reserved 32;
 
@@ -460,7 +460,18 @@ message Peripherals {
     CHAMELEON_TYPE_V3 = 10;
     CHAMELEON_TYPE_RPI = 11;
   }
+
+  enum ChameleonConnectionType {
+    CHAMELEON_CONNECTION_TYPE_INVALID = 0;
+    CHAMELEON_CONNECTION_TYPE_AUDIOJACK = 1;
+    CHAMELEON_CONNECTION_TYPE_USB = 2;
+    CHAMELEON_CONNECTION_TYPE_HDMI = 3;
+    CHAMELEON_CONNECTION_TYPE_DP = 4;
+  }
+
   repeated ChameleonType chameleon_type = 10;
+  repeated ChameleonConnectionType chameleon_connection_types = 45;
+
   optional PeripheralState chameleon_state = 33;
   // copy from chameleon.proto
   // NEXT TAG: 4
