@@ -3,12 +3,13 @@
 # found in the LICENSE file.
 
 create {
-  platform_re: "mac-.*"
+  platform_re: "linux-.*|mac-.*"
   source {
     git {
       repo: "https://github.com/google/hiba.git"
       tag_pattern: "v%s"
     }
+    patch_version: "chromium.1"
   }
   build {
     tool: "tools/autoconf"
@@ -16,6 +17,7 @@ create {
     tool: "tools/libtool"
     dep: "static_libs/opensshlibs"
     dep: "static_libs/openssl"
+    dep: "static_libs/zlib"
   }
 }
 

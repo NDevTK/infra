@@ -10,17 +10,35 @@ set -o pipefail
 PREFIX="$1"
 DEPS_PREFIX="$2"
 
-./autogen.sh
+_CONFIG_ARGS=(
+  "--disable-shared"
+  "--prefix=${PREFIX}"
+  "--with-opensshdir=${DEPS_PREFIX}/include/openssh"
+  "--with-openssldir=${DEPS_PREFIX}"
+  "LDFLAGS=-L${DEPS_PREFIX}/lib"
+)
+
+if [[ -n "${CROSS_TRIPLE}" ]]; then
+  _CONFIG_ARGS=( "${_CONFIG_ARGS[@]}" "--host=${CROSS_TRIPLE}" )
+fi
+
+case "${_3PP_PLATFORM}" in
+  mac-*)
+    _CONFIG_ARGS=(
+      "${_CONFIG_ARGS[@]}"
+      "CFLAGS=-O2 -Wno-unused-command-line-argument"
+    )
+    ;;
+  linux-*)
+    _CONFIG_ARGS=(
+      "${_CONFIG_ARGS[@]}"
+      "CFLAGS=-O2 -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L"
+    )
+    ;;
+esac
 
 export LIBRARY_PATH="${DEPS_PREFIX}/lib"
 
-./configure \
-  --disable-shared \
-  --with-opensshdir="${DEPS_PREFIX}/include/openssh" \
-  --with-openssldir="${DEPS_PREFIX}" \
-  --prefix="${PREFIX}" \
-  --host="${CROSS_TRIPLE}" \
-  CFLAGS="-Wno-unused-command-line-argument" \
-  || cat config.log
-
-make install
+./autogen.sh
+./configure "${_CONFIG_ARGS[@]}" || cat config.log
+make -j $(nproc) install

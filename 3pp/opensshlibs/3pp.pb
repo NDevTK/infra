@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 create {
-  platform_re: "mac-.*"
+  platform_re: "linux-.*|mac-.*"
   source {
     url {
       download_url: "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-9.7p1.tar.gz"

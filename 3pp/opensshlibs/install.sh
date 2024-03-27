@@ -10,13 +10,24 @@ set -o pipefail
 PREFIX="$1"
 DEPS_PREFIX="$2"
 
-./configure \
-  --with-ssl-dir="${DEPS_PREFIX}" \
-  --prefix="${PREFIX}" \
-  --host="${CROSS_TRIPLE}" \
-  || cat config.log
+_CONFIG_ARGS=(
+  "--with-ssl-dir=${DEPS_PREFIX}"
+  "--prefix=${PREFIX}"
+)
 
-make libssh.a openbsd-compat/libopenbsd-compat.a
+if [[ -n "${CROSS_TRIPLE}" ]]; then
+  _CONFIG_ARGS=( "${_CONFIG_ARGS[@]}" "--host=${CROSS_TRIPLE}" )
+fi
+
+case "${_3PP_PLATFORM}" in
+  linux-*)
+    _CONFIG_ARGS=( "--without-zlib" "${_CONFIG_ARGS[@]}" "LIBS=-lpthread" )
+    ;;
+esac
+
+./configure "${_CONFIG_ARGS[@]}" || cat config.log
+
+make -j $(nproc) libssh.a openbsd-compat/libopenbsd-compat.a
 
 # OpenSSH does not export *.a and *.h files with a make install. So we have to
 # copy them instead.
