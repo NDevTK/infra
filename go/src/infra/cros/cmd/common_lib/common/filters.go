@@ -36,7 +36,7 @@ var (
 	defaultLegacyHWSha      = "a40e76e81f20dc54e26acea67bb9a00ebd0a64552276d4d3931715668798fffd"
 	defaultTTCPSha          = "3eefb2c80e9cc946d752bc06501caee3105db8e9f2564f535fc9895bf568d6f0"
 	defaultProvisionSha     = "79878b6cdcde1edbe5abb64c7a7286148b4da0959510e4334b89691edbd1a422"
-	defaultUseFlagFilterSha = "5645e85225939ddb3d5b46f6587375884bad2661643c114203d7a2c94c355179"
+	defaultUseFlagFilterSha = "aeea5aca5133945b0ae2ca70ffe2d90fc5b95d5b8036ed22d3a90d2346e8b11b"
 	prodShas                = map[string]string{
 		TtcpContainerName:          defaultTTCPSha,
 		LegacyHWContainerName:      defaultLegacyHWSha,
