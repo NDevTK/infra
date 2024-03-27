@@ -13,11 +13,6 @@ import (
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
-type contextKey string
-
-// MockUFSClientKey is used for testing.
-var MockUFSClientKey contextKey = "used in tests only for setting the mock UFSClient"
-
 // UFSClient is UFS API	wrapper for BotsRegulator specific usage.
 // It is used for mocking and testing.
 type UFSClient interface {
@@ -26,9 +21,6 @@ type UFSClient interface {
 }
 
 func NewUFSClient(ctx context.Context, host, namespace string) (UFSClient, error) {
-	if mockClient, ok := ctx.Value(MockUFSClientKey).(UFSClient); ok {
-		return mockClient, nil
-	}
 	pc, err := rawPRPCClient(ctx, host)
 	if err != nil {
 		return nil, err

@@ -12,9 +12,6 @@ import (
 	gcepAPI "go.chromium.org/luci/gce/api/config/v1"
 )
 
-// MockGCEPClientKey is used for testing.
-var MockGCEPClientKey contextKey = "used in tests only for setting the mock GCEPClient"
-
 // GCEPClient is GCE Provider API wrapper for BotsRegulator specific usage.
 // It is used for mocking and testing.
 type GCEPClient interface {
@@ -23,9 +20,6 @@ type GCEPClient interface {
 }
 
 func NewGCEPClient(ctx context.Context, host string) (GCEPClient, error) {
-	if mockGCEPClient, ok := ctx.Value(MockGCEPClientKey).(GCEPClient); ok {
-		return mockGCEPClient, nil
-	}
 	pc, err := rawPRPCClient(ctx, host)
 	if err != nil {
 		return nil, err

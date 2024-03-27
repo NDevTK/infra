@@ -20,19 +20,19 @@ const (
 // RegulatorOptions refers to the flag options needed
 // to create a new regulator struct.
 type RegulatorOptions struct {
-	BPI       string
-	CfID      string
-	Hive      string
-	Namespace string
-	UFS       string
+	bpi       string
+	cfID      string
+	hive      string
+	namespace string
+	ufs       string
 }
 
 // RegisterFlags exposes the command line flags required to run the application.
 // We never check for flag emptiness so all options must have defaults.
 func (r *RegulatorOptions) RegisterFlags(fs *flag.FlagSet) {
-	fs.StringVar(&r.BPI, "bpi", gcepDev, "URI endpoint of the service used to scale bots.")
-	fs.StringVar(&r.CfID, "config", configID, "CloudBots config prefix.")
-	fs.StringVar(&r.Hive, "hive", "cloudbots", "hive used for UFS filtering.")
-	fs.StringVar(&r.Namespace, "ufs-namespace", ufsUtil.OSNamespace, "UFS namespace.")
-	fs.StringVar(&r.UFS, "ufs", ufsDev, "UFS endpoint.")
+	fs.StringVar(&r.bpi, "bpi", gcepDev, "URI endpoint of the service used to scale bots.")
+	fs.StringVar(&r.cfID, "config", configID, "CloudBots config prefix.")
+	fs.StringVar(&r.hive, "hive", "cloudbots", "hive used for UFS filtering.")
+	fs.StringVar(&r.namespace, "ufs-namespace", ufsUtil.OSNamespace, "UFS namespace.")
+	fs.StringVar(&r.ufs, "ufs", ufsDev, "UFS endpoint.")
 }
