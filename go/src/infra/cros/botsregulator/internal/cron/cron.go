@@ -11,7 +11,6 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/botsregulator/internal/regulator"
-	"infra/cros/botsregulator/internal/util"
 )
 
 // Regulate is BotsRegulator main flow.
@@ -22,7 +21,7 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
-	lses, err := r.FetchDUTsByHive(ctx)
+	lses, err := r.FetchLSEsByHive(ctx)
 	if err != nil {
 		return err
 	}
@@ -32,13 +31,18 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	}
 	logging.Infof(ctx, "lses: %v\n", lses)
 
-	hns, err := util.CutHostnames(lses)
+	sus, err := r.FetchAllSchedulingUnits(ctx)
 	if err != nil {
 		return err
 	}
-	logging.Infof(ctx, "hostnames: %v\n", hns)
 
-	err = r.UpdateConfig(ctx, hns)
+	ad, err := r.ConsolidateAvailableDUTs(ctx, lses, sus)
+	if err != nil {
+		return err
+	}
+	logging.Infof(ctx, "available DUTs: %v\n", ad)
+
+	err = r.UpdateConfig(ctx, ad)
 	if err != nil {
 		return err
 	}

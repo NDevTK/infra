@@ -7,13 +7,8 @@ package util
 
 import (
 	"os"
-	"strings"
 
 	"google.golang.org/protobuf/types/known/emptypb"
-
-	"go.chromium.org/luci/common/errors"
-
-	ufspb "infra/unifiedfleet/api/v1/models"
 )
 
 const (
@@ -23,21 +18,10 @@ const (
 	ConfigID string = "cloudbots-dev"
 
 	// Common prefix for machineLSE keys.
-	machineLSEPrefix string = "machineLSEs/"
+	MachineLSEPrefix string = "machineLSEs/"
+	// Common prefix for schedulingUnits keys.
+	SchedulingUnitsPrefix string = "schedulingunits/"
 )
-
-// CutHostnames cuts "machineLSEs/" prefix from DUT names.
-func CutHostnames(lses []*ufspb.MachineLSE) ([]string, error) {
-	hns := make([]string, len(lses))
-	for i, lse := range lses {
-		hn, ok := strings.CutPrefix(lse.GetName(), machineLSEPrefix)
-		if !ok {
-			return nil, errors.Reason("could not parse DUT hostname: %v", lse).Err()
-		}
-		hns[i] = hn
-	}
-	return hns, nil
-}
 
 type Set = map[string]*emptypb.Empty
 

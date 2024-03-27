@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
@@ -20,7 +21,7 @@ type UFSClient interface {
 }
 
 func NewUFSClient(ctx context.Context, host, namespace string) (UFSClient, error) {
-	pc, err := RawPRPCClient(ctx, host)
+	pc, err := rawPRPCClient(ctx, host)
 	if err != nil {
 		return nil, err
 	}
@@ -41,4 +42,10 @@ func (u *ufsService) ListMachineLSEs(ctx context.Context, in *ufsAPI.ListMachine
 
 func (u *ufsService) ListSchedulingUnits(ctx context.Context, in *ufsAPI.ListSchedulingUnitsRequest, opts ...grpc.CallOption) (*ufsAPI.ListSchedulingUnitsResponse, error) {
 	return u.client.ListSchedulingUnits(ctx, in, opts...)
+}
+
+// SetUFSNamespace is a helper function to set UFS namespace in context.
+func SetUFSNamespace(ctx context.Context, namespace string) context.Context {
+	md := metadata.Pairs("namespace", namespace)
+	return metadata.NewOutgoingContext(ctx, md)
 }

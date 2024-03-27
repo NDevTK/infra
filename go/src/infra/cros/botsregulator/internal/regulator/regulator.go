@@ -8,13 +8,13 @@ package regulator
 import (
 	"context"
 	"fmt"
-
-	"google.golang.org/grpc/metadata"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/botsregulator/internal/clients"
 	"infra/cros/botsregulator/internal/provider"
+	"infra/cros/botsregulator/internal/util"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
@@ -42,22 +42,75 @@ func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, erro
 	}, nil
 }
 
-// FetchDUTsByHive fetches the available DUTs from UFS by hive
+// FetchLSEsByHive fetches the available DUTs from UFS by hive
 // and returns a slice of hostname.
-func (r *regulator) FetchDUTsByHive(ctx context.Context) ([]*ufspb.MachineLSE, error) {
-	md := metadata.Pairs("namespace", r.opts.namespace)
-	ctx = metadata.NewOutgoingContext(ctx, md)
+func (r *regulator) FetchLSEsByHive(ctx context.Context) ([]*ufspb.MachineLSE, error) {
+	ctx = clients.SetUFSNamespace(ctx, r.opts.namespace)
 	// TODO(b/328443703): Handle pagination. Current max value: 1000.
 	res, err := r.ufsClient.ListMachineLSEs(ctx, &ufsAPI.ListMachineLSEsRequest{
 		Filter: fmt.Sprintf("hive=%s", r.opts.hive),
 		// KeysOnly returns the entities' ID only. It is faster than a full query.
 		KeysOnly: true,
+		PageSize: 1000,
 	})
 	if err != nil {
 		return nil, errors.Annotate(err, "could not list machinesLSEs").Err()
 	}
-	lses := res.GetMachineLSEs()
-	return lses, nil
+	return res.GetMachineLSEs(), nil
+}
+
+func (r *regulator) FetchAllSchedulingUnits(ctx context.Context) ([]*ufspb.SchedulingUnit, error) {
+	ctx = clients.SetUFSNamespace(ctx, r.opts.namespace)
+	// TODO(b/328443703): Handle pagination. Current max value: 1000.
+	res, err := r.ufsClient.ListSchedulingUnits(ctx, &ufsAPI.ListSchedulingUnitsRequest{
+		PageSize: 1000,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return res.GetSchedulingUnits(), nil
+}
+
+// ConsolidateAvailableDUTs returns a list of available DUTs to create Swarming bots for.
+// This list includes Scheduling Units and single DUTs, all sharing the same hive.
+// The assumption is that all LSEs in a Scheduling Unit should share the same hive.
+// This is enforced on UFS side.
+func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, lses []*ufspb.MachineLSE, sus []*ufspb.SchedulingUnit) ([]string, error) {
+	var ad []string
+	lsesInSU := make(map[string]bool, len(lses))
+	// All DUTs in this map have the correct hive.
+	for _, lse := range lses {
+		l, ok := strings.CutPrefix(lse.GetName(), util.MachineLSEPrefix)
+		if !ok {
+			return nil, errors.Reason("could not parse LSE name: %v", lse).Err()
+		}
+		lsesInSU[l] = false
+	}
+	// Filtering SUs by hive.
+	for _, su := range sus {
+		seen := false
+		for _, lse := range su.GetMachineLSEs() {
+			if _, ok := lsesInSU[lse]; ok {
+				lsesInSU[lse] = true
+				seen = true
+			}
+		}
+		// At least 1 DUT in the SU has the corresponding hive.
+		if seen {
+			s, ok := strings.CutPrefix(su.GetName(), util.SchedulingUnitsPrefix)
+			if !ok {
+				return nil, errors.Reason("could not parse SU name: %v", su).Err()
+			}
+			ad = append(ad, s)
+		}
+	}
+	// Add single DUT.
+	for lse, seen := range lsesInSU {
+		if !seen {
+			ad = append(ad, lse)
+		}
+	}
+	return ad, nil
 }
 
 // UpdateConfig is a wrapper around the current provider UpdateConfig method.

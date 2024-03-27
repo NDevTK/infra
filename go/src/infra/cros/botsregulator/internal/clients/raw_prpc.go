@@ -14,9 +14,8 @@ import (
 	"go.chromium.org/luci/server/auth"
 )
 
-// RawPRPCClient returns a generic PRPC Client.
-// TODO: This will need to be private.
-func RawPRPCClient(ctx context.Context, host string) (*prpc.Client, error) {
+// rawPRPCClient returns a generic PRPC Client.
+func rawPRPCClient(ctx context.Context, host string) (*prpc.Client, error) {
 	t, err := auth.GetRPCTransport(ctx, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
 	if err != nil {
 		return nil, errors.Annotate(err, "could not create http.RoundTripper").Err()

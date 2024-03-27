@@ -20,7 +20,7 @@ type GCEPClient interface {
 }
 
 func NewGCEPClient(ctx context.Context, host string) (GCEPClient, error) {
-	pc, err := RawPRPCClient(ctx, host)
+	pc, err := rawPRPCClient(ctx, host)
 	if err != nil {
 		return nil, err
 	}
