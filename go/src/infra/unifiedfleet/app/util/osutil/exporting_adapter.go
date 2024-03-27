@@ -106,6 +106,12 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 				p.ChameleonType = append(p.ChameleonType, cType)
 			}
 		}
+		for _, c := range chameleon.GetChameleonConnectionTypes() {
+			cType := inventory.Peripherals_ChameleonConnectionType(c)
+			if cType != inventory.Peripherals_CHAMELEON_CONNECTION_TYPE_INVALID {
+				p.ChameleonConnectionTypes = append(p.ChameleonConnectionTypes, cType)
+			}
+		}
 		p.AudioBoard = &chameleon.AudioBoard
 		p.AudioboxJackpluggerState = setAudioboxJackpluggerState(chameleon.GetAudioboxJackplugger())
 	}
