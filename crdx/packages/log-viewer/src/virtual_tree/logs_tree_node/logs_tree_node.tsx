@@ -21,7 +21,7 @@ import { TreeLeafNode } from './tree_leaf_node';
 /**
  * Props for the Tree node.
  */
-interface LogsTreeNodeProps<T extends TreeNodeData> {
+export interface LogsTreeNodeProps<T extends TreeNodeData> {
   treeNodeData: TreeData<T>;
   index: number;
   collapseIcon?: ReactNode;
