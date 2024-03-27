@@ -182,9 +182,10 @@ func TestAsap(t *testing.T) {
 	}
 }
 
-var testDimensionsAndPoolData = []struct {
+var testDimensionsDeviceNameAndPoolData = []struct {
 	bbDims           []*buildbucketpb.RequestedDimension
 	wantSchedukeDims *schedukepb.SwarmingDimensions
+	wantDeviceName   string
 	wantPool         string
 }{
 	{
@@ -192,7 +193,8 @@ var testDimensionsAndPoolData = []struct {
 		wantSchedukeDims: &schedukepb.SwarmingDimensions{
 			DimsMap: map[string]*schedukepb.DimValues{},
 		},
-		wantPool: "",
+		wantDeviceName: "",
+		wantPool:       "",
 	},
 	{
 		bbDims: []*buildbucketpb.RequestedDimension{
@@ -211,7 +213,8 @@ var testDimensionsAndPoolData = []struct {
 				"bar": {Values: []string{"val1", "val2"}},
 			},
 		},
-		wantPool: "",
+		wantDeviceName: "",
+		wantPool:       "",
 	},
 	{
 		bbDims: []*buildbucketpb.RequestedDimension{
@@ -235,15 +238,21 @@ var testDimensionsAndPoolData = []struct {
 				Key:   "label-pool",
 				Value: "pool1|pool2",
 			},
+			{
+				Key:   "dut_name",
+				Value: "name1|name2",
+			},
 		},
 		wantSchedukeDims: &schedukepb.SwarmingDimensions{
 			DimsMap: map[string]*schedukepb.DimValues{
 				"foo":        {Values: []string{"val"}},
 				"bar":        {Values: []string{"val1", "val2", "val3", "val4", "val5"}},
 				"label-pool": {Values: []string{"pool1", "pool2"}},
+				"dut_name":   {Values: []string{"name1", "name2"}},
 			},
 		},
-		wantPool: "pool1|pool2",
+		wantDeviceName: "name1|name2",
+		wantPool:       "pool1|pool2",
 	},
 	{
 		bbDims: []*buildbucketpb.RequestedDimension{
@@ -259,15 +268,21 @@ var testDimensionsAndPoolData = []struct {
 				Key:   "label-pool",
 				Value: "baz pool",
 			},
+			{
+				Key:   "dut_name",
+				Value: "haha name",
+			},
 		},
 		wantSchedukeDims: &schedukepb.SwarmingDimensions{
 			DimsMap: map[string]*schedukepb.DimValues{
 				"foo":        {Values: []string{"val"}},
 				"bar":        {Values: []string{"val1", "val2"}},
 				"label-pool": {Values: []string{"baz pool"}},
+				"dut_name":   {Values: []string{"haha name"}},
 			},
 		},
-		wantPool: "baz pool",
+		wantDeviceName: "haha name",
+		wantPool:       "baz pool",
 	},
 	{
 		bbDims: []*buildbucketpb.RequestedDimension{
@@ -283,30 +298,39 @@ var testDimensionsAndPoolData = []struct {
 				Key:   "label-pool",
 				Value: "schedukeTest",
 			},
+			{
+				Key:   "dut_name",
+				Value: "lol name",
+			},
 		},
 		wantSchedukeDims: &schedukepb.SwarmingDimensions{
 			DimsMap: map[string]*schedukepb.DimValues{
 				"foo":        {Values: []string{"val"}},
 				"bar":        {Values: []string{"val1", "val2"}},
 				"label-pool": {Values: []string{"schedukeTest"}},
+				"dut_name":   {Values: []string{"lol name"}},
 			},
 		},
-		wantPool: "schedukeTest",
+		wantDeviceName: "lol name",
+		wantPool:       "schedukeTest",
 	},
 }
 
-func TestDimensionsAndPool(t *testing.T) {
+func TestDimensionsDeviceNameAndPool(t *testing.T) {
 	t.Parallel()
 	cmpOpts := cmpopts.IgnoreUnexported(
 		schedukepb.DimValues{},
 		schedukepb.SwarmingDimensions{})
-	for _, tt := range testDimensionsAndPoolData {
+	for _, tt := range testDimensionsDeviceNameAndPoolData {
 		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.bbDims), func(t *testing.T) {
 			t.Parallel()
-			gotSchedukeDims, gotPool := dimensionsAndPool(tt.bbDims)
+			gotSchedukeDims, gotDeviceName, gotPool := dimensionsDeviceNameAndPool(tt.bbDims)
 			if diff := cmp.Diff(gotSchedukeDims, tt.wantSchedukeDims, cmpOpts); diff != "" {
 				t.Errorf("unexpected diff (%s)", diff)
+			}
+			if gotDeviceName != tt.wantDeviceName {
+				t.Errorf("got %v, want %v", gotDeviceName, tt.wantDeviceName)
 			}
 			if gotPool != tt.wantPool {
 				t.Errorf("got %v, want %v", gotPool, tt.wantPool)

@@ -21,9 +21,10 @@ import (
 
 const (
 	// Higher integer value means lower priority.
-	noAccountPriority  int64 = 10
-	poolDimensionKey         = "label-pool"
-	quotaAccountTagKey       = "qs_account"
+	noAccountPriority      int64 = 10
+	deviceNameDimensionKey       = "dut_name"
+	poolDimensionKey             = "label-pool"
+	quotaAccountTagKey           = "qs_account"
 	// SchedukeTaskRequestKey is the key all Scheduke tasks are launched with.
 	// Scheduke supports batch task creation, but we send individually for now, so
 	// we use this key.
@@ -100,7 +101,7 @@ func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*
 	qsAccount := qsAccount(tags)
 	periodic := periodic(tags)
 	asap := asap(qsAccount, periodic)
-	dims, pool := dimensionsAndPool(bbReq.GetDimensions())
+	dims, deviceName, pool := dimensionsDeviceNameAndPool(bbReq.GetDimensions())
 
 	schedukeTask := &schedukepb.TaskRequestEvent{
 		EventTime:                time.Now().UnixMicro(),
@@ -115,6 +116,7 @@ func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*
 		Bbid:                     parentBBID,
 		Asap:                     asap,
 		ScheduleBuildRequestJson: compressedReqJSON,
+		DeviceName:               deviceName,
 	}
 
 	return &schedukepb.KeyedTaskRequestEvents{
@@ -181,11 +183,10 @@ func asap(qsAccount string, periodic bool) bool {
 	return false
 }
 
-// dimensionsAndPool converts the given Buildbucket RequestedDimensions to
+// dimensionsDeviceNameAndPool converts the given Buildbucket RequestedDimensions to
 // Scheduke SwarmingDimensions, and returns the pool dimension separately.
-func dimensionsAndPool(dims []*buildbucketpb.RequestedDimension) (*schedukepb.SwarmingDimensions, string) {
+func dimensionsDeviceNameAndPool(dims []*buildbucketpb.RequestedDimension) (schedukeDims *schedukepb.SwarmingDimensions, deviceName, pool string) {
 	dimsMap := make(map[string]*schedukepb.DimValues)
-	var pool string
 
 	for _, dim := range dims {
 		dimKey := dim.GetKey()
@@ -197,8 +198,12 @@ func dimensionsAndPool(dims []*buildbucketpb.RequestedDimension) (*schedukepb.Sw
 		if dimKey == poolDimensionKey {
 			pool = dim.GetValue()
 		}
+		if dimKey == deviceNameDimensionKey {
+			deviceName = dim.GetValue()
+		}
 	}
-	return &schedukepb.SwarmingDimensions{DimsMap: dimsMap}, pool
+	schedukeDims = &schedukepb.SwarmingDimensions{DimsMap: dimsMap}
+	return
 }
 
 // compressAndEncodeBBReq compresses the given bytes using zlib and encodes it
