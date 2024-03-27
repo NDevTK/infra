@@ -7,8 +7,14 @@ package regulator
 import (
 	"flag"
 
-	"infra/cros/botsregulator/internal/util"
 	ufsUtil "infra/unifiedfleet/app/util"
+)
+
+const (
+	// Default flag values.
+	ufsDev   string = "staging.ufs.api.cr.dev"
+	gcepDev  string = "gce-provider-dev.appspot.com"
+	configID string = "cloudbots-dev"
 )
 
 // RegulatorOptions refers to the flag options needed
@@ -24,9 +30,9 @@ type RegulatorOptions struct {
 // RegisterFlags exposes the command line flags required to run the application.
 // We never check for flag emptiness so all options must have defaults.
 func (r *RegulatorOptions) RegisterFlags(fs *flag.FlagSet) {
-	fs.StringVar(&r.bpi, "bpi", util.GCEPDev, "URI endpoint of the service used to scale bots.")
-	fs.StringVar(&r.cfID, "config", util.ConfigID, "CloudBots config prefix.")
+	fs.StringVar(&r.bpi, "bpi", gcepDev, "URI endpoint of the service used to scale bots.")
+	fs.StringVar(&r.cfID, "config", configID, "CloudBots config prefix.")
 	fs.StringVar(&r.hive, "hive", "cloudbots", "hive used for UFS filtering.")
 	fs.StringVar(&r.namespace, "ufs-namespace", ufsUtil.OSNamespace, "UFS namespace.")
-	fs.StringVar(&r.ufs, "ufs", util.UFSDev, "UFS endpoint.")
+	fs.StringVar(&r.ufs, "ufs", ufsDev, "UFS endpoint.")
 }

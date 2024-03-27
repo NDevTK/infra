@@ -14,9 +14,15 @@ import (
 
 	"infra/cros/botsregulator/internal/clients"
 	"infra/cros/botsregulator/internal/provider"
-	"infra/cros/botsregulator/internal/util"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+)
+
+const (
+	// Common prefix for machineLSE keys.
+	MachineLSEPrefix string = "machineLSEs/"
+	// Common prefix for schedulingUnits keys.
+	SchedulingUnitsPrefix string = "schedulingunits/"
 )
 
 type regulator struct {
@@ -26,7 +32,7 @@ type regulator struct {
 }
 
 func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, error) {
-	fmt.Printf("opts: %v\n", opts)
+	fmt.Printf("creating regulator with flags: %v\n", opts)
 	uc, err := clients.NewUFSClient(ctx, opts.ufs, opts.namespace)
 	if err != nil {
 		return nil, err
@@ -42,8 +48,7 @@ func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, erro
 	}, nil
 }
 
-// FetchLSEsByHive fetches the available DUTs from UFS by hive
-// and returns a slice of hostname.
+// FetchLSEsByHive fetches machineLSEs from UFS by hive.
 func (r *regulator) FetchLSEsByHive(ctx context.Context) ([]*ufspb.MachineLSE, error) {
 	ctx = clients.SetUFSNamespace(ctx, r.opts.namespace)
 	// TODO(b/328443703): Handle pagination. Current max value: 1000.
@@ -59,6 +64,7 @@ func (r *regulator) FetchLSEsByHive(ctx context.Context) ([]*ufspb.MachineLSE, e
 	return res.GetMachineLSEs(), nil
 }
 
+// FetchAllSchedulingUnits fetches ALL Scheduling Units from UFS.
 func (r *regulator) FetchAllSchedulingUnits(ctx context.Context) ([]*ufspb.SchedulingUnit, error) {
 	ctx = clients.SetUFSNamespace(ctx, r.opts.namespace)
 	// TODO(b/328443703): Handle pagination. Current max value: 1000.
@@ -80,7 +86,7 @@ func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, lses []*ufspb.
 	lsesInSU := make(map[string]bool, len(lses))
 	// All DUTs in this map have the correct hive.
 	for _, lse := range lses {
-		l, ok := strings.CutPrefix(lse.GetName(), util.MachineLSEPrefix)
+		l, ok := strings.CutPrefix(lse.GetName(), MachineLSEPrefix)
 		if !ok {
 			return nil, errors.Reason("could not parse LSE name: %v", lse).Err()
 		}
@@ -97,14 +103,14 @@ func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, lses []*ufspb.
 		}
 		// At least 1 DUT in the SU has the corresponding hive.
 		if seen {
-			s, ok := strings.CutPrefix(su.GetName(), util.SchedulingUnitsPrefix)
+			s, ok := strings.CutPrefix(su.GetName(), SchedulingUnitsPrefix)
 			if !ok {
 				return nil, errors.Reason("could not parse SU name: %v", su).Err()
 			}
 			ad = append(ad, s)
 		}
 	}
-	// Add single DUT.
+	// Add single DUTs.
 	for lse, seen := range lsesInSU {
 		if !seen {
 			ad = append(ad, lse)

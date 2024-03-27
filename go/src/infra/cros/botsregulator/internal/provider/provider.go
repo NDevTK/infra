@@ -10,8 +10,6 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
-
-	"infra/cros/botsregulator/internal/util"
 )
 
 // BPI is a generic Provider interface.
@@ -26,10 +24,10 @@ type BPI interface {
 func NewProviderFromEnv(ctx context.Context, host string) (BPI, error) {
 	var bc BPI
 	var err error
-	switch util.GetEnv() {
-	case util.GCP:
+	switch getEnv() {
+	case gcp:
 		bc, err = NewGCEPClient(ctx, host)
-	case util.Satlab:
+	case satlab:
 		err = errors.New("Satlab flow not implemented")
 	default:
 		panic("unrecognized running environment")

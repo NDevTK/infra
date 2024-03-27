@@ -14,7 +14,6 @@ import (
 	gcepAPI "go.chromium.org/luci/gce/api/config/v1"
 
 	"infra/cros/botsregulator/internal/clients"
-	"infra/cros/botsregulator/internal/util"
 )
 
 // gcepProvider is the GCE Provider implementation of the Provider interface.
@@ -69,7 +68,7 @@ func (g *gcepProvider) UpdateConfig(ctx context.Context, hns []string, cfID stri
 	}
 	logging.Infof(ctx, "updateConfig: retrieved Config: %v", cf)
 
-	cf.Duts = util.NewStringSet(hns)
+	cf.Duts = newStringSet(hns)
 	logging.Infof(ctx, "updateConfig: config.Duts pre-update: %v", cf.Duts)
 
 	err = g.update(ctx, cf, cfID)
