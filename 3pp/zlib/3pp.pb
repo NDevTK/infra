@@ -1,5 +1,4 @@
 create {
-  platform_re: "linux-.*|mac-.*"
   source {
     url {
       download_url: "https://zlib.net/fossils/zlib-1.2.12.tar.gz"
@@ -9,8 +8,19 @@ create {
     cpe_base_address: "cpe:/a:zlib:zlib"
     patch_version: "chromium.1"
   }
+}
+
+create {
+  platform_re: "linux-.*|mac-.*"
   build {
     tool: "tools/sed"
+  }
+}
+
+create {
+  platform_re: "windows-.*"
+  build {
+    install: "install_win.sh"
   }
 }
 
