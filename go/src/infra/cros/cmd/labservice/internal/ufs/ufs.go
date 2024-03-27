@@ -215,6 +215,7 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 				Hwid:           di.hwidData.GetHwid(),
 				Phase:          getPhase(di.hwidData),
 				SimInfos:       getSimInfo(d.GetSiminfo()),
+				ModemInfo:      getModemInfo(d.GetModeminfo()),
 			},
 		},
 		CacheServer: &labapi.CacheServer{
@@ -554,6 +555,37 @@ func getPhase(hd *ufspb.HwidData) labapi.Phase {
 		}
 	}
 	return labapi.Phase_PHASE_UNSPECIFIED
+}
+
+func getModemInfo(src *lab.ModemInfo) *labapi.ModemInfo {
+	r := &labapi.ModemInfo{
+		Imei:           src.GetImei(),
+		SupportedBands: src.GetSupportedBands(),
+		SimCount:       src.GetSimCount(),
+		ModelVariant:   src.GetModelVariant(),
+	}
+
+	switch src.GetType() {
+	case lab.ModemType_MODEM_TYPE_UNSPECIFIED:
+		r.Type = labapi.ModemType_MODEM_TYPE_UNSPECIFIED
+	case lab.ModemType_MODEM_TYPE_QUALCOMM_SC7180:
+		r.Type = labapi.ModemType_MODEM_TYPE_QUALCOMM_SC7180
+	case lab.ModemType_MODEM_TYPE_QUALCOMM_SC7280:
+		r.Type = labapi.ModemType_MODEM_TYPE_QUALCOMM_SC7280
+	case lab.ModemType_MODEM_TYPE_FIBOCOMM_L850GL:
+		r.Type = labapi.ModemType_MODEM_TYPE_FIBOCOMM_L850GL
+	case lab.ModemType_MODEM_TYPE_NL668:
+		r.Type = labapi.ModemType_MODEM_TYPE_NL668
+	case lab.ModemType_MODEM_TYPE_FM350:
+		r.Type = labapi.ModemType_MODEM_TYPE_FM350
+	case lab.ModemType_MODEM_TYPE_FM101:
+		r.Type = labapi.ModemType_MODEM_TYPE_FM101
+	case lab.ModemType_MODEM_TYPE_EM060:
+		r.Type = labapi.ModemType_MODEM_TYPE_EM060
+	default:
+		r.Type = labapi.ModemType_MODEM_TYPE_UNSUPPORTED
+	}
+	return r
 }
 
 func getSimInfo(src []*lab.SIMInfo) []*labapi.SIMInfo {
