@@ -9,9 +9,21 @@
 package testweights
 
 // GoDistTest returns a weight for the test by name.
-func GoDistTest(name string) int {
-	if weight, ok := goDistTestWeights[name]; ok {
-		return weight
+func GoDistTest(name string, longtest, race bool) int {
+	var weight int
+	var ok bool
+	switch {
+	case !longtest && !race:
+		weight, ok = goDistTestWeights[name]
+	case longtest && !race:
+		weight, ok = goDistTestLongtestWeights[name]
+	case !longtest && race:
+		weight, ok = goDistTestRaceWeights[name]
+	case longtest && race:
+		weight, ok = goDistTestLongtestRaceWeights[name]
 	}
-	return 1
+	if !ok {
+		return 1
+	}
+	return weight
 }
