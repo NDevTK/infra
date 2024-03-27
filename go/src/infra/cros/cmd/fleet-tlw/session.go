@@ -196,7 +196,7 @@ func (s *sessionServer) UpdateSession(ctx context.Context, req *access.UpdateSes
 			// later.
 			updateTimer = true
 		default:
-			badPaths = append(badPaths)
+			badPaths = append(badPaths, p)
 		}
 	}
 	if len(badPaths) > 0 {
