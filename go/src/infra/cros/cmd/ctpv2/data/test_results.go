@@ -6,6 +6,7 @@ package data
 
 import (
 	"fmt"
+	"strings"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
@@ -52,7 +53,7 @@ type BotParamsRejectedError struct {
 }
 
 func (e *BotParamsRejectedError) Error() string {
-	return fmt.Sprintf("bot params rejected for: %s", e.Key)
+	return fmt.Sprintf("rejected params: %s", strings.Join(e.RejectedDims, ", "))
 }
 
 type EnumerationError struct {

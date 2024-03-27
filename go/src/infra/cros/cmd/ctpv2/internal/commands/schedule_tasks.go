@@ -328,6 +328,7 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum}
 
 	if buildReq.err != nil {
+		err = buildReq.err
 		return setTopLevelError(ctx, step, result, resultsChan, buildReq.err)
 	}
 	req := buildReq.ScheduleBuildRequest
@@ -351,14 +352,16 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 
 	scheduledBuild, err := scheduler.ScheduleRequest(ctx, req, step)
 	if err != nil {
-		return setTopLevelError(ctx, step, result, resultsChan, fmt.Errorf("error while scheduling req: %s", err))
+		err = fmt.Errorf("error while scheduling req: %s", err)
+		return setTopLevelError(ctx, step, result, resultsChan, err)
 	}
 
 	if scheduledBuild != nil && scheduledBuild.GetId() != 0 {
 		result.BuildUrl = common.BBUrl(builderId, scheduledBuild.GetId())
 		step.SetSummaryMarkdown(fmt.Sprintf("[latest attempt](%s)", common.BBUrl(builderId, scheduledBuild.GetId())))
 	} else {
-		return setTopLevelError(ctx, step, result, resultsChan, fmt.Errorf("no bbid found from scheduler"))
+		err = fmt.Errorf("no bbid found from scheduler")
+		return setTopLevelError(ctx, step, result, resultsChan, err)
 	}
 
 	// Monitor here
@@ -399,7 +402,8 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 
 		trResult, err := extractResult(buildInfo)
 		if err != nil {
-			return setTopLevelError(ctx, step, result, resultsChan, fmt.Errorf("error while extracting results from test_runner build %d: %s", buildInfo.Id, err))
+			err = fmt.Errorf("error while extracting results from test_runner build %d: %s", buildInfo.Id, err)
+			return setTopLevelError(ctx, step, result, resultsChan, err)
 		} else {
 			result.Results = trResult
 		}
