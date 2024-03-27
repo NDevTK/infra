@@ -109,8 +109,12 @@ func (cmd *UpdateDutStateCmd) updateDevice(ctx context.Context, deviceId string)
 			break
 		}
 	}
-	if !triedToUpdateState && cmd.TestResponses != nil && len(cmd.TestResponses.GetTestCaseResults()) > 0 && common.IsAnyTestFailure(cmd.TestResponses.GetTestCaseResults()) {
-		triedToUpdateState = updateDutState(ctx, device.GetDut().GetId().GetValue(), dutstate.NeedsRepair, "test(s)")
+	if !triedToUpdateState {
+		if cmd.TestResponses == nil || cmd.TestResponses.TestCaseResults == nil || len(cmd.TestResponses.TestCaseResults) == 0 {
+			triedToUpdateState = updateDutState(ctx, device.GetDut().GetId().GetValue(), dutstate.NeedsRepair, "failed before running test(s)")
+		} else if common.IsAnyTestFailure(cmd.TestResponses.TestCaseResults) {
+			triedToUpdateState = updateDutState(ctx, device.GetDut().GetId().GetValue(), dutstate.NeedsRepair, "test(s)")
+		}
 	}
 
 	if triedToUpdateState {
