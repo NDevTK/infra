@@ -1946,7 +1946,9 @@ Task Link: https://chromeos-swarming.appspot.com/`), nil
 }
 
 func TestListTasksShouldSuccess(t *testing.T) {
-	t.Parallel()
+	// Reopen the tree! Make this test non-parallel.
+	//
+	// t.Parallel()
 	ctx := context.Background()
 	ctl := gomock.NewController(t)
 	defer ctl.Finish()
