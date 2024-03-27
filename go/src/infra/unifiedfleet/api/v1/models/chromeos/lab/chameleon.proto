@@ -10,10 +10,12 @@ option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 
-// Next Tag: 8
+// Next Tag: 9
 message Chameleon {
   reserved 1;
   repeated ChameleonType chameleon_peripherals = 3;
+  repeated ChameleonConnectionType chameleon_connection_types = 8;
+
   // Indicate if there's audio_board in the chameleon.
   bool audio_board = 2;
 
@@ -55,4 +57,12 @@ enum ChameleonType {
   CHAMELEON_TYPE_V2 = 9;
   CHAMELEON_TYPE_V3 = 10;
   CHAMELEON_TYPE_RPI = 11;
+}
+
+enum ChameleonConnectionType {
+  CHAMELEON_CONNECTION_TYPE_INVALID = 0;
+  CHAMELEON_CONNECTION_TYPE_AUDIOJACK = 1;
+  CHAMELEON_CONNECTION_TYPE_USB = 2;
+  CHAMELEON_CONNECTION_TYPE_HDMI = 3;
+  CHAMELEON_CONNECTION_TYPE_DP = 4;
 }
