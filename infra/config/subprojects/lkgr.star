@@ -20,6 +20,12 @@ luci.builder(
     },
     execution_timeout = 4 * time.hour,
     schedule = "with 3000s interval",
+    properties = {
+        "project": "chromium",
+        "repo": "https://chromium.googlesource.com/chromium/src",
+        "ref": "refs/heads/lkgr",
+        "lkgr_status_gs_path": "chromium-v8/chromium-lkgr-status",
+    },
 )
 
 luci.list_view_entry(
