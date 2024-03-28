@@ -203,7 +203,8 @@ func buildHwDef(hw *testapi.LegacyHW) *testapi.SwarmingDefinition {
 	}}
 	dut.DutType = &labapi.Dut_Chromeos{Chromeos: Cros}
 
-	return &testapi.SwarmingDefinition{DutInfo: dut, Variant: hw.GetVariant()}
+	return &testapi.SwarmingDefinition{DutInfo: dut, Variant: hw.GetVariant(),
+		SwarmingLabels: hw.GetSwarmingDimensions()}
 }
 
 func NewTranslateRequestCmd() *TranslateRequestCmd {

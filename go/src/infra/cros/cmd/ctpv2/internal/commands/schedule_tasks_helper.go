@@ -265,7 +265,7 @@ func createFreeformDims(TRRequesthwDef *testapi.SwarmingDefinition) []string {
 
 func formatLabel(label string) string {
 
-	if strings.HasPrefix(label, "label") {
+	if strings.HasPrefix(label, "label") || strings.HasPrefix(label, "dut_name") {
 		return label
 	} else {
 		return fmt.Sprintf("label-%s", label)
