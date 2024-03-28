@@ -72,27 +72,6 @@ var GenericPublish_GenericPublishExecutor = &common_configs.CommandExecutorPaire
 var GenericService_GenericServiceExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericServiceCmdType, ExecutorType: executors.GenericServiceExecutorType}
 var ParseDutTopology_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ParseDutTopologyCmdType, ExecutorType: common_executors.NoExecutorType}
 
-var RequiredCmdExecPairMap = map[*common_configs.CommandExecutorPairedConfig]*common_configs.CommandExecutorPairedConfig{}
-
-func GetCmdExecPair(pair_base *common_configs.CommandExecutorPairedConfig, required bool) *common_configs.CommandExecutorPairedConfig {
-	if !required {
-		return pair_base
-	}
-	if pair_required, ok := RequiredCmdExecPairMap[pair_base]; ok {
-		return pair_required
-	}
-
-	pair_required := &common_configs.CommandExecutorPairedConfig{
-		CommandType:  pair_base.CommandType,
-		ExecutorType: pair_base.ExecutorType,
-	}
-	pair_required.SetRequired(true)
-
-	RequiredCmdExecPairMap[pair_base] = pair_required
-
-	return pair_required
-}
-
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *api.CrosTestRunnerDynamicRequest, isAndroidProvisionRequired bool) *common_configs.Configs {
 	platform := common.GetBotProvider()
@@ -193,29 +172,29 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 		// Gcs publish commands
 		if !cftHwStepsConfig.GetSkipGcsPublish() {
 			mainConfigs = append(mainConfigs,
-				GetCmdExecPair(GcsPublishStart_CrosGcsPublishExecutor, true),
-				GetCmdExecPair(GcsPublishUpload_CrosGcsPublishExecutor, true))
+				GcsPublishStart_CrosGcsPublishExecutor.WithRequired(true),
+				GcsPublishUpload_CrosGcsPublishExecutor.WithRequired(true))
 		}
 
 		// Cpcon publish commands
 		if cftHwStepsConfig.GetRunCpconPublish() {
 			mainConfigs = append(mainConfigs,
-				GetCmdExecPair(CpconPublishStart_CrosCpconPublishExecutor, true),
-				GetCmdExecPair(CpconPublishUpload_CrosCpconPublishExecutor, true))
+				CpconPublishStart_CrosCpconPublishExecutor.WithRequired(true),
+				CpconPublishUpload_CrosCpconPublishExecutor.WithRequired(true))
 		}
 	}
 
 	// Stop CTR and result processing commands
 	if platform == common.BotProviderGce {
 		mainConfigs = append(mainConfigs,
-			GetCmdExecPair(VMProvisionRelease_CrosVMProvisionExecutor, true),
-			GetCmdExecPair(CtrStop_CtrExecutor, true),
-			GetCmdExecPair(ProcessResults_NoExecutor, true))
+			VMProvisionRelease_CrosVMProvisionExecutor.WithRequired(true),
+			CtrStop_CtrExecutor.WithRequired(true),
+			ProcessResults_NoExecutor.WithRequired(true))
 	} else {
 		mainConfigs = append(mainConfigs,
-			GetCmdExecPair(CtrStop_CtrExecutor, true),
-			GetCmdExecPair(UpdateDutState_NoExecutor, true),
-			GetCmdExecPair(ProcessResults_NoExecutor, true))
+			CtrStop_CtrExecutor.WithRequired(true),
+			UpdateDutState_NoExecutor.WithRequired(true),
+			ProcessResults_NoExecutor.WithRequired(true))
 	}
 
 	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: []*common_configs.CommandExecutorPairedConfig{}}
@@ -266,10 +245,10 @@ func hwConfigsForPlatformV2(cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *ap
 
 	// Stop CTR and result processing commands
 	mainConfigs = append(mainConfigs,
-		GetCmdExecPair(ContainerCloseLogs_ContainerExecutor, true),
-		GetCmdExecPair(CtrStop_CtrExecutor, true),
-		GetCmdExecPair(UpdateDutState_NoExecutor, true),
-		GetCmdExecPair(ProcessResults_NoExecutor, true))
+		ContainerCloseLogs_ContainerExecutor.WithRequired(true),
+		CtrStop_CtrExecutor.WithRequired(true),
+		UpdateDutState_NoExecutor.WithRequired(true),
+		ProcessResults_NoExecutor.WithRequired(true))
 
 	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }
@@ -353,24 +332,24 @@ func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest) *common_conf
 	for _, task := range inputV2.GetOrderedTasks() {
 		for range task.GetOrderedContainerRequests() {
 			mainConfigs = append(mainConfigs,
-				GetCmdExecPair(ContainerStart_ContainerExecutor, task.Required))
+				ContainerStart_ContainerExecutor.WithRequired(task.Required))
 		}
 		switch task.Task.(type) {
 		case *api.CrosTestRunnerDynamicRequest_Task_Provision:
 			mainConfigs = append(mainConfigs,
-				GetCmdExecPair(GenericProvision_GenericProvisionExecutor, task.Required))
+				GenericProvision_GenericProvisionExecutor.WithRequired(task.Required))
 		case *api.CrosTestRunnerDynamicRequest_Task_PreTest:
 		case *api.CrosTestRunnerDynamicRequest_Task_Test:
 			mainConfigs = append(mainConfigs,
-				GetCmdExecPair(GenericTests_GenericTestsExecutor, task.Required))
+				GenericTests_GenericTestsExecutor.WithRequired(task.Required))
 		case *api.CrosTestRunnerDynamicRequest_Task_PostTest:
 		case *api.CrosTestRunnerDynamicRequest_Task_Publish:
 			mainConfigs = append(mainConfigs,
-				GetCmdExecPair(GcloudAuth_CtrExecutor, task.Required),
-				GetCmdExecPair(GenericPublish_GenericPublishExecutor, task.Required))
+				GcloudAuth_CtrExecutor.WithRequired(task.Required),
+				GenericPublish_GenericPublishExecutor.WithRequired(task.Required))
 		case *api.CrosTestRunnerDynamicRequest_Task_Generic:
 			mainConfigs = append(mainConfigs,
-				GetCmdExecPair(GenericService_GenericServiceExecutor, task.Required))
+				GenericService_GenericServiceExecutor.WithRequired(task.Required))
 		default:
 		}
 	}

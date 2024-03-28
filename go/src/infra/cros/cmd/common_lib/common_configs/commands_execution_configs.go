@@ -37,9 +37,13 @@ func (cepc *CommandExecutorPairedConfig) IsRequired() bool {
 	return cepc.required
 }
 
-// SetRequired sets the commands requirement status.
-func (cepc *CommandExecutorPairedConfig) SetRequired(required bool) {
-	cepc.required = required
+// WithRequired returns back the CommandExecutorPairedConfig with required set.
+func (cepc *CommandExecutorPairedConfig) WithRequired(required bool) *CommandExecutorPairedConfig {
+	return &CommandExecutorPairedConfig{
+		CommandType:  cepc.CommandType,
+		ExecutorType: cepc.ExecutorType,
+		required:     required,
+	}
 }
 
 // Config types

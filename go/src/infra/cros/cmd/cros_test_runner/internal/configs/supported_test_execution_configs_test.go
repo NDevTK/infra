@@ -16,7 +16,6 @@ import (
 )
 
 func TestGenerateHwConfigs(t *testing.T) {
-	t.Parallel()
 	Convey("GenerateHwConfigs", t, func() {
 		ctx := context.Background()
 		hwConfigs := GenerateHwConfigs(ctx, nil, nil, false)
@@ -53,21 +52,20 @@ func TestGenerateHwConfigs(t *testing.T) {
 	Convey("hwConfigsForPlatform for VM", t, func() {
 		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderGce, false)
 
-		So(hwConfigs.MainConfigs, ShouldContain, GetCmdExecPair(VMProvisionRelease_CrosVMProvisionExecutor, true))
+		So(hwConfigs.MainConfigs, ShouldContain, VMProvisionRelease_CrosVMProvisionExecutor.WithRequired(true))
 		So(hwConfigs.MainConfigs, ShouldNotContain, DutServerStart_CrosDutExecutor)
-		So(hwConfigs.MainConfigs, ShouldNotContain, GetCmdExecPair(UpdateDutState_NoExecutor, true))
+		So(hwConfigs.MainConfigs, ShouldNotContain, UpdateDutState_NoExecutor.WithRequired(true))
 	})
 
 	Convey("hwConfigsForPlatform for HW", t, func() {
 		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderDrone, false)
 
 		So(hwConfigs.MainConfigs, ShouldContain, DutServerStart_CrosDutExecutor)
-		So(hwConfigs.MainConfigs, ShouldContain, GetCmdExecPair(UpdateDutState_NoExecutor, true))
+		So(hwConfigs.MainConfigs, ShouldContain, UpdateDutState_NoExecutor.WithRequired(true))
 	})
 }
 
 func TestGeneratePreLocalConfigs(t *testing.T) {
-	t.Parallel()
 	Convey("GeneratePreLocalConfigs", t, func() {
 		ctx := context.Background()
 		preLocalConfigs := GeneratePreLocalConfigs(ctx)
@@ -79,7 +77,6 @@ func TestGeneratePreLocalConfigs(t *testing.T) {
 }
 
 func TestGenerateLocalConfigs(t *testing.T) {
-	t.Parallel()
 	Convey("GenerateLocalConfigs", t, func() {
 		ctx := context.Background()
 		localConfigs := GenerateLocalConfigs(ctx, &data.LocalTestStateKeeper{Args: &data.LocalArgs{}})

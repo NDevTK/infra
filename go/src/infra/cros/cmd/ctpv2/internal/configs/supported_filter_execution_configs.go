@@ -33,7 +33,6 @@ var ScheduleTasks_NoExecutor = &common_configs.CommandExecutorPairedConfig{Comma
 // GenerateFilterConfigs generates cmd execution for ctpv2.
 func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_configs.Configs {
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
-	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
 
 	// Translate request
 	mainConfigs = append(mainConfigs,
@@ -53,7 +52,7 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_config
 	}
 
 	mainConfigs = append(mainConfigs,
-		ContainerCloseLogs_ContainerExecutor)
+		ContainerCloseLogs_ContainerExecutor.WithRequired(true))
 
 	// Middleout
 	mainConfigs = append(mainConfigs, MiddleOut_NoExecutor)
@@ -61,10 +60,7 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_config
 	// Schedule tasks
 	mainConfigs = append(mainConfigs, ScheduleTasks_NoExecutor)
 
-	cleanupConfigs = append(cleanupConfigs,
-		ContainerCloseLogs_ContainerExecutor)
-
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: []*common_configs.CommandExecutorPairedConfig{}}
 }
 
 // GeneratePreConfigs generates pre cmd execution for ctpv2.
@@ -88,15 +84,11 @@ func GeneratePreConfigs(ctx context.Context) *common_configs.Configs {
 // GeneratePostConfigs generates post cmd execution for ctpv2.
 func GeneratePostConfigs(ctx context.Context) *common_configs.Configs {
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
-	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
 
 	// Stop Ctr
 	mainConfigs = append(mainConfigs,
 		Summarize_NoExecutor,
-		CtrStop_CtrExecutor)
+		CtrStop_CtrExecutor.WithRequired(true))
 
-	cleanupConfigs = append(cleanupConfigs,
-		CtrStop_CtrExecutor)
-
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: []*common_configs.CommandExecutorPairedConfig{}}
 }
