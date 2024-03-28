@@ -105,6 +105,24 @@ func New(ctx context.Context, fname string, flags map[string]string, repos map[s
 	}, nil
 }
 
+// HandlerError is error of handler.
+type HandlerError struct {
+	entry string
+	err   *starlark.EvalError
+}
+
+func (e HandlerError) Error() string {
+	return fmt.Sprintf("failed to run %s: %v", e.entry, e.err)
+}
+
+func (e HandlerError) Backtrace() string {
+	return e.err.Backtrace()
+}
+
+func (e HandlerError) Unwrap() error {
+	return e.err
+}
+
 // Init initializes config by running `init`.
 func (cfg *Config) Init(ctx context.Context, hashFS *hashfs.HashFS, buildPath *build.Path) (string, error) {
 	fun, ok := cfg.globals[configEntryPoint]
@@ -135,6 +153,7 @@ func (cfg *Config) Init(ctx context.Context, hashFS *hashfs.HashFS, buildPath *b
 		var eerr *starlark.EvalError
 		if errors.As(err, &eerr) {
 			clog.Warningf(ctx, "stacktrace:\n%s", eerr.Backtrace())
+			return "", HandlerError{entry: configEntryPoint, err: eerr}
 		}
 		return "", fmt.Errorf("failed to run %s: %w", configEntryPoint, err)
 	}
@@ -232,6 +251,8 @@ func (cfg *Config) Handle(ctx context.Context, handler string, bpath *build.Path
 		var eerr *starlark.EvalError
 		if errors.As(err, &eerr) {
 			clog.Warningf(ctx, "stacktrace:\n%s", eerr.Backtrace())
+			return HandlerError{entry: handler, err: eerr}
+
 		}
 		return fmt.Errorf("failed to run %s: %w", handler, err)
 	}
