@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"strings"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
@@ -71,6 +72,11 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 			volumes = append(volumes, fmt.Sprintf("%s:%s", dockerSock, dockerSock))
 		}
 	}
+	// Add cloudbots related options
+	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
+		cloudbotsOptions := cloudbotsAdditionalOptionsCrosTest()
+		volumes = append(volumes, cloudbotsOptions.Volume...)
+	}
 	if _, err := os.Stat(HostServiceAcctCredsDir); err == nil {
 		volumes = append(volumes, fmt.Sprintf("%s:%s", HostServiceAcctCredsDir, HostServiceAcctCredsDir))
 	}
@@ -118,4 +124,22 @@ func (p *crosTestProcessor) createDir(dirPath string) {
 		log.Printf("warning: cros-test template processor received error when creating directory %s: %v", dirPath, err)
 	}
 	log.Printf("cros-test template processor has created directory %s", dirPath)
+}
+
+func cloudbotsAdditionalOptionsCrosTest() *api.StartContainerRequest_Options {
+	o := &api.StartContainerRequest_Options{
+		Volume: []string{},
+	}
+	// cloudbots host files
+	if v, found := os.LookupEnv("CLOUDBOTS_CA_CERTIFICATE"); found {
+		o.Volume = append(o.Volume, fmt.Sprintf("%s:%s", v, v))
+	}
+	hostSSHConfig := "/home/chrome-bot/.ssh/config"
+	cntSSHConfig := "/home/chromeos-test/.ssh/config"
+	if _, err := os.Stat(hostSSHConfig); err != nil {
+		log.Printf("warning: cloudbots .ssh/config file do not exist")
+	} else {
+		o.Volume = append(o.Volume, "-v", fmt.Sprintf("%s:%s", hostSSHConfig, cntSSHConfig))
+	}
+	return o
 }
