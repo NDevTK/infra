@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"go.chromium.org/luci/lucictx"
@@ -180,6 +181,9 @@ func toolsRoot(ctx context.Context) string {
 }
 
 func toolPath(ctx context.Context, tool string) string {
+	if runtime.GOOS == "windows" {
+		tool += ".exe"
+	}
 	return filepath.Join(toolsRoot(ctx), "bin", tool)
 }
 
