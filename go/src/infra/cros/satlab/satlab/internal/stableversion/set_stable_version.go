@@ -41,6 +41,11 @@ const allowSetModelBoard = false
 var SetStableVersionCmd = &subcommands.Command{
 	UsageLine: `set-stable-version`,
 	ShortDesc: `Set the stable version using {board, model} or {hostname}.`,
+	LongDesc: `Set the stable version of ChromeOS, Firmware and Firmware Image (aka faftVersion).
+	Here we have two strategies.
+	The first is for partners when the user use a {board, model}.
+	The partner user must also specify all of the {os, fw, fwImage} or none of them. Then we set stable version based on the live OS version.
+	Second is for Googler when user uses a {hostname}. The Google user must also specify {os, fw, fwImage} xor {os, flex}.`,
 	CommandRun: func() subcommands.CommandRun {
 		r := &setStableVersionRun{}
 
