@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/botsregulator/internal/clients"
 	"infra/cros/botsregulator/internal/provider"
@@ -32,12 +33,12 @@ type regulator struct {
 }
 
 func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, error) {
-	fmt.Printf("creating regulator with flags: %v\n", opts)
-	uc, err := clients.NewUFSClient(ctx, opts.ufs, opts.namespace)
+	logging.Infof(ctx, "creating regulator with flags: %v\n", opts)
+	uc, err := clients.NewUFSClient(ctx, opts.UFS, opts.Namespace)
 	if err != nil {
 		return nil, err
 	}
-	bc, err := provider.NewProviderFromEnv(ctx, opts.bpi)
+	bc, err := provider.NewProviderFromEnv(ctx, opts.BPI)
 	if err != nil {
 		return nil, err
 	}
@@ -50,10 +51,10 @@ func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, erro
 
 // FetchLSEsByHive fetches machineLSEs from UFS by hive.
 func (r *regulator) FetchLSEsByHive(ctx context.Context) ([]*ufspb.MachineLSE, error) {
-	ctx = clients.SetUFSNamespace(ctx, r.opts.namespace)
+	ctx = clients.SetUFSNamespace(ctx, r.opts.Namespace)
 	// TODO(b/328443703): Handle pagination. Current max value: 1000.
 	res, err := r.ufsClient.ListMachineLSEs(ctx, &ufsAPI.ListMachineLSEsRequest{
-		Filter: fmt.Sprintf("hive=%s", r.opts.hive),
+		Filter: fmt.Sprintf("hive=%s", r.opts.Hive),
 		// KeysOnly returns the entities' ID only. It is faster than a full query.
 		KeysOnly: true,
 		PageSize: 1000,
@@ -66,7 +67,7 @@ func (r *regulator) FetchLSEsByHive(ctx context.Context) ([]*ufspb.MachineLSE, e
 
 // FetchAllSchedulingUnits fetches ALL Scheduling Units from UFS.
 func (r *regulator) FetchAllSchedulingUnits(ctx context.Context) ([]*ufspb.SchedulingUnit, error) {
-	ctx = clients.SetUFSNamespace(ctx, r.opts.namespace)
+	ctx = clients.SetUFSNamespace(ctx, r.opts.Namespace)
 	// TODO(b/328443703): Handle pagination. Current max value: 1000.
 	res, err := r.ufsClient.ListSchedulingUnits(ctx, &ufsAPI.ListSchedulingUnitsRequest{
 		PageSize: 1000,
@@ -121,5 +122,5 @@ func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, lses []*ufspb.
 
 // UpdateConfig is a wrapper around the current provider UpdateConfig method.
 func (r *regulator) UpdateConfig(ctx context.Context, hns []string) error {
-	return r.bpiClient.UpdateConfig(ctx, hns, r.opts.cfID)
+	return r.bpiClient.UpdateConfig(ctx, hns, r.opts.CfID)
 }
