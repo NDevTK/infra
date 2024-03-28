@@ -122,7 +122,7 @@ deps = {
     'packages': [
       {
         'package': 'infra/3pp/tools/protoc/${{os}}-${{arch=amd64}}',
-        'version': 'version:2@21.7',
+        'version': 'version:2@26.1',
       },
 
       {
