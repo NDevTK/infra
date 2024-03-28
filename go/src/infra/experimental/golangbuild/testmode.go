@@ -175,9 +175,9 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 
 	// Determine which tests to run.
 	if _, ok := spec.experiments["golang.shard_by_weight"]; ok {
-		tests = shardTestsByWeight(tests, shard, spec.inputs.LongTest, spec.inputs.RaceMode)
+		tests = shardTestsByWeight(tests, shard)
 	} else {
-		tests = shardTestsByHash(tests, shard, spec.inputs.LongTest, spec.inputs.RaceMode)
+		tests = shardTestsByHash(tests, shard)
 	}
 
 	// Log the tests we're going to run.
@@ -194,7 +194,7 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 // shardTestsByHash filters tests down based on shard. The algorithm it
 // uses to do so splits tests across shards by hashing the names and using
 // the hash to index into the set of shards.
-func shardTestsByHash(tests []string, shard testShard, _, _ bool) []string {
+func shardTestsByHash(tests []string, shard testShard) []string {
 	var filtered []string
 	for _, name := range tests {
 		if shard.shouldRunTest(name) {
@@ -210,12 +210,12 @@ func shardTestsByHash(tests []string, shard testShard, _, _ bool) []string {
 // It then takes the short tests and shards them by hash. This is intended
 // to strike a balance between sharding reproducibility and build latency by
 // sharding work more evenly.
-func shardTestsByWeight(tests []string, shard testShard, longtest, race bool) []string {
+func shardTestsByWeight(tests []string, shard testShard) []string {
 	var shortTests []string
 	var longTests []string
 	longWeight := 0
 	for _, name := range tests {
-		if weight := testweights.GoDistTest(name, longtest, race); weight > 1 {
+		if weight := testweights.GoDistTest(name); weight > 1 {
 			longWeight += weight
 			longTests = append(longTests, name)
 		} else {
@@ -227,7 +227,7 @@ func shardTestsByWeight(tests []string, shard testShard, longtest, race bool) []
 	var shardTotal int
 	var shardBucket []string
 	for _, name := range longTests {
-		shardTotal += testweights.GoDistTest(name, longtest, race)
+		shardTotal += testweights.GoDistTest(name)
 		if s == int(shard.shardID) {
 			shardBucket = append(shardBucket, name)
 		}
@@ -236,7 +236,7 @@ func shardTestsByWeight(tests []string, shard testShard, longtest, race bool) []
 			shardTotal = 0
 		}
 	}
-	return append(shardBucket, shardTestsByHash(shortTests, shard, longtest, race)...)
+	return append(shardBucket, shardTestsByHash(shortTests, shard)...)
 }
 
 // fetchSubrepoAndRunTests fetches a target golang.org/x repository,

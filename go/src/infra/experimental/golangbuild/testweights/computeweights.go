@@ -10,10 +10,10 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"go/format"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"slices"
 	"sync"
@@ -29,22 +29,12 @@ func main() {
 	if runtime.GOMAXPROCS(-1) < 16 {
 		log.Fatal("please run on a machine with at least 16 cores")
 	}
-	shards := int(runtime.GOMAXPROCS(-1) / 16)
+	shards := runtime.GOMAXPROCS(-1) / 16
 
-	for _, longtest := range []bool{false, true} {
-		for _, race := range []bool{false, true} {
-			log.Printf("Generating weights for longtest=%t race=%t", longtest, race)
-			if err := generateWeights(shards, longtest, race); err != nil {
-				log.Fatal(err)
-			}
-		}
-	}
-}
-
-func generateWeights(shards int, longtest, race bool) error {
-	tests, err := goDistTestList(longtest, race)
+	// Run `go tool dist test -list` to list all tests.
+	tests, err := goDistTestList(false)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 
 	// Measure test run times.
@@ -57,7 +47,36 @@ func generateWeights(shards int, longtest, race bool) error {
 		testName := testName
 		eg.Go(func() error {
 			// Run the test.
-			dt, err := goDistTestTime(testName, longtest, race)
+			dt, err := goDistTestTime(testName, false)
+			if err != nil {
+				fmt.Printf("FAIL\t%s\t(%v)\n", testName, err)
+				return err
+			}
+			fmt.Printf("ok\t%s\t%.3fs\n", testName, dt.Seconds())
+
+			// Store the result.
+			testTimesMu.Lock()
+			defer testTimesMu.Unlock()
+			testTimes[testName] = dt
+
+			return nil
+		})
+	}
+
+	// Do the same for any race-mode exclusive tests.
+	raceTests, err := goDistTestList(true)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, testName := range raceTests {
+		testName := testName
+		if _, ok := testTimes[testName]; ok {
+			// Don't measure tests we've already measured again.
+			continue
+		}
+		eg.Go(func() error {
+			// Run the test.
+			dt, err := goDistTestTime(testName, true)
 			if err != nil {
 				fmt.Printf("FAIL\t%s\t(%v)\n", testName, err)
 				return err
@@ -75,32 +94,27 @@ func generateWeights(shards int, longtest, race bool) error {
 
 	// Wait for all tests to complete.
 	if err := eg.Wait(); err != nil {
-		return err
+		log.Fatal(err)
 	}
 
 	// Generate a Go file.
-	contents := generateWeightsFile(testTimes, longtest, race)
+	contents, err := generateWeightsFile(testTimes)
+	if err != nil {
+		log.Fatal(err)
+	}
 	// Format it.
 	formattedContents, err := format.Source(contents)
 	if err != nil {
-		return fmt.Errorf("formatting generated file: %v: contents:\n%s", err, contents)
+		log.Printf("generated file:\n%s", contents)
+		log.Fatalf("formatting generated file: %v", err)
 	}
 	// Write it.
-	filename := "raw"
-	if longtest {
-		filename += "longtest"
+	if err := os.WriteFile("raw.go", formattedContents, 0o644); err != nil {
+		log.Fatal(err)
 	}
-	if race {
-		filename += "race"
-	}
-	filename += ".go"
-	if err := os.WriteFile(filename, formattedContents, 0o644); err != nil {
-		return err
-	}
-	return nil
 }
 
-func generateWeightsFile(testTimes map[string]time.Duration, longtest, race bool) []byte {
+func generateWeightsFile(testTimes map[string]time.Duration) []byte {
 	var buf bytes.Buffer
 
 	// Get a sorted list of all the tests.
@@ -110,17 +124,8 @@ func generateWeightsFile(testTimes map[string]time.Duration, longtest, race bool
 	}
 	slices.Sort(allTests)
 
-	varName := "goDistTest"
-	if longtest {
-		varName += "Longtest"
-	}
-	if race {
-		varName += "Race"
-	}
-	varName += "Weights"
-
 	fmt.Fprintln(&buf, header)
-	fmt.Fprintf(&buf, "var %s = map[string]int{\n", varName)
+	fmt.Fprintln(&buf, "var goDistTestWeights = map[string]int{")
 	for _, testName := range allTests {
 		weight := int(testTimes[testName].Seconds())
 		if weight <= 1 {
@@ -142,15 +147,13 @@ const header = `// Copyright 2024 The Chromium Authors
 package testweights
 `
 
-func goDistTestList(longtest, race bool) ([]string, error) {
+func goDistTestList(race bool) ([]string, error) {
 	testListCmd := exec.Command("go", "tool", "dist", "test", "-list")
-	testListCmd.Env = append(os.Environ(), fmt.Sprintf("GO_BUILDER_NAME=%s", goBuilderName(longtest, race)))
-	if longtest {
-		testListCmd.Env = append(testListCmd.Env, "GO_TEST_SHORT=0")
-	}
 	if race {
 		testListCmd.Args = append(testListCmd.Args, "-race")
 	}
+	// Always run in longtest mode to make sure all tests are visible.
+	testListCmd.Env = append(os.Environ(), "GO_TEST_SHORT=0")
 
 	// Run the command.
 	output, err := testListCmd.Output()
@@ -167,34 +170,25 @@ func goDistTestList(longtest, race bool) ([]string, error) {
 	return tests, nil
 }
 
-func goDistTestTime(testName string, longtest, race bool) (time.Duration, error) {
+func goDistTestTime(testName string, race bool) (time.Duration, error) {
 	// Try to run three times, in case of flakiness.
 	var dt time.Duration
 	var testRunErr error
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 3; i++ {
 		testRunCmd := exec.Command("go", "tool", "dist", "test")
 		if race {
 			testRunCmd.Args = append(testRunCmd.Args, "-race")
 		}
 		testRunCmd.Args = append(testRunCmd.Args, testName)
 
-		// Always run with GOMAXPROCS=16. This is important for two reasons.
+		// Always run in longtest mode to make sure all tests are visible.
+		// Also, always run with GOMAXPROCS=16. This is important for two reasons.
 		// One, there are some tests that are only enabled if GOMAXPROCS is high
 		// enough, so we don't want to miss them.
 		// And two, most of our builder machines have 16 cores as of this writing,
 		// so this will give slightly more accurate timings. It will still be slightly
 		// wrong for other platforms, but we don't generally shard on those platforms.
-		//
-		// Set the test timeout scale high. We don't care that much, we just don't
-		// want spurious failures here.
-		testRunCmd.Env = append(os.Environ(),
-			"GOMAXPROCS=16",
-			"GO_TEST_TIMEOUT_SCALE=10",
-			fmt.Sprintf("GO_BUILDER_NAME=%s", goBuilderName(longtest, race)),
-		)
-		if longtest {
-			testRunCmd.Env = append(testRunCmd.Env, "GO_TEST_SHORT=0")
-		}
+		testRunCmd.Env = append(os.Environ(), "GOMAXPROCS=16", "GO_TEST_SHORT=0")
 
 		// Run the command, and time it.
 		start := time.Now()
@@ -205,16 +199,5 @@ func goDistTestTime(testName string, longtest, race bool) (time.Duration, error)
 		dt = time.Since(start)
 		break
 	}
-	return dt, testRunErr
-}
-
-func goBuilderName(longtest, race bool) string {
-	name := fmt.Sprintf("gotip-%s-%s", runtime.GOOS, runtime.GOARCH)
-	if longtest {
-		name += "-longtest"
-	}
-	if race {
-		name += "-race"
-	}
-	return name
+	return dt, testRunError
 }

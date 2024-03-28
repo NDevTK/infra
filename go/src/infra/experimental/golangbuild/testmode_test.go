@@ -18,27 +18,23 @@ func TestShardByWeight(t *testing.T) {
 	testShardFunc(t, shardTestsByWeight)
 }
 
-type shardFunc func(tests []string, shard testShard, longtest, race bool) []string
+type shardFunc func(tests []string, shard testShard) []string
 
 func testShardFunc(t *testing.T, f shardFunc) {
-	for _, longtest := range []bool{false, true} {
-		for _, race := range []bool{false, true} {
-			for _, n := range []int{1, 2, 3, 4, 5, 10, 12} {
-				t.Run(fmt.Sprintf("Shards=%d", n), func(t *testing.T) {
-					testShardFuncByN(t, f, n, longtest, race)
-				})
-			}
-		}
+	for _, n := range []int{1, 2, 3, 4, 5, 10, 12} {
+		t.Run(fmt.Sprintf("Shards=%d", n), func(t *testing.T) {
+			testShardFuncByN(t, f, n)
+		})
 	}
 }
 
-func testShardFuncByN(t *testing.T, f shardFunc, n int, longtest, race bool) {
+func testShardFuncByN(t *testing.T, f shardFunc, n int) {
 	allTests := testNames()
 
 	// Shard all the tests.
 	shardTests := make([][]string, n)
 	for i := 0; i < n; i++ {
-		shardTests[i] = f(allTests, testShard{shardID: uint32(i), nShards: uint32(n)}, longtest, race)
+		shardTests[i] = f(allTests, testShard{shardID: uint32(i), nShards: uint32(n)})
 	}
 
 	// Concatenate and sort the tests.
