@@ -118,7 +118,6 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 		cftHwStepsConfig.SkipStartingDutService = false
 	}
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
-	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
 
 	// Input validation and parse env commands
 	mainConfigs = append(mainConfigs,
@@ -194,46 +193,32 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 		// Gcs publish commands
 		if !cftHwStepsConfig.GetSkipGcsPublish() {
 			mainConfigs = append(mainConfigs,
-				GcsPublishStart_CrosGcsPublishExecutor,
-				GcsPublishUpload_CrosGcsPublishExecutor)
-			cleanupConfigs = append(cleanupConfigs,
-				GcsPublishStart_CrosGcsPublishExecutor,
-				GcsPublishUpload_CrosGcsPublishExecutor)
+				GetCmdExecPair(GcsPublishStart_CrosGcsPublishExecutor, true),
+				GetCmdExecPair(GcsPublishUpload_CrosGcsPublishExecutor, true))
 		}
 
 		// Cpcon publish commands
 		if cftHwStepsConfig.GetRunCpconPublish() {
 			mainConfigs = append(mainConfigs,
-				CpconPublishStart_CrosCpconPublishExecutor,
-				CpconPublishUpload_CrosCpconPublishExecutor)
-			cleanupConfigs = append(cleanupConfigs,
-				CpconPublishStart_CrosCpconPublishExecutor,
-				CpconPublishUpload_CrosCpconPublishExecutor)
+				GetCmdExecPair(CpconPublishStart_CrosCpconPublishExecutor, true),
+				GetCmdExecPair(CpconPublishUpload_CrosCpconPublishExecutor, true))
 		}
 	}
 
 	// Stop CTR and result processing commands
 	if platform == common.BotProviderGce {
 		mainConfigs = append(mainConfigs,
-			VMProvisionRelease_CrosVMProvisionExecutor,
-			CtrStop_CtrExecutor,
-			ProcessResults_NoExecutor)
-		cleanupConfigs = append(cleanupConfigs,
-			VMProvisionRelease_CrosVMProvisionExecutor,
-			CtrStop_CtrExecutor,
-			ProcessResults_NoExecutor)
+			GetCmdExecPair(VMProvisionRelease_CrosVMProvisionExecutor, true),
+			GetCmdExecPair(CtrStop_CtrExecutor, true),
+			GetCmdExecPair(ProcessResults_NoExecutor, true))
 	} else {
 		mainConfigs = append(mainConfigs,
-			CtrStop_CtrExecutor,
-			UpdateDutState_NoExecutor,
-			ProcessResults_NoExecutor)
-		cleanupConfigs = append(cleanupConfigs,
-			CtrStop_CtrExecutor,
-			UpdateDutState_NoExecutor,
-			ProcessResults_NoExecutor)
+			GetCmdExecPair(CtrStop_CtrExecutor, true),
+			GetCmdExecPair(UpdateDutState_NoExecutor, true),
+			GetCmdExecPair(ProcessResults_NoExecutor, true))
 	}
 
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: []*common_configs.CommandExecutorPairedConfig{}}
 }
 
 func GeneratePreLocalConfigs(ctx context.Context) *common_configs.Configs {

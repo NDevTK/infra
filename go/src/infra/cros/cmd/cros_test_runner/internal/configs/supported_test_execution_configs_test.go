@@ -23,9 +23,7 @@ func TestGenerateHwConfigs(t *testing.T) {
 
 		So(hwConfigs, ShouldNotBeNil)
 		So(hwConfigs.MainConfigs, ShouldNotBeNil)
-		So(hwConfigs.CleanupConfigs, ShouldNotBeNil)
 		So(len(hwConfigs.MainConfigs), ShouldBeGreaterThan, 0)
-		So(len(hwConfigs.CleanupConfigs), ShouldBeGreaterThan, 0)
 	})
 
 	Convey("GenerateHwConfigs with CrosTestRunnerRequest", t, func() {
@@ -48,28 +46,23 @@ func TestGenerateHwConfigs(t *testing.T) {
 
 		So(hwConfigs, ShouldNotBeNil)
 		So(hwConfigs.MainConfigs, ShouldNotBeNil)
-		So(hwConfigs.CleanupConfigs, ShouldNotBeNil)
 		So(len(hwConfigs.MainConfigs), ShouldBeGreaterThan, 0)
 		So(hwConfigs.MainConfigs, ShouldContain, GenericProvision_GenericProvisionExecutor)
-		So(len(hwConfigs.CleanupConfigs), ShouldEqual, 0)
 	})
 
 	Convey("hwConfigsForPlatform for VM", t, func() {
 		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderGce, false)
 
-		So(hwConfigs.MainConfigs, ShouldContain, VMProvisionRelease_CrosVMProvisionExecutor)
-		So(hwConfigs.CleanupConfigs, ShouldContain, VMProvisionRelease_CrosVMProvisionExecutor)
+		So(hwConfigs.MainConfigs, ShouldContain, GetCmdExecPair(VMProvisionRelease_CrosVMProvisionExecutor, true))
 		So(hwConfigs.MainConfigs, ShouldNotContain, DutServerStart_CrosDutExecutor)
-		So(hwConfigs.MainConfigs, ShouldNotContain, UpdateDutState_NoExecutor)
-		So(hwConfigs.CleanupConfigs, ShouldNotContain, UpdateDutState_NoExecutor)
+		So(hwConfigs.MainConfigs, ShouldNotContain, GetCmdExecPair(UpdateDutState_NoExecutor, true))
 	})
 
 	Convey("hwConfigsForPlatform for HW", t, func() {
 		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderDrone, false)
 
 		So(hwConfigs.MainConfigs, ShouldContain, DutServerStart_CrosDutExecutor)
-		So(hwConfigs.MainConfigs, ShouldContain, UpdateDutState_NoExecutor)
-		So(hwConfigs.CleanupConfigs, ShouldContain, UpdateDutState_NoExecutor)
+		So(hwConfigs.MainConfigs, ShouldContain, GetCmdExecPair(UpdateDutState_NoExecutor, true))
 	})
 }
 
