@@ -40,11 +40,20 @@ func findContainer(cm *build_api.ContainerMetadata, lookupKey, name string) (*bu
 	if containers == nil {
 		return nil, nil
 	}
-	imageMap, ok := containers[lookupKey]
-	if !ok {
-		log.Printf("Image %q not found", name)
-		return nil, fmt.Errorf("Image %q not found for lookupkey %s", name, lookupKey)
+
+	if len(containers) != 1 {
+		log.Printf("Unexpected none or multiple conatiner maps in same metadata")
+		return nil, fmt.Errorf("unexpected none or multiple conatiner maps in same metadata")
+
 	}
+
+	var imageMap *build_api.ContainerImageMap
+
+	// Always grab the first map for the list, as the key lookup is unreliable. (b/331283423)
+	for _, IM := range containers {
+		imageMap = IM
+	}
+
 	return imageMap.Images[name], nil
 }
 

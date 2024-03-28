@@ -167,10 +167,16 @@ func FetchImageData(ctx context.Context, board string, gcsPath string) (map[stri
 		return nil, errors.Annotate(err, "unable to unmarshal metadata: ").Err()
 	}
 
-	imagesMap, ok := metadata.Containers[board]
-	if !ok {
-		logging.Infof(ctx, fmt.Sprintf("provided board %s not found in container images map", board))
-		return nil, fmt.Errorf("provided board %s not found in container images map", board)
+	var imagesMap *api.ContainerImageMap
+
+	if len(metadata.Containers) != 1 {
+		logging.Infof(ctx, "Unexpected none or multiple conatiner maps in same metadata")
+		return nil, fmt.Errorf("unexpected none or multiple conatiner maps in same metadata")
+
+	}
+	// Always grab the first map for the list, as the key lookup is unreliable. (b/331283423)
+	for _, IM := range metadata.Containers {
+		imagesMap = IM
 	}
 
 	Containers := make(map[string]*api.ContainerImageInfo)

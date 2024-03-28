@@ -124,6 +124,14 @@ func TestGetVariant(t *testing.T) {
 		So(variant, ShouldEqual, "variant-arc")
 	})
 
+	// Currently this incorrectly pulls the variant for the example below; but without better variant info,
+	// this appears to be difficult to safely solve. Leaving this test in here as an example of something
+	// to look into long term.
+	// Convey("GetVariant remove prefix and postfix", t, func() {
+	// 	variant := builders.GetVariant(getChromeosSoftwareDeps("staging-rex-release-R124-15823.B/R124-15823.9.0-8752476513443194785"))
+	// 	So(variant, ShouldEqual, "")
+	// })
+
 	Convey("GetVariant empty string", t, func() {
 		variant := builders.GetVariant(getChromeosSoftwareDeps(""))
 		So(variant, ShouldEqual, "")
