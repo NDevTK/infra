@@ -238,7 +238,14 @@ func main() {
 			if testsFailed {
 				fmt.Fprintf(&sb, "**Tests failed.** [See all test results.](%s)\n\n", testResultsURL(st.Build().Id))
 			}
-			fmt.Fprintf(&sb, "Error:\n%s\n\n", "\t"+strings.ReplaceAll(runErr.Error(), "\n", "\n\t"))
+			if e := runErr.Error(); !strings.ContainsAny(e, "\n`") {
+				// Simple error, viable to put it in a Markdown code span.
+				fmt.Fprintf(&sb, "Error: `%s`\n\n", e)
+			} else {
+				// Put the error in a Markdown code block (using indentation)
+				// to avoid error content from being interpreted as Markdown.
+				fmt.Fprintf(&sb, "Error:\n\n%s\n\n", "\t"+strings.ReplaceAll(e, "\n", "\n\t"))
+			}
 			fmt.Fprintf(&sb, "Links:\n")
 			for _, link := range links {
 				fmt.Fprintf(&sb, "* [%s](%s)\n", link.name, link.url)
