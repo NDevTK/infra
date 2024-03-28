@@ -6,6 +6,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/protobuf/proto"
 
@@ -20,7 +21,6 @@ const CostIndicatorKind = "CostIndicatorKind"
 
 type CostIndicatorEntity struct {
 	_kind         string                     `gae:"$kind,CostIndicatorKind"`
-	ID            string                     `gae:"$id"`
 	Extra         datastore.PropertyMap      `gae:",extra"`
 	CostIndicator *fleetcostpb.CostIndicator `gae:"cost_indicator"`
 	// Indexed fields for improved query performance.
@@ -56,6 +56,28 @@ func (indicator *CostIndicatorEntity) Load(propertyMap datastore.PropertyMap) er
 
 var _ datastore.PropertyLoadSaver = &CostIndicatorEntity{}
 
+var _ datastore.MetaGetterSetter = &CostIndicatorEntity{}
+
+// GetAllMeta transfers control to the default implementation of GetAllMeta.
+// We need this function so that we can compute the ID.
+func (indicator *CostIndicatorEntity) GetAllMeta() datastore.PropertyMap {
+	return datastore.GetPLS(indicator).GetAllMeta()
+}
+
+// SetMeta always returns false because we do not allow meta keys to be changed and false communicates this to the LUCI datastore library.
+func (indicator *CostIndicatorEntity) SetMeta(key string, value any) bool {
+	return false
+}
+
+// GetMeta gets meta-values. The id ("$id") is computed. The other things (like $kind, for instance) get their default values.
+func (indicator *CostIndicatorEntity) GetMeta(key string) (any, bool) {
+	if key == "id" {
+		costIndicator := indicator.CostIndicator
+		return fmt.Sprintf("v1-%s-%s-%s", costIndicator.GetBoard(), costIndicator.GetModel(), costIndicator.GetSku()), true
+	}
+	return datastore.GetPLS(indicator).GetMeta(key)
+}
+
 // Clone produces a deep copy of a cost indicator.
 //
 // This method intentionally takes a non-pointer receiver to perform a
@@ -70,7 +92,6 @@ func (indicator CostIndicatorEntity) Clone() *CostIndicatorEntity {
 // NewCostIndicatorEntity makes a cost indicator entity from an object extracted from a request.
 func NewCostIndicatorEntity(costIndicator *fleetcostpb.CostIndicator) *CostIndicatorEntity {
 	return &CostIndicatorEntity{
-		ID:            costIndicator.GetName(),
 		CostIndicator: costIndicator,
 	}
 }

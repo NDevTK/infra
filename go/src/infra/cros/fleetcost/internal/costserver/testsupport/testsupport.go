@@ -44,10 +44,9 @@ func NewFixture(ctx context.Context, t *testing.T) *Fixture {
 func NewFixtureWithData(ctx context.Context, t *testing.T) *Fixture {
 	tf := NewFixture(ctx, t)
 	err := models.PutCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{
-		ID: "fake-cost-indicator",
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Name:  "a",
-			Board: "e",
+			Board:       "e",
+			BurnoutRate: 44.0,
 		},
 	})
 	if err != nil {
