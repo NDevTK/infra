@@ -61,6 +61,23 @@ func TestChameleonCleanAndValidateFlags(t *testing.T) {
 			want: []string{errDuplicateType},
 		},
 
+		{
+			cmd: &manageChamCmd{
+				hostname:        "h1",
+				dutName:         "d",
+				connectionTypes: []string{"  "},
+			},
+			want: []string{errEmptyType},
+		},
+		{
+			cmd: &manageChamCmd{
+				hostname:        "h1",
+				dutName:         "d",
+				connectionTypes: []string{"hdmi", "hdmi"},
+			},
+			want: []string{errDuplicateConnType},
+		},
+
 		// TRRS Type tests
 		{
 			cmd: &manageChamCmd{
@@ -87,12 +104,13 @@ func TestChameleonCleanAndValidateFlags(t *testing.T) {
 
 	validTests := []*manageChamCmd{
 		{
-			dutName:     "d",
-			hostname:    "h1",
-			types:       []string{"v2", "v3"},
-			rpmHostname: "rpm",
-			rpmOutlet:   "123",
-			mode:        actionAdd,
+			dutName:         "d",
+			hostname:        "h1",
+			types:           []string{"v2", "v3"},
+			connectionTypes: []string{"dp", "hdmi"},
+			rpmHostname:     "rpm",
+			rpmOutlet:       "123",
+			mode:            actionAdd,
 		},
 
 		// TRRS Type tests

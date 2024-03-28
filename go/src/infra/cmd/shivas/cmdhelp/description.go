@@ -2156,14 +2156,15 @@ shivas replace bluetooth-peers -dut {d} -hostname {h3} -hostname {h4} -hostname 
 
 This cmd always runs in the OS namespace. The command requires specifying
 an action which is either add, delete, or replace. Only one chameleon
-is allowed per DUT.
+is allowed per DUT. Parameter "-type" describes type of chameleon like, v2 or pi.
+Parameter "-connection_type"(or "-co") describes connection on chameleon like, usb or hdmi.
 
 Add adds specified chameleon to the DUT.
 Delete deletes the specified chamleon in the DUT.
 Replace replaces the existing with the specified chameleon, which includes update existing chameleon's type or RPM information.
 
 Examples:
-shivas add chameleon -dut {d} -hostname {h1} -type {t1} -type {t2} -rpm {rh1} -rpm-outlet {o1}
+shivas add chameleon -dut {d} -hostname {h1} -type {t1} -connection_type {ct1} -connection_type {ct2} -rpm {rh1} -rpm-outlet {o1}
 shivas delete chameleon -dut {d} -hostname {h1}
 shivas replace chameleon -dut {d} -hostname {h2} -type {t3}
 `

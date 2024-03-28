@@ -43,7 +43,8 @@ func chamCmd(mode action) *subcommands.Command {
 
 			c.Flags.StringVar(&c.dutName, "dut", "", "DUT name to update")
 			c.Flags.StringVar(&c.hostname, "hostname", "", "hostname for Chameleon")
-			c.Flags.Var(flag.StringSlice(&c.types), "type", "type of chameleon, can be specified multiple times")
+			c.Flags.Var(flag.StringSlice(&c.types), "type", "type of chameleon, ie. v2")
+			c.Flags.Var(flag.StringSlice(&c.connectionTypes), "connection_type", "connection type of chameleon, can be specified multiple times, ie. dp, hdmi")
 
 			c.Flags.StringVar(&c.rpmHostname, "rpm", "", "hostname for rpm connected to chameleon")
 			c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "outlet number of rpm connected to chameleon")
@@ -62,11 +63,16 @@ type manageChamCmd struct {
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
 
-	dutName        string
-	hostname       string
+	dutName  string
+	hostname string
+
 	types          []string
 	chameleonTypes []lab.ChameleonType
 	typesMap       map[lab.ChameleonType]bool
+
+	connectionTypes          []string
+	chameleonConnectionTypes []lab.ChameleonConnectionType
+	connectionTypesMap       map[lab.ChameleonConnectionType]bool
 
 	rpmHostname  string
 	rpmOutlet    string
@@ -165,9 +171,10 @@ func (c *manageChamCmd) newCham(current *lab.Chameleon) (*lab.Chameleon, error) 
 }
 
 const (
-	errEmptyType       = "empty type"
-	errDuplicateType   = "duplicate type specified"
-	errInvalidTRRSType = "invalid TRRS type specified"
+	errEmptyType         = "empty type"
+	errDuplicateType     = "duplicate type specified"
+	errDuplicateConnType = "duplicate connection type specified"
+	errInvalidTRRSType   = "invalid TRRS type specified"
 )
 
 // cleanAndValidateFlags returns an error with the result of all validations. It strips whitespaces
@@ -184,6 +191,10 @@ func (c *manageChamCmd) cleanAndValidateFlags() error {
 
 	if c.typesMap == nil {
 		c.typesMap = map[lab.ChameleonType]bool{}
+	}
+
+	if c.connectionTypesMap == nil {
+		c.connectionTypesMap = map[lab.ChameleonConnectionType]bool{}
 	}
 
 	var types []lab.ChameleonType
@@ -205,6 +216,11 @@ func (c *manageChamCmd) cleanAndValidateFlags() error {
 		}
 		t := toChameleonType(ts)
 
+		// Deprecation warning
+		if isDeprecatingChameleonType(t) {
+			fmt.Println("Warning, type is pending deprecation:", ts)
+		}
+
 		// Duplicate Type
 		if c.typesMap[t] {
 			if c.commonFlags.Verbose() {
@@ -217,6 +233,38 @@ func (c *manageChamCmd) cleanAndValidateFlags() error {
 		types = append(types, t)
 	}
 	c.chameleonTypes = types
+
+	var connectionTypes []lab.ChameleonConnectionType
+	for _, ts := range c.connectionTypes {
+		ts = strings.ToUpper(strings.TrimSpace(ts))
+
+		// Empty Type
+		if len(ts) == 0 {
+			if c.commonFlags.Verbose() {
+				fmt.Println("Empty connection type specified")
+			}
+			errStrs = append(errStrs, errEmptyType)
+			continue
+		}
+
+		if !isChameleonConnectionType(ts) {
+			errStrs = append(errStrs, fmt.Sprintf("Invalid chameleon connection type specified %s", ts))
+			continue
+		}
+		t := toChameleonConnectionType(ts)
+
+		// Duplicate Type
+		if c.connectionTypesMap[t] {
+			if c.commonFlags.Verbose() {
+				fmt.Println("Duplicate connection type specified:", ts)
+			}
+			errStrs = append(errStrs, fmt.Sprintf("%s: %s", errDuplicateConnType, ts))
+			continue
+		}
+		c.connectionTypesMap[t] = true
+		connectionTypes = append(connectionTypes, t)
+	}
+	c.chameleonConnectionTypes = connectionTypes
 
 	if c.trrsTypeName != "" {
 
@@ -251,10 +299,11 @@ func (c *manageChamCmd) cleanAndValidateFlags() error {
 // createChameleon creates a *lab.Chameleon object from manageChamCmd variables.
 func (c *manageChamCmd) createChameleon() *lab.Chameleon {
 	ret := &lab.Chameleon{
-		Hostname:             c.hostname,
-		ChameleonPeripherals: c.chameleonTypes,
-		AudioBoard:           c.audioBoard,
-		TrrsType:             c.trrsType,
+		Hostname:                 c.hostname,
+		ChameleonPeripherals:     c.chameleonTypes,
+		ChameleonConnectionTypes: c.chameleonConnectionTypes,
+		AudioBoard:               c.audioBoard,
+		TrrsType:                 c.trrsType,
 	}
 	if c.rpmHostname != "" {
 		ret.Rpm = &lab.OSRPM{
@@ -277,6 +326,24 @@ func toChameleonType(s string) lab.ChameleonType {
 		return lab.ChameleonType(lab.ChameleonType_value[fmt.Sprintf("CHAMELEON_TYPE_%s", s)])
 	}
 	return lab.ChameleonType_CHAMELEON_TYPE_INVALID
+}
+
+func isDeprecatingChameleonType(s lab.ChameleonType) bool {
+	return s == lab.ChameleonType_CHAMELEON_TYPE_DP || s == lab.ChameleonType_CHAMELEON_TYPE_HDMI
+}
+
+func isChameleonConnectionType(s string) bool {
+	if val, ok := lab.ChameleonConnectionType_value[fmt.Sprintf("CHAMELEON_CONNECTION_TYPE_%s", s)]; ok {
+		return val != 0
+	}
+	return false
+}
+
+func toChameleonConnectionType(s string) lab.ChameleonConnectionType {
+	if isChameleonConnectionType(s) {
+		return lab.ChameleonConnectionType(lab.ChameleonConnectionType_value[fmt.Sprintf("CHAMELEON_CONNECTION_TYPE_%s", s)])
+	}
+	return lab.ChameleonConnectionType_CHAMELEON_CONNECTION_TYPE_INVALID
 }
 
 func supportedTrrsTypes() []string {
