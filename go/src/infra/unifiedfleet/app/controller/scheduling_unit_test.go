@@ -13,6 +13,7 @@ import (
 	"google.golang.org/genproto/protobuf/field_mask"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	. "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/history"
 	"infra/unifiedfleet/app/model/inventory"
@@ -129,6 +130,57 @@ func TestCreateSchedulingUnit(t *testing.T) {
 			So(changes, ShouldHaveLength, 0)
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-6")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 0)
+		})
+
+		Convey("Create new SchedulingUnit - DUTs do not share the same hive", func() {
+			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name: "dut-4",
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: &ufspb.ChromeOSDeviceLSE_Dut{
+									Dut: &chromeosLab.DeviceUnderTest{
+										Hive: "hive-1",
+									},
+								},
+							},
+						},
+					},
+				},
+			})
+			So(err, ShouldBeNil)
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name: "dut-5",
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: &ufspb.ChromeOSDeviceLSE_Dut{
+									Dut: &chromeosLab.DeviceUnderTest{
+										Hive: "hive-2",
+									},
+								},
+							},
+						},
+					},
+				},
+			})
+			So(err, ShouldBeNil)
+
+			su1 := mockSchedulingUnit("su-7")
+			su1.MachineLSEs = []string{"dut-4", "dut-5"}
+			_, err = CreateSchedulingUnit(ctx, su1)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "have different hives")
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-7")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 0)
+
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-7")
 			So(err, ShouldBeNil)
 			So(msgs, ShouldHaveLength, 0)
 		})
@@ -251,6 +303,57 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 			So(changes, ShouldHaveLength, 0)
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-8")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 0)
+		})
+
+		Convey("UpdateSchedulingUnit - DUTs do not share the same hive", func() {
+			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name: "dut-7",
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: &ufspb.ChromeOSDeviceLSE_Dut{
+									Dut: &chromeosLab.DeviceUnderTest{
+										Hive: "hive-1",
+									},
+								},
+							},
+						},
+					},
+				},
+			})
+			So(err, ShouldBeNil)
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name: "dut-8",
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: &ufspb.ChromeOSDeviceLSE_Dut{
+									Dut: &chromeosLab.DeviceUnderTest{
+										Hive: "hive-2",
+									},
+								},
+							},
+						},
+					},
+				},
+			})
+			So(err, ShouldBeNil)
+
+			su1 := mockSchedulingUnit("su-9")
+			su1.MachineLSEs = []string{"dut-7", "dut-8"}
+			_, err = CreateSchedulingUnit(ctx, su1)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "have different hives")
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-9")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 0)
+
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-9")
 			So(err, ShouldBeNil)
 			So(msgs, ShouldHaveLength, 0)
 		})

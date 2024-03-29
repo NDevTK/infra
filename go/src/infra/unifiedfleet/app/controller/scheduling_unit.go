@@ -130,6 +130,10 @@ func validateCreateSchedulingUnit(ctx context.Context, su *ufspb.SchedulingUnit)
 	if err := checkIfMachineLSEsExists(ctx, su.GetMachineLSEs()); err != nil {
 		return err
 	}
+	// Check if DUTs/MachineLSEs share the same hive.
+	if err := validateLSEsShareHive(ctx, su.GetMachineLSEs()); err != nil {
+		return err
+	}
 	// Check if DUTs/MachineLSEs already used in other SchedulingUnit or specified more than once
 	seenDuts := make(map[string]bool)
 	for _, lse := range su.GetMachineLSEs() {
@@ -157,6 +161,10 @@ func validateUpdateSchedulingUnit(ctx context.Context, oldsu *ufspb.SchedulingUn
 	}
 	// Check if the DUTs/MachineLSEs not found.
 	if err := checkIfMachineLSEsExists(ctx, su.GetMachineLSEs()); err != nil {
+		return err
+	}
+	// Check if DUTs/MachineLSEs share the same hive.
+	if err := validateLSEsShareHive(ctx, su.GetMachineLSEs()); err != nil {
 		return err
 	}
 	// Check if DUTs/MachineLSEs already used in other SchedulingUnit or specified more than once
@@ -279,6 +287,27 @@ func checkIfMachineLSEsExists(ctx context.Context, lseNames []string) error {
 	}
 	if err := ResourceExist(ctx, resourcesNotfound, nil); err != nil {
 		return err
+	}
+	return nil
+}
+
+// validateLSEsShareHive validates that all LSEs have the same hive.
+func validateLSEsShareHive(ctx context.Context, lseNames []string) error {
+	var hive string
+	for idx, lseName := range lseNames {
+		lse, err := inventory.GetMachineLSE(ctx, lseName)
+		if err != nil {
+			return err
+		}
+		// GetHiveForDUT makes sure we consider computed hive as well as datastore hive value.
+		h := util.GetHiveForDut(lseName, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive())
+		if idx == 0 {
+			hive = h
+			continue
+		}
+		if hive != h {
+			return status.Errorf(codes.InvalidArgument, fmt.Sprintf("DUTs have different hives: %s - %s", hive, h))
+		}
 	}
 	return nil
 }
