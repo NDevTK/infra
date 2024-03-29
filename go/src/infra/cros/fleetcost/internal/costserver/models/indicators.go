@@ -73,7 +73,7 @@ func (indicator *CostIndicatorEntity) SetMeta(key string, value any) bool {
 func (indicator *CostIndicatorEntity) GetMeta(key string) (any, bool) {
 	if key == "id" {
 		costIndicator := indicator.CostIndicator
-		return fmt.Sprintf("v1-%s-%s-%s", costIndicator.GetBoard(), costIndicator.GetModel(), costIndicator.GetSku()), true
+		return fmt.Sprintf("v1;%s;%s;%s", costIndicator.GetBoard(), costIndicator.GetModel(), costIndicator.GetSku()), true
 	}
 	return datastore.GetPLS(indicator).GetMeta(key)
 }
