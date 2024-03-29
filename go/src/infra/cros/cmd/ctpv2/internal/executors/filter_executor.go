@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -16,6 +17,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/grpc"
 
+	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	ctpv2_data "infra/cros/cmd/ctpv2/data"
@@ -43,7 +45,24 @@ func (ex *FilterExecutor) ExecuteCommand(
 
 	switch cmd := cmdInterface.(type) {
 	case *commands.FilterExecutionCmd:
-		return ex.filterExecutionCommandExecution(ctx, cmd)
+		key := ""
+		if cmd.ContainerInfo != nil && cmd.BQClient != nil {
+			key = fmt.Sprintf("%s-execute", cmd.ContainerInfo.GetKey())
+			analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: analytics.Start}, cmd.InputTestPlan, cmd.BuildState)
+		}
+		start := time.Now()
+		status := analytics.Success
+
+		// Execute the Filter
+		err := ex.filterExecutionCommandExecution(ctx, cmd)
+		if err != nil {
+			status = analytics.Fail
+		}
+		if key != "" {
+			analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: status, Duration: float32(time.Now().Sub(start).Seconds())}, cmd.InputTestPlan, cmd.BuildState)
+		}
+		return err
+
 	default:
 		return fmt.Errorf(
 			"Command type %s is not supported by %s executor type!",
