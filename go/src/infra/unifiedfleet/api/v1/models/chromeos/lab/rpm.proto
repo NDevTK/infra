@@ -9,8 +9,19 @@ package unifiedfleet.api.v1.models.chromeos.lab;
 option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
 // Remote power management info.
-// Next Tag: 3
+// Next Tag: 4
 message OSRPM {
   string powerunit_name = 1;
   string powerunit_outlet = 2;
+
+  // Type of RPM that controls the device
+  // Next Tag: 3
+  enum Type {
+    TYPE_UNKNOWN = 0;
+    // Sentry Switched PDU
+    TYPE_SENTRY = 1;
+    // IP Power 9850
+    TYPE_IP9850 = 2;
+  }
+  Type powerunit_type = 3;
 }
