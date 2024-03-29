@@ -23,6 +23,7 @@ import (
 
 var manifestFilePattern = testplans.FilePattern{Pattern: "{manifest,manifest-internal}/*.xml"}
 var kernelUpstreamManifestFilePattern = testplans.FilePattern{Pattern: "manifest-internal/_kernel_upstream.xml"}
+var toolchainManifestFilePattern = testplans.FilePattern{Pattern: "manifest-internal/_toolchain.xml"}
 
 // CheckBuildersInput is the input for a CheckBuilders call.
 type CheckBuildersInput struct {
@@ -241,15 +242,24 @@ func stringInSlice(a string, list []string) bool {
 }
 
 func hasTestAllManifestXMLChange(files []string) (bool, error) {
-	// TODO(b/187795897): If there is only changes to the _kernel_upstream.xml
+	// TODO(b/187795897): If there is only changes to kernel/toolchain sources,
 	// do not report it.
 	if len(files) == 1 {
-		match, err := match.FilePatternMatches(&kernelUpstreamManifestFilePattern, files[0])
-		if err != nil {
-			log.Fatalf("Failed to match pattern %s against file %s: %v", &kernelUpstreamManifestFilePattern, files[0], err)
+		ignorePatterns := []*testplans.FilePattern{
+			&kernelUpstreamManifestFilePattern,
+			&toolchainManifestFilePattern,
 		}
-		if match {
-			return false, nil
+
+		for _, pattern := range ignorePatterns {
+			f := files[0]
+			match, err := match.FilePatternMatches(pattern, f)
+			if err != nil {
+				log.Fatalf("Failed to match pattern %s against file %s: %v", &kernelUpstreamManifestFilePattern, f, err)
+			}
+			if match {
+				log.Printf("File %s matches pattern %s; skipping manifest checking", f, pattern)
+				return false, nil
+			}
 		}
 	}
 	for _, f := range files {
