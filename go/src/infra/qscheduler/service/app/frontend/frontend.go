@@ -25,7 +25,7 @@ import (
 	"github.com/golang/protobuf/proto"
 
 	"go.chromium.org/luci/server/auth"
-	swarming "go.chromium.org/luci/swarming/proto/api"
+	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
 	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
 	"infra/qscheduler/service/app/config"

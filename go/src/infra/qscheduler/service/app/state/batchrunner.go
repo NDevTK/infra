@@ -24,7 +24,7 @@ import (
 
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
-	swarming "go.chromium.org/luci/swarming/proto/api"
+	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
 	"infra/qscheduler/qslib/scheduler"
 	"infra/qscheduler/service/app/config"

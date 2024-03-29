@@ -23,7 +23,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/logging"
-	swarming "go.chromium.org/luci/swarming/proto/api"
+	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
 	"infra/qscheduler/qslib/reconciler"
 	"infra/qscheduler/qslib/scheduler"
@@ -209,22 +209,22 @@ const (
 	taskStateAbsent
 )
 
-func translateTaskState(s swarming.TaskState) (taskState, bool) {
-	cInt := int(s) &^ int(swarming.TaskStateCategory_TASK_STATE_MASK)
-	category := swarming.TaskStateCategory(cInt)
+func translateTaskState(s swarming.TaskSpec_State) (taskState, bool) {
+	cInt := int(s) &^ int(swarming.TaskSpec_TASK_STATE_MASK)
+	category := swarming.TaskSpec_StateCategory(cInt)
 
 	// These category cases occur in the same order as they are defined in
 	// swarming.proto. Please preserve that when adding new cases.
 	switch category {
-	case swarming.TaskStateCategory_CATEGORY_PENDING:
+	case swarming.TaskSpec_CATEGORY_PENDING:
 		return taskStateWaiting, true
-	case swarming.TaskStateCategory_CATEGORY_RUNNING:
+	case swarming.TaskSpec_CATEGORY_RUNNING:
 		return taskStateRunning, true
 	// The following categories all translate to "ABSENT", because they are all
 	// equivalent to the task being neither running nor waiting.
-	case swarming.TaskStateCategory_CATEGORY_TRANSIENT_DONE,
-		swarming.TaskStateCategory_CATEGORY_EXECUTION_DONE,
-		swarming.TaskStateCategory_CATEGORY_NEVER_RAN_DONE:
+	case swarming.TaskSpec_CATEGORY_TRANSIENT_DONE,
+		swarming.TaskSpec_CATEGORY_EXECUTION_DONE,
+		swarming.TaskSpec_CATEGORY_NEVER_RAN_DONE:
 		return taskStateAbsent, true
 
 	// Invalid state.

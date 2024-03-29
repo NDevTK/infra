@@ -10,7 +10,7 @@ syntax = "proto3";
 package chromium.bootstrapper.chromium_bootstrap;
 
 import "go.chromium.org/luci/buildbucket/proto/common.proto";
-import "go.chromium.org/luci/swarming/proto/api/swarming.proto";
+import "go.chromium.org/luci/swarming/proto/api_v2/swarming.proto";
 
 option go_package = "infra/chromium/bootstrapper/bootstrap";
 
@@ -31,7 +31,7 @@ message BootstrappedExe {
   // The location that the bootstrapped executable is retrieved from.
   oneof source {
     Cipd cipd = 1;
-    swarming.v1.CASReference cas = 2;
+    swarming.v2.CASReference cas = 2;
   }
 
   repeated string cmd = 3;

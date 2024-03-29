@@ -23,7 +23,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/grpc/grpcutil"
-	swarming "go.chromium.org/luci/swarming/proto/api"
+	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
 	"infra/qscheduler/service/app/state"
 	"infra/qscheduler/service/app/state/nodestore"

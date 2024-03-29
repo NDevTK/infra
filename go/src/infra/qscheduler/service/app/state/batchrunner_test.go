@@ -27,7 +27,7 @@ import (
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock/testclock"
-	swarming "go.chromium.org/luci/swarming/proto/api"
+	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
 	"infra/qscheduler/qslib/tutils"
 	"infra/qscheduler/service/app/eventlog"
@@ -132,7 +132,7 @@ func TestBatcherBehavior(t *testing.T) {
 								Task: &swarming.TaskSpec{
 									EnqueuedTime: now,
 									Id:           fmt.Sprintf("%d", i),
-									State:        swarming.TaskState_PENDING,
+									State:        swarming.TaskSpec_PENDING,
 									Slices: []*swarming.SliceSpec{
 										{
 											Dimensions: []string{labels[i]},

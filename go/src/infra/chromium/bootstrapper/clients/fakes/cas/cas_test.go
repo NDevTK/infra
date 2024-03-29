@@ -14,7 +14,7 @@ import (
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/digest"
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/filemetadata"
 	. "github.com/smartystreets/goconvey/convey"
-	apipb "go.chromium.org/luci/swarming/proto/api"
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
 func TestFactory(t *testing.T) {

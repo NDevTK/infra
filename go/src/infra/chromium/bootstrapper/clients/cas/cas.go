@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/client/casclient"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
-	apipb "go.chromium.org/luci/swarming/proto/api"
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
 // Client provides the CAS-related operations required for bootstrapping.

@@ -21,7 +21,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/appengine/gaetesting"
-	swarming "go.chromium.org/luci/swarming/proto/api"
+	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
 	"infra/qscheduler/qslib/tutils"
 	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
@@ -55,7 +55,7 @@ func TestAssignTasks(t *testing.T) {
 							Time: tutils.TimestampProto(time.Now()),
 							Task: &swarming.TaskSpec{
 								Id:    taskID,
-								State: swarming.TaskState_PENDING,
+								State: swarming.TaskSpec_PENDING,
 								Slices: []*swarming.SliceSpec{
 									{Dimensions: []string{"label1"}},
 								},

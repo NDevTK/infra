@@ -17,7 +17,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	. "go.chromium.org/luci/common/testing/assertions"
-	apipb "go.chromium.org/luci/swarming/proto/api"
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
 func TestDownloadPackages(t *testing.T) {

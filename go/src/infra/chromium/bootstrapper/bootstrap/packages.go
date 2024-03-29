@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
-	apipb "go.chromium.org/luci/swarming/proto/api"
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 	"golang.org/x/sync/errgroup"
 )
 
