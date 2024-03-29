@@ -8,11 +8,18 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
+	"cloud.google.com/go/bigquery"
+
+	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/ctpv2/data"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/luciexe/build"
 )
 
 // CommandExecutorPairedConfig represents command and executor pair
@@ -210,6 +217,20 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 			logging.Infof(ctx, "Command type %s extract dependencies failed, %s", cmdType, singleErr)
 			continue
 		}
+
+		var bqClient *bigquery.Client
+		var req *api.CTPv2Request
+		var buildstate *build.State
+		switch sk := tecfg.StateKeeper.(type) {
+		case *data.PrePostFilterStateKeeper:
+			bqClient = sk.BQClient
+			req = sk.CtpV2Request
+			buildstate = sk.BuildState
+		}
+
+		analytics.SoftInsertStepWCtp2Req(ctx, bqClient, &analytics.BqData{Step: fmt.Sprintf("%s", cmdType), Status: analytics.Start}, req, buildstate)
+		startTime := time.Now()
+		status := analytics.Success
 		if singleErr = cmd.Execute(ctx); singleErr != nil {
 			foundErr = true
 			allErr = errors.Append(allErr, singleErr)
@@ -217,9 +238,14 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 			if innerErr := cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); innerErr != nil {
 				logging.Infof(ctx, "Command type %s could not update state keeper: %s", cmdType, innerErr)
 			}
+			status = analytics.Fail
 			continue
 		}
+
+		analytics.SoftInsertStepWCtp2Req(ctx, bqClient, &analytics.BqData{Step: fmt.Sprintf("%s", cmdType), Status: status, Duration: float32(time.Since(startTime).Seconds())}, req, buildstate)
+
 		logging.Infof(ctx, "Cmd completed: %s", cmdType)
+
 		tecfg.executedCommands[cmdType] = true
 		if singleErr = cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); singleErr != nil {
 			foundErr = true

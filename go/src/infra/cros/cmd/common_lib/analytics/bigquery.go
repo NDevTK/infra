@@ -127,6 +127,9 @@ func SoftInsertStepWCtp2Req(ctx context.Context, BQClient *bigquery.Client, data
 			logging.Infof(ctx, "ERROR DURING BQ WITE: %s", err)
 
 		}
+	} else {
+		logging.Infof(ctx, "Skipped BQ write as no client provided.")
+
 	}
 }
 
