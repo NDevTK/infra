@@ -100,7 +100,7 @@ func setDutStateReasonFromTaskTagsExec(ctx context.Context, info *execs.ExecInfo
 	}
 	rawTags, ok := scopes.GetParam(ctx, scopes.ParamKeySwarmingTaskTags)
 	if !ok {
-		log.Debugf(ctx, "Set dut state reason from task tags: scope is empty")
+		log.Debugf(ctx, "Set DUT state reason from task tags: scope is empty")
 		return nil
 	}
 	tags, ok := rawTags.(map[string]string)
@@ -110,6 +110,7 @@ func setDutStateReasonFromTaskTagsExec(ctx context.Context, info *execs.ExecInfo
 	for k, v := range tags {
 		if k == tagName {
 			if cv := strings.TrimSpace(v); cv != "" {
+				log.Infof(ctx, "New DUT state reason: %q", cv)
 				info.GetDut().DutStateReason = tlw.DutStateReason(cv)
 				break
 			}

@@ -39,7 +39,22 @@ func ReserveDutConfig() *Configuration {
 		Plans: map[string]*Plan{
 			PlanCrOS: {
 				CriticalActions: []string{
-					"dut_state_reserved",
+					"Reserve DUT",
+				},
+				Actions: map[string]*Action{
+					"Reserve DUT": {
+						Dependencies: []string{
+							"Set DUT reason",
+						},
+						ExecName: "dut_state_reserved",
+					},
+					"Set DUT reason": {
+						ExecName: "dut_state_reason_set_from_tags",
+						ExecExtraArgs: []string{
+							"tag_name:comment",
+						},
+						AllowFailAfterRecovery: true,
+					},
 				},
 			},
 		},
