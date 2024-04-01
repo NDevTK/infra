@@ -212,14 +212,18 @@ func (c *Change) fetchFileList(ctx context.Context, httpClient *http.Client) err
 
 // Fetch changes from the given hosts (will only make one request per host) or die.
 func MustFetchChanges(parentCtx context.Context, httpClient *http.Client, changes Changes, options Options) Changes {
-	// Group changes by host.
+	// Group changes by host, skipping duplicates.
+	changeIdsSeen := make(map[int]bool)
 	hostChanges := make(map[string]Changes)
 	for _, c := range changes {
-		host := c.Host
-		if !strings.ContainsRune(host, '.') {
-			host = host + shortHostSuffix
+		if _, seen := changeIdsSeen[c.Number]; !seen {
+			changeIdsSeen[c.Number] = true
+			host := c.Host
+			if !strings.ContainsRune(host, '.') {
+				host = host + shortHostSuffix
+			}
+			hostChanges[host] = append(hostChanges[host], c)
 		}
-		hostChanges[host] = append(hostChanges[host], c)
 	}
 
 	// Error management for parallel requests.
