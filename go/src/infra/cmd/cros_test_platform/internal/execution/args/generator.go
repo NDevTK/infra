@@ -180,11 +180,14 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		}
 	}
 
+	dims := g.Params.GetFreeformAttributes().GetSwarmingDimensions()
+	dims = dimsWithDUTState(dims)
+
 	return request.Args{
 		Cmd:                              *cmd,
 		SchedulableLabels:                labels,
 		SecondaryDevicesLabels:           g.secondaryDevicesInventoryLabels(),
-		Dimensions:                       g.Params.GetFreeformAttributes().GetSwarmingDimensions(),
+		Dimensions:                       dims,
 		ParentTaskID:                     g.ParentTaskID,
 		ParentRequestUID:                 g.ParentRequestUID,
 		Priority:                         g.Params.GetScheduling().GetPriority(),
@@ -201,6 +204,19 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		GerritChanges:                    g.GerritChanges,
 		ResultsConfig:                    g.Params.Results,
 	}, nil
+}
+
+// dimsWithDUTState adds a dut_state:ready requirement to the given dims if no
+// dut_state was specified.
+func dimsWithDUTState(dims []string) []string {
+	for _, dim := range dims {
+		if strings.HasPrefix(dim, "dut_state:") {
+			// Don't modify the dimensions in this case.
+			return dims
+		}
+	}
+	dims = append(dims, "dut_state:ready")
+	return dims
 }
 
 func pubSubTopicFullName(c *config.Config_PubSub) string {

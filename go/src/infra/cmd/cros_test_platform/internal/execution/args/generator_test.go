@@ -8,6 +8,8 @@ package args
 
 import (
 	"context"
+	"fmt"
+	"reflect"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -325,4 +327,36 @@ func TestExperiment2s(t *testing.T) {
 			})
 		})
 	})
+}
+
+var testDimsWithDUTStateData = []struct {
+	inputDims []string
+	wantDims  []string
+}{
+	{
+		inputDims: []string{"foo"},
+		wantDims:  []string{"foo", "dut_state:ready"},
+	},
+	{
+		inputDims: []string{"bar", "dut_state:reserved"},
+		wantDims:  []string{"bar", "dut_state:reserved"},
+	},
+	{
+		inputDims: []string{"baz", "dut_state:ready"},
+		wantDims:  []string{"baz", "dut_state:ready"},
+	},
+}
+
+func TestDimsWithDUTState(t *testing.T) {
+	t.Parallel()
+	for _, tt := range testDimsWithDUTStateData {
+		tt := tt
+		t.Run(fmt.Sprintf("%v", tt.inputDims), func(t *testing.T) {
+			t.Parallel()
+			gotDims := dimsWithDUTState(tt.inputDims)
+			if !reflect.DeepEqual(tt.wantDims, gotDims) {
+				t.Errorf("unexpected error: wanted %v, got %v", tt.wantDims, gotDims)
+			}
+		})
+	}
 }

@@ -96,8 +96,9 @@ func TestRequestArguments(t *testing.T) {
 			So(launchArgs.SchedulableLabels.GetCriticalPools(), ShouldHaveLength, 1)
 			So(launchArgs.SchedulableLabels.GetCriticalPools()[0], ShouldEqual, inventory.SchedulableLabels_DUT_POOL_CQ)
 
-			So(launchArgs.Dimensions, ShouldHaveLength, 1)
+			So(launchArgs.Dimensions, ShouldHaveLength, 2)
 			So(launchArgs.Dimensions, ShouldContain, "freeform-key:freeform-value")
+			So(launchArgs.Dimensions, ShouldContain, "dut_state:ready")
 		})
 	})
 }
