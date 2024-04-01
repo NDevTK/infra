@@ -355,10 +355,9 @@ func updateBotConfigForBotIds(ctx context.Context, botsMap map[string]*ufspb.Own
 		if err != nil && status.Code(err) != codes.NotFound {
 			logging.Debugf(ctx, "Failed to check if ownership is updated %s - %v", botId, err)
 			errs = append(errs, err)
-		} else if !updated {
-			logging.Debugf(ctx, "Nothing to update for bot id %s", botId)
 		}
 		if updated {
+			logging.Infof(ctx, "Updating ownership for for bot id %s", botId)
 			err = updateOwnership(ctx, botId, ownershipData, assetType)
 			if err != nil {
 				logging.Debugf(ctx, "Failed to update ownership for bot id %s - %v", botId, err)
@@ -525,10 +524,9 @@ func updateBotConfigForBotIdPrefix(ctx context.Context, botIdPrefixesMap map[str
 		if err != nil && status.Code(err) != codes.NotFound {
 			logging.Debugf(ctx, "Failed to check if ownership is updated for prefix %s - %v", prefix, err)
 			errs = append(errs, err)
-		} else if !updated {
-			logging.Debugf(ctx, "Nothing to update for bot id prefix %s", prefix)
 		}
 		if updated {
+			logging.Infof(ctx, "Updating ownership for bot id prefix %s", prefix)
 			err = updateOwnershipForAssetByPrefix(ctx, prefix, ownershipData, assetType)
 			if err != nil {
 				logging.Debugf(ctx, "Failed to update ownership for bot id prefix %s - %v", prefix, err)
