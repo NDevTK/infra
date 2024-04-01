@@ -8,7 +8,6 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
-	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -159,8 +158,8 @@ var (
 func TestStepsSort(t *testing.T) {
 	steps := append([]Step{}, stepsTestCase...)
 	sort.Sort(Steps(steps))
-	if !reflect.DeepEqual(steps, stepsSorted) {
-		t.Errorf("sort Steps=%v; want=%v", steps, stepsSorted)
+	if diff := cmp.Diff(steps, stepsSorted); diff != "" {
+		t.Errorf("sort Steps mismatch (-want, +got):\n%s", diff)
 	}
 }
 
@@ -178,8 +177,8 @@ func TestStepsReverse(t *testing.T) {
 		{Out: "1"},
 		{Out: "0"},
 	}
-	if !reflect.DeepEqual(steps, want) {
-		t.Errorf("steps.Reverse=%v; want=%v", steps, want)
+	if diff := cmp.Diff(steps, want); diff != "" {
+		t.Errorf("steps.Reverse(...) mismatch (-want, +got):\n%s", diff)
 	}
 }
 
@@ -203,8 +202,8 @@ func TestParseSimple(t *testing.T) {
 		Start:    1,
 		Steps:    stepsTestCase,
 	}
-	if !reflect.DeepEqual(njl, want) {
-		t.Errorf("Parse()=%v; want=%v", njl, want)
+	if diff := cmp.Diff(njl, want); diff != "" {
+		t.Errorf("Parse(...) mismatch (-want, +got):\n%s", diff)
 	}
 }
 
@@ -218,8 +217,8 @@ func TestParseEmptyLine(t *testing.T) {
 		Start:    1,
 		Steps:    stepsTestCase,
 	}
-	if !reflect.DeepEqual(njl, want) {
-		t.Errorf("Parse()=%v; want=%v", njl, want)
+	if diff := cmp.Diff(njl, want); diff != "" {
+		t.Errorf("Parse(...) mismatch (-want, +got):\n%s", diff)
 	}
 }
 
@@ -324,8 +323,8 @@ func TestDedup(t *testing.T) {
 		},
 		CmdHash: "a551cc46f8c21e5a",
 	})
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Dedup=%v; want=%v", got, want)
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Dedup(...) mismatch (-want, +got):\n%s", diff)
 	}
 }
 
@@ -403,8 +402,8 @@ func TestFlow(t *testing.T) {
 		},
 	}
 
-	if !reflect.DeepEqual(flow, wantSortByStart) {
-		t.Errorf("Flow()=\n%#v\n want=\n%#v", flow, wantSortByStart)
+	if diff := cmp.Diff(flow, wantSortByStart); diff != "" {
+		t.Errorf("Flow(...) mismatch (-want, +got):\n%s", diff)
 	}
 
 	flow = Flow(steps, true)
@@ -471,8 +470,8 @@ func TestFlow(t *testing.T) {
 		},
 	}
 
-	if !reflect.DeepEqual(flow, wantSortByEnd) {
-		t.Errorf("Flow()=\n%#v\n want=\n%#v", flow, wantSortByEnd)
+	if diff := cmp.Diff(flow, wantSortByEnd); diff != "" {
+		t.Errorf("Flow(...) mismatch (-want, +got):\n%s", diff)
 	}
 }
 
@@ -517,8 +516,8 @@ func TestWeightedTime(t *testing.T) {
 		"target-c": 1*time.Millisecond/4 + 2*time.Millisecond/2 + 3*time.Millisecond,
 		"target-d": 1 * time.Millisecond / 4,
 	}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("WeightedTime(%v)=%v; want=%v", steps, got, want)
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("WeightedTime(%v) mismatch (-want, +got):\n%s", steps, diff)
 	}
 }
 
@@ -550,8 +549,8 @@ func TestParseMetadata(t *testing.T) {
 		Targets: []string{"chrome"},
 	}
 
-	if !reflect.DeepEqual(m, want) {
-		t.Errorf("json.Unmarshal(%q, ...): got %#v, want %#v", mJson, m, want)
+	if diff := cmp.Diff(m, want); diff != "" {
+		t.Errorf("json.Unmarshal(%q, ...) mismatch (-want, +got):\n%s", mJson, diff)
 	}
 }
 
