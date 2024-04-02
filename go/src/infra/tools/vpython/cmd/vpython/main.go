@@ -19,6 +19,8 @@ import (
 	"go.chromium.org/luci/vpython/common"
 	"go.chromium.org/luci/vpython/python"
 	"go.chromium.org/luci/vpython/wheels"
+
+	"infra/tools/vpython/vpythoncommon"
 )
 
 type PythonRuntime struct {
@@ -37,7 +39,7 @@ func GetPythonRuntime(ver string) *PythonRuntime {
 			Executable:  "python",
 			CIPDName:    "cpython",
 			SpecPattern: ".vpython",
-			Virtualenv:  "version:2@16.7.12.chromium.7",
+			Virtualenv:  vpythoncommon.Virtualenv27Version,
 		}
 	case "3.8":
 		return &PythonRuntime{
@@ -45,7 +47,15 @@ func GetPythonRuntime(ver string) *PythonRuntime {
 			Executable:  "python3",
 			CIPDName:    "cpython3",
 			SpecPattern: ".vpython3",
-			Virtualenv:  "version:2@16.7.12.chromium.7",
+			Virtualenv:  vpythoncommon.Virtualenv38Version,
+		}
+	case "3.11":
+		return &PythonRuntime{
+			Version:     "3.11",
+			Executable:  "python3",
+			CIPDName:    "cpython3",
+			SpecPattern: ".vpython3",
+			Virtualenv:  vpythoncommon.Virtualenv311Version,
 		}
 	default:
 		return &PythonRuntime{
@@ -53,7 +63,7 @@ func GetPythonRuntime(ver string) *PythonRuntime {
 			Executable:  "python3",
 			CIPDName:    "cpython3",
 			SpecPattern: ".vpython3",
-			Virtualenv:  "version:2@20.17.1.chromium.8",
+			Virtualenv:  vpythoncommon.Virtualenv311Version,
 		}
 	}
 }

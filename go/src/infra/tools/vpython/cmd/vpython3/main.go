@@ -17,12 +17,23 @@ import (
 	"go.chromium.org/luci/vpython/common"
 	"go.chromium.org/luci/vpython/python"
 	"go.chromium.org/luci/vpython/wheels"
+
+	"infra/tools/vpython/vpythoncommon"
 )
 
 const DefaultPythonVersion = "3.8"
 
 type PythonRuntime struct {
-	Version    string
+	// The version of the python interpreter bundle.
+	//
+	// Should be a value like "3.8" or "3.11" (i.e. MAJOR.MINOR, no patch
+	// version).
+	Version string
+
+	// The version of the "infra/3pp/tools/virtualenv" CIPD package to use for
+	// virtualenv support.
+	//
+	// Should be a CIPD tag for this package.
 	Virtualenv string
 }
 
@@ -31,12 +42,17 @@ func GetPythonRuntime(ver string) *PythonRuntime {
 	case "3.8":
 		return &PythonRuntime{
 			Version:    "3.8",
-			Virtualenv: "version:2@16.7.12.chromium.7",
+			Virtualenv: vpythoncommon.Virtualenv38Version,
+		}
+	case "3.11":
+		return &PythonRuntime{
+			Version:    ver,
+			Virtualenv: vpythoncommon.Virtualenv311Version,
 		}
 	default:
 		return &PythonRuntime{
 			Version:    ver,
-			Virtualenv: "version:2@20.17.1.chromium.8",
+			Virtualenv: vpythoncommon.Virtualenv311Version,
 		}
 	}
 }
