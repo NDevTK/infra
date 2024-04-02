@@ -187,6 +187,10 @@ func buildDataFromCTPReq(data *BqData, req *api.CTPv2Request) *BqData {
 
 // SoftInsertStepWInternalPlan insert a step info to BQl built from the InternalTestPlan req. Do not fail on errors.
 func SoftInsertStepWInternalPlan(ctx context.Context, BQClient *bigquery.Client, data *BqData, req *api.InternalTestplan, build *build.State) {
+	if BQClient == nil {
+		logging.Infof(ctx, "No BQ client to write to")
+		return
+	}
 	if req != nil {
 		data = buildDataFromInternalTP(data, req)
 	}

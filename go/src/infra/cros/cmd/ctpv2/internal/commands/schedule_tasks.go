@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/bigquery"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -19,8 +20,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/protobuf/proto"
 	protobuf "google.golang.org/protobuf/proto"
 
+	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/schedulers"
@@ -51,8 +54,14 @@ type ScheduleTasksCmd struct {
 	BuildState     *build.State
 	Scheduler      interfaces.SchedulerInterface
 
+	// Deps
+	InternalTestPlan *api.InternalTestplan
+
 	// Updates
 	TestResults map[string]*data.TestResults
+
+	// For logging
+	BQClient *bigquery.Client
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -84,7 +93,7 @@ func (cmd *ScheduleTasksCmd) UpdateStateKeeper(
 	var err error
 	switch sk := ski.(type) {
 	case *data.FilterStateKeeper:
-		err = cmd.updateFilterStateKeeper(ctx, sk)
+		err = cmd.updateScheduleStateKeeper(ctx, sk)
 	}
 
 	if err != nil {
@@ -110,6 +119,10 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 		return fmt.Errorf("Cmd %q missing dependency: Scheduler", cmd.GetCommandType())
 	}
 
+	if sk.BQClient != nil {
+		cmd.BQClient = sk.BQClient
+	}
+	cmd.InternalTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*api.InternalTestplan)
 	cmd.MiddledOutResp = sk.MiddledOutResp
 	cmd.BuildState = sk.BuildState
 	// Assign scheduler
@@ -123,11 +136,11 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	return nil
 }
 
-func (cmd *ScheduleTasksCmd) updateFilterStateKeeper(ctx context.Context, sk *data.FilterStateKeeper) error {
+func (cmd *ScheduleTasksCmd) updateScheduleStateKeeper(ctx context.Context, sk *data.FilterStateKeeper) error {
 	if cmd.TestResults != nil && len(cmd.TestResults) != 0 {
 		sk.SuiteTestResults = cmd.TestResults
 	}
-
+	cmd.InternalTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*api.InternalTestplan)
 	return nil
 }
 
@@ -137,10 +150,18 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Schedule tasks")
 	defer func() { step.End(err) }()
 
+	key := "scheduleTasks"
+	if cmd.BQClient != nil {
+		analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: analytics.Start}, cmd.InternalTestPlan, cmd.BuildState)
+	}
+	start := time.Now()
+
+	enumStatus := analytics.Success
 	cmd.TestResults = map[string]*data.TestResults{}
 	suiteName := suiteName(cmd.MiddledOutResp.SuiteInfo)
 	if len(cmd.MiddledOutResp.TrReqs) == 0 {
 		logging.Infof(ctx, "no test found in middle-out response")
+		enumStatus = analytics.Fail
 		step.SetSummaryMarkdown("enumeration error: no test found")
 		err = &data.EnumerationError{SuiteName: suiteName}
 		cmd.TestResults[common.EnumerationErrKey] = &data.TestResults{Suite: suiteName, Key: common.EnumerationErrKey, TopLevelError: &err}
@@ -151,23 +172,46 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	// GenerateRequests
 	buildMap := GenerateRequests(ctx, cmd.MiddledOutResp, cmd.BuildState)
 	if len(buildMap) == 0 {
+		enumStatus = analytics.Fail
 		step.SetSummaryMarkdown("enumeration error: no valid test found")
 		err = &data.EnumerationError{SuiteName: suiteName}
 		cmd.TestResults[common.EnumerationErrKey] = &data.TestResults{Suite: suiteName, Key: common.EnumerationErrKey, TopLevelError: &err}
 		return err
 	}
 
+	bqData := &analytics.BqData{Step: "enumeration", Status: enumStatus, Duration: float32(time.Since(start).Seconds())}
+	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
+
+	schedulerStatus := analytics.Success
+	schedulerFreeform := ""
+
 	scheduler := cmd.Scheduler
 	if cmd.Scheduler == nil {
-		logging.Infof(ctx, "empty scheduler")
-		return fmt.Errorf("empty scheduler")
+		errmsg := "empty scheduler"
+
+		schedulerFreeform = errmsg
+		schedulerStatus = analytics.Fail
+
+		logging.Infof(ctx, errmsg)
+		return fmt.Errorf(errmsg)
 	}
 	pool := pool(cmd.MiddledOutResp.SuiteInfo)
 	err = scheduler.Setup(pool)
 	if err != nil {
-		logging.Infof(ctx, "error while setting up scheduler: %s", err)
-		return errors.Annotate(err, "error while setting up scheduler").Err()
+		errmsg := "error while setting up scheduler"
+
+		schedulerStatus = analytics.Fail
+		schedulerFreeform = errmsg
+
+		logging.Infof(ctx, "%s: %s", errmsg, err)
+		return errors.Annotate(err, errmsg).Err()
 	}
+
+	bqData = &analytics.BqData{Step: "scheduler-setup", Status: schedulerStatus, Duration: float32(time.Since(start).Seconds())}
+	if schedulerFreeform != "" {
+		bqData.Freeform = schedulerFreeform
+	}
+	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
 
 	// Todo: batch call
 	resultsChan := make(chan *data.TestResults)
@@ -190,6 +234,8 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 		}
 		cmd.TestResults[mapKey] = result
 	}
+
+	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: analytics.Success, Duration: float32(time.Since(start).Seconds())}, cmd.InternalTestPlan, cmd.BuildState)
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.TestResults, "consolidated results")
 	return nil
 
