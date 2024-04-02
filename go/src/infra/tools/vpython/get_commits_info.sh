@@ -14,7 +14,7 @@ fi
 
 cd "$(git rev-parse --show-toplevel)"
 
-COMMIT_RANGE=$(git --no-pager log --pretty=format:"%H" ${COMMIT_RANGE_START}..${COMMIT_RANGE_END} -- go/src/infra/tools/vpython/)
+COMMIT_RANGE=$(git --no-pager log --pretty=format:"%H" ${COMMIT_RANGE_START}..${COMMIT_RANGE_END} -- go/src/infra/tools/vpython/ build/packages/vpython*)
 
 DEPS_TEMP=$(mktemp)
 get_luci_go_commit() {
