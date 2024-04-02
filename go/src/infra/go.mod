@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go v0.112.0
 	cloud.google.com/go/appengine v1.8.5
 	cloud.google.com/go/bigquery v1.59.1
+	cloud.google.com/go/cloudsqlconn v1.8.1
 	cloud.google.com/go/cloudtasks v1.12.6
 	cloud.google.com/go/compute v1.24.0
 	cloud.google.com/go/compute/metadata v0.2.3
@@ -40,7 +41,7 @@ require (
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/gofrs/flock v0.8.1
 	github.com/gogo/protobuf v1.3.2
-	github.com/golang/glog v1.1.2
+	github.com/golang/glog v1.2.0
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.4
 	github.com/google/cel-go v0.7.3
@@ -50,10 +51,11 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/google/subcommands v1.2.0
 	github.com/google/uuid v1.6.0
-	github.com/googleapis/gax-go/v2 v2.12.1
+	github.com/googleapis/gax-go/v2 v2.12.2
 	github.com/googleapis/google-cloud-go-testing v0.0.0-20210719221736-1c9a4c676720
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-version v1.2.0
+	github.com/jackc/pgtype v1.14.0
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/jdxcode/netrc v0.0.0-20210204082910-926c7f70242a
 	github.com/julienschmidt/httprouter v1.3.0
@@ -83,36 +85,36 @@ require (
 	go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20240216220433-8a9cb838503d
 	go.chromium.org/luci v0.0.0-20230103053340-8a57daa72e32
 	go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace v0.47.0
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.47.0
-	go.opentelemetry.io/otel v1.23.1
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0
+	go.opentelemetry.io/otel v1.24.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.21.0
 	go.opentelemetry.io/otel/sdk v1.23.1
-	go.opentelemetry.io/otel/trace v1.23.1
+	go.opentelemetry.io/otel/trace v1.24.0
 	go.skia.org/infra v0.0.0-20230524042348-e1356ea7576d
 	go.starlark.net v0.0.0-20240123142251-f86470692795
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
-	golang.org/x/crypto v0.20.0
+	golang.org/x/crypto v0.21.0
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/mod v0.15.0
-	golang.org/x/net v0.21.0
-	golang.org/x/oauth2 v0.17.0
+	golang.org/x/net v0.22.0
+	golang.org/x/oauth2 v0.18.0
 	golang.org/x/perf v0.0.0-20210220033136-40a54f11e909
 	golang.org/x/sync v0.6.0
-	golang.org/x/sys v0.17.0
-	golang.org/x/term v0.17.0
+	golang.org/x/sys v0.18.0
+	golang.org/x/term v0.18.0
 	golang.org/x/time v0.5.0
 	golang.org/x/tools v0.18.0
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
 	gonum.org/v1/gonum v0.12.0
-	google.golang.org/api v0.164.0
+	google.golang.org/api v0.169.0
 	google.golang.org/appengine v1.6.8
 	google.golang.org/appengine/v2 v2.0.4
 	google.golang.org/genproto v0.0.0-20240213162025-012b6fc9bca9
 	google.golang.org/genproto/googleapis/api v0.0.0-20240213162025-012b6fc9bca9
-	google.golang.org/genproto/googleapis/bytestream v0.0.0-20240213162025-012b6fc9bca9
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240213162025-012b6fc9bca9
-	google.golang.org/grpc v1.61.0
+	google.golang.org/genproto/googleapis/bytestream v0.0.0-20240304161311-37d4d3c04a78
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240311173647-c811ad7063a7
+	google.golang.org/grpc v1.62.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
 	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -178,9 +180,9 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.16.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgtype v1.14.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jcgregorio/logger v0.1.3 // indirect
@@ -228,9 +230,9 @@ require (
 	go.einride.tech/aip v0.66.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/detectors/gcp v1.23.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.48.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.49.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.21.0 // indirect
-	go.opentelemetry.io/otel/metric v1.23.1 // indirect
+	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.0.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect

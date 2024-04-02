@@ -23,6 +23,7 @@ import (
 	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
+	"infra/cros/cmd/kron/cloudsql"
 	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/metrics"
 	"infra/cros/cmd/kron/pubsub"
@@ -227,16 +228,35 @@ type BuildPackage struct {
 	TriggeredConfigs []*ConfigDetails
 }
 
-// publishBuild uploads each build information proto to a pubsub queue
-// to later be sent to BigQuery.
-func publishBuild(build *BuildPackage, client pubsub.PublishClient) error {
-	common.Stdout.Printf("Publishing build %s for build target %s and milestone %d to pub sub", build.Build.BuildUuid, build.Build.BuildTarget, build.Build.Milestone)
+// publishBuild uploads each build information proto to our long term storage
+// PSQL database and our Pub/Sub metrics pipeline.
+//
+// NOTE: We will attempt to write the build message to the PSQL DB before we try
+// uploading to pubsub. Since the BuildUUID is a hash, we will not be able to
+// upload the build twice.
+func publishBuild(build *BuildPackage, psClient pubsub.PublishClient, sqlClient cloudsql.Client) error {
+	ctx := context.Background()
+	common.Stdout.Printf("Publishing build %s for build target %s and milestone %d to long term storage", build.Build.BuildUuid, build.Build.BuildTarget, build.Build.Milestone)
 	data, err := protojson.Marshal(build.Build)
 	if err != nil {
 		return err
 	}
 
-	err = client.PublishMessage(context.Background(), data)
+	// Convert the build to a PSQL compatible type.
+	psqlBuild, err := cloudsql.ConvertBuildToPSQLRow(build.Build)
+	if err != nil {
+		return err
+	}
+
+	// Insert the row into Cloud SQL PSQL.
+	_, err = sqlClient.Exec(ctx, cloudsql.InsertBuildsTemplate, cloudsql.RowToSlice(psqlBuild)...)
+	if err != nil {
+		return err
+	}
+	common.Stdout.Printf("Published build %s for build target %s and milestone %d to PSQL", build.Build.BuildUuid, build.Build.BuildTarget, build.Build.Milestone)
+
+	// Publish the build to Pub/Sub.
+	err = psClient.PublishMessage(ctx, data)
 	if err != nil {
 		return err
 	}
@@ -249,6 +269,8 @@ func publishBuild(build *BuildPackage, client pubsub.PublishClient) error {
 // from the releases Pub/Sub stream. Once read, all builds will be written into
 // long term storage.
 func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage, error) {
+	ctx := context.Background()
+
 	psHandler := handler{
 		buildsChan: make(chan *BuildPackage),
 	}
@@ -256,7 +278,12 @@ func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage
 	builds := []*BuildPackage{}
 
 	common.Stdout.Printf("Initializing client for pub sub topic %s on project %s", common.BuildsPubSubTopic, projectID)
-	client, err := pubsub.InitPublishClient(context.Background(), projectID, common.BuildsPubSubTopic)
+	psClient, err := pubsub.InitPublishClient(ctx, projectID, common.BuildsPubSubTopic)
+	if err != nil {
+		return nil, err
+	}
+
+	sqlClient, err := cloudsql.InitBuildsClient(ctx, false)
 	if err != nil {
 		return nil, err
 	}
@@ -269,11 +296,12 @@ func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage
 	// deadlock.
 	var wait sync.WaitGroup
 	wait.Add(1)
-	go func(builds *[]*BuildPackage, wg *sync.WaitGroup, buildsChan chan *BuildPackage, client pubsub.PublishClient) {
+	go func(builds *[]*BuildPackage, wg *sync.WaitGroup, buildsChan chan *BuildPackage, psClient pubsub.PublishClient, sqlClient cloudsql.Client) {
 		defer wg.Done()
 		for build := range buildsChan {
 			//  We need to publish the messages here to pubsub.
-			if err := publishBuild(build, client); err != nil {
+			if err := publishBuild(build, psClient, sqlClient); err != nil {
+				common.Stderr.Println(err)
 				// If we failed to republish the message then we should nack the
 				// build to be ingested again.
 				build.Message.Nack()
@@ -289,13 +317,12 @@ func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage
 			build.Message.Ack()
 
 		}
-	}(&builds, &wait, psHandler.buildsChan, client)
+	}(&builds, &wait, psHandler.buildsChan, psClient, sqlClient)
 
 	// Initialize the custom pubsub receiver. This custom handler implements a
 	// timeout feature which will stop the pubsub Receive() call once no more
 	// messages are incoming.
 	common.Stdout.Println("Initializing Pub/Sub Receive Client")
-	ctx := context.Background()
 	receiveClient, err := pubsub.InitReceiveClientWithTimer(ctx, projectID, subscriptionName, psHandler.processPSMessage)
 	if err != nil {
 		return nil, err

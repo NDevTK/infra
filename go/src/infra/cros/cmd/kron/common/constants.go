@@ -40,8 +40,10 @@ const (
 
 	TotFileURL = "https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/main/chromeos/config/chromeos_version.sh?format=text"
 
-	StagingProjectID = "google.com:suite-scheduler-staging"
-	ProdProjectID    = "google.com:suite-scheduler"
+	StagingProjectID     = "google.com:suite-scheduler-staging"
+	StagingProjectNumber = 118927920079
+	ProdProjectID        = "google.com:suite-scheduler"
+	ProdProjectNumber    = 542690066668
 
 	BuildsSubscription          = "chromeos-builds-all"
 	BuildsSubscriptionTesting   = "chromeos-builds-all-testing"
@@ -59,4 +61,24 @@ const (
 	MultirequestSize = 25
 
 	StagingMaxRequests = 5
+
+	// Names are shared across environments but versions may have skew depending
+	// on individual key recycling. If a different version needs to be targeted
+	// then the version number will need to be updated here.
+
+	KronWriterUsernameSecret               = "kron-writer-username"
+	KronWriterUsernameSecretVersionStaging = 2
+	KronWriterUsernameSecretVersionProd    = 1
+
+	KronWriterPasswordSecret               = "kron-writer-password"
+	KronWriterPasswordSecretVersionStaging = 1
+	KronWriterPasswordSecretVersionProd    = 1
+
+	KronBuildsDBNameSecret               = "kron-builds-dbname"
+	KronBuildsDBNameSecretVersionStaging = 1
+	KronBuildsDBNameSecretVersionProd    = 1
+
+	KronBuildsConnectionNameSecret               = "kron-builds-connection-name"
+	KronBuildsConnectionNameSecretVersionStaging = 1
+	KronBuildsConnectionNameSecretVersionProd    = 1
 )

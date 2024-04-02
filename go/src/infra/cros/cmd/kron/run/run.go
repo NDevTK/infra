@@ -117,12 +117,6 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	// TODO(b/315340446): Write build info to long term storage(database)
 
 	// Build the list of all configs triggered by the ingested build images.
-	//
-	// TODO(TBD): For in run events, determine if we need to squash the
-	// builds so that NEW_BUILD configs are only triggered by the newest images.
-	// The created time is stored inside the build artifact type. Reach out to
-	// release team to determine if this is required.
-	// https://chromium.googlesource.com/chromiumos/infra/proto/+/refs/heads/main/src/chromiumos/build_report.proto#197
 	common.Stdout.Println("Gathering all configs triggered from retrieved build images.")
 	err = fetchTriggeredNewBuildConfigs(releaseBuilds, suiteSchedulerConfigs)
 	if err != nil {
@@ -138,9 +132,6 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 		return err
 	}
 
-	// TODO(b/319273876): Remove slow migration logic upon completion of
-	// transition. Right now only the CFTNewBuild config on brya is
-	// supported. Below checks ensure only one request can launch per run.
 	if len(releaseBuilds) == 0 {
 		common.Stderr.Println("No builds found")
 		return nil
@@ -150,7 +141,7 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	// requests into one large CTP request.
 	ctpRequests := combineCTPRequests(releaseBuilds)
 
-	// If staging reduce requests to 5 MAX
+	// If staging reduce requests to 5 MAX.
 	if !isProd {
 		ctpRequests = limitStagingRequests(ctpRequests)
 	}

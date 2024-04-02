@@ -169,7 +169,6 @@ func TimeToKronTime(time time.Time) KronTime {
 // format but with a 0 value for nanoseconds. Nanos need to be set to 0 because
 // PLX cannot support sub second precision when time format RFC 3339 is used.
 func TimestamppbNowWithoutNanos() *timestamppb.Timestamp {
-
 	ret := timestamppb.Now()
 	ret.Nanos = 0
 
