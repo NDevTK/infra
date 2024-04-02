@@ -29,6 +29,10 @@ var (
 
 	stepsTestCase = []Step{
 		{
+			End: 76 * time.Millisecond,
+			Out: "ninja startup overhead",
+		},
+		{
 			Start:   76 * time.Millisecond,
 			End:     187 * time.Millisecond,
 			Out:     "resources/inspector/devtools_extension_api.js",
@@ -88,6 +92,10 @@ var (
 	}...)
 
 	stepsSorted = []Step{
+		{
+			End: 76 * time.Millisecond,
+			Out: "ninja startup overhead",
+		},
 		{
 			Start:   76 * time.Millisecond,
 			End:     187 * time.Millisecond,
@@ -290,8 +298,8 @@ func TestDump(t *testing.T) {
 	if err != nil {
 		t.Errorf("Dump()=%v; want=<nil>", err)
 	}
-	if b.String() != logTestCase {
-		t.Errorf("Dump %q; want %q", b.String(), logTestCase)
+	if diff := cmp.Diff(b.String(), logTestCase); diff != "" {
+		t.Errorf("Dump(...) mismatch (-want, +got):\n%s", diff)
 	}
 }
 
@@ -341,6 +349,10 @@ func TestFlow(t *testing.T) {
 
 	wantSortByStart := [][]Step{
 		{
+			{
+				End: 76 * time.Millisecond,
+				Out: "ninja startup overhead",
+			},
 			{
 				Start:   76 * time.Millisecond,
 				End:     187 * time.Millisecond,
@@ -409,6 +421,10 @@ func TestFlow(t *testing.T) {
 	flow = Flow(steps, true)
 	wantSortByEnd := [][]Step{
 		{
+			{
+				End: 76 * time.Millisecond,
+				Out: "ninja startup overhead",
+			},
 			{
 				Start:   76 * time.Millisecond,
 				End:     187 * time.Millisecond,

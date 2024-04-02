@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"regexp"
 	"sort"
 	"strconv"
@@ -173,6 +174,8 @@ type NinjaLog struct {
 const (
 	initialBufSize = 4096
 	maxBufSize     = 128 * 1024
+
+	startupOverhead = "ninja startup overhead"
 )
 
 // Parse parses .ninja_log file, with chromium's compile.py metadata.
@@ -195,7 +198,10 @@ func Parse(fname string, r io.Reader) (*NinjaLog, error) {
 		return nil, fmt.Errorf("unexpected format: %s", line)
 	}
 	nlog.Start = lineno
-	var lastStep Step
+	lastStep := Step{
+		End: time.Duration(math.MaxInt64),
+	}
+
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "# end of ninja log" {
@@ -214,12 +220,18 @@ func Parse(fname string, r io.Reader) (*NinjaLog, error) {
 		// multi threads. So, it adds 1 minute buffer.
 		if step.End+1*time.Minute < lastStep.End {
 			nlog.Start = lineno
-			nlog.Steps = nil
+			nlog.Steps = []Step{
+				{
+					End: step.Start,
+					Out: startupOverhead,
+				},
+			}
 		}
 		nlog.Steps = append(nlog.Steps, step)
 		lastStep = step
 		lineno++
 	}
+
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("error at %d: %v", lineno, err)
 	}
@@ -295,6 +307,11 @@ func Dump(w io.Writer, steps []Step) error {
 		return err
 	}
 	for _, s := range steps {
+
+		if s.Out == startupOverhead {
+			// Ignore ninja loading step as that is added in Parse.
+			continue
+		}
 		_, err = fmt.Fprintln(w, stepToLine(s))
 		if err != nil {
 			return err

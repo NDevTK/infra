@@ -66,6 +66,12 @@ func TestToAVRO(t *testing.T) {
 		"targets":       []string{"all"},
 		"log_entries": []map[string]interface{}{
 			{
+				"end_duration_sec":      float64(0.076),
+				"outputs":               []string{"ninja startup overhead"},
+				"start_duration_sec":    float64(0),
+				"weighted_duration_sec": float64(0.076),
+			},
+			{
 				"end_duration_sec":      float64(0.187),
 				"outputs":               []string{"resources/inspector/devtools_api.js", "resources/inspector/devtools_extension_api.js"},
 				"start_duration_sec":    float64(0.076),
