@@ -18,9 +18,11 @@ import (
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/luciexe/build"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/data"
 )
@@ -111,11 +113,26 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	}
 
 	internalStruct := &testapi.InternalTestplan{}
-	targs := targetRequirements(cmd.CtpReq)
 	suitemd := &testapi.SuiteMetadata{
-		TargetRequirements: targs,
-		Pool:               cmd.CtpReq.GetPool(),
-		ExecutionMetadata:  executionMetadata(cmd.CtpReq),
+		Pool:              cmd.CtpReq.GetPool(),
+		ExecutionMetadata: executionMetadata(cmd.CtpReq),
+	}
+
+	// Check if new field exists
+	exists, err := common.CheckIfSchedulingUnitFieldExistsInSuiteMD()
+	if err != nil {
+		logging.Infof(ctx, "err while checking scheduling unit field check: %s", err)
+	}
+
+	// TODO (azrahman): remove this when all the default containers are up to date
+	exists = false
+
+	if exists {
+		// new field exists that supports multi-dut
+		suitemd.SchedulingUnits = getSchedulingUnits(cmd.CtpReq)
+	} else {
+		// non-multi-dut legacy flow to support backwards compatibility
+		suitemd.TargetRequirements = targetRequirements(cmd.CtpReq)
 	}
 
 	suitemd.SchedulerInfo = generateSchedulerInfo(cmd.CtpReq)
@@ -184,6 +201,38 @@ func targetRequirements(req *testapi.CTPRequest) []*testapi.TargetRequirements {
 		}
 	}
 	return targs
+}
+
+func getSchedulingUnits(req *testapi.CTPRequest) []*testapi.SchedulingUnit {
+	schedUnits := []*testapi.SchedulingUnit{}
+	for _, scheduleTarget := range req.GetScheduleTargets() {
+		newSchedUnit := &api.SchedulingUnit{CompanionTargets: []*api.Target{}}
+		for i, targ := range scheduleTarget.GetTargets() {
+			newTarget := TargetsToNewTarget(targ)
+			if i == 0 {
+				// primary target
+				newSchedUnit.PrimaryTarget = newTarget
+			} else {
+				// secondary target
+				newSchedUnit.CompanionTargets = append(newSchedUnit.CompanionTargets, newTarget)
+			}
+		}
+		schedUnits = append(schedUnits, newSchedUnit)
+	}
+	return schedUnits
+}
+
+func TargetsToNewTarget(targ *testapi.Targets) *api.Target {
+	switch hw := targ.HwTarget.Target.(type) {
+	case *testapi.HWTarget_LegacyHw:
+		// There will only be one set by the translation; but other filters might
+		// expand this as they see fit.
+		swDef := buildHwDef(hw.LegacyHw)
+		legacysw := legacyswpoper(targ.SwTarget)
+
+		return &api.Target{SwarmingDef: swDef, SwReq: legacysw}
+	}
+	return nil
 }
 
 func legacyswpoper(sws *testapi.SWTarget) *testapi.LegacySW {
