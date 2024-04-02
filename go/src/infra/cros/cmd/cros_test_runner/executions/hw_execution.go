@@ -58,7 +58,7 @@ func HwExecution() {
 			var err error
 			if input.CrosTestRunnerRequest != nil {
 				// If the request is a CrosTestRunner dynamic request...
-				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
 			} else if input.CftTestRequest.TranslateTrv2Request {
 				// If the request is a CrosTestRunner non-dynamic request with translation flag...
 				builder := &common_builders.CrosTestRunnerRequestBuilder{}
@@ -66,10 +66,10 @@ func HwExecution() {
 					Cft: input.CftTestRequest,
 				}
 				crosTestRunnerRequest := builder.Build(constructor)
-				skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+				skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
 			} else {
 				// If the request is a CrosTestRunner non-dynamic request...
-				skylabResult, err = executeHwTests(ctx, input.CftTestRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+				skylabResult, err = executeHwTests(ctx, input.CftTestRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
 			}
 			if skylabResult != nil {
 				m, _ := proto.Marshal(skylabResult)
@@ -100,6 +100,7 @@ func HwExecution() {
 func executeHwTests(
 	ctx context.Context,
 	req *skylab_test_runner.CFTTestRequest,
+	commonConfig *skylab_test_runner.CommonConfig,
 	ctrCipdVersion string,
 	gsRoot string,
 	buildState *build.State) (*skylab_test_runner.Result, error) {
@@ -135,6 +136,7 @@ func executeHwTests(
 	sk := data.NewHwTestStateKeeper()
 	sk.BuildState = buildState
 	sk.CftTestRequest = req
+	sk.CommonConfig = commonConfig
 	sk.Ctr = ctr
 	sk.DockerKeyFileLocation = dockerKeyFile
 	sk.GcsPublishSrcDir = os.Getenv("TEMPDIR")
@@ -181,6 +183,7 @@ func executeHwTestsV2(
 	ctx context.Context,
 	cft *skylab_test_runner.CFTTestRequest,
 	req *api.CrosTestRunnerDynamicRequest,
+	commonConfig *skylab_test_runner.CommonConfig,
 	ctrCipdVersion string,
 	gsRoot string,
 	buildState *build.State) (*skylab_test_runner.Result, error) {
@@ -217,6 +220,7 @@ func executeHwTestsV2(
 	sk := data.NewHwTestStateKeeper()
 	sk.BuildState = buildState
 	sk.CrosTestRunnerRequest = req
+	sk.CommonConfig = commonConfig
 	sk.CftTestRequest = cft
 	sk.Ctr = ctr
 	sk.DockerKeyFileLocation = dockerKeyFile

@@ -27,6 +27,7 @@ type UpdateDutStateCmd struct {
 
 	// Deps
 	TestResponses      *testapi.CrosTestResponse // optional
+	UfsNameSpace       string                    // optional
 	ProvisionResponses map[string][]*testapi.InstallResponse
 	ProvisionDevices   map[string]*testapi.CrosTestRequest_Device
 
@@ -96,6 +97,12 @@ func (cmd *UpdateDutStateCmd) updateDevice(ctx context.Context, deviceId string)
 
 	logging.Infof(ctx, "deviceId: %s", deviceId)
 	triedToUpdateState := false
+
+	// setup new context if ufs namespace was provided
+	if cmd.UfsNameSpace != "" {
+		ctx = ufs.SetupContext(ctx, cmd.UfsNameSpace)
+	}
+
 	currentDutState, err := ufs.GetDutStateFromUFS(ctx, device.GetDut().GetId().GetValue())
 	if err != nil {
 		logging.Infof(ctx, "error while getting current dut state: %s", err.Error())
@@ -143,6 +150,12 @@ func (cmd *UpdateDutStateCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TestResponses", cmd.GetCommandType())
 	}
 	cmd.TestResponses = sk.TestResponses
+
+	if sk.CommonConfig == nil || sk.CommonConfig.GetUfsConfig().GetUfsNamespace() == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: UfsNameSpace. Default namespace will be used.", cmd.GetCommandType())
+	} else {
+		cmd.UfsNameSpace = sk.CommonConfig.GetUfsConfig().GetUfsNamespace()
+	}
 
 	return nil
 }

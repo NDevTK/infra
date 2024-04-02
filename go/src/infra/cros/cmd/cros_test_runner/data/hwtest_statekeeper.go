@@ -32,6 +32,7 @@ type HwTestStateKeeper struct {
 	// Set from input
 	CftTestRequest        *skylab_test_runner.CFTTestRequest
 	CrosTestRunnerRequest *testapi.CrosTestRunnerDynamicRequest
+	CommonConfig          *skylab_test_runner.CommonConfig
 
 	// Request Queues
 	ContainerQueue *list.List

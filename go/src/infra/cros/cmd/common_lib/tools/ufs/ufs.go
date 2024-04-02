@@ -14,10 +14,12 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
+	"google.golang.org/grpc/metadata"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/dutstate"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
 // Allowlist of DUT states that are safe to overwrite.
@@ -29,6 +31,12 @@ var dutStatesSafeForOverwrite = map[dutstate.State]bool{
 
 // prpcOptions is used for UFS PRPC clients.
 var prpcOptions = prpcOptionWithUserAgent("skylab_local_state/6.0.0")
+
+// SetupContext set up the outgoing context for API calls.
+func SetupContext(ctx context.Context, namespace string) context.Context {
+	md := metadata.Pairs(ufsutil.Namespace, namespace)
+	return metadata.NewOutgoingContext(ctx, md)
+}
 
 // NewClient initialize and return new client to work with UFS service.
 func NewClient(ctx context.Context) (ufsAPI.FleetClient, error) {
