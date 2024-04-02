@@ -6,11 +6,13 @@ package ninjalog
 
 import (
 	"bufio"
+	"cmp"
 	"encoding/json"
 	"fmt"
 	"io"
 	"math"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -220,16 +222,21 @@ func Parse(fname string, r io.Reader) (*NinjaLog, error) {
 		// multi threads. So, it adds 1 minute buffer.
 		if step.End+1*time.Minute < lastStep.End {
 			nlog.Start = lineno
-			nlog.Steps = []Step{
-				{
-					End: step.Start,
-					Out: startupOverhead,
-				},
-			}
+			nlog.Steps = nil
 		}
 		nlog.Steps = append(nlog.Steps, step)
 		lastStep = step
 		lineno++
+	}
+
+	if len(nlog.Steps) > 0 {
+		minStart := slices.MinFunc(nlog.Steps, func(a, b Step) int {
+			return cmp.Compare(a.Start, b.Start)
+		}).Start
+		nlog.Steps = append([]Step{{
+			End: minStart,
+			Out: startupOverhead,
+		}}, nlog.Steps...)
 	}
 
 	if err := scanner.Err(); err != nil {
