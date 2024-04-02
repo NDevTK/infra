@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z4go.chromium.org/luci/buildbucket/proto;buildbucketpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n2go.chromium.org/luci/buildbucket/proto/token.proto\x12\x0e\x62uildbucket.v2\"\xc1\x01\n\tTokenBody\x12\x10\n\x08\x62uild_id\x18\x01 \x01(\x03\x12\x32\n\x07purpose\x18\x02 \x01(\x0e\x32!.buildbucket.v2.TokenBody.Purpose\x12\r\n\x05state\x18\x03 \x01(\x0c\"_\n\x07Purpose\x12\x17\n\x13PURPOSE_UNSPECIFIED\x10\x00\x12\t\n\x05\x42UILD\x10\x01\x12\x0c\n\x04TASK\x10\x02\x1a\x02\x08\x01\x12\x0f\n\x0bSTART_BUILD\x10\x03\x12\x11\n\rREGISTER_TASK\x10\x04\"\xaa\x01\n\rTokenEnvelope\x12\x36\n\x07version\x18\x01 \x01(\x0e\x32%.buildbucket.v2.TokenEnvelope.Version\x12\x0f\n\x07payload\x18\x02 \x01(\x0c\"P\n\x07Version\x12\x17\n\x13VERSION_UNSPECIFIED\x10\x00\x12\x1d\n\x19UNENCRYPTED_PASSWORD_LIKE\x10\x01\x12\r\n\tENCRYPTED\x10\x02\x42\x36Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
+  serialized_pb=b'\n2go.chromium.org/luci/buildbucket/proto/token.proto\x12\x0e\x62uildbucket.v2\"\xc4\x01\n\tTokenBody\x12\x10\n\x08\x62uild_id\x18\x01 \x01(\x03\x12\x32\n\x07purpose\x18\x02 \x01(\x0e\x32!.buildbucket.v2.TokenBody.Purpose\x12\r\n\x05state\x18\x03 \x01(\x0c\"b\n\x07Purpose\x12\x17\n\x13PURPOSE_UNSPECIFIED\x10\x00\x12\t\n\x05\x42UILD\x10\x01\x12\x0c\n\x04TASK\x10\x02\x1a\x02\x08\x01\x12\x0f\n\x0bSTART_BUILD\x10\x03\x12\x14\n\x10START_BUILD_TASK\x10\x04\"\xaa\x01\n\rTokenEnvelope\x12\x36\n\x07version\x18\x01 \x01(\x0e\x32%.buildbucket.v2.TokenEnvelope.Version\x12\x0f\n\x07payload\x18\x02 \x01(\x0c\"P\n\x07Version\x12\x17\n\x13VERSION_UNSPECIFIED\x10\x00\x12\x1d\n\x19UNENCRYPTED_PASSWORD_LIKE\x10\x01\x12\r\n\tENCRYPTED\x10\x02\x42\x36Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
 )
 
 
@@ -52,7 +52,7 @@ _TOKENBODY_PURPOSE = _descriptor.EnumDescriptor(
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='REGISTER_TASK', index=4, number=4,
+      name='START_BUILD_TASK', index=4, number=4,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
@@ -60,7 +60,7 @@ _TOKENBODY_PURPOSE = _descriptor.EnumDescriptor(
   containing_type=None,
   serialized_options=None,
   serialized_start=169,
-  serialized_end=264,
+  serialized_end=267,
 )
 _sym_db.RegisterEnumDescriptor(_TOKENBODY_PURPOSE)
 
@@ -89,8 +89,8 @@ _TOKENENVELOPE_VERSION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=357,
-  serialized_end=437,
+  serialized_start=360,
+  serialized_end=440,
 )
 _sym_db.RegisterEnumDescriptor(_TOKENENVELOPE_VERSION)
 
@@ -138,7 +138,7 @@ _TOKENBODY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=71,
-  serialized_end=264,
+  serialized_end=267,
 )
 
 
@@ -177,8 +177,8 @@ _TOKENENVELOPE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=267,
-  serialized_end=437,
+  serialized_start=270,
+  serialized_end=440,
 )
 
 _TOKENBODY.fields_by_name['purpose'].enum_type = _TOKENBODY_PURPOSE

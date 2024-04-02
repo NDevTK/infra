@@ -24,7 +24,7 @@ LEGACY_PROTOC = $(INFRA)/cipd/legacy/bin/protoc
 
 regenerate: $(PROTOC) $(TOOLS)/protoc-gen-prpc-python
 	rm -rf ./go ./validate
-	python3 ${THIS_DIR}/third_party/validate/update.py
+	vpython3 ${THIS_DIR}/third_party/validate/update.py
 	$(LEGACY_PROTOC) \
 		--proto_path $(INFRA)/go/src \
 		--proto_path ${THIS_DIR}/third_party \
@@ -41,7 +41,6 @@ regenerate: $(PROTOC) $(TOOLS)/protoc-gen-prpc-python
 		$(LUCI_GO)/resultdb/proto/v1/*.proto \
 		$(LUCI_GO)/scheduler/appengine/messages/config.proto  \
 		$(LUCI_GO)/server/auth/delegation/messages/*.proto  \
-		$(LUCI_GO)/swarming/proto/api/*.proto \
 		$(LUCI_GO)/tokenserver/api/*.proto  \
 		$(LUCI_GO)/tokenserver/api/minter/v1/*.proto \
 		--plugin=$(TOOLS)/protoc-gen-prpc-python \
