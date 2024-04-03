@@ -149,7 +149,7 @@ func (cmd *ContainerStartCmd) extractDepsFromHwTestStateKeeper(
 	}
 
 	if err := common.InjectDependencies(cmd.ContainerRequest.Container, sk.Injectables, cmd.ContainerRequest.DynamicDeps); err != nil {
-		return fmt.Errorf("cmd %q failed injecting dependencies, %s", cmd.GetCommandType(), err)
+		logging.Infof(ctx, "Warning: cmd %q failed to inject some dependencies, %s", cmd.GetCommandType(), err)
 	}
 
 	containerImage, err := common.GetContainerImageFromMap(cmd.ContainerRequest.ContainerImageKey, sk.ContainerImages)

@@ -113,7 +113,7 @@ func (cmd *GenericTestsCmd) extractDepsFromHwTestStateKeeper(
 	}
 
 	if err := common.InjectDependencies(cmd.TestRequest, sk.Injectables, cmd.TestRequest.DynamicDeps); err != nil {
-		return fmt.Errorf("cmd %q failed injecting dependencies, %s", cmd.GetCommandType(), err)
+		logging.Infof(ctx, "Warning: cmd %q failed to inject some dependencies, %s", cmd.GetCommandType(), err)
 	}
 
 	cmd.Identifier = cmd.TestRequest.GetDynamicIdentifier()

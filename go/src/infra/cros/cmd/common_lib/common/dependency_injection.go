@@ -41,16 +41,17 @@ func NewInjectableStorage() *InjectableStorage {
 // LoadInjectables takes the dictionary of injectable objects and converts them
 // into json interactable `interface{}`s.
 func (storage *InjectableStorage) LoadInjectables() error {
+	var allErrs error
 	var err error
 	storage.Injectables = map[string]interface{}{}
 
 	for key, val := range storage.injectables {
 		storage.Injectables[key], err = toInterface(val)
 		if err != nil {
-			return fmt.Errorf("Failed to load injectables, %s", err)
+			allErrs = errors.Append(allErrs, fmt.Errorf("Failed to load injectables, %s", err))
 		}
 	}
-	return nil
+	return allErrs
 }
 
 // Get searches through the Storage and returns an error if the object is not found.
@@ -78,15 +79,12 @@ func (storage *InjectableStorage) Set(key string, obj interface{}) error {
 
 // LogStorageToStep writes the json structure of the storage as a log in a step.
 func (storage *InjectableStorage) LogStorageToBuild(ctx context.Context, buildState *build.State) {
-	err := storage.LoadInjectables()
-	if err != nil {
-		return
-	}
+	_ = storage.LoadInjectables()
 
 	storageLog := buildState.Log("Injectable Storage Contents")
 	storageJson, _ := json.MarshalIndent(storage.Injectables, "", "    ")
 	storageStr := string(storageJson)
-	_, err = storageLog.Write([]byte(storageStr))
+	_, err := storageLog.Write([]byte(storageStr))
 	if err != nil {
 		logging.Infof(ctx, "Failed to write contents of injectable storage, %s", err)
 	}
@@ -183,17 +181,18 @@ func Inject(receiver protoreflect.ProtoMessage, injection_point string, storage 
 
 // InjectDependencies handles loading the storage's injectables and injecting the dependencies into the receiver.
 func InjectDependencies(receiver protoreflect.ProtoMessage, storage *InjectableStorage, deps []*api.DynamicDep) error {
+	var allErrs error
 	err := storage.LoadInjectables()
 	if err != nil {
-		return fmt.Errorf("Failed to load dependency, %s", err)
+		allErrs = errors.Append(allErrs, fmt.Errorf("Failed to load some injectables, %s", err))
 	}
 	for _, dep := range deps {
 		if err := Inject(receiver, dep.Key, storage, dep.Value); err != nil {
-			return fmt.Errorf("Failed to inject dependency, %s", err)
+			allErrs = errors.Append(allErrs, fmt.Errorf("Failed to inject dependency, %s", err))
 		}
 	}
 
-	return nil
+	return allErrs
 }
 
 // setValue stores the value into the obj at key.
