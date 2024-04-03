@@ -11,11 +11,14 @@ import (
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
 	ufsFetcher "infra/cros/fleetcost/internal/costserver/inventory/ufs"
-	"infra/cros/fleetcost/internal/utils"
+	"infra/cros/fleetcost/internal/costserver/models"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
+// IndicatorAttribute is the information that's necessary to look up a datastore record.
+//
+// TODO(gregorynisbet): Remove this type. It duplicates the functionality of the datastore entity and protos.
 type IndicatorAttribute struct {
 	IndicatorType fleetcostpb.IndicatorType
 	Board         string
@@ -24,6 +27,25 @@ type IndicatorAttribute struct {
 	Location      fleetcostpb.Location
 }
 
+// AsEntity converts an IndicatorAttribute to a datastore Entity.
+func (attribute *IndicatorAttribute) AsEntity() *models.CostIndicatorEntity {
+	if attribute == nil {
+		return nil
+	}
+	return &models.CostIndicatorEntity{
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Type:     attribute.IndicatorType,
+			Board:    attribute.Board,
+			Model:    attribute.Model,
+			Sku:      attribute.Sku,
+			Location: attribute.Location,
+		},
+	}
+}
+
+// CalculateCostForOsResource calculates the cost for an OS resource.
+//
+// So far, only ChromeOS devices are supported.
 func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, hostname string) (*fleetcostpb.CostResult, error) {
 	res, err := ic.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{Hostname: hostname})
 	if err != nil {
@@ -31,7 +53,7 @@ func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, host
 	}
 	switch res.GetResourceType() {
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
-		return calculateCostForSingleChromeosDut(ctx, ic, res.GetChromeOsDeviceData())
+		return CalculateCostForSingleChromeosDut(ctx, ic, res.GetChromeOsDeviceData())
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
 		return nil, errors.Reason("%s is an attached device, support is not implemented yet.", hostname).Err()
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT:
@@ -41,7 +63,8 @@ func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, host
 	}
 }
 
-func calculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClient, data *ufspb.ChromeOSDeviceData) (*fleetcostpb.CostResult, error) {
+// CalculateCostForSingleChromeosDut calculates the cost of a ChromeOS DUT.
+func CalculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClient, data *ufspb.ChromeOSDeviceData) (*fleetcostpb.CostResult, error) {
 	dut := data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut()
 	peripherals := dut.GetPeripherals()
 	servo := peripherals.GetServo()
@@ -52,14 +75,14 @@ func calculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 	}
 	var dedicateCost, sharedCost, cloudCost float64
 	// Cost for DUT hardware.
-	dutCost, err := getDutHardwareCost(data.GetMachine().GetChromeosMachine(), location)
+	dutCost, err := GetDutHardwareCost(ctx, data.GetMachine().GetChromeosMachine(), location)
 	if err != nil {
 		return nil, errors.Annotate(err, "calculate cost for single chromeos dut").Err()
 	}
 	dedicateCost = dedicateCost + dutCost
 	// Cost for servo related items.
 	if servo.GetServoHostname() != "" {
-		servoCost, err := getServoCost(servo.GetServoType(), location)
+		servoCost, err := getServoCost(ctx, servo.GetServoType(), location)
 		if err != nil {
 			return nil, errors.Annotate(err, "calculate cost for single chromeos dut").Err()
 		}
@@ -77,8 +100,8 @@ func calculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 	}, nil
 }
 
-func getServoCost(servoType string, location fleetcostpb.Location) (float64, error) {
-	v, err := fakeGetIndicatorCostValue(IndicatorAttribute{
+func getServoCost(ctx context.Context, servoType string, location fleetcostpb.Location) (float64, error) {
+	v, err := GetCostIndicatorValue(ctx, IndicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO,
 		Board:         servoType,
 		Location:      location,
@@ -89,8 +112,9 @@ func getServoCost(servoType string, location fleetcostpb.Location) (float64, err
 	return v, nil
 }
 
-func getDutHardwareCost(m *ufspb.ChromeOSMachine, location fleetcostpb.Location) (float64, error) {
-	v, err := fakeGetIndicatorCostValue(IndicatorAttribute{
+// GetDutHardwareCost gets the hardware cost for a single DUT.
+func GetDutHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, location fleetcostpb.Location) (float64, error) {
+	v, err := GetCostIndicatorValue(ctx, IndicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
 		Board:         m.GetBuildTarget(),
 		Model:         m.GetModel(),
@@ -109,7 +133,7 @@ func getLabstationCost(ctx context.Context, ic ufsAPI.FleetClient, hostname stri
 		return 0, errors.Annotate(err, "get labstation cost").Err()
 	}
 	m := data.GetMachine().GetChromeosMachine()
-	v, err := fakeGetIndicatorCostValue(IndicatorAttribute{
+	v, err := GetCostIndicatorValue(ctx, IndicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_LABSTATION,
 		Board:         m.GetBuildTarget(),
 		Model:         m.GetModel(),
@@ -129,29 +153,4 @@ func getLabstationCost(ctx context.Context, ic ufsAPI.FleetClient, hostname stri
 		}
 	}
 	return 0, errors.Reason("Unable to get number of DUTs under %s", hostname).Err()
-}
-
-func fakeGetIndicatorCostValue(attr IndicatorAttribute) (float64, error) {
-	var s string
-	switch attr.IndicatorType {
-	case fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT:
-		s = "1234.56"
-	case fleetcostpb.IndicatorType_INDICATOR_TYPE_LABSTATION:
-		s = "900.23"
-	case fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO:
-		s = "623.12"
-	}
-	v, err := utils.ToUSD(s)
-	if err != nil {
-		return 0, err
-	}
-	i := &fleetcostpb.CostIndicator{
-		Type:     attr.IndicatorType,
-		Board:    attr.Board,
-		Model:    attr.Model,
-		Sku:      attr.Sku,
-		Location: attr.Location,
-		Cost:     v,
-	}
-	return utils.MoneyToFloat(i.GetCost()), nil
 }
