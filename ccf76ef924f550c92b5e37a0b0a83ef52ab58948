@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9cb30aac_28185e53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2024-04-03T23:49:58Z",
+      "side": 1,
+      "message": "I believe this one is still needed when Satlab starts to support CFT. I can create a new CL to cover this.\n\nFYI @jkusuma@google.com",
+      "parentUuid": "6c458040_54329623",
+      "revId": "ccf76ef924f550c92b5e37a0b0a83ef52ab58948",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f467d792_d93339e1",
         "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
         "patchSetId": 1
