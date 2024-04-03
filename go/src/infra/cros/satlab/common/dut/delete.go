@@ -180,12 +180,9 @@ func deleteAllDuts(ctx context.Context, names []string, ufs DeleteClient) ([]str
 			fail = append(fail, dut)
 		} else {
 			success = append(success, dut)
-			fmt.Fprintf(os.Stderr, "The dut %s has been deleted successfully, removing DHCP and DNS entries\n", dut)
-			if err := DeleteDHCPHostReservation(dut); err != nil {
-				fmt.Fprintf(os.Stderr, "Cannot remove DHCP host IP address reservation for %s\n", dut)
-			}
+			fmt.Fprintf(os.Stderr, "The dut %s has been deleted successfully, removing the DNS entry\n", dut)
 			if err := DeleteDNSEntry(dut); err != nil {
-				fmt.Fprintf(os.Stderr, "Cannot remove DNS entry IP address reservation for %s\n", dut)
+				fmt.Fprintf(os.Stderr, "Cannot remove the DNS entry for %s\n", dut)
 			}
 		}
 	}
@@ -230,19 +227,6 @@ func deleteAllRacks(ctx context.Context, names []string, ufs DeleteClient) ([]st
 	}
 
 	return success, fail
-}
-
-// DeleteDHCPHostReservation removes the file in dhcp-hostsdir.
-func DeleteDHCPHostReservation(hostname string) error {
-	args := []string{
-		paths.DockerPath,
-		"exec",
-		"dhcp",
-		"rm",
-		"-f",
-		"/var/lib/misc/dhcp_hosts/" + hostname,
-	}
-	return exec.Command(args[0], args[1:]...).Run()
 }
 
 // DeleteDNSEntry removes the dns entry from /etc/dut_hosts/hosts.
