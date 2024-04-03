@@ -97,7 +97,7 @@ func TestTastConversions(t *testing.T) {
 	Convey(`ToProtos works`, t, func() {
 		ctx := context.Background()
 		Convey(`Basic`, func() {
-			testhausBaseUrl := "https://cros-test-analytics.appspot.com/p/chromeos/logs/browse/build-12345"
+			testhausBaseUrl := "https://tests.chromeos.goog/p/chromeos/logs/unified/build-12345"
 			jsonLine := genJSONLine(map[string]string{
 				"searchFlags": `[{"key":"testKey", "value":"testValue"}]`,
 			})

@@ -8,25 +8,24 @@ import "time"
 
 // All common constants used throughout the service.
 const (
-	ServiceConnectionTimeout     = 5 * time.Minute
-	CtrCipdPackage               = "chromiumos/infra/cros-tool-runner/${platform}"
-	ContainerDefaultNetwork      = "host"
-	LabDockerKeyFileLocation     = "/creds/service_accounts/skylab-drone.json"
-	VmLabDockerKeyFileLocation   = "/creds/service_accounts/service-account-chromeos.json"
-	VmLabDutHostName             = "vm"
-	GceProject                   = "chromeos-gce-tests"
-	GceNetwork                   = "global/networks/chromeos-gce-tests"
-	GceMachineTypeN14            = "n1-standard-4"
-	GceMachineTypeN18            = "n1-standard-8"
-	GceMinCpuPlatform            = "Intel Haswell"
-	DockerImageCacheServer       = "us-docker.pkg.dev/cros-registry/test-services/cacheserver:prod"
-	LroTimeout                   = 1 * time.Minute
-	GcsPublishTestArtifactsDir   = "/tmp/gcs-publish-test-artifacts/"
-	TKOPublishTestArtifactsDir   = "/tmp/tko-publish-test-artifacts/"
-	CpconPublishTestArtifactsDir = "/tmp/cpcon-publish-test-artifacts/"
-	RdbPublishTestArtifactDir    = "/tmp/rdb-publish-test-artifacts/"
-	// TODO(b/330067464): Update the default Testhaus URL to the fusion view
-	TesthausURLPrefix                      = "https://cros-test-analytics.appspot.com/p/chromeos/logs/browse/"
+	ServiceConnectionTimeout               = 5 * time.Minute
+	CtrCipdPackage                         = "chromiumos/infra/cros-tool-runner/${platform}"
+	ContainerDefaultNetwork                = "host"
+	LabDockerKeyFileLocation               = "/creds/service_accounts/skylab-drone.json"
+	VmLabDockerKeyFileLocation             = "/creds/service_accounts/service-account-chromeos.json"
+	VmLabDutHostName                       = "vm"
+	GceProject                             = "chromeos-gce-tests"
+	GceNetwork                             = "global/networks/chromeos-gce-tests"
+	GceMachineTypeN14                      = "n1-standard-4"
+	GceMachineTypeN18                      = "n1-standard-8"
+	GceMinCpuPlatform                      = "Intel Haswell"
+	DockerImageCacheServer                 = "us-docker.pkg.dev/cros-registry/test-services/cacheserver:prod"
+	LroTimeout                             = 1 * time.Minute
+	GcsPublishTestArtifactsDir             = "/tmp/gcs-publish-test-artifacts/"
+	TKOPublishTestArtifactsDir             = "/tmp/tko-publish-test-artifacts/"
+	CpconPublishTestArtifactsDir           = "/tmp/cpcon-publish-test-artifacts/"
+	RdbPublishTestArtifactDir              = "/tmp/rdb-publish-test-artifacts/"
+	TesthausURLPrefix                      = "https://tests.chromeos.goog/p/chromeos/logs/unified/"
 	GcsURLPrefix                           = "https://pantheon.corp.google.com/storage/browser/"
 	HwTestCtrInputPropertyName             = "$chromeos/cros_tool_runner"
 	CftServiceMetadataFileName             = ".cftmeta"
