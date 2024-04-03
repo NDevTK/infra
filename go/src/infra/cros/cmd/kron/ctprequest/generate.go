@@ -132,11 +132,16 @@ func getTestPlan(config *suschpb.SchedulerConfig) *requestpb.Request_TestPlan {
 	testPlan := &requestpb.Request_TestPlan{
 		Suite: []*requestpb.Request_Suite{
 			{
-				Name: config.Suite,
+				Name: config.GetSuite(),
 			},
 		},
-		TagCriteria: config.RunOptions.TagCriteria,
+		TagCriteria: config.GetRunOptions().GetTagCriteria(),
 	}
+
+	if config.GetTestArgs() != "" && len(testPlan.Suite) > 0 {
+		testPlan.Suite[0].TestArgs = config.GetTestArgs()
+	}
+
 	return testPlan
 }
 
