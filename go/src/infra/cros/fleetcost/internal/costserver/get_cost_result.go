@@ -6,6 +6,7 @@ package costserver
 
 import (
 	"context"
+	"errors"
 
 	// TODO, move shared util to a standalone directory.
 	shivasUtil "infra/cmd/shivas/utils"
@@ -18,6 +19,9 @@ import (
 func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
 	// Handling OS namespace request only at MVP.
 	ctx = shivasUtil.SetupContext(ctx, ufsUtil.OSNamespace)
+	if f.fleetClient == nil {
+		return nil, errors.New("fleet client must exist")
+	}
 	res, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, req.GetHostname())
 	if err != nil {
 		return nil, err
