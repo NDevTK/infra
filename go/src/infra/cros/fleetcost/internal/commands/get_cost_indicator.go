@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -73,6 +74,15 @@ func (c *getCostIndicatorCommand) innerRun(ctx context.Context, a subcommands.Ap
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.ListCostIndicators(ctx, &fleetcostAPI.ListCostIndicatorsRequest{})
-	fmt.Printf("%#v\n", resp)
-	return err
+	if err != nil {
+		return err
+	}
+	bytes, err := (&protojson.MarshalOptions{
+		Indent: "  ",
+	}).Marshal(resp)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%s\n", string(bytes))
+	return nil
 }
