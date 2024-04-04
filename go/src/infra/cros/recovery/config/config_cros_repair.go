@@ -57,6 +57,7 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 		"Audit wifi",
 		"Audit bluetooth",
 		"Audit cellular",
+		"Audit cellular modem on non-cellular pools",
 		"Stop if DUT needs replacement",
 		"Firmware validations",
 		"Check if OS on required version for camerabox tablet",
@@ -1404,6 +1405,20 @@ func crosRepairActions() map[string]*Action {
 				UploadPolicy: MetricsConfig_SKIP_ALL,
 			},
 		},
+		"Is in non-cellular pool that runs cellular tests": {
+			Docs: []string{
+				"Verify that DUT is not in a cellular pool but is still in a pool",
+				"that runs cellular tests.",
+			},
+			ExecName: "dut_is_in_pool_regex",
+			ExecExtraArgs: []string{
+				"regex:(?i)^dut_pool_quota$",
+			},
+			RunControl: RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
 		"Is not starfish device": {
 			Docs: []string{
 				"Verify that DUT is not a starfish device",
@@ -1495,6 +1510,30 @@ func crosRepairActions() map[string]*Action {
 				"Cellular modem is up",
 			},
 			ExecName:               "sample_pass",
+			AllowFailAfterRecovery: true,
+		},
+		"Audit cellular modem on non-cellular pools": {
+			Docs: []string{
+				"Check cellular modem on the DUT is normal and update cellular modem state accordingly.",
+				"Differs from the normal Audit cellular modem by using a reduced timeout and no recovery actions",
+				"to limit impact on quota pools.",
+			},
+			Conditions: []string{
+				"Is in non-cellular pool that runs cellular tests",
+				"cros_has_mmcli",
+				"has_cellular_info",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_audit_cellular_modem",
+			ExecExtraArgs: []string{
+				"wait_manager_when_not_expected:15",
+				"wait_manager_when_expected:15",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 180,
+			},
 			AllowFailAfterRecovery: true,
 		},
 		"Audit cellular network connection": {

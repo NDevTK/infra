@@ -108,11 +108,11 @@ func crosRepairClosingActions() map[string]*Action {
 		},
 		"Is not in cellular pool": {
 			Docs: []string{
-				"Verify that DUT is not in a cellular pool.",
+				"Verify that DUT is not in a pool that runs cellular tests",
 			},
 			ExecName: "dut_not_in_pool_regex",
 			ExecExtraArgs: []string{
-				"regex:(?i)^cellular",
+				"regex:(?i)^cellular|dut_pool_quota",
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
