@@ -72,7 +72,7 @@ const (
 
 	KronWriterPasswordSecret               = "kron-writer-password"
 	KronWriterPasswordSecretVersionStaging = 1
-	KronWriterPasswordSecretVersionProd    = 1
+	KronWriterPasswordSecretVersionProd    = 2
 
 	KronBuildsDBNameSecret               = "kron-builds-dbname"
 	KronBuildsDBNameSecretVersionStaging = 1
