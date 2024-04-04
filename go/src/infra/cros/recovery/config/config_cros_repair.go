@@ -30,6 +30,7 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 		"Has repair-request for re-image by USB-key",
 		"Device is pingable",
 		"Device is SSHable",
+		"Device Uptime",
 	)
 	if isRepair {
 		actions = append(actions, "Verify access to cache")
@@ -209,6 +210,14 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{
 				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
 			},
+		},
+		"Device Uptime": {
+			Docs: []string{
+				"Print uptime of the DUT.",
+			},
+			ExecName:               "cros_uptime_print",
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Verify internal storage": {
 			Docs: []string{
