@@ -17,7 +17,7 @@
 pins:
 - image: docker.io/envoyproxy/envoy
   tag: v1.26-latest
-  digest: sha256:ac884924abdf752db0a9866b0f55afab05c794651987f593d8af063e6f90c5fa
+  digest: sha256:aa7f16bd856930a2604f1f1b77b8dcc22988d593461e8c119d08f23a7e8276f6
 - image: docker.io/library/ubuntu
   tag: "14.04"
   digest: sha256:64483f3496c1373bfd55348e88694d1c4d0c9b660dee6bfef5e12f43b9933b30
