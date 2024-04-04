@@ -1,0 +1,6 @@
+name: fleet_systems/puppet/3.8.7
+extends: ../../../base.yaml
+
+dockerfile: ../../../../../docker/fleet_systems/puppet/3.8.7.Dockerfile
+imagepins: ../../../pins.yaml
+deterministic: false
