@@ -237,10 +237,6 @@ type BuildPackage struct {
 func publishBuild(build *BuildPackage, psClient pubsub.PublishClient, sqlClient cloudsql.Client) error {
 	ctx := context.Background()
 	common.Stdout.Printf("Publishing build %s for build target %s and milestone %d to long term storage", build.Build.BuildUuid, build.Build.BuildTarget, build.Build.Milestone)
-	data, err := protojson.Marshal(build.Build)
-	if err != nil {
-		return err
-	}
 
 	// Convert the build to a PSQL compatible type.
 	psqlBuild, err := cloudsql.ConvertBuildToPSQLRow(build.Build)
@@ -256,6 +252,10 @@ func publishBuild(build *BuildPackage, psClient pubsub.PublishClient, sqlClient 
 	common.Stdout.Printf("Published build %s for build target %s and milestone %d to PSQL", build.Build.BuildUuid, build.Build.BuildTarget, build.Build.Milestone)
 
 	// Publish the build to Pub/Sub.
+	data, err := protojson.Marshal(build.Build)
+	if err != nil {
+		return err
+	}
 	err = psClient.PublishMessage(ctx, data)
 	if err != nil {
 		return err
@@ -268,7 +268,7 @@ func publishBuild(build *BuildPackage, psClient pubsub.PublishClient, sqlClient 
 // IngestBuildsFromPubSub connects to pubsub ingests all new build information
 // from the releases Pub/Sub stream. Once read, all builds will be written into
 // long term storage.
-func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage, error) {
+func IngestBuildsFromPubSub(projectID, subscriptionName string, isProd bool) ([]*BuildPackage, error) {
 	ctx := context.Background()
 
 	psHandler := handler{
@@ -283,7 +283,7 @@ func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage
 		return nil, err
 	}
 
-	sqlClient, err := cloudsql.InitBuildsClient(ctx, false)
+	sqlClient, err := cloudsql.InitBuildsClient(ctx, isProd)
 	if err != nil {
 		return nil, err
 	}
@@ -312,8 +312,6 @@ func IngestBuildsFromPubSub(projectID, subscriptionName string) ([]*BuildPackage
 
 			// Ack the message once it has been correctly republished to our
 			// metrics for analysis.
-			// TODO: when we store build information in psql we will need move
-			// where this ack call is made.
 			build.Message.Ack()
 
 		}

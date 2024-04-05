@@ -108,13 +108,11 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	// we can launch the BB task. This may require that we do a lot of heavy
 	// lifting in the callback but overall it would be safer.
 	common.Stdout.Println("Fetching builds from Pub/Sub.")
-	releaseBuilds, err := builds.IngestBuildsFromPubSub(projectID, common.BuildsSubscription)
+	releaseBuilds, err := builds.IngestBuildsFromPubSub(projectID, common.BuildsSubscription, isProd)
 	if err != nil {
 		return err
 
 	}
-
-	// TODO(b/315340446): Write build info to long term storage(database)
 
 	// Build the list of all configs triggered by the ingested build images.
 	common.Stdout.Println("Gathering all configs triggered from retrieved build images.")
