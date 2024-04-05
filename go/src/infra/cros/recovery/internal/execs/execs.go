@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
@@ -144,7 +145,14 @@ func (ei *ExecInfo) GetAccess() tlw.Access {
 }
 
 // Run runs exec function provided by this package by name.
-func Run(ctx context.Context, ei *ExecInfo) error {
+func Run(ctx context.Context, ei *ExecInfo) (rErr error) {
+	defer func() {
+		// Recovery from panic if it happened.
+		if r := recover(); r != nil {
+			log.Debugf(ctx, "Received panic: %v", r)
+			rErr = errors.Reason("panic: %v", r).Err()
+		}
+	}()
 	e, ok := knownExecMap[ei.name]
 	if !ok {
 		return errors.Reason("exec %q: not found", ei.name).Err()
