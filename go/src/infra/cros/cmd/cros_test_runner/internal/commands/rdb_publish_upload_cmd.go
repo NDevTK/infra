@@ -489,6 +489,7 @@ func populateTestRunsInfo(
 	suite := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "suite")
 	branch := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "branch")
 	mainBuilderName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "master_build_config")
+	channel := getSingleTagValue(build.Tags, "branch-trigger")
 	displayName := getSingleTagValue(build.Tags, "display_name")
 	for _, testCaseResult := range sk.TestResponses.GetTestCaseResults() {
 		// - TestRun
@@ -503,7 +504,6 @@ func populateTestRunsInfo(
 		if displayName != "" {
 			testCaseInfo.DisplayName = displayName
 		}
-
 		if suite != "" {
 			testCaseInfo.Suite = suite
 		}
@@ -512,6 +512,9 @@ func populateTestRunsInfo(
 		}
 		if mainBuilderName != "" {
 			testCaseInfo.MainBuilderName = mainBuilderName
+		}
+		if channel != "" {
+			testCaseInfo.Channel = channel
 		}
 
 		timeInfo := &artifactpb.TimingInfo{}

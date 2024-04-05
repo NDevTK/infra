@@ -282,6 +282,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						"ctp-fwd-task-name": "Bluetooth_Sa_Perbuild",
 						"qs_account":        "unmanaged_p2",
 						"parent_task_id":    "parentId1",
+						"branch-trigger":    "DEV",
 					},
 				},
 			},
@@ -305,6 +306,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						Suite:           "arc-cts-vm",
 						Branch:          "main",
 						MainBuilderName: "main-release",
+						Channel:         "DEV",
 					},
 					LogsInfo: []*configpb.StoragePath{
 						{
@@ -342,6 +344,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				{Key: "ctp-fwd-task-name", Value: "Bluetooth_Sa_Perbuild"},
 				{Key: "qs_account", Value: "unmanaged_p2"},
 				{Key: "parent_task_id", Value: "parentId1"},
+				{Key: "branch-trigger", Value: "DEV"},
 			},
 			CreateTime: createTime,
 			Infra: &bbpb.BuildInfra{Swarming: &bbpb.BuildInfra_Swarming{
