@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19cefbe7_38d8f848",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/calculate_os_cost.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2024-04-05T21:32:57Z",
+      "side": 1,
+      "message": "go/go-style/decisions#commentary",
+      "range": {
+        "startLine": 46,
+        "startChar": 5,
+        "endLine": 46,
+        "endChar": 31
+      },
+      "revId": "6aea497a80ae8e3038f74676d4872ae800b69462",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7e9ed34_dd130208",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/calculate_os_cost.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2024-04-05T21:32:57Z",
+      "side": 1,
+      "message": "Exported functions",
+      "range": {
+        "startLine": 63,
+        "startChar": 5,
+        "endLine": 63,
+        "endChar": 38
+      },
+      "revId": "6aea497a80ae8e3038f74676d4872ae800b69462",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f19ecd1a_fcf07527",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/calculate_os_cost.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2024-04-05T21:32:57Z",
+      "side": 1,
+      "message": "go/go-style/decisions#commentary",
+      "range": {
+        "startLine": 63,
+        "startChar": 5,
+        "endLine": 63,
+        "endChar": 38
+      },
+      "revId": "6aea497a80ae8e3038f74676d4872ae800b69462",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
