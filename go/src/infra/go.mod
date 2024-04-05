@@ -97,7 +97,7 @@ require (
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/mod v0.15.0
-	golang.org/x/net v0.22.0
+	golang.org/x/net v0.23.0
 	golang.org/x/oauth2 v0.18.0
 	golang.org/x/perf v0.0.0-20210220033136-40a54f11e909
 	golang.org/x/sync v0.6.0
