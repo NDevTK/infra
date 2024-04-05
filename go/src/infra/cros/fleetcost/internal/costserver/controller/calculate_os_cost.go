@@ -82,7 +82,7 @@ func CalculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 	dedicateCost = dedicateCost + dutCost
 	// Cost for servo related items.
 	if servo.GetServoHostname() != "" {
-		servoCost, err := getServoCost(ctx, servo.GetServoType(), location)
+		servoCost, err := GetServoCost(ctx, servo.GetServoType(), location)
 		if err != nil {
 			return nil, errors.Annotate(err, "calculate cost for single chromeos dut").Err()
 		}
@@ -100,7 +100,7 @@ func CalculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 	}, nil
 }
 
-func getServoCost(ctx context.Context, servoType string, location fleetcostpb.Location) (float64, error) {
+func GetServoCost(ctx context.Context, servoType string, location fleetcostpb.Location) (float64, error) {
 	v, err := GetCostIndicatorValue(ctx, IndicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO,
 		Board:         servoType,
