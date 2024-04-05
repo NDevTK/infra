@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ee1bcba3_c8583fc3",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cost_indicator.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-05T22:25:06Z",
+      "side": 1,
+      "message": "The IndicatorAttribute has all the information necessary to construct an ID.\n\nIndex filtering isn\u0027t implemented yet. I\u0027ll implement it in a subsequent CL.",
+      "parentUuid": "fd3bb23d_3251afa6",
+      "revId": "a3e2ec748a0bda4436c8921d3c99a22c654674e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d650125e_c394b81b",
         "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cost_indicator.go",
         "patchSetId": 4
@@ -31,6 +49,24 @@
       "writtenOn": "2024-04-05T22:11:21Z",
       "side": 1,
       "message": "The previous draft example only extract cost dollar value, but for the full version I think we want to return all value part(fields beside those indexes) of the indicator, as things like burnout rate and cadence are needed in calculation.",
+      "revId": "a3e2ec748a0bda4436c8921d3c99a22c654674e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be8b49c6_fedd96dc",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cost_indicator.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-05T22:25:06Z",
+      "side": 1,
+      "message": "Ack. Sounds good. I\u0027ll do it in a subsequent CL.",
+      "parentUuid": "d650125e_c394b81b",
       "revId": "a3e2ec748a0bda4436c8921d3c99a22c654674e9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
