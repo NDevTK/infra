@@ -328,6 +328,9 @@ func populatePrimaryBuildMetadata(
 		if chromeOSInfo != nil {
 			// - Chameleon info
 			buildMetadata.Chameleon = chromeOSInfo.GetChameleon()
+
+			// - Modem info
+			buildMetadata.ModemInfo = chromeOSInfo.GetModemInfo()
 		}
 	}
 }

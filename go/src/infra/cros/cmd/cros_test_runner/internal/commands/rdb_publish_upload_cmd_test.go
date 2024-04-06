@@ -203,6 +203,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							labapi.Chameleon_V3,
 						},
 					},
+					ModemInfo: &labapi.ModemInfo{
+						Type: labapi.ModemType_MODEM_TYPE_FIBOCOMM_L850GL,
+					},
 				},
 			},
 		}
@@ -232,6 +235,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 									labapi.Chameleon_V2,
 									labapi.Chameleon_V3,
 								},
+							},
+							ModemInfo: &labapi.ModemInfo{
+								Type: labapi.ModemType_MODEM_TYPE_FIBOCOMM_L850GL,
 							},
 						},
 					},
