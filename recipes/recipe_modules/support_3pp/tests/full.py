@@ -93,7 +93,7 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
       excluded.add('unsupported_no_method')
     if api.platform.is_win and 'tools/posix_tool' in pkgs:
       excluded.add('tools/posix_tool')
-    if GOOS != 'linux':
+    if GOOS != 'linux' and 'tools/fetch_and_package' in pkgs:
       excluded.add('tools/fetch_and_package')
     assert unsupported == excluded, (
         'Expected: %r. Got: %r' %(excluded, unsupported))
@@ -365,7 +365,7 @@ def GenTests(api):
     }
   }
   '''
-  
+
   pkgs_dict['dir_tools/windows_experiment'] = r'''
   create {
     platform_re: "linux-.*|mac-.*"
@@ -1054,6 +1054,70 @@ def GenTests(api):
           GOARCH='amd64',
           use_new_checkout=True,
           tryserver_affected_files=['b/3pp.pb']) +
+      api.buildbucket.try_build('infra') +
+      api.tryserver.gerrit_change_target_ref('refs/branch-heads/foo') +
+      api.step_data('find package specs',
+                    api.file.glob_paths([n + '/3pp.pb' for n, _ in pkgs])))
+  for pkg, spec in pkgs:
+    test += api.step_data(
+        mk_name('load package specs', 'read \'%s/3pp.pb\'' % pkg),
+        api.file.read_text(spec))
+  yield test
+
+  # On Mac, 'a' does not depend on 'b' so should not be rebuilt.
+  test = (
+      api.test('tryjob-honors-platform-re') + api.platform('mac', 64) +
+      api.properties(
+          GOOS='darwin',
+          GOARCH='amd64',
+          use_new_checkout=True,
+          tryserver_affected_files=['b/3pp.pb']) +
+      api.buildbucket.try_build('infra') +
+      api.tryserver.gerrit_change_target_ref('refs/branch-heads/foo') +
+      api.step_data('find package specs',
+                    api.file.glob_paths([n + '/3pp.pb' for n, _ in pkgs])))
+  for pkg, spec in pkgs:
+    test += api.step_data(
+        mk_name('load package specs', 'read \'%s/3pp.pb\'' % pkg),
+        api.file.read_text(spec))
+  yield test
+
+  # In this test, there is a tool dependency, which must be evaluated
+  # for the host platform. So, a change to package "a" affected linux-amd64
+  # must cause all upstream dependencies to rebuild, even if building for
+  # a different target.
+  pkgs = sorted(
+      dict(
+          a='''
+    create {
+      source { script { name: "fetch.py" } }
+    }
+    upload { pkg_prefix: "prefix/deps" }
+    ''',
+          b='''
+    create {
+      source { script { name: "fetch.py" } }
+    }
+    create {
+      platform_re: "linux-amd64"
+      build { dep: "prefix/deps/a" }
+    }
+    upload { pkg_prefix: "prefix/deps" }
+    ''',
+          c='''
+    create {
+      source { script { name: "fetch.py" } }
+      build { tool: "prefix/deps/b" }
+    }
+    upload { pkg_prefix: "prefix/deps" }
+    ''',
+      ).items())
+  test = (
+      api.test('tryjob-tool-dep') + api.platform('linux', 64) + api.properties(
+          GOOS='linux',
+          GOARCH='arm64',
+          use_new_checkout=True,
+          tryserver_affected_files=['a/3pp.pb']) +
       api.buildbucket.try_build('infra') +
       api.tryserver.gerrit_change_target_ref('refs/branch-heads/foo') +
       api.step_data('find package specs',

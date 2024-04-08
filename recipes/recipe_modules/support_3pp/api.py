@@ -751,14 +751,17 @@ class Support3ppApi(recipe_api.RecipeApi):
   def _NormalizePath(self, p):
     return self.m.path.abs_to_path(str(p))
 
-  def _ComputeAffectedPackages(self, tryserver_affected_files):
+  def _ComputeAffectedPackages(self, tryserver_affected_files, platform,
+                               host_platform):
     reverse_deps = {}  # cipd_pkg_name -> Set[cipd_pkg_name]
     for cipd_pkg_name, dir_spec in self._loaded_specs.items():
-      for create_msg in dir_spec[1].create:
-        for dep in itertools.chain(create_msg.build.dep, create_msg.build.tool):
-          # Some packages depend on themselves for cross-compiling, ignore this.
-          if dep != cipd_pkg_name:
-            reverse_deps.setdefault(dep, set()).add(cipd_pkg_name)
+      for p in (platform, host_platform):
+        if flat_spec := _flatten_spec_pb_for_platform(dir_spec[1], p):
+          for dep in itertools.chain(flat_spec.create[0].build.dep,
+                                     flat_spec.create[0].build.tool):
+            # Some packages depend on themselves for cross-compiling, ignore this.
+            if dep != cipd_pkg_name:
+              reverse_deps.setdefault(dep, set()).add(cipd_pkg_name)
 
     affected_packages = set()
 
@@ -825,10 +828,13 @@ class Support3ppApi(recipe_api.RecipeApi):
     Returns (list[(cipd_pkg, cipd_version)], set[str]) of built CIPD packages
     and their tagged versions, as well as a list of unsupported packages.
     """
+    platform = platform or platform_for_host(self.m)
     if tryserver_affected_files:
       force_build = True
       with self.m.step.nest('compute affected packages') as p:
-        packages = self._ComputeAffectedPackages(tryserver_affected_files)
+        packages = self._ComputeAffectedPackages(tryserver_affected_files,
+                                                 platform,
+                                                 platform_for_host(self.m))
         p.step_text = ','.join(packages) if packages else 'all packages'
 
     # If `packages` is an empty list, pkgbuild will build all packages under
@@ -843,7 +849,6 @@ class Support3ppApi(recipe_api.RecipeApi):
     explicit_build_plan = []
     packages = packages or list(self._loaded_specs.keys())
     force_build_packages = set(packages) if force_build else set()
-    platform = platform or platform_for_host(self.m)
     with self.m.step.nest('compute build plan'):
       for pkg in packages:
         cipd_pkg_name, version = parse_name_version(pkg)
