@@ -16,6 +16,24 @@
       "message": "PTAL, this needs stamped again due to the test expectation file rename.",
       "revId": "bc7eb8a3dd4a090d62bad7f4efec2df78f34ef5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "70d9b245_23df3f83",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2024-04-08T06:40:59Z",
+      "side": 1,
+      "message": "I made a further change here because I realized that restricting to the target platform may miss packages that are only needed via tool dependencies.\n\nGetting this completely right is pretty complicated and possibly not worthwhile, so I\u0027ve changed it to just build the union of the reverse dependencies for the host and target platforms. This is still an improvement over the old code, which considered dependencies on completely unrelated platforms (i.e. a dependency only used on linux would trigger a rebuild on windows in the old code)",
+      "parentUuid": "033e97e8_5c808ca8",
+      "revId": "bc7eb8a3dd4a090d62bad7f4efec2df78f34ef5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
