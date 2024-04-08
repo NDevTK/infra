@@ -95,11 +95,13 @@ func Init(cfg *Config) error {
 	// Embedded files
 	base = append(base,
 		stdenvGen,
-		resourcesGen.SubDir(os).WithModeOverride(func(info fs.FileInfo) (fs.FileMode, error) {
-			if path.Dir(info.Name()) == "bin" {
-				return info.Mode() | fs.ModePerm, nil
+		resourcesGen.SubDir(os).WithModeOverride(func(name string) (fs.FileMode, error) {
+			if path.Dir(name) == "bin" {
+				// -r-xr-xr-x
+				return 0o555, nil
 			}
-			return info.Mode(), nil
+			// -r--r--r--
+			return 0o444, nil
 		}),
 	)
 
