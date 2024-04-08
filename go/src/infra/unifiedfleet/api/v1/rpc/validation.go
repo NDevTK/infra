@@ -492,6 +492,15 @@ func (r *GetMachineLSEBySerialRequest) Validate() error {
 	return nil
 }
 
+// Validate validates input requests of GetHostData.
+func (r *GetHostDataRequest) Validate() error {
+	r.Serial = strings.TrimSpace(r.Serial)
+	if r.Serial == "" {
+		return status.Errorf(codes.InvalidArgument, NilEntity)
+	}
+	return nil
+}
+
 // Validate validates input requests of DeleteMachineLSE.
 func (r *DeleteMachineLSERequest) Validate() error {
 	return validateResourceName(machineLSERegex, MachineLSENameFormat, r.Name)

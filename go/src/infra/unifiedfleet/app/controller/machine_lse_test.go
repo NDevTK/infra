@@ -4122,3 +4122,90 @@ func TestGetMachineLSEBySerial(t *testing.T) {
 		})
 	})
 }
+
+func TestGetHostData(t *testing.T) {
+	//t.Parallel()
+	ctx := testingContext()
+	Convey("GetHostData", t, func() {
+		Convey("GetHostData - Missing machine", func() {
+			_, _, err := GetHostData(ctx, "e34a2b3c8c8e9f9acc", true)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
+		})
+		Convey("GetHostData - Missing machine lse", func() {
+			creMachine := &ufspb.Machine{
+				Name:         "machine-100",
+				SerialNumber: "e34a2b3c8c8e9f9acc",
+			}
+			_, err := registration.CreateMachine(ctx, creMachine)
+			So(err, ShouldBeNil)
+			_, retMachine, err := GetHostData(ctx, "e34a2b3c8c8e9f9acc", true)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
+			So(retMachine, ShouldResembleProto, creMachine)
+		})
+		Convey("GetHostData - Multiple machines with serial", func() {
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name:         "machine-102",
+				SerialNumber: "e34a2b3c8c8e9f7acc",
+			})
+			So(err, ShouldBeNil)
+			_, err = registration.CreateMachine(ctx, &ufspb.Machine{
+				Name:         "machine-103",
+				SerialNumber: "e34a2b3c8c8e9f7acc",
+			})
+			So(err, ShouldBeNil)
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name:     "machinelse-102",
+				Machines: []string{"machine-102"},
+				Hostname: "machinelse-102",
+			})
+			So(err, ShouldBeNil)
+			_, _, err = GetHostData(ctx, "e34a2b3c8c8e9f7acc", true)
+			So(err, ShouldNotBeNil)
+		})
+		Convey("GetHostData - Multiple lses with machine", func() {
+			creMachine := &ufspb.Machine{
+				Name:         "machine-104",
+				SerialNumber: "e34a2b3c8c8e9f2acc",
+			}
+			_, err := registration.CreateMachine(ctx, creMachine)
+			So(err, ShouldBeNil)
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name:     "machinelse-104",
+				Machines: []string{"machine-104"},
+				Hostname: "machinelse-104",
+			})
+			So(err, ShouldBeNil)
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name:     "machinelse-105",
+				Machines: []string{"machine-104"},
+				Hostname: "machinelse-105",
+			})
+			So(err, ShouldBeNil)
+			_, retMachine, err := GetHostData(ctx, "e34a2b3c8c8e9f2acc", true)
+			So(err, ShouldNotBeNil)
+			So(retMachine, ShouldResembleProto, creMachine)
+		})
+		Convey("GetHostData - Happy path", func() {
+			creMachine := &ufspb.Machine{
+				Name:         "machine-101",
+				SerialNumber: "e34a2b3c8c8e9f8acc",
+			}
+			_, err := registration.CreateMachine(ctx, creMachine)
+			So(err, ShouldBeNil)
+			host := &ufspb.MachineLSE{
+				Name:     "machinelse-101",
+				Machines: []string{"machine-101"},
+				Hostname: "machinelse-101",
+			}
+			resp, err := inventory.CreateMachineLSE(ctx, host)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, host)
+			resp, retMachine, err := GetHostData(ctx, "e34a2b3c8c8e9f8acc", true)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, host)
+			So(retMachine, ShouldResembleProto, creMachine)
+		})
+	})
+}

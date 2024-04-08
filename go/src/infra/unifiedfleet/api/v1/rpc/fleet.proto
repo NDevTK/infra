@@ -134,6 +134,9 @@ service Fleet {
   // Get retrieves the details of the machineLSE by serial number
   rpc GetMachineLSEBySerial(GetMachineLSEBySerialRequest) returns (models.MachineLSE);
 
+  // Get retrieves the details of the host by serial number
+  rpc GetHostData(GetHostDataRequest) returns (GetHostDataResponse);
+
   // List gets all the machineLSEs
   rpc ListMachineLSEs(ListMachineLSEsRequest) returns (ListMachineLSEsResponse);
 
@@ -1108,6 +1111,22 @@ message GetMachineLSEBySerialRequest {
   ];
   // if this is true, machinelse will contain the full information of VMs.
   bool full = 2;
+}
+
+message GetHostDataRequest {
+  // The serial number of the machine underlying the host
+  string serial = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+  // if this is true, machinelse will contain the full information of VMs.
+  bool full = 2;
+}
+
+message GetHostDataResponse {
+  // MachineLSE data corresponding to the serial number
+  models.MachineLSE host = 1;
+  // Machine data corresponding to the serial number
+  models.Machine machine = 2;
 }
 
 message ListMachineLSEsRequest {

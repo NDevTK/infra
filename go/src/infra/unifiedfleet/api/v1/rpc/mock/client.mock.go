@@ -1580,6 +1580,26 @@ func (mr *MockFleetClientMockRecorder) GetDutState(ctx, in interface{}, opts ...
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDutState", reflect.TypeOf((*MockFleetClient)(nil).GetDutState), varargs...)
 }
 
+// GetHostData mocks base method.
+func (m *MockFleetClient) GetHostData(ctx context.Context, in *ufspb1.GetHostDataRequest, opts ...grpc.CallOption) (*ufspb1.GetHostDataResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetHostData", varargs...)
+	ret0, _ := ret[0].(*ufspb1.GetHostDataResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetHostData indicates an expected call of GetHostData.
+func (mr *MockFleetClientMockRecorder) GetHostData(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostData", reflect.TypeOf((*MockFleetClient)(nil).GetHostData), varargs...)
+}
+
 // GetKVM mocks base method.
 func (m *MockFleetClient) GetKVM(ctx context.Context, in *ufspb1.GetKVMRequest, opts ...grpc.CallOption) (*ufspb.KVM, error) {
 	m.ctrl.T.Helper()
@@ -3996,6 +4016,21 @@ func (m *MockFleetServer) GetDutState(arg0 context.Context, arg1 *ufspb1.GetDutS
 func (mr *MockFleetServerMockRecorder) GetDutState(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDutState", reflect.TypeOf((*MockFleetServer)(nil).GetDutState), arg0, arg1)
+}
+
+// GetHostData mocks base method.
+func (m *MockFleetServer) GetHostData(arg0 context.Context, arg1 *ufspb1.GetHostDataRequest) (*ufspb1.GetHostDataResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetHostData", arg0, arg1)
+	ret0, _ := ret[0].(*ufspb1.GetHostDataResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetHostData indicates an expected call of GetHostData.
+func (mr *MockFleetServerMockRecorder) GetHostData(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHostData", reflect.TypeOf((*MockFleetServer)(nil).GetHostData), arg0, arg1)
 }
 
 // GetKVM mocks base method.

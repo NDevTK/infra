@@ -157,6 +157,33 @@ func (fs *FleetServerImpl) GetMachineLSEBySerial(ctx context.Context, req *ufsAP
 	return machineLSE, err
 }
 
+// GetHostData gets the machine, host information from database given the serial number.
+func (fs *FleetServerImpl) GetHostData(ctx context.Context, req *ufsAPI.GetHostDataRequest) (rsp *ufsAPI.GetHostDataResponse, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	machineLSE, machine, err := controller.GetHostData(ctx, req.Serial, req.Full)
+	if err != nil && machine == nil {
+		return nil, err
+	}
+	if machineLSE != nil {
+		// https://aip.dev/122 - as per AIP guideline
+		machineLSE.Name = util.AddPrefix(util.MachineLSECollection, machineLSE.Name)
+	}
+	if machine != nil {
+		// https://aip.dev/122 - as per AIP guideline
+		machine.Name = util.AddPrefix(util.MachineCollection, machine.Name)
+	}
+	rsp = &ufsAPI.GetHostDataResponse{
+		Machine: machine,
+		Host:    machineLSE,
+	}
+	return
+}
+
 // BatchGetMachineLSEs gets a batch of machineLSE information from database.
 func (fs *FleetServerImpl) BatchGetMachineLSEs(ctx context.Context, req *ufsAPI.BatchGetMachineLSEsRequest) (rsp *ufsAPI.BatchGetMachineLSEsResponse, err error) {
 	defer func() {

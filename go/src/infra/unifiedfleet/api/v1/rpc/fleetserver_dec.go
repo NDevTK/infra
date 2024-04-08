@@ -572,6 +572,23 @@ func (s *DecoratedFleet) GetMachineLSEBySerial(ctx context.Context, req *GetMach
 	return
 }
 
+func (s *DecoratedFleet) GetHostData(ctx context.Context, req *GetHostDataRequest) (rsp *GetHostDataResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetHostData", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetHostData(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetHostData", rsp, err)
+	}
+	return
+}
+
 func (s *DecoratedFleet) ListMachineLSEs(ctx context.Context, req *ListMachineLSEsRequest) (rsp *ListMachineLSEsResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
