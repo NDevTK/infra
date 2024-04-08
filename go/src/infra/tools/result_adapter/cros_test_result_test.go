@@ -394,6 +394,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),
 						pbutil.StringPair("main_builder_name", "main-release"),
 						pbutil.StringPair("model", "nipperkin"),
+						pbutil.StringPair("modem_type", "MODEM_TYPE_FIBOCOMM_L850GL"),
 						pbutil.StringPair("multiduts", "False"),
 						pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
 						pbutil.StringPair("pool", "ChromeOSSkylab"),

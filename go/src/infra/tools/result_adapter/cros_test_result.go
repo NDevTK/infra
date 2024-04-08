@@ -328,6 +328,11 @@ func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.Bu
 		}
 	}
 
+	modemInfo := buildMetadata.GetModemInfo()
+	if modemInfo != nil {
+		newTags = AppendTags(newTags, "modem_type", modemInfo.GetType().Enum().String())
+	}
+
 	return newTags
 }
 
