@@ -241,25 +241,41 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
-func hasTestAllManifestXMLChange(files []string) (bool, error) {
-	// TODO(b/187795897): If there is only changes to kernel/toolchain sources,
-	// do not report it.
-	if len(files) == 1 {
-		ignorePatterns := []*testplans.FilePattern{
-			&kernelUpstreamManifestFilePattern,
-			&toolchainManifestFilePattern,
+// Filters manifest files that the CQ is known to test correctly out of `files`.
+func filterExplicitlyIgnoredManifestFiles(files []string) ([]string, error) {
+	filtered := make([]string, 0, len(files))
+	for _, f := range files {
+		match, err := match.FilePatternMatches(&toolchainManifestFilePattern, f)
+		if err != nil {
+			return nil, fmt.Errorf("matching against %q: %w", f, err)
 		}
+		if match {
+			log.Printf("File %s matches known-tested pattern; ignoring for manifest checking", f)
+		} else {
+			filtered = append(filtered, f)
+		}
+	}
+	return filtered, nil
+}
 
-		for _, pattern := range ignorePatterns {
-			f := files[0]
-			match, err := match.FilePatternMatches(pattern, f)
-			if err != nil {
-				log.Fatalf("Failed to match pattern %s against file %s: %v", &kernelUpstreamManifestFilePattern, f, err)
-			}
-			if match {
-				log.Printf("File %s matches pattern %s; skipping manifest checking", f, pattern)
-				return false, nil
-			}
+func hasTestAllManifestXMLChange(files []string) (bool, error) {
+	files, err := filterExplicitlyIgnoredManifestFiles(files)
+	if err != nil {
+		log.Fatalf("Failed filtering manifest files: %v", err)
+	}
+
+	// TODO(b/187795897): If there is only changes to kernel sources, do not report it.
+	// Alternatively, maybe this can be merged with `filterExplicitlyIgnoredManifestFiles` logic
+	// above? It's unclear if the "1 file" constraint is required here.
+	if len(files) == 1 {
+		f := files[0]
+		match, err := match.FilePatternMatches(&kernelUpstreamManifestFilePattern, f)
+		if err != nil {
+			log.Fatalf("Failed to match pattern %s against file %s: %v", &kernelUpstreamManifestFilePattern, f, err)
+		}
+		if match {
+			log.Printf("File %s matches kernel pattern; skipping manifest checking", f)
+			return false, nil
 		}
 	}
 	for _, f := range files {

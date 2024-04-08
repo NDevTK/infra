@@ -159,11 +159,12 @@ func TestCheckBuilders_hasTestAllManifestXMLChange(t *testing.T) {
 }
 
 func TestCheckBuilders_hasTestAllManifestXMLChangeException(t *testing.T) {
-	testFiles := []string{
-		"_kernel_upstream.xml",
-		"_toolchain.xml",
+	testFileSets := [][]string{
+		{"_kernel_upstream.xml"},
+		{"_toolchain.xml"},
+		{"_toolchain.xml", "some-non-manifest-file.txt"},
 	}
-	for _, testFile := range testFiles {
+	for _, testFiles := range testFileSets {
 		changes := []*bbproto.GerritChange{
 			{Host: "test-review.googlesource.com", Change: 123, Patchset: 2, Project: "chromiumos/public/example"},
 		}
@@ -176,7 +177,7 @@ func TestCheckBuilders_hasTestAllManifestXMLChangeException(t *testing.T) {
 				},
 				Branch:  "refs/heads/main",
 				Project: "chromiumos/manifest-internal",
-				Files:   []string{testFile},
+				Files:   testFiles,
 			},
 		})
 		repoToBranchToSrcRoot := map[string]map[string]string{
