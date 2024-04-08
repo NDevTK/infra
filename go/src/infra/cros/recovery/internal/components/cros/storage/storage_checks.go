@@ -164,38 +164,53 @@ func detectSSDState(ctx context.Context, storageInfoSlice []string) (StorageStat
 	if err != nil {
 		return StorageStateUndefined, errors.Annotate(err, "detect ssd state").Err()
 	}
+	var usedValue float64
+	var errorFound bool
+	var errorFoundLine string
 	for _, line := range storageInfoSlice {
-		_, err := regexpSubmatchToMap(ssdFailRegexp, line)
-		if err == nil {
-			log.Debugf(ctx, "Found critical line => %q", line)
-			return StorageStateCritical, nil
+		if !errorFound {
+			_, err := regexpSubmatchToMap(ssdFailRegexp, line)
+			if err == nil {
+				errorFound = true
+				errorFoundLine = line
+			}
 		}
 		mRelocate, err := regexpSubmatchToMap(ssdRelocateSectorsRegexp, line)
 		if err == nil {
 			log.Debugf(ctx, "Found warning line => %q", line)
-			value, _ := strconv.ParseFloat(mRelocate["value"], 64)
+			usedValue, _ = strconv.ParseFloat(mRelocate["value"], 64)
 			// manufacture set default value 100, if number started to grow then it is time to mark it.
-			if value > 100 {
-				return StorageStateWarning, nil
+			if usedValue > 100 {
+				break
 			}
 		}
+	}
+	metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("storage_type", "ssd"))
+	// metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("storage_end_of_life_signal", int64(eolValue)))
+	metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("est_storage_life_used", int64(usedValue)))
+	if errorFound {
+		log.Debugf(ctx, "Found critical line => %q", errorFoundLine)
+		return StorageStateCritical, nil
+	} else if usedValue > 100 {
+		return StorageStateWarning, nil
 	}
 	return StorageStateNormal, nil
 }
 
 const (
-	// Ex:
-	// Device life time type A [DEVICE_LIFE_TIME_EST_TYP_A: 0x01]
+	// Regex used for MMS and SSD.
+	// SSD will be applied later.
+	// Ex: Device life time type A [DEVICE_LIFE_TIME_EST_TYP_A: 0x01]
 	// 0x00~9 means 0-90% band
 	// 0x0a means 90-100% band
 	// 0x0b means over 100% band
-	mmcFailLifeGlob = `.*(?P<param>DEVICE_LIFE_TIME_EST_TYP_.)]?: 0x0(?P<val>\S)` // life time persentage
+	deviceLifeTimeGlob = `.*(?P<param>DEVICE_LIFE_TIME_EST_TYP_.)]?: 0x0(?P<val>\S)` // life time persentage
 	// Ex "Pre EOL information [PRE_EOL_INFO: 0x01]"
 	// 0x00 - not defined
 	// 0x01 - Normal
 	// 0x02 - Warning, consumed 80% of the reserved blocks
 	// 0x03 - Urgent, consumed 90% of the reserved blocks
-	mmcFailEolGlob = `.*(?P<param>PRE_EOL_INFO)]?: 0x0(?P<val>\d)`
+	devicePreEolGlob = `.*(?P<param>PRE_EOL_INFO)]?: 0x0(?P<val>\d)`
 )
 
 const (
@@ -217,7 +232,7 @@ const (
 // detectMMCState read the info to detect state for MMC storage.
 // return error if the regular expression cannot compile.
 func detectMMCState(ctx context.Context, storageInfoSlice []string) (StorageState, error) {
-	return detectJedecState(ctx, "MMC", mmcFailLifeGlob, mmcFailEolGlob, storageInfoSlice)
+	return detectJedecState(ctx, "MMC", deviceLifeTimeGlob, devicePreEolGlob, storageInfoSlice)
 }
 
 // detectUFSState read the info to detect state for UFS storage.
@@ -274,7 +289,7 @@ func detectJedecState(ctx context.Context, ifaceName, jedecFailLifeGlob, jedecFa
 			break
 		}
 	}
-
+	metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("storage_type", ifaceName))
 	metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("storage_end_of_life_signal", int64(eolValue)))
 	metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("est_storage_life_used", int64(lifeValue)))
 	// We determine storage state Critical(require replacement) based on end-of-life signal only
@@ -315,6 +330,9 @@ func detectNVMEState(ctx context.Context, storageInfoSlice []string) (StorageSta
 			break
 		}
 	}
+	metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("storage_type", "nvme"))
+	// metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("storage_end_of_life_signal", int64(eolValue)))
+	metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("est_storage_life_used", int64(usedValue)))
 	if usedValue < 91 {
 		log.Infof(ctx, "NVME storage usage value: %v", usedValue)
 		return StorageStateNormal, nil
