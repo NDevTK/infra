@@ -219,16 +219,22 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 		}
 
 		var bqClient *bigquery.Client
-		var req *api.CTPv2Request
+		var reqs *api.CTPv2Request
+		var req *api.CTPRequest
+
 		var buildstate *build.State
 		switch sk := tecfg.StateKeeper.(type) {
 		case *data.PrePostFilterStateKeeper:
 			bqClient = sk.BQClient
-			req = sk.CtpV2Request
+			reqs = sk.CtpV2Request
 			buildstate = sk.BuildState
+		case *data.FilterStateKeeper:
+			bqClient = sk.BQClient
+			buildstate = sk.BuildState
+			req = sk.CtpReq
 		}
 
-		analytics.SoftInsertStepWCtp2Req(ctx, bqClient, &analytics.BqData{Step: fmt.Sprintf("%s", cmdType), Status: analytics.Start}, req, buildstate)
+		analytics.SoftInsertStepWCtp2Req(ctx, bqClient, &analytics.BqData{Step: fmt.Sprintf("%s", cmdType), Status: analytics.Start}, reqs, buildstate, req)
 		startTime := time.Now()
 		status := analytics.Success
 		if singleErr = cmd.Execute(ctx); singleErr != nil {
@@ -242,7 +248,7 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 			continue
 		}
 
-		analytics.SoftInsertStepWCtp2Req(ctx, bqClient, &analytics.BqData{Step: fmt.Sprintf("%s", cmdType), Status: status, Duration: float32(time.Since(startTime).Seconds())}, req, buildstate)
+		analytics.SoftInsertStepWCtp2Req(ctx, bqClient, &analytics.BqData{Step: fmt.Sprintf("%s", cmdType), Status: status, Duration: float32(time.Since(startTime).Seconds())}, reqs, buildstate, req)
 
 		logging.Infof(ctx, "Cmd completed: %s", cmdType)
 

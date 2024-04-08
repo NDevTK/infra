@@ -9,9 +9,12 @@ import (
 	"infra/cros/cmd/ctpv2/data"
 	"strconv"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/civil"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/api/option"
@@ -45,6 +48,7 @@ type BqData struct {
 
 type TaskData struct {
 	SuiteName     string
+	Date          civil.DateTime
 	AnalyticsName string
 	BBID          string
 	Build         string
@@ -112,9 +116,14 @@ func SoftInsertStep(ctx context.Context, BQClient *bigquery.Client, data *BqData
 }
 
 // SoftInsertStepWCtp2Req insert a step info to BQl built from the CTPv2Request req. Do not fail on errors.
-func SoftInsertStepWCtp2Req(ctx context.Context, BQClient *bigquery.Client, data *BqData, req *api.CTPv2Request, build *build.State) {
-	if req != nil && len(req.GetRequests()) > 0 {
-		data = buildDataFromCTPReq(data, req)
+func SoftInsertStepWCtp2Req(ctx context.Context, BQClient *bigquery.Client, data *BqData, ctpv2Req *api.CTPv2Request, build *build.State, v1Req *api.CTPRequest) {
+	if ctpv2Req != nil && len(ctpv2Req.GetRequests()) > 0 {
+		data = buildDataFromCTPReq(data, ctpv2Req)
+	} else if v1Req != nil {
+		rs := []*api.CTPRequest{}
+		rs = append(rs, v1Req)
+		data = buildDataFromCTPReq(data, &api.CTPv2Request{Requests: rs})
+
 	}
 	data = addBBID(data, build)
 
@@ -138,22 +147,31 @@ func SoftInsertStepWTrReq(ctx context.Context, BQClient *bigquery.Client, data *
 	if req == nil {
 		return
 	}
-	// BBID          string
-	// Build         string
-	// Freeform      string
-	// Pool          string
-	// DisplayName   string
-	// TrTaskID      string
-	// SchedukeID    string
-	// Board         string
-	// Model         string
-	// Deps          []string
-	// data.SuiteName = req.Req
+
+	if build != nil {
+		swarmingID := strconv.FormatInt(build.Build().GetId(), 10)
+		if swarmingID != "" {
+			data.BBID = swarmingID
+		}
+
+	}
 
 	var rows []*TaskData
 	data.SuiteName = suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
 	data.AnalyticsName = suiteInfo.GetSuiteRequest().GetAnalyticsName()
+	data.Pool = suiteInfo.GetSuiteMetadata().GetPool()
+
+	data.Date = civil.DateTimeOf(time.Now())
+
+	// TODO; will add once the new internal proto is added to the MO+ TR request.
+	// data.Board = populateBoardFromDut(req.NewReq)
+	// data.Model = populateModelFromDut(req.NewReq)
+	data.SuiteName = suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
+	// data.Deps = deps(req.NewReq)
+
 	rows = append(rows, data)
+
+	// data.Build = buildFromGcs(req.NewReq.GetPrimaryTarget().GetSwReq().GetGcsPath())
 
 	if BQClient != nil {
 		err := InsertCTPTaskMetrics(BQClient, rows)
@@ -162,6 +180,28 @@ func SoftInsertStepWTrReq(ctx context.Context, BQClient *bigquery.Client, data *
 
 		}
 	}
+}
+
+func deps(target *api.SchedulingUnit) []string {
+	return target.GetPrimaryTarget().GetSwarmingDef().GetSwarmingLabels()
+}
+
+func populateBoardFromDut(target *api.SchedulingUnit) string {
+	switch hw := target.GetPrimaryTarget().GetSwarmingDef().GetDutInfo().GetDutType().(type) {
+	case *dut_api.Dut_Chromeos:
+		return hw.Chromeos.GetDutModel().GetBuildTarget()
+	}
+	// TODO, populate other dut types
+	return "nonChromeos"
+}
+func populateModelFromDut(target *api.SchedulingUnit) string {
+
+	switch hw := target.GetPrimaryTarget().GetSwarmingDef().GetDutInfo().GetDutType().(type) {
+	case *dut_api.Dut_Chromeos:
+		return hw.Chromeos.GetDutModel().GetModelName()
+	}
+	// TODO, populate other dut types
+	return "nonChromeos"
 }
 
 // buildDataFromInternal will append the CTP Request details to the to be inserted BQ row.
