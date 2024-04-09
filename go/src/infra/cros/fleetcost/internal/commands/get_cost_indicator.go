@@ -6,12 +6,10 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/maruel/subcommands"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -77,12 +75,8 @@ func (c *getCostIndicatorCommand) innerRun(ctx context.Context, a subcommands.Ap
 	if err != nil {
 		return err
 	}
-	bytes, err := (&protojson.MarshalOptions{
-		Indent: "  ",
-	}).Marshal(resp)
-	if err != nil {
+	if _, err := showProto(a.GetOut(), resp); err != nil {
 		return err
 	}
-	fmt.Printf("%s\n", string(bytes))
 	return nil
 }

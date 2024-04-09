@@ -6,7 +6,6 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -47,14 +46,14 @@ type getCostResultCommand struct {
 // Run is the main entrypoint to the ping.
 func (c *getCostResultCommand) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, c, env)
-	if err := c.innerRun(ctx); err != nil {
+	if err := c.innerRun(ctx, a); err != nil {
 		cmdlib.PrintError(a, err)
 		return 1
 	}
 	return 0
 }
 
-func (c *getCostResultCommand) innerRun(ctx context.Context) error {
+func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Application) error {
 	host, err := c.commonFlags.Host()
 	if err != nil {
 		return err
@@ -78,8 +77,8 @@ func (c *getCostResultCommand) innerRun(ctx context.Context) error {
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.GetCostResult(ctx, &fleetcostAPI.GetCostResultRequest{Hostname: c.name})
 	if err == nil {
-		dCost, sCost, cCost := resp.GetResult().GetDedicatedCost(), resp.GetResult().GetSharedCost(), resp.GetResult().GetCloudServiceCost()
-		fmt.Printf("Cost result for %s\nDedicate cost: %f, shared cost %f, cloud cost: %f\nTotal cost: %f\n", c.name, dCost, sCost, cCost, dCost+sCost+cCost)
+		return err
 	}
+	_, err = showProto(a.GetOut(), resp)
 	return err
 }

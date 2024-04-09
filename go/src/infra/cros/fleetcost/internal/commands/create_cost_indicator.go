@@ -6,7 +6,6 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"math"
 	"net/http"
 	"time"
@@ -135,6 +134,9 @@ func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 		Location:    c.location,
 		Description: c.description,
 	}})
-	fmt.Printf("%#v\n", resp)
+	if err != nil {
+		return err
+	}
+	_, err = showProto(a.GetOut(), resp)
 	return err
 }

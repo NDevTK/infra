@@ -6,7 +6,6 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -14,7 +13,6 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/testing/assert/structuraldiff"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
@@ -75,6 +73,9 @@ func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, a
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.Ping(ctx, &fleetcostAPI.PingRequest{})
-	fmt.Printf("%s\n", structuraldiff.DebugDump(resp))
+	if err != nil {
+		return err
+	}
+	_, err = showProto(a.GetOut(), resp)
 	return err
 }

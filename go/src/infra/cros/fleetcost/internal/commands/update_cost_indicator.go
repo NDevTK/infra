@@ -6,7 +6,6 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"math"
 	"net/http"
 	"time"
@@ -173,6 +172,9 @@ func (c *updateCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 			Paths: c.getFieldMaskPaths(),
 		},
 	})
-	fmt.Printf("%#v\n", resp)
+	if err != nil {
+		return err
+	}
+	_, err = showProto(a.GetOut(), resp)
 	return err
 }
