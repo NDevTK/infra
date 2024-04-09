@@ -17,8 +17,10 @@ import (
 	"infra/cros/fleetcost/internal/costserver/maskutils"
 )
 
+// CostIndicatorKind is the datastore kind of a cost indicator entity.
 const CostIndicatorKind = "CostIndicatorKind"
 
+// CostIndicatorEntity is a datastore entity storing a cost indicator.
 type CostIndicatorEntity struct {
 	_kind         string                     `gae:"$kind,CostIndicatorKind"`
 	Extra         datastore.PropertyMap      `gae:",extra"`
@@ -54,8 +56,12 @@ func (indicator *CostIndicatorEntity) Load(propertyMap datastore.PropertyMap) er
 	return datastore.GetPLS(indicator).Load(propertyMap)
 }
 
+// Compile-time assertion that CostIndicatorEntity is a PropertyLoadSaver, i.e. it can be converted to and from a
+// datastore.PropertyMap.
 var _ datastore.PropertyLoadSaver = &CostIndicatorEntity{}
 
+// Compile-time assertion that CostIndicatorEntity is a MetaGetterSetter, i.e. it has the ability to produce meta keys
+// (in this case just $id).
 var _ datastore.MetaGetterSetter = &CostIndicatorEntity{}
 
 // GetAllMeta transfers control to the default implementation of GetAllMeta.
