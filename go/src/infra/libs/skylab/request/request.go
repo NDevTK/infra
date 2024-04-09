@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
@@ -70,6 +71,8 @@ type Args struct {
 	TestRunnerRequest *skylab_test_runner.Request
 	// Describes the test to be run via CFT workflow.
 	CFTTestRunnerRequest *skylab_test_runner.CFTTestRequest
+	// Describes the dynamic workflow by which tests will be ran via CFT.
+	DynamicTestRunnerRequest *api.CrosTestRunnerDynamicRequest
 	// Experiments to pass on to test_runner builders.
 	Experiments []string
 	// The Gerrit Changes associated with the test_runner invocation.
@@ -110,11 +113,19 @@ func (a *Args) NewBBRequest(b *buildbucket_pb.BuilderID) (*buildbucket_pb.Schedu
 	}
 
 	if a.CFTIsEnabled {
-		cftReq, err := protoToStructPB(a.CFTTestRunnerRequest)
-		if err != nil {
-			return nil, errors.Annotate(err, "create bb request: cftRequestToStructPB").Err()
+		if a.DynamicTestRunnerRequest != nil {
+			dynReq, err := protoToStructPB(a.DynamicTestRunnerRequest)
+			if err != nil {
+				return nil, errors.Annotate(err, "create bb request: dynamicTestRunnerRequestToStructPB").Err()
+			}
+			props.Fields["cros_test_runner_dynamic_request"] = dynReq
+		} else {
+			cftReq, err := protoToStructPB(a.CFTTestRunnerRequest)
+			if err != nil {
+				return nil, errors.Annotate(err, "create bb request: cftRequestToStructPB").Err()
+			}
+			props.Fields["cft_test_request"] = cftReq
 		}
-		props.Fields["cft_test_request"] = cftReq
 	} else {
 		// TODO(crbug.com/1036559#c1): Add timeouts.
 		req, err := protoToStructPB(a.TestRunnerRequest)

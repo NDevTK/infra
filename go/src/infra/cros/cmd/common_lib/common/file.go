@@ -15,9 +15,11 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -415,4 +417,28 @@ func Decompress(from string) ([]byte, error) {
 		return nil, errors.Annotate(err, "decompress").Err()
 	}
 	return bs, nil
+}
+
+// FetchContainerMetadata retrieves the container metadata from the provided gcs path.
+func FetchContainerMetadata(ctx context.Context, containerGcsPath string) (*buildapi.ContainerMetadata, error) {
+	tempRootDir := os.Getenv("TEMPDIR")
+
+	// Just here to prevent race conditions of shards fighting over a file.
+	rand.Seed(time.Now().UnixNano())
+	tempRootDir = path.Join(tempRootDir, strconv.Itoa(rand.Int()))
+
+	localFilePath, err := DownloadGcsFileToLocal(ctx, containerGcsPath, tempRootDir)
+	if err != nil {
+		logging.Infof(ctx, "error while downloading gcs file to local: %s", err)
+		return nil, err
+	}
+
+	containerMetadata := &api.ContainerMetadata{}
+	err = ReadProtoJSONFile(ctx, localFilePath, containerMetadata)
+	if err != nil {
+		logging.Infof(ctx, "error while reading proto json file: %s", err)
+		return nil, err
+	}
+
+	return containerMetadata, nil
 }

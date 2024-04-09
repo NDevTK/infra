@@ -152,11 +152,15 @@ func (cmd *ContainerStartCmd) extractDepsFromHwTestStateKeeper(
 		logging.Infof(ctx, "Warning: cmd %q failed to inject some dependencies, %s", cmd.GetCommandType(), err)
 	}
 
-	containerImage, err := common.GetContainerImageFromMap(cmd.ContainerRequest.ContainerImageKey, sk.ContainerImages)
-	if err != nil {
-		return fmt.Errorf("cmd %q missing dependency: ContainerImage, %s", cmd.GetCommandType(), err)
+	if cmd.ContainerRequest.ContainerImagePath != "" {
+		cmd.ContainerImage = cmd.ContainerRequest.ContainerImagePath
+	} else {
+		containerImage, err := common.GetContainerImageFromMap(cmd.ContainerRequest.ContainerImageKey, sk.ContainerImages)
+		if err != nil {
+			return fmt.Errorf("cmd %q missing dependency: ContainerImage, %s", cmd.GetCommandType(), err)
+		}
+		cmd.ContainerImage = containerImage
 	}
-	cmd.ContainerImage = containerImage
 
 	return nil
 }

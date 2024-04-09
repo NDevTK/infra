@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"log"
 	"path"
-	"strings"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -109,13 +108,11 @@ func executeLocalTests(
 	}
 
 	if sk.CftTestRequest.GetPrimaryDut() != nil {
-		sk.CftTestRequest.AutotestKeyvals["primary-board"] = sk.CftTestRequest.GetPrimaryDut().GetDutModel().GetBuildTarget()
+		sk.PrimaryDutModel = sk.CftTestRequest.GetPrimaryDut().GetDutModel()
 	}
-	companionBoards := []string{}
 	for _, companion := range sk.CftTestRequest.GetCompanionDuts() {
-		companionBoards = append(companionBoards, companion.GetDutModel().GetBuildTarget())
+		sk.CompanionDutModels = append(sk.CompanionDutModels, companion.GetDutModel())
 	}
-	sk.CftTestRequest.AutotestKeyvals["companion-boards"] = strings.Join(companionBoards, ",")
 
 	// Generate config
 	localTestConfig := configs.NewTrv2ExecutionConfig(configs.LocalTestExecutionConfigType, cmdCfg, sk, nil)

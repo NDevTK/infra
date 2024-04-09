@@ -160,7 +160,7 @@ func (cmd *GenericProvisionCmd) updateHwTestStateKeeper(
 		deviceMetadata := &skylab_test_runner.CFTTestRequest_Device{}
 		if err := common.Inject(deviceMetadata, "", sk.Injectables, key); err != nil {
 			logging.Infof(ctx, "Warning: could not retrieve '%s' from InjectableStorage, %s", key, err)
-		} else {
+		} else if cmd.ProvisionRequest.GetInstallRequest().GetImagePath().GetPath() != "" {
 			deviceMetadata.ProvisionState = &testapi.ProvisionState{
 				SystemImage: &testapi.ProvisionState_SystemImage{
 					SystemImagePath: cmd.ProvisionRequest.GetInstallRequest().GetImagePath(),

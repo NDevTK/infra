@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
@@ -75,15 +76,14 @@ func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("error compressing and encoding ScheduleBuildRequest %v: %w", bbReq, err)
 	}
-	cftReq, ok := bbReq.GetProperties().GetFields()["cft_test_request"]
-	if !ok {
-		return nil, fmt.Errorf("no cft test request found on ScheduleBuildRequest %v", bbReq)
+	deadlineStruct, err := getDeadlineStruct(bbReq)
+	if err != nil {
+		return nil, err
 	}
-	deadlineStruct, ok := cftReq.GetStructValue().GetFields()["deadline"]
-	if !ok {
-		return nil, fmt.Errorf("no deadline found on ScheduleBuildRequest %v", bbReq)
+	parentBBIDStr, err := getParentBBIDstr(bbReq)
+	if err != nil {
+		return nil, err
 	}
-	parentBBIDStr := cftReq.GetStructValue().GetFields()["parentBuildId"].GetStringValue()
 	var parentBBID int64
 	// Fail softly if parentBuildId field is not set on the request, as Scheduke
 	// only uses this for metadata/logging.
@@ -124,6 +124,48 @@ func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*
 			SchedukeTaskRequestKey: schedukeTask,
 		},
 	}, nil
+}
+
+// getParentBBIDstr searches the bbReq for the parentBuildId field.
+// Can be found in either the CrosTestRunnerDynamicRequest or the CftTestRequest.
+func getParentBBIDstr(bbReq *buildbucketpb.ScheduleBuildRequest) (string, error) {
+	fields := bbReq.GetProperties().GetFields()
+	if dynReq, ok := fields["cros_test_runner_dynamic_request"]; ok {
+		buildStartRequest, ok := dynReq.GetStructValue().GetFields()["build"]
+		if !ok {
+			return "", fmt.Errorf("no BuildStartRequest found on ScheduleBuildRequest %v", bbReq)
+		}
+		fields = buildStartRequest.GetStructValue().GetFields()
+	} else {
+		cftReq, ok := fields["cft_test_request"]
+		if !ok {
+			return "", fmt.Errorf("no cft test request found on ScheduleBuildRequest %v", bbReq)
+		}
+		fields = cftReq.GetStructValue().GetFields()
+	}
+
+	return fields["parentBuildId"].GetStringValue(), nil
+}
+
+// getDeadlineStruct searches the bbReq for the deadline field.
+// Can be found in either the CrosTestRunnerDynamicRequest or the CftTestRequest.
+func getDeadlineStruct(bbReq *buildbucketpb.ScheduleBuildRequest) (*structpb.Value, error) {
+	fields := bbReq.GetProperties().GetFields()
+	if dynReq, ok := fields["cros_test_runner_dynamic_request"]; ok {
+		params, ok := dynReq.GetStructValue().GetFields()["params"]
+		if !ok {
+			return nil, fmt.Errorf("no CrosTestRequestParams found on ScheduleBuildRequest %v", bbReq)
+		}
+		fields = params.GetStructValue().GetFields()
+	} else {
+		cftReq, ok := fields["cft_test_request"]
+		if !ok {
+			return nil, fmt.Errorf("no cft test request found on ScheduleBuildRequest %v", bbReq)
+		}
+		fields = cftReq.GetStructValue().GetFields()
+	}
+
+	return fields["deadline"], nil
 }
 
 // priority derives the approximate Scheduke priority from the given build's

@@ -60,6 +60,8 @@ type HwTestStateKeeper struct {
 	DutServerAddress         *labapi.IpEndpoint
 	AndroidDutServerAddress  *labapi.IpEndpoint
 	CurrentDutState          dutstate.State
+	PrimaryDutModel          *labapi.DutModel
+	CompanionDutModels       []*labapi.DutModel
 	// Only when DUT is a VM
 	DutVmGceImage   *vmlabapi.GceImage
 	DutVm           *vmlabapi.VmInstance
@@ -108,5 +110,7 @@ func NewHwTestStateKeeper() *HwTestStateKeeper {
 		CompanionDevices:         []*testapi.CrosTestRequest_Device{},
 		CompanionDevicesMetadata: []*skylab_test_runner.CFTTestRequest_Device{},
 		ProvisionResponses:       make(map[string][]*testapi.InstallResponse),
+		PrimaryDutModel:          &labapi.DutModel{},
+		CompanionDutModels:       []*labapi.DutModel{},
 	}
 }

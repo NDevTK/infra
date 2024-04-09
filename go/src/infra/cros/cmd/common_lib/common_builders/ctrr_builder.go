@@ -5,99 +5,112 @@
 package common_builders
 
 import (
+	"context"
+	"fmt"
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
+
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/logging"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// CrosTestRunnerRequestBuilder wraps the construction of a CrosTestRunnerRequest
-// and contains the top-level object that gets built.
-type CrosTestRunnerRequestBuilder struct {
-	crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest
-}
-
-// CrosTestRunnerRequestConstructor defines the interface by which
-// concrete constructors may define how to construct the CrosTestRunnerRequest
-// from varying internal objects.
-type CrosTestRunnerRequestConstructor interface {
-	ConstructStartRequest(*api.CrosTestRunnerDynamicRequest)
-	ConstructParams(*api.CrosTestRunnerDynamicRequest)
-	ConstructOrderedTasks(*api.CrosTestRunnerDynamicRequest)
-}
-
-// Build initializes the CrosTestRunnerRequest, constructs each top-level field
-// using a given constructor, then returns the resulting construction.
-func (builder *CrosTestRunnerRequestBuilder) Build(constructor CrosTestRunnerRequestConstructor) *api.CrosTestRunnerDynamicRequest {
-	builder.initializeBuilder()
-
-	constructor.ConstructStartRequest(builder.crosTestRunnerRequest)
-	constructor.ConstructParams(builder.crosTestRunnerRequest)
-	constructor.ConstructOrderedTasks(builder.crosTestRunnerRequest)
-
-	return builder.crosTestRunnerRequest
-}
-
-// initializeBuilder sets the CrosTestRunnerRequest to a default empty
-// state in which important high-level fields are safe to reference.
-func (builder *CrosTestRunnerRequestBuilder) initializeBuilder() {
-	builder.crosTestRunnerRequest = &api.CrosTestRunnerDynamicRequest{
-		Params: &api.CrosTestRunnerParams{
-			TestSuites: []*api.TestSuite{},
-			Keyvals:    make(map[string]string),
-		},
-		OrderedTasks: []*api.CrosTestRunnerDynamicRequest_Task{},
-	}
-}
-
-// Concrete CrosTestRunnerRequestConstructor that translates a CftTestRequest
-// into the expected values within a CrosTestRunnerRequest.
-type CftCrosTestRunnerRequestConstructor struct {
-	CrosTestRunnerRequestConstructor
+type DynamicTrv2FromCft struct {
+	interfaces.DynamicTRv2Builder
 
 	Cft *skylab_test_runner.CFTTestRequest
 }
 
-// ConstructStartRequest builds a CrosTestRunnerRequest_StartRequest from
-// a CftTestRequest.
-func (constructor *CftCrosTestRunnerRequestConstructor) ConstructStartRequest(crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest) {
-	crosTestRunnerRequest.StartRequest = &api.CrosTestRunnerDynamicRequest_Build{
+func NewDynamicTrv2FromCftBuilder(cft *skylab_test_runner.CFTTestRequest) *DynamicTrv2FromCft {
+	return &DynamicTrv2FromCft{
+		Cft: cft,
+	}
+}
+
+// BuildRequest extracts necessary information from the cft test request to build out the
+// dynamic trv2 request.
+func (builder *DynamicTrv2FromCft) BuildRequest(ctx context.Context) (*api.CrosTestRunnerDynamicRequest, error) {
+	dynamic := builder.buildDynamicRequest()
+
+	builder.tryAppendProvisionTask(dynamic)
+	builder.tryAppendTestTask(dynamic)
+	builder.tryAppendPublishTasks(dynamic)
+
+	for _, companionDut := range builder.Cft.GetCompanionDuts() {
+		dynamic.CompanionDuts = append(dynamic.CompanionDuts, companionDut.GetDutModel())
+	}
+
+	return dynamic.BuildRequest(ctx)
+}
+
+type DynamicTaskBuilder func(*DynamicTrv2Builder) []*api.CrosTestRunnerDynamicRequest_Task
+
+type DynamicTrv2Builder struct {
+	// Inputs
+	ParentBuildId    int64
+	ParentRequestUid string
+	Deadline         *timestamppb.Timestamp
+	// Oneof
+	ContainerGcsPath  string
+	ContainerMetadata *buildapi.ContainerMetadata
+	// End Oneof
+	ContainerMetadataKey string
+	BuildString          string
+	TestSuites           []*api.TestSuite
+	PrimaryDut           *labapi.DutModel
+	CompanionDuts        []*labapi.DutModel
+	Keyvals              map[string]string
+	OrderedTaskBuilders  []DynamicTaskBuilder
+}
+
+// BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.
+func (builder *DynamicTrv2Builder) BuildRequest(ctx context.Context) (*api.CrosTestRunnerDynamicRequest, error) {
+	if builder.ContainerMetadata == nil {
+		if builder.ContainerGcsPath == "" {
+			return nil, fmt.Errorf("request missing `ContainerGcsPath`, can't fetch container metadata")
+		}
+		containerMetadata, err := common.FetchContainerMetadata(ctx, builder.ContainerGcsPath)
+		if err != nil {
+			logging.Infof(ctx, "error while fetching container metadata: %s", err)
+			return nil, err
+		}
+		builder.ContainerMetadata = containerMetadata
+	}
+
+	orderedTasks := []*api.CrosTestRunnerDynamicRequest_Task{}
+	for _, taskBuilder := range builder.OrderedTaskBuilders {
+		orderedTasks = append(orderedTasks, taskBuilder(builder)...)
+	}
+
+	return &api.CrosTestRunnerDynamicRequest{
+		StartRequest: builder.buildStartRequest(),
+		Params:       builder.buildParams(),
+		OrderedTasks: orderedTasks,
+	}, nil
+}
+
+// buildStartRequest defaults to the BuildMode start request.
+func (builder *DynamicTrv2Builder) buildStartRequest() *api.CrosTestRunnerDynamicRequest_Build {
+	return &api.CrosTestRunnerDynamicRequest_Build{
 		Build: &api.BuildMode{
-			ParentBuildId:    constructor.Cft.GetParentBuildId(),
-			ParentRequestUid: constructor.Cft.GetParentRequestUid(),
+			ParentBuildId:    builder.ParentBuildId,
+			ParentRequestUid: builder.ParentRequestUid,
 		},
 	}
 }
 
-// ConstructParams builds a CrosTestRunnerParams from
-// a CftTestRequest.
-func (constructor *CftCrosTestRunnerRequestConstructor) ConstructParams(crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest) {
-	params := &api.CrosTestRunnerParams{
-		Keyvals:           constructor.Cft.GetAutotestKeyvals(),
-		ContainerMetadata: PatchContainerMetadata(constructor.Cft.GetContainerMetadata(), constructor.Cft.GetAutotestKeyvals()["build"]),
-		TestSuites:        constructor.Cft.GetTestSuites(),
+// buildParams constructs the CrosTestRunnerParams.
+func (builder *DynamicTrv2Builder) buildParams() *api.CrosTestRunnerParams {
+	return &api.CrosTestRunnerParams{
+		ContainerMetadata:    PatchContainerMetadata(builder.ContainerMetadata, builder.BuildString),
+		ContainerMetadataKey: builder.ContainerMetadataKey,
+		Keyvals:              builder.Keyvals,
+		PrimaryDut:           builder.PrimaryDut,
+		CompanionDuts:        builder.CompanionDuts,
+		TestSuites:           builder.TestSuites,
+		Deadline:             builder.Deadline,
 	}
-
-	if params.Keyvals == nil {
-		params.Keyvals = make(map[string]string)
-	}
-
-	if params.TestSuites == nil {
-		params.TestSuites = []*api.TestSuite{}
-	}
-
-	constructor.addDevicesInfoToKeyvals(params.Keyvals)
-
-	crosTestRunnerRequest.Params = params
-}
-
-// ConstructOrderedTasks builds a slice of CrosTestRunnerRequest_Task from
-// a CftTestRequest.
-func (constructor *CftCrosTestRunnerRequestConstructor) ConstructOrderedTasks(crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest) {
-	orderedTasks := &[]*api.CrosTestRunnerDynamicRequest_Task{}
-
-	constructor.buildPrimaryDutProvision(orderedTasks)
-	constructor.buildCompanionDutProvisions(orderedTasks)
-	constructor.buildTestExecution(orderedTasks)
-	constructor.buildPublishes(orderedTasks)
-
-	crosTestRunnerRequest.OrderedTasks = *orderedTasks
 }

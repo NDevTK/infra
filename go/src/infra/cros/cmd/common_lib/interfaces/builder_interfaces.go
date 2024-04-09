@@ -11,3 +11,7 @@ import (
 type CTPv2Builder interface {
 	BuildRequest() *testapi.CTPv2Request
 }
+
+type DynamicTRv2Builder interface {
+	BuildRequest() (*testapi.CrosTestRunnerDynamicRequest, error)
+}

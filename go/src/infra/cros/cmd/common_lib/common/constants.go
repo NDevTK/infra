@@ -25,6 +25,7 @@ const (
 	TKOPublishTestArtifactsDir             = "/tmp/tko-publish-test-artifacts/"
 	CpconPublishTestArtifactsDir           = "/tmp/cpcon-publish-test-artifacts/"
 	RdbPublishTestArtifactDir              = "/tmp/rdb-publish-test-artifacts/"
+	CrosTestCqLight                        = "cros-test-cq-light"
 	TesthausURLPrefix                      = "https://tests.chromeos.goog/p/chromeos/logs/unified/"
 	GcsURLPrefix                           = "https://pantheon.corp.google.com/storage/browser/"
 	HwTestCtrInputPropertyName             = "$chromeos/cros_tool_runner"
@@ -75,6 +76,17 @@ const (
 	// Device base identifiers.
 	Primary   = "primary"
 	Companion = "companion"
+
+	// Commonly used Dynamic Dependecy keys.
+	ServiceAddress            = "serviceAddress"
+	CrosDutCacheServer        = "crosDut.cacheServer"
+	CrosDutDutAddress         = "crosDut.dutAddress"
+	ProvisionStartupDut       = "startupRequest.dut"
+	ProvisionStartupDutServer = "startupRequest.dutServer"
+	TestRequestTestSuites     = "testRequest.testSuites"
+	TestRequestPrimary        = "testRequest.primary"
+	TestRequestCompanions     = "testRequest.companions"
+	RequestTestSuites         = "req.params.testSuites"
 )
 
 var (

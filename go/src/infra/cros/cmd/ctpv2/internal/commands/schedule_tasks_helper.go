@@ -15,17 +15,14 @@ package commands
 import (
 	"context"
 	"fmt"
-	"math/rand"
 	"os"
-	"path"
-	"strconv"
 	"strings"
 	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	goconfig "go.chromium.org/chromiumos/config/go"
-	"go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -37,6 +34,8 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/common_builders"
+	"infra/cros/cmd/common_lib/dynamic_updates"
 	"infra/cros/cmd/ctpv2/data"
 	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/request"
@@ -57,6 +56,9 @@ const (
 )
 
 type TrV2ReqHelper struct {
+	// Control Variables
+	dynamicRun bool
+
 	// Top Level Variables
 	trReqHWDef *testapi.SwarmingDefinition
 	testCases  []*testapi.CTPTestCase
@@ -195,11 +197,19 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 		return nil, fmt.Errorf("No provision info found!!")
 	}
 
-	cftTestRequest, err := createCftTestRequest(ctx, trHelper, provInfo)
-	if err != nil {
-		return nil, err
+	if trHelper.dynamicRun {
+		dynamicRequest, err := createDynamicTrv2Request(ctx, trHelper)
+		if err != nil {
+			return nil, err
+		}
+		args.DynamicTestRunnerRequest = dynamicRequest
+	} else {
+		cftTestRequest, err := createCftTestRequest(ctx, trHelper, provInfo)
+		if err != nil {
+			return nil, err
+		}
+		args.CFTTestRunnerRequest = cftTestRequest
 	}
-	args.CFTTestRunnerRequest = cftTestRequest
 
 	logging.Infof(ctx, "trhelper: %s", trHelper.currBBID)
 
@@ -337,6 +347,77 @@ func getBuildTargetWVariantfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition)
 	return fmt.Sprintf("%s-%s", getBuildTargetfromHwDef(TRRequesthwDef), TRRequesthwDef.GetVariant())
 }
 
+func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*api.CrosTestRunnerDynamicRequest, error) {
+	deadline := timestamppb.New(time.Now().Add(19 * time.Hour))
+
+	testCaseIds := []*testapi.TestCase_Id{}
+	for _, testCase := range trHelper.testCases {
+		testCaseIds = append(testCaseIds, testCase.GetMetadata().GetTestCase().GetId())
+	}
+	testSuites := []*testapi.TestSuite{
+		{
+			Name: trHelper.suiteName,
+			Spec: &testapi.TestSuite_TestCaseIds{
+				TestCaseIds: &testapi.TestCaseIdList{
+					TestCaseIds: testCaseIds,
+				},
+			},
+			ExecutionMetadata: trHelper.suiteInfo.GetSuiteMetadata().GetExecutionMetadata(),
+		},
+	}
+
+	keyvals := make(map[string]string)
+	keyvals["suite"] = trHelper.suiteName // suite name
+
+	// TODO (dbeckett) we need the int of the shard # passed into the gofunc.
+	keyvals["label"] = fmt.Sprintf("%s-shard-0", trHelper.suiteName) // test name
+	keyvals["build"] = trHelper.builderStr                           // Required for rdb-publish
+	keyvals["build_target"] = trHelper.board
+	keyvals["parent_job_id"] = trHelper.currSwarmingID
+
+	gsSourcePath := ""
+	if path, ok := trHelper.trReqHWDef.DynamicUpdateLookupTable["installPath"]; ok {
+		gsSourcePath = path + "/metadata/sources.jsonpb"
+	}
+
+	builder := common_builders.DynamicTrv2Builder{
+		ParentBuildId:        trHelper.currBBID,
+		ParentRequestUid:     trHelper.parentRequestUID,
+		ContainerGcsPath:     trHelper.gcsArtifactPath + common.ContainerMetadataPath,
+		ContainerMetadataKey: trHelper.boardWVaraint,
+		BuildString:          trHelper.builderStr,
+		Deadline:             deadline,
+		TestSuites:           testSuites,
+		PrimaryDut: &labapi.DutModel{
+			BuildTarget: trHelper.board,
+			ModelName:   trHelper.model,
+		},
+		CompanionDuts: []*labapi.DutModel{},
+		Keyvals:       keyvals,
+		OrderedTaskBuilders: []common_builders.DynamicTaskBuilder{
+			common_builders.DefaultDynamicTestTaskWrapper(common.CrosTest),
+			common_builders.DefaultDynamicRdbPublishTaskWrapper(gsSourcePath, false),
+			common_builders.DefaultDynamicGcsPublishTask,
+		},
+	}
+
+	dynamicRequest, err := builder.BuildRequest(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to build base dynamic request").Err()
+	}
+
+	err = dynamic_updates.AddUserDefinedDynamicUpdates(
+		dynamicRequest,
+		trHelper.suiteInfo.SuiteMetadata.DynamicUpdates,
+		trHelper.trReqHWDef.DynamicUpdateLookupTable)
+
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to add user defined dynamic updates to trv2 request").Err()
+	}
+
+	return dynamicRequest, err
+}
+
 // createCftTestRequest creates cft test request.
 func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper, provInfo []*testapi.ProvisionInfo) (*skylab_test_runner.CFTTestRequest, error) {
 	deadline := timestamppb.New(time.Now().Add(19 * time.Hour))
@@ -347,23 +428,9 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper, provInfo
 	}
 
 	containerGcsPath := trHelper.gcsArtifactPath + common.ContainerMetadataPath
-
-	tempRootDir := os.Getenv("TEMPDIR")
-
-	// Just here to prevent race conditions of shards fighting over a file.
-	rand.Seed(time.Now().UnixNano())
-	tempRootDir = path.Join(tempRootDir, strconv.Itoa(rand.Int()))
-
-	localFilePath, err := common.DownloadGcsFileToLocal(ctx, containerGcsPath, tempRootDir)
+	containerMetadata, err := common.FetchContainerMetadata(ctx, containerGcsPath)
 	if err != nil {
-		logging.Infof(ctx, "error while downloading gcs file to local: %s", err)
-		return nil, err
-	}
-
-	containerMetadata := &api.ContainerMetadata{}
-	err = common.ReadProtoJSONFile(ctx, localFilePath, containerMetadata)
-	if err != nil {
-		logging.Infof(ctx, "error while reading proto json file: %s", err)
+		logging.Infof(ctx, "error while fetching container metadata: %s", err)
 		return nil, err
 	}
 

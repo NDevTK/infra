@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	api_common "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
@@ -56,17 +55,15 @@ func HwExecution() {
 			// TODO (azrahman): After stablizing in prod, move log data gs root to cft/new proto.
 			var skylabResult *skylab_test_runner.Result
 			var err error
-			if input.CrosTestRunnerRequest != nil {
+			if input.CrosTestRunnerDynamicRequest != nil {
 				// If the request is a CrosTestRunner dynamic request...
 				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
 			} else if input.CftTestRequest.TranslateTrv2Request {
 				// If the request is a CrosTestRunner non-dynamic request with translation flag...
-				builder := &common_builders.CrosTestRunnerRequestBuilder{}
-				constructor := &common_builders.CftCrosTestRunnerRequestConstructor{
-					Cft: input.CftTestRequest,
+				crosTestRunnerRequest, err := common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx)
+				if err == nil {
+					skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
 				}
-				crosTestRunnerRequest := builder.Build(constructor)
-				skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
 			} else {
 				// If the request is a CrosTestRunner non-dynamic request...
 				skylabResult, err = executeHwTests(ctx, input.CftTestRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
@@ -146,13 +143,11 @@ func executeHwTests(
 	sk.ContainerImages = containerImagesMap
 
 	if sk.CftTestRequest.GetPrimaryDut() != nil {
-		sk.CftTestRequest.AutotestKeyvals["primary-board"] = sk.CftTestRequest.GetPrimaryDut().GetDutModel().GetBuildTarget()
+		sk.PrimaryDutModel = sk.CftTestRequest.GetPrimaryDut().GetDutModel()
 	}
-	companionBoards := []string{}
 	for _, companion := range sk.CftTestRequest.GetCompanionDuts() {
-		companionBoards = append(companionBoards, companion.GetDutModel().GetBuildTarget())
+		sk.CompanionDutModels = append(sk.CompanionDutModels, companion.GetDutModel())
 	}
-	sk.CftTestRequest.AutotestKeyvals["companion-boards"] = strings.Join(companionBoards, ",")
 
 	// For demonstration/logging purposes.
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
@@ -199,13 +194,10 @@ func executeHwTestsV2(
 
 	// Create configs
 	metadataContainers := req.GetParams().GetContainerMetadata().GetContainers()
-	buildTarget, ok := req.GetParams().GetKeyvals()["build_target"]
+	metadataKey := req.GetParams().GetContainerMetadataKey()
+	metadataMap, ok := metadataContainers[metadataKey]
 	if !ok {
-		return nil, fmt.Errorf("Provided keyvals in CrosTestRunnerRequest missing key 'build_target'")
-	}
-	metadataMap, ok := metadataContainers[buildTarget]
-	if !ok {
-		return nil, fmt.Errorf("Provided key %q does not exist in provided container metadata.", buildTarget)
+		return nil, fmt.Errorf("Provided key %q does not exist in provided container metadata.", metadataKey)
 	}
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
 	if err != nil {
@@ -229,6 +221,8 @@ func executeHwTestsV2(
 	sk.GcsURL = gcsurl
 	sk.TesthausURL = common.GetTesthausURL(gcsurl)
 	sk.ContainerImages = containerImagesMap
+	sk.PrimaryDutModel = req.GetParams().GetPrimaryDut()
+	sk.CompanionDutModels = req.GetParams().GetCompanionDuts()
 
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions()))

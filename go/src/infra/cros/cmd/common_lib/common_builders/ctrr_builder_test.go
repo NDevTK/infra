@@ -5,6 +5,7 @@
 package common_builders_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -21,24 +22,22 @@ import (
 )
 
 func TestCrosTestRunnerRequestBuilder(t *testing.T) {
-	builder := &builders.CrosTestRunnerRequestBuilder{}
-
 	Convey("Empty CftTestRequest All Skipped", t, func() {
-		constructor := &builders.CftCrosTestRunnerRequestConstructor{
-			Cft: &skylab_test_runner.CFTTestRequest{
-				StepsConfig: &tpcommon.CftStepsConfig{
-					ConfigType: &tpcommon.CftStepsConfig_HwTestConfig{
-						HwTestConfig: &tpcommon.HwTestConfig{
-							SkipStartingDutService: true,
-							SkipProvision:          true,
-							SkipTestExecution:      true,
-							SkipAllResultPublish:   true,
-						},
+		request, err := builders.NewDynamicTrv2FromCftBuilder(&skylab_test_runner.CFTTestRequest{
+			StepsConfig: &tpcommon.CftStepsConfig{
+				ConfigType: &tpcommon.CftStepsConfig_HwTestConfig{
+					HwTestConfig: &tpcommon.HwTestConfig{
+						SkipStartingDutService: true,
+						SkipProvision:          true,
+						SkipTestExecution:      true,
+						SkipAllResultPublish:   true,
 					},
 				},
 			},
-		}
-		request := builder.Build(constructor)
+			ContainerMetadata: &buildapi.ContainerMetadata{
+				Containers: make(map[string]*buildapi.ContainerImageMap),
+			},
+		}).BuildRequest(context.Background())
 
 		expected := &api.CrosTestRunnerDynamicRequest{
 			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
@@ -48,46 +47,48 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 				ContainerMetadata: &buildapi.ContainerMetadata{
 					Containers: make(map[string]*buildapi.ContainerImageMap),
 				},
-				TestSuites: []*api.TestSuite{},
-				Keyvals:    make(map[string]string),
+				TestSuites:    []*api.TestSuite{},
+				Keyvals:       make(map[string]string),
+				CompanionDuts: []*labapi.DutModel{},
 			},
 		}
 
+		So(err, ShouldBeNil)
 		So(request.GetOrderedTasks(), ShouldHaveLength, 0)
 		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
 		So(request.GetParams(), ShouldResemble, expected.GetParams())
 	})
 
 	Convey("Build Params and StartRequest", t, func() {
-		constructor := &builders.CftCrosTestRunnerRequestConstructor{
-			Cft: &skylab_test_runner.CFTTestRequest{
-				ParentRequestUid: "parent",
-				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
-					DutModel: &labapi.DutModel{
-						BuildTarget: "test-board",
-					},
+		request, err := builders.NewDynamicTrv2FromCftBuilder(&skylab_test_runner.CFTTestRequest{
+			ParentRequestUid: "parent",
+			PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
+				DutModel: &labapi.DutModel{
+					BuildTarget: "test-board",
 				},
-				AutotestKeyvals: map[string]string{
-					"fizz": "buzz",
+			},
+			AutotestKeyvals: map[string]string{
+				"fizz": "buzz",
+			},
+			TestSuites: []*api.TestSuite{
+				{
+					Name: "test1",
 				},
-				TestSuites: []*api.TestSuite{
-					{
-						Name: "test1",
-					},
-				},
-				StepsConfig: &tpcommon.CftStepsConfig{
-					ConfigType: &tpcommon.CftStepsConfig_HwTestConfig{
-						HwTestConfig: &tpcommon.HwTestConfig{
-							SkipStartingDutService: true,
-							SkipProvision:          true,
-							SkipTestExecution:      true,
-							SkipAllResultPublish:   true,
-						},
+			},
+			StepsConfig: &tpcommon.CftStepsConfig{
+				ConfigType: &tpcommon.CftStepsConfig_HwTestConfig{
+					HwTestConfig: &tpcommon.HwTestConfig{
+						SkipStartingDutService: true,
+						SkipProvision:          true,
+						SkipTestExecution:      true,
+						SkipAllResultPublish:   true,
 					},
 				},
 			},
-		}
-		request := builder.Build(constructor)
+			ContainerMetadata: &buildapi.ContainerMetadata{
+				Containers: make(map[string]*buildapi.ContainerImageMap),
+			},
+		}).BuildRequest(context.Background())
 
 		expected := &api.CrosTestRunnerDynamicRequest{
 			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
@@ -105,37 +106,41 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 					},
 				},
 				Keyvals: map[string]string{
-					"fizz":          "buzz",
-					"primary-board": "test-board",
+					"fizz": "buzz",
 				},
+				PrimaryDut: &labapi.DutModel{
+					BuildTarget: "test-board",
+				},
+				CompanionDuts: []*labapi.DutModel{},
 			},
 		}
 
+		So(err, ShouldBeNil)
 		So(request.GetOrderedTasks(), ShouldHaveLength, 0)
 		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
 		So(request.GetParams(), ShouldResemble, expected.GetParams())
 	})
 
 	Convey("Builds Tasks", t, func() {
-		constructor := &builders.CftCrosTestRunnerRequestConstructor{
-			Cft: &skylab_test_runner.CFTTestRequest{
-				ParentRequestUid: "parent",
-				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
-					DutModel: &labapi.DutModel{
-						BuildTarget: "test-board",
-					},
-				},
-				AutotestKeyvals: map[string]string{
-					"fizz": "buzz",
-				},
-				TestSuites: []*api.TestSuite{
-					{
-						Name: "test1",
-					},
+		request, err := builders.NewDynamicTrv2FromCftBuilder(&skylab_test_runner.CFTTestRequest{
+			ParentRequestUid: "parent",
+			PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
+				DutModel: &labapi.DutModel{
+					BuildTarget: "test-board",
 				},
 			},
-		}
-		request := builder.Build(constructor)
+			AutotestKeyvals: map[string]string{
+				"fizz": "buzz",
+			},
+			TestSuites: []*api.TestSuite{
+				{
+					Name: "test1",
+				},
+			},
+			ContainerMetadata: &buildapi.ContainerMetadata{
+				Containers: make(map[string]*buildapi.ContainerImageMap),
+			},
+		}).BuildRequest(context.Background())
 
 		expected := &api.CrosTestRunnerDynamicRequest{
 			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
@@ -153,60 +158,65 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 					},
 				},
 				Keyvals: map[string]string{
-					"fizz":          "buzz",
-					"primary-board": "test-board",
+					"fizz": "buzz",
 				},
+				PrimaryDut: &labapi.DutModel{
+					BuildTarget: "test-board",
+				},
+				CompanionDuts: []*labapi.DutModel{},
 			},
 		}
 
+		So(err, ShouldBeNil)
 		So(request.GetOrderedTasks(), ShouldHaveLength, 5)
 		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
 		So(request.GetParams(), ShouldResemble, expected.GetParams())
 	})
 
 	Convey("Builds Tasks with Companions", t, func() {
-		constructor := &builders.CftCrosTestRunnerRequestConstructor{
-			Cft: &skylab_test_runner.CFTTestRequest{
-				ParentRequestUid: "parent",
-				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
+		request, err := builders.NewDynamicTrv2FromCftBuilder(&skylab_test_runner.CFTTestRequest{
+			ParentRequestUid: "parent",
+			PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
+				DutModel: &labapi.DutModel{
+					BuildTarget: "test-board",
+				},
+			},
+			CompanionDuts: []*skylab_test_runner.CFTTestRequest_Device{
+				{
 					DutModel: &labapi.DutModel{
 						BuildTarget: "test-board",
 					},
 				},
-				ContainerMetadata: &buildapi.ContainerMetadata{
-					Containers: map[string]*buildapi.ContainerImageMap{
-						"default": {},
+				{
+					DutModel: &labapi.DutModel{
+						BuildTarget: "test-board",
 					},
 				},
-				CompanionDuts: []*skylab_test_runner.CFTTestRequest_Device{
-					{
-						DutModel: &labapi.DutModel{
-							BuildTarget: "test-board",
-						},
-					},
-					{
-						DutModel: &labapi.DutModel{
-							BuildTarget: "test-board",
-						},
-					},
-					{
-						DutModel: &labapi.DutModel{
-							BuildTarget: "test-board",
-						},
-					},
-				},
-				AutotestKeyvals: map[string]string{
-					"fizz":  "buzz",
-					"build": "Release/R123.0.0-123",
-				},
-				TestSuites: []*api.TestSuite{
-					{
-						Name: "test1",
+				{
+					DutModel: &labapi.DutModel{
+						BuildTarget: "test-board",
 					},
 				},
 			},
-		}
-		request := builder.Build(constructor)
+			ContainerMetadata: &buildapi.ContainerMetadata{
+				Containers: map[string]*buildapi.ContainerImageMap{
+					"default": {
+						Images: map[string]*buildapi.ContainerImageInfo{
+							"cros-fw-provision": common.CreateTestServicesContainer("cros-fw-provision", common.DefaultCrosFwProvisionSha),
+						},
+					},
+				},
+			},
+			AutotestKeyvals: map[string]string{
+				"fizz":  "buzz",
+				"build": "Release/R123.0.0-123",
+			},
+			TestSuites: []*api.TestSuite{
+				{
+					Name: "test1",
+				},
+			},
+		}).BuildRequest(context.Background())
 
 		expected := &api.CrosTestRunnerDynamicRequest{
 			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
@@ -230,14 +240,27 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 					},
 				},
 				Keyvals: map[string]string{
-					"fizz":             "buzz",
-					"build":            "Release/R123.0.0-123",
-					"primary-board":    "test-board",
-					"companion-boards": "test-board,test-board,test-board",
+					"fizz":  "buzz",
+					"build": "Release/R123.0.0-123",
+				},
+				PrimaryDut: &labapi.DutModel{
+					BuildTarget: "test-board",
+				},
+				CompanionDuts: []*labapi.DutModel{
+					{
+						BuildTarget: "test-board",
+					},
+					{
+						BuildTarget: "test-board",
+					},
+					{
+						BuildTarget: "test-board",
+					},
 				},
 			},
 		}
 
+		So(err, ShouldBeNil)
 		So(request.GetOrderedTasks(), ShouldHaveLength, 11)
 		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
 		So(request.GetParams(), ShouldResemble, expected.GetParams())

@@ -116,6 +116,7 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	suitemd := &testapi.SuiteMetadata{
 		Pool:              cmd.CtpReq.GetPool(),
 		ExecutionMetadata: executionMetadata(cmd.CtpReq),
+		DynamicUpdates:    []*api.UserDefinedDynamicUpdate{},
 	}
 
 	// Check if new field exists

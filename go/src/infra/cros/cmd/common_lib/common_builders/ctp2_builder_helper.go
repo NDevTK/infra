@@ -88,6 +88,8 @@ func buildCTPRequest(v1 *test_platform.Request) *testapi.CTPRequest {
 		ScheduleTargets: buildScheduleTargets(v1),
 		SchedulerInfo:   buildSchedulerInfo(v1),
 		Pool:            getSchedulingPool(v1),
+		// Reuse translate flag from v1 to signal dynamic run in v2.
+		RunDynamic: v1.GetParams().GetTranslateTrv2Request(),
 	}
 }
 

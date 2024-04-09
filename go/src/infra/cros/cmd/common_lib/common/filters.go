@@ -33,9 +33,11 @@ var (
 	DefaultKoffeeFilterNames = []string{}
 
 	// Default shas for backwards compatibility
-	defaultLegacyHWSha      = "a40e76e81f20dc54e26acea67bb9a00ebd0a64552276d4d3931715668798fffd"
-	defaultTTCPSha          = "3eefb2c80e9cc946d752bc06501caee3105db8e9f2564f535fc9895bf568d6f0"
-	defaultProvisionSha     = "79878b6cdcde1edbe5abb64c7a7286148b4da0959510e4334b89691edbd1a422"
+	defaultLegacyHWSha = "a40e76e81f20dc54e26acea67bb9a00ebd0a64552276d4d3931715668798fffd"
+	defaultTTCPSha     = "3eefb2c80e9cc946d752bc06501caee3105db8e9f2564f535fc9895bf568d6f0"
+	// Temp todo while other changes land
+	// TODO(cdelagarza): Update this Sha before submitting once provision-filter changes land.
+	defaultProvisionSha     = "b5084d5953aa28391d8d4a934f016157beaeac515241e88ef103428376f6aa6d"
 	defaultUseFlagFilterSha = "aeea5aca5133945b0ae2ca70ffe2d90fc5b95d5b8036ed22d3a90d2346e8b11b"
 	prodShas                = map[string]string{
 		TtcpContainerName:          defaultTTCPSha,

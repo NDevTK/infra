@@ -28,9 +28,9 @@ type ParseDutTopologyCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	DutTopology     *labapi.DutTopology
-	PrimaryBoard    string
-	CompanionBoards []string
+	DutTopology        *labapi.DutTopology
+	PrimaryDutModel    *labapi.DutModel
+	CompanionDutModels []*labapi.DutModel
 
 	// Updates
 	Devices           map[string]*testapi.CrosTestRequest_Device
@@ -107,20 +107,20 @@ func (cmd *ParseDutTopologyCmd) Execute(ctx context.Context) error {
 	}
 
 	// Match primary board to dut.
-	if cmd.PrimaryBoard != "" {
-		info, err := cmd.matchDut(devicePool, cmd.PrimaryBoard)
+	if cmd.PrimaryDutModel != nil {
+		info, err := cmd.matchDut(devicePool, cmd.PrimaryDutModel)
 		if err != nil {
 			return fmt.Errorf("Failed to match primaryDevice, %s", err)
 		}
 		cmd.appendDevice(common.NewPrimaryDeviceIdentifier().Id, info)
 	}
 
-	for _, companionBoard := range cmd.CompanionBoards {
-		info, err := cmd.matchDut(devicePool, companionBoard)
+	for _, companionDutModel := range cmd.CompanionDutModels {
+		info, err := cmd.matchDut(devicePool, companionDutModel)
 		if err != nil {
 			return fmt.Errorf("Failed to match companionDevice, %s", err)
 		}
-		deviceId := common.NewCompanionDeviceIdentifier(companionBoard)
+		deviceId := common.NewCompanionDeviceIdentifier(companionDutModel.GetBuildTarget())
 		if _, ok := cmd.Devices[deviceId.Id]; ok {
 			// deviceId already exists, try postfixing
 			// Standard within swarming when there are duplicate boards
@@ -148,16 +148,19 @@ func (cmd *ParseDutTopologyCmd) appendDevice(deviceId string, deviceInfo *Device
 }
 
 // matchDut finds a dut within the dutPool that contains a board that matches the requested board.
-func (cmd *ParseDutTopologyCmd) matchDut(dutPool []*DeviceInfo, board string) (*DeviceInfo, error) {
+func (cmd *ParseDutTopologyCmd) matchDut(dutPool []*DeviceInfo, dutModel *labapi.DutModel) (*DeviceInfo, error) {
 	foundIndex := -1
 	for i, deviceMetadataPair := range dutPool {
-		if deviceMetadataPair.Metadata.GetDutModel().GetBuildTarget() == board {
+		if deviceMetadataPair.Metadata.GetDutModel().GetBuildTarget() == dutModel.GetBuildTarget() {
+			if dutModel.GetModelName() != "" && dutModel.GetModelName() != deviceMetadataPair.Metadata.GetDutModel().GetModelName() {
+				continue
+			}
 			foundIndex = i
 			break
 		}
 	}
 	if foundIndex == -1 {
-		return nil, fmt.Errorf("Failed to find board_target %s within dut_topology", board)
+		return nil, fmt.Errorf("Failed to find board/model %s/%s within dut_topology", dutModel.GetBuildTarget(), dutModel.GetModelName())
 	}
 	match := dutPool[foundIndex]
 	dutPool = slices.Delete(dutPool, foundIndex, foundIndex+1)
@@ -170,19 +173,15 @@ func (cmd *ParseDutTopologyCmd) extractDepsFromHwTestStateKeeper(ctx context.Con
 	}
 	cmd.DutTopology = sk.DutTopology
 
-	primaryBoard := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "primary-board")
-	if primaryBoard == "" {
-		logging.Infof(ctx, "Cmd %s missing non-required dependency: primary-board", cmd.GetCommandType())
+	if sk.PrimaryDutModel == nil {
+		logging.Infof(ctx, "Cmd %s missing non-required dependency: primaryDutModel", cmd.GetCommandType())
 	}
-	cmd.PrimaryBoard = primaryBoard
+	cmd.PrimaryDutModel = sk.PrimaryDutModel
 
-	companionBoards := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "companion-boards")
-	if companionBoards == "" {
-		logging.Infof(ctx, "Cmd %s missing non-required dependency: companion-boards", cmd.GetCommandType())
-		cmd.CompanionBoards = []string{}
-	} else {
-		cmd.CompanionBoards = strings.Split(companionBoards, ",")
+	if sk.CompanionDutModels == nil || len(sk.CompanionDutModels) == 0 {
+		logging.Infof(ctx, "Cmd %s missing non-required dependency: companionDutModels", cmd.GetCommandType())
 	}
+	cmd.CompanionDutModels = sk.CompanionDutModels
 
 	return nil
 }

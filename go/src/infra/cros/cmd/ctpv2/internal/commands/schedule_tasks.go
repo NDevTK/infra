@@ -53,6 +53,7 @@ type ScheduleTasksCmd struct {
 	MiddledOutResp *data.MiddleOutResponse
 	BuildState     *build.State
 	Scheduler      interfaces.SchedulerInterface
+	DynamicRun     bool
 
 	// Deps
 	InternalTestPlan *api.InternalTestplan
@@ -123,6 +124,12 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 		cmd.BQClient = sk.BQClient
 	}
 	cmd.InternalTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*api.InternalTestplan)
+
+	if sk.CtpReq == nil {
+		return fmt.Errorf("Cmd %q missing dependency: CtpReq", cmd.GetCommandType())
+	}
+
+	cmd.DynamicRun = sk.CtpReq.RunDynamic
 	cmd.MiddledOutResp = sk.MiddledOutResp
 	cmd.BuildState = sk.BuildState
 	// Assign scheduler
@@ -171,7 +178,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	}
 
 	// GenerateRequests
-	buildMap := GenerateRequests(ctx, cmd.MiddledOutResp, cmd.BuildState, cmd.BQClient)
+	buildMap := GenerateRequests(ctx, cmd.MiddledOutResp, cmd.BuildState, cmd.BQClient, cmd.DynamicRun)
 	if len(buildMap) == 0 {
 		enumStatus = analytics.Fail
 		step.SetSummaryMarkdown("enumeration error: no valid test found")
@@ -219,7 +226,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	wg := &sync.WaitGroup{}
 	for k, v := range buildMap {
 		wg.Add(1)
-		go ScheduleAndMonitor(ctx, cmd.Scheduler, v, cmd.BuildState, k, wg, resultsChan, suiteName, 0, cmd.BQClient)
+		go ScheduleAndMonitor(ctx, cmd.Scheduler, v, cmd.BuildState, k, wg, resultsChan, suiteName, 0, cmd.BQClient, cmd.DynamicRun)
 	}
 
 	go func() {
@@ -251,7 +258,7 @@ type BuildRequest struct {
 	err                  error
 }
 
-func GenerateRequests(ctx context.Context, moResp *data.MiddleOutResponse, buildState *build.State, BQClient *bigquery.Client) map[string]*BuildRequest {
+func GenerateRequests(ctx context.Context, moResp *data.MiddleOutResponse, buildState *build.State, BQClient *bigquery.Client, dynamicRun bool) map[string]*BuildRequest {
 	var err error
 	step, ctx := build.StartStep(ctx, "Generate Trv2 Requests")
 	defer func() { step.End(err) }()
@@ -276,7 +283,7 @@ func GenerateRequests(ctx context.Context, moResp *data.MiddleOutResponse, build
 
 		modifiedKey := fmt.Sprintf("%s-shard-%d", key, shardMap[key])
 		buildReq := &BuildRequest{Key: modifiedKey, OriginalTrReq: trReq, shardNum: shardMap[key], SuiteInfo: moResp.SuiteInfo}
-		req, err := GenerateReq(ctx, trReq, modifiedKey, buildState, moResp.SuiteInfo, shardMap[key], BQClient)
+		req, err := GenerateReq(ctx, trReq, modifiedKey, buildState, moResp.SuiteInfo, shardMap[key], BQClient, dynamicRun)
 		if err != nil {
 			buildReq.err = err
 			errCount++
@@ -324,7 +331,7 @@ func GetBoardModelVariantKey(ctx context.Context, trReq *data.TrRequest) (string
 	return builderString, nil
 }
 
-func GenerateReq(ctx context.Context, trReq *data.TrRequest, key string, buildState *build.State, suiteInfo *api.SuiteInfo, shardNum int, BQClient *bigquery.Client) (*buildbucketpb.ScheduleBuildRequest, error) {
+func GenerateReq(ctx context.Context, trReq *data.TrRequest, key string, buildState *build.State, suiteInfo *api.SuiteInfo, shardNum int, BQClient *bigquery.Client, dynamicRun bool) (*buildbucketpb.ScheduleBuildRequest, error) {
 	var err error
 	// '0'ed index because we should always have one hw here. It supports multiple
 	// MO should reduce it down to 1 always. The len check is done at MO step.
@@ -358,6 +365,7 @@ func GenerateReq(ctx context.Context, trReq *data.TrRequest, key string, buildSt
 		build:      buildState,
 		suiteInfo:  suiteInfo,
 		shardNum:   shardNum,
+		dynamicRun: dynamicRun,
 	}
 
 	req, err := GenerateTrv2Req(ctx, true, helper)
@@ -374,7 +382,7 @@ func GenerateReq(ctx context.Context, trReq *data.TrRequest, key string, buildSt
 	return req, nil
 }
 
-func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerInterface, buildReq *BuildRequest, buildState *build.State, key string, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, suiteName string, retryNum int, BQClient *bigquery.Client) error {
+func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerInterface, buildReq *BuildRequest, buildState *build.State, key string, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, suiteName string, retryNum int, BQClient *bigquery.Client, dynamicRun bool) error {
 	defer wg.Done()
 	var err error
 
@@ -497,11 +505,11 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 
 		// Retry if qualifies
 		if buildReq.SuiteInfo.GetSuiteRequest().GetRetryCount() > int64(retryNum) {
-			newBuildReq := RetryReqIfQualifies(ctx, trResult, step, buildReq, buildState, nil)
+			newBuildReq := RetryReqIfQualifies(ctx, trResult, step, buildReq, buildState, nil, dynamicRun)
 			if newBuildReq != nil && newBuildReq.ScheduleBuildRequest != nil {
 				// Schedule retry
 				wg.Add(1)
-				go ScheduleAndMonitor(rootCtx, scheduler, newBuildReq, buildState, newBuildReq.Key, wg, resultsChan, suiteName, retryNum+1, BQClient)
+				go ScheduleAndMonitor(rootCtx, scheduler, newBuildReq, buildState, newBuildReq.Key, wg, resultsChan, suiteName, retryNum+1, BQClient, dynamicRun)
 			}
 		}
 
@@ -513,7 +521,7 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 	return nil
 }
 
-func RetryReqIfQualifies(ctx context.Context, trResult *skylab_test_runner.Result, step *build.Step, buildReq *BuildRequest, buildState *build.State, bqClient *bigquery.Client) *BuildRequest {
+func RetryReqIfQualifies(ctx context.Context, trResult *skylab_test_runner.Result, step *build.Step, buildReq *BuildRequest, buildState *build.State, bqClient *bigquery.Client, dynamicRun bool) *BuildRequest {
 	retriableTestsMap := determineRetriablity(trResult)
 	if len(retriableTestsMap) == 0 {
 		logging.Infof(ctx, "no retriable tests found for: %s", buildReq.Key)
@@ -527,7 +535,7 @@ func RetryReqIfQualifies(ctx context.Context, trResult *skylab_test_runner.Resul
 	common.WriteAnyObjectToStepLog(ctx, step, newBuildReq, "new build req for retry")
 
 	// Generate a new req
-	req, err := GenerateReq(ctx, newBuildReq.OriginalTrReq, newBuildReq.Key, buildState, newBuildReq.SuiteInfo, newBuildReq.shardNum, bqClient)
+	req, err := GenerateReq(ctx, newBuildReq.OriginalTrReq, newBuildReq.Key, buildState, newBuildReq.SuiteInfo, newBuildReq.shardNum, bqClient, dynamicRun)
 	if err != nil {
 		newBuildReq.err = err
 		logging.Infof(ctx, "no more retry will take place for %s since trv2 req generation failed: %s", newBuildReq.Key, err)
