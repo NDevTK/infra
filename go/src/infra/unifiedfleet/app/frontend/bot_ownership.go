@@ -11,14 +11,13 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
-	api "infra/unifiedfleet/api/v1/rpc"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/controller"
 	"infra/unifiedfleet/app/util"
 )
 
 // GetOwnershipData returns the ownership data for a given host.
-func (fs *FleetServerImpl) GetOwnershipData(ctx context.Context, req *api.GetOwnershipDataRequest) (response *ufspb.OwnershipData, err error) {
+func (fs *FleetServerImpl) GetOwnershipData(ctx context.Context, req *ufsAPI.GetOwnershipDataRequest) (response *ufspb.OwnershipData, err error) {
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
@@ -34,7 +33,7 @@ func (fs *FleetServerImpl) GetOwnershipData(ctx context.Context, req *api.GetOwn
 }
 
 // ListOwnershipData returns the ownership data entries.
-func (fs *FleetServerImpl) ListOwnershipData(ctx context.Context, req *api.ListOwnershipDataRequest) (response *api.ListOwnershipDataResponse, err error) {
+func (fs *FleetServerImpl) ListOwnershipData(ctx context.Context, req *ufsAPI.ListOwnershipDataRequest) (response *ufsAPI.ListOwnershipDataResponse, err error) {
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
@@ -46,7 +45,7 @@ func (fs *FleetServerImpl) ListOwnershipData(ctx context.Context, req *api.ListO
 	if err != nil {
 		return nil, err
 	}
-	return &api.ListOwnershipDataResponse{
+	return &ufsAPI.ListOwnershipDataResponse{
 		OwnershipData: result,
 		NextPageToken: nextPageToken,
 	}, nil
