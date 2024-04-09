@@ -259,6 +259,7 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 			tags = AppendTags(tags, "main_builder_name", testCaseInfo.GetMainBuilderName())
 			tags = AppendTags(tags, "contacts", strings.Join(testCaseInfo.GetContacts(), ","))
 			tags = AppendTags(tags, "suite", testCaseInfo.GetSuite())
+			tags = AppendTags(tags, "channel", testCaseInfo.GetChannel())
 
 			tags = configTestMetadataTags(tags, testCaseInfo.GetTestCaseResult().GetTestCaseMetadata())
 		}

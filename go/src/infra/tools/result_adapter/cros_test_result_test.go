@@ -380,6 +380,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("buildbucket_builder", "test_runner-dev"),
 						pbutil.StringPair("cbx", "true"),
 						pbutil.StringPair("chameleon_type", "V2,V3"),
+						pbutil.StringPair("channel", "DEV"),
 						pbutil.StringPair("contacts", "user@google.com"),
 						pbutil.StringPair("criteria", "Tauto wrapper for specified tast tests"),
 						pbutil.StringPair("ctp_fwd_task_name", "Bluetooth_Sa_Perbuild"),

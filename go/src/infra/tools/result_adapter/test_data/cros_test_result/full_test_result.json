@@ -135,7 +135,8 @@
                 "branch":"main",
                 "main_builder_name":"main-release",
                 "contacts": ["user@google.com"],
-                "suite":"arc-cts-vm"
+                "suite": "arc-cts-vm",
+                "channel": "DEV"
             },
             "logs_info":[
                 {
