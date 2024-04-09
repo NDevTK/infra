@@ -12,14 +12,13 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	api "infra/unifiedfleet/api/v1/rpc"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/controller"
 	"infra/unifiedfleet/app/util"
 )
 
 // UpdateState updates the state for a resource.
-func (fs *FleetServerImpl) UpdateState(ctx context.Context, req *api.UpdateStateRequest) (response *ufspb.StateRecord, err error) {
+func (fs *FleetServerImpl) UpdateState(ctx context.Context, req *ufsAPI.UpdateStateRequest) (response *ufspb.StateRecord, err error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -31,7 +30,7 @@ func (fs *FleetServerImpl) UpdateState(ctx context.Context, req *api.UpdateState
 }
 
 // GetState returns the state for a resource.
-func (fs *FleetServerImpl) GetState(ctx context.Context, req *api.GetStateRequest) (response *ufspb.StateRecord, err error) {
+func (fs *FleetServerImpl) GetState(ctx context.Context, req *ufsAPI.GetStateRequest) (response *ufspb.StateRecord, err error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -39,7 +38,7 @@ func (fs *FleetServerImpl) GetState(ctx context.Context, req *api.GetStateReques
 }
 
 // UpdateDutState updates DUT state for a DUT.
-func (fs *FleetServerImpl) UpdateDutState(ctx context.Context, req *api.UpdateDutStateRequest) (response *chromeosLab.DutState, err error) {
+func (fs *FleetServerImpl) UpdateDutState(ctx context.Context, req *ufsAPI.UpdateDutStateRequest) (response *chromeosLab.DutState, err error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -66,7 +65,7 @@ func (fs *FleetServerImpl) UpdateDutState(ctx context.Context, req *api.UpdateDu
 }
 
 // UpdateDeviceRecoveryData update device configs for a DUT
-func (fs *FleetServerImpl) UpdateDeviceRecoveryData(ctx context.Context, req *api.UpdateDeviceRecoveryDataRequest) (rsp *api.UpdateDeviceRecoveryDataResponse, err error) {
+func (fs *FleetServerImpl) UpdateDeviceRecoveryData(ctx context.Context, req *ufsAPI.UpdateDeviceRecoveryDataRequest) (rsp *ufsAPI.UpdateDeviceRecoveryDataResponse, err error) {
 	if err := req.Validate(); err != nil {
 		logging.Errorf(ctx, "UpdateDeviceRecoverData request validate fail - %s", err.Error())
 		return nil, err
@@ -75,11 +74,11 @@ func (fs *FleetServerImpl) UpdateDeviceRecoveryData(ctx context.Context, req *ap
 		logging.Errorf(ctx, "fail to update device recovery data: %s", err.Error())
 		return nil, err
 	}
-	return &api.UpdateDeviceRecoveryDataResponse{}, nil
+	return &ufsAPI.UpdateDeviceRecoveryDataResponse{}, nil
 }
 
 // UpdateTestData updates the device date provide by Test runner.
-func (fs *FleetServerImpl) UpdateTestData(ctx context.Context, req *api.UpdateTestDataRequest) (rsp *api.UpdateTestDataResponse, err error) {
+func (fs *FleetServerImpl) UpdateTestData(ctx context.Context, req *ufsAPI.UpdateTestDataRequest) (rsp *ufsAPI.UpdateTestDataResponse, err error) {
 	if err := req.Validate(); err != nil {
 		logging.Errorf(ctx, "UpdateTestData request validate fail - %s", err.Error())
 		return nil, err
@@ -88,11 +87,11 @@ func (fs *FleetServerImpl) UpdateTestData(ctx context.Context, req *api.UpdateTe
 		logging.Errorf(ctx, "fail to update test data: %s", err.Error())
 		return nil, err
 	}
-	return &api.UpdateTestDataResponse{}, nil
+	return &ufsAPI.UpdateTestDataResponse{}, nil
 }
 
 // GetDutState gets the ChromeOS device DutState.
-func (fs *FleetServerImpl) GetDutState(ctx context.Context, req *api.GetDutStateRequest) (rsp *chromeosLab.DutState, err error) {
+func (fs *FleetServerImpl) GetDutState(ctx context.Context, req *ufsAPI.GetDutStateRequest) (rsp *chromeosLab.DutState, err error) {
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
@@ -104,7 +103,7 @@ func (fs *FleetServerImpl) GetDutState(ctx context.Context, req *api.GetDutState
 }
 
 // ListDutStates list the DutStates information from database.
-func (fs *FleetServerImpl) ListDutStates(ctx context.Context, req *api.ListDutStatesRequest) (rsp *api.ListDutStatesResponse, err error) {
+func (fs *FleetServerImpl) ListDutStates(ctx context.Context, req *ufsAPI.ListDutStatesRequest) (rsp *ufsAPI.ListDutStatesResponse, err error) {
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
@@ -116,7 +115,7 @@ func (fs *FleetServerImpl) ListDutStates(ctx context.Context, req *api.ListDutSt
 	if err != nil {
 		return nil, err
 	}
-	return &api.ListDutStatesResponse{
+	return &ufsAPI.ListDutStatesResponse{
 		DutStates:     result,
 		NextPageToken: nextPageToken,
 	}, nil
