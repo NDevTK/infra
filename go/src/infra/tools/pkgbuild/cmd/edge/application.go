@@ -130,25 +130,27 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 		Target: target,
 	}
 
-	builder := workflow.NewBuilder(plats, a.PackageManager, ap)
-	builder.SetPreExecuteHook(func(ctx context.Context, pkg actions.Package) error {
-		return cipdPackage(pkg).download(ctx, a.CipdService)
-	})
-	builder.SetExecutor(func(ctx context.Context, cfg *workflow.ExecutionConfig, drv *core.Derivation) error {
-		step, ctx := startStep(ctx, fmt.Sprintf("build %s", drv.Name))
-		return step.With(func() error {
-			cmd := exec.CommandContext(ctx, drv.Args[0], drv.Args[1:]...)
-			cmd.Path = drv.Args[0]
-			cmd.Dir = cfg.WorkingDir
-			cmd.Stdin = cfg.Stdin
-			cmd.Stdout = io.MultiWriter(step.Stdout(), cfg.Stdout)
-			cmd.Stderr = io.MultiWriter(step.Stdout(), cfg.Stderr)
-			cmd.Env = append(slices.Clone(drv.Env), "out="+cfg.OutputDir)
+	buildTemp := filepath.Join(a.StorageDir, "temp")
+	pe := workflow.NewPackageExecutor(buildTemp,
+		func(ctx context.Context, pkg actions.Package) error {
+			return cipdPackage(pkg).download(ctx, a.CipdService)
+		},
+		func(ctx context.Context, cfg *workflow.ExecutionConfig, drv *core.Derivation) error {
+			step, ctx := startStep(ctx, fmt.Sprintf("build %s", drv.Name))
+			return step.With(func() error {
+				cmd := exec.CommandContext(ctx, drv.Args[0], drv.Args[1:]...)
+				cmd.Path = drv.Args[0]
+				cmd.Dir = cfg.WorkingDir
+				cmd.Stdin = cfg.Stdin
+				cmd.Stdout = io.MultiWriter(step.Stdout(), cfg.Stdout)
+				cmd.Stderr = io.MultiWriter(step.Stdout(), cfg.Stderr)
+				cmd.Env = append(slices.Clone(drv.Env), "out="+cfg.OutputDir)
 
-			logging.Infof(ctx, "command: %+v", cmd)
-			return cmd.Run()
-		})
-	})
+				logging.Infof(ctx, "command: %+v", cmd)
+				return cmd.Run()
+			})
+		},
+	)
 
 	return &PackageBuilder{
 		Packages: a.PackageManager,
@@ -163,8 +165,9 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 		CIPDTarget:  a.TargetPlatform,
 		SpecLoader:  loader,
 
-		BuildTempDir: filepath.Join(a.StorageDir, "temp"),
-		Builder:      builder,
+		BuildTempDir:    buildTemp,
+		Builder:         workflow.NewBuilder(plats, a.PackageManager, ap),
+		PackageExecutor: pe,
 	}, nil
 }
 
@@ -263,8 +266,9 @@ type PackageBuilder struct {
 	CIPDTarget  string
 	SpecLoader  *spec.SpecLoader
 
-	BuildTempDir string
-	Builder      *workflow.Builder
+	BuildTempDir    string
+	Builder         *workflow.Builder
+	PackageExecutor *workflow.PackageExecutor
 
 	loaded []generators.Generator
 }
@@ -320,7 +324,7 @@ func (b *PackageBuilder) BuildAll(ctx context.Context, skipUploaded bool) ([]act
 
 	// Make packages available. We still return all packages regardless of the
 	// error.
-	if err := b.Builder.BuildPackages(ctx, b.BuildTempDir, newPkgs); err != nil {
+	if err := b.Builder.BuildPackages(ctx, b.PackageExecutor, newPkgs, true); err != nil {
 		return pkgs, err
 	}
 

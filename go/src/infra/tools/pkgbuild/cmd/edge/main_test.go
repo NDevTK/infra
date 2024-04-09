@@ -89,9 +89,11 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			SpecLoader:   loader,
 			BuildTempDir: buildTemp,
 			Builder:      workflow.NewBuilder(plats, pm, ap),
+			PackageExecutor: workflow.NewPackageExecutor(buildTemp,
+				func(ctx context.Context, pkg actions.Package) error { return nil },
+				func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil },
+			),
 		}
-		b.Builder.SetExecutor(func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil })
-		b.Builder.SetPreExecuteHook(func(ctx context.Context, pkg actions.Package) error { return nil })
 
 		Convey("build ninja", func() {
 			err := b.Load(ctx, "tools/ninja")
@@ -155,9 +157,11 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			SpecLoader:   loader,
 			BuildTempDir: buildTemp,
 			Builder:      workflow.NewBuilder(plats, pm, ap),
+			PackageExecutor: workflow.NewPackageExecutor(buildTemp,
+				func(ctx context.Context, pkg actions.Package) error { return nil },
+				func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil },
+			),
 		}
-		b.Builder.SetExecutor(func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil })
-		b.Builder.SetPreExecuteHook(func(ctx context.Context, pkg actions.Package) error { return nil })
 
 		Convey("build packages", func() {
 			err := b.Load(ctx, "tools/ninja")
@@ -233,9 +237,11 @@ func TestPackageSources(t *testing.T) {
 			SpecLoader:   loader,
 			BuildTempDir: buildTemp,
 			Builder:      workflow.NewBuilder(plats, pm, ap),
+			PackageExecutor: workflow.NewPackageExecutor(buildTemp,
+				func(ctx context.Context, pkg actions.Package) error { return nil },
+				func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil },
+			),
 		}
-		b.Builder.SetExecutor(func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil })
-		b.Builder.SetPreExecuteHook(func(ctx context.Context, pkg actions.Package) error { return nil })
 
 		Convey("git source", func() {
 			err := b.Load(ctx, "tools/ninja")
