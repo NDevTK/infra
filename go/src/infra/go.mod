@@ -114,7 +114,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240213162025-012b6fc9bca9
 	google.golang.org/genproto/googleapis/bytestream v0.0.0-20240304161311-37d4d3c04a78
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240311173647-c811ad7063a7
-	google.golang.org/grpc v1.62.1
+	google.golang.org/grpc v1.62.2
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
 	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v2 v2.4.0
