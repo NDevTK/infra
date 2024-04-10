@@ -29,6 +29,7 @@ func TestGetServoCost(t *testing.T) {
 	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board: "servo_v4_with_servo_micro_and_ccd_cr50",
+			Model: "",
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        100.0,
