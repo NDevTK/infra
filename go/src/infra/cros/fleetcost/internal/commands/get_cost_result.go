@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
@@ -56,14 +57,14 @@ func (c *getCostResultCommand) Run(a subcommands.Application, args []string, env
 func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Application) error {
 	host, err := c.commonFlags.Host()
 	if err != nil {
-		return err
+		return errors.Annotate(err, "get cost result command").Err()
 	}
 	var httpClient *http.Client
 	if !c.commonFlags.HTTP() {
 		var err error
 		httpClient, err = getSecureClient(ctx, host, c.authFlags)
 		if err != nil {
-			return err
+			return errors.Annotate(err, "get cost result").Err()
 		}
 	}
 	prpcClient := &prpc.Client{
@@ -77,8 +78,8 @@ func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Appli
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.GetCostResult(ctx, &fleetcostAPI.GetCostResultRequest{Hostname: c.name})
 	if err == nil {
-		return err
+		return errors.Annotate(err, "get cost result").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return err
+	return errors.Annotate(err, "get cost result").Err()
 }

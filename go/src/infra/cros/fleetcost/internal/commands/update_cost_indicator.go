@@ -137,14 +137,14 @@ func (c *updateCostIndicatorCommand) getFieldMaskPaths() []string {
 func (c *updateCostIndicatorCommand) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	host, err := c.commonFlags.Host()
 	if err != nil {
-		return err
+		return errors.Annotate(err, "update cost indicator command").Err()
 	}
 	var httpClient *http.Client
 	if !c.commonFlags.HTTP() {
 		var err error
 		httpClient, err = getSecureClient(ctx, host, c.authFlags)
 		if err != nil {
-			return err
+			return errors.Annotate(err, "update cost indicator command").Err()
 		}
 	}
 	prpcClient := &prpc.Client{
@@ -173,8 +173,8 @@ func (c *updateCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 		},
 	})
 	if err != nil {
-		return err
+		return errors.Annotate(err, "update cost indicator command").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return err
+	return errors.Annotate(err, "update cost indicator command").Err()
 }

@@ -6,7 +6,8 @@ package costserver
 
 import (
 	"context"
-	"errors"
+
+	"go.chromium.org/luci/common/errors"
 
 	// TODO, move shared util to a standalone directory.
 	shivasUtil "infra/cmd/shivas/utils"
@@ -24,7 +25,7 @@ func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI
 	}
 	res, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, req.GetHostname())
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "get cost result").Err()
 	}
 	return &fleetcostAPI.GetCostResultResponse{Result: res}, nil
 }

@@ -7,6 +7,8 @@ package costserver
 import (
 	"context"
 
+	"go.chromium.org/luci/common/errors"
+
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/models"
 )
@@ -17,7 +19,7 @@ func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fl
 	costIndicator := request.GetCostIndicator()
 	entity := models.NewCostIndicatorEntity(costIndicator)
 	if err := models.PutCostIndicatorEntity(ctx, entity); err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "create cost indicator").Err()
 	}
 	return &fleetcostAPI.CreateCostIndicatorResponse{
 		CostIndicator: costIndicator,
@@ -28,7 +30,7 @@ func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fl
 func (f *FleetCostFrontend) ListCostIndicators(ctx context.Context, request *fleetcostAPI.ListCostIndicatorsRequest) (*fleetcostAPI.ListCostIndicatorsResponse, error) {
 	out, err := models.ListCostIndicators(ctx, 0)
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "list cost indicators").Err()
 	}
 	return &fleetcostAPI.ListCostIndicatorsResponse{
 		CostIndicator: out,
@@ -40,7 +42,7 @@ func (f *FleetCostFrontend) UpdateCostIndicator(ctx context.Context, request *fl
 	entity := models.NewCostIndicatorEntity(request.GetCostIndicator())
 	out, err := models.UpdateCostIndicatorEntity(ctx, entity, request.GetUpdateMask().GetPaths())
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "update cost indicator").Err()
 	}
 	return &fleetcostAPI.UpdateCostIndicatorResponse{
 		CostIndicator: out.CostIndicator,

@@ -113,7 +113,7 @@ func PutCostIndicatorEntity(ctx context.Context, entity *CostIndicatorEntity) er
 // GetCostIndicatorEntity extracts a cost indicator from the database.
 func GetCostIndicatorEntity(ctx context.Context, entity *CostIndicatorEntity) (*CostIndicatorEntity, error) {
 	if err := datastore.Get(ctx, entity); err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "get cost indicator").Err()
 	}
 	return entity, nil
 }
@@ -125,7 +125,7 @@ func ListCostIndicators(ctx context.Context, limit int) ([]*fleetcostpb.CostIndi
 	if err := datastore.Run(ctx, query, func(entity *CostIndicatorEntity) {
 		out = append(out, entity.CostIndicator)
 	}); err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "list cost indicators").Err()
 	}
 	return out, nil
 }
@@ -135,11 +135,11 @@ func UpdateCostIndicatorEntity(ctx context.Context, entity *CostIndicatorEntity,
 	oldEntity := entity.Clone()
 	newEntity := entity
 	if err := datastore.Get(ctx, oldEntity); err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "update cost indicator").Err()
 	}
 	maskutils.UpdateCostIndicatorProto(oldEntity.CostIndicator, newEntity.CostIndicator, fields)
 	if err := datastore.Put(ctx, oldEntity); err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "update cost indicator proto").Err()
 	}
 	return oldEntity, nil
 }

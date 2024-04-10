@@ -7,6 +7,8 @@ package controller
 import (
 	"context"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/fleetcost/internal/costserver/models"
 	"infra/cros/fleetcost/internal/utils"
 )
@@ -15,7 +17,7 @@ import (
 func GetCostIndicatorValue(ctx context.Context, attribute IndicatorAttribute) (float64, error) {
 	entity := attribute.AsEntity()
 	if _, err := models.GetCostIndicatorEntity(ctx, entity); err != nil {
-		return 0, err
+		return 0, errors.Annotate(err, "get cost indicator value").Err()
 	}
 	return utils.MoneyToFloat(entity.CostIndicator.GetCost()), nil
 }

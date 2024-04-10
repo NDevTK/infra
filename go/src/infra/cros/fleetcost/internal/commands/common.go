@@ -51,7 +51,7 @@ func showProto(dst io.Writer, message proto.Message) (int, error) {
 		Indent: "  ",
 	}).Marshal(message)
 	if err != nil {
-		return 0, err
+		return 0, errors.Annotate(err, "show proto").Err()
 	}
 	return dst.Write(bytes)
 }

@@ -14,6 +14,7 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
@@ -54,14 +55,14 @@ func (c *pingUFSCommand) Run(a subcommands.Application, args []string, env subco
 func (c *pingUFSCommand) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	host, err := c.commonFlags.Host()
 	if err != nil {
-		return err
+		return errors.Annotate(err, "ping ufs command").Err()
 	}
 	var httpClient *http.Client
 	if !c.commonFlags.HTTP() {
 		var err error
 		httpClient, err = getSecureClient(ctx, host, c.authFlags)
 		if err != nil {
-			return err
+			return errors.Annotate(err, "ping ufs command").Err()
 		}
 	}
 	prpcClient := &prpc.Client{

@@ -104,14 +104,14 @@ func (c *createCostIndicatorCommand) Run(a subcommands.Application, args []strin
 func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	host, err := c.commonFlags.Host()
 	if err != nil {
-		return err
+		return errors.Annotate(err, "create cost indicator command").Err()
 	}
 	var httpClient *http.Client
 	if !c.commonFlags.HTTP() {
 		var err error
 		httpClient, err = getSecureClient(ctx, host, c.authFlags)
 		if err != nil {
-			return err
+			return errors.Annotate(err, "create cost indicator command").Err()
 		}
 	}
 	prpcClient := &prpc.Client{
@@ -135,8 +135,8 @@ func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 		Description: c.description,
 	}})
 	if err != nil {
-		return err
+		return errors.Annotate(err, "create cost indicator command").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return err
+	return errors.Annotate(err, "create cost indicator command").Err()
 }

@@ -63,7 +63,7 @@ func listMachineLSEs(ctx context.Context, ic ufsAPI.FleetClient, pageSize int32,
 	}
 	res, err := ic.ListMachineLSEs(ctx, req)
 	if err != nil {
-		return nil, "", err
+		return nil, "", errors.Annotate(err, "list machine lses").Err()
 	}
 	protos := make([]protoadapt.MessageV1, len(res.GetMachineLSEs()))
 	for i, kvm := range res.GetMachineLSEs() {

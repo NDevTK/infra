@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
@@ -53,14 +54,14 @@ func (c *pingCommand) Run(a subcommands.Application, args []string, env subcomma
 func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	host, err := c.commonFlags.Host()
 	if err != nil {
-		return err
+		return errors.Annotate(err, "ping").Err()
 	}
 	var httpClient *http.Client
 	if !c.commonFlags.HTTP() {
 		var err error
 		httpClient, err = getSecureClient(ctx, host, c.authFlags)
 		if err != nil {
-			return err
+			return errors.Annotate(err, "ping").Err()
 		}
 	}
 	prpcClient := &prpc.Client{
@@ -74,8 +75,8 @@ func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, a
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.Ping(ctx, &fleetcostAPI.PingRequest{})
 	if err != nil {
-		return err
+		return errors.Annotate(err, "ping").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return err
+	return errors.Annotate(err, "ping").Err()
 }
