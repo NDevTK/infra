@@ -10,6 +10,7 @@ import (
 	"io/fs"
 	"os/exec"
 	"path"
+	"path/filepath"
 
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipkg/base/generators"
@@ -222,6 +223,10 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 	env.Set("buildFlags", "")
 	env.Set("installFlags", "")
 	env.SetEntry(srcsEnv)
+	py3 := filepath.Join("{{.stdenv_python3}}", "bin", "python3")
+	if plats.Build.OS() == "windows" {
+		py3 += ".exe"
+	}
 	tmpl := &workflow.Generator{
 		Name: g.Name,
 		Metadata: &core.Action_Metadata{
@@ -230,7 +235,7 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 				Version: g.Version,
 			},
 		},
-		Args:         []string{"{{.stdenv_python3}}/bin/python3", "-I", "-B", "{{.stdenv}}/setup/main.py"},
+		Args:         []string{py3, "-I", "-B", filepath.Join("{{.stdenv}}", "setup", "main.py")},
 		Env:          env,
 		Dependencies: deps,
 	}
