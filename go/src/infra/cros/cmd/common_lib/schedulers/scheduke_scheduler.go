@@ -83,7 +83,7 @@ func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucke
 			return &buildbucketpb.Build{Id: taskWithState.Bbid}, nil
 		case schedukepb.TaskState_EXPIRED:
 			step.SetSummaryMarkdown(fmt.Sprintf("task %d expired in Scheduke", taskID))
-			return nil, fmt.Errorf("request %v (scheduke task %d) expired without launching", req, taskID)
+			return nil, fmt.Errorf("scheduke task %d expired without launching", taskID)
 		}
 
 		time.Sleep(schedukePollingWait)
