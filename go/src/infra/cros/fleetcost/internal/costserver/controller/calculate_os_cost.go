@@ -53,7 +53,8 @@ func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, host
 	}
 	switch res.GetResourceType() {
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
-		return CalculateCostForSingleChromeosDut(ctx, ic, res.GetChromeOsDeviceData())
+		resp, err := CalculateCostForSingleChromeosDut(ctx, ic, res.GetChromeOsDeviceData())
+		return resp, errors.Annotate(err, "calculate ChromeOS device cost").Err()
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
 		return nil, errors.Reason("%s is an attached device, support is not implemented yet.", hostname).Err()
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT:

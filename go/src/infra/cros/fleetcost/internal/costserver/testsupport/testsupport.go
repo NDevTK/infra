@@ -18,13 +18,24 @@ import (
 	fleetcostpb "infra/cros/fleetcost/api/models"
 	"infra/cros/fleetcost/internal/costserver"
 	"infra/cros/fleetcost/internal/costserver/models"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	mockufs "infra/unifiedfleet/api/v1/rpc/mock"
 )
 
+// Fixture creates a new test fixture for the fleet cost service and the backend services it talks to.
+//
+// For each of the backend services, we use the best test implementation available.
+// Datastore uses the LUCI in-memory representation, so it doesn't get an explicit field.
+// UFS uses the go-mock generated stub.
 type Fixture struct {
 	Ctx      context.Context
 	Frontend *costserver.FleetCostFrontend
 	MockUFS  *mockufs.MockFleetClient
+}
+
+// RegisterGetDeviceDataCall registers a GetDeviceData request and response.
+func (tf *Fixture) RegisterGetDeviceDataCall(reqMatcher gomock.Matcher, resp *ufsAPI.GetDeviceDataResponse) {
+	tf.MockUFS.EXPECT().GetDeviceData(gomock.Any(), reqMatcher).Return(resp, nil)
 }
 
 // NewFixture creates a basic fixture with fake versions of datastore and UFS with properties

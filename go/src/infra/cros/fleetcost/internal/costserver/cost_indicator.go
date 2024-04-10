@@ -9,9 +9,21 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	fleetcostModels "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/models"
 )
+
+// MustCreateCostIndicator is a helper function for tests that ergonomically creates a
+// CostIndicator so that the database can be brought to a known state.
+func MustCreateCostIndicator(ctx context.Context, f *FleetCostFrontend, costIndicator *fleetcostModels.CostIndicator) {
+	_, err := f.CreateCostIndicator(ctx, &fleetcostAPI.CreateCostIndicatorRequest{
+		CostIndicator: costIndicator,
+	})
+	if err != nil {
+		panic(err)
+	}
+}
 
 // CreateCostIndicator creates a cost indicator.
 func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fleetcostAPI.CreateCostIndicatorRequest) (*fleetcostAPI.CreateCostIndicatorResponse, error) {
