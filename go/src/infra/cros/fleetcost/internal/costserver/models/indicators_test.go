@@ -157,12 +157,14 @@ func TestGetCostIndicator(t *testing.T) {
 	}
 }
 
+// TestListCostIndicator tests listing all cost indicators in a scenario where this is only
+// one cost indicator.
 func TestListCostIndicator(t *testing.T) {
 	t.Parallel()
 
 	tf := testsupport.NewFixtureWithData(context.Background(), t)
 
-	costIndicators, err := models.ListCostIndicators(tf.Ctx, 1)
+	costIndicators, err := models.ListCostIndicators(tf.Ctx, 1, nil)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}

@@ -40,7 +40,7 @@ func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fl
 
 // ListCostIndicators lists the cost indicators in the database satisfying the request.
 func (f *FleetCostFrontend) ListCostIndicators(ctx context.Context, request *fleetcostAPI.ListCostIndicatorsRequest) (*fleetcostAPI.ListCostIndicatorsResponse, error) {
-	out, err := models.ListCostIndicators(ctx, 0)
+	out, err := models.ListCostIndicators(ctx, 0, request.GetFilter())
 	if err != nil {
 		return nil, errors.Annotate(err, "list cost indicators").Err()
 	}
