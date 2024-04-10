@@ -204,7 +204,7 @@ type Generator struct {
 }
 
 func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*core.Action, error) {
-	src, srcsEnv, err := g.fetchSource()
+	src, srcsEnv, err := g.fetchSource(plats)
 	if err != nil {
 		return nil, err
 	}
@@ -223,10 +223,6 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 	env.Set("buildFlags", "")
 	env.Set("installFlags", "")
 	env.SetEntry(srcsEnv)
-	py3 := filepath.Join("{{.stdenv_python3}}", "bin", "python3")
-	if plats.Build.OS() == "windows" {
-		py3 += ".exe"
-	}
 	tmpl := &workflow.Generator{
 		Name: g.Name,
 		Metadata: &core.Action_Metadata{
@@ -235,7 +231,7 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 				Version: g.Version,
 			},
 		},
-		Args:         []string{py3, "-I", "-B", filepath.Join("{{.stdenv}}", "setup", "main.py")},
+		Args:         []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", filepath.Join("{{.stdenv}}", "setup", "main.py")},
 		Env:          env,
 		Dependencies: deps,
 	}
@@ -258,4 +254,12 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 	}
 
 	return tmpl.Generate(ctx, plats)
+}
+
+func execPath(plat generators.Platform, s ...string) string {
+	p := filepath.Join(s...)
+	if plat.OS() == "windows" {
+		p += ".exe"
+	}
+	return p
 }

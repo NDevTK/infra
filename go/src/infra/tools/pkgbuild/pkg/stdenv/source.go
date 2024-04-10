@@ -22,7 +22,7 @@ var gitSourceGen = generators.InitEmbeddedFS(
 	"git_source", gitSourceEmbed,
 )
 
-func (g *Generator) fetchSource() (generators.Generator, string, error) {
+func (g *Generator) fetchSource(plats generators.Platforms) (generators.Generator, string, error) {
 	// The name of the source derivation. It's also used in environment variable
 	// srcs to pointing to the location of source file(s), which will be expanded
 	// to absolute path by utilities.BaseGenerator.
@@ -40,7 +40,7 @@ func (g *Generator) fetchSource() (generators.Generator, string, error) {
 					Version: s.Version,
 				},
 			},
-			Args: []string{filepath.Join("{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", filepath.Join("{{.git_source}}", "git_archive.py"), s.URL, s.Ref},
+			Args: []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", filepath.Join("{{.git_source}}", "git_archive.py"), s.URL, s.Ref},
 			Dependencies: []generators.Dependency{
 				{Type: generators.DepsBuildHost, Generator: git},
 				{Type: generators.DepsBuildHost, Generator: cpython},

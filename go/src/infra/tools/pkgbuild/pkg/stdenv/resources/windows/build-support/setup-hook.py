@@ -60,7 +60,7 @@ def setup(exe) -> None:
     # CMD.EXE is required by NMAKE but NMAKE doesn't recognize MinGW's symlink.
     # Set COMSPEC instead.
     if cmd := _lookup(exe, 'cmd'):
-      exe.env['COMSPEC'] = _resolve_links(cmd)
+      exe.env['COMSPEC'] = str(_resolve_links(cmd))
 
     return True
 
