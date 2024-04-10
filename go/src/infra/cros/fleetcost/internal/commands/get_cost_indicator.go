@@ -29,6 +29,7 @@ var GetCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
+		c.Flags.StringVar(&c.board, "board", "", "the board to search for")
 		return c
 	},
 }
@@ -37,6 +38,7 @@ type getCostIndicatorCommand struct {
 	subcommands.CommandRunBase
 	authFlags   authcli.Flags
 	commonFlags site.CommonFlags
+	board       string
 }
 
 // Run is the main entrypoint to the get-ci.
@@ -71,7 +73,14 @@ func (c *getCostIndicatorCommand) innerRun(ctx context.Context, a subcommands.Ap
 		},
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
-	resp, err := fleetCostClient.ListCostIndicators(ctx, &fleetcostAPI.ListCostIndicatorsRequest{})
+	resp, err := fleetCostClient.ListCostIndicators(
+		ctx,
+		&fleetcostAPI.ListCostIndicatorsRequest{
+			Filter: &fleetcostAPI.ListCostIndicatorsFilter{
+				Board: c.board,
+			},
+		},
+	)
 	if err != nil {
 		return err
 	}
