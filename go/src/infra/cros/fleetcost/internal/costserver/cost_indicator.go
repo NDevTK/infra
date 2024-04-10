@@ -60,3 +60,8 @@ func (f *FleetCostFrontend) UpdateCostIndicator(ctx context.Context, request *fl
 		CostIndicator: out.CostIndicator,
 	}, nil
 }
+
+// DeleteCostIndicator deletes a CostIndicator.
+func (f *FleetCostFrontend) DeleteCostIndicator(ctx context.Context, request *fleetcostAPI.DeleteCostIndicatorRequest) (*fleetcostAPI.DeleteCostIndicatorResponse, error) {
+	return nil, errors.New("not yet implemented")
+}

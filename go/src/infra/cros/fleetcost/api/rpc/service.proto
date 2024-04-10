@@ -53,6 +53,12 @@ service FleetCost {
     };
   }
 
+  rpc DeleteCostIndicator(DeleteCostIndicatorRequest) returns (DeleteCostIndicatorResponse) {
+    option (google.api.http) = {
+      post: "/v1/delete-cost-indicator"
+    };
+  }
+
   // GetCostResult gets the cost breakdown for a given device.
   rpc GetCostResult(GetCostResultRequest) returns (GetCostResultResponse) {
     option (google.api.http) = {
@@ -138,4 +144,14 @@ message GetCostResultRequest {
 // GetCostResultResponse is the cost detail information obtained by GetCostResult.
 message GetCostResultResponse {
   models.CostResult result = 1;
+}
+
+// DeleteCostIndicatorRequest deletes a cost_indicator
+message DeleteCostIndicatorRequest {
+  models.CostIndicator cost_indicator = 1;
+}
+
+// DeleteCostIndicatorResponse deletes a cost_indicator
+message DeleteCostIndicatorResponse {
+  models.CostIndicator cost_indicator = 1;
 }
