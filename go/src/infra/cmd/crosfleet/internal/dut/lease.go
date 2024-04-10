@@ -31,7 +31,9 @@ const (
 	// Buildbucket priority for dut_leaser builds.
 	dutLeaserBuildPriority = 15
 	// leaseCmdName is the name of the `crosfleet dut lease` command.
-	leaseCmdName             = "lease"
+	leaseCmdName = "lease"
+	// Default DUT pool available for leasing from.
+	defaultLeasesPool        = "DUT_POOL_QUOTA"
 	maxLeaseReasonCharacters = 30
 )
 
@@ -157,10 +159,17 @@ func botDimsAndBuildTags(ctx context.Context, swarmingBotsClient swarmingapi.Bot
 	} else {
 		// Swarming dimension-based lease.
 		dims["dut_state"] = "ready"
+		userSpecifiedPool := false
 		// Add user-added dimensions to both bot dimensions and build tags.
 		for key, val := range leaseFlags.freeformDims {
+			if key == "label-pool" {
+				userSpecifiedPool = true
+			}
 			dims[key] = val
 			tags[key] = val
+		}
+		if !userSpecifiedPool {
+			dims["label-pool"] = defaultLeasesPool
 		}
 		if board := leaseFlags.board; board != "" {
 			tags["label-board"] = board
