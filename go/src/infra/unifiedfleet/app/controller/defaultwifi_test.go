@@ -80,6 +80,7 @@ func TestUpdateDefaultWifi(t *testing.T) {
 					SecretName: "s2",
 				}}
 			resp, err := UpdateDefaultWifi(ctx, w2, nil)
+			So(err, ShouldBeNil)
 			So(resp, ShouldNotBeNil)
 			So(resp, ShouldResembleProto, w2)
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "defaultwifis/zone_sfo36_os")
