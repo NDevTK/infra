@@ -99,9 +99,16 @@ message CreateCostIndicatorResponse {
 
 // ListCostIndicatorsRequest lists the cost indicators.
 message ListCostIndicatorsRequest {
-  // TODO(gregorynisbet): Add filters here.
   int32 pageSize = 1;
+  // TODO(gregorynisbet): Do we need filter disjunctions here? For the moment, don't add them.
+  ListCostIndicatorsFilter filter = 2;
 }
+
+// ListCostIndicatorsFilter is a filter query containing all the fields that can be filtered on.
+message ListCostIndicatorsFilter {
+  // Board is the board of the cost indicator in question.
+  string board = 1;
+};
 
 // ListCostIndicatorsResponse lists cost indicators
 message ListCostIndicatorsResponse {
