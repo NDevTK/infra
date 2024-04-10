@@ -36,7 +36,7 @@
       "git",
       "clone",
       "https://chromium.googlesource.com/chromium/src",
-      "[CACHE]/codesearch_update_submodules_mirror/src/"
+      "[CACHE]/codesearch_update_submodules_mirror/src"
     ],
     "cwd": "[CACHE]/codesearch_update_submodules_mirror",
     "infra_step": true,
@@ -49,7 +49,7 @@
       "https://chromium.googlesource.com/chromium/src",
       "refs/heads/main"
     ],
-    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "git ls-remote"
   },
@@ -60,7 +60,7 @@
       "--hard",
       "origin/main"
     ],
-    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "git reset"
   },
@@ -70,7 +70,7 @@
       "fetch",
       "-t"
     ],
-    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "git fetch"
   },
@@ -85,7 +85,7 @@
       "-f",
       "refs/remotes/origin/main"
     ],
-    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "Process refs/heads/main.git checkout",
     "~followup_annotations": [
@@ -153,7 +153,7 @@
       "--cacheinfo",
       "160000,13a00f110ef910a25763346d6538b60f12845656,buildtools"
     ],
-    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "Process refs/heads/main.Add gitlinks",
     "~followup_annotations": [
@@ -190,7 +190,7 @@
       "add",
       ".gitmodules"
     ],
-    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "Process refs/heads/main.git add",
     "~followup_annotations": [
@@ -208,7 +208,7 @@
       "-m",
       "Synthetic commit for submodules"
     ],
-    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "Process refs/heads/main.git commit",
     "~followup_annotations": [
@@ -226,7 +226,7 @@
       "--push-option=skip-validation",
       "--force"
     ],
-    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "Process refs/heads/main.git push refs/heads/main",
     "~followup_annotations": [
@@ -242,7 +242,7 @@
       "https://chromium.googlesource.com/codesearch/src_mirror",
       "refs/remotes/origin/main:refs/heads/main-original"
     ],
-    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "git push"
   },
@@ -255,7 +255,7 @@
       "--tags",
       "https://chromium.googlesource.com/codesearch/src_mirror"
     ],
-    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "git push --tags"
   },
