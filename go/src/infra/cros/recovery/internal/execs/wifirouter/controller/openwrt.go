@@ -476,8 +476,15 @@ func (c *OpenWrtRouterController) updateImage(ctx context.Context, imageUUID str
 	// Flash the device with the new image binary.
 	log.Infof(ctx, "Flashing OpenWrt device with new image binary at %q", remoteImageBinaryPath)
 	sysupgradeRunResult := c.sshRunner.RunForResult(ctx, 0, false, "sysupgrade", "-n", remoteImageBinaryPath)
-	if sysupgradeRunResult.GetExitCode() != -2 {
-		return errors.Reason("sysupgrade did not cause remote command to exit as expected: ExitCode=%d, Stdout=%s", sysupgradeRunResult.GetExitCode(), sysupgradeRunResult.GetStdout()).Err()
+	if !(strings.Contains(sysupgradeRunResult.GetStderr(), "Commencing upgrade. Closing all shell sessions.") ||
+		sysupgradeRunResult.GetExitCode() == -2 || // Exit code with older ssh server.
+		sysupgradeRunResult.GetExitCode() == 256) { // Exit code with newer ssh server.
+		return errors.Reason(
+			"sysupgrade did not cause remote command to exit as expected: ExitCode=%d, Stdout=%q, Stderr=%q",
+			sysupgradeRunResult.GetExitCode(),
+			sysupgradeRunResult.GetStdout(),
+			sysupgradeRunResult.GetStderr(),
+		).Err()
 	}
 	log.Infof(ctx, "Waiting 1m before reconnecting to give time for OpenWrt sysupgrade to complete")
 	time.Sleep(1 * time.Minute)
