@@ -7,9 +7,8 @@ package process3d
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	cloudPubsub "cloud.google.com/go/pubsub"
+	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 
 	buildPB "go.chromium.org/chromiumos/infra/proto/go/chromiumos"

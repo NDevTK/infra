@@ -36,7 +36,7 @@ var (
 	ctpBuilderIDStaging = bb.BuilderID{
 		Project: "chromeos",
 		Bucket:  "testplatform",
-		Builder: "cros_test_platform-staging",
+		Builder: "cros_test_platform-dev",
 	}
 )
 
