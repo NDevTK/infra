@@ -78,6 +78,9 @@
                         8814951792758733697
                     ]
                 }
+            },
+            "inventory_info": {
+                "ufs_zone": "ZONE_SFO36_OS"
             }
         },
         "scheduling_metadata":{

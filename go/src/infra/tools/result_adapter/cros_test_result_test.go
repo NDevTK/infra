@@ -407,6 +407,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("suite_task_id", "59ef5e9532bbd611"),
 						pbutil.StringPair("task_id", "59f0e13fe7af0710"),
 						pbutil.StringPair("label_pool", "DUT_POOL_QUOTA"),
+						pbutil.StringPair("ufs_zone", "ZONE_SFO36_OS"),
 						pbutil.StringPair("wifi_chip", "marvell"),
 						pbutil.StringPair("wifi_router_models", "gale"),
 						pbutil.StringPair("kernel_version", "5.4.151-16902-g93699f4e73de"),

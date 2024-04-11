@@ -220,6 +220,14 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 				tags = AppendTags(tags, "cbx", strconv.FormatBool(dutInfo.GetCbx()))
 			}
 
+			inventoryInfo := primaryExecInfo.GetInventoryInfo()
+			if inventoryInfo != nil {
+				ufsZone := inventoryInfo.GetUfsZone()
+				if len(ufsZone) != 0 {
+					tags = AppendTags(tags, "ufs_zone", ufsZone)
+				}
+			}
+
 			tags = configEnvInfoTags(tags, primaryExecInfo)
 
 			// For Multi-DUT testing info.
@@ -361,6 +369,7 @@ func configEnvInfoTags(tags []*pb.StringPair, execInfo *artifactpb.ExecutionInfo
 		if satlabInfo != nil {
 			newTags = configSwarmingTags(newTags, satlabInfo.GetSwarmingInfo())
 			newTags = configBuildbucketTags(newTags, satlabInfo.GetBuildbucketInfo())
+			newTags = configDroneTags(newTags, satlabInfo.GetDroneInfo())
 		}
 	}
 	return newTags
