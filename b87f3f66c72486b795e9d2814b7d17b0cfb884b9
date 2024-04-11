@@ -70,6 +70,24 @@
       "parentUuid": "c73c5788_daba28a9",
       "revId": "b87f3f66c72486b795e9d2814b7d17b0cfb884b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9e49590_cbb92063",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/models/indicators.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-04-11T19:59:49Z",
+      "side": 1,
+      "message": "Ack, please add me as reviewer for following filter implementation.",
+      "parentUuid": "7309e878_1b9524e1",
+      "revId": "b87f3f66c72486b795e9d2814b7d17b0cfb884b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
