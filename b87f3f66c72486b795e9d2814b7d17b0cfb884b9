@@ -52,6 +52,24 @@
       "parentUuid": "8c58d215_da3404eb",
       "revId": "b87f3f66c72486b795e9d2814b7d17b0cfb884b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7309e878_1b9524e1",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/models/indicators.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-11T18:55:28Z",
+      "side": 1,
+      "message": "The `board` field is one of the simplest. I can also add `model` and `sku`, but `location` for example will need more complicated logic because the location fields are less convenient to type and I will need some abbreviations.\n\nThe `board` is the most straightforward filter, so I want us to agree on this one first, and then I\u0027ll implement the other ones using it as a template.",
+      "parentUuid": "c73c5788_daba28a9",
+      "revId": "b87f3f66c72486b795e9d2814b7d17b0cfb884b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
