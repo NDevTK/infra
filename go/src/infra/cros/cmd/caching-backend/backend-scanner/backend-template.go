@@ -53,6 +53,10 @@ http {
     '"x_forwarded_for":"$http_x_forwarded_for"'
   '}';
 
+  # More stable downloading by reducing the super fast connections and sharing
+  # the saved bandwidth to other slower connections.
+  limit_rate 15m;
+
   proxy_cache_path  /var/cache/nginx levels=1:2 keys_zone=google-storage:80m
                     max_size={{ .CacheSizeInGB }}g inactive=720h;
   proxy_cache           google-storage;
