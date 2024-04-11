@@ -50,7 +50,12 @@ func isBeta(milestone int) bool {
 }
 
 func isStable(milestone int) bool {
+	// TODO: remove `<` logic once LTS Suites have been introduced.
 	return milestone > 0 && milestone <= GetTot()-3
+}
+
+func isLTS(milestone int) bool {
+	return milestone > 0 && milestone < GetTot()-3
 }
 
 // IsTargetedBranch checks to see if the given milestone is targeted by the
@@ -77,6 +82,9 @@ func IsTargetedBranch(milestone int, branches []suschpb.Branch) (bool, suschpb.B
 		case suschpb.Branch_STABLE:
 			isTargeted = isStable(milestone)
 			targetBranch = suschpb.Branch_STABLE
+		case suschpb.Branch_LTS:
+			isTargeted = isLTS(milestone)
+			targetBranch = suschpb.Branch_LTS
 		case suschpb.Branch_BRANCH_UNSPECIFIED:
 			return false, targetBranch, fmt.Errorf("branch unspecified not supported")
 		default:
