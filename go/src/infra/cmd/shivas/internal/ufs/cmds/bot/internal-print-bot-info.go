@@ -19,10 +19,10 @@ import (
 
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
-	suUtil "infra/cmd/shivas/utils/schedulingunit"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/dutstate"
 	"infra/libs/fleet/device"
+	suUtil "infra/libs/fleet/device/scheduling_unit"
 	"infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
