@@ -16,6 +16,24 @@
       "message": "Any reason we only do board instead of all index fields?",
       "revId": "b87f3f66c72486b795e9d2814b7d17b0cfb884b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c58d215_da3404eb",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/models/indicators.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-11T17:21:22Z",
+      "side": 1,
+      "message": "To keep the CL small.",
+      "parentUuid": "1bfeba49_f51e1f85",
+      "revId": "b87f3f66c72486b795e9d2814b7d17b0cfb884b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
