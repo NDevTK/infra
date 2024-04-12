@@ -82,7 +82,7 @@ func TestFromSSHConfig(t *testing.T) {
 				So(c.GetProxy(""), ShouldBeNil)
 			})
 		})
-		Convey("SSH config with Proxy command", func() {
+		Convey("SSH config with Proxy command (host only)", func() {
 			sshConfig := `Host *
   Hostname %h.google.com
   ProxyCommand openssl s_client -connect 1.2.3.4:443 -servername %h`
@@ -121,6 +121,38 @@ func TestFromSSHConfig(t *testing.T) {
 				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
 				So(pc.GetConfig(), ShouldResemble, &tls.Config{
 					ServerName: "test.google.com",
+				})
+			})
+			Convey("Given hostname:port - Returns ProxyConfig", func() {
+				pc := c.GetProxy("test:2222")
+				So(pc, ShouldNotBeNil)
+				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
+				So(pc.GetConfig(), ShouldResemble, &tls.Config{
+					ServerName: "test.google.com:2222",
+				})
+			})
+		})
+		Convey("SSH config with Proxy command (host and port)", func() {
+			sshConfig := `Host *
+  Hostname %h.google.com
+  ProxyCommand openssl s_client -connect 1.2.3.4:443 -servername %h:%p`
+			c, err := fromSSHConfig(sshConfig, nil)
+
+			So(err, ShouldBeNil)
+			Convey("Given hostname - Returns ProxyConfig", func() {
+				pc := c.GetProxy("test")
+				So(pc, ShouldNotBeNil)
+				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
+				So(pc.GetConfig(), ShouldResemble, &tls.Config{
+					ServerName: "test.google.com:22",
+				})
+			})
+			Convey("Given hostname:default port - Returns ProxyConfig", func() {
+				pc := c.GetProxy("test:22")
+				So(pc, ShouldNotBeNil)
+				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
+				So(pc.GetConfig(), ShouldResemble, &tls.Config{
+					ServerName: "test.google.com:22",
 				})
 			})
 			Convey("Given hostname:port - Returns ProxyConfig", func() {
