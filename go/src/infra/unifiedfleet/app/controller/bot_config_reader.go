@@ -57,6 +57,42 @@ func ImportBotConfigs(ctx context.Context) error {
 	return err
 }
 
+// processSecurityConfig processes a single security config.
+func processSecurityConfig(ctx context.Context, commitsh string, cfg *config.OwnershipConfig_ConfigFile, gitTilesClient external.GitTilesClient, ownershipConfig *config.OwnershipConfig) ([]*api.OwnershipByHost, error) {
+	start := time.Now()
+	logging.Debugf(ctx, "########### Parse %s at commit %s ###########", cfg.GetName(), commitsh)
+
+	conf, err := fetchConfigProtoFromGitiles(ctx, gitTilesClient, ownershipConfig.GetProject(), commitsh, cfg.GetRemotePath())
+	if err != nil {
+		return nil, err
+	}
+	content := &ufspb.SecurityInfos{}
+	err = prototext.Unmarshal([]byte(conf), content)
+	if err != nil {
+		return nil, err
+	}
+	botsMap, botPrefixesMap := parseConfigs(ctx, content)
+	var entities []*api.OwnershipByHost
+	for k, v := range botsMap {
+		ownership := &api.OwnershipByHost{
+			Hostname:  k,
+			Ownership: v,
+		}
+		entities = append(entities, ownership)
+		// botConfigs = append(botConfigs, v)
+	}
+	for k, v := range botPrefixesMap {
+		ownership := &api.OwnershipByHost{
+			Hostname:  k,
+			Ownership: v,
+		}
+		entities = append(entities, ownership)
+	}
+	duration := time.Since(start)
+	logging.Debugf(ctx, "########### Done Parsing %s at commit %s; Time taken %s ###########", cfg.GetName(), commitsh, duration.String())
+	return entities, nil
+}
+
 // GetBotConfigsForCommitSh gets the OwnershipConfigs at a particular commitsh
 func GetBotConfigsForCommitSh(ctx context.Context, commitsh string) ([]*api.OwnershipByHost, error) {
 	ownershipConfig, gitTilesClient, err := getConfigAndGitTilesClient(ctx)
@@ -65,41 +101,17 @@ func GetBotConfigsForCommitSh(ctx context.Context, commitsh string) ([]*api.Owne
 		return nil, err
 	}
 
-	for _, cfg := range ownershipConfig.GetSecurityConfig() {
-		start := time.Now()
-		logging.Debugf(ctx, "########### Parse %s at commit %s ###########", cfg.GetName(), commitsh)
+	var out []*api.OwnershipByHost
+	var errs []error
 
-		conf, err := fetchConfigProtoFromGitiles(ctx, gitTilesClient, ownershipConfig.GetProject(), commitsh, cfg.GetRemotePath())
-		if err != nil {
-			return nil, err
-		}
-		content := &ufspb.SecurityInfos{}
-		err = prototext.Unmarshal([]byte(conf), content)
-		if err != nil {
-			return nil, err
-		}
-		botsMap, botPrefixesMap := parseConfigs(ctx, content)
-		var entities []*api.OwnershipByHost
-		for k, v := range botsMap {
-			ownership := &api.OwnershipByHost{
-				Hostname:  k,
-				Ownership: v,
-			}
-			entities = append(entities, ownership)
-			// botConfigs = append(botConfigs, v)
-		}
-		for k, v := range botPrefixesMap {
-			ownership := &api.OwnershipByHost{
-				Hostname:  k,
-				Ownership: v,
-			}
-			entities = append(entities, ownership)
-		}
-		duration := time.Since(start)
-		logging.Debugf(ctx, "########### Done Parsing %s at commit %s; Time taken %s ###########", cfg.GetName(), commitsh, duration.String())
-		return entities, nil
+	// TODO(gregorynisbet): Is this correct? Do we want to stop reading after getting an answer from a single data source?
+	for _, cfg := range ownershipConfig.GetSecurityConfig() {
+		entities, err := processSecurityConfig(ctx, commitsh, cfg, gitTilesClient, ownershipConfig)
+		errs = append(errs, err)
+		out = append(out, entities...)
 	}
-	return nil, nil
+
+	return out, errors.Append(errs...)
 }
 
 // GetConfigAndGitClient reads the OwnershipConfig and creates a corresponding git client
