@@ -246,6 +246,72 @@ func TestListCostIndicatorWithModelFilter(t *testing.T) {
 	}
 }
 
+// TestListCostIndicatorWithSkuFilter tests listing devices with a SKU filter.
+func TestListCostIndicatorWithSkuFilter(t *testing.T) {
+	t.Parallel()
+
+	tf := testsupport.NewFixture(context.Background(), t)
+	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Board:    "fake-board-1",
+			Model:    "fake-model-1",
+			Sku:      "fake-sku",
+			Location: fleetcostpb.Location_LOCATION_ACS,
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Cost: &money.Money{
+				CurrencyCode: "USD",
+				Units:        100,
+			},
+		},
+	}); err != nil {
+		panic(err)
+	}
+	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Board:    "fake-board-2",
+			Model:    "fake-model-2",
+			Sku:      "fake-sku",
+			Location: fleetcostpb.Location_LOCATION_ACS,
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Cost: &money.Money{
+				CurrencyCode: "USD",
+				Units:        200,
+			},
+		},
+	}); err != nil {
+		panic(err)
+	}
+	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Board:    "fake-board-3",
+			Model:    "fake-model-3",
+			Sku:      "different-sku",
+			Location: fleetcostpb.Location_LOCATION_ACS,
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Cost: &money.Money{
+				CurrencyCode: "USD",
+				Units:        200,
+			},
+		},
+	}); err != nil {
+		panic(err)
+	}
+
+	resp, err := tf.Frontend.ListCostIndicators(tf.Ctx, &fleetcostAPI.ListCostIndicatorsRequest{
+		PageSize: 1000,
+		Filter: &fleetcostAPI.ListCostIndicatorsFilter{
+			Sku: "fake-sku",
+		},
+	})
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+
+	if diff := typed.Got(len(resp.GetCostIndicator())).Want(2).Diff(); diff != "" {
+		t.Errorf("unexpected diff (-want +got): %s", diff)
+	}
+}
+
 // TestUpdateCostIndicatorHappyPath tests updating a cost indicator that already exists.
 //
 // Note that when updating the record, we provide an argument that

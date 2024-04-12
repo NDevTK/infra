@@ -111,11 +111,16 @@ message ListCostIndicatorsRequest {
 }
 
 // ListCostIndicatorsFilter is a filter query containing all the fields that can be filtered on.
+//
+// TODO(gregorynisbet): Do we want a separate Boolean field for searching for empty boards, models, SKUs?
+//                      Does the datastore query engine support this well?
 message ListCostIndicatorsFilter {
   // Board is the board of the cost indicator in question.
   string board = 1;
   // Model is the model of the cost indicator in question
   string model = 2;
+  // Sku is the SKU of the cost indicator in question.
+  string sku = 3;
 };
 
 // ListCostIndicatorsResponse lists cost indicators

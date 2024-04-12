@@ -129,6 +129,9 @@ func ListCostIndicators(ctx context.Context, limit int, filter *fleetcostAPI.Lis
 	if filter != nil && filter.GetModel() != "" {
 		query = query.Eq("model", filter.GetModel())
 	}
+	if filter != nil && filter.GetSku() != "" {
+		query = query.Eq("sku", filter.GetSku())
+	}
 	if err := datastore.Run(ctx, query, func(entity *CostIndicatorEntity) {
 		out = append(out, entity.CostIndicator)
 	}); err != nil {
