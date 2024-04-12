@@ -9,12 +9,14 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/genproto/googleapis/type/money"
 
 	"go.chromium.org/luci/common/testing/assert/structuraldiff"
 	"go.chromium.org/luci/common/testing/typed"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/models"
 	"infra/cros/fleetcost/internal/costserver/testsupport"
 )
@@ -178,6 +180,69 @@ func TestListCostIndicator(t *testing.T) {
 
 	if diff := structuraldiff.DebugCompare(costIndicators, want).String(); diff != "" {
 		t.Errorf("unexpected diff: %s", diff)
+	}
+}
+
+// TestListCostIndicatorWithModelFilter tests listing devices with a model filter.
+func TestListCostIndicatorWithModelFilter(t *testing.T) {
+	t.Parallel()
+
+	tf := testsupport.NewFixture(context.Background(), t)
+	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Board:    "fake-board-1",
+			Model:    "fake-model",
+			Location: fleetcostpb.Location_LOCATION_ACS,
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Cost: &money.Money{
+				CurrencyCode: "USD",
+				Units:        100,
+			},
+		},
+	}); err != nil {
+		panic(err)
+	}
+	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Board:    "fake-board-2",
+			Model:    "fake-model",
+			Location: fleetcostpb.Location_LOCATION_ACS,
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Cost: &money.Money{
+				CurrencyCode: "USD",
+				Units:        200,
+			},
+		},
+	}); err != nil {
+		panic(err)
+	}
+	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Board:    "fake-board-2",
+			Model:    "a-different-model",
+			Location: fleetcostpb.Location_LOCATION_ACS,
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Cost: &money.Money{
+				CurrencyCode: "USD",
+				Units:        200,
+			},
+		},
+	}); err != nil {
+		panic(err)
+	}
+
+	resp, err := tf.Frontend.ListCostIndicators(tf.Ctx, &fleetcostAPI.ListCostIndicatorsRequest{
+		PageSize: 1000,
+		Filter: &fleetcostAPI.ListCostIndicatorsFilter{
+			Model: "fake-model",
+		},
+	})
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+
+	if diff := typed.Got(len(resp.GetCostIndicator())).Want(2).Diff(); diff != "" {
+		t.Errorf("unexpected diff (-want +got): %s", diff)
 	}
 }
 

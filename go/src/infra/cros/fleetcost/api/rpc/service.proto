@@ -114,6 +114,8 @@ message ListCostIndicatorsRequest {
 message ListCostIndicatorsFilter {
   // Board is the board of the cost indicator in question.
   string board = 1;
+  // Model is the model of the cost indicator in question
+  string model = 2;
 };
 
 // ListCostIndicatorsResponse lists cost indicators
