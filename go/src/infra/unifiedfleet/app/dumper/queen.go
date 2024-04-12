@@ -77,9 +77,14 @@ func pushToDroneQueen(ctx context.Context) (err error) {
 		}
 		for _, lse := range lses {
 			if !lseInSUnitMap[lse.GetName()] {
+				hive := util.GetHiveForDut(lse.GetName(), lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive())
+				// Do not include "cloudbots" hive DUTS
+				if hive == "cloudbots" {
+					continue
+				}
 				availableDuts = append(availableDuts, &dronequeenapi.DeclareDutsRequest_Dut{
 					Name: lse.GetName(),
-					Hive: util.GetHiveForDut(lse.GetName(), lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive()),
+					Hive: hive,
 				})
 			}
 		}

@@ -104,8 +104,10 @@ func TestPushToDroneQueenNamespaces(t *testing.T) {
 	osMachineHive, _ := addMachineLSEHive(osCtx, "os1", "hive1")
 	// Satlab DUT without hive
 	osMachineSatlabNoHive, _ := addMachineLSEHive(osCtx, "satlab-abc-host1", "")
-	//Satlab DUT with hive
+	// Satlab DUT with hive
 	osMachineSatlabWithHive, _ := addMachineLSEHive(osCtx, "satlab-abc-host2", "satlab-1")
+	// DUT with cloudbots hive should not be declared
+	addMachineLSEHive(osCtx, "cloudbots-host", "cloudbots")
 
 	// only want os, partner machines to be pushed
 	want := &dronequeenapi.DeclareDutsRequest{
