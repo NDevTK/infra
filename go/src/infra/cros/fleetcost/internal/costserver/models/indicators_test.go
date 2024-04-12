@@ -350,3 +350,39 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
 	}
 }
+
+func TestDeleteCostIndicatorEntity(t *testing.T) {
+	t.Parallel()
+
+	tf := testsupport.NewFixture(context.Background(), t)
+
+	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Board:       "fake-board",
+			BurnoutRate: 14.0,
+			Location:    fleetcostpb.Location_LOCATION_ACS,
+			Type:        fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Cost: &money.Money{
+				CurrencyCode: "USD",
+				Units:        200,
+			},
+		},
+	}); err != nil {
+		panic(err)
+	}
+
+	if _, err := tf.Frontend.DeleteCostIndicator(tf.Ctx, &fleetcostAPI.DeleteCostIndicatorRequest{
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Board:    "fake-board",
+			Location: fleetcostpb.Location_LOCATION_ACS,
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+		},
+	}); err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+
+	_, err := models.GetCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{})
+	if !datastore.IsErrNoSuchEntity(err) {
+		t.Errorf("unexpected error: %s", err)
+	}
+}
