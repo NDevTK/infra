@@ -12,6 +12,7 @@ import (
 	fleetcostModels "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/models"
+	"infra/cros/fleetcost/internal/validation"
 )
 
 // MustCreateCostIndicator is a helper function for tests that ergonomically creates a
@@ -27,7 +28,9 @@ func MustCreateCostIndicator(ctx context.Context, f *FleetCostFrontend, costIndi
 
 // CreateCostIndicator creates a cost indicator.
 func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fleetcostAPI.CreateCostIndicatorRequest) (*fleetcostAPI.CreateCostIndicatorResponse, error) {
-	// TODO(gregorynisbet): Do some kind of input validation here.
+	if err := validation.ValidateCreateCostIndicatorRequest(request); err != nil {
+		return nil, err
+	}
 	costIndicator := request.GetCostIndicator()
 	entity := models.NewCostIndicatorEntity(costIndicator)
 	if err := models.PutCostIndicatorEntity(ctx, entity); err != nil {

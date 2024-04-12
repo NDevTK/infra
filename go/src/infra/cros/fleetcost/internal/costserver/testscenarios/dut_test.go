@@ -48,8 +48,10 @@ func TestDUTWithNoPeripherals(t *testing.T) {
 
 	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board: "build-target",
-			Model: "model",
+			Board:    "build-target",
+			Model:    "model",
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_LABSTATION,
+			Location: fleetcostpb.Location_LOCATION_ALL,
 			Cost: &money.Money{
 				Units: 100,
 			},
