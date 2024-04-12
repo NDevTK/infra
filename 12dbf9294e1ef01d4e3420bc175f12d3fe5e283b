@@ -16,6 +16,24 @@
       "message": "Just to confirm, do these paths get hardcoded anywhere inside the output package contents? If so, we\u0027ll run into problems later because the package will be deployed to a different path.",
       "revId": "12dbf9294e1ef01d4e3420bc175f12d3fe5e283b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "67907c12_9a68d237",
+        "filename": "3pp/lldpd/install.sh",
+        "patchSetId": 21
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1309389
+      },
+      "writtenOn": "2024-04-12T12:32:18Z",
+      "side": 1,
+      "message": "For the Mac, I can say they absolutely should not hard code the LaunchDaemon path. If they do, that is a mistake.\n\nIn general, I believe these are just meant for the install target because it adds files there, but I can double check.",
+      "parentUuid": "172f8919_ee04704b",
+      "revId": "12dbf9294e1ef01d4e3420bc175f12d3fe5e283b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
