@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package utils
+package utils_test
 
 import (
+	"context"
+	"errors"
+	"fmt"
 	"testing"
 
 	"google.golang.org/genproto/googleapis/type/money"
 
 	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/gae/service/datastore"
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
+	"infra/cros/fleetcost/internal/costserver/testsupport"
+	"infra/cros/fleetcost/internal/utils"
 )
 
 // TestToIndicatorType checks the output of the indicator type.
@@ -61,7 +67,7 @@ func TestToIndicatorType(t *testing.T) {
 			t.Parallel()
 
 			got := tt.output
-			want, _ := ToIndicatorType(tt.input)
+			want, _ := utils.ToIndicatorType(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
@@ -126,7 +132,7 @@ func TestToUSD(t *testing.T) {
 			t.Parallel()
 
 			got := tt.output
-			want, _ := ToUSD(tt.input)
+			want, _ := utils.ToUSD(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
@@ -181,7 +187,7 @@ func TestToCostCadence(t *testing.T) {
 			t.Parallel()
 
 			want := tt.output
-			got, _ := ToCostCadence(tt.input)
+			got, _ := utils.ToCostCadence(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
@@ -236,10 +242,29 @@ func TestToLocation(t *testing.T) {
 			t.Parallel()
 
 			want := tt.output
-			got, _ := ToLocation(tt.input)
+			got, _ := utils.ToLocation(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
 		})
+	}
+}
+
+// TestInsertOneWithoutReplacement tests that inserting a record that already exists fails.
+func TestInsertOneWithoutReplacement(t *testing.T) {
+	t.Parallel()
+	tf := testsupport.NewFixture(context.Background(), t)
+	record := datastore.PropertyMap{
+		"$id":   datastore.MkProperty("d36cd895-5242-4509-b59f-7642b7d67de7"),
+		"$kind": datastore.MkProperty("some cool kind of datastore.PropertyMap with spaces and punctuation in its name."),
+		"a":     datastore.MkProperty("b"),
+	}
+	if err := datastore.Put(tf.Ctx, record); err != nil {
+		panic(fmt.Sprintf("unexpected error: %s", err))
+	}
+
+	err := utils.InsertOneWithoutReplacement(tf.Ctx, false, record, nil)
+	if !errors.Is(err, utils.ErrItemExists) {
+		t.Errorf("inserting a record that already exists should have failed: %s", err)
 	}
 }

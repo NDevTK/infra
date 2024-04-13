@@ -103,14 +103,6 @@ func NewCostIndicatorEntity(costIndicator *fleetcostpb.CostIndicator) *CostIndic
 	}
 }
 
-// PutCostIndicatorEntity puts a cost indicator entity into the database.
-func PutCostIndicatorEntity(ctx context.Context, entity *CostIndicatorEntity) error {
-	if entity == nil {
-		return errors.New("cost indicator entity cannot be nil")
-	}
-	return datastore.Put(ctx, entity)
-}
-
 // GetCostIndicatorEntity extracts a cost indicator from the database.
 func GetCostIndicatorEntity(ctx context.Context, entity *CostIndicatorEntity) (*CostIndicatorEntity, error) {
 	if err := datastore.Get(ctx, entity); err != nil {

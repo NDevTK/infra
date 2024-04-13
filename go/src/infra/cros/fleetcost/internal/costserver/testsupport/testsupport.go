@@ -18,6 +18,7 @@ import (
 	fleetcostpb "infra/cros/fleetcost/api/models"
 	"infra/cros/fleetcost/internal/costserver"
 	"infra/cros/fleetcost/internal/costserver/models"
+	"infra/cros/fleetcost/internal/utils"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	mockufs "infra/unifiedfleet/api/v1/rpc/mock"
 )
@@ -54,12 +55,12 @@ func NewFixture(ctx context.Context, t *testing.T) *Fixture {
 // NewFixtureWithData returns a fixture with test data.
 func NewFixtureWithData(ctx context.Context, t *testing.T) *Fixture {
 	tf := NewFixture(ctx, t)
-	err := models.PutCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{
+	err := utils.InsertOneWithoutReplacement(tf.Ctx, false, &models.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "e",
 			BurnoutRate: 44.0,
 		},
-	})
+	}, nil)
 	if err != nil {
 		panic(err)
 	}

@@ -19,6 +19,7 @@ import (
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/models"
 	"infra/cros/fleetcost/internal/costserver/testsupport"
+	"infra/cros/fleetcost/internal/utils"
 )
 
 // TestCostIndicatorSimple tests putting a cost indicator into database and retrieving it.
@@ -108,12 +109,12 @@ func TestPutCostIndicator(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	err := models.PutCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{
+	err := utils.InsertOneWithoutReplacement(tf.Ctx, false, &models.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "e",
 			BurnoutRate: 12.0,
 		},
-	})
+	}, nil)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
@@ -320,12 +321,12 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	if err := models.PutCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{
+	if err := utils.InsertOneWithoutReplacement(tf.Ctx, false, &models.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "fake-board",
 			BurnoutRate: 12.0,
 		},
-	}); err != nil {
+	}, nil); err != nil {
 		t.Fatalf("failed to insert cost indicator: %s", err)
 	}
 

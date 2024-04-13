@@ -13,6 +13,7 @@ import (
 	fleetcostModels "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/models"
+	"infra/cros/fleetcost/internal/utils"
 	"infra/cros/fleetcost/internal/validation"
 )
 
@@ -34,7 +35,7 @@ func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fl
 	}
 	costIndicator := request.GetCostIndicator()
 	entity := models.NewCostIndicatorEntity(costIndicator)
-	if err := models.PutCostIndicatorEntity(ctx, entity); err != nil {
+	if err := utils.InsertOneWithoutReplacement(ctx, true, entity, nil); err != nil {
 		return nil, errors.Annotate(err, "create cost indicator").Err()
 	}
 	return &fleetcostAPI.CreateCostIndicatorResponse{

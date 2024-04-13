@@ -5,12 +5,15 @@
 package utils
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math"
 	"strings"
 
 	"google.golang.org/genproto/googleapis/type/money"
+
+	"go.chromium.org/luci/gae/service/datastore"
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
 )
@@ -82,4 +85,35 @@ func lookupValue(m map[string]int32, key string, prefix string) (int32, error) {
 		}
 	}
 	return 0, errNotFound
+}
+
+// RunPerhapsInTransaction runs a datastore command perhaps in a transaction.
+func RunPerhapsInTransaction(ctx context.Context, newTransaction bool, callback func(context.Context) error, options *datastore.TransactionOptions) error {
+	if newTransaction {
+		return datastore.RunInTransaction(ctx, callback, options)
+	}
+	return callback(ctx)
+}
+
+// ErrItemExists applies when we try to insert an item that already exists.
+var ErrItemExists = errors.New("item already exists, cannot replace")
+
+// InsertOneWithoutReplacement inserts an item without replacement.
+//
+// We insist on having a PropertyLoadSaver+MetaGetterSetter (rather than taking an any) because this function only inserts one thing without replacement.
+// (It's not clear what the semantics should be if you want to replace multiple things without replacement).
+func InsertOneWithoutReplacement(ctx context.Context, newTransaction bool, entity interface {
+	datastore.PropertyLoadSaver
+	datastore.MetaGetterSetter
+}, options *datastore.TransactionOptions) error {
+	return RunPerhapsInTransaction(ctx, newTransaction, func(ctx context.Context) error {
+		existsResult, err := datastore.Exists(ctx, entity)
+		if err != nil {
+			return err
+		}
+		if existsResult.Any() {
+			return ErrItemExists
+		}
+		return datastore.Put(ctx, entity)
+	}, options)
 }
