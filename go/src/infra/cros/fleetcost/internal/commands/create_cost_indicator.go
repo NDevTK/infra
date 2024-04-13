@@ -35,14 +35,7 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.name, "name", "", "name of cost indicator")
-		c.Flags.Func("type", "name of cost indicator", func(name string) error {
-			typ, err := utils.ToIndicatorType(name)
-			if err != nil {
-				return errors.Reason("type %s is invalid", name).Err()
-			}
-			c.typ = typ
-			return nil
-		})
+		c.Flags.Func("type", "name of cost indicator", makeTypeRecorder(&c.typ))
 		c.Flags.StringVar(&c.board, "board", "", "board")
 		c.Flags.StringVar(&c.model, "model", "", "model")
 		c.Flags.StringVar(&c.sku, "sku", "", "sku")
@@ -63,14 +56,7 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 			return nil
 		})
 		c.Flags.Float64Var(&c.burnoutRate, "burnout", math.NaN(), "device burnout rate")
-		c.Flags.Func("location", "where the device is located", func(value string) error {
-			location, err := utils.ToLocation(value)
-			if err != nil {
-				return errors.Reason("location %q is invalid", value).Err()
-			}
-			c.location = location
-			return nil
-		})
+		c.Flags.Func("location", "where the device is located", makeLocationRecorder(&c.location))
 		return c
 	},
 }

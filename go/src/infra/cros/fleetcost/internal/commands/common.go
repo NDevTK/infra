@@ -15,6 +15,9 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
+
+	fleetcostpb "infra/cros/fleetcost/api/models"
+	"infra/cros/fleetcost/internal/utils"
 )
 
 // getSecureClient gets a secure http.Client pointed at a specific host.
@@ -54,4 +57,33 @@ func showProto(dst io.Writer, message proto.Message) (int, error) {
 		return 0, errors.Annotate(err, "show proto").Err()
 	}
 	return dst.Write(bytes)
+}
+
+// Function makeLocationRecorder makes a func(string) error that writes the location
+// to somewhere on a command object.
+//
+// Sample usage:
+//
+//	c.Flags.Func("location", "where the device is located", makeLocationRecorder(&c.location))
+func makeLocationRecorder(dest *fleetcostpb.Location) func(string) error {
+	return func(value string) error {
+		location, err := utils.ToLocation(value)
+		if err != nil {
+			return errors.Reason("location %q is invalid", value).Err()
+		}
+		*dest = location
+		return nil
+	}
+}
+
+// Function makeTypeRecorder records the location of a type.
+func makeTypeRecorder(dest *fleetcostpb.IndicatorType) func(string) error {
+	return func(value string) error {
+		typ, err := utils.ToIndicatorType(value)
+		if err != nil {
+			return errors.Reason("type %s is invalid", value).Err()
+		}
+		*dest = typ
+		return nil
+	}
 }
