@@ -216,6 +216,7 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 				Phase:          getPhase(di.hwidData),
 				SimInfos:       getSimInfo(d.GetSiminfo()),
 				ModemInfo:      getModemInfo(d.GetModeminfo()),
+				Cellular:       getCellular(p),
 			},
 		},
 		CacheServer: &labapi.CacheServer{
@@ -555,6 +556,12 @@ func getPhase(hd *ufspb.HwidData) labapi.Phase {
 		}
 	}
 	return labapi.Phase_PHASE_UNSPECIFIED
+}
+
+func getCellular(src *lab.Peripherals) *labapi.Cellular {
+	return &labapi.Cellular{
+		Carrier: src.GetCarrier(),
+	}
 }
 
 func getModemInfo(src *lab.ModemInfo) *labapi.ModemInfo {

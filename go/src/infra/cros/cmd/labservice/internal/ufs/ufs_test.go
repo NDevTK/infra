@@ -40,6 +40,7 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 												AudioBox: true,
 												Atrus:    true,
 											},
+											Carrier: "verizon",
 											Chameleon: &lab.Chameleon{
 												AudioBoard:           true,
 												ChameleonPeripherals: []lab.ChameleonType{lab.ChameleonType_CHAMELEON_TYPE_DP, lab.ChameleonType_CHAMELEON_TYPE_V3},
@@ -237,6 +238,9 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 							{
 								Type: labapi.Cable_AUDIOJACK,
 							},
+						},
+						Cellular: &labapi.Cellular{
+							Carrier: "verizon",
 						},
 						DutModel: &labapi.DutModel{
 							BuildTarget: "build-target",
