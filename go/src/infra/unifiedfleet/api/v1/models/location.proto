@@ -75,7 +75,7 @@ enum Lab {
 }
 
 // Zone refers to the different network zones under chrome org
-// Next tag: 38
+// Next tag: 43
 enum Zone {
   ZONE_UNSPECIFIED = 0;
   ZONE_ATLANTA = 1;             // "atl" Building ? Room ?
@@ -116,4 +116,9 @@ enum Zone {
   ZONE_SFP_15 = 35; // "sfp_15" // Zone for SfP assets for partner // Testhaus ID:15;
   ZONE_SFP_16 = 36; // "sfp_16" // Zone for SfP assets for partner // Testhaus ID:16;
   ZONE_SFP_17 = 37; // "sfp_17" // Zone for SfP assets for partner // Testhaus ID:17;
+  ZONE_SFP_20 = 38; // "sfp_20" // Zone for SfP assets for partner // Testhaus ID:20;
+  ZONE_SFP_21 = 39; // "sfp_21" // Zone for SfP assets for partner // Testhaus ID:21;
+  ZONE_SFP_22 = 40; // "sfp_22" // Zone for SfP assets for partner // Testhaus ID:22;
+  ZONE_SFP_23 = 41; // "sfp_23" // Zone for SfP assets for partner // Testhaus ID:23;
+  ZONE_SFP_24 = 42; // "sfp_24" // Zone for SfP assets for partner // Testhaus ID:24;
 }
