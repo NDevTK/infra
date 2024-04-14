@@ -218,7 +218,8 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						BuildTarget: "hatch",
 						BuildMetadata: &artifactpb.BuildMetadata{
 							Sku: &artifactpb.BuildMetadata_Sku{
-								HwidSku: "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-Q6I",
+								HwidSku:  "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-Q6I",
+								DlmSkuId: "16968",
 							},
 							Chipset: &artifactpb.BuildMetadata_Chipset{
 								WifiChip:         "INTEL_GFP2_AX211",
@@ -360,6 +361,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					{Key: "label-wifi_chip", Value: "INTEL_GFP2_AX211"},
 					{Key: "label-wifi_router_models", Value: "gale"},
 					{Key: "label-hwid_sku", Value: "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-Q6I"},
+					{Key: "label-dlm_sku_id", Value: "16968"},
 					{Key: "label-carrier", Value: "CARRIER_ESIM"},
 					{Key: "drone", Value: "skylab-drone-deployment-prod-6dc79d4f9-czjlj"},
 					{Key: "drone_server", Value: "chromeos4-row4-rack1-drone8"},

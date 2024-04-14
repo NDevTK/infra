@@ -298,8 +298,12 @@ func populatePrimaryBuildMetadata(
 	skuInfo := &artifactpb.BuildMetadata_Sku{}
 	buildMetadata.Sku = skuInfo
 
-	if hwidSku := getSingleTagValue(botDims, "label-hwid_sku"); hwidSku != "" {
-		skuInfo.HwidSku = hwidSku
+	if hwidSKU := getSingleTagValue(botDims, "label-hwid_sku"); hwidSKU != "" {
+		skuInfo.HwidSku = hwidSKU
+	}
+
+	if dlmSKUID := getSingleTagValue(botDims, "label-dlm_sku_id"); dlmSKUID != "" {
+		skuInfo.DlmSkuId = dlmSKUID
 	}
 
 	// - Cellular info
