@@ -16,7 +16,8 @@
                         "version":"5.4.151-16902-g93699f4e73de"
                     },
                     "sku":{
-                        "hwid_sku":"katsu_MT8183_0B"
+                        "hwid_sku": "katsu_MT8183_0B",
+                        "dlm_sku_id": "16968"
                     },
                     "chipset":{
                         "wifi_chip":"marvell",
