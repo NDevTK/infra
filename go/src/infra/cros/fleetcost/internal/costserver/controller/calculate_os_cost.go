@@ -10,8 +10,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
+	"infra/cros/fleetcost/internal/costserver/entities"
 	ufsFetcher "infra/cros/fleetcost/internal/costserver/inventory/ufs"
-	"infra/cros/fleetcost/internal/costserver/models"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
@@ -28,11 +28,11 @@ type IndicatorAttribute struct {
 }
 
 // AsEntity converts an IndicatorAttribute to a datastore Entity.
-func (attribute *IndicatorAttribute) AsEntity() *models.CostIndicatorEntity {
+func (attribute *IndicatorAttribute) AsEntity() *entities.CostIndicatorEntity {
 	if attribute == nil {
 		return nil
 	}
-	return &models.CostIndicatorEntity{
+	return &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Type:     attribute.IndicatorType,
 			Board:    attribute.Board,

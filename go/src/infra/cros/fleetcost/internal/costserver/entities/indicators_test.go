@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package models_test
+package entities_test
 
 import (
 	"context"
@@ -17,7 +17,7 @@ import (
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver/models"
+	"infra/cros/fleetcost/internal/costserver/entities"
 	"infra/cros/fleetcost/internal/costserver/testsupport"
 	"infra/cros/fleetcost/internal/utils"
 )
@@ -27,7 +27,7 @@ func TestCostIndicatorSimple(t *testing.T) {
 	t.Parallel()
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	if err := datastore.Put(tf.Ctx, &models.CostIndicatorEntity{
+	if err := datastore.Put(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "e",
 			BurnoutRate: 12.0,
@@ -36,7 +36,7 @@ func TestCostIndicatorSimple(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	if err := datastore.Get(tf.Ctx, &models.CostIndicatorEntity{
+	if err := datastore.Get(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "e",
 			BurnoutRate: 12.0,
@@ -52,7 +52,7 @@ func TestCostIndicatorIndexedFields(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	oldIndicator := &models.CostIndicatorEntity{
+	oldIndicator := &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board: "e",
 			Model: "w",
@@ -64,7 +64,7 @@ func TestCostIndicatorIndexedFields(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	item := &models.CostIndicatorEntity{
+	item := &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board: "e",
 			Model: "w",
@@ -74,14 +74,14 @@ func TestCostIndicatorIndexedFields(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := typed.Got(item).Want(&models.CostIndicatorEntity{
+	if diff := typed.Got(item).Want(&entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board: "e",
 			Model: "w",
 		},
 		Board: "e",
 		Model: "w",
-	}).Options(cmp.AllowUnexported(models.CostIndicatorEntity{})).Diff(); diff != "" {
+	}).Options(cmp.AllowUnexported(entities.CostIndicatorEntity{})).Diff(); diff != "" {
 		t.Errorf("unexpected error (-want +got): %s", diff)
 	}
 }
@@ -90,7 +90,7 @@ func TestCostIndicatorIndexedFields(t *testing.T) {
 func TestCostIndicatorClone(t *testing.T) {
 	t.Parallel()
 
-	oldIndicator := &models.CostIndicatorEntity{
+	oldIndicator := &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Name:  "a",
 			Board: "e",
@@ -109,7 +109,7 @@ func TestPutCostIndicator(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	err := utils.InsertOneWithoutReplacement(tf.Ctx, false, &models.CostIndicatorEntity{
+	err := utils.InsertOneWithoutReplacement(tf.Ctx, false, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "e",
 			BurnoutRate: 12.0,
@@ -119,7 +119,7 @@ func TestPutCostIndicator(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	result, err := models.GetCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{
+	result, err := entities.GetCostIndicatorEntity(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board: "e",
 		},
@@ -138,7 +138,7 @@ func TestGetCostIndicator(t *testing.T) {
 
 	tf := testsupport.NewFixtureWithData(context.Background(), t)
 
-	costIndicator, err := models.GetCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{
+	costIndicator, err := entities.GetCostIndicatorEntity(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board: "e",
 		},
@@ -147,7 +147,7 @@ func TestGetCostIndicator(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	want := &models.CostIndicatorEntity{
+	want := &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "e",
 			BurnoutRate: 44.0,
@@ -167,7 +167,7 @@ func TestListCostIndicator(t *testing.T) {
 
 	tf := testsupport.NewFixtureWithData(context.Background(), t)
 
-	costIndicators, err := models.ListCostIndicators(tf.Ctx, 1, nil)
+	costIndicators, err := entities.ListCostIndicators(tf.Ctx, 1, nil)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
@@ -321,7 +321,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	if err := utils.InsertOneWithoutReplacement(tf.Ctx, false, &models.CostIndicatorEntity{
+	if err := utils.InsertOneWithoutReplacement(tf.Ctx, false, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "fake-board",
 			BurnoutRate: 12.0,
@@ -330,7 +330,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 		t.Fatalf("failed to insert cost indicator: %s", err)
 	}
 
-	got, err := models.UpdateCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{
+	got, err := entities.UpdateCostIndicatorEntity(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "fake-board",
 			BurnoutRate: 14.0,
@@ -341,7 +341,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 		t.Errorf("unexpected error: %q", err)
 	}
 
-	if diff := typed.Got(got).Want(&models.CostIndicatorEntity{
+	if diff := typed.Got(got).Want(&entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "fake-board",
 			BurnoutRate: 14.0,
@@ -382,7 +382,7 @@ func TestDeleteCostIndicatorEntity(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	_, err := models.GetCostIndicatorEntity(tf.Ctx, &models.CostIndicatorEntity{})
+	_, err := entities.GetCostIndicatorEntity(tf.Ctx, &entities.CostIndicatorEntity{})
 	if !datastore.IsErrNoSuchEntity(err) {
 		t.Errorf("unexpected error: %s", err)
 	}
