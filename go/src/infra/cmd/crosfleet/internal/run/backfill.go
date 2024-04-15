@@ -14,7 +14,6 @@ import (
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
 	"infra/cmd/crosfleet/internal/site"
-	"infra/cmdsupport/cmdlib"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/maruel/subcommands"
@@ -81,12 +80,12 @@ func (args *backfillRun) Run(a subcommands.Application, _ []string, env subcomma
 	bbService := args.envFlags.Env().BuildbucketService
 	ctpBBClient, err := buildbucket.NewClient(ctx, args.envFlags.Env().DefaultCTPBuilder, bbService, args.authFlags)
 	if err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 1
 	}
 
 	if err := args.innerRun(a, env, ctx, ctpBBClient); err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 2
 	}
 	return 0

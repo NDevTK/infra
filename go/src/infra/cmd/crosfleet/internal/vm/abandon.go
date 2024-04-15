@@ -14,8 +14,8 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/cli"
+	"infra/cmd/crosfleet/internal/common"
 
-	"infra/cmdsupport/cmdlib"
 	croscommon "infra/cros/cmd/common_lib/common"
 	"infra/vm_leaser/client"
 )
@@ -48,7 +48,7 @@ type abandonRun struct {
 
 func (c *abandonRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.innerRun(a, args, env); err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 1
 	}
 	return 0

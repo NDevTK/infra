@@ -6,14 +6,18 @@ package common
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
-	"infra/cmd/crosfleet/internal/site"
 	"io"
 	"os"
 	"time"
 
+	"infra/cmd/crosfleet/internal/site"
+	"infra/cmdsupport/cmdlib"
+
 	"github.com/golang/protobuf/proto"
+	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/gcloud/googleoauth"
@@ -166,4 +170,13 @@ func GetUserEmail(ctx context.Context, flags *authcli.Flags) (string, error) {
 		return "", fmt.Errorf("no email found for the current user")
 	}
 	return authInfo.Email, nil
+}
+
+// PrintCmdError wraps the standard cmdlib.PrintError() function with a prompt
+// to run `crosfleet login` if the error was LUCI auth-related.
+func PrintCmdError(a subcommands.Application, err error) {
+	if errors.Is(err, auth.ErrLoginRequired) {
+		err = fmt.Errorf("%s: %s", err.Error(), "run `crosfleet login`")
+	}
+	cmdlib.PrintError(a, err)
 }

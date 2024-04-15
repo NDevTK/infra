@@ -10,15 +10,13 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
+	"github.com/maruel/subcommands"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/luci/auth/client/authcli"
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
-	"infra/cmdsupport/cmdlib"
-
-	"github.com/maruel/subcommands"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	"go.chromium.org/luci/auth/client/authcli"
 )
 
 // testPlanCmdName is the name of the `crosfleet run testplan` command.
@@ -59,7 +57,7 @@ type planRun struct {
 
 func (c *planRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.innerRun(a, args, env); err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 1
 	}
 	return 0

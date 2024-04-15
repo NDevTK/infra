@@ -16,7 +16,6 @@ import (
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
-	"infra/cmdsupport/cmdlib"
 	crosbb "infra/cros/lib/buildbucket"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
@@ -70,18 +69,18 @@ func (c *suiteRun) Run(a subcommands.Application, args []string, env subcommands
 	ctpBuilder := c.getCTPBuilder(c.envFlags.Env())
 	ctpBBClient, err := buildbucket.NewClient(ctx, ctpBuilder, bbService, c.authFlags)
 	if err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 1
 	}
 
 	ufsClient, err := ufs.NewUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
 	if err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 2
 	}
 
 	if err := c.innerRun(a, args, ctx, ctpBBClient, ufsClient); err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 3
 	}
 	return 0

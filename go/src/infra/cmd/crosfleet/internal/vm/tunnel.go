@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"golang.org/x/crypto/ssh"
 
-	"infra/cmdsupport/cmdlib"
+	"infra/cmd/crosfleet/internal/common"
 	"infra/vm_leaser/client"
 )
 
@@ -53,7 +53,7 @@ type tunnelRun struct {
 
 func (c *tunnelRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
 	if err := c.innerRun(a, env); err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		fmt.Fprintln(os.Stderr, "Visit http://go/chromeos-lab-vms-ssh for up-to-date docs on SSHing to a leased VM")
 		return 1
 	}

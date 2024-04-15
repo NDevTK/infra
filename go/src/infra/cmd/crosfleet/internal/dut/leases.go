@@ -9,18 +9,16 @@ import (
 	"strings"
 	"time"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	dutinfopb "infra/cmd/crosfleet/internal/proto"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmd/crosfleet/internal/ufs"
-	"infra/cmdsupport/cmdlib"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/cli"
 	"google.golang.org/genproto/protobuf/field_mask"
+	"infra/cmd/crosfleet/internal/buildbucket"
+	"infra/cmd/crosfleet/internal/common"
+	dutinfopb "infra/cmd/crosfleet/internal/proto"
+	"infra/cmd/crosfleet/internal/site"
+	"infra/cmd/crosfleet/internal/ufs"
 )
 
 const leasesCmd = "leases"
@@ -55,7 +53,7 @@ type leasesRun struct {
 
 func (c *leasesRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
 	if err := c.innerRun(a, env); err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 1
 	}
 	return 0

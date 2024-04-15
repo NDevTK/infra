@@ -6,10 +6,10 @@ package dut
 
 import (
 	"fmt"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
-	"infra/cmdsupport/cmdlib"
 	"infra/libs/skylab/common/heuristics"
 
 	"github.com/maruel/subcommands"
@@ -49,7 +49,7 @@ type abandonRun struct {
 
 func (c *abandonRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.innerRun(a, args, env); err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 1
 	}
 	return 0

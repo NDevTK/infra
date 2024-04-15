@@ -76,7 +76,7 @@ type leaseRun struct {
 
 func (c *leaseRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
 	if err := c.innerRun(a, env); err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 1
 	}
 	return 0

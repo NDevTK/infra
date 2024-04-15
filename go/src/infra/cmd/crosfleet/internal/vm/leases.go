@@ -11,7 +11,7 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmdsupport/cmdlib"
+	"infra/cmd/crosfleet/internal/common"
 	"infra/vm_leaser/client"
 )
 
@@ -38,7 +38,7 @@ type leasesRun struct {
 
 func (c *leasesRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
 	if err := c.innerRun(a, env); err != nil {
-		cmdlib.PrintError(a, err)
+		common.PrintCmdError(a, err)
 		return 1
 	}
 	return 0
