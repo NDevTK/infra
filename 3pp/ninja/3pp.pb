@@ -8,6 +8,8 @@ create {
     git {
       repo: "https://chromium.googlesource.com/external/github.com/ninja-build/ninja"
       tag_pattern: "v%s"
+      # Temporarily pinned due to https://issues.chromium.org/334693405
+      version_restriction: { op: LT val: "1.12.0" }
     }
     patch_version: "chromium.7"
   }
