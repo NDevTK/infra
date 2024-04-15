@@ -359,13 +359,13 @@ def _roll_built_images(api, notify, images, meta):
     (Issue number, Issue URL) if created a CL.
   """
   repo_id = sha256(notify.repo.encode('utf-8')).hexdigest()[:8]
-  with api.step.nest('upload roll CL') as roll:
+  with api.step.nest('upload roll CL') as pres:
     num, url = api.cloudbuildhelper.do_roll(
         repo_url=notify.repo,
         root=api.path['cache'].join('builder', 'roll', repo_id),
         callback=lambda root: _mutate_repo(api, root, notify, images, meta))
     if num is not None:
-      roll.presentation.links['Issue %s' % num] = url
+      pres.links['Issue %s' % num] = url
 
 
 def _mutate_repo(api, root, notify, images, meta):

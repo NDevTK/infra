@@ -581,7 +581,7 @@ class OnlineWindowsCustomization(customization.Customization):
       * oc: an OnlineCustomization proto object containing the data
     '''
     with self.m.step.nest('Execute online customization {}'.format(
-        oc.name)) as s:
+        oc.name)) as pres:
       # If set, attempt to upload the disks
       attempt_upload = True
       # Boot up the vm
@@ -593,7 +593,7 @@ class OnlineWindowsCustomization(customization.Customization):
             for action in online_action.actions:
               self.execute_action(action, oc.win_vm_config.context)
       except Exception as e:
-        s.presentation.logs['Error'] = str(e)
+        pres.logs['Error'] = str(e)
         # Don't upload these disks.
         attempt_upload = False
         if self.mode == wib.CustomizationMode.CUST_DEBUG:

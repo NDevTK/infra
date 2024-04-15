@@ -100,10 +100,10 @@ def RunSteps(api, properties):
   # Try to roll even if something failed. One broken tarball should not block
   # the rest of them.
   if built and properties.HasField('roll_into'):
-    with api.step.nest('upload roll CL') as roll:
+    with api.step.nest('upload roll CL') as pres:
       num, url = _roll_built_tarballs(api, properties.roll_into, built, meta)
       if num is not None:
-        roll.presentation.links['Issue %s' % num] = url
+        pres.links['Issue %s' % num] = url
         summary_lines.extend([
           'Created roll CL ' + url,
           ''

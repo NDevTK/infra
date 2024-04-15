@@ -226,13 +226,13 @@ class WinISOCustomization(customization.Customization):
       * iso_staging: dir path where we stage the iso to be packaged
     """
     url = self._source.get_url(base_image)
-    with self.m.step.nest('Copy {} to staging'.format(url)) as n:
+    with self.m.step.nest('Copy {} to staging'.format(url)) as pres:
       base_image_path = self._source.get_local_src(base_image)
       loop, mount_loc = self.m.qemu.mount_disk_image(
           self._source.get_local_src(base_image), partitions=None)
       try:
-        n.presentation.logs['mount_path'] = mount_loc[0]
-        n.presentation.logs['loop'] = loop
+        pres.logs['mount_path'] = mount_loc[0]
+        pres.logs['loop'] = loop
         # Copy the base image to the staging dir (iso_dir)
         self.m.file.copytree('Copy base image', mount_loc[0], iso_staging)
         # default permissions are 0555
