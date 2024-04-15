@@ -117,8 +117,8 @@ class InfraCIPDApi(recipe_api.RecipeApi):
       raise ValueError('buildnumbers must be enabled')
     return [
       'luci_build:%s/%s/%s' % (
-        self.m.buildbucket.builder_id.bucket,
-        self.m.buildbucket.builder_id.builder,
+        self.m.buildbucket.build.builder.bucket,
+        self.m.buildbucket.build.builder.builder,
         self.m.buildbucket.build.number),
       'git_repository:%s' % git_repo_url,
       'git_revision:%s' % revision,
