@@ -41,9 +41,11 @@ func main() {
 			Service: "ufs-dumper",
 			// TODO(gregorynisbet): replace with commit hash or some other smarter way of getting
 			//                      the UFS version.
-			ServiceVersion:    "1.0.0",
-			EnableOCTelemetry: false,
-			ProjectID:         srv.Options.CloudProject,
+			ServiceVersion:     "1.0.0",
+			EnableOCTelemetry:  false,
+			ProjectID:          srv.Options.CloudProject,
+			DebugLogging:       true,
+			DebugLoggingOutput: nil, // stderr by default
 		}
 
 		profilerStartErr := profiler.Start(cfg)
