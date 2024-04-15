@@ -283,7 +283,7 @@ func IngestBuildsFromPubSub(projectID, subscriptionName string, isProd bool) ([]
 		return nil, err
 	}
 
-	sqlClient, err := cloudsql.InitBuildsClient(ctx, isProd)
+	sqlClient, err := cloudsql.InitBuildsClient(ctx, isProd, true)
 	if err != nil {
 		return nil, err
 	}
@@ -342,4 +342,69 @@ func IngestBuildsFromPubSub(projectID, subscriptionName string, isProd bool) ([]
 	common.Stdout.Printf("Returning %d Builds from Pub/Sub feed\n", len(builds))
 
 	return builds, nil
+}
+
+// RequiredBuild encapsulates the information needed to request a build from
+// PSQL for TimedEvents configs.
+type RequiredBuild struct {
+	BuildTarget string
+	Board       string
+	Milestone   int
+}
+
+// formatQuery inserts filters to select only the required builds specified.
+//
+// NOTE: We insert %s for the first token because we do not have the database
+// name known to us here. This will be inserted by the cloudsql client.
+func formatQuery(requiredBuilds []*RequiredBuild) (string, error) {
+	if len(requiredBuilds) == 0 {
+		return "", fmt.Errorf("no required builds to add to the SQL query")
+	}
+
+	// These WHERE clause filters will allow us to only fetch the
+	// buildTargets:milestones we need.
+	whereClauseItems := fmt.Sprintf(cloudsql.SelectWhereClauseItem, requiredBuilds[0].BuildTarget, requiredBuilds[0].Milestone)
+
+	for _, requiredBuild := range requiredBuilds[1:] {
+		item := fmt.Sprintf(cloudsql.SelectWhereClauseItem, requiredBuild.BuildTarget, requiredBuild.Milestone)
+
+		whereClauseItems = strings.Join([]string{whereClauseItems, item}, " OR ")
+	}
+
+	// NOTE: Place a '%s' operator back into the string so that the sql client
+	// can insert the table name it retrieved from the SecretManager.
+	return fmt.Sprintf(cloudsql.SelectBuildsTemplate, "%s", whereClauseItems), nil
+}
+
+func IngestBuildsFromPSQL(ctx context.Context, requiredBuilds []*RequiredBuild, isProd bool) ([]*kronpb.Build, error) {
+	client, err := cloudsql.InitBuildsClient(ctx, isProd, false)
+	if err != nil {
+		return nil, err
+	}
+
+	// Generate the select query using the template.
+	query, err := formatQuery(requiredBuilds)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fetch the builds from the LTS PSQL database.
+	builds, err := client.Read(ctx, query, cloudsql.ScanBuildRows)
+	if err != nil {
+		return nil, err
+	}
+
+	// Assert that value of the returned type is []*BuildPackage. To make the
+	// client generic we have a return of any which means that we must confirm
+	// and apply type to this new variable.
+	//
+	// NOTE: Generics have long been considered an anti-pattern to GO but
+	// recently support for them was added at the stdlib level.
+	// https://go.dev/ref/spec#Type_assertions for more info.
+	buildPackages, ok := builds.([]*kronpb.Build)
+	if !ok {
+		return nil, fmt.Errorf("returned type from sql read is not of type []*kronpb.Build")
+	}
+
+	return buildPackages, nil
 }

@@ -74,6 +74,14 @@ const (
 	KronWriterPasswordSecretVersionStaging = 1
 	KronWriterPasswordSecretVersionProd    = 2
 
+	KronReaderUsernameSecret               = "kron-reader-username"
+	KronReaderUsernameSecretVersionStaging = 1
+	KronReaderUsernameSecretVersionProd    = 1
+
+	KronReaderPasswordSecret               = "kron-reader-password"
+	KronReaderPasswordSecretVersionStaging = 1
+	KronReaderPasswordSecretVersionProd    = 1
+
 	KronBuildsDBNameSecret               = "kron-builds-dbname"
 	KronBuildsDBNameSecretVersionStaging = 1
 	KronBuildsDBNameSecretVersionProd    = 1

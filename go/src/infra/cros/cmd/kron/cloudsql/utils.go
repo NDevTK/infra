@@ -19,12 +19,32 @@ import (
 // provided. "ON CONFLICT DO NOTHING" is added so that in the case of a
 // duplicated build being inserted neither an error is returned nor, rows
 // updated.
-var InsertBuildsTemplate = "INSERT INTO \"%s\" (build_uuid,run_uuid,create_time,bbid,build_target,milestone,version,image_path,board,variant) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT DO NOTHING;"
+const InsertBuildsTemplate = "INSERT INTO \"%s\" (build_uuid,run_uuid,create_time,bbid,build_target,milestone,version,image_path,board,variant) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT DO NOTHING;"
 
-// SelectBuildsTemplate is the constant string template for how we will fetch
-// builds from the Cloud SQL PSQL database. The table name will need to be
-// provided.
-const SelectBuildsTemplate = "SELECT * from \"public\".\"%s\""
+// SelectBuildsTemplate will be used as the basis to fetch the required builds
+// for timed Event configs. The table name and where clause items will need to
+// be provided.
+//
+// NOTE: The rank function here creates groupings of ("build_target",
+// "milestone") pairs and gives the newest a value of rank 1. Using this we can
+// ignore all but the latest image for the given build_target and milestone.
+const SelectBuildsTemplate = `WITH
+RankedBuilds AS (
+SELECT
+  *,
+  RANK() OVER (PARTITION BY "build_target", "milestone" ORDER BY "create_time" DESC) AS "build_rank"
+FROM
+  "public"."%s" )
+SELECT
+	build_uuid, run_uuid, create_time, bbid, build_target, milestone, version,image_path, board, variant
+FROM
+	RankedBuilds
+WHERE
+	"build_rank" = 1 AND (%s)
+ORDER BY
+	"create_time" DESC`
+
+const SelectWhereClauseItem = "(\"build_target\" = '%s' AND \"milestone\" = %d)"
 
 // PSQLBuildRow is a PSQL compliant version of the kronpb.Build type. The
 // difference here is that for the PSQL adapter we need to use

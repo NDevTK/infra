@@ -4,7 +4,9 @@
 
 package builds
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestExtractBoardAndVariant(t *testing.T) {
 	amdTest := "amd64-generic"
@@ -108,5 +110,47 @@ func TestGenerateBuildHash(t *testing.T) {
 	if buildHash != expected {
 		t.Errorf("expected %s got %s", expected, buildHash)
 		return
+	}
+}
+
+func TestFormatQuery(t *testing.T) {
+	requiredBuilds := []*RequiredBuild{
+		{
+			BuildTarget: "abc",
+			Milestone:   120,
+		},
+		{
+			BuildTarget: "def",
+			Milestone:   120,
+		},
+		{
+			BuildTarget: "ghi",
+			Milestone:   80,
+		},
+	}
+	expectedQuery := `WITH
+RankedBuilds AS (
+SELECT
+  *,
+  RANK() OVER (PARTITION BY "build_target", "milestone" ORDER BY "create_time" DESC) AS "build_rank"
+FROM
+  "public"."%s" )
+SELECT
+	build_uuid, run_uuid, create_time, bbid, build_target, milestone, version,image_path, board, variant
+FROM
+	RankedBuilds
+WHERE
+	"build_rank" = 1 AND (("build_target" = 'abc' AND "milestone" = 120) OR ("build_target" = 'def' AND "milestone" = 120) OR ("build_target" = 'ghi' AND "milestone" = 80))
+ORDER BY
+	"create_time" DESC`
+
+	formattedQuery, err := formatQuery(requiredBuilds)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if expectedQuery != formattedQuery {
+		t.Errorf("returned query does not match expected string.\nGot:\n%s\nExpected:%s", formattedQuery, expectedQuery)
 	}
 }

@@ -20,7 +20,7 @@ import (
 
 type Client interface {
 	Connect(ctx context.Context, user, password, databaseName, connectionName string) error
-	Read(ctx context.Context, query string, handleScanRows func(rows *pgx.Rows) (any, error)) (any, error)
+	Read(ctx context.Context, query string, handleScanRows func(rows pgx.Rows) (any, error)) (any, error)
 	Exec(ctx context.Context, sqlCommand string, insertArgs ...any) (int, error)
 }
 type sqlClient struct {
@@ -59,10 +59,16 @@ func (c *sqlClient) Connect(ctx context.Context, username, password, databaseNam
 
 // Read queries the PSQL db. The user provides handleScanRows to deal with the
 // generic types used in the sql adapter code.
-func (c *sqlClient) Read(ctx context.Context, query string, handleScanRows func(rows *pgx.Rows) (any, error)) (any, error) {
+//
+// NOTE: it is assumed that the database name needs to be inserted into the SQL
+// query and will be retrieved by the client during the instantiation.
+func (c *sqlClient) Read(ctx context.Context, query string, handleScanRows func(rows pgx.Rows) (any, error)) (any, error) {
 	if c.dbPool == nil {
 		return nil, fmt.Errorf("the dbPool was not initialized and connected")
 	}
+
+	// Place the database name in the SELECT statement.
+	query = fmt.Sprintf(query, c.dbName)
 
 	rows, err := c.dbPool.Query(ctx, query)
 	if err != nil {
@@ -74,11 +80,14 @@ func (c *sqlClient) Read(ctx context.Context, query string, handleScanRows func(
 
 	// Since the PSQl adapter works with generic types it's up to the caller of
 	// this function to determine how to ingest the row returned.
-	return handleScanRows(&rows)
+	return handleScanRows(rows)
 }
 
 // Exec executes the command with the given value args. It returns how many rows
 // were affected.
+//
+// NOTE: it is assumed that the database name needs to be inserted into the SQL
+// query and will be retrieved by the client during the instantiation.
 func (c *sqlClient) Exec(ctx context.Context, sqlCommand string, insertArgs ...any) (int, error) {
 	if c.dbPool == nil {
 		return 0, fmt.Errorf("the dbPool was not initialized and connected")
@@ -96,33 +105,56 @@ func (c *sqlClient) Exec(ctx context.Context, sqlCommand string, insertArgs ...a
 }
 
 // InitBuildsClient initialize a PSQL client for for the kron-builds table.
-func InitBuildsClient(ctx context.Context, isProd bool) (Client, error) {
+func InitBuildsClient(ctx context.Context, isProd, isWriter bool) (Client, error) {
 	client := &sqlClient{}
 
 	var projectNumber, usernameVersion, passwordVersion, dbNameVersion, connectionNameVersion int
+	var usernameSecret, passwordSecret string
+
+	// Select the secret for the given account requested.
+	if isWriter {
+		usernameSecret = common.KronWriterUsernameSecret
+		passwordSecret = common.KronWriterPasswordSecret
+	} else {
+		usernameSecret = common.KronReaderUsernameSecret
+		passwordSecret = common.KronReaderPasswordSecret
+	}
 
 	// Set the per project values.
 	if isProd {
+		if isWriter {
+			usernameVersion = common.KronWriterUsernameSecretVersionProd
+			passwordVersion = common.KronWriterPasswordSecretVersionProd
+		} else {
+			usernameVersion = common.KronReaderUsernameSecretVersionProd
+			passwordVersion = common.KronReaderPasswordSecretVersionProd
+		}
+
 		projectNumber = common.ProdProjectNumber
-		usernameVersion = common.KronWriterUsernameSecretVersionProd
-		passwordVersion = common.KronWriterPasswordSecretVersionProd
 		dbNameVersion = common.KronBuildsDBNameSecretVersionProd
 		connectionNameVersion = common.KronBuildsConnectionNameSecretVersionProd
 	} else {
+		if isWriter {
+			usernameVersion = common.KronWriterUsernameSecretVersionStaging
+			passwordVersion = common.KronWriterPasswordSecretVersionStaging
+		} else {
+			usernameVersion = common.KronReaderUsernameSecretVersionStaging
+			passwordVersion = common.KronReaderPasswordSecretVersionStaging
+
+		}
+
 		projectNumber = common.StagingProjectNumber
-		usernameVersion = common.KronWriterUsernameSecretVersionStaging
-		passwordVersion = common.KronWriterPasswordSecretVersionStaging
 		dbNameVersion = common.KronBuildsDBNameSecretVersionStaging
 		connectionNameVersion = common.KronBuildsConnectionNameSecretVersionStaging
 	}
 
 	// Get username from Cloud Secret Manager.
-	username, err := secretmanager.GetSecret(ctx, common.KronWriterUsernameSecret, projectNumber, usernameVersion)
+	username, err := secretmanager.GetSecret(ctx, usernameSecret, projectNumber, usernameVersion)
 	if err != nil {
 		return nil, err
 	}
 	// Get password from Cloud Secret Manager.
-	password, err := secretmanager.GetSecret(ctx, common.KronWriterPasswordSecret, projectNumber, passwordVersion)
+	password, err := secretmanager.GetSecret(ctx, passwordSecret, projectNumber, passwordVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -149,5 +181,3 @@ func InitBuildsClient(ctx context.Context, isProd bool) (Client, error) {
 
 	return client, nil
 }
-
-// TODO(b/315340446): Write scan handler function
