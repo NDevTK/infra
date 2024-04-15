@@ -37,7 +37,6 @@ Do not build automation around this subcommand.`,
 		c.envFlags.Register(&c.Flags)
 		c.printer.Register(&c.Flags)
 		c.testCommonFlags.register(&c.Flags, testCmdName)
-		c.Flags.StringVar(&c.testArgs, "test-args", "", "Test arguments string (meaning depends on test).")
 		return c
 	},
 }
@@ -48,7 +47,6 @@ type testRun struct {
 	authFlags authcli.Flags
 	envFlags  common.EnvFlags
 	printer   common.CLIPrinter
-	testArgs  string
 }
 
 func (c *testRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {

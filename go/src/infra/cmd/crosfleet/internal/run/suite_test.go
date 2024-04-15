@@ -205,8 +205,9 @@ func TestSuiteDedupeNoModels_NoRun(t *testing.T) {
 			board:       "drallion",
 			pool:        "DUT_POOL_QUOTA",
 			cft:         true,
-			tagIncludes: []string{"tag1"},
+			testArgs:    "testArgsExample",
 		},
+		tagIncludes: []string{"tag1"},
 	}
 	ctx := context.Background()
 	suite := "bvt-installer"
@@ -379,7 +380,8 @@ func getInputProps(t *testing.T, model string) *structpb.Struct {
 				"testPlan": map[string]interface{}{
 					"suite": []interface{}{
 						map[string]interface{}{
-							"name": "bvt-installer",
+							"name":     "bvt-installer",
+							"testArgs": "testArgsExample",
 						},
 					},
 					"tagCriteria": map[string]interface{}{
@@ -427,8 +429,9 @@ func TestSuiteDedupeModels_NoRun(t *testing.T) {
 			models:      []string{"drallion", "drallion360"},
 			pool:        "DUT_POOL_QUOTA",
 			cft:         true,
-			tagIncludes: []string{"tag1"},
+			testArgs:    "testArgsExample",
 		},
+		tagIncludes: []string{"tag1"},
 	}
 	ctx := context.Background()
 	suite := "bvt-installer"

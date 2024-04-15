@@ -12,19 +12,21 @@ import (
 	"strconv"
 	"strings"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmd/crosfleet/internal/ufs"
-	crosbb "infra/cros/lib/buildbucket"
-
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/cli"
+	luciflag "go.chromium.org/luci/common/flag"
+
+	"infra/cmd/crosfleet/internal/buildbucket"
+	"infra/cmd/crosfleet/internal/common"
+	"infra/cmd/crosfleet/internal/site"
+	"infra/cmd/crosfleet/internal/ufs"
+	crosbb "infra/cros/lib/buildbucket"
 )
 
 // suiteCmdName is the name of the `crosfleet run suite` command.
@@ -48,7 +50,17 @@ Do not build automation around this subcommand.`,
 		c.printer.Register(&c.Flags)
 		c.Flags.BoolVar(&c.allowDupes, "allow-duplicates", false,
 			"If set, will schedule all builds, including those for which an equivalent build is already pending or running.")
+		c.Flags.Var(luciflag.CommaList(&c.tagIncludes), "tag-includes", `Comma-separated list of tags for listing tests to be run(only tests matching ALL of the tags)
+		Tags must match exactly (i.e. no regexp, wildcard, etc. allowed).`)
+		c.Flags.Var(luciflag.CommaList(&c.tagExcludes), "tag-excludes", `Comma-separated list of tags that should exclude tests tagged with any of these tags during a CTP run
+		Tags must match exactly (i.e. no regexp, wildcard, etc. allowed).`)
+		c.Flags.Var(luciflag.CommaList(&c.testNameIncludes), "test-name-includes", `Comma-separated list of tests to be run(only tests matching ALL of the tags.
+		Test names allow usage of wildcard.`)
+		c.Flags.Var(luciflag.CommaList(&c.testNameExcludes), "test-name-excludes", `Comma-separated list of tests that should be excluded from execution. These tests will be skipped during the run.
+		Test names allow usage of wildcard.`)
+
 		c.testCommonFlags.register(&c.Flags, suiteCmdName)
+
 		return c
 	},
 }
@@ -56,10 +68,14 @@ Do not build automation around this subcommand.`,
 type suiteRun struct {
 	subcommands.CommandRunBase
 	testCommonFlags
-	authFlags  authcli.Flags
-	envFlags   common.EnvFlags
-	printer    common.CLIPrinter
-	allowDupes bool
+	authFlags        authcli.Flags
+	envFlags         common.EnvFlags
+	printer          common.CLIPrinter
+	allowDupes       bool
+	tagIncludes      []string
+	tagExcludes      []string
+	testNameIncludes []string
+	testNameExcludes []string
 }
 
 func (c *suiteRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -109,7 +125,7 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx contex
 		printer:     c.printer,
 		cmdName:     suiteCmdName,
 		bbClient:    ctpBBClient,
-		testPlan:    testPlanForSuites(args, c.testCommonFlags.tagIncludes, c.testCommonFlags.tagExcludes, c.testCommonFlags.testNameExcludes, c.testCommonFlags.testNameExcludes, c.enableAutotestSharding),
+		testPlan:    testPlanForSuites(args, c.tagIncludes, c.tagExcludes, c.testNameExcludes, c.testNameExcludes, c.enableAutotestSharding, c.testArgs),
 		cliFlags:    &c.testCommonFlags,
 	}
 
@@ -127,10 +143,10 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx contex
 }
 
 // testPlanForSuites constructs a Test Platform test plan for the given tests.
-func testPlanForSuites(suiteNames []string, tagIncludes []string, tagExcludes []string, testNameIncludes []string, testNameExcludes []string, enableAutotestSharding bool) *test_platform.Request_TestPlan {
+func testPlanForSuites(suiteNames []string, tagIncludes []string, tagExcludes []string, testNameIncludes []string, testNameExcludes []string, enableAutotestSharding bool, testArgs string) *test_platform.Request_TestPlan {
 	testPlan := test_platform.Request_TestPlan{}
 	for _, suiteName := range suiteNames {
-		suiteRequest := &test_platform.Request_Suite{Name: suiteName}
+		suiteRequest := &test_platform.Request_Suite{Name: suiteName, TestArgs: testArgs}
 		testPlan.Suite = append(testPlan.Suite, suiteRequest)
 	}
 
