@@ -48,9 +48,9 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     """ init initializes all the dirs and sub modules required."""
     self._try_job = try_job
     with self.m.step.nest('Initialize the config engine'):
-      self._sources = sources.Source(self.m.path['cache'].join('Pkgs'), self.m)
+      self._sources = sources.Source(self.m.path.cache_dir.join('Pkgs'), self.m)
 
-      self._configs_dir = self.m.path['cleanup'].join('configs')
+      self._configs_dir = self.m.path.cleanup_dir.join('configs')
       helper.ensure_dirs(self.m.file, [self._configs_dir])
 
   def init_customizations(self, config):

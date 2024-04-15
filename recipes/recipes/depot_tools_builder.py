@@ -26,13 +26,13 @@ DOC_UPLOAD_URL='gs://chrome-infra-docs/flat/depot_tools/docs/'
 
 def RunSteps(api):
   # prepare the output dir and zip paths
-  api.path['checkout'] = api.path['start_dir'].join('depot_tools')
-  zip_out = api.path['start_dir'].join('depot_tools.zip')
+  api.path.checkout_dir = api.path.start_dir.join('depot_tools')
+  zip_out = api.path.start_dir.join('depot_tools.zip')
 
-  api.step('mkdir depot_tools', ['mkdir', api.path['checkout']])
+  api.step('mkdir depot_tools', ['mkdir', api.path.checkout_dir])
 
   with api.step.nest('clone + checkout'):
-    api.git('clone', '-n', REPO_URL, api.path['checkout'])
+    api.git('clone', '-n', REPO_URL, api.path.checkout_dir)
     api.step.active_result.presentation.properties['got_revision'] = (
         api.buildbucket.gitiles_commit.id)
     api.git('config', 'core.autocrlf', 'false', name='set autocrlf')
@@ -44,13 +44,13 @@ def RunSteps(api):
     api.git('gc', '--aggressive', '--prune=all')
 
   # zip + upload repo
-  api.zip.directory('zip it up', api.path['checkout'], zip_out)
+  api.zip.directory('zip it up', api.path.checkout_dir, zip_out)
   api.gsutil.upload(zip_out, 'chrome-infra', 'depot_tools.zip',
                     args=['-a', 'public-read'], unauthenticated_url=True)
 
   # upload html docs
   api.gsutil(['cp', '-r', '-z', 'html', '-a', 'public-read',
-              api.path['checkout'].join('man', 'html'), DOC_UPLOAD_URL],
+              api.path.checkout_dir.join('man', 'html'), DOC_UPLOAD_URL],
              name='upload docs')
 
 

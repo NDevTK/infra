@@ -27,7 +27,7 @@ def RunSteps(api, commit):
         commit=commit)
 
   api.cloudbuildhelper.do_roll(
-      'https://repo.example.com', api.path['cache'].join('roll'), roll_cb)
+      'https://repo.example.com', api.path.cache_dir.join('roll'), roll_cb)
 
 
 def GenTests(api):

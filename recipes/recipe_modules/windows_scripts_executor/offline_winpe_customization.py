@@ -37,8 +37,8 @@ class OfflineWinPECustomization(customization.Customization):
         'customization') == 'offline_winpe_customization'
     # use a custom work dir
     self._name = self.customization().offline_winpe_customization.name
-    self._workdir = self.m.path['cleanup'].join(self._name, 'workdir')
-    self._scratchpad = self.m.path['cleanup'].join(self._name, 'sp')
+    self._workdir = self.m.path.cleanup_dir.join(self._name, 'workdir')
+    self._scratchpad = self.m.path.cleanup_dir.join(self._name, 'sp')
     self._canon_cust = None
     helper.ensure_dirs(self.m.file, [self._workdir])
 
@@ -229,7 +229,7 @@ class OfflineWinPECustomization(customization.Customization):
       self.m.file.ensure_directory('Ensure mount point', dest)
       # Mount the boot.wim to mount dir for modification
       mount_wim.mount_win_wim(self.m.powershell, dest, wim_path, index,
-                              self.m.path['cleanup'])
+                              self.m.path.cleanup_dir)
 
   def deinit_win_pe_image(self, save=True):
     """ deinit_win_pe_image unmounts the winpe image and saves/discards changes

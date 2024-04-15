@@ -54,7 +54,7 @@ def RunSteps(api, git_repo):
   safe_project_name = ''.join(
       c if c.isalnum() else '_'
       for c in git_repo.replace('.googlesource.com', ''))
-  root_dir = api.path['cache'].join('builder', safe_project_name)
+  root_dir = api.path.cache_dir.join('builder', safe_project_name)
   api.file.ensure_directory('ensure cache dir', root_dir)
   c = api.gclient.make_config()
   soln = c.solutions.add()

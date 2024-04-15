@@ -58,7 +58,7 @@ def _GetZonesToTest(api, zone_host_map):
 
 def _InstallShivasCIPD(api):
   """Install shivas CIPD package and return path to the binary."""
-  packages_dir = api.path['cleanup'].join('packages')
+  packages_dir = api.path.cleanup_dir.join('packages')
   ensure_file = api.cipd.EnsureFile()
   ensure_file.add_package('infra/shivas/${platform}', 'prod')
   api.cipd.ensure(packages_dir, ensure_file, name='ensure shivas installed')
@@ -164,7 +164,7 @@ def RunSteps(api):
   # Read a file in the repo that defines zones and their dhcp servers.
   zone_host_map = api.file.read_json(
       'read %s' % _ZONE_HOST_MAP_FILE,
-      api.path['checkout'].join(_ZONE_HOST_MAP_FILE),
+      api.path.checkout_dir.join(_ZONE_HOST_MAP_FILE),
       test_data=_ZONE_HOST_MAP_TESTDATA)
 
   zones_to_test = _GetZonesToTest(api, zone_host_map)
@@ -189,7 +189,7 @@ def RunSteps(api):
           image=_IMAGE_TEMPLATE % os,
           step_name='DHCP config test for %s on %s' % (zone, os),
           cmd_args=[zone],
-          dir_mapping=[(api.path['checkout'], '/src')])
+          dir_mapping=[(api.path.checkout_dir, '/src')])
 
 
 def GenTests(api):
@@ -205,7 +205,7 @@ def GenTests(api):
   def changed_files(test_file='services/dhcpd/%s/foo' % _TEST_ZONE):
     t = api.override_step_data(
         'git diff to analyze patch', stdout=api.raw_io.output(test_file))
-    t += api.path.exists(api.path['checkout'].join('chrome_golo', test_file))
+    t += api.path.exists(api.path.checkout_dir.join('chrome_golo', test_file))
     return t
 
   yield api.test(

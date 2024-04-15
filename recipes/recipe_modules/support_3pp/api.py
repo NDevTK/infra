@@ -700,7 +700,7 @@ class Support3ppApi(recipe_api.RecipeApi):
           # Add package hash each time recipe loads a new package
           self._infra_3pp_hash.update(
               self.m.file.compute_hash('Compute hash for %r' % cipd_pkg_name,
-                                       [pkg_dir], self.m.path['start_dir'],
+                                       [pkg_dir], self.m.path.start_dir,
                                        'deadbeef').encode('utf-8'))
           self._loaded_specs[cipd_pkg_name] = (pkg_dir, pkg_spec)
 
@@ -892,7 +892,7 @@ class Support3ppApi(recipe_api.RecipeApi):
       If unspecified, this will be the appropriate CIPD ${platform} for the
       current host machine.
     """
-    base_dir = self.m.path['start_dir'].join('_pkgbuild')
+    base_dir = self.m.path.start_dir.join('_pkgbuild')
 
     self.m.file.ensure_directory('mkdir -p [pkgbuild]', base_dir)
     self.m.cipd.ensure(

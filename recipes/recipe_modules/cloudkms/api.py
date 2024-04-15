@@ -20,7 +20,7 @@ class CloudKMSApi(recipe_api.RecipeApi):
     using cipd.
     """
     if self._cloudkms_bin is None:
-      cloudkms_dir = self.m.path['start_dir'].join('cloudkms')
+      cloudkms_dir = self.m.path.start_dir.join('cloudkms')
       ensure_file = self.m.cipd.EnsureFile().add_package(
           'infra/tools/luci/cloudkms/${platform}', 'latest')
       self.m.cipd.ensure(cloudkms_dir, ensure_file)
@@ -35,7 +35,7 @@ class CloudKMSApi(recipe_api.RecipeApi):
         projects/chops-kms/locations/global/keyRings/[KEYRING]/cryptoKeys/[KEY]
       * input_file (Path) - The path to the input (ciphertext) file.
       * output_file (Path) - The path to the output (plaintext) file. It is
-        recommended that this is inside api.path['cleanup'] to ensure the
+        recommended that this is inside api.path.cleanup_dir to ensure the
         plaintext file will be cleaned up by recipe.
     """
     self.m.step('decrypt', [

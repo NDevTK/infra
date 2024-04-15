@@ -58,7 +58,7 @@ PROPERTIES = {
 
 
 def RunSteps(api, platforms, dry_run, rebuild):
-  solution_path = api.path['cache'].join('builder', 'build_wheels')
+  solution_path = api.path.cache_dir.join('builder', 'build_wheels')
   api.file.ensure_directory("init cache if it doesn't exist", solution_path)
   try:
     with api.context(cwd=solution_path):

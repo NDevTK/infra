@@ -212,7 +212,7 @@ def RunSteps(api, inputs):
   refs = 'origin/main'
   if inputs.refs:
     refs = inputs.refs
-  builder_named_cache = api.path['cache'].join('builder')
+  builder_named_cache = api.path.cache_dir.join('builder')
 
   with api.step.nest('read user config') as c:
     # check if it is a try build

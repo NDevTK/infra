@@ -178,13 +178,13 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
         db_gcs_bucket (string): The GCS bucket used as a database for previous
           roll attempts.
     """
-    recipes_dir = self.m.path['cache'].join('builder', 'recipe_engine')
+    recipes_dir = self.m.path.cache_dir.join('builder', 'recipe_engine')
     self.m.file.rmtree('ensure recipe_dir gone', recipes_dir)
     self.m.file.ensure_directory(
         'ensure builder cache dir exists',
-        self.m.path['cache'].join('builder'))
+        self.m.path.cache_dir.join('builder'))
 
-    with self.m.context(cwd=self.m.path['cache'].join('builder')):
+    with self.m.context(cwd=self.m.path.cache_dir.join('builder')):
       # Git clone really wants to have cwd set to something other than None.
       self.m.git('clone', '--depth', '1',
                  'https://chromium.googlesource.com/infra/luci/recipes-py',
@@ -228,7 +228,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
   def _prepare_checkout(self, project_id, project_url):
     # Keep persistent checkout. Speeds up the roller for large repos
     # like chromium/src.
-    workdir = self.m.path['cache'].join(
+    workdir = self.m.path.cache_dir.join(
         'builder', 'recipe_autoroller', project_id)
     self.m.git.checkout(
         project_url, dir_path=workdir, submodules=False, ref='main')

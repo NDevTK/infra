@@ -12,10 +12,10 @@ DEPS = [
 
 
 def RunSteps(api):
-  with api.buildenv(api.path['start_dir'], 'GO_VERSION', 'NODEJS_VERSION'):
+  with api.buildenv(api.path.start_dir, 'GO_VERSION', 'NODEJS_VERSION'):
     api.step('full env', ['echo', 'hi'])
 
-  with api.buildenv(api.path['start_dir']):
+  with api.buildenv(api.path.start_dir):
     api.step('empty env', ['echo', 'hi'])
 
 

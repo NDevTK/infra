@@ -412,7 +412,7 @@ def RunSteps(api, upstream_id, upstream_url, downstream_id, downstream_url):
 
   # TODO: figure out upstream_id from downstream's repo recipes.cfg file using
   # patch and deprecated both upstream_id and upstream_url parameters.
-  workdir_base = api.path['cache'].join('builder')
+  workdir_base = api.path.cache_dir.join('builder')
 
   upstream_repo = RecipesRepo(
     api, workdir_base, upstream_id, upstream_url)

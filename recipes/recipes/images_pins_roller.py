@@ -33,7 +33,7 @@ def RunSteps(api, properties):
   co.gclient_runhooks()
 
   # Checkout the repo with the file to be updated.
-  root = api.path['cache'].join('builder', 'checkout')
+  root = api.path.cache_dir.join('builder', 'checkout')
   api.git.checkout(
       properties.repo_url, ref='main', dir_path=root, submodules=False)
 

@@ -31,7 +31,7 @@ class WindowsSDKApi(recipe_api.RecipeApi):
     """
     if enabled:
       sdk_dir = self._ensure_sdk(
-          path or self.m.path['start_dir'].join('cipd', 'windows_sdk'),
+          path or self.m.path.start_dir.join('cipd', 'windows_sdk'),
           version or self._sdk_properties['version'])
       try:
         with self.m.context(**self._sdk_env(sdk_dir)):

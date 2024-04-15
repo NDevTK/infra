@@ -40,7 +40,7 @@ class CodesearchApi(recipe_api.RecipeApi):
       #               it's not a directory.
       delete_command = [
           'forfiles', '/p',
-          self.m.path['checkout'].join('out'), '/s', '/m', '*', '/d',
+          self.m.path.checkout_dir.join('out'), '/s', '/m', '*', '/d',
           ('-%d' % age_days), '/c', 'cmd /c if @isdir==FALSE del @path'
       ]
       try:
@@ -57,7 +57,7 @@ class CodesearchApi(recipe_api.RecipeApi):
       # -type f        -- Find files only (not directories)
       # -delete        -- Delete the found files
       delete_command = [
-          'find', self.m.path['checkout'].join('out'), '-mtime',
+          'find', self.m.path.checkout_dir.join('out'), '-mtime',
           ('+%d' % age_days), '-type', 'f', '-delete'
       ]
       self.m.step('delete old generated files', delete_command)
@@ -99,7 +99,7 @@ class CodesearchApi(recipe_api.RecipeApi):
       run_dirs: Dirs in which to run the clang tool.
       target_architecture: If given, the architecture to transpile for.
     """
-    clang_dir = clang_dir or self.m.path['checkout'].join('tools', 'clang')
+    clang_dir = clang_dir or self.m.path.checkout_dir.join('tools', 'clang')
 
     # Download the clang tool.
     translation_unit_dir = self.m.path.mkdtemp()
@@ -252,7 +252,7 @@ class CodesearchApi(recipe_api.RecipeApi):
                                         "latest")
     args = [
         '--checkout_dir',
-        self.m.path['checkout'],
+        self.m.path.checkout_dir,
         '--path_to_compdb',
         self.c.compile_commands_json_file,
         '--path_to_gn_targets',
@@ -272,13 +272,13 @@ class CodesearchApi(recipe_api.RecipeApi):
       args.extend(['--path_to_java_kzips', self.c.javac_extractor_output_dir])
 
     # If out_path is /path/to/src/out/foo and
-    # self.m.path['checkout'] is /path/to/src/,
+    # self.m.path.checkout_dir is /path/to/src/,
     # then out_dir wants src/out/foo.
     args.extend([
         '--out_dir',
         self.m.path.relpath(
             self.c.out_path,
-            self.m.path.dirname(self.m.path['checkout']),
+            self.m.path.dirname(self.m.path.checkout_dir),
         )
     ])
 
@@ -374,7 +374,7 @@ class CodesearchApi(recipe_api.RecipeApi):
 
     # Check out the generated files repo. We use a named cache so that the
     # checkout stays around between builds (this saves ~15 mins of build time).
-    generated_repo_dir = self.m.path['cache'].join('generated')
+    generated_repo_dir = self.m.path.cache_dir.join('generated')
 
     # Windows is unable to checkout files with names longer than 260 chars.
     # This git setting works around this limitation.

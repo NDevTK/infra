@@ -18,16 +18,16 @@ PROPERTIES = CloneAndRunClangToolProps
 
 
 def RunSteps(api, properties):
-  api.path['checkout'] = api.path['cache'].join('builder', 'src')
+  api.path.checkout_dir = api.path.cache_dir.join('builder', 'src')
   api.codesearch.set_config('chromium', PROJECT='chromium')
-  api.codesearch.clone_clang_tools(api.path['cache'])
+  api.codesearch.clone_clang_tools(api.path.cache_dir)
 
   target_architecture: Optional[str] = None
   if properties.HasField("target_architecture"):
     target_architecture = properties.target_architecture
   api.codesearch.run_clang_tool(
       clang_dir=None,
-      run_dirs=[api.path['cache']],
+      run_dirs=[api.path.cache_dir],
       target_architecture=target_architecture)
 
 

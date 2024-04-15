@@ -21,12 +21,12 @@ PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 def _getNode(api):
   with api.step.nest('get node'):
-    packages_dir = api.path['start_dir'].join('packages')
+    packages_dir = api.path.start_dir.join('packages')
     ensure_file = api.cipd.EnsureFile()
     ensure_file.add_package('infra/nodejs/nodejs/${platform}',
                             'node_version:12.13.0')
     api.cipd.ensure(packages_dir, ensure_file)
-    return api.path['start_dir'].join('packages', 'bin')
+    return api.path.start_dir.join('packages', 'bin')
 
 
 def _getChrome(api):
@@ -65,7 +65,7 @@ def RunSteps(api):
   test_name = 'gerrit_plugins_%s' % plugin.replace('-', '_')
   api.gclient.set_config(test_name)
   api.bot_update.ensure_checkout(patch_root=project_name)
-  test_dir = api.path['start_dir'].join(test_name)
+  test_dir = api.path.start_dir.join(test_name)
 
   node_path = _getNode(api)
 
@@ -79,7 +79,7 @@ def RunSteps(api):
 
   # TypeScript plugin tests require that the plugin be located within the
   # Gerrit repo. Move and rename the plugin.
-  plugins_dir = api.path['start_dir'].join('gerrit', 'plugins')
+  plugins_dir = api.path.start_dir.join('gerrit', 'plugins')
   with api.step.nest('set up plugin layout'):
     api.step('move test repo', ['mv', test_dir, plugins_dir])
     api.step('rename test repo',

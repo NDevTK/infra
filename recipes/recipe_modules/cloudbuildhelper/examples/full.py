@@ -39,7 +39,7 @@ def restrictions(api):
 
 def repo_checkout_metadata(api):
   return api.cloudbuildhelper.CheckoutMetadata(
-      root=api.path['start_dir'],
+      root=api.path.start_dir,
       repos={
           '.': {
               'repository': 'https://root.example.com',

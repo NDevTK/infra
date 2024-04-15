@@ -18,7 +18,7 @@ DEPS = [
 
 
 def RunSteps(api):
-  root_dir = api.path['tmp_base']
+  root_dir = api.path.tmp_base_dir
   name = 'access_test'
 
   api.file.write_text('write %s' % name, root_dir.join(name),

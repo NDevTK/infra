@@ -290,7 +290,7 @@ def _checkout_git(api, repo, mode):
   Returns:
     (Metadata, build environment context manager).
   """
-  path = api.path['cache'].join('builder', 'repo')
+  path = api.path.cache_dir.join('builder', 'repo')
   revision = api.git.checkout(
       url=repo.url,
       ref=api.buildbucket.gitiles_commit.id or 'refs/heads/main',
@@ -362,7 +362,7 @@ def _roll_built_images(api, notify, images, meta):
   with api.step.nest('upload roll CL') as pres:
     num, url = api.cloudbuildhelper.do_roll(
         repo_url=notify.repo,
-        root=api.path['cache'].join('builder', 'roll', repo_id),
+        root=api.path.cache_dir.join('builder', 'roll', repo_id),
         callback=lambda root: _mutate_repo(api, root, notify, images, meta))
     if num is not None:
       pres.links['Issue %s' % num] = url

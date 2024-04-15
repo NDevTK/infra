@@ -29,7 +29,7 @@ def RunSteps(api):
       'luci_py', patch_root='infra/luci', generate_py2_env=True)
   co.gclient_runhooks()
 
-  luci_dir = api.path['checkout'].join('luci')
+  luci_dir = api.path.checkout_dir.join('luci')
   with api.context(cwd=luci_dir):
 
     with api.step.nest('check changes') as presentation:
@@ -116,7 +116,7 @@ def _step_run_py_tests(api, cwd, python3=False, timeout=None):
       venv = luci_dir.join('.vpython')
       py = 'python2'
       # Install vpython2.7 to run these tests.
-      vpython_path = api.path['cache'].join('builder', 'vpython2.7')
+      vpython_path = api.path.cache_dir.join('builder', 'vpython2.7')
       env_path_prefix = [vpython_path]
       ensure_file = api.cipd.EnsureFile().add_package(
           'infra/tools/luci/vpython2.7/${platform}', 'latest')
@@ -137,7 +137,7 @@ def _step_auth_tests(api, changes):
     # skip tests when no changes on the dependencies.
     return
 
-  auth_dir = api.path['checkout'].join('luci', 'appengine', 'auth_service')
+  auth_dir = api.path.checkout_dir.join('luci', 'appengine', 'auth_service')
   with api.step.nest('auth_service'):
     _step_run_py_tests(api, auth_dir)
 
@@ -151,7 +151,7 @@ def _step_components_tests(api, changes):
     # skip tests when no changes on the dependencies.
     return
 
-  components_dir = api.path['checkout'].join('luci', 'appengine', 'components')
+  components_dir = api.path.checkout_dir.join('luci', 'appengine', 'components')
   with api.step.nest('components'):
     _step_run_py_tests(api, components_dir)
     _step_run_py_tests(api, components_dir, python3=True)
@@ -166,7 +166,7 @@ def _step_config_tests(api, changes):
     # skip tests when no changes on the dependencies.
     return
 
-  config_dir = api.path['checkout'].join('luci', 'appengine', 'config_service')
+  config_dir = api.path.checkout_dir.join('luci', 'appengine', 'config_service')
   with api.step.nest('config_service'):
     _step_run_py_tests(api, config_dir)
 
@@ -177,7 +177,7 @@ def _step_client_tests(api, changes):
     # skip tests when no changes on the dependencies.
     return
 
-  luci_dir = api.path['checkout'].join('luci')
+  luci_dir = api.path.checkout_dir.join('luci')
   with api.step.nest('client'):
     _step_run_py_tests(api, luci_dir.join('client'), python3=True)
 
@@ -194,7 +194,7 @@ def _step_swarming_tests(api, changes):
     # the server runs only on linux.
     return
 
-  swarming_dir = api.path['checkout'].join('luci', 'appengine', 'swarming')
+  swarming_dir = api.path.checkout_dir.join('luci', 'appengine', 'swarming')
   with api.step.nest('swarming'):
     _step_run_py_tests(api, swarming_dir)
 
@@ -205,7 +205,7 @@ def _step_swarming_bot_tests(api, changes):
     # skip tests when no changes on the dependencies.
     return
 
-  bot_dir = api.path['checkout'].join('luci', 'appengine', 'swarming',
+  bot_dir = api.path.checkout_dir.join('luci', 'appengine', 'swarming',
                                       'swarming_bot')
   with api.step.nest('swarming bot'):
     _step_run_py_tests(api, bot_dir, python3=True)
@@ -219,7 +219,7 @@ def _step_swarming_ui_tests(api, changes):
     # skip tests when no changes on the dependencies.
     return
   with api.step.nest('swarming-ui'):
-    ui_dir = api.path['checkout'].join('luci', 'appengine', 'swarming', 'ui2')
+    ui_dir = api.path.checkout_dir.join('luci', 'appengine', 'swarming', 'ui2')
     node_path = ui_dir.join('nodejs', 'bin')
     paths_to_add = [api.path.pathsep.join([str(node_path)])]
     env_prefixes = {'PATH': paths_to_add}

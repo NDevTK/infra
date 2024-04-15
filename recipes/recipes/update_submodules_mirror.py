@@ -88,7 +88,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
 
   # NOTE: This name must match the definition in cr-buildbucket.cfg. Do not
   # change without adjusting that config to match.
-  checkout_dir = api.m.path['cache'].join(cache_name)
+  checkout_dir = api.m.path.cache_dir.join(cache_name)
   api.m.file.ensure_directory('Create checkout parent dir', checkout_dir)
 
   # We assume here that we won't have a mirror for two repos with the same name.

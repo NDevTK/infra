@@ -70,7 +70,7 @@ def RunSteps(api):
   # a new clang binary and not use the previous one downloaded by
   # api.codesearch.run_clang_tool().
   api.file.rmtree('llvm-build',
-                  api.path['checkout'].join('third_party', 'llvm-build'))
+                  api.path.checkout_dir.join('third_party', 'llvm-build'))
 
   api.codesearch.cleanup_old_generated()
 

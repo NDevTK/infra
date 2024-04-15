@@ -26,9 +26,9 @@ class WindowsADKApi(recipe_api.RecipeApi):
   def ensure(self, install=True):
     """Ensure the presence of the Windows ADK."""
     # Dir to store logs in
-    self._logs = self.m.path['cleanup'].join('logs')
+    self._logs = self.m.path.cleanup_dir.join('logs')
     # Dir to download cipd packages
-    self._3pp = self.m.path['start_dir'].join('cipd', '3pp')
+    self._3pp = self.m.path.start_dir.join('cipd', '3pp')
     with self.m.step.nest('ensure windows adk present'):
       with self.m.context(infra_steps=True):
         if install:

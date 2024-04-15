@@ -214,9 +214,9 @@ def _checkout_gclient(api, project, version_label_template):
       # Don't pollute ~/.npm/
       env = {
           # npm's content-addressed cache.
-          'npm_config_cache': api.path['cache'].join('npmcache', 'npm'),
+          'npm_config_cache': api.path.cache_dir.join('npmcache', 'npm'),
           # Where packages are installed when using 'npm -g ...'.
-          'npm_config_prefix': api.path['cache'].join('npmcache', 'pfx'),
+          'npm_config_prefix': api.path.cache_dir.join('npmcache', 'pfx'),
       }
       env_prefixes = {
           'PATH': [
@@ -258,7 +258,7 @@ def _checkout_git(api, repo, version_label_template):
   Returns:
     (Metadata, build environment context manager).
   """
-  path = api.path['cache'].join('builder', 'repo')
+  path = api.path.cache_dir.join('builder', 'repo')
 
   revision = api.git.checkout(
       url=repo.url,
@@ -303,7 +303,7 @@ def _roll_built_tarballs(api, spec, tarballs, meta):
   """
   return api.cloudbuildhelper.do_roll(
       repo_url=spec.repo_url,
-      root=api.path['cache'].join('builder', 'roll'),
+      root=api.path.cache_dir.join('builder', 'roll'),
       callback=lambda root: _mutate_pins_repo(api, root, spec, tarballs, meta))
 
 

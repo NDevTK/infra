@@ -162,7 +162,7 @@ class CIPDSpec(object):
 
     This is `[CACHE]/3pp_cipd/name/of/package`.
     """
-    ret = self._api.path['cache'].join('3pp_cipd')
+    ret = self._api.path.cache_dir.join('3pp_cipd')
     return ret.join(*self._pkg.split('/'))
 
   def local_pkg_path(self):

@@ -73,7 +73,7 @@ class BuildEnvApi(recipe_api.RecipeApi):
         ).strip().lower()
         if not re.match(GOOD_VERSION_RE, version):  # pragma: no cover
           raise ValueError('Bad %s version number %r' % (tool, version))
-        install_path = self.m.path['cache'].join(
+        install_path = self.m.path.cache_dir.join(
             '%s%s' % (tool, version.replace('.', '_')))
         with module(version, path=install_path):
           yield

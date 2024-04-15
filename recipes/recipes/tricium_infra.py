@@ -44,7 +44,7 @@ def RunSteps(api, inputs):
   commit_message = api.gerrit.get_change_description(
       'https://%s' % api.tryserver.gerrit_change.host,
       api.tryserver.gerrit_change.change, api.tryserver.gerrit_change.patchset)
-  input_dir = api.path['checkout']
+  input_dir = api.path.checkout_dir
   affected_files = [
       f for f in checkout.get_changed_files()
       if api.path.exists(input_dir.join(f)) and 'third_party/' not in f
@@ -84,7 +84,7 @@ def GenTests(api):
             }])),
     )
     existing_files = [
-        api.path['cache'].join('builder', x) for x in affected_files
+        api.path.cache_dir.join('builder', x) for x in affected_files
     ]
     test += api.path.exists(*existing_files)
     return test

@@ -49,9 +49,9 @@ class QEMUAPI(recipe_api.RecipeApi):
       * version: the cipd version tag for qemu
     """
     # create a directory to store qemu tools
-    self._install_dir = self.m.path['cache'].join('qemu')
+    self._install_dir = self.m.path.cache_dir.join('qemu')
     # directory to store qemu workdata
-    self._workdir = self.m.path['cleanup'].join('qemu', 'workdir')
+    self._workdir = self.m.path.cleanup_dir.join('qemu', 'workdir')
     self.m.file.ensure_directory(
         name='Ensure {}'.format(self.disks), dest=self.disks)
 

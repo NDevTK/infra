@@ -17,11 +17,11 @@ def RunSteps(api):
   # test good cases for both create_empty_disk and create_disk
   api.qemu.create_disk('fat_disk', 'fat', 20480)
   # mock existence of cache directory
-  api.path.mock_add_directory(api.path['cache'])
+  api.path.mock_add_directory(api.path.cache_dir)
   # mock cleanup to be a file
-  api.path.mock_add_file(api.path['cleanup'])
+  api.path.mock_add_file(api.path.cleanup_dir)
   api.qemu.create_disk('ext4_disk', 'ext4', 20480,
-                       {api.path['cache']: 'got_cache/i_need_it'})
+                       {api.path.cache_dir: 'got_cache/i_need_it'})
 
 
 def GenTests(api):

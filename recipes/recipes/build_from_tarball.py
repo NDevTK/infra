@@ -19,7 +19,7 @@ DEPS = [
 
 
 def RunSteps(api):
-  build_dir = api.path['start_dir'].join('build_dir')
+  build_dir = api.path.start_dir.join('build_dir')
   try:
     version = api.properties['version']
     tar_filename = 'chromium-%s.tar.xz' % version
@@ -32,7 +32,7 @@ def RunSteps(api):
     src_dir = build_dir.join('chromium-' + version)
 
     # Install ninja CIPD package.
-    cipd_root = api.path['cache'].join('cipd')
+    cipd_root = api.path.cache_dir.join('cipd')
     ensure_file = api.cipd.EnsureFile().add_package(
         'infra/3pp/tools/ninja/${platform}', 'version:2@1.8.2.chromium.3')
     api.cipd.ensure(cipd_root, ensure_file)

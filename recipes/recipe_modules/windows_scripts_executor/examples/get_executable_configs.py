@@ -202,7 +202,7 @@ def RunSteps(api, config):
   api.windows_scripts_executor.init()
   custs = []
   images = []
-  cfg_path = api.path['cache'].join(config.config_path)
+  cfg_path = api.path.cache_dir.join(config.config_path)
   # list the dir to get the corresponding inputs to tests. see DIR_DATA
   cfgs = api.file.listdir(
       "Read all the configs", cfg_path, test_data=lsdir(config.config_path))
@@ -238,7 +238,7 @@ def RunSteps(api, config):
         if not keys.issubset(executed_custs):
           executed_custs.update(keys)
           api.file.write_proto('Write image',
-                               api.path['cache'].join(image.name), image,
+                               api.path.cache_dir.join(image.name), image,
                                'TEXTPB')
         else:
           raise Exception('Failed to execute the last run')  #pragma no cover

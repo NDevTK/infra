@@ -21,8 +21,8 @@ class WinISOCustomization(customization.Customization):
         'customization') == 'windows_iso_customization'
     # use custom work dir
     self._name = self.customization().windows_iso_customization.name
-    self._workdir = self.m.path['cleanup'].join(self._name, 'workdir')
-    self._scratchpad = self.m.path['cleanup'].join(self._name, 'scratchpad')
+    self._workdir = self.m.path.cleanup_dir.join(self._name, 'workdir')
+    self._scratchpad = self.m.path.cleanup_dir.join(self._name, 'scratchpad')
     self._canon_cust = None
     helper.ensure_dirs(self.m.file, [self._workdir, self._scratchpad])
 

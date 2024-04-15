@@ -28,7 +28,7 @@ def RunSteps(api):
   assert project_name in ('infra/infra', 'infra/infra_internal',
                           'infra/luci/luci-go'), ('unknown project: "%s"' %
                                                   project_name)
-  path = api.path['cache'].join('builder')
+  path = api.path.cache_dir.join('builder')
   api.file.ensure_directory('ensure builder dir', path)
 
   patch_root = project_name.split('/')[-1]
@@ -43,9 +43,9 @@ def RunSteps(api):
       'infra/infra_internal': RunInfraInternalFrontendTests,
       'infra/luci/luci-go': RunLuciGoTests,
   }[project_name]
-  repo_checkout_root = api.path['checkout']
+  repo_checkout_root = api.path.checkout_dir
   if project_name == 'infra/luci/luci-go':
-    repo_checkout_root = api.path['checkout'].join('go/src/go.chromium.org/luci')
+    repo_checkout_root = api.path.checkout_dir.join('go/src/go.chromium.org/luci')
 
   # Read the desired nodejs version from <repo>/build/NODEJS_VERSION.
   version = api.file.read_text(
@@ -64,7 +64,7 @@ def RunInfraInternalFrontendTests(api, root_path):
   """
 
   # Add your infra_internal tests here following this example:
-  # cwd = api.path['checkout'].join('path', 'to', 'ui', 'root')
+  # cwd = api.path.checkout_dir.join('path', 'to', 'ui', 'root')
   # RunFrontendTests(api, env, cwd, 'myapp')
   # `myapp` is the name that will show up in the step.
 

@@ -313,7 +313,7 @@ Args:
     projects/chops-kms/locations/global/keyRings/[KEYRING]/cryptoKeys/[KEY]
   * input_file (Path) - The path to the input (ciphertext) file.
   * output_file (Path) - The path to the output (plaintext) file. It is
-    recommended that this is inside api.path['cleanup'] to ensure the
+    recommended that this is inside api.path.cleanup_dir to ensure the
     plaintext file will be cleaned up by recipe.
 
 &mdash; **def [sign](/recipes/recipe_modules/cloudkms/api.py#48)(self, kms_crypto_key, input_file, output_file, service_account_creds_file=None):**

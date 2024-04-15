@@ -48,13 +48,13 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
     """
     assert gclient_config_name, gclient_config_name
 
-    with self.m.context(cwd=self.m.path['start_dir']):
+    with self.m.context(cwd=self.m.path.start_dir):
       if self.m.platform.is_win:
         # Need to enable support for symlinks on Windows for unittest in luci-py
         self.m.git(
             'config', '--global', 'core.symlinks', 'true', name='set symlinks')
 
-    path = path or self.m.path['cache'].join('builder')
+    path = path or self.m.path.cache_dir.join('builder')
     self.m.file.ensure_directory('ensure builder dir', path)
 
     with self.m.context(cwd=path):

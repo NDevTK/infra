@@ -35,7 +35,7 @@ PROPERTIES = {
 
 def RunSteps(api, arch_type):
   api.gclient.set_config('infra_superproject')
-  cache_dir = api.path['cache'].join('builder')
+  cache_dir = api.path.cache_dir.join('builder')
   with api.context(cwd=cache_dir):
     api.bot_update.ensure_checkout()
     api.gclient.runhooks()
@@ -67,7 +67,7 @@ def RunSteps(api, arch_type):
   dir_name = api.properties.get('dir_name', container_name)
   if arch_type:
     dir_name = dir_name + '_' + arch_type
-  build_script = api.path['checkout'].join('infra', 'docker', dir_name,
+  build_script = api.path.checkout_dir.join('infra', 'docker', dir_name,
                                            'build.sh')
   api.step('build image', ['/bin/bash', build_script])
 

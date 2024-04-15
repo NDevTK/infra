@@ -70,7 +70,7 @@ class DockerApi(recipe_api.RecipeApi):
     # We store config file in the cleanup dir to ensure that it is deleted after
     # the build finishes running. This way no subsequent builds running on the
     # same bot can re-use credentials obtained below.
-    self._config_file = self.m.path['cleanup'].join('.docker')
+    self._config_file = self.m.path.cleanup_dir.join('.docker')
     self._project = project
     self._server = server
     if not service_account:

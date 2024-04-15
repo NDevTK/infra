@@ -30,7 +30,7 @@ def RunSteps(api):
   tags = api.buildbucket.tags(k1='v1', k2=['v2', 'v2', 'v2_1'])
   api.buildbucket.add_tags_to_current_build(tags)
 
-  root_dir = api.path['tmp_base'].join('repo')
+  root_dir = api.path.tmp_base_dir.join('repo')
   api.file.ensure_directory('make dir', root_dir)
 
   with api.context(cwd=root_dir):
