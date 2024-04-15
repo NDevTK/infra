@@ -10,12 +10,13 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"go.chromium.org/luci/appengine/gaetesting"
+	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsmfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"

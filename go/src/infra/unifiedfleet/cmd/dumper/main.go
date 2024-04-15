@@ -8,6 +8,7 @@ import (
 	"flag"
 
 	"cloud.google.com/go/bigquery"
+
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/limiter"

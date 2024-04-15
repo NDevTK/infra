@@ -8,9 +8,10 @@ import (
 	"context"
 	"time"
 
-	"go.chromium.org/luci/server"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/server"
 
 	"infra/unifiedfleet/app/cron"
 )

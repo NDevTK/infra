@@ -9,10 +9,10 @@ import (
 	"testing"
 	"testing/quick"
 
-	"go.chromium.org/luci/common/testing/typed"
-
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/testing/typed"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/util/iputil"

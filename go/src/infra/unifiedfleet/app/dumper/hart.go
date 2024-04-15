@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
 	"go.chromium.org/luci/common/logging"
 
 	ufspb "infra/unifiedfleet/api/v1/models"

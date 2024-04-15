@@ -12,6 +12,7 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"github.com/golang/protobuf/proto"
+
 	"go.chromium.org/luci/common/errors"
 
 	ufspb "infra/unifiedfleet/api/v1/models"

@@ -12,9 +12,10 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/hwid"
 	ufspb "infra/unifiedfleet/api/v1/models"

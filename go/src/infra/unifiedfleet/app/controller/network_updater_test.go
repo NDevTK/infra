@@ -10,8 +10,9 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"go.chromium.org/luci/common/errors"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/configuration"

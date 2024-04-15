@@ -8,10 +8,11 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/gae/service/datastore"
 )
 
 // SnapshotMsgKind is the datastore entity kind for storing the snapshot msgs of resources.

@@ -8,10 +8,11 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/luci/appengine/gaetesting"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/gae/service/datastore"
 )
 
 func TestAddPublicBoardData(t *testing.T) {

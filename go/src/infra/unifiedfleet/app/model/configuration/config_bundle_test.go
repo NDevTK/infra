@@ -8,14 +8,15 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/chromiumos/config/go/api"
-	"go.chromium.org/chromiumos/config/go/payload"
-	"go.chromium.org/luci/appengine/gaetesting"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"go.chromium.org/chromiumos/config/go/api"
+	"go.chromium.org/chromiumos/config/go/payload"
+	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 )

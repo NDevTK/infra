@@ -9,11 +9,12 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/inventory"

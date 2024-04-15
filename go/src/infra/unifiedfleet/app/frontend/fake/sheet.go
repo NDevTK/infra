@@ -9,8 +9,9 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/sheets/v4"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // SheetClient mocks the sheet.ClientInterface

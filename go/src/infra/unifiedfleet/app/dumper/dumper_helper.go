@@ -11,9 +11,10 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/storage"
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/protobuf/proto"
 
 	bqlib "infra/cros/lab_inventory/bq"
 	ufspb "infra/unifiedfleet/api/v1/models"

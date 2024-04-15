@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	. "github.com/smartystreets/goconvey/convey"
+
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/libs/skylab/inventory"

@@ -9,12 +9,13 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
-	"google.golang.org/protobuf/proto"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	apibq "infra/unifiedfleet/api/v1/models/bigquery"

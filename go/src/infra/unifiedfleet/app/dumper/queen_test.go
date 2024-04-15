@@ -11,8 +11,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"go.chromium.org/luci/gae/impl/memory"
 	"google.golang.org/grpc"
+
+	"go.chromium.org/luci/gae/impl/memory"
 
 	dronequeenapi "infra/appengine/drone-queen/api"
 	ufspb "infra/unifiedfleet/api/v1/models"

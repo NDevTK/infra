@@ -7,10 +7,11 @@ package configuration
 import (
 	"context"
 
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/gae/service/datastore"
 )
 
 // ProjectConfigKind is the datastore entity kind for storing the project configs.

@@ -7,11 +7,12 @@ package external
 import (
 	"context"
 
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/grpc"
-	"google.golang.org/protobuf/proto"
 
 	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"

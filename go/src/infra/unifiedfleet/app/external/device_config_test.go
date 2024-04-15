@@ -11,12 +11,13 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/grpc"
+
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
-	"google.golang.org/grpc"
 
 	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"

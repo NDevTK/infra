@@ -10,18 +10,18 @@ import (
 	"regexp"
 	"strings"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/datastore"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	invlab "go.chromium.org/chromiumos/infra/proto/go/lab"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	invlab "go.chromium.org/chromiumos/infra/proto/go/lab"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	invapibq "infra/appengine/cros/lab_inventory/api/bigquery"
 	iv2ds "infra/cros/lab_inventory/datastore"

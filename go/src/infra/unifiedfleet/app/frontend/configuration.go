@@ -8,9 +8,10 @@ import (
 	"context"
 
 	empty "github.com/golang/protobuf/ptypes/empty"
+	status "google.golang.org/genproto/googleapis/rpc/status"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
-	status "google.golang.org/genproto/googleapis/rpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"

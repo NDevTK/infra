@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"

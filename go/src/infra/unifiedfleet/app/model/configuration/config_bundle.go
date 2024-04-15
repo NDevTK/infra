@@ -12,11 +12,12 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/luci/gae/service/datastore"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsds "infra/unifiedfleet/app/model/datastore"

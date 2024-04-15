@@ -10,13 +10,14 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/grpc/codes"
+
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	. "go.chromium.org/luci/common/testing/assertions"
-	"google.golang.org/genproto/protobuf/field_mask"
-	"google.golang.org/grpc/codes"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	device "infra/unifiedfleet/api/v1/models/chromeos/device"

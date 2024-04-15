@@ -13,23 +13,23 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/proto/gitiles"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/testing/protocmp"
 
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/proto/gitiles"
+	"go.chromium.org/luci/gae/service/datastore"
+
 	"infra/libs/git"
+	ufspb "infra/unifiedfleet/api/v1/models"
+	api "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
-
-	ufspb "infra/unifiedfleet/api/v1/models"
-	api "infra/unifiedfleet/api/v1/rpc"
 )
 
 const (

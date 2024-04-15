@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"strings"
 
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/configuration"

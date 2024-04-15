@@ -9,11 +9,12 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/unifiedfleet/app/model/configuration"
 )

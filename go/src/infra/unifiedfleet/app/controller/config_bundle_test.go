@@ -7,9 +7,10 @@ package controller
 import (
 	"testing"
 
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
-	"google.golang.org/protobuf/proto"
 )
 
 func mockConfigBundle(id string, programId string, name string) *payload.ConfigBundle {

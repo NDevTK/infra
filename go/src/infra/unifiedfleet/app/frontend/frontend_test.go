@@ -9,11 +9,12 @@ import (
 	"fmt"
 	"testing"
 
+	"google.golang.org/grpc"
+
 	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
-	"google.golang.org/grpc"
 
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/util"

@@ -8,6 +8,18 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/google/go-cmp/cmp"
+	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/genproto/googleapis/rpc/code"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/testing/protocmp"
+
+	"go.chromium.org/chromiumos/config/go/api"
+	"go.chromium.org/chromiumos/config/go/payload"
+	. "go.chromium.org/luci/common/testing/assertions"
+
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/model/configuration"
@@ -15,17 +27,6 @@ import (
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
-
-	"github.com/golang/protobuf/proto"
-	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/chromiumos/config/go/api"
-	"go.chromium.org/chromiumos/config/go/payload"
-	. "go.chromium.org/luci/common/testing/assertions"
-	"google.golang.org/genproto/googleapis/rpc/code"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/testing/protocmp"
 )
 
 func mockChromePlatform(id, desc string) *ufspb.ChromePlatform {

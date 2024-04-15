@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 
 	"github.com/golang/protobuf/jsonpb"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/common/logging"

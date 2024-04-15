@@ -8,11 +8,12 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc"
+
 	device "go.chromium.org/chromiumos/infra/proto/go/device"
 	lab "go.chromium.org/chromiumos/infra/proto/go/lab"
 	manufacturing "go.chromium.org/chromiumos/infra/proto/go/manufacturing"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/grpc"
 
 	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 )

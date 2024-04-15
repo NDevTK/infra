@@ -12,11 +12,12 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	descriptorpb "github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/gae/service/info"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/reflect/protoreflect"
+
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/gae/service/info"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"

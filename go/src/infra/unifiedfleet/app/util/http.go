@@ -11,10 +11,11 @@ import (
 	"net/http"
 	"net/url"
 
-	"go.chromium.org/luci/common/logging"
 	"golang.org/x/net/context/ctxhttp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/luci/common/logging"
 )
 
 // HTTPError wraps the http response errors.

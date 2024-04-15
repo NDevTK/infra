@@ -12,11 +12,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"infra/cros/dutstate"
 	"infra/libs/fleet/boxster/swarming"

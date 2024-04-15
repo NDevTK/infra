@@ -10,6 +10,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/auth"
 

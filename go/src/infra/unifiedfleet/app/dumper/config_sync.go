@@ -6,10 +6,11 @@ package dumper
 import (
 	"context"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	"infra/unifiedfleet/app/config"

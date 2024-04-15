@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"time"
 
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/gae/service/datastore"
 
 	ufsds "infra/unifiedfleet/app/model/datastore"
 )

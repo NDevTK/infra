@@ -8,11 +8,12 @@ import (
 	"context"
 	"net/http"
 
+	"google.golang.org/grpc"
+
 	authclient "go.chromium.org/luci/auth"
 	gitilesapi "go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/server/auth"
-	"google.golang.org/grpc"
 )
 
 // GitTilesClient exposes a subset of gitiles.GitilesClient
