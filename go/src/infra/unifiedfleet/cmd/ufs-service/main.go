@@ -11,11 +11,13 @@ import (
 	"regexp"
 	"strings"
 
+	"cloud.google.com/go/profiler"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
@@ -45,6 +47,25 @@ func main() {
 	cfgLoader.RegisterFlags(flag.CommandLine)
 
 	server.Main(nil, modules, func(srv *server.Server) error {
+		// We closely follow the profiler-enabling documentation available at the following URL:
+		// https://cloud.google.com/profiler/docs/profiling-go#enabling-profiler-api
+		cfg := profiler.Config{
+			Service: "ufs-service",
+			// TODO(gregorynisbet): replace with commit hash or some other smarter way of getting
+			//                      the UFS version.
+			ServiceVersion:    "1.0.0",
+			EnableOCTelemetry: false,
+			ProjectID:         srv.Options.CloudProject,
+		}
+
+		profilerStartErr := profiler.Start(cfg)
+		// TODO(gregorynisbet): Upgrade this to a panic once enabling the profiler is reliable enough in prod.
+		if profilerStartErr == nil {
+			logging.Infof(srv.Context, "profiler started successfully: 848356fa-b429-4e0e-bc63-a8cfbe3b5b75")
+		} else {
+			logging.Errorf(srv.Context, "%s\n", errors.Annotate(profilerStartErr, "error encountered when setting up profiler during startup").Err())
+		}
+
 		// Load service config form a local file (deployed via GKE),
 		// periodically reread it to pick up changes without full restart.
 		if _, err := cfgLoader.Load(srv.Context); err != nil {
