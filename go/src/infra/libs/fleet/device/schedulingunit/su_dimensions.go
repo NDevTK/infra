@@ -1,9 +1,7 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package schedulingunit provides utilities related to scheduling units,
-// including label generation.
 package schedulingunit
 
 import (
