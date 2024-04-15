@@ -1,0 +1,11 @@
+--- libffi-3.4.4.orig/m4/ax_cc_maxopt.m4	2022-10-24 11:17:29.000000000 +1100
++++ libffi-3.4.4/m4/ax_cc_maxopt.m4	2024-04-15 10:49:14.811032423 +1000
+@@ -150,7 +150,7 @@
+ 
+     gnu)
+      # default optimization flags for gcc on all systems
+-     CFLAGS="$CFLAGS -O3 -fomit-frame-pointer"
++     CFLAGS="$CFLAGS -fPIC -O3 -fomit-frame-pointer"
+ 
+      # -malign-double for x86 systems
+      # LIBFFI_LOCAL: don't do this.
