@@ -285,7 +285,7 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		}
 	case buildbucket.AuditRPM:
 		switch ds {
-		case tlw.DUTSetupTypeCros:
+		case tlw.DUTSetupTypeCros, tlw.DUTSetupTypeCrosBrowser:
 			return config.CrosAuditRPMConfig(), nil
 		case tlw.DUTSetupTypeCrosVM:
 			return config.CrosVMSuccessConfig(), nil
@@ -294,7 +294,7 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		}
 	case buildbucket.AuditStorage:
 		switch ds {
-		case tlw.DUTSetupTypeCros:
+		case tlw.DUTSetupTypeCros, tlw.DUTSetupTypeCrosBrowser:
 			return config.CrosAuditStorageConfig(), nil
 		case tlw.DUTSetupTypeCrosVM:
 			return config.CrosVMSuccessConfig(), nil
@@ -303,7 +303,7 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		}
 	case buildbucket.AuditUSB:
 		switch ds {
-		case tlw.DUTSetupTypeCros:
+		case tlw.DUTSetupTypeCros, tlw.DUTSetupTypeCrosBrowser:
 			return config.CrosAuditUSBConfig(), nil
 		case tlw.DUTSetupTypeCrosVM:
 			return config.CrosVMSuccessConfig(), nil

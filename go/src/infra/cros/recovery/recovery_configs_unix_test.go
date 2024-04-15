@@ -94,6 +94,24 @@ var configTreeChangesCases = []struct {
 		buildbucket.Deploy,
 		"browser_deploy.json",
 	},
+	{
+		"Browser Audit RPM",
+		tlw.DUTSetupTypeCrosBrowser,
+		buildbucket.AuditRPM,
+		"browser_cros_audit_rpm.json",
+	},
+	{
+		"Browser Audit Storage",
+		tlw.DUTSetupTypeCrosBrowser,
+		buildbucket.AuditStorage,
+		"browser_cros_audit_storage.json",
+	},
+	{
+		"Browser Audit USB stick",
+		tlw.DUTSetupTypeCrosBrowser,
+		buildbucket.AuditUSB,
+		"browser_cros_audit_usb_stick.json",
+	},
 }
 
 // CreateTreeFileIfNotExist controls whether we create tree files.
