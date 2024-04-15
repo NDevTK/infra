@@ -106,8 +106,7 @@ type SuiteSchedulerConfigs struct {
 
 // addConfigToNewBuildMap takes a newBuild configuration and inserts it into the
 // appropriate tracking lists.
-func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *suschpb.SchedulerConfig, lab *LabConfigs, targetOptions TargetOptions) {
-
+func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *suschpb.SchedulerConfig, targetOptions TargetOptions) {
 	// Fetch all build buildTargets which can trigger this configuration.
 	buildTargets := GetBuildTargetsForAllTargets(targetOptions)
 

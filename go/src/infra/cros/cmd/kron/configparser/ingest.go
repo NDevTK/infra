@@ -73,7 +73,7 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 		// its LaunchProfile type
 		switch config.LaunchCriteria.LaunchProfile {
 		case suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD:
-			configDS.addConfigToNewBuildMap(config, lab, targetOptions)
+			configDS.addConfigToNewBuildMap(config, targetOptions)
 		case suschpb.SchedulerConfig_LaunchCriteria_DAILY:
 			err := configDS.addConfigToDailyMap(config)
 			if err != nil {

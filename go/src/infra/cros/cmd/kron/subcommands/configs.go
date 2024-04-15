@@ -431,7 +431,7 @@ func (c *configParserCommand) sieveViaTopLevelFilter(configs *configparser.Suite
 // sieveViaBottomLevelFilters further filters out any configs which do not match
 // the user given inputs. These bottom-level filters apply to attributes within
 // the config.
-func (c *configParserCommand) sieveViaBottomLevelFilters(configs CLIConfigList, lab configparser.LabConfigs, suiteIndex *configparser.SuiteSchedulerConfigs) (CLIConfigList, error) {
+func (c *configParserCommand) sieveViaBottomLevelFilters(configs CLIConfigList, suiteIndex *configparser.SuiteSchedulerConfigs) (CLIConfigList, error) {
 	bottomLevelFilteredConfigs := CLIConfigList{}
 
 	// Check if the filter is not default. If it is not then check it's status against
@@ -697,7 +697,7 @@ func (c *configParserCommand) Run(a subcommands.Application, args []string, env 
 	}
 
 	// Fetch and ingest the configurations.
-	labConfigs, schedulerConfigs, err := fetchConfigs(c.labCFGInputPath, c.configCFGInputPath)
+	_, schedulerConfigs, err := fetchConfigs(c.labCFGInputPath, c.configCFGInputPath)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
@@ -711,7 +711,7 @@ func (c *configParserCommand) Run(a subcommands.Application, args []string, env 
 	}
 
 	// Filter out configs which don't match the bottom level filters.
-	filteredConfigs, err = c.sieveViaBottomLevelFilters(filteredConfigs, *labConfigs, schedulerConfigs)
+	filteredConfigs, err = c.sieveViaBottomLevelFilters(filteredConfigs, schedulerConfigs)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
