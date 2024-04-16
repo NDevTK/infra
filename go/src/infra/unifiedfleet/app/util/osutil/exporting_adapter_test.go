@@ -916,8 +916,8 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			d, err := AdaptToV1DutSpec(&extDevboard)
 			So(err, ShouldBeNil)
 			So(d.GetCommon().GetLabels().GetSelfServePools(), ShouldResemble, []string{"devboard_main"})
-			So(d.GetCommon().GetLabels().GetBoard(), ShouldEqual, "andreiboard")
-			So(d.GetCommon().GetLabels().GetModel(), ShouldEqual, "andreiboard")
+			So(d.GetCommon().GetLabels().GetBoard(), ShouldEqual, "andreiboard-devboard")
+			So(d.GetCommon().GetLabels().GetModel(), ShouldEqual, "andreiboard-devboard")
 		})
 
 	})

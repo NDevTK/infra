@@ -879,6 +879,10 @@ func adaptV2DevboardToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.Devi
 			devboardType = inventory.SchedulableLabels_DEVBOARD_TYPE_DRAGONCLAW
 			b = "dragonclaw"
 		}
+		// All Devboards need the `-devboard` identifier in the label
+		if len(b) > 0 {
+			b = fmt.Sprintf("%s-devboard", b)
+		}
 	}
 	labels := &inventory.SchedulableLabels{
 		DevboardType: &devboardType,
