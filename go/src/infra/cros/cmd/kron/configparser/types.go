@@ -9,8 +9,6 @@ import (
 	"fmt"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
-
-	"infra/cros/cmd/kron/common"
 )
 
 type (
@@ -20,7 +18,7 @@ type (
 
 	TestPlanName string
 
-	HourMap map[common.Hour]ConfigList
+	HourMap map[int]ConfigList
 
 	ConfigList []*suschpb.SchedulerConfig
 
@@ -100,8 +98,8 @@ type SuiteSchedulerConfigs struct {
 	// The following maps correspond to the specific set of TimedEvents the
 	// configuration is of.
 	dailyMap       HourMap
-	weeklyMap      map[common.Day]HourMap
-	fortnightlyMap map[common.Day]HourMap
+	weeklyMap      map[int]HourMap
+	fortnightlyMap map[int]HourMap
 }
 
 // addConfigToNewBuildMap takes a newBuild configuration and inserts it into the
@@ -132,7 +130,7 @@ func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *suschpb.Scheduler
 // addConfigToDailyMap takes a daily configuration and inserts it into the
 // appropriate tracking lists.
 func (s *SuiteSchedulerConfigs) addConfigToDailyMap(config *suschpb.SchedulerConfig) error {
-	configHour := common.Hour(config.LaunchCriteria.Hour)
+	configHour := int(config.LaunchCriteria.Hour)
 	err := isHourCompliant(configHour)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
@@ -156,12 +154,12 @@ func (s *SuiteSchedulerConfigs) addConfigToDailyMap(config *suschpb.SchedulerCon
 // addConfigToWeeklyMap takes a weekly configuration and inserts it into the
 // appropriate tracking lists.
 func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *suschpb.SchedulerConfig) error {
-	configDay := common.Day(config.LaunchCriteria.Day)
+	configDay := int(config.LaunchCriteria.Day)
 	err := isDayCompliant(configDay, false)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
-	configHour := common.Hour(config.LaunchCriteria.Hour)
+	configHour := int(config.LaunchCriteria.Hour)
 	err = isHourCompliant(configHour)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
@@ -190,12 +188,12 @@ func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *suschpb.SchedulerCo
 // addConfigToFortnightlyMap takes a fortnightly configuration and inserts it into the
 // appropriate tracking lists.
 func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *suschpb.SchedulerConfig) error {
-	configDay := common.Day(config.LaunchCriteria.Day)
+	configDay := int(config.LaunchCriteria.Day)
 	err := isDayCompliant(configDay, true)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
-	configHour := common.Hour(config.LaunchCriteria.Hour)
+	configHour := int(config.LaunchCriteria.Hour)
 	err = isHourCompliant(configHour)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))

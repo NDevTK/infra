@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
 	"infra/cros/cmd/kron/buildbucket"
@@ -25,6 +26,57 @@ import (
 	"infra/cros/cmd/kron/pubsub"
 	"infra/cros/cmd/kron/totmanager"
 )
+
+// launchCTPRequests takes in build images, generates CTP requests, and launches
+// them via BuildBucket.
+func launchCTPRequests(fetchedBuilds []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs, authOpts *authcli.Flags, projectID string, isProd, dryRun bool) error {
+	// Build CTP Requests for all triggered configs.
+	common.Stdout.Println("Generating CTP requests for all configs and builds")
+	err := buildCTPRequests(fetchedBuilds, suiteSchedulerConfigs)
+	if err != nil {
+		return err
+	}
+
+	// CTP is bottlenecked by it's drone count. To combat this, combine tests
+	// requests into one large CTP request.
+	common.Stdout.Println("Grouping CTP request by config name")
+	ctpRequests := combineCTPRequests(fetchedBuilds)
+
+	// If staging reduce requests to 5 MAX.
+	if !isProd {
+		common.Stdout.Printf("Limiting CTP request to %d max because we are running in staging", common.StagingMaxRequests)
+		ctpRequests = limitStagingRequests(ctpRequests)
+	}
+
+	// Initialize an authenticated BuildBucket client for scheduling.
+	common.Stdout.Printf("Initializing BuildBucket scheduling client prod: %t dryRun: %t", isProd, dryRun)
+	schedulerClient, err := buildbucket.InitScheduler(context.Background(), authOpts, isProd, dryRun)
+	if err != nil {
+		return err
+	}
+	// Initialize the Pub/Sub client for event message publishing.
+	common.Stdout.Printf("Initializing client for pub sub topic %s", common.EventsPubSubTopic)
+	publishClient, err := pubsub.InitPublishClient(context.Background(), projectID, common.EventsPubSubTopic)
+	if err != nil {
+		return err
+	}
+
+	// Introduce a wait group to hold for all spun out goroutines.
+	var wg sync.WaitGroup
+
+	// Schedule all requests via BuildBucket in parallel.
+	common.Stdout.Println("Scheduling CTP request batches in parallel.")
+	for configName, requestList := range ctpRequests {
+		wg.Add(1)
+		go scheduleBatchViaBB(requestList, configName, schedulerClient, publishClient, &wg)
+	}
+
+	common.Stdout.Println("Waiting for batched requests to finish scheduling...")
+	wg.Wait()
+	common.Stdout.Println("NEW_BUILD scheduling completed")
+
+	return nil
+}
 
 // fetchTriggeredDailyEvents returns all DAILY configs which are triggered at
 // the current run's operating time. Logging is also wrapped within this function.
@@ -47,13 +99,13 @@ func fetchTriggeredDailyEvents(currTime common.KronTime, ingestedConfigs *config
 // fetchTriggeredWeeklyEvents returns all WEEKLY configs which are triggered at
 // the current run's operating time. Logging is also wrapped within this function.
 func fetchTriggeredWeeklyEvents(currTime common.KronTime, ingestedConfigs *configparser.SuiteSchedulerConfigs, configs *configparser.ConfigList) error {
-	common.Stdout.Printf("Gathering WEEKLY configs triggered at day %d hour %d\n", currTime.RegularDay, currTime.Hour)
-	triggeredConfigs, err := ingestedConfigs.FetchWeeklyByDayHour(currTime.RegularDay, currTime.Hour)
+	common.Stdout.Printf("Gathering WEEKLY configs triggered at day %d hour %d\n", currTime.WeeklyDay, currTime.Hour)
+	triggeredConfigs, err := ingestedConfigs.FetchWeeklyByDayHour(currTime.WeeklyDay, currTime.Hour)
 	if err != nil {
 		return err
 	}
 
-	common.Stdout.Printf("The following %d configs are triggered at day %d hour %d:\n", len(triggeredConfigs), currTime.RegularDay, currTime.Hour)
+	common.Stdout.Printf("The following %d configs are triggered at day %d hour %d:\n", len(triggeredConfigs), currTime.WeeklyDay, currTime.Hour)
 	for _, config := range triggeredConfigs {
 		common.Stdout.Printf("\t%s\n", config.Name)
 	}
@@ -188,6 +240,30 @@ func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, buil
 	} else {
 		request := ctprequest.BuildCTPRequest(config, build.Board, "", build.BuildTarget, strconv.FormatInt(build.Milestone, 10), build.Version, branch)
 		event, err := wrapEvent(request, config, build.BuildUuid, build.Board, "")
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+
+	return events, nil
+}
+
+// buildConfigEventsPerModel generates an event message for the current config,
+// board, model(s).
+func buildConfigEventsPerModel(models []string, config *suschpb.SchedulerConfig, board, buildUUID string, schedulingDecision *kronpb.SchedulingDecision) ([]*kronpb.Event, error) {
+	events := []*kronpb.Event{}
+
+	if len(models) > 0 {
+		for _, model := range models {
+			event, err := metrics.GenerateEventMessage(config, schedulingDecision, 0, buildUUID, board, model)
+			if err != nil {
+				return nil, err
+			}
+			events = append(events, event)
+		}
+	} else {
+		event, err := metrics.GenerateEventMessage(config, schedulingDecision, 0, buildUUID, board, "")
 		if err != nil {
 			return nil, err
 		}

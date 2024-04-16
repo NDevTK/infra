@@ -45,9 +45,9 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 		newBuild3dList: ConfigList{},
 		configTargets:  map[string]TargetOptions{},
 		configMap:      map[TestPlanName]*suschpb.SchedulerConfig{},
-		dailyMap:       map[common.Hour]ConfigList{},
-		weeklyMap:      map[common.Day]HourMap{},
-		fortnightlyMap: map[common.Day]HourMap{},
+		dailyMap:       map[int]ConfigList{},
+		weeklyMap:      map[int]HourMap{},
+		fortnightlyMap: map[int]HourMap{},
 	}
 
 	for _, config := range configs {

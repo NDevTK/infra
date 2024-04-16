@@ -270,7 +270,7 @@ func increaseTimeByAnHour(currTime common.KronTime) common.KronTime {
 	// Handle the new day boundary.
 	if currTime.Hour > 23 {
 		currTime.Hour = 0
-		currTime.RegularDay += 1
+		currTime.WeeklyDay += 1
 		currTime.FortnightDay += 1
 	}
 
@@ -278,8 +278,8 @@ func increaseTimeByAnHour(currTime common.KronTime) common.KronTime {
 	if currTime.FortnightDay > 13 {
 		currTime.FortnightDay = 0
 	}
-	if currTime.RegularDay > 6 {
-		currTime.RegularDay = 0
+	if currTime.WeeklyDay > 6 {
+		currTime.WeeklyDay = 0
 	}
 
 	return currTime
@@ -325,7 +325,7 @@ func fetchNextNHoursDailyConfigs(startTime common.KronTime, hoursAhead int64, co
 // the next N hours after the given start time. WEEKLY and FORTNIGHTLY share
 // nearly all the same logic so this function is used as a base for both types
 // of configs.
-func fetchNextNHoursConfigsNotDaily(startTime common.KronTime, hoursAhead int64, isFortnightly bool, fetch func(common.Day, common.Hour) (configparser.ConfigList, error)) (CLIConfigList, error) {
+func fetchNextNHoursConfigsNotDaily(startTime common.KronTime, hoursAhead int64, isFortnightly bool, fetch func(int, int) (configparser.ConfigList, error)) (CLIConfigList, error) {
 	// Validate that all input values fit within the expected bounds.
 	if err := configparser.ValidateHoursAheadArgs(startTime, hoursAhead); err != nil {
 		return nil, err
@@ -334,7 +334,7 @@ func fetchNextNHoursConfigsNotDaily(startTime common.KronTime, hoursAhead int64,
 	var err error
 	configs := CLIConfigList{}
 	for i := 0; i < int(hoursAhead); i++ {
-		day := startTime.RegularDay
+		day := startTime.WeeklyDay
 		if isFortnightly {
 			day = startTime.FortnightDay
 		}
@@ -372,7 +372,7 @@ func (c *configParserCommand) sieveViaTopLevelFilter(configs *configparser.Suite
 
 		// Convert time.Time to a kron usable form.
 		kronTime := common.TimeToKronTime(c.commandExecutionTime)
-		common.Stdout.Printf("Looking ahead %d hours from a start time of %s %s. kron time: weekly (day:hour) %d:%d Fortnightly (day:hour) %d:%d\n", int(c.nextNHours.Hours()), c.commandExecutionTime.Weekday().String(), c.commandExecutionTime, kronTime.RegularDay, kronTime.Hour, kronTime.FortnightDay, kronTime.Hour)
+		common.Stdout.Printf("Looking ahead %d hours from a start time of %s %s. kron time: weekly (day:hour) %d:%d Fortnightly (day:hour) %d:%d\n", int(c.nextNHours.Hours()), c.commandExecutionTime.Weekday().String(), c.commandExecutionTime, kronTime.WeeklyDay, kronTime.Hour, kronTime.FortnightDay, kronTime.Hour)
 
 		// Daily
 		// NOTE: This will include duplicate tasks if the a hours ahead value is

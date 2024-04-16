@@ -11,6 +11,10 @@ import (
 )
 
 const (
+	Day       = 24 * time.Hour
+	Week      = 7 * Day
+	Fortnight = 14 * Day
+
 	DefaultHoursAhead = -1 * time.Hour
 	DefaultInt64      = int64(-1)
 	DefaultString     = ""

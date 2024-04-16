@@ -161,7 +161,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	// Launch execution path for all TIMED_EVENT configs
 	if c.timedEvents {
 		common.Stdout.Println("Launching TIMED_EVENTS")
-		err := run.TimedEvents()
+		err := run.TimedEvents(&c.authFlags, c.prod, c.dryRun)
 		if err != nil {
 			// Stop run timer and publish the message to pubsub
 			endRunErr := endRun(c.prod)

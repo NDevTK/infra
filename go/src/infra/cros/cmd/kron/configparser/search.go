@@ -73,7 +73,7 @@ func (s *SuiteSchedulerConfigs) FetchAllDailyConfigs() ConfigList {
 
 // FetchDailyByHour returns all DAILY configs that are to be scheduled at the
 // specified hour.
-func (s *SuiteSchedulerConfigs) FetchDailyByHour(hour common.Hour) (ConfigList, error) {
+func (s *SuiteSchedulerConfigs) FetchDailyByHour(hour int) (ConfigList, error) {
 	err := isHourCompliant(hour)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (s *SuiteSchedulerConfigs) FetchAllWeeklyConfigs() ConfigList {
 
 // FetchWeeklyByDay returns all WEEKLY configs that are to be scheduled on the
 // specified DAY.
-func (s *SuiteSchedulerConfigs) FetchWeeklyByDay(day common.Day) (ConfigList, error) {
+func (s *SuiteSchedulerConfigs) FetchWeeklyByDay(day int) (ConfigList, error) {
 	err := isDayCompliant(day, false)
 	if err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func (s *SuiteSchedulerConfigs) FetchWeeklyByDay(day common.Day) (ConfigList, er
 
 // FetchWeeklyByDayHour returns all WEEKLY configs that are to be scheduled on the
 // specified DAY at the given HOUR.
-func (s *SuiteSchedulerConfigs) FetchWeeklyByDayHour(day common.Day, hour common.Hour) (ConfigList, error) {
+func (s *SuiteSchedulerConfigs) FetchWeeklyByDayHour(day int, hour int) (ConfigList, error) {
 	err := isDayCompliant(day, false)
 	if err != nil {
 		return nil, err
@@ -153,7 +153,7 @@ func (s *SuiteSchedulerConfigs) FetchAllFortnightlyConfigs() ConfigList {
 
 // FetchFortnightlyByDay returns all FORTNIGHTLY configs that are to be scheduled on the
 // specified DAY.
-func (s *SuiteSchedulerConfigs) FetchFortnightlyByDay(day common.Day) (ConfigList, error) {
+func (s *SuiteSchedulerConfigs) FetchFortnightlyByDay(day int) (ConfigList, error) {
 	err := isDayCompliant(day, true)
 	if err != nil {
 		return nil, err
@@ -173,7 +173,7 @@ func (s *SuiteSchedulerConfigs) FetchFortnightlyByDay(day common.Day) (ConfigLis
 
 // FetchFortnightlyByDayHour returns all FORTNIGHTLY configs that are to be scheduled on the
 // specified DAY at the given HOUR.
-func (s *SuiteSchedulerConfigs) FetchFortnightlyByDayHour(day common.Day, hour common.Hour) (ConfigList, error) {
+func (s *SuiteSchedulerConfigs) FetchFortnightlyByDayHour(day int, hour int) (ConfigList, error) {
 	err := isDayCompliant(day, true)
 	if err != nil {
 		return nil, err
@@ -214,12 +214,12 @@ func ValidateHoursAheadArgs(startTime common.KronTime, hoursAhead int64) error {
 	// This check allows the same function to be used by for the daily configs
 	// function as long as it sends over the default int64 value stored as a
 	// constant.
-	if startTime.RegularDay != common.Day(common.DefaultInt64) {
-		if err := isDayCompliant(startTime.RegularDay, false); err != nil {
+	if startTime.WeeklyDay != int(common.DefaultInt64) {
+		if err := isDayCompliant(startTime.WeeklyDay, false); err != nil {
 			return err
 		}
 	}
-	if startTime.FortnightDay != common.Day(common.DefaultInt64) {
+	if startTime.FortnightDay != int(common.DefaultInt64) {
 		if err := isDayCompliant(startTime.FortnightDay, true); err != nil {
 			return err
 		}

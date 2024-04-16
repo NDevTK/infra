@@ -33,8 +33,22 @@ func InitTotManager() error {
 
 // GetTot returns the calculated ToT version. If the value is 0 then that means the ToT
 // info was never fetched and the nil int value is being returned.
+//
+// NOTE: Canary is ToT.
 func GetTot() int {
 	return tot.ChromeBranch
+}
+
+func GetDev() int {
+	return tot.ChromeBranch - 1
+}
+
+func GetBeta() int {
+	return tot.ChromeBranch - 2
+}
+
+func GetStable() int {
+	return tot.ChromeBranch - 3
 }
 
 func isCanary(milestone int) bool {
@@ -42,16 +56,15 @@ func isCanary(milestone int) bool {
 }
 
 func isDev(milestone int) bool {
-	return milestone == GetTot()-1
+	return milestone == GetDev()
 }
 
 func isBeta(milestone int) bool {
-	return milestone == GetTot()-2
+	return milestone == GetBeta()
 }
 
 func isStable(milestone int) bool {
-	// TODO: remove `<` logic once LTS Suites have been introduced.
-	return milestone > 0 && milestone <= GetTot()-3
+	return milestone > 0 && milestone <= GetStable()
 }
 
 func isLTS(milestone int) bool {
@@ -62,7 +75,7 @@ func isLTS(milestone int) bool {
 // passed in branch target list.
 func IsTargetedBranch(milestone int, branches []suschpb.Branch) (bool, suschpb.Branch, error) {
 	if len(branches) == 0 {
-		return false, suschpb.Branch_BRANCH_UNSPECIFIED, fmt.Errorf("empty branch target list passed in to TOTManager")
+		return false, suschpb.Branch_BRANCH_UNSPECIFIED, fmt.Errorf("empty branch target list passed in to IsTargetedBranch")
 	}
 
 	for _, branch := range branches {
@@ -97,4 +110,35 @@ func IsTargetedBranch(milestone int, branches []suschpb.Branch) (bool, suschpb.B
 	}
 
 	return false, suschpb.Branch_BRANCH_UNSPECIFIED, nil
+}
+
+func BranchesToMilestones(branches []suschpb.Branch) ([]int, error) {
+	if tot.ChromeBranch == 0 {
+		return nil, fmt.Errorf("totManager not instantiated")
+	}
+
+	if len(branches) == 0 {
+		return nil, fmt.Errorf("empty branch target list passed in to BranchesToMilestones")
+	}
+
+	milestones := []int{}
+	for _, branch := range branches {
+		switch branch {
+		case suschpb.Branch_CANARY:
+			milestones = append(milestones, GetTot())
+		case suschpb.Branch_DEV:
+			milestones = append(milestones, GetDev())
+		case suschpb.Branch_BETA:
+			milestones = append(milestones, GetBeta())
+		case suschpb.Branch_STABLE:
+			milestones = append(milestones, GetStable())
+		case suschpb.Branch_BRANCH_UNSPECIFIED:
+			return nil, fmt.Errorf("branch unspecified not supported")
+		default:
+			return nil, fmt.Errorf("unknown branch enum value received")
+		}
+
+	}
+
+	return milestones, nil
 }

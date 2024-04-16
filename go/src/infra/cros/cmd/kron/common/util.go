@@ -8,6 +8,7 @@ package common
 
 import (
 	"encoding/base64"
+	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -30,26 +31,26 @@ var (
 	Stderr = log.New(os.Stderr, "", log.Lshortfile|log.LstdFlags)
 )
 
-type (
-	// Hour is bounded to [0,23]
-	Hour int32
-
-	// Day is bounded to [0,13]:
-	// 		Weekly will only use [0,6].
-	// 		Fortnightly can use the full [0,13].
-	Day int32
-)
-
 type KronTime struct {
-	RegularDay   Day
-	FortnightDay Day
-	Hour         Hour
-	StartTime    time.Time
+	// WeeklyDay will only use [0,6].
+	WeeklyDay int
+	// Fortnightly can use the full [0,13].
+	FortnightDay int
+	// KronHour is bounded to [0,23]
+	Hour      int
+	StartTime time.Time
+}
+
+func (c *KronTime) String() string {
+	if c == nil {
+		return ""
+	}
+
+	return fmt.Sprintf("hour %d weekly day %d fornightly day %d", c.Hour, c.WeeklyDay, c.FortnightDay)
 }
 
 // KronDayToTimeDay provides a map to translate time weekday enums to Kron
 // weekdays.
-// TODO(juahurta): Adjust SuSch configs such that this is no longer needed.
 var KronDayToTimeDay = map[time.Weekday]int{
 	time.Sunday:    Sunday,
 	time.Monday:    Monday,
@@ -149,13 +150,13 @@ func TimeToKronTime(time time.Time) KronTime {
 		StartTime: time,
 	}
 
-	retTime.Hour = Hour(time.Hour())
+	retTime.Hour = time.Hour()
 
 	// Kron and the time package do not share enum values for week days. This
 	// provides a quick translation.
-	retTime.RegularDay = Day(KronDayToTimeDay[time.Weekday()])
+	retTime.WeeklyDay = KronDayToTimeDay[time.Weekday()]
 
-	retTime.FortnightDay = Day(KronDayToTimeDay[time.Weekday()])
+	retTime.FortnightDay = KronDayToTimeDay[time.Weekday()]
 
 	_, week := time.ISOWeek()
 	if week%2 == 0 {

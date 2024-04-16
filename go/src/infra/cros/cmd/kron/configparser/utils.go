@@ -9,18 +9,16 @@ import (
 	"fmt"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
-
-	"infra/cros/cmd/kron/common"
 )
 
 // isDayCompliant checks the day int type to ensure that it is within the
 // accepted bounds. A flag for fortnightly is required for calculation of day
 // range values.
-func isDayCompliant(day common.Day, isFortnightly bool) error {
-	highBound := common.Day(6)
+func isDayCompliant(day int, isFortnightly bool) error {
+	highBound := 6
 
 	if isFortnightly {
-		highBound = common.Day(13)
+		highBound = 13
 	}
 
 	if day < 0 || day > highBound {
@@ -32,7 +30,7 @@ func isDayCompliant(day common.Day, isFortnightly bool) error {
 
 // isHourCompliant checks the hour int type to ensure that it is within the
 // accepted bounds.
-func isHourCompliant(hour common.Hour) error {
+func isHourCompliant(hour int) error {
 	if hour < 0 || hour > 23 {
 		return fmt.Errorf("hour %d is not within the supported range [0,23]", hour)
 	}
