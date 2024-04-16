@@ -60,6 +60,7 @@ require (
 	github.com/jdxcode/netrc v0.0.0-20210204082910-926c7f70242a
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/klauspost/compress v1.17.6
+	github.com/klauspost/cpuid/v2 v2.2.6
 	github.com/kr/pretty v0.3.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/linkedin/goavro/v2 v2.11.0
@@ -189,7 +190,6 @@ require (
 	github.com/jcgregorio/slog v0.0.0-20190423190439-e6f2d537f900 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
-	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/luci/gtreap v0.0.0-20161228054646-35df89791e8f // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
