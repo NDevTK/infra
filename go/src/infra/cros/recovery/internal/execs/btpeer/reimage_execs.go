@@ -6,6 +6,7 @@ package btpeer
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -23,6 +24,8 @@ const (
 	// bPartitionsSizeGB is the combined space for the B root+boot partitions (in GB), this
 	// is smaller than A to make sure that we can fit it all on a 32GB SD card.
 	bPartitionsSizeGB = 12
+	// localOSImageStorePath is the path to the local image file after downloading it to the device.
+	localOSImageStorePath = "/tmp/rpi.img"
 	// Filesystem labels.
 	bootALabel = "BOOT_A"
 	rootALabel = "ROOT_A"
@@ -226,6 +229,34 @@ func createPartitionsExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// downloadImageExec downloads an OS Image and extracts (.xz) it.
+//
+// Currently  this downloads the images directly from a url as we don't have a
+// GCS bucket set up for these images. It also assumes images are .xz'd but can
+// be easily changed once we land on a final image upload scheme.
+func downloadImageExec(ctx context.Context, info *execs.ExecInfo) error {
+	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+	argsMap := info.GetActionArgs(ctx)
+	imagePath := argsMap.AsString(ctx, "local_image_path", localOSImageStorePath)
+	downloadTimeout := argsMap.AsDuration(ctx, "download_timeout", 180, time.Second)
+	img := argsMap.AsString(ctx, "image_path", "")
+	unxzTimeout := argsMap.AsDuration(ctx, "unxz_timeout", 300, time.Second)
+
+	if img == "" {
+		return errors.Reason("download image: required image_path argument missing").Err()
+	}
+
+	if _, _, _, err := ssh.WgetURL(ctx, runner, downloadTimeout, img, "-O", imagePath+".xz"); err != nil {
+		return errors.Annotate(err, "download image: failed to download image with wget").Err()
+	}
+
+	if _, err := runner.Run(ctx, unxzTimeout, "unxz", imagePath+".xz"); err != nil {
+		return errors.Annotate(err, "download image: failed to unxz image").Err()
+	}
+
+	return nil
+}
+
 // hasPartitionsWithLabelsExec verifies that partitions can be found with the requested labels.
 func hasPartitionsWithLabelsExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
@@ -246,6 +277,126 @@ func hasPartitionsWithLabelsExec(ctx context.Context, info *execs.ExecInfo) erro
 	return nil
 }
 
+// provisionExec flashes a raspberry pi image to the ROOT_B/BOOT_B partitions.
+func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
+	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+	argsMap := info.GetActionArgs(ctx)
+	imagePath := argsMap.AsString(ctx, "local_image_path", localOSImageStorePath)
+
+	// First find the partitions we are going to flash.
+	rootB, err := btpeer.GetFSWithLabel(ctx, runner.Run, rootBLabel)
+	if err != nil {
+		return errors.Annotate(err, "provision: failed to find ROOT_B partition").Err()
+	}
+	bootB, err := btpeer.GetFSWithLabel(ctx, runner.Run, bootBLabel)
+	if err != nil {
+		return errors.Annotate(err, "provision: failed to find BOOT_B partition").Err()
+	}
+
+	// Load the image loopback device so we can interact with it as if it's just a normal device.
+	device, err := btpeer.LoadImageAsLoopbackDevice(ctx, runner.Run, imagePath)
+	if err != nil {
+		return errors.Annotate(err, "provision: failed to get and associate image").Err()
+	}
+
+	imgBootDev := fmt.Sprintf("%sp1", device)
+	imgRootDev := fmt.Sprintf("%sp2", device)
+
+	// Change partition labels on image before flashing.
+	// Do this here so if something goes wrong during the flashing the partition
+	// The labels will still exist so we can find the correct partition next time.
+	if err := btpeer.SetEXTLabel(ctx, runner.Run, imgRootDev, rootBLabel); err != nil {
+		return errors.Annotate(err, "provision: failed to label ROOT_B").Err()
+	}
+
+	if err := btpeer.SetFAT32Label(ctx, runner.Run, imgBootDev, bootBLabel); err != nil {
+		return errors.Annotate(err, "provision: failed to label BOOT_B").Err()
+	}
+
+	// Flash boot partition.
+	if err := btpeer.FlashImage(ctx, runner.Run, imgBootDev, bootB); err != nil {
+		return errors.Annotate(err, "provision: failed to flash BOOT_B parition").Err()
+	}
+
+	// Flash root partition.
+	if err := btpeer.FlashImage(ctx, runner.Run, imgRootDev, rootB); err != nil {
+		return errors.Annotate(err, "provision: failed to flash ROOT_B parition").Err()
+	}
+
+	// Finally, update the partition IDs to match the new device.
+	// Without this, the raspberry PI will search for partitions that match the UUID in the image since it's expecting
+	// that we dd the entire .img to the device rather than individual partitions.
+	// This is similar to what is already done in the default raspberry pi OS during first boot:
+	// https://github.com/RPi-Distro/raspi-config/blob/bookworm/usr/lib/raspi-config/init_resize.sh#L90-L91
+
+	// Mount the newly flashed partitions so we can update the files.
+	imgBootMount, err := btpeer.MountDevice(ctx, runner.Run, bootB)
+	if err != nil {
+		return errors.Annotate(err, "update partition id: failed to mount image boot partition").Err()
+	}
+
+	imgRootMount, err := btpeer.MountDevice(ctx, runner.Run, rootB)
+	if err != nil {
+		return errors.Annotate(err, "update partition id: failed to mount image boot partition").Err()
+	}
+
+	// Replace old boot and root partition IDs in fstab.
+	if err := btpeer.ReplacePartID(ctx, runner.Run, imgRootDev, rootB, imgRootMount+"/etc/fstab"); err != nil {
+		return errors.Annotate(err, "update partition id: failed to replace old image root PART ID").Err()
+	}
+
+	if err := btpeer.ReplacePartID(ctx, runner.Run, imgBootDev, bootB, imgRootMount+"/etc/fstab"); err != nil {
+		return errors.Annotate(err, "update partition id: failed to replace old image root PART ID").Err()
+	}
+
+	// Replace old root partition ID in cmdline.txt.
+	if err := btpeer.ReplacePartID(ctx, runner.Run, imgRootDev, rootB, imgBootMount+"/cmdline.txt"); err != nil {
+		return errors.Annotate(err, "update partition id: failed to replace old image root PART ID").Err()
+	}
+
+	return nil
+}
+
+// setTempBootPartitionExec temporarily boots into the specified partition.
+//
+// This is done prior to changing the permanent boot partition to verify that the
+// partition is valid and bootable before making any permanent changes.
+func setTempBootPartitionExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	partition := argsMap.AsString(ctx, "boot_partition_label", "")
+	if partition == "" {
+		return errors.Reason("set temp boot partition: required arg boot_partition_label not provided.").Err()
+	}
+
+	rebootTime := argsMap.AsDuration(ctx, "wait_reboot", 300, time.Second)
+	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+	if err := btpeer.TempBootIntoPartition(ctx, runner.Run, partition, rebootTime); err != nil {
+		return errors.Annotate(err, "set temp boot partition: failed to boot into requested partition").Err()
+	}
+	return nil
+}
+
+// setPermanentBootPartitionExec permanently boots into the requested partition.
+//
+// See: https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/config_txt/autoboot.adoc
+func setPermanentBootPartitionExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	partition := argsMap.AsString(ctx, "boot_partition_label", "")
+	if partition == "" {
+		return errors.Reason("set temp boot partition: required arg boot_partition_label not provided.").Err()
+	}
+
+	rebootTime := argsMap.AsDuration(ctx, "wait_reboot", 300, time.Second)
+	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+	// Raspberry PI bootloader will search the first FAT32 partition for
+	// an autoboot.txt file which points to which partition contains the boot partition.
+	// This is sometimes a separate RECOVERY partition, but for us it is just BOOT_A partition
+	if err := btpeer.PermBootIntoPartition(ctx, runner.Run, bootALabel, partition, rebootTime); err != nil {
+		return errors.Reason("set perm boot partition: failed to set perm boot partition.").Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("btpeer_enable_initrd", enableInitrdExec)
 	execs.Register("btpeer_disable_initrd", disableInitrdExec)
@@ -254,4 +405,8 @@ func init() {
 	execs.Register("btpeer_partition_device", createPartitionsExec)
 	execs.Register("btpeer_has_partitions_with_labels", hasPartitionsWithLabelsExec)
 	execs.Register("btpeer_device_has_standard_partitions", hasStandardPartitioningExec)
+	execs.Register("btpeer_download_image", downloadImageExec)
+	execs.Register("btpeer_set_permanent_boot_partition", setPermanentBootPartitionExec)
+	execs.Register("btpeer_temp_boot_into_partition", setTempBootPartitionExec)
+	execs.Register("btpeer_provision_device", provisionExec)
 }

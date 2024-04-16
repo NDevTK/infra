@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/log"
 )
 
 // GetUsedFSSpace returns the amount of used space on the filesystem.
@@ -26,6 +27,87 @@ func GetUsedFSSpace(ctx context.Context, runner components.Runner, path string) 
 	} else {
 		return bytes, nil
 	}
+}
+
+// FlashImage writes an image to a device using dd.
+func FlashImage(ctx context.Context, runner components.Runner, input string, outputDev string) error {
+	// Ensure the output device is unmounted before we attempt to flash it as the machine may automatically
+	// mount the drive even when it's not the boot/root device.
+	if err := unmountDevice(ctx, runner, outputDev); err != nil {
+		return errors.Annotate(err, "flash image: failed to unmount destination device before flashing").Err()
+	}
+
+	cmd := fmt.Sprintf("dd if=%q of=%q", input, outputDev)
+	if _, err := runner(ctx, 10*time.Minute, cmd); err != nil {
+		return errors.Annotate(err, "flash image: failed to flash image with dd").Err()
+	}
+	return nil
+}
+
+// LoadImageAsLoopbackDevice loads an image as a loopback device and returns the device.
+func LoadImageAsLoopbackDevice(ctx context.Context, runner components.Runner, image string) (string, error) {
+	cmd := fmt.Sprintf("losetup -f --show -P %s", image)
+	dev, err := runner(ctx, 2*time.Minute, cmd)
+	if err != nil {
+		return "", errors.Annotate(err, "loop image: failed to load image to loopback device").Err()
+	}
+	return strings.TrimSpace(dev), nil
+}
+
+// getMountPoints returns the mount point of a device or an empty string if it is not mounted.
+func getMountPoints(ctx context.Context, runner components.Runner, device string) ([]string, error) {
+	// findmnt will return all listed mount points, but fall back to lsblk in event of an error since
+	// findmnt does not differentiate between unknown device and mountpoint not found.
+	cmd := fmt.Sprintf("findmnt %q -o target -n || lsblk -no mountpoint %q", device, device)
+	out, err := runner(ctx, 15*time.Second, cmd)
+	if err != nil {
+		return nil, errors.Annotate(err, "get mount points: failed to get mount points for device %q", device).Err()
+	}
+	res := make([]string, 0)
+	for _, mnt := range strings.Split(out, "\n") {
+		mnt = strings.TrimSpace(mnt)
+		if mnt != "" {
+			res = append(res, mnt)
+		}
+	}
+	return res, nil
+}
+
+// MountDevice returns a devices mount point if it's already mounted or otherwise mounts it and returns the new mount path.
+func MountDevice(ctx context.Context, runner components.Runner, device string) (string, error) {
+	if mounts, err := getMountPoints(ctx, runner, device); err == nil && len(mounts) > 0 {
+		log.Infof(ctx, "Found existing points for device %q: %v", device, mounts)
+		return mounts[0], nil
+	}
+
+	mount, err := runner(ctx, time.Minute, "mktemp -d")
+	if err != nil {
+		return "", errors.Annotate(err, "flash image: failed to flash image with dd").Err()
+	}
+
+	mount = strings.TrimSpace(mount)
+	if _, err := runner(ctx, 2*time.Minute, "mount", device, mount); err != nil {
+		return "", errors.Annotate(err, "flash image: failed to flash image with dd").Err()
+	}
+	return mount, nil
+}
+
+// unmountDevice unmounts a device if it is mounted.
+func unmountDevice(ctx context.Context, runner components.Runner, device string) error {
+	mounts, err := getMountPoints(ctx, runner, device)
+	if err != nil {
+		return errors.Annotate(err, "unmount device: failed to get mount point for device %q", device).Err()
+	}
+
+	log.Infof(ctx, "Found mount points for device %q: %v", device, mounts)
+	for _, mount := range mounts {
+		cmd := fmt.Sprintf("umount %q", mount)
+		if _, err := runner(ctx, 2*time.Minute, cmd); err != nil {
+			return errors.Annotate(err, "unmount device: failed to unmount device %q", device).Err()
+		}
+	}
+
+	return nil
 }
 
 // GetFSWithLabel returns a device whose FS has the matching label.
@@ -112,6 +194,40 @@ func InitEXT4FS(ctx context.Context, runner components.Runner, device, label str
 	cmd := fmt.Sprintf("mkfs.ext4 %s -F -L %s", device, label)
 	if _, err := runner(ctx, 6*time.Minute, cmd); err != nil {
 		return errors.Annotate(err, "make ext4 fs: failed to initialize fs").Err()
+	}
+	return nil
+}
+
+// getPartitionID gets the UUID of a partition/device.
+func getPartitionID(ctx context.Context, runner components.Runner, device string) (string, error) {
+	cmd := fmt.Sprintf("blkid %q -s PARTUUID -o value", device)
+	dev, err := runner(ctx, time.Minute, cmd)
+	if err != nil {
+		return "", errors.Annotate(err, "get device for path: failed to get mount with findmnt").Err()
+	}
+	return strings.TrimSpace(dev), nil
+}
+
+// ReplacePartID replaces the old partiion ID with the new one in the specified file.
+func ReplacePartID(ctx context.Context, runner components.Runner, oldDev, newDev, file string) error {
+	newID, err := getPartitionID(ctx, runner, newDev)
+	if err != nil {
+		return errors.Annotate(err, "update partition id: failed to get BOOT_B partition ID").Err()
+	} else if newID == "" {
+		return errors.Reason("update partition id: partition ID for %q is empty", newDev).Err()
+	}
+
+	oldID, err := getPartitionID(ctx, runner, oldDev)
+	if err != nil {
+		return errors.Annotate(err, "update partition id: failed to get image root partition ID").Err()
+	} else if oldID == "" {
+		return errors.Reason("update partition id: partition ID for %q is empty", oldDev).Err()
+	}
+
+	// Find replace the requested text in the file.
+	cmd := fmt.Sprintf(`sed -i "s/%s/%s/g" %q`, oldID, newID, file)
+	if _, err := runner(ctx, time.Minute, cmd); err != nil {
+		return errors.Annotate(err, "update partition id: failed to replace old image root PART ID").Err()
 	}
 	return nil
 }
