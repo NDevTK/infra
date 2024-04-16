@@ -58,20 +58,24 @@ func (r *goRun) ensureArgsValid(args []string) ([]string, error) {
 }
 
 func (r *goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb.TestResult, error) {
-	ordered, byID := goTestJsonToTestRecords(ctx, data, r.CopyTestOutput, r.VerboseTestOutput)
-	return testRecordsToTestProtos(ctx, ordered, byID), nil
+	ordered := goTestJSONToPackageRecords(ctx, data, r.CopyTestOutput, r.VerboseTestOutput)
+
+	ret := make([]*sinkpb.TestResult, 0, 8)
+	for _, record := range ordered {
+		ret = append(ret, record.toTestProtos(ctx)...)
+	}
+	return ret, nil
 }
 
-// goTestJsonToTestRecords parses one line at a time from the given output,
+// goTestJSONToPackageRecords parses one line at a time from the given output,
 // which is expected to be the one produced by `go test -json <package>`.
-// It converts each line to TestEvent and ingests it into a TestRecord.
+// It converts each line to TestEvent and ingests it into a PackageRecord.
 // copyTestOutput optionally specifies where to write a copy of test output.
-// The resulting TestRecord(s) are returned to the caller as a slice in the
-// same order as they were initially seen, and in a map where the test's id
-// maps to its TestRecord.
-func goTestJsonToTestRecords(ctx context.Context, data []byte, copyTestOutput io.Writer, verboseTestOutput bool) ([]*TestRecord, map[string]*TestRecord) {
-	var ordered []*TestRecord
-	var byID = make(map[string]*TestRecord)
+// The resulting PackageRecord(s) are returned to the caller as a slice in the
+// same order as they were initially seen.
+func goTestJSONToPackageRecords(ctx context.Context, data []byte, copyTestOutput io.Writer, verboseTestOutput bool) []*PackageRecord {
+	var ordered []*PackageRecord
+	byID := make(map[string]*PackageRecord)
 	// Ensure that the scanner below returns the last line in the output.
 	if !bytes.HasSuffix(data, []byte("\n")) {
 		data = append(data, []byte("\n")...)
@@ -103,11 +107,14 @@ func goTestJsonToTestRecords(ctx context.Context, data []byte, copyTestOutput io
 			logging.Warningf(ctx, "cannot parse row %q, %s", string(l), err)
 			continue
 		}
-		currentRecord := byID[tEvt.id()]
+		currentRecord := byID[tEvt.Package]
 		if currentRecord == nil {
-			currentRecord = &TestRecord{TestID: tEvt.id()}
+			currentRecord = &PackageRecord{
+				PackageName: tEvt.Package,
+				TestsByName: make(map[string]*TestRecord),
+			}
 			ordered = append(ordered, currentRecord)
-			byID[currentRecord.TestID] = currentRecord
+			byID[currentRecord.PackageName] = currentRecord
 		}
 		currentRecord.ingest(tEvt)
 
@@ -121,58 +128,7 @@ func goTestJsonToTestRecords(ctx context.Context, data []byte, copyTestOutput io
 			}
 		}
 	}
-	return ordered, byID
-}
-
-// testRecordsToTestProtos converts the TestRecords returned by the above into
-// a list of TestResult protos suitable for sending to result sink.
-func testRecordsToTestProtos(ctx context.Context, ordered []*TestRecord, byID map[string]*TestRecord) []*sinkpb.TestResult {
-	ret := make([]*sinkpb.TestResult, 0, 8)
-	for _, record := range ordered {
-		if record.IsPackage {
-			continue
-		}
-		tr := sinkpb.TestResult{}
-		switch record.Result {
-		case "pass", "bench":
-			tr.Status = resultpb.TestStatus_PASS
-			tr.Expected = true
-		case "fail":
-			tr.Status = resultpb.TestStatus_FAIL
-		case "skip":
-			tr.Status = resultpb.TestStatus_SKIP
-			tr.Expected = true
-		case "":
-			// It has been observed that test2json may fail to parse the status
-			// of a test when multiple tests run in parallel in the same package
-			// and produce certain output (such as goconvey output). In those
-			// cases it's okay to mark the tests as passing if the whole
-			// package passed.
-			if byID[record.PackageName].Result == "pass" {
-				logging.Warningf(ctx,
-					"Status for test %s is missing from the list of test events. Setting to `pass` because package passed.", record.TestID)
-				tr.Status = resultpb.TestStatus_PASS
-				tr.Expected = true
-			} else {
-				// A test interrupted by SIGTERM, SIGABORT, SIGKILL will usually
-				// have its status unset.
-				tr.Status = resultpb.TestStatus_ABORT
-			}
-		}
-		if record.Output.Len() > 0 {
-			a := sinkpb.Artifact{}
-			a.Body = &sinkpb.Artifact_Contents{
-				Contents: []byte(record.Output.String()),
-			}
-			tr.Artifacts = map[string]*sinkpb.Artifact{"output": &a}
-			tr.SummaryHtml = `<p><text-artifact artifact-id="output"></p>`
-		}
-		tr.TestId = record.TestID
-		tr.Duration = durationpb.New(time.Duration(int64(record.Elapsed * float64(time.Second))))
-		tr.StartTime = timestamppb.New(record.Started)
-		ret = append(ret, &tr)
-	}
-	return ret
+	return ordered
 }
 
 func parseRow(s []byte) (*TestEvent, error) {
@@ -189,21 +145,6 @@ type TestEvent struct {
 	Test    string
 	Elapsed float64 // seconds
 	Output  string
-}
-
-// id identifies tests by their package name, e.g. `go.chromium.org/luci/resultdb/sink`
-// joined by a period to the name of the test: e.g. `TestNewServer`, so
-// the test id would be e.g. `go.chromium.org/luci/resultdb/sink.TestNewServer`.
-// Events that apply to the whole package are identified only by the package name.
-func (te *TestEvent) id() string {
-	if te.Test == "" {
-		return te.Package
-	}
-	// Test names in Go may contain Unicode printable runes, but
-	// ResultDB currently only allows ASCII printable runes. See crbug.com/1446084.
-	// Work around that by temporarily escaping non-ASCII test names to ASCII.
-	// TODO(crbug.com/1446084): Drop maybeEscape after the ResultDB fix rolls out.
-	return fmt.Sprintf("%s.%s", te.Package, maybeEscape(te.Test))
 }
 
 // maybeEscape returns s unmodified if it consists entirely of ASCII runes,
@@ -231,16 +172,119 @@ func maybeEscape(s string) string {
 	return s
 }
 
-// TestRecord represents the results of a single test or package.
+// PackageRecord represents the results of a single package.
+type PackageRecord struct {
+	PackageName string // Import path of the go package.
+	Result      string // Out of a subset of the values for TestEvent.Action as applicable.
+	Started     time.Time
+	Elapsed     float64         //seconds
+	Output      strings.Builder // Output for the package, excluding output attributed to individual tests.
+
+	TestsByName  map[string]*TestRecord
+	OrderedTests []*TestRecord
+}
+
+// TestRecord represents the results of a single test.
 // Several test events will apply to each TestRecord.
 type TestRecord struct {
-	TestID      string // TestID is the ID of the test this TestRecord represents.
-	IsPackage   bool
+	TestName    string // TestName is the name of the test within the package.
 	PackageName string // Import path of the Go package that the test is a part of.
 	Result      string // Out of a subset of the values for TestEvent.Action as applicable.
 	Started     time.Time
 	Elapsed     float64 //seconds
 	Output      strings.Builder
+}
+
+func (pr *PackageRecord) ingest(te *TestEvent) {
+	if te.Test == "" {
+		switch te.Action {
+		// Action string values from https://go.dev/cmd/test2json.
+		case "start":
+			pr.Started = te.Time
+		case "output":
+			pr.Output.WriteString(te.Output)
+		case "pass", "bench", "fail", "skip":
+			pr.Result = te.Action
+			if te.Elapsed > 0 {
+				pr.Elapsed = te.Elapsed
+			}
+		case "pause", "cont":
+			// Ignore.
+		default:
+			// Ignore.
+		}
+	} else {
+		// Record for a specific test.
+		testRecord := pr.TestsByName[te.Test]
+		if testRecord == nil {
+			testRecord = &TestRecord{TestName: te.Test}
+			pr.OrderedTests = append(pr.OrderedTests, testRecord)
+			pr.TestsByName[testRecord.TestName] = testRecord
+		}
+		testRecord.ingest(te)
+	}
+}
+
+func (pr *PackageRecord) toTestProtos(ctx context.Context) []*sinkpb.TestResult {
+	anyTestFailed := false
+	for _, tr := range pr.OrderedTests {
+		if tr.Result == "fail" {
+			anyTestFailed = true
+		}
+	}
+
+	// Include a result for the package, which relates to the package
+	// setup/teardown that is not covered by the individual test results.
+	packageResult := &sinkpb.TestResult{}
+	packageResult.TestId = pr.PackageName
+	switch pr.Result {
+	case "pass", "bench":
+		packageResult.Status = resultpb.TestStatus_PASS
+		packageResult.Expected = true
+	case "fail":
+		if anyTestFailed {
+			// Package may only be reporting fail because one of the tests failed.
+			// Report 'skip' to signify we don't know whether the package setup/teardown
+			// passed or failed.
+			// This is different to how go represents package failures but is intended
+			// to avoid creating two 'failing' results in response to one test failure.
+			packageResult.Status = resultpb.TestStatus_SKIP
+			packageResult.Expected = true
+		} else {
+			// Package failed in setup/teardown.
+			packageResult.Status = resultpb.TestStatus_FAIL
+		}
+	case "skip":
+		packageResult.Status = resultpb.TestStatus_SKIP
+		packageResult.Expected = true
+	case "":
+		// A test interrupted by SIGTERM, SIGABORT, SIGKILL will usually
+		// have its status unset.
+		packageResult.Status = resultpb.TestStatus_ABORT
+	}
+
+	if pr.Output.Len() > 0 {
+		a := sinkpb.Artifact{}
+		a.Body = &sinkpb.Artifact_Contents{
+			Contents: []byte(pr.Output.String()),
+		}
+		packageResult.Artifacts = map[string]*sinkpb.Artifact{"output": &a}
+		packageResult.SummaryHtml = `<p>Result only captures package setup and teardown. Tests within the package have their own result.</p>` +
+			`<p><text-artifact artifact-id="output"></p>`
+	}
+	packageResult.Duration = durationpb.New(time.Duration(int64(pr.Elapsed * float64(time.Second))))
+	if pr.Started != (time.Time{}) {
+		packageResult.StartTime = timestamppb.New(pr.Started)
+	}
+
+	results := make([]*sinkpb.TestResult, 0, len(pr.OrderedTests)+1)
+	results = append(results, packageResult)
+
+	packagePassed := pr.Result == "pass" || pr.Result == "bench"
+	for _, tr := range pr.OrderedTests {
+		results = append(results, tr.toProto(ctx, packagePassed))
+	}
+	return results
 }
 
 // ingest updates the fields of the test record according to the contents of
@@ -251,26 +295,75 @@ type TestRecord struct {
 // write to stdout/stderr directly may result in output being associated with
 // the wrong test. See https://go.dev/issue/23036#issuecomment-355669573.
 func (tr *TestRecord) ingest(te *TestEvent) {
-	if te.Test == "" {
-		tr.IsPackage = true
-	}
 	if tr.PackageName == "" {
 		tr.PackageName = te.Package
 	}
+
 	switch te.Action {
 	// Action string values from https://go.dev/cmd/test2json.
-	case "pause":
-	case "cont":
 	case "run":
 		tr.Started = te.Time
 	case "output":
 		tr.Output.WriteString(te.Output)
-	default:
+	case "pass", "bench", "fail", "skip":
 		tr.Result = te.Action
 		if te.Elapsed > 0 {
 			tr.Elapsed = te.Elapsed
 		}
+	case "pause", "cont":
+		// Ignore.
+	default:
+		// Ignore.
 	}
+}
+
+func (tr *TestRecord) toProto(ctx context.Context, packagePassed bool) *sinkpb.TestResult {
+	result := &sinkpb.TestResult{}
+
+	// Test names in Go may contain Unicode printable runes, but
+	// ResultDB currently only allows ASCII printable runes. See crbug.com/1446084.
+	// Work around that by temporarily escaping non-ASCII test names to ASCII.
+	// TODO(crbug.com/1446084): Drop maybeEscape after the ResultDB fix rolls out.
+	testID := fmt.Sprintf("%s.%s", tr.PackageName, maybeEscape(tr.TestName))
+	result.TestId = testID
+
+	switch tr.Result {
+	case "pass", "bench":
+		result.Status = resultpb.TestStatus_PASS
+		result.Expected = true
+	case "fail":
+		result.Status = resultpb.TestStatus_FAIL
+	case "skip":
+		result.Status = resultpb.TestStatus_SKIP
+		result.Expected = true
+	case "":
+		// It has been observed that test2json may fail to parse the status
+		// of a test when multiple tests run in parallel in the same package
+		// and produce certain output (such as goconvey output). In those
+		// cases it's okay to mark the tests as passing if the whole
+		// package passed.
+		if packagePassed {
+			logging.Warningf(ctx,
+				"Status for test %s is missing from the list of test events. Setting to `pass` because package passed.", testID)
+			result.Status = resultpb.TestStatus_PASS
+			result.Expected = true
+		} else {
+			// A test interrupted by SIGTERM, SIGABORT, SIGKILL will usually
+			// have its status unset.
+			result.Status = resultpb.TestStatus_ABORT
+		}
+	}
+	if tr.Output.Len() > 0 {
+		a := sinkpb.Artifact{}
+		a.Body = &sinkpb.Artifact_Contents{
+			Contents: []byte(tr.Output.String()),
+		}
+		result.Artifacts = map[string]*sinkpb.Artifact{"output": &a}
+		result.SummaryHtml = `<p><text-artifact artifact-id="output"></p>`
+	}
+	result.Duration = durationpb.New(time.Duration(int64(tr.Elapsed * float64(time.Second))))
+	result.StartTime = timestamppb.New(tr.Started)
+	return result
 }
 
 // GoTestRenderer takes a go test -json event stream and renders it as text.

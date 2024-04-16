@@ -61,7 +61,9 @@ func TestGenerateTestResults(t *testing.T) {
 
 	Convey(`parses output`, t, func() {
 		trs, err := r.generateTestResults(context.Background(),
-			[]byte(`{"Time":"2021-06-17T15:59:10.536706-07:00","Action":"run","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid"}
+			[]byte(`
+			{"Time":"2021-06-17T15:59:10.536701-07:00","Action":"start","Package":"infra/tools/result_adapter"}
+			{"Time":"2021-06-17T15:59:10.536706-07:00","Action":"run","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid"}
 			{"Time":"2021-06-17T15:59:10.537037-07:00","Action":"output","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid","Output":"=== RUN   TestEnsureArgsValid\n"}
 			{"Time":"2021-06-17T15:59:10.537058-07:00","Action":"output","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid","Output":"=== PAUSE TestEnsureArgsValid\n"}
 			{"Time":"2021-06-17T15:59:10.537064-07:00","Action":"pause","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid"}
@@ -74,8 +76,26 @@ func TestGenerateTestResults(t *testing.T) {
 			{"Time":"2021-06-17T15:59:10.541324-07:00","Action":"pass","Package":"infra/tools/result_adapter","Elapsed":0.143}`),
 		)
 		So(err, ShouldBeNil)
-		So(trs, ShouldHaveLength, 1)
+		So(trs, ShouldHaveLength, 2)
 		So(trs[0], ShouldResembleProtoText,
+			`test_id:  "infra/tools/result_adapter"
+			expected:  true
+			status:  PASS
+			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time:  {
+		  		seconds:  1623970750
+		  		nanos:  536701000
+			}
+			duration:  {
+				nanos:  143000000
+			}
+			artifacts:  {
+		  		key:  "output"
+		  		value:  {
+					contents:  "PASS\nok  	infra/tools/result_adapter	0.143s\n"
+		  		}
+			}`)
+		So(trs[1], ShouldResembleProtoText,
 			`test_id:  "infra/tools/result_adapter.TestEnsureArgsValid"
 			expected:  true
 			status:  PASS
@@ -142,8 +162,26 @@ func TestGenerateTestResults(t *testing.T) {
 {"Time":"2023-04-03T12:44:58.739667-04:00","Action":"pass","Package":"example/pkg","Elapsed":0.228}`),
 		)
 		So(err, ShouldBeNil)
-		So(trs, ShouldHaveLength, 3)
+		So(trs, ShouldHaveLength, 4)
 		So(trs[0], ShouldResembleProtoText,
+			`test_id: "example/pkg"
+			expected: true
+			status: PASS
+			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1680540298
+			  nanos: 511534000
+			}
+			duration: {
+			  nanos: 228000000
+			}
+			artifacts: {
+			  key: "output"
+			  value: {
+				contents:  "PASS\nok  	example/pkg	0.228s\n"
+			  }
+			}`)
+		So(trs[1], ShouldResembleProtoText,
 			`test_id: "example/pkg.TestA"
 			expected: true
 			status: PASS
@@ -159,7 +197,7 @@ func TestGenerateTestResults(t *testing.T) {
 			    contents: "=== RUN   TestA\n    main_test.go:6: TestA line 1 of 1\n--- PASS: TestA (0.00s)\n"
 			  }
 			}`)
-		So(trs[1], ShouldResembleProtoText,
+		So(trs[2], ShouldResembleProtoText,
 			`test_id: "example/pkg.TestB"
 			expected: true
 			status: PASS
@@ -175,7 +213,7 @@ func TestGenerateTestResults(t *testing.T) {
 			    contents: "=== RUN   TestB\n    main_test.go:10: TestB line 1 of 2\n    main_test.go:11: TestB line 2 of 2\n--- PASS: TestB (0.00s)\n"
 			  }
 			}`)
-		So(trs[2], ShouldResembleProtoText,
+		So(trs[3], ShouldResembleProtoText,
 			`test_id:  "example/pkg.TestAB"
 			expected:  true
 			status:  PASS
@@ -199,7 +237,19 @@ func TestGenerateTestResults(t *testing.T) {
 			{"Time":"2021-06-17T16:11:01.086381-07:00","Action":"skip","Package":"go.chromium.org/luci/resultdb/internal/permissions","Elapsed":0}`),
 		)
 		So(err, ShouldBeNil)
-		So(trs, ShouldHaveLength, 0)
+		So(trs, ShouldHaveLength, 1)
+		So(trs[0], ShouldResembleProtoText,
+			`test_id: "go.chromium.org/luci/resultdb/internal/permissions"
+			expected: true
+			status: SKIP
+			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+				contents:  "?   	go.chromium.org/luci/resultdb/internal/permissions	[no test files]\n"
+			  }
+			}`)
 	})
 }
 
@@ -370,27 +420,27 @@ func TestTestID(t *testing.T) {
 
 	for _, tc := range [...]struct {
 		name string
-		in   TestEvent
+		in   string
 		want string
 	}{
 		{
 			name: "ASCII only",
-			in:   TestEvent{Package: "example/pkg", Test: "TestASCIIOnly"},
-			want: "example/pkg.TestASCIIOnly",
+			in:   "TestASCIIOnly",
+			want: "TestASCIIOnly",
 		},
 		{
 			name: "one printable Unicode rune",
-			in:   TestEvent{Package: "os", Test: "TestVariousDeadlines/5µs"},
-			want: "os.TestVariousDeadlines/5(U+00B5)s",
+			in:   "TestVariousDeadlines/5µs",
+			want: "TestVariousDeadlines/5(U+00B5)s",
 		},
 		{
 			name: "multiple printable Unicode runes",
-			in:   TestEvent{Package: "testing", Test: "TestTempDir/äöüéè"},
-			want: "testing.TestTempDir/(U+00E4)(U+00F6)(U+00FC)(U+00E9)(U+00E8)",
+			in:   "TestTempDir/äöüéè",
+			want: "TestTempDir/(U+00E4)(U+00F6)(U+00FC)(U+00E9)(U+00E8)",
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			got := tc.in.id()
+			got := maybeEscape(tc.in)
 			if !resultDBTestIDRE.MatchString(got) {
 				t.Errorf("got %q, doesn't match %q", got, resultDBTestIDRE)
 			} else if got != tc.want {
