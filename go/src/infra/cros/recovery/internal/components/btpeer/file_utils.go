@@ -60,3 +60,17 @@ func BuildInitrd(ctx context.Context, runner components.Runner) error {
 	}
 	return nil
 }
+
+// createExecutableScript writes an executable script to the btpeer.
+func createExecutableScript(ctx context.Context, runner components.Runner, text string, filePath string) error {
+	cmd := fmt.Sprintf("cat > %s <<\"EOF\"\n%s\nEOF", filePath, text)
+	if _, err := runner(ctx, 30*time.Second, "bash", "-c", cmd); err != nil {
+		return errors.Annotate(err, "write script: failed to write script to file: %q", filePath).Err()
+	}
+
+	if _, err := runner(ctx, 30*time.Second, "chmod", "+x", filePath); err != nil {
+		return errors.Annotate(err, "write script: failed to make script executable: %q", filePath).Err()
+	}
+
+	return nil
+}
