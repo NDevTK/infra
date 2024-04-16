@@ -23,6 +23,11 @@ const (
 	// bPartitionsSizeGB is the combined space for the B root+boot partitions (in GB), this
 	// is smaller than A to make sure that we can fit it all on a 32GB SD card.
 	bPartitionsSizeGB = 12
+	// Filesystem labels.
+	bootALabel = "BOOT_A"
+	rootALabel = "ROOT_A"
+	bootBLabel = "BOOT_B"
+	rootBLabel = "ROOT_B"
 )
 
 // enableInitrdExec enables initrd on the btpeer.
@@ -173,10 +178,80 @@ func hasStandardPartitioningExec(ctx context.Context, info *execs.ExecInfo) erro
 	return nil
 }
 
+// createPartitionsExec creates two new "B"  partitions in the free space on the
+// btpeer so the device can be AB updated.
+//
+// The final partioning looks like:
+//
+//	BOOT_A(FAT32) - existing partition
+//	ROOT_A(EXT4)  - existing partition
+//	BOOT_B(FAT32) - newly created
+//	ROOT_B(EXT4)  - newly created
+//
+// The A partitions correspond to the "recovery" partitions while the B partitions
+// are the ones that the B new OS versions will actually be flashed onto.
+func createPartitionsExec(ctx context.Context, info *execs.ExecInfo) error {
+	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+	helper, err := btpeer.NewPartitionHelperForPath(ctx, runner.Run, "/")
+	if err != nil {
+		return errors.Annotate(err, "create partitions: failed to create partition helper").Err()
+	}
+
+	// Add label to existing BOOT_A partition.
+	if err := btpeer.SetLabelForFAT32Path(ctx, runner.Run, "/boot", bootALabel); err != nil {
+		return errors.Annotate(err, "create partitions: failed to set BOOT_A label").Err()
+	}
+
+	// Add label to existing ROOT_A partition.
+	if err := btpeer.SetLabelForEXTPath(ctx, runner.Run, "/", rootALabel); err != nil {
+		return errors.Annotate(err, "create partitions: failed to set ROOT_A label").Err()
+	}
+
+	// Create the B boot partition with a fixed size of 1GB.
+	if bootB, err := helper.CreateNewPrimaryPartitionBytes(ctx, "fat32", int64(1e9)); err != nil {
+		return errors.Annotate(err, "create partitions: failed to create boot partition").Err()
+		// Initialize an empty filesystem on the newly created boot partition and add the BOOT_B label.
+	} else if err := btpeer.InitFAT32FS(ctx, runner.Run, bootB, bootBLabel); err != nil {
+		return errors.Annotate(err, "create partitions: failed initialize ROOT_B fs").Err()
+	}
+
+	// Create the B root partition using all of the remaining free space.
+	if rootB, err := helper.CreateNewPrimaryPartitionPercent(ctx, "ext4", 100); err != nil {
+		return errors.Annotate(err, "create partitions: failed to create root partition").Err()
+		// Initialize an empty filesystem on the newly created root partition and add the ROOT_B label.
+	} else if err := btpeer.InitEXT4FS(ctx, runner.Run, rootB, rootBLabel); err != nil {
+		return errors.Annotate(err, "create partitions: failed initialize ROOT_B fs").Err()
+	}
+
+	return nil
+}
+
+// hasPartitionsWithLabelsExec verifies that partitions can be found with the requested labels.
+func hasPartitionsWithLabelsExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+
+	labels := argsMap.AsStringSlice(ctx, "labels", []string{})
+	if len(labels) == 0 {
+		return errors.Reason("partitions with labels exist: required argument: 'labels' not provided").Err()
+	}
+
+	for _, label := range labels {
+		device, err := btpeer.GetFSWithLabel(ctx, runner.Run, label)
+		if err != nil {
+			return errors.Annotate(err, "partitions with labels exist: failed to find partition with label: %q", label).Err()
+		}
+		log.Infof(ctx, "Found device: %q with label: %q", label, device)
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("btpeer_enable_initrd", enableInitrdExec)
 	execs.Register("btpeer_disable_initrd", disableInitrdExec)
 	execs.Register("btpeer_has_partition_room", hasRoomToPartitionExec)
 	execs.Register("btpeer_shrink_rootfs", shrinkRootFSExec)
+	execs.Register("btpeer_partition_device", createPartitionsExec)
+	execs.Register("btpeer_has_partitions_with_labels", hasPartitionsWithLabelsExec)
 	execs.Register("btpeer_device_has_standard_partitions", hasStandardPartitioningExec)
 }

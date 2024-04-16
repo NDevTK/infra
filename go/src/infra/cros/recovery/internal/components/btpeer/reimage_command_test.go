@@ -20,6 +20,79 @@ func mockResult(output []string) components.Runner {
 	}
 }
 
+func TestGetDeviceInfo(t *testing.T) {
+	tests := []struct {
+		name           string
+		output         []string
+		wantErr        bool
+		expectedResult *deviceInfo
+	}{
+		{
+			name: "pass",
+			output: []string{
+				"BYT",
+				"/dev/mmcblk0:31914983424B:sd/mmc:512:512:msdos:SD SE32G:",
+				"1:4194304B:272629759B:268435456B:fat32::lba",
+				"2:272629760B:16656630271B:16384000512B:ext4::",
+				"3:16657678336B:17660116991B:1002438656B:fat32::lba",
+				"4:17660116992B:31914983423B:14254866432B:ext4::",
+			},
+			wantErr: false,
+			expectedResult: &deviceInfo{
+				Name: "/dev/mmcblk0",
+				Size: 31914983424,
+			},
+		},
+		{
+			name: "fail_no_device",
+			output: []string{
+				"BYT",
+				"1:4194304B:272629759B:268435456B:fat32::lba",
+				"2:272629760B:16656630271B:16384000512B:ext4::",
+				"3:16657678336B:17660116991B:1002438656B:fat32::lba",
+				"4:17660116992B:31914983423B:14254866432B:ext4::",
+			},
+			wantErr:        true,
+			expectedResult: nil,
+		},
+		{
+			name: "fail_malformed_size",
+			output: []string{
+				"BYT",
+				"/dev/mmcblk0:319149834..24B:sd/mmc:512:512:msdos:SD SE32G:",
+			},
+			wantErr:        true,
+			expectedResult: nil,
+		},
+		{
+			name: "fail_negative_size",
+			output: []string{
+				"BYT",
+				"/dev/mmcblk0:-31914983424B:sd/mmc:512:512:msdos:SD SE32G:",
+			},
+			wantErr:        true,
+			expectedResult: nil,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			p := &partitionHelper{
+				device: "/dev/mmcblk0",
+				runner: mockResult(test.output),
+			}
+			info, err := p.getDeviceInfo(context.Background())
+			if info != nil && test.expectedResult != nil && *info != *test.expectedResult {
+				t.Errorf("TestDeviceInfo: invalid result, got %v expected %v", info, test.expectedResult)
+			}
+			if (err != nil) != test.wantErr {
+				t.Errorf("TestDeviceInfo: error = %v, wantErr %v", err, test.wantErr)
+				return
+			}
+		})
+	}
+}
+
 func TestGetPartitionInfo(t *testing.T) {
 	tests := []struct {
 		name           string
