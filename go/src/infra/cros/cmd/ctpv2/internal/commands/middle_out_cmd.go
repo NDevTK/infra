@@ -20,6 +20,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -187,10 +188,15 @@ type loading struct {
 }
 
 type hwInfo struct {
-	req                *api.HWRequirements
+	req *api.SchedulingUnitOptions
+
+	// TODO; when HwRequirements is fully deprecated, remove this.
+	oldReq *api.HWRequirements
+
 	labLoading         *loading
 	numInCurrentShard  int
 	hwValue            uint64
+	matchingValue      uint64
 	provValue          uint64
 	labDevices         int64
 	shardHarness       string
@@ -219,7 +225,10 @@ type middleOutData struct {
 	hwEquivalenceMap map[uint64][]uint64
 
 	// the Sha of the HWRequirements object from a TC, pointing back to the HWRequirements object
-	hwUUIDMap map[uint64]*api.HWRequirements
+	hwUUIDMap map[uint64]*api.SchedulingUnitOptions
+
+	// TODO; when HwRequirements is fully deprecated, remove this.
+	oldhwUUIDMap map[uint64]*api.HWRequirements
 
 	cfg distroCfg
 
@@ -237,10 +246,14 @@ func newMiddleOutData() *middleOutData {
 	mo := &middleOutData{
 		hwToTCMap:        make(map[uint64][]string),
 		hwEquivalenceMap: make(map[uint64][]uint64),
-		hwUUIDMap:        make(map[uint64]*api.HWRequirements),
-		cfg:              distroCfg{},
-		flatHWUUIDMap:    make(map[uint64]*hwInfo),
-		tcUUIDMap:        make(map[string]*api.CTPTestCase),
+		hwUUIDMap:        make(map[uint64]*api.SchedulingUnitOptions),
+
+		// TODO; when HwRequirements is fully deprecated, remove this.
+		oldhwUUIDMap: make(map[uint64]*api.HWRequirements),
+
+		cfg:           distroCfg{},
+		flatHWUUIDMap: make(map[uint64]*hwInfo),
+		tcUUIDMap:     make(map[string]*api.CTPTestCase),
 
 		finalAssignments: make(map[uint64][][]string),
 	}
@@ -250,6 +263,10 @@ func newMiddleOutData() *middleOutData {
 
 func getName(tc *api.CTPTestCase) string {
 	return tc.GetMetadata().GetTestCase().GetId().GetValue()
+}
+
+func oldProto(targs []*api.HWRequirements) bool {
+	return len(targs) > 0
 }
 
 // middleOut creates TRRequest(S) from a ctpv2 internal test plan.
@@ -264,29 +281,56 @@ func middleOut(ctx context.Context, resp *api.InternalTestplan, cfg distroCfg) (
 			Metadata: tc.GetMetadata(),
 		}
 		solverData.tcUUIDMap[tcUUID] = tcForMap
+
+		// TODO; when HwRequirements is fully deprecated, remove this.
+		if oldProto(tc.HwRequirements) {
+			for _, hw := range tc.HwRequirements {
+				// Note: Each `hw` is still a repeated list of HW *options* for the test.
+				hash := oldAddHWtohwUUIDMap(solverData.oldhwUUIDMap, hw)
+				for k, v := range oldFlattenList(ctx, []*api.HWRequirements{hw}) {
+					err := addHWtoFlatHWUUIDMap(ctx, solverData.flatHWUUIDMap, k, v)
+					if err != nil {
+						logging.Infof(ctx, fmt.Sprintf("error found in addHWtoFlatHWUUIDMap: %s", err))
+						return nil, err
+					}
+				}
+				solverData.hwToTCMap[hash] = append(solverData.hwToTCMap[hash], tcUUID)
+
+			}
+		} else
 		// tc.HwRequirements example:
 		// [[hw1] && [hw2] && [hw3]]
 		// OR [[hw1 || hw2] && [hw3 || hw4]]
-		for _, hw := range tc.HwRequirements {
-			// Note: Each `hw` is still a repeated list of HW *options* for the test.
-			hash := addHWtohwUUIDMap(solverData.hwUUIDMap, hw)
-			for k, v := range flattenList(ctx, []*api.HWRequirements{hw}) {
-				err := addHWtoFlatHWUUIDMap(solverData.flatHWUUIDMap, k, v)
-				if err != nil {
-					logging.Infof(ctx, fmt.Sprintf("error found in addHWtoFlatHWUUIDMap: %s", err))
-					return nil, err
+		{
+			for _, hw := range tc.SchedulingUnitOptions {
+				// Note: Each `hw` is still a repeated list of HW *options* for the test.
+				hash := addHWtohwUUIDMap(solverData.hwUUIDMap, hw)
+				for k, v := range flattenList(ctx, []*api.SchedulingUnitOptions{hw}) {
+					err := addHWtoFlatHWUUIDMap(ctx, solverData.flatHWUUIDMap, k, v)
+					if err != nil {
+						logging.Infof(ctx, fmt.Sprintf("error found in addHWtoFlatHWUUIDMap: %s", err))
+						return nil, err
+					}
 				}
-			}
-			solverData.hwToTCMap[hash] = append(solverData.hwToTCMap[hash], tcUUID)
+				solverData.hwToTCMap[hash] = append(solverData.hwToTCMap[hash], tcUUID)
 
+			}
 		}
 	}
 
-	// Goal here is to make the hwEquivalenceMap; such that when we go to distribute the hwToTCMap
-	// We can lookup what HW options are available.
-	for key, hwOptions := range solverData.hwUUIDMap {
-		solverData.hwEquivalenceMap[key] = findMatches(hwOptions, solverData.flatHWUUIDMap)
+	// TODO; when HwRequirements is fully deprecated, remove this.
+	if len(solverData.oldhwUUIDMap) > 0 {
+		for key, hwOptions := range solverData.oldhwUUIDMap {
+			solverData.hwEquivalenceMap[key] = oldFindMatches(hwOptions, solverData.flatHWUUIDMap)
+		}
+	} else {
+		// Goal here is to make the hwEquivalenceMap; such that when we go to distribute the hwToTCMap
+		// We can lookup what HW options are available.
+		for key, hwOptions := range solverData.hwUUIDMap {
+			solverData.hwEquivalenceMap[key] = findMatches(ctx, hwOptions, solverData.flatHWUUIDMap)
+		}
 	}
+
 	return createTrRequests(greedyDistro(ctx, solverData), solverData)
 }
 
@@ -303,9 +347,13 @@ func createTrRequests(distro map[uint64][][]string, solverData *middleOutData) (
 				}
 				shardedtcs = append(shardedtcs, lltc)
 			}
+
+			// TODO; when HwRequirements is fully deprecated, remove `Req`.
+
 			trReq := &data.TrRequest{
-				Req: solverData.flatHWUUIDMap[k].req,
-				Tcs: shardedtcs,
+				Req:    solverData.flatHWUUIDMap[k].oldReq,
+				NewReq: solverData.flatHWUUIDMap[k].req,
+				Tcs:    shardedtcs,
 				DevicesInfo: &data.DevicesInfo{LabDevicesCount: solverData.flatHWUUIDMap[k].labDevices,
 					Dims: solverData.flatHWUUIDMap[k].dimsExcludingReady,
 				},
@@ -320,7 +368,6 @@ func createTrRequests(distro map[uint64][][]string, solverData *middleOutData) (
 func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][]string {
 
 	populateLabAvalability(ctx, solverData)
-
 	orderedHw := hwSearchOrdering(solverData.hwEquivalenceMap)
 
 	// Starting with the HW classes with the least amount of  equivalent classes
@@ -365,6 +412,7 @@ func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurr
 		}
 
 		solverData.finalAssignments[selectedDevice] = append(solverData.finalAssignments[selectedDevice], shardedtc)
+
 		solverData.flatHWUUIDMap[selectedDevice].labLoading.value-- // Reduce the # of open devices by 1.
 		// If the shard is not full, mark it as such.
 		if len(shardedtc) != solverData.cfg.maxInShard {
@@ -375,21 +423,23 @@ func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurr
 }
 
 type helper struct {
-	hwOption       *api.SwarmingDefinition
-	hashV          uint64
+	hwOption *api.SwarmingDefinition
+	hashV    uint64
+	// TODO remove `hashProvV` once hwRequirements has been fully removed.
 	hashProvV      uint64
 	swarmingLabels []string
 }
 
-// findMatches: find options for the given hwOption from the given flatHWUUIDMap
-func findMatches(hwOption *api.HWRequirements, flatHWUUIDMap map[uint64]*hwInfo) []uint64 {
+// TODO remove this method once hwRequirements has been fully removed.
+// oldFindMatches: find options for the given hwOption from the given flatHWUUIDMap. LEGACY PROTO
+func oldFindMatches(hwOption *api.HWRequirements, flatHWUUIDMap map[uint64]*hwInfo) []uint64 {
 	matches := []uint64{}
 	cnt := 0
 
 	helperList := []*helper{}
-	for _, child := range hwOption.HwDefinition {
+	for _, child := range hwOption.GetHwDefinition() {
 		childHash, _ := hashstructure.Hash(child.DutInfo, hashstructure.FormatV2, nil)
-		childHashProv, _ := hashstructure.Hash(child.ProvisionInfo, hashstructure.FormatV2, nil)
+		childHashProv, _ := hashstructure.Hash(child.Variant, hashstructure.FormatV2, nil)
 		h := &helper{
 			hashV:          childHash,
 			hashProvV:      childHashProv,
@@ -399,11 +449,11 @@ func findMatches(hwOption *api.HWRequirements, flatHWUUIDMap map[uint64]*hwInfo)
 	}
 
 	for sha, foundHW := range flatHWUUIDMap {
-		if len(foundHW.req.HwDefinition) > 1 {
+		if len(foundHW.oldReq.GetHwDefinition()) > 1 {
 			panic("foundHW.req.HwDefinition should not have more than 1 object inside it")
 		}
 
-		if isParent(foundHW, helperList) {
+		if oldIsParent(foundHW, helperList) {
 			matches = append(matches, sha)
 		}
 		cnt++
@@ -412,8 +462,133 @@ func findMatches(hwOption *api.HWRequirements, flatHWUUIDMap map[uint64]*hwInfo)
 	return matches
 }
 
-// isParent determines if the first is fully encompassing of the second object.
-func isParent(parentSrc *hwInfo, childSrc []*helper) bool {
+// TODO remove this method once hwRequirements has been fully removed.
+// oldIsParent determines if the first is fully encompassing of the second object. LEGACY PROTO
+func oldIsParent(parentSrc *hwInfo, childSrc []*helper) bool {
+	/*
+		In other words, if the parent has at least all of the fields of the child, it can run the child.
+	*/
+	// [1]
+
+	// [1... 5000]
+	if len(parentSrc.oldReq.GetHwDefinition()) != 1 && len(childSrc) > 0 {
+		return false
+	}
+
+	// isParent is true by default if there is no child
+	correct := true
+	for _, child := range childSrc {
+		childHash := child.hashV
+		childHashProv := child.hashProvV
+		// TODO (dbeckett/azrahman): determine if the AllItemsIn check is going to be problematic and needs to be cached.
+		if childHash == parentSrc.hwValue && childHashProv == parentSrc.provValue && allItemsIn(child.swarmingLabels, parentSrc.oldReq.GetHwDefinition()[0].GetSwarmingLabels()) {
+			return true
+		}
+
+		correct = false
+	}
+
+	return correct
+}
+
+// findMatches: find options for the given hwOption from the given allFlatHWUUIDMap
+func findMatches(ctx context.Context, oneOfHws *api.SchedulingUnitOptions, allFlatHWUUIDMap map[uint64]*hwInfo) []uint64 {
+	matches := []uint64{}
+	cnt := 0
+
+	/* Using this example:
+	 {tc.SchedulingUnits = [
+		SchedulingUnitOptions = {
+			Schedulingunits = [
+				SchedulingUnit = {
+					Primary = SwarmingDef1
+				},
+				SchedulingUnit = {
+					Primary = SwarmingDef12
+				},
+			],
+			state: ONEOF
+		},
+		SchedulingUnitOptions = {
+			Schedulingunits = [
+				SchedulingUnit = {
+					Primary = SwarmingDef3
+				},
+				SchedulingUnit = {
+					Primary = SwarmingDef2
+				},
+			],
+			state: ONEOF
+		},
+
+	]}
+
+
+	`hwOption` is going to only _one_ of the `SchedulingUnitOptions` (not the entire []SchedulingUnits)
+
+		SchedulingUnitOptions = {
+			Schedulingunits = [
+				SchedulingUnit = {
+					Primary = SwarmingDef1
+				},
+				SchedulingUnit = {
+					Primary = SwarmingDef12
+				},
+			],
+			state: ONEOF
+		}
+
+	`flatHWUUIDMap` is going to be a full list of all flat HW. Eg:
+
+	[
+				SchedulingUnit = {
+					Primary = SwarmingDef1
+				},
+				SchedulingUnit = {
+					Primary = SwarmingDef2
+				},
+				SchedulingUnit = {
+					Primary = SwarmingDef3
+				},
+	]
+
+
+	The goal of the method is to see per option in `SchedulingUnitOptions`; which DUTS in the flat map match it.
+	This is useful for bundling tests which have semi-overlapping deps.
+	*/
+	EqClassList := []*helper{}
+	for _, child := range oneOfHws.SchedulingUnits {
+
+		childHash := hashForSchedulingUnit(child)
+
+		h := &helper{
+			hashV:          childHash,
+			swarmingLabels: child.GetPrimaryTarget().GetSwarmingDef().GetSwarmingLabels(),
+		}
+
+		EqClassList = append(EqClassList, h)
+	}
+
+	// From the existing HWUIID map, see what DUTs can run what classes.
+	// This effectively means that selecting:
+	// `HW.1234` is valid for ['HW.1234' || 'HW.1222']
+	// `HW.1222` is valid for ['HW.1234' || 'HW.1222']
+	for sha, foundHW := range allFlatHWUUIDMap {
+		if len(foundHW.req.SchedulingUnits) > 1 {
+			panic("foundHW.req.SchedulingUnits should not have more than 1 object inside it")
+		}
+		ip := isParentofAtleastOne(foundHW, EqClassList)
+		if ip {
+			matches = append(matches, sha)
+		}
+		cnt++
+
+	}
+	return matches
+}
+
+// isParentofOne determines if the first is fully encompassing of the second object.
+func isParentofAtleastOne(parentSrc *hwInfo, childSrc []*helper) bool {
 	/*
 		In other words, if the parent has at least all of the fields of the child, it can run the child.
 	*/
@@ -425,10 +600,12 @@ func isParent(parentSrc *hwInfo, childSrc []*helper) bool {
 	correct := true
 	for _, child := range childSrc {
 		childHash := child.hashV
-		childHashProv := child.hashProvV
 
 		// TODO (dbeckett/azrahman): determine if the AllItemsIn check is going to be problematic and needs to be cached.
-		if childHash == parentSrc.hwValue && childHashProv == parentSrc.provValue && allItemsIn(child.swarmingLabels, parentSrc.req.HwDefinition[0].GetSwarmingLabels()) {
+		if len(parentSrc.req.GetSchedulingUnits()) < 1 {
+			return false
+		}
+		if childHash == parentSrc.hwValue && allItemsIn(child.swarmingLabels, parentSrc.req.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwarmingDef().GetSwarmingLabels()) {
 			return true
 		}
 		correct = false
@@ -505,10 +682,22 @@ func labAvalability(*api.HWRequirements) int {
 func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 	// toComplete will track what hwInfo will need labAvailibility info to be populated.
 	toComplete := []*hwInfo{}
-
 	hwFound := make(map[uint64]*loading)
 	for _, value := range solverData.flatHWUUIDMap {
-		hash, _ := hashstructure.Hash(value.req.HwDefinition[0].DutInfo, hashstructure.FormatV2, nil)
+		hash := uint64(0)
+
+		// TODO remove this if block (keep the else) once hwRequirements has been fully removed.
+		if len(value.oldReq.GetHwDefinition()) > 0 {
+			hash, _ = hashstructure.Hash(value.oldReq.GetHwDefinition()[0].GetDutInfo(), hashstructure.FormatV2, nil)
+		} else {
+
+			// 0 index is safe as this is coming from the flatHWUUIDMap; which garuntees the list to be flat.
+			// We have to use the `HwOnly` hashfor; as we should consider a variant as the same underlying hardware.
+			// Eg; Brya and brya-kernelnext, are the same underlying DUT.
+			hash = hashForSchedulingUnitHwOnly(value.req.GetSchedulingUnits()[0])
+
+		}
+
 		_, exists := hwFound[hash]
 		if exists {
 			value.labLoading = hwFound[hash]
@@ -537,8 +726,9 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 			wg.Add(1)
 			go func(hwInfoInput *hwInfo) {
 				defer wg.Done()
-				dims := CreateDims(hwInfoInput, solverData.cfg.pool, true)
-				dimsExcludingReady := CreateDims(hwInfoInput, solverData.cfg.pool, false)
+				dims := CreateDims(ctx, hwInfoInput, solverData.cfg.pool, true)
+
+				dimsExcludingReady := CreateDims(ctx, hwInfoInput, solverData.cfg.pool, false)
 
 				botCount, err := common.GetBotCount(ctx, dims, swarmingServ)
 				if err != nil {
@@ -561,8 +751,26 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 }
 
 // CreateDims creates dims list from hwInfo object.
-func CreateDims(hwInfo *hwInfo, pool string, readycheck bool) []string {
-	if hwInfo == nil || hwInfo.req == nil || len(hwInfo.req.HwDefinition) < 1 {
+func CreateDims(ctx context.Context, hwInfo *hwInfo, pool string, readycheck bool) []string {
+	// TODO replace `units` with just `hwInfo.req.GetSchedulingUnits()` once hwRequirements has been fully removed.
+	units := 0
+	if hwInfo.oldReq != nil {
+		units = len(hwInfo.oldReq.GetHwDefinition())
+	} else if hwInfo.req == nil {
+		units = len(hwInfo.req.GetSchedulingUnits())
+	}
+
+	if hwInfo == nil || (hwInfo.req == nil && hwInfo.oldReq == nil) || units < 1 {
+		return []string{}
+	}
+
+	// TODO replace `dut` with just `hwInfo.req.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwarmingDef()` once hwRequirements has been fully removed
+	dut := &api.SwarmingDefinition{}
+	if len(hwInfo.req.GetSchedulingUnits()) > 0 {
+		dut = hwInfo.req.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwarmingDef()
+	} else if len(hwInfo.oldReq.GetHwDefinition()) == 1 {
+		dut = hwInfo.oldReq.GetHwDefinition()[0]
+	} else {
 		return []string{}
 	}
 
@@ -570,11 +778,11 @@ func CreateDims(hwInfo *hwInfo, pool string, readycheck bool) []string {
 	if readycheck {
 		deafultDims = append(deafultDims, "dut_state:ready")
 	}
-	dims := ConvertSwarmingLabelsToDims(deafultDims, hwInfo.req.HwDefinition[0].GetSwarmingLabels())
+	dims := ConvertSwarmingLabelsToDims(deafultDims, dut.GetSwarmingLabels())
 
 	// Add labels from dut info
-	if hwInfo.req.HwDefinition[0].GetDutInfo() != nil {
-		dutInfo := hwInfo.req.HwDefinition[0].GetDutInfo()
+	if dut.GetDutInfo() != nil {
+		dutInfo := dut.GetDutInfo()
 
 		// TODO (azrahman/dbeckett): Handle android and devboard cases
 		if dutInfo.GetChromeos().GetDutModel() != nil {
@@ -620,12 +828,12 @@ func ConvertSwarmingLabelsToDims(defaultDims []string, swarmingLabels []string) 
 // EG [id1=[1 || 2] || id2=[3 || 4]] needs to be [[1, 2, 3, 4]]
 // hwEquivalenceMap is like id1 = [id1, id2]
 // now needs to be like id1 = [newid1, newid2, newid3, newid4]
-func flattenEqMap(hwEquivalenceMap map[uint64][]uint64, hwUUIDMap map[uint64]*api.HWRequirements) (map[uint64][]uint64, map[uint64]*hwInfo) {
+func flattenEqMap(hwEquivalenceMap map[uint64][]uint64, hwUUIDMap map[uint64]*api.SchedulingUnitOptions) (map[uint64][]uint64, map[uint64]*hwInfo) {
 	newHWUUIDMap := make(map[uint64]*hwInfo)
 	newHwEquivalenceMap := make(map[uint64][]uint64)
 
 	for hw, results := range hwEquivalenceMap {
-		var allHw []*api.HWRequirements
+		var allHw []*api.SchedulingUnitOptions
 		newHwEquivalenceMap[hw] = []uint64{}
 
 		allHw = append(allHw, hwUUIDMap[hw])
@@ -644,14 +852,37 @@ func flattenEqMap(hwEquivalenceMap map[uint64][]uint64, hwUUIDMap map[uint64]*ap
 	return newHwEquivalenceMap, newHWUUIDMap
 }
 
-// flattenList translates [hw.requirements=[1||2], hw.requirements=[3||4]] into [[1],[2],[3],[4]]
-func flattenList(ctx context.Context, allHw []*api.HWRequirements) map[uint64]*hwInfo {
+// TODO; when HwRequirements is fully deprecated, remove this.
+func oldFlattenEqMap(hwEquivalenceMap map[uint64][]uint64, hwUUIDMap map[uint64]*api.HWRequirements) (map[uint64][]uint64, map[uint64]*hwInfo) {
+	newHWUUIDMap := make(map[uint64]*hwInfo)
+	newHwEquivalenceMap := make(map[uint64][]uint64)
 
+	for hw, results := range hwEquivalenceMap {
+		allHw := []*api.HWRequirements{hwUUIDMap[hw]}
+
+		for _, hash := range results {
+			allHw = append(allHw, hwUUIDMap[hash])
+		}
+
+		// flattened is now the uuid for [newid1: obj, etc]
+		flattened := oldFlattenList(context.Background(), allHw)
+
+		for k, v := range flattened {
+			newHWUUIDMap[k] = v
+			newHwEquivalenceMap[hw] = append(newHwEquivalenceMap[hw], k)
+		}
+	}
+	return newHwEquivalenceMap, newHWUUIDMap
+}
+
+// TODO; when HwRequirements is fully deprecated, remove this.
+// oldFlattenList translates [hw.requirements=[1||2], hw.requirements=[3||4]] into [[1],[2],[3],[4]]
+func oldFlattenList(ctx context.Context, allHw []*api.HWRequirements) map[uint64]*hwInfo {
 	flatHW := make(map[uint64]*hwInfo)
 
 	for _, hw := range allHw {
 
-		for _, innerHW := range hw.HwDefinition {
+		for _, innerHW := range hw.GetHwDefinition() {
 
 			flattened := &api.HWRequirements{
 				HwDefinition: []*api.SwarmingDefinition{innerHW},
@@ -660,7 +891,7 @@ func flattenList(ctx context.Context, allHw []*api.HWRequirements) map[uint64]*h
 			if err != nil {
 				logging.Infof(ctx, fmt.Sprintf("error while creating hash for dutInfo: %s", err))
 			}
-			provInfoHash, err := hashstructure.Hash(innerHW.ProvisionInfo, hashstructure.FormatV2, nil)
+			provInfoHash, err := hashstructure.Hash(innerHW.Variant, hashstructure.FormatV2, nil)
 			if err != nil {
 				logging.Infof(ctx, fmt.Sprintf("error while creating hash for provisionInfo: %s", err))
 			}
@@ -671,9 +902,39 @@ func flattenList(ctx context.Context, allHw []*api.HWRequirements) map[uint64]*h
 			}
 
 			newHwInfo := &hwInfo{
-				req:       flattened,
+				oldReq:    flattened,
 				hwValue:   dutInfoHash,
 				provValue: provInfoHash,
+			}
+			flatHW[flattenedHash] = newHwInfo
+		}
+	}
+
+	return flatHW
+}
+
+// flattenList translates [hw.requirements=[1||2], hw.requirements=[3||4]] into [[1],[2],[3],[4]]
+func flattenList(ctx context.Context, allHw []*api.SchedulingUnitOptions) map[uint64]*hwInfo {
+
+	flatHW := make(map[uint64]*hwInfo)
+
+	for _, hw := range allHw {
+
+		for _, innerHW := range hw.SchedulingUnits {
+
+			flattened := &api.SchedulingUnitOptions{
+				SchedulingUnits: []*api.SchedulingUnit{innerHW},
+			}
+
+			flattenedHash, err := hashstructure.Hash(flattened, hashstructure.FormatV2, nil)
+			if err != nil {
+				logging.Infof(ctx, fmt.Sprintf("error while creating hash for flattened: %s", err))
+			}
+
+			newHwInfo := &hwInfo{
+				req:           flattened,
+				hwValue:       hashForSchedulingUnit(innerHW),
+				matchingValue: hashForSchedulingUnit(innerHW),
 			}
 
 			flatHW[flattenedHash] = newHwInfo
@@ -762,7 +1023,18 @@ func hwSearchOrdering(flatEqMap map[uint64][]uint64) []kv {
 }
 
 // addHWtohwUUIDMap is a helper method to inject into the map without overwriting the keys existing values.
-func addHWtohwUUIDMap(hwUUIDMap map[uint64]*api.HWRequirements, hw *api.HWRequirements) uint64 {
+func addHWtohwUUIDMap(hwUUIDMap map[uint64]*api.SchedulingUnitOptions, hw *api.SchedulingUnitOptions) uint64 {
+	hash, _ := hashstructure.Hash(hw, hashstructure.FormatV2, nil)
+	if _, hwExists := hwUUIDMap[hash]; !hwExists {
+		// Add the HW to the lookup map if not seen before.
+		hwUUIDMap[hash] = hw
+	}
+	return hash
+}
+
+// TODO; when HwRequirements is fully deprecated, remove this.
+// oldAddHWtohwUUIDMap is a helper method to inject into the map without overwriting the keys existing values.
+func oldAddHWtohwUUIDMap(hwUUIDMap map[uint64]*api.HWRequirements, hw *api.HWRequirements) uint64 {
 	hash, _ := hashstructure.Hash(hw, hashstructure.FormatV2, nil)
 	_, hwExists := hwUUIDMap[hash]
 	// Add the HW to the lookup map if not seen before.
@@ -773,7 +1045,7 @@ func addHWtohwUUIDMap(hwUUIDMap map[uint64]*api.HWRequirements, hw *api.HWRequir
 }
 
 // addHWtoFlatHWUUIDMap is a helper method to inject into the map without overwriting the keys existing values.
-func addHWtoFlatHWUUIDMap(flatHWUUIDMap map[uint64]*hwInfo, k uint64, v *hwInfo) error {
+func addHWtoFlatHWUUIDMap(ctx context.Context, flatHWUUIDMap map[uint64]*hwInfo, k uint64, v *hwInfo) error {
 	_, exists := flatHWUUIDMap[k]
 	// Add the HW to the lookup map if not seen before.
 	if !exists {
@@ -783,4 +1055,39 @@ func addHWtoFlatHWUUIDMap(flatHWUUIDMap map[uint64]*hwInfo, k uint64, v *hwInfo)
 		return fmt.Errorf("mismatch")
 	}
 	return nil
+}
+
+type hashHelper struct {
+	S *labapi.Dut
+	V string
+}
+
+func hashForSchedulingUnit(unit *api.SchedulingUnit) uint64 {
+	return hashSchedulingUnit(unit, false)
+}
+
+// This only looks at the actual DUTinfo, thus it ignores variant.
+func hashForSchedulingUnitHwOnly(unit *api.SchedulingUnit) uint64 {
+	return hashSchedulingUnit(unit, true)
+}
+
+func hashSchedulingUnit(unit *api.SchedulingUnit, hwOnly bool) uint64 {
+	h := hashHelper{S: unit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo()}
+	if !hwOnly {
+		h.V = unit.GetPrimaryTarget().GetSwarmingDef().GetVariant()
+	}
+
+	hasher := []hashHelper{h}
+	for _, secondary := range unit.GetCompanionTargets() {
+
+		if secondary.GetSwarmingDef().GetDutInfo() != nil {
+			sh := hashHelper{S: secondary.GetSwarmingDef().GetDutInfo()}
+			if !hwOnly {
+				h.V = secondary.GetSwarmingDef().GetVariant()
+			}
+			hasher = append(hasher, sh)
+		}
+	}
+	hash, _ := hashstructure.Hash(hasher, hashstructure.FormatV2, nil)
+	return hash
 }
