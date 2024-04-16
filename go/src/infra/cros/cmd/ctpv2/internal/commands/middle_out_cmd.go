@@ -750,6 +750,47 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 	}
 }
 
+func dutModelFromSwarmingDef(def *api.SwarmingDefinition) *labapi.DutModel {
+	switch hw := def.GetDutInfo().GetDutType().(type) {
+	case *labapi.Dut_Chromeos:
+		return hw.Chromeos.GetDutModel()
+	case *labapi.Dut_Android_:
+		return hw.Android.GetDutModel()
+	case *labapi.Dut_Devboard_:
+		return hw.Devboard.GetDutModel()
+	}
+	return nil
+}
+
+func addBoardModelToDims(unit *api.SchedulingUnit, dims []string) []string {
+	primaryBoard := dutModelFromSwarmingDef(unit.GetPrimaryTarget().GetSwarmingDef()).GetBuildTarget()
+	dims = append(dims, fmt.Sprintf("label-board:%s", primaryBoard))
+
+	primaryModel := dutModelFromSwarmingDef(unit.GetPrimaryTarget().GetSwarmingDef()).GetModelName()
+	if primaryModel != "" {
+		dims = append(dims, fmt.Sprintf("label-model:%s", primaryModel))
+
+	}
+	for _, secondary := range unit.GetCompanionTargets() {
+		board := dutModelFromSwarmingDef(secondary.GetSwarmingDef()).GetBuildTarget()
+		// When equal, the secondary needs the _2.
+		if board == primaryBoard {
+			board = fmt.Sprintf("%s_2", board)
+		}
+		dims = append(dims, fmt.Sprintf("label-board:%s", board))
+
+		model := dutModelFromSwarmingDef(secondary.GetSwarmingDef()).GetModelName()
+		if model == primaryModel && model != "" {
+			model = fmt.Sprintf("%s_2", model)
+		}
+
+		dims = append(dims, fmt.Sprintf("label-model:%s", model))
+
+	}
+
+	return dims
+}
+
 // CreateDims creates dims list from hwInfo object.
 func CreateDims(ctx context.Context, hwInfo *hwInfo, pool string, readycheck bool) []string {
 	// TODO replace `units` with just `hwInfo.req.GetSchedulingUnits()` once hwRequirements has been fully removed.
@@ -764,46 +805,49 @@ func CreateDims(ctx context.Context, hwInfo *hwInfo, pool string, readycheck boo
 		return []string{}
 	}
 
-	// TODO replace `dut` with just `hwInfo.req.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwarmingDef()` once hwRequirements has been fully removed
-	dut := &api.SwarmingDefinition{}
+	dims := []string{}
+	if readycheck {
+		dims = append(dims, "dut_state:ready")
+	}
+
 	if len(hwInfo.req.GetSchedulingUnits()) > 0 {
-		dut = hwInfo.req.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwarmingDef()
+		dims = ConvertSwarmingLabelsToDims(dims, hwInfo.req.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwarmingDef().GetSwarmingLabels())
+		dims = addBoardModelToDims(hwInfo.req.GetSchedulingUnits()[0], dims)
 	} else if len(hwInfo.oldReq.GetHwDefinition()) == 1 {
-		dut = hwInfo.oldReq.GetHwDefinition()[0]
+		// TODO remove this entire `else` statement when HWRequirements is done.
+		dims = ConvertSwarmingLabelsToDims(dims, hwInfo.oldReq.GetHwDefinition()[0].GetSwarmingLabels())
+		if hwInfo.oldReq.GetHwDefinition()[0] != nil {
+			dutInfo := hwInfo.oldReq.GetHwDefinition()[0].GetDutInfo()
+			if dutInfo.GetChromeos().GetDutModel() != nil {
+				dutModel := dutInfo.GetChromeos().GetDutModel()
+				if dutModel.GetBuildTarget() != "" {
+					dims = append(dims, fmt.Sprintf("label-board:%s", strings.ToLower(dutModel.GetBuildTarget())))
+				}
+				if dutModel.GetModelName() != "" {
+					dims = append(dims, fmt.Sprintf("label-model:%s", strings.ToLower(dutModel.GetModelName())))
+				}
+			}
+		}
 	} else {
 		return []string{}
 	}
-
-	deafultDims := []string{}
-	if readycheck {
-		deafultDims = append(deafultDims, "dut_state:ready")
+	if hwidFromHwInfo(hwInfo) != "" {
+		dims = append(dims, fmt.Sprintf("hwid:%s", hwidFromHwInfo(hwInfo)))
 	}
-	dims := ConvertSwarmingLabelsToDims(deafultDims, dut.GetSwarmingLabels())
-
-	// Add labels from dut info
-	if dut.GetDutInfo() != nil {
-		dutInfo := dut.GetDutInfo()
-
-		// TODO (azrahman/dbeckett): Handle android and devboard cases
-		if dutInfo.GetChromeos().GetDutModel() != nil {
-			dutModel := dutInfo.GetChromeos().GetDutModel()
-			if dutModel.GetBuildTarget() != "" {
-				dims = append(dims, fmt.Sprintf("label-board:%s", strings.ToLower(dutModel.GetBuildTarget())))
-			}
-			if dutModel.GetModelName() != "" {
-				dims = append(dims, fmt.Sprintf("label-model:%s", strings.ToLower(dutModel.GetModelName())))
-			}
-			if pool != "" {
-				dims = append(dims, fmt.Sprintf("label-pool:%s", pool))
-			}
-		}
-
-		if dutInfo.GetChromeos().GetHwid() != "" {
-			dims = append(dims, fmt.Sprintf("hwid:%s", dutInfo.GetChromeos().GetHwid()))
-		}
+	if pool != "" {
+		dims = append(dims, fmt.Sprintf("label-pool:%s", pool))
 	}
 
 	return dims
+}
+
+func hwidFromHwInfo(hwInfo *hwInfo) string {
+	if hwInfo.oldReq != nil {
+		return hwInfo.oldReq.GetHwDefinition()[0].GetDutInfo().GetChromeos().GetHwid()
+	} else if hwInfo.req != nil {
+		return hwInfo.req.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwarmingDef().GetDutInfo().GetChromeos().GetHwid()
+	}
+	return ""
 }
 
 // ConvertSwarmingLabelsToDims converts provided swarming labels to swarming dims.
@@ -820,7 +864,6 @@ func ConvertSwarmingLabelsToDims(defaultDims []string, swarmingLabels []string) 
 			dims = append(dims, fmt.Sprintf("label-%s:True", label))
 		}
 	}
-
 	return dims
 }
 

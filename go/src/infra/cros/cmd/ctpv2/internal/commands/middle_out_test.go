@@ -1484,6 +1484,23 @@ func TestSharding(t *testing.T) {
 	}
 }
 
+func TestAddBoardModelToDims(t *testing.T) {
+	vars := buildTestVars()
+	dims := []string{"one"}
+	expected := []string{"one", "label-board:foo", "label-model:bar"}
+	dims = addBoardModelToDims(vars.HwDef001SU, dims)
+	if !reflect.DeepEqual(dims, expected) {
+		t.Fatalf("mismatch. Expected %s got %s", dims, expected)
+	}
+
+	newDims := []string{"ready"}
+	newDims = addBoardModelToDims(vars.HwDef001SUWHW1Companion, newDims)
+	expected = []string{"ready", "label-board:foo", "label-model:bar", "label-board:foo_2", "label-model:bar_2"}
+	if !reflect.DeepEqual(newDims, expected) {
+		t.Fatalf("mismatch. Expected %s got %s", expected, newDims)
+	}
+}
+
 // TODO; once HWRequirements is deprecated; remove `target`
 func getBuildTarget(target *api.HWRequirements, newtarget *api.SchedulingUnitOptions) string {
 	if target != nil {
