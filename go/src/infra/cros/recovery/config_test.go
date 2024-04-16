@@ -70,6 +70,12 @@ func TestAndroidDeployConfig(t *testing.T) {
 	verifyConfig("android-deploy", t, config.AndroidDeployConfig())
 }
 
+// TestBtpeerProvisionConfig verifies the btpeer provision config.
+func TestBtpeerProvisionConfig(t *testing.T) {
+	t.Parallel()
+	verifyConfig("btpeer-provision", t, config.ProvisionBtpeerConfig("test_url"))
+}
+
 func mustCreateConfigJSON(c *config.Configuration) io.Reader {
 	b, err := json.Marshal(c)
 	if err != nil {

@@ -639,6 +639,12 @@ var customConfigurationTestCases = []struct {
 			return config.EnableSerialConsoleConfig()
 		},
 	},
+	{
+		"BTpeer provision plan",
+		func() *config.Configuration {
+			return config.ProvisionBtpeerConfig("test_url")
+		},
+	},
 }
 
 // TestOtherConfigurations tests other known configurations used anywhere.
