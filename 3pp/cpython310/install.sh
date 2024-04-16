@@ -24,6 +24,10 @@ GITTAG="/bin/echo -n ${GITTAG_NAME}"
 # result.
 rm -rf .git
 
+# Workaround to avoid posixpath importing pwd which generates
+# ImportError: 'pwd' is not a built-in module
+export HOME="$(pwd)"
+
 # Make sure we don't pick up any modules from the host PYTHONPATH.
 export PYTHONPATH=""
 

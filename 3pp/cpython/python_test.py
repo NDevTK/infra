@@ -68,6 +68,7 @@ class TestPython(unittest.TestCase):
   def setUp(self):
     self.test_tdir = tempfile.mkdtemp(dir=self.tdir)
     self.env = os.environ.copy()
+    self.env["HOME"] = os.getcwd()
 
   def _write_file(self, content):
     fd = None
@@ -138,7 +139,7 @@ class TestPython(unittest.TestCase):
         '-c',
         script,
     ]
-    rv = subprocess.call(cmd)
+    rv = subprocess.call(cmd, env=self.env)
     self.assertEqual(rv, 0)
 
   def test_cryptography_import(self):

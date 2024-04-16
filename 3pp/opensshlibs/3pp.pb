@@ -13,6 +13,7 @@ create {
   }
 
   build {
+    tool: "tools/sed"
     dep: "static_libs/openssl"
     dep: "static_libs/zlib"
   }

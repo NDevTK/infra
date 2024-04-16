@@ -12,7 +12,9 @@ create {
 
 create {
   platform_re: "linux-.*|mac-.*"
-  build {}
+  build {
+    tool: "tools/sed"
+  }
 }
 
 create {

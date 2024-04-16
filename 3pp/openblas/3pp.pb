@@ -7,7 +7,9 @@ create {
     }
     patch_version: "chromium.2"
   }
-  build {}
+  build {
+    tool: "tools/sed"
+  }
 }
 
 upload { pkg_prefix: "static_libs" }
