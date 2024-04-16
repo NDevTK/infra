@@ -1591,7 +1591,7 @@ The protos are exported via a symlink in
 &mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py#18)(api):**
 ### *recipes* / [cv\_testing/tryjob](/recipes/recipes/cv_testing/tryjob.py)
 
-[DEPS](/recipes/recipes/cv_testing/tryjob.py#11): [recipe\_engine/cq][recipe_engine/recipe_modules/cq], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipes/cv_testing/tryjob.py#11): [recipe\_engine/cv][recipe_engine/recipe_modules/cv], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
 Recipe to test LUCI CQ/CV itself.
@@ -2030,7 +2030,7 @@ This recipe executes offline_winpe_customization.
 [recipe_engine/recipe_modules/cipd]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f99f9d564981c342f664cc643f1d9ce9fc269a23/README.recipes.md#recipe_modules-cipd
 [recipe_engine/recipe_modules/commit_position]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f99f9d564981c342f664cc643f1d9ce9fc269a23/README.recipes.md#recipe_modules-commit_position
 [recipe_engine/recipe_modules/context]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f99f9d564981c342f664cc643f1d9ce9fc269a23/README.recipes.md#recipe_modules-context
-[recipe_engine/recipe_modules/cq]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f99f9d564981c342f664cc643f1d9ce9fc269a23/README.recipes.md#recipe_modules-cq
+[recipe_engine/recipe_modules/cv]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f99f9d564981c342f664cc643f1d9ce9fc269a23/README.recipes.md#recipe_modules-cv
 [recipe_engine/recipe_modules/defer]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f99f9d564981c342f664cc643f1d9ce9fc269a23/README.recipes.md#recipe_modules-defer
 [recipe_engine/recipe_modules/file]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f99f9d564981c342f664cc643f1d9ce9fc269a23/README.recipes.md#recipe_modules-file
 [recipe_engine/recipe_modules/futures]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f99f9d564981c342f664cc643f1d9ce9fc269a23/README.recipes.md#recipe_modules-futures

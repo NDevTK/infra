@@ -9,7 +9,7 @@ from PB.recipes.infra.cv_testing import tryjob as pb
 PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
-  'recipe_engine/cq',
+  'recipe_engine/cv',
   'recipe_engine/properties',
   'recipe_engine/step',
 ]
@@ -20,7 +20,7 @@ PROPERTIES = pb.Input
 def RunSteps(api, properties):
   api.step('1 step per recipe keeps a recipe engine crash away', cmd=None)
   if properties.reuse_own_mode_only:
-    api.cq.allow_reuse_for(api.cq.run_mode)
+    api.cv.allow_reuse_for(api.cv.run_mode)
   if properties.fail:
     raise api.step.StepFailure('tryjob wants to be red')
   if properties.infra_fail:
@@ -31,7 +31,7 @@ def GenTests(api):
   def test(name, *args, **kwargs):
     return api.test(
         name,
-        api.cq(run_mode=api.cq.DRY_RUN),
+        api.cv(run_mode=api.cv.DRY_RUN),
         *args,
         **kwargs,
     )
