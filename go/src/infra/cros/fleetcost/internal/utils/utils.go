@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 
 	"google.golang.org/genproto/googleapis/type/money"
@@ -70,8 +71,11 @@ func ToLocation(x string) (fleetcostpb.Location, error) {
 	return fleetcostpb.Location(out), err
 }
 
-var errNotFound error = errors.New("item not found")
-
+// Function lookValue looks up a string key in a proto map.
+//
+// First it uppercases the string, and adds a prefix if necessary, due to the verbosity of the proto naming conventions.
+//
+// The error that this function returns is intended to be multi-line and human readable.
 func lookupValue(m map[string]int32, key string, prefix string) (int32, error) {
 	key = strings.ToUpper(key)
 	prefix = strings.ToUpper(prefix)
@@ -84,7 +88,22 @@ func lookupValue(m map[string]int32, key string, prefix string) (int32, error) {
 			return res, nil
 		}
 	}
-	return 0, errNotFound
+	return 0, errors.New(strings.Join(lookupValueErrorMessage(m), "\n"))
+}
+
+// Function lookupValueErrorMessage creates a help message from a proto map.
+func lookupValueErrorMessage(m map[string]int32) []string {
+	var out []string
+	out = append(out, "Choose a candidate from the following values (with or without prefix):")
+	var keys []string
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		out = append(out, fmt.Sprintf("- %s", k))
+	}
+	return out
 }
 
 // RunPerhapsInTransaction runs a datastore command perhaps in a transaction.
