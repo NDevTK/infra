@@ -50,6 +50,7 @@ func getApplication() *cli.Application {
 			tasks.BatteryCutOff,
 			tasks.SerialConsole,
 			tasks.TestStateChange,
+			tasks.ProvisionBtpeers,
 		},
 	}
 }
