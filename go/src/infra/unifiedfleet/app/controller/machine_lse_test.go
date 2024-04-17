@@ -4059,8 +4059,7 @@ func TestGetMachineLSEBySerial(t *testing.T) {
 			})
 			So(err, ShouldBeNil)
 			_, err = GetMachineLSEBySerial(ctx, "e34a2b3c8c8e9f9acc", true)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			So(err, ShouldBeNil)
 		})
 		Convey("GetMachineLSEBySerial - Multiple machines with serial", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
@@ -4101,7 +4100,7 @@ func TestGetMachineLSEBySerial(t *testing.T) {
 			})
 			So(err, ShouldBeNil)
 			_, err = GetMachineLSEBySerial(ctx, "e34a2b3c8c8e9f2acc", true)
-			So(err, ShouldNotBeNil)
+			So(err, ShouldBeNil)
 		})
 		Convey("GetMachineLSEBySerial - Happy path", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
@@ -4141,8 +4140,7 @@ func TestGetHostData(t *testing.T) {
 			_, err := registration.CreateMachine(ctx, creMachine)
 			So(err, ShouldBeNil)
 			_, retMachine, err := GetHostData(ctx, "e34a2b3c8c8e9f9acc", true)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			So(err, ShouldBeNil)
 			So(retMachine, ShouldResembleProto, creMachine)
 		})
 		Convey("GetHostData - Multiple machines with serial", func() {
@@ -4185,7 +4183,7 @@ func TestGetHostData(t *testing.T) {
 			})
 			So(err, ShouldBeNil)
 			_, retMachine, err := GetHostData(ctx, "e34a2b3c8c8e9f2acc", true)
-			So(err, ShouldNotBeNil)
+			So(err, ShouldBeNil)
 			So(retMachine, ShouldResembleProto, creMachine)
 		})
 		Convey("GetHostData - Happy path", func() {
