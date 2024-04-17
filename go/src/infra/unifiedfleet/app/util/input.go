@@ -1117,24 +1117,15 @@ func ToSIMType(simType string) chromeosLab.SIMType {
 	return chromeosLab.SIMType(v)
 }
 
-// StrToNetworkType refers a map between NetworkProvider type and and enum value.
-var StrToNetworkType = map[string]int32{
-	"NETWORK_OTHER":   0,
-	"NETWORK_TEST":    1,
-	"NETWORK_ATT":     2,
-	"NETWORK_TMOBILE": 3,
-	"NETWORK_VERIZON": 4,
-}
-
 // IsNetworkType checks if a string refers to a valid NetworkProvider.
 func IsNetworkType(networkType string) bool {
-	_, ok := StrToNetworkType[networkType]
+	_, ok := chromeosLab.NetworkProvider_value[networkType]
 	return ok
 }
 
 // ToNetworkType converts Type string to a NetworkProvider type enum.
 func ToNetworkType(networkType string) chromeosLab.NetworkProvider {
-	v, ok := StrToNetworkType[networkType]
+	v, ok := chromeosLab.NetworkProvider_value[networkType]
 	if !ok {
 		return chromeosLab.NetworkProvider_NETWORK_OTHER
 	}
