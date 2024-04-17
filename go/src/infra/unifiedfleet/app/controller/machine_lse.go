@@ -546,14 +546,17 @@ func GetHostData(ctx context.Context, serial string, full bool) (*ufspb.MachineL
 	lseFilter := fmt.Sprintf("%s=%s", util.MachineFilterName, machines[0].GetName())
 	machineLses, _, err := ListMachineLSEs(ctx, 2, "", lseFilter, false, full)
 	if err != nil {
-		return nil, machines[0], errors.Annotate(err, "GetHostData - Failed to get machine LSE").Err()
+		logging.Errorf(ctx, "GetHostData - Failed to get machine LSE. Returning machine data only. %v", err)
+		return nil, machines[0], nil
 	}
 	// There should be exactly one machine lse configured for the machine
 	if len(machineLses) > 1 {
-		return nil, machines[0], errors.Reason("GetHostData - unexpected!! multiple machine lses[%v] with same machine %s", machineLses, machines[0]).Err()
+		logging.Errorf(ctx, "GetHostData - unexpected!! multiple machine lses[%v] with same machine %s", machineLses, machines[0])
+		return nil, machines[0], nil
 	}
 	if len(machineLses) == 0 {
-		return nil, machines[0], errors.Reason("GetHostData - Entity not found, No Lse setup for the machine").Err()
+		logging.Errorf(ctx, "GetHostData - Entity not found, No Lse setup for the machine. %v", err)
+		return nil, machines[0], nil
 	}
 	return machineLses[0], machines[0], nil
 }
