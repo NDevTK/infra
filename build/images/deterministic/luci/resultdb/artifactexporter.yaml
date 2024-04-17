@@ -1,0 +1,12 @@
+name: luci/resultdb/artifactexporter
+extends: ../../../base.yaml
+
+contextdir: ../../../../../go/src/go.chromium.org/luci/resultdb/cmd/artifactexporter/docker
+deterministic: true
+
+sources:
+  - ../../../../../go/src/go.chromium.org/luci/resultdb
+
+build:
+  - go_binary: go.chromium.org/luci/resultdb/cmd/artifactexporter
+    dest: ${contextdir}/bin/artifactexporter
