@@ -150,3 +150,17 @@ func PrintMultiError(a subcommands.Application, err error) {
 		cmdlib.PrintError(a, err)
 	}
 }
+
+// Assert panics if the condition is false.
+//
+// You must only use this function when you encounter a logic error in the program.
+// Do not use it for conditions that do not indicate a bug.
+//
+// Note that this function contradicts the following Go recommendation:
+// https://go.dev/doc/faq#assertions
+func Assert(cond bool, message string) {
+	if cond {
+		return
+	}
+	panic(message)
+}
