@@ -165,7 +165,7 @@ describe('mr-header', () => {
   it('_projectDropdownItems computes projects for user', () => {
     element.userProjects = {
       ownerOf: ['chromium'],
-      memberOf: ['v8'],
+      memberOf: ['mockv8'],
       contributorTo: ['mockskia'],
       starredProjects: ['mockgerrit'],
     };
@@ -180,8 +180,8 @@ describe('mr-header', () => {
     assert.equal(items[1].url, 'https://bugs.chromium.org/p/chromium/issues/list');
     assert.equal(items[2].text, 'mockskia');
     assert.equal(items[2].url, '/p/mockskia/issues/list');
-    assert.equal(items[3].text, 'v8');
-    assert.equal(items[3].url, '/p/v8/issues/list');
+    assert.equal(items[3].text, 'mockv8');
+    assert.equal(items[3].url, '/p/mockv8/issues/list');
 
     // Starred Projects
     assert.equal(items[5].text, 'mockgerrit');

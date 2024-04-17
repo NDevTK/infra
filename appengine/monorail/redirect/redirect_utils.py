@@ -11,12 +11,13 @@ from tracker import tracker_bizobj
 from redirect import redirect_custom_labels
 
 PROJECT_REDIRECT_MAP = {
-    'pigweed': 'https://issues.pigweed.dev',
-    'git': 'https://git.issues.gerritcodereview.com',
-    'gerrit': 'https://issues.gerritcodereview.com',
-    'skia': 'http://issues.skia.org',
-    'fuchsia': 'https://issues.fuchsia.dev',
     'chromium': 'https://issues.chromium.org',
+    'fuchsia': 'https://issues.fuchsia.dev',
+    'gerrit': 'https://issues.gerritcodereview.com',
+    'git': 'https://git.issues.gerritcodereview.com',
+    'pigweed': 'https://issues.pigweed.dev',
+    'skia': 'http://issues.skia.org',
+    'v8': 'http://issues.chromium.org',
 }
 
 MAX_MONORAIL_ISSUE_ID = 10000000
