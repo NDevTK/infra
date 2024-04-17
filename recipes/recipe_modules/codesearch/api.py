@@ -20,7 +20,7 @@ class CodesearchApi(recipe_api.RecipeApi):
 
   def get_config_defaults(self):
     return {
-        'CHECKOUT_PATH': self.m.path['checkout'],
+        'CHECKOUT_PATH': self.m.path.checkout_dir,
     }
 
   def cleanup_old_generated(self, age_days=7):
