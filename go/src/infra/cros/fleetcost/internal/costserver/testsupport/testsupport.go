@@ -9,6 +9,7 @@ package testsupport
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 
@@ -32,6 +33,7 @@ type Fixture struct {
 	Ctx      context.Context
 	Frontend *costserver.FleetCostFrontend
 	MockUFS  *mockufs.MockFleetClient
+	Time     time.Time
 }
 
 // RegisterGetDeviceDataCall registers a GetDeviceData request and response.
@@ -46,6 +48,7 @@ func NewFixture(ctx context.Context, t *testing.T) *Fixture {
 	var out Fixture
 	out.Ctx = memory.Use(ctx)
 	datastore.GetTestable(out.Ctx).Consistent(true)
+	out.Time = time.Unix(1713391490, 0).UTC()
 	out.Frontend = costserver.NewFleetCostFrontend().(*costserver.FleetCostFrontend)
 	out.MockUFS = mockufs.NewMockFleetClient(mc)
 	costserver.SetUFSClient(out.Frontend, out.MockUFS)
