@@ -130,7 +130,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[submodule \"third_party/gsutil\"]\n\tpath = third_party/gsutil\n\turl = https://chromium.googlesource.com/external/gsutil/src.git",
+      "[submodule \"third_party/gsutil\"]\n\tpath = third_party/gsutil\n\turl = https://chromium.googlesource.com/external/gsutil/src",
       "[CACHE]/codesearch_update_submodules_mirror/src/.gitmodules"
     ],
     "infra_step": true,
@@ -139,7 +139,7 @@
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@.gitmodules@[submodule \"third_party/gsutil\"]@@@",
       "@@@STEP_LOG_LINE@.gitmodules@\tpath = third_party/gsutil@@@",
-      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/external/gsutil/src.git@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/external/gsutil/src@@@",
       "@@@STEP_LOG_END@.gitmodules@@@"
     ]
   },

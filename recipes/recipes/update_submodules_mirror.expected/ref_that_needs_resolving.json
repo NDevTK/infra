@@ -144,7 +144,7 @@
       "--json-output",
       "/path/to/tmp/json",
       "copy",
-      "[submodule \"v8\"]\n\tpath = v8\n\turl = https://chromium.googlesource.com/v8/v8.git",
+      "[submodule \"v8\"]\n\tpath = v8\n\turl = https://chromium.googlesource.com/v8/v8",
       "[CACHE]/codesearch_update_submodules_mirror/src/.gitmodules"
     ],
     "infra_step": true,
@@ -153,7 +153,7 @@
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@.gitmodules@[submodule \"v8\"]@@@",
       "@@@STEP_LOG_LINE@.gitmodules@\tpath = v8@@@",
-      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/v8/v8.git@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/v8/v8@@@",
       "@@@STEP_LOG_END@.gitmodules@@@"
     ]
   },

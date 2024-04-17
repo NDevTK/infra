@@ -321,8 +321,10 @@ def GetSubmodules(api, deps, source_checkout_name, overlays):
 
     update_index_entries.extend(['--cacheinfo', '160000,%s,%s' % (rev, path)])
 
-    gitmodules_entries.append('[submodule "%s"]\n\tpath = %s\n\turl = %s'
-                              % (path, path, str(url)))
+    if url.endswith('.git'):
+      url = url[:-4]
+    gitmodules_entries.append('[submodule "%s"]\n\tpath = %s\n\turl = %s' %
+                              (path, path, url))
 
   return update_index_entries, gitmodules_entries
 
@@ -334,7 +336,7 @@ fake_src_deps = """
     "rev": "4ad2459561d76217c9b7aff412c5c086b491078a"
   },
   "src/buildtools": {
-    "url": "https://chromium.googlesource.com/chromium/buildtools.git",
+    "url": "https://chromium.googlesource.com/chromium/buildtools",
     "rev": "13a00f110ef910a25763346d6538b60f12845656"
   },
   "src-internal": {
