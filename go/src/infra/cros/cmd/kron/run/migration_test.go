@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 )
@@ -169,6 +170,34 @@ func TestIsAllowedNotOnListSkip(t *testing.T) {
 	allowed := isAllowed(&config)
 
 	if allowed {
+		t.Errorf("Config was accepted incorrectly.")
+	}
+}
+
+func TestIsAllowedSkipPartnersConfigs(t *testing.T) {
+	config := `{
+		"name": "Partner",
+		"suite": "rlz",
+		"runOptions": {
+			"timeoutMins": 2340,
+			"tagCriteria": {},
+			"builderId": {
+				"project": "test",
+				"bucket": "test",
+				"builder": "test"
+			},
+			"crosImageBucket": "test"
+		},
+		"analyticsName": "Partner"
+	}`
+
+	configObject := &suschpb.SchedulerConfig{}
+	err := protojson.Unmarshal([]byte(config), configObject)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if isAllowed(configObject) {
 		t.Errorf("Config was accepted incorrectly.")
 	}
 }
