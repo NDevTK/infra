@@ -246,12 +246,23 @@ func legacyswpoper(sws *testapi.SWTarget) *testapi.LegacySW {
 
 func buildHwDef(hw *testapi.LegacyHW) *testapi.SwarmingDefinition {
 	dut := &labapi.Dut{}
-
-	Cros := &labapi.Dut_ChromeOS{DutModel: &labapi.DutModel{
+	dutModel := &labapi.DutModel{
 		BuildTarget: hw.Board,
 		ModelName:   hw.Model,
-	}}
-	dut.DutType = &labapi.Dut_Chromeos{Chromeos: Cros}
+	}
+	if common.IsAndroid(hw) {
+		android := &labapi.Dut_Android{DutModel: dutModel}
+		dut.DutType = &labapi.Dut_Android_{Android: android}
+
+	} else if common.IsCros(hw) {
+		Cros := &labapi.Dut_ChromeOS{DutModel: dutModel}
+		dut.DutType = &labapi.Dut_Chromeos{Chromeos: Cros}
+
+	} else if common.IsDevBoard(hw) {
+		devBoard := &labapi.Dut_Devboard{DutModel: dutModel}
+		dut.DutType = &labapi.Dut_Devboard_{Devboard: devBoard}
+
+	}
 
 	return &testapi.SwarmingDefinition{DutInfo: dut, Variant: hw.GetVariant(),
 		SwarmingLabels: hw.GetSwarmingDimensions()}
