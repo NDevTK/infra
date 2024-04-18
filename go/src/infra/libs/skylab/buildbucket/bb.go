@@ -71,7 +71,7 @@ func NewHTTPClient(ctx context.Context, f *authcli.Flags) (*http.Client, error) 
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get auth options").Err()
 	}
-	a := auth.NewAuthenticator(ctx, auth.OptionalLogin, o)
+	a := auth.NewAuthenticator(ctx, auth.SilentLogin, o)
 	c, err := a.Client()
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to create HTTP client").Err()
