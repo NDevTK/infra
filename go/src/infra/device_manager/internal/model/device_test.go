@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	. "github.com/smartystreets/goconvey/convey"
@@ -33,16 +34,37 @@ func TestGetDeviceByName(t *testing.T) {
 				}
 			}()
 
-			rows := sqlmock.NewRows([]string{"id", "device_address", "device_type", "device_state"}).
-				AddRow("test-device-1", "1.1.1.1:1", "DEVICE_TYPE_PHYSICAL", "DEVICE_STATE_AVAILABLE").
-				AddRow("test-device-2", "2.2.2.2:2", "DEVICE_TYPE_VIRTUAL", "DEVICE_STATE_LEASED")
+			timeNow := time.Now()
+			rows := sqlmock.NewRows([]string{
+				"id",
+				"device_address",
+				"device_type",
+				"device_state",
+				"last_updated_time",
+				"is_active"}).
+				AddRow(
+					"test-device-1",
+					"1.1.1.1:1",
+					"DEVICE_TYPE_PHYSICAL",
+					"DEVICE_STATE_AVAILABLE",
+					timeNow,
+					true).
+				AddRow(
+					"test-device-2",
+					"2.2.2.2:2",
+					"DEVICE_TYPE_VIRTUAL",
+					"DEVICE_STATE_LEASED",
+					timeNow,
+					false)
 
 			mock.ExpectQuery(regexp.QuoteMeta(`
 				SELECT
 					id,
 					device_address,
 					device_type,
-					device_state
+					device_state,
+					last_update_time,
+					is_active
 				FROM "Devices"
 				WHERE id=$1;`)).
 				WithArgs("test-device-1").
@@ -51,10 +73,12 @@ func TestGetDeviceByName(t *testing.T) {
 			device, err := GetDeviceByName(ctx, db, "test-device-1")
 			So(err, ShouldBeNil)
 			So(device, ShouldEqual, Device{
-				ID:            "test-device-1",
-				DeviceAddress: "1.1.1.1:1",
-				DeviceType:    "DEVICE_TYPE_PHYSICAL",
-				DeviceState:   "DEVICE_STATE_AVAILABLE",
+				ID:              "test-device-1",
+				DeviceAddress:   "1.1.1.1:1",
+				DeviceType:      "DEVICE_TYPE_PHYSICAL",
+				DeviceState:     "DEVICE_STATE_AVAILABLE",
+				LastUpdatedTime: timeNow,
+				IsActive:        true,
 			})
 		})
 		Convey("GetDeviceByName: invalid request; no device name match", func() {
@@ -75,7 +99,9 @@ func TestGetDeviceByName(t *testing.T) {
 					id,
 					device_address,
 					device_type,
-					device_state
+					device_state,
+					last_update_time,
+					is_active
 				FROM "Devices"
 				WHERE id=$1;`)).
 				WithArgs("test-device-2").
@@ -114,23 +140,28 @@ func TestUpdateDevice(t *testing.T) {
 				t.Fatalf("an error '%s' was not expected when opening a stub db transaction", err)
 			}
 
+			timeNow := time.Now()
+
 			mock.ExpectExec(regexp.QuoteMeta(`
 				UPDATE
 					"Devices"
 				SET
 					device_address=COALESCE($2, device_address),
 					device_type=COALESCE($3, device_type),
-					device_state=COALESCE($4, device_state)
+					device_state=COALESCE($4, device_state),
+					last_updated_time=COALESCE($5, last_updated_time),
+					is_active=COALESCE($6, is_active)
 				WHERE
 					id=$1;`)).
-				WithArgs("test-device-1", "2.2.2.2:2", "DEVICE_TYPE_VIRTUAL", "DEVICE_STATE_LEASED").
+				WithArgs("test-device-1", "2.2.2.2:2", "DEVICE_TYPE_VIRTUAL", "DEVICE_STATE_LEASED", timeNow, false).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
 			err = UpdateDevice(ctx, tx, Device{
-				ID:            "test-device-1",
-				DeviceAddress: "2.2.2.2:2",
-				DeviceType:    "DEVICE_TYPE_VIRTUAL",
-				DeviceState:   "DEVICE_STATE_LEASED",
+				ID:              "test-device-1",
+				DeviceAddress:   "2.2.2.2:2",
+				DeviceType:      "DEVICE_TYPE_VIRTUAL",
+				DeviceState:     "DEVICE_STATE_LEASED",
+				LastUpdatedTime: timeNow,
 			})
 			So(err, ShouldBeNil)
 		})
