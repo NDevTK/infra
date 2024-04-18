@@ -6,16 +6,18 @@ package utils
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math"
 	"sort"
 	"strings"
 
+	"github.com/maruel/subcommands"
 	"google.golang.org/genproto/googleapis/type/money"
 
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 
+	"infra/cmdsupport/cmdlib"
 	fleetcostpb "infra/cros/fleetcost/api/models"
 )
 
@@ -135,4 +137,16 @@ func InsertOneWithoutReplacement(ctx context.Context, newTransaction bool, entit
 		}
 		return datastore.Put(ctx, entity)
 	}, options)
+}
+
+// PrintMultiError prints a multierror, unwrapping as necessary.
+func PrintMultiError(a subcommands.Application, err error) {
+	var merr errors.MultiError
+	if errors.As(err, &merr) {
+		for _, e := range merr {
+			cmdlib.PrintError(a, e)
+		}
+	} else {
+		cmdlib.PrintError(a, err)
+	}
 }
