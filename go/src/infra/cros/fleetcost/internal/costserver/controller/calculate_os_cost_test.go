@@ -31,7 +31,7 @@ func TestGetServoCost(t *testing.T) {
 			Board:    "servo_v4_with_servo_micro_and_ccd_cr50",
 			Model:    "",
 			Location: fleetcostpb.Location_LOCATION_ALL,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        100.0,
@@ -89,8 +89,9 @@ func TestCalculateCostForSingleChromeosDut(t *testing.T) {
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:    "build-target",
 			Model:    "model",
+			Sku:      "",
 			Location: fleetcostpb.Location_LOCATION_ALL,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        12,

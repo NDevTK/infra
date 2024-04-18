@@ -50,7 +50,7 @@ func TestDUTWithNoPeripherals(t *testing.T) {
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:    "build-target",
 			Model:    "model",
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_LABSTATION,
+			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
 			Location: fleetcostpb.Location_LOCATION_ALL,
 			Cost: &money.Money{
 				Units: 100,

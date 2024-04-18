@@ -10,6 +10,7 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
+	"go.chromium.org/luci/common/data/lex64"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -80,9 +81,26 @@ func (indicator *CostIndicatorEntity) SetMeta(key string, value any) bool {
 func (indicator *CostIndicatorEntity) GetMeta(key string) (any, bool) {
 	if key == "id" {
 		costIndicator := indicator.CostIndicator
-		return fmt.Sprintf("v1;%s;%s;%s", costIndicator.GetBoard(), costIndicator.GetModel(), costIndicator.GetSku()), true
+		return fmt.Sprintf(
+			"v1;%s;%s;%s;%d;%d",
+			encode(costIndicator.GetBoard()),
+			encode(costIndicator.GetModel()),
+			encode(costIndicator.GetSku()),
+			costIndicator.GetLocation().Number(),
+			costIndicator.GetType().Number(),
+		), true
 	}
 	return datastore.GetPLS(indicator).GetMeta(key)
+}
+
+// Function encode encodes a string to a custom base64 encoding that preserves lexicographic comparisons.
+func encode(input string) string {
+	encoding, _ := lex64.GetEncoding(lex64.V2)
+	out, err := lex64.Encode(encoding, []byte(input))
+	if err != nil {
+		return ""
+	}
+	return out
 }
 
 // Clone produces a deep copy of a cost indicator.
