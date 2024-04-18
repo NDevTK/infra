@@ -77,7 +77,7 @@ func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Appli
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.GetCostResult(ctx, &fleetcostAPI.GetCostResultRequest{Hostname: c.name})
-	if err == nil {
+	if err != nil {
 		return errors.Annotate(err, "get cost result").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
