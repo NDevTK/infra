@@ -128,7 +128,7 @@ func TestFromSSHConfig(t *testing.T) {
 				So(pc, ShouldNotBeNil)
 				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
 				So(pc.GetConfig(), ShouldResemble, &tls.Config{
-					ServerName: "test.google.com:2222",
+					ServerName: "test.google.com",
 				})
 			})
 		})
@@ -144,7 +144,7 @@ func TestFromSSHConfig(t *testing.T) {
 				So(pc, ShouldNotBeNil)
 				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
 				So(pc.GetConfig(), ShouldResemble, &tls.Config{
-					ServerName: "test.google.com:22",
+					ServerName: "test.google.com",
 				})
 			})
 			Convey("Given hostname:default port - Returns ProxyConfig", func() {
@@ -152,7 +152,7 @@ func TestFromSSHConfig(t *testing.T) {
 				So(pc, ShouldNotBeNil)
 				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
 				So(pc.GetConfig(), ShouldResemble, &tls.Config{
-					ServerName: "test.google.com:22",
+					ServerName: "test.google.com",
 				})
 			})
 			Convey("Given hostname:port - Returns ProxyConfig", func() {
@@ -160,7 +160,7 @@ func TestFromSSHConfig(t *testing.T) {
 				So(pc, ShouldNotBeNil)
 				So(pc.GetAddr(), ShouldEqual, "1.2.3.4:443")
 				So(pc.GetConfig(), ShouldResemble, &tls.Config{
-					ServerName: "test.google.com:2222",
+					ServerName: "test.google.com",
 				})
 			})
 		})
