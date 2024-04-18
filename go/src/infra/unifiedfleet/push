@@ -43,34 +43,7 @@ NEW_VERSION_FILE=$(cat $VERSION_FILE | python3 -c 'import json,sys;obj=json.load
 
 echo "$NEW_VERSION_FILE" > $VERSION_FILE
 
-./main.star
-git commit -a -F - <<EOF
-UFS: push to prod
-
-dumper => $DUMPER_OLD_IMAGE_TAG to $DUMPER_NEW_IMAGE_TAG
-ufs-service => $SERVICE_OLD_IMAGE_TAG to $SERVICE_NEW_IMAGE_TAG
-
-BUG=None
-TEST=./main.star
-EOF
-
-cat - | more <<EOF
-== The UFS push CL:
-
-$(git log -1 -p)
-
-EOF
-
-echo "== Does this look good? [y/n]"
-read -r CONFIRM
-
-if [[ $CONFIRM != "y" ]]; then
-	echo "Aborting the CL and push"
-	exit 1
-fi
-
-git cl upload --no-squash
-
+# Get the changelog from the ufs dir
 popd >/dev/null || (
 	echo "Failed to exit from the temp working dir $WORKDIR. Exiting."
 	exit 1
@@ -106,6 +79,53 @@ fi
 
 # Get the changelog content
 CONTENT=$(git log refs/remotes/origin/main --oneline "$OLD_COMMIT".."$NEW_COMMIT" -- . ../cmd/shivas)
+
+# Change back to workdir to create the CL
+pushd "$WORKDIR" >/dev/null || (
+	echo "Failed to enter created temp working dir $WORKDIR. Exiting."
+	exit
+)
+cd k8s || (
+	echo "Failed to enter clones repository. Exiting."
+	exit 1
+)
+
+./main.star
+git commit -a -F - <<EOF
+UFS: push to prod
+
+dumper => $DUMPER_OLD_IMAGE_TAG to $DUMPER_NEW_IMAGE_TAG
+ufs-service => $SERVICE_OLD_IMAGE_TAG to $SERVICE_NEW_IMAGE_TAG
+
+Changelog:
+$CONTENT
+
+BUG=None
+TEST=./main.star
+EOF
+
+cat - | more <<EOF
+== The UFS push CL:
+
+$(git log -1 -p)
+
+EOF
+
+echo "== Does this look good? [y/n]"
+read -r CONFIRM
+
+if [[ $CONFIRM != "y" ]]; then
+	echo "Aborting the CL and push"
+	exit 1
+fi
+
+git cl upload --no-squash
+
+popd >/dev/null || (
+	echo "Failed to exit from the temp working dir $WORKDIR. Exiting."
+	exit 1
+)
+
 
 git fetch origin main &>/dev/null
 cat - <<EOF
