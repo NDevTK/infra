@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c488eafa_957a97b0",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-18T22:13:44Z",
+      "side": 1,
+      "message": "I rewrote this area to make the flow more clear.\n\nThis is the error from the parent function. `StoreCachedCostResultDefer` is called in a `defer` block and the correct thing to do is skip the actual storing if there was an error of some kind.",
+      "parentUuid": "fdd2970f_019596c9",
+      "range": {
+        "startLine": 36,
+        "startChar": 136,
+        "endLine": 36,
+        "endChar": 145
+      },
+      "revId": "d4e2c5e7231b16dec32ad5bf66d18258a71079f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c213d3fc_5527a084",
         "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
         "patchSetId": 3
@@ -37,6 +61,30 @@
       "writtenOn": "2024-04-18T20:17:50Z",
       "side": 1,
       "message": "I think we need to enforce unique hostname in our datastore. And in that case do we need to handle this error?",
+      "range": {
+        "startLine": 63,
+        "startChar": 1,
+        "endLine": 64,
+        "endChar": 110
+      },
+      "revId": "d4e2c5e7231b16dec32ad5bf66d18258a71079f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a90b7196_ef24cbb3",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-18T22:13:44Z",
+      "side": 1,
+      "message": "I think we should surface this issue as an error since it is inexpensive to do so.",
+      "parentUuid": "c213d3fc_5527a084",
       "range": {
         "startLine": 63,
         "startChar": 1,
@@ -64,6 +112,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6d5bf316_d71f72d6",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-18T22:13:44Z",
+      "side": 1,
+      "message": "Added another check inside the function body, now we just skip storing if we encounter a nil.\n\nDone.",
+      "parentUuid": "1ecb26ac_1b7336fd",
+      "revId": "d4e2c5e7231b16dec32ad5bf66d18258a71079f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3b9b1dc6_9f9d0f0e",
@@ -77,6 +143,30 @@
       "writtenOn": "2024-04-18T20:17:50Z",
       "side": 1,
       "message": "Instead of handle `forceUpdate` inside `ReadCachedCostResult()` and with an error(which hurts readability), can we only calls `ReadCachedCostResult` when `req.forceUpdate` isn\u0027t set?",
+      "range": {
+        "startLine": 29,
+        "startChar": 63,
+        "endLine": 29,
+        "endChar": 100
+      },
+      "revId": "d4e2c5e7231b16dec32ad5bf66d18258a71079f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "09dca798_bdd788f8",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-18T22:13:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b9b1dc6_9f9d0f0e",
       "range": {
         "startLine": 29,
         "startChar": 63,
