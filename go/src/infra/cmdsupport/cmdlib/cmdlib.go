@@ -69,6 +69,18 @@ func PrintError(a subcommands.Application, err error) {
 	}
 }
 
+// PrintMultiError prints a multierror, unwrapping as necessary.
+func PrintMultiError(a subcommands.Application, err error) {
+	var merr errors.MultiError
+	if errors.As(err, &merr) {
+		for _, e := range merr {
+			PrintError(a, e)
+		}
+	} else {
+		PrintError(a, err)
+	}
+}
+
 // NewUsageError creates a new error that also reports flags usage error
 // details.
 func NewUsageError(flags flag.FlagSet, format string, a ...interface{}) error {
