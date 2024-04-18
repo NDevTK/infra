@@ -62,6 +62,20 @@ type UserErrorReporter interface {
 //
 // Detailed error information is printed if err is a UserErrorReporter.
 func PrintError(a subcommands.Application, err error) {
+	var merr errors.MultiError
+	if errors.As(err, &merr) {
+		for _, err := range merr {
+			printSingleError(a, err)
+		}
+	} else {
+		printSingleError(a, err)
+	}
+}
+
+// Function printSingleError reports errors back to the user.
+//
+// Detailed error information is printed if err is a UserErrorReporter.
+func printSingleError(a subcommands.Application, err error) {
 	if u, ok := err.(UserErrorReporter); ok {
 		u.ReportUserError(a.GetErr())
 	} else {

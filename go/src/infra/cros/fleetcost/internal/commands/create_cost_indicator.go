@@ -23,6 +23,7 @@ import (
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/site"
 	"infra/cros/fleetcost/internal/utils"
+	"infra/cros/fleetcost/internal/validation"
 )
 
 var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
@@ -109,17 +110,24 @@ func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 		},
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
-	resp, err := fleetCostClient.CreateCostIndicator(ctx, &fleetcostAPI.CreateCostIndicatorRequest{CostIndicator: &fleetcostpb.CostIndicator{
-		Name:        c.name,
-		Type:        c.typ,
-		Board:       c.board,
-		Model:       c.model,
-		Cost:        c.cost,
-		CostCadence: c.costCadence,
-		BurnoutRate: c.burnoutRate,
-		Location:    c.location,
-		Description: c.description,
-	}})
+	request := &fleetcostAPI.CreateCostIndicatorRequest{
+		CostIndicator: &fleetcostpb.CostIndicator{
+			Name:        c.name,
+			Type:        c.typ,
+			Board:       c.board,
+			Model:       c.model,
+			Cost:        c.cost,
+			CostCadence: c.costCadence,
+			BurnoutRate: c.burnoutRate,
+			Location:    c.location,
+			Description: c.description,
+		},
+	}
+	if err := validation.ValidateCreateCostIndicatorRequest(request); err != nil {
+		// Do NOT annotate a multierror!
+		return err
+	}
+	resp, err := fleetCostClient.CreateCostIndicator(ctx, request)
 	if err != nil {
 		return errors.Annotate(err, "create cost indicator command").Err()
 	}
