@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef20b50d_9b549689",
+        "filename": "go/src/infra/cmdsupport/cmdlib/cmdlib.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-04-18T04:00:46Z",
+      "side": 1,
+      "message": "i think that is incorrect as funstion as does unwraping, so if multierro is jjust deep child then you will no print original error, so if you want  to print it more accurate then you need to do manual unwrap here.",
+      "revId": "e5ee4ed208e2fceed1bd64eb741628f9d74f848d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50df3f43_727b2835",
+        "filename": "go/src/infra/cros/fleetcost/internal/commands/create_cost_indicator.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-04-18T04:00:46Z",
+      "side": 1,
+      "message": "why? it still can be annotate above, right?",
+      "range": {
+        "startLine": 127,
+        "startChar": 2,
+        "endLine": 127,
+        "endChar": 34
+      },
+      "revId": "e5ee4ed208e2fceed1bd64eb741628f9d74f848d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
