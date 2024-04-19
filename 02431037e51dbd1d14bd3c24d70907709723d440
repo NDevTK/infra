@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dbfa04ba_365efa13",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-19T22:16:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9212a8ee_cb7182ad",
+      "range": {
+        "startLine": 27,
+        "startChar": 2,
+        "endLine": 27,
+        "endChar": 12
+      },
+      "revId": "02431037e51dbd1d14bd3c24d70907709723d440",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2cb5471f_5fdd5c77",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b559427_e89b5213",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-19T22:16:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2cb5471f_5fdd5c77",
+      "range": {
+        "startLine": 46,
+        "startChar": 73,
+        "endLine": 46,
+        "endChar": 122
+      },
+      "revId": "02431037e51dbd1d14bd3c24d70907709723d440",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cfa29c90_dbbc1460",
@@ -60,6 +108,30 @@
       "writtenOn": "2024-04-19T19:01:31Z",
       "side": 1,
       "message": "Here should block us from return result to user since there was no error for calculate result, we can logging the error.",
+      "range": {
+        "startLine": 47,
+        "startChar": 2,
+        "endLine": 47,
+        "endChar": 67
+      },
+      "revId": "02431037e51dbd1d14bd3c24d70907709723d440",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "31ae95b1_bbdbffd6",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-19T22:16:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cfa29c90_dbbc1460",
       "range": {
         "startLine": 47,
         "startChar": 2,
