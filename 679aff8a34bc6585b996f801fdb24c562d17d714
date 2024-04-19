@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e1846373_c97c70a5",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-04-19T19:01:31Z",
+      "side": 1,
+      "message": "\u003e 1\n\nI don\u0027t feel making unittest easier is convince enough to having the function take an args of current time. Think about when we use it at other places we have to pass current time every time.\n\n\u003e 2\n\nCalculate cost result can take up to a few seconds.",
+      "parentUuid": "47c54807_da47c21e",
+      "range": {
+        "startLine": 24,
+        "startChar": 65,
+        "endLine": 24,
+        "endChar": 76
+      },
+      "revId": "679aff8a34bc6585b996f801fdb24c562d17d714",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "af5c3ca0_278f32fa",
         "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
         "patchSetId": 4

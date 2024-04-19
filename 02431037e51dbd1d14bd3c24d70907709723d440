@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9212a8ee_cb7182ad",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-04-19T19:01:31Z",
+      "side": 1,
+      "message": "Can we avoid use `goto` in here? Use of goto statement is highly discouraged unless there is no other control features can(or very hard to) achieve what you want. In here, it should be fairly easy to achieve that with if/else statement or wrapping the part you want `goto` into another function.",
+      "range": {
+        "startLine": 27,
+        "startChar": 2,
+        "endLine": 27,
+        "endChar": 12
+      },
+      "revId": "02431037e51dbd1d14bd3c24d70907709723d440",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2cb5471f_5fdd5c77",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-04-19T19:01:31Z",
+      "side": 1,
+      "message": "Looks like the function only need to take a CostResult instead of the whole response?",
+      "range": {
+        "startLine": 46,
+        "startChar": 73,
+        "endLine": 46,
+        "endChar": 122
+      },
+      "revId": "02431037e51dbd1d14bd3c24d70907709723d440",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cfa29c90_dbbc1460",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-04-19T19:01:31Z",
+      "side": 1,
+      "message": "Here should block us from return result to user since there was no error for calculate result, we can logging the error.",
+      "range": {
+        "startLine": 47,
+        "startChar": 2,
+        "endLine": 47,
+        "endChar": 67
+      },
+      "revId": "02431037e51dbd1d14bd3c24d70907709723d440",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
