@@ -501,7 +501,7 @@ class CloudBuildHelperApi(recipe_api.RecipeApi):
     paths = []
     for entry in entries:
       if entry.endswith('.yaml'):
-        paths.append(root.join(*entry.split('/')))
+        paths.append(root.join(entry))
       else:
         paths.extend(self.m.file.glob_paths(
             'list %s' % entry,

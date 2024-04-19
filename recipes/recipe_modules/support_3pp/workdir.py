@@ -76,7 +76,7 @@ class Workdir(object):
 
     Returns the Path to the spec scripts.
     """
-    return self.script_dir_base.join(*spec.cipd_pkg_name.split('/'))
+    return self.script_dir_base.join(spec.cipd_pkg_name)
 
   @property
   def tools_prefix(self):

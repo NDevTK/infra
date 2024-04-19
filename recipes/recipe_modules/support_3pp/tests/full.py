@@ -75,7 +75,7 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
 
     cipd_platform = '%s-%s' % (GOOS, GOARCH)
     tryserver_affected_files = [
-        checkout_path.join(*f.split('/')) for f in tryserver_affected_files
+        checkout_path.join(f) for f in tryserver_affected_files
     ]
     pkgs = to_build if to_build else pkgs
     _, unsupported = api.support_3pp.ensure_uploaded(

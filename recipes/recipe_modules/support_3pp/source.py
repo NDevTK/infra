@@ -539,7 +539,7 @@ def _source_checkout(api,
   checkout_dir = workdir.checkout
   # Run checkout in this subdirectory of the install script's $CWD.
   if source_pb.subdir:
-    checkout_dir = checkout_dir.join(*(source_pb.subdir.split('/')))
+    checkout_dir = checkout_dir.join(source_pb.subdir)
 
   api.file.ensure_directory(
       'mkdir -p [workdir]/checkout/%s' % (str(source_pb.subdir),), checkout_dir)
@@ -608,6 +608,6 @@ def _source_checkout(api,
       patch_dir = str(patch_dir)
       patches.extend(
           api.file.glob_paths('find patches in %s' % patch_dir,
-                              spec.pkg_dir.join(*(patch_dir.split('/'))), '*'))
+                              spec.pkg_dir.join(patch_dir), '*'))
     with api.context(cwd=checkout_dir):
       api.git('apply', '-v', *patches)

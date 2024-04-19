@@ -153,7 +153,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
 
         package_path = checkout_path
         if subdir:
-          package_path = package_path.join(*subdir.split('/'))
+          package_path = package_path.join(subdir)
         api.support_3pp.load_packages_from_path(package_path)
 
         if api.tryserver.is_tryserver:
@@ -166,7 +166,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
               name='git diff to find changed files',
               stdout=api.raw_io.output_text()).stdout.split()
           tryserver_affected_files += [
-              checkout_path.join(*f.split('/'))
+              checkout_path.join(f)
               for f in repo_tryserver_affected_files
           ]
     if api.tryserver.is_tryserver:

@@ -609,7 +609,7 @@ class Support3ppApi(recipe_api.RecipeApi):
 
     # `git ls-files` always returns posix path.
     ret = [
-        source.join(*x.split(posixpath.sep))
+        source.join(x)
         for x in result.stdout.splitlines()
     ]
     result.presentation.logs["glob_from_git"] = [str(x) for x in ret]
