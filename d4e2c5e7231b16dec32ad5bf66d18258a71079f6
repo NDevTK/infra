@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ab34f5a4_76cd08d9",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-19T04:15:26Z",
+      "side": 1,
+      "message": "Done. The `defer` call and the associated code has been removed.",
+      "parentUuid": "c488eafa_957a97b0",
+      "range": {
+        "startLine": 36,
+        "startChar": 136,
+        "endLine": 36,
+        "endChar": 145
+      },
+      "revId": "d4e2c5e7231b16dec32ad5bf66d18258a71079f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c213d3fc_5527a084",
@@ -168,6 +192,24 @@
       "side": 1,
       "message": "I think we\u0027re overcomplicating it here, plus defer should be used for things like cleanup(e.g. closing file, restore state) which you want it happens no matter how function complete. But in here, it\u0027s very clear when we want to store cachedResult, see my another comments about make a separate function `CalculateAndUpdate` where you can always update cache after a calculation.",
       "parentUuid": "6d5bf316_d71f72d6",
+      "revId": "d4e2c5e7231b16dec32ad5bf66d18258a71079f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7fb42bb_da79109e",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-19T04:15:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d2bad3e_b5e2645e",
       "revId": "d4e2c5e7231b16dec32ad5bf66d18258a71079f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },

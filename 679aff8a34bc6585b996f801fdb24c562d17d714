@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "47c54807_da47c21e",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-19T04:15:26Z",
+      "side": 1,
+      "message": "Yes, for two reasons.\n\n1) `time.Now()` leads to flaky tests. It is much easier if you minimize the amount of code that interacts with the current time.\n2) I always set `now :\u003d time.Now().UTC()` at the beginning of each RPC. An RPC does not take very long to execute, but I think it\u0027s better to compute the current time once and then reuse it. An RPC should look instantaneous to the outside world (except in things like log messages and the like).",
+      "parentUuid": "e34991e8_4355a5bd",
+      "range": {
+        "startLine": 24,
+        "startChar": 65,
+        "endLine": 24,
+        "endChar": 76
+      },
+      "revId": "679aff8a34bc6585b996f801fdb24c562d17d714",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "af5c3ca0_278f32fa",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "80e9c934_341dce80",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-19T04:15:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "af5c3ca0_278f32fa",
+      "range": {
+        "startLine": 55,
+        "startChar": 1,
+        "endLine": 55,
+        "endChar": 109
+      },
+      "revId": "679aff8a34bc6585b996f801fdb24c562d17d714",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fe579b7d_5969b606",
@@ -60,6 +108,30 @@
       "writtenOn": "2024-04-19T01:44:55Z",
       "side": 1,
       "message": "I think these is some mis-understanding on `forceUpdate` flag. It\u0027s a flag to tell RPC ignores cache and do a cost calculation instead of if no cache then fail.\n\nSo I think we want something like:\nAssume we have `func CalculateAndUpdate()` to handle calculation and update result in datastore.\n\n```\nif req.forceUpdate {\n    // Do CalculateAndUpdate() and return result.\n}\ncachedResult, err \u003d ReadCachedCostResult()\nif err !\u003d nil {\n    // Just logging since not able to fetch cache is not critical blocker.\nif cachedResult !\u003d nil {\n    // Return a response with cachedResult. \n} else {\n    // Do CalculateAndUpdate() and return result.\n}\n```",
+      "range": {
+        "startLine": 26,
+        "startChar": 1,
+        "endLine": 36,
+        "endChar": 2
+      },
+      "revId": "679aff8a34bc6585b996f801fdb24c562d17d714",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b1358e42_3e744294",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-04-19T04:15:26Z",
+      "side": 1,
+      "message": "Only the error `datastore.ErrNoSuchEntity` represents the lack of an entity.\n\nAll other errors indicate some kind of issue reading from datastore.\n\nI simplified the control flow in the latest patchset.",
+      "parentUuid": "fe579b7d_5969b606",
       "range": {
         "startLine": 26,
         "startChar": 1,
