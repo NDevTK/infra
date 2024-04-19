@@ -6,6 +6,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -27,6 +28,18 @@ type IndicatorAttribute struct {
 	Model         string
 	Sku           string
 	Location      fleetcostpb.Location
+}
+
+// FriendlyString produces a human-readable string for error messages.
+//
+// This string is NOT RELATED to how IndicatorAttributes or CostIndicatorEntities are actually stored
+// in the database.
+func (attribute *IndicatorAttribute) FriendlyString() string {
+	if attribute == nil {
+		return "<nil>"
+	}
+	message := fmt.Sprintf("type=%s board=%s model=%s sku=%s loc=%s", attribute.IndicatorType.String(), attribute.Board, attribute.Model, attribute.Sku, attribute.Location.String())
+	return message
 }
 
 // AsEntity converts an IndicatorAttribute to a datastore Entity.
@@ -121,15 +134,16 @@ func GetServoCost(ctx context.Context, servoType string, location fleetcostpb.Lo
 
 // GetDutHardwareCost gets the hardware cost for a single DUT.
 func GetDutHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, location fleetcostpb.Location) (float64, error) {
-	v, err := GetCostIndicatorValue(ctx, IndicatorAttribute{
+	indicator := IndicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
 		Board:         m.GetBuildTarget(),
 		Model:         m.GetModel(),
 		Sku:           m.GetSku(),
 		Location:      location,
-	})
+	}
+	v, err := GetCostIndicatorValue(ctx, indicator)
 	if err != nil {
-		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get dut hardware cost").Err())
+		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get dut hardware cost for %q", indicator.FriendlyString()).Err())
 	}
 	return v, nil
 }
