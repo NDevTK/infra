@@ -50,6 +50,8 @@ func TestDefaultGitRetryRegexps(t *testing.T) {
 			`fatal: expected wanted-ref, got '0176ERR RESOURCE_EXHAUSTED: Resource has been exhausted (e.g. check quota).'`,
 			`fatal: fetch-pack: protocol error: bad band #48`,
 			`error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400`,
+			`fatal: unable to access 'repo': OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to host:443`,
+			`error: RPC failed; curl 56 OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 104`,
 			`fatal: fetch-pack: fetch failed`,
 			`fatal: fetch-pack: unable to spawn http-fetch`,
 			`fatal: fetch-pack: expected keep then TAB at start of http-fetch output`,
