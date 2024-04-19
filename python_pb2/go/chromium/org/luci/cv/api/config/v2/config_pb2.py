@@ -24,7 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z+go.chromium.org/luci/cv/api/config/v2;cfgpb\242\376#;\n9https://config.luci.app/schemas/projects:commit-queue.cfg',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n2go.chromium.org/luci/cv/api/config/v2/config.proto\x12\tcv.config\x1a\x1egoogle/protobuf/duration.proto\x1a\x17validate/validate.proto\x1a/go.chromium.org/luci/common/proto/options.proto\x1a(go.chromium.org/luci/cv/api/v1/run.proto\"\xdd\x01\n\x06\x43onfig\x12\x1f\n\x13\x64raining_start_time\x18\x01 \x01(\tB\x02\x18\x01\x12\x1a\n\x0e\x63q_status_host\x18\x02 \x01(\tB\x02\x18\x01\x12\x30\n\x0esubmit_options\x18\x03 \x01(\x0b\x32\x18.cv.config.SubmitOptions\x12-\n\rconfig_groups\x18\x04 \x03(\x0b\x32\x16.cv.config.ConfigGroup\x12\x35\n\x16project_scoped_account\x18\x05 \x01(\x0e\x32\x11.cv.config.ToggleB\x02\x18\x01\"\x90\n\n\x0b\x43onfigGroup\x12\x0c\n\x04name\x18\x06 \x01(\t\x12-\n\x06gerrit\x18\x01 \x03(\x0b\x32\x1d.cv.config.ConfigGroup.Gerrit\x12*\n\x0b\x63ombine_cls\x18\x04 \x01(\x0b\x32\x15.cv.config.CombineCLs\x12\'\n\tverifiers\x18\x02 \x01(\x0b\x32\x14.cv.config.Verifiers\x12#\n\x08\x66\x61llback\x18\x05 \x01(\x0e\x32\x11.cv.config.Toggle\x12)\n\x10\x61\x64\x64itional_modes\x18\x07 \x03(\x0b\x32\x0f.cv.config.Mode\x12)\n\x0buser_limits\x18\x08 \x03(\x0b\x32\x14.cv.config.UserLimit\x12\x30\n\x12user_limit_default\x18\t \x01(\x0b\x32\x14.cv.config.UserLimit\x12\x46\n\x0cpost_actions\x18\n \x03(\x0b\x32!.cv.config.ConfigGroup.PostActionB\r\xfa\x42\n\x92\x01\x07\"\x05\x8a\x01\x02\x10\x01\x12R\n\x12tryjob_experiments\x18\x0b \x03(\x0b\x32\'.cv.config.ConfigGroup.TryjobExperimentB\r\xfa\x42\n\x92\x01\x07\"\x05\x8a\x01\x02\x10\x01\x1a\x97\x01\n\x06Gerrit\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x37\n\x08projects\x18\x02 \x03(\x0b\x32%.cv.config.ConfigGroup.Gerrit.Project\x1aG\n\x07Project\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nref_regexp\x18\x02 \x03(\t\x12\x1a\n\x12ref_regexp_exclude\x18\x03 \x03(\t\x1a\xd9\x03\n\nPostAction\x12\x15\n\x04name\x18\x01 \x01(\tB\x07\xfa\x42\x04r\x02\x10\x01\x12Z\n\nconditions\x18\x02 \x03(\x0b\x32\x35.cv.config.ConfigGroup.PostAction.TriggeringConditionB\x0f\xfa\x42\x0c\x92\x01\t\x08\x01\"\x05\x8a\x01\x02\x10\x01\x12P\n\x12vote_gerrit_labels\x18\x03 \x01(\x0b\x32\x32.cv.config.ConfigGroup.PostAction.VoteGerritLabelsH\x00\x1a\x62\n\x13TriggeringCondition\x12\x15\n\x04mode\x18\x01 \x01(\tB\x07\xfa\x42\x04r\x02\x10\x01\x12\x34\n\x08statuses\x18\x02 \x03(\x0e\x32\x11.cv.v1.Run.StatusB\x0f\xfa\x42\x0c\x92\x01\t\x08\x01\"\x05\x82\x01\x02\x10\x01\x1a\x92\x01\n\x10VoteGerritLabels\x12P\n\x05votes\x18\x01 \x03(\x0b\x32\x37.cv.config.ConfigGroup.PostAction.VoteGerritLabels.VoteB\x08\xfa\x42\x05\x92\x01\x02\x08\x01\x1a,\n\x04Vote\x12\x15\n\x04name\x18\x01 \x01(\tB\x07\xfa\x42\x04r\x02\x10\x01\x12\r\n\x05value\x18\x02 \x01(\x05\x42\r\n\x06\x61\x63tion\x12\x03\xf8\x42\x01\x1a\xa9\x01\n\x10TryjobExperiment\x12\x15\n\x04name\x18\x01 \x01(\tB\x07\xfa\x42\x04r\x02\x10\x01\x12\x44\n\tcondition\x18\x02 \x01(\x0b\x32\x31.cv.config.ConfigGroup.TryjobExperiment.Condition\x1a\x38\n\tCondition\x12+\n\x15owner_group_allowlist\x18\x01 \x03(\tB\x0c\xfa\x42\t\x92\x01\x06\"\x04r\x02\x10\x01J\x04\x08\x03\x10\x04\"R\n\rSubmitOptions\x12\x11\n\tmax_burst\x18\x01 \x01(\x05\x12.\n\x0b\x62urst_delay\x18\x02 \x01(\x0b\x32\x19.google.protobuf.Duration\"\xcc\x01\n\x04Mode\x12M\n\x04name\x18\x01 \x01(\tB?\xfa\x42<r:2\x13^[A-Z][A-Z_]{0,39}$Z\x07\x44RY_RUNZ\x08\x46ULL_RUNZ\x10NEW_PATCHSET_RUN\x12!\n\x0e\x63q_label_value\x18\x02 \x01(\x05\x42\t\xfa\x42\x06\x1a\x04\x30\x01\x30\x02\x12/\n\x10triggering_label\x18\x03 \x01(\tB\x15\xfa\x42\x12r\x10\x10\x01Z\x0c\x43ommit-Queue\x12!\n\x10triggering_value\x18\x04 \x01(\x05\x42\x07\xfa\x42\x04\x1a\x02 \x00\"D\n\nCombineCLs\x12\x36\n\x13stabilization_delay\x18\x01 \x01(\x0b\x32\x19.google.protobuf.Duration\"\xa8\r\n\tVerifiers\x12?\n\x11gerrit_cq_ability\x18\x01 \x01(\x0b\x32$.cv.config.Verifiers.GerritCQAbility\x12\x34\n\x0btree_status\x18\x02 \x01(\x0b\x32\x1f.cv.config.Verifiers.TreeStatus\x12+\n\x06tryjob\x18\x03 \x01(\x0b\x32\x1b.cv.config.Verifiers.Tryjob\x12/\n\x08\x63qlinter\x18\x04 \x01(\x0b\x32\x1d.cv.config.Verifiers.CQLinter\x12\'\n\x04\x66\x61ke\x18\x05 \x01(\x0b\x32\x19.cv.config.Verifiers.Fake\x1a\xd7\x02\n\x0fGerritCQAbility\x12\x16\n\x0e\x63ommitter_list\x18\x01 \x03(\t\x12\x1b\n\x13\x64ry_run_access_list\x18\x02 \x03(\t\x12$\n\x1cnew_patchset_run_access_list\x18\x05 \x03(\t\x12#\n\x1b\x61llow_submit_with_open_deps\x18\x03 \x01(\x08\x12Q\n\x1a\x61llow_owner_if_submittable\x18\x04 \x01(\x0e\x32-.cv.config.Verifiers.GerritCQAbility.CQAction\x12\x1d\n\x15trust_dry_runner_deps\x18\x06 \x01(\x08\x12\"\n\x1a\x61llow_non_owner_dry_runner\x18\x07 \x01(\x08\".\n\x08\x43QAction\x12\t\n\x05UNSET\x10\x00\x12\x0b\n\x07\x44RY_RUN\x10\x01\x12\n\n\x06\x43OMMIT\x10\x02\x1a\x19\n\nTreeStatus\x12\x0b\n\x03url\x18\x01 \x01(\t\x1a\xde\x07\n\x06Tryjob\x12\x35\n\x08\x62uilders\x18\x01 \x03(\x0b\x32#.cv.config.Verifiers.Tryjob.Builder\x12=\n\x0cretry_config\x18\x02 \x01(\x0b\x32\'.cv.config.Verifiers.Tryjob.RetryConfig\x12\x33\n\x14\x63\x61ncel_stale_tryjobs\x18\x03 \x01(\x0e\x32\x11.cv.config.ToggleB\x02\x18\x01\x1a\xa1\x04\n\x07\x42uilder\x12\x0c\n\x04host\x18\x10 \x01(\t\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x17\n\x0fincludable_only\x18\t \x01(\x08\x12\x32\n\x11result_visibility\x18\n \x01(\x0e\x32\x17.cv.config.CommentLevel\x12\x15\n\rdisable_reuse\x18\x02 \x01(\x08\x12\'\n\x0c\x63\x61ncel_stale\x18\x0b \x01(\x0e\x32\x11.cv.config.Toggle\x12\x1d\n\x15\x65xperiment_percentage\x18\x04 \x01(\x02\x12\x44\n\requivalent_to\x18\x05 \x01(\x0b\x32-.cv.config.Verifiers.Tryjob.EquivalentBuilder\x12L\n\x10location_filters\x18\x0f \x03(\x0b\x32\x32.cv.config.Verifiers.Tryjob.Builder.LocationFilter\x12\x1d\n\x15owner_whitelist_group\x18\x08 \x03(\t\x12\x16\n\x0emode_allowlist\x18\x0e \x03(\t\x1aq\n\x0eLocationFilter\x12\x1a\n\x12gerrit_host_regexp\x18\x01 \x01(\t\x12\x1d\n\x15gerrit_project_regexp\x18\x02 \x01(\t\x12\x13\n\x0bpath_regexp\x18\x03 \x01(\t\x12\x0f\n\x07\x65xclude\x18\x04 \x01(\x08J\x04\x08\x03\x10\x04J\x04\x08\x0c\x10\rJ\x04\x08\r\x10\x0e\x1aT\n\x11\x45quivalentBuilder\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\npercentage\x18\x02 \x01(\x02\x12\x1d\n\x15owner_whitelist_group\x18\x03 \x01(\t\x1a!\n\x11IncludableBuilder\x12\x0c\n\x04name\x18\x01 \x01(\t\x1a\x8b\x01\n\x0bRetryConfig\x12\x14\n\x0csingle_quota\x18\x01 \x01(\x05\x12\x14\n\x0cglobal_quota\x18\x02 \x01(\x05\x12\x16\n\x0e\x66\x61ilure_weight\x18\x03 \x01(\x05\x12 \n\x18transient_failure_weight\x18\x04 \x01(\x05\x12\x16\n\x0etimeout_weight\x18\x05 \x01(\x05\x1a\n\n\x08\x43QLinter\x1a;\n\x04\x46\x61ke\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x16\n\x0e\x65ventual_state\x18\x02 \x01(\t\x12\r\n\x05\x64\x65lay\x18\x03 \x01(\x05\"\xc3\x02\n\tUserLimit\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nprincipals\x18\x02 \x03(\t\x12%\n\x03run\x18\x05 \x01(\x0b\x32\x18.cv.config.UserLimit.Run\x12+\n\x06tryjob\x18\x06 \x01(\x0b\x32\x1b.cv.config.UserLimit.Tryjob\x1a\x36\n\x05Limit\x12\x0f\n\x05value\x18\x01 \x01(\x03H\x00\x12\x13\n\tunlimited\x18\x02 \x01(\x08H\x00\x42\x07\n\x05limit\x1aN\n\x03Run\x12.\n\nmax_active\x18\x01 \x01(\x0b\x32\x1a.cv.config.UserLimit.Limit\x12\x17\n\x0freach_limit_msg\x18\x02 \x01(\t\x1a\x38\n\x06Tryjob\x12.\n\nmax_active\x18\x01 \x01(\x0b\x32\x1a.cv.config.UserLimit.Limit*]\n\x0c\x43ommentLevel\x12\x17\n\x13\x43OMMENT_LEVEL_UNSET\x10\x00\x12\x16\n\x12\x43OMMENT_LEVEL_FULL\x10\x01\x12\x1c\n\x18\x43OMMENT_LEVEL_RESTRICTED\x10\x02*$\n\x06Toggle\x12\t\n\x05UNSET\x10\x00\x12\x07\n\x03YES\x10\x01\x12\x06\n\x02NO\x10\x02\x42lZ+go.chromium.org/luci/cv/api/config/v2;cfgpb\xa2\xfe#;\n9https://config.luci.app/schemas/projects:commit-queue.cfgb\x06proto3'
+  serialized_pb=b'\n2go.chromium.org/luci/cv/api/config/v2/config.proto\x12\tcv.config\x1a\x1egoogle/protobuf/duration.proto\x1a\x17validate/validate.proto\x1a/go.chromium.org/luci/common/proto/options.proto\x1a(go.chromium.org/luci/cv/api/v1/run.proto\"\x83\x02\n\x06\x43onfig\x12\x1f\n\x13\x64raining_start_time\x18\x01 \x01(\tB\x02\x18\x01\x12\x1a\n\x0e\x63q_status_host\x18\x02 \x01(\tB\x02\x18\x01\x12\x30\n\x0esubmit_options\x18\x03 \x01(\x0b\x32\x18.cv.config.SubmitOptions\x12-\n\rconfig_groups\x18\x04 \x03(\x0b\x32\x16.cv.config.ConfigGroup\x12\x35\n\x16project_scoped_account\x18\x05 \x01(\x0e\x32\x11.cv.config.ToggleB\x02\x18\x01\x12$\n\x1chonor_gerrit_linked_accounts\x18\x06 \x01(\x08\"\x90\n\n\x0b\x43onfigGroup\x12\x0c\n\x04name\x18\x06 \x01(\t\x12-\n\x06gerrit\x18\x01 \x03(\x0b\x32\x1d.cv.config.ConfigGroup.Gerrit\x12*\n\x0b\x63ombine_cls\x18\x04 \x01(\x0b\x32\x15.cv.config.CombineCLs\x12\'\n\tverifiers\x18\x02 \x01(\x0b\x32\x14.cv.config.Verifiers\x12#\n\x08\x66\x61llback\x18\x05 \x01(\x0e\x32\x11.cv.config.Toggle\x12)\n\x10\x61\x64\x64itional_modes\x18\x07 \x03(\x0b\x32\x0f.cv.config.Mode\x12)\n\x0buser_limits\x18\x08 \x03(\x0b\x32\x14.cv.config.UserLimit\x12\x30\n\x12user_limit_default\x18\t \x01(\x0b\x32\x14.cv.config.UserLimit\x12\x46\n\x0cpost_actions\x18\n \x03(\x0b\x32!.cv.config.ConfigGroup.PostActionB\r\xfa\x42\n\x92\x01\x07\"\x05\x8a\x01\x02\x10\x01\x12R\n\x12tryjob_experiments\x18\x0b \x03(\x0b\x32\'.cv.config.ConfigGroup.TryjobExperimentB\r\xfa\x42\n\x92\x01\x07\"\x05\x8a\x01\x02\x10\x01\x1a\x97\x01\n\x06Gerrit\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x37\n\x08projects\x18\x02 \x03(\x0b\x32%.cv.config.ConfigGroup.Gerrit.Project\x1aG\n\x07Project\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nref_regexp\x18\x02 \x03(\t\x12\x1a\n\x12ref_regexp_exclude\x18\x03 \x03(\t\x1a\xd9\x03\n\nPostAction\x12\x15\n\x04name\x18\x01 \x01(\tB\x07\xfa\x42\x04r\x02\x10\x01\x12Z\n\nconditions\x18\x02 \x03(\x0b\x32\x35.cv.config.ConfigGroup.PostAction.TriggeringConditionB\x0f\xfa\x42\x0c\x92\x01\t\x08\x01\"\x05\x8a\x01\x02\x10\x01\x12P\n\x12vote_gerrit_labels\x18\x03 \x01(\x0b\x32\x32.cv.config.ConfigGroup.PostAction.VoteGerritLabelsH\x00\x1a\x62\n\x13TriggeringCondition\x12\x15\n\x04mode\x18\x01 \x01(\tB\x07\xfa\x42\x04r\x02\x10\x01\x12\x34\n\x08statuses\x18\x02 \x03(\x0e\x32\x11.cv.v1.Run.StatusB\x0f\xfa\x42\x0c\x92\x01\t\x08\x01\"\x05\x82\x01\x02\x10\x01\x1a\x92\x01\n\x10VoteGerritLabels\x12P\n\x05votes\x18\x01 \x03(\x0b\x32\x37.cv.config.ConfigGroup.PostAction.VoteGerritLabels.VoteB\x08\xfa\x42\x05\x92\x01\x02\x08\x01\x1a,\n\x04Vote\x12\x15\n\x04name\x18\x01 \x01(\tB\x07\xfa\x42\x04r\x02\x10\x01\x12\r\n\x05value\x18\x02 \x01(\x05\x42\r\n\x06\x61\x63tion\x12\x03\xf8\x42\x01\x1a\xa9\x01\n\x10TryjobExperiment\x12\x15\n\x04name\x18\x01 \x01(\tB\x07\xfa\x42\x04r\x02\x10\x01\x12\x44\n\tcondition\x18\x02 \x01(\x0b\x32\x31.cv.config.ConfigGroup.TryjobExperiment.Condition\x1a\x38\n\tCondition\x12+\n\x15owner_group_allowlist\x18\x01 \x03(\tB\x0c\xfa\x42\t\x92\x01\x06\"\x04r\x02\x10\x01J\x04\x08\x03\x10\x04\"R\n\rSubmitOptions\x12\x11\n\tmax_burst\x18\x01 \x01(\x05\x12.\n\x0b\x62urst_delay\x18\x02 \x01(\x0b\x32\x19.google.protobuf.Duration\"\xcc\x01\n\x04Mode\x12M\n\x04name\x18\x01 \x01(\tB?\xfa\x42<r:2\x13^[A-Z][A-Z_]{0,39}$Z\x07\x44RY_RUNZ\x08\x46ULL_RUNZ\x10NEW_PATCHSET_RUN\x12!\n\x0e\x63q_label_value\x18\x02 \x01(\x05\x42\t\xfa\x42\x06\x1a\x04\x30\x01\x30\x02\x12/\n\x10triggering_label\x18\x03 \x01(\tB\x15\xfa\x42\x12r\x10\x10\x01Z\x0c\x43ommit-Queue\x12!\n\x10triggering_value\x18\x04 \x01(\x05\x42\x07\xfa\x42\x04\x1a\x02 \x00\"D\n\nCombineCLs\x12\x36\n\x13stabilization_delay\x18\x01 \x01(\x0b\x32\x19.google.protobuf.Duration\"\xa8\r\n\tVerifiers\x12?\n\x11gerrit_cq_ability\x18\x01 \x01(\x0b\x32$.cv.config.Verifiers.GerritCQAbility\x12\x34\n\x0btree_status\x18\x02 \x01(\x0b\x32\x1f.cv.config.Verifiers.TreeStatus\x12+\n\x06tryjob\x18\x03 \x01(\x0b\x32\x1b.cv.config.Verifiers.Tryjob\x12/\n\x08\x63qlinter\x18\x04 \x01(\x0b\x32\x1d.cv.config.Verifiers.CQLinter\x12\'\n\x04\x66\x61ke\x18\x05 \x01(\x0b\x32\x19.cv.config.Verifiers.Fake\x1a\xd7\x02\n\x0fGerritCQAbility\x12\x16\n\x0e\x63ommitter_list\x18\x01 \x03(\t\x12\x1b\n\x13\x64ry_run_access_list\x18\x02 \x03(\t\x12$\n\x1cnew_patchset_run_access_list\x18\x05 \x03(\t\x12#\n\x1b\x61llow_submit_with_open_deps\x18\x03 \x01(\x08\x12Q\n\x1a\x61llow_owner_if_submittable\x18\x04 \x01(\x0e\x32-.cv.config.Verifiers.GerritCQAbility.CQAction\x12\x1d\n\x15trust_dry_runner_deps\x18\x06 \x01(\x08\x12\"\n\x1a\x61llow_non_owner_dry_runner\x18\x07 \x01(\x08\".\n\x08\x43QAction\x12\t\n\x05UNSET\x10\x00\x12\x0b\n\x07\x44RY_RUN\x10\x01\x12\n\n\x06\x43OMMIT\x10\x02\x1a\x19\n\nTreeStatus\x12\x0b\n\x03url\x18\x01 \x01(\t\x1a\xde\x07\n\x06Tryjob\x12\x35\n\x08\x62uilders\x18\x01 \x03(\x0b\x32#.cv.config.Verifiers.Tryjob.Builder\x12=\n\x0cretry_config\x18\x02 \x01(\x0b\x32\'.cv.config.Verifiers.Tryjob.RetryConfig\x12\x33\n\x14\x63\x61ncel_stale_tryjobs\x18\x03 \x01(\x0e\x32\x11.cv.config.ToggleB\x02\x18\x01\x1a\xa1\x04\n\x07\x42uilder\x12\x0c\n\x04host\x18\x10 \x01(\t\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x17\n\x0fincludable_only\x18\t \x01(\x08\x12\x32\n\x11result_visibility\x18\n \x01(\x0e\x32\x17.cv.config.CommentLevel\x12\x15\n\rdisable_reuse\x18\x02 \x01(\x08\x12\'\n\x0c\x63\x61ncel_stale\x18\x0b \x01(\x0e\x32\x11.cv.config.Toggle\x12\x1d\n\x15\x65xperiment_percentage\x18\x04 \x01(\x02\x12\x44\n\requivalent_to\x18\x05 \x01(\x0b\x32-.cv.config.Verifiers.Tryjob.EquivalentBuilder\x12L\n\x10location_filters\x18\x0f \x03(\x0b\x32\x32.cv.config.Verifiers.Tryjob.Builder.LocationFilter\x12\x1d\n\x15owner_whitelist_group\x18\x08 \x03(\t\x12\x16\n\x0emode_allowlist\x18\x0e \x03(\t\x1aq\n\x0eLocationFilter\x12\x1a\n\x12gerrit_host_regexp\x18\x01 \x01(\t\x12\x1d\n\x15gerrit_project_regexp\x18\x02 \x01(\t\x12\x13\n\x0bpath_regexp\x18\x03 \x01(\t\x12\x0f\n\x07\x65xclude\x18\x04 \x01(\x08J\x04\x08\x03\x10\x04J\x04\x08\x0c\x10\rJ\x04\x08\r\x10\x0e\x1aT\n\x11\x45quivalentBuilder\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\npercentage\x18\x02 \x01(\x02\x12\x1d\n\x15owner_whitelist_group\x18\x03 \x01(\t\x1a!\n\x11IncludableBuilder\x12\x0c\n\x04name\x18\x01 \x01(\t\x1a\x8b\x01\n\x0bRetryConfig\x12\x14\n\x0csingle_quota\x18\x01 \x01(\x05\x12\x14\n\x0cglobal_quota\x18\x02 \x01(\x05\x12\x16\n\x0e\x66\x61ilure_weight\x18\x03 \x01(\x05\x12 \n\x18transient_failure_weight\x18\x04 \x01(\x05\x12\x16\n\x0etimeout_weight\x18\x05 \x01(\x05\x1a\n\n\x08\x43QLinter\x1a;\n\x04\x46\x61ke\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x16\n\x0e\x65ventual_state\x18\x02 \x01(\t\x12\r\n\x05\x64\x65lay\x18\x03 \x01(\x05\"\xc3\x02\n\tUserLimit\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nprincipals\x18\x02 \x03(\t\x12%\n\x03run\x18\x05 \x01(\x0b\x32\x18.cv.config.UserLimit.Run\x12+\n\x06tryjob\x18\x06 \x01(\x0b\x32\x1b.cv.config.UserLimit.Tryjob\x1a\x36\n\x05Limit\x12\x0f\n\x05value\x18\x01 \x01(\x03H\x00\x12\x13\n\tunlimited\x18\x02 \x01(\x08H\x00\x42\x07\n\x05limit\x1aN\n\x03Run\x12.\n\nmax_active\x18\x01 \x01(\x0b\x32\x1a.cv.config.UserLimit.Limit\x12\x17\n\x0freach_limit_msg\x18\x02 \x01(\t\x1a\x38\n\x06Tryjob\x12.\n\nmax_active\x18\x01 \x01(\x0b\x32\x1a.cv.config.UserLimit.Limit*]\n\x0c\x43ommentLevel\x12\x17\n\x13\x43OMMENT_LEVEL_UNSET\x10\x00\x12\x16\n\x12\x43OMMENT_LEVEL_FULL\x10\x01\x12\x1c\n\x18\x43OMMENT_LEVEL_RESTRICTED\x10\x02*$\n\x06Toggle\x12\t\n\x05UNSET\x10\x00\x12\x07\n\x03YES\x10\x01\x12\x06\n\x02NO\x10\x02\x42lZ+go.chromium.org/luci/cv/api/config/v2;cfgpb\xa2\xfe#;\n9https://config.luci.app/schemas/projects:commit-queue.cfgb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_duration__pb2.DESCRIPTOR,validate_dot_validate__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_common_dot_proto_dot_options__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_cv_dot_api_dot_v1_dot_run__pb2.DESCRIPTOR,])
 
@@ -53,8 +53,8 @@ _COMMENTLEVEL = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4130,
-  serialized_end=4223,
+  serialized_start=4168,
+  serialized_end=4261,
 )
 _sym_db.RegisterEnumDescriptor(_COMMENTLEVEL)
 
@@ -84,8 +84,8 @@ _TOGGLE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4225,
-  serialized_end=4261,
+  serialized_start=4263,
+  serialized_end=4299,
 )
 _sym_db.RegisterEnumDescriptor(_TOGGLE)
 
@@ -123,8 +123,8 @@ _VERIFIERS_GERRITCQABILITY_CQACTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2663,
-  serialized_end=2709,
+  serialized_start=2701,
+  serialized_end=2747,
 )
 _sym_db.RegisterEnumDescriptor(_VERIFIERS_GERRITCQABILITY_CQACTION)
 
@@ -172,6 +172,13 @@ _CONFIG = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=b'\030\001', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='honor_gerrit_linked_accounts', full_name='cv.config.Config.honor_gerrit_linked_accounts', index=5,
+      number=6, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -185,7 +192,7 @@ _CONFIG = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=214,
-  serialized_end=435,
+  serialized_end=473,
 )
 
 
@@ -230,8 +237,8 @@ _CONFIGGROUP_GERRIT_PROJECT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1009,
-  serialized_end=1080,
+  serialized_start=1047,
+  serialized_end=1118,
 )
 
 _CONFIGGROUP_GERRIT = _descriptor.Descriptor(
@@ -268,8 +275,8 @@ _CONFIGGROUP_GERRIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=929,
-  serialized_end=1080,
+  serialized_start=967,
+  serialized_end=1118,
 )
 
 _CONFIGGROUP_POSTACTION_TRIGGERINGCONDITION = _descriptor.Descriptor(
@@ -306,8 +313,8 @@ _CONFIGGROUP_POSTACTION_TRIGGERINGCONDITION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1294,
-  serialized_end=1392,
+  serialized_start=1332,
+  serialized_end=1430,
 )
 
 _CONFIGGROUP_POSTACTION_VOTEGERRITLABELS_VOTE = _descriptor.Descriptor(
@@ -344,8 +351,8 @@ _CONFIGGROUP_POSTACTION_VOTEGERRITLABELS_VOTE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1497,
-  serialized_end=1541,
+  serialized_start=1535,
+  serialized_end=1579,
 )
 
 _CONFIGGROUP_POSTACTION_VOTEGERRITLABELS = _descriptor.Descriptor(
@@ -375,8 +382,8 @@ _CONFIGGROUP_POSTACTION_VOTEGERRITLABELS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1395,
-  serialized_end=1541,
+  serialized_start=1433,
+  serialized_end=1579,
 )
 
 _CONFIGGROUP_POSTACTION = _descriptor.Descriptor(
@@ -425,8 +432,8 @@ _CONFIGGROUP_POSTACTION = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[], serialized_options=b'\370B\001'),
   ],
-  serialized_start=1083,
-  serialized_end=1556,
+  serialized_start=1121,
+  serialized_end=1594,
 )
 
 _CONFIGGROUP_TRYJOBEXPERIMENT_CONDITION = _descriptor.Descriptor(
@@ -456,8 +463,8 @@ _CONFIGGROUP_TRYJOBEXPERIMENT_CONDITION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1672,
-  serialized_end=1728,
+  serialized_start=1710,
+  serialized_end=1766,
 )
 
 _CONFIGGROUP_TRYJOBEXPERIMENT = _descriptor.Descriptor(
@@ -494,8 +501,8 @@ _CONFIGGROUP_TRYJOBEXPERIMENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1559,
-  serialized_end=1728,
+  serialized_start=1597,
+  serialized_end=1766,
 )
 
 _CONFIGGROUP = _descriptor.Descriptor(
@@ -588,8 +595,8 @@ _CONFIGGROUP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=438,
-  serialized_end=1734,
+  serialized_start=476,
+  serialized_end=1772,
 )
 
 
@@ -627,8 +634,8 @@ _SUBMITOPTIONS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1736,
-  serialized_end=1818,
+  serialized_start=1774,
+  serialized_end=1856,
 )
 
 
@@ -680,8 +687,8 @@ _MODE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1821,
-  serialized_end=2025,
+  serialized_start=1859,
+  serialized_end=2063,
 )
 
 
@@ -712,8 +719,8 @@ _COMBINECLS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2027,
-  serialized_end=2095,
+  serialized_start=2065,
+  serialized_end=2133,
 )
 
 
@@ -787,8 +794,8 @@ _VERIFIERS_GERRITCQABILITY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2366,
-  serialized_end=2709,
+  serialized_start=2404,
+  serialized_end=2747,
 )
 
 _VERIFIERS_TREESTATUS = _descriptor.Descriptor(
@@ -818,8 +825,8 @@ _VERIFIERS_TREESTATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2711,
-  serialized_end=2736,
+  serialized_start=2749,
+  serialized_end=2774,
 )
 
 _VERIFIERS_TRYJOB_BUILDER_LOCATIONFILTER = _descriptor.Descriptor(
@@ -870,8 +877,8 @@ _VERIFIERS_TRYJOB_BUILDER_LOCATIONFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3335,
-  serialized_end=3448,
+  serialized_start=3373,
+  serialized_end=3486,
 )
 
 _VERIFIERS_TRYJOB_BUILDER = _descriptor.Descriptor(
@@ -971,8 +978,8 @@ _VERIFIERS_TRYJOB_BUILDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2921,
-  serialized_end=3466,
+  serialized_start=2959,
+  serialized_end=3504,
 )
 
 _VERIFIERS_TRYJOB_EQUIVALENTBUILDER = _descriptor.Descriptor(
@@ -1016,8 +1023,8 @@ _VERIFIERS_TRYJOB_EQUIVALENTBUILDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3468,
-  serialized_end=3552,
+  serialized_start=3506,
+  serialized_end=3590,
 )
 
 _VERIFIERS_TRYJOB_INCLUDABLEBUILDER = _descriptor.Descriptor(
@@ -1047,8 +1054,8 @@ _VERIFIERS_TRYJOB_INCLUDABLEBUILDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3554,
-  serialized_end=3587,
+  serialized_start=3592,
+  serialized_end=3625,
 )
 
 _VERIFIERS_TRYJOB_RETRYCONFIG = _descriptor.Descriptor(
@@ -1106,8 +1113,8 @@ _VERIFIERS_TRYJOB_RETRYCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3590,
-  serialized_end=3729,
+  serialized_start=3628,
+  serialized_end=3767,
 )
 
 _VERIFIERS_TRYJOB = _descriptor.Descriptor(
@@ -1151,8 +1158,8 @@ _VERIFIERS_TRYJOB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2739,
-  serialized_end=3729,
+  serialized_start=2777,
+  serialized_end=3767,
 )
 
 _VERIFIERS_CQLINTER = _descriptor.Descriptor(
@@ -1175,8 +1182,8 @@ _VERIFIERS_CQLINTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3731,
-  serialized_end=3741,
+  serialized_start=3769,
+  serialized_end=3779,
 )
 
 _VERIFIERS_FAKE = _descriptor.Descriptor(
@@ -1220,8 +1227,8 @@ _VERIFIERS_FAKE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3743,
-  serialized_end=3802,
+  serialized_start=3781,
+  serialized_end=3840,
 )
 
 _VERIFIERS = _descriptor.Descriptor(
@@ -1279,8 +1286,8 @@ _VERIFIERS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2098,
-  serialized_end=3802,
+  serialized_start=2136,
+  serialized_end=3840,
 )
 
 
@@ -1323,8 +1330,8 @@ _USERLIMIT_LIMIT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=3936,
-  serialized_end=3990,
+  serialized_start=3974,
+  serialized_end=4028,
 )
 
 _USERLIMIT_RUN = _descriptor.Descriptor(
@@ -1361,8 +1368,8 @@ _USERLIMIT_RUN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3992,
-  serialized_end=4070,
+  serialized_start=4030,
+  serialized_end=4108,
 )
 
 _USERLIMIT_TRYJOB = _descriptor.Descriptor(
@@ -1392,8 +1399,8 @@ _USERLIMIT_TRYJOB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4072,
-  serialized_end=4128,
+  serialized_start=4110,
+  serialized_end=4166,
 )
 
 _USERLIMIT = _descriptor.Descriptor(
@@ -1444,8 +1451,8 @@ _USERLIMIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3805,
-  serialized_end=4128,
+  serialized_start=3843,
+  serialized_end=4166,
 )
 
 _CONFIG.fields_by_name['submit_options'].message_type = _SUBMITOPTIONS
