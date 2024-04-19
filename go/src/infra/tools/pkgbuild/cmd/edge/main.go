@@ -23,6 +23,8 @@ import (
 	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
+const envEnableLuciexe = "PKGBUILD_ENABLE_LUCIEXE"
+
 func main() {
 	ctx := context.Background()
 	actions.NewReexecRegistry().Intercept(ctx)
@@ -93,15 +95,21 @@ func Main(ctx context.Context, app *Application, args []string) error {
 		}
 	}
 
+	// Collect errors from build and upload.
+	// We do best effort upload for all built packages even in case BuildAll
+	// returns error.
+	var errs error
+
 	pkgs, err := b.BuildAll(ctx, true)
 	if err != nil {
-		return errors.Annotate(err, "failed to build packages").Err()
+		errs = errors.Join(errs, errors.Annotate(err, "failed to build some packages").Err())
 	}
 
 	if err := app.TryUpload(ctx, pkgs); err != nil {
-		return err
+		errs = errors.Join(errs, errors.Annotate(err, "failed to upload some packages").Err())
 	}
 
 	app.PackageManager.Prune(ctx, time.Hour*24, 256)
-	return nil
+
+	return errs
 }

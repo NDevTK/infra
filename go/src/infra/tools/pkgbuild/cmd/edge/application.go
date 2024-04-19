@@ -15,6 +15,8 @@ import (
 	"slices"
 	"time"
 
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/cipd/client/cipd/platform"
@@ -22,9 +24,9 @@ import (
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/cipkg/base/workflow"
 	"go.chromium.org/luci/cipkg/core"
+	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
 	"go.chromium.org/luci/luciexe/build"
 	"go.chromium.org/luci/provenance/api/snooperpb/v1"
@@ -121,36 +123,7 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 		return nil, errors.Annotate(err, "failed to load specs").Err()
 	}
 
-	ap := actions.NewActionProcessor()
-
 	target := generators.PlatformFromCIPD(a.TargetPlatform)
-	plats := generators.Platforms{
-		Build:  generators.CurrentPlatform(),
-		Host:   target,
-		Target: target,
-	}
-
-	buildTemp := filepath.Join(a.StorageDir, "temp")
-	pe := workflow.NewPackageExecutor(buildTemp,
-		func(ctx context.Context, pkg actions.Package) error {
-			return cipdPackage(pkg).download(ctx, a.CipdService)
-		},
-		func(ctx context.Context, cfg *workflow.ExecutionConfig, drv *core.Derivation) error {
-			step, ctx := startStep(ctx, fmt.Sprintf("build %s", drv.Name))
-			return step.With(func() error {
-				cmd := exec.CommandContext(ctx, drv.Args[0], drv.Args[1:]...)
-				cmd.Path = drv.Args[0]
-				cmd.Dir = cfg.WorkingDir
-				cmd.Stdin = cfg.Stdin
-				cmd.Stdout = io.MultiWriter(step.Stdout(), cfg.Stdout)
-				cmd.Stderr = io.MultiWriter(step.Stdout(), cfg.Stderr)
-				cmd.Env = append(slices.Clone(drv.Env), "out="+cfg.OutputDir)
-
-				logging.Infof(ctx, "command: %+v", cmd)
-				return cmd.Run()
-			})
-		},
-	)
 
 	return &PackageBuilder{
 		Packages: a.PackageManager,
@@ -165,60 +138,69 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 		CIPDTarget:  a.TargetPlatform,
 		SpecLoader:  loader,
 
-		BuildTempDir:    buildTemp,
-		Builder:         workflow.NewBuilder(plats, a.PackageManager, ap),
-		PackageExecutor: pe,
+		BuildTempDir: filepath.Join(a.StorageDir, "temp"),
 	}, nil
 }
 
 // TryUpload build and register the cipd if Application.Upload set to true.
-func (a *Application) TryUpload(ctx context.Context, pkgs []actions.Package) error {
+func (a *Application) TryUpload(ctx context.Context, pkgs []actions.Package) (err error) {
 	if !a.Upload {
 		return nil
 	}
 
+	step, ctx := build.StartStep(ctx, "upload packages")
+	defer step.End(err)
+
 	clt, err := client.MakeProvenanceClient(ctx, a.SnoopyService)
 	if err != nil {
-		return errors.Annotate(err, "failed to create provenance client").Err()
+		err = errors.Annotate(err, "failed to create provenance client").Err()
+		return
 	}
 
 	tmp, err := os.MkdirTemp("", "pkgbuild-")
 	if err != nil {
-		return errors.Annotate(err, "failed to create tmp dir").Err()
+		err = errors.Annotate(err, "failed to create tmp dir").Err()
+		return
 	}
 	defer filesystem.RemoveAll(tmp)
 
 	for _, pkg := range pkgs {
-		if err := a.tryUploadOne(ctx, func(ctx context.Context, in *snooperpb.ReportCipdRequest) error {
-			_, err := clt.ReportCipd(ctx, in)
-			return err
-		}, tmp, pkg); err != nil {
-			return err
+		if err = a.tryUploadOne(ctx, clt, tmp, pkg); err != nil {
+			return
 		}
 	}
 
-	return nil
+	return
 }
 
-// We can't pass ProvenanceClient since it's private. Use a wrapper function
-// instead.
-type cipdReporter func(ctx context.Context, in *snooperpb.ReportCipdRequest) error
+// provenanceClient interface for snoopy ProvenanceClient.
+type provenanceClient interface {
+	ReportCipd(context.Context, *snooperpb.ReportCipdRequest, ...grpc.CallOption) (*emptypb.Empty, error)
+}
 
 // tryUploadOne uploads the package provided. If reporter function is not nil,
 // it will be called after the cipd file generated in tmp, to report the
 // cipd package to snoopy service.
-func (a *Application) tryUploadOne(ctx context.Context, reporter cipdReporter, tmp string, pkg actions.Package) error {
-	cipdPkg := cipdPackage(pkg)
+func (a *Application) tryUploadOne(ctx context.Context, clt provenanceClient, tmp string, pkg actions.Package) (err error) {
+	cipdPkg := toCIPDPackage(pkg)
+	if cipdPkg == nil {
+		return nil
+	}
+
+	step, ctx := build.StartStep(ctx, pkg.Action.Metadata.Cipd.String())
+	defer step.End(err)
 
 	// Package is available in cipd
-	if err := cipdPkg.check(ctx, a.CipdService); err == nil {
+	if err = cipdPkg.check(ctx, a.CipdService); err == nil {
 		// TODO(fancl): add tags and refs
-		return cipdPkg.setTags(ctx, a.CipdService, nil)
+		err = cipdPkg.setTags(ctx, a.CipdService, nil)
+		return
 	} else if !errors.Is(err, errPackgeNotExist) {
-		return err
+		return
 	}
 
 	// Skip if Package is not available locally.
+	// Ignore error here.
 	if err := cipdPkg.Handler.IncRef(); err != nil {
 		return nil
 	}
@@ -227,7 +209,7 @@ func (a *Application) tryUploadOne(ctx context.Context, reporter cipdReporter, t
 	// TODO(fancl): add tags and refs
 	name, iid, err := cipdPkg.upload(ctx, tmp, a.CipdService, nil)
 	if err != nil {
-		return errors.Annotate(err, "failed to upload package").Err()
+		return
 	}
 
 	// Recursively upload package's dependencies
@@ -235,14 +217,15 @@ func (a *Application) tryUploadOne(ctx context.Context, reporter cipdReporter, t
 	deps = append(deps, cipdPkg.BuildDependencies...)
 	deps = append(deps, cipdPkg.RuntimeDependencies...)
 	for _, dep := range deps {
-		if err := a.tryUploadOne(ctx, reporter, tmp, dep); err != nil {
-			return err
+		if err = a.tryUploadOne(ctx, clt, tmp, dep); err != nil {
+			return
 		}
 	}
 
-	if reporter != nil && iid != "" {
+	if clt != nil && iid != "" {
 		// Report package info to server to trigger provenance generation.
-		if err := reporter(ctx, &snooperpb.ReportCipdRequest{
+		// Ignore error here.
+		if _, err := clt.ReportCipd(ctx, &snooperpb.ReportCipdRequest{
 			CipdReport: &snooperpb.CipdReport{
 				PackageName: name,
 				Iid:         iid,
@@ -254,7 +237,7 @@ func (a *Application) tryUploadOne(ctx context.Context, reporter cipdReporter, t
 		}
 	}
 
-	return nil
+	return
 }
 
 type PackageBuilder struct {
@@ -266,11 +249,12 @@ type PackageBuilder struct {
 	CIPDTarget  string
 	SpecLoader  *spec.SpecLoader
 
-	BuildTempDir    string
-	Builder         *workflow.Builder
-	PackageExecutor *workflow.PackageExecutor
+	BuildTempDir string
 
 	loaded []generators.Generator
+
+	// For testing purpose
+	packageExecutor *workflow.PackageExecutor
 }
 
 // Load 3pp spec by name and convert it into a cipkg.Package. If the 3pp spec
@@ -301,68 +285,114 @@ func (b *PackageBuilder) BuildAll(ctx context.Context, skipUploaded bool) ([]act
 		return nil, err
 	}
 
-	pkgs, err := b.Builder.GeneratePackages(ctx, b.loaded)
+	builder := workflow.NewBuilder(b.Platforms, b.Packages, actions.NewActionProcessor())
+
+	pkgs, err := builder.GeneratePackages(ctx, b.loaded)
 	if err != nil {
 		return nil, err
 	}
 
-	var newPkgs []actions.Package
-	if skipUploaded {
-		// Check if package has been built and available in cipd.
-		for _, pkg := range pkgs {
-			if err := cipdPackage(pkg).check(ctx, b.CipdService); err != nil {
-				if errors.Is(err, errPackgeNotExist) {
-					newPkgs = append(newPkgs, pkg)
-				} else {
-					return nil, err
-				}
-			}
+	executor := b.packageExecutor
+	if executor == nil {
+		if executor, err = b.defaultPackageExecutor(ctx, pkgs); err != nil {
+			return nil, err
 		}
-	} else {
+	}
+
+	var newPkgs []actions.Package
+	if !skipUploaded {
 		newPkgs = slices.Clone(pkgs)
+	} else if newPkgs, err = b.filterUploaded(ctx, pkgs); err != nil {
+		return nil, err
 	}
 
 	// Make packages available. We still return all packages regardless of the
 	// error.
-	if err := b.Builder.BuildPackages(ctx, b.PackageExecutor, newPkgs, true); err != nil {
+	if err := builder.BuildPackages(ctx, executor, newPkgs, true); err != nil {
 		return pkgs, err
 	}
 
 	return pkgs, nil
 }
 
-const envEnableLuciexe = "PKGBUILD_ENABLE_LUCIEXE"
+// filterUploaded filters out package has been built and available in cipd.
+func (b *PackageBuilder) filterUploaded(ctx context.Context, pkgs []actions.Package) (ret []actions.Package, err error) {
+	step, ctx := build.StartStep(ctx, "compute packages to be built")
+	defer step.End(err)
 
-type step struct {
-	b *build.Step
-}
+	checked := stringset.New(len(pkgs))
+	for _, pkg := range pkgs {
+		if !checked.Add(pkg.DerivationID) {
+			continue
+		}
 
-func startStep(ctx context.Context, name string) (*step, context.Context) {
-	if environ.FromCtx(ctx).Get(envEnableLuciexe) != "" {
-		b, ctx := build.StartStep(ctx, name)
-		return &step{b: b}, ctx
+		cipdPkg := toCIPDPackage(pkg)
+		if cipdPkg == nil {
+			continue
+		}
+
+		if err = cipdPkg.check(ctx, b.CipdService); err != nil {
+			if errors.Is(err, errPackgeNotExist) {
+				err = nil
+				ret = append(ret, pkg)
+			} else {
+				return
+			}
+		}
 	}
 
-	logging.Infof(ctx, "================================================================================")
-	logging.Infof(ctx, "executing step: %s", name)
-	return &step{}, ctx
+	return
 }
 
-func (s *step) End(err error) {
-	if s.b != nil {
-		s.b.End(err)
+func (b *PackageBuilder) defaultPackageExecutor(ctx context.Context, pkgs []actions.Package) (*workflow.PackageExecutor, error) {
+	rootSteps := NewRootSteps()
+	for _, pkg := range pkgs {
+		if _, err := rootSteps.UpdateRoot(ctx, pkg); err != nil {
+			return nil, err
+		}
 	}
-}
 
-func (s *step) Stdout() io.Writer {
-	if s.b != nil {
-		return s.b.Log("stdout")
+	preExecFn := func(ctx context.Context, pkg actions.Package) error {
+		return rootSteps.GetRoot(pkg.DerivationID).RunSubstep(ctx, func(ctx context.Context, root *build.Step) error {
+			cipdPkg := toCIPDPackage(pkg)
+			if cipdPkg == nil {
+				return nil
+			}
+			return cipdPkg.download(ctx, b.CipdService)
+		})
 	}
-	return io.Discard
-}
+	execFn := func(ctx context.Context, cfg *workflow.ExecutionConfig, drv *core.Derivation) error {
+		id, err := core.GetDerivationID(drv)
+		if err != nil {
+			return err
+		}
+		r := rootSteps.GetRoot(id)
 
-func (s *step) With(f func() error) error {
-	err := f()
-	s.End(err)
-	return err
+		err = r.RunSubstep(ctx, func(ctx context.Context, root *build.Step) (err error) {
+			s, ctx := build.StartStep(ctx, fmt.Sprintf("build %s", drv.Name))
+			defer s.End(err)
+
+			stepOutput := s.Log("stdout")
+			cmd := exec.CommandContext(ctx, drv.Args[0], drv.Args[1:]...)
+			cmd.Path = drv.Args[0]
+			cmd.Dir = cfg.WorkingDir
+			cmd.Stdin = cfg.Stdin
+			cmd.Stdout = io.MultiWriter(stepOutput, cfg.Stdout)
+			cmd.Stderr = io.MultiWriter(stepOutput, cfg.Stderr)
+			cmd.Env = append(slices.Clone(drv.Env), "out="+cfg.OutputDir)
+
+			fmt.Fprintf(s.Log("execution details"), "%#v\n", cmd)
+			err = cmd.Run()
+
+			return
+		})
+
+		if err != nil || r.ID() == id {
+			r.End()
+		}
+
+		return err
+	}
+
+	return workflow.NewPackageExecutor(b.BuildTempDir, preExecFn, execFn), nil
 }

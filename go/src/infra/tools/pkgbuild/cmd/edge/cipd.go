@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -20,6 +19,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
+	"go.chromium.org/luci/luciexe/build"
 )
 
 type cipdPackage actions.Package
@@ -29,143 +29,122 @@ var (
 	errAmbiguousPackgeTag = errors.New("ambiguity when resolving the derivation tag")
 )
 
-func (pkg cipdPackage) check(ctx context.Context, cipdService string) error {
-	cipd := pkg.Action.Metadata.GetCipd()
-	if cipd == nil || cipd.Name == "" {
+func toCIPDPackage(pkg actions.Package) *cipdPackage {
+	if pkg.Action.Metadata.GetCipd().GetName() == "" {
 		return nil
 	}
-
-	step, ctx := startStep(ctx, fmt.Sprintf("describing cipd package %s:%s", cipd.Name, pkg.derivationTag()))
-	return step.With(func() error {
-		cmd := step.cipdCommand("describe", cipd.Name,
-			"-service-url", cipdService,
-			"-version", pkg.derivationTag(),
-		)
-		var b bytes.Buffer
-		cmd.Stdout = io.MultiWriter(&b, cmd.Stdout)
-		cmd.Stderr = io.MultiWriter(&b, cmd.Stderr)
-
-		logging.Infof(ctx, "command: %+v", cmd)
-		if err := cmd.Run(); err != nil {
-			out := b.String()
-			if strings.Contains(out, "no such tag") || strings.Contains(out, "no such package") {
-				return errPackgeNotExist
-			} else if strings.Contains(out, "ambiguity when resolving the tag") {
-				return errAmbiguousPackgeTag
-			}
-
-			logging.Infof(ctx, "%s", out)
-			return err
-		}
-
-		return nil
-	})
+	ret := cipdPackage(pkg)
+	return &ret
 }
 
-func (pkg cipdPackage) upload(ctx context.Context, workdir, cipdService string, tags []string) (name string, iid string, err error) {
+func (pkg *cipdPackage) check(ctx context.Context, cipdService string) error {
 	cipd := pkg.Action.Metadata.GetCipd()
-	if cipd == nil || cipd.Name == "" {
-		return "", "", nil
+
+	var b bytes.Buffer
+	cmd := cipdCommand("describe", cipd.Name,
+		"-service-url", cipdService,
+		"-version", pkg.derivationTag(),
+	)
+	cmd.Stderr = &b
+
+	if err := runStepCommand(ctx, cmd); err != nil {
+		out := b.String()
+		if strings.Contains(out, "no such tag") || strings.Contains(out, "no such package") {
+			return errPackgeNotExist
+		} else if strings.Contains(out, "ambiguity when resolving the tag") {
+			return errAmbiguousPackgeTag
+		}
+		return err
 	}
+
+	return nil
+}
+
+func (pkg *cipdPackage) upload(ctx context.Context, workdir, cipdService string, tags []string) (name string, iid string, err error) {
+	cipd := pkg.Action.Metadata.GetCipd()
 	name = cipd.Name
 
-	step, ctx := startStep(ctx, fmt.Sprintf("creating cipd package %s:%s with %s", name, pkg.derivationTag(), cipd.Version))
-	if err := step.With(func() error {
-		// If .cipd file already exists, assume it has been uploaded.
-		out := filepath.Join(workdir, pkg.DerivationID+".cipd")
-		if _, err := os.Stat(out); err == nil || !errors.Is(err, fs.ErrNotExist) {
-			return err
-		}
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("creating cipd package %s:%s with %s", name, pkg.derivationTag(), cipd.Version))
+	defer step.End(err)
 
-		iid, err = buildCIPD(ctx, step, name, pkg.Handler.OutputDirectory(), out)
-		if err != nil {
-			_ = filesystem.RemoveAll(out)
-			return errors.Annotate(err, "failed to build cipd package").Err()
-		}
+	// If .cipd file already exists, assume it has been uploaded.
+	out := filepath.Join(workdir, pkg.DerivationID+".cipd")
+	if _, err = os.Stat(out); err == nil || !errors.Is(err, fs.ErrNotExist) {
+		return
+	}
 
-		if err := registerCIPD(ctx, step, cipdService, out, append([]string{pkg.derivationTag()}, tags...)); err != nil {
-			return errors.Annotate(err, "failed to register cipd package").Err()
-		}
+	iid, err = buildCIPD(ctx, name, pkg.Handler.OutputDirectory(), out)
+	if err != nil {
+		_ = filesystem.RemoveAll(out)
+		err = errors.Annotate(err, "failed to build cipd package").Err()
+		return
+	}
 
-		return nil
-	}); err != nil {
-		return "", "", err
+	if err = registerCIPD(ctx, cipdService, out, append([]string{pkg.derivationTag()}, tags...)); err != nil {
+		err = errors.Annotate(err, "failed to register cipd package").Err()
+		return
 	}
 
 	return
 }
 
-func (pkg cipdPackage) download(ctx context.Context, cipdService string) error {
+func (pkg *cipdPackage) download(ctx context.Context, cipdService string) (err error) {
 	cipd := pkg.Action.Metadata.GetCipd()
-	if cipd == nil || cipd.Name == "" {
-		return nil
+
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("downloading cipd package %s:%s", cipd.Name, pkg.derivationTag()))
+	defer step.End(err)
+
+	// Error from cipd export is intentionally ignored here.
+	// Cache miss should not be treated as failure.
+	if err := pkg.Handler.Build(func() error {
+		cmd := cipdCommand("export",
+			"-service-url", cipdService,
+			"-root", pkg.Handler.OutputDirectory(),
+			"-ensure-file", "-",
+		)
+		cmd.Stdin = strings.NewReader(fmt.Sprintf("%s %s", cipd.Name, pkg.derivationTag()))
+
+		return runStepCommand(ctx, cmd)
+	}); err != nil {
+		logging.Infof(ctx, "failed to download package from cipd (possible cache miss): %s", err)
 	}
 
-	step, ctx := startStep(ctx, fmt.Sprintf("dowloading cipd package %s:%s", cipd.Name, pkg.derivationTag()))
-	return step.With(func() error {
-		if err := pkg.Handler.Build(func() error {
-			cmd := step.cipdCommand("export",
-				"-service-url", cipdService,
-				"-root", pkg.Handler.OutputDirectory(),
-				"-ensure-file", "-",
-			)
-			cmd.Stdin = strings.NewReader(fmt.Sprintf("%s %s", cipd.Name, pkg.derivationTag()))
-
-			logging.Infof(ctx, "command: %+v", cmd)
-			return cmd.Run()
-		}); err != nil {
-			logging.Infof(ctx, "failed to download package from cipd (possible cache miss): %s", err)
-		}
-
-		return nil
-	})
+	return
 }
 
-func (pkg cipdPackage) setTags(ctx context.Context, cipdService string, tags []string) error {
+func (pkg *cipdPackage) setTags(ctx context.Context, cipdService string, tags []string) error {
 	cipd := pkg.Action.Metadata.GetCipd()
-	if cipd == nil || cipd.Name == "" {
-		return nil
-	}
 
 	if len(tags) == 0 {
 		return nil
 	}
 
-	step, ctx := startStep(ctx, fmt.Sprintf("tagging cipd package %s:%s", cipd.Name, pkg.derivationTag()))
-	return step.With(func() error {
-		cmd := step.cipdCommand("set-tag", cipd.Name,
-			"-service-url", cipdService,
-			"-version", pkg.derivationTag(),
-		)
+	cmd := cipdCommand("set-tag", cipd.Name,
+		"-service-url", cipdService,
+		"-version", pkg.derivationTag(),
+	)
 
-		for _, tag := range tags {
-			cmd.Args = append(cmd.Args, "-tag", tag)
-		}
+	for _, tag := range tags {
+		cmd.Args = append(cmd.Args, "-tag", tag)
+	}
 
-		logging.Infof(ctx, "command: %+v", cmd)
-		if err := cmd.Run(); err != nil {
-			return errors.Annotate(err, "failed to set-tag for cipd package %s:%s", cipd.Name, pkg.derivationTag()).Err()
-		}
-
-		return nil
-	})
+	return runStepCommand(ctx, cmd)
 }
 
-func (pkg cipdPackage) derivationTag() string {
+func (pkg *cipdPackage) derivationTag() string {
 	return "derivation:" + pkg.DerivationID
 }
 
-func buildCIPD(ctx context.Context, step *step, name, src, dst string) (Iid string, err error) {
+func buildCIPD(ctx context.Context, name, src, dst string) (Iid string, err error) {
 	resultFile := dst + ".json"
-	cmd := step.cipdCommand("pkg-build",
+	cmd := cipdCommand("pkg-build",
 		"-name", name,
 		"-in", src,
 		"-out", dst,
 		"-json-output", resultFile,
 	)
 
-	logging.Infof(ctx, "command: %+v", cmd)
-	if err := cmd.Run(); err != nil {
+	if err := runStepCommand(ctx, cmd); err != nil {
 		return "", err
 	}
 
@@ -188,8 +167,8 @@ func buildCIPD(ctx context.Context, step *step, name, src, dst string) (Iid stri
 	return result.Result.InstanceID, nil
 }
 
-func registerCIPD(ctx context.Context, step *step, cipdService, pkg string, tags []string) error {
-	cmd := step.cipdCommand("pkg-register", pkg,
+func registerCIPD(ctx context.Context, cipdService, pkg string, tags []string) error {
+	cmd := cipdCommand("pkg-register", pkg,
 		"-service-url", cipdService,
 	)
 
@@ -197,11 +176,10 @@ func registerCIPD(ctx context.Context, step *step, cipdService, pkg string, tags
 		cmd.Args = append(cmd.Args, "-tag", tag)
 	}
 
-	logging.Infof(ctx, "command: %+v", cmd)
-	return cmd.Run()
+	return runStepCommand(ctx, cmd)
 }
 
-func (s *step) cipdCommand(arg ...string) *exec.Cmd {
+func cipdCommand(arg ...string) *exec.Cmd {
 	cipd, err := exec.LookPath("cipd")
 	if err != nil {
 		cipd = "cipd"
@@ -214,8 +192,5 @@ func (s *step) cipdCommand(arg ...string) *exec.Cmd {
 	} else {
 		cmd = exec.Command(cipd, arg...)
 	}
-	cmd.Stdout = s.Stdout()
-	cmd.Stderr = s.Stdout()
-
 	return cmd
 }

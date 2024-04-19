@@ -74,7 +74,6 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 
 		pm, err := workflow.NewLocalPackageManager(storeTemp)
 		So(err, ShouldBeNil)
-		ap := actions.NewActionProcessor()
 
 		plats := generators.Platforms{
 			Build:  buildPlatform,
@@ -88,8 +87,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			CIPDTarget:   cipdPlatform,
 			SpecLoader:   loader,
 			BuildTempDir: buildTemp,
-			Builder:      workflow.NewBuilder(plats, pm, ap),
-			PackageExecutor: workflow.NewPackageExecutor(buildTemp,
+			packageExecutor: workflow.NewPackageExecutor(buildTemp,
 				func(ctx context.Context, pkg actions.Package) error { return nil },
 				func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil },
 			),
@@ -142,7 +140,6 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 
 		pm, err := workflow.NewLocalPackageManager(storeTemp)
 		So(err, ShouldBeNil)
-		ap := actions.NewActionProcessor()
 
 		plats := generators.Platforms{
 			Build:  buildPlatform,
@@ -156,8 +153,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			CIPDTarget:   cipdTarget,
 			SpecLoader:   loader,
 			BuildTempDir: buildTemp,
-			Builder:      workflow.NewBuilder(plats, pm, ap),
-			PackageExecutor: workflow.NewPackageExecutor(buildTemp,
+			packageExecutor: workflow.NewPackageExecutor(buildTemp,
 				func(ctx context.Context, pkg actions.Package) error { return nil },
 				func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil },
 			),
@@ -222,7 +218,6 @@ func TestPackageSources(t *testing.T) {
 
 		pm, err := workflow.NewLocalPackageManager(storeTemp)
 		So(err, ShouldBeNil)
-		ap := actions.NewActionProcessor()
 
 		plats := generators.Platforms{
 			Build:  buildPlatform,
@@ -236,8 +231,7 @@ func TestPackageSources(t *testing.T) {
 			CIPDTarget:   cipdPlatform,
 			SpecLoader:   loader,
 			BuildTempDir: buildTemp,
-			Builder:      workflow.NewBuilder(plats, pm, ap),
-			PackageExecutor: workflow.NewPackageExecutor(buildTemp,
+			packageExecutor: workflow.NewPackageExecutor(buildTemp,
 				func(ctx context.Context, pkg actions.Package) error { return nil },
 				func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil },
 			),

@@ -42,7 +42,8 @@ const (
 
 var (
 	git = &generators.CIPDExport{
-		Name: "stdenv_git",
+		Name:     "stdenv_git",
+		Metadata: &core.Action_Metadata{Luciexe: &core.Action_Metadata_LUCIExe{StepName: "stdenv_git"}},
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
 				"": {
@@ -52,7 +53,8 @@ var (
 		},
 	}
 	cpython = &generators.CIPDExport{
-		Name: "stdenv_python3",
+		Name:     "stdenv_python3",
+		Metadata: &core.Action_Metadata{Luciexe: &core.Action_Metadata_LUCIExe{StepName: "stdenv_python3"}},
 		Ensure: ensure.File{
 			PackagesBySubdir: map[string]ensure.PackageSlice{
 				"": {
@@ -229,6 +231,9 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 			Cipd: &core.Action_Metadata_CIPD{
 				Name:    g.CIPDName,
 				Version: g.Version,
+			},
+			Luciexe: &core.Action_Metadata_LUCIExe{
+				StepName: fmt.Sprintf("%s@%s:%s", g.Name, g.Version, plats.Build.String()),
 			},
 		},
 		Args:         []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", filepath.Join("{{.stdenv}}", "setup", "main.py")},
