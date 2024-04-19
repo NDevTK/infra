@@ -55,6 +55,7 @@ func (c *getCostResultCommand) Run(a subcommands.Application, args []string, env
 }
 
 func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Application) error {
+	c.commonFlags.VerboseLog(a, "starting get-ci")
 	host, err := c.commonFlags.Host()
 	if err != nil {
 		return errors.Annotate(err, "get cost result command").Err()
@@ -78,8 +79,10 @@ func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Appli
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.GetCostResult(ctx, &fleetcostAPI.GetCostResultRequest{Hostname: c.name})
 	if err != nil {
+		c.commonFlags.VerboseLog(a, "RPC call failed.")
 		return errors.Annotate(err, "get cost result").Err()
 	}
+	c.commonFlags.VerboseLog(a, "RPC call succeeded")
 	_, err = showProto(a.GetOut(), resp)
 	return errors.Annotate(err, "get cost result").Err()
 }
