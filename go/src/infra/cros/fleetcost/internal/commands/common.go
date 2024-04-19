@@ -45,7 +45,7 @@ func getSecureClient(ctx context.Context, host string, authFlags authcli.Flags) 
 	return httpClient, nil
 }
 
-// Message showProto writes a proto message as an indentend object.
+// Message showProto writes a proto message as an indentend object. Always adds a newline.
 func showProto(dst io.Writer, message proto.Message) (int, error) {
 	if dst == nil {
 		return 0, errors.New("dest cannot be nil")
@@ -56,7 +56,7 @@ func showProto(dst io.Writer, message proto.Message) (int, error) {
 	if err != nil {
 		return 0, errors.Annotate(err, "show proto").Err()
 	}
-	return dst.Write(bytes)
+	return dst.Write(append(bytes, byte('\n')))
 }
 
 // Function makeLocationRecorder makes a func(string) error that writes the location
