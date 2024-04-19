@@ -20,12 +20,12 @@ import (
 func TestJoinSingleValueLabel(t *testing.T) {
 	Convey("Test with no repeat labels", t, func() {
 		l := []string{"eve", "nami", "coral"}
-		So(joinSingleValueLabel(l), ShouldResemble, []string{"eve", "nami", "coral"})
+		So(differentiateLabelValues(l), ShouldResemble, []string{"eve", "nami", "coral"})
 	})
 
 	Convey("Test with repeat labels", t, func() {
 		l := []string{"nami", "coral", "nami", "nami"}
-		So(joinSingleValueLabel(l), ShouldResemble, []string{"nami", "coral", "nami_2", "nami_3"})
+		So(differentiateLabelValues(l), ShouldResemble, []string{"nami", "coral", "nami_2", "nami_3"})
 	})
 }
 
@@ -83,7 +83,7 @@ func TestLabelIntersection(t *testing.T) {
 	})
 }
 
-func TestSchedulingUnitDimensions(t *testing.T) {
+func TestGetSchedulingUnitDimensions(t *testing.T) {
 	Convey("Test with a non-empty scheduling unit with all devices are stable.", t, func() {
 		su := &ufspb.SchedulingUnit{
 			Name:       "schedulingunit/test-unit1",
@@ -156,7 +156,7 @@ func TestSchedulingUnitDimensions(t *testing.T) {
 				"OPENWRT[Ubiquiti_Unifi_6_Lite]",
 			},
 		}
-		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
 	})
 
 	Convey("Test with an empty scheduling unit.", t, func() {
@@ -176,7 +176,7 @@ func TestSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
 	})
 
 	Convey("Test with an scheduling unit that include non-stable device.", t, func() {
@@ -223,7 +223,7 @@ func TestSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
 	})
 	Convey("Test with a strict primary dut dimensions", t, func() {
 		su := &ufspb.SchedulingUnit{
@@ -274,7 +274,7 @@ func TestSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
 	})
 	Convey("Test with a primary dut default dimensions", t, func() {
 		su := &ufspb.SchedulingUnit{
@@ -324,7 +324,7 @@ func TestSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
 	})
 	Convey("Test with a default_plus_primary dimensions", t, func() {
 		su := &ufspb.SchedulingUnit{
@@ -375,7 +375,7 @@ func TestSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
 	})
 	Convey("Test schedulingunit with wificell label.", t, func() {
 		su := &ufspb.SchedulingUnit{
@@ -396,7 +396,7 @@ func TestSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
 	})
 	Convey("Test schedulingunit with carrier label.", t, func() {
 		su := &ufspb.SchedulingUnit{
@@ -419,11 +419,11 @@ func TestSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
 	})
 }
 
-func TestSchedulingUnitBotState(t *testing.T) {
+func TestGetSchedulingUnitBotState(t *testing.T) {
 	Convey("Test scheduling unit bot state.", t, func() {
 		t, _ := time.Parse(time.RFC3339, "2021-05-07T11:54:36.225Z")
 		su := &ufspb.SchedulingUnit{
@@ -433,11 +433,11 @@ func TestSchedulingUnitBotState(t *testing.T) {
 		expectedResult := map[string][]string{
 			"scheduling_unit_version_index": {"2021-05-07 11:54:36.225 UTC"},
 		}
-		So(SchedulingUnitBotState(su), ShouldResemble, expectedResult)
+		So(GetSchedulingUnitBotState(su), ShouldResemble, expectedResult)
 	})
 }
 
-func Test_collectPeripheralDimensions(t *testing.T) {
+func TestCollectPeripheralDimensions(t *testing.T) {
 	tests := []struct {
 		name        string
 		dutsDimsArg []swarming.Dimensions
@@ -620,7 +620,7 @@ func Test_collectPeripheralDimensions(t *testing.T) {
 	}
 }
 
-func Test_sortWifiRouterFeaturesByName(t *testing.T) {
+func TestSortWifiRouterFeaturesByName(t *testing.T) {
 	tests := []struct {
 		name            string
 		featuresInitial []inventory.Peripherals_WifiRouterFeature

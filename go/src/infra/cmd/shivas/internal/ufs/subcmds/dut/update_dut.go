@@ -26,7 +26,7 @@ import (
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
-	suUtil "infra/libs/fleet/device/schedulingunit"
+	"infra/libs/fleet/device/schedulingunit"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -1228,7 +1228,7 @@ func validateUpdateDUTRequest(ctx context.Context, ic ufsAPI.FleetClient, req *u
 			return errors.New("Invalid update. Missing DUT name")
 		}
 	}
-	return suUtil.CheckIfLSEBelongsToSU(ctx, ic, lse.GetName())
+	return schedulingunit.CheckIfLSEBelongsToSU(ctx, ic, lse.GetName())
 }
 
 func appendServoFwChannelPrefix(servoFwChannel string) string {

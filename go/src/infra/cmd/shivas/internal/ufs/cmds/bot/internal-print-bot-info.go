@@ -21,8 +21,9 @@ import (
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/dutstate"
-	"infra/libs/fleet/device"
-	suUtil "infra/libs/fleet/device/schedulingunit"
+	"infra/libs/fleet/device/attacheddevice"
+	"infra/libs/fleet/device/dut"
+	"infra/libs/fleet/device/schedulingunit"
 	"infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -173,7 +174,10 @@ func getOSBotInfo(ctx context.Context, client ufsAPI.FleetClient, id string, byH
 	if err != nil {
 		return nil, err
 	}
-	return &botInfo{Dimensions: botDimensions, State: botState}, nil
+	return &botInfo{
+		Dimensions: botDimensions,
+		State:      botState,
+	}, nil
 }
 
 func getSUBotInfo(ctx context.Context, client ufsAPI.FleetClient, su *ufspb.SchedulingUnit, r swarming.ReportFunc) (*botInfo, error) {
@@ -190,8 +194,8 @@ func getSUBotInfo(ctx context.Context, client ufsAPI.FleetClient, su *ufspb.Sche
 		dutsDims = append(dutsDims, botDimensions)
 	}
 	return &botInfo{
-		Dimensions: suUtil.SchedulingUnitDimensions(su, dutsDims),
-		State:      suUtil.SchedulingUnitBotState(su),
+		Dimensions: schedulingunit.GetSchedulingUnitDimensions(su, dutsDims),
+		State:      schedulingunit.GetSchedulingUnitBotState(su),
 	}, nil
 }
 
@@ -245,10 +249,10 @@ func getBotDimensions(ctx context.Context, client ufsAPI.FleetClient, deviceData
 	switch deviceData.GetResourceType() {
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
 		dutState := dutstate.Read(ctx, client, deviceData.GetChromeOsDeviceData().GetLabConfig().GetName())
-		return device.GetDUTBotDims(ctx, r, dutState, deviceData.GetChromeOsDeviceData()), nil
+		return dut.GetDUTBotDims(ctx, r, dutState, deviceData.GetChromeOsDeviceData()), nil
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
 		dutState := dutstate.Read(ctx, client, deviceData.GetAttachedDeviceData().GetLabConfig().GetName())
-		return device.GetAttachedDeviceBotDims(ctx, r, dutState, deviceData.GetAttachedDeviceData()), nil
+		return attacheddevice.GetAttachedDeviceBotDims(ctx, r, dutState, deviceData.GetAttachedDeviceData()), nil
 	}
 	return nil, fmt.Errorf("append bot dimensions: invalid device type (%s)", deviceData.GetResourceType())
 }

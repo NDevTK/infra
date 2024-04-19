@@ -22,7 +22,7 @@ import (
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
-	suUtil "infra/libs/fleet/device/schedulingunit"
+	"infra/libs/fleet/device/schedulingunit"
 	"infra/libs/skylab/common/heuristics"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -277,7 +277,7 @@ func (c *updateLabstation) validateRequest(ctx context.Context, ic ufsAPI.FleetC
 			return fmt.Errorf("Invalid update. Missing Labstation name")
 		}
 	}
-	return suUtil.CheckIfLSEBelongsToSU(ctx, ic, lse.GetName())
+	return schedulingunit.CheckIfLSEBelongsToSU(ctx, ic, lse.GetName())
 }
 
 // containsAnyStrings returns true if any of the inputs are included in the list.

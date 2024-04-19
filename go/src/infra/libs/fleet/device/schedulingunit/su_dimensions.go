@@ -23,14 +23,19 @@ var dutToSULabelMap = map[string]string{
 	"dut_name":    "label-managed_dut",
 }
 
-func joinSingleValueLabel(labels []string) []string {
+// differentiateLabelValues takes an array of label values and makes them unique.
+//
+// differentiateLabelValues makes the values unique by adding suffixes to the
+// value if they are duplicates.Swarming doesn't allow repeat value of a
+// dimension, so we give them a suffix.
+//
+// E.g. A scheduling unit containing two eve board DUTs will have label-board:
+// [eve, eve_2]
+func differentiateLabelValues(labelValues []string) []string {
 	var res []string
 	occurrences := make(map[string]int)
-	for _, l := range labels {
+	for _, l := range labelValues {
 		occurrences[l] += 1
-		// Swarming doesn't allow repeat value of a dimension, so we give
-		// them a suffix. E.g. A scheduling unit contains two eve board DUTs
-		// will have label-board: [eve, eve2]
 		suffix := ""
 		if occurrences[l] > 1 {
 			suffix = fmt.Sprintf("_%d", occurrences[l])
@@ -40,10 +45,12 @@ func joinSingleValueLabel(labels []string) []string {
 	return res
 }
 
+// joinDutLabelsToSU joins adds the label values of an SU's DUTs to the SU's
+// label dimensions.
 func joinDutLabelsToSU(dutLabels []string, dutsDims []swarming.Dimensions, suDims map[string][]string) {
 	for _, dutLabelName := range dutLabels {
 		if suLabelName, ok := dutToSULabelMap[dutLabelName]; ok {
-			joinedLabels := joinSingleValueLabel(dutLabelValues(dutLabelName, dutsDims))
+			joinedLabels := differentiateLabelValues(dutLabelValues(dutLabelName, dutsDims))
 			if len(joinedLabels) > 0 {
 				suDims[suLabelName] = joinedLabels
 			}
@@ -51,6 +58,8 @@ func joinDutLabelsToSU(dutLabels []string, dutsDims []swarming.Dimensions, suDim
 	}
 }
 
+// dutLabelValues iterates through an array of Swarming dimensions and returns
+// all the values of a specified label.
 func dutLabelValues(label string, dims []swarming.Dimensions) []string {
 	var res []string
 	for _, dim := range dims {
@@ -90,8 +99,10 @@ func labelIntersection(label string, dims []swarming.Dimensions) []string {
 	return labels
 }
 
-func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dimensions) map[string][]string {
-	// Add label from scheduling unit
+// GetSchedulingUnitDimensions converts UFS SchedulingUnit data to Swarming
+// labels and returns it as a map.
+func GetSchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dimensions) map[string][]string {
+	// Base labels for a SchedulingUnit
 	suDims := map[string][]string{
 		"dut_name":        {ufsUtil.RemovePrefix(su.GetName())},
 		"dut_id":          {ufsUtil.RemovePrefix(su.GetName())},
@@ -109,6 +120,7 @@ func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dime
 	if su.GetCarrier() != "" {
 		suDims["label-carrier"] = []string{su.GetCarrier()}
 	}
+
 	var dutLabels, conjunctionLabels []string
 	var detailedLabelDut string
 	switch su.GetExposeType() {
@@ -119,14 +131,17 @@ func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dime
 		dutLabels = []string{"label-board", "label-model", "dut_name"}
 		detailedLabelDut = su.GetPrimaryDut()
 	case ufspb.SchedulingUnit_STRICTLY_PRIMARY_ONLY:
-		// For the strict primary dut mode, we will only expose primary dut labels scheduling unit.
+		// For the strict primary dut mode, we will only expose primary dut labels
+		// scheduling unit.
 		dutLabels = []string{"dut_name"}
 		detailedLabelDut = su.GetPrimaryDut()
 	}
-	// Add join labels. SU label is the union of all dut's label
+
+	// Join DUT labels. SU labels is the union of all of its DUTs' labels.
 	joinDutLabelsToSU(dutLabels, dutsDims, suDims)
-	// conjunctionLabels define labels we want present it in SU only if all
-	// their devices has the given label, and SU will only inherit values that
+
+	// conjunctionLabels defines labels we want present in the SU only if all
+	// its devices has the given label. The SU will only inherit values that
 	// are common among all devices under the SU.
 	for _, label := range conjunctionLabels {
 		values := labelIntersection(label, dutsDims)
@@ -134,9 +149,10 @@ func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dime
 			suDims[label] = values
 		}
 	}
+
+	// Add label from detailedLabelDut to suDims.
+	// detailedLabelDut labels that are not already in suDims are added.
 	if detailedLabelDut != "" {
-		// Add label from detailedLabelDut to suDims.
-		// detailedLabelDut labels that are not already in suDims are added.
 		var detailDim swarming.Dimensions
 		for _, dim := range dutsDims {
 			if dim["dut_name"][0] == detailedLabelDut {
@@ -150,6 +166,7 @@ func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dime
 			}
 		}
 	}
+
 	// Add peripheral dims from all duts.
 	for dim, value := range collectPeripheralDimensions(dutsDims) {
 		suDims[dim] = value
@@ -157,7 +174,9 @@ func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dime
 	return suDims
 }
 
-func SchedulingUnitBotState(su *ufspb.SchedulingUnit) map[string][]string {
+// GetSchedulingUnitBotState converts UFS SchedulingUnit data to bot state
+// and returns it as a map.
+func GetSchedulingUnitBotState(su *ufspb.SchedulingUnit) map[string][]string {
 	return map[string][]string{
 		"scheduling_unit_version_index": {su.GetUpdateTime().AsTime().Format(ufsUtil.TimestampBasedVersionKeyFormat)},
 	}
@@ -182,13 +201,13 @@ func CheckIfLSEBelongsToSU(ctx context.Context, ic ufsAPI.FleetClient, lseName s
 	return nil
 }
 
-// collectPeripheralDimensions collects all the dimensions specific to peripherals
-// from all the individual dut dimensions. Values are combined as needed to reflect
-// state of the whole unit.
+// collectPeripheralDimensions collects all the dimensions specific to
+// peripherals from all the individual dut dimensions. Values are combined as
+// needed to reflect state of the whole unit.
 //
-// The dut converter functions are used to create the dims the same way it's done
-// for duts once the values are finalized. Then, only the related peripheral
-// labels are returned.
+// The dut converter functions are used to create the dims the same way it's
+// done for duts once the values are finalized. Then, only the related
+// peripheral labels are returned.
 func collectPeripheralDimensions(dutsDims []swarming.Dimensions) swarming.Dimensions {
 	// Initialize defaults.
 	peripheralWifiState := inventory.PeripheralState_NOT_APPLICABLE
@@ -297,9 +316,8 @@ func combinePeripheralState(suState, dutState inventory.PeripheralState) invento
 }
 
 // sortWifiRouterFeaturesByName sorts the list of features first by known names
-// and then unknown names (would be integers).
-// Has the same effect as the sorting method used when setting the dut-level
-// dimensions.
+// and then unknown names (would be integers). Has the same effect as the
+// sorting method used when setting the dut-level dimensions.
 func sortWifiRouterFeaturesByName(features []inventory.Peripherals_WifiRouterFeature) {
 	sort.SliceStable(features, func(i, j int) bool {
 		aName := features[i].String()
