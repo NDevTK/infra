@@ -783,12 +783,12 @@ class Support3ppApi(recipe_api.RecipeApi):
       resolved_file = self._NormalizePath(f)
       found_pkg = False
       for pkg_dir, pkg_name in self._pkg_dir_to_pkg_name.items():
-        if pkg_dir.is_parent_of(resolved_file):
+        if pkg_dir in resolved_file.parents:
           _AddDependenciesRecurse(pkg_name)
           found_pkg = True
           break
       if not found_pkg and any(
-          dir.is_parent_of(resolved_file) for dir in self._package_roots):
+          dir in resolved_file.parents for dir in self._package_roots):
         # The file is under a package root, but not corresponding to a
         # particular package.
         return []
