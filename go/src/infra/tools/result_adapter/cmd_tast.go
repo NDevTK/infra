@@ -64,7 +64,6 @@ func (r *tastRun) Run(a subcommands.Application, args []string, env subcommands.
 
 	ctx := cli.GetContext(a, r, env)
 	return r.run(ctx, args, r.generateTestResults)
-	//TODO(crbug.com/1238139): Upload invocation level logs.
 }
 
 // generateTestResults converts test results from results file to sinkpb.TestResult.

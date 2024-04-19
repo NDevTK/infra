@@ -5,6 +5,7 @@
 package main
 
 import (
+	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
@@ -15,11 +16,13 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/duration"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
-	"google.golang.org/protobuf/encoding/protojson"
+	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 )
 
 const (
@@ -114,6 +117,48 @@ func normalizePath(p string) string {
 func convertTagKey(key string) string {
 	lowerKey := strings.ToLower(key)
 	return strings.ReplaceAll(lowerKey, "-", "_")
+}
+
+// invocationArtifacts walks the files in the artifact dir and finds all invocation level artifact
+// excluding the test artifacts already present in the test results.
+func invocationArtifacts(artifactDir string, trs []*sinkpb.TestResult) (normPathToArtifact map[string]*sinkpb.Artifact, err error) {
+	// Obtain a set of all test level artifacts to exclude from the invocation level ones
+	testArts := map[string]bool{}
+	for _, tr := range trs {
+		for _, art := range tr.Artifacts {
+			if art.GetFilePath() != "" {
+				testArts[art.GetFilePath()] = true
+			}
+		}
+	}
+
+	normPathToArtifact = map[string]*sinkpb.Artifact{}
+	err = filepath.WalkDir(artifactDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if _, exists := testArts[path]; exists {
+			return nil
+		}
+
+		if d.Type().IsRegular() {
+			// normPath is the normalized relative path to artifactDir.
+			relPath, err := filepath.Rel(artifactDir, path)
+			if err != nil {
+				return err
+			}
+			normPath := normalizePath(relPath)
+			normPathToArtifact[normPath] = &sinkpb.Artifact{
+				Body: &sinkpb.Artifact_FilePath{FilePath: path},
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	return normPathToArtifact, nil
 }
 
 // processArtifacts walks the files in artifactDir then returns a map from normalized relative path to full path.

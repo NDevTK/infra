@@ -32,11 +32,12 @@ type baseRun struct {
 	subcommands.CommandRunBase
 
 	// Flags.
-	artifactDir            string
-	resultFile             string
-	testMetadataFile       string
-	trimArtifactPrefix     string
-	invocationLinkArtifact string
+	artifactDir                     string
+	resultFile                      string
+	testMetadataFile                string
+	trimArtifactPrefix              string
+	invocationLinkArtifact          string
+	enableInvocationArtifactsUpload bool
 
 	sinkCtx       *lucictx.ResultSink
 	sinkC         sinkpb.SinkClient
@@ -62,6 +63,9 @@ func (r *baseRun) RegisterGlobalFlags() {
 				Name and URL pairs to insert as invocation level artifacts, e.g. stainless_logs=https://stainless/logs/1234,testhaus_logs=https://testhaus/logs/1234
 				URLs must be url encoded, so '=', ',' and ' ' are not valid characters. Optional.
 	`))
+	r.Flags.BoolVar(&r.enableInvocationArtifactsUpload, "enable-invocation-artifacts-upload", false, text.Doc(`
+				Whether to upload all invocation level artifacts to resultdb.
+			`))
 }
 
 // validate validates the command has required flags.
@@ -172,6 +176,19 @@ func (r *baseRun) run(ctx context.Context, args []string, f converter) (ret int)
 	}
 	if _, err := r.sinkC.ReportInvocationLevelArtifacts(ctx, &sinkpb.ReportInvocationLevelArtifactsRequest{Artifacts: linkArtifacts}); err != nil {
 		logging.Warningf(ctx, "Warning: failed to upload invocation level link artifacts: %q, err: %v", r.invocationLinkArtifact, err)
+	}
+
+	// Upload invocations level artifacts
+	if r.enableInvocationArtifactsUpload {
+		invArtifacts, err := invocationArtifacts(r.artifactDir, trs)
+		logging.Infof(ctx, "Info: Uploading %d invocation level artifacts to resultdb from dir: %q", len(invArtifacts), r.artifactDir)
+		if err != nil {
+			logging.Warningf(ctx, "Warning: failed to prepare invocation level artifacts from dir: %q, err: %v", r.artifactDir, err)
+		} else {
+			if _, err := r.sinkC.ReportInvocationLevelArtifacts(ctx, &sinkpb.ReportInvocationLevelArtifactsRequest{Artifacts: invArtifacts}); err != nil {
+				logging.Warningf(ctx, "Warning: failed to upload invocation level artifacts from dir: %q, err: %v", r.artifactDir, err)
+			}
+		}
 	}
 
 	if _, err := r.sinkC.ReportTestResults(ctx, &sinkpb.ReportTestResultsRequest{TestResults: trs}); err != nil {
