@@ -124,9 +124,27 @@ def setup(exe):
         return e.split(os.path.pathsep)
       return []
 
+    def copy2(src, dst, *, follow_symlinks=True):
+      """This is a wrapper for shutil.copy2 to mark parent directory writable.
+      Workaround for copying from different packages into same dir since cipd
+      marks everything readonly.
+      """
+      if not os.access(
+          parent := os.path.dirname(dst),
+          os.W_OK,
+          follow_symlinks=follow_symlinks,
+      ):
+        os.chmod(
+            parent,
+            mode=os.stat(parent).st_mode | os.ST_WRITE,
+            follow_symlinks=follow_symlinks,
+        )
+      return shutil.copy2(src, dst, follow_symlinks=follow_symlinks)
+
     for pkg in itertools.chain(pkgs('depsHostHost'), pkgs('depsHostTarget')):
       shutil.copytree(pkg, exe.env['_3PP_PREFIX'],
-                      symlinks=True, dirs_exist_ok=True)
+                      symlinks=True, dirs_exist_ok=True,
+                      copy_function=copy2)
     return True
 
   exe.add_hook('activatePkg', activate_pkg)
