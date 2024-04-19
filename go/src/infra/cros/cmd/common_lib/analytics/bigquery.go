@@ -44,6 +44,7 @@ type BqData struct {
 	Pool          string
 	Status        string
 	Duration      float32
+	Date          civil.DateTime
 }
 
 type TaskData struct {
@@ -73,7 +74,6 @@ func CtpAnalyticsBQClient(ctx context.Context) *bigquery.Client {
 		logging.Infof(ctx, "Unable to make BQ client :%s", err)
 		return nil
 	}
-
 	return c
 }
 
@@ -84,35 +84,17 @@ func InsertCTPMetrics(c *bigquery.Client, data []*BqData) error {
 	if err := inserter.Put(ctx, data); err != nil {
 		return err
 	}
-
-	logging.Infof(ctx, "Successfully inserted %v rows to %s", len(data), resultsTable)
 	return nil
 }
 
-// InsertCTPMetrics will insert the CTP Analytics Data into the CTPv2Metrics Table.
+// InsertCTPMetrics will insert the CTP Analytics Data into the CTPv2TaskMetrics Table.
 func InsertCTPTaskMetrics(c *bigquery.Client, data []*TaskData) error {
 	ctx := context.Background()
 	inserter := c.Dataset(dataset).Table(taskResultsTable).Inserter()
 	if err := inserter.Put(ctx, data); err != nil {
 		return err
 	}
-
-	logging.Infof(ctx, "Successfully inserted %v rows to %s", len(data), resultsTable)
 	return nil
-}
-
-// SoftInsertStep insert a step info to BQ. Do not fail on errors.
-func SoftInsertStep(ctx context.Context, BQClient *bigquery.Client, data *BqData) {
-	var rows []*BqData
-	rows = append(rows, data)
-
-	if BQClient != nil {
-		err := InsertCTPMetrics(BQClient, rows)
-		if err != nil {
-			logging.Infof(ctx, "ERROR DURING BQ WITE: %s", err)
-
-		}
-	}
 }
 
 // SoftInsertStepWCtp2Req insert a step info to BQl built from the CTPv2Request req. Do not fail on errors.
@@ -120,25 +102,17 @@ func SoftInsertStepWCtp2Req(ctx context.Context, BQClient *bigquery.Client, data
 	if ctpv2Req != nil && len(ctpv2Req.GetRequests()) > 0 {
 		data = buildDataFromCTPReq(data, ctpv2Req)
 	} else if v1Req != nil {
-		rs := []*api.CTPRequest{}
-		rs = append(rs, v1Req)
-		data = buildDataFromCTPReq(data, &api.CTPv2Request{Requests: rs})
-
+		data = buildDataFromCTPReq(data, &api.CTPv2Request{Requests: []*api.CTPRequest{v1Req}})
 	}
-	data = addBBID(data, build)
-
-	var rows []*BqData
-	rows = append(rows, data)
 
 	if BQClient != nil {
-		err := InsertCTPMetrics(BQClient, rows)
+		err := InsertCTPMetrics(BQClient, []*BqData{data})
 		if err != nil {
-			logging.Infof(ctx, "ERROR DURING BQ WITE: %s", err)
-
+			logging.Infof(ctx, "Error during BQ write: %s", err)
 		}
+		logging.Infof(ctx, "Successful write")
 	} else {
 		logging.Infof(ctx, "Skipped BQ write as no client provided.")
-
 	}
 }
 
@@ -147,104 +121,44 @@ func SoftInsertStepWTrReq(ctx context.Context, BQClient *bigquery.Client, data *
 	if req == nil {
 		return
 	}
-
-	if build != nil {
-		swarmingID := strconv.FormatInt(build.Build().GetId(), 10)
-		if swarmingID != "" {
-			data.BBID = swarmingID
-		}
-
-	}
-
-	var rows []*TaskData
+	data = addBBIDToTaskData(data, build)
 	data.SuiteName = suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
 	data.AnalyticsName = suiteInfo.GetSuiteRequest().GetAnalyticsName()
 	data.Pool = suiteInfo.GetSuiteMetadata().GetPool()
-
 	data.Date = civil.DateTimeOf(time.Now())
 
-	// TODO; will add once the new internal proto is added to the MO+ TR request.
-	// data.Board = populateBoardFromDut(req.NewReq)
-	// data.Model = populateModelFromDut(req.NewReq)
-	data.SuiteName = suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
-	// data.Deps = deps(req.NewReq)
-
-	rows = append(rows, data)
-
-	// data.Build = buildFromGcs(req.NewReq.GetPrimaryTarget().GetSwReq().GetGcsPath())
-
-	if BQClient != nil {
-		err := InsertCTPTaskMetrics(BQClient, rows)
-		if err != nil {
-			logging.Infof(ctx, "ERROR DURING BQ WITE: %s", err)
-
+	if req.NewReq != nil {
+		if len(req.NewReq.GetSchedulingUnits()) > 0 {
+			data.Board = boardFromSU(req.NewReq.GetSchedulingUnits()[0])
+			data.Model = modelFromSU(req.NewReq.GetSchedulingUnits()[0])
+			data.Build = buildFromGcs(req.NewReq.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwReq().GetGcsPath())
+			data.Deps = deps(req.NewReq.GetSchedulingUnits()[0])
 		}
 	}
-}
-
-func deps(target *api.SchedulingUnit) []string {
-	return target.GetPrimaryTarget().GetSwarmingDef().GetSwarmingLabels()
-}
-
-func populateBoardFromDut(target *api.SchedulingUnit) string {
-	switch hw := target.GetPrimaryTarget().GetSwarmingDef().GetDutInfo().GetDutType().(type) {
-	case *dut_api.Dut_Chromeos:
-		return hw.Chromeos.GetDutModel().GetBuildTarget()
+	data.SuiteName = suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
+	if BQClient != nil {
+		err := InsertCTPTaskMetrics(BQClient, []*TaskData{data})
+		if err != nil {
+			logging.Infof(ctx, "Error During BQ write: %s", err)
+		}
+		logging.Infof(ctx, "Successful write")
 	}
-	// TODO, populate other dut types
-	return "nonChromeos"
-}
-func populateModelFromDut(target *api.SchedulingUnit) string {
-
-	switch hw := target.GetPrimaryTarget().GetSwarmingDef().GetDutInfo().GetDutType().(type) {
-	case *dut_api.Dut_Chromeos:
-		return hw.Chromeos.GetDutModel().GetModelName()
-	}
-	// TODO, populate other dut types
-	return "nonChromeos"
-}
-
-// buildDataFromInternal will append the CTP Request details to the to be inserted BQ row.
-func buildDataFromCTPReq(data *BqData, req *api.CTPv2Request) *BqData {
-	poolName := req.GetRequests()[0].GetPool()
-	aName := req.GetRequests()[0].GetSuiteRequest().GetAnalyticsName()
-	sName := req.GetRequests()[0].GetSuiteRequest().GetTestSuite().GetName()
-	b := req.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()
-	if aName != "" {
-		data.AnalyticsName = aName
-	}
-	if sName != "" {
-		data.SuiteName = sName
-	}
-	if b != "" {
-		data.Build = buildFromGcs(b)
-	}
-	if poolName != "" {
-		data.Pool = poolName
-	}
-	return data
 }
 
 // SoftInsertStepWInternalPlan insert a step info to BQl built from the InternalTestPlan req. Do not fail on errors.
 func SoftInsertStepWInternalPlan(ctx context.Context, BQClient *bigquery.Client, data *BqData, req *api.InternalTestplan, build *build.State) {
-	if BQClient == nil {
-		logging.Infof(ctx, "No BQ client to write to")
-		return
-	}
 	if req != nil {
 		data = buildDataFromInternalTP(data, req)
 	}
 	data = addBBID(data, build)
-
-	var rows []*BqData
-	rows = append(rows, data)
+	data.Date = civil.DateTimeOf(time.Now())
 
 	if BQClient != nil {
-		err := InsertCTPMetrics(BQClient, rows)
+		err := InsertCTPMetrics(BQClient, []*BqData{data})
 		if err != nil {
-			logging.Infof(ctx, "ERROR DURING BQ WITE: %s", err)
-
+			logging.Infof(ctx, "Error During BQ write: %s", err)
 		}
+		logging.Infof(ctx, "Successful write")
 	}
 }
 
@@ -252,19 +166,34 @@ func SoftInsertStepWInternalPlan(ctx context.Context, BQClient *bigquery.Client,
 func buildFromGcs(build string) string {
 	f := strings.Split(build, "/")
 	return f[len(f)-1]
-
 }
 
-// buildDataFromInternal will append the BBID to the to be inserted BQ row.
-func addBBID(data *BqData, build *build.State) *BqData {
-	if build == nil {
-		return data
-	}
-	swarmingID := strconv.FormatInt(build.Build().GetId(), 10)
-	if swarmingID != "" {
-		data.BBID = swarmingID
+func addBBIDToTaskData(data *TaskData, build *build.State) *TaskData {
+	bbid := getBBID(build)
+	if bbid != "" {
+		data.BBID = bbid
 	}
 	return data
+}
+
+func addBBID(data *BqData, build *build.State) *BqData {
+	bbid := getBBID(build)
+	if bbid != "" {
+		data.BBID = bbid
+	}
+	return data
+}
+
+// getBBID will return BBID from the build.state
+func getBBID(build *build.State) string {
+	if build == nil {
+		return ""
+	}
+	bbid := strconv.FormatInt(build.Build().GetId(), 10)
+	if bbid != "" {
+		return bbid
+	}
+	return ""
 }
 
 // buildDataFromInternal will append the internal test plan details to the to be inserted BQ row.
@@ -277,7 +206,11 @@ func buildDataFromInternalTP(data *BqData, req *api.InternalTestplan) *BqData {
 		if b != "" {
 			data.Build = buildFromGcs(b)
 		}
-
+	} else if len(req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits()) > 0 {
+		b := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits()[0].GetPrimaryTarget().GetSwReq().GetGcsPath()
+		if b != "" {
+			data.Build = buildFromGcs(b)
+		}
 	}
 	if aName != "" {
 		data.AnalyticsName = aName
@@ -288,5 +221,63 @@ func buildDataFromInternalTP(data *BqData, req *api.InternalTestplan) *BqData {
 	if poolName != "" {
 		data.Pool = poolName
 	}
+	return data
+}
+
+func deps(target *api.SchedulingUnit) []string {
+	return target.GetPrimaryTarget().GetSwarmingDef().GetSwarmingLabels()
+}
+
+func boardFromSU(target *api.SchedulingUnit) string {
+	return dutModelFromSwarmingDef(target.GetPrimaryTarget().GetSwarmingDef()).GetBuildTarget()
+}
+func modelFromSU(target *api.SchedulingUnit) string {
+	return dutModelFromSwarmingDef(target.GetPrimaryTarget().GetSwarmingDef()).GetModelName()
+}
+
+func dutModelFromSwarmingDef(def *api.SwarmingDefinition) *dut_api.DutModel {
+	switch hw := def.GetDutInfo().GetDutType().(type) {
+	case *dut_api.Dut_Chromeos:
+		return hw.Chromeos.GetDutModel()
+	case *dut_api.Dut_Android_:
+		return hw.Android.GetDutModel()
+	case *dut_api.Dut_Devboard_:
+		return hw.Devboard.GetDutModel()
+	}
+	return nil
+}
+
+// buildDataFromInternal will append the CTP Request details to the to be inserted BQ row.
+func buildDataFromCTPReq(data *BqData, req *api.CTPv2Request) *BqData {
+	// This should always only be len(1); but good to check anyways.
+	if len(req.GetRequests()) < 1 {
+		return data
+	}
+	poolName := req.GetRequests()[0].GetPool()
+	aName := req.GetRequests()[0].GetSuiteRequest().GetAnalyticsName()
+	sName := req.GetRequests()[0].GetSuiteRequest().GetTestSuite().GetName()
+
+	// This will not actually always be len(1); but as this is used just to get the build which
+	// will be identical across all; [0] index is OK
+	if len(req.GetRequests()[0].GetScheduleTargets()) > 0 {
+		if len(req.GetRequests()[0].GetScheduleTargets()[0].GetTargets()) > 0 {
+			b := req.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()
+			if b != "" {
+				data.Build = buildFromGcs(b)
+			}
+		}
+	}
+
+	if aName != "" {
+		data.AnalyticsName = aName
+	}
+	if sName != "" {
+		data.SuiteName = sName
+	}
+	if poolName != "" {
+		data.Pool = poolName
+	}
+	data.Date = civil.DateTimeOf(time.Now())
+
 	return data
 }
