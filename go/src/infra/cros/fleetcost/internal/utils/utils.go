@@ -15,6 +15,7 @@ import (
 	"google.golang.org/genproto/googleapis/type/money"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/cmdsupport/cmdlib"
@@ -166,4 +167,12 @@ func PrintMultiError(a subcommands.Application, err error) {
 	} else {
 		cmdlib.PrintError(a, err)
 	}
+}
+
+// MaybeErrorf logs an error if it's non-nil and then returns it.
+func MaybeErrorf(ctx context.Context, e error) error {
+	if e != nil {
+		logging.Errorf(ctx, "%s\n", e)
+	}
+	return e
 }

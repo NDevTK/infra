@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	// TODO, move shared util to a standalone directory.
 	shivasUtil "infra/cmd/shivas/utils"
@@ -19,6 +20,7 @@ import (
 // GetCostResult gets cost result of a fleet resource(DUT, scheduling unit).
 func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
 	// Handling OS namespace request only at MVP.
+	logging.Infof(ctx, "begin cost result request for dut %q Id %q", req.GetHostname(), req.GetDeviceId())
 	ctx = shivasUtil.SetupContext(ctx, ufsUtil.OSNamespace)
 	if f.fleetClient == nil {
 		return nil, errors.New("fleet client must exist")

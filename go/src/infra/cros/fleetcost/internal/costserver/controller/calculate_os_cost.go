@@ -8,10 +8,12 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
 	"infra/cros/fleetcost/internal/costserver/entities"
 	ufsFetcher "infra/cros/fleetcost/internal/costserver/inventory/ufs"
+	"infra/cros/fleetcost/internal/utils"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
@@ -47,12 +49,16 @@ func (attribute *IndicatorAttribute) AsEntity() *entities.CostIndicatorEntity {
 //
 // So far, only ChromeOS devices are supported.
 func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, hostname string) (*fleetcostpb.CostResult, error) {
+	logging.Infof(ctx, "getting device data for hostname %q", hostname)
 	res, err := ic.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{Hostname: hostname})
 	if err != nil {
-		return nil, errors.Annotate(err, "calculate cost for os resource").Err()
+		err := errors.Annotate(err, "calculate cost for os resource").Err()
+		logging.Errorf(ctx, "%s\n", err)
+		return nil, err
 	}
 	switch res.GetResourceType() {
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
+		logging.Infof(ctx, "detected that %q is a ChromeOS device", hostname)
 		resp, err := CalculateCostForSingleChromeosDut(ctx, ic, res.GetChromeOsDeviceData())
 		return resp, errors.Annotate(err, "calculate ChromeOS device cost").Err()
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
@@ -72,26 +78,26 @@ func CalculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 	// TODO: add a map that convert UFS location to cost indicator location. Hardcode to all for now.
 	location := fleetcostpb.Location_LOCATION_ALL
 	if dut == nil {
-		return nil, errors.Reason("%s is not a valid ChromeOS DUT", data.GetLabConfig().GetHostname()).Err()
+		return nil, utils.MaybeErrorf(ctx, errors.Reason("%s is not a valid ChromeOS DUT", data.GetLabConfig().GetHostname()).Err())
 	}
 	var dedicateCost, sharedCost, cloudCost float64
 	// Cost for DUT hardware.
 	dutCost, err := GetDutHardwareCost(ctx, data.GetMachine().GetChromeosMachine(), location)
 	if err != nil {
-		return nil, errors.Annotate(err, "calculate cost for single chromeos dut").Err()
+		return nil, utils.MaybeErrorf(ctx, errors.Annotate(err, "calculate cost for single chromeos dut").Err())
 	}
 	dedicateCost = dedicateCost + dutCost
 	// Cost for servo related items.
 	if servo.GetServoHostname() != "" {
 		servoCost, err := GetServoCost(ctx, servo.GetServoType(), location)
 		if err != nil {
-			return nil, errors.Annotate(err, "calculate cost for single chromeos dut").Err()
+			return nil, utils.MaybeErrorf(ctx, errors.Annotate(err, "calculate cost for single chromeos dut").Err())
 		}
 		dedicateCost = dedicateCost + float64(servoCost)
 		labstationCost, err := getLabstationCost(ctx, ic, servo.GetServoHostname(), location)
 		sharedCost = sharedCost + labstationCost
 		if err != nil {
-			return nil, errors.Annotate(err, "calculate cost for single chromeos dut").Err()
+			return nil, utils.MaybeErrorf(ctx, errors.Annotate(err, "calculate cost for single chromeos dut").Err())
 		}
 	}
 	return &fleetcostpb.CostResult{
@@ -108,7 +114,7 @@ func GetServoCost(ctx context.Context, servoType string, location fleetcostpb.Lo
 		Location:      location,
 	})
 	if err != nil {
-		return 0, errors.Annotate(err, "get servo cost").Err()
+		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get servo cost").Err())
 	}
 	return v, nil
 }
@@ -123,7 +129,7 @@ func GetDutHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, location 
 		Location:      location,
 	})
 	if err != nil {
-		return 0, errors.Annotate(err, "get dut hardware cost").Err()
+		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get dut hardware cost").Err())
 	}
 	return v, nil
 }
@@ -131,7 +137,7 @@ func GetDutHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, location 
 func getLabstationCost(ctx context.Context, ic ufsAPI.FleetClient, hostname string, location fleetcostpb.Location) (float64, error) {
 	data, err := ufsFetcher.GetChromeosDeviceData(ctx, ic, hostname)
 	if err != nil {
-		return 0, errors.Annotate(err, "get labstation cost").Err()
+		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get labstation cost").Err())
 	}
 	m := data.GetMachine().GetChromeosMachine()
 	v, err := GetCostIndicatorValue(ctx, IndicatorAttribute{
@@ -142,16 +148,16 @@ func getLabstationCost(ctx context.Context, ic ufsAPI.FleetClient, hostname stri
 		Location:      location,
 	})
 	if err != nil {
-		return 0, errors.Annotate(err, "get labstation cost").Err()
+		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get labstation cost").Err())
 	}
 	labMap, err := ufsFetcher.GetLabstationDutMapping(ctx, ic, []string{hostname})
 	if err != nil {
-		return 0, errors.Annotate(err, "get labstation cost").Err()
+		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get labstation cost").Err())
 	}
 	if l, ok := labMap[hostname]; ok {
 		if len(l) > 0 {
 			return v / float64(len(l)), nil
 		}
 	}
-	return 0, errors.Reason("Unable to get number of DUTs under %s", hostname).Err()
+	return 0, utils.MaybeErrorf(ctx, errors.Reason("Unable to get number of DUTs under %s", hostname).Err())
 }
