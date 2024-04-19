@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e34991e8_4355a5bd",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-04-19T01:44:55Z",
+      "side": 1,
+      "message": "Do we need this to be passed in? IIUC this will always to be current time.",
+      "range": {
+        "startLine": 24,
+        "startChar": 65,
+        "endLine": 24,
+        "endChar": 76
+      },
+      "revId": "679aff8a34bc6585b996f801fdb24c562d17d714",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af5c3ca0_278f32fa",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-04-19T01:44:55Z",
+      "side": 1,
+      "message": "1. This is unnecessary check, we need to have some basic assumption when we do implementation, otherwise we need to add endless validation in our code.\n2. The function do things outside it\u0027s boundary/scope, e.g. whether the request is valid or not. What this function should do is taking an identify(e.g. hostname, id) and fetch and return existing result for it if the result is not expired yet.\n\nSo I\u0027d refactor it to take a hostname instead of whole `GetCostResultRequest`, and this help say if we want to re-use this function from other places.",
+      "range": {
+        "startLine": 55,
+        "startChar": 1,
+        "endLine": 55,
+        "endChar": 109
+      },
+      "revId": "679aff8a34bc6585b996f801fdb24c562d17d714",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe579b7d_5969b606",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-04-19T01:44:55Z",
+      "side": 1,
+      "message": "I think these is some mis-understanding on `forceUpdate` flag. It\u0027s a flag to tell RPC ignores cache and do a cost calculation instead of if no cache then fail.\n\nSo I think we want something like:\nAssume we have `func CalculateAndUpdate()` to handle calculation and update result in datastore.\n\n```\nif req.forceUpdate {\n    // Do CalculateAndUpdate() and return result.\n}\ncachedResult, err \u003d ReadCachedCostResult()\nif err !\u003d nil {\n    // Just logging since not able to fetch cache is not critical blocker.\nif cachedResult !\u003d nil {\n    // Return a response with cachedResult. \n} else {\n    // Do CalculateAndUpdate() and return result.\n}\n```",
+      "range": {
+        "startLine": 26,
+        "startChar": 1,
+        "endLine": 36,
+        "endChar": 2
+      },
+      "revId": "679aff8a34bc6585b996f801fdb24c562d17d714",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

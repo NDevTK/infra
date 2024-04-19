@@ -95,6 +95,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8db58214_5dcc1371",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/controller/cache.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-04-19T01:44:55Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "a90b7196_ef24cbb3",
+      "range": {
+        "startLine": 63,
+        "startChar": 1,
+        "endLine": 64,
+        "endChar": 110
+      },
+      "revId": "d4e2c5e7231b16dec32ad5bf66d18258a71079f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1ecb26ac_1b7336fd",
@@ -126,6 +150,24 @@
       "side": 1,
       "message": "Added another check inside the function body, now we just skip storing if we encounter a nil.\n\nDone.",
       "parentUuid": "1ecb26ac_1b7336fd",
+      "revId": "d4e2c5e7231b16dec32ad5bf66d18258a71079f6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d2bad3e_b5e2645e",
+        "filename": "go/src/infra/cros/fleetcost/internal/costserver/get_cost_result.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2024-04-19T01:44:55Z",
+      "side": 1,
+      "message": "I think we\u0027re overcomplicating it here, plus defer should be used for things like cleanup(e.g. closing file, restore state) which you want it happens no matter how function complete. But in here, it\u0027s very clear when we want to store cachedResult, see my another comments about make a separate function `CalculateAndUpdate` where you can always update cache after a calculation.",
+      "parentUuid": "6d5bf316_d71f72d6",
       "revId": "d4e2c5e7231b16dec32ad5bf66d18258a71079f6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
