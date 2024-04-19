@@ -139,6 +139,23 @@ func InsertOneWithoutReplacement(ctx context.Context, newTransaction bool, entit
 	}, options)
 }
 
+// DeleteOneIfExists deletes an entity if it exists.
+func DeleteOneIfExists(ctx context.Context, newTransaction bool, entity interface {
+	datastore.PropertyLoadSaver
+	datastore.MetaGetterSetter
+}, options *datastore.TransactionOptions) error {
+	return RunPerhapsInTransaction(ctx, newTransaction, func(ctx context.Context) error {
+		existsResult, err := datastore.Exists(ctx, entity)
+		if err != nil {
+			return err
+		}
+		if !existsResult.Any() {
+			return datastore.ErrNoSuchEntity
+		}
+		return datastore.Delete(ctx, entity)
+	}, options)
+}
+
 // PrintMultiError prints a multierror, unwrapping as necessary.
 func PrintMultiError(a subcommands.Application, err error) {
 	var merr errors.MultiError

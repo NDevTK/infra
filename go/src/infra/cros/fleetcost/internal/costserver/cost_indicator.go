@@ -8,7 +8,6 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/gae/service/datastore"
 
 	fleetcostModels "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
@@ -69,7 +68,7 @@ func (f *FleetCostFrontend) UpdateCostIndicator(ctx context.Context, request *fl
 // DeleteCostIndicator deletes a CostIndicator.
 func (f *FleetCostFrontend) DeleteCostIndicator(ctx context.Context, request *fleetcostAPI.DeleteCostIndicatorRequest) (*fleetcostAPI.DeleteCostIndicatorResponse, error) {
 	entity := entities.NewCostIndicatorEntity(request.GetCostIndicator())
-	if err := datastore.Delete(ctx, entity); err != nil {
+	if err := utils.DeleteOneIfExists(ctx, true, entity, nil); err != nil {
 		return nil, errors.Annotate(err, "delete cost indicator").Err()
 	}
 	return &fleetcostAPI.DeleteCostIndicatorResponse{

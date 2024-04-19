@@ -268,3 +268,19 @@ func TestInsertOneWithoutReplacement(t *testing.T) {
 		t.Errorf("inserting a record that already exists should have failed: %s", err)
 	}
 }
+
+// TestDeleteOneIfExists tests that deleting a nonexistent entity fails with the correct error.
+func TestDeleteOneIfExists(t *testing.T) {
+	t.Parallel()
+
+	tf := testsupport.NewFixture(context.Background(), t)
+
+	err := utils.DeleteOneIfExists(tf.Ctx, false, datastore.PropertyMap{
+		"$id":   datastore.MkProperty("fake-id"),
+		"$kind": datastore.MkProperty("fake-kind"),
+		"foo":   datastore.MkProperty(72),
+	}, nil)
+	if !datastore.IsErrNoSuchEntity(err) {
+		t.Errorf("unexpected error: %s", err)
+	}
+}
