@@ -22,6 +22,8 @@ platforms:
   - netbsd-armv6l
   - openbsd-amd64
   - openbsd-arm64
+  - openbsd-ppc64
+  - openbsd-riscv64
   - solaris-amd64
 go_packages:
   - infra/tools/vpython/cmd/vpython3

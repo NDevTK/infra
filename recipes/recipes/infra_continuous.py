@@ -113,6 +113,8 @@ CIPD_PACKAGE_BUILDERS = {
         'openbsd-386',
         'openbsd-amd64',
         'openbsd-arm64',
+        'openbsd-ppc64',
+        'openbsd-riscv64',
         'solaris-amd64',
     ],
     'infra-packager-linux-xc2': [
