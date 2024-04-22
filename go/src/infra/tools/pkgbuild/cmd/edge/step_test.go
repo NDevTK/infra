@@ -123,6 +123,12 @@ func TestRootSteps(t *testing.T) {
 			So(s.GetRoot("second-xxxx").ID(), ShouldEqual, "first-xxxx")
 			So(s.GetRoot("third-xxxx").ID(), ShouldEqual, "third-xxxx")
 			So(s.GetRoot("fourth-xxxx").ID(), ShouldEqual, "third-xxxx")
+
+			r, err = s.UpdateRoot(ctx, actions.Package{
+				Action: &core.Action{Name: "third"}, DerivationID: "third-xxxx",
+			})
+			So(err, ShouldBeNil)
+			So(r.ID(), ShouldEqual, "third-xxxx")
 		})
 
 		Convey("conflict", func() {

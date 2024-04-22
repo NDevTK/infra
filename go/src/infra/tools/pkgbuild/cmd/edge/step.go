@@ -142,12 +142,16 @@ func (rs RootSteps) UpdateRoot(ctx context.Context, pkg actions.Package) (*RootS
 
 func (rs RootSteps) update(ctx context.Context, pkg actions.Package, root *RootStep) (*RootStep, error) {
 	if r, ok := rs[pkg.DerivationID]; ok {
-		if root == nil {
-			return nil, fmt.Errorf("top level package shouldn't belong to other root: %s, from %s", pkg.DerivationID, r.ID())
+		// If pkg has root other than itself.
+		if r.ID() != pkg.DerivationID {
+			if root == nil {
+				return nil, fmt.Errorf("top level package shouldn't belong to other root: %s, from %s", pkg.DerivationID, r.ID())
+			}
+			if r.ID() != root.ID() {
+				return nil, fmt.Errorf("package must only belong to one root: %s, from %s and %s", pkg.DerivationID, r.ID(), root.ID())
+			}
 		}
-		if r.ID() != pkg.DerivationID && r.ID() != root.ID() {
-			return nil, fmt.Errorf("package must only belong to one root: %s, from %s and %s", pkg.DerivationID, r.ID(), root.ID())
-		}
+
 		return r, nil
 	}
 
