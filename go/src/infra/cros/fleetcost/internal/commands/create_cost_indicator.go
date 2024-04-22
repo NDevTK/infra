@@ -39,22 +39,8 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.Flags.StringVar(&c.board, "board", "", "board")
 		c.Flags.StringVar(&c.model, "model", "", "model")
 		c.Flags.StringVar(&c.sku, "sku", "", "sku")
-		c.Flags.Func("cost", "cost", func(value string) error {
-			cost, err := utils.ToUSD(value)
-			if err != nil {
-				return errors.Reason("cost %q is invalid", value).Err()
-			}
-			c.cost = cost
-			return nil
-		})
-		c.Flags.Func("cadence", "cost-cadence", func(value string) error {
-			costCadence, err := utils.ToCostCadence(value)
-			if err != nil {
-				return errors.Reason("cost cadence %q is invalid", value).Err()
-			}
-			c.costCadence = costCadence
-			return nil
-		})
+		c.Flags.Func("cost", "cost", makeMoneyRecorder(&c.cost))
+		c.Flags.Func("cadence", "cost-cadence", makeCostCadenceRecorder(&c.costCadence))
 		c.Flags.Float64Var(&c.burnoutRate, "burnout", math.NaN(), "device burnout rate")
 		c.Flags.Func("location", "where the device is located", makeLocationRecorder(&c.location))
 		return c

@@ -23,7 +23,6 @@ import (
 	fleetcostpb "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/site"
-	"infra/cros/fleetcost/internal/utils"
 )
 
 var UpdateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
@@ -36,42 +35,14 @@ var UpdateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.name, "name", "", "name of cost indicator")
-		c.Flags.Func("type", "name of cost indicator", func(name string) error {
-			typ, err := utils.ToIndicatorType(name)
-			if err != nil {
-				return errors.Reason("type %s is invalid", name).Err()
-			}
-			c.typ = typ
-			return nil
-		})
+		c.Flags.Func("type", "name of cost indicator", makeTypeRecorder(&c.typ))
 		c.Flags.StringVar(&c.board, "board", "", "board")
 		c.Flags.StringVar(&c.model, "model", "", "model")
 		c.Flags.StringVar(&c.sku, "sku", "", "sku")
-		c.Flags.Func("cost", "cost", func(value string) error {
-			cost, err := utils.ToUSD(value)
-			if err != nil {
-				return errors.Reason("cost %q is invalid", value).Err()
-			}
-			c.cost = cost
-			return nil
-		})
-		c.Flags.Func("cadence", "cost-cadence", func(value string) error {
-			costCadence, err := utils.ToCostCadence(value)
-			if err != nil {
-				return errors.Reason("cost cadence %q is invalid", value).Err()
-			}
-			c.costCadence = costCadence
-			return nil
-		})
+		c.Flags.Func("cost", "cost", makeMoneyRecorder(&c.cost))
+		c.Flags.Func("cadence", "cost-cadence", makeCostCadenceRecorder(&c.costCadence))
 		c.Flags.Float64Var(&c.burnoutRate, "burnout", math.NaN(), "device burnout rate")
-		c.Flags.Func("location", "where the device is located", func(value string) error {
-			location, err := utils.ToLocation(value)
-			if err != nil {
-				return errors.Reason("location %q is invalid", value).Err()
-			}
-			c.location = location
-			return nil
-		})
+		c.Flags.Func("location", "where the device is located", makeLocationRecorder(&c.location))
 		return c
 	},
 }

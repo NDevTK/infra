@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 
+	"google.golang.org/genproto/googleapis/type/money"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
@@ -69,7 +70,7 @@ func makeLocationRecorder(dest *fleetcostpb.Location) func(string) error {
 	return func(value string) error {
 		location, err := utils.ToLocation(value)
 		if err != nil {
-			return errors.Reason("location %q is invalid", value).Err()
+			return err
 		}
 		*dest = location
 		return nil
@@ -81,9 +82,33 @@ func makeTypeRecorder(dest *fleetcostpb.IndicatorType) func(string) error {
 	return func(value string) error {
 		typ, err := utils.ToIndicatorType(value)
 		if err != nil {
-			return errors.Reason("type %s is invalid", value).Err()
+			return err
 		}
 		*dest = typ
+		return nil
+	}
+}
+
+// Function makeCostCadenceRecorder records the cost cadence of a record.
+func makeCostCadenceRecorder(dest *fleetcostpb.CostCadence) func(string) error {
+	return func(value string) error {
+		cadence, err := utils.ToCostCadence(value)
+		if err != nil {
+			return err
+		}
+		*dest = cadence
+		return nil
+	}
+}
+
+// Function makeMoneyRecorder records an argument in a *money.Money.
+func makeMoneyRecorder(dest **money.Money) func(string) error {
+	return func(value string) error {
+		usd, err := utils.ToUSD(value)
+		if err != nil {
+			return err
+		}
+		*dest = usd
 		return nil
 	}
 }
