@@ -127,6 +127,7 @@
       "--deps",
       "all",
       "--ignore-dep-type=cipd",
+      "--ignore-dep-type=gcs",
       "--spec",
       "solutions=[{'managed': False, 'name': 'src/', 'url': 'https://chromium.googlesource.com/chromium/src', 'deps_file': 'DEPS', 'custom_vars': {'checkout_src_internal': True}}]",
       "--output-json=-"

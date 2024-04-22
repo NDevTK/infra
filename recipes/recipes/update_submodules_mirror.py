@@ -187,7 +187,8 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
             api.gclient(
                 'evaluate DEPS', [
                     'revinfo', '--deps', 'all', '--ignore-dep-type=cipd',
-                    '--spec', gclient_spec_repr, '--output-json=-'
+                    '--ignore-dep-type=gcs', '--spec', gclient_spec_repr,
+                    '--output-json=-'
                 ],
                 stdout=api.raw_io.output_text()).stdout)
 
