@@ -9,7 +9,9 @@ import (
 	"fmt"
 
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/luci/auth/client/authcli"
+
 	"infra/cmd/stable_version2/internal/site"
 )
 

@@ -12,8 +12,8 @@ import (
 	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
-	gslib "infra/cmd/stable_version2/internal/gs"
 
+	gslib "infra/cmd/stable_version2/internal/gs"
 	svlib "infra/cros/stableversion"
 )
 
