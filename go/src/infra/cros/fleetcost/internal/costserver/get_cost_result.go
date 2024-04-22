@@ -7,6 +7,8 @@ package costserver
 import (
 	"context"
 
+	"google.golang.org/grpc/codes"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -15,6 +17,7 @@ import (
 	shivasUtil "infra/cmd/shivas/utils"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/controller"
+	"infra/cros/fleetcost/internal/fleetcosterror"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -41,11 +44,11 @@ func (f *FleetCostFrontend) getCostResultImpl(ctx context.Context, req *fleetcos
 	logging.Infof(ctx, "begin cost result request for dut %q Id %q", req.GetHostname(), req.GetDeviceId())
 	ctx = shivasUtil.SetupContext(ctx, ufsUtil.OSNamespace)
 	if f.fleetClient == nil {
-		return nil, errors.New("fleet client must exist")
+		return nil, fleetcosterror.WithDefaultCode(codes.Internal, errors.New("fleet client must exist"))
 	}
 	res, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, req.GetHostname())
 	if err != nil {
-		return nil, errors.Annotate(err, "get cost result").Err()
+		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "get cost result").Err())
 	}
 	if err := controller.StoreCachedCostResult(ctx, req.GetHostname(), res); err != nil {
 		logging.Errorf(ctx, "%s\n", errors.Annotate(err, "caching get cost result").Err())

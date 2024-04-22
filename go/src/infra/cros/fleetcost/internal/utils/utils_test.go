@@ -6,7 +6,6 @@ package utils_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"testing"
 
@@ -264,7 +263,7 @@ func TestInsertOneWithoutReplacement(t *testing.T) {
 	}
 
 	err := utils.InsertOneWithoutReplacement(tf.Ctx, false, record, nil)
-	if !errors.Is(err, utils.ErrItemExists) {
+	if !utils.ErrorStringContains(err, utils.ErrItemExists.Error()) {
 		t.Errorf("inserting a record that already exists should have failed: %s", err)
 	}
 }
@@ -280,7 +279,7 @@ func TestDeleteOneIfExists(t *testing.T) {
 		"$kind": datastore.MkProperty("fake-kind"),
 		"foo":   datastore.MkProperty(72),
 	}, nil)
-	if !datastore.IsErrNoSuchEntity(err) {
+	if !utils.ErrorStringContains(err, datastore.ErrNoSuchEntity.Error()) {
 		t.Errorf("unexpected error: %s", err)
 	}
 }

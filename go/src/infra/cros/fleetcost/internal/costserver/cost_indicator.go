@@ -7,11 +7,14 @@ package costserver
 import (
 	"context"
 
+	"google.golang.org/grpc/codes"
+
 	"go.chromium.org/luci/common/errors"
 
 	fleetcostModels "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/entities"
+	"infra/cros/fleetcost/internal/fleetcosterror"
 	"infra/cros/fleetcost/internal/utils"
 	"infra/cros/fleetcost/internal/validation"
 )
@@ -30,12 +33,12 @@ func MustCreateCostIndicator(ctx context.Context, f *FleetCostFrontend, costIndi
 // CreateCostIndicator creates a cost indicator.
 func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fleetcostAPI.CreateCostIndicatorRequest) (*fleetcostAPI.CreateCostIndicatorResponse, error) {
 	if err := validation.ValidateCreateCostIndicatorRequest(request); err != nil {
-		return nil, err
+		return nil, fleetcosterror.WithDefaultCode(codes.FailedPrecondition, err)
 	}
 	costIndicator := request.GetCostIndicator()
 	entity := entities.NewCostIndicatorEntity(costIndicator)
 	if err := utils.InsertOneWithoutReplacement(ctx, true, entity, nil); err != nil {
-		return nil, errors.Annotate(err, "create cost indicator").Err()
+		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "create cost indicator").Err())
 	}
 	return &fleetcostAPI.CreateCostIndicatorResponse{
 		CostIndicator: costIndicator,
@@ -46,7 +49,7 @@ func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fl
 func (f *FleetCostFrontend) ListCostIndicators(ctx context.Context, request *fleetcostAPI.ListCostIndicatorsRequest) (*fleetcostAPI.ListCostIndicatorsResponse, error) {
 	out, err := entities.ListCostIndicators(ctx, 0, request.GetFilter())
 	if err != nil {
-		return nil, errors.Annotate(err, "list cost indicators").Err()
+		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "list cost indicators").Err())
 	}
 	return &fleetcostAPI.ListCostIndicatorsResponse{
 		CostIndicator: out,
@@ -58,7 +61,7 @@ func (f *FleetCostFrontend) UpdateCostIndicator(ctx context.Context, request *fl
 	entity := entities.NewCostIndicatorEntity(request.GetCostIndicator())
 	out, err := entities.UpdateCostIndicatorEntity(ctx, entity, request.GetUpdateMask().GetPaths())
 	if err != nil {
-		return nil, errors.Annotate(err, "update cost indicator").Err()
+		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "update cost indicator").Err())
 	}
 	return &fleetcostAPI.UpdateCostIndicatorResponse{
 		CostIndicator: out.CostIndicator,
@@ -69,7 +72,7 @@ func (f *FleetCostFrontend) UpdateCostIndicator(ctx context.Context, request *fl
 func (f *FleetCostFrontend) DeleteCostIndicator(ctx context.Context, request *fleetcostAPI.DeleteCostIndicatorRequest) (*fleetcostAPI.DeleteCostIndicatorResponse, error) {
 	entity := entities.NewCostIndicatorEntity(request.GetCostIndicator())
 	if err := utils.DeleteOneIfExists(ctx, true, entity, nil); err != nil {
-		return nil, errors.Annotate(err, "delete cost indicator").Err()
+		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "delete cost indicator").Err())
 	}
 	return &fleetcostAPI.DeleteCostIndicatorResponse{
 		CostIndicator: entity.CostIndicator,

@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/luci/common/data/lex64"
@@ -17,6 +18,7 @@ import (
 	fleetcostpb "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/maskutils"
+	"infra/cros/fleetcost/internal/fleetcosterror"
 )
 
 // CostIndicatorKind is the datastore kind of a cost indicator entity.
@@ -155,11 +157,14 @@ func UpdateCostIndicatorEntity(ctx context.Context, entity *CostIndicatorEntity,
 	oldEntity := entity.Clone()
 	newEntity := entity
 	if err := datastore.Get(ctx, oldEntity); err != nil {
+		if datastore.IsErrNoSuchEntity(err) {
+			return nil, fleetcosterror.WithDefaultCode(codes.NotFound, errors.Annotate(err, "update cost indicator").Err())
+		}
 		return nil, errors.Annotate(err, "update cost indicator").Err()
 	}
 	maskutils.UpdateCostIndicatorProto(oldEntity.CostIndicator, newEntity.CostIndicator, fields)
 	if err := datastore.Put(ctx, oldEntity); err != nil {
-		return nil, errors.Annotate(err, "update cost indicator proto").Err()
+		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "update cost indicator proto").Err())
 	}
 	return oldEntity, nil
 }

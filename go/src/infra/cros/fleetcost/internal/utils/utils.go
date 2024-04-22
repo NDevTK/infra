@@ -13,6 +13,7 @@ import (
 
 	"github.com/maruel/subcommands"
 	"google.golang.org/genproto/googleapis/type/money"
+	"google.golang.org/grpc/codes"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -20,6 +21,7 @@ import (
 
 	"infra/cmdsupport/cmdlib"
 	fleetcostpb "infra/cros/fleetcost/api/models"
+	"infra/cros/fleetcost/internal/fleetcosterror"
 )
 
 // ToIndicatorType converts a string to an indicator.
@@ -134,7 +136,7 @@ func InsertOneWithoutReplacement(ctx context.Context, newTransaction bool, entit
 			return err
 		}
 		if existsResult.Any() {
-			return ErrItemExists
+			return fleetcosterror.WithDefaultCode(codes.AlreadyExists, ErrItemExists)
 		}
 		return datastore.Put(ctx, entity)
 	}, options)
@@ -151,7 +153,7 @@ func DeleteOneIfExists(ctx context.Context, newTransaction bool, entity interfac
 			return err
 		}
 		if !existsResult.Any() {
-			return datastore.ErrNoSuchEntity
+			return fleetcosterror.WithDefaultCode(codes.NotFound, datastore.ErrNoSuchEntity)
 		}
 		return datastore.Delete(ctx, entity)
 	}, options)
@@ -175,4 +177,13 @@ func MaybeErrorf(ctx context.Context, e error) error {
 		logging.Errorf(ctx, "%s\n", e)
 	}
 	return e
+}
+
+// ErrorStringContains is a helper function that returns true if and only if the error in question contains
+// the substring msg.
+func ErrorStringContains(e error, msg string) bool {
+	if e == nil {
+		return msg == ""
+	}
+	return strings.Contains(e.Error(), msg)
 }
