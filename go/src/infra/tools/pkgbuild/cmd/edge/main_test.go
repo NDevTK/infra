@@ -15,6 +15,8 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
+	"strings"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -187,6 +189,82 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			err := b.Load(ctx, "tests/unavailable_arm64")
 			So(err, ShouldNotBeNil)
 			So(err, ShouldEqual, spec.ErrPackageNotAvailable)
+		})
+	})
+}
+
+func TestRootPackges(t *testing.T) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("failed to get working directory: %v", err)
+	}
+
+	ctx := gologger.StdConfig.Use(context.Background())
+
+	Convey("native platform", t, func() {
+		tempBase := t.TempDir()
+		storeTemp := filepath.Join(tempBase, "store")
+		specs := filepath.Join(cwd, "testdata")
+
+		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig())
+		if err != nil {
+			t.Fatalf("failed to init spec loader: %v", err)
+		}
+
+		buildPlatform := generators.NewPlatform("linux", "amd64")
+		cipdPlatform := "linux-amd64"
+
+		initStdenv(buildPlatform)
+
+		pm, err := workflow.NewLocalPackageManager(storeTemp)
+		So(err, ShouldBeNil)
+
+		plats := generators.Platforms{
+			Build:  buildPlatform,
+			Host:   buildPlatform,
+			Target: buildPlatform,
+		}
+
+		initStdenv(buildPlatform)
+
+		var loaded []generators.Generator
+		load := func(name string) {
+			g, err := loader.FromSpec(name, cipdPlatform, cipdPlatform)
+			So(err, ShouldBeNil)
+			loaded = append(loaded, g)
+		}
+
+		Convey("ok", func() {
+			load("tests/step_1")
+			load("tests/step_2")
+
+			builder := workflow.NewBuilder(plats, pm, actions.NewActionProcessor())
+			pkgs, err := builder.GeneratePackages(ctx, loaded)
+			So(err, ShouldBeNil)
+
+			rootSteps := NewRootSteps()
+			for _, pkg := range pkgs {
+				_, err = rootSteps.UpdateRoot(ctx, pkg)
+				So(err, ShouldBeNil)
+			}
+			var roots []string
+			for id, s := range rootSteps {
+				if s.ID() == id {
+					roots = append(roots, id[:strings.IndexAny(id, "+-")])
+				}
+				slices.Sort(roots)
+			}
+			expected := []string{
+				"stdenv", "setup", "stdenv_git", "stdenv_python3", "posix_import", // stdenv
+				"from_spec_support", "docker_import", // from_spec
+
+				"step_1", "step_2", // loaded packages
+
+				"step_dep", "step_tool", "step_tool_pinned",
+			}
+			slices.Sort(expected)
+
+			So(roots, ShouldEqual, expected)
 		})
 	})
 }
