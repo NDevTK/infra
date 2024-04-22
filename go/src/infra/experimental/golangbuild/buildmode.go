@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"regexp"
+	"strings"
 
 	"go.chromium.org/luci/luciexe/build"
 
@@ -86,17 +88,8 @@ func getGo(ctx context.Context, stepName, goroot string, goSrc *sourceSpec, inpu
 		return err
 	}
 
-	// Write out the VERSION file.
-	var version string
-	switch {
-	case inputs.VersionFile != "":
-		version = inputs.VersionFile
-	case goSrc.change != nil:
-		version = fmt.Sprintf("devel %d/%d", goSrc.change.Change, goSrc.change.Patchset)
-	case goSrc.commit != nil:
-		version = fmt.Sprintf("devel %s", goSrc.commit.Id)
-	}
-	if err := writeFile(ctx, filepath.Join(goroot, "VERSION"), version); err != nil {
+	// Possibly update the version file.
+	if err := maybeUpdateVersionFile(ctx, goSrc, goroot, inputs); err != nil {
 		return err
 	}
 
@@ -108,6 +101,76 @@ func getGo(ctx context.Context, stepName, goroot string, goSrc *sourceSpec, inpu
 
 	// Upload to CAS.
 	return uploadGoToCAS(ctx, goSrc, inputs, goroot)
+}
+
+// maybeUpdateVersionFile possibly updates the VERSION file in goroot. It ensures that after it runs
+// that *some* valid VERSION file exists in goroot.
+//
+// The precise semantics of maybeUpdateVersionFile are:
+//   - If the input property "version_file" is present, it always overwrites
+//     the VERSION file with that value.
+//   - If no VERSION file is present or the VERSION file is empty, then the
+//     VERSION file is written with contents `devel <commit>` or
+//     `devel <change>/<patchset>` (existing behavior).
+//   - If a VERSION file is present AND the first line matches `go1.X.Y`,
+//     then only the first line is kept, and we append `-devel_<commit>` or
+//     `-devel_<change>_<patchset>` to the version.
+//   - If a VERSION file is present otherwise, it is left alone.
+//
+// The purpose of retaining existing version files, and possibly appending
+// a suffix to the version, is to retain invariants about toolchain versions
+// for downstream tooling.
+func maybeUpdateVersionFile(ctx context.Context, goSrc *sourceSpec, goroot string, inputs *golangbuildpb.Inputs) error {
+	versionPath := filepath.Join(goroot, "VERSION")
+	if inputs.VersionFile != "" {
+		return writeFile(ctx, versionPath, inputs.VersionFile)
+	}
+
+	// Load VERSION file.
+	version, _, err := readFile(ctx, versionPath)
+	if err != nil {
+		return err
+	}
+	// Strip metadata from the version.
+	version = versionWithoutMetadata(version)
+
+	// Check the version and update it if necessary.
+	var newVersion string
+	if versionRegexp.MatchString(version) {
+		// On release branches, there may already be a version file of
+		// the form "go1.X.Y". Preserve this version so that tests can
+		// rely on the version comparing correctly with other Go versions.
+		// Add a suffix, however, just to delineate that this is likely a
+		// released version with a few extra commits patched on top.
+		switch {
+		case goSrc.change != nil:
+			newVersion = fmt.Sprintf("%s-devel_%d_%d", version, goSrc.change.Change, goSrc.change.Patchset)
+		case goSrc.commit != nil:
+			newVersion = fmt.Sprintf("%s-devel_%s", version, goSrc.commit.Id)
+		}
+	} else if version == "" {
+		switch {
+		case goSrc.change != nil:
+			newVersion = fmt.Sprintf("devel %d/%d", goSrc.change.Change, goSrc.change.Patchset)
+		case goSrc.commit != nil:
+			newVersion = fmt.Sprintf("devel %s", goSrc.commit.Id)
+		}
+	}
+
+	// Write out the VERSION file if necessary.
+	if newVersion != "" && newVersion != version {
+		if err := writeFile(ctx, versionPath, newVersion); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+var versionRegexp = regexp.MustCompile(`^go1([.]\d+){2}$`)
+
+func versionWithoutMetadata(v string) string {
+	s, _, _ := strings.Cut(v, "\n")
+	return s
 }
 
 // scriptExt returns the extension to use for

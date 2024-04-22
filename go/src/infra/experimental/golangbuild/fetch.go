@@ -378,6 +378,23 @@ func goModDownload(ctx context.Context, spec *buildSpec, stepName, dir string) (
 	return nil
 }
 
+func readFile(ctx context.Context, path string) (data string, exists bool, err error) {
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("read %s", filepath.Base(path)))
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
+	contentsLog := step.Log("contents")
+
+	b, err := os.ReadFile(path)
+	if os.IsNotExist(err) {
+		return "", false, nil
+	}
+	if err != nil {
+		return "", false, err
+	}
+	data = string(b)
+	_, err = io.WriteString(contentsLog, data)
+	return data, true, err
+}
+
 func writeFile(ctx context.Context, path, data string) (err error) {
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("write %s", filepath.Base(path)))
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
