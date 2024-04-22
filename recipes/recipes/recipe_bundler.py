@@ -49,18 +49,22 @@ PROPERTIES = {
 def RunSteps(api, recipe_bundler_pkg, recipe_bundler_vers, repo_specs,
              repo_specs_optional, package_name_prefix,
              package_name_internal_prefix):
-  bundler_path = api.path.cache_dir.join('builder', 'bundler')
-  ensure_file = api.cipd.EnsureFile().add_package(
-      recipe_bundler_pkg, recipe_bundler_vers)
+  bundler_path = api.path.cache_dir.joinpath('builder', 'bundler')
+  ensure_file = api.cipd.EnsureFile().add_package(recipe_bundler_pkg,
+                                                  recipe_bundler_vers)
   api.cipd.ensure(bundler_path, ensure_file)
 
   cmd = [
-    bundler_path.join('recipe_bundler'),
-    'bundle',
-    '-log-level', 'debug',
-    '-workdir', api.path.cache_dir.join('builder', 'workdir'),
-    '-package-name-prefix', package_name_prefix,
-    '-package-name-internal-prefix', package_name_internal_prefix,
+      bundler_path / 'recipe_bundler',
+      'bundle',
+      '-log-level',
+      'debug',
+      '-workdir',
+      api.path.cache_dir.joinpath('builder', 'workdir'),
+      '-package-name-prefix',
+      package_name_prefix,
+      '-package-name-internal-prefix',
+      package_name_internal_prefix,
   ]
 
   if repo_specs:

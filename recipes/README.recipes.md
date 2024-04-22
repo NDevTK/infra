@@ -201,7 +201,7 @@ Args:
 Returns:
   [Path].
 
-&mdash; **def [do\_roll](/recipes/recipe_modules/cloudbuildhelper/api.py#513)(self, repo_url, root, callback, ref='main'):**
+&mdash; **def [do\_roll](/recipes/recipe_modules/cloudbuildhelper/api.py#515)(self, repo_url, root, callback, ref='main'):**
 
 Checks out a repo, calls the callback to modify it, uploads the result.
 
@@ -218,7 +218,7 @@ Returns:
   * (None, None) if didn't create a CL (because nothing has changed).
   * (Issue number, Issue URL) if created a CL.
 
-&mdash; **def [get\_version\_label](/recipes/recipe_modules/cloudbuildhelper/api.py#583)(self, path, revision, ref=None, commit_position=None, template=None):**
+&mdash; **def [get\_version\_label](/recipes/recipe_modules/cloudbuildhelper/api.py#585)(self, path, revision, ref=None, commit_position=None, template=None):**
 
 Computes a version string identifying a commit.
 
@@ -352,7 +352,7 @@ Args:
 
 #### **class [CodesearchApi](/recipes/recipe_modules/codesearch/api.py#11)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
-&mdash; **def [add\_kythe\_metadata](/recipes/recipe_modules/codesearch/api.py#65)(self):**
+&mdash; **def [add\_kythe\_metadata](/recipes/recipe_modules/codesearch/api.py#64)(self):**
 
 Adds inline Kythe metadata to Mojom generated files.
 
@@ -360,7 +360,7 @@ This metadata is used to connect things in the generated file to the thing
 in the Mojom file which generated it. This is made possible by annotations
 added to the generated file by the Mojo compiler.
 
-&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#340)(self, copy, revision, kzip_path=None, ignore=None):**
+&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#339)(self, copy, revision, kzip_path=None, ignore=None):**
 
 Check out the generated files repo and sync the generated files
    into this checkout.
@@ -392,11 +392,11 @@ Clean up generated files older than the specified number of days.
 Args:
   age_days: Minimum age in days for files to delete (integer).
 
-&mdash; **def [clone\_clang\_tools](/recipes/recipe_modules/codesearch/api.py#80)(self, clone_dir):**
+&mdash; **def [clone\_clang\_tools](/recipes/recipe_modules/codesearch/api.py#79)(self, clone_dir):**
 
 Clone chromium/src clang tools.
 
-&mdash; **def [create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#182)(self, commit_hash: str, commit_timestamp: int, commit_position: Optional[str]=None, clang_target_arch: Optional[str]=None):**
+&mdash; **def [create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#181)(self, commit_hash: str, commit_timestamp: int, commit_position: Optional[str]=None, clang_target_arch: Optional[str]=None):**
 
 Create the kythe index pack and upload it to google storage.
 
@@ -412,7 +412,7 @@ Returns:
 
 &mdash; **def [get\_config\_defaults](/recipes/recipe_modules/codesearch/api.py#21)(self):**
 
-&mdash; **def [run\_clang\_tool](/recipes/recipe_modules/codesearch/api.py#89)(self, clang_dir: Optional[config_types.Path]=None, run_dirs: Optional[Iterable[config_types.Path]]=None, target_architecture: Optional[str]=None):**
+&mdash; **def [run\_clang\_tool](/recipes/recipe_modules/codesearch/api.py#88)(self, clang_dir: Optional[config_types.Path]=None, run_dirs: Optional[Iterable[config_types.Path]]=None, target_architecture: Optional[str]=None):**
 
 Download and run the clang tool.
 
@@ -502,7 +502,7 @@ Args:
 
 Stateless API for using public infra gclient checkout.
 
-&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#250)(self, co, go_module_root=None):**
+&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#258)(self, co, go_module_root=None):**
 
 Apply golangci-lint to existing diffs and emit lint warnings via tricium.
 
@@ -537,7 +537,7 @@ Arguments:
 Returns:
   a Checkout object with commands for common actions on infra checkout.
 
-&mdash; **def [get\_footer\_infra\_deps\_overrides](/recipes/recipe_modules/infra_checkout/api.py#223)(self, gerrit_change, step_test_data=None):**
+&mdash; **def [get\_footer\_infra\_deps\_overrides](/recipes/recipe_modules/infra_checkout/api.py#231)(self, gerrit_change, step_test_data=None):**
 
 Returns revision overrides for infra repos parsed from the gerrit footer.
 
@@ -1436,8 +1436,8 @@ Returns ZipPackage object that can be used to compress a set of files.
 
 Usage:
   pkg = api.zip.make_package(root, output)
-  pkg.add_file(root.join('file'))
-  pkg.add_directory(root.join('directory'))
+  pkg.add_file(root / 'file')
+  pkg.add_directory(root / 'directory')
   yield pkg.zip('zipping step')
 
 Args:
@@ -1470,8 +1470,8 @@ Returns ZipPackage object that can be used to update an existing package.
 
 Usage:
   pkg = api.zip.update_package(root, output)
-  pkg.add_file(root.join('file'))
-  pkg.add_directory(root.join('directory'))
+  pkg.add_file(root / 'file')
+  pkg.add_directory(root / 'directory')
   yield pkg.zip('updating zip step')
 
 Args:

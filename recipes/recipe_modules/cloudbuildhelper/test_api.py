@@ -99,8 +99,8 @@ class CloudBuildHelperTestApi(recipe_test_api.RecipeTestApi):
     # Build a reverse map: repo URL => checkout directory.
     repo_paths = {
         entry['repository']:
-            checkout_metadata.root.join(path)
-            if path != '.' else checkout_metadata.root
+            checkout_metadata.root /
+            path if path != '.' else checkout_metadata.root
         for path, entry in checkout_metadata.repos.items()
     }
 
@@ -114,7 +114,7 @@ class CloudBuildHelperTestApi(recipe_test_api.RecipeTestApi):
             'Repository %s is not part of the mocked checkout %r' %
             (repo['repository'], checkout_metadata))
       for src in repo.get('sources') or []:
-        paths.append(repo_path.join(src) if src != '.' else repo_path)
+        paths.append(repo_path / src if src != '.' else repo_path)
 
     # JSON should have only strings, not Paths.
     return [str(p) for p in paths]

@@ -68,12 +68,12 @@ class BuildEnvApi(recipe_api.RecipeApi):
       if version_file:
         version = self.m.file.read_text(
             'read %s' % version_file,
-            root.join(version_file),
+            root / version_file,
             test_data='6.6.6.chromium1\n',
         ).strip().lower()
         if not re.match(GOOD_VERSION_RE, version):  # pragma: no cover
           raise ValueError('Bad %s version number %r' % (tool, version))
-        install_path = self.m.path.cache_dir.join(
+        install_path = self.m.path.cache_dir.joinpath(
             '%s%s' % (tool, version.replace('.', '_')))
         with module(version, path=install_path):
           yield

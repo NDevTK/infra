@@ -119,7 +119,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
   # behaviors where things like 'describe' permanently tries to load data about
   # a deleted instance, leading to continual re-uploads of packages.
   with api.cipd.cache_dir(api.path.mkdtemp()):
-    package_repos = api.path.cache_dir.join('builder')
+    package_repos = api.path.cache_dir / 'builder'
     current_repos = set()
     try:
       current_repos = set(p.pieces[-1] for p in api.file.glob_paths(
@@ -153,7 +153,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
 
         package_path = checkout_path
         if subdir:
-          package_path = package_path.join(subdir)
+          package_path = package_path / subdir
         api.support_3pp.load_packages_from_path(package_path)
 
         if api.tryserver.is_tryserver:
@@ -166,8 +166,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
               name='git diff to find changed files',
               stdout=api.raw_io.output_text()).stdout.split()
           tryserver_affected_files += [
-              checkout_path.join(f)
-              for f in repo_tryserver_affected_files
+              checkout_path / f for f in repo_tryserver_affected_files
           ]
     if api.tryserver.is_tryserver:
       assert (tryserver_affected_files != [])

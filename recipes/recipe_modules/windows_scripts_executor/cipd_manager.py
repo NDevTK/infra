@@ -144,9 +144,9 @@ class CIPDManager:
               pkg.add_file(c)
         else:
           #Add the directory as the whole
-          pkg.add_dir(root.join(filename))
+          pkg.add_dir(root / filename)
       else:
-        pkg.add_file(root.join(filename))  # pragma: no cover
+        pkg.add_file(root / filename)  # pragma: no cover
       self.m.cipd.create_from_pkg(
           pkg,
           refs=[dest.cipd_src.refs],

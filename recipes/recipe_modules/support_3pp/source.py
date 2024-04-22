@@ -204,7 +204,7 @@ def resolve_latest(api, spec):
 
   # TODO(akashmukherjee): Get/compute hash for script method.
   elif method_name == 'script':
-    script = spec.pkg_dir.join(source_method_pb.name[0])
+    script = spec.pkg_dir / source_method_pb.name[0]
     args = list(map(str, source_method_pb.name[1:])) + ['latest']
     version = run_script(
         api,
@@ -411,7 +411,7 @@ def _generate_download_manifest(api, spec, checkout_dir,
                     checkout_dir, ext=source_method_pb.extension or '.tar.gz')
 
   elif method_name == 'script':
-    script = spec.pkg_dir.join(source_method_pb.name[0])
+    script = spec.pkg_dir / source_method_pb.name[0]
     if source_method_pb.use_fetch_checkout_workflow:
       # version is already in env as $_3PP_VERSION
       script_args = list(map(str, source_method_pb.name[1:])) + ['checkout']
@@ -539,7 +539,7 @@ def _source_checkout(api,
   checkout_dir = workdir.checkout
   # Run checkout in this subdirectory of the install script's $CWD.
   if source_pb.subdir:
-    checkout_dir = checkout_dir.join(source_pb.subdir)
+    checkout_dir = checkout_dir / source_pb.subdir
 
   api.file.ensure_directory(
       'mkdir -p [workdir]/checkout/%s' % (str(source_pb.subdir),), checkout_dir)
@@ -588,7 +588,7 @@ def _source_checkout(api,
         # TODO(iannucci): Have a way for `cipd pkg-deploy` to always deploy in
         # copy mode and change this to a move.
         api.file.copy('cp %r [tmpdir]' % archive_name, archive,
-                      tmpdir.join(archive_name))
+                      tmpdir / archive_name)
 
       # blow away any other files (e.g. .git)
       api.file.rmtree('rm -rf [checkout_dir]', checkout_dir)
@@ -596,7 +596,7 @@ def _source_checkout(api,
       for archive in paths:
         archive_name = archive.pieces[-1]
         api.archive.extract('extracting [tmpdir]/%s' % archive_name,
-                            tmpdir.join(archive_name), checkout_dir)
+                            tmpdir / archive_name, checkout_dir)
 
       if len(paths) == 1 and not source_pb.no_archive_prune:
         api.file.flatten_single_directories('prune archive subdirs',
@@ -608,6 +608,6 @@ def _source_checkout(api,
       patch_dir = str(patch_dir)
       patches.extend(
           api.file.glob_paths('find patches in %s' % patch_dir,
-                              spec.pkg_dir.join(patch_dir), '*'))
+                              spec.pkg_dir / patch_dir, '*'))
     with api.context(cwd=checkout_dir):
       api.git('apply', '-v', *patches)

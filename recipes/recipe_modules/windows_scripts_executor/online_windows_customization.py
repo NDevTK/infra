@@ -31,8 +31,8 @@ class OnlineWindowsCustomization(customization.Customization):
     assert self.customization().WhichOneof(
         'customization') == 'online_windows_customization'
     self._name = self.customization().online_windows_customization.name
-    self._workdir = self.m.path.cleanup_dir.join(self._name, 'workdir')
-    self._scratchpad = self.m.path.cleanup_dir.join(self._name, 'sp')
+    self._workdir = self.m.path.cleanup_dir.joinpath(self._name, 'workdir')
+    self._scratchpad = self.m.path.cleanup_dir.joinpath(self._name, 'sp')
     self._canon_cust = None
 
   def pin_sources(self, ctx):

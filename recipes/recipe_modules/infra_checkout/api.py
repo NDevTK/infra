@@ -54,19 +54,20 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
         self.m.git(
             'config', '--global', 'core.symlinks', 'true', name='set symlinks')
 
-    path = path or self.m.path.cache_dir.join('builder')
+    path = path or self.m.path.cache_dir / 'builder'
     self.m.file.ensure_directory('ensure builder dir', path)
 
     with self.m.context(cwd=path):
       self.m.gclient.set_config(gclient_config_name)
       if generate_py2_env:
-        py2_pkg = path.join('cpython')
+        py2_pkg = path / 'cpython'
         self.m.cipd.ensure(
             py2_pkg,
             self.m.cipd.EnsureFile().add_package(
                 'infra/3pp/tools/cpython/${platform}',
                 'version:2@2.7.18.chromium.47'))
-        py2_bin = self.m.path.abspath(py2_pkg.join('bin').join('python'))
+        py2_bin = self.m.path.abspath(
+            py2_pkg.joinpath('bin').joinpath('python'))
         if self.m.platform.is_win:
           py2_bin += '.exe'
         self.m.gclient.c.solutions[0].custom_vars['infra_env_python'] = py2_bin
@@ -100,11 +101,11 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
       @property
       def patch_root_path(self):
         assert patch_root
-        return path.join(patch_root)
+        return path / patch_root
 
       def commit_change(self):
         assert patch_root
-        with self.m.context(cwd=path.join(patch_root)):
+        with self.m.context(cwd=path / patch_root):
           self.m.git(
               '-c',
               'user.email=commit-bot@chromium.org',
@@ -133,7 +134,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
         git_args = ['diff', '--name-only', 'HEAD~', 'HEAD']
         if diff_filter:
           git_args.extend(['--diff-filter', diff_filter])
-        with self.m.context(cwd=path.join(patch_root)):
+        with self.m.context(cwd=path / patch_root):
           result = self.m.git(
               *git_args,
               name='get change list',
@@ -172,20 +173,20 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
           step = self.m.step(
               'init infra go env', [
                   'python3',
-                  path.join(where, 'go', bootstrap),
+                  path.joinpath(where, 'go', bootstrap),
                   self.m.json.output()
               ],
               infra_step=True,
               step_test_data=lambda: self.m.json.test_api.output({
                   'go_version': '1.66.6',
                   'env': {
-                      'GOROOT': str(path.join('golang', 'go'))
+                      'GOROOT': str(path.joinpath('golang', 'go'))
                   },
                   'env_prefixes': {
-                      'PATH': [str(path.join('golang', 'go'))],
+                      'PATH': [str(path.joinpath('golang', 'go'))],
                   },
                   'env_suffixes': {
-                      'PATH': [str(path.join(where, 'go', 'bin'))],
+                      'PATH': [str(path.joinpath(where, 'go', 'bin'))],
                   },
               }))
 
@@ -204,19 +205,26 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
         upstream = bot_update_step.json.output['properties'].get(revs[0])
         gerrit_change = self.m.buildbucket.build.input.gerrit_changes[0]
         with self.m.context(env={'PRESUBMIT_BUILDER': '1'}):
-          return self.m.step(
-              'presubmit',
-              ['vpython3', self.m.presubmit.presubmit_support_path,
-                  '--root', path.join(patch_root),
-                  '--commit',
-                  '--verbose', '--verbose',
-                  '--issue', gerrit_change.change,
-                  '--patchset', gerrit_change.patchset,
-                  '--gerrit_url', 'https://' + gerrit_change.host,
-                  '--gerrit_fetch',
-                  '--upstream', upstream,
-                  '--skip_canned', 'CheckTreeIsOpen',
-              ])
+          return self.m.step('presubmit', [
+              'vpython3',
+              self.m.presubmit.presubmit_support_path,
+              '--root',
+              path / patch_root,
+              '--commit',
+              '--verbose',
+              '--verbose',
+              '--issue',
+              gerrit_change.change,
+              '--patchset',
+              gerrit_change.patchset,
+              '--gerrit_url',
+              'https://' + gerrit_change.host,
+              '--gerrit_fetch',
+              '--upstream',
+              upstream,
+              '--skip_canned',
+              'CheckTreeIsOpen',
+          ])
 
     return Checkout(self.m)
 
@@ -285,7 +293,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
     roots = []
     try:
       text = self.m.file.read_text('read .go-lintable',
-                                   go_module_root.join('.go-lintable'))
+                                   go_module_root / '.go-lintable')
       cfg = configparser.ConfigParser()
       cfg.read_file(text.splitlines())
       for section in cfg:
@@ -373,8 +381,8 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
       self.m.tricium.add_comment(
           'golangci-lint (%s)' % issue['FromLinter'],
           text,
-          self.m.path.relpath(
-              go_module_root.join(pos['Filename']), co.patch_root_path),
+          self.m.path.relpath(go_module_root / pos['Filename'],
+                              co.patch_root_path),
           start_line=line,
           end_line=line,
           # Gerrit (and Tricium, as a pass-through proxy) requires robot

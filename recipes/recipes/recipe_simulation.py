@@ -54,7 +54,7 @@ def RunSteps(api, git_repo):
   safe_project_name = ''.join(
       c if c.isalnum() else '_'
       for c in git_repo.replace('.googlesource.com', ''))
-  root_dir = api.path.cache_dir.join('builder', safe_project_name)
+  root_dir = api.path.cache_dir.joinpath('builder', safe_project_name)
   api.file.ensure_directory('ensure cache dir', root_dir)
   c = api.gclient.make_config()
   soln = c.solutions.add()
@@ -65,12 +65,11 @@ def RunSteps(api, git_repo):
   with api.context(cwd=root_dir):
     api.bot_update.ensure_checkout(gclient_config=c)
 
-  recipes_cfg_path = root_dir.join('s', *CFG_PATH.split('/'))
+  recipes_cfg_path = root_dir.joinpath('s', *CFG_PATH.split('/'))
   cfg = json.loads(api.file.read_raw('read %s' % CFG_PATH, recipes_cfg_path))
   cfg_recipes_path = cfg.get('recipes_path', '')  # default to the repo's root.
-  recipes_py_path = root_dir.join(
-      's',
-      *(cfg_recipes_path.split('/') + ['recipes.py']))
+  recipes_py_path = root_dir.joinpath(
+      's', *(cfg_recipes_path.split('/') + ['recipes.py']))
   try:
     api.step(
         'recipe simulation test', [

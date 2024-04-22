@@ -37,8 +37,8 @@ class OfflineWinPECustomization(customization.Customization):
         'customization') == 'offline_winpe_customization'
     # use a custom work dir
     self._name = self.customization().offline_winpe_customization.name
-    self._workdir = self.m.path.cleanup_dir.join(self._name, 'workdir')
-    self._scratchpad = self.m.path.cleanup_dir.join(self._name, 'sp')
+    self._workdir = self.m.path.cleanup_dir.joinpath(self._name, 'workdir')
+    self._scratchpad = self.m.path.cleanup_dir.joinpath(self._name, 'sp')
     self._canon_cust = None
     helper.ensure_dirs(self.m.file, [self._workdir])
 
@@ -189,7 +189,7 @@ class OfflineWinPECustomization(customization.Customization):
     with self.m.step.nest('Init WinPE image modification ' + arch + ' in ' +
                           str(self._workdir)):
       # Path to boot.wim. This is where COPY-PE generates the image
-      wim_path = self._workdir.join('media', 'sources', 'boot.wim')
+      wim_path = self._workdir.joinpath('media', 'sources', 'boot.wim')
       # Use WhichOneOf to test for emptiness
       # https://developers.google.com/protocol-buffers/docs/reference/python-generated#oneof
       if not image.WhichOneof('src'):
@@ -210,7 +210,7 @@ class OfflineWinPECustomization(customization.Customization):
               self._source.get_local_src(image), self._workdir)
         else:
           # Path to copy the image to
-          wim_path = self._workdir.join(self.m.path.basename(image_path))
+          wim_path = self._workdir.joinpath(self.m.path.basename(image_path))
           # image was from remote source. Copy to workdir
           self.m.file.copy(
               'Copy {} to workdir'.format(self._source.get_url(image)),
@@ -225,7 +225,7 @@ class OfflineWinPECustomization(customization.Customization):
                   '-Path', wim_path, '-Name', 'IsReadOnly', '-Value', '$false'
               ])
       # ensure that the destination exists
-      dest = self._workdir.join('mount')
+      dest = self._workdir / 'mount'
       self.m.file.ensure_directory('Ensure mount point', dest)
       # Mount the boot.wim to mount dir for modification
       mount_wim.mount_win_wim(self.m.powershell, dest, wim_path, index,
@@ -246,13 +246,13 @@ class OfflineWinPECustomization(customization.Customization):
             'Add cfg {}'.format(source),
             ADDFILE,
             self._configs,
-            self._workdir.join('mount'),
+            self._workdir / 'mount',
             '{}.cfg'.format(self.get_key()),
             logs=None,
             ret_codes=[0, 1])
       unmount_wim.unmount_win_wim(
           self.m.powershell,
-          self._workdir.join('mount'),
+          self._workdir / 'mount',
           self._scratchpad,
           save=save)
       if save:
@@ -290,7 +290,7 @@ class OfflineWinPECustomization(customization.Customization):
     if a == 'edit_offline_registry':
       return regedit.edit_offline_registry(
           self.m.powershell, self._scripts('WindowsPowerShell\Scripts'),
-          action.edit_offline_registry, self._workdir.join('mount'))
+          action.edit_offline_registry, self._workdir / 'mount')
 
   def perform_winpe_actions(self, offline_action):
     """ perform_winpe_actions Performs the given offline_action
@@ -312,7 +312,7 @@ class OfflineWinPECustomization(customization.Customization):
     """
     add_windows_package.install_package(
         self.m.powershell, self._scripts('WindowsPowerShell\Scripts'), awp, src,
-        self._workdir.join('mount'), self._scratchpad)
+        self._workdir / 'mount', self._scratchpad)
 
   def add_file(self, af):
     """ add_file runs Copy-Item in Powershell to copy the given file to image.
@@ -330,7 +330,7 @@ class OfflineWinPECustomization(customization.Customization):
       src_file = self.m.path.basename(src)
       src = self.m.path.dirname(src)
     # destination to copy the file to
-    dest = '"{}"'.format(self._workdir.join('mount', af.dst))
+    dest = '"{}"'.format(self._workdir.joinpath('mount', af.dst))
     self.execute_script(
         'Add file {}'.format(self._source.get_url(af.src)),
         ADDFILE,
@@ -351,4 +351,4 @@ class OfflineWinPECustomization(customization.Customization):
     """
     add_windows_driver.install_driver(
         self.m.powershell, self._scripts('WindowsPowerShell\Scripts'), awd, src,
-        self._workdir.join('mount'), self._scratchpad)
+        self._workdir / 'mount', self._scratchpad)

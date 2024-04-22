@@ -18,7 +18,7 @@ PROPERTIES = CloneAndRunClangToolProps
 
 
 def RunSteps(api, properties):
-  api.path.checkout_dir = api.path.cache_dir.join('builder', 'src')
+  api.path.checkout_dir = api.path.cache_dir.joinpath('builder', 'src')
   api.codesearch.set_config('chromium', PROJECT='chromium')
   api.codesearch.clone_clang_tools(api.path.cache_dir)
 

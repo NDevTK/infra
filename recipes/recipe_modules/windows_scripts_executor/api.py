@@ -48,9 +48,9 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     """ init initializes all the dirs and sub modules required."""
     self._try_job = try_job
     with self.m.step.nest('Initialize the config engine'):
-      self._sources = sources.Source(self.m.path.cache_dir.join('Pkgs'), self.m)
+      self._sources = sources.Source(self.m.path.cache_dir / 'Pkgs', self.m)
 
-      self._configs_dir = self.m.path.cleanup_dir.join('configs')
+      self._configs_dir = self.m.path.cleanup_dir / 'configs'
       helper.ensure_dirs(self.m.file, [self._configs_dir])
 
   def init_customizations(self, config):
@@ -274,7 +274,7 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
           arch=cust.image().arch, customizations=[cust.get_canonical_cfg()])
       name = cust.name()
       # write the config to disk
-      cfg_file = self._configs_dir.join('{}-{}.cfg'.format(
+      cfg_file = self._configs_dir.joinpath('{}-{}.cfg'.format(
           cust.image().name, name))
       self.m.file.write_proto(
           'Write config {}'.format(cfg_file),
@@ -286,7 +286,7 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
       key = self.m.file.file_hash(cfg_file)
       cust.set_key(key)
       # save the config to disk as <key>.cfg
-      key_file = self._configs_dir.join('{}.cfg'.format(key))
+      key_file = self._configs_dir.joinpath('{}.cfg'.format(key))
       self.m.file.copy('Copy {} to {}'.format(cfg_file, key_file), cfg_file,
                        key_file)
 

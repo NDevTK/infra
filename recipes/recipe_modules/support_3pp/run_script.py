@@ -124,8 +124,8 @@ def run_script(api, *args, **kwargs):
           step_name,
           [
               'vpython3', '-vpython-spec',
-              repo_root.join('infra', 'tools', 'dockerbuild',
-                             'standalone.vpython3'), '-u', '-m'
+              repo_root.joinpath('infra', 'tools', 'dockerbuild',
+                                 'standalone.vpython3'), '-u', '-m'
           ] + cmd,
           stdout=stdout,
           step_test_data=step_test_data)

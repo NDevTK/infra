@@ -143,9 +143,9 @@ class RecipesRepo(object):
     if self._recipes_py is None:
       recipes_cfg = self._api.file.read_json(
           'parse recipes.cfg',
-          self._root.join('infra', 'config', 'recipes.cfg'),
+          self._root.joinpath('infra', 'config', 'recipes.cfg'),
           test_data={
-            'recipes_path': 'some/path',
+              'recipes_path': 'some/path',
           })
       self._recipes_py = self._api.path.join(
           recipes_cfg.get('recipes_path', ''), 'recipes.py')
@@ -211,7 +211,7 @@ class RecipesRepo(object):
           # Only try to checkout the CL if this repo is the one that triggered
           # the current build.
           patch=is_triggering_repo)
-      self._root = self._workdir.join(ret.json.output['root'])
+      self._root = self._workdir / ret.json.output['root']
 
       if is_triggering_repo:
         with self._api.context(cwd=self._root):
@@ -254,7 +254,7 @@ class RecipesRepo(object):
     try:
       return self._api.step(step_name, [
           'python3',
-          self._root.join(self.recipes_py),
+          self._root / self.recipes_py,
           '-O',
           '%s=%s' % (upstream_repo.name, upstream_repo.root),
           'test',
@@ -412,7 +412,7 @@ def RunSteps(api, upstream_id, upstream_url, downstream_id, downstream_url):
 
   # TODO: figure out upstream_id from downstream's repo recipes.cfg file using
   # patch and deprecated both upstream_id and upstream_url parameters.
-  workdir_base = api.path.cache_dir.join('builder')
+  workdir_base = api.path.cache_dir / 'builder'
 
   upstream_repo = RecipesRepo(
     api, workdir_base, upstream_id, upstream_url)

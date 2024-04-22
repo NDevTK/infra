@@ -39,9 +39,8 @@ class CodesearchApi(recipe_api.RecipeApi):
       # /c <cmd>   -- Run <cmd> for each file. In our case we delete the file if
       #               it's not a directory.
       delete_command = [
-          'forfiles', '/p',
-          self.m.path.checkout_dir.join('out'), '/s', '/m', '*', '/d',
-          ('-%d' % age_days), '/c', 'cmd /c if @isdir==FALSE del @path'
+          'forfiles', '/p', self.m.path.checkout_dir / 'out', '/s', '/m', '*',
+          '/d', ('-%d' % age_days), '/c', 'cmd /c if @isdir==FALSE del @path'
       ]
       try:
         self.m.step('delete old generated files', delete_command)
@@ -57,7 +56,7 @@ class CodesearchApi(recipe_api.RecipeApi):
       # -type f        -- Find files only (not directories)
       # -delete        -- Delete the found files
       delete_command = [
-          'find', self.m.path.checkout_dir.join('out'), '-mtime',
+          'find', self.m.path.checkout_dir / 'out', '-mtime',
           ('+%d' % age_days), '-type', 'f', '-delete'
       ]
       self.m.step('delete old generated files', delete_command)
@@ -79,7 +78,7 @@ class CodesearchApi(recipe_api.RecipeApi):
 
   def clone_clang_tools(self, clone_dir):
     """Clone chromium/src clang tools."""
-    clang_dir = clone_dir.join('clang')
+    clang_dir = clone_dir / 'clang'
     with self.m.context(cwd=clone_dir):
       self.m.file.rmtree('remove previous instance of clang tools', clang_dir)
       self.m.git('clone',
@@ -99,7 +98,7 @@ class CodesearchApi(recipe_api.RecipeApi):
       run_dirs: Dirs in which to run the clang tool.
       target_architecture: If given, the architecture to transpile for.
     """
-    clang_dir = clang_dir or self.m.path.checkout_dir.join('tools', 'clang')
+    clang_dir = clang_dir or self.m.path.checkout_dir.joinpath('tools', 'clang')
 
     # Download the clang tool.
     translation_unit_dir = self.m.path.mkdtemp()
@@ -107,15 +106,15 @@ class CodesearchApi(recipe_api.RecipeApi):
         name='download translation_unit clang tool',
         cmd=[
             'python3', '-u',
-            clang_dir.join('scripts',
-                           'update.py'), '--package=translation_unit',
+            clang_dir.joinpath('scripts',
+                               'update.py'), '--package=translation_unit',
             '--output-dir=' + str(translation_unit_dir)
         ])
 
     # Run the clang tool.
     args = [
         '--tool', 'translation_unit', '--tool-path',
-        translation_unit_dir.join('bin'), '-p', self.c.out_path, '--all'
+        translation_unit_dir / 'bin', '-p', self.c.out_path, '--all'
     ]
 
     if target_architecture is not None:
@@ -159,7 +158,7 @@ class CodesearchApi(recipe_api.RecipeApi):
           self.m.step(
               'run translation_unit clang tool',
               ['python3', '-u',
-               clang_dir.join('scripts', 'run_tool.py')] + args)
+               clang_dir.joinpath('scripts', 'run_tool.py')] + args)
 
       except self.m.step.StepFailure as f:  # pragma: nocover
         # For some files, the clang tool produces errors. This is a known issue,
@@ -201,7 +200,7 @@ class CodesearchApi(recipe_api.RecipeApi):
 
     index_pack_kythe_base = '%s_%s' % (self.c.PROJECT, self.c.PLATFORM)
     index_pack_kythe_name = '%s.kzip' % index_pack_kythe_base
-    index_pack_kythe_path = self.c.out_path.join(index_pack_kythe_name)
+    index_pack_kythe_path = self.c.out_path / index_pack_kythe_name
     self._create_kythe_index_pack(
         index_pack_kythe_path, clang_target_arch=clang_target_arch)
 
@@ -374,7 +373,7 @@ class CodesearchApi(recipe_api.RecipeApi):
 
     # Check out the generated files repo. We use a named cache so that the
     # checkout stays around between builds (this saves ~15 mins of build time).
-    generated_repo_dir = self.m.path.cache_dir.join('generated')
+    generated_repo_dir = self.m.path.cache_dir / 'generated'
 
     # Windows is unable to checkout files with names longer than 260 chars.
     # This git setting works around this limitation.

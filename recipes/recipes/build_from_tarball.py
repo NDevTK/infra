@@ -19,20 +19,20 @@ DEPS = [
 
 
 def RunSteps(api):
-  build_dir = api.path.start_dir.join('build_dir')
+  build_dir = api.path.start_dir / 'build_dir'
   try:
     version = api.properties['version']
     tar_filename = 'chromium-%s.tar.xz' % version
-    tar_file = build_dir.join(tar_filename)
+    tar_file = build_dir / tar_filename
     api.gsutil.download_url('gs://chromium-browser-official/' + tar_filename,
                             tar_file)
     api.step('Extract tarball.',
              ['tar', '-xJf', str(tar_file), '-C',
               str(build_dir)])
-    src_dir = build_dir.join('chromium-' + version)
+    src_dir = build_dir.joinpath('chromium-' + version)
 
     # Install ninja CIPD package.
-    cipd_root = api.path.cache_dir.join('cipd')
+    cipd_root = api.path.cache_dir / 'cipd'
     ensure_file = api.cipd.EnsureFile().add_package(
         'infra/3pp/tools/ninja/${platform}', 'version:2@1.8.2.chromium.3')
     api.cipd.ensure(cipd_root, ensure_file)
@@ -44,12 +44,12 @@ def RunSteps(api):
     with api.context(
         cwd=src_dir,
         env_suffixes={'PATH': [cipd_root]}):
-      llvm_bin_dir = src_dir.join('third_party', 'llvm-build',
-                                  'Release+Asserts', 'bin')
+      llvm_bin_dir = src_dir.joinpath('third_party', 'llvm-build',
+                                      'Release+Asserts', 'bin')
       gn_bootstrap_env = {
-          'CC': llvm_bin_dir.join('clang'),
-          'CXX': llvm_bin_dir.join('clang++'),
-          'AR': llvm_bin_dir.join('llvm-ar'),
+          'CC': llvm_bin_dir / 'clang',
+          'CXX': llvm_bin_dir.joinpath('clang++'),
+          'AR': llvm_bin_dir / 'llvm-ar',
           'LDFLAGS': '-fuse-ld=lld',
       }
 

@@ -25,7 +25,7 @@ def RunSteps(api):
   url = 'https://chromium.googlesource.com/infra/infra'
   rev = 'deadbeef' * 5
   # Assume path is where infra/infra is repo is checked out.
-  path = api.path.cache_dir.join('builder', 'assume', 'infra')
+  path = api.path.cache_dir.joinpath('builder', 'assume', 'infra')
   with api.infra_cipd.context(
       path_to_repo=path,
       goos=api.properties.get('goos'),

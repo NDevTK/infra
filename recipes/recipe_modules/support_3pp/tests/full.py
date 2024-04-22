@@ -49,7 +49,7 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
   # set a cache directory to be similar to what the actual 3pp recipe does.
   # TODO(iannucci): just move the 3pp recipe into the recipe_module here...
   with api.cipd.cache_dir(api.path.mkdtemp()):
-    builder = api.path.cache_dir.join('builder')
+    builder = api.path.cache_dir / 'builder'
     api.support_3pp.set_package_prefix(package_prefix)
     api.support_3pp.set_source_cache_prefix(source_cache_prefix)
     api.support_3pp.set_experimental(experimental)
@@ -75,7 +75,7 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
 
     cipd_platform = '%s-%s' % (GOOS, GOARCH)
     tryserver_affected_files = [
-        checkout_path.join(f) for f in tryserver_affected_files
+        checkout_path / f for f in tryserver_affected_files
     ]
     pkgs = to_build if to_build else pkgs
     _, unsupported = api.support_3pp.ensure_uploaded(

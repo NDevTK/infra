@@ -31,7 +31,7 @@ class WindowsSDKApi(recipe_api.RecipeApi):
     """
     if enabled:
       sdk_dir = self._ensure_sdk(
-          path or self.m.path.start_dir.join('cipd', 'windows_sdk'),
+          path or self.m.path.start_dir.joinpath('cipd', 'windows_sdk'),
           version or self._sdk_properties['version'])
       try:
         with self.m.context(**self._sdk_env(sdk_dir)):
@@ -83,7 +83,8 @@ class WindowsSDKApi(recipe_api.RecipeApi):
     # for the compiler and linker to work.
     filename = 'SetEnv.%s.json' % {32: 'x86', 64: 'x64'}[self.m.platform.bits]
     step_result = self.m.json.read(
-        'read %s' % filename, sdk_dir.join('win_sdk', 'bin', filename),
+        'read %s' % filename,
+        sdk_dir.joinpath('win_sdk', 'bin', filename),
         step_test_data=lambda: self.m.json.test_api.output({
             'env': {
                 'PATH': [['..', '..', 'win_sdk', 'bin', 'x64']],
@@ -94,14 +95,14 @@ class WindowsSDKApi(recipe_api.RecipeApi):
     for key in data:
       # recipes' Path() does not like .., ., \, or /, so this is cumbersome.
       # What we want to do is:
-      #   [sdk_bin_dir.join(*e) for e in env[k]]
+      #   [sdk_bin_dir.joinpath(*e) for e in env[k]]
       # Instead do that badly, and rely (but verify) on the fact that the paths
       # are all specified relative to the root, but specified relative to
       # win_sdk/bin (i.e. everything starts with "../../".)
       results = []
       for value in data[key]:
         assert value[0] == '..' and (value[1] == '..' or value[1] == '..\\')
-        results.append('%s' % sdk_dir.join(*value[2:]))
+        results.append('%s' % sdk_dir.joinpath(*value[2:]))
 
       # PATH is special-cased because we don't want to overwrite other things
       # like C:\Windows\System32. Others are replacements because prepending

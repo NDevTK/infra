@@ -21,12 +21,15 @@ PROPERTIES = {
 
 
 def RunSteps(api, commit_position):
-  api.path.checkout_dir = api.path.cache_dir.join('builder')
-  api.step('label 1', ['echo', api.cloudbuildhelper.get_version_label(
-      path=api.path.checkout_dir,
-      revision='abcdefabcdef63ad814cd1dfffe2fcfc9f81299c',
-      commit_position=commit_position,
-  )])
+  api.path.checkout_dir = api.path.cache_dir / 'builder'
+  api.step('label 1', [
+      'echo',
+      api.cloudbuildhelper.get_version_label(
+          path=api.path.checkout_dir,
+          revision='abcdefabcdef63ad814cd1dfffe2fcfc9f81299c',
+          commit_position=commit_position,
+      )
+  ])
   api.step('label 2', ['echo', api.cloudbuildhelper.get_version_label(
       path=api.path.checkout_dir,
       revision='abcdefabcdef63ad814cd1dfffe2fcfc9f81299c',

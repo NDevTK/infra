@@ -32,11 +32,11 @@ class QEMUAPI(recipe_api.RecipeApi):
 
   @property
   def path(self):
-    return self._install_dir.join('bin')
+    return self._install_dir / 'bin'
 
   @property
   def disks(self):
-    return self._workdir.join('disks')
+    return self._workdir / 'disks'
 
   def init(self, version):
     """ Initialize the module, ensure that qemu exists on the system
@@ -49,9 +49,9 @@ class QEMUAPI(recipe_api.RecipeApi):
       * version: the cipd version tag for qemu
     """
     # create a directory to store qemu tools
-    self._install_dir = self.m.path.cache_dir.join('qemu')
+    self._install_dir = self.m.path.cache_dir / 'qemu'
     # directory to store qemu workdata
-    self._workdir = self.m.path.cleanup_dir.join('qemu', 'workdir')
+    self._workdir = self.m.path.cleanup_dir.joinpath('qemu', 'workdir')
     self.m.file.ensure_directory(
         name='Ensure {}'.format(self.disks), dest=self.disks)
 
@@ -216,7 +216,7 @@ class QEMUAPI(recipe_api.RecipeApi):
                                                         partition_name),
             # pass path to the parted binary
             '-g',
-            self._install_dir.join('sbin', 'parted'),
+            self._install_dir.joinpath('sbin', 'parted'),
             self.disks.join(disk_name)
         ])
 

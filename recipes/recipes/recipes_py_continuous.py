@@ -27,7 +27,7 @@ def RunSteps(api):
   }
 
   api.cipd.create_from_yaml(
-      api.path.checkout_dir.join('infra', 'cipd', 'recipes-py.yaml'),
+      api.path.checkout_dir.joinpath('infra', 'cipd', 'recipes-py.yaml'),
       refs=['latest'],
       tags=tags)
 

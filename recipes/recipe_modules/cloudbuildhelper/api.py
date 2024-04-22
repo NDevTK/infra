@@ -282,7 +282,7 @@ class CloudBuildHelperApi(recipe_api.RecipeApi):
 
     # Helper to convert Path to str. Note that join('.') is not allowed, so
     # we need to special-case it.
-    render_path = lambda root, p: str(root.join(p) if p != '.' else root)
+    render_path = lambda root, p: str(root / p if p != '.' else root)
 
     # Build full paths to repos in the gclient checkout, ordering them by
     # "most nested first".
@@ -501,13 +501,15 @@ class CloudBuildHelperApi(recipe_api.RecipeApi):
     paths = []
     for entry in entries:
       if entry.endswith('.yaml'):
-        paths.append(root.join(entry))
+        paths.append(root / entry)
       else:
-        paths.extend(self.m.file.glob_paths(
-            'list %s' % entry,
-            root.join(entry),
-            '**/*.yaml',
-            test_data=test_data if test_data is not None else ['target.yaml']))
+        paths.extend(
+            self.m.file.glob_paths(
+                'list %s' % entry,
+                root / entry,
+                '**/*.yaml',
+                test_data=test_data
+                if test_data is not None else ['target.yaml']))
     return paths
 
   def do_roll(self, repo_url, root, callback, ref='main'):

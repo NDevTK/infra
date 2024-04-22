@@ -37,7 +37,7 @@ class Source:
     gcs_dir = cache.join('GCSPkgs')
     helper.ensure_dirs(self.m.file, [
         cipd_dir, git_dir, gcs_dir,
-        gcs_dir.join('chrome-gce-images', 'WIB-WIM')
+        gcs_dir.joinpath('chrome-gce-images', 'WIB-WIM')
     ])
     self._cipd = cipd_manager.CIPDManager(module, cipd_dir)
     self._gcs = gcs_manager.GCSManager(module, gcs_dir)

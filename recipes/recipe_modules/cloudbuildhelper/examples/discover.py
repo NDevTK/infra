@@ -15,9 +15,9 @@ def RunSteps(api):
       root=api.path.cache_dir,
       entries=['stuff/direct.yaml', '1', '2'])
   assert paths == [
-      api.path.cache_dir.join('stuff', 'direct.yaml'),
-      api.path.cache_dir.join('1', 'target.yaml'),
-      api.path.cache_dir.join('2', 'target.yaml'),
+      api.path.cache_dir.joinpath('stuff', 'direct.yaml'),
+      api.path.cache_dir.joinpath('1', 'target.yaml'),
+      api.path.cache_dir.joinpath('2', 'target.yaml'),
   ], paths
 
 

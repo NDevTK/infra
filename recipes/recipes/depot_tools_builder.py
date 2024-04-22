@@ -26,8 +26,8 @@ DOC_UPLOAD_URL='gs://chrome-infra-docs/flat/depot_tools/docs/'
 
 def RunSteps(api):
   # prepare the output dir and zip paths
-  api.path.checkout_dir = api.path.start_dir.join('depot_tools')
-  zip_out = api.path.start_dir.join('depot_tools.zip')
+  api.path.checkout_dir = api.path.start_dir / 'depot_tools'
+  zip_out = api.path.start_dir / 'depot_tools.zip'
 
   api.step('mkdir depot_tools', ['mkdir', api.path.checkout_dir])
 
@@ -49,8 +49,10 @@ def RunSteps(api):
                     args=['-a', 'public-read'], unauthenticated_url=True)
 
   # upload html docs
-  api.gsutil(['cp', '-r', '-z', 'html', '-a', 'public-read',
-              api.path.checkout_dir.join('man', 'html'), DOC_UPLOAD_URL],
+  api.gsutil([
+      'cp', '-r', '-z', 'html', '-a', 'public-read',
+      api.path.checkout_dir.joinpath('man', 'html'), DOC_UPLOAD_URL
+  ],
              name='upload docs')
 
 

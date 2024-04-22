@@ -88,7 +88,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
 
   # NOTE: This name must match the definition in cr-buildbucket.cfg. Do not
   # change without adjusting that config to match.
-  checkout_dir = api.m.path.cache_dir.join(cache_name)
+  checkout_dir = api.m.path.cache_dir / cache_name
   api.m.file.ensure_directory('Create checkout parent dir', checkout_dir)
 
   # We assume here that we won't have a mirror for two repos with the same name.
@@ -102,7 +102,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
   # The slash on the end doesn't make a difference for source_checkout_dir. But
   # it's necessary for the other uses for source_checkout_name, below.
   source_checkout_name = source_project[source_project.rfind('/') + 1:] + '/'
-  source_checkout_dir = checkout_dir.join(source_checkout_name)
+  source_checkout_dir = checkout_dir / source_checkout_name
 
   # TODO: less hacky way of checking if the dir exists?
   glob = api.m.file.glob_paths('Check for existing source checkout dir',
@@ -203,9 +203,9 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
       api.git(
           'update-index', '--add', *update_index_entries, name='Add gitlinks')
 
-      api.file.write_text(
-          'Write .gitmodules file', source_checkout_dir.join('.gitmodules'),
-          '\n'.join(gitmodules_entries))
+      api.file.write_text('Write .gitmodules file',
+                          source_checkout_dir / '.gitmodules',
+                          '\n'.join(gitmodules_entries))
       api.git('add', '.gitmodules')
 
       api.git(

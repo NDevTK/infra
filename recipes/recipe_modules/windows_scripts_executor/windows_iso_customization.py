@@ -21,8 +21,9 @@ class WinISOCustomization(customization.Customization):
         'customization') == 'windows_iso_customization'
     # use custom work dir
     self._name = self.customization().windows_iso_customization.name
-    self._workdir = self.m.path.cleanup_dir.join(self._name, 'workdir')
-    self._scratchpad = self.m.path.cleanup_dir.join(self._name, 'scratchpad')
+    self._workdir = self.m.path.cleanup_dir.joinpath(self._name, 'workdir')
+    self._scratchpad = self.m.path.cleanup_dir.joinpath(self._name,
+                                                        'scratchpad')
     self._canon_cust = None
     helper.ensure_dirs(self.m.file, [self._workdir, self._scratchpad])
 
@@ -167,7 +168,7 @@ class WinISOCustomization(customization.Customization):
     with self.m.step.nest('Windows iso customization {}'.format(output.name)):
       try:
         # Use staging to unpack the iso for modification
-        iso_dir = self._workdir.join('staging')
+        iso_dir = self._workdir / 'staging'
         boot = None
         # Copy base image
         if output.base_image.WhichOneof('src'):
@@ -178,9 +179,10 @@ class WinISOCustomization(customization.Customization):
         if output.boot_image.WhichOneof('src'):
           src = self._source.download(output.boot_image)
           # Copy the boot_image to /boot dir
-          self.m.file.copy('Add {}'.format(src), src, iso_dir.join('boot'))
-          boot = iso_dir.join('boot', self.m.path.basename(src))
-        compressed_archive = self._workdir.join('{}.zip'.format(output.name))
+          self.m.file.copy('Add {}'.format(src), src, iso_dir / 'boot')
+          boot = iso_dir.joinpath('boot', self.m.path.basename(src))
+        compressed_archive = self._workdir.joinpath('{}.zip'.format(
+            output.name))
         if output.unpacked_uploads:
           do_archive = False
           # Only archive if gcs upload is needed. CIPD can do its own archiving
@@ -192,7 +194,7 @@ class WinISOCustomization(customization.Customization):
             # archive the iso staging as we need to upload it
             self.m.archive.package(iso_dir).archive(
                 'Compress contents for upload', compressed_archive)
-        output_image = self._workdir.join(output.name + '.iso')
+        output_image = self._workdir.joinpath(output.name + '.iso')
         # package everything into an iso
         self.generate_iso_image(
             output.name, boot=boot, directory=iso_dir, output=output_image)

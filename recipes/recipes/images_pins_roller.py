@@ -33,7 +33,7 @@ def RunSteps(api, properties):
   co.gclient_runhooks()
 
   # Checkout the repo with the file to be updated.
-  root = api.path.cache_dir.join('builder', 'checkout')
+  root = api.path.cache_dir.joinpath('builder', 'checkout')
   api.git.checkout(
       properties.repo_url, ref='main', dir_path=root, submodules=False)
 
@@ -42,7 +42,7 @@ def RunSteps(api, properties):
     api.cloudbuildhelper.command = 'cloudbuildhelper'
     api.cloudbuildhelper.report_version()
     # Modify pins_yaml file in-place.
-    updated = api.cloudbuildhelper.update_pins(root.join(properties.pins_yaml))
+    updated = api.cloudbuildhelper.update_pins(root / properties.pins_yaml)
 
   # Send a CL if something has changed.
   if updated:

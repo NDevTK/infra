@@ -30,14 +30,14 @@ def RunSteps(api):
   tags = api.buildbucket.tags(k1='v1', k2=['v2', 'v2', 'v2_1'])
   api.buildbucket.add_tags_to_current_build(tags)
 
-  root_dir = api.path.tmp_base_dir.join('repo')
+  root_dir = api.path.tmp_base_dir / 'repo'
   api.file.ensure_directory('make dir', root_dir)
 
   with api.context(cwd=root_dir):
     api.step('git clone', ['git', 'clone', PLAYGROUND_REPO, '.'])
     api.step('git checkout -b', ['git', 'checkout', '-b', 'cl'])
-    api.file.write_text(
-        'drop file', root_dir.join('time.txt'), str(api.time.time()))
+    api.file.write_text('drop file', root_dir / 'time.txt',
+                        str(api.time.time()))
     api.step('git add', ['git', 'add', 'time.txt'])
     api.step('git commit', ['git', 'commit', '-m', 'Test commit'])
     api.step('push for review',

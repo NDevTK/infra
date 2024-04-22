@@ -47,7 +47,7 @@ def RunSteps(api, inputs):
   input_dir = api.path.checkout_dir
   affected_files = [
       f for f in checkout.get_changed_files()
-      if api.path.exists(input_dir.join(f)) and 'third_party/' not in f
+      if api.path.exists(input_dir / f) and 'third_party/' not in f
   ]
 
   by_name = api.tricium.analyzers.by_name()
@@ -84,7 +84,7 @@ def GenTests(api):
             }])),
     )
     existing_files = [
-        api.path.cache_dir.join('builder', x) for x in affected_files
+        api.path.cache_dir.joinpath('builder', x) for x in affected_files
     ]
     test += api.path.exists(*existing_files)
     return test

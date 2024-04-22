@@ -168,7 +168,7 @@ def RunSteps(api, inputs):
     return result_pb.RawResult(
         status=bb_common_pb.FAILURE, summary_markdown=str(e))
 
-  work_dir = api.path.cache_dir.join('builder', 'w')
+  work_dir = api.path.cache_dir.joinpath('builder', 'w')
   api.file.ensure_directory('ensure work_dir', work_dir)
 
   env = {

@@ -214,9 +214,9 @@ def _checkout_gclient(api, project, version_label_template):
       # Don't pollute ~/.npm/
       env = {
           # npm's content-addressed cache.
-          'npm_config_cache': api.path.cache_dir.join('npmcache', 'npm'),
+          'npm_config_cache': api.path.cache_dir.joinpath('npmcache', 'npm'),
           # Where packages are installed when using 'npm -g ...'.
-          'npm_config_prefix': api.path.cache_dir.join('npmcache', 'pfx'),
+          'npm_config_prefix': api.path.cache_dir.joinpath('npmcache', 'pfx'),
       }
       env_prefixes = {
           'PATH': [
@@ -258,7 +258,7 @@ def _checkout_git(api, repo, version_label_template):
   Returns:
     (Metadata, build environment context manager).
   """
-  path = api.path.cache_dir.join('builder', 'repo')
+  path = api.path.cache_dir.joinpath('builder', 'repo')
 
   revision = api.git.checkout(
       url=repo.url,
@@ -303,7 +303,7 @@ def _roll_built_tarballs(api, spec, tarballs, meta):
   """
   return api.cloudbuildhelper.do_roll(
       repo_url=spec.repo_url,
-      root=api.path.cache_dir.join('builder', 'roll'),
+      root=api.path.cache_dir.joinpath('builder', 'roll'),
       callback=lambda root: _mutate_pins_repo(api, root, spec, tarballs, meta))
 
 
@@ -350,7 +350,7 @@ def _mutate_pins_repo(api, root, spec, tarballs, meta):
   # Add all new tags (if any).
   res = api.step(
       name='roll_tarballs.py',
-      cmd=[root.join('scripts', 'roll_tarballs.py')],
+      cmd=[root.joinpath('scripts', 'roll_tarballs.py')],
       stdin=api.json.input({'tarballs': versions}),
       stdout=api.json.output(),
       step_test_data=lambda: api.json.test_api.output_stream(
@@ -367,7 +367,7 @@ def _mutate_pins_repo(api, root, spec, tarballs, meta):
   if rolled:
     api.step(
         name='prune_tarballs.py',
-        cmd=[root.join('scripts', 'prune_tarballs.py'), '--verbose'])
+        cmd=[root.joinpath('scripts', 'prune_tarballs.py'), '--verbose'])
 
   # Generate the commit message.
   message = str('\n'.join([

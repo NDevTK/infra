@@ -58,7 +58,7 @@ PROPERTIES = {
 
 
 def RunSteps(api, platforms, dry_run, rebuild):
-  solution_path = api.path.cache_dir.join('builder', 'build_wheels')
+  solution_path = api.path.cache_dir.joinpath('builder', 'build_wheels')
   api.file.ensure_directory("init cache if it doesn't exist", solution_path)
   try:
     with api.context(cwd=solution_path):
@@ -79,7 +79,7 @@ def RunSteps(api, platforms, dry_run, rebuild):
     api.gclient.runhooks()
 
   wheels = None
-  with api.context(cwd=solution_path.join('infra')):
+  with api.context(cwd=solution_path / 'infra'):
     if api.tryserver.is_tryserver:
       files = api.git(
           '-c',

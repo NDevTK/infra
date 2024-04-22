@@ -21,13 +21,13 @@ def RunSteps(api):
   root_dir = api.path.tmp_base_dir
   name = 'access_test'
 
-  api.file.write_text('write %s' % name, root_dir.join(name),
+  api.file.write_text('write %s' % name, root_dir.joinpath(name),
                       str(api.time.time()))
-  api.gsutil.upload(root_dir.join(name), 'luci-playground', name)
-  api.step(
-      'upload_to_google_storage',
-      ['python3', api.depot_tools.upload_to_google_storage_path,
-       '-b', 'luci-playground', root_dir.join(name)])
+  api.gsutil.upload(root_dir / name, 'luci-playground', name)
+  api.step('upload_to_google_storage', [
+      'python3', api.depot_tools.upload_to_google_storage_path, '-b',
+      'luci-playground', root_dir / name
+  ])
 
 
 def GenTests(api):

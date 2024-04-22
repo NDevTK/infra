@@ -96,7 +96,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
 
       if internal and (api.platform.is_linux or api.platform.is_mac) and any(
           f.startswith('appengine/chromiumdash') for f in files):
-        cwd = api.path.checkout_dir.join('appengine', 'chromiumdash')
+        cwd = api.path.checkout_dir.joinpath('appengine', 'chromiumdash')
         gae_env = {
             'GAE_RUNTIME': 'python3',
             'GAE_APPLICATION': 'testbed-test',
@@ -116,7 +116,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
       if api.platform.is_linux or api.platform.is_mac:
         for app in ['monorail', 'predator', 'findit']:
           if any(f.startswith('appengine/%s' % app) for f in files):
-            cwd = api.path.checkout_dir.join('appengine', app)
+            cwd = api.path.checkout_dir.joinpath('appengine', app)
             if app == 'predator':
               cwd = cwd.join('app')
             with api.context(cwd=cwd):

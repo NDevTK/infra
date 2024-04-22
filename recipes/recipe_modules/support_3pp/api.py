@@ -897,7 +897,7 @@ class Support3ppApi(recipe_api.RecipeApi):
       If unspecified, this will be the appropriate CIPD ${platform} for the
       current host machine.
     """
-    base_dir = self.m.path.start_dir.join('_pkgbuild')
+    base_dir = self.m.path.start_dir / '_pkgbuild'
 
     self.m.file.ensure_directory('mkdir -p [pkgbuild]', base_dir)
     self.m.cipd.ensure(
@@ -907,7 +907,7 @@ class Support3ppApi(recipe_api.RecipeApi):
          'infra/tools/luci/pkgbuild/%s' % platform_for_host(self.m), 'latest')
        ))
 
-    storage_dir = base_dir.join('store')
+    storage_dir = base_dir / 'store'
 
     platform = platform or platform_for_host(self.m)
     args = [
@@ -942,6 +942,6 @@ class Support3ppApi(recipe_api.RecipeApi):
       with self.m.context(env={'PKGBUILD_ENABLE_LUCIEXE': '1'}):
         self.m.step.sub_build(
             'build packages',
-            [base_dir.join('edge'), '--'] + args,
+            [base_dir / 'edge', '--'] + args,
             self.m.buildbucket.build,
         )

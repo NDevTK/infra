@@ -41,7 +41,7 @@ class Workdir(object):
   def __init__(self, api, spec, version):
     paths = (['3pp', 'wd'] + spec.cipd_pkg_name.split('/') +
              [spec.platform, version])
-    self._base = api.path.start_dir.join(*paths)
+    self._base = api.path.start_dir.joinpath(*paths)
 
   @property
   def base(self):

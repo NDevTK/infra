@@ -162,7 +162,7 @@ class CIPDSpec(object):
 
     This is `[CACHE]/3pp_cipd/name/of/package`.
     """
-    ret = self._api.path.cache_dir.join('3pp_cipd')
+    ret = self._api.path.cache_dir / '3pp_cipd'
     return ret.join(self._pkg)
 
   def local_pkg_path(self):
@@ -170,7 +170,7 @@ class CIPDSpec(object):
     disk, this returns None.
     """
     iid = self._resolved_instance_id
-    ret = self._local_pkg_path_dir.join(iid)
+    ret = self._local_pkg_path_dir / iid
     return ret if iid and self._api.path.exists(ret) else None
 
   def _ensure_fetched(self):
@@ -192,9 +192,8 @@ class CIPDSpec(object):
     self._api.file.ensure_directory(
       'ensure cipd package cache exists', local_pkg_dir)
 
-    ret = local_pkg_dir.join(pin.instance_id)
-    self._api.file.move(
-      'move fetched cipd package to cache', fetch_path, ret)
+    ret = local_pkg_dir / pin.instance_id
+    self._api.file.move('move fetched cipd package to cache', fetch_path, ret)
 
     self._version_cache[self._cache_key] = pin.instance_id
 
@@ -245,9 +244,8 @@ class CIPDSpec(object):
     self._api.file.ensure_directory(
       'ensure cipd pkg cache exists', local_pkg_dir)
 
-    local_path = local_pkg_dir.join(pin.instance_id)
-    self._api.file.move(
-      'mv built cipd pkg to cache', tmpfile, local_path)
+    local_path = local_pkg_dir / pin.instance_id
+    self._api.file.move('mv built cipd pkg to cache', tmpfile, local_path)
 
   def ensure_uploaded(self,
                       latest=False,

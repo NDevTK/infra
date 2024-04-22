@@ -178,13 +178,12 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
         db_gcs_bucket (string): The GCS bucket used as a database for previous
           roll attempts.
     """
-    recipes_dir = self.m.path.cache_dir.join('builder', 'recipe_engine')
+    recipes_dir = self.m.path.cache_dir.joinpath('builder', 'recipe_engine')
     self.m.file.rmtree('ensure recipe_dir gone', recipes_dir)
-    self.m.file.ensure_directory(
-        'ensure builder cache dir exists',
-        self.m.path.cache_dir.join('builder'))
+    self.m.file.ensure_directory('ensure builder cache dir exists',
+                                 self.m.path.cache_dir / 'builder')
 
-    with self.m.context(cwd=self.m.path.cache_dir.join('builder')):
+    with self.m.context(cwd=self.m.path.cache_dir / 'builder'):
       # Git clone really wants to have cwd set to something other than None.
       self.m.git('clone', '--depth', '1',
                  'https://chromium.googlesource.com/infra/luci/recipes-py',
@@ -228,8 +227,8 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
   def _prepare_checkout(self, project_id, project_url):
     # Keep persistent checkout. Speeds up the roller for large repos
     # like chromium/src.
-    workdir = self.m.path.cache_dir.join(
-        'builder', 'recipe_autoroller', project_id)
+    workdir = self.m.path.cache_dir.joinpath('builder', 'recipe_autoroller',
+                                             project_id)
     self.m.git.checkout(
         project_url, dir_path=workdir, submodules=False, ref='main')
 
@@ -320,7 +319,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
     # like chromium/src.
     workdir = self._prepare_checkout(project_id, project_url)
 
-    recipes_cfg_path = workdir.join('infra', 'config', 'recipes.cfg')
+    recipes_cfg_path = workdir.joinpath('infra', 'config', 'recipes.cfg')
 
     disable_reason = self._get_disable_reason(recipes_cfg_path)
     if disable_reason:
@@ -335,9 +334,8 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
       return _Status(status)
 
     roll_step = self.m.step('roll', [
-        'vpython3',
-        recipes_dir.join('recipes.py'), '--package', recipes_cfg_path, '-vv',
-        'autoroll', '--output-json',
+        'vpython3', recipes_dir / 'recipes.py', '--package', recipes_cfg_path,
+        '-vv', 'autoroll', '--output-json',
         self.m.json.output()
     ])
     roll_result = roll_step.json.output
@@ -424,7 +422,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
           'get deps',
           [
               'vpython3',
-              recipes_dir.join('recipes.py'),
+              recipes_dir / 'recipes.py',
               '--package',
               recipes_cfg_path,
               'dump_specs',

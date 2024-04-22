@@ -63,10 +63,10 @@ config_ctx = config_item_context(BaseConfig)
 
 @config_ctx(is_root=True)
 def base(c):
-  c.out_path = c.CHECKOUT_PATH.join('out', c.GEN_REPO_OUT_DIR or 'Debug')
-  c.compile_commands_json_file = c.out_path.join('compile_commands.json')
-  c.gn_targets_json_file = c.out_path.join('gn_targets.json')
-  c.javac_extractor_output_dir = c.out_path.join('kzip')
+  c.out_path = c.CHECKOUT_PATH.joinpath('out', c.GEN_REPO_OUT_DIR or 'Debug')
+  c.compile_commands_json_file = c.out_path / 'compile_commands.json'
+  c.gn_targets_json_file = c.out_path / 'gn_targets.json'
+  c.javac_extractor_output_dir = c.out_path / 'kzip'
 
 
 @config_ctx(includes=['chromium_gs'])
@@ -76,12 +76,12 @@ def chromium(c):
 
 @config_ctx(includes=['chromium_gs'])
 def chromiumos(c):
-  c.out_path = c.CHECKOUT_PATH.join('out', c.PLATFORM)
+  c.out_path = c.CHECKOUT_PATH.joinpath('out', c.PLATFORM)
   c.generated_repo = (
       'https://chromium.googlesource.com/chromiumos/codesearch/gen/' +
       c.PLATFORM)
-  c.compile_commands_json_file = c.out_path.join('compile_commands.json')
-  c.gn_targets_json_file = c.out_path.join('gn_targets.json')
+  c.compile_commands_json_file = c.out_path / 'compile_commands.json'
+  c.gn_targets_json_file = c.out_path / 'gn_targets.json'
   c.javac_extractor_output_dir = None
 
 
