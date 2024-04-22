@@ -25,6 +25,7 @@ type simInfo struct {
 			ICCID        string `json:"iccid,omitempty"`
 			EID          string `json:"eid,omitempty"`
 			OperatorName string `json:"operator-name,omitempty"`
+			OperatorCode string `json:"operator-code,omitempty"`
 			TypeString   string `json:"sim-type,omitempty"`
 		} `json:"properties,omitempty"`
 	} `json:"sim,omitempty"`
@@ -69,10 +70,38 @@ func (s *simInfo) EID() string {
 	return s.SIM.Properties.EID
 }
 
+// knownCarriers is a map of known operator_code to carrier mappings present in
+// the lab, these are generally fixed and should only really need to be updated when
+// adding new carriers to the lab..
+var knownCarriers = map[string]tlw.Cellular_NetworkProvider{
+	"00101":  tlw.Cellular_NETWORK_AMARISOFT,
+	"001010": tlw.Cellular_NETWORK_AMARISOFT,
+	"23415":  tlw.Cellular_NETWORK_VODAFONE,
+	"23430":  tlw.Cellular_NETWORK_EE,
+	"302220": tlw.Cellular_NETWORK_TELUS,
+	"302720": tlw.Cellular_NETWORK_ROGER,
+	"310260": tlw.Cellular_NETWORK_TMOBILE,
+	"311882": tlw.Cellular_NETWORK_TMOBILE,
+	"310280": tlw.Cellular_NETWORK_ATT,
+	"310410": tlw.Cellular_NETWORK_ATT,
+	"311480": tlw.Cellular_NETWORK_VERIZON,
+	"44010":  tlw.Cellular_NETWORK_DOCOMO,
+	"44011":  tlw.Cellular_NETWORK_RAKUTEN,
+	"44020":  tlw.Cellular_NETWORK_SOFTBANK,
+	"44051":  tlw.Cellular_NETWORK_KDDI,
+}
+
 // CarrierName returns the SIMs operator/carrier name.
 func (s *simInfo) CarrierName() tlw.Cellular_NetworkProvider {
 	if s == nil || s.SIM == nil || s.SIM.Properties == nil {
 		return tlw.Cellular_NETWORK_UNSPECIFIED
+	}
+
+	// First try to determine Carrier Name from OperatorCode as it is more reliable,
+	// if that fails then fallback to the OperatorName.
+	oc := s.SIM.Properties.OperatorCode
+	if _, ok := knownCarriers[oc]; ok {
+		return knownCarriers[oc]
 	}
 
 	on := s.SIM.Properties.OperatorName
