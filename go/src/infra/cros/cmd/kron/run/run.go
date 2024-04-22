@@ -63,12 +63,6 @@ func NewBuilds(authOpts *authcli.Flags, isProd, dryRun bool) error {
 	common.Stdout.Println("Filtering out SuSch configs not on migration allowlist.")
 	releaseBuilds = filterConfigs(releaseBuilds)
 
-	// Build CTP Requests for all triggered configs.
-	err = buildCTPRequests(releaseBuilds, suiteSchedulerConfigs)
-	if err != nil {
-		return err
-	}
-
 	if len(releaseBuilds) == 0 {
 		common.Stderr.Println("No builds found")
 		return nil
