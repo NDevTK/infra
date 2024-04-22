@@ -292,18 +292,18 @@ func (b *PackageBuilder) BuildAll(ctx context.Context, skipUploaded bool) ([]act
 		return nil, err
 	}
 
-	executor := b.packageExecutor
-	if executor == nil {
-		if executor, err = b.defaultPackageExecutor(ctx, pkgs); err != nil {
-			return nil, err
-		}
-	}
-
 	var newPkgs []actions.Package
 	if !skipUploaded {
 		newPkgs = slices.Clone(pkgs)
 	} else if newPkgs, err = b.filterUploaded(ctx, pkgs); err != nil {
 		return nil, err
+	}
+
+	executor := b.packageExecutor
+	if executor == nil {
+		if executor, err = b.defaultPackageExecutor(ctx, newPkgs); err != nil {
+			return nil, err
+		}
 	}
 
 	// Make packages available. We still return all packages regardless of the

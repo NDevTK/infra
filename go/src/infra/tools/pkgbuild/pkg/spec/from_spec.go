@@ -18,6 +18,7 @@ import (
 
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipkg/base/generators"
+	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/system/environ"
 
 	"infra/tools/pkgbuild/pkg/stdenv"
@@ -457,6 +458,11 @@ func (p *createParser) LoadDependencies(buildCipdPlatform string, l *SpecLoader)
 		if ver != "" && ver != g.Version {
 			return &generators.CIPDExport{
 				Name: g.Name,
+				Metadata: &core.Action_Metadata{
+					Luciexe: &core.Action_Metadata_LUCIExe{
+						StepName: fmt.Sprintf("%s@%s:%s from cipd", g.Name, ver, hostCipdPlatform),
+					},
+				},
 				Ensure: ensure.File{
 					PackagesBySubdir: map[string]ensure.PackageSlice{
 						"": {
