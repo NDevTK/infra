@@ -56,6 +56,22 @@ var missingBoardAllowList map[string]bool = stringSliceToStringSet([]string{
 	"x86_mario",
 	"x86_zgb",
 	"x86_zgb_he",
+	// These items are to be removed AFTER b/336334308 is resolved.
+	"cave",
+	"celes",
+	"coral",
+	"dedede",
+	"drallion",
+	"grunt",
+	"jacuzzi",
+	"kevin",
+	"kukui",
+	"mistral",
+	"nami",
+	"octopus",
+	"puff",
+	"snappy",
+	"trogdor",
 })
 
 var failedToLookupAllowList map[string]bool = stringSliceToStringSet([]string{
