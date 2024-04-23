@@ -556,3 +556,29 @@ func TestListHwidData(t *testing.T) {
 		})
 	})
 }
+
+func TestSetHwidDataWithDutLabels(t *testing.T) {
+	t.Parallel()
+
+	t.Run("set correct hwid data", func(t *testing.T) {
+		hwidData := mockHwidData()
+		hwidData.GetDutLabel().Labels = []*ufspb.DutLabel_Label{
+			{
+				Name: "stylus",
+			},
+			{
+				Name: "touchpad",
+			},
+		}
+		res := SetHwidDataWithDutLabels(hwidData)
+		if !res.GetStylus() {
+			t.Errorf("SetHwidDataWithDutLabels set wrong flag for stylus: want true, got %v\n", res.GetStylus())
+		}
+		if !res.GetTouchpad() {
+			t.Errorf("SetHwidDataWithDutLabels set wrong flag for touchpad: want true, got %v\n", res.GetTouchpad())
+		}
+		if res.GetTouchscreen() {
+			t.Errorf("SetHwidDataWithDutLabels set wrong flag for touchscreen: want false, got %v\n", res.GetTouchscreen())
+		}
+	})
+}

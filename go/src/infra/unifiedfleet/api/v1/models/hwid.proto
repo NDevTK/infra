@@ -39,4 +39,7 @@ message HwidData {
   string variant = 2;
   string hwid = 3;
   DutLabel dut_label = 4;
+  bool stylus = 5;
+  bool touchpad = 6;
+  bool touchscreen = 7;
 }

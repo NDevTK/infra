@@ -171,6 +171,12 @@ func SetHwidDataWithDutLabels(hwidData *ufspb.HwidData) *ufspb.HwidData {
 			hwidData.Sku = l.GetValue()
 		case "variant":
 			hwidData.Variant = l.GetValue()
+		case "stylus":
+			hwidData.Stylus = true
+		case "touchpad":
+			hwidData.Touchpad = true
+		case "touchscreen":
+			hwidData.Touchscreen = true
 		}
 	}
 	return hwidData
