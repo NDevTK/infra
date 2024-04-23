@@ -48,7 +48,7 @@ func (r *RootStep) runRoot(ctx context.Context, name string) {
 	defer close(r.ended)
 
 	s, ctx := build.StartStep(ctx, name)
-	defer s.End(r.err)
+	defer func() { s.End(r.err) }()
 
 	for sub := range r.substep {
 		r.err = errors.Join(r.err, sub(ctx, s))
@@ -104,7 +104,7 @@ func (r *RootStep) End() {
 
 func runStepCommand(ctx context.Context, cmd *exec.Cmd) (err error) {
 	s, _ := build.StartStep(ctx, fmt.Sprintf("run command: %s", cmd.Args))
-	defer s.End(err)
+	defer func() { s.End(err) }()
 	stepOutput := s.Log("stdout")
 
 	if cmd.Stdout == nil {

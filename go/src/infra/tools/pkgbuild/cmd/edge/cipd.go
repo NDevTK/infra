@@ -17,7 +17,6 @@ import (
 
 	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
 	"go.chromium.org/luci/luciexe/build"
 )
@@ -65,7 +64,7 @@ func (pkg *cipdPackage) upload(ctx context.Context, workdir, cipdService string,
 	name = cipd.Name
 
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("creating cipd package %s:%s with %s", name, pkg.derivationTag(), cipd.Version))
-	defer step.End(err)
+	defer func() { step.End(err) }()
 
 	// If .cipd file already exists, assume it has been uploaded.
 	out := filepath.Join(workdir, pkg.DerivationID+".cipd")
@@ -92,11 +91,9 @@ func (pkg *cipdPackage) download(ctx context.Context, cipdService string) (err e
 	cipd := pkg.Action.Metadata.GetCipd()
 
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("downloading cipd package %s:%s", cipd.Name, pkg.derivationTag()))
-	defer step.End(err)
+	defer func() { step.End(err) }()
 
-	// Error from cipd export is intentionally ignored here.
-	// Cache miss should not be treated as failure.
-	if err := pkg.Handler.Build(func() error {
+	err = pkg.Handler.Build(func() error {
 		cmd := cipdCommand("export",
 			"-service-url", cipdService,
 			"-root", pkg.Handler.OutputDirectory(),
@@ -105,9 +102,7 @@ func (pkg *cipdPackage) download(ctx context.Context, cipdService string) (err e
 		cmd.Stdin = strings.NewReader(fmt.Sprintf("%s %s", cipd.Name, pkg.derivationTag()))
 
 		return runStepCommand(ctx, cmd)
-	}); err != nil {
-		logging.Infof(ctx, "failed to download package from cipd (possible cache miss): %s", err)
-	}
+	})
 
 	return
 }

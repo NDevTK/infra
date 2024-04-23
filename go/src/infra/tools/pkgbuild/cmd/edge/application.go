@@ -149,7 +149,7 @@ func (a *Application) TryUpload(ctx context.Context, pkgs []actions.Package) (er
 	}
 
 	step, ctx := build.StartStep(ctx, "upload packages")
-	defer step.End(err)
+	defer func() { step.End(err) }()
 
 	clt, err := client.MakeProvenanceClient(ctx, a.SnoopyService)
 	if err != nil {
@@ -188,7 +188,7 @@ func (a *Application) tryUploadOne(ctx context.Context, clt provenanceClient, tm
 	}
 
 	step, ctx := build.StartStep(ctx, pkg.Action.Metadata.Cipd.String())
-	defer step.End(err)
+	defer func() { step.End(err) }()
 
 	// Package is available in cipd
 	if err = cipdPkg.check(ctx, a.CipdService); err == nil {
@@ -318,7 +318,7 @@ func (b *PackageBuilder) BuildAll(ctx context.Context, skipUploaded bool) ([]act
 // filterUploaded filters out package has been built and available in cipd.
 func (b *PackageBuilder) filterUploaded(ctx context.Context, pkgs []actions.Package) (ret []actions.Package, err error) {
 	step, ctx := build.StartStep(ctx, "compute packages to be built")
-	defer step.End(err)
+	defer func() { step.End(err) }()
 
 	checked := stringset.New(len(pkgs))
 	for _, pkg := range pkgs {
@@ -352,13 +352,29 @@ func (b *PackageBuilder) defaultPackageExecutor(ctx context.Context, pkgs []acti
 		}
 	}
 
+	prepared := stringset.New(len(pkgs))
 	preExecFn := func(ctx context.Context, pkg actions.Package) error {
-		return rootSteps.GetRoot(pkg.DerivationID).RunSubstep(ctx, func(ctx context.Context, root *build.Step) error {
-			cipdPkg := toCIPDPackage(pkg)
-			if cipdPkg == nil {
-				return nil
+		if !prepared.Add(pkg.DerivationID) {
+			return nil
+		}
+
+		cipdPkg := toCIPDPackage(pkg)
+		if cipdPkg == nil {
+			return nil
+		}
+
+		r := rootSteps.GetRoot(pkg.DerivationID)
+		return r.RunSubstep(ctx, func(ctx context.Context, root *build.Step) error {
+			if err := cipdPkg.download(ctx, b.CipdService); err != nil {
+				// Error from cipd export is intentionally ignored here.
+				// Cache miss should not be treated as failure.
+				logging.Infof(ctx, "failed to download package from cipd (possible cache miss): %s", err)
+			} else if r.ID() == pkg.DerivationID {
+				// downloaded cached package. We don't need to build the step.
+				root.End(nil)
 			}
-			return cipdPkg.download(ctx, b.CipdService)
+
+			return nil
 		})
 	}
 	execFn := func(ctx context.Context, cfg *workflow.ExecutionConfig, drv *core.Derivation) error {
@@ -370,7 +386,7 @@ func (b *PackageBuilder) defaultPackageExecutor(ctx context.Context, pkgs []acti
 
 		err = r.RunSubstep(ctx, func(ctx context.Context, root *build.Step) (err error) {
 			s, ctx := build.StartStep(ctx, fmt.Sprintf("build %s", drv.Name))
-			defer s.End(err)
+			defer func() { s.End(err) }()
 
 			stepOutput := s.Log("stdout")
 			cmd := exec.CommandContext(ctx, drv.Args[0], drv.Args[1:]...)
