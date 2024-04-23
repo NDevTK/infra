@@ -18,6 +18,7 @@ PROJECT_REDIRECT_MAP = {
     'pigweed': 'https://issues.pigweed.dev',
     'skia': 'http://issues.skia.org',
     'v8': 'http://issues.chromium.org',
+    'webrtc': 'http://issues.webrtc.org',
 }
 
 MAX_MONORAIL_ISSUE_ID = 10000000
