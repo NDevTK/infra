@@ -277,6 +277,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							},
 						},
 					},
+					InventoryInfo: &artifactpb.InventoryInfo{
+						UfsZone: "ZONE_SFO36_OS",
+					},
 				},
 				DutTopology: &labapi.DutTopology{
 					Id:   &labapi.DutTopology_Id{Value: "0wgtfqin2033834d-ecghcra"},
@@ -367,6 +370,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					{Key: "drone_server", Value: "chromeos4-row4-rack1-drone8"},
 					{Key: "pool", Value: "ChromeOSSkylab"},
 					{Key: "label-pool", Value: "DUT_POOL_QUOTA"},
+					{Key: "ufs_zone", Value: "ZONE_SFO36_OS"},
 				},
 			}},
 		}

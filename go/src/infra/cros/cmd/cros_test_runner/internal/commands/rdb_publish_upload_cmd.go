@@ -182,6 +182,9 @@ func constructTestResultFromStateKeeper(
 	// -- Env info (skylab/satlab)
 	populatePrimaryEnvInfo(ctx, primaryExecInfo, botDims, build, isSkylab)
 
+	// -- Inventory info
+	populatePrimaryInventoryInfo(ctx, primaryExecInfo, sk, botDims)
+
 	// - Secondary execution info
 	populateSecondaryExecutionInfo(ctx, resultProto, sk)
 
@@ -429,6 +432,22 @@ func populatePrimaryEnvInfo(
 		// Satlab
 		satlabInfo := &artifactpb.SatlabInfo{DroneInfo: droneInfo, SwarmingInfo: swarmingInfo, BuildbucketInfo: bbInfo}
 		primaryExecInfo.EnvInfo = &artifactpb.ExecutionInfo_SatlabInfo{SatlabInfo: satlabInfo}
+	}
+}
+
+// populatePrimaryInventoryInfo populates primary inventory info.
+func populatePrimaryInventoryInfo(
+	ctx context.Context,
+	primaryExecInfo *artifactpb.ExecutionInfo,
+	sk *data.HwTestStateKeeper,
+	botDims []*buildbucketpb.StringPair) {
+
+	// Build info
+	primaryInventoryInfo := &artifactpb.InventoryInfo{}
+	primaryExecInfo.InventoryInfo = primaryInventoryInfo
+
+	if ufsZone := getSingleTagValue(botDims, "ufs_zone"); ufsZone != "" {
+		primaryInventoryInfo.UfsZone = ufsZone
 	}
 }
 
