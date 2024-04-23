@@ -714,16 +714,31 @@ func servoSetEcUartCmdExec(ctx context.Context, info *execs.ExecInfo) error {
 // Failure of this kinds of controls can be recovered by rebooting the DUT.
 //
 // @params: actionArgs should be in the format of:
-// Ex: ["wait_timeout:x"]
+// Ex: ["wait_timeout:x", "timeout:x", "more_logs:true"]
 func servoPowerStateResetExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
-	// Timeout to wait for resetting the power state. Default to be 1s.
-	waitTimeout := argsMap.AsDuration(ctx, "wait_timeout", 1, time.Second)
+	waitTimeoutAfterCall := argsMap.AsDuration(ctx, "wait_timeout", 1, time.Second)
+	timeout := argsMap.AsDuration(ctx, "timeout", components.ServodDefaultTimeoutSec, time.Second)
+	enableMoreLogs := argsMap.AsBool(ctx, "more_logs", false)
+
 	servod := info.NewServod()
-	if err := servod.Set(ctx, "power_state", "reset"); err != nil {
+	// Set hcdebug every to be able to collect inforof cold-reset.
+	// We run it always as some board
+	if _, err := servod.Call(ctx, components.ServodSet, timeout, "power_state", "reset"); err != nil {
 		return errors.Annotate(err, "servo power state reset").Err()
 	}
-	time.Sleep(waitTimeout)
+	if enableMoreLogs {
+		// We enable more logs as some board can disable them by default.
+		// More detail b/325124302#14.
+		ecCommands := []string{"hcdebug every", "chan 0xffffffff"}
+		for _, ecCommand := range ecCommands {
+			if err := servod.Set(ctx, "ec_uart_cmd", ecCommand); err != nil {
+				log.Debugf(ctx, "Fail to set %q: %s", ecCommand, err)
+			}
+		}
+	}
+
+	time.Sleep(waitTimeoutAfterCall)
 	return nil
 }
 

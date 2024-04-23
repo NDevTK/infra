@@ -3011,7 +3011,7 @@
                       "dependencies": [
                         {
                           "name": "Cold reset DUT by servo",
-                          "exec_name": "servo_set",
+                          "exec_name": "servo_power_state_reset",
                           "docs": [
                             "Cold reset device by servo and do not wait."
                           ],
@@ -3049,8 +3049,6 @@
                             }
                           ],
                           "exec_args": [
-                            "command:power_state",
-                            "string_value:reset",
                             "timeout:30"
                           ],
                           "run_control": "ALWAYS_RUN"
