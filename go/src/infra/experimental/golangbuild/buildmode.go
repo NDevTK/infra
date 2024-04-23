@@ -82,6 +82,10 @@ func getGo(ctx context.Context, stepName, goroot string, goSrc *sourceSpec, inpu
 	}
 
 	// There was no prebuilt toolchain we could grab. Fetch Go and build it.
+	//
+	// If you make any changes here, consider if it's also necessary to bump
+	// prebuiltGoVersion so that when golangbuild consumes the prebuilt toolchain,
+	// it won't encounter any unexpected contents.
 
 	// Fetch the main Go repository into goroot.
 	if err := fetchRepo(ctx, goSrc, goroot, inputs); err != nil {

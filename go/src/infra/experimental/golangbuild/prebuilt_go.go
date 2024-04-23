@@ -24,10 +24,19 @@ import (
 	"infra/experimental/golangbuild/golangbuildpb"
 )
 
+// prebuiltGoVersion is a versioning mechanism for what golangbuild expects to be inside of a prebuilt
+// toolchain archive. Any time golangbuild changes what is placed in the archive, this number must be
+// incremented to ensure that future golangbuild versions don't accidentally encounter build archive
+// contents they can't work with. This versioning scheme is also useful for introducing invariants that
+// are depended on by tests and downstream Go tooling.
+const prebuiltGoVersion = 1
+
 // prebuiltGo represents a mapping between a Go toolchain version and the prebuilt
 // GOROOT for that toolchain in CAS.
 type prebuiltGo struct {
-	// ID represents the toolchain build target. Specifically, it takes the form: $GOOS-$GOARCH-$commit-$envhash.
+	// ID represents the toolchain build target.
+	//
+	// Specifically, it takes the form: $HOSTGOOS-$HOSTGOARCH-$GOOS-$GOARCH-$commit-$envhash-v$prebuiltGoVersion.
 	ID string `gae:"$id"`
 
 	// CASDigest is the digest of the prebuilt toolchain in CAS.
@@ -134,7 +143,7 @@ func prebuiltID(ctx context.Context, goSrc *sourceSpec, inputs *golangbuildpb.In
 	}
 
 	// Construct the final ID.
-	id = fmt.Sprintf("%s-%s-%s-%s-%s-%x", inputs.Host.Goos, inputs.Host.Goarch, inputs.Target.Goos, inputs.Target.Goarch, rev, detailsHash.Sum(nil))
+	id = fmt.Sprintf("%s-%s-%s-%s-%s-%x-v%d", inputs.Host.Goos, inputs.Host.Goarch, inputs.Target.Goos, inputs.Target.Goarch, rev, detailsHash.Sum(nil), prebuiltGoVersion)
 
 	// Log the ID and the inputs.
 	_, err = io.WriteString(step.Log("id"), id)
