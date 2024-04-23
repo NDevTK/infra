@@ -118,7 +118,10 @@ luci.milo(
     logo = "https://storage.googleapis.com/chrome-infra-public/logo/chrome-infra-logo-200x200.png",
     favicon = "https://storage.googleapis.com/chrome-infra-public/logo/favicon.ico",
 )
-luci.cq(status_host = "chromium-cq-status.appspot.com")
+luci.cq(
+    status_host = "chromium-cq-status.appspot.com",
+    honor_gerrit_linked_accounts = True,
+)
 luci.notify(tree_closing_enabled = True)
 
 # Global builder defaults.
