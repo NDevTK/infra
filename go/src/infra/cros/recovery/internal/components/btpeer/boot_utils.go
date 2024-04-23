@@ -45,6 +45,23 @@ func TempBootIntoPartition(ctx context.Context, runner components.Runner, bootPa
 	return nil
 }
 
+// GetCurrentBootPath gets the mounted boot directory that the OS is using.
+//
+// Older versions of raspberry pi use /boot/, while newer versions use /boot/firmware.
+// See: https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/configuration/boot_folder.adoc
+func GetCurrentBootPath(ctx context.Context, runner components.Runner) (string, error) {
+	if _, err := runner(ctx, 15*time.Second, "test -d /boot/firmware/"); err == nil {
+		return "/boot/firmware/", nil
+	}
+	log.Debugf(ctx, "/boot/firmware does not exist, checking for /boot/")
+
+	if _, err := runner(ctx, 15*time.Second, "test -d /boot/"); err == nil {
+		return "/boot/", nil
+	}
+
+	return "", errors.Reason("get current booth path: failed to find a mounted boot path").Err()
+}
+
 // PermBootIntoPartition sets a partition as the permenent boot partition.
 //
 // This is accomplished by writing a file "autoboot.txt" to the recovery partition which instructs the
@@ -66,9 +83,14 @@ func PermBootIntoPartition(ctx context.Context, runner components.Runner, recove
 		return errors.Annotate(err, "set perm boot partition: failed to get partition number for partition: %q", bootPart).Err()
 	}
 
+	bootPath, err := GetCurrentBootPath(ctx, runner)
+	if err != nil {
+		return errors.Annotate(err, "set perm boot partition: failed to get current boot path").Err()
+	}
+
 	// Ensure that the partition that we're setting as the perm partition is the one we're
 	// currently booted into so there's no risk of booting into the wrong partition.
-	if dev, err := getMountDeviceForPath(ctx, runner, "/boot/"); err != nil {
+	if dev, err := getMountDeviceForPath(ctx, runner, bootPath); err != nil {
 		return errors.Annotate(err, "set perm boot partition: failed to get current boot device.").Err()
 	} else if dev != bootPart {
 		return errors.Reason("set perm boot partition: cannot change boot partition, booted into %q, expected %q.", dev, bootPart).Err()
@@ -115,8 +137,13 @@ func waitForBootPartition(ctx context.Context, runner components.Runner, bootPar
 		return errors.Annotate(err, "wait for boot partition: device did not come back up after temp booting into partition").Err()
 	}
 
+	bootPath, err := GetCurrentBootPath(ctx, runner)
+	if err != nil {
+		return errors.Annotate(err, "set perm boot partition: failed to get current boot path").Err()
+	}
+
 	// Verify after rebooting that we're booted into the expected partition
-	if dev, err := getMountDeviceForPath(ctx, runner, "/boot/"); err != nil {
+	if dev, err := getMountDeviceForPath(ctx, runner, bootPath); err != nil {
 		return errors.Annotate(err, "wait for boot partition: failed to get current boot device.").Err()
 	} else if dev != bootPart {
 		return errors.Reason("wait for boot partition: failed to verify boot partition, got %q, expected %q.", dev, bootPart).Err()

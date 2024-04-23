@@ -54,7 +54,12 @@ func BuildInitrd(ctx context.Context, runner components.Runner) error {
 		return errors.Annotate(err, "build initrd: failed to re-create initrd.img").Err()
 	}
 
-	const copyCmd = `cp "/boot/initrd.img-$(uname -r)" /boot/initrd.img`
+	bootPath, err := GetCurrentBootPath(ctx, runner)
+	if err != nil {
+		return errors.Annotate(err, "build initrd: failed to get current boot path").Err()
+	}
+
+	copyCmd := fmt.Sprintf(`cp "/boot/initrd.img-$(uname -r)" %sinitrd.img`, bootPath)
 	if _, err := runner(ctx, time.Minute, copyCmd); err != nil {
 		return errors.Annotate(err, "build initrd: failed to copy initrd.img").Err()
 	}

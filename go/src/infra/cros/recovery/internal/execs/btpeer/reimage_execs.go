@@ -46,8 +46,13 @@ func enableInitrdExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "enable initrd: failed to build initial initrd image").Err()
 	}
 
+	bootPath, err := btpeer.GetCurrentBootPath(ctx, runner.Run)
+	if err != nil {
+		return errors.Annotate(err, "enable initrd: failed to get current boot path").Err()
+	}
+
 	// Tell the kernel to use initrd image that we just built and renamed.
-	if err := btpeer.AddLineToFile(ctx, runner.Run, "/boot/config.txt", "initramfs initrd.img followkernel"); err != nil {
+	if err := btpeer.AddLineToFile(ctx, runner.Run, bootPath+"config.txt", "initramfs initrd.img followkernel"); err != nil {
 		return errors.Annotate(err, "enable initrd: failed to build initial initrd image").Err()
 	}
 
@@ -69,8 +74,13 @@ func enableInitrdExec(ctx context.Context, info *execs.ExecInfo) error {
 func disableInitrdExec(ctx context.Context, info *execs.ExecInfo) error {
 	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
 
+	bootPath, err := btpeer.GetCurrentBootPath(ctx, runner.Run)
+	if err != nil {
+		return errors.Annotate(err, "disable initrd: failed to get current boot path").Err()
+	}
+
 	// Remove initramfs line from boot config.
-	if err := btpeer.RemoveLineFromFile(ctx, runner.Run, "/boot/config.txt", "initramfs initrd.img followkernel"); err != nil {
+	if err := btpeer.RemoveLineFromFile(ctx, runner.Run, bootPath+"config.txt", "initramfs initrd.img followkernel"); err != nil {
 		return errors.Annotate(err, "disable initrd: failed to build initial initrd image").Err()
 	}
 
@@ -200,8 +210,13 @@ func createPartitionsExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "create partitions: failed to create partition helper").Err()
 	}
 
+	bootPath, err := btpeer.GetCurrentBootPath(ctx, runner.Run)
+	if err != nil {
+		return errors.Annotate(err, "createn partitions: failed to get current boot path").Err()
+	}
+
 	// Add label to existing BOOT_A partition.
-	if err := btpeer.SetLabelForFAT32Path(ctx, runner.Run, "/boot", bootALabel); err != nil {
+	if err := btpeer.SetLabelForFAT32Path(ctx, runner.Run, bootPath, bootALabel); err != nil {
 		return errors.Annotate(err, "create partitions: failed to set BOOT_A label").Err()
 	}
 

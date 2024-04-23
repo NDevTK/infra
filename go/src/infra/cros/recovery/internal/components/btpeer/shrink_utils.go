@@ -107,7 +107,9 @@ e2fsck -y -f "$ROOT_DEV" || echo Yes | parted "$DEVICE" ---pretend-input-tty res
 // CreateShrinkInitrdHook creates an initrd image that will shrink the filesystem on the next reboot.
 func CreateShrinkInitrdHook(ctx context.Context, runner components.Runner, size int64) (func(context.Context) error, error) {
 	// Create a hook to copy CLI utilities into initrd image during build so it can be used by premount hok.
-	const shrinkUtilsFile = "/etc/initramfs-tools/hooks/shrinkutils"
+	// Note: this can also be: "/etc/initramfs-tools/hooks/shrinkutils" but RPi OS 12 doesn't like to
+	// pick up that directory.
+	const shrinkUtilsFile = "/usr/share/initramfs-tools/hooks/shrinkutils"
 	if err := createExecutableScript(ctx, runner, copyInitrdUtils, shrinkUtilsFile); err != nil {
 		return nil, errors.Annotate(err, "create shrink hook: failed to create copy utility hook").Err()
 	}
