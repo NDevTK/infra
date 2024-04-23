@@ -11,14 +11,16 @@ import (
 	"time"
 
 	"infra/appengine/drone-queen/api"
+	"infra/appengine/drone-queen/internal/clients"
 	"infra/appengine/drone-queen/internal/entities"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestDroneQueenImpl_DeclareDuts(t *testing.T) {
@@ -199,6 +201,31 @@ func TestDroneQueenImpl_DeclareDuts(t *testing.T) {
 		}
 		assertDatastoreDUTs(ctx, t, want)
 	})
+	t.Run("declare DUTs running on cloudbots", func(t *testing.T) {
+		t.Parallel()
+		ctx := gaetesting.TestingContextWithAppID("go-test")
+		datastore.GetTestable(ctx).Consistent(true)
+		var d DroneQueenImpl
+		availableDuts := []*api.DeclareDutsRequest_Dut{
+			{Name: "ion", Hive: "hive-A"},
+			{Name: "test", Hive: "hive-A"},
+			{Name: "nelo", Hive: "hive-B"},
+			{Name: "test2", Hive: "hive-C"},
+		}
+		ctx = mockSwarmingListBots(ctx, t)
+		_, err := d.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})
+		if err != nil {
+			t.Fatal(err)
+		}
+		k := entities.DUTGroupKey(ctx)
+		want := []*entities.DUT{
+			{ID: "test", Hive: "hive-A", Group: k},
+			{ID: "nelo", Hive: "hive-B", Group: k},
+		}
+		assertDatastoreDUTs(ctx, t, want)
+
+	})
+
 }
 
 func TestDroneQueenImpl_ReleaseDuts(t *testing.T) {
@@ -489,13 +516,27 @@ func testHappyPath(t *testing.T) {
 	}
 }
 
+func TestDroneQueenImpl_listCloudbots(t *testing.T) {
+	t.Parallel()
+
+	t.Run("listCloudbots", func(t *testing.T) {
+		t.Parallel()
+		ctx := gaetesting.TestingContextWithAppID("go-test")
+		ctx = mockSwarmingListBots(ctx, t)
+		bots, _ := listCloudbots(ctx)
+		if len(bots) != len(fakeCloudBotsSwarmingBots.Items) {
+			t.Errorf("Got %v; want %v", len(bots), len(fakeCloudBotsSwarmingBots.Items))
+		}
+
+	})
+}
+
 // goTime converts a protobuf timestamp to a Go Time.
-func goTime(t *timestamp.Timestamp) time.Time {
-	gt, err := ptypes.Timestamp(t)
-	if err != nil {
+func goTime(t *timestamppb.Timestamp) time.Time {
+	if err := t.CheckValid(); err != nil {
 		panic(err)
 	}
-	return gt
+	return t.AsTime()
 }
 
 // staticTime returns a nowFunc for DroneQueenImpl for a static time.
@@ -543,4 +584,34 @@ func assertDatastoreDUTs(ctx context.Context, t *testing.T, want []*entities.DUT
 
 func sortDUTs(d []*entities.DUT) {
 	sort.Slice(d, func(i, j int) bool { return d[i].ID < d[j].ID })
+}
+
+var fakeCloudBotsSwarmingBots = &apipb.BotInfoListResponse{
+	Cursor: "",
+	Items: []*apipb.BotInfo{
+		{
+			Dimensions: []*apipb.StringListPair{
+				{
+					Key:   "dut_name",
+					Value: []string{"ion"},
+				},
+			},
+		},
+		{
+			Dimensions: []*apipb.StringListPair{
+				{
+					Key:   "dut_name",
+					Value: []string{"test2"},
+				},
+			},
+		},
+	},
+}
+
+func mockSwarmingListBots(ctx context.Context, t *testing.T) context.Context {
+	mc := gomock.NewController(t)
+	msc := clients.NewMockSwarmingClient(mc)
+	ctx = context.WithValue(ctx, &clients.MockSwarmingClientKey, msc)
+	msc.EXPECT().ListBots(gomock.Any(), gomock.Any()).Return(fakeCloudBotsSwarmingBots, nil)
+	return ctx
 }

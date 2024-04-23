@@ -14,10 +14,12 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 	"go.opentelemetry.io/otel"
 	"google.golang.org/grpc/metadata"
 
 	"infra/appengine/drone-queen/api"
+	clients "infra/appengine/drone-queen/internal/clients"
 	"infra/appengine/drone-queen/internal/config"
 	"infra/appengine/drone-queen/internal/entities"
 	"infra/appengine/drone-queen/internal/queries"
@@ -158,6 +160,39 @@ func isVersionSupported2(ctx context.Context, droneVersion string, threshold int
 	return version >= threshold
 }
 
+// listCloudbots returns list of running cloudbots swarming bots.
+func listCloudbots(ctx context.Context) ([]*apipb.BotInfo, error) {
+	c, err := clients.NewSwarmingClient(ctx, "chromeos-swarming.appspot.com", "chromeos")
+	if err != nil {
+		return nil, err
+	}
+	cursor := ""
+	// Keep calling as long as there's a cursor indicating more bots to list.
+	bots := make([]*apipb.BotInfo, 0)
+	for {
+		resp, err := c.ListBots(ctx, &apipb.BotsRequest{
+			Limit:  500,
+			Cursor: cursor,
+			Dimensions: []*apipb.StringPair{
+				{
+					Key:   "bot_config",
+					Value: "cloudbots_config.py",
+				},
+			},
+			IsDead: apipb.NullableBool_FALSE,
+		})
+		bots = append(bots, resp.Items...)
+		if err != nil {
+			return bots, err
+		}
+		cursor = resp.Cursor
+		if cursor == "" {
+			break
+		}
+	}
+	return bots, nil
+}
+
 // ReleaseDuts implements service interfaces.
 func (q *DroneQueenImpl) ReleaseDuts(ctx context.Context, req *api.ReleaseDutsRequest) (res *api.ReleaseDutsResponse, err error) {
 	defer func() {
@@ -215,12 +250,31 @@ func (q *DroneQueenImpl) DeclareDuts(ctx context.Context, req *api.DeclareDutsRe
 		for i := range existingDuts {
 			existingMap[existingDuts[i].ID] = &existingDuts[i]
 		}
+		// Create a map of cloudbot DUTs for easy search.
+		cbs, err := listCloudbots(ctx)
+		if err != nil {
+			logging.Debugf(ctx, "DecalreDuts: listCloudbots error %q", err)
+		}
+		cbMap := make(map[string]*apipb.BotInfo, len(cbs))
+		for _, cb := range cbs {
+			for _, d := range cb.GetDimensions() {
+				if d.Key == "dut_name" {
+					cbMap[d.Value[0]] = cb
+					break
+				}
+			}
+		}
 		// Aggregate the DUTs to be created/updated.
 		var updatedDuts []*entities.DUT
 		// To track the DUTs which are declared in this call.
 		declared := make(map[entities.DUTID]bool)
 		for _, availableDut := range req.GetAvailableDuts() {
 			if availableDut.GetName() == "" {
+				continue
+			}
+			if _, ok := cbMap[availableDut.GetName()]; ok {
+				// This DUT is still running on CloudBots.
+				logging.Debugf(ctx, "DUT %s is stilll running on CloubBots. Not assigning to drone", availableDut.GetName())
 				continue
 			}
 			dutID := entities.DUTID(availableDut.GetName())
