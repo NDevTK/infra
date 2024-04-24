@@ -113,6 +113,11 @@ func otherCapabilitiesConverter(dims Dimensions, ls *inventory.SchedulableLabels
 	if v := c.GetCarrier(); v != inventory.HardwareCapabilities_CARRIER_INVALID {
 		dims["label-carrier"] = []string{v.String()}
 	}
+	for _, v := range c.GetSupportedCarriers() {
+		if v != inventory.HardwareCapabilities_CARRIER_INVALID {
+			appendDim(dims, "label-supported_carriers", v.String())
+		}
+	}
 	if v := c.GetCbx(); v != inventory.HardwareCapabilities_CBX_STATE_UNSPECIFIED {
 		if v == inventory.HardwareCapabilities_CBX_STATE_TRUE {
 			dims["label-cbx"] = []string{"True"}
@@ -143,6 +148,15 @@ func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Di
 		}
 		delete(d, "label-carrier")
 	}
+
+	c.SupportedCarriers = make([]inventory.HardwareCapabilities_Carrier, len(d["label-supported_carriers"]))
+	for i, v := range d["label-supported_carriers"] {
+		if p, ok := inventory.HardwareCapabilities_Carrier_value[v]; ok {
+			c.SupportedCarriers[i] = inventory.HardwareCapabilities_Carrier(p)
+		}
+	}
+	delete(d, "label-supported_carrier")
+
 	if v, ok := getLastStringValue(d, "label-cbx"); ok {
 		if v == "True" {
 			*c.Cbx = inventory.HardwareCapabilities_CBX_STATE_TRUE

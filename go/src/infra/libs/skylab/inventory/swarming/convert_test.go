@@ -119,6 +119,9 @@ capabilities {
   fingerprint: true
   detachablebase: true
   carrier: 2
+  supported_carriers: 2
+  supported_carriers: 4
+  supported_carriers: 5
   bluetooth: true
   atrus: true
   cbx: 0
@@ -282,6 +285,9 @@ capabilities {
   fingerprint: true
   detachablebase: true
   carrier: 2
+  supported_carriers: 2
+  supported_carriers: 4
+  supported_carriers: 5
   bluetooth: true
   atrus: true
   cbx: 0
@@ -357,6 +363,7 @@ var fullDimensions = Dimensions{
 	"label-camerabox_facing":            {"CAMERABOX_FACING_BACK"},
 	"label-camerabox_light":             {"CAMERABOX_LIGHT_LED"},
 	"label-carrier":                     {"CARRIER_TMOBILE"},
+	"label-supported_carriers":          {"CARRIER_TMOBILE", "CARRIER_SPRINT", "CARRIER_TESTESIM"},
 	"label-cellular_modem":              {"fake_cellular"},
 	"label-chameleon":                   {"True"},
 	"label-chameleon_type": {
