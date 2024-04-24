@@ -1,0 +1,36 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package fleetcost.api.bqpb;
+
+option go_package = "infra/cros/fleetcost/api/bigquery;bqpb";
+
+// CostResult is a cached cost result.
+//
+// For simplicity, the cost result table will be partitioned by ingestion time, but
+// there is no dedicated field for ingestion time in this schema.
+message CostResult {
+  // Name is the hostname or device id of the entity with the cost associated with it, as appropriate.
+  string name = 1;
+
+  // Namespace is the namespace that the record resides in, valid namespaces are:
+  // - OS
+  // - BROWSER
+  // - ANDROID
+  string namespace = 2;
+
+  // hourly_total_cost is the total hourly cost.
+  double hourly_total_cost = 3;
+
+  // hourly_dedicated_cost is the cost for this specific device.
+  double hourly_dedicated_cost = 4;
+
+  // hourly_shared_cost is the pro-rated share of costs that aren't specific to this device.
+  double hourly_shared_cost = 5;
+
+  // hourly_cloud_cost is the pro-rated share of the cloud costs.
+  double hourly_cloud_cost = 6;
+}
