@@ -121,6 +121,10 @@ message ListCostIndicatorsFilter {
   string model = 2;
   // Sku is the SKU of the cost indicator in question.
   string sku = 3;
+  // Location is the location as a string.
+  string location = 4;
+  // Type is the type as a string.
+  string type = 5;
 };
 
 // ListCostIndicatorsResponse lists cost indicators
