@@ -126,6 +126,34 @@ func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*
 	}, nil
 }
 
+// leaseRequest constructs a keyed TaskRequestEvent to request a lease from
+// Scheduke with the given dimensions and lease length in minutes, for the given
+// user, at the given time.
+func leaseRequest(dims map[string][]string, mins int64, user string, t time.Time) *schedukepb.KeyedTaskRequestEvents {
+	schedukeDims, pool, deviceName := schedukeDimsPoolAndDeviceNameForLease(dims)
+	return &schedukepb.KeyedTaskRequestEvents{
+		Events: map[int64]*schedukepb.TaskRequestEvent{
+			schedukeTaskKey: {
+				EventTime:                t.UnixMicro(),
+				Deadline:                 t.Add(leaseSchedulingWindow).UnixMicro(),
+				Periodic:                 false,
+				Priority:                 leasePriority,
+				RequestedDimensions:      schedukeDims,
+				RealExecutionMinutes:     mins,
+				MaxExecutionMinutes:      mins,
+				ScheduleBuildRequestJson: "",
+				QsAccount:                leasesSchedulingAccount,
+				Pool:                     pool,
+				Bbid:                     0,
+				Asap:                     false,
+				TaskStateId:              0,
+				DeviceName:               deviceName,
+				User:                     user,
+			},
+		},
+	}
+}
+
 // getParentBBIDstr searches the bbReq for the parentBuildId field.
 // Can be found in either the CrosTestRunnerDynamicRequest or the CftTestRequest.
 func getParentBBIDstr(bbReq *buildbucketpb.ScheduleBuildRequest) (string, error) {
@@ -245,6 +273,30 @@ func dimensionsDeviceNameAndPool(dims []*buildbucketpb.RequestedDimension) (sche
 		}
 	}
 	schedukeDims = &schedukepb.SwarmingDimensions{DimsMap: dimsMap}
+	return
+}
+
+// schedukeDimsPoolAndDeviceNameForLease converts a simple map[string][]string
+// of Swarming dimensions to Scheduke dimensions, sets the default pool if none
+// was found, and returns the Scheduke dimensions, pool, and (optional)
+// requested device name.
+func schedukeDimsPoolAndDeviceNameForLease(dims map[string][]string) (schedukeDims *schedukepb.SwarmingDimensions, pool string, deviceName string) {
+	schedukeDimsMap := map[string]*schedukepb.DimValues{}
+	for key, vals := range dims {
+		if key == poolDimensionKey && len(vals) > 0 {
+			pool = vals[0]
+		} else if key == deviceNameDimensionKey && len(vals) > 0 {
+			deviceName = vals[0]
+		}
+
+		schedukeDimsMap[key] = &schedukepb.DimValues{Values: vals}
+	}
+
+	if pool == "" {
+		pool = defaultPool
+		schedukeDimsMap[poolDimensionKey] = &schedukepb.DimValues{Values: []string{pool}}
+	}
+	schedukeDims = &schedukepb.SwarmingDimensions{DimsMap: schedukeDimsMap}
 	return
 }
 

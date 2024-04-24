@@ -10,37 +10,71 @@ import (
 	"testing"
 )
 
-var testIDsParamData = []struct {
-	bbIDs        []int64
-	wantIDsParam string
+var testSchedukeParamsData = []struct {
+	taskStateIDs []int64
+	users        []string
+	deviceNames  []string
+	wantParam    string
 }{
 	{
-		bbIDs:        []int64{4, 9, 2, 6, 0},
-		wantIDsParam: "ids=4,9,2,6,0",
+		taskStateIDs: []int64{4, 9, 2, 6, 0},
+		users:        []string{"a", "b", "c"},
+		deviceNames:  []string{"d", "f", "g"},
+		wantParam:    "ids=4,9,2,6,0&users=a,b,c&device_names=d,f,g",
 	},
 	{
-		bbIDs:        []int64{1},
-		wantIDsParam: "ids=1",
+		taskStateIDs: []int64{},
+		users:        []string{"a", "b", "e"},
+		deviceNames:  []string{"d", "f", "g"},
+		wantParam:    "users=a,b,e&device_names=d,f,g",
 	},
 	{
-		bbIDs:        []int64{},
-		wantIDsParam: "ids=",
+		taskStateIDs: []int64{4, 9, 2, 6, 0},
+		users:        []string{},
+		deviceNames:  []string{"e", "f", "g"},
+		wantParam:    "ids=4,9,2,6,0&device_names=e,f,g",
 	},
 	{
-		bbIDs:        nil,
-		wantIDsParam: "ids=",
+		taskStateIDs: []int64{4, 9, 2, 6, 0},
+		users:        []string{"a", "b", "c"},
+		deviceNames:  nil,
+		wantParam:    "ids=4,9,2,6,0&users=a,b,c",
+	},
+	{
+		taskStateIDs: []int64{4, 9, 2, 6, 0},
+		users:        nil,
+		deviceNames:  nil,
+		wantParam:    "ids=4,9,2,6,0",
+	},
+	{
+		taskStateIDs: nil,
+		users:        []string{"a", "b", "c"},
+		deviceNames:  nil,
+		wantParam:    "users=a,b,c",
+	},
+	{
+		taskStateIDs: nil,
+		users:        nil,
+		deviceNames:  []string{"d", "f", "g"},
+		wantParam:    "device_names=d,f,g",
+	},
+	{
+		taskStateIDs: nil,
+		users:        nil,
+		deviceNames:  nil,
+		wantParam:    "",
 	},
 }
 
-func TestIDsParam(t *testing.T) {
+func TestSchedukeParams(t *testing.T) {
 	t.Parallel()
-	for _, tt := range testIDsParamData {
+	for _, tt := range testSchedukeParamsData {
 		tt := tt
-		t.Run(fmt.Sprintf("(%v)", tt.bbIDs), func(t *testing.T) {
+		t.Run(fmt.Sprintf("(%v/%v/%v)", tt.taskStateIDs, tt.users, tt.deviceNames), func(t *testing.T) {
 			t.Parallel()
-			gotIDsParam := idsParam(tt.bbIDs)
-			if gotIDsParam != tt.wantIDsParam {
-				t.Errorf("got %s, want %s", gotIDsParam, tt.wantIDsParam)
+			gotParam := schedukeParams(tt.taskStateIDs, tt.users, tt.deviceNames)
+			if gotParam != tt.wantParam {
+				t.Errorf("got %s, want %s", gotParam, tt.wantParam)
 			}
 		})
 	}

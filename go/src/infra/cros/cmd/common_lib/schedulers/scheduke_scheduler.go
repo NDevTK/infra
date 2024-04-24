@@ -63,12 +63,13 @@ func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucke
 		return nil, fmt.Errorf("no task ID returned from Scheduke for request %v", schedukeReq)
 	}
 	step.SetSummaryMarkdown(fmt.Sprintf("task %d scheduled in Scheduke (no BB link yet)", taskID))
+	taskIDsList := []int64{taskID}
 	for {
 		if ctx.Err() != nil {
 			return nil, nil
 		}
 
-		taskStateResponse, err := s.schedukeClient.GetBBIDs([]int64{taskID})
+		taskStateResponse, err := s.schedukeClient.ReadTaskStates(taskIDsList, nil, nil)
 		if err != nil {
 			return nil, err
 		}

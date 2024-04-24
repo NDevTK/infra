@@ -27,11 +27,12 @@ import (
 const schedukeDevPool = "schedukeTest"
 
 var (
-	schedukeDevURL               = "https://front-door-2q7tjgq5za-wl.a.run.app"
-	schedukeProdURL              = "https://front-door-4vl5zcgwzq-wl.a.run.app"
-	schedukeExecutionEndpoint    = "tasks/add"
-	schedukeGetExecutionEndpoint = "tasks"
-	maxHTTPRetries               = 5
+	schedukeDevURL                  = "https://front-door-2q7tjgq5za-wl.a.run.app"
+	schedukeProdURL                 = "https://front-door-4vl5zcgwzq-wl.a.run.app"
+	schedukeExecutionEndpoint       = "tasks/add"
+	schedukeGetExecutionEndpoint    = "tasks"
+	schedukeCancelExecutionEndpoint = "tasks/cancel"
+	maxHTTPRetries                  = 5
 )
 
 type SchedukeClient struct {
@@ -39,6 +40,13 @@ type SchedukeClient struct {
 	client  *http.Client
 	ctx     context.Context
 	local   bool
+}
+
+func NewLocalSchedukeClient(ctx context.Context) (*SchedukeClient, error) {
+	// TODO (b/332370221): send to prod
+	client := SchedukeClient{ctx: ctx, local: true, baseURL: schedukeDevURL}
+	err := client.setUpHTTPClient()
+	return &client, err
 }
 
 func NewSchedukeClient(ctx context.Context, pool string, local bool) (*SchedukeClient, error) {
@@ -101,7 +109,7 @@ func (s *SchedukeClient) parseSchedukeRequestResponse(response *http.Response) (
 
 }
 
-func (s *SchedukeClient) parseGetIdsResponse(response *http.Response) (*schedukeapi.ReadTaskStatesResponse, error) {
+func (s *SchedukeClient) parseReadResponse(response *http.Response) (*schedukeapi.ReadTaskStatesResponse, error) {
 	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
@@ -134,11 +142,13 @@ func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEven
 	if err != nil {
 		return nil, errors.Annotate(err, "HttpPost").Err()
 	}
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("scheduke returned %d", response.StatusCode)
+	}
 	return s.parseSchedukeRequestResponse(response)
 }
 
 func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) (*http.Response, error) {
-	fmt.Println(body)
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, errors.Annotate(err, "creating new HTTP request").Err()
@@ -190,27 +200,60 @@ func sendRequestWithRetries(c clientThatSendsRequests, req *http.Request) (*http
 	return resp, err
 }
 
-// GetBBIDs will call scheduke to attempt to get BBIDs for the given tasks.
-func (s *SchedukeClient) GetBBIDs(ids []int64) (*schedukeapi.ReadTaskStatesResponse, error) {
-	endpoint, err := url.JoinPath(s.baseURL, schedukeGetExecutionEndpoint)
+// ReadTaskStates calls Scheduke to read task states for the given task state
+// IDs, users, and/or device names.
+func (s *SchedukeClient) ReadTaskStates(taskStateIDs []int64, users, deviceNames []string) (*schedukeapi.ReadTaskStatesResponse, error) {
+	readEndpoint, err := url.JoinPath(s.baseURL, schedukeGetExecutionEndpoint)
 	if err != nil {
 		return nil, errors.Annotate(err, "url.joinpath").Err()
 	}
-	withIds := fmt.Sprintf("%s?%s", endpoint, idsParam(ids))
 
-	r, err := s.makeRequest(http.MethodGet, withIds, nil)
+	fullReadURL := fmt.Sprintf("%s?%s", readEndpoint, schedukeParams(taskStateIDs, users, deviceNames))
+	r, err := s.makeRequest(http.MethodGet, fullReadURL, nil)
 	if err != nil {
 		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
-
-	return s.parseGetIdsResponse(r)
+	if r.StatusCode != 200 {
+		return nil, fmt.Errorf("scheduke returned %d", r.StatusCode)
+	}
+	return s.parseReadResponse(r)
 }
 
-// idsParam converts a list of BBIDs to the "ids" param for a GetBBIDs request.
-func idsParam(bbIDs []int64) string {
-	s := make([]string, len(bbIDs))
-	for i, num := range bbIDs {
-		s[i] = strconv.FormatInt(num, 10)
+// CancelTasks calls Scheduke to cancel tasks for the given task state IDs,
+// users, and/or device names.
+func (s *SchedukeClient) CancelTasks(taskStateIDs []int64, users, deviceNames []string) error {
+	cancelEndpoint, err := url.JoinPath(s.baseURL, schedukeCancelExecutionEndpoint)
+	if err != nil {
+		return errors.Annotate(err, "url.joinpath").Err()
 	}
-	return fmt.Sprintf("ids=%s", strings.Join(s, ","))
+
+	fullCancelURL := fmt.Sprintf("%s?%s", cancelEndpoint, schedukeParams(taskStateIDs, users, deviceNames))
+	r, err := s.makeRequest(http.MethodPost, fullCancelURL, nil)
+	if err != nil {
+		return errors.Annotate(err, "executing HTTP request").Err()
+	}
+	if r.StatusCode != 200 {
+		return fmt.Errorf("scheduke returned %d", r.StatusCode)
+	}
+	return nil
+}
+
+// schedukeParams converts a list of task state IDs, users, and device names to
+// params for a request to read task states or cancel tasks.
+func schedukeParams(taskStateIDs []int64, users, deviceNames []string) string {
+	var params []string
+	if len(taskStateIDs) > 0 {
+		stringIDs := make([]string, len(taskStateIDs))
+		for i, num := range taskStateIDs {
+			stringIDs[i] = strconv.FormatInt(num, 10)
+		}
+		params = append(params, fmt.Sprintf("ids=%s", strings.Join(stringIDs, ",")))
+	}
+	if len(users) > 0 {
+		params = append(params, fmt.Sprintf("users=%s", strings.Join(users, ",")))
+	}
+	if len(deviceNames) > 0 {
+		params = append(params, fmt.Sprintf("device_names=%s", strings.Join(deviceNames, ",")))
+	}
+	return strings.Join(params, "&")
 }
