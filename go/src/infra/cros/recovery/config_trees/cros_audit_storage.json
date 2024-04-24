@@ -103,7 +103,8 @@
                     }
                   ],
                   "exec_args": [
-                    "timeout:30"
+                    "timeout:30",
+                    "more_logs:true"
                   ],
                   "run_control": "ALWAYS_RUN"
                 },
@@ -2317,7 +2318,8 @@
                         }
                       ],
                       "exec_args": [
-                        "timeout:30"
+                        "timeout:30",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -2440,7 +2442,8 @@
                     }
                   ],
                   "exec_args": [
-                    "timeout:30"
+                    "timeout:30",
+                    "more_logs:true"
                   ],
                   "run_control": "ALWAYS_RUN"
                 },
@@ -2613,7 +2616,8 @@
                         }
                       ],
                       "exec_args": [
-                        "timeout:30"
+                        "timeout:30",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -4827,7 +4831,8 @@
                             }
                           ],
                           "exec_args": [
-                            "timeout:30"
+                            "timeout:30",
+                            "more_logs:true"
                           ],
                           "run_control": "ALWAYS_RUN"
                         },
@@ -4950,7 +4955,8 @@
                         }
                       ],
                       "exec_args": [
-                        "timeout:30"
+                        "timeout:30",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -5445,7 +5451,8 @@
                             }
                           ],
                           "exec_args": [
-                            "timeout:30"
+                            "timeout:30",
+                            "more_logs:true"
                           ],
                           "run_control": "ALWAYS_RUN"
                         },
@@ -5916,7 +5923,8 @@
                             }
                           ],
                           "exec_args": [
-                            "timeout:30"
+                            "timeout:30",
+                            "more_logs:true"
                           ],
                           "run_control": "ALWAYS_RUN"
                         },
@@ -6523,7 +6531,8 @@
                             }
                           ],
                           "exec_args": [
-                            "timeout:30"
+                            "timeout:30",
+                            "more_logs:true"
                           ],
                           "run_control": "ALWAYS_RUN"
                         },

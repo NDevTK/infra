@@ -1655,6 +1655,7 @@ func servoRepairPlan() *Plan {
 				ExecName: "servo_power_state_reset",
 				ExecExtraArgs: []string{
 					"wait_timeout:1",
+					"more_logs:true",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
 			},
@@ -1665,8 +1666,10 @@ func servoRepairPlan() *Plan {
 				ExecName: "servo_power_state_reset",
 				ExecExtraArgs: []string{
 					"wait_timeout:1",
+					"more_logs:true",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				AllowFailAfterRecovery: true,
+				RunControl:             RunControl_ALWAYS_RUN,
 			},
 			"Create request to reboot labstation": {
 				Docs: []string{

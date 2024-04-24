@@ -2932,6 +2932,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "servo_power_state_reset",
 			ExecExtraArgs: []string{
 				"timeout:30",
+				"more_logs:true",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
@@ -2943,11 +2944,11 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Is servod running",
 			},
-			ExecName: "servo_set",
+			ExecName: "servo_power_state_reset",
 			ExecExtraArgs: []string{
-				"command:power_state",
-				"string_value:reset",
 				"timeout:30",
+				"wait_timeout:1",
+				"more_logs:true",
 			},
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,

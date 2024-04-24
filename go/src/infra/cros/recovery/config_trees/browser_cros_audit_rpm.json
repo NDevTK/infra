@@ -1459,7 +1459,8 @@
                     "Try to reboot DUT by resetting power state command on servod."
                   ],
                   "exec_args": [
-                    "wait_timeout:1"
+                    "wait_timeout:1",
+                    "more_logs:true"
                   ],
                   "run_control": "ALWAYS_RUN"
                 },
@@ -1942,7 +1943,8 @@
                     "Try to reboot DUT by resetting power state command on servod."
                   ],
                   "exec_args": [
-                    "wait_timeout:1"
+                    "wait_timeout:1",
+                    "more_logs:true"
                   ],
                   "run_control": "ALWAYS_RUN"
                 },
@@ -2379,8 +2381,10 @@
                     "Try to reboot DUT by resetting power state command on servod."
                   ],
                   "exec_args": [
-                    "wait_timeout:1"
+                    "wait_timeout:1",
+                    "more_logs:true"
                   ],
+                  "allow_fail_after_recovery": true,
                   "run_control": "ALWAYS_RUN"
                 },
                 {
@@ -2626,7 +2630,8 @@
                     "Try to reboot DUT by resetting power state command on servod."
                   ],
                   "exec_args": [
-                    "wait_timeout:1"
+                    "wait_timeout:1",
+                    "more_logs:true"
                   ],
                   "run_control": "ALWAYS_RUN"
                 },
@@ -4408,7 +4413,8 @@
                         "Try to reboot DUT by resetting power state command on servod."
                       ],
                       "exec_args": [
-                        "wait_timeout:1"
+                        "wait_timeout:1",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -5210,7 +5216,8 @@
                         "Try to reboot DUT by resetting power state command on servod."
                       ],
                       "exec_args": [
-                        "wait_timeout:1"
+                        "wait_timeout:1",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -5831,7 +5838,8 @@
                     "Try to reboot DUT by resetting power state command on servod."
                   ],
                   "exec_args": [
-                    "wait_timeout:1"
+                    "wait_timeout:1",
+                    "more_logs:true"
                   ],
                   "run_control": "ALWAYS_RUN"
                 },
@@ -6593,7 +6601,8 @@
                         "Try to reboot DUT by resetting power state command on servod."
                       ],
                       "exec_args": [
-                        "wait_timeout:1"
+                        "wait_timeout:1",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -7329,7 +7338,8 @@
                         "Try to reboot DUT by resetting power state command on servod."
                       ],
                       "exec_args": [
-                        "wait_timeout:1"
+                        "wait_timeout:1",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -7945,7 +7955,8 @@
                         "Try to reboot DUT by resetting power state command on servod."
                       ],
                       "exec_args": [
-                        "wait_timeout:1"
+                        "wait_timeout:1",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -8521,7 +8532,8 @@
                     "Try to reboot DUT by resetting power state command on servod."
                   ],
                   "exec_args": [
-                    "wait_timeout:1"
+                    "wait_timeout:1",
+                    "more_logs:true"
                   ],
                   "run_control": "ALWAYS_RUN"
                 },
@@ -9074,7 +9086,8 @@
                             "Try to reboot DUT by resetting power state command on servod."
                           ],
                           "exec_args": [
-                            "wait_timeout:1"
+                            "wait_timeout:1",
+                            "more_logs:true"
                           ],
                           "run_control": "ALWAYS_RUN"
                         },
@@ -9650,7 +9663,8 @@
                         "Try to reboot DUT by resetting power state command on servod."
                       ],
                       "exec_args": [
-                        "wait_timeout:1"
+                        "wait_timeout:1",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -10322,7 +10336,8 @@
                     "Try to reboot DUT by resetting power state command on servod."
                   ],
                   "exec_args": [
-                    "wait_timeout:1"
+                    "wait_timeout:1",
+                    "more_logs:true"
                   ],
                   "run_control": "ALWAYS_RUN"
                 },
@@ -11203,7 +11218,8 @@
                         "Try to reboot DUT by resetting power state command on servod."
                       ],
                       "exec_args": [
-                        "wait_timeout:1"
+                        "wait_timeout:1",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -11713,7 +11729,8 @@
                         "Try to reboot DUT by resetting power state command on servod."
                       ],
                       "exec_args": [
-                        "wait_timeout:1"
+                        "wait_timeout:1",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -12159,7 +12176,8 @@
                         "Try to reboot DUT by resetting power state command on servod."
                       ],
                       "exec_args": [
-                        "wait_timeout:1"
+                        "wait_timeout:1",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -12537,7 +12555,8 @@
                     }
                   ],
                   "exec_args": [
-                    "timeout:30"
+                    "timeout:30",
+                    "more_logs:true"
                   ],
                   "run_control": "ALWAYS_RUN"
                 },
@@ -14751,7 +14770,8 @@
                         }
                       ],
                       "exec_args": [
-                        "timeout:30"
+                        "timeout:30",
+                        "more_logs:true"
                       ],
                       "run_control": "ALWAYS_RUN"
                     },
@@ -14874,7 +14894,8 @@
                     }
                   ],
                   "exec_args": [
-                    "timeout:30"
+                    "timeout:30",
+                    "more_logs:true"
                   ],
                   "run_control": "ALWAYS_RUN"
                 },
