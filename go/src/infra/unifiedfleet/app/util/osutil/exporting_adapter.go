@@ -574,10 +574,6 @@ func setCbx(l *inventory.SchedulableLabels, machine *ufspb.Machine) {
 	} else {
 		cbx = inventory.HardwareCapabilities_CBX_STATE_FALSE
 	}
-	// To-be-deleted: See b/320710277#comment21 for details
-	if machine.GetChromeosMachine().GetModel() == "screebo4es" {
-		cbx = inventory.HardwareCapabilities_CBX_STATE_FALSE
-	}
 	c.Cbx = &cbx
 
 	// Cbx Branding
@@ -587,11 +583,6 @@ func setCbx(l *inventory.SchedulableLabels, machine *ufspb.Machine) {
 	} else if machine.GetChromeosMachine().GetCbxFeatureType() == ufspb.ChassisXBrandType_SOFT_BRANDED_LEGACY || machine.GetChromeosMachine().GetCbxFeatureType() == ufspb.ChassisXBrandType_SOFT_BRANDED_WAIVER {
 		cbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_SOFT_BRANDING
 	} else {
-		cbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_UNSPECIFIED
-	}
-
-	// To-be-deleted: See b/320710277#comment21 for details
-	if machine.GetChromeosMachine().GetModel() == "screebo4es" {
 		cbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_UNSPECIFIED
 	}
 	c.CbxBranding = &cbxBranding
