@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/btpeer"
+	"infra/cros/recovery/internal/components/cache"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/internal/log"
@@ -31,6 +32,9 @@ const (
 	rootALabel = "ROOT_A"
 	bootBLabel = "BOOT_B"
 	rootBLabel = "ROOT_B"
+
+	// The GCS bucket and folder which all btpeer images are stored under.
+	imageBaseGCSPath = "gs://chromeos-connectivity-test-artifacts/btpeer/raspios-cros-btpeer/"
 )
 
 // enableInitrdExec enables initrd on the btpeer.
@@ -244,29 +248,59 @@ func createPartitionsExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// downloadImageExec downloads an OS Image and extracts (.xz) it.
+// downloadImageExec downloads an OS Image to the btpeer from GCS through the
+// cache server and decompresses it. Once complete, the decompressed image will
+// be located at localOSImageStorePath.
 //
-// Currently  this downloads the images directly from a url as we don't have a
-// GCS bucket set up for these images. It also assumes images are .xz'd but can
-// be easily changed once we land on a final image upload scheme.
+// Supports xz (*.img.xz) and gz (*.img.gz) compressed images based on file
+// extension.
+//
+// Image file must be stored in GCS under imageBaseGCSPath.
 func downloadImageExec(ctx context.Context, info *execs.ExecInfo) error {
-	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
 	argsMap := info.GetActionArgs(ctx)
-	imagePath := argsMap.AsString(ctx, "local_image_path", localOSImageStorePath)
-	downloadTimeout := argsMap.AsDuration(ctx, "download_timeout", 180, time.Second)
-	img := argsMap.AsString(ctx, "image_path", "")
-	unxzTimeout := argsMap.AsDuration(ctx, "unxz_timeout", 300, time.Second)
+	runner := info.DefaultRunner()
+	externalDownloadURL := argsMap.AsString(ctx, "image_path", "")
+	downloadTimeout := argsMap.AsDuration(ctx, "download_timeout", 600, time.Second)
+	decompressTimeout := argsMap.AsDuration(ctx, "decompress_timeout", 300, time.Second)
 
-	if img == "" {
+	// Validate/parse image URL.
+	if externalDownloadURL == "" {
 		return errors.Reason("download image: required image_path argument missing").Err()
 	}
-
-	if _, _, _, err := ssh.WgetURL(ctx, runner, downloadTimeout, img, "-O", imagePath+".xz"); err != nil {
-		return errors.Annotate(err, "download image: failed to download image with wget").Err()
+	if !strings.HasPrefix(externalDownloadURL, imageBaseGCSPath) {
+		return errors.Reason("download image: image_path expected to be located in GCS under %q, got %q", imageBaseGCSPath, externalDownloadURL).Err()
+	}
+	var xzCompression bool
+	downloadDst := localOSImageStorePath
+	if strings.HasSuffix(externalDownloadURL, ".img.xz") {
+		xzCompression = true
+		downloadDst += ".xz"
+	} else if strings.HasSuffix(externalDownloadURL, ".img.gz") {
+		xzCompression = false
+		downloadDst += ".gz"
+	} else {
+		return errors.Reason("download image: image %q not identified as having xz or gz compression", externalDownloadURL).Err()
 	}
 
-	if _, err := runner.Run(ctx, unxzTimeout, "unxz", imagePath+".xz"); err != nil {
-		return errors.Annotate(err, "download image: failed to unxz image").Err()
+	// Download compressed image through cache server.
+	cacheDownloadURL, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, externalDownloadURL)
+	if err != nil {
+		return errors.Annotate(err, "failed to get download URL from cache server for file path %q", externalDownloadURL).Err()
+	}
+	if _, err := cache.CurlFile(ctx, runner, cacheDownloadURL, downloadDst, downloadTimeout); err != nil {
+		return errors.Annotate(err, "failed to download image %q to btpeer at %q", externalDownloadURL, downloadDst).Err()
+	}
+
+	// Decompress image in-place (removes compression file extension).
+	if xzCompression {
+		if _, err := runner(ctx, decompressTimeout, "unxz", downloadDst); err != nil {
+			return errors.Annotate(err, "download image: failed to extract xz image").Err()
+		}
+	} else {
+		// Is gz compression.
+		if _, err := runner(ctx, decompressTimeout, "gzip", "-d", downloadDst); err != nil {
+			return errors.Annotate(err, "download image: failed to extract gz image").Err()
+		}
 	}
 
 	return nil
@@ -296,7 +330,8 @@ func hasPartitionsWithLabelsExec(ctx context.Context, info *execs.ExecInfo) erro
 func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
 	argsMap := info.GetActionArgs(ctx)
-	imagePath := argsMap.AsString(ctx, "local_image_path", localOSImageStorePath)
+	flashBootTimeout := argsMap.AsDuration(ctx, "flash_boot_timeout", 300, time.Second)
+	flashRootTimeout := argsMap.AsDuration(ctx, "flash_root_timeout", 1800, time.Second)
 
 	// First find the partitions we are going to flash.
 	rootB, err := btpeer.GetFSWithLabel(ctx, runner.Run, rootBLabel)
@@ -309,7 +344,7 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 
 	// Load the image loopback device so we can interact with it as if it's just a normal device.
-	device, err := btpeer.LoadImageAsLoopbackDevice(ctx, runner.Run, imagePath)
+	device, err := btpeer.LoadImageAsLoopbackDevice(ctx, runner.Run, localOSImageStorePath)
 	if err != nil {
 		return errors.Annotate(err, "provision: failed to get and associate image").Err()
 	}
@@ -329,12 +364,12 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 
 	// Flash boot partition.
-	if err := btpeer.FlashImage(ctx, runner.Run, imgBootDev, bootB); err != nil {
+	if err := btpeer.FlashImage(ctx, runner.Run, flashBootTimeout, imgBootDev, bootB); err != nil {
 		return errors.Annotate(err, "provision: failed to flash BOOT_B parition").Err()
 	}
 
 	// Flash root partition.
-	if err := btpeer.FlashImage(ctx, runner.Run, imgRootDev, rootB); err != nil {
+	if err := btpeer.FlashImage(ctx, runner.Run, flashRootTimeout, imgRootDev, rootB); err != nil {
 		return errors.Annotate(err, "provision: failed to flash ROOT_B parition").Err()
 	}
 

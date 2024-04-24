@@ -30,7 +30,7 @@ func GetUsedFSSpace(ctx context.Context, runner components.Runner, path string) 
 }
 
 // FlashImage writes an image to a device using dd.
-func FlashImage(ctx context.Context, runner components.Runner, input string, outputDev string) error {
+func FlashImage(ctx context.Context, runner components.Runner, timeout time.Duration, input string, outputDev string) error {
 	// Ensure the output device is unmounted before we attempt to flash it as the machine may automatically
 	// mount the drive even when it's not the boot/root device.
 	if err := unmountDevice(ctx, runner, outputDev); err != nil {
@@ -38,7 +38,7 @@ func FlashImage(ctx context.Context, runner components.Runner, input string, out
 	}
 
 	cmd := fmt.Sprintf("dd if=%q of=%q", input, outputDev)
-	if _, err := runner(ctx, 10*time.Minute, cmd); err != nil {
+	if _, err := runner(ctx, timeout, cmd); err != nil {
 		return errors.Annotate(err, "flash image: failed to flash image with dd").Err()
 	}
 	return nil
