@@ -296,9 +296,14 @@ func envvars() []string {
 	if swarmingTaskID == "" {
 		swarmingTaskID = "none"
 	}
+	servodContainerLabel := os.Getenv("SERVOD_CONTAINER_LABEL")
+	if servodContainerLabel == "" {
+		servodContainerLabel = "release"
+	}
 	return []string{
 		"--env", fmt.Sprintf("BUILD_BUCKET_ID=%s", bbid),
 		"--env", fmt.Sprintf("SWARMING_TASK_ID=%s", swarmingTaskID),
+		"--env", fmt.Sprintf("SERVOD_CONTAINER_LABEL=%s", servodContainerLabel),
 	}
 }
 
