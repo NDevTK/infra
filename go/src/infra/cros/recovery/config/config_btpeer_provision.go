@@ -193,7 +193,7 @@ func btpeerProvisionPlan(imagePath string) *Plan {
 					fmt.Sprintf("image_path:%s", imagePath),
 				},
 				RunControl:  RunControl_ALWAYS_RUN,
-				ExecTimeout: &durationpb.Duration{Seconds: 600},
+				ExecTimeout: &durationpb.Duration{Seconds: 960},
 			},
 			"Flash B partitions with downloaded OS image": {
 				Docs: []string{
@@ -205,7 +205,7 @@ func btpeerProvisionPlan(imagePath string) *Plan {
 				},
 				ExecName:    "btpeer_provision_device",
 				RunControl:  RunControl_ALWAYS_RUN,
-				ExecTimeout: &durationpb.Duration{Seconds: 1200},
+				ExecTimeout: &durationpb.Duration{Seconds: 2400},
 			},
 			"Create new AB Partitions": {
 				Docs: []string{
