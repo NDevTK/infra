@@ -201,9 +201,9 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *api.Cont
 					// So keeping it as comment for now.
 					//DockerArtifactDir: fmt.Sprintf("/tmp/%s", filter.GetContainer().GetName()),
 					DockerArtifactDir: "/tmp/filters",
-					BinaryArgs: []string{
+					BinaryArgs: append([]string{
 						"server", "-port", "0",
-					},
+					}, requestedFilter.GetContainerInfo().GetBinaryArgs()...),
 					BinaryName:        requestedFilter.GetContainerInfo().GetBinaryName(),
 					AdditionalVolumes: []string{"/creds/service_accounts/:/creds/service_accounts/"},
 				},
@@ -234,11 +234,11 @@ func CreateTTCPContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerRe
 					// So keeping it as comment for now.
 					//DockerArtifactDir: fmt.Sprintf("/tmp/%s", filter.GetContainer().GetName()),
 					DockerArtifactDir: "/tmp/filters",
-					BinaryArgs: []string{
+					BinaryArgs: append([]string{
 						"-port", "0",
 						"-log", "/tmp/filters",
 						"-creds", "/creds/service_accounts/service-account-chromeos.json",
-					},
+					}, requestedFilter.GetContainerInfo().GetBinaryArgs()...),
 					// TODO (azrahman): Get binary name from new field of CTPFilter proto.
 					BinaryName:        "/solver_service",
 					AdditionalVolumes: []string{"/creds/service_accounts/:/creds/service_accounts/"},
