@@ -143,7 +143,7 @@ message Shard {
 //
 // Keep sorted by field name.
 //
-// NEXT TAG: 41
+// NEXT TAG: 42
 message SchedulableLabels {
   // Whether this device supports ARC execution environment.
   optional bool arc = 20;
@@ -351,6 +351,8 @@ message HardwareCapabilities {
     CARRIER_RAK = 25;
   }
   optional Carrier carrier = 16;
+  // Extension of Carrier which supports multiple potential carriers for starfish and multi-SIM DUTs.
+  repeated Carrier supported_carriers = 41;
 
   // Next tag: 3
   // We care about the both true/false cases, so we need a default value to
