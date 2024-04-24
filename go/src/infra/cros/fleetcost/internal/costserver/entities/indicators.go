@@ -135,13 +135,13 @@ func GetCostIndicatorEntity(ctx context.Context, entity *CostIndicatorEntity) (*
 func ListCostIndicators(ctx context.Context, limit int, filter *fleetcostAPI.ListCostIndicatorsFilter) ([]*fleetcostpb.CostIndicator, error) {
 	var out []*fleetcostpb.CostIndicator
 	query := datastore.NewQuery(CostIndicatorKind)
-	if filter != nil && filter.GetBoard() != "" {
+	if filter.GetBoard() != "" {
 		query = query.Eq("board", filter.GetBoard())
 	}
-	if filter != nil && filter.GetModel() != "" {
+	if filter.GetModel() != "" {
 		query = query.Eq("model", filter.GetModel())
 	}
-	if filter != nil && filter.GetSku() != "" {
+	if filter.GetSku() != "" {
 		query = query.Eq("sku", filter.GetSku())
 	}
 	if err := datastore.Run(ctx, query, func(entity *CostIndicatorEntity) {
