@@ -28,14 +28,9 @@ def run_test(api, workdir, spec, cipd_spec):
     # TODO(iannucci): This is a bit gross; we should have a way to copy the
     # CIPD/vpython versions (as a tag not an instance ID) from the environment
     # for use here.
-    api.cipd.ensure(
-      workdir.bin_tools,
-      (api.cipd.EnsureFile().
-       add_package(
-         'infra/tools/cipd/%s' % spec.tool_platform, 'latest').
-       add_package(
-         'infra/tools/luci/vpython/%s' % spec.tool_platform, 'latest')
-       ))
+    api.cipd.ensure(workdir.bin_tools, (api.cipd.EnsureFile().add_package(
+        'infra/tools/cipd/%s' % spec.tool_platform, 'latest').add_package(
+            'infra/tools/luci/vpython3/%s' % spec.tool_platform, 'latest')))
     env_prefixes = {'PATH': [workdir.bin_tools]}
 
   script = spec.create_pb.verify.test[0]
