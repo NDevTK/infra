@@ -30,6 +30,19 @@ type IndicatorAttribute struct {
 	Location      fleetcostpb.Location
 }
 
+// NewIndicatorAttribute creates a new indicator attribute.
+//
+// TODO(gregorynisbet): Rethink the API for this function, maybe move it to utils.
+func NewIndicatorAttribute(typ fleetcostpb.IndicatorType, board string, model string, sku string, location fleetcostpb.Location) *IndicatorAttribute {
+	return &IndicatorAttribute{
+		IndicatorType: typ,
+		Board:         board,
+		Model:         model,
+		Sku:           sku,
+		Location:      location,
+	}
+}
+
 // FriendlyString produces a human-readable string for error messages.
 //
 // This string is NOT RELATED to how IndicatorAttributes or CostIndicatorEntities are actually stored
@@ -120,12 +133,14 @@ func CalculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 	}, nil
 }
 
+// GetServoCost gets the cost of a servo.
 func GetServoCost(ctx context.Context, servoType string, location fleetcostpb.Location) (float64, error) {
-	v, err := GetCostIndicatorValue(ctx, IndicatorAttribute{
+	indicator := &IndicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO,
 		Board:         servoType,
 		Location:      location,
-	})
+	}
+	v, err := GetCostIndicatorValue(ctx, indicator, true)
 	if err != nil {
 		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get servo cost").Err())
 	}
@@ -134,14 +149,14 @@ func GetServoCost(ctx context.Context, servoType string, location fleetcostpb.Lo
 
 // GetDutHardwareCost gets the hardware cost for a single DUT.
 func GetDutHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, location fleetcostpb.Location) (float64, error) {
-	indicator := IndicatorAttribute{
+	indicator := &IndicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
 		Board:         m.GetBuildTarget(),
 		Model:         m.GetModel(),
 		Sku:           m.GetSku(),
 		Location:      location,
 	}
-	v, err := GetCostIndicatorValue(ctx, indicator)
+	v, err := GetCostIndicatorValue(ctx, indicator, true)
 	if err != nil {
 		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get dut hardware cost for %q", indicator.FriendlyString()).Err())
 	}
@@ -154,13 +169,14 @@ func getLabstationCost(ctx context.Context, ic ufsAPI.FleetClient, hostname stri
 		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get labstation cost").Err())
 	}
 	m := data.GetMachine().GetChromeosMachine()
-	v, err := GetCostIndicatorValue(ctx, IndicatorAttribute{
+	indicator := &IndicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_LABSTATION,
 		Board:         m.GetBuildTarget(),
 		Model:         m.GetModel(),
 		Sku:           m.GetSku(),
 		Location:      location,
-	})
+	}
+	v, err := GetCostIndicatorValue(ctx, indicator, true)
 	if err != nil {
 		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get labstation cost").Err())
 	}
