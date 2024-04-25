@@ -8,12 +8,19 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"go.chromium.org/luci/common/logging"
 
 	"infra/device_manager/internal/config"
+)
+
+const (
+	connMaxLifetime time.Duration = 0
+	maxIdleConns    int           = 50
+	maxOpenConns    int           = 50
 )
 
 type DatabaseConfig struct {
@@ -60,6 +67,9 @@ func connectTCPSocket(ctx context.Context, dbConfig DatabaseConfig) (*sql.DB, er
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open: %w", err)
 	}
+	dbPool.SetConnMaxLifetime(connMaxLifetime)
+	dbPool.SetMaxIdleConns(maxIdleConns)
+	dbPool.SetMaxOpenConns(maxOpenConns)
 
 	return dbPool, nil
 }
