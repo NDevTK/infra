@@ -619,6 +619,9 @@ message Cellular {
 
   // Information on all SIMs available on the DUT.
   repeated SIMInfo sim_infos = 5;
+
+  // Information on all carrier dependencies that can be satisfied by this DUT.
+  repeated string supported_carriers = 6;
 }
 
 // Battery holds info about battery of the DUT.
