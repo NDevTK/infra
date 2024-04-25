@@ -7,6 +7,7 @@ package frontend
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/data/strpair"
@@ -268,6 +269,16 @@ func identifyBotsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo) (rep
 		if err != nil {
 			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
 			continue
+		}
+		if strings.HasPrefix(id, "cloudbots-") {
+			// Dut name should be used for CloudBots since its swarming BotID does not contain dut name.
+			logging.Infof(ctx, "cloudbots: %q - getting dut name", id)
+			id, err = util.ExtractSingleValuedDimension(dims, clients.DutNameDimensionKey)
+			if err != nil {
+				logging.Warningf(ctx, "failed to obtain BOT id for cloudbot %q", b.BotId)
+				continue
+			}
+			logging.Infof(ctx, "cloudbots: succesfully got dut name - %q", id)
 		}
 
 		s := clients.GetStateDimensionV2(b.GetDimensions())
