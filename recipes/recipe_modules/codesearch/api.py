@@ -23,12 +23,19 @@ class CodesearchApi(recipe_api.RecipeApi):
         'CHECKOUT_PATH': self.m.path.checkout_dir,
     }
 
-  def cleanup_old_generated(self, age_days=7):
+  def cleanup_old_generated(
+      self,
+      age_days: int = 7,
+      checkout_dir: Optional[config_types.Path] = None,
+  ) -> None:
     """Clean up generated files older than the specified number of days.
 
     Args:
       age_days: Minimum age in days for files to delete (integer).
+      checkout_dir: The directory where code is checked out. If not specified,
+        use checkout_dir initialized in path module by default
     """
+    checkout_dir = checkout_dir or self.m.path.checkout_dir
     if self.c.PLATFORM.startswith('win'):
       # Flag explanations for the Windows command:
       # /p <path>  -- Search files in the given path
@@ -39,8 +46,8 @@ class CodesearchApi(recipe_api.RecipeApi):
       # /c <cmd>   -- Run <cmd> for each file. In our case we delete the file if
       #               it's not a directory.
       delete_command = [
-          'forfiles', '/p', self.m.path.checkout_dir / 'out', '/s', '/m', '*',
-          '/d', ('-%d' % age_days), '/c', 'cmd /c if @isdir==FALSE del @path'
+          'forfiles', '/p', checkout_dir / 'out', '/s', '/m', '*', '/d',
+          ('-%d' % age_days), '/c', 'cmd /c if @isdir==FALSE del @path'
       ]
       try:
         self.m.step('delete old generated files', delete_command)
@@ -56,8 +63,8 @@ class CodesearchApi(recipe_api.RecipeApi):
       # -type f        -- Find files only (not directories)
       # -delete        -- Delete the found files
       delete_command = [
-          'find', self.m.path.checkout_dir / 'out', '-mtime',
-          ('+%d' % age_days), '-type', 'f', '-delete'
+          'find', checkout_dir / 'out', '-mtime', ('+%d' % age_days), '-type',
+          'f', '-delete'
       ]
       self.m.step('delete old generated files', delete_command)
 
@@ -183,7 +190,9 @@ class CodesearchApi(recipe_api.RecipeApi):
       commit_hash: str,
       commit_timestamp: int,
       commit_position: Optional[str] = None,
-      clang_target_arch: Optional[str] = None) -> config_types.Path:
+      clang_target_arch: Optional[str] = None,
+      checkout_dir: Optional[config_types.Path] = None,
+  ) -> config_types.Path:
     """Create the kythe index pack and upload it to google storage.
 
     Args:
@@ -192,6 +201,8 @@ class CodesearchApi(recipe_api.RecipeApi):
       commit_timestamp: Timestamp of the commit at which we're creating the
         index pack, in integer seconds since the UNIX epoch.
       clang_target_arch: Target architecture to cross-compile for.
+      checkout_dir: The directory where code is checked out. If not specified,
+        use checkout_dir initialized in path module by default.
 
     Returns:
       Path to the generated index pack.
@@ -202,7 +213,9 @@ class CodesearchApi(recipe_api.RecipeApi):
     index_pack_kythe_name = '%s.kzip' % index_pack_kythe_base
     index_pack_kythe_path = self.c.out_path / index_pack_kythe_name
     self._create_kythe_index_pack(
-        index_pack_kythe_path, clang_target_arch=clang_target_arch)
+        index_pack_kythe_path,
+        checkout_dir or self.m.path.checkout_dir,
+        clang_target_arch=clang_target_arch)
 
     if self.m.tryserver.is_tryserver:  # pragma: no cover
       return index_pack_kythe_path
@@ -240,18 +253,20 @@ class CodesearchApi(recipe_api.RecipeApi):
 
   def _create_kythe_index_pack(self,
                                index_pack_kythe_path: config_types.Path,
+                               checkout_dir: config_types.Path,
                                clang_target_arch: Optional[str] = None) -> None:
     """Create the kythe index pack.
 
     Args:
       index_pack_kythe_path: Path to the Kythe index pack.
+      checkout_dir: The directory where code is checked out.
       clang_target_arch: Target architecture to cross-compile for.
     """
     exec_path = self.m.cipd.ensure_tool("infra/tools/package_index/${platform}",
                                         "latest")
     args = [
         '--checkout_dir',
-        self.m.path.checkout_dir,
+        checkout_dir,
         '--path_to_compdb',
         self.c.compile_commands_json_file,
         '--path_to_gn_targets',
@@ -270,14 +285,13 @@ class CodesearchApi(recipe_api.RecipeApi):
     if self.c.javac_extractor_output_dir:
       args.extend(['--path_to_java_kzips', self.c.javac_extractor_output_dir])
 
-    # If out_path is /path/to/src/out/foo and
-    # self.m.path.checkout_dir is /path/to/src/,
+    # If out_path is /path/to/src/out/foo and checkout_dir is /path/to/src/,
     # then out_dir wants src/out/foo.
     args.extend([
         '--out_dir',
         self.m.path.relpath(
             self.c.out_path,
-            self.m.path.dirname(self.m.path.checkout_dir),
+            self.m.path.dirname(checkout_dir),
         )
     ])
 

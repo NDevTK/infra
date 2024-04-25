@@ -65,14 +65,15 @@ def RunSteps(api):
 
   api.gclient.c = api.gclient.make_config('infra')
   api.bot_update.ensure_checkout()
+  checkout_dir = api.path.checkout_dir
 
   # Remove the llvm-build directory, so that gclient runhooks will download
   # a new clang binary and not use the previous one downloaded by
   # api.codesearch.run_clang_tool().
   api.file.rmtree('llvm-build',
-                  api.path.checkout_dir.joinpath('third_party', 'llvm-build'))
+                  checkout_dir.joinpath('third_party', 'llvm-build'))
 
-  api.codesearch.cleanup_old_generated()
+  api.codesearch.cleanup_old_generated(checkout_dir=checkout_dir)
 
   # Generate your kzip here.
 
@@ -84,7 +85,11 @@ def RunSteps(api):
 
   # Create the kythe index pack and upload it to google storage.
   api.codesearch.create_and_upload_kythe_index_pack(
-      commit_hash='a' * 40, commit_timestamp=1337000000, commit_position=123)
+      commit_hash='a' * 40,
+      commit_timestamp=1337000000,
+      commit_position=123,
+      checkout_dir=checkout_dir,
+  )
 
   # Check out the generated files repo and sync the generated files
   # into this checkout.
