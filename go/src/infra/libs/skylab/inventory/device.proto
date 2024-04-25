@@ -143,7 +143,7 @@ message Shard {
 //
 // Keep sorted by field name.
 //
-// NEXT TAG: 41
+// NEXT TAG: 42
 message SchedulableLabels {
   // Whether this device supports ARC execution environment.
   optional bool arc = 20;
@@ -351,6 +351,9 @@ message HardwareCapabilities {
     CARRIER_RAK = 25;
   }
   optional Carrier carrier = 16;
+  // A list of all carriers that can be tested on the DUT. This extends the carrier field which could previously only
+  // be used with a single carrier.
+  repeated Carrier supported_carriers = 41;
 
   // Next tag: 3
   // We care about the both true/false cases, so we need a default value to
