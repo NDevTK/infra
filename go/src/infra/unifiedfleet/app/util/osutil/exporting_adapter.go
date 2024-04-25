@@ -169,6 +169,14 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 	carrierKey := fmt.Sprintf("CARRIER_%s", strings.ToUpper(d.GetCarrier()))
 	carrier := inventory.HardwareCapabilities_Carrier(inventory.HardwareCapabilities_Carrier_value[carrierKey])
 	c.Carrier = &carrier
+
+	c.SupportedCarriers = make([]inventory.HardwareCapabilities_Carrier, len(d.GetSupportedCarriers()))
+	for i, car := range d.GetSupportedCarriers() {
+		carrierKey := fmt.Sprintf("CARRIER_%s", strings.ToUpper(car))
+		carrier := inventory.HardwareCapabilities_Carrier(inventory.HardwareCapabilities_Carrier_value[carrierKey])
+		c.SupportedCarriers[i] = carrier
+	}
+
 	p.Camerabox = &(d.Camerabox)
 
 	hint.ChaosDut = &(d.Chaos)

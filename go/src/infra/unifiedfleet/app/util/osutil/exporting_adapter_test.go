@@ -141,8 +141,9 @@ var lse = ufspb.MachineLSE{
 								Touch: &chromeosLab.Touch{
 									Mimo: true,
 								},
-								Carrier:   "att",
-								Camerabox: true,
+								Carrier:           "att",
+								SupportedCarriers: []string{"att", "tmobile", "verizon"},
+								Camerabox:         true,
 								CameraboxInfo: &chromeosLab.Camerabox{
 									Facing: chromeosLab.Camerabox_FACING_BACK,
 									Light:  chromeosLab.Camerabox_LIGHT_LED,
@@ -462,6 +463,9 @@ common {
 			atrus: true
 			bluetooth: true
 			carrier: CARRIER_ATT
+			supported_carriers: CARRIER_ATT
+			supported_carriers: CARRIER_TMOBILE
+			supported_carriers: CARRIER_VERIZON
 			cbx: CBX_STATE_FALSE
 			cbx_branding: CBX_BRANDING_UNSPECIFIED
 			detachablebase: true
