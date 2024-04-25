@@ -19,6 +19,7 @@ import (
 	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/external"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 // Prove that Server implements pb.DeviceLeaseServiceServer by instantiating a Server.
@@ -28,13 +29,18 @@ var _ api.DeviceLeaseServiceServer = (*Server)(nil)
 type Server struct {
 	api.UnimplementedDeviceLeaseServiceServer
 
-	// service clients
-	dbClient     database.Client
-	pubSubClient *pubsub.Client
+	ServiceClients ServiceClients
 
 	// retry defaults
 	initialRetryBackoff time.Duration
 	maxRetries          int
+}
+
+// ServiceClients contains all relevant service clients for Device Manager Service.
+type ServiceClients struct {
+	DBClient     database.Client
+	PubSubClient *pubsub.Client
+	UFSClient    ufsAPI.FleetClient
 }
 
 // NewServer returns a new Server.
@@ -55,8 +61,8 @@ func SetUpDBClient(ctx context.Context, server *Server, dbconf database.Database
 		return status.Errorf(codes.Internal, "SetUpDBClient: could not set up DB client: %s", err)
 	}
 
-	server.dbClient.Conn = db
-	server.dbClient.Config = dbconf
+	server.ServiceClients.DBClient.Conn = db
+	server.ServiceClients.DBClient.Config = dbconf
 
 	return nil
 }
@@ -75,7 +81,7 @@ func SetUpPubSubClient(ctx context.Context, server *Server, cloudProject string)
 		logging.Errorf(ctx, "UpdateDevice: cannot set up PubSub client: %s", err)
 		return err
 	}
-	server.pubSubClient = client
+	server.ServiceClients.PubSubClient = client
 	return nil
 }
 
@@ -84,7 +90,7 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	logging.Debugf(ctx, "LeaseDevice: received LeaseDeviceRequest %v", r)
 
 	// Check idempotency of lease. Return if there is an existing unexpired lease.
-	rsp, err := controller.CheckLeaseIdempotency(ctx, s.dbClient.Conn, r.GetIdempotencyKey())
+	rsp, err := controller.CheckLeaseIdempotency(ctx, s.ServiceClients.DBClient.Conn, r.GetIdempotencyKey())
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +102,7 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	// search for the device to lease.
 	deviceLabels := r.GetHardwareDeviceReqs().GetSchedulableLabels()
 	deviceID := deviceLabels["device_id"].GetValues()[0] // assumes only leasing one device
-	device, err := controller.GetDevice(ctx, s.dbClient.Conn, deviceID)
+	device, err := controller.GetDevice(ctx, s.ServiceClients.DBClient.Conn, deviceID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "LeaseDevice: failed to find Device %s: %s", deviceID, err)
 	}
@@ -105,12 +111,12 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	if !controller.IsDeviceAvailable(ctx, device.GetState()) {
 		return nil, status.Errorf(codes.Unavailable, "LeaseDevice: device %s is unavailable for lease", deviceID)
 	}
-	return controller.LeaseDevice(ctx, s.dbClient.Conn, s.pubSubClient, r, device)
+	return controller.LeaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r, device)
 }
 
 // ReleaseDevice releases the leased device.
 func (s *Server) ReleaseDevice(ctx context.Context, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {
-	return controller.ReleaseDevice(ctx, s.dbClient.Conn, s.pubSubClient, r)
+	return controller.ReleaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r)
 }
 
 // ExtendLease attempts to extend the lease on a device by ExtendLeaseRequest.
@@ -119,7 +125,7 @@ func (s *Server) ExtendLease(ctx context.Context, r *api.ExtendLeaseRequest) (*a
 
 	// Check idempotency of ExtendLeaseRequest. Return request if it is a
 	// duplicate.
-	rsp, err := controller.CheckExtensionIdempotency(ctx, s.dbClient.Conn, r.GetIdempotencyKey())
+	rsp, err := controller.CheckExtensionIdempotency(ctx, s.ServiceClients.DBClient.Conn, r.GetIdempotencyKey())
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +133,7 @@ func (s *Server) ExtendLease(ctx context.Context, r *api.ExtendLeaseRequest) (*a
 		return rsp, nil
 	}
 
-	return controller.ExtendLease(ctx, s.dbClient.Conn, r)
+	return controller.ExtendLease(ctx, s.ServiceClients.DBClient.Conn, r)
 }
 
 // GetDevice takes a GetDeviceRequest and returns a corresponding device.
@@ -137,7 +143,7 @@ func (s *Server) GetDevice(ctx context.Context, r *api.GetDeviceRequest) (*api.D
 		return nil, status.Errorf(codes.Internal, "GetDevice: request has no device name")
 	}
 
-	device, err := controller.GetDevice(ctx, s.dbClient.Conn, r.Name)
+	device, err := controller.GetDevice(ctx, s.ServiceClients.DBClient.Conn, r.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "GetDevice: failed to get Device %s: %s", r.Name, err)
 	}
