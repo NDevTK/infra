@@ -22,6 +22,7 @@ import (
 func init() {
 	execs.Register("carrier_not_in", carrierNotInExec)
 	execs.Register("cros_audit_cellular_modem", auditCellularModemExec)
+	execs.Register("cros_collect_supported_carriers", collectSupportedCarriersExec)
 	execs.Register("cros_update_cellular_modem_labels", updateCellularModemLabelsExec)
 	execs.Register("cros_update_cellular_sim_labels", updateCellularSIMLabelsExec)
 	execs.Register("cros_has_only_one_sim_profile", hasOnlyOneSIMProfileExec)
@@ -431,5 +432,39 @@ func auditCellularModemExec(ctx context.Context, info *execs.ExecInfo) error {
 	// not found and not expected, don't report an error, instead just log it
 	log.Errorf(ctx, err.Error())
 	c.ModemState = tlw.HardwareState_HARDWARE_NOT_DETECTED
+	return nil
+}
+
+// collectSupportedCarriersExec populates schedulable labels that are deduced based on other device labels.
+func collectSupportedCarriersExec(ctx context.Context, info *execs.ExecInfo) error {
+	c := info.GetChromeos().GetCellular()
+	if c == nil {
+		return errors.Reason("collect supported carriers: cellular data is not present in dut info").Err()
+	}
+
+	// If the DUT is a "starfish" device then this DUT supports multiple carriers and its
+	// supported_carriers just a list of all the SIM network operators on the device.
+	// Otherwise, we only support 1 carrier and it is the default one on the device.
+	var carriers []string
+	if strings.EqualFold(c.GetCarrier(), "STARFISH") || strings.EqualFold(c.GetCarrier(), "STARFISHPLUS") {
+		seen := make(map[string]bool)
+		for _, s := range c.GetSimInfos() {
+			for _, p := range s.GetProfileInfos() {
+				name := strings.TrimPrefix(p.GetCarrierName().String(), "NETWORK_")
+				if seen[name] {
+					log.Infof(ctx, "collect supported carriers: skipping duplicate carrier: %q", name)
+					continue
+				}
+				seen[name] = true
+				carriers = append(carriers, name)
+			}
+		}
+	} else if c.GetCarrier() != "" {
+		carriers = []string{c.GetCarrier()}
+	} else {
+		log.Infof(ctx, "collect supported carriers: carrier is empty")
+	}
+
+	c.SupportedCarriers = carriers
 	return nil
 }

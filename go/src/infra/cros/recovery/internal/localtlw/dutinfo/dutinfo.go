@@ -450,9 +450,10 @@ func createDUTBluetooth(ds *ufslab.DutState, dc *ufsdevice.Config) *tlw.Bluetoot
 
 func createDUTCellular(ds *ufslab.DutState, p *ufslab.Peripherals, m *ufslab.ModemInfo, siOld []*ufslab.SIMInfo) *tlw.Cellular {
 	cellular := &tlw.Cellular{
-		ModemState:   convertHardwareState(ds.GetCellularModemState()),
-		Carrier:      p.GetCarrier(),
-		ModelVariant: m.GetModelVariant(),
+		ModemState:        convertHardwareState(ds.GetCellularModemState()),
+		Carrier:           p.GetCarrier(),
+		SupportedCarriers: p.GetSupportedCarriers(),
+		ModelVariant:      m.GetModelVariant(),
 		ModemInfo: &tlw.Cellular_ModemInfo{
 			Imei: m.GetImei(),
 			Type: convertModemTypes(m.GetType()),
@@ -551,6 +552,7 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 			})
 		}
 		if c := ch.GetCellular(); c != nil {
+			labData.SupportedCarriers = c.GetSupportedCarriers()
 			labData.ModemInfo = &ufsAPI.ChromeOsRecoveryData_ModemInfo{
 				ModelVariant: c.GetModelVariant(),
 			}
