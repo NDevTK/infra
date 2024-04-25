@@ -188,7 +188,7 @@ def _checkout_committed(api, mode, project):
   if mode == PROPERTIES.MODE_CI:
     # E.g. "41861-d008a93".
     commit_label = api.cloudbuildhelper.get_version_label(
-          path=co.path.join('infra_internal' if internal else 'infra'),
+          path=co.path / ('infra_internal' if internal else 'infra'),
           revision=props['got_revision'],
           ref=api.buildbucket.gitiles_commit.ref,
           commit_position=props.get('got_revision_cp'),

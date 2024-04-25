@@ -223,7 +223,7 @@ def _checkout_gclient(api, project, version_label_template):
               # Putting this in front of PATH allows doing stuff like
               # `npm install -g npm@8.1.4` and picking up the updated `npm`
               # binary from `<npm_config_prefix>/bin`.
-              env['npm_config_prefix'].join('bin'),
+              env['npm_config_prefix'] / 'bin',
           ],
       }
       with api.context(env=env, env_prefixes=env_prefixes):
@@ -233,7 +233,7 @@ def _checkout_gclient(api, project, version_label_template):
       repo_url=repo_url,
       revision=props['got_revision'],
       canonical_tag=api.cloudbuildhelper.get_version_label(
-          path=co.path.join('infra_internal' if internal else 'infra'),
+          path=co.path / ('infra_internal' if internal else 'infra'),
           revision=props['got_revision'],
           ref=api.buildbucket.gitiles_commit.ref,
           commit_position=props.get('got_revision_cp'),

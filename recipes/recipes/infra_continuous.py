@@ -243,7 +243,7 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
             'infra go tests',
             api.resultdb.wrap([
                 'vpython3', '-u',
-                checkout.path.join(project_name, 'go', 'test.py')
+                checkout.path / project_name / 'go' / 'test.py'
             ]))
 
     fails = []
@@ -269,7 +269,7 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
 
       try:
         with api.infra_cipd.context(
-            checkout.path.join(project_name), goos, goarch):
+            checkout.path / project_name, goos, goarch):
           if api.platform.is_mac:
             api.infra_cipd.build(api.properties.get('signing_identity'))
           else:
@@ -295,7 +295,7 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
 
 def run_python_tests(api, checkout, project_name):
   deferred = []
-  with api.context(cwd=checkout.path.join(project_name)):
+  with api.context(cwd=checkout.path / project_name):
     # Run Linux tests everywhere, Windows tests only on public CI.
     if api.platform.is_linux or project_name == 'infra':
       deferred.append(
@@ -310,9 +310,9 @@ def run_python_tests(api, checkout, project_name):
     if ((api.platform.is_linux or api.platform.is_mac) and
         project_name == 'infra'):
       for app in ['monorail', 'predator', 'findit']:
-        cwd = checkout.path.join(project_name, 'appengine', app)
+        cwd = checkout.path / project_name / 'appengine' / app
         if app == 'predator':
-          cwd = cwd.join('app')
+          cwd = cwd / 'app'
         with api.context(cwd=cwd):
           deferred.append(
               api.defer(api.step, '%s python tests' % app,
@@ -320,8 +320,8 @@ def run_python_tests(api, checkout, project_name):
 
     # Validate ccompute configs.
     if api.platform.is_linux and project_name == 'infra_internal':
-      ccompute_config = checkout.path.join(project_name, 'ccompute',
-                                           'scripts', 'ccompute_config.py')
+      ccompute_config = checkout.path.joinpath(project_name, 'ccompute',
+                                               'scripts', 'ccompute_config.py')
       deferred.append(
           api.defer(api.step, 'ccompute config test',
                     ['python3', ccompute_config, 'test']))

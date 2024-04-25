@@ -67,7 +67,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
   if run_lint:
     with co.go_env():
       api.infra_checkout.apply_golangci_lint(co,
-                                             co.path.join('infra/go/src/infra'))
+                                             co.path / 'infra/go/src/infra')
     return
 
   # Analyze the CL to skip unnecessary tests.
@@ -85,7 +85,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
   if not is_pure_go_change:
     deferred = []
     if should_run_python_tests(api):
-      with api.context(cwd=co.path.join(patch_root)):
+      with api.context(cwd=co.path / patch_root):
         deferred.append(
             api.defer(api.step, 'python tests',
                       ['vpython3', 'test.py', 'test', '--verbose']))
@@ -118,7 +118,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
           if any(f.startswith('appengine/%s' % app) for f in files):
             cwd = api.path.checkout_dir.joinpath('appengine', app)
             if app == 'predator':
-              cwd = cwd.join('app')
+              cwd = cwd / 'app'
             with api.context(cwd=cwd):
               deferred.append(
                   api.defer(api.step, '%s python3 tests' % app,
@@ -131,7 +131,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
               'recipe test',
               [
                   'python3',
-                  co.path.join('infra', 'recipes', 'recipes.py'),
+                  co.path / 'infra' / 'recipes' / 'recipes.py',
                   'test',
                   'run',
               ]
@@ -143,7 +143,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
               'recipe lint',
               [
                   'python3',
-                  co.path.join('infra', 'recipes', 'recipes.py'),
+                  co.path / 'infra' / 'recipes' / 'recipes.py',
                   'lint',
               ],
           )
@@ -169,7 +169,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
           'go tests',
           api.resultdb.wrap(
               ['vpython3', '-u',
-               co.path.join(patch_root, 'go', 'test.py')]))
+               co.path / patch_root / 'go' / 'test.py']))
       step.presentation.step_text += (
           '\n'
           'Search with "--- FAIL:" in stdout if this step has test failures.')
@@ -181,17 +181,17 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
     if is_build_change or is_deps_roll:
       api.step('cipd - build packages', [
           'vpython3',
-          co.path.join(patch_root, 'build', 'build.py'),
+          co.path / patch_root / 'build' / 'build.py',
       ])
       api.step(
           'cipd - test packages integrity',
           ['vpython3',
-           co.path.join(patch_root, 'build', 'test_packages.py')])
+           co.path / patch_root / 'build' / 'test_packages.py'])
       if api.platform.is_win:
         with api.context(env={'GOOS': 'windows', 'GOARCH': 'arm64'}):
           api.step('cipd - build packages (ARM64)',
                    ['vpython3',
-                    co.path.join(patch_root, 'build', 'build.py')])
+                    co.path / patch_root / 'build' / 'build.py'])
           # Cross-compiling, so no tests.
     else:
       api.step('skipping slow CIPD packaging tests', cmd=None)

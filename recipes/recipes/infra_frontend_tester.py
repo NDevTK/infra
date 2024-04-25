@@ -70,7 +70,7 @@ def RunInfraInternalFrontendTests(api, root_path):
 
   testhaus = root_path.joinpath('go', 'src', 'infra_internal', 'appengine',
                                 'testhaus')
-  RunFrontendTests(api, testhaus.join('frontend', 'ui'), 'testhaus')
+  RunFrontendTests(api, testhaus / 'frontend' / 'ui', 'testhaus')
 
   cwd = root_path.joinpath('go', 'src', 'infra_internal', 'appengine', 'spike',
                            'appengine', 'frontend', 'ui')

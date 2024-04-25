@@ -27,11 +27,11 @@ def run_installation(api, workdir, spec):
     rest = my_args
 
   env_prefixes = {
-    'PATH': [workdir.tools_prefix, workdir.tools_prefix.join('bin')]
+    'PATH': [workdir.tools_prefix, workdir.tools_prefix / 'bin']
   }
   compile_platform = '' if spec.create_pb.build.no_docker_env else spec.platform
   with api.context(cwd=workdir.checkout, env_prefixes=env_prefixes):
     run_script.run_script(
-        api, workdir.script_dir(spec).join(script), *rest,
+        api, workdir.script_dir(spec) / script, *rest,
         compile_platform=compile_platform, workdir=workdir,
         no_toolchain=spec.create_pb.build.no_toolchain)

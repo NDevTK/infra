@@ -57,7 +57,7 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
     api.step('echo package_prefix', ['echo', api.support_3pp.package_prefix()])
 
     # do a checkout in `builder`
-    checkout_path = builder.join('package_repo')
+    checkout_path = builder / 'package_repo'
     # some code still references api.path.checkout_dir so assign it to be
     # consistent.
     api.path.checkout_dir = checkout_path
@@ -70,8 +70,7 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
 
     # doing it twice should raise a DuplicatePackage exception
     if load_dupe:
-      api.support_3pp.load_packages_from_path(
-        builder.join('dup_repo'))
+      api.support_3pp.load_packages_from_path(builder / 'dup_repo')
 
     cipd_platform = '%s-%s' % (GOOS, GOARCH)
     tryserver_affected_files = [

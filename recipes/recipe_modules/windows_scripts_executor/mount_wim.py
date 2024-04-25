@@ -23,11 +23,11 @@ def mount_win_wim(powershell,
       MOUNT_IMG_FILE.format(image),
       MOUNT_INDEX.format(index),
       MOUNT_DIR.format(mnt_dir),
-      MOUNT_LOG_PATH.format(logs.join(MOUNT_CMD, 'mount.log')),  # include logs
+      MOUNT_LOG_PATH.format(logs / MOUNT_CMD / 'mount.log'),  # include logs
       MOUNT_LOG_LEVEL.format(log_level)
   ]
   powershell(
       'Mount wim to {}'.format(mnt_dir),
       MOUNT_CMD,
-      logs=[logs.join(MOUNT_CMD)],
+      logs=[logs / MOUNT_CMD],
       args=args)

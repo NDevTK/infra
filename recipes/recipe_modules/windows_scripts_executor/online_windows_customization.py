@@ -356,7 +356,7 @@ class OnlineWindowsCustomization(customization.Customization):
       * drive: Drive proto object
       * include: dict containing the files to be copied
     '''
-    if not self.m.path.exists(self.m.qemu.disks.join(drive.name)):
+    if not self.m.path.exists(self.m.qemu.disks / drive.name):
       if not drive.input_src.WhichOneof('src'):
         # create a new drive and copy the files to it.
         self.m.qemu.create_disk(
@@ -377,7 +377,7 @@ class OnlineWindowsCustomization(customization.Customization):
         else:
           # Everything else, just link them to disk dir (isos, flash image,...)
           self.m.file.symlink('Link {} to {}'.format(disk_image, disk_folder),
-                              disk_image, disk_folder.join(drive.name))
+                              disk_image, disk_folder / drive.name)
 
   def start_qemu(self, oc):
     ''' start_qemu starts a qemu vm with given config and drives.
@@ -530,9 +530,9 @@ class OnlineWindowsCustomization(customization.Customization):
     """
     for drive in oc.vm_config.qemu_vm.drives:
       if drive.output_dests:
-        pkg = self.m.qemu.disks.join(drive.name)
+        pkg = self.m.qemu.disks / drive.name
         # compress disk images as they are pretty big
-        compressed_pkg = self.m.qemu.disks.join('{}.zip'.format(drive.name))
+        compressed_pkg = self.m.qemu.disks / '{}.zip'.format(drive.name)
         (self.m.archive.package(self.m.qemu.disks).with_file(pkg).archive(
             'Archive {} for upload'.format(drive.name), compressed_pkg))
         # Upload a cached copy first
@@ -616,9 +616,9 @@ class OnlineWindowsCustomization(customization.Customization):
             self.upload_disks(oc)
           # Delete the dependency disk. We don't need it anymore
           if self.m.path.exists(
-              self.m.qemu.disks.join("DEPS")):  #pragma: nocover
+              self.m.qemu.disks / "DEPS"):  #pragma: nocover
             self.m.file.remove("Delete deps disk",
-                               self.m.qemu.disks.join("DEPS"))
+                               self.m.qemu.disks / "DEPS")
 
   def execute_action(self, action, ctx):
     ''' execute_action runs the given action in the given context

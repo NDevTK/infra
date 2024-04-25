@@ -23,7 +23,7 @@ def install_driver(powershell,
       INSTALL_DRIVER_PATH.format(driver),
       INSTALL_DRIVER_ROOT.format(mnt_dir),
       INSTALL_DRIVER_LOG_PATH.format(
-          logs.join(INSTALL_DRIVER_CMD, 'ins_driver.log')),
+          logs / INSTALL_DRIVER_CMD / 'ins_driver.log'),
       INSTALL_DRIVER_LOG_LEVEL.format(log_level)
   ]
 
@@ -32,6 +32,6 @@ def install_driver(powershell,
 
   return powershell(
       'Install driver {}'.format(awd.name),
-      scripts.join(INSTALL_DRIVER_SCRIPT),
-      logs=[logs.join(INSTALL_DRIVER_CMD)],
+      scripts / INSTALL_DRIVER_SCRIPT,
+      logs=[logs / INSTALL_DRIVER_CMD],
       args=args)

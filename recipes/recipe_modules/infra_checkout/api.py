@@ -157,7 +157,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
         name = 'infra_internal' if internal else 'infra'
         self._ensure_go_env()
         with self.m.context(
-            cwd=self.path.join(name, 'go', 'src', name),
+            cwd=self.path / name / 'go' / 'src' / name,
             env=self._go_env,
             env_prefixes=self._go_env_prefixes,
             env_suffixes=self._go_env_suffixes):

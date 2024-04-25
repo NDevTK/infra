@@ -23,7 +23,7 @@ def install_package(powershell,
       INSTALL_PACKAGE_PATH.format(package),
       INSTALL_PACKAGE_ROOT.format(mnt_dir),
       INSTALL_PACKAGE_LOG_PATH.format(
-          logs.join(INSTALL_PACKAGE_CMD, 'ins_pkg.log')),
+          logs / INSTALL_PACKAGE_CMD / 'ins_pkg.log'),
       INSTALL_PACKAGE_LOG_LEVEL.format(log_level)
   ]
 
@@ -32,6 +32,6 @@ def install_package(powershell,
 
   return powershell(
       'Install package {}'.format(awp.name),
-      scripts.join(INSTALL_PACKAGE_SCRIPT),
-      logs=[logs.join(INSTALL_PACKAGE_CMD)],
+      scripts / INSTALL_PACKAGE_SCRIPT,
+      logs=[logs / INSTALL_PACKAGE_CMD],
       args=args)

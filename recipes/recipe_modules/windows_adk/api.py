@@ -43,10 +43,10 @@ class WindowsADKApi(recipe_api.RecipeApi):
     """Downloads & Installs the Windows ADK."""
     ensure_file = self.m.cipd.EnsureFile()
     ensure_file.add_package(WIN_ADK_PACKAGE, refs)
-    cipd_dir = self._3pp.join('adk')
+    cipd_dir = self._3pp / 'adk'
     # Download the installer using cipd
     self.m.cipd.ensure(cipd_dir, ensure_file)
-    logs_dir = self._logs.join('adk')
+    logs_dir = self._logs / 'adk'
     log_file = logs_dir / 'adk.log'
     # Run the installer and install ADK. If ADK is already installed this
     # does nothing. q: quiet, l: logs, features +: all features
@@ -64,10 +64,10 @@ class WindowsADKApi(recipe_api.RecipeApi):
     """Ensures that the WinPE add-on is available."""
     ensure_file = self.m.cipd.EnsureFile()
     ensure_file.add_package(WIN_ADK_WINPE_PACKAGE, refs)
-    cipd_dir = self._3pp.join('winpe')
+    cipd_dir = self._3pp / 'winpe'
     # Download the installer using cipd
     self.m.cipd.ensure(cipd_dir, ensure_file)
-    logs_dir = self._logs.join('winpe')
+    logs_dir = self._logs / 'winpe'
     log_file = logs_dir / 'winpe.log'
     # Run the installer and install WinPE. If WinPE is already installed this
     # does nothing. q: quiet, l: logs, features +: all features
@@ -82,8 +82,8 @@ class WindowsADKApi(recipe_api.RecipeApi):
 
   def cleanup_win_adk(self):
     """Cleanup the Windows ADK."""
-    cipd_dir = self._3pp.join('adk')
-    logs_dir = self._logs.join('adk-uninstall')
+    cipd_dir = self._3pp / 'adk'
+    logs_dir = self._logs / 'adk-uninstall'
     log_file = logs_dir / 'adk.log'
     # Run the installer and uninstall ADK. q: quiet, l: logs,
     # uninstall: remove all
@@ -98,8 +98,8 @@ class WindowsADKApi(recipe_api.RecipeApi):
 
   def cleanup_winpe(self):
     """Cleanup WinPE."""
-    cipd_dir = self._3pp.join('winpe')
-    logs_dir = self._logs.join('winpe-uninstall')
+    cipd_dir = self._3pp / 'winpe'
+    logs_dir = self._logs / 'winpe-uninstall'
     log_file = logs_dir / 'winpe.log'
     # Run the installer and uninstall WinPE. q: quiet, l: logs, uninstall:
     # remove all

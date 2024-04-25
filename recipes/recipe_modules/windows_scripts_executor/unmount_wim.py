@@ -20,7 +20,7 @@ def unmount_win_wim(powershell,
   # Args for the unmount cmd
   args = [
       UNMOUNT_DIR.format(mnt_dir),
-      UNMOUNT_LOG_PATH.format(logs.join(UNMOUNT_CMD, 'unmount.log')),
+      UNMOUNT_LOG_PATH.format(logs / UNMOUNT_CMD / 'unmount.log'),
       UNMOUNT_LOG_LEVEL.format(log_level)
   ]
   # Save/Discard the changes to the wim
@@ -31,5 +31,5 @@ def unmount_win_wim(powershell,
   powershell(
       'Unmount wim at {}'.format(mnt_dir),
       UNMOUNT_CMD,
-      logs=[logs.join(UNMOUNT_CMD)],
+      logs=[logs / UNMOUNT_CMD],
       args=args)

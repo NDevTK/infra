@@ -29,7 +29,7 @@ def RunSteps(api):
     with co.go_env():
       co.run_presubmit()
       api.infra_checkout.apply_golangci_lint(co,
-                                             co.path.join('infra/go/src/infra'))
+                                             co.path / 'infra/go/src/infra')
 
   change = GerritChange(
       host='host', project='infra/infra', change=1234, patchset=5)

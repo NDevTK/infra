@@ -104,7 +104,7 @@ def _has_changed_files(api, path, exclude_dir=None):
 def _step_run_py_tests(api, cwd, python3=False, timeout=None):
   luci_dir = api.context.cwd
   with api.context(cwd=cwd):
-    cfg = api.context.cwd.join('unittest.cfg')
+    cfg = api.context.cwd / 'unittest.cfg'
     testpy_args = ['-v', '--conf', cfg]
     env_path_prefix = []
 

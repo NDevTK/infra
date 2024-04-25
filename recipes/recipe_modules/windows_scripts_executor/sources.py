@@ -30,11 +30,11 @@ class Source:
     """
     self.m = module
     # dir to store CIPD downloaded packages
-    cipd_dir = cache.join('CIPDPkgs')
+    cipd_dir = cache / 'CIPDPkgs'
     # dir to store GIT downloaded packages
-    git_dir = cache.join('GITPkgs')
+    git_dir = cache / 'GITPkgs'
     # dir to store GCS downloaded packages
-    gcs_dir = cache.join('GCSPkgs')
+    gcs_dir = cache / 'GCSPkgs'
     helper.ensure_dirs(self.m.file, [
         cipd_dir, git_dir, gcs_dir,
         gcs_dir.joinpath('chrome-gce-images', 'WIB-WIM')

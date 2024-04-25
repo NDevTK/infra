@@ -157,7 +157,7 @@ class QEMUAPI(recipe_api.RecipeApi):
     if include:
       # copy files to the disk
       with self.m.step.nest(name='Copy files to {}'.format(disk_name)):
-        loop_file, mount_loc = self.mount_disk_image(self.disks.join(disk_name))
+        loop_file, mount_loc = self.mount_disk_image(self.disks / disk_name)
         try:
           for src, dest in include.items():
             dest = mount_loc[0] + '/' + dest
@@ -217,7 +217,7 @@ class QEMUAPI(recipe_api.RecipeApi):
             # pass path to the parted binary
             '-g',
             self._install_dir.joinpath('sbin', 'parted'),
-            self.disks.join(disk_name)
+            self.disks / disk_name
         ])
 
   def mount_disk_image(self, disk, partitions=[1]):
@@ -314,7 +314,7 @@ class QEMUAPI(recipe_api.RecipeApi):
     # Map the WIB config arch to qemu arch
     ARCH_TO_QEMU_ARCH = {'amd64': 'x86_64', 'aarch64': 'aarch64', 'x86': 'i386'}
     cmd = [
-        self.path.join('qemu-system-{}'.format(ARCH_TO_QEMU_ARCH[arch])),
+        self.path / 'qemu-system-{}'.format(ARCH_TO_QEMU_ARCH[arch]),
         '-qmp',
         QMP_SOCKET,  # start a qmp service
         '--serial',
@@ -343,7 +343,7 @@ class QEMUAPI(recipe_api.RecipeApi):
       cmd += ['-device', dev]
     for drive in qemu_vm.drives:
       # Add the file to be used for the drive
-      drive_opts = 'file={},'.format(self.disks.join(drive.name))
+      drive_opts = 'file={},'.format(self.disks / drive.name)
       # Add an id to the drive. Useful in specifying device for it
       drive_opts += 'id={},'.format(drive.name)
       if drive.interface:

@@ -52,43 +52,43 @@ class Workdir(object):
   def checkout(self):
     """The path where the sources for the package are checked out (the
     result of the `source` phase.)"""
-    return self._base.join('checkout')
+    return self._base / 'checkout'
 
   @property
   def verify(self):
     """The path where the verification of the package takes place. The test
     script is invoked within this directory and can use it how it pleases."""
-    return self._base.join('verify')
+    return self._base / 'verify'
 
   @property
   def bin_tools(self):
     """The path where the recipe can install tools (like `cipd`) to put in $PATH
     for the docker environment."""
-    return self._base.join('bin_tools')
+    return self._base / 'bin_tools'
 
   @property
   def script_dir_base(self):
     """The directory where ALL of the package scripts are copied."""
-    return self.checkout.join('.3pp')
+    return self.checkout / '.3pp'
 
   def script_dir(self, spec):
     """The directory where stores the scripts of a given spec (ResolvedSpec).
 
     Returns the Path to the spec scripts.
     """
-    return self.script_dir_base.join(spec.cipd_pkg_name)
+    return self.script_dir_base / spec.cipd_pkg_name
 
   @property
   def tools_prefix(self):
     """The $PREFIX where all of the packages's tools will be installed."""
-    return self._base.join('tools_prefix')
+    return self._base / 'tools_prefix'
 
   @property
   def deps_prefix(self):
     """The $PREFIX where all of the packages's deps will be installed."""
-    return self._base.join('deps_prefix')
+    return self._base / 'deps_prefix'
 
   @property
   def output_prefix(self):
     """The $PREFIX which contains the contents of the built package."""
-    return self._base.join('out')
+    return self._base / 'out'

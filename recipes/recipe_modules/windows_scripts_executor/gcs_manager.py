@@ -115,7 +115,7 @@ class GCSManager:
     """
     # source is usually given as a unix path. Ensure this works on windows
     source = gcs_src.source.split('/')
-    return self._cache.join(gcs_src.bucket, *source)
+    return self._cache.joinpath(gcs_src.bucket, *source)
 
   def get_gs_url(self, gcs_src):
     """ get_gs_url returns the gcs url for the given gcs src
@@ -171,7 +171,7 @@ class GCSManager:
     up_path = source
     if self.m.path.isdir(source):
       # package the dir to zip
-      up_path = source.join('gcs.zip')
+      up_path = source / 'gcs.zip'
       self.m.archive.package(source).archive(
           'Package {} for upload'.format(source), up_path)
     try:

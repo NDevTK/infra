@@ -148,7 +148,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
                                      (repo, ref)).encode('utf-8')).hexdigest()
         actual_repos.add(hash_name)
 
-        checkout_path = package_repos.join(hash_name)
+        checkout_path = package_repos / hash_name
         api.git.checkout(repo, ref, checkout_path, submodules=False)
 
         package_path = checkout_path
@@ -175,7 +175,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
       leftovers = current_repos - actual_repos
       for hash_name in sorted(leftovers):
         api.file.rmtree('rm %s' % (hash_name,),
-                        package_repos.join(hash_name))
+                        package_repos / hash_name)
 
     _, unsupported = api.support_3pp.ensure_uploaded(
         to_build,

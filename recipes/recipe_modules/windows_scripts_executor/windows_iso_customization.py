@@ -259,7 +259,7 @@ class WinISOCustomization(customization.Customization):
     src = self._source.get_local_src(cf.artifact)
     src_url = self._source.get_url(cf.artifact)
     partitions = None
-    dest = iso_staging.join(cf.dest)
+    dest = iso_staging / cf.dest
     loop = ''
     with self.m.step.nest('Copy {} to staging'.format(src_url)) as n:
       # If src is an archive of sorts
@@ -286,7 +286,7 @@ class WinISOCustomization(customization.Customization):
             partitions = None if str(image).endswith('iso') else [1]
             return self.mount_copy(image, cf.source, dest, partitions)
         else:
-          src = self._scratchpad.join(cf.source)
+          src = self._scratchpad / cf.source
           # Copy the given file as is to the target location
           return self.copy(src, dest)
       if cf.mount:
@@ -295,7 +295,7 @@ class WinISOCustomization(customization.Customization):
         return self.mount_copy(src, cf.source, dest, partitions)
       # Append source if given
       if cf.source:
-        src = src.join(cf.source)
+        src = src / cf.source
       # Copy the given file as is to the target location
       return self.copy(src, dest)
 

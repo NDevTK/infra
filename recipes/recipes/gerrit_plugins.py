@@ -38,11 +38,11 @@ def _getChrome(api):
     chrome_zip = 'chrome-linux.zip'
     api.gsutil.download(gs_bucket, '%s/%s' % (gs_path, version_file), chrome)
     version = api.file.read_text('read latest chrome version',
-                                 chrome.join(version_file))
+                                 chrome / version_file)
     api.gsutil.download(gs_bucket, '%s/%s/%s' % (gs_path, version, chrome_zip),
                         chrome)
-    api.zip.unzip('unzip chrome', chrome.join(chrome_zip), chrome.join('zip'))
-    return chrome.join('zip', 'chrome-linux')
+    api.zip.unzip('unzip chrome', chrome / chrome_zip, chrome / 'zip')
+    return chrome / 'zip' / 'chrome-linux'
 
 
 def _getBazel(api):

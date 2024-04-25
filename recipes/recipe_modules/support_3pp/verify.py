@@ -15,7 +15,7 @@ def run_test(api, workdir, spec, cipd_spec):
     * cipd_spec (CIPDSpec) - The package we've already built and want to test.
   """
   api.file.ensure_directory('mkdir [verify]', workdir.verify)
-  test_pkg = workdir.verify.join('cipd.pkg')
+  test_pkg = workdir.verify / 'cipd.pkg'
   api.file.copy('cp cipd.pkg [verify]/cipd.pkg',
                 cipd_spec.local_pkg_path(), test_pkg)
 
@@ -37,5 +37,5 @@ def run_test(api, workdir, spec, cipd_spec):
   rest = spec.create_pb.verify.test[1:] + [test_pkg]
   with api.context(cwd=workdir.verify, env_prefixes=env_prefixes):
     run_script(
-        api, workdir.script_dir(spec).join(script), *rest,
+        api, workdir.script_dir(spec) / script, *rest,
       compile_platform=spec.platform, workdir=workdir)

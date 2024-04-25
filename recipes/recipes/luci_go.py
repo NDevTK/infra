@@ -71,12 +71,12 @@ def RunSteps(
     if is_presubmit:
       co.run_presubmit()
     else:
-      luci_go = co.path.join('infra', 'go', 'src', 'go.chromium.org', 'luci')
-      adapter = co.path.join('infra', 'cipd', 'result_adapter',
-                             'result_adapter')
+      luci_go = co.path / 'infra' / 'go' / 'src' / 'go.chromium.org' / 'luci'
+      adapter = co.path.joinpath('infra', 'cipd', 'result_adapter',
+                                 'result_adapter')
       if api.platform.is_win:
-        adapter = co.path.join('infra', 'cipd', 'result_adapter',
-                               'result_adapter.exe')
+        adapter = co.path.joinpath('infra', 'cipd', 'result_adapter',
+                                   'result_adapter.exe')
       with api.context(cwd=luci_go):
         if run_lint:
           api.infra_checkout.apply_golangci_lint(co, luci_go)

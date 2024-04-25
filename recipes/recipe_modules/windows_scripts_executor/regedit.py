@@ -33,4 +33,4 @@ def edit_offline_registry(powershell, res, edit_offline_registry_action, img):
   name = 'Edit Offline Registry Key {} and Property {}'.format(
       reg_key_leaf, action.property_name)
 
-  powershell(name, res.join(EDIT_OFFLINE_REG_CMD), args=args)
+  powershell(name, res / EDIT_OFFLINE_REG_CMD, args=args)

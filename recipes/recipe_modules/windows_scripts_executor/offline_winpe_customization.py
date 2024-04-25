@@ -196,7 +196,7 @@ class OfflineWinPECustomization(customization.Customization):
         # gen a winpe arch dir for the given arch
         self.m.powershell(
             'Gen WinPE media for {}'.format(arch),
-            self._scripts('WindowsPowerShell\Scripts').join('Copy-PE.ps1'),
+            self._scripts('WindowsPowerShell\Scripts') / 'Copy-PE.ps1',
             args=[
                 '-WinPeArch', COPYPE_ARCH[arch], '-Destination',
                 str(self._workdir)
@@ -241,7 +241,7 @@ class OfflineWinPECustomization(customization.Customization):
     with self.m.step.nest('Deinit WinPE image modification'):
       if save:
         # copy the config used for building the image
-        source = self._configs.join('{}.cfg'.format(self.get_key()))
+        source = self._configs / '{}.cfg'.format(self.get_key())
         self.execute_script(
             'Add cfg {}'.format(source),
             ADDFILE,

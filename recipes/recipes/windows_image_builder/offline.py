@@ -229,8 +229,8 @@ def RunSteps(api, inputs):
       api.gclient.runhooks()
       # split the string on '/' as luci scheduler passes a unix path and this
       # recipe is expected to run on windows ('\')
-      cfg_path = builder_named_cache.join('infra-data-config',
-                                          *inputs.config_path.split('/'))
+      cfg_path = builder_named_cache.joinpath('infra-data-config',
+                                              *inputs.config_path.split('/'))
 
       # Recursively call the offline.py recipe with all configs
       cfgs = api.file.listdir(

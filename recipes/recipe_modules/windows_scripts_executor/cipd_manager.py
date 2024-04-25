@@ -71,7 +71,7 @@ class CIPDManager:
       # add refs to root dir. This will ensure that the root dirs are unique.
       # cipd will delete older files if the root dir is same
       self.m.cipd.ensure(
-          self._cache.join(cipd_src.refs),
+          self._cache / cipd_src.refs,
           e_file,
           name="Download {}".format(self.get_cipd_url(cipd_src)))
       self._downloads_cache[local_path] = cipd_src
@@ -107,7 +107,7 @@ class CIPDManager:
       # filename is typically added to the package name in cipd.
       package.append(cipd_src.filename)
     # return the deref
-    return self._cache.join(cipd_src.refs, *package)
+    return self._cache.joinpath(cipd_src.refs, *package)
 
   def get_cipd_url(self, cipd_src):
     """ get_url returns string containing an url referencing the given src

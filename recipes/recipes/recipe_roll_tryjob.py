@@ -116,7 +116,7 @@ class RecipesRepo(object):
       url (str): The remote URL for this repo.
     """
     self._api = api
-    self._workdir = workdir_base.join(name)
+    self._workdir = workdir_base / name
     self._name = name
     self._url = url
 

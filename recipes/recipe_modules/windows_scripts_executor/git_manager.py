@@ -71,7 +71,7 @@ class GITManager:
         'Download {}'.format(self.get_gitiles_url(git_src)), status='last'):
       local_path = self.get_local_src(git_src)
       if not local_path in self._downloads_cache:
-        download_path = self._cache.join(git_src.ref)
+        download_path = self._cache / git_src.ref
         self.m.git.checkout(
             step_suffix=git_src.src,
             url=git_src.repo,
@@ -102,7 +102,7 @@ class GITManager:
     ref = git_src.ref.split('/')
     # Add all the path names together
     ref.extend(src)
-    return self._cache.join(*ref)
+    return self._cache.joinpath(*ref)
 
   # TODO(anushruth): Cover this test path
   def exists(self, git_src):  #pragma: no cover
