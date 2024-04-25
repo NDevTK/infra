@@ -17,7 +17,7 @@ import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_rou
 
 // This proto defines setup labels in lab config of a DUT.
 
-// Peripherals of device. Next Tag: 21
+// Peripherals of device. Next Tag: 22
 message Peripherals {
   Servo servo = 1;
   Chameleon chameleon = 2;
@@ -31,6 +31,9 @@ message Peripherals {
   string carrier = 8;
   // e.g: "0_att,1_verizon,3_tmobile", "1_kddi,6_rakuten".. slot mapping: only for Starfish enabled modules.
   string starfish_slot_mapping = 17;
+  // A list of all carriers that can be tested on the DUT. This extends the carrier field which could previously only
+  // be used with a single carrier.
+  repeated string supported_carriers = 21;
   // Indicate if the device is setup in a steady and controllable camera box environment for camera test automation.
   // http://go/cros-camera-box
   bool camerabox = 9;
