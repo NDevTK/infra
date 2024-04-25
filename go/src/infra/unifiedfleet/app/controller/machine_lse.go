@@ -2003,6 +2003,8 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 				updateCellularModemInfo(ctx, dut, labData)
 				// Update Cellular SIM Info
 				updateCellularSIMInfo(ctx, dut, labData)
+				// Update supported cellular carriers
+				peri.SupportedCarriers = labData.GetSupportedCarriers()
 				// Update Bluetooth peers
 				if err = updateBluetoothPeerStates(peri, labData.GetBluetoothPeers()); err != nil {
 					return err

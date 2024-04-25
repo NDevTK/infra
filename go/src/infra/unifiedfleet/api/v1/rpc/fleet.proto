@@ -1925,6 +1925,8 @@ message ModemInfo {
     // Info on the installed SIM cards
     repeated models.chromeos.lab.SIMInfo sim_infos = 13;
     Dolos dolos = 14;
+    // Info on all carrier dependencies that can be satisfied by this DUT.
+    repeated string supported_carriers = 15;
   }
 
   // Used for updating back essential configs from repair/deploy task.

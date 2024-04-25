@@ -1933,6 +1933,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 					Imei:         "654321",
 					Type:         chromeosLab.ModemType_MODEM_TYPE_NL668,
 				},
+				SupportedCarriers: []string{
+					"ATT", "VERIZON", "TMOBILE",
+				},
 				SimInfos: []*chromeosLab.SIMInfo{
 					{
 						SlotId: 1,
@@ -2004,6 +2007,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(peri.GetWifi().GetWifiRouters()[0].GetState(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
 			So(peri.GetWifi().GetWifiRouters()[1].GetHostname(), ShouldEqual, machineName+"-router")
 			So(peri.GetWifi().GetWifiRouters()[1].GetState(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
+			So(peri.GetSupportedCarriers()[0], ShouldEqual, "ATT")
+			So(peri.GetSupportedCarriers()[1], ShouldEqual, "VERIZON")
+			So(peri.GetSupportedCarriers()[2], ShouldEqual, "TMOBILE")
 			So(peri.Servo.GetUsbDrive().GetSerial(), ShouldEqual, "usb-drive serial")
 			So(peri.Servo.GetUsbDrive().GetManufacturer(), ShouldEqual, "usb-drive-make")
 			So(peri.Chameleon.GetHostname(), ShouldEqual, machineName+"-chameleon")
