@@ -109,7 +109,7 @@ func TestPutCostIndicator(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	err := utils.InsertOneWithoutReplacement(tf.Ctx, false, &entities.CostIndicatorEntity{
+	err := utils.InsertOneWithoutReplacement(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "e",
 			BurnoutRate: 12.0,
@@ -321,7 +321,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	if err := utils.InsertOneWithoutReplacement(tf.Ctx, false, &entities.CostIndicatorEntity{
+	if err := utils.InsertOneWithoutReplacement(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "fake-board",
 			BurnoutRate: 12.0,

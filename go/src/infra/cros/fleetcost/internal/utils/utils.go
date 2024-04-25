@@ -112,8 +112,8 @@ func lookupValueErrorMessage(m map[string]int32) []string {
 }
 
 // RunPerhapsInTransaction runs a datastore command perhaps in a transaction.
-func RunPerhapsInTransaction(ctx context.Context, newTransaction bool, callback func(context.Context) error, options *datastore.TransactionOptions) error {
-	if newTransaction {
+func RunPerhapsInTransaction(ctx context.Context, callback func(context.Context) error, options *datastore.TransactionOptions) error {
+	if datastore.CurrentTransaction(ctx) == nil {
 		return datastore.RunInTransaction(ctx, callback, options)
 	}
 	return callback(ctx)
@@ -126,11 +126,11 @@ var ErrItemExists = errors.New("item already exists, cannot replace")
 //
 // We insist on having a PropertyLoadSaver+MetaGetterSetter (rather than taking an any) because this function only inserts one thing without replacement.
 // (It's not clear what the semantics should be if you want to replace multiple things without replacement).
-func InsertOneWithoutReplacement(ctx context.Context, newTransaction bool, entity interface {
+func InsertOneWithoutReplacement(ctx context.Context, entity interface {
 	datastore.PropertyLoadSaver
 	datastore.MetaGetterSetter
 }, options *datastore.TransactionOptions) error {
-	return RunPerhapsInTransaction(ctx, newTransaction, func(ctx context.Context) error {
+	return RunPerhapsInTransaction(ctx, func(ctx context.Context) error {
 		existsResult, err := datastore.Exists(ctx, entity)
 		if err != nil {
 			return err
@@ -143,11 +143,11 @@ func InsertOneWithoutReplacement(ctx context.Context, newTransaction bool, entit
 }
 
 // DeleteOneIfExists deletes an entity if it exists.
-func DeleteOneIfExists(ctx context.Context, newTransaction bool, entity interface {
+func DeleteOneIfExists(ctx context.Context, entity interface {
 	datastore.PropertyLoadSaver
 	datastore.MetaGetterSetter
 }, options *datastore.TransactionOptions) error {
-	return RunPerhapsInTransaction(ctx, newTransaction, func(ctx context.Context) error {
+	return RunPerhapsInTransaction(ctx, func(ctx context.Context) error {
 		existsResult, err := datastore.Exists(ctx, entity)
 		if err != nil {
 			return err

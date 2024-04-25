@@ -37,7 +37,7 @@ func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fl
 	}
 	costIndicator := request.GetCostIndicator()
 	entity := entities.NewCostIndicatorEntity(costIndicator)
-	if err := utils.InsertOneWithoutReplacement(ctx, true, entity, nil); err != nil {
+	if err := utils.InsertOneWithoutReplacement(ctx, entity, nil); err != nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "create cost indicator").Err())
 	}
 	return &fleetcostAPI.CreateCostIndicatorResponse{
@@ -71,7 +71,7 @@ func (f *FleetCostFrontend) UpdateCostIndicator(ctx context.Context, request *fl
 // DeleteCostIndicator deletes a CostIndicator.
 func (f *FleetCostFrontend) DeleteCostIndicator(ctx context.Context, request *fleetcostAPI.DeleteCostIndicatorRequest) (*fleetcostAPI.DeleteCostIndicatorResponse, error) {
 	entity := entities.NewCostIndicatorEntity(request.GetCostIndicator())
-	if err := utils.DeleteOneIfExists(ctx, true, entity, nil); err != nil {
+	if err := utils.DeleteOneIfExists(ctx, entity, nil); err != nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "delete cost indicator").Err())
 	}
 	return &fleetcostAPI.DeleteCostIndicatorResponse{

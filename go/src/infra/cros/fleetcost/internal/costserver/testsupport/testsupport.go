@@ -55,7 +55,7 @@ func NewFixture(ctx context.Context, t *testing.T) *Fixture {
 // NewFixtureWithData returns a fixture with test data.
 func NewFixtureWithData(ctx context.Context, t *testing.T) *Fixture {
 	tf := NewFixture(ctx, t)
-	err := utils.InsertOneWithoutReplacement(tf.Ctx, false, &entities.CostIndicatorEntity{
+	err := utils.InsertOneWithoutReplacement(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "e",
 			BurnoutRate: 44.0,

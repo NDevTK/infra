@@ -262,7 +262,7 @@ func TestInsertOneWithoutReplacement(t *testing.T) {
 		panic(fmt.Sprintf("unexpected error: %s", err))
 	}
 
-	err := utils.InsertOneWithoutReplacement(tf.Ctx, false, record, nil)
+	err := utils.InsertOneWithoutReplacement(tf.Ctx, record, nil)
 	if !utils.ErrorStringContains(err, utils.ErrItemExists.Error()) {
 		t.Errorf("inserting a record that already exists should have failed: %s", err)
 	}
@@ -274,7 +274,7 @@ func TestDeleteOneIfExists(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	err := utils.DeleteOneIfExists(tf.Ctx, false, datastore.PropertyMap{
+	err := utils.DeleteOneIfExists(tf.Ctx, datastore.PropertyMap{
 		"$id":   datastore.MkProperty("fake-id"),
 		"$kind": datastore.MkProperty("fake-kind"),
 		"foo":   datastore.MkProperty(72),
