@@ -325,6 +325,10 @@ func (s *Server) ExecDutCommand(req *tls.ExecDutCommandRequest, stream tls.Commo
 
 // getSSHAddr returns the SSH address to use for the DUT, through the wiring service.
 func (s *Server) getSSHAddr(ctx context.Context, name string) (string, error) {
+	if env.IsCloudBot() {
+		// Skip ip lookup on CloudBots since it's in a different network.
+		return name, nil
+	}
 	c := s.wiringClient()
 
 	// Read a port if passed in from the name.
