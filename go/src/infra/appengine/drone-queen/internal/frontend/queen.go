@@ -181,10 +181,10 @@ func listCloudbots(ctx context.Context) ([]*apipb.BotInfo, error) {
 			},
 			IsDead: apipb.NullableBool_FALSE,
 		})
-		bots = append(bots, resp.Items...)
 		if err != nil {
 			return bots, err
 		}
+		bots = append(bots, resp.Items...)
 		cursor = resp.Cursor
 		if cursor == "" {
 			break
