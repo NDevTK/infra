@@ -194,7 +194,7 @@ func GroupErrAndNonErrResults(inputMap map[string][]*data.TestResults) ([]string
 	for _, resultList := range inputMap {
 		for _, eachResult := range resultList {
 			if eachResult.TopLevelError != nil {
-				switch (*eachResult.TopLevelError).(type) {
+				switch (eachResult.TopLevelError).(type) {
 				case *data.EnumerationError:
 					errKey := common.EnumerationErrKey
 					if _, ok := errorResultMap[errKey]; !ok {
@@ -238,7 +238,7 @@ func addToMap(inMap map[string][]*data.TestResults, key string, result *data.Tes
 }
 
 func DisplayError(ctx context.Context, result *data.TestResults, step *build.Step) {
-	switch e := (*result.TopLevelError).(type) {
+	switch e := (result.TopLevelError).(type) {
 	case *data.EnumerationError:
 		log := step.Log(fmt.Sprintf("suite `%s`", e.SuiteName))
 		log.Write([]byte(e.Error()))

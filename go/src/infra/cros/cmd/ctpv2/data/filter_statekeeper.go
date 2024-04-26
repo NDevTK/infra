@@ -25,6 +25,7 @@ type FilterStateKeeper struct {
 	TestPlanStates          []*testapi.InternalTestplan
 	Scheduler               testapi.SchedulerInfo_Scheduler
 	SuiteTestResults        map[string]*TestResults
+	BuildsMap               map[string]*BuildRequest
 
 	// Build related
 	BuildState *build.State

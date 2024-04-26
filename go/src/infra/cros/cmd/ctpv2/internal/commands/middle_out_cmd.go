@@ -750,54 +750,13 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 	}
 }
 
-func dutModelFromSwarmingDef(def *api.SwarmingDefinition) *labapi.DutModel {
-	switch hw := def.GetDutInfo().GetDutType().(type) {
-	case *labapi.Dut_Chromeos:
-		return hw.Chromeos.GetDutModel()
-	case *labapi.Dut_Android_:
-		return hw.Android.GetDutModel()
-	case *labapi.Dut_Devboard_:
-		return hw.Devboard.GetDutModel()
-	}
-	return nil
-}
-
-func addBoardModelToDims(unit *api.SchedulingUnit, dims []string) []string {
-	primaryBoard := dutModelFromSwarmingDef(unit.GetPrimaryTarget().GetSwarmingDef()).GetBuildTarget()
-	dims = append(dims, fmt.Sprintf("label-board:%s", primaryBoard))
-
-	primaryModel := dutModelFromSwarmingDef(unit.GetPrimaryTarget().GetSwarmingDef()).GetModelName()
-	if primaryModel != "" {
-		dims = append(dims, fmt.Sprintf("label-model:%s", primaryModel))
-
-	}
-	for _, secondary := range unit.GetCompanionTargets() {
-		board := dutModelFromSwarmingDef(secondary.GetSwarmingDef()).GetBuildTarget()
-		// When equal, the secondary needs the _2.
-		if board == primaryBoard {
-			board = fmt.Sprintf("%s_2", board)
-		}
-		dims = append(dims, fmt.Sprintf("label-board:%s", board))
-
-		model := dutModelFromSwarmingDef(secondary.GetSwarmingDef()).GetModelName()
-		if model == primaryModel && model != "" {
-			model = fmt.Sprintf("%s_2", model)
-		}
-
-		dims = append(dims, fmt.Sprintf("label-model:%s", model))
-
-	}
-
-	return dims
-}
-
 // CreateDims creates dims list from hwInfo object.
 func CreateDims(ctx context.Context, hwInfo *hwInfo, pool string, readycheck bool) []string {
 	// TODO replace `units` with just `hwInfo.req.GetSchedulingUnits()` once hwRequirements has been fully removed.
 	units := 0
 	if hwInfo.oldReq != nil {
 		units = len(hwInfo.oldReq.GetHwDefinition())
-	} else if hwInfo.req == nil {
+	} else if hwInfo.req != nil {
 		units = len(hwInfo.req.GetSchedulingUnits())
 	}
 
@@ -812,7 +771,7 @@ func CreateDims(ctx context.Context, hwInfo *hwInfo, pool string, readycheck boo
 
 	if len(hwInfo.req.GetSchedulingUnits()) > 0 {
 		dims = ConvertSwarmingLabelsToDims(dims, hwInfo.req.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwarmingDef().GetSwarmingLabels())
-		dims = addBoardModelToDims(hwInfo.req.GetSchedulingUnits()[0], dims)
+		dims = append(dims, common.GetBoardModelDims(hwInfo.req.GetSchedulingUnits()[0])...)
 	} else if len(hwInfo.oldReq.GetHwDefinition()) == 1 {
 		// TODO remove this entire `else` statement when HWRequirements is done.
 		dims = ConvertSwarmingLabelsToDims(dims, hwInfo.oldReq.GetHwDefinition()[0].GetSwarmingLabels())

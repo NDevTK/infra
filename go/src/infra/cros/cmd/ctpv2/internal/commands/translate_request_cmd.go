@@ -250,15 +250,15 @@ func buildHwDef(hw *testapi.LegacyHW) *testapi.SwarmingDefinition {
 		BuildTarget: hw.Board,
 		ModelName:   hw.Model,
 	}
-	if common.IsAndroid(hw) {
+	if common.IsAndroid(hw.GetBoard()) {
 		android := &labapi.Dut_Android{DutModel: dutModel}
 		dut.DutType = &labapi.Dut_Android_{Android: android}
 
-	} else if common.IsCros(hw) {
+	} else if common.IsCros(hw.GetBoard()) {
 		Cros := &labapi.Dut_ChromeOS{DutModel: dutModel}
 		dut.DutType = &labapi.Dut_Chromeos{Chromeos: Cros}
 
-	} else if common.IsDevBoard(hw) {
+	} else if common.IsDevBoard(hw.GetBoard()) {
 		devBoard := &labapi.Dut_Devboard{DutModel: dutModel}
 		dut.DutType = &labapi.Dut_Devboard_{Devboard: devBoard}
 

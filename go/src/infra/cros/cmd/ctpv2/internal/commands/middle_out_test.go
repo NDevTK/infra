@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/common_lib/common"
 	"reflect"
 	"testing"
 
@@ -1488,13 +1489,13 @@ func TestAddBoardModelToDims(t *testing.T) {
 	vars := buildTestVars()
 	dims := []string{"one"}
 	expected := []string{"one", "label-board:foo", "label-model:bar"}
-	dims = addBoardModelToDims(vars.HwDef001SU, dims)
+	dims = append(dims, common.GetBoardModelDims(vars.HwDef001SU)...)
 	if !reflect.DeepEqual(dims, expected) {
 		t.Fatalf("mismatch. Expected %s got %s", dims, expected)
 	}
 
 	newDims := []string{"ready"}
-	newDims = addBoardModelToDims(vars.HwDef001SUWHW1Companion, newDims)
+	newDims = append(newDims, common.GetBoardModelDims(vars.HwDef001SUWHW1Companion)...)
 	expected = []string{"ready", "label-board:foo", "label-model:bar", "label-board:foo_2", "label-model:bar_2"}
 	if !reflect.DeepEqual(newDims, expected) {
 		t.Fatalf("mismatch. Expected %s got %s", expected, newDims)

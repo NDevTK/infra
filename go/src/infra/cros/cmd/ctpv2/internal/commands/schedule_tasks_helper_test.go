@@ -29,10 +29,10 @@ func TestCreateLabels(t *testing.T) {
 	testBoard := "board1"
 	testModel := "model3"
 	testPool := "swimming"
+	hwTarget := &HwTarget{board: testBoard, model: testModel}
 	trHelper := &TrV2ReqHelper{
-		pool:  testPool,
-		board: testBoard,
-		model: testModel,
+		pool:          testPool,
+		primaryTarget: hwTarget,
 	}
 	foo, err := createLabels(trHelper)
 	if err != nil {

@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -50,19 +49,22 @@ type ScheduleTasksCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	MiddledOutResp *data.MiddleOutResponse
-	BuildState     *build.State
-	Scheduler      interfaces.SchedulerInterface
-	DynamicRun     bool
+	BuildState *build.State
+	Scheduler  interfaces.SchedulerInterface
+	DynamicRun bool
 
 	// Deps
 	InternalTestPlan *api.InternalTestplan
+	BuildsMap        map[string]*data.BuildRequest
 
 	// Updates
 	TestResults map[string]*data.TestResults
 
 	// For logging
-	BQClient *bigquery.Client
+	BQClient              *bigquery.Client
+	StartCmdTime          time.Time
+	StartTrSchedulingTime time.Time
+	StartTrBuildTime      time.Time
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -112,6 +114,10 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 		return fmt.Errorf("Cmd %q missing dependency: MiddleOutResponse", cmd.GetCommandType())
 	}
 
+	if sk.BuildsMap == nil || len(sk.BuildsMap) == 0 {
+		return fmt.Errorf("Cmd %q missing dependency: BuildsMap", cmd.GetCommandType())
+	}
+
 	if sk.BuildState == nil {
 		return fmt.Errorf("Cmd %q missing dependency: Scheduler", cmd.GetCommandType())
 	}
@@ -130,9 +136,10 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	}
 
 	cmd.DynamicRun = sk.CtpReq.RunDynamic
-	cmd.MiddledOutResp = sk.MiddledOutResp
+	cmd.BuildsMap = sk.BuildsMap
 	cmd.BuildState = sk.BuildState
 	// Assign scheduler
+	cmd.Scheduler = schedulers.NewLocalScheduler() // Default
 	if sk.Scheduler == api.SchedulerInfo_QSCHEDULER {
 		cmd.Scheduler = schedulers.NewDirectBBScheduler()
 	} else if sk.Scheduler == api.SchedulerInfo_PRINT_REQUEST_ONLY {
@@ -158,75 +165,26 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Schedule tasks")
 	defer func() { step.End(err) }()
 
-	key := "scheduleTasks"
-	if cmd.BQClient != nil {
-		analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: analytics.Start}, cmd.InternalTestPlan, cmd.BuildState)
-	}
-	start := time.Now()
-
-	enumStatus := analytics.Success
+	cmd.ObserveCmdStart(ctx)
 	cmd.TestResults = map[string]*data.TestResults{}
-	suiteName := suiteName(cmd.MiddledOutResp.SuiteInfo)
-	if len(cmd.MiddledOutResp.TrReqs) == 0 {
-		logging.Infof(ctx, "no test found in middle-out response")
-		enumStatus = analytics.Fail
-		step.SetSummaryMarkdown("enumeration error: no test found")
-		err = &data.EnumerationError{SuiteName: suiteName}
-		cmd.TestResults[common.EnumerationErrKey] = &data.TestResults{Suite: suiteName, Key: common.EnumerationErrKey, TopLevelError: &err}
-		common.WriteAnyObjectToStepLog(ctx, step, cmd.TestResults, "consolidated results")
-		return err
-	}
-
-	// GenerateRequests
-	buildMap := GenerateRequests(ctx, cmd.MiddledOutResp, cmd.BuildState, cmd.BQClient, cmd.DynamicRun)
-	if len(buildMap) == 0 {
-		enumStatus = analytics.Fail
-		step.SetSummaryMarkdown("enumeration error: no valid test found")
-		err = &data.EnumerationError{SuiteName: suiteName}
-		cmd.TestResults[common.EnumerationErrKey] = &data.TestResults{Suite: suiteName, Key: common.EnumerationErrKey, TopLevelError: &err}
-		return err
-	}
-
-	bqData := &analytics.BqData{Step: "enumeration", Status: enumStatus, Duration: float32(time.Since(start).Seconds())}
-	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
-
-	schedulerStatus := analytics.Success
-	schedulerFreeform := ""
 
 	scheduler := cmd.Scheduler
-	if cmd.Scheduler == nil {
-		errmsg := "empty scheduler"
-
-		schedulerFreeform = errmsg
-		schedulerStatus = analytics.Fail
-
-		logging.Infof(ctx, errmsg)
-		return fmt.Errorf(errmsg)
-	}
-	pool := pool(cmd.MiddledOutResp.SuiteInfo)
+	pool := pool(cmd.InternalTestPlan.SuiteInfo)
 	err = scheduler.Setup(pool)
 	if err != nil {
 		errmsg := "error while setting up scheduler"
-
-		schedulerStatus = analytics.Fail
-		schedulerFreeform = errmsg
-
+		cmd.ObserveSchedulerSetupFailure(ctx, errmsg)
 		logging.Infof(ctx, "%s: %s", errmsg, err)
 		return errors.Annotate(err, errmsg).Err()
 	}
-
-	bqData = &analytics.BqData{Step: "scheduler-setup", Status: schedulerStatus, Duration: float32(time.Since(start).Seconds())}
-	if schedulerFreeform != "" {
-		bqData.Freeform = schedulerFreeform
-	}
-	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
+	cmd.ObserveSchedulerSetupSuccess(ctx)
 
 	// Todo: batch call
 	resultsChan := make(chan *data.TestResults)
 	wg := &sync.WaitGroup{}
-	for k, v := range buildMap {
+	for k, v := range cmd.BuildsMap {
 		wg.Add(1)
-		go ScheduleAndMonitor(ctx, cmd.Scheduler, v, cmd.BuildState, k, wg, resultsChan, suiteName, 0, cmd.BQClient, cmd.DynamicRun)
+		go cmd.ScheduleAndMonitor(ctx, k, v, wg, resultsChan, 0)
 	}
 
 	go func() {
@@ -243,149 +201,17 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 		cmd.TestResults[mapKey] = result
 	}
 
-	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: analytics.Success, Duration: float32(time.Since(start).Seconds())}, cmd.InternalTestPlan, cmd.BuildState)
+	cmd.ObserveCmdEndSuccess(ctx)
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.TestResults, "consolidated results")
 	return nil
 
 }
 
-type BuildRequest struct {
-	Key                  string
-	shardNum             int
-	ScheduleBuildRequest *buildbucketpb.ScheduleBuildRequest
-	OriginalTrReq        *data.TrRequest
-	SuiteInfo            *api.SuiteInfo
-	err                  error
-}
-
-func GenerateRequests(ctx context.Context, moResp *data.MiddleOutResponse, buildState *build.State, BQClient *bigquery.Client, dynamicRun bool) map[string]*BuildRequest {
-	var err error
-	step, ctx := build.StartStep(ctx, "Generate Trv2 Requests")
-	defer func() { step.End(err) }()
-
-	// Generate reqs first
-	errCount := 0
-	buildMap := map[string]*BuildRequest{}
-	shardMap := map[string]int{}
-	for _, trReq := range moResp.TrReqs {
-		key, err := GetBoardModelVariantKey(ctx, trReq)
-		if err != nil {
-			logging.Infof(ctx, fmt.Sprintf("error while generating board-model-variant key: %s", err))
-			errCount++
-			continue
-		}
-		// check if the tcs were sharded
-		if _, ok := shardMap[key]; !ok {
-			shardMap[key] = 0
-		} else {
-			shardMap[key] = shardMap[key] + 1
-		}
-
-		modifiedKey := fmt.Sprintf("%s-shard-%d", key, shardMap[key])
-		buildReq := &BuildRequest{Key: modifiedKey, OriginalTrReq: trReq, shardNum: shardMap[key], SuiteInfo: moResp.SuiteInfo}
-		req, err := GenerateReq(ctx, trReq, modifiedKey, buildState, moResp.SuiteInfo, shardMap[key], BQClient, dynamicRun)
-		if err != nil {
-			buildReq.err = err
-			errCount++
-			logging.Infof(ctx, "error while generating trv2 req for %s: %s", modifiedKey, err)
-		} else {
-			buildReq.ScheduleBuildRequest = req
-		}
-
-		buildMap[modifiedKey] = buildReq
-	}
-
-	if errCount == 0 {
-		step.SetSummaryMarkdown("all test requests were generated successfully")
-	} else {
-		step.SetSummaryMarkdown(fmt.Sprintf("error found in %d out of %d requests", errCount, len(moResp.TrReqs)))
-		err = fmt.Errorf("error found in %d out of %d", errCount, len(moResp.TrReqs))
-	}
-
-	return buildMap
-}
-
-func GetBoardModelVariantKey(ctx context.Context, trReq *data.TrRequest) (string, error) {
-	if trReq.Req == nil || len(trReq.Req.GetHwDefinition()) == 0 {
-		// This should not happen. If this happens, we should have flagged input
-		// error earlier. Still kept this as a sanity check.
-		logging.Infof(ctx, "no hw def is found in req")
-		return "", fmt.Errorf("no hw def is found so, rejecting task")
-	}
-
-	// '0'ed index because we should always have one hw here. It supports multiple
-	// MO should reduce it down to 1 always. The len check is done at MO step.
-	TrReqhwDef := trReq.Req.GetHwDefinition()[0]
-	board := strings.ToLower(getBuildTargetfromHwDef(TrReqhwDef))
-	variant := strings.ToLower(TrReqhwDef.GetVariant())
-	model := strings.ToLower(getModelTargetfromHwDef(TrReqhwDef))
-
-	builderString := board
-	if model != "" {
-		builderString = fmt.Sprintf("%s-%s", builderString, model)
-	}
-	if variant != "" {
-		builderString = fmt.Sprintf("%s-%s", builderString, variant)
-	}
-
-	return builderString, nil
-}
-
-func GenerateReq(ctx context.Context, trReq *data.TrRequest, key string, buildState *build.State, suiteInfo *api.SuiteInfo, shardNum int, BQClient *bigquery.Client, dynamicRun bool) (*buildbucketpb.ScheduleBuildRequest, error) {
-	var err error
-	// '0'ed index because we should always have one hw here. It supports multiple
-	// MO should reduce it down to 1 always. The len check is done at MO step.
-	TrReqhwDef := trReq.Req.GetHwDefinition()[0]
-	testCases := trReq.Tcs
-	st := time.Now()
-
-	d := logTrAnalyticsStart(ctx, BQClient, trReq, suiteInfo, buildState, "generateReq", key, suiteInfo.GetSuiteRequest().GetAnalyticsName())
-
-	// Input validations
-	if len(testCases) == 0 {
-		errStr := "no test is found so, rejecting task"
-		logging.Infof(ctx, errStr)
-		err = fmt.Errorf(errStr)
-		logTrAnalyticsFail(ctx, BQClient, d, trReq, suiteInfo, buildState, errStr, st)
-		return nil, err
-
-	}
-
-	if trReq.DevicesInfo.LabDevicesCount == 0 {
-		logging.Infof(ctx, "no suitable device found to run tests so, rejecting task")
-
-		logTrAnalyticsFail(ctx, BQClient, d, trReq, suiteInfo, buildState, "rejected, no bots found", st)
-		err := &data.BotParamsRejectedError{Key: key, RejectedDims: trReq.DevicesInfo.Dims}
-		return nil, err
-	}
-
-	helper := &TrV2ReqHelper{
-		trReqHWDef: TrReqhwDef,
-		testCases:  testCases,
-		build:      buildState,
-		suiteInfo:  suiteInfo,
-		shardNum:   shardNum,
-		dynamicRun: dynamicRun,
-	}
-
-	req, err := GenerateTrv2Req(ctx, true, helper)
-	if err != nil {
-		logging.Infof(ctx, "error while generating req: %s", err)
-		logTrAnalyticsFail(ctx, BQClient, d, trReq, suiteInfo, buildState, "unable to build task", st)
-
-		err := &data.BotParamsRejectedError{Key: key, RejectedDims: trReq.DevicesInfo.Dims}
-		return nil, errors.Annotate(err, "error while generating req:").Err()
-	}
-
-	logTrAnalyticsSuccess(ctx, BQClient, d, trReq, suiteInfo, buildState, "", st)
-
-	return req, nil
-}
-
-func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerInterface, buildReq *BuildRequest, buildState *build.State, key string, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, suiteName string, retryNum int, BQClient *bigquery.Client, dynamicRun bool) error {
+func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int) error {
 	defer wg.Done()
 	var err error
 
+	suiteName := suiteName(buildReq.SuiteInfo)
 	stepName := key
 	if retryNum > 0 {
 		stepName = fmt.Sprintf("%s-retry-%d", key, retryNum)
@@ -396,9 +222,9 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 	// Construct test results
 	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum}
 
-	if buildReq.err != nil {
-		err = buildReq.err
-		return setTopLevelError(ctx, step, result, resultsChan, buildReq.err)
+	if buildReq.Err != nil {
+		err = buildReq.Err
+		return setTopLevelError(ctx, step, result, resultsChan, buildReq.Err)
 	}
 	req := buildReq.ScheduleBuildRequest
 
@@ -412,6 +238,9 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 	}
 	step.Log("BB Request").Write(requestData)
 
+	// Spit out requested dims since scheduke doesn't pass this info to swarming
+	common.WriteAnyObjectToStepLog(ctx, step, req.GetDimensions(), "requested dimensions")
+
 	builderId := common.TestRunnerBuilderID()
 
 	bbClient, err := newBBClient(ctx)
@@ -419,15 +248,13 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 		return err
 	}
 
-	st := time.Now()
-
-	d := logTrAnalyticsStart(ctx, BQClient, buildReq.OriginalTrReq, buildReq.SuiteInfo, buildState, "ScheduleBuild", buildReq.Key, buildReq.SuiteInfo.GetSuiteRequest().GetAnalyticsName())
+	cmd.ObserveTrSchedulingStart(ctx, buildReq)
 
 	// BQ TODO log the request is in the scheduling tool (ie log the scheduke ID if possible?)
-	scheduledBuild, err := scheduler.ScheduleRequest(ctx, req, step)
+	scheduledBuild, err := cmd.Scheduler.ScheduleRequest(ctx, req, step)
 	if err != nil {
 		err = fmt.Errorf("error while scheduling req: %s", err)
-		logTrAnalyticsFail(ctx, BQClient, d, buildReq.OriginalTrReq, buildReq.SuiteInfo, buildState, "error scheduling", st)
+		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
 		return setTopLevelError(ctx, step, result, resultsChan, err)
 	}
 
@@ -437,23 +264,15 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 	} else {
 		errStr := "no bbid found from scheduler"
 		err = fmt.Errorf(errStr)
-		logTrAnalyticsFail(ctx, BQClient, d, buildReq.OriginalTrReq, buildReq.SuiteInfo, buildState, errStr, st)
+		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
 
 		return setTopLevelError(ctx, step, result, resultsChan, err)
 	}
 	// Log the successful start.
-	d.TrTaskID = fmt.Sprint(scheduledBuild.GetId())
-	logTrAnalyticsSuccess(ctx, BQClient, d, buildReq.OriginalTrReq, buildReq.SuiteInfo, buildState, "", st)
-
-	// Metrics for the task running
-	st = time.Now()
+	cmd.ObserveTrSchedulingSuccess(ctx, buildReq, fmt.Sprint(scheduledBuild.GetId()))
 
 	// Re-init the data for the run build step. Keep the previously populated data.
-	d.Step = "Run Build"
-	d.Status = analytics.Start
-	d.Duration = 0
-
-	analytics.SoftInsertStepWTrReq(ctx, BQClient, d, buildReq.OriginalTrReq, buildReq.SuiteInfo, buildState)
+	cmd.ObserveTrBuildStart(ctx, buildReq)
 
 	// Monitor here
 	loopSleepInterval := 30 * time.Second
@@ -486,7 +305,7 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 		common.WriteAnyObjectToStepLog(ctx, step, buildInfo, "final build info")
 
 		// Log success as we found a completed build. The status is not of the child build itself.
-		logTrAnalyticsSuccess(ctx, BQClient, d, buildReq.OriginalTrReq, buildReq.SuiteInfo, buildState, fmt.Sprint("build status: ", buildInfo.GetStatus()), st)
+		cmd.ObserveTrBuildSuccess(ctx, buildReq, buildInfo)
 
 		logging.Infof(ctx, "bb status: %s", buildInfo.GetStatus())
 		if buildInfo.GetStatus() != buildbucketpb.Status_SUCCESS {
@@ -505,11 +324,11 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 
 		// Retry if qualifies
 		if buildReq.SuiteInfo.GetSuiteRequest().GetRetryCount() > int64(retryNum) {
-			newBuildReq := RetryReqIfQualifies(ctx, trResult, step, buildReq, buildState, nil, dynamicRun)
+			newBuildReq := cmd.RetryReqIfQualifies(ctx, trResult, step, buildReq)
 			if newBuildReq != nil && newBuildReq.ScheduleBuildRequest != nil {
 				// Schedule retry
 				wg.Add(1)
-				go ScheduleAndMonitor(rootCtx, scheduler, newBuildReq, buildState, newBuildReq.Key, wg, resultsChan, suiteName, retryNum+1, BQClient, dynamicRun)
+				go cmd.ScheduleAndMonitor(rootCtx, newBuildReq.Key, newBuildReq, wg, resultsChan, retryNum+1)
 			}
 		}
 
@@ -521,7 +340,7 @@ func ScheduleAndMonitor(rootCtx context.Context, scheduler interfaces.SchedulerI
 	return nil
 }
 
-func RetryReqIfQualifies(ctx context.Context, trResult *skylab_test_runner.Result, step *build.Step, buildReq *BuildRequest, buildState *build.State, bqClient *bigquery.Client, dynamicRun bool) *BuildRequest {
+func (cmd *ScheduleTasksCmd) RetryReqIfQualifies(ctx context.Context, trResult *skylab_test_runner.Result, step *build.Step, buildReq *data.BuildRequest) *data.BuildRequest {
 	retriableTestsMap := determineRetriablity(trResult)
 	if len(retriableTestsMap) == 0 {
 		logging.Infof(ctx, "no retriable tests found for: %s", buildReq.Key)
@@ -535,15 +354,59 @@ func RetryReqIfQualifies(ctx context.Context, trResult *skylab_test_runner.Resul
 	common.WriteAnyObjectToStepLog(ctx, step, newBuildReq, "new build req for retry")
 
 	// Generate a new req
-	req, err := GenerateReq(ctx, newBuildReq.OriginalTrReq, newBuildReq.Key, buildState, newBuildReq.SuiteInfo, newBuildReq.shardNum, bqClient, dynamicRun)
+	req, err := cmd.GenerateReqForRetry(ctx, newBuildReq)
 	if err != nil {
-		newBuildReq.err = err
+		newBuildReq.Err = err
 		logging.Infof(ctx, "no more retry will take place for %s since trv2 req generation failed: %s", newBuildReq.Key, err)
 	} else {
 		newBuildReq.ScheduleBuildRequest = req
 	}
 
 	return newBuildReq
+}
+
+func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *data.BuildRequest) (*buildbucketpb.ScheduleBuildRequest, error) {
+	// TODO (azrahman/dbeckett): add analytics metrics for this func
+	var err error
+	trReq := buildReq.OriginalTrReq
+	key := buildReq.Key
+	shardNum := buildReq.ShardNum
+	// '0'ed index because we should always have one hw here. It supports multiple
+	// MO should reduce it down to 1 always. The len check is done at MO step.
+	TrReqhwDef := trReq.Req.GetHwDefinition()[0]
+	testCases := trReq.Tcs
+
+	// Input validations
+	if len(testCases) == 0 {
+		errStr := "no test is found so, rejecting task"
+		logging.Infof(ctx, errStr)
+		err = fmt.Errorf(errStr)
+		return nil, err
+
+	}
+
+	if trReq.DevicesInfo.LabDevicesCount == 0 {
+		logging.Infof(ctx, "no suitable device found to run tests so, rejecting task")
+		err := &data.BotParamsRejectedError{Key: key, RejectedDims: trReq.DevicesInfo.Dims}
+		return nil, err
+	}
+
+	helper := &TrV2ReqHelper{
+		trReqHWDef: TrReqhwDef,
+		testCases:  testCases,
+		build:      cmd.BuildState,
+		suiteInfo:  cmd.InternalTestPlan.SuiteInfo,
+		shardNum:   shardNum,
+		dynamicRun: cmd.DynamicRun,
+	}
+
+	req, err := GenerateTrv2Req(ctx, true, helper)
+	if err != nil {
+		logging.Infof(ctx, "error while generating req: %s", err)
+		return nil, errors.Annotate(err, "error while generating req:").Err()
+	}
+
+	return req, nil
 }
 
 func CheckBuildInfoIfBuildEnded(ctx context.Context, statusReq *buildbucketpb.GetBuildStatusRequest, bbClient buildbucketpb.BuildsClient) (*buildbucketpb.Build, error) {
@@ -572,7 +435,7 @@ func CheckBuildInfoIfBuildEnded(ctx context.Context, statusReq *buildbucketpb.Ge
 	return buildInfo, nil
 }
 
-func GenerateNewBuildReqForRetry(ctx context.Context, buildReq *BuildRequest, retriableTests map[string]bool) *BuildRequest {
+func GenerateNewBuildReqForRetry(ctx context.Context, buildReq *data.BuildRequest, retriableTests map[string]bool) *data.BuildRequest {
 	if len(retriableTests) == 0 {
 		return nil
 	}
@@ -580,7 +443,7 @@ func GenerateNewBuildReqForRetry(ctx context.Context, buildReq *BuildRequest, re
 	// dereference so that we can make changes
 	retryBuildReq := *buildReq
 	retryBuildReq.ScheduleBuildRequest = nil
-	retryBuildReq.err = nil
+	retryBuildReq.Err = nil
 
 	testCases := retryBuildReq.OriginalTrReq.Tcs
 	newTcs := []*api.CTPTestCase{}
@@ -632,7 +495,7 @@ func IsTcRetriable(verdict skylab_test_runner.Result_Autotest_TestCase_Verdict) 
 func setTopLevelError(ctx context.Context, step *build.Step, result *data.TestResults, resultsChan chan<- *data.TestResults, err error) error {
 	logging.Infof(ctx, err.Error())
 	step.SetSummaryMarkdown(err.Error())
-	result.TopLevelError = &err
+	result.TopLevelError = err
 
 	// Send the result via channel
 	resultsChan <- result
@@ -659,12 +522,6 @@ func extractResult(from *buildbucketpb.Build) (*skylab_test_runner.Result, error
 	return &r, nil
 }
 
-func NewScheduleTasksCmd() *ScheduleTasksCmd {
-	abstractCmd := interfaces.NewAbstractCmd(ScheduleTasksCmdType)
-	abstractSingleCmdByNoExecutor := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: abstractCmd}
-	return &ScheduleTasksCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
-}
-
 // FindBuildName finds build name from suite info.
 func FindBuildName(suiteInfo *api.SuiteInfo, board string) string {
 	for _, target := range suiteInfo.GetSuiteMetadata().GetTargetRequirements() {
@@ -678,31 +535,104 @@ func FindBuildName(suiteInfo *api.SuiteInfo, board string) string {
 	return ""
 }
 
-func logTrAnalyticsFail(ctx context.Context, BQClient *bigquery.Client, data *analytics.TaskData, req *data.TrRequest, suiteInfo *api.SuiteInfo, build *build.State, err string, st time.Time) {
-	data.Duration = float32(time.Since(st).Seconds())
+// ------------ analytics funcs -------
 
-	data.Status = analytics.Fail
-	data.Freeform = err
-	analytics.SoftInsertStepWTrReq(ctx, BQClient, data, req, suiteInfo, build)
+func (cmd *ScheduleTasksCmd) ObserveCmdStart(ctx context.Context) {
+	cmd.StartCmdTime = time.Now()
+	bqData := &analytics.BqData{Step: string(cmd.GetCommandType()), Status: analytics.Start}
+	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
 }
 
-func logTrAnalyticsSuccess(ctx context.Context, BQClient *bigquery.Client, data *analytics.TaskData, req *data.TrRequest, suiteInfo *api.SuiteInfo, build *build.State, freeform string, st time.Time) {
-	data.Duration = float32(time.Since(st).Seconds())
-
-	data.Status = analytics.Success
-	if freeform != "" {
-		data.Freeform = freeform
-	}
-	analytics.SoftInsertStepWTrReq(ctx, BQClient, data, req, suiteInfo, build)
+func (cmd *ScheduleTasksCmd) ObserveCmdEndSuccess(ctx context.Context) {
+	bqData := &analytics.BqData{Step: string(cmd.GetCommandType()), Status: analytics.Start, Duration: float32(time.Since(cmd.StartCmdTime).Seconds())}
+	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
 }
 
-func logTrAnalyticsStart(ctx context.Context, BQClient *bigquery.Client, req *data.TrRequest, suiteInfo *api.SuiteInfo, build *build.State, step string, key string, analyticsName string) *analytics.TaskData {
+func (cmd *ScheduleTasksCmd) ObserveSchedulerSetupSuccess(ctx context.Context) {
+	bqData := &analytics.BqData{Step: "SchedulerSetup", Status: analytics.Success, Duration: float32(time.Since(cmd.StartCmdTime).Seconds())}
+	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
+}
+
+func (cmd *ScheduleTasksCmd) ObserveSchedulerSetupFailure(ctx context.Context, err string) {
+	bqData := &analytics.BqData{Step: "SchedulerSetup", Status: analytics.Fail, Duration: float32(time.Since(cmd.StartCmdTime).Seconds()), Freeform: err}
+	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
+}
+
+func (cmd *ScheduleTasksCmd) ObserveTrSchedulingStart(ctx context.Context, buildReq *data.BuildRequest) {
+	cmd.StartTrSchedulingTime = time.Now()
 	data := &analytics.TaskData{
-		Step:          step,
-		DisplayName:   key,
-		AnalyticsName: analyticsName,
+		Step:          "ScheduleBuild",
+		DisplayName:   buildReq.Key,
+		AnalyticsName: buildReq.SuiteInfo.GetSuiteRequest().GetAnalyticsName(),
 		Status:        analytics.Start,
 	}
-	analytics.SoftInsertStepWTrReq(ctx, BQClient, data, req, suiteInfo, build)
-	return data
+	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
+}
+
+func (cmd *ScheduleTasksCmd) ObserveTrSchedulingSuccess(ctx context.Context, buildReq *data.BuildRequest, taskBBId string) {
+	data := &analytics.TaskData{
+		Step:          "ScheduleBuild",
+		DisplayName:   buildReq.Key,
+		AnalyticsName: buildReq.SuiteInfo.GetSuiteRequest().GetAnalyticsName(),
+		Status:        analytics.Success,
+		TrTaskID:      taskBBId,
+		Duration:      float32(time.Since(cmd.StartTrSchedulingTime).Seconds()),
+	}
+	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
+}
+
+func (cmd *ScheduleTasksCmd) ObserveTrSchedulingFail(ctx context.Context, buildReq *data.BuildRequest, err string) {
+	data := &analytics.TaskData{
+		Step:          "ScheduleBuild",
+		DisplayName:   buildReq.Key,
+		AnalyticsName: buildReq.SuiteInfo.GetSuiteRequest().GetAnalyticsName(),
+		Status:        analytics.Fail,
+		Freeform:      err,
+		Duration:      float32(time.Since(cmd.StartTrSchedulingTime).Seconds()),
+	}
+	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
+}
+
+func (cmd *ScheduleTasksCmd) ObserveTrBuildStart(ctx context.Context, buildReq *data.BuildRequest) {
+	cmd.StartTrBuildTime = time.Now()
+	data := &analytics.TaskData{
+		Step:          "RunBuild",
+		DisplayName:   buildReq.Key,
+		AnalyticsName: buildReq.SuiteInfo.GetSuiteRequest().GetAnalyticsName(),
+		Status:        analytics.Start,
+	}
+	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
+}
+
+func (cmd *ScheduleTasksCmd) ObserveTrBuildSuccess(ctx context.Context, buildReq *data.BuildRequest, buildInfo *buildbucketpb.Build) {
+	data := &analytics.TaskData{
+		Step:          "RunBuild",
+		DisplayName:   buildReq.Key,
+		AnalyticsName: buildReq.SuiteInfo.GetSuiteRequest().GetAnalyticsName(),
+		Status:        analytics.Success,
+		TrTaskID:      fmt.Sprint(buildInfo.GetId()),
+		Freeform:      fmt.Sprint("build status: ", buildInfo.GetStatus()),
+		Duration:      float32(time.Since(cmd.StartTrBuildTime).Seconds()),
+	}
+	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
+}
+
+func (cmd *ScheduleTasksCmd) ObserveTrBuildFail(ctx context.Context, buildReq *data.BuildRequest, err string) {
+	data := &analytics.TaskData{
+		Step:          "RunBuild",
+		DisplayName:   buildReq.Key,
+		AnalyticsName: buildReq.SuiteInfo.GetSuiteRequest().GetAnalyticsName(),
+		Status:        analytics.Fail,
+		Freeform:      err,
+		Duration:      float32(time.Since(cmd.StartTrBuildTime).Seconds()),
+	}
+	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
+}
+
+// ----------- end analytics funcs --------
+
+func NewScheduleTasksCmd() *ScheduleTasksCmd {
+	abstractCmd := interfaces.NewAbstractCmd(ScheduleTasksCmdType)
+	abstractSingleCmdByNoExecutor := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: abstractCmd}
+	return &ScheduleTasksCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
 }

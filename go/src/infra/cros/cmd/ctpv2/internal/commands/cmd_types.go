@@ -17,5 +17,6 @@ const (
 	TranslateRequestType           interfaces.CommandType = "TranslateRequest"
 	MiddleoutExecutionType         interfaces.CommandType = "MiddleOutExecution"
 	ScheduleTasksCmdType           interfaces.CommandType = "ScheduleTasks"
+	GenerateTrv2RequestsCmdType    interfaces.CommandType = "GenerateTrv2Requests"
 	SummarizeCmdType               interfaces.CommandType = "Summarize"
 )

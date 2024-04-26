@@ -52,6 +52,9 @@ func (cfg *CommandConfig) GetCommand(
 	case commands.MiddleoutExecutionType:
 		cmd = commands.NewMiddleOutRequestCmd()
 
+	case commands.GenerateTrv2RequestsCmdType:
+		cmd = commands.NewGenerateTrv2RequestsCmd()
+
 	case commands.ScheduleTasksCmdType:
 		cmd = commands.NewScheduleTasksCmd()
 

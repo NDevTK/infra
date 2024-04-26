@@ -19,6 +19,7 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	goconfig "go.chromium.org/chromiumos/config/go"
@@ -60,7 +61,8 @@ type TrV2ReqHelper struct {
 	dynamicRun bool
 
 	// Top Level Variables
-	trReqHWDef *testapi.SwarmingDefinition
+	schedUnit  *testapi.SchedulingUnit
+	trReqHWDef *testapi.SwarmingDefinition // TODO (oldProto-azrahman): remove when new proto fully rolls in
 	testCases  []*testapi.CTPTestCase
 	suiteInfo  *testapi.SuiteInfo
 	shardNum   int
@@ -68,18 +70,25 @@ type TrV2ReqHelper struct {
 
 	// Other fields often used several times throughout.
 	suiteName        string
+	primaryTarget    *HwTarget
+	secondaryTargets []*HwTarget
 	pool             string
-	board            string
-	variant          string
-	boardWVaraint    string
 	currBBID         int64
-	model            string
-	provisionInfo    string
+
 	analyticsName    string
 	parentRequestUID string
 	currSwarmingID   string
-	gcsArtifactPath  string
 	builderStr       string
+}
+
+type HwTarget struct {
+	board           string
+	model           string
+	variant         string
+	boardWVaraint   string
+	provisionInfo   []*testapi.ProvisionInfo
+	gcsArtifactPath string // if cros type
+	apiTarget       *api.Target
 }
 
 // GenerateTrv2Req generates ScheduleBuildRequest.
@@ -100,17 +109,6 @@ func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2R
 		return nil, err
 	}
 
-	// bbCtx := lucictx.GetBuildbucket(ctx)
-
-	// if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" && bbCtx.GetScheduleBuildToken() != buildbucket.DummyBuildbucketToken {
-	// 	ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
-
-	// 	// // Decide if the child can outlive its parent or not.
-	// 	// if canOutliveParent {
-	// 	// 	req.CanOutliveParent = buildbucketpb.Trinary_YES
-	// 	// }
-	// }
-
 	return req, nil
 }
 
@@ -121,38 +119,101 @@ func pool(suiteInfo *testapi.SuiteInfo) string {
 	return DutPoolQuota
 }
 
+func populateHwTarget(ctx context.Context, target *testapi.Target, suiteInfo *testapi.SuiteInfo) (*HwTarget, error) {
+	board := getBuildTargetFromSchedulingTarget(target)
+	model := getModelFromSchedulingTarget(target)
+	variant := target.GetSwarmingDef().GetVariant()
+	return populateHwTargetHelper(ctx, board, model, variant, suiteInfo, target.GetSwarmingDef().GetDutInfo(), target)
+}
+
+func populateHelperOldProto(ctx context.Context, trHelper *TrV2ReqHelper) error {
+	board := getBuildTargetfromHwDef(trHelper.trReqHWDef)
+	model := getModelTargetfromHwDef(trHelper.trReqHWDef)
+	variant := trHelper.trReqHWDef.GetVariant()
+	target, err := populateHwTargetHelper(ctx, board, model, variant, trHelper.suiteInfo, trHelper.trReqHWDef.GetDutInfo(), nil)
+	if err != nil {
+		return err
+	}
+	trHelper.primaryTarget = target
+	target.provisionInfo = findProvisionInfo(ctx, trHelper)
+
+	return nil
+}
+
+func populateHelperNewProto(ctx context.Context, trHelper *TrV2ReqHelper) error {
+	target, err := populateHwTarget(ctx, trHelper.schedUnit.GetPrimaryTarget(), trHelper.suiteInfo)
+	if err != nil {
+		return err
+	}
+	target.provisionInfo = getProvisionInfoFromSuiteInfo(target.board, target.variant, trHelper.suiteInfo)
+	trHelper.primaryTarget = target
+
+	trHelper.secondaryTargets = []*HwTarget{}
+	for _, secondary := range trHelper.schedUnit.GetCompanionTargets() {
+		target, err := populateHwTarget(ctx, secondary, trHelper.suiteInfo)
+		if err != nil {
+			return err
+		}
+		target.provisionInfo = getProvisionInfoFromSuiteInfo(target.board, target.variant, trHelper.suiteInfo)
+
+		trHelper.secondaryTargets = append(trHelper.secondaryTargets, target)
+	}
+	return nil
+}
+
 func populateHelper(ctx context.Context, trHelper *TrV2ReqHelper) error {
+	if trHelper.schedUnit != nil {
+		// new proto flow (supports multi-dut)
+		err := populateHelperNewProto(ctx, trHelper)
+		if err != nil {
+			return err
+		}
+
+	} else if trHelper.trReqHWDef != nil {
+		// TODO(oldProto-azrahman): remove when the new proto is rolled in
+		// old proto flow (doesn't support multi dut)
+		err := populateHelperOldProto(ctx, trHelper)
+		if err != nil {
+			return err
+		}
+	}
 	trHelper.suiteName = trHelper.suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
-	trHelper.board = strings.ToLower(getBuildTargetfromHwDef(trHelper.trReqHWDef))
-	trHelper.model = strings.ToLower(getModelTargetfromHwDef(trHelper.trReqHWDef))
 	trHelper.pool = pool(trHelper.suiteInfo)
-	logging.Infof(ctx, "POOL FOUND: %s", trHelper.suiteInfo)
-	trHelper.variant = trHelper.trReqHWDef.GetVariant()
-
-	trHelper.boardWVaraint = trHelper.board
-	if trHelper.variant != "" {
-		trHelper.boardWVaraint = fmt.Sprintf("%s-%s", trHelper.board, trHelper.variant)
-
-	}
 	trHelper.currBBID = trHelper.build.Build().GetId()
-
-	trHelper.gcsArtifactPath = findGcsPath(trHelper.suiteInfo, trHelper.board, trHelper.variant)
-	if trHelper.gcsArtifactPath == "" {
-		logging.Infof(ctx, "GcsPath was not found for build target: %s", trHelper.boardWVaraint)
-		return fmt.Errorf("GcsPath was not found for build target: %s", trHelper.boardWVaraint)
-	}
-
-	trHelper.builderStr = getBuildFromGcsPath(trHelper.gcsArtifactPath)
-
+	trHelper.builderStr = getBuildFromGcsPath(trHelper.primaryTarget.gcsArtifactPath)
 	trHelper.parentRequestUID = fmt.Sprintf(CtpRequestUIDTemplate, trHelper.currBBID, trHelper.suiteName)
 	trHelper.currSwarmingID = os.Getenv("SWARMING_TASK_ID")
 	if trHelper.currSwarmingID == "" {
 		logging.Infof(ctx, "SWARMING_TASK_ID NOT FOUND")
 	}
-
 	trHelper.analyticsName = trHelper.suiteInfo.GetSuiteRequest().GetAnalyticsName()
 
 	return nil
+}
+
+func populateHwTargetHelper(ctx context.Context, board string, model string, variant string, suiteInfo *api.SuiteInfo, dutInfo *labapi.Dut, apiTarget *api.Target) (*HwTarget, error) {
+	hwTarget := &HwTarget{apiTarget: apiTarget}
+	hwTarget.board = strings.ToLower(board)
+	hwTarget.model = strings.ToLower(model)
+	hwTarget.variant = strings.ToLower(variant)
+	hwTarget.boardWVaraint = hwTarget.board
+	if variant != "" {
+		hwTarget.boardWVaraint = fmt.Sprintf("%s-%s", hwTarget.board, hwTarget.variant)
+	}
+
+	hwTarget.gcsArtifactPath = findGcsPath(suiteInfo, board, variant)
+	if hwTarget.gcsArtifactPath == "" {
+		logging.Infof(ctx, "GcsPath was not found for build target: %s", hwTarget.boardWVaraint)
+		// if the type is not cros, then ignore
+		switch dutType := dutInfo.GetDutType().(type) {
+		case *labapi.Dut_Chromeos:
+			return hwTarget, fmt.Errorf("GcsPath was not found for build target: %s", hwTarget.boardWVaraint)
+		default:
+			logging.Infof(ctx, "Ignoring gcsPath err for non-cros type: %s", dutType)
+		}
+	}
+
+	return hwTarget, nil
 }
 
 // GenerateArgs generates args for the builder request.
@@ -163,7 +224,7 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 	args := request.Args{
 		Cmd:               *createCommand(ctx, trHelper.suiteName),
 		SwarmingPool:      trHelper.pool,
-		Dimensions:        createFreeformDims(trHelper.trReqHWDef),
+		Dimensions:        createFreeformDims(trHelper),
 		ParentTaskID:      trHelper.currSwarmingID,
 		ParentRequestUID:  trHelper.parentRequestUID,
 		Priority:          10,
@@ -181,21 +242,11 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 	}
 	args.SchedulableLabels = labels
 
-	secondaryLabels, err := createSecondaryLabels()
+	secondaryLabels, err := createSecondaryLabels(trHelper)
 	if err != nil {
 		return nil, errors.Annotate(err, "error while creating secondary labels: ").Err()
 	}
 	args.SecondaryDevicesLabels = secondaryLabels
-
-	// TODO (azrahman): Should we even use provisionable dims for scheduling?
-	provisionableDims, _ := createProvisionableDimensions()
-	args.ProvisionableDimensions = provisionableDims
-	args.ProvisionableDimensionExpiration = time.Minute
-
-	provInfo := findProvisionInfo(ctx, trHelper)
-	if provInfo == nil {
-		return nil, fmt.Errorf("No provision info found!!")
-	}
 
 	if trHelper.dynamicRun {
 		dynamicRequest, err := createDynamicTrv2Request(ctx, trHelper)
@@ -204,14 +255,12 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 		}
 		args.DynamicTestRunnerRequest = dynamicRequest
 	} else {
-		cftTestRequest, err := createCftTestRequest(ctx, trHelper, provInfo)
+		cftTestRequest, err := createCftTestRequest(ctx, trHelper)
 		if err != nil {
 			return nil, err
 		}
 		args.CFTTestRunnerRequest = cftTestRequest
 	}
-
-	logging.Infof(ctx, "trhelper: %s", trHelper.currBBID)
 
 	tags, err := createSwarmingTags(ctx, trHelper)
 	if err != nil {
@@ -220,18 +269,6 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 	args.SwarmingTags = tags
 
 	return &args, nil
-}
-
-// generateReqName generates request name.
-func generateReqName(board string, build string, suiteName string) string {
-	retVal := board
-	if build != "" {
-		retVal += fmt.Sprintf("-%s", build)
-	}
-	if suiteName != "" {
-		retVal += fmt.Sprintf(".%s", suiteName)
-	}
-	return retVal
 }
 
 // createCommand creates cmd for the builder request.
@@ -245,9 +282,7 @@ func createCommand(ctx context.Context, suiteName string) *worker.Command {
 		Deadline:        time.Now().Add(DefaultTimeout), // Deadline should come from input (add it)
 		Keyvals:         keyvals,
 		OutputToIsolate: true,
-		TaskName:        suiteName, // 111: was test name in ctpv1
-		//TestArgs:        "bar", // TODO (azrahman): add test args support when
-		// ctpv2 supports it
+		TaskName:        suiteName,
 	}
 
 	// This was retrieved from input in ctpv1 but turns out this was always the same.
@@ -260,21 +295,49 @@ func createCommand(ctx context.Context, suiteName string) *worker.Command {
 	return cmd
 }
 
-// createFreeformDims creates free form dims from swarming def.
-func createFreeformDims(TRRequesthwDef *testapi.SwarmingDefinition) []string {
-	freeformDims := []string{"dut_state:ready"}
-	if TRRequesthwDef.GetDutInfo().GetChromeos().GetHwid() != "" {
-		freeformDims = append(freeformDims, fmt.Sprintf("hwid:%s", TRRequesthwDef.GetDutInfo().GetChromeos().GetHwid()))
+func getFreeFormDimsForTarget(target *api.Target) []string {
+	dims := []string{}
+	hwId := target.GetSwarmingDef().GetDutInfo().GetChromeos().GetHwid()
+	if hwId != "" {
+		dims = append(dims, fmt.Sprintf("hwid:%s", hwId))
 	}
 
-	for _, v := range TRRequesthwDef.GetSwarmingLabels() {
+	for _, label := range target.GetSwarmingDef().GetSwarmingLabels() {
+		dims = append(dims, formatLabel(label))
+	}
+	return dims
+}
+
+// createFreeformDims creates free form dims from swarming def.
+func createFreeformDims(trv2ReqHelper *TrV2ReqHelper) []string {
+	if trv2ReqHelper.schedUnit != nil {
+		// new proto flow
+		primaryTarget := trv2ReqHelper.schedUnit.GetPrimaryTarget()
+
+		freeformDims := []string{"dut_state:ready"}
+		freeformDims = append(freeformDims, getFreeFormDimsForTarget(primaryTarget)...)
+
+		// secondary targets should not have any swarming labels.
+		// hence not adding any from them.
+
+		return freeformDims
+	}
+
+	// TODO (oldProt-azrahman): remove
+	// old proto flow
+	tRRequesthwDef := trv2ReqHelper.trReqHWDef
+	freeformDims := []string{"dut_state:ready"}
+	if tRRequesthwDef.GetDutInfo().GetChromeos().GetHwid() != "" {
+		freeformDims = append(freeformDims, fmt.Sprintf("hwid:%s", tRRequesthwDef.GetDutInfo().GetChromeos().GetHwid()))
+	}
+
+	for _, v := range tRRequesthwDef.GetSwarmingLabels() {
 		freeformDims = append(freeformDims, formatLabel(v))
 	}
 	return freeformDims
 }
 
 func formatLabel(label string) string {
-
 	if strings.HasPrefix(label, "label") || strings.HasPrefix(label, "dut_name") {
 		return label
 	} else {
@@ -282,10 +345,56 @@ func formatLabel(label string) string {
 	}
 }
 
+func getProvisionInfoFromTarget(target *api.Target, board string, variant string) []*testapi.ProvisionInfo {
+	if strings.ToLower(getBuildTargetFromSchedulingTarget(target)) == board && strings.ToLower(target.GetSwarmingDef().GetVariant()) == variant {
+		return target.GetSwarmingDef().GetProvisionInfo()
+	}
+	return nil
+}
+
+func getGcsPathFromProvisionInfos(provInfos []*testapi.ProvisionInfo) string {
+	for _, provInfo := range provInfos {
+		if provInfo.GetType() == testapi.ProvisionInfo_CROS {
+			return provInfo.GetInstallRequest().GetImagePath().GetPath()
+		}
+	}
+
+	return ""
+}
+
+func findGcsPathFromTarget(target *api.Target, board string, variant string) string {
+	provInfos := getProvisionInfoFromTarget(target, board, variant)
+	if provInfos != nil {
+		return getGcsPathFromProvisionInfos(provInfos)
+	}
+
+	return ""
+}
+
 // findGcsPath finds gcs path for provided board.
 // This is based on the given board + id; then looping through the suite metadata to find
 // the target which matched these. We then will return the GCS path from there.
 func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, variant string) string {
+
+	schedUnits := suiteInfo.GetSuiteMetadata().GetSchedulingUnits()
+	if schedUnits != nil && len(schedUnits) != 0 {
+		// new proto flow
+		for _, schedUnit := range schedUnits {
+			// search primary target first
+			if gcsPath := findGcsPathFromTarget(schedUnit.PrimaryTarget, board, variant); gcsPath != "" {
+				return gcsPath
+			}
+			// search secondary targets
+			for _, secondary := range schedUnit.CompanionTargets {
+				if gcsPath := findGcsPathFromTarget(secondary, board, variant); gcsPath != "" {
+					return gcsPath
+				}
+			}
+		}
+		return ""
+	}
+
+	// TODO (oldproto-azrahman): remove this when new proto rolls in
 	for _, suiteTarget := range suiteInfo.GetSuiteMetadata().GetTargetRequirements() {
 		// This is [0] indexed because we are ignoring multi-dut today.
 
@@ -304,11 +413,10 @@ func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, variant string) str
 		}
 	}
 	return ""
-
 }
 
 func findProvisionInfo(ctx context.Context, trHelper *TrV2ReqHelper) []*testapi.ProvisionInfo {
-	logging.Infof(ctx, "looking for provision info for board: %s, variant: %s", trHelper.board, trHelper.variant)
+	logging.Infof(ctx, "looking for provision info for board: %s, variant: %s", trHelper.primaryTarget.board, trHelper.primaryTarget.variant)
 	logging.Infof(ctx, "looking for provision info for suiteMD: %s", trHelper.suiteInfo.GetSuiteMetadata())
 
 	for _, suiteTarget := range trHelper.suiteInfo.GetSuiteMetadata().GetTargetRequirements() {
@@ -325,14 +433,34 @@ func findProvisionInfo(ctx context.Context, trHelper *TrV2ReqHelper) []*testapi.
 		suiteSwDef := suiteTarget.GetSwRequirement()
 		logging.Infof(ctx, "looking for provision info for suiteInfo: %s", suiteSwDef)
 
-		if getBuildTargetfromHwDef(suiteHwDef) == trHelper.board && suiteHwDef.GetVariant() == trHelper.variant {
+		if getBuildTargetfromHwDef(suiteHwDef) == trHelper.primaryTarget.board && suiteHwDef.GetVariant() == trHelper.primaryTarget.variant {
 			return suiteHwDef.GetProvisionInfo()
 		}
 	}
 	return nil
-
 }
 
+// only works for new proto
+// this will return the first one that matches provided board/variant
+// if there are multiple targets with same board/variant, assumption here is that
+// they all have same provision info
+func getProvisionInfoFromSuiteInfo(board string, variant string, suiteInfo *api.SuiteInfo) []*testapi.ProvisionInfo {
+	for _, schedUnit := range suiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
+		// check primary
+		if provInfo := getProvisionInfoFromTarget(schedUnit.GetPrimaryTarget(), board, variant); provInfo != nil {
+			return provInfo
+		}
+		// check secondary
+		for _, secondary := range schedUnit.GetCompanionTargets() {
+			if provInfo := getProvisionInfoFromTarget(secondary, board, variant); provInfo != nil {
+				return provInfo
+			}
+		}
+	}
+	return nil
+}
+
+// ----- TODO (oldProt-azrahman): remove oldProto func defs -----
 func getBuildTargetfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string {
 	return TRRequesthwDef.GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget()
 }
@@ -347,7 +475,25 @@ func getBuildTargetWVariantfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition)
 	return fmt.Sprintf("%s-%s", getBuildTargetfromHwDef(TRRequesthwDef), TRRequesthwDef.GetVariant())
 }
 
+// --------------------
+
+func getBuildTargetFromSchedulingTarget(target *testapi.Target) string {
+	return common.DutModelFromDut(target.GetSwarmingDef().GetDutInfo()).GetBuildTarget()
+}
+
+func getModelFromSchedulingTarget(target *testapi.Target) string {
+	return common.DutModelFromDut(target.GetSwarmingDef().GetDutInfo()).GetModelName()
+}
+
+func getBuildTargetWVariantFromSchedulingTarget(target *testapi.Target) string {
+	if target.GetSwarmingDef().GetVariant() == "" {
+		return getBuildTargetFromSchedulingTarget(target)
+	}
+	return fmt.Sprintf("%s-%s", getBuildTargetFromSchedulingTarget(target), target.GetSwarmingDef().GetVariant())
+}
+
 func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*api.CrosTestRunnerDynamicRequest, error) {
+	// TODO(cdelagarza): support multi-dut
 	deadline := timestamppb.New(time.Now().Add(19 * time.Hour))
 
 	testCaseIds := []*testapi.TestCase_Id{}
@@ -367,12 +513,12 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 	}
 
 	keyvals := make(map[string]string)
-	keyvals["suite"] = trHelper.suiteName // suite name
+	keyvals["suite"] = trHelper.suiteName
 
 	// TODO (dbeckett) we need the int of the shard # passed into the gofunc.
-	keyvals["label"] = fmt.Sprintf("%s-shard-0", trHelper.suiteName) // test name
-	keyvals["build"] = trHelper.builderStr                           // Required for rdb-publish
-	keyvals["build_target"] = trHelper.board
+	keyvals["label"] = fmt.Sprintf("%s/%s/%s-shard-%d", trHelper.builderStr, trHelper.suiteName, trHelper.suiteName, trHelper.shardNum) // ex: dedede-release/R126-15863.0.0/wifi_cross_device_multidut_flaky/wifi_cross_device_multidut_flaky-shard-0
+	keyvals["build"] = trHelper.builderStr                                                                                              // Required for rdb-publish
+	keyvals["build_target"] = trHelper.primaryTarget.board
 	keyvals["parent_job_id"] = trHelper.currSwarmingID
 
 	gsSourcePath := ""
@@ -383,14 +529,14 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 	builder := common_builders.DynamicTrv2Builder{
 		ParentBuildId:        trHelper.currBBID,
 		ParentRequestUid:     trHelper.parentRequestUID,
-		ContainerGcsPath:     trHelper.gcsArtifactPath + common.ContainerMetadataPath,
-		ContainerMetadataKey: trHelper.boardWVaraint,
+		ContainerGcsPath:     trHelper.primaryTarget.gcsArtifactPath + common.ContainerMetadataPath,
+		ContainerMetadataKey: trHelper.primaryTarget.boardWVaraint,
 		BuildString:          trHelper.builderStr,
 		Deadline:             deadline,
 		TestSuites:           testSuites,
 		PrimaryDut: &labapi.DutModel{
-			BuildTarget: trHelper.board,
-			ModelName:   trHelper.model,
+			BuildTarget: trHelper.primaryTarget.board,
+			ModelName:   trHelper.primaryTarget.model,
 		},
 		CompanionDuts: []*labapi.DutModel{},
 		Keyvals:       keyvals,
@@ -419,22 +565,15 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 }
 
 // createCftTestRequest creates cft test request.
-func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper, provInfo []*testapi.ProvisionInfo) (*skylab_test_runner.CFTTestRequest, error) {
+func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab_test_runner.CFTTestRequest, error) {
 	deadline := timestamppb.New(time.Now().Add(19 * time.Hour))
 
-	dutModel := &labapi.DutModel{
-		BuildTarget: trHelper.board,
-		ModelName:   trHelper.model,
-	}
-
-	containerGcsPath := trHelper.gcsArtifactPath + common.ContainerMetadataPath
+	containerGcsPath := trHelper.primaryTarget.gcsArtifactPath + common.ContainerMetadataPath
 	containerMetadata, err := common.FetchContainerMetadata(ctx, containerGcsPath)
 	if err != nil {
 		logging.Infof(ctx, "error while fetching container metadata: %s", err)
 		return nil, err
 	}
-
-	companionDuts := []*skylab_test_runner.CFTTestRequest_Device{}
 
 	testCaseIds := []*testapi.TestCase_Id{}
 	for _, testCase := range trHelper.testCases {
@@ -453,28 +592,33 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper, provInfo
 	}
 
 	keyvals := make(map[string]string)
-	keyvals["suite"] = trHelper.suiteName // suite name
+	keyvals["suite"] = trHelper.suiteName
 
 	// TODO (dbeckett) we need the int of the shard # passed into the gofunc.
-	keyvals["label"] = fmt.Sprintf("%s-shard-0", trHelper.suiteName) // test name
-	keyvals["build"] = trHelper.builderStr                           // Required for rdb-publish
-	keyvals["build_target"] = trHelper.board
+	keyvals["label"] = fmt.Sprintf("%s/%s/%s-shard-%d", trHelper.builderStr, trHelper.suiteName, trHelper.suiteName, trHelper.shardNum) // ex: dedede-release/R126-15863.0.0/wifi_cross_device_multidut_flaky/wifi_cross_device_multidut_flaky-shard-0
+	keyvals["build"] = trHelper.builderStr                                                                                              // Required for rdb-publish
+	keyvals["build_target"] = trHelper.primaryTarget.board
 	keyvals["parent_job_id"] = trHelper.currSwarmingID
 
-	provisionState, err := buildProvisionState(provInfo)
+	primaryDut, err := createCftDeviceRequestFromTarget(trHelper.primaryTarget)
 	if err != nil {
 		return nil, err
 	}
 
+	companionDuts := []*skylab_test_runner.CFTTestRequest_Device{}
+	for _, secondary := range trHelper.secondaryTargets {
+		secondaryDut, err := createCftDeviceRequestFromTarget(secondary)
+		if err != nil {
+			return nil, err
+		}
+		companionDuts = append(companionDuts, secondaryDut)
+	}
+
 	cftTestRequest := &skylab_test_runner.CFTTestRequest{
-		Deadline:         deadline,
-		ParentRequestUid: trHelper.parentRequestUID,
-		ParentBuildId:    trHelper.currBBID,
-		PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
-			DutModel:             dutModel,
-			ProvisionState:       provisionState,
-			ContainerMetadataKey: trHelper.boardWVaraint,
-		},
+		Deadline:                     deadline,
+		ParentRequestUid:             trHelper.parentRequestUID,
+		ParentBuildId:                trHelper.currBBID,
+		PrimaryDut:                   primaryDut,
 		CompanionDuts:                companionDuts,
 		ContainerMetadata:            containerMetadata,
 		TestSuites:                   testSuites,
@@ -485,6 +629,71 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper, provInfo
 	}
 
 	return cftTestRequest, nil
+}
+
+// This method is currently incomplete, its basically just taking the gcs path from the given info.
+// it will migrate to the dynamic TRv2 stuff in the near future.
+// TODO (oldProto-azrahman): remove old proto
+func buildProvisionStateOldProto(provInfo []*testapi.ProvisionInfo) (*testapi.ProvisionState, error) {
+	if len(provInfo) == 0 {
+		return nil, fmt.Errorf("No Provision Info items given")
+	}
+	gcsPath := provInfo[0].GetInstallRequest().GetImagePath().GetPath()
+	if gcsPath == "" {
+		return nil, fmt.Errorf("No gcs path found found")
+	}
+
+	provisionState := &testapi.ProvisionState{
+
+		SystemImage: &testapi.ProvisionState_SystemImage{
+			SystemImagePath: &goconfig.StoragePath{
+				HostType: goconfig.StoragePath_GS,
+				Path:     gcsPath,
+			},
+		},
+		ProvisionMetadata: nil,
+	}
+	return provisionState, nil
+}
+
+func createCftDeviceRequestFromTarget(target *HwTarget) (*skylab_test_runner.CFTTestRequest_Device, error) {
+	var err error
+	dutModel := &labapi.DutModel{
+		BuildTarget: target.board,
+		ModelName:   target.model,
+	}
+
+	var provisionState *testapi.ProvisionState
+	provisionState = nil
+	if common.IsCros(target.board) {
+		if target.apiTarget == nil {
+			// TODO (oldProto-azrahman): remove old proto
+			// old proto flow
+			provisionState, err = buildProvisionStateOldProto(target.provisionInfo)
+		} else {
+			// new proto flow
+			provisionState, err = buildCrosProvisionState(target.apiTarget)
+		}
+
+		if err != nil {
+			return nil, err
+		}
+	} else if common.IsAndroid((target.board)) {
+		provisionState, err = buildAndroidProvisionState(target.apiTarget)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if provisionState == nil {
+		return nil, fmt.Errorf("nil provisionState!")
+	}
+
+	return &skylab_test_runner.CFTTestRequest_Device{
+		DutModel:             dutModel,
+		ProvisionState:       provisionState,
+		ContainerMetadataKey: target.boardWVaraint,
+	}, nil
 }
 
 // getBuildFromGcsPath gets build from gcs path.
@@ -542,8 +751,8 @@ func createLabels(trHelper *TrV2ReqHelper) (*inventory.SchedulableLabels, error)
 	// inv., inv.Model
 	// TODO (azrahman): Handle non chromeos type.
 
-	labels.Board = &trHelper.board
-	labels.Model = &trHelper.model
+	labels.Board = &trHelper.primaryTarget.board
+	labels.Model = &trHelper.primaryTarget.model
 
 	if trHelper.pool == "" || trHelper.pool == DutPoolQuota {
 		labels.CriticalPools = append(labels.CriticalPools, inventory.SchedulableLabels_DUT_POOL_QUOTA)
@@ -563,7 +772,7 @@ func createLabels(trHelper *TrV2ReqHelper) (*inventory.SchedulableLabels, error)
 }
 
 // createSecondaryLabels creates secondary labels.
-func createSecondaryLabels() ([]*inventory.SchedulableLabels, error) {
+func createSecondaryLabels(trHelper *TrV2ReqHelper) ([]*inventory.SchedulableLabels, error) {
 
 	// TODO (azrahman): populate this for multi-dut use-case.
 	// 1. Add secondary board and model
@@ -582,6 +791,25 @@ func createSecondaryLabels() ([]*inventory.SchedulableLabels, error) {
 	// }
 	// return sInvLabels
 
+	if trHelper.schedUnit != nil {
+		invLabels := []*inventory.SchedulableLabels{}
+
+		for _, secondary := range trHelper.schedUnit.GetCompanionTargets() {
+			il := inventory.NewSchedulableLabels()
+			board := getBuildTargetFromSchedulingTarget(secondary)
+			model := getModelFromSchedulingTarget(secondary)
+			if board != "" {
+				*il.Board = board
+			}
+			if model != "" {
+				*il.Model = model
+			}
+			invLabels = append(invLabels, il)
+		}
+
+		return invLabels, nil
+	}
+
 	return []*inventory.SchedulableLabels{{}}, nil
 }
 
@@ -589,6 +817,36 @@ func createSecondaryLabels() ([]*inventory.SchedulableLabels, error) {
 func createSwarmingTags(ctx context.Context, trHelper *TrV2ReqHelper) ([]string, error) {
 	tags := []string{}
 
+	// add board, models
+	if trHelper.primaryTarget.board != "" {
+		tags = append(tags, "label-board:"+trHelper.primaryTarget.board)
+		tags = append(tags, "primary_board:"+trHelper.primaryTarget.board)
+	}
+	if trHelper.primaryTarget.model != "" {
+		tags = append(tags, "label-model:"+trHelper.primaryTarget.model)
+		tags = append(tags, "primary_model:"+trHelper.primaryTarget.model)
+	}
+
+	// add tags for multiDut
+	secondaryBooards := []string{}
+	secondaryModels := []string{}
+	for _, secondary := range trHelper.secondaryTargets {
+		if secondary.board != "" {
+			secondaryBooards = append(secondaryBooards, secondary.board)
+		}
+		if secondary.model != "" {
+			secondaryModels = append(secondaryModels, secondary.model)
+		}
+	}
+
+	if len(secondaryBooards) > 0 {
+		tags = append(tags, "secondary_boards:"+strings.Join(secondaryBooards, ","))
+	}
+	if len(secondaryModels) > 0 {
+		tags = append(tags, "secondary_models:"+strings.Join(secondaryModels, ","))
+	}
+
+	// qs account
 	qsAccount := trHelper.suiteInfo.GetSuiteMetadata().GetSchedulerInfo().GetQsAccount()
 	if qsAccount == "" {
 		qsAccount = "unmanaged_p2"
@@ -596,19 +854,23 @@ func createSwarmingTags(ctx context.Context, trHelper *TrV2ReqHelper) ([]string,
 	}
 	tags = append(tags, "qs_account:"+qsAccount)
 
-	tags = append(tags, "label-board:"+trHelper.boardWVaraint)
-	if trHelper.model != "" {
-		tags = append(tags, "label-model:"+trHelper.model)
-	}
-
+	// pool
 	tags = append(tags, "label-pool:"+trHelper.pool)
 
+	// suite
 	if trHelper.suiteName != "" {
 		tags = append(tags, "label-suite:"+trHelper.suiteName)
+		tags = append(tags, "suite:"+trHelper.suiteName)
 	}
 
+	// parent swarming id
 	if trHelper.currSwarmingID != "" {
 		tags = append(tags, "parent_task_id:"+trHelper.currSwarmingID)
+	}
+
+	// parent created by
+	if trHelper.build.Build().GetCreatedBy() != "" {
+		tags = append(tags, "parent_created_by:"+trHelper.build.Build().GetCreatedBy())
 	}
 
 	// TODO should we un-hardcode this?
@@ -630,65 +892,27 @@ func createSwarmingTags(ctx context.Context, trHelper *TrV2ReqHelper) ([]string,
 	// TODO(dbeckett) THESE BELOW:
 	reprName := fmt.Sprintf("shard-%v", trHelper.shardNum)
 	tags = append(tags, "display_name:"+makeDisplayName(trHelper.builderStr, trHelper.suiteName, reprName))
-	ll := getLogLocation()
-	if ll != "" {
-		tags = append(tags, "log_location:"+ll)
-	}
 	// tags = append(tags, removeReservedTags(g.Params.GetDecorations().GetTags())...)
 	// // Add primary/secondary DUTs board/model info in swarming tags for
 	// // multi-DUTs result reporting purpose.
 	// tags = append(tags, g.multiDutsTags()...)
 
 	return tags, nil
-
-}
-
-// TODO (azrahaman)
-func getLogLocation() string {
-	return ""
 }
 
 func makeDisplayName(buildStr string, suite string, TRName string) string {
-	return fmt.Sprintf("%s/%s/%s", buildStr, suite, TRName)
+	return fmt.Sprintf("%s/%s-%s", buildStr, suite, TRName)
 }
 
-// func (g *Generator) multiDutsTags() []string {
-// 	var tags []string
-// 	if g.Params.GetSoftwareAttributes().GetBuildTarget() != nil {
-// 		tags = append(tags, fmt.Sprintf("primary_board:%s", g.Params.SoftwareAttributes.BuildTarget.Name))
-// 	}
-// 	if g.Params.GetHardwareAttributes().GetModel() != "" {
-// 		tags = append(tags, fmt.Sprintf("primary_model:%s", g.Params.HardwareAttributes.Model))
-// 	}
-// 	sds := g.Params.GetSecondaryDevices()
-// 	var secondary_boards []string
-// 	var secondary_models []string
-// 	for _, sd := range sds {
-// 		if sd.GetSoftwareAttributes().GetBuildTarget() != nil {
-// 			secondary_boards = append(secondary_boards, sd.SoftwareAttributes.BuildTarget.Name)
-// 		}
-// 		if sd.GetHardwareAttributes().GetModel() != "" {
-// 			secondary_models = append(secondary_models, sd.HardwareAttributes.Model)
-// 		}
-// 	}
-// 	if len(secondary_boards) > 0 {
-// 		boards := strings.Join(secondary_boards, ",")
-// 		tags = append(tags, fmt.Sprintf("secondary_boards:%s", boards))
-// 	}
-// 	if len(secondary_models) > 0 {
-// 		models := strings.Join(secondary_models, ",")
-// 		tags = append(tags, fmt.Sprintf("secondary_models:%s", models))
-// 	}
-// 	return tags
-// }
-
-// This method is currently incomplete, its basically just taking the gcs path from the given info.
-// it will migrate to the dynamic TRv2 stuff in the near future.
-func buildProvisionState(provInfo []*testapi.ProvisionInfo) (*testapi.ProvisionState, error) {
-	if len(provInfo) == 0 {
+func buildCrosProvisionState(target *api.Target) (*testapi.ProvisionState, error) {
+	if target == nil {
+		return nil, fmt.Errorf("nil target")
+	}
+	provInfo := target.GetSwarmingDef().GetProvisionInfo()[0]
+	if provInfo == nil {
 		return nil, fmt.Errorf("No Provision Info items given")
 	}
-	gcsPath := provInfo[0].GetInstallRequest().GetImagePath().GetPath()
+	gcsPath := provInfo.GetInstallRequest().GetImagePath().GetPath()
 	if gcsPath == "" {
 		return nil, fmt.Errorf("No gcs path found found")
 	}
@@ -704,6 +928,53 @@ func buildProvisionState(provInfo []*testapi.ProvisionInfo) (*testapi.ProvisionS
 		ProvisionMetadata: nil,
 	}
 	return provisionState, nil
+}
+
+func buildAndroidProvisionState(target *api.Target) (*testapi.ProvisionState, error) {
+	if target == nil {
+		return nil, fmt.Errorf("nil target")
+	}
+
+	androidProvisionRequestMetadata := &testapi.AndroidProvisionRequestMetadata{}
+	gmsCorePackage := ""
+	androidImageVersion := ""
+
+	kvs := target.GetSwReq().GetKeyValues()
+
+	for _, kv := range kvs {
+		if kv.Key == common_builders.GmsCorePackage {
+			gmsCorePackage = kv.Value
+		}
+		if kv.Key == common_builders.AndroidImageVersion {
+			androidImageVersion = kv.Value
+		}
+	}
+
+	if gmsCorePackage != "" {
+		androidProvisionRequestMetadata.CipdPackages = []*testapi.CIPDPackage{
+			{
+				AndroidPackage: 1,
+				VersionOneof: &testapi.CIPDPackage_Ref{
+					Ref: gmsCorePackage,
+				},
+			},
+		}
+	}
+
+	if androidImageVersion != "" {
+		androidProvisionRequestMetadata.AndroidOsImage = &testapi.AndroidOsImage{
+			LocationOneof: &testapi.AndroidOsImage_OsVersion{
+				OsVersion: androidImageVersion,
+			},
+		}
+	}
+
+	provisionMetadata, err := anypb.New(androidProvisionRequestMetadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return &testapi.ProvisionState{ProvisionMetadata: provisionMetadata}, nil
 }
 
 func suiteName(suiteInfo *testapi.SuiteInfo) string {

@@ -5,26 +5,97 @@
 package common
 
 import (
+	"fmt"
 	"strings"
 
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
-func IsAndroid(hw *testapi.LegacyHW) bool {
+func IsAndroid(board string) bool {
 	return strings.Contains(
-		strings.ToLower(hw.GetBoard()),
+		strings.ToLower(board),
 		strings.ToLower("pixel"),
 	)
 }
 
-func IsCros(hw *testapi.LegacyHW) bool {
-	return (!IsDevBoard(hw) && !IsAndroid(hw))
+func IsCros(board string) bool {
+	return (!IsDevBoard(board) && !IsAndroid(board))
 }
 
-func IsDevBoard(hw *testapi.LegacyHW) bool {
-
+func IsDevBoard(board string) bool {
 	return strings.Contains(
-		strings.ToLower(hw.GetBoard()),
+		strings.ToLower(board),
 		strings.ToLower("-devboard"),
 	)
+}
+
+// GetBoardModelDims gets board, model dims from scheduling unit.
+func GetBoardModelDims(unit *api.SchedulingUnit) []string {
+	dims := []string{}
+	boardsMap := map[string]int{}
+	modelsMap := map[string]int{}
+
+	// process primary
+	primaryBoard := DutModelFromDut(unit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo()).GetBuildTarget()
+	if primaryBoard != "" {
+		dims = append(dims, fmt.Sprintf("label-board:%s", primaryBoard))
+		boardsMap[primaryBoard] = 1
+	}
+
+	primaryModel := DutModelFromDut(unit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo()).GetModelName()
+	if primaryModel != "" {
+		dims = append(dims, fmt.Sprintf("label-model:%s", primaryModel))
+		modelsMap[primaryModel] = 1
+	}
+
+	// process secondary
+	for _, secondary := range unit.GetCompanionTargets() {
+		board := DutModelFromDut(secondary.GetSwarmingDef().GetDutInfo()).GetBuildTarget()
+		if board != "" {
+			// When equal, the secondary needs the _n.
+			if count, ok := boardsMap[board]; ok {
+				count++
+				boardsMap[board] = count
+				board = fmt.Sprintf("%s_%d", board, count)
+			} else {
+				boardsMap[board] = 1
+			}
+
+			dims = append(dims, fmt.Sprintf("label-board:%s", board))
+		}
+
+		model := DutModelFromDut(secondary.GetSwarmingDef().GetDutInfo()).GetModelName()
+		if model != "" {
+			// When equal, the secondary needs the _2.
+			if count, ok := modelsMap[model]; ok {
+				count++
+				modelsMap[model] = count
+				model = fmt.Sprintf("%s_%d", model, count)
+			} else {
+				modelsMap[model] = 1
+			}
+
+			dims = append(dims, fmt.Sprintf("label-model:%s", model))
+		}
+	}
+
+	return dims
+}
+
+// DutModelFromDut gets dutModel from provided dut.
+func DutModelFromDut(dut *labapi.Dut) *labapi.DutModel {
+	if dut == nil {
+		return nil
+	}
+
+	switch hw := dut.GetDutType().(type) {
+	case *labapi.Dut_Chromeos:
+		return hw.Chromeos.GetDutModel()
+	case *labapi.Dut_Android_:
+		return hw.Android.GetDutModel()
+	case *labapi.Dut_Devboard_:
+		return hw.Devboard.GetDutModel()
+	}
+	return nil
 }

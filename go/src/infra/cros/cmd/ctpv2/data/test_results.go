@@ -14,7 +14,7 @@ import (
 type TestResults struct {
 	Suite         string
 	Key           string // board-model-variant
-	TopLevelError *error
+	TopLevelError error
 	Results       *skylab_test_runner.Result
 	Attempt       int // 0 means no retry
 	BuildUrl      string
@@ -22,7 +22,7 @@ type TestResults struct {
 
 func (t *TestResults) GetFailureErr() error {
 	if t.TopLevelError != nil {
-		return *t.TopLevelError
+		return t.TopLevelError
 	}
 
 	testResults, ok := t.Results.GetAutotestResults()["original_test"]
