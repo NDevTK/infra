@@ -160,38 +160,14 @@ func constructBaseVariantFromStateKeeper(
 func constructTestResultFromStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) (*artifactpb.TestResult, error) {
-
 	build := sk.BuildState.Build()
 	botDims := protoutil.MustBotDimensions(build)
-
 	resultProto := &artifactpb.TestResult{}
 
 	// Invocation level info
-	populateTestInvocationInfo(ctx, resultProto, sk)
+	populateTestInvocationInfo(ctx, resultProto, sk, botDims, build)
 
-	// - Primary execution info
-	primaryExecInfo := &artifactpb.ExecutionInfo{}
-	resultProto.TestInvocation.PrimaryExecutionInfo = primaryExecInfo
-
-	// -- Build info
-	populatePrimaryBuildInfo(ctx, primaryExecInfo, sk, botDims)
-
-	// -- Dut info
-	isSkylab := populatePrimaryDutInfo(ctx, primaryExecInfo, sk)
-
-	// -- Env info (skylab/satlab)
-	populatePrimaryEnvInfo(ctx, primaryExecInfo, botDims, build, isSkylab)
-
-	// -- Inventory info
-	populatePrimaryInventoryInfo(ctx, primaryExecInfo, sk, botDims)
-
-	// - Secondary execution info
-	populateSecondaryExecutionInfo(ctx, resultProto, sk)
-
-	// - Scheduling metadata
-	populateSchedulingMetadata(ctx, resultProto, build.GetTags())
-
-	// TestRuns
+	// Test level info
 	populateTestRunsInfo(ctx, resultProto, sk, botDims, build)
 
 	return resultProto, nil
@@ -201,19 +177,23 @@ func constructTestResultFromStateKeeper(
 func populateTestInvocationInfo(
 	ctx context.Context,
 	resultProto *artifactpb.TestResult,
-	sk *data.HwTestStateKeeper) {
-
+	sk *data.HwTestStateKeeper,
+	botDims []*buildbucketpb.StringPair,
+	build *buildbucketpb.Build) {
 	testInv := &artifactpb.TestInvocation{}
 	resultProto.TestInvocation = testInv
-	testInv.DutTopology = &labapi.DutTopology{
-		Duts: []*labapi.Dut{},
-	}
-	if sk.DutTopology != nil {
-		testInv.DutTopology.Id = sk.DutTopology.GetId()
-	}
-	for _, device := range sk.Devices {
-		testInv.DutTopology.Duts = append(testInv.DutTopology.Duts, device.GetDut())
-	}
+
+	// Dut topology
+	populateDUTTopology(ctx, testInv, sk)
+
+	// Primary execution info
+	populatePrimaryExecutionInfo(ctx, testInv, sk, botDims, build)
+
+	// Secondary execution info
+	populateSecondaryExecutionInfo(ctx, testInv, sk, botDims, build)
+
+	// Scheduling metadata
+	populateSchedulingMetadata(ctx, testInv, build.GetTags())
 }
 
 // getPrimaryDut get the primary Dut if exists. Otherwise, return nil.
@@ -229,47 +209,55 @@ func getPrimaryDut(sk *data.HwTestStateKeeper) *labapi.Dut {
 	return nil
 }
 
-// populatePrimaryBuildInfo populates primary build info.
-func populatePrimaryBuildInfo(
+// populateBuildInfo populates build info.
+func populateBuildInfo(
 	ctx context.Context,
-	primaryExecInfo *artifactpb.ExecutionInfo,
+	executionInfo *artifactpb.ExecutionInfo,
 	sk *data.HwTestStateKeeper,
-	botDims []*buildbucketpb.StringPair) {
-
-	// Build info
-	primaryBuildInfo := &artifactpb.BuildInfo{}
-	primaryExecInfo.BuildInfo = primaryBuildInfo
+	botDims []*buildbucketpb.StringPair,
+	build *buildbucketpb.Build,
+	dut *labapi.Dut) {
+	buildInfo := &artifactpb.BuildInfo{}
+	executionInfo.BuildInfo = buildInfo
 
 	if buildName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "build"); buildName != "" {
-		primaryBuildInfo.Name = buildName
+		buildInfo.Name = buildName
 	}
 
 	// TODO (azrahman): Even though this says build-target, it's always being
 	// set to board upstream (since pre trv2). This should be fixed at some point.
-	if board := sk.CftTestRequest.GetPrimaryDut().GetDutModel().GetBuildTarget(); board != "" {
-		primaryBuildInfo.Board = board
-	} else if board := common.GetValueFromRequestKeyvals(ctx, nil, sk.CrosTestRunnerRequest, "build_target"); board != "" {
-		primaryBuildInfo.Board = board
+	buildTarget := dut.GetChromeos().GetDutModel().GetBuildTarget()
+	if buildTarget != "" {
+		buildInfo.BuildTarget = buildTarget
+		buildInfo.Board = buildTarget
+	} else {
+		// Falls back to the CTR and CFT requests if it's the primary DUT.
+		if dut == getPrimaryDut(sk) {
+			if buildTarget = common.GetValueFromRequestKeyvals(ctx, nil, sk.CrosTestRunnerRequest, "build_target"); len(buildTarget) == 0 {
+				buildTarget = common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "build_target")
+			}
+
+			if len(buildTarget) != 0 {
+				buildInfo.BuildTarget = buildTarget
+				buildInfo.Board = buildTarget
+			}
+		}
 	}
 
-	if buildTarget := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "build_target"); buildTarget != "" {
-		primaryBuildInfo.BuildTarget = buildTarget
-	}
-
-	populatePrimaryBuildMetadata(ctx, primaryBuildInfo, sk, botDims)
-
+	populateBuildMetadata(ctx, buildInfo, sk, botDims, dut)
 }
 
-// populatePrimaryBuildMetadata populates primary build metadata.
-func populatePrimaryBuildMetadata(
+// populateBuildMetadata populates build metadata.
+func populateBuildMetadata(
 	ctx context.Context,
-	primaryBuildInfo *artifactpb.BuildInfo,
+	buildInfo *artifactpb.BuildInfo,
 	sk *data.HwTestStateKeeper,
-	botDims []*buildbucketpb.StringPair) {
+	botDims []*buildbucketpb.StringPair,
+	dut *labapi.Dut) {
 
 	// Build metadata
 	buildMetadata := &artifactpb.BuildMetadata{}
-	primaryBuildInfo.BuildMetadata = buildMetadata
+	buildInfo.BuildMetadata = buildMetadata
 
 	// - Firmware info
 	firmwareInfo := &artifactpb.BuildMetadata_Firmware{}
@@ -329,9 +317,8 @@ func populatePrimaryBuildMetadata(
 		lacrosInfo.LacrosVersion = lacrosVersion
 	}
 
-	primaryDut := getPrimaryDut(sk)
-	if primaryDut != nil {
-		chromeOSInfo := primaryDut.GetChromeos()
+	if dut != nil {
+		chromeOSInfo := dut.GetChromeos()
 		if chromeOSInfo != nil {
 			// - Chameleon info
 			buildMetadata.Chameleon = chromeOSInfo.GetChameleon()
@@ -342,42 +329,40 @@ func populatePrimaryBuildMetadata(
 	}
 }
 
-// populatePrimaryDutInfo populates primary dut info.
-func populatePrimaryDutInfo(
-	ctx context.Context,
-	primaryExecInfo *artifactpb.ExecutionInfo,
-	sk *data.HwTestStateKeeper) bool {
-
-	// Dut info
-	primaryDutInfo := &artifactpb.DutInfo{}
-	primaryExecInfo.DutInfo = primaryDutInfo
-
-	isSkylab := true
-	primaryDut := getPrimaryDut(sk)
-	if primaryDut != nil {
-		primaryDutInfo.Dut = primaryDut
-		isSkylab = !strings.HasPrefix(primaryDut.GetId().GetValue(), "satlab-")
+// isSkylab returns true if the dut is deployed in internal lab.
+func isSkylab(dut *labapi.Dut) bool {
+	if dut != nil {
+		return !strings.HasPrefix(dut.GetId().GetValue(), "satlab-")
 	}
-
-	requestedPrimaryDut := sk.CftTestRequest.GetPrimaryDut()
-	if sk.PrimaryDeviceMetadata != nil {
-		requestedPrimaryDut = sk.PrimaryDeviceMetadata
-	}
-	provisionState := requestedPrimaryDut.GetProvisionState()
-	if provisionState != nil {
-		primaryDutInfo.ProvisionState = provisionState
-	}
-
-	return isSkylab
+	return true
 }
 
-// populatePrimaryEnvInfo populates primary env info.
-func populatePrimaryEnvInfo(
+// populateDutInfo populates dut info.
+func populateDutInfo(
 	ctx context.Context,
-	primaryExecInfo *artifactpb.ExecutionInfo,
+	executionInfo *artifactpb.ExecutionInfo,
+	sk *data.HwTestStateKeeper,
+	dut *labapi.Dut,
+	provisionState *testapipb.ProvisionState) {
+	dutInfo := &artifactpb.DutInfo{}
+	executionInfo.DutInfo = dutInfo
+
+	if dut != nil {
+		dutInfo.Dut = dut
+	}
+
+	if provisionState != nil {
+		dutInfo.ProvisionState = provisionState
+	}
+}
+
+// populateEnvInfo populates env info.
+func populateEnvInfo(
+	ctx context.Context,
+	executionInfo *artifactpb.ExecutionInfo,
 	botDims []*buildbucketpb.StringPair,
 	build *buildbucketpb.Build,
-	isSkylab bool) {
+	dut *labapi.Dut) {
 
 	// - Drone info
 	droneInfo := &artifactpb.DroneInfo{}
@@ -424,69 +409,99 @@ func populatePrimaryEnvInfo(
 		bbInfo.AncestorIds = build.AncestorIds
 	}
 
-	if isSkylab {
+	if isSkylab(dut) {
 		// Skylab
 		skylabInfo := &artifactpb.SkylabInfo{DroneInfo: droneInfo, SwarmingInfo: swarmingInfo, BuildbucketInfo: bbInfo}
-		primaryExecInfo.EnvInfo = &artifactpb.ExecutionInfo_SkylabInfo{SkylabInfo: skylabInfo}
+		executionInfo.EnvInfo = &artifactpb.ExecutionInfo_SkylabInfo{SkylabInfo: skylabInfo}
 	} else {
 		// Satlab
 		satlabInfo := &artifactpb.SatlabInfo{DroneInfo: droneInfo, SwarmingInfo: swarmingInfo, BuildbucketInfo: bbInfo}
-		primaryExecInfo.EnvInfo = &artifactpb.ExecutionInfo_SatlabInfo{SatlabInfo: satlabInfo}
+		executionInfo.EnvInfo = &artifactpb.ExecutionInfo_SatlabInfo{SatlabInfo: satlabInfo}
 	}
 }
 
-// populatePrimaryInventoryInfo populates primary inventory info.
-func populatePrimaryInventoryInfo(
+// populateInventoryInfo populates inventory info.
+func populateInventoryInfo(
 	ctx context.Context,
-	primaryExecInfo *artifactpb.ExecutionInfo,
+	executionInfo *artifactpb.ExecutionInfo,
 	sk *data.HwTestStateKeeper,
 	botDims []*buildbucketpb.StringPair) {
-
-	// Build info
-	primaryInventoryInfo := &artifactpb.InventoryInfo{}
-	primaryExecInfo.InventoryInfo = primaryInventoryInfo
+	inventoryInfo := &artifactpb.InventoryInfo{}
+	executionInfo.InventoryInfo = inventoryInfo
 
 	if ufsZone := getSingleTagValue(botDims, "ufs_zone"); ufsZone != "" {
-		primaryInventoryInfo.UfsZone = ufsZone
+		inventoryInfo.UfsZone = ufsZone
 	}
+}
+
+// populateExecutionInfo populates execution info.
+func populateExecutionInfo(
+	ctx context.Context,
+	executionInfo *artifactpb.ExecutionInfo,
+	sk *data.HwTestStateKeeper,
+	botDims []*buildbucketpb.StringPair,
+	build *buildbucketpb.Build,
+	dut *labapi.Dut,
+	provisionState *testapipb.ProvisionState) {
+	// Build info
+	populateBuildInfo(ctx, executionInfo, sk, botDims, build, dut)
+
+	// Dut info
+	populateDutInfo(ctx, executionInfo, sk, dut, provisionState)
+
+	// Env info
+	populateEnvInfo(ctx, executionInfo, botDims, build, dut)
+
+	// Inventory info
+	populateInventoryInfo(ctx, executionInfo, sk, botDims)
+}
+
+// populatePrimaryExecutionInfo populates primary execution info.
+func populatePrimaryExecutionInfo(
+	ctx context.Context,
+	testInv *artifactpb.TestInvocation,
+	sk *data.HwTestStateKeeper,
+	botDims []*buildbucketpb.StringPair,
+	build *buildbucketpb.Build) {
+	primaryExecInfo := &artifactpb.ExecutionInfo{}
+	testInv.PrimaryExecutionInfo = primaryExecInfo
+
+	primaryDut := getPrimaryDut(sk)
+	requestedPrimaryDut := sk.CftTestRequest.GetPrimaryDut()
+	if sk.PrimaryDeviceMetadata != nil {
+		requestedPrimaryDut = sk.PrimaryDeviceMetadata
+	}
+	provisionState := requestedPrimaryDut.GetProvisionState()
+
+	populateExecutionInfo(ctx, primaryExecInfo, sk, botDims, build, primaryDut, provisionState)
 }
 
 // populateSecondaryExecutionInfo populates secondary execution info.
 func populateSecondaryExecutionInfo(
 	ctx context.Context,
-	resultProto *artifactpb.TestResult,
-	sk *data.HwTestStateKeeper) {
-
+	testInv *artifactpb.TestInvocation,
+	sk *data.HwTestStateKeeper,
+	botDims []*buildbucketpb.StringPair,
+	build *buildbucketpb.Build) {
 	// TODO (azrahman): check if inventory service actually provides these duts info
 	// or not for multi-duts. If not, raise this issue to proper channel.
 	companionDevicesMetadata := sk.CompanionDevicesMetadata
 	secondaryExecInfos := []*artifactpb.ExecutionInfo{}
 	for i, device := range sk.CompanionDevices {
 		secondaryExecInfo := &artifactpb.ExecutionInfo{}
-		secondaryDutInfo := &artifactpb.DutInfo{}
-		secondaryExecInfo.DutInfo = secondaryDutInfo
-		secondaryDutInfo.Dut = device.GetDut()
-
-		secondaryBuildInfo := &artifactpb.BuildInfo{}
-		secondaryExecInfo.BuildInfo = secondaryBuildInfo
-		if i < len(companionDevicesMetadata) {
-			if secondaryBoard := companionDevicesMetadata[i].GetDutModel().GetBuildTarget(); secondaryBoard != "" {
-				secondaryBuildInfo.Board = secondaryBoard
-			}
-			if secondaryProvisionState := companionDevicesMetadata[i].GetProvisionState(); secondaryProvisionState != nil {
-				secondaryDutInfo.ProvisionState = secondaryProvisionState
-			}
-		}
+		secondaryDUT := device.GetDut()
+		secondaryProvisionState := companionDevicesMetadata[i].GetProvisionState()
+		populateExecutionInfo(ctx, secondaryExecInfo, sk, botDims, build, secondaryDUT, secondaryProvisionState)
 
 		secondaryExecInfos = append(secondaryExecInfos, secondaryExecInfo)
 	}
-	resultProto.TestInvocation.SecondaryExecutionsInfo = secondaryExecInfos
+	testInv.SecondaryExecutionsInfo = secondaryExecInfos
 }
 
 // populateSchedulingMetadata populates scheduling metadata.
 func populateSchedulingMetadata(
 	ctx context.Context,
-	resultProto *artifactpb.TestResult,
+	testInv *artifactpb.TestInvocation,
 	tags []*buildbucketpb.StringPair) {
 	schedulingArgs := map[string]string{}
 	for _, tag := range tags {
@@ -494,10 +509,26 @@ func populateSchedulingMetadata(
 	}
 
 	if len(schedulingArgs) != 0 {
-		resultProto.TestInvocation.SchedulingMetadata =
+		testInv.SchedulingMetadata =
 			&artifactpb.SchedulingMetadata{
 				SchedulingArgs: schedulingArgs,
 			}
+	}
+}
+
+// populateDUTTopology populates DUT topology.
+func populateDUTTopology(
+	ctx context.Context,
+	testInv *artifactpb.TestInvocation,
+	sk *data.HwTestStateKeeper) {
+	testInv.DutTopology = &labapi.DutTopology{
+		Duts: []*labapi.Dut{},
+	}
+	if sk.DutTopology != nil {
+		testInv.DutTopology.Id = sk.DutTopology.GetId()
+	}
+	for _, device := range sk.Devices {
+		testInv.DutTopology.Duts = append(testInv.DutTopology.Duts, device.GetDut())
 	}
 }
 
