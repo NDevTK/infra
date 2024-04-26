@@ -1560,6 +1560,18 @@ func crosRepairActions() map[string]*Action {
 			},
 			AllowFailAfterRecovery: true,
 		},
+		"Collect additional cellular labels": {
+			Docs: []string{
+				"Automatically populates/constructs additional cellular labels",
+				"based on manually defined labels.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"has_cellular_info",
+			},
+			ExecName:               "cros_collect_supported_carriers",
+			AllowFailAfterRecovery: true,
+		},
 		"Audit cellular": {
 			Docs: []string{
 				"Audit cellular peripherals states and report metrics.",
@@ -1572,6 +1584,7 @@ func crosRepairActions() map[string]*Action {
 				"Update cellular sim labels if missing",
 				"Update cellular modem labels if missing",
 				"Audit cellular network connection",
+				"Collect additional cellular labels",
 				"Collect var/log/messages from DUT",
 				"Collect var/log/net.log from DUT",
 			},
