@@ -294,7 +294,11 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						"qs_account":        "unmanaged_p2",
 						"parent_task_id":    "parentId1",
 						"branch-trigger":    "DEV",
+						"bug_id":            "1234",
 					},
+				},
+				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{
+					BugId: "1234",
 				},
 			},
 			TestRuns: []*artifactpb.TestRun{
@@ -356,6 +360,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				{Key: "qs_account", Value: "unmanaged_p2"},
 				{Key: "parent_task_id", Value: "parentId1"},
 				{Key: "branch-trigger", Value: "DEV"},
+				{Key: "bug_id", Value: "1234"},
 			},
 			CreateTime: createTime,
 			Infra: &bbpb.BuildInfra{Swarming: &bbpb.BuildInfra_Swarming{

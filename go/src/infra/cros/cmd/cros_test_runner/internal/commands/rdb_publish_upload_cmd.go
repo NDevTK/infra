@@ -193,7 +193,11 @@ func populateTestInvocationInfo(
 	populateSecondaryExecutionInfo(ctx, testInv, sk, botDims, build)
 
 	// Scheduling metadata
-	populateSchedulingMetadata(ctx, testInv, build.GetTags())
+	bbTags := build.GetTags()
+	populateSchedulingMetadata(ctx, testInv, bbTags)
+
+	// Project tracker metadata
+	populateProjectTrackerMetadata(ctx, testInv, bbTags)
 }
 
 // getPrimaryDut get the primary Dut if exists. Otherwise, return nil.
@@ -529,6 +533,24 @@ func populateDUTTopology(
 	}
 	for _, device := range sk.Devices {
 		testInv.DutTopology.Duts = append(testInv.DutTopology.Duts, device.GetDut())
+	}
+}
+
+// populateProjectTrackerMetadata populates project tracker metadata.
+func populateProjectTrackerMetadata(
+	ctx context.Context,
+	testInv *artifactpb.TestInvocation,
+	tags []*buildbucketpb.StringPair) {
+	projectTrackerMetadata := &artifactpb.ProjectTrackerMetadata{}
+	testInv.ProjectTrackerMetadata = projectTrackerMetadata
+
+	for _, tag := range tags {
+		if tag.GetKey() == "bug_id" {
+			projectTrackerMetadata.BugId = tag.GetValue()
+
+			// Remove the break if adding more fields whitin the loop.
+			break
+		}
 	}
 }
 
