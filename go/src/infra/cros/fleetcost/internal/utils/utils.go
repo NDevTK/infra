@@ -26,6 +26,9 @@ import (
 
 // ToIndicatorType converts a string to an indicator.
 func ToIndicatorType(x string) (fleetcostpb.IndicatorType, error) {
+	if x == "" {
+		return fleetcostpb.IndicatorType_INDICATOR_TYPE_UNKNOWN, nil
+	}
 	out, err := lookupValue(fleetcostpb.IndicatorType_value, x, "INDICATOR_TYPE")
 	return fleetcostpb.IndicatorType(out), err
 }
@@ -72,6 +75,9 @@ func ToCostCadence(x string) (fleetcostpb.CostCadence, error) {
 
 // ToLocation converts a string to a location.
 func ToLocation(x string) (fleetcostpb.Location, error) {
+	if x == "" {
+		return fleetcostpb.Location_LOCATION_UNKNOWN, nil
+	}
 	out, err := lookupValue(fleetcostpb.Location_value, x, "LOCATION")
 	return fleetcostpb.Location(out), err
 }

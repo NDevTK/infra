@@ -1,0 +1,16 @@
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+This file is a quasi-structured list of complaints.
+
+1) I don't like how stringifying Location and Type works.
+
+2) The package "infra/cros/fleetcost/api/models" has too many distinct names in different parts of the code.
+
+3) We need a function for creating dollar amounts as a money.Money from a float.
+
+4) We need a library of fake UFS data. Creating a new fake UFS entity is too annoying.
+
+5) For location and filter, we convert back and forth between strings and the enum like twice in the whole get-ci flow.
+Maybe don't do that.

@@ -19,6 +19,7 @@ import (
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/maskutils"
 	"infra/cros/fleetcost/internal/fleetcosterror"
+	"infra/cros/fleetcost/internal/utils"
 )
 
 // CostIndicatorKind is the datastore kind of a cost indicator entity.
@@ -134,7 +135,23 @@ func GetCostIndicatorEntity(ctx context.Context, entity *CostIndicatorEntity) (*
 // ListCostIndicators lists the cost indicators in the database, up to a limit (not yet implemented).
 func ListCostIndicators(ctx context.Context, limit int, filter *fleetcostAPI.ListCostIndicatorsFilter) ([]*fleetcostpb.CostIndicator, error) {
 	var out []*fleetcostpb.CostIndicator
-	query := datastore.NewQuery(CostIndicatorKind)
+	query, err := ApplyFilter(datastore.NewQuery(CostIndicatorKind), filter)
+	if err != nil {
+		return nil, errors.Annotate(err, "list cost indicators").Err()
+	}
+	if err := datastore.Run(ctx, query, func(entity *CostIndicatorEntity) {
+		out = append(out, entity.CostIndicator)
+	}); err != nil {
+		return nil, errors.Annotate(err, "list cost indicators").Err()
+	}
+	return out, nil
+}
+
+// ApplyFilter applies filters to a datastore query and returns the original query unmodified
+func ApplyFilter(query *datastore.Query, filter *fleetcostAPI.ListCostIndicatorsFilter) (*datastore.Query, error) {
+	if filter == nil {
+		return query, nil
+	}
 	if filter.GetBoard() != "" {
 		query = query.Eq("board", filter.GetBoard())
 	}
@@ -144,12 +161,21 @@ func ListCostIndicators(ctx context.Context, limit int, filter *fleetcostAPI.Lis
 	if filter.GetSku() != "" {
 		query = query.Eq("sku", filter.GetSku())
 	}
-	if err := datastore.Run(ctx, query, func(entity *CostIndicatorEntity) {
-		out = append(out, entity.CostIndicator)
-	}); err != nil {
-		return nil, errors.Annotate(err, "list cost indicators").Err()
+	if filter.GetLocation() != "" {
+		location, err := utils.ToLocation(filter.GetLocation())
+		if err != nil {
+			return nil, err
+		}
+		query = query.Eq("location", location.String())
 	}
-	return out, nil
+	if filter.GetType() != "" {
+		typ, err := utils.ToIndicatorType(filter.GetType())
+		if err != nil {
+			return nil, err
+		}
+		query = query.Eq("type", typ.String())
+	}
+	return query, nil
 }
 
 // UpdateCostIndicatorEntity extracts a cost indicator entity from the database and updates it.

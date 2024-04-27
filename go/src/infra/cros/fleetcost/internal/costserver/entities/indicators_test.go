@@ -17,6 +17,7 @@ import (
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
+	"infra/cros/fleetcost/internal/costserver"
 	"infra/cros/fleetcost/internal/costserver/entities"
 	"infra/cros/fleetcost/internal/costserver/testsupport"
 	"infra/cros/fleetcost/internal/utils"
@@ -385,5 +386,39 @@ func TestDeleteCostIndicatorEntity(t *testing.T) {
 	_, err := entities.GetCostIndicatorEntity(tf.Ctx, &entities.CostIndicatorEntity{})
 	if !datastore.IsErrNoSuchEntity(err) {
 		t.Errorf("unexpected error: %s", err)
+	}
+}
+
+// TestApplyFilter tests searching for a record using the default values for location and type.
+//
+// Using the default values for location and type should *not* result in the exclusion of any records.
+func TestApplyFilter(t *testing.T) {
+	t.Parallel()
+
+	tf := testsupport.NewFixture(context.Background(), t)
+
+	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostpb.CostIndicator{
+		Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+		Location: fleetcostpb.Location_LOCATION_SFO36,
+		Cost: &money.Money{
+			CurrencyCode: "USD",
+			Units:        100,
+		},
+	})
+
+	query, err := entities.ApplyFilter(datastore.NewQuery(entities.CostIndicatorKind), &fleetcostAPI.ListCostIndicatorsFilter{
+		Location: "",
+		Type:     "",
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	n, err := datastore.Count(tf.Ctx, query)
+	if err != nil {
+		t.Errorf("unexpected error when counting matches: %s", err)
+	}
+	if n != 1 {
+		t.Errorf("unexpected count %d", n)
 	}
 }
