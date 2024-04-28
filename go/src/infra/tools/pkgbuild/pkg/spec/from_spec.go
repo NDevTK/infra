@@ -179,7 +179,7 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 					PackagesBySubdir: map[string]ensure.PackageSlice{
 						"bin": {
 							{PackageTemplate: path.Join("infra/tools/cipd", buildCipdPlatform), UnresolvedVersion: "latest"},
-							{PackageTemplate: path.Join("infra/tools/luci/vpython", buildCipdPlatform), UnresolvedVersion: "latest"},
+							{PackageTemplate: path.Join("infra/tools/luci/vpython3", buildCipdPlatform), UnresolvedVersion: "latest"},
 						},
 					},
 				},
