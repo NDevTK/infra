@@ -55,6 +55,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -309,18 +310,20 @@ func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Requ
 		log.Printf(err.Error())
 		return nil, metricData{status: http.StatusBadRequest}, err
 	}
+	if err := gsClient.verifyBucket(ctx, objectName.bucket); err != nil {
+		status := deriveHTTPStatusFromError(err)
+		err := fmt.Errorf("%s Bucket %q: %w", reqID, objectName.bucket, err)
+		http.Error(w, err.Error(), status)
+		log.Print(err.Error())
+		return nil, metricData{status: status}, err
+	}
 
 	gsObject := gsClient.getObject(objectName)
 
 	gsAttrs, err := gsObject.Attrs(ctx)
 	if err != nil {
-		var status int
-		if errors.Is(err, storage.ErrObjectNotExist) {
-			status = http.StatusNotFound
-		} else {
-			status = http.StatusInternalServerError
-		}
-		err := fmt.Errorf("%s Attrs error: %w", reqID, err)
+		status := deriveHTTPStatusFromError(err)
+		err := fmt.Errorf("%s Obj %q: %w", reqID, objectName.path, err)
 		http.Error(w, err.Error(), status)
 		log.Printf(err.Error())
 		return nil, metricData{status: status}, err
@@ -749,6 +752,21 @@ func getHTTPClient(sourceAddr string, defaultClient *http.Client) (*http.Client,
 	dialer := &net.Dialer{LocalAddr: addr}
 	transport := &http.Transport{DialContext: dialer.DialContext}
 	return &http.Client{Transport: transport}, nil
+}
+
+// deriveHTTPStatusFromError returns a proper HTTP status code based on the
+// error details.
+func deriveHTTPStatusFromError(err error) int {
+	var e *googleapi.Error
+	var status int
+	if ok := errors.As(err, &e); ok {
+		status = e.Code
+	} else if errors.Is(err, storage.ErrBucketNotExist) || errors.Is(err, storage.ErrObjectNotExist) {
+		status = http.StatusNotFound
+	} else {
+		status = http.StatusInternalServerError
+	}
+	return status
 }
 
 // generateTraceID gets the unique id of the request

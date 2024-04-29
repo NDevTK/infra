@@ -16,6 +16,8 @@ import (
 // gsClient interface is used mainly for testing purpose,
 // since storage pkg does not provide test pkg.
 type gsClient interface {
+	// verifyBucket verifies the access to the bucket.
+	verifyBucket(ctx context.Context, name string) error
 	// getObject returns object handle given the gs object name.
 	getObject(name *gsObjectName) gsObject
 	// close closes the client.
@@ -68,6 +70,11 @@ func (c *realGSClient) getObject(name *gsObjectName) gsObject {
 
 func (c *realGSClient) close() error {
 	return c.gsClient.Close()
+}
+
+func (c *realGSClient) verifyBucket(ctx context.Context, name string) error {
+	_, err := c.gsClient.Bucket(name).Attrs(ctx)
+	return err
 }
 
 // gsObjectName contains fields used to identify google storage object.

@@ -64,7 +64,7 @@ func TestDownloadHandler(t *testing.T) {
 			method:            "GET",
 			url:               "/download/wrong-bucket/path/to/file",
 			wantStatusCode:    404,
-			wantBody:          "GET/download/wrong-bucket/path/to/file  swarming_task_id= bbid= Attrs error: storage: object doesn't exist\n",
+			wantBody:          "GET/download/wrong-bucket/path/to/file  swarming_task_id= bbid= Obj \"path/to/file\": storage: object doesn't exist\n",
 			wantContentLength: -1,
 			wantContentType:   "text/plain; charset=utf-8",
 		},
@@ -597,5 +597,9 @@ func (c *fakeGSClient) getObject(name *gsObjectName) gsObject {
 }
 
 func (*fakeGSClient) close() error {
+	return nil
+}
+
+func (*fakeGSClient) verifyBucket(context.Context, string) error {
 	return nil
 }
