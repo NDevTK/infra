@@ -10,8 +10,7 @@ environment.
 ## Make and build
 Run the following commands:
 ```
-go mod tidy
-go build
+make mallet
 ```
 
 ## Login
