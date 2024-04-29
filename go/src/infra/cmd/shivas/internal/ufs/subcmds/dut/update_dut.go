@@ -238,6 +238,10 @@ func (c *updateDUT) Run(a subcommands.Application, args []string, env subcommand
 }
 
 func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
+	if len(args) != 0 {
+		return fmt.Errorf("update dut does not take any position parameters: %#v provided", args)
+	}
+
 	// Determine all the input flags and store them in the map.
 	c.flagInputs = make(map[string]bool)
 	c.Flags.Visit(func(f *flag.Flag) {
