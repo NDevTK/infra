@@ -1276,7 +1276,7 @@ func (x ChromeOS_PowerSupplyType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChromeOS_PowerSupplyType.Descriptor instead.
 func (ChromeOS_PowerSupplyType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{33, 0}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{34, 0}
 }
 
 // Cr50Phase describes different phases of CR50 firmware used on DUT.
@@ -1327,7 +1327,7 @@ func (x ChromeOS_Cr50Phase) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChromeOS_Cr50Phase.Descriptor instead.
 func (ChromeOS_Cr50Phase) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{33, 1}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{34, 1}
 }
 
 // Cr50KeyEnv describes key env for cr50 RW version.
@@ -1378,7 +1378,7 @@ func (x ChromeOS_Cr50KeyEnv) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChromeOS_Cr50KeyEnv.Descriptor instead.
 func (ChromeOS_Cr50KeyEnv) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{33, 2}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{34, 2}
 }
 
 // PeripheralWifiState describes the state of peripheral wifi testbed.
@@ -1434,7 +1434,7 @@ func (x ChromeOS_PeripheralWifiState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChromeOS_PeripheralWifiState.Descriptor instead.
 func (ChromeOS_PeripheralWifiState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{33, 3}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{34, 3}
 }
 
 // RunRequest represents result of executed command.
@@ -3824,8 +3824,69 @@ func (x *AudioLatencyToolkit) GetState() AudioLatencyToolkit_State {
 	return AudioLatencyToolkit_STATE_UNSPECIFIED
 }
 
+// FirmwareInfo hold info to describe FW information.
+type FirmwareInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Target names for EC and AP. In majority cases they are the same.
+	// Example: `target1` will generate names
+	//
+	//	ec: target1/ec/bin and target1/npcx_monitor.bin
+	//	ap: image-target1.bin
+	EcTarget string `protobuf:"bytes,1,opt,name=ec_target,json=ecTarget,proto3" json:"ec_target,omitempty"`
+	ApTarget string `protobuf:"bytes,2,opt,name=ap_target,json=apTarget,proto3" json:"ap_target,omitempty"`
+}
+
+func (x *FirmwareInfo) Reset() {
+	*x = FirmwareInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[33]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FirmwareInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FirmwareInfo) ProtoMessage() {}
+
+func (x *FirmwareInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[33]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FirmwareInfo.ProtoReflect.Descriptor instead.
+func (*FirmwareInfo) Descriptor() ([]byte, []int) {
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *FirmwareInfo) GetEcTarget() string {
+	if x != nil {
+		return x.EcTarget
+	}
+	return ""
+}
+
+func (x *FirmwareInfo) GetApTarget() string {
+	if x != nil {
+		return x.ApTarget
+	}
+	return ""
+}
+
 // Chrome OS specific DUT details
-// NEXT TAG: 32
+// NEXT TAG: 33
 type ChromeOS struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3841,6 +3902,8 @@ type ChromeOS struct {
 	Phase string `protobuf:"bytes,5,opt,name=phase,proto3" json:"phase,omitempty"`
 	// Serial number of the DUT.
 	SerialNumber string `protobuf:"bytes,6,opt,name=serial_number,json=serialNumber,proto3" json:"serial_number,omitempty"`
+	// FirmwareInfo describes DUT firmware data.
+	FirmwareInfo *FirmwareInfo `protobuf:"bytes,32,opt,name=firmware_info,json=firmwareInfo,proto3" json:"firmware_info,omitempty"`
 	// PowerSupplyType describes the DUT's power supply type.
 	PowerSupplyType ChromeOS_PowerSupplyType `protobuf:"varint,7,opt,name=power_supply_type,json=powerSupplyType,proto3,enum=chromeos.recovery.ChromeOS_PowerSupplyType" json:"power_supply_type,omitempty"`
 	// Cr50 firmware phase used on the DUT.
@@ -3907,7 +3970,7 @@ type ChromeOS struct {
 func (x *ChromeOS) Reset() {
 	*x = ChromeOS{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[33]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[34]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3920,7 +3983,7 @@ func (x *ChromeOS) String() string {
 func (*ChromeOS) ProtoMessage() {}
 
 func (x *ChromeOS) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[33]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[34]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3933,7 +3996,7 @@ func (x *ChromeOS) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOS.ProtoReflect.Descriptor instead.
 func (*ChromeOS) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{33}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *ChromeOS) GetBoard() string {
@@ -3969,6 +4032,13 @@ func (x *ChromeOS) GetSerialNumber() string {
 		return x.SerialNumber
 	}
 	return ""
+}
+
+func (x *ChromeOS) GetFirmwareInfo() *FirmwareInfo {
+	if x != nil {
+		return x.FirmwareInfo
+	}
+	return nil
 }
 
 func (x *ChromeOS) GetPowerSupplyType() ChromeOS_PowerSupplyType {
@@ -4166,7 +4236,7 @@ type TestbedCapability struct {
 func (x *TestbedCapability) Reset() {
 	*x = TestbedCapability{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[34]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[35]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4179,7 +4249,7 @@ func (x *TestbedCapability) String() string {
 func (*TestbedCapability) ProtoMessage() {}
 
 func (x *TestbedCapability) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[34]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[35]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4192,7 +4262,7 @@ func (x *TestbedCapability) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestbedCapability.ProtoReflect.Descriptor instead.
 func (*TestbedCapability) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{34}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *TestbedCapability) GetAudiojack() bool {
@@ -4242,7 +4312,7 @@ type Android struct {
 func (x *Android) Reset() {
 	*x = Android{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[35]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[36]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4255,7 +4325,7 @@ func (x *Android) String() string {
 func (*Android) ProtoMessage() {}
 
 func (x *Android) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[35]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[36]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4268,7 +4338,7 @@ func (x *Android) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Android.ProtoReflect.Descriptor instead.
 func (*Android) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *Android) GetBoard() string {
@@ -4319,7 +4389,7 @@ type DevBoard struct {
 func (x *DevBoard) Reset() {
 	*x = DevBoard{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[36]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[37]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4332,7 +4402,7 @@ func (x *DevBoard) String() string {
 func (*DevBoard) ProtoMessage() {}
 
 func (x *DevBoard) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[36]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[37]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4345,7 +4415,7 @@ func (x *DevBoard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DevBoard.ProtoReflect.Descriptor instead.
 func (*DevBoard) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{36}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *DevBoard) GetBoard() string {
@@ -4393,7 +4463,7 @@ type CopyRequest struct {
 func (x *CopyRequest) Reset() {
 	*x = CopyRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[37]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[38]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4406,7 +4476,7 @@ func (x *CopyRequest) String() string {
 func (*CopyRequest) ProtoMessage() {}
 
 func (x *CopyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[37]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[38]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4419,7 +4489,7 @@ func (x *CopyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CopyRequest.ProtoReflect.Descriptor instead.
 func (*CopyRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{37}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *CopyRequest) GetResource() string {
@@ -4458,7 +4528,7 @@ type CallServodRequest struct {
 func (x *CallServodRequest) Reset() {
 	*x = CallServodRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[38]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[39]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4471,7 +4541,7 @@ func (x *CallServodRequest) String() string {
 func (*CallServodRequest) ProtoMessage() {}
 
 func (x *CallServodRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[38]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[39]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4484,7 +4554,7 @@ func (x *CallServodRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallServodRequest.ProtoReflect.Descriptor instead.
 func (*CallServodRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{38}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *CallServodRequest) GetResource() string {
@@ -4528,7 +4598,7 @@ type CallServodResponse struct {
 func (x *CallServodResponse) Reset() {
 	*x = CallServodResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[39]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[40]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4541,7 +4611,7 @@ func (x *CallServodResponse) String() string {
 func (*CallServodResponse) ProtoMessage() {}
 
 func (x *CallServodResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[39]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[40]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4554,7 +4624,7 @@ func (x *CallServodResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallServodResponse.ProtoReflect.Descriptor instead.
 func (*CallServodResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{39}
+	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *CallServodResponse) GetValue() *xmlrpc.Value {
@@ -4591,7 +4661,7 @@ type BluetoothPeerScopeState_Chameleond struct {
 func (x *BluetoothPeerScopeState_Chameleond) Reset() {
 	*x = BluetoothPeerScopeState_Chameleond{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[40]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[41]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4604,7 +4674,7 @@ func (x *BluetoothPeerScopeState_Chameleond) String() string {
 func (*BluetoothPeerScopeState_Chameleond) ProtoMessage() {}
 
 func (x *BluetoothPeerScopeState_Chameleond) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[40]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[41]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4654,7 +4724,7 @@ type Cellular_ModemInfo struct {
 func (x *Cellular_ModemInfo) Reset() {
 	*x = Cellular_ModemInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[42]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[43]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4667,7 +4737,7 @@ func (x *Cellular_ModemInfo) String() string {
 func (*Cellular_ModemInfo) ProtoMessage() {}
 
 func (x *Cellular_ModemInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[42]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[43]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4718,7 +4788,7 @@ type Cellular_SIMProfileInfo struct {
 func (x *Cellular_SIMProfileInfo) Reset() {
 	*x = Cellular_SIMProfileInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[43]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[44]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4731,7 +4801,7 @@ func (x *Cellular_SIMProfileInfo) String() string {
 func (*Cellular_SIMProfileInfo) ProtoMessage() {}
 
 func (x *Cellular_SIMProfileInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[43]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[44]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4802,7 +4872,7 @@ type Cellular_SIMInfo struct {
 func (x *Cellular_SIMInfo) Reset() {
 	*x = Cellular_SIMInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[44]
+		mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[45]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4815,7 +4885,7 @@ func (x *Cellular_SIMInfo) String() string {
 func (*Cellular_SIMInfo) ProtoMessage() {}
 
 func (x *Cellular_SIMInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[44]
+	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[45]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5456,15 +5526,24 @@ var file_infra_cros_recovery_tlw_models_proto_rawDesc = []byte{
 	0x45, 0x44, 0x10, 0x00, 0x12, 0x0b, 0x0a, 0x07, 0x57, 0x4f, 0x52, 0x4b, 0x49, 0x4e, 0x47, 0x10,
 	0x01, 0x12, 0x0a, 0x0a, 0x06, 0x42, 0x52, 0x4f, 0x4b, 0x45, 0x4e, 0x10, 0x02, 0x12, 0x12, 0x0a,
 	0x0e, 0x4e, 0x4f, 0x54, 0x5f, 0x41, 0x50, 0x50, 0x4c, 0x49, 0x43, 0x41, 0x42, 0x4c, 0x45, 0x10,
-	0x03, 0x22, 0x92, 0x11, 0x0a, 0x08, 0x43, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x4f, 0x53, 0x12, 0x14,
-	0x0a, 0x05, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x62,
-	0x6f, 0x61, 0x72, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x05, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x77,
-	0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x68, 0x77, 0x69, 0x64, 0x12, 0x14,
-	0x0a, 0x05, 0x70, 0x68, 0x61, 0x73, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x70,
-	0x68, 0x61, 0x73, 0x65, 0x12, 0x23, 0x0a, 0x0d, 0x73, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x5f, 0x6e,
-	0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x65, 0x72,
-	0x69, 0x61, 0x6c, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x12, 0x57, 0x0a, 0x11, 0x70, 0x6f, 0x77,
+	0x03, 0x22, 0x48, 0x0a, 0x0c, 0x46, 0x69, 0x72, 0x6d, 0x77, 0x61, 0x72, 0x65, 0x49, 0x6e, 0x66,
+	0x6f, 0x12, 0x1b, 0x0a, 0x09, 0x65, 0x63, 0x5f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x65, 0x63, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x12, 0x1b,
+	0x0a, 0x09, 0x61, 0x70, 0x5f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x08, 0x61, 0x70, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x22, 0xd8, 0x11, 0x0a, 0x08,
+	0x43, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x4f, 0x53, 0x12, 0x14, 0x0a, 0x05, 0x62, 0x6f, 0x61, 0x72,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x12, 0x14,
+	0x0a, 0x05, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6d,
+	0x6f, 0x64, 0x65, 0x6c, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x77, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x04, 0x68, 0x77, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x68, 0x61, 0x73,
+	0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x70, 0x68, 0x61, 0x73, 0x65, 0x12, 0x23,
+	0x0a, 0x0d, 0x73, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18,
+	0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x4e, 0x75, 0x6d,
+	0x62, 0x65, 0x72, 0x12, 0x44, 0x0a, 0x0d, 0x66, 0x69, 0x72, 0x6d, 0x77, 0x61, 0x72, 0x65, 0x5f,
+	0x69, 0x6e, 0x66, 0x6f, 0x18, 0x20, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2e, 0x46,
+	0x69, 0x72, 0x6d, 0x77, 0x61, 0x72, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x0c, 0x66, 0x69, 0x72,
+	0x6d, 0x77, 0x61, 0x72, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x57, 0x0a, 0x11, 0x70, 0x6f, 0x77,
 	0x65, 0x72, 0x5f, 0x73, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x07,
 	0x20, 0x01, 0x28, 0x0e, 0x32, 0x2b, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e,
 	0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2e, 0x43, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x4f,
@@ -5680,7 +5759,7 @@ func file_infra_cros_recovery_tlw_models_proto_rawDescGZIP() []byte {
 }
 
 var file_infra_cros_recovery_tlw_models_proto_enumTypes = make([]protoimpl.EnumInfo, 23)
-var file_infra_cros_recovery_tlw_models_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
+var file_infra_cros_recovery_tlw_models_proto_msgTypes = make([]protoimpl.MessageInfo, 47)
 var file_infra_cros_recovery_tlw_models_proto_goTypes = []interface{}{
 	(HardwareState)(0),                         // 0: chromeos.recovery.HardwareState
 	(ServoFwChannel)(0),                        // 1: chromeos.recovery.ServoFwChannel
@@ -5738,49 +5817,50 @@ var file_infra_cros_recovery_tlw_models_proto_goTypes = []interface{}{
 	(*HumanMotionRobot)(nil),                   // 53: chromeos.recovery.HumanMotionRobot
 	(*Dolos)(nil),                              // 54: chromeos.recovery.Dolos
 	(*AudioLatencyToolkit)(nil),                // 55: chromeos.recovery.AudioLatencyToolkit
-	(*ChromeOS)(nil),                           // 56: chromeos.recovery.ChromeOS
-	(*TestbedCapability)(nil),                  // 57: chromeos.recovery.TestbedCapability
-	(*Android)(nil),                            // 58: chromeos.recovery.Android
-	(*DevBoard)(nil),                           // 59: chromeos.recovery.DevBoard
-	(*CopyRequest)(nil),                        // 60: chromeos.recovery.CopyRequest
-	(*CallServodRequest)(nil),                  // 61: chromeos.recovery.CallServodRequest
-	(*CallServodResponse)(nil),                 // 62: chromeos.recovery.CallServodResponse
-	(*BluetoothPeerScopeState_Chameleond)(nil), // 63: chromeos.recovery.BluetoothPeerScopeState.Chameleond
-	nil,                                       // 64: chromeos.recovery.VersionResponse.ValueEntry
-	(*Cellular_ModemInfo)(nil),                // 65: chromeos.recovery.Cellular.ModemInfo
-	(*Cellular_SIMProfileInfo)(nil),           // 66: chromeos.recovery.Cellular.SIMProfileInfo
-	(*Cellular_SIMInfo)(nil),                  // 67: chromeos.recovery.Cellular.SIMInfo
-	nil,                                       // 68: chromeos.recovery.ChromeOS.RoVpdMapEntry
-	(*durationpb.Duration)(nil),               // 69: google.protobuf.Duration
-	(*xmlrpc.Value)(nil),                      // 70: chromiumos.config.api.test.xmlrpc.Value
-	(api.WifiRouterFeature)(0),                // 71: chromiumos.test.lab.api.WifiRouterFeature
-	(api.WifiRouterDeviceType)(0),             // 72: chromiumos.test.lab.api.WifiRouterDeviceType
-	(*api.CrosOpenWrtImageBuildInfo)(nil),     // 73: chromiumos.test.lab.api.CrosOpenWrtImageBuildInfo
-	(*api.OpenWrtWifiRouterDeviceConfig)(nil), // 74: chromiumos.test.lab.api.OpenWrtWifiRouterDeviceConfig
-	(*api.UsbDrive)(nil),                      // 75: chromiumos.test.lab.api.UsbDrive
-	(*api.Cbi)(nil),                           // 76: chromiumos.test.lab.api.Cbi
-	(*api.BluetoothPeerChameleondConfig)(nil), // 77: chromiumos.test.lab.api.BluetoothPeerChameleondConfig
-	(*api.BluetoothPeerChameleondConfig_ChameleondBundle)(nil), // 78: chromiumos.test.lab.api.BluetoothPeerChameleondConfig.ChameleondBundle
+	(*FirmwareInfo)(nil),                       // 56: chromeos.recovery.FirmwareInfo
+	(*ChromeOS)(nil),                           // 57: chromeos.recovery.ChromeOS
+	(*TestbedCapability)(nil),                  // 58: chromeos.recovery.TestbedCapability
+	(*Android)(nil),                            // 59: chromeos.recovery.Android
+	(*DevBoard)(nil),                           // 60: chromeos.recovery.DevBoard
+	(*CopyRequest)(nil),                        // 61: chromeos.recovery.CopyRequest
+	(*CallServodRequest)(nil),                  // 62: chromeos.recovery.CallServodRequest
+	(*CallServodResponse)(nil),                 // 63: chromeos.recovery.CallServodResponse
+	(*BluetoothPeerScopeState_Chameleond)(nil), // 64: chromeos.recovery.BluetoothPeerScopeState.Chameleond
+	nil,                                       // 65: chromeos.recovery.VersionResponse.ValueEntry
+	(*Cellular_ModemInfo)(nil),                // 66: chromeos.recovery.Cellular.ModemInfo
+	(*Cellular_SIMProfileInfo)(nil),           // 67: chromeos.recovery.Cellular.SIMProfileInfo
+	(*Cellular_SIMInfo)(nil),                  // 68: chromeos.recovery.Cellular.SIMInfo
+	nil,                                       // 69: chromeos.recovery.ChromeOS.RoVpdMapEntry
+	(*durationpb.Duration)(nil),               // 70: google.protobuf.Duration
+	(*xmlrpc.Value)(nil),                      // 71: chromiumos.config.api.test.xmlrpc.Value
+	(api.WifiRouterFeature)(0),                // 72: chromiumos.test.lab.api.WifiRouterFeature
+	(api.WifiRouterDeviceType)(0),             // 73: chromiumos.test.lab.api.WifiRouterDeviceType
+	(*api.CrosOpenWrtImageBuildInfo)(nil),     // 74: chromiumos.test.lab.api.CrosOpenWrtImageBuildInfo
+	(*api.OpenWrtWifiRouterDeviceConfig)(nil), // 75: chromiumos.test.lab.api.OpenWrtWifiRouterDeviceConfig
+	(*api.UsbDrive)(nil),                      // 76: chromiumos.test.lab.api.UsbDrive
+	(*api.Cbi)(nil),                           // 77: chromiumos.test.lab.api.Cbi
+	(*api.BluetoothPeerChameleondConfig)(nil), // 78: chromiumos.test.lab.api.BluetoothPeerChameleondConfig
+	(*api.BluetoothPeerChameleondConfig_ChameleondBundle)(nil), // 79: chromiumos.test.lab.api.BluetoothPeerChameleondConfig.ChameleondBundle
 }
 var file_infra_cros_recovery_tlw_models_proto_depIdxs = []int32{
-	69, // 0: chromeos.recovery.RunRequest.timeout:type_name -> google.protobuf.Duration
-	70, // 1: chromeos.recovery.CallBluetoothPeerRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
-	70, // 2: chromeos.recovery.CallBluetoothPeerResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
-	70, // 3: chromeos.recovery.CallTouchHostdRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
-	69, // 4: chromeos.recovery.CallTouchHostdRequest.timeout:type_name -> google.protobuf.Duration
-	70, // 5: chromeos.recovery.CallTouchHostdResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
+	70, // 0: chromeos.recovery.RunRequest.timeout:type_name -> google.protobuf.Duration
+	71, // 1: chromeos.recovery.CallBluetoothPeerRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
+	71, // 2: chromeos.recovery.CallBluetoothPeerResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
+	71, // 3: chromeos.recovery.CallTouchHostdRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
+	70, // 4: chromeos.recovery.CallTouchHostdRequest.timeout:type_name -> google.protobuf.Duration
+	71, // 5: chromeos.recovery.CallTouchHostdResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
 	2,  // 6: chromeos.recovery.RunRPMActionRequest.action:type_name -> chromeos.recovery.RunRPMActionRequest.Action
 	3,  // 7: chromeos.recovery.RPMOutlet.state:type_name -> chromeos.recovery.RPMOutlet.State
 	4,  // 8: chromeos.recovery.WifiRouterHost.state:type_name -> chromeos.recovery.WifiRouterHost.State
 	31, // 9: chromeos.recovery.WifiRouterHost.RPMOutlet:type_name -> chromeos.recovery.RPMOutlet
-	71, // 10: chromeos.recovery.WifiRouterHost.features:type_name -> chromiumos.test.lab.api.WifiRouterFeature
-	72, // 11: chromeos.recovery.WifiRouterHost.device_type:type_name -> chromiumos.test.lab.api.WifiRouterDeviceType
-	73, // 12: chromeos.recovery.OpenWrtRouterControllerState.device_build_info:type_name -> chromiumos.test.lab.api.CrosOpenWrtImageBuildInfo
-	74, // 13: chromeos.recovery.OpenWrtRouterControllerState.config:type_name -> chromiumos.test.lab.api.OpenWrtWifiRouterDeviceConfig
+	72, // 10: chromeos.recovery.WifiRouterHost.features:type_name -> chromiumos.test.lab.api.WifiRouterFeature
+	73, // 11: chromeos.recovery.WifiRouterHost.device_type:type_name -> chromiumos.test.lab.api.WifiRouterDeviceType
+	74, // 12: chromeos.recovery.OpenWrtRouterControllerState.device_build_info:type_name -> chromiumos.test.lab.api.CrosOpenWrtImageBuildInfo
+	75, // 13: chromeos.recovery.OpenWrtRouterControllerState.config:type_name -> chromiumos.test.lab.api.OpenWrtWifiRouterDeviceConfig
 	48, // 14: chromeos.recovery.BluetoothPeerScopeState.btpeer:type_name -> chromeos.recovery.BluetoothPeer
-	63, // 15: chromeos.recovery.BluetoothPeerScopeState.chameleond:type_name -> chromeos.recovery.BluetoothPeerScopeState.Chameleond
+	64, // 15: chromeos.recovery.BluetoothPeerScopeState.chameleond:type_name -> chromeos.recovery.BluetoothPeerScopeState.Chameleond
 	5,  // 16: chromeos.recovery.VersionRequest.type:type_name -> chromeos.recovery.VersionRequest.VersionType
-	64, // 17: chromeos.recovery.VersionResponse.value:type_name -> chromeos.recovery.VersionResponse.ValueEntry
+	65, // 17: chromeos.recovery.VersionResponse.value:type_name -> chromeos.recovery.VersionResponse.ValueEntry
 	6,  // 18: chromeos.recovery.DUTAudio.loopback_state:type_name -> chromeos.recovery.DUTAudio.LoopbackState
 	41, // 19: chromeos.recovery.InitServodRequest.options:type_name -> chromeos.recovery.ServodOptions
 	43, // 20: chromeos.recovery.ServoTopology.root:type_name -> chromeos.recovery.ServoTopologyItem
@@ -5789,7 +5869,7 @@ var file_infra_cros_recovery_tlw_models_proto_depIdxs = []int32{
 	1,  // 23: chromeos.recovery.ServoHost.firmware_channel:type_name -> chromeos.recovery.ServoFwChannel
 	0,  // 24: chromeos.recovery.ServoHost.usbkey_state:type_name -> chromeos.recovery.HardwareState
 	42, // 25: chromeos.recovery.ServoHost.servo_topology:type_name -> chromeos.recovery.ServoTopology
-	75, // 26: chromeos.recovery.ServoHost.usb_drive:type_name -> chromiumos.test.lab.api.UsbDrive
+	76, // 26: chromeos.recovery.ServoHost.usb_drive:type_name -> chromiumos.test.lab.api.UsbDrive
 	0,  // 27: chromeos.recovery.Storage.state:type_name -> chromeos.recovery.HardwareState
 	8,  // 28: chromeos.recovery.Storage.type:type_name -> chromeos.recovery.Storage.Type
 	9,  // 29: chromeos.recovery.Chameleon.state:type_name -> chromeos.recovery.Chameleon.State
@@ -5799,50 +5879,51 @@ var file_infra_cros_recovery_tlw_models_proto_depIdxs = []int32{
 	0,  // 33: chromeos.recovery.Wifi.state:type_name -> chromeos.recovery.HardwareState
 	0,  // 34: chromeos.recovery.Bluetooth.state:type_name -> chromeos.recovery.HardwareState
 	0,  // 35: chromeos.recovery.Cellular.modem_state:type_name -> chromeos.recovery.HardwareState
-	65, // 36: chromeos.recovery.Cellular.modem_info:type_name -> chromeos.recovery.Cellular.ModemInfo
-	67, // 37: chromeos.recovery.Cellular.sim_infos:type_name -> chromeos.recovery.Cellular.SIMInfo
+	66, // 36: chromeos.recovery.Cellular.modem_info:type_name -> chromeos.recovery.Cellular.ModemInfo
+	68, // 37: chromeos.recovery.Cellular.sim_infos:type_name -> chromeos.recovery.Cellular.SIMInfo
 	0,  // 38: chromeos.recovery.Battery.state:type_name -> chromeos.recovery.HardwareState
 	15, // 39: chromeos.recovery.HumanMotionRobot.state:type_name -> chromeos.recovery.HumanMotionRobot.State
 	16, // 40: chromeos.recovery.Dolos.hw_major_revision:type_name -> chromeos.recovery.Dolos.DolosHWMajorRevision
 	17, // 41: chromeos.recovery.Dolos.state:type_name -> chromeos.recovery.Dolos.State
 	18, // 42: chromeos.recovery.AudioLatencyToolkit.state:type_name -> chromeos.recovery.AudioLatencyToolkit.State
-	19, // 43: chromeos.recovery.ChromeOS.power_supply_type:type_name -> chromeos.recovery.ChromeOS.PowerSupplyType
-	20, // 44: chromeos.recovery.ChromeOS.cr50_phase:type_name -> chromeos.recovery.ChromeOS.Cr50Phase
-	21, // 45: chromeos.recovery.ChromeOS.cr50_key_env:type_name -> chromeos.recovery.ChromeOS.Cr50KeyEnv
-	39, // 46: chromeos.recovery.ChromeOS.audio:type_name -> chromeos.recovery.DUTAudio
-	46, // 47: chromeos.recovery.ChromeOS.storage:type_name -> chromeos.recovery.Storage
-	52, // 48: chromeos.recovery.ChromeOS.battery:type_name -> chromeos.recovery.Battery
-	49, // 49: chromeos.recovery.ChromeOS.wifi:type_name -> chromeos.recovery.Wifi
-	50, // 50: chromeos.recovery.ChromeOS.bluetooth:type_name -> chromeos.recovery.Bluetooth
-	44, // 51: chromeos.recovery.ChromeOS.servo:type_name -> chromeos.recovery.ServoHost
-	47, // 52: chromeos.recovery.ChromeOS.chameleon:type_name -> chromeos.recovery.Chameleon
-	48, // 53: chromeos.recovery.ChromeOS.bluetooth_peers:type_name -> chromeos.recovery.BluetoothPeer
-	32, // 54: chromeos.recovery.ChromeOS.wifi_routers:type_name -> chromeos.recovery.WifiRouterHost
-	22, // 55: chromeos.recovery.ChromeOS.peripheral_wifi_state:type_name -> chromeos.recovery.ChromeOS.PeripheralWifiState
-	71, // 56: chromeos.recovery.ChromeOS.wifi_router_features:type_name -> chromiumos.test.lab.api.WifiRouterFeature
-	31, // 57: chromeos.recovery.ChromeOS.rpm_outlet:type_name -> chromeos.recovery.RPMOutlet
-	68, // 58: chromeos.recovery.ChromeOS.ro_vpd_map:type_name -> chromeos.recovery.ChromeOS.RoVpdMapEntry
-	76, // 59: chromeos.recovery.ChromeOS.cbi:type_name -> chromiumos.test.lab.api.Cbi
-	51, // 60: chromeos.recovery.ChromeOS.cellular:type_name -> chromeos.recovery.Cellular
-	53, // 61: chromeos.recovery.ChromeOS.human_motion_robot:type_name -> chromeos.recovery.HumanMotionRobot
-	57, // 62: chromeos.recovery.ChromeOS.testbed_capability:type_name -> chromeos.recovery.TestbedCapability
-	55, // 63: chromeos.recovery.ChromeOS.audio_latency_toolkit:type_name -> chromeos.recovery.AudioLatencyToolkit
-	54, // 64: chromeos.recovery.ChromeOS.dolos:type_name -> chromeos.recovery.Dolos
-	44, // 65: chromeos.recovery.DevBoard.servo:type_name -> chromeos.recovery.ServoHost
-	70, // 66: chromeos.recovery.CallServodRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
-	69, // 67: chromeos.recovery.CallServodRequest.timeout:type_name -> google.protobuf.Duration
-	70, // 68: chromeos.recovery.CallServodResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
-	77, // 69: chromeos.recovery.BluetoothPeerScopeState.Chameleond.release_config:type_name -> chromiumos.test.lab.api.BluetoothPeerChameleondConfig
-	78, // 70: chromeos.recovery.BluetoothPeerScopeState.Chameleond.expected_bundle_config:type_name -> chromiumos.test.lab.api.BluetoothPeerChameleondConfig.ChameleondBundle
-	12, // 71: chromeos.recovery.Cellular.ModemInfo.type:type_name -> chromeos.recovery.Cellular.ModemType
-	13, // 72: chromeos.recovery.Cellular.SIMProfileInfo.carrier_name:type_name -> chromeos.recovery.Cellular.NetworkProvider
-	14, // 73: chromeos.recovery.Cellular.SIMInfo.type:type_name -> chromeos.recovery.Cellular.SIMType
-	66, // 74: chromeos.recovery.Cellular.SIMInfo.profile_infos:type_name -> chromeos.recovery.Cellular.SIMProfileInfo
-	75, // [75:75] is the sub-list for method output_type
-	75, // [75:75] is the sub-list for method input_type
-	75, // [75:75] is the sub-list for extension type_name
-	75, // [75:75] is the sub-list for extension extendee
-	0,  // [0:75] is the sub-list for field type_name
+	56, // 43: chromeos.recovery.ChromeOS.firmware_info:type_name -> chromeos.recovery.FirmwareInfo
+	19, // 44: chromeos.recovery.ChromeOS.power_supply_type:type_name -> chromeos.recovery.ChromeOS.PowerSupplyType
+	20, // 45: chromeos.recovery.ChromeOS.cr50_phase:type_name -> chromeos.recovery.ChromeOS.Cr50Phase
+	21, // 46: chromeos.recovery.ChromeOS.cr50_key_env:type_name -> chromeos.recovery.ChromeOS.Cr50KeyEnv
+	39, // 47: chromeos.recovery.ChromeOS.audio:type_name -> chromeos.recovery.DUTAudio
+	46, // 48: chromeos.recovery.ChromeOS.storage:type_name -> chromeos.recovery.Storage
+	52, // 49: chromeos.recovery.ChromeOS.battery:type_name -> chromeos.recovery.Battery
+	49, // 50: chromeos.recovery.ChromeOS.wifi:type_name -> chromeos.recovery.Wifi
+	50, // 51: chromeos.recovery.ChromeOS.bluetooth:type_name -> chromeos.recovery.Bluetooth
+	44, // 52: chromeos.recovery.ChromeOS.servo:type_name -> chromeos.recovery.ServoHost
+	47, // 53: chromeos.recovery.ChromeOS.chameleon:type_name -> chromeos.recovery.Chameleon
+	48, // 54: chromeos.recovery.ChromeOS.bluetooth_peers:type_name -> chromeos.recovery.BluetoothPeer
+	32, // 55: chromeos.recovery.ChromeOS.wifi_routers:type_name -> chromeos.recovery.WifiRouterHost
+	22, // 56: chromeos.recovery.ChromeOS.peripheral_wifi_state:type_name -> chromeos.recovery.ChromeOS.PeripheralWifiState
+	72, // 57: chromeos.recovery.ChromeOS.wifi_router_features:type_name -> chromiumos.test.lab.api.WifiRouterFeature
+	31, // 58: chromeos.recovery.ChromeOS.rpm_outlet:type_name -> chromeos.recovery.RPMOutlet
+	69, // 59: chromeos.recovery.ChromeOS.ro_vpd_map:type_name -> chromeos.recovery.ChromeOS.RoVpdMapEntry
+	77, // 60: chromeos.recovery.ChromeOS.cbi:type_name -> chromiumos.test.lab.api.Cbi
+	51, // 61: chromeos.recovery.ChromeOS.cellular:type_name -> chromeos.recovery.Cellular
+	53, // 62: chromeos.recovery.ChromeOS.human_motion_robot:type_name -> chromeos.recovery.HumanMotionRobot
+	58, // 63: chromeos.recovery.ChromeOS.testbed_capability:type_name -> chromeos.recovery.TestbedCapability
+	55, // 64: chromeos.recovery.ChromeOS.audio_latency_toolkit:type_name -> chromeos.recovery.AudioLatencyToolkit
+	54, // 65: chromeos.recovery.ChromeOS.dolos:type_name -> chromeos.recovery.Dolos
+	44, // 66: chromeos.recovery.DevBoard.servo:type_name -> chromeos.recovery.ServoHost
+	71, // 67: chromeos.recovery.CallServodRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
+	70, // 68: chromeos.recovery.CallServodRequest.timeout:type_name -> google.protobuf.Duration
+	71, // 69: chromeos.recovery.CallServodResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
+	78, // 70: chromeos.recovery.BluetoothPeerScopeState.Chameleond.release_config:type_name -> chromiumos.test.lab.api.BluetoothPeerChameleondConfig
+	79, // 71: chromeos.recovery.BluetoothPeerScopeState.Chameleond.expected_bundle_config:type_name -> chromiumos.test.lab.api.BluetoothPeerChameleondConfig.ChameleondBundle
+	12, // 72: chromeos.recovery.Cellular.ModemInfo.type:type_name -> chromeos.recovery.Cellular.ModemType
+	13, // 73: chromeos.recovery.Cellular.SIMProfileInfo.carrier_name:type_name -> chromeos.recovery.Cellular.NetworkProvider
+	14, // 74: chromeos.recovery.Cellular.SIMInfo.type:type_name -> chromeos.recovery.Cellular.SIMType
+	67, // 75: chromeos.recovery.Cellular.SIMInfo.profile_infos:type_name -> chromeos.recovery.Cellular.SIMProfileInfo
+	76, // [76:76] is the sub-list for method output_type
+	76, // [76:76] is the sub-list for method input_type
+	76, // [76:76] is the sub-list for extension type_name
+	76, // [76:76] is the sub-list for extension extendee
+	0,  // [0:76] is the sub-list for field type_name
 }
 
 func init() { file_infra_cros_recovery_tlw_models_proto_init() }
@@ -6248,7 +6329,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 			}
 		}
 		file_infra_cros_recovery_tlw_models_proto_msgTypes[33].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ChromeOS); i {
+			switch v := v.(*FirmwareInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6260,7 +6341,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 			}
 		}
 		file_infra_cros_recovery_tlw_models_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TestbedCapability); i {
+			switch v := v.(*ChromeOS); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6272,7 +6353,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 			}
 		}
 		file_infra_cros_recovery_tlw_models_proto_msgTypes[35].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Android); i {
+			switch v := v.(*TestbedCapability); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6284,7 +6365,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 			}
 		}
 		file_infra_cros_recovery_tlw_models_proto_msgTypes[36].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DevBoard); i {
+			switch v := v.(*Android); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6296,7 +6377,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 			}
 		}
 		file_infra_cros_recovery_tlw_models_proto_msgTypes[37].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CopyRequest); i {
+			switch v := v.(*DevBoard); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6308,7 +6389,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 			}
 		}
 		file_infra_cros_recovery_tlw_models_proto_msgTypes[38].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CallServodRequest); i {
+			switch v := v.(*CopyRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6320,7 +6401,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 			}
 		}
 		file_infra_cros_recovery_tlw_models_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CallServodResponse); i {
+			switch v := v.(*CallServodRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6332,6 +6413,18 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 			}
 		}
 		file_infra_cros_recovery_tlw_models_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CallServodResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_cros_recovery_tlw_models_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*BluetoothPeerScopeState_Chameleond); i {
 			case 0:
 				return &v.state
@@ -6343,7 +6436,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 				return nil
 			}
 		}
-		file_infra_cros_recovery_tlw_models_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
+		file_infra_cros_recovery_tlw_models_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Cellular_ModemInfo); i {
 			case 0:
 				return &v.state
@@ -6355,7 +6448,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 				return nil
 			}
 		}
-		file_infra_cros_recovery_tlw_models_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
+		file_infra_cros_recovery_tlw_models_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Cellular_SIMProfileInfo); i {
 			case 0:
 				return &v.state
@@ -6367,7 +6460,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 				return nil
 			}
 		}
-		file_infra_cros_recovery_tlw_models_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
+		file_infra_cros_recovery_tlw_models_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Cellular_SIMInfo); i {
 			case 0:
 				return &v.state
@@ -6386,7 +6479,7 @@ func file_infra_cros_recovery_tlw_models_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_cros_recovery_tlw_models_proto_rawDesc,
 			NumEnums:      23,
-			NumMessages:   46,
+			NumMessages:   47,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

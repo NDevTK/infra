@@ -708,8 +708,18 @@ message AudioLatencyToolkit {
   State state = 2;
 }
 
+// FirmwareInfo hold info to describe FW information.
+message FirmwareInfo {
+  // Target names for EC and AP. In majority cases they are the same.
+  // Example: `target1` will generate names
+  //  ec: target1/ec/bin and target1/npcx_monitor.bin
+  //  ap: image-target1.bin
+  string ec_target = 1;
+  string ap_target = 2;
+}
+
 // Chrome OS specific DUT details
-// NEXT TAG: 32
+// NEXT TAG: 33
 message ChromeOS {
   reserved 1;
   // Board name of the DUT.
@@ -722,6 +732,8 @@ message ChromeOS {
   string phase = 5;
   // Serial number of the DUT.
   string serial_number = 6;
+  // FirmwareInfo describes DUT firmware data.
+  FirmwareInfo firmware_info = 32;
 
   // PowerSupplyType describes different power supply types for a DUT.
   enum PowerSupplyType {
