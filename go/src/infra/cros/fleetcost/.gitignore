@@ -10,3 +10,6 @@ fleetcostserver
 # Doing so increases the odds that some piece of automation
 # somewhere will come to depend on it.
 Makefile
+
+# Do not check in the coverage profile.
+coverage.out
