@@ -21,6 +21,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	schedulingAPI "go.chromium.org/chromiumos/config/go/test/scheduling"
 	. "go.chromium.org/luci/common/testing/assertions"
 
 	"infra/device_manager/internal/model"
@@ -50,6 +51,7 @@ func TestGetDevice(t *testing.T) {
 				"device_address",
 				"device_type",
 				"device_state",
+				"schedulable_labels",
 				"last_updated_time",
 				"is_active"}).
 				AddRow(
@@ -57,6 +59,7 @@ func TestGetDevice(t *testing.T) {
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
 					"DEVICE_STATE_AVAILABLE",
+					`{"label-test":{"Values":["test-value-1"]}}`,
 					timeNow,
 					true).
 				AddRow(
@@ -64,6 +67,7 @@ func TestGetDevice(t *testing.T) {
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-2"]}}`,
 					timeNow,
 					false)
 
@@ -73,7 +77,8 @@ func TestGetDevice(t *testing.T) {
 					device_address,
 					device_type,
 					device_state,
-					last_update_time,
+					schedulable_labels,
+					last_updated_time,
 					is_active
 				FROM "Devices"
 				WHERE id=$1;`)).
@@ -111,7 +116,8 @@ func TestGetDevice(t *testing.T) {
 					device_address,
 					device_type,
 					device_state,
-					last_update_time,
+					schedulable_labels,
+					last_updated_time,
 					is_active
 				FROM "Devices"
 				WHERE id=$1;`)).
@@ -160,7 +166,7 @@ func TestUpdateDevice(t *testing.T) {
 		}
 	}()
 
-	_, err = psClient.CreateTopic(ctx, deviceEventsPubSubTopic)
+	_, err = psClient.CreateTopic(ctx, DeviceEventsPubSubTopic)
 	if err != nil {
 		t.Fatalf("failed to create fake pubsub topic")
 	}
@@ -195,8 +201,9 @@ func TestUpdateDevice(t *testing.T) {
 					device_address=COALESCE($2, device_address),
 					device_type=COALESCE($3, device_type),
 					device_state=COALESCE($4, device_state),
-					last_updated_time=COALESCE($5, last_updated_time),
-					is_active=COALESCE($6, is_active)
+					schedulable_labels=COALESCE($5, schedulable_labels),
+					last_updated_time=COALESCE($6, last_updated_time),
+					is_active=COALESCE($7, is_active)
 				WHERE
 					id=$1;`)).
 				WithArgs(
@@ -204,15 +211,21 @@ func TestUpdateDevice(t *testing.T) {
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-1"]}}`,
 					timeNow,
 					false).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
 			err = UpdateDevice(ctx, tx, psClient, model.Device{
-				ID:              "test-device-1",
-				DeviceAddress:   "2.2.2.2:2",
-				DeviceType:      "DEVICE_TYPE_VIRTUAL",
-				DeviceState:     "DEVICE_STATE_LEASED",
+				ID:            "test-device-1",
+				DeviceAddress: "2.2.2.2:2",
+				DeviceType:    "DEVICE_TYPE_VIRTUAL",
+				DeviceState:   "DEVICE_STATE_LEASED",
+				SchedulableLabels: model.SchedulableLabels{
+					"label-test": model.LabelValues{
+						Values: []string{"test-value-1"},
+					},
+				},
 				LastUpdatedTime: timeNow,
 				IsActive:        false,
 			})
@@ -327,6 +340,42 @@ func TestConvertDeviceStateToAPIFormat(t *testing.T) {
 		Convey("convertDeviceStateToAPIFormat: unknown state", func() {
 			apiState := convertDeviceStateToAPIFormat(ctx, "UNKNOWN_STATE")
 			So(apiState, ShouldEqual, api.DeviceState_DEVICE_STATE_UNSPECIFIED)
+		})
+	})
+}
+
+func TestConvertSchedulableLabelsToPubSubFormat(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("convertSchedulableLabelsToPubSubFormat", t, func() {
+		Convey("convertSchedulableLabelsToPubSubFormat: valid labels", func() {
+			labels := model.SchedulableLabels{
+				"label-test": model.LabelValues{
+					Values: []string{
+						"test-value-1",
+						"test-value-2",
+					},
+				},
+			}
+			dims := convertSchedulableLabelsToPubSubFormat(ctx, labels)
+			So(dims, ShouldResembleProto, schedulingAPI.SwarmingDimensions{
+				DimsMap: map[string]*schedulingAPI.DimValues{
+					"label-test": {
+						Values: []string{
+							"test-value-1",
+							"test-value-2",
+						},
+					},
+				},
+			})
+		})
+		Convey("convertSchedulableLabelsToPubSubFormat: empty labels", func() {
+			labels := model.SchedulableLabels{}
+			dims := convertSchedulableLabelsToPubSubFormat(ctx, labels)
+			So(dims, ShouldEqual, &schedulingAPI.SwarmingDimensions{
+				DimsMap: map[string]*schedulingAPI.DimValues{},
+			})
 		})
 	})
 }

@@ -40,6 +40,7 @@ func TestGetDeviceByName(t *testing.T) {
 				"device_address",
 				"device_type",
 				"device_state",
+				"schedulable_labels",
 				"last_updated_time",
 				"is_active"}).
 				AddRow(
@@ -47,6 +48,7 @@ func TestGetDeviceByName(t *testing.T) {
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
 					"DEVICE_STATE_AVAILABLE",
+					`{"label-test":{"Values":["test-value-1"]}}`,
 					timeNow,
 					true).
 				AddRow(
@@ -54,6 +56,7 @@ func TestGetDeviceByName(t *testing.T) {
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-2"]}}`,
 					timeNow,
 					false)
 
@@ -63,7 +66,8 @@ func TestGetDeviceByName(t *testing.T) {
 					device_address,
 					device_type,
 					device_state,
-					last_update_time,
+					schedulable_labels,
+					last_updated_time,
 					is_active
 				FROM "Devices"
 				WHERE id=$1;`)).
@@ -73,10 +77,15 @@ func TestGetDeviceByName(t *testing.T) {
 			device, err := GetDeviceByName(ctx, db, "test-device-1")
 			So(err, ShouldBeNil)
 			So(device, ShouldEqual, Device{
-				ID:              "test-device-1",
-				DeviceAddress:   "1.1.1.1:1",
-				DeviceType:      "DEVICE_TYPE_PHYSICAL",
-				DeviceState:     "DEVICE_STATE_AVAILABLE",
+				ID:            "test-device-1",
+				DeviceAddress: "1.1.1.1:1",
+				DeviceType:    "DEVICE_TYPE_PHYSICAL",
+				DeviceState:   "DEVICE_STATE_AVAILABLE",
+				SchedulableLabels: SchedulableLabels{
+					"label-test": LabelValues{
+						Values: []string{"test-value-1"},
+					},
+				},
 				LastUpdatedTime: timeNow,
 				IsActive:        true,
 			})
@@ -100,7 +109,8 @@ func TestGetDeviceByName(t *testing.T) {
 					device_address,
 					device_type,
 					device_state,
-					last_update_time,
+					schedulable_labels,
+					last_updated_time,
 					is_active
 				FROM "Devices"
 				WHERE id=$1;`)).
@@ -149,19 +159,33 @@ func TestUpdateDevice(t *testing.T) {
 					device_address=COALESCE($2, device_address),
 					device_type=COALESCE($3, device_type),
 					device_state=COALESCE($4, device_state),
-					last_updated_time=COALESCE($5, last_updated_time),
-					is_active=COALESCE($6, is_active)
+					schedulable_labels=COALESCE($5, schedulable_labels),
+					last_updated_time=COALESCE($6, last_updated_time),
+					is_active=COALESCE($7, is_active)
 				WHERE
 					id=$1;`)).
-				WithArgs("test-device-1", "2.2.2.2:2", "DEVICE_TYPE_VIRTUAL", "DEVICE_STATE_LEASED", timeNow, false).
+				WithArgs(
+					"test-device-1",
+					"2.2.2.2:2",
+					"DEVICE_TYPE_VIRTUAL",
+					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-1"]}}`,
+					timeNow,
+					false).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
 			err = UpdateDevice(ctx, tx, Device{
-				ID:              "test-device-1",
-				DeviceAddress:   "2.2.2.2:2",
-				DeviceType:      "DEVICE_TYPE_VIRTUAL",
-				DeviceState:     "DEVICE_STATE_LEASED",
+				ID:            "test-device-1",
+				DeviceAddress: "2.2.2.2:2",
+				DeviceType:    "DEVICE_TYPE_VIRTUAL",
+				DeviceState:   "DEVICE_STATE_LEASED",
+				SchedulableLabels: SchedulableLabels{
+					"label-test": LabelValues{
+						Values: []string{"test-value-1"},
+					},
+				},
 				LastUpdatedTime: timeNow,
+				IsActive:        false,
 			})
 			So(err, ShouldBeNil)
 		})

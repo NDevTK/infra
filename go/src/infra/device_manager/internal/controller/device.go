@@ -23,7 +23,7 @@ import (
 	"infra/device_manager/internal/model"
 )
 
-const deviceEventsPubSubTopic string = "device-events-v1"
+const DeviceEventsPubSubTopic string = "device-events-v1"
 
 // GetDevice gets a Device from the database based on deviceName.
 func GetDevice(ctx context.Context, db *sql.DB, deviceName string) (*api.Device, error) {
@@ -56,9 +56,13 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, psClient *pubsub.Client, devi
 		return err
 	}
 	logging.Debugf(ctx, "UpdateDevice: updated Device %s successfully", device.ID)
+	return PublishDeviceEvent(ctx, psClient, device)
+}
 
+// PublishDeviceEvent takes a Device and publishes an event to PubSub.
+func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device model.Device) error {
 	// Send message to PubSub Device events stream
-	topic := psClient.Topic(deviceEventsPubSubTopic)
+	topic := psClient.Topic(DeviceEventsPubSubTopic)
 	defer topic.Stop()
 
 	ok, err := topic.Exists(ctx)
@@ -66,14 +70,15 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, psClient *pubsub.Client, devi
 		return err
 	}
 	if !ok {
-		return fmt.Errorf("UpdateDevice: topic %s not found", deviceEventsPubSubTopic)
+		return fmt.Errorf("PublishDeviceEvent: topic %s not found", DeviceEventsPubSubTopic)
 	}
 
 	var msg []byte
 	msg, err = proto.Marshal(&schedulingAPI.DeviceEvent{
-		EventTime:   time.Now().Unix(),
-		DeviceId:    device.ID,
-		DeviceReady: IsDeviceAvailable(ctx, convertDeviceStateToAPIFormat(ctx, device.DeviceState)),
+		EventTime:        time.Now().Unix(),
+		DeviceId:         device.ID,
+		DeviceReady:      IsDeviceAvailable(ctx, convertDeviceStateToAPIFormat(ctx, device.DeviceState)),
+		DeviceDimensions: convertSchedulableLabelsToPubSubFormat(ctx, device.SchedulableLabels),
 	})
 	if err != nil {
 		return fmt.Errorf("proto.Marshal err: %w", err)
@@ -85,7 +90,7 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, psClient *pubsub.Client, devi
 
 	_, err = rsp.Get(ctx)
 	if err != nil {
-		logging.Debugf(ctx, "UpdateDevice: failed to publish to PubSub %s", err)
+		logging.Debugf(ctx, "PublishDeviceEvent: failed to publish to PubSub %s", err)
 	}
 	return nil
 }
@@ -132,4 +137,17 @@ func convertDeviceTypeToAPIFormat(ctx context.Context, deviceType string) api.De
 // convertDeviceStateToAPIFormat takes a string and converts it to DeviceState.
 func convertDeviceStateToAPIFormat(ctx context.Context, state string) api.DeviceState {
 	return api.DeviceState(api.DeviceState_value[state])
+}
+
+// convertSchedulableLabelsToPubSubFormat formats the labels for publishing.
+func convertSchedulableLabelsToPubSubFormat(ctx context.Context, labels model.SchedulableLabels) *schedulingAPI.SwarmingDimensions {
+	swarmingDims := &schedulingAPI.SwarmingDimensions{
+		DimsMap: map[string]*schedulingAPI.DimValues{},
+	}
+	for k, v := range labels {
+		swarmingDims.GetDimsMap()[k] = &schedulingAPI.DimValues{
+			Values: v.Values,
+		}
+	}
+	return swarmingDims
 }
