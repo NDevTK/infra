@@ -14,10 +14,8 @@ import (
 	fleetcostModels "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver"
+	"infra/cros/fleetcost/internal/costserver/fakeufsdata"
 	"infra/cros/fleetcost/internal/costserver/testsupport"
-	models "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 // TestFallbackCostResult tests the flow where we fall back to the cost of a DUT.
@@ -26,36 +24,7 @@ func TestFallbackCostResult(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	tf.RegisterGetDeviceDataCall(gomock.Any(), &ufsAPI.GetDeviceDataResponse{
-		Resource: &ufsAPI.GetDeviceDataResponse_ChromeOsDeviceData{
-			ChromeOsDeviceData: &models.ChromeOSDeviceData{
-				LabConfig: &models.MachineLSE{
-					Lse: &models.MachineLSE_ChromeosMachineLse{
-						ChromeosMachineLse: &models.ChromeOSMachineLSE{
-							ChromeosLse: &models.ChromeOSMachineLSE_DeviceLse{
-								DeviceLse: &models.ChromeOSDeviceLSE{
-									Device: &models.ChromeOSDeviceLSE_Dut{
-										Dut: &lab.DeviceUnderTest{
-											Hostname: "fake-octopus-dut-1",
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				Machine: &models.Machine{
-					Device: &models.Machine_ChromeosMachine{
-						ChromeosMachine: &models.ChromeOSMachine{
-							BuildTarget: "build-target",
-							Model:       "model",
-						},
-					},
-				},
-			},
-		},
-		ResourceType: ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE,
-	})
+	tf.RegisterGetDeviceDataCall(gomock.Any(), fakeufsdata.FakeOctopusDUTDeviceDataResponse)
 
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostModels.CostIndicator{
 		Type:     fleetcostModels.IndicatorType_INDICATOR_TYPE_DUT,
