@@ -16,6 +16,7 @@ import (
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
+	fleetcostpb "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/site"
 )
@@ -30,6 +31,10 @@ var GetCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.board, "board", "", "the board to search for")
+		c.Flags.StringVar(&c.model, "model", "", "the model to search for")
+		c.Flags.StringVar(&c.sku, "sku", "", "the sku to search for")
+		c.Flags.Func("location", "where the device is located", makeLocationRecorder(&c.location))
+		c.Flags.Func("type", "name of cost indicator", makeTypeRecorder(&c.typ))
 		return c
 	},
 }
@@ -39,6 +44,10 @@ type getCostIndicatorCommand struct {
 	authFlags   authcli.Flags
 	commonFlags site.CommonFlags
 	board       string
+	model       string
+	sku         string
+	location    fleetcostpb.Location
+	typ         fleetcostpb.IndicatorType
 }
 
 // Run is the main entrypoint to the get-ci.
@@ -73,13 +82,20 @@ func (c *getCostIndicatorCommand) innerRun(ctx context.Context, a subcommands.Ap
 		},
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
+	filter := &fleetcostAPI.ListCostIndicatorsFilter{
+		Board: c.board,
+		Model: c.model,
+		Sku:   c.sku,
+	}
+	if c.location != fleetcostpb.Location_LOCATION_UNKNOWN {
+		filter.Location = c.location.String()
+	}
+	if c.typ != fleetcostpb.IndicatorType_INDICATOR_TYPE_UNKNOWN {
+		filter.Type = c.typ.String()
+	}
 	resp, err := fleetCostClient.ListCostIndicators(
 		ctx,
-		&fleetcostAPI.ListCostIndicatorsRequest{
-			Filter: &fleetcostAPI.ListCostIndicatorsFilter{
-				Board: c.board,
-			},
-		},
+		&fleetcostAPI.ListCostIndicatorsRequest{Filter: filter},
 	)
 	if err != nil {
 		return err
