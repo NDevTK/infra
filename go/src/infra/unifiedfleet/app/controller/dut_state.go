@@ -213,6 +213,12 @@ func UpdateDutStateWithMasks(ctx context.Context, maskSet map[string]bool, ds *c
 		if maskSet["dut_state.dolos"] {
 			newDs.DolosState = ds.GetDolosState()
 		}
+		if maskSet["dut_state.fw_ec_target"] {
+			newDs.FwEcTarget = ds.GetFwEcTarget()
+		}
+		if maskSet["dut_state.fw_ap_target"] {
+			newDs.FwApTarget = ds.GetFwApTarget()
+		}
 		if ds.GetHostname() != "" {
 			// Update hostname always as it can change and better to update.
 			newDs.Hostname = ds.GetHostname()
