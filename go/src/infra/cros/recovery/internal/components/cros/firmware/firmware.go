@@ -357,8 +357,15 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 
 	if req.UseCacheToExtractor {
 		var err error
-		imagePath = "ec.bin"
-		fwBoard, err = extractFromCache(ctx, req.DownloadImagePath, destDir, imagePath, req.DownloadImageReattemptCount, req.DownloadImageReattemptWait, candidatesFiles, run, log)
+		fwBoard, err = extractFromCache(ctx, run, log, &extractFromCacheRequest{
+			sourceCachePath:        req.DownloadImagePath,
+			destDirPath:            destDir,
+			destFileName:           "ec.bin",
+			candidates:             candidatesFiles,
+			metricsFwDst:           "ec",
+			downloadReattemptCount: req.DownloadImageReattemptCount,
+			downloadReattemptWait:  req.DownloadImageReattemptWait,
+		})
 		if err != nil {
 			return "", "", errors.Annotate(err, "extract ec files").Err()
 		}
@@ -376,7 +383,16 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		monitorFiles = append(monitorFiles, strings.Replace(f, "ec.bin", ecMonitorFileName, 1))
 	}
 	if req.UseCacheToExtractor {
-		if _, err := extractFromCache(ctx, req.DownloadImagePath, destDir, ecMonitorFileName, req.DownloadImageReattemptCount, req.DownloadImageReattemptWait, monitorFiles, run, log); err != nil {
+		_, err := extractFromCache(ctx, run, log, &extractFromCacheRequest{
+			sourceCachePath:        req.DownloadImagePath,
+			destDirPath:            destDir,
+			destFileName:           ecMonitorFileName,
+			candidates:             monitorFiles,
+			metricsFwDst:           "ec_monitor",
+			downloadReattemptCount: req.DownloadImageReattemptCount,
+			downloadReattemptWait:  req.DownloadImageReattemptWait,
+		})
+		if err != nil {
 			log.Debugf("Extract EC files: fail to extract %q file. Error: %s", ecMonitorFileName, err)
 		}
 	} else {
@@ -414,8 +430,16 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 
 	var imagePath string
 	if req.UseCacheToExtractor {
-		imagePath = "image.bin"
-		if _, err := extractFromCache(ctx, req.DownloadImagePath, destDir, imagePath, req.DownloadImageReattemptCount, req.DownloadImageReattemptWait, candidatesFiles, run, log); err != nil {
+		_, err := extractFromCache(ctx, run, log, &extractFromCacheRequest{
+			sourceCachePath:        req.DownloadImagePath,
+			destDirPath:            destDir,
+			destFileName:           "image.bin",
+			candidates:             candidatesFiles,
+			metricsFwDst:           "ap",
+			downloadReattemptCount: req.DownloadImageReattemptCount,
+			downloadReattemptWait:  req.DownloadImageReattemptWait,
+		})
+		if err != nil {
 			return "", errors.Annotate(err, "extract ap files").Err()
 		}
 	} else {
@@ -464,21 +488,46 @@ func extractFromTarball(ctx context.Context, tarballPath, destDirPath string, ca
 	return "", "", errors.Reason("extract from tarball: no candidate file found").Err()
 }
 
+type extractFromCacheRequest struct {
+	// Path to cache service to request extraction.
+	sourceCachePath string
+	// Output directory for files.
+	destDirPath  string
+	destFileName string
+	// List of files which can be opresent in archive.
+	candidates []string
+	// Firmware destination (ec/ap) used for metrics.
+	metricsFwDst string
+
+	// Download settings.
+	downloadReattemptCount int
+	downloadReattemptWait  time.Duration
+}
+
 // Try extracting the image_candidates from Cache Service.
-func extractFromCache(ctx context.Context, sourceCachePath, destDirPath, destFileName string, downloadReattemptCount int, downloadReattemptWait time.Duration, candidates []string, run components.Runner, log logger.Logger) (string, error) {
+func extractFromCache(ctx context.Context, run components.Runner, log logger.Logger, req *extractFromCacheRequest) (string, error) {
+	if req == nil {
+		return "", errors.Reason("extract from cache: request not provided").Err()
+	}
 	// Try to download candidates till first success.
-	for _, cf := range candidates {
-		req := &cache.ExtractRequest{
-			CacheFileURL:                sourceCachePath,
+	for _, cf := range req.candidates {
+		extractReq := &cache.ExtractRequest{
+			CacheFileURL:                req.sourceCachePath,
 			ExtractFileName:             cf,
-			DestintionFilePath:          filepath.Join(destDirPath, destFileName),
+			DestintionFilePath:          filepath.Join(req.destDirPath, req.destFileName),
 			Timeout:                     extractFileTimeout,
-			DownloadImageReattemptCount: downloadReattemptCount,
-			DownloadImageReattemptWait:  downloadReattemptWait,
+			DownloadImageReattemptCount: req.downloadReattemptCount,
+			DownloadImageReattemptWait:  req.downloadReattemptWait,
 		}
-		if err := cache.Extract(ctx, req, run); err != nil {
+		if err := cache.Extract(ctx, extractReq, run); err != nil {
 			log.Debugf("Fail to download candidate %q: %s", cf, err)
 			continue
+		}
+		if req.metricsFwDst != "" {
+			key := fmt.Sprintf("success_fw_%s_target", req.metricsFwDst)
+			if execMetric := metrics.GetDefaultAction(ctx); execMetric != nil {
+				execMetric.Observations = append(execMetric.Observations, metrics.NewStringObservation(key, cf))
+			}
 		}
 		log.Infof("Candidate file %q extracted.", cf)
 		return boardFromCandidateName(cf), nil
