@@ -202,6 +202,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			TestbedCapability:   createTestbedCapability(p.GetCable()),
 			AudioLatencyToolkit: createDUTAudioLatencyToolkit(p, ds),
 			Dolos:               createDUTDolos(p, ds),
+			FirmwareInfo:        createFirmwareInfo(ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -505,6 +506,13 @@ func createDUTDolos(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.Dolos {
 	}
 }
 
+func createFirmwareInfo(ds *ufslab.DutState) *tlw.FirmwareInfo {
+	return &tlw.FirmwareInfo{
+		EcTarget: ds.GetFwEcTarget(),
+		ApTarget: ds.GetFwApTarget(),
+	}
+}
+
 func configHasFeature(dc *ufsdevice.Config, hf ufsdevice.Config_HardwareFeature) bool {
 	for _, f := range dc.GetHardwareFeatures() {
 		if f == hf {
@@ -617,6 +625,8 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.DutStateReason = string(dut.DutStateReason)
 	state.RepairRequests = convertRepairRequestsToUFS(dut.RepairRequests)
 	state.DolosState = ufslab.PeripheralState_UNKNOWN
+	state.FwApTarget = ""
+	state.FwEcTarget = ""
 
 	// Update states for present components.
 	if chromeos := dut.GetChromeos(); chromeos != nil {
@@ -699,6 +709,10 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 
 		if audioLatencyToolkit := chromeos.GetAudioLatencyToolkit(); audioLatencyToolkit != nil {
 			state.AudioLatencyToolkitState = convertAudioLatencyToolkitStatesToUFS(audioLatencyToolkit.GetState())
+		}
+		if fi := chromeos.GetFirmwareInfo(); fi != nil {
+			state.FwApTarget = fi.GetApTarget()
+			state.FwEcTarget = fi.GetEcTarget()
 		}
 	} else if devboard := dut.GetDevBoard(); devboard != nil {
 		if s := devboard.GetServo(); s != nil {
