@@ -2,8 +2,11 @@ CREATE OR REPLACE VIEW `APP_ID.PROJECT_NAME.failing_steps`
 AS
 /*
 Failing steps table.
-Each row represents a step that has failed in the most recent run of the
-given builder (bucket, project etc).
+Each row represents a step that has failed in the most recent run of the given
+builder (bucket, project etc).
+This table excludes failing steps that have been retried but includes the failed
+retry steps themselves. This ensures we only display steps responsible for the
+build failure (https://crbug.com/323898567).
 As the status of the build system changes, so should the contents of this
 view.
 */
@@ -40,7 +43,11 @@ WITH
     r.variant_hash,
     r.source_ref_hash,
     ANY_VALUE(COALESCE((SELECT value FROM UNNEST(r.tags) WHERE key = "test_name"), r.test_id)) AS test_name,
-    ANY_VALUE((SELECT value FROM UNNEST(r.tags) WHERE key = "step_name" limit 1)) as step_name,
+    ANY_VALUE(
+      (SELECT value FROM UNNEST(r.tags) WHERE key = "step_name" limit 1)
+      -- we prefer the step_name for retry shards.
+      HAVING MAX(SELECT CONTAINS_SUBSTR(value, " (retry shards)") FROM UNNEST(r.tags) WHERE key = "step_name" limit 1)
+    ) as step_name,
     -- we prefix 'rules' algorithms with 'a' and others with 'b' so that MIN chooses clusters in order of [rules, reason, testname].
     CONCAT(ANY_VALUE(project), '/', SUBSTR(MIN(CONCAT(
         IF
@@ -154,12 +161,22 @@ FROM
   latest_builds b,
   b.latest.steps s
 LEFT OUTER JOIN
+  b.latest.steps retry_step
+ON
+  CONTAINS_SUBSTR(retry_step.name, " (retry shards)")
+  AND s.name = REPLACE(retry_step.name, " (retry shards)", "")
+LEFT OUTER JOIN
   recent_tests_with_changepoint_analysis tr
 ON
   SAFE_CAST(tr.build_id AS int64) = b.latest.id
   AND (tr.step_name IS NULL OR tr.step_name = s.name)
 WHERE
-  (b.latest.status = 'FAILURE' AND s.status = 'FAILURE')
+  (
+    b.latest.status = 'FAILURE'
+    AND s.status = 'FAILURE'
+    -- Ignore the steps that had been retried.
+    AND retry_step IS NULL
+  )
   OR
   (
     b.latest.status = 'INFRA_FAILURE'
