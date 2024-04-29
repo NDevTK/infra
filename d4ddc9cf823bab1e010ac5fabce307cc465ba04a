@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa3553c5_f3597021",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2024-04-29T17:54:49Z",
+      "side": 1,
+      "message": "The requested change has already been done, and this CL is no longer needed.",
+      "revId": "d4ddc9cf823bab1e010ac5fabce307cc465ba04a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
