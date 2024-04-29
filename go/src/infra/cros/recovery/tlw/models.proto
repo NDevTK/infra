@@ -202,10 +202,25 @@ message BluetoothPeerScopeState {
     // identified as the expected bundle for this specific btpeer.
     chromiumos.test.lab.api.BluetoothPeerChameleondConfig.ChameleondBundle expected_bundle_config = 3;
   }
+  // RaspiosCrosBtpeerImage holds data related to the state of a ChromeOS
+  // Raspberry Pi OS image on the btpeer.
+  message RaspiosCrosBtpeerImage {
+    // The UUID of the ChromeOS Raspberry Pi OS image installed on the btpeer.
+    string installed_image_uuid = 1;
+    // The RaspiosCrosBtpeerImageConfig as retrieved from the global config JSON
+    // file stored on GCS. Includes information regarding available image
+    // releases for all btpeers.
+    chromiumos.test.lab.api.RaspiosCrosBtpeerImageConfig release_config = 2;
+    // The config of the image from the release_config that has been identified
+    // as the expected image for this specific btpeer.
+    chromiumos.test.lab.api.RaspiosCrosBtpeerImageConfig.OSImage expected_image_config = 3;
+  }
   // Reference to the BluetoothPeer device this state is for.
   BluetoothPeer btpeer = 1;
   // Chameleond state info for this btpeer.
   Chameleond chameleond = 2;
+  // RaspiosCrosBtpeerImage state info for this btpeer.
+  RaspiosCrosBtpeerImage raspios_cros_btpeer_image = 3;
 }
 
 // VersionRequest holds data for version service request.
