@@ -47,6 +47,17 @@ func TestValidateCreateCostIndicatorRequest(t *testing.T) {
 			ok: false,
 		},
 		{
+			name: "request with unknown type",
+			in: &fleetcostAPI.CreateCostIndicatorRequest{
+				CostIndicator: &models.CostIndicator{
+					Name:     "",
+					Location: models.Location_LOCATION_ALL,
+					Type:     models.IndicatorType_INDICATOR_TYPE_UNKNOWN,
+				},
+			},
+			ok: false,
+		},
+		{
 			name: "good record",
 			in: &fleetcostAPI.CreateCostIndicatorRequest{
 				CostIndicator: &models.CostIndicator{
