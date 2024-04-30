@@ -300,6 +300,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{
 					BugId: "1234",
 				},
+				PartnerInfo: &artifactpb.PartnerInfo{
+					AccountId: 4,
+				},
 			},
 			TestRuns: []*artifactpb.TestRun{
 				{
@@ -411,6 +414,11 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					"suite":               "arc-cts-vm",
 					"branch":              "main",
 					"master_build_config": "main-release",
+				},
+			},
+			CommonConfig: &skylab_test_runner.CommonConfig{
+				PartnerConfig: &skylab_test_runner.CommonConfig_PartnerConfig{
+					AccountId: 4,
 				},
 			},
 			Devices: map[string]*testapi.CrosTestRequest_Device{

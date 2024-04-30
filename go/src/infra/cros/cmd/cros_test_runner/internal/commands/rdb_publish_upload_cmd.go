@@ -198,6 +198,9 @@ func populateTestInvocationInfo(
 
 	// Project tracker metadata
 	populateProjectTrackerMetadata(ctx, testInv, bbTags)
+
+	// Populate Partner related info.
+	populatePartnerInfo(ctx, testInv, sk)
 }
 
 // getPrimaryDut get the primary Dut if exists. Otherwise, return nil.
@@ -609,6 +612,21 @@ func populateTestRunsInfo(
 	}
 
 	resultProto.TestRuns = testRuns
+}
+
+// populatePartnerInfo populates partner info.
+func populatePartnerInfo(
+	ctx context.Context,
+	testInv *artifactpb.TestInvocation,
+	sk *data.HwTestStateKeeper) {
+	testInv.PartnerInfo = &artifactpb.PartnerInfo{}
+	if sk.CommonConfig != nil {
+		if partnerInfo := sk.CommonConfig.GetPartnerConfig(); partnerInfo != nil {
+			if accountId := partnerInfo.GetAccountId(); accountId > 0 {
+				testInv.PartnerInfo.AccountId = accountId
+			}
+		}
+	}
 }
 
 // getTagValues gets tag values from provided string pairs.
