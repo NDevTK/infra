@@ -310,13 +310,6 @@ func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Requ
 		log.Printf(err.Error())
 		return nil, metricData{status: http.StatusBadRequest}, err
 	}
-	if err := gsClient.verifyBucket(ctx, objectName.bucket); err != nil {
-		status := deriveHTTPStatusFromError(err)
-		err := fmt.Errorf("%s Bucket %q: %w", reqID, objectName.bucket, err)
-		http.Error(w, err.Error(), status)
-		log.Print(err.Error())
-		return nil, metricData{status: status}, err
-	}
 
 	gsObject := gsClient.getObject(objectName)
 

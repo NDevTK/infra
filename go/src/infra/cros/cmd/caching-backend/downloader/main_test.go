@@ -599,7 +599,3 @@ func (c *fakeGSClient) getObject(name *gsObjectName) gsObject {
 func (*fakeGSClient) close() error {
 	return nil
 }
-
-func (*fakeGSClient) verifyBucket(context.Context, string) error {
-	return nil
-}
