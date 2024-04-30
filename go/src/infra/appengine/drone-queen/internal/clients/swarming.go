@@ -39,7 +39,7 @@ func NewSwarmingClient(ctx context.Context, host string, project string) (Swarmi
 		return mockClient, nil
 	}
 
-	t, err := auth.GetRPCTransport(ctx, auth.AsProject, auth.WithProject(project))
+	t, err := auth.GetRPCTransport(ctx, auth.AsSelf)
 	if err != nil {
 		return nil, err
 	}
