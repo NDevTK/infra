@@ -354,19 +354,21 @@ func btpeerRepairPlan() *Plan {
 			},
 			"Download expected OS image release to device": {
 				Docs: []string{
-					"Downloads and decompresses the expected OS image release to the device",
+					"Downloads and decompresses the expected OS image release to the device.",
+					"The overall timeout is set to 25m, with a 10m timeout for the download and a 10m timeout for decompression.",
 				},
 				ExecName:    "btpeer_download_image",
 				RunControl:  RunControl_ALWAYS_RUN,
-				ExecTimeout: &durationpb.Duration{Seconds: 960},
+				ExecTimeout: &durationpb.Duration{Seconds: 1500}, // 25m
 			},
 			"Flash B partitions with downloaded OS image": {
 				Docs: []string{
-					"Flashes a new OS onto the BOOT/ROOT_B partitions",
+					"Flashes a new OS onto the BOOT_B/ROOT_B partitions.",
+					"The overall timeout is set to 40m, with a 5m timeout for the BOOT_B partition flash and a 30m timeout for the ROOT_B partition flash.",
 				},
 				ExecName:    "btpeer_provision_device",
 				RunControl:  RunControl_ALWAYS_RUN,
-				ExecTimeout: &durationpb.Duration{Seconds: 2400},
+				ExecTimeout: &durationpb.Duration{Seconds: 2400}, // 40m
 			},
 			"Temp Boot into B partition": {
 				Docs: []string{
