@@ -268,7 +268,7 @@ func downloadImageExec(ctx context.Context, info *execs.ExecInfo) error {
 	runner := info.DefaultRunner()
 	externalDownloadURL := argsMap.AsString(ctx, "image_path", "")
 	downloadTimeout := argsMap.AsDuration(ctx, "download_timeout", 600, time.Second)
-	decompressTimeout := argsMap.AsDuration(ctx, "decompress_timeout", 300, time.Second)
+	decompressTimeout := argsMap.AsDuration(ctx, "decompress_timeout", 600, time.Second)
 
 	// Validate/parse image URL.
 	if externalDownloadURL == "" {
