@@ -12,7 +12,7 @@ _URL = f"https://ci.android.com/builds/submitted/{_VERSION}/linux/latest/raw/and
 
 
 def do_latest():
-  return _VERSION
+  print(_VERSION)
 
 
 def do_get_url():

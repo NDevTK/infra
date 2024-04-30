@@ -12,7 +12,7 @@ _URL = f"https://dl.google.com/android/repository/android-ndk-{_VERSION}-linux.z
 
 
 def do_latest():
-  return _VERSION
+  print(_VERSION)
 
 
 def do_get_url():
