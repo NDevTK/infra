@@ -12,11 +12,13 @@ from redirect import redirect_custom_labels
 
 PROJECT_REDIRECT_MAP = {
     'chromium': 'https://issues.chromium.org',
+    'dawn': 'https://issues.chromium.org',
     'fuchsia': 'https://issues.fuchsia.dev',
     'gerrit': 'https://issues.gerritcodereview.com',
     'git': 'https://git.issues.gerritcodereview.com',
     'pigweed': 'https://issues.pigweed.dev',
     'skia': 'http://issues.skia.org',
+    'tint': 'https://issues.chromium.org',
     'v8': 'http://issues.chromium.org',
     'webrtc': 'http://issues.webrtc.org',
 }
