@@ -371,6 +371,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 60},
 					Tags: SortTags([]*pb.StringPair{
+						pbutil.StringPair("account_id", "4"),
 						pbutil.StringPair("analytics_name", "Bluetooth_Sa_Perbuild"),
 						pbutil.StringPair("ancestor_buildbucket_ids", "8814950840874708945,8814951792758733697"),
 						pbutil.StringPair("ash_version", "109.0.5391.0"),

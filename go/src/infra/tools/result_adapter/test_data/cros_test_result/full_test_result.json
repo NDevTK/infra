@@ -90,6 +90,9 @@
                 "ctp-fwd-task-name":"Bluetooth_Sa_Perbuild",
                 "qs_account":"unmanaged_p2"
             }
+        },
+        "partner_info":{
+            "account_id": 4
         }
     },
     "test_runs":[

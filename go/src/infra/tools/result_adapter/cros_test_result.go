@@ -250,6 +250,13 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 				}
 			}
 		}
+		partnerInfo := testInvocation.GetPartnerInfo()
+		if partnerInfo != nil {
+			accountID := partnerInfo.GetAccountId()
+			if accountID != 0 {
+				tags = AppendTags(tags, "account_id", strconv.FormatInt(accountID, 10))
+			}
+		}
 	}
 
 	if testRun != nil {
