@@ -15,12 +15,15 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 )
 
+type ManifestFetcher func(ctx context.Context, s string) (string, error)
+
 type CTPV2FromV1 struct {
 	interfaces.CTPv2Builder
 
-	ctx context.Context
-	v2  *testapi.CTPv2Request
-	v1  []*test_platform.Request
+	ctx             context.Context
+	v2              *testapi.CTPv2Request
+	v1              []*test_platform.Request
+	manifestFetcher ManifestFetcher
 }
 
 func NewCTPV2FromV1(ctx context.Context, v1 map[string]*test_platform.Request) *CTPV2FromV1 {
@@ -29,7 +32,22 @@ func NewCTPV2FromV1(ctx context.Context, v1 map[string]*test_platform.Request) *
 		v2: &testapi.CTPv2Request{
 			Requests: []*testapi.CTPRequest{},
 		},
-		ctx: ctx,
+		ctx:             ctx,
+		manifestFetcher: GetBuilderManifestFromContainer,
+	}
+}
+
+func NewCTPV2FromV1WithCustomManifestFetcher(ctx context.Context, v1 map[string]*test_platform.Request, manifestFetcher ManifestFetcher) *CTPV2FromV1 {
+	if manifestFetcher == nil {
+		manifestFetcher = GetBuilderManifestFromContainer
+	}
+	return &CTPV2FromV1{
+		v1: maps.Values(v1),
+		v2: &testapi.CTPv2Request{
+			Requests: []*testapi.CTPRequest{},
+		},
+		ctx:             ctx,
+		manifestFetcher: manifestFetcher,
 	}
 }
 
@@ -37,6 +55,7 @@ func (builder *CTPV2FromV1) BuildRequest() *testapi.CTPv2Request {
 	for _, v1Request := range builder.v1 {
 		builder.v2.Requests = append(builder.v2.Requests, buildCTPRequest(v1Request))
 	}
-	builder.v2.Requests = GroupV2Requests(builder.ctx, builder.v2.Requests)
+
+	builder.v2.Requests = GroupV2Requests(builder.ctx, builder.v2.Requests, builder.manifestFetcher)
 	return builder.v2
 }

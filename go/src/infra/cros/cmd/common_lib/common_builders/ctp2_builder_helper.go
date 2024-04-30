@@ -31,6 +31,8 @@ const (
 	LacrosGcsPath          = "lacros_gcs_path"
 	AndroidImageVersion    = "android_image_version"
 	GmsCorePackage         = "gms_core_package"
+	Public                 = "PUBLIC"
+	Private                = "PRIVATE"
 )
 
 var (
@@ -38,10 +40,27 @@ var (
 	ExcludedChromeosBuildPostfixes = []string{"main"}
 )
 
-// GroupV2Requests reduces the list of v2 requests by grouping
-// by build and suite request.
-func GroupV2Requests(ctx context.Context, v2s []*testapi.CTPRequest) []*testapi.CTPRequest {
-	groups := map[string][]*testapi.CTPRequest{}
+// GroupV2Requests filters CTP requests list by manifest. "PUBLIC" manifest will
+// not be grouped. The manifest information is fetched from container image info.
+// Eligible requests are grouped together based on suite and board.
+// The function then returns the grouped eligible requests.
+//
+// NOTE: The manifest is being fetched from container image info because that's info
+// is used while generating new containers or resuing cache containers. "PUBLIC" manifest
+// boards do not use cached containers and therefore grouping shouldn't be done.
+func GroupV2Requests(ctx context.Context, v2s []*testapi.CTPRequest, manifestFetcher ManifestFetcher) []*testapi.CTPRequest {
+	eligible, public := FilterV2RequestsBasedOnManifest(ctx, v2s, manifestFetcher)
+	groupedEligibleRequests := GroupEligibleV2Requests(ctx, eligible)
+	// merge public group as is with groupedEligibleRequests
+	groupedEligibleRequests = append(groupedEligibleRequests, public...)
+	return groupedEligibleRequests
+}
+
+// FilterV2RequestsBasedOnManifest divides the ctp requests into two groups based on the manifest from container
+// image info. One set for "PUBLIC" manifest and another for others.
+func FilterV2RequestsBasedOnManifest(ctx context.Context, v2s []*testapi.CTPRequest, manifestFetcher ManifestFetcher) ([]*testapi.CTPRequest, []*testapi.CTPRequest) {
+	public := []*testapi.CTPRequest{}
+	nonPublic := []*testapi.CTPRequest{}
 	for _, v2 := range v2s {
 		// Safe guard against CTPRequests missing targets to schedule on.
 		if len(v2.GetScheduleTargets()) == 0 || len(v2.GetScheduleTargets()[0].GetTargets()) == 0 {
@@ -51,6 +70,34 @@ func GroupV2Requests(ctx context.Context, v2s []*testapi.CTPRequest) []*testapi.
 		// Translator only supplies singular length schedule targets,
 		// and only care about checking the primary target's gcspath when grouping.
 		gcsPath := v2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()
+
+		// Fetch manifest info from containerImageInfo
+		manifest, err := manifestFetcher(ctx, gcsPath)
+		if err != nil {
+			// Instead of dropping, add it to public
+			logging.Infof(ctx, "failed to fetch manifest info for %s, add to public list: %v", gcsPath, v2)
+			public = append(public, v2)
+			continue
+		}
+		// If manifest is "PUBLIC" then add to public
+		if manifest == Public {
+			public = append(public, v2)
+		} else {
+			nonPublic = append(nonPublic, v2)
+		}
+	}
+	return nonPublic, public
+}
+
+// GroupEligibleV2Requests reduces the list of v2 requests by grouping
+// by build and suite request.
+func GroupEligibleV2Requests(ctx context.Context, v2s []*testapi.CTPRequest) []*testapi.CTPRequest {
+	groups := map[string][]*testapi.CTPRequest{}
+	for _, v2 := range v2s {
+		// Translator only supplies singular length schedule targets,
+		// and only care about checking the primary target's gcspath when grouping.
+		gcsPath := v2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()
+
 		build := common.GetMajorBuildFromGCSPath(gcsPath)
 		if build == "" || v2.SuiteRequest == nil {
 			continue
@@ -72,13 +119,28 @@ func GroupV2Requests(ctx context.Context, v2s []*testapi.CTPRequest) []*testapi.
 		}
 		groups[build] = append(groups[build], v2)
 	}
-
 	flatRequests := []*testapi.CTPRequest{}
 	for _, buildRequests := range groups {
 		flatRequests = append(flatRequests, buildRequests...)
 	}
 
 	return flatRequests
+}
+
+// GetBuilderManifestFromContainer returns the manifest info fetched from container image info
+func GetBuilderManifestFromContainer(ctx context.Context, gcsPath string) (string, error) {
+	containerImageInfo, err := common.FetchImageData(ctx, "", gcsPath)
+	if err != nil {
+		return "", err
+	}
+	for _, imageInfo := range containerImageInfo {
+		for _, tag := range imageInfo.GetTags() {
+			if tag == Public {
+				return Public, nil
+			}
+		}
+	}
+	return Private, nil
 }
 
 // buildCTPRequest converts a v1 ctp request into a v2 CTPRequest.

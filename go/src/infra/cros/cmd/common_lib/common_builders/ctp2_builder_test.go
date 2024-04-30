@@ -7,6 +7,7 @@ package common_builders_test
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -18,6 +19,14 @@ import (
 	builders "infra/cros/cmd/common_lib/common_builders"
 )
 
+func MockManifestFetcher(ctx context.Context, gcsPath string) (string, error) {
+	if strings.Contains(gcsPath, "public-manifest") {
+		return "PUBLIC", nil
+	} else {
+		return "PRIVATE", nil
+	}
+
+}
 func TestCTPv1Tov2Translation(t *testing.T) {
 	Convey("Single Translation", t, func() {
 		requests := map[string]*test_platform.Request{
@@ -63,7 +72,7 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", ""),
 			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", ""),
 		}
-		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
+		result := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
 
 		So(result.GetRequests(), ShouldHaveLength, 1)
 		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 2)
@@ -78,6 +87,29 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 		}
 		So(target1.GetHwTarget().GetLegacyHw().GetModel(), ShouldEqual, "model")
 		So(target2.GetHwTarget().GetLegacyHw().GetModel(), ShouldEqual, "model2")
+	})
+
+	Convey("Multi Translation, grouping, including public manifest", t, func() {
+		requests := map[string]*test_platform.Request{
+			"r1": getCTPv1Request("board", "model", "public-manifest-release/R123.0.0", "suite", "", ""),
+			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", ""),
+		}
+		result := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
+
+		So(result.GetRequests(), ShouldHaveLength, 2)
+		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 1)
+		So(result.GetRequests()[1].GetScheduleTargets(), ShouldHaveLength, 1)
+		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		So(result.GetRequests()[1].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		target1 := result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0]
+		target2 := result.GetRequests()[1].GetScheduleTargets()[0].GetTargets()[0]
+		if target1.GetSwTarget().GetLegacySw().GetGcsPath() != "gs://chromeos-image-archive/public-manifest-release/R123.0.0" {
+			swap := target1
+			target1 = target2
+			target2 = swap
+		}
+		So(target1.GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/public-manifest-release/R123.0.0")
+		So(target2.GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/board-release/R123.0.0")
 	})
 }
 
@@ -140,7 +172,7 @@ func TestGetVariant(t *testing.T) {
 
 func TestCTP2Grouping(t *testing.T) {
 	Convey("Same build, same suite, diff boards", t, func() {
-		groupings := builders.GroupV2Requests(context.Background(), []*testapi.CTPRequest{
+		groupings := builders.GroupEligibleV2Requests(context.Background(), []*testapi.CTPRequest{
 			getCTPv2Request("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 			getCTPv2Request("board2", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 		})
@@ -155,7 +187,7 @@ func TestCTP2Grouping(t *testing.T) {
 	})
 
 	Convey("Same build, diff suite", t, func() {
-		groupings := builders.GroupV2Requests(context.Background(), []*testapi.CTPRequest{
+		groupings := builders.GroupEligibleV2Requests(context.Background(), []*testapi.CTPRequest{
 			getCTPv2Request("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 			getCTPv2Request("board1", "model1", "release", "board1-release/R123.0.0", "", "suite2", ""),
 		})
@@ -169,7 +201,7 @@ func TestCTP2Grouping(t *testing.T) {
 	})
 
 	Convey("Diff build, same suite", t, func() {
-		groupings := builders.GroupV2Requests(context.Background(), []*testapi.CTPRequest{
+		groupings := builders.GroupEligibleV2Requests(context.Background(), []*testapi.CTPRequest{
 			getCTPv2Request("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 			getCTPv2Request("board1", "model1", "release", "board1-release/R124.0.0", "", "suite1", ""),
 		})
@@ -185,7 +217,7 @@ func TestCTP2Grouping(t *testing.T) {
 	})
 
 	Convey("Diff build, diff suite", t, func() {
-		groupings := builders.GroupV2Requests(context.Background(), []*testapi.CTPRequest{
+		groupings := builders.GroupEligibleV2Requests(context.Background(), []*testapi.CTPRequest{
 			getCTPv2Request("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 			getCTPv2Request("board1", "model1", "release", "board1-release/R124.0.0", "", "suite2", ""),
 		})
