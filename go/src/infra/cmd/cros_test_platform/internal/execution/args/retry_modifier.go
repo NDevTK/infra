@@ -10,7 +10,6 @@ import (
 	"context"
 	"infra/libs/skylab/request"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -37,19 +36,11 @@ func (rm *RetryModifier) ModifyArgs(ctx context.Context, args request.Args) erro
 
 	testSuites := []*testapi.TestSuite{}
 	for _, testSuite := range args.CFTTestRunnerRequest.TestSuites {
-		testCases := testSuite.GetTestCaseIds().TestCaseIds
-		if len(testCases) <= 1 {
-			testSuites = append(testSuites, testSuite)
-			continue
+		testCases := testSuite.GetTestCaseIds().GetTestCaseIds()
+		if len(testCases) > 1 {
+			testSuite.GetTestCaseIds().TestCaseIds = rm.filterTestsWithoutVerdictPassed(testCases)
 		}
-		testSuites = append(testSuites, &api.TestSuite{
-			Name: testSuite.Name,
-			Spec: &testapi.TestSuite_TestCaseIds{
-				TestCaseIds: &testapi.TestCaseIdList{
-					TestCaseIds: rm.filterTestsWithoutVerdictPassed(testCases),
-				},
-			},
-		})
+		testSuites = append(testSuites, testSuite)
 	}
 	args.CFTTestRunnerRequest.TestSuites = testSuites
 
