@@ -97,13 +97,35 @@ func InstallChameleondBundle(ctx context.Context, sshRunner ssh.Runner, pathToBu
 
 // AssertChameleondServiceIsRunning will check the status of the chameleond
 // service on the host and return a non-nil error if it is not running.
+//
+// Supports both the legacy init.d chameleond service installed by chameleond
+// bundles and the newer systemd chameleond service present on custom images.
+//
+// The status check timeout is set to 30s to account for a delay in sending the
+// ssh command, but the status check normally takes less than a second. It is
+// not expected to ever exceed this timeout.
 func AssertChameleondServiceIsRunning(ctx context.Context, sshRunner ssh.Runner) error {
-	status, err := sshRunner.Run(ctx, 5*time.Second, "/etc/init.d/chameleond", "status")
+	const getStatusTimeout = 30 * time.Second
+	hasLegacyService, err := ssh.TestFileExists(ctx, sshRunner, "/etc/init.d/chameleond")
 	if err != nil {
-		return errors.Annotate(err, "failed to check chameleond service status").Err()
+		return errors.Annotate(err, "assert chameleond service is running: failed to check if host has legacy init.d chameleond service").Err()
 	}
-	if !strings.Contains(status, "chameleond is running") {
-		return errors.Reason("chameleond service is not running, got status %q", status).Err()
+	if hasLegacyService {
+		status, err := sshRunner.Run(ctx, getStatusTimeout, "/etc/init.d/chameleond", "status")
+		if err != nil {
+			return errors.Annotate(err, "assert chameleond service is running: failed to check chameleond init.d service status").Err()
+		}
+		if !strings.Contains(status, "chameleond is running") {
+			return errors.Reason("assert chameleond service is running: chameleond init.d service is not running, got status %q", status).Err()
+		}
+	} else {
+		status, err := sshRunner.Run(ctx, getStatusTimeout, "systemctl", "show", "chameleond.service", "-p", "ActiveState")
+		if err != nil {
+			return errors.Annotate(err, "assert chameleond service is running: failed to check chameleond systemd service status").Err()
+		}
+		if strings.TrimSpace(status) != "ActiveState=active" {
+			return errors.Reason("assert chameleond service is running: chameleond systemd service is not active, got %q", status).Err()
+		}
 	}
 	return nil
 }

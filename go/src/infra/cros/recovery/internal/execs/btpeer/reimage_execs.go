@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/recovery/internal/components/btpeer"
+	"infra/cros/recovery/internal/components/btpeer/image"
 	"infra/cros/recovery/internal/components/cache"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
@@ -256,6 +258,11 @@ func createPartitionsExec(ctx context.Context, info *execs.ExecInfo) error {
 // extension.
 //
 // Image file must be stored in GCS under imageBaseGCSPath.
+//
+// If the image_path exec arg is unset and the expected image config is
+// specified in the exec scope, the expected image's path will be used. Will
+// fail if neither the image_path is set nor expected image config is specified
+// in the exec scope.
 func downloadImageExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	runner := info.DefaultRunner()
@@ -265,7 +272,24 @@ func downloadImageExec(ctx context.Context, info *execs.ExecInfo) error {
 
 	// Validate/parse image URL.
 	if externalDownloadURL == "" {
-		return errors.Reason("download image: required image_path argument missing").Err()
+		btpeerScopeState, err := getBtpeerScopeState(ctx, info)
+		if err != nil {
+			return errors.Annotate(err, "download image: failed to get btpeer scope state").Err()
+		}
+		expectedImageConfig := btpeerScopeState.GetRaspiosCrosBtpeerImage().GetExpectedImageConfig()
+		if expectedImageConfig == nil {
+			return errors.Reason("download image: required image_path argument missing and no expected image config specified in btpeer scope state").Err()
+		}
+		if expectedImageConfig.GetUuid() == "" || expectedImageConfig.GetPath() == "" {
+			return errors.Reason("download image: expected image present in btpeer scope state, but is invalid: %s", expectedImageConfig).Err()
+		}
+		logging.Infof(
+			ctx,
+			"Download image exec arg image_path unset, downloading expected image from btpeer scope state with UUID %q and path %q",
+			expectedImageConfig.GetUuid(),
+			expectedImageConfig.GetPath(),
+		)
+		externalDownloadURL = expectedImageConfig.GetPath()
 	}
 	if !strings.HasPrefix(externalDownloadURL, imageBaseGCSPath) {
 		return errors.Reason("download image: image_path expected to be located in GCS under %q, got %q", imageBaseGCSPath, externalDownloadURL).Err()
@@ -306,23 +330,40 @@ func downloadImageExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// hasPartitionsWithLabelsExec verifies that partitions can be found with the requested labels.
+// hasPartitionsWithLabelsExec verifies that partitions can be found with the
+// requested labels.
+//
+// Use required exec arg "labels" to specify the expected labels.
+//
+// Use optional exec arg "expect_match" to specify if the partitions are
+// expected to exist or not (default is true). If expect_match is false, this
+// exec will pass if it fails to confirm that the device has partitions with all
+// the labels.
 func hasPartitionsWithLabelsExec(ctx context.Context, info *execs.ExecInfo) error {
-	argsMap := info.GetActionArgs(ctx)
 	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
-
+	argsMap := info.GetActionArgs(ctx)
 	labels := argsMap.AsStringSlice(ctx, "labels", []string{})
+	expectMatch := argsMap.AsBool(ctx, "expect_match", true)
 	if len(labels) == 0 {
-		return errors.Reason("partitions with labels exist: required argument: 'labels' not provided").Err()
+		return errors.Reason("has partitions with labels: required argument: 'labels' not provided").Err()
 	}
-
+	var device string
+	var err error
 	for _, label := range labels {
-		device, err := btpeer.GetFSWithLabel(ctx, runner.Run, label)
+		device, err = btpeer.GetFSWithLabel(ctx, runner.Run, label)
 		if err != nil {
-			return errors.Annotate(err, "partitions with labels exist: failed to find partition with label: %q", label).Err()
+			err = errors.Annotate(err, "failed to find partition with label: %q", label).Err()
+			break
 		}
 		log.Infof(ctx, "Found device: %q with label: %q", label, device)
 	}
+	if expectMatch {
+		return errors.Annotate(err, "has partitions with labels: failed to confirm that partitions with all labels exist as expected (expect_match=true)").Err()
+	}
+	if err == nil {
+		return errors.Reason("has partitions with labels: device not expected to have partitions with all labels (expect_match=false)").Err()
+	}
+	logging.Infof(ctx, "Successfully failed to confirm that partitions with all labels exist as expected (expect_match=false): %v", err)
 	return nil
 }
 
@@ -447,6 +488,132 @@ func setPermanentBootPartitionExec(ctx context.Context, info *execs.ExecInfo) er
 	return nil
 }
 
+// fetchImageReleaseConfigExec downloads the current production btpeer image
+// release config from GCS through the btpeer host and stores it in the scope.
+func fetchImageReleaseConfigExec(ctx context.Context, info *execs.ExecInfo) error {
+	btpeerScopeState, err := getBtpeerScopeState(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "fetch image release config: failed to get btpeer scope state").Err()
+	}
+	if btpeerScopeState.GetRaspiosCrosBtpeerImage() == nil {
+		return errors.Reason("identify expected btpeer image: invalid btpeer scope state: RaspiosCrosBtpeerImage is nil").Err()
+	}
+	releaseConfig, err := image.FetchBtpeerImageReleaseConfig(ctx, info.DefaultRunner())
+	if err != nil {
+		return errors.Annotate(err, "fetch image release config").Err()
+	}
+	configJSON, err := image.MarshalBtpeerImageReleaseConfig(releaseConfig)
+	if err != nil {
+		return errors.Annotate(err, "fetch image release config").Err()
+	}
+	log.Infof(ctx, "Successfully retrieved btpeer image release config:\n%s", configJSON)
+	btpeerScopeState.GetRaspiosCrosBtpeerImage().ReleaseConfig = releaseConfig
+	return nil
+}
+
+// fetchInstalledImageUUIDExec reads the image UUID from the image
+// build info file present on all ChromeOS Raspberry Pi btpeer OS image
+// installations and stores it in the scope. Will fail if no build info file
+// is present unless the "allow_legacy_image" arg is true.
+func fetchInstalledImageUUIDExec(ctx context.Context, info *execs.ExecInfo) error {
+	const allowLegacyImageArg = "allow_legacy_image"
+	argsMap := info.GetActionArgs(ctx)
+	allowLegacyImage := argsMap.AsBool(ctx, allowLegacyImageArg, false)
+	btpeerScopeState, err := getBtpeerScopeState(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "fetch installed btpeer image UUID: failed to get btpeer scope state").Err()
+	}
+	if btpeerScopeState.GetRaspiosCrosBtpeerImage() == nil {
+		return errors.Reason("fetch installed btpeer image UUID: invalid btpeer scope state: RaspiosCrosBtpeerImage is nil").Err()
+	}
+	sshRunner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+	hasImageBuildInfoFile, err := image.BtpeerHasImageBuildInfoFile(ctx, sshRunner)
+	if err != nil {
+		return errors.Annotate(err, "fetch installed btpeer image UUID").Err()
+	}
+	if !hasImageBuildInfoFile {
+		// No image file, assume that a legacy image is installed without an image UUID.
+		logging.Infof(ctx, "Btpeer resource %q identified as having a legacy OS image and allow_legacy_image exec arg is %t", info.GetActiveResource(), allowLegacyImage)
+		if allowLegacyImage {
+			logging.Infof(ctx, "Skipping fetch of installed btpeer image UUID as legacy OS images do not have UUIDs (allow_legacy_image=true)")
+			return nil
+		}
+		return errors.Reason("fetch installed btpeer image UUID: no image build info file found on host (allow_legacy_image=false)").Err()
+	}
+	buildInfo, err := image.FetchBtpeerImageBuildInfo(ctx, sshRunner)
+	if err != nil {
+		return errors.Annotate(err, "fetch installed btpeer image UUID: image build info file exists, but failed to read it").Err()
+	}
+	if buildInfo.GetImageUuid() == "" {
+		return errors.Reason("fetch installed btpeer image UUID: image build info file exists, but is missing its ImageUuid").Err()
+	}
+	logging.Infof(ctx, "Btpeer resource %q installed OS image UUID is %q", info.GetActiveResource(), buildInfo.GetImageUuid())
+	btpeerScopeState.GetRaspiosCrosBtpeerImage().InstalledImageUuid = buildInfo.GetImageUuid()
+	return nil
+}
+
+// identifyExpectedImageExec identifies which btpeer image this
+// specific btpeer should have installed based on the release config and the
+// primary dut's hostname, and then stores it in the scope.
+func identifyExpectedImageExec(ctx context.Context, info *execs.ExecInfo) error {
+	btpeerScopeState, err := getBtpeerScopeState(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "identify expected btpeer image: failed to get btpeer scope state").Err()
+	}
+	releaseConfig := btpeerScopeState.GetRaspiosCrosBtpeerImage().GetReleaseConfig()
+	if releaseConfig == nil {
+		return errors.Reason("identify expected btpeer image: invalid btpeer scope state: RaspiosCrosBtpeerImage.ReleaseConfig is nil").Err()
+	}
+	dut := info.GetDut()
+	if dut == nil {
+		return errors.Reason("identify expected btpeer image: dut is nil").Err()
+	}
+	expectedImageConfig, err := image.SelectBtpeerImageForDut(ctx, releaseConfig, dut.Name)
+	if err != nil {
+		return errors.Annotate(err, "identify expected btpeer image: failed to select image for btpeer with primary dut hostname %q", dut.Name).Err()
+	}
+	if expectedImageConfig.GetUuid() == "" || expectedImageConfig.GetPath() == "" {
+		return errors.Reason("identify expected btpeer image: image selected for btpeer with primary dut hostname %q, but is invalid: %s", dut.Name, expectedImageConfig).Err()
+	}
+	var expectedImageType string
+	if expectedImageConfig.GetUuid() == releaseConfig.GetCurrentImageUuid() {
+		expectedImageType = "current"
+	} else {
+		expectedImageType = "next"
+	}
+	log.Infof(
+		ctx,
+		"Selected %s image with UUID %q for btpeer resource %q with primary dut hostname %q",
+		expectedImageType,
+		expectedImageConfig.GetUuid(),
+		info.GetActiveResource(),
+		dut.Name,
+	)
+	btpeerScopeState.GetRaspiosCrosBtpeerImage().ExpectedImageConfig = expectedImageConfig
+	return nil
+}
+
+// assertExpectedAndInstalledImageUUIDsMatchExec checks the btpeer scope state for
+// the expected image UUID and installed image UUID and fails if they differ.
+func assertExpectedAndInstalledImageUUIDsMatchExec(ctx context.Context, info *execs.ExecInfo) error {
+	btpeerScopeState, err := getBtpeerScopeState(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "assert btpeer has expected image installed: failed to get btpeer scope state").Err()
+	}
+	actual := btpeerScopeState.GetRaspiosCrosBtpeerImage().GetInstalledImageUuid()
+	if actual == "" {
+		return errors.Reason("assert btpeer has expected image installed: invalid btpeer scope state: RaspiosCrosBtpeerImage.InstalledImageUuid is empty").Err()
+	}
+	expected := btpeerScopeState.GetRaspiosCrosBtpeerImage().GetExpectedImageConfig().GetUuid()
+	if expected == "" {
+		return errors.Reason("assert btpeer has expected image installed: invalid btpeer scope state: RaspiosCrosBtpeerImage.ExpectedImageConfig.Uuid is empty").Err()
+	}
+	if actual != expected {
+		return errors.Reason("assert btpeer has expected image installed: expected %q != actual %q", expected, actual).Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("btpeer_enable_initrd", enableInitrdExec)
 	execs.Register("btpeer_disable_initrd", disableInitrdExec)
@@ -459,4 +626,8 @@ func init() {
 	execs.Register("btpeer_set_permanent_boot_partition", setPermanentBootPartitionExec)
 	execs.Register("btpeer_temp_boot_into_partition", setTempBootPartitionExec)
 	execs.Register("btpeer_provision_device", provisionExec)
+	execs.Register("btpeer_image_fetch_release_config", fetchImageReleaseConfigExec)
+	execs.Register("btpeer_image_fetch_installed_uuid", fetchInstalledImageUUIDExec)
+	execs.Register("btpeer_image_identify_expected", identifyExpectedImageExec)
+	execs.Register("btpeer_image_assert_expected_installed", assertExpectedAndInstalledImageUUIDsMatchExec)
 }

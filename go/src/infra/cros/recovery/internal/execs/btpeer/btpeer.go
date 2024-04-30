@@ -33,8 +33,9 @@ func getBtpeerScopeState(ctx context.Context, info *execs.ExecInfo) (*tlw.Blueto
 	var btpeerScopeState *tlw.BluetoothPeerScopeState
 	if state, ok := scopes.ReadConfigParam(ctx, btpeerScopeStateKey); !ok {
 		btpeerScopeState = &tlw.BluetoothPeerScopeState{
-			Btpeer:     btpeer,
-			Chameleond: &tlw.BluetoothPeerScopeState_Chameleond{},
+			Btpeer:                 btpeer,
+			Chameleond:             &tlw.BluetoothPeerScopeState_Chameleond{},
+			RaspiosCrosBtpeerImage: &tlw.BluetoothPeerScopeState_RaspiosCrosBtpeerImage{},
 		}
 		scopes.PutConfigParam(ctx, btpeerScopeStateKey, btpeerScopeState)
 	} else {

@@ -6,9 +6,12 @@ package btpeer
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/recovery/internal/components/btpeer"
 	"infra/cros/recovery/internal/components/cros"
@@ -72,9 +75,89 @@ func assertUptimeIsLessThanDurationExec(ctx context.Context, info *execs.ExecInf
 	return nil
 }
 
+// assertReleaseProcessMatchesExec passes if the release process this specific
+// btpeer should use ("chameleond" or "image") matches the value passed in the
+// required "expected_release_process" arg.
+//
+// The btpeer will be chosen to use the "chameleond" process if it is not chosen
+// to use the new "image" release process.
+//
+// The btpeer will be chosen to use the "image" process if it currently has a
+// custom image installed (i.e. existence of an image UUID in scope) or the
+// hostname of the primary dut in this testbed is present in the image release
+// config's NextImageVerificationDutPool.
+//
+// Note: When we are ready to fully switch over to the new "image" release
+// process for all btpeers this exec and its usages should be removed, as all
+// btpeers would use the "image" process.
+func assertReleaseProcessMatchesExec(ctx context.Context, info *execs.ExecInfo) error {
+	// Process exec arg.
+	const imageProcess = "image"
+	const chameleondProcess = "chameleond"
+	const expectedReleaseProcessArg = "expected_release_process"
+	argsMap := info.GetActionArgs(ctx)
+	expectedReleaseProcess := argsMap.AsString(ctx, expectedReleaseProcessArg, "")
+	if expectedReleaseProcess == "" {
+		return errors.Reason("assert release process matches: missing required exec arg %q", expectedReleaseProcessArg).Err()
+	}
+	if expectedReleaseProcess != imageProcess && expectedReleaseProcess != chameleondProcess {
+		return errors.Reason(
+			"assert release process matches: invalid exec arg %q value %q, must be either %q or %q",
+			expectedReleaseProcessArg,
+			expectedReleaseProcess,
+			imageProcess,
+			chameleondProcess,
+		).Err()
+	}
+
+	// Collect and validate state.
+	btpeerScopeState, err := getBtpeerScopeState(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "assert release process matches: failed to get btpeer scope state").Err()
+	}
+	if btpeerScopeState.GetRaspiosCrosBtpeerImage().GetReleaseConfig() == nil {
+		return errors.Reason("assert release process matches: invalid btpeer scope state: RaspiosCrosBtpeerImage.ReleaseConfig is nil").Err()
+	}
+
+	// Determine actual release process this btpeers should use.
+	actualReleaseProcess := chameleondProcess
+	selectionReason := "btpeer not selected for new %q release process"
+	if btpeerScopeState.GetRaspiosCrosBtpeerImage().GetInstalledImageUuid() != "" {
+		// Already on a custom image, so we must continue to use custom images to
+		// prevent breaking chameleond on the btpeer.
+		actualReleaseProcess = imageProcess
+		selectionReason = fmt.Sprintf("btpeer has custom image installed with image UUID %q", btpeerScopeState.GetRaspiosCrosBtpeerImage().GetInstalledImageUuid())
+	} else {
+		dut := info.GetDut()
+		if dut == nil {
+			return errors.Reason("assert release process matches: dut is nil").Err()
+		}
+		for _, dutHostname := range btpeerScopeState.GetRaspiosCrosBtpeerImage().GetReleaseConfig().GetNextImageVerificationDutPool() {
+			if strings.EqualFold(dut.Name, dutHostname) {
+				actualReleaseProcess = imageProcess
+				selectionReason = fmt.Sprintf("primary dut hostname %q present in image release config next image verification dut pool", dut.Name)
+			}
+		}
+	}
+	logging.Infof(
+		ctx,
+		"Selected the %q release process for btpeer resource %q: %s",
+		actualReleaseProcess,
+		info.GetActiveResource(),
+		selectionReason,
+	)
+
+	// Evaluate expectation.
+	if actualReleaseProcess != expectedReleaseProcess {
+		return errors.Reason("assert release process matches: expected %q != actual %q", expectedReleaseProcess, actualReleaseProcess).Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("btpeer_state_broken", setStateBrokenExec)
 	execs.Register("btpeer_state_working", setStateWorkingExec)
 	execs.Register("btpeer_reboot", rebootExec)
 	execs.Register("btpeer_assert_uptime_is_less_than_duration", assertUptimeIsLessThanDurationExec)
+	execs.Register("btpeer_assert_release_process_matches", assertReleaseProcessMatchesExec)
 }
