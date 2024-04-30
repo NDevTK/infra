@@ -62,6 +62,13 @@ recipes.simulation_tester(
     console_view = "build",
 )
 
+# External tester for checking the Universal Test Runner against recipe changes
+luci.cq_tryjob_verifier(
+    builder = "chromium:try/linux-utr-tester",
+    cq_group = "build",
+    includable_only = True,
+)
+
 # External testers (defined in another projects) for recipe rolls.
 luci.cq_tryjob_verifier(
     builder = "infra-internal:try/build_limited Roll Tester (build)",
