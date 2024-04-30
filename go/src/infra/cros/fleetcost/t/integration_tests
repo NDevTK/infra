@@ -16,24 +16,47 @@ main() {
   export CDPATH=
   readonly selfdir="$(dirname -- "$0")" || die 'cannot find self dir'
   cd -- "$selfdir" || die 'cannot chdir'
+  cd -- .. || die 'cannot chdir to parent'
+  test -f FleetCostMakefile || die 'failed heuristic, no FleetCostMakefile'
 
-  readonly fleetcost="../fleetcost"
+  readonly fleetcost="./fleetcost"
 
   test -f "$fleetcost" || die 'cannot find fleetcost binary'
+
+  td="$(mktemp -d)" || die 'cannot make tempdir'
+  test -d "$td" || die 'no tempdir'
+
+  (./fleetcostserver 1>"$td"/server.out 2>"$td"/server.err)&
+  sleep 1
 
   test_suite
 
   case "$?" in
-    0) : "do nothing" ;;
-    *) die "unexpected status $?"
+    0) : "do nothing"
+    ;;
+    *)
+       cat -- "$td"/server.out "$td"/server.err
+       die "unexpected status $?"
+    ;;
   esac
 }
 
+# TODO: use the child PID.
+cleanup() {
+  killall fleetcostserver
+}
+
+trap cleanup INT EXIT
+
 test_suite() {
-  "$fleetcost" ping -http                        || die 'test 1: ping'
-  "$fleetcost" pingufs -http                     || die 'test 2: ping-ufs'
-  "$fleetcost" create-ci -http -name "some-name" || die 'test 3: create-ci'
-  "$fleetcost" get-ci -http                      || die 'test 4: get-ci'
+  "$fleetcost" ping      -local \
+     || die 'test 1: ping'
+  "$fleetcost" pingufs   -local \
+     || die 'test 2: ping-ufs'
+  "$fleetcost" create-ci -local -board=board -model=model -location=all -type=dut -cost=45.33 \
+     || die 'test 3: create-ci'
+  "$fleetcost" get-ci    -local \
+     || die 'test 4: get-ci'
 }
 
 main "$@"
