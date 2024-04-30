@@ -46,4 +46,7 @@ type IDUTServices interface {
 
 	// GetUSBDevicePaths returns all the USBDevices instance of plugged devices
 	GetUSBDevicePaths(ctx context.Context) ([]enumeration.USBDevice, error)
+
+	// GetCCDStatus gets the status of CCD
+	GetCCDStatus(ctx context.Context, address string) (string, error)
 }

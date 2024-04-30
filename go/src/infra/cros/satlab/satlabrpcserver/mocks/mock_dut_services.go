@@ -64,3 +64,9 @@ func (m *MockDUTServices) GetUSBDevicePaths(ctx context.Context) ([]enumeration.
 	args := m.Called(ctx)
 	return args.Get(0).([]enumeration.USBDevice), args.Error(1)
 }
+
+// GetCCDStatus gets CCD status from the DUT
+func (m *MockDUTServices) GetCCDStatus(ctx context.Context, address string) (string, error) {
+	args := m.Called(ctx, address)
+	return args.String(0), args.Error(1)
+}

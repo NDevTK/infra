@@ -557,3 +557,41 @@ func Test_GetServoSerialServoConnectedAndDetected(t *testing.T) {
 	}
 
 }
+
+func Test_GetCCDOpenedStatus(t *testing.T) {
+	sshResponse := "Opened\n"
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
+
+	res, err := dutServices.GetCCDStatus(ctx, "127.0.0.1")
+	if err != nil {
+		t.Errorf("Expected should succes, but got an error: %v\n", err)
+	}
+	expected := "Opened"
+
+	if res != expected {
+		t.Errorf("expected: %v, got: %v\n", expected, res)
+	}
+}
+
+func Test_GetCCDUnknownStatus(t *testing.T) {
+	sshResponse := "\n"
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
+
+	res, err := dutServices.GetCCDStatus(ctx, "127.0.0.1")
+	if err != nil {
+		t.Errorf("Expected should succes, but got an error: %v\n", err)
+	}
+	expected := "Unknown"
+
+	if res != expected {
+		t.Errorf("expected: %v, got: %v\n", expected, res)
+	}
+}

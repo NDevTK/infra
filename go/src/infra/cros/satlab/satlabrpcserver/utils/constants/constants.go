@@ -55,6 +55,8 @@ const UpdateFirmwareCommand = "/usr/sbin/chromeos-firmwareupdate --mode autoupda
 
 const GrepLSBReleaseCommand = "timeout 2 cat /etc/lsb-release"
 
+const CCDStatusCommand = "gsctool -aI"
+
 const ChromeosTestImageReleaseTrack = "chromeos_release_track=testimage-channel"
 
 const ChromeosReleaseBoard = "CHROMEOS_RELEASE_BOARD="

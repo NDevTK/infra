@@ -1166,6 +1166,8 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
 
 	s.commandExecutor = shivasTestHelper(true)
 
@@ -1194,6 +1196,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				MacAddress:   "00:14:3d:14:c4:02",
 				State:        "unknown",
 				BotInfo:      nil,
+				CcdStatus:    "Unknown",
 			},
 			{
 				Name:         "",
@@ -1208,6 +1211,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				HasTestImage: true,
 				State:        "",
 				BotInfo:      nil,
+				CcdStatus:    "Opened",
 			},
 		},
 	}
@@ -1237,6 +1241,8 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
 
 	s.commandExecutor = shivasTestHelper(true)
 
@@ -1265,6 +1271,7 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				HasTestImage: false,
 				MacAddress:   "00:14:3d:14:c4:02",
 				State:        "unknown",
+				CcdStatus:    "Unknown",
 			},
 			{
 				Name:         "",
@@ -1306,8 +1313,10 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("model", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.222", mock.Anything).Return(false, "", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.222").Return(false, "", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2").Return(true, "SERVOSERIAL", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
 	s.commandExecutor = shivasTestHelper(false)
 	req := &pb.ListDutsRequest{}
 	resp, err := s.ListDuts(ctx, req)
@@ -1333,6 +1342,7 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 				IsPingable:   true,
 				HasTestImage: true,
 				MacAddress:   "00:14:3d:14:c4:02",
+				CcdStatus:    "Unknown",
 			},
 			{
 				Name:         "",
@@ -1345,6 +1355,7 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 				IsPingable:   true,
 				HasTestImage: true,
 				ServoSerial:  "SERVOSERIAL",
+				CcdStatus:    "Opened",
 			},
 		},
 	}
@@ -1373,6 +1384,8 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
 
 	s.commandExecutor = shivasTestHelper(false)
 
@@ -1440,6 +1453,8 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("", errors.New("can't get board"))
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("", errors.New("can't get model"))
 	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
 	s.commandExecutor = shivasTestHelper(true)
 
 	req := &pb.ListDutsRequest{}
@@ -1466,6 +1481,7 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 				HasTestImage: true,
 				MacAddress:   "00:14:3d:14:c4:02",
 				State:        "unknown",
+				CcdStatus:    "Unknown",
 			},
 			{
 				Name:         "",
@@ -1479,6 +1495,7 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 				HasTestImage: true,
 				ServoSerial:  "SERVOSERIAL",
 				State:        "",
+				CcdStatus:    "Opened",
 			},
 		},
 	}
@@ -1511,6 +1528,8 @@ func TestListConnectedDutsShouldFail(t *testing.T) {
 	s.commandExecutor = &executor.FakeCommander{
 		Err: errors.New("execute command failed"),
 	}
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
 
 	req := &pb.ListDutsRequest{}
 	resp, err := s.ListDuts(ctx, req)
@@ -2077,6 +2096,8 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
 
 	s.commandExecutor = shivasTestHelper(true)
 
@@ -2109,6 +2130,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 					CurrentTask: "https://chromeos-swarming.appspot.com/task?id=abcd",
 					TaskName:    "Running",
 				},
+				CcdStatus: "Unknown",
 			},
 			{
 				Name:         "",
@@ -2123,6 +2145,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 				HasTestImage: true,
 				State:        "",
 				BotInfo:      nil,
+				CcdStatus:    "Opened",
 			},
 		},
 	}

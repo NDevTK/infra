@@ -910,6 +910,11 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 				dut.HasTestImage = device.HasTestImage
 				dut.MacAddress = device.MACAddress
 				enrolledIPs = append(enrolledIPs, dut.Address)
+				ccdStatus, err := s.dutService.GetCCDStatus(ctx, dut.Address)
+				if err != nil {
+					ccdStatus = "Unknown"
+				}
+				dut.CcdStatus = ccdStatus
 			}
 		}
 	}
@@ -926,6 +931,7 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 		var servoSerial = ""
 		var board = ""
 		var model = ""
+		var ccdStatus = ""
 		if device.IsPingable && device.HasTestImage {
 			board, err = s.dutService.GetBoard(ctx, device.IP)
 			if err != nil {
@@ -946,6 +952,10 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 			if isServoConnected && servoSerial == "" {
 				servoSerial = "NOT DETECTED"
 			}
+			ccdStatus, err = s.dutService.GetCCDStatus(ctx, device.IP)
+			if err != nil {
+				ccdStatus = "Unknown"
+			}
 		}
 		duts = append(duts, &pb.Dut{
 			Board:        board,
@@ -955,6 +965,7 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 			IsPingable:   device.IsPingable,
 			HasTestImage: device.HasTestImage,
 			ServoSerial:  servoSerial,
+			CcdStatus:    ccdStatus,
 		})
 	}
 

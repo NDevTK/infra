@@ -391,3 +391,25 @@ func (d *DUTServicesImpl) GetServoSerial(ctx context.Context, IP string, usbDevi
 func (d *DUTServicesImpl) GetUSBDevicePaths(ctx context.Context) ([]enumeration.USBDevice, error) {
 	return enumeration.GetAllServoUSBDevices()
 }
+
+// GetCCDStatus gets the CCD status from the given IP address. If it the command return empty string,
+// we set it `Unknown` status.
+func (d *DUTServicesImpl) GetCCDStatus(ctx context.Context, address string) (string, error) {
+	res, err := d.RunCommandOnIP(ctx, address, fmt.Sprintf(
+		"%s | grep State | awk '{print $2}'",
+		constants.CCDStatusCommand,
+	))
+	if err != nil {
+		return "", err
+	}
+	if res.Error != nil {
+		return "", res.Error
+	}
+
+	status := strings.TrimSpace(res.Value)
+	if status == "" {
+		return "Unknown", nil
+	} else {
+		return status, nil
+	}
+}
