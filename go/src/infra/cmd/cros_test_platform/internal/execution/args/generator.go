@@ -479,24 +479,32 @@ func (g *Generator) testargsforCFT() *testapi.ExecutionMetadata {
 				v = ""
 			}
 		}
-		kvproto := &testapi.Arg{
-			Flag:  k,
-			Value: v,
+		if k != "" && v != "" {
+			kvproto := &testapi.Arg{
+				Flag:  k,
+				Value: v,
+			}
+			things = append(things, kvproto)
 		}
-		things = append(things, kvproto)
-
 	}
 
 	for k, v := range g.Params.GetDecorations().GetTestArgs() {
 		if k == "resultdb_settings" {
 			continue
 		}
-		kvproto := &testapi.Arg{
-			Flag:  k,
-			Value: v,
+		if k != "" && v != "" {
+			kvproto := &testapi.Arg{
+				Flag:  k,
+				Value: v,
+			}
+			things = append(things, kvproto)
 		}
-		things = append(things, kvproto)
 	}
+
+	if len(things) == 0 {
+		return nil
+	}
+
 	args.Args = things
 	return args
 }
