@@ -16,7 +16,7 @@ import (
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
-// FakeOctopusDUTDeviceDataResponse is a fake octopus DUT with hostname "fake-octopus-dut".
+// FakeOctopusDUTDeviceDataResponse is a fake octopus DUT with hostname "fake-octopus-dut-1".
 //
 // It is very useful in tests.
 var FakeOctopusDUTDeviceDataResponse = &ufsAPI.GetDeviceDataResponse{

@@ -39,6 +39,15 @@ func (tf *Fixture) RegisterGetDeviceDataCall(reqMatcher gomock.Matcher, resp *uf
 	tf.MockUFS.EXPECT().GetDeviceData(gomock.Any(), reqMatcher).Return(resp, nil)
 }
 
+// RegisterGetDeviceDataFailure registers a failing GetDeviceData response.
+//
+// No attempt is made to ensure that the error that we get back is realistic.
+// TODO(gregorynisbet): Check the error for reasonableness and make sure it resembles a UFS error
+// and panic if it does not resemble one.
+func (tf *Fixture) RegisterGetDeviceDataFailure(reqMatcher gomock.Matcher, failure error) {
+	tf.MockUFS.EXPECT().GetDeviceData(gomock.Any(), reqMatcher).Return(nil, failure)
+}
+
 // NewFixture creates a basic fixture with fake versions of datastore and UFS with properties
 // that are convenient for unit tests.
 func NewFixture(ctx context.Context, t *testing.T) *Fixture {
@@ -65,4 +74,28 @@ func NewFixtureWithData(ctx context.Context, t *testing.T) *Fixture {
 		panic(err)
 	}
 	return tf
+}
+
+// SimpleMatcher takes an artbirary function and makes it a matcher.
+type SimpleMatcher struct {
+	Predicate func(any) bool
+	Message   string
+}
+
+// Matches determines whether an item fulfills the predicate.
+func (matcher SimpleMatcher) Matches(item any) bool {
+	return matcher.Predicate(item)
+}
+
+// String returns the matcher message.
+func (matcher SimpleMatcher) String() string {
+	return matcher.Message
+}
+
+// NewMatcher makes a new predicate matcher.
+func NewMatcher(message string, predicate func(any) bool) gomock.Matcher {
+	return SimpleMatcher{
+		Predicate: predicate,
+		Message:   message,
+	}
 }
