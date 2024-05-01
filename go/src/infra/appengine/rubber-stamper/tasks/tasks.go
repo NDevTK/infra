@@ -8,10 +8,11 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/common/logging"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	"go.chromium.org/luci/server/tq"
-	"google.golang.org/protobuf/proto"
 
 	"infra/appengine/rubber-stamper/internal/reviewer"
 	"infra/appengine/rubber-stamper/tasks/taskspb"

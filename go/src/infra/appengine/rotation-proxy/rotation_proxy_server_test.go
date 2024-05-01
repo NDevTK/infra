@@ -9,16 +9,17 @@ import (
 	"testing"
 	"time"
 
-	rpb "infra/appengine/rotation-proxy/proto"
-
 	"github.com/golang/protobuf/proto"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
+
+	rpb "infra/appengine/rotation-proxy/proto"
 )
 
 var person1 = &rpb.OncallPerson{Email: "person1@google.com"}

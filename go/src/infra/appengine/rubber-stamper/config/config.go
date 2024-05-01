@@ -8,10 +8,11 @@ import (
 	"context"
 	"regexp"
 
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/server/cfgcache"
 	"go.chromium.org/luci/config/validation"
-	"google.golang.org/protobuf/proto"
 )
 
 // Cached service config.

@@ -13,13 +13,14 @@ import (
 	"time"
 
 	ptypes "github.com/golang/protobuf/ptypes"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/router"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	rpb "infra/appengine/rotation-proxy/proto"
 )
