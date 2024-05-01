@@ -10,10 +10,12 @@ import (
 	"time"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/genproto/protobuf/field_mask"
+
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/cli"
-	"google.golang.org/genproto/protobuf/field_mask"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	dutinfopb "infra/cmd/crosfleet/internal/proto"

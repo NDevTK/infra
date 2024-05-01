@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 

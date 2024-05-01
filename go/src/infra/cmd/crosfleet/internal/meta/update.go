@@ -6,18 +6,19 @@ package meta
 
 import (
 	"fmt"
-	"infra/libs/cipd"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
+	"infra/libs/cipd"
 )
 
 // crosfleetDir is the CIPD parent directory for crosfleet packages.

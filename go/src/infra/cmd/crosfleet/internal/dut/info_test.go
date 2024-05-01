@@ -6,12 +6,13 @@ package dut
 
 import (
 	"fmt"
-	dutinfopb "infra/cmd/crosfleet/internal/proto"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufslabpb "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
+	dutinfopb "infra/cmd/crosfleet/internal/proto"
+	ufspb "infra/unifiedfleet/api/v1/models"
+	ufslabpb "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 var testDutInfoAsBashVariablesData = []struct {

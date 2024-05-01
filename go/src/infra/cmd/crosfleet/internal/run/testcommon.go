@@ -12,6 +12,12 @@ import (
 	"strings"
 	"sync"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
+	"go.chromium.org/luci/auth/client/authcli"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	luciflag "go.chromium.org/luci/common/flag"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
@@ -19,14 +25,7 @@ import (
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
-
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
-	"go.chromium.org/luci/auth/client/authcli"
-	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	luciflag "go.chromium.org/luci/common/flag"
 )
 
 const (
