@@ -13,10 +13,11 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+	"go.chromium.org/luci/common/logging"
 
 	inv "infra/cros/lab_inventory/protos"
 )
