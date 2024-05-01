@@ -6,13 +6,14 @@ import (
 	"log"
 	"net"
 
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
-	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
+	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
+	"go.chromium.org/luci/common/logging"
 )
 
 type fakeTLSCommonService struct {

@@ -10,6 +10,7 @@ import (
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/golang/protobuf/ptypes/timestamp"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/analytics"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	runner "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"

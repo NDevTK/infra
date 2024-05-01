@@ -9,20 +9,21 @@ import (
 	"fmt"
 	"time"
 
-	"infra/cros/cmd/result_flow/internal/bb"
-	"infra/cros/cmd/result_flow/internal/bq"
-	"infra/cros/cmd/result_flow/internal/message"
-	"infra/cros/cmd/result_flow/internal/site"
-	"infra/cros/cmd/result_flow/internal/transform"
-
 	"cloud.google.com/go/bigquery"
 	"github.com/maruel/subcommands"
+	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	"go.chromium.org/luci/auth/client/authcli"
 	lucibq "go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging"
-	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
+
+	"infra/cros/cmd/result_flow/internal/bb"
+	"infra/cros/cmd/result_flow/internal/bq"
+	"infra/cros/cmd/result_flow/internal/message"
+	"infra/cros/cmd/result_flow/internal/site"
+	"infra/cros/cmd/result_flow/internal/transform"
 )
 
 // PipeCTPData subcommand pipelines CTP builds to analytics BQ table represented in the form
