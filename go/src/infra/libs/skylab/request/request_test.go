@@ -15,6 +15,8 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/kylelemons/godebug/pretty"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	goconfig "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -24,7 +26,6 @@ import (
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	. "go.chromium.org/luci/common/testing/assertions"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/request"
