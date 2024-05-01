@@ -14,6 +14,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/common/errors"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 

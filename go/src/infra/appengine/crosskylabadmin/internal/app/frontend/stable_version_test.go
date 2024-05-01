@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -16,7 +17,6 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
-
 	"infra/libs/skylab/inventory"
 )
 

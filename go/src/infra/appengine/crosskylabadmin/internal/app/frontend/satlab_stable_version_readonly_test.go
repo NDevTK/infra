@@ -20,8 +20,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"go.chromium.org/luci/gae/service/datastore"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
