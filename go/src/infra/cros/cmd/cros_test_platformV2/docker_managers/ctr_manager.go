@@ -7,8 +7,6 @@ package managers
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
-	crostoolrunner "infra/cros/cmd/cros_test_platformV2/tools/ctr"
 	"log"
 	"os/exec"
 	"path"
@@ -16,12 +14,15 @@ import (
 	"sync"
 	"time"
 
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
 
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/common"
+	crostoolrunner "infra/cros/cmd/cros_test_platformV2/tools/ctr"
 )
 
 const (
