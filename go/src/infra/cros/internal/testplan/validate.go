@@ -15,15 +15,11 @@ import (
 	"strings"
 	"sync"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/docker"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/shared"
-	"infra/tools/dirmd"
-
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/strslice"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"go.chromium.org/chromiumos/config/go/build/api"
 	testpb "go.chromium.org/chromiumos/config/go/test/api"
 	planpb "go.chromium.org/chromiumos/config/go/test/plan"
@@ -32,7 +28,12 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
-	"google.golang.org/protobuf/encoding/protojson"
+
+	"infra/cros/internal/cmd"
+	"infra/cros/internal/docker"
+	"infra/cros/internal/gerrit"
+	"infra/cros/internal/shared"
+	"infra/tools/dirmd"
 )
 
 type validator struct {
