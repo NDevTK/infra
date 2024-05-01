@@ -13,22 +13,21 @@ import (
 	"sort"
 	"testing"
 
-	"infra/cros/cmd/result_flow/internal/transform"
+	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes/timestamp"
+	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/analytics"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
-
-	"google.golang.org/protobuf/types/known/structpb"
-
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/timestamp"
-	. "github.com/smartystreets/goconvey/convey"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/result_flow/internal/transform"
 )
 
 var (

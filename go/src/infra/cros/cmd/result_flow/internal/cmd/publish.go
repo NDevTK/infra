@@ -10,11 +10,12 @@ import (
 	"time"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/api/option"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/api/option"
 
 	"infra/cros/cmd/result_flow/internal/message"
 	"infra/cros/cmd/result_flow/internal/site"

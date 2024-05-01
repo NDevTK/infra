@@ -10,15 +10,16 @@ import (
 	"sync"
 	"testing"
 
-	"infra/cros/cmd/result_flow/internal/bq"
-
 	"cloud.google.com/go/bigquery"
 	. "github.com/smartystreets/goconvey/convey"
+	bqapi "google.golang.org/api/bigquery/v2"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
-	bqapi "google.golang.org/api/bigquery/v2"
+
+	"infra/cros/cmd/result_flow/internal/bq"
 )
 
 // Original TestRAMBufferedBQInserter was at "infra/qscheduler/service/app/eventlog/ram_test.go".
