@@ -10,10 +10,10 @@ import (
 	"encoding/json"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestLegacy(t *testing.T) {
