@@ -9,8 +9,9 @@ import (
 	"encoding/json"
 	"os/exec"
 
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
