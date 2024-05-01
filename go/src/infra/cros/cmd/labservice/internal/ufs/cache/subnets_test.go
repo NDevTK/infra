@@ -10,10 +10,10 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 func TestGetSubnets_single(t *testing.T) {

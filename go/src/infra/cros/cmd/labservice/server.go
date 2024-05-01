@@ -7,9 +7,10 @@ package main
 import (
 	"context"
 
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	lsapi "infra/cros/cmd/labservice/api"
 	"infra/cros/cmd/labservice/internal/ufs"
