@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/luci/common/cli"
 
 	"infra/cros/cmd/paris-uploader/internal/cmds"

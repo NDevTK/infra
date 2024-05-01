@@ -13,6 +13,7 @@ import (
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/google/go-cmp/cmp"
+
 	"go.chromium.org/chromiumos/config/go/build/api"
 
 	"infra/cros/cmd/phosphorus/internal/autotest"
