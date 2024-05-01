@@ -12,6 +12,11 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/buildbucket"
@@ -20,10 +25,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
-	"google.golang.org/genproto/protobuf/field_mask"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/cmd/crosfleet/internal/common"
 	dutinfopb "infra/cmd/crosfleet/internal/proto"

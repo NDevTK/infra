@@ -11,8 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/luci/luciexe/exe"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 
@@ -22,6 +20,7 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/luciexe/exe"
 
 	"infra/cmd/cros_test_platform/internal/execution"
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
