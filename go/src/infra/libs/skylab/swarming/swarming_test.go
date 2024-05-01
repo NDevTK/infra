@@ -10,11 +10,11 @@ import (
 	"testing"
 	"time"
 
+	"google.golang.org/api/googleapi"
+
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/errors"
-
-	"google.golang.org/api/googleapi"
 )
 
 func TestSwarmingCallWithRetries_TransientFailure(t *testing.T) {
