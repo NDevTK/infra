@@ -5,8 +5,9 @@
 package peripherals
 
 import (
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"testing"
+
+	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 func TestHmrCleanAndValidateFlags(t *testing.T) {
