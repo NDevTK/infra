@@ -14,10 +14,10 @@ import (
 	"sync"
 	"time"
 
+	"google.golang.org/grpc/metadata"
+
 	ufsmodels "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
-	"google.golang.org/grpc/metadata"
 )
 
 const refreshInterval = time.Hour

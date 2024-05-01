@@ -14,11 +14,12 @@ import (
 	"os/signal"
 	"strings"
 
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	lsapi "infra/cros/cmd/labservice/api"
 	"infra/unifiedfleet/app/util"
