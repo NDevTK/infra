@@ -19,13 +19,14 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
+	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
+
 	"go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/api/option"
-	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/common/satlabcommands"

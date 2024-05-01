@@ -10,11 +10,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
+	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/common/site"
