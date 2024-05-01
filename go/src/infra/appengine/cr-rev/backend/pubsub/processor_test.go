@@ -6,16 +6,18 @@ package pubsub
 
 import (
 	"fmt"
-	"infra/appengine/cr-rev/backend/gitiles"
-	"infra/appengine/cr-rev/config"
-	"infra/appengine/cr-rev/models"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/proto/git"
 	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/gae/service/datastore"
+
+	"infra/appengine/cr-rev/backend/gitiles"
+	"infra/appengine/cr-rev/config"
+	"infra/appengine/cr-rev/models"
 )
 
 func TestPubsubProcessor(t *testing.T) {
