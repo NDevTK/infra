@@ -16,6 +16,7 @@ import (
 	"time"
 
 	stats "github.com/containerd/cgroups/stats/v1"
+
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/target"

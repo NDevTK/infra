@@ -14,11 +14,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/maruel/subcommands"
+
+	"go.chromium.org/luci/common/cli"
 
 	"infra/cmdsupport/cmdlib"
-
-	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/common/cli"
 )
 
 func getCollection(ctx context.Context, common commonFlags) (*firestore.CollectionRef, error) {
