@@ -6,15 +6,17 @@ package gitiles
 
 import (
 	"context"
-	"infra/chromium/bootstrapper/clients/gitiles"
 	"regexp"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc/codes"
+
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/grpc/grpcutil"
-	"google.golang.org/grpc/codes"
+
+	"infra/chromium/bootstrapper/clients/gitiles"
 )
 
 func strPtr(s string) *string {
