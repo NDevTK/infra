@@ -12,13 +12,13 @@ import (
 	"path/filepath"
 	"regexp"
 
+	"go.chromium.org/luci/common/errors"
+	lgs "go.chromium.org/luci/common/gcloud/gs"
+
 	"infra/cros/internal/gerrit"
 	"infra/cros/internal/gs"
 	"infra/cros/internal/repo"
 	"infra/cros/internal/shared"
-
-	"go.chromium.org/luci/common/errors"
-	lgs "go.chromium.org/luci/common/gcloud/gs"
 )
 
 var (

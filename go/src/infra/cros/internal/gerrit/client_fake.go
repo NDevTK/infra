@@ -9,12 +9,13 @@ import (
 	"context"
 	gerrs "errors"
 	"fmt"
-	"infra/cros/internal/shared"
 	"os"
 	"reflect"
 	"testing"
 
 	"go.chromium.org/luci/common/api/gerrit"
+
+	"infra/cros/internal/shared"
 )
 
 type ExpectedFetch struct {

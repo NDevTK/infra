@@ -8,7 +8,6 @@ package gerrit
 import (
 	"context"
 	"fmt"
-	"infra/cros/internal/shared"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -16,10 +15,13 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/errors"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
-	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/cros/internal/shared"
 )
 
 // This files contains legacy functions that do not use a client.
