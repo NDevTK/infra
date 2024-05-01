@@ -14,6 +14,9 @@ import (
 	"cloud.google.com/go/bigquery"
 	protov1 "github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/appengine/gaemiddleware"
 	authclient "go.chromium.org/luci/auth"
 	gitilesapi "go.chromium.org/luci/common/api/gitiles"
@@ -24,8 +27,6 @@ import (
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
-	"google.golang.org/api/iterator"
-	"google.golang.org/protobuf/proto"
 
 	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
 	"infra/appengine/cros/lab_inventory/app/config"
