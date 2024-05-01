@@ -21,10 +21,11 @@ import (
 	"io"
 	"os"
 
+	"gopkg.in/yaml.v2"
+
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"gopkg.in/yaml.v2"
 )
 
 type batchSummaryReportMetric struct {

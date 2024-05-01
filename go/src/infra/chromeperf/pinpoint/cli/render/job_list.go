@@ -15,13 +15,15 @@ package render
 
 import (
 	"fmt"
-	"infra/chromeperf/pinpoint/proto"
 	"io"
 	"text/template"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+
 	"go.chromium.org/luci/common/errors"
+
+	"infra/chromeperf/pinpoint/proto"
 )
 
 const (
