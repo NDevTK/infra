@@ -6,17 +6,13 @@ package commands_test
 
 import (
 	"context"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/containers"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"testing"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/duration"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	_go "go.chromium.org/chromiumos/config/go"
 	configpb "go.chromium.org/chromiumos/config/go"
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
@@ -31,7 +27,13 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/containers"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"infra/cros/cmd/cros_test_runner/data"
+	"infra/cros/cmd/cros_test_runner/internal/commands"
+	"infra/cros/cmd/cros_test_runner/internal/executors"
 )
 
 func parseTime(s string) time.Time {
