@@ -8,11 +8,12 @@ import (
 	"context"
 	"net/http"
 
+	"google.golang.org/grpc"
+
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
-	"google.golang.org/grpc"
 )
 
 // BBBuildersClient is for testing purpose.

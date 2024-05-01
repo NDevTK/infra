@@ -8,11 +8,12 @@ package main
 import (
 	"net/http"
 
+	"google.golang.org/appengine"
+
 	"go.chromium.org/luci/appengine/gaeauth/server"
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
-	"google.golang.org/appengine"
 
 	"infra/appengine/sheriff-o-matic/som/analyzer"
 	"infra/appengine/sheriff-o-matic/som/handler"

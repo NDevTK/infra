@@ -9,8 +9,9 @@ import (
 	"fmt"
 	"regexp"
 
-	"go.chromium.org/luci/gae/service/info"
 	"google.golang.org/grpc"
+
+	"go.chromium.org/luci/gae/service/info"
 
 	monorailv3 "infra/monorailv2/api/v3/api_proto"
 )

@@ -9,10 +9,10 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging/gologger"
-	"google.golang.org/grpc"
 )
 
 type mockBuildersClient struct{}
