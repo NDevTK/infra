@@ -17,9 +17,10 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
 
 	"infra/cros/tlslib/internal/nebraska"
 )

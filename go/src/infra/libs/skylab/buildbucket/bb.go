@@ -11,13 +11,13 @@ import (
 	"net/http"
 	"strings"
 
+	structbuilder "google.golang.org/protobuf/types/known/structpb"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
-
-	structbuilder "google.golang.org/protobuf/types/known/structpb"
 )
 
 // Set higher priority for admin task to compite with tests.

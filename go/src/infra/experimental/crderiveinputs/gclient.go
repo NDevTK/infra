@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"infra/experimental/crderiveinputs/inputpb"
 	"io"
 	"io/fs"
 	"os"
@@ -19,11 +18,14 @@ import (
 	"sort"
 	"strings"
 
+	"golang.org/x/sync/errgroup"
+
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/exec"
 	"go.chromium.org/luci/common/flag/stringmapflag"
-	"golang.org/x/sync/errgroup"
+
+	"infra/experimental/crderiveinputs/inputpb"
 )
 
 //go:embed all:embed

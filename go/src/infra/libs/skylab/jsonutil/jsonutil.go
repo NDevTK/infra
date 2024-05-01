@@ -9,9 +9,10 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/jsonpb"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // JSONPBMarshaller marshals protobufs as JSON.

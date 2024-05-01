@@ -14,10 +14,9 @@ import (
 	"strings"
 	"sync"
 
+	"cloud.google.com/go/storage"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
-
-	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/proto"
 
