@@ -16,13 +16,12 @@ import (
 
 	"cloud.google.com/go/datastore"
 	. "github.com/smartystreets/goconvey/convey"
+	mock "github.com/stretchr/testify/mock"
 
 	"infra/appengine/chrome-test-health/api"
 	"infra/appengine/chrome-test-health/datastorage"
 	"infra/appengine/chrome-test-health/datastorage/mocks"
 	"infra/appengine/chrome-test-health/internal/coverage/entities"
-
-	mock "github.com/stretchr/testify/mock"
 )
 
 var (

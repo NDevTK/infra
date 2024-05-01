@@ -11,6 +11,7 @@ import (
 	"time"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
+
 	"go.chromium.org/luci/common/logging"
 
 	"infra/appengine/chrome-test-health/api"
