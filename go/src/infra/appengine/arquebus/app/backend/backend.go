@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+
 	"go.chromium.org/luci/appengine/tq"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
