@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/wrappers"
+
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
 )
