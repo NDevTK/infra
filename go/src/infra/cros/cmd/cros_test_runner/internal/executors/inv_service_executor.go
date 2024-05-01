@@ -10,13 +10,13 @@ import (
 	"os"
 	"strings"
 
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"

@@ -8,6 +8,7 @@ import (
 	"container/list"
 
 	"cloud.google.com/go/bigquery"
+
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/luciexe/build"

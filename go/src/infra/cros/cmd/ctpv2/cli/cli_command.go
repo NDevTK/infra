@@ -7,7 +7,6 @@ package cli
 
 import (
 	"flag"
-
 	"log"
 	"strings"
 )
