@@ -11,9 +11,10 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 type fakeClient struct {
