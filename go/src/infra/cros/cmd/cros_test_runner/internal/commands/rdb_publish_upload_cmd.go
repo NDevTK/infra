@@ -9,10 +9,6 @@ import (
 	"fmt"
 	"strings"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
-
 	_go "go.chromium.org/chromiumos/config/go"
 	testapipb "go.chromium.org/chromiumos/config/go/test/api"
 	testapi_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
@@ -23,6 +19,10 @@ import (
 	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
 )
 
 // RdbPublishUploadCmd represents rdb publish upload cmd.
