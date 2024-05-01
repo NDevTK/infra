@@ -10,13 +10,14 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+	"go.opentelemetry.io/otel"
+	"google.golang.org/grpc/metadata"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
-	"go.opentelemetry.io/otel"
-	"google.golang.org/grpc/metadata"
 
 	"infra/appengine/drone-queen/api"
 	clients "infra/appengine/drone-queen/internal/clients"

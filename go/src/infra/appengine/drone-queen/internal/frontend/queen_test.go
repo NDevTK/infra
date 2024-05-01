@@ -10,17 +10,18 @@ import (
 	"testing"
 	"time"
 
-	"infra/appengine/drone-queen/api"
-	"infra/appengine/drone-queen/internal/clients"
-	"infra/appengine/drone-queen/internal/entities"
-
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/appengine/drone-queen/api"
+	"infra/appengine/drone-queen/internal/clients"
+	"infra/appengine/drone-queen/internal/entities"
 )
 
 func TestDroneQueenImpl_DeclareDuts(t *testing.T) {
