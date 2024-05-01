@@ -14,11 +14,12 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/maruel/subcommands"
+	"google.golang.org/genproto/protobuf/field_mask"
+
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/genproto/protobuf/field_mask"
 
 	"infra/cmd/shivas/cmdhelp"
 	"infra/cmd/shivas/internal/ufs/subcmds/host"
