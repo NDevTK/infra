@@ -14,8 +14,9 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/iterator"
+
+	"go.chromium.org/luci/common/errors"
 
 	"infra/appengine/chrome-test-health/api"
 )
