@@ -5,10 +5,10 @@
 package executor
 
 import (
-	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
-
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 )
 
 func NewKarbonExecutor(ctr managers.ContainerManager, req *api.CTPFilter, containerMetadata map[string]*buildapi.ContainerImageInfo) (*FilterExecutor, error) {

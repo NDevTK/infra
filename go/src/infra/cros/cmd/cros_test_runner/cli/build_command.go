@@ -7,8 +7,9 @@ package cli
 
 import (
 	"flag"
-	"infra/cros/cmd/cros_test_runner/executions"
 	"log"
+
+	"infra/cros/cmd/cros_test_runner/executions"
 )
 
 // Run as build. This is in place to support backward-compatibility with
