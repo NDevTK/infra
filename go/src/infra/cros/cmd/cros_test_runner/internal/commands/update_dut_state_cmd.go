@@ -7,18 +7,18 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/common_lib/tools/ufs"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/dutstate"
-
-	"infra/cros/cmd/common_lib/common"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/tools/ufs"
+	"infra/cros/cmd/cros_test_runner/data"
+	"infra/cros/dutstate"
 )
 
 // UpdateDutStateCmd represents update dut state command.
