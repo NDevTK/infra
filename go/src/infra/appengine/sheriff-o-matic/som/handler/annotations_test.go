@@ -17,6 +17,8 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
@@ -25,7 +27,6 @@ import (
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/auth/xsrf"
 	"go.chromium.org/luci/server/router"
-	"google.golang.org/grpc"
 
 	"infra/appengine/sheriff-o-matic/som/model"
 	monorailv3 "infra/monorailv2/api/v3/api_proto"

@@ -15,12 +15,13 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/appengine"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
-	"google.golang.org/appengine"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/sheriff-o-matic/som/model/gen"
 )
