@@ -12,13 +12,13 @@ import (
 	"path/filepath"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/common/logging/gologger"
 
 	"infra/cmd/cloudbuildhelper/bundledesc"
 	"infra/cmd/cloudbuildhelper/fileset"
 	"infra/cmd/cloudbuildhelper/manifest"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func init() {

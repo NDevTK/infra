@@ -8,11 +8,12 @@ import (
 	"context"
 	"time"
 
+	"google.golang.org/grpc/codes"
+
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/grpc/grpcutil"
-	"google.golang.org/grpc/codes"
 )
 
 // ErrorIsRetriable determines whether an error would be retried by Execute.

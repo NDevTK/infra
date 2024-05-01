@@ -40,7 +40,6 @@ import (
 	"go.chromium.org/luci/common/flag/stringmapflag"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
-
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
