@@ -5,8 +5,9 @@
 package swarming
 
 import (
-	"infra/libs/skylab/inventory"
 	"strconv"
+
+	"infra/libs/skylab/inventory"
 )
 
 func init() {

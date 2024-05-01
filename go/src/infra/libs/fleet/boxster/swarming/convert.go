@@ -14,6 +14,7 @@ import (
 	"github.com/PaesslerAG/jsonpath"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
+
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/chromiumos/config/go/test/api"
 )

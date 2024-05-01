@@ -14,8 +14,9 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/luci/common/errors"
 	"golang.org/x/net/publicsuffix"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // NewJar returns a new cookie jar containing the given cookies.

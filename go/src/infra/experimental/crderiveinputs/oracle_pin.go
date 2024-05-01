@@ -16,12 +16,13 @@ import (
 	"path/filepath"
 	"strings"
 
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/wrapperspb"
+
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/cipd/common"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"infra/experimental/crderiveinputs/inputpb"
 	"infra/experimental/crderiveinputs/inputs"
