@@ -15,12 +15,13 @@ import (
 	"time"
 
 	"github.com/gogo/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

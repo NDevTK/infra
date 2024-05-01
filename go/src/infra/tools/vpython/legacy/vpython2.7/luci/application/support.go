@@ -19,9 +19,9 @@ import (
 	"fmt"
 	"os"
 
-	vpython "infra/tools/vpython/legacy/vpython2.7/luci"
-
 	"go.chromium.org/luci/common/errors"
+
+	vpython "infra/tools/vpython/legacy/vpython2.7/luci"
 )
 
 // returnCodeError is an error wrapping a return code value.
