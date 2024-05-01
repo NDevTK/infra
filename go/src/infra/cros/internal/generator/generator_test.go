@@ -7,15 +7,16 @@ package generator
 import (
 	"testing"
 
-	"infra/cros/internal/gerrit"
-
 	_struct "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/wrapperspb"
+
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
-	"google.golang.org/protobuf/testing/protocmp"
-	"google.golang.org/protobuf/types/known/wrapperspb"
+
+	"infra/cros/internal/gerrit"
 )
 
 const (
