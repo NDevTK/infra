@@ -4,11 +4,12 @@ import (
 	"context"
 	"time"
 
-	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
-	"go.chromium.org/luci/common/retry"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
+	"go.chromium.org/luci/common/retry"
 )
 
 const (

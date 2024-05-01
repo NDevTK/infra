@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.chromium.org/luci/common/api/gitiles"
-	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
+
+	"go.chromium.org/luci/common/api/gitiles"
+	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
 )
 
 // NewThrottlingClient creates REST Gitiles client and consumes limiter quota
