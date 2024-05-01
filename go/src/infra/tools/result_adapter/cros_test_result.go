@@ -250,6 +250,7 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 				}
 			}
 		}
+
 		partnerInfo := testInvocation.GetPartnerInfo()
 		if partnerInfo != nil {
 			accountID := partnerInfo.GetAccountId()
@@ -257,6 +258,8 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 				tags = AppendTags(tags, "account_id", strconv.FormatInt(accountID, 10))
 			}
 		}
+
+		tags = configProjectTrackerMetadataTags(tags, testInvocation)
 	}
 
 	if testRun != nil {
@@ -473,6 +476,20 @@ func configMultiDUTTags(tags []*pb.StringPair, primaryExecInfo *artifactpb.Execu
 	// Concatenates board names and model names separately.
 	newTags = AppendTags(newTags, "secondary_boards", strings.Join(secondaryBoards, " | "))
 	newTags = AppendTags(newTags, "secondary_models", strings.Join(secondaryModels, " | "))
+	return newTags
+}
+
+// configProjectTrackerMetadataTags configs test result tags based on the project tracker metadata.
+func configProjectTrackerMetadataTags(tags []*pb.StringPair, testInvocation *artifactpb.TestInvocation) []*pb.StringPair {
+	projectTrackerMetadata := testInvocation.GetProjectTrackerMetadata()
+	if projectTrackerMetadata == nil {
+		return tags
+	}
+
+	newTags := make([]*pb.StringPair, 0, len(tags))
+	newTags = append(newTags, tags...)
+
+	newTags = AppendTags(newTags, "project_tracker_bug_id", projectTrackerMetadata.GetBugId())
 	return newTags
 }
 

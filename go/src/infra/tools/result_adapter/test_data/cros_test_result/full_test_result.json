@@ -93,6 +93,9 @@
         },
         "partner_info":{
             "account_id": 4
+        },
+        "project_tracker_metadata": {
+            "bug_id": "1234"
         }
     },
     "test_runs":[

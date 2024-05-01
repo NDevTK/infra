@@ -406,6 +406,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("multiduts", "False"),
 						pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
 						pbutil.StringPair("pool", "ChromeOSSkylab"),
+						pbutil.StringPair("project_tracker_bug_id", "1234"),
 						pbutil.StringPair("qs_account", "unmanaged_p2"),
 						pbutil.StringPair("queued_time", "2022-06-03 18:53:33.983328614 +0000 UTC"),
 						pbutil.StringPair("requirements", "requirement 1,requirement 2"),
