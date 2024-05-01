@@ -7,10 +7,11 @@ package entities
 import (
 	"context"
 	"fmt"
-	"infra/appengine/chrome-test-health/datastorage"
 	"time"
 
 	"cloud.google.com/go/datastore"
+
+	"infra/appengine/chrome-test-health/datastorage"
 )
 
 type FinditConfig struct {
