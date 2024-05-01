@@ -15,9 +15,10 @@
 package scheduler
 
 import (
+	"sort"
+
 	"infra/qscheduler/qslib/protos/metrics"
 	"infra/qscheduler/qslib/tutils"
-	"sort"
 )
 
 // Snapshot represents the scheduler state at a specified timestamp.

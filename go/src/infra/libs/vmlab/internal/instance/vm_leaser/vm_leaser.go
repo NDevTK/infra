@@ -9,9 +9,10 @@ import (
 	"errors"
 	"fmt"
 
+	"google.golang.org/grpc"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/grpc"
 
 	vmlabpb "infra/libs/vmlab/api"
 	"infra/vm_leaser/client"

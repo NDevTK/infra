@@ -19,9 +19,9 @@ import (
 	"fmt"
 	"time"
 
-	"infra/qscheduler/qslib/scheduler"
-
 	"go.chromium.org/luci/common/data/stringset"
+
+	"infra/qscheduler/qslib/scheduler"
 )
 
 func HandleAssignments([]*scheduler.Assignment) {}

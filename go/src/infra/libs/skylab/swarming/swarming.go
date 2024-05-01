@@ -15,13 +15,13 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/api/googleapi"
+	option "google.golang.org/api/option"
+
 	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
-	"google.golang.org/api/googleapi"
-
-	option "google.golang.org/api/option"
 )
 
 // SkylabPool is the swarming pool for all skylab bots.

@@ -17,11 +17,11 @@ package frontend_test
 import (
 	"testing"
 
+	"github.com/golang/protobuf/ptypes/wrappers"
+	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/golang/protobuf/ptypes/wrappers"
-	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 
 	"infra/qscheduler/qslib/protos"
