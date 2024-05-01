@@ -10,8 +10,9 @@ import (
 	"path"
 	"strings"
 
-	"go.chromium.org/luci/common/errors"
 	"golang.org/x/sync/errgroup"
+
+	"go.chromium.org/luci/common/errors"
 
 	"infra/experimental/crderiveinputs/inputpb"
 )

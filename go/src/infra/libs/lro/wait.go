@@ -9,11 +9,12 @@ import (
 	"math/rand"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
-	"go.chromium.org/luci/common/clock"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
+	"go.chromium.org/luci/common/clock"
 )
 
 // Wait waits until the long-running operation specified by the provided

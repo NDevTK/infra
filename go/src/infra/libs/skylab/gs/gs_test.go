@@ -13,11 +13,12 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/googleapi"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/gcloud/gs"
 	gcgs "go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/retry"
-	"google.golang.org/api/googleapi"
 )
 
 // Implements InnerClient interface, writing to provided local directory instead

@@ -13,11 +13,10 @@ import (
 	"sync"
 	"time"
 
-	"infra/cros/support/internal/shared"
-
+	"go.chromium.org/luci/common/api/gerrit"
 	gerrit2 "go.chromium.org/luci/common/proto/gerrit"
 
-	"go.chromium.org/luci/common/api/gerrit"
+	"infra/cros/support/internal/shared"
 )
 
 const (

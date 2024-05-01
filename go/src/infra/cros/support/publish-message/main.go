@@ -7,11 +7,12 @@ import (
 	"encoding/base64"
 	"log"
 
-	"infra/cros/support/internal/cli"
-	"infra/cros/support/internal/pubsub"
+	"google.golang.org/api/option"
 
 	luciPubsub "go.chromium.org/luci/common/gcloud/pubsub"
-	"google.golang.org/api/option"
+
+	"infra/cros/support/internal/cli"
+	"infra/cros/support/internal/pubsub"
 )
 
 // Publish a message containing `data` to projects/`projectId`/topics/`topic-id`. `data` must be
