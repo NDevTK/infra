@@ -12,10 +12,11 @@ import (
 	"os"
 	"strings"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/rts/filegraph/git"
 	"infra/rts/internal/gitutil"

@@ -13,14 +13,14 @@ import (
 	"regexp"
 	"time"
 
-	"infra/tools/git/state"
-
 	"go.chromium.org/luci/cipd/version"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/system/environ"
+
+	"infra/tools/git/state"
 )
 
 // versionString is the version string for this wrapper.

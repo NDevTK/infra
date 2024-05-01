@@ -22,8 +22,6 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	"infra/tools/git/state"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
@@ -31,6 +29,8 @@ import (
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/exitcode"
 	"go.chromium.org/luci/common/system/filesystem"
+
+	"infra/tools/git/state"
 )
 
 // GitRunnerMode determines how a GitRunner should be run.
