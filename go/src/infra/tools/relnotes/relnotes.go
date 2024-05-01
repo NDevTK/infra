@@ -25,9 +25,8 @@ import (
 	"time"
 
 	"golang.org/x/oauth2/google"
-	"gopkg.in/yaml.v2"
-
 	appengine "google.golang.org/api/appengine/v1"
+	"gopkg.in/yaml.v2"
 
 	"go.chromium.org/luci/common/data/stringset"
 )
