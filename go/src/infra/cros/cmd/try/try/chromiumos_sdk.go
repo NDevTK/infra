@@ -9,12 +9,13 @@ import (
 	"log"
 	"os"
 
-	"infra/cros/internal/cmd"
-	bb "infra/cros/lib/buildbucket"
-
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/internal/cmd"
+	bb "infra/cros/lib/buildbucket"
 )
 
 func GetCmdChromiumOSSDK(authOpts auth.Options) *subcommands.Command {
