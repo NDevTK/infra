@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/ptypes"
+
 	"go.chromium.org/luci/common/logging"
 
 	kpb "infra/cmd/package_index/kythe/proto"
