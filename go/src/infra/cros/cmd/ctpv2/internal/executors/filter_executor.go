@@ -10,12 +10,13 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/grpc"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/grpc"
 
 	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/common"

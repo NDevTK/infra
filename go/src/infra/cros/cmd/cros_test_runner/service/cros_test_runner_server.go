@@ -5,25 +5,23 @@
 package service
 
 import (
+	"context"
+	"fmt"
+	"log"
+	"net"
 	"os"
 	"path"
 	"regexp"
 	"time"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/cros_test_runner/data"
-
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
-	"context"
-	"fmt"
-	"log"
-	"net"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/cros_test_runner/data"
 )
 
 type CrosTestRunnerServer struct {
