@@ -12,6 +12,8 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"go.chromium.org/chromiumos/config/go/test/plan"
+
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/gerrit"
@@ -20,8 +22,6 @@ import (
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
 	"infra/tools/dirmd/proto/chromeos"
-
-	"go.chromium.org/chromiumos/config/go/test/plan"
 )
 
 func TestComputeProjectMappingInfos(t *testing.T) {

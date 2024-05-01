@@ -10,11 +10,11 @@ import (
 	"log"
 	"strings"
 
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/repo"
-
 	bbproto "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/internal/gerrit"
+	"infra/cros/internal/repo"
 )
 
 const (

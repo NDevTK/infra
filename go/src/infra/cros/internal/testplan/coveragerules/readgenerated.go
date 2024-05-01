@@ -7,20 +7,22 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infra/cros/internal/git"
 	"io/fs"
 	"os"
 	"path/filepath"
 
 	"cloud.google.com/go/bigquery"
-	testpb "go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/bq"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/proto/google/descutil"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+
+	testpb "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/bq"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/proto/google/descutil"
+
+	"infra/cros/internal/git"
 )
 
 // getAllFileDescriptorProtos finds the FileDescriptorProto for descriptor and

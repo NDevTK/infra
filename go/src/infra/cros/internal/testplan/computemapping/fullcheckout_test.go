@@ -5,19 +5,21 @@ package computemapping_test
 
 import (
 	"context"
+	"testing"
+
+	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/chromiumos/config/go/test/plan"
+	"go.chromium.org/luci/common/clock/testclock"
+
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/git"
 	"infra/cros/internal/repo"
 	"infra/cros/internal/testplan/computemapping"
 	dirmdpb "infra/tools/dirmd/proto"
 	"infra/tools/dirmd/proto/chromeos"
-	"testing"
-
-	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/chromiumos/config/go/test/plan"
-	"go.chromium.org/luci/common/clock/testclock"
-	"google.golang.org/protobuf/testing/protocmp"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestToDirBQRows(t *testing.T) {
