@@ -17,9 +17,10 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/protobuf/proto"
 
 	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
 	ds "infra/cros/lab_inventory/datastore"
