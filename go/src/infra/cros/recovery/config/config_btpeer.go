@@ -67,10 +67,10 @@ func btpeerRepairPlan() *Plan {
 					"duration_min:1440",
 				},
 				RecoveryActions: []string{
-					"Reboot device",
+					"Reboot device and wait for SSH",
 				},
 			},
-			"Reboot device": {
+			"Reboot device and wait for SSH": {
 				Docs: []string{
 					"Reboots the device over ssh and waits for the device to become ssh-able again.",
 				},
@@ -85,7 +85,7 @@ func btpeerRepairPlan() *Plan {
 				},
 				ExecName: "btpeer_assert_chameleond_service_is_running",
 				RecoveryActions: []string{
-					"Reboot device",
+					"Reboot device and wait for SSH",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
 			},
@@ -149,7 +149,7 @@ func btpeerRepairPlan() *Plan {
 				},
 				Dependencies: []string{
 					"Install expected chameleond release bundle",
-					"Reboot device",
+					"Reboot device and wait for SSH",
 				},
 				ExecName:   "sample_pass",
 				RunControl: RunControl_ALWAYS_RUN,
@@ -162,7 +162,7 @@ func btpeerRepairPlan() *Plan {
 				ExecName:    "btpeer_install_expected_chameleond_release_bundle",
 				ExecTimeout: durationpb.New(15 * time.Minute),
 				RecoveryActions: []string{
-					"Reboot device",
+					"Reboot device and wait for SSH",
 				},
 			},
 
@@ -329,12 +329,30 @@ func btpeerRepairPlan() *Plan {
 				ExecTimeout: &durationpb.Duration{Seconds: 1000},
 				RunControl:  RunControl_ALWAYS_RUN,
 			},
+			"Enable temp booting": {
+				Docs: []string{
+					"Applies necessary configurations to ensure temp booting is",
+					"supported on the device.",
+				},
+				Conditions: []string{
+					"btpeer_is_raspi_4b_less_than_revision_14",
+				},
+				Dependencies: []string{
+					"btpeer_enable_debug_quirks",
+					"Reboot device and wait for SSH",
+				},
+				ExecName:   "sample_pass",
+				RunControl: RunControl_ALWAYS_RUN,
+			},
 			"Temp Boot into A partition": {
 				Docs: []string{
 					"Temporarily boots into the A partition on the device so we can ",
 					"verify it's ok before setting it as the permanent boot device.",
 				},
 				ExecName: "btpeer_temp_boot_into_partition",
+				Dependencies: []string{
+					"Enable temp booting",
+				},
 				ExecExtraArgs: []string{
 					"boot_partition_label:BOOT_A",
 				},
@@ -374,6 +392,9 @@ func btpeerRepairPlan() *Plan {
 				Docs: []string{
 					"Temporarily boots into the B partition on the device so we can ",
 					"verify it's ok before setting it as the permanent boot device.",
+				},
+				Dependencies: []string{
+					"Enable temp booting",
 				},
 				ExecName: "btpeer_temp_boot_into_partition",
 				ExecExtraArgs: []string{
