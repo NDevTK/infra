@@ -13,9 +13,10 @@ import (
 	"os"
 	"time"
 
+	"golang.org/x/oauth2"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
-	"golang.org/x/oauth2"
 )
 
 const (

@@ -12,9 +12,10 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/types/known/durationpb"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/cli"
-	"google.golang.org/protobuf/types/known/durationpb"
 
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmdsupport/cmdlib"

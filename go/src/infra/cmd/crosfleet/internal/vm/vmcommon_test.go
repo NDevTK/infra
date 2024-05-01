@@ -11,8 +11,9 @@ import (
 	"reflect"
 	"testing"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
 
 	croscommon "infra/cros/cmd/common_lib/common"
 	"infra/vm_leaser/client"

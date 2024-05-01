@@ -13,13 +13,14 @@ import (
 	"sync/atomic"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/grpc/metadata"
+
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	lflag "go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/grpc/metadata"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	commonFlags "infra/cmd/mallet/internal/cmd/cmdlib"
