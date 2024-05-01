@@ -6,11 +6,10 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"google.golang.org/protobuf/reflect/protoreflect"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	structbuilder "google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

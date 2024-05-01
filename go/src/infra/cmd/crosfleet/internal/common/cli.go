@@ -13,15 +13,16 @@ import (
 	"os"
 	"time"
 
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmdsupport/cmdlib"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/gcloud/googleoauth"
-	"google.golang.org/protobuf/encoding/protojson"
+
+	"infra/cmd/crosfleet/internal/site"
+	"infra/cmdsupport/cmdlib"
 )
 
 // Tag to add to Buildbucket builds to indicate which crosfleet subcommand was
