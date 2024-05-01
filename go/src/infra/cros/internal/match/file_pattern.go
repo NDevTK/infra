@@ -6,6 +6,7 @@ package match
 
 import (
 	"github.com/bmatcuk/doublestar"
+
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 )
 
