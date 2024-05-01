@@ -14,9 +14,9 @@ import (
 	"strconv"
 	"strings"
 
-	"go.chromium.org/luci/common/cli"
-
 	"github.com/maruel/subcommands"
+
+	"go.chromium.org/luci/common/cli"
 )
 
 // TODO(gregorynisbet): is a status.log file is the
