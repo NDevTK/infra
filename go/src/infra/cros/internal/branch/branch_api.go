@@ -13,11 +13,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"infra/cros/internal/shared"
-
 	gerritapi "github.com/andygrunwald/go-gerrit"
-	"go.chromium.org/luci/common/errors"
 	"golang.org/x/sync/errgroup"
+
+	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/internal/shared"
 )
 
 const (
