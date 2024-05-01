@@ -13,14 +13,9 @@ import (
 	"strings"
 	"sync"
 
-	"infra/cmd/cros_test_platform/internal/autotest/artifacts"
-	"infra/cmd/cros_test_platform/internal/autotest/testspec"
-	"infra/cmd/cros_test_platform/internal/enumeration"
-	"infra/cmd/cros_test_platform/internal/site"
-	"infra/cmd/cros_test_platform/internal/utils"
-
 	"github.com/kr/pretty"
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -28,6 +23,12 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cmd/cros_test_platform/internal/autotest/artifacts"
+	"infra/cmd/cros_test_platform/internal/autotest/testspec"
+	"infra/cmd/cros_test_platform/internal/enumeration"
+	"infra/cmd/cros_test_platform/internal/site"
+	"infra/cmd/cros_test_platform/internal/utils"
 )
 
 // Enumerate is the `enumerate` subcommand implementation.

@@ -7,11 +7,12 @@ package args
 import (
 	"time"
 
+	"google.golang.org/protobuf/types/known/durationpb"
+
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
-	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func basicInvocation() *steps.EnumerationResponse_AutotestInvocation {
