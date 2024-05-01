@@ -6,6 +6,7 @@ package data
 
 import (
 	"cloud.google.com/go/bigquery"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/luciexe/build"

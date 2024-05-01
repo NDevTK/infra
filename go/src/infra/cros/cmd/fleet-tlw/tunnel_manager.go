@@ -8,9 +8,9 @@ import (
 	"log"
 	"sync"
 
-	"infra/libs/sshtunnel"
-
 	"golang.org/x/crypto/ssh"
+
+	"infra/libs/sshtunnel"
 )
 
 // tunnelManager keeps track of SSH tunnels. Any client using tunnelManager must
