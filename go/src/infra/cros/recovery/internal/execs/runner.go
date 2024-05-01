@@ -9,8 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/types/known/durationpb"
+
+	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"

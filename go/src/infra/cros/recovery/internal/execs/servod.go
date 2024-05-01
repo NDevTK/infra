@@ -10,9 +10,10 @@ import (
 	"reflect"
 	"time"
 
+	"google.golang.org/protobuf/types/known/durationpb"
+
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/protobuf/types/known/durationpb"
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"

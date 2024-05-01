@@ -8,8 +8,9 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"go.chromium.org/luci/common/errors"
 	"golang.org/x/crypto/ssh"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // The provided key is copied from
