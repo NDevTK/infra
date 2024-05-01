@@ -11,9 +11,10 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/luci/common/errors"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
+
+	"go.chromium.org/luci/common/errors"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cros/internal/env"

@@ -8,8 +8,10 @@ import (
 	"context"
 	"time"
 
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/types/known/durationpb"
+
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/tlw"
 )

@@ -7,11 +7,12 @@ package cros
 
 import (
 	"context"
+
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/recovery/internal/components/cros/cbi"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // restoreCBIContentsFromUFS restores CBI contents on the DUT by writing the CBI contents stored
