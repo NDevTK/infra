@@ -17,9 +17,10 @@ import (
 	"sort"
 	"strings"
 
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/luci/common/logging"
 
 	kpb "infra/cmd/package_index/kythe/proto"
 )
