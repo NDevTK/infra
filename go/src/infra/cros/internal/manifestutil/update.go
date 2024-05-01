@@ -13,9 +13,9 @@ import (
 	"sort"
 	"strings"
 
-	"infra/cros/internal/repo"
-
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/internal/repo"
 )
 
 const (
