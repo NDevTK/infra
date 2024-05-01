@@ -9,6 +9,7 @@ import (
 	"time"
 
 	cloudBQ "cloud.google.com/go/bigquery"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
