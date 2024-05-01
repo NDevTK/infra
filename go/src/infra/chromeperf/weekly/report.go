@@ -22,14 +22,15 @@ import (
 	"sync"
 	"text/template"
 
-	"infra/monorail"
-
 	"github.com/maruel/subcommands"
+	"google.golang.org/grpc/credentials"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/grpc/credentials"
+
+	"infra/monorail"
 )
 
 var (

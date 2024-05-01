@@ -23,16 +23,17 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"infra/chromeperf/workflows"
-
 	. "github.com/smartystreets/goconvey/convey"
-	configProto "go.chromium.org/luci/common/proto/config"
-	"go.chromium.org/luci/config"
-	"go.chromium.org/luci/config/impl/memory"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
+
+	configProto "go.chromium.org/luci/common/proto/config"
+	"go.chromium.org/luci/config"
+	"go.chromium.org/luci/config/impl/memory"
+
+	"infra/chromeperf/workflows"
 )
 
 const bufSize = 1024 * 1024

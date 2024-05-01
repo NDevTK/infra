@@ -19,22 +19,24 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/cli/render"
-	"infra/chromeperf/pinpoint/proto"
 	"io"
 	"os"
 	"strings"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/encoding/prototext"
+	"gopkg.in/yaml.v2"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
-	"google.golang.org/protobuf/encoding/prototext"
-	"gopkg.in/yaml.v2"
+
+	"infra/chromeperf/pinpoint"
+	"infra/chromeperf/pinpoint/cli/render"
+	"infra/chromeperf/pinpoint/proto"
 )
 
 const MaxConcurrency = 5

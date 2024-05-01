@@ -8,13 +8,14 @@ import (
 	"sort"
 	"strings"
 
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
+
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/led/ledcmd"
 	"go.chromium.org/luci/luciexe/exe"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // InputOptions provides options that are inputs to the bootstrapping process.
