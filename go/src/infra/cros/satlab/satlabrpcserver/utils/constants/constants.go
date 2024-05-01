@@ -7,6 +7,7 @@ import (
 	"time"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
+
 	"infra/cros/satlab/common/services/build_service"
 )
 
