@@ -6,6 +6,15 @@ package bootstrap
 
 import (
 	"context"
+	"testing"
+	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/structpb"
+
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	. "go.chromium.org/luci/common/testing/assertions"
+
 	fakegerrit "infra/chromium/bootstrapper/clients/fakes/gerrit"
 	fakegitiles "infra/chromium/bootstrapper/clients/fakes/gitiles"
 	"infra/chromium/bootstrapper/clients/gclient"
@@ -13,13 +22,6 @@ import (
 	"infra/chromium/bootstrapper/clients/gitiles"
 	"infra/chromium/bootstrapper/clients/gob"
 	"infra/chromium/util"
-	"testing"
-	"time"
-
-	. "github.com/smartystreets/goconvey/convey"
-	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	. "go.chromium.org/luci/common/testing/assertions"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestGetBootstrapConfig(t *testing.T) {
