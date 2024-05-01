@@ -9,9 +9,10 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/durationpb"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	. "go.chromium.org/luci/common/testing/assertions"
-	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func TestValidateVmLeaserBackend(t *testing.T) {

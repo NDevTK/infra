@@ -12,11 +12,12 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	. "go.chromium.org/luci/common/testing/assertions"
 
 	vmlabpb "infra/libs/vmlab/api"
 )
