@@ -5,9 +5,10 @@ import (
 	"strconv"
 
 	"github.com/golang/protobuf/jsonpb"
+	"google.golang.org/grpc/status"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
-	"google.golang.org/grpc/status"
 )
 
 var marshaler = &jsonpb.Marshaler{}
