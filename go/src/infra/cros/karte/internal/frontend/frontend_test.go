@@ -12,11 +12,12 @@ import (
 
 	cloudBQ "cloud.google.com/go/bigquery"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/gae/service/datastore"
-	"google.golang.org/protobuf/testing/protocmp"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/internal/identifiers"
