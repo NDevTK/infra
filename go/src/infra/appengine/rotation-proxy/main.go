@@ -10,17 +10,18 @@ import (
 	"context"
 	"net/http"
 
-	rpb "infra/appengine/rotation-proxy/proto"
-
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/router"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+
+	rpb "infra/appengine/rotation-proxy/proto"
 )
 
 var (

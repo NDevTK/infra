@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
