@@ -7,11 +7,11 @@ package configs
 import (
 	"fmt"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/cmd/common_lib/common_commands"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/internal/commands"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // CommandConfig represents command config.

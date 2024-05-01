@@ -11,8 +11,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc/metadata"
+
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
