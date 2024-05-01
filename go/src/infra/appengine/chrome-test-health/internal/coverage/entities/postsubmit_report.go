@@ -7,8 +7,9 @@ package entities
 import (
 	"context"
 	"fmt"
-	"infra/appengine/chrome-test-health/datastorage"
 	"time"
+
+	"infra/appengine/chrome-test-health/datastorage"
 )
 
 type DependencyRepository struct {
