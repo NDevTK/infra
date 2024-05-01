@@ -18,6 +18,10 @@ func Migrate(ctx context.Context, r *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
-	logging.Infof(ctx, "migrator: %v", m)
+	cfg, err := m.GetMigrationConfig(ctx)
+	if err != nil {
+		return err
+	}
+	logging.Infof(ctx, "migration file: %v \n", cfg)
 	return nil
 }

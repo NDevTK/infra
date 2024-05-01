@@ -10,6 +10,7 @@ import (
 	"flag"
 
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
 	scron "go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/module"
@@ -21,6 +22,7 @@ import (
 func main() {
 	mods := []module.Module{
 		scron.NewModuleFromFlags(),
+		cfgmodule.NewModule(&cfgmodule.ModuleOptions{ServiceHost: "luci-config.appspot.com"}),
 	}
 
 	r := regulator.RegulatorOptions{}
