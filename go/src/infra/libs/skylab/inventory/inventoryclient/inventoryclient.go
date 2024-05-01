@@ -14,12 +14,13 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/grpc/status"
+
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/grpc/status"
 
 	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 	protos "infra/libs/fleet/protos"

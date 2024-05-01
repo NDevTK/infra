@@ -15,11 +15,12 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"golang.org/x/crypto/ssh"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
 )
 
 const (

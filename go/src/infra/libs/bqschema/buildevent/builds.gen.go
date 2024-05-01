@@ -2,8 +2,11 @@
 
 package buildevent
 
-import pb "infra/libs/bqschema/tabledef"
-import time "time"
+import (
+	time "time"
+
+	pb "infra/libs/bqschema/tabledef"
+)
 
 // BuildsTable is the TableDef for the
 // "" dataset's "builds" table.
