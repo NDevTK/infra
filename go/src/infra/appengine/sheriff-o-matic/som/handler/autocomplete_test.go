@@ -5,10 +5,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/server/router"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGetUserAutocompleteHandler(t *testing.T) {

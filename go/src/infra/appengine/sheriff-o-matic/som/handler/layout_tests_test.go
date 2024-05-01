@@ -8,8 +8,7 @@ import (
 	"testing"
 	"time"
 
-	testhelper "infra/appengine/sheriff-o-matic/som/client/test"
-	te "infra/appengine/sheriff-o-matic/som/testexpectations"
+	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/impl/dummy"
@@ -17,7 +16,8 @@ import (
 	"go.chromium.org/luci/gae/service/urlfetch"
 	"go.chromium.org/luci/server/router"
 
-	. "github.com/smartystreets/goconvey/convey"
+	testhelper "infra/appengine/sheriff-o-matic/som/client/test"
+	te "infra/appengine/sheriff-o-matic/som/testexpectations"
 )
 
 const (

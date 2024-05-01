@@ -21,9 +21,10 @@ import (
 	"text/template"
 
 	"github.com/maruel/subcommands"
+	"gopkg.in/yaml.v2"
+
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/logging"
-	"gopkg.in/yaml.v2"
 )
 
 // userConfig defines a type that represents some user-configured defaults for

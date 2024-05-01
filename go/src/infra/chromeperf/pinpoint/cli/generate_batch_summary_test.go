@@ -16,7 +16,6 @@ package cli
 
 import (
 	"fmt"
-	"infra/chromeperf/pinpoint/proto"
 	"io/ioutil"
 	"log"
 	"os"
@@ -25,6 +24,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/chromeperf/pinpoint/proto"
 )
 
 func validateFile(path, expected string) {

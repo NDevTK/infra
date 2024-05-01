@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"strings"
 
+	"google.golang.org/appengine"
+
 	"go.chromium.org/luci/appengine/gaeauth/server"
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
 	"go.chromium.org/luci/auth/identity"
@@ -19,7 +21,6 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/xsrf"
 	"go.chromium.org/luci/server/router"
-	"google.golang.org/appengine"
 )
 
 const (

@@ -15,6 +15,9 @@ import (
 	"sync"
 	"time"
 
+	"google.golang.org/appengine"
+	"google.golang.org/grpc"
+
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -24,8 +27,6 @@ import (
 	"go.chromium.org/luci/server/auth/xsrf"
 	"go.chromium.org/luci/server/caching"
 	"go.chromium.org/luci/server/router"
-	"google.golang.org/appengine"
-	"google.golang.org/grpc"
 
 	"infra/appengine/sheriff-o-matic/som/client"
 	"infra/appengine/sheriff-o-matic/som/model"
