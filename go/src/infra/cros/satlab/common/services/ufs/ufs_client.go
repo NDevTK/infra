@@ -7,11 +7,12 @@ package ufs
 import (
 	"context"
 
+	"google.golang.org/grpc"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/grpc"
 
 	"infra/cmd/shivas/site"
 	"infra/cmdsupport/cmdlib"

@@ -12,8 +12,9 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/executor"

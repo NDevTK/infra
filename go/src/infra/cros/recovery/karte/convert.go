@@ -9,8 +9,9 @@ import (
 	"strconv"
 	"time"
 
-	"go.chromium.org/luci/common/errors"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/luci/common/errors"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/recovery/logger/metrics"

@@ -8,8 +8,9 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 	grpc "google.golang.org/grpc"
+
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
 // MockISwarmingService is a mock of ISwarmingService interface.

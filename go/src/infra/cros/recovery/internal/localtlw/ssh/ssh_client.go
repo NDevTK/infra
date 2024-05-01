@@ -11,8 +11,9 @@ import (
 	"net"
 	"time"
 
-	"go.chromium.org/luci/common/errors"
 	"golang.org/x/crypto/ssh"
+
+	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/log"
 )
