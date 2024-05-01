@@ -9,9 +9,10 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"infra/cros/cmd/cros_test_runner/service"
 	"log"
 	"strings"
+
+	"infra/cros/cmd/cros_test_runner/service"
 )
 
 // ServerCommand executes as a server
