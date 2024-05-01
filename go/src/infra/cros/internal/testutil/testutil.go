@@ -12,11 +12,11 @@ import (
 	"os"
 	"regexp"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/git"
 	"infra/cros/internal/util"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 var (
