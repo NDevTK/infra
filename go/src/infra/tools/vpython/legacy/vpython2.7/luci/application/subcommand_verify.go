@@ -19,12 +19,12 @@ import (
 
 	"github.com/maruel/subcommands"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
-
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
 )
 
 var subcommandVerify = &subcommands.Command{
