@@ -8,12 +8,12 @@ import (
 	"context"
 	"time"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
 	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+
+	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 const (

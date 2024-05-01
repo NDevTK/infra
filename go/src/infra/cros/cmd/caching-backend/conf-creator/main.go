@@ -16,9 +16,10 @@ import (
 	"os"
 	"strconv"
 
+	"google.golang.org/grpc/metadata"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/grpc/metadata"
 
 	models "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"

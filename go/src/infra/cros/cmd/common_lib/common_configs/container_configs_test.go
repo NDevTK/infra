@@ -7,11 +7,12 @@ package common_configs
 import (
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/chromiumos/config/go/build/api"
+
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-
-	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/chromiumos/config/go/build/api"
 )
 
 func TestGetContainer_UnsupportedContainerType(t *testing.T) {

@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"infra/cros/lib/buildbucket"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -20,7 +21,8 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
-	"google.golang.org/protobuf/encoding/protojson"
+
+	"infra/cros/lib/buildbucket"
 )
 
 var logCfg = gologger.LoggerConfig{
