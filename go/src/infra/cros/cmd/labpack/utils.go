@@ -12,12 +12,13 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	lab "go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/cros/cmd/labpack/logger"
 	ufsUtil "infra/unifiedfleet/app/util"

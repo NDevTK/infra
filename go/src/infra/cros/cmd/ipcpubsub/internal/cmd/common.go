@@ -8,13 +8,14 @@ import (
 	"context"
 	"flag"
 
-	"infra/cros/cmd/ipcpubsub/internal/site"
-
 	"cloud.google.com/go/pubsub"
 	"github.com/maruel/subcommands"
+	"google.golang.org/api/option"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
-	"google.golang.org/api/option"
+
+	"infra/cros/cmd/ipcpubsub/internal/site"
 )
 
 type baseRun struct {
