@@ -9,11 +9,11 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"infra/tools/migrator"
-
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/tools/migrator"
 )
 
 // ExecuteUpload implements "upload" subcommand.
