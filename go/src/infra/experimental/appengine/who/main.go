@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"infra/monorail"
+	gerrit "github.com/andygrunwald/go-gerrit"
 
 	"go.chromium.org/luci/appengine/gaeauth/server"
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 
-	gerrit "github.com/andygrunwald/go-gerrit"
+	"infra/monorail"
 )
 
 const (

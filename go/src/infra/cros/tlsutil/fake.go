@@ -8,10 +8,11 @@ import (
 	"context"
 	"net"
 
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"golang.org/x/crypto/ssh"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
 )
 
 // MakeTestClient returns a gRPC client connected to a listener which

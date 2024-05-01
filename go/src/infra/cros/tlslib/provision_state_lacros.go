@@ -15,8 +15,9 @@ import (
 	"strconv"
 	"strings"
 
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"golang.org/x/crypto/ssh"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
 )
 
 const (
