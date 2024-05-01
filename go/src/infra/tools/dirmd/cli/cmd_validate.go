@@ -6,10 +6,12 @@ package cli
 
 import (
 	"fmt"
-	"infra/tools/dirmd"
 
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/luci/common/data/text"
+
+	"infra/tools/dirmd"
 )
 
 func cmdValidate() *subcommands.Command {

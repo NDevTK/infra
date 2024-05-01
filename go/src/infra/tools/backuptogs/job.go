@@ -4,12 +4,13 @@ import (
 	"context"
 	"time"
 
-	"infra/tools/backuptogs/filetree"
-
 	"cloud.google.com/go/storage"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/types"
+
+	"infra/tools/backuptogs/filetree"
 )
 
 var (

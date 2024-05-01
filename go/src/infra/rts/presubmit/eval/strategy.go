@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"infra/rts"
-
 	evalpb "infra/rts/presubmit/eval/proto"
 )
 

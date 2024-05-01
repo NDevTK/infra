@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
+	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/api/iterator"
 
-	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 
