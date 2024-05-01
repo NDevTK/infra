@@ -297,8 +297,17 @@
   },
   {
     "cmd": [
+      "rdb",
+      "stream",
+      "-var",
+      "race:true",
+      "--",
+      "[CACHE]/builder/infra/cipd/result_adapter/result_adapter",
+      "go",
+      "--",
       "go",
       "test",
+      "-json",
       "-race",
       "./..."
     ],

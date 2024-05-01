@@ -92,7 +92,10 @@ def RunSteps(
           # The race detector requires CGO.
           if not api.platform.is_win:
             # Windows bots do not have gcc installed at the moment.
-            api.step('go test -race', ['go', 'test', '-race', './...'])
+            cmd = api.resultdb.wrap(
+                [adapter, 'go', '--', 'go', 'test', '-json', '-race', './...'],
+                base_variant={'race': 'true'})
+            api.step('go test -race', cmd)
 
 
 def GenTests(api):
