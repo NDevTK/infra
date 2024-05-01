@@ -7,17 +7,19 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
 	"os/exec"
 	"regexp"
 	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
+
 	"go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
 )
 
 // FetchContainerMetadataCmd represents build input validation command.
