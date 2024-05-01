@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"go.chromium.org/luci/common/errors"
-
 	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 const ListRuntimeJson = `{

@@ -11,12 +11,13 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/maruel/subcommands"
+	"google.golang.org/api/option"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/api/option"
 
 	"infra/cmd/mallet/internal/cmd/tasks/ethernethook"
 	"infra/cmd/mallet/internal/site"
