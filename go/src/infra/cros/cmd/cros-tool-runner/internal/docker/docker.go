@@ -22,6 +22,7 @@ import (
 
 	"github.com/gofrs/flock"
 	"github.com/mitchellh/go-homedir"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/tsmon/field"

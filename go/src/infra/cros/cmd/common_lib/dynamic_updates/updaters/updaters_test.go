@@ -5,11 +5,13 @@
 package updaters_test
 
 import (
-	. "infra/cros/cmd/common_lib/dynamic_updates/updaters"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	. "infra/cros/cmd/common_lib/dynamic_updates/updaters"
 )
 
 func TestInsertHelpers(t *testing.T) {

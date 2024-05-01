@@ -16,11 +16,10 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 
-	build_api "go.chromium.org/chromiumos/config/go/build/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-
 	config "go.chromium.org/chromiumos/config/go"
+	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/cros-tool-runner/internal/common"

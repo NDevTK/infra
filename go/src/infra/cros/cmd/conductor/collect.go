@@ -10,13 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/try/try"
-	"infra/cros/internal/shared"
-
-	"go.chromium.org/luci/common/errors"
-
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/try/try"
+	"infra/cros/internal/shared"
 )
 
 // retryBuild retries a build using `cros try retry`. It returns the BBID of the

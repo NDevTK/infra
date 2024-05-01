@@ -12,6 +12,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
+
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 )
 
