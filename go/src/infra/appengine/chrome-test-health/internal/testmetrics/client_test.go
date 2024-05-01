@@ -5,12 +5,13 @@
 package testmetrics
 
 import (
-	"infra/appengine/chrome-test-health/api"
 	"testing"
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/appengine/chrome-test-health/api"
 )
 
 func ShouldContainParameter(actual any, expected ...any) string {

@@ -7,9 +7,10 @@ package entities
 import (
 	"context"
 	"fmt"
-	"infra/appengine/chrome-test-health/datastorage"
 
 	"cloud.google.com/go/datastore"
+
+	"infra/appengine/chrome-test-health/datastorage"
 )
 
 type SummaryCoverageData struct {
