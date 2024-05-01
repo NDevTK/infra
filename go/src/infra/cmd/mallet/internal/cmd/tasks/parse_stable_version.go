@@ -12,6 +12,7 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
