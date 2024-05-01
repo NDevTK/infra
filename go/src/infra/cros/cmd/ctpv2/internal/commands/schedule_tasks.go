@@ -12,15 +12,16 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/protobuf/proto"
+	protobuf "google.golang.org/protobuf/proto"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/genproto/protobuf/field_mask"
-	"google.golang.org/protobuf/proto"
-	protobuf "google.golang.org/protobuf/proto"
 
 	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/common"
