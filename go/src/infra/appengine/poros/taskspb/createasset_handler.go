@@ -18,19 +18,18 @@ import (
 	sync "sync"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	"github.com/google/uuid"
+	protobuf "google.golang.org/protobuf/proto"
+
 	client "go.chromium.org/luci/cipd/client/cipd"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/mailer"
 	"go.chromium.org/luci/server/tq"
 
 	"infra/appengine/poros/api/entities"
-
-	"cloud.google.com/go/compute/metadata"
-
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/gae/service/datastore"
-	protobuf "google.golang.org/protobuf/proto"
 )
 
 func CreateAssetHandler(ctx context.Context, payload protobuf.Message) error {

@@ -15,15 +15,16 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/api/iterator"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging/gologger"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
-	"google.golang.org/api/iterator"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"infra/appengine/sheriff-o-matic/som/analyzer/step"
 	"infra/appengine/sheriff-o-matic/som/model"

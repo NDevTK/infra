@@ -17,6 +17,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
+	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
+
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
@@ -24,8 +27,6 @@ import (
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/gae/service/memcache"
 	"go.chromium.org/luci/grpc/grpcutil"
-	"google.golang.org/api/iterator"
-	"google.golang.org/grpc/codes"
 
 	"infra/appengine/sheriff-o-matic/som/analyzer/step"
 	"infra/appengine/sheriff-o-matic/som/client"

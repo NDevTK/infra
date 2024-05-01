@@ -11,6 +11,7 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 	"go.chromium.org/luci/common/clock"

@@ -9,11 +9,12 @@ import (
 	"net/http"
 
 	emptypb "github.com/golang/protobuf/ptypes/empty"
+	"google.golang.org/grpc"
+
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/errors"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	"go.chromium.org/luci/server/auth"
-	"google.golang.org/grpc"
 )
 
 // Client defines a subset of Gerrit API used by rubber-stamper.
