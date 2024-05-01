@@ -16,13 +16,13 @@ import (
 	"sync"
 	"time"
 
+	"go.chromium.org/luci/common/errors"
+
 	mv "infra/cros/internal/chromeosversion"
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/git"
 	"infra/cros/internal/repo"
 	"infra/cros/internal/shared"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 const (

@@ -15,11 +15,11 @@ import (
 	"strconv"
 	"strings"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/internal/git"
 	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/repo"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // VersionFileProjectPath contains the path to the project containing
