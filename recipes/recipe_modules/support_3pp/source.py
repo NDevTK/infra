@@ -213,6 +213,8 @@ def resolve_latest(api, spec):
         stdout=api.raw_io.output_text(),
         step_test_data=lambda: api.raw_io.test_api.stream_output_text('2.0.0')
     ).stdout.strip()
+    if not version:  # pragma: no cover
+      raise AssertionError(f'Script {script} returned an empty version')
     api.step.active_result.presentation.step_text = (
       'resolved version: %s' % (version,))
 
@@ -234,6 +236,9 @@ def resolve_latest(api, spec):
             source_method_pb.pkg)
 
   elif method_name == 'url':
+    if not source_method_pb.version:  # pragma: no cover
+      raise AssertionError(
+        'A version must be specified for packages with a "url" source')
     version = source_method_pb.version
 
   else: # pragma: no cover
