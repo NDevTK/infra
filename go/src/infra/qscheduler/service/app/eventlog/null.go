@@ -18,6 +18,7 @@ import (
 	"context"
 
 	"cloud.google.com/go/bigquery"
+
 	"go.chromium.org/luci/common/logging"
 )
 

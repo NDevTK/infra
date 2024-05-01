@@ -15,10 +15,11 @@
 package scheduler
 
 import (
-	"infra/qscheduler/qslib/protos"
 	"testing"
 
 	"github.com/kylelemons/godebug/pretty"
+
+	"infra/qscheduler/qslib/protos"
 )
 
 // TestBestPriority tests that BestPriorityFor behaves correctly.
