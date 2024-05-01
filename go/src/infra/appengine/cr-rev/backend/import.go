@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"os"
 
+	"golang.org/x/time/rate"
+
 	"go.chromium.org/luci/common/logging"
 	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
-	"golang.org/x/time/rate"
 
 	"infra/appengine/cr-rev/backend/gitiles"
 	"infra/appengine/cr-rev/backend/pubsub"

@@ -8,14 +8,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"infra/appengine/cr-rev/backend/gitiles"
-	"infra/appengine/cr-rev/common"
-	"infra/appengine/cr-rev/config"
-	"infra/appengine/cr-rev/models"
 	"strings"
 
 	"go.chromium.org/luci/common/logging"
 	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
+
+	"infra/appengine/cr-rev/backend/gitiles"
+	"infra/appengine/cr-rev/common"
+	"infra/appengine/cr-rev/config"
+	"infra/appengine/cr-rev/models"
 )
 
 // Processor returns function which is called each time there is a new

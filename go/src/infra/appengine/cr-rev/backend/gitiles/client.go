@@ -7,8 +7,9 @@ package gitiles
 import (
 	"context"
 
-	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
 	"google.golang.org/grpc"
+
+	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
 )
 
 type Client interface {
