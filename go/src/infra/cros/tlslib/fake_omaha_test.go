@@ -21,8 +21,9 @@ import (
 	"testing"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
 
 	"infra/cros/tlslib/internal/nebraska"
 )

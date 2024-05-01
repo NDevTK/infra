@@ -15,8 +15,9 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"golang.org/x/crypto/ssh"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
 )
 
 type provisionState struct {
