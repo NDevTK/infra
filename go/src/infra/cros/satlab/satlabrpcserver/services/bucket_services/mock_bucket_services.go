@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/stretchr/testify/mock"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 )
 
