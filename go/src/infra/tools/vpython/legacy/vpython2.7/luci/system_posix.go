@@ -22,11 +22,11 @@ import (
 	"os"
 	"syscall"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/system/environ"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
 )
 
 // systemSpecificLaunch launches the process described by "cmd" while ensuring
