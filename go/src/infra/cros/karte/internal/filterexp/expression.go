@@ -8,10 +8,11 @@ import (
 	"reflect"
 
 	"github.com/google/cel-go/cel"
-	"go.chromium.org/luci/common/errors"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // comparisons are the valid comparisons.
