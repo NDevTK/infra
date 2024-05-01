@@ -8,6 +8,7 @@ import (
 	"io"
 
 	"cloud.google.com/go/storage"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 )
 

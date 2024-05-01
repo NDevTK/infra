@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
+	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
+
 	"infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/site"
-
-	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 )
 
 // BUG_ID is a key for the run suite tag.

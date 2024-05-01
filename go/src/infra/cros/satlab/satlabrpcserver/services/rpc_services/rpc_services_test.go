@@ -18,17 +18,16 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
-	. "go.chromium.org/luci/common/testing/assertions"
-	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
+	. "go.chromium.org/luci/common/testing/assertions"
+	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 
 	"infra/cros/satlab/common/dut"
 	"infra/cros/satlab/common/enumeration"
