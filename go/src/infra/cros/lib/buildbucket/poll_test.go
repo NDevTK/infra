@@ -2,19 +2,21 @@ package buildbucket_test
 
 import (
 	"context"
-	"infra/cros/lib/buildbucket"
 	"testing"
 	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
-	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/structpb"
 	"gotest.tools/assert"
+
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+
+	"infra/cros/lib/buildbucket"
 )
 
 var (
