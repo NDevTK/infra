@@ -12,12 +12,12 @@ import (
 	"reflect"
 	"testing"
 
+	lgerrit "go.chromium.org/luci/common/api/gerrit"
+
 	"infra/cros/internal/assert"
 	"infra/cros/internal/gerrit"
 	"infra/cros/internal/repo"
 	rh "infra/cros/internal/repoharness"
-
-	lgerrit "go.chromium.org/luci/common/api/gerrit"
 )
 
 const (

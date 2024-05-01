@@ -14,6 +14,9 @@ import (
 	"time"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	tlsapi "go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -21,8 +24,6 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"infra/cros/cmd/phosphorus/internal/autotest/atutil"
 	"infra/cros/cmd/phosphorus/internal/botcache"
