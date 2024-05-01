@@ -12,12 +12,13 @@ import (
 	"path"
 	"strings"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 type crosTestProcessor struct {
