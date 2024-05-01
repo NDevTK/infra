@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+
 	"infra/cros/recovery/config"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/logger/metrics"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 // Predefined exec functions.

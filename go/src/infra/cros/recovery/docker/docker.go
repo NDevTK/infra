@@ -25,6 +25,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/docker/go-connections/nat"
+
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/log"
