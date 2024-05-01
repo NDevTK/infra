@@ -8,11 +8,10 @@ import (
 	"context"
 	"fmt"
 
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
-
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_commands"

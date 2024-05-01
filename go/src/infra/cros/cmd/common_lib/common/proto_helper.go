@@ -5,11 +5,12 @@
 package common
 
 import (
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/dynamicpb"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/errors"
 )
 
 // CheckIfFieldDefinitionExists checks if a field definition exist in the provided msg type
