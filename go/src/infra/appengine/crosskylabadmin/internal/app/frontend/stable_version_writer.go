@@ -8,10 +8,11 @@ import (
 	"context"
 	"strings"
 
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/grpc/grpcutil"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/grpcutil"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
