@@ -11,10 +11,11 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/chromiumos/config/go/longrunning"
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"go.chromium.org/chromiumos/config/go/longrunning"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
