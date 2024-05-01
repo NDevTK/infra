@@ -25,14 +25,15 @@ import (
 	"strings"
 	"time"
 
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/proto"
-
 	"cloud.google.com/go/storage"
+	"google.golang.org/protobuf/encoding/prototext"
+
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/protobuf/encoding/prototext"
+
+	"infra/chromeperf/pinpoint"
+	"infra/chromeperf/pinpoint/proto"
 )
 
 // downloadResultsToDir copies the results associated with the provided job to the dstDir.

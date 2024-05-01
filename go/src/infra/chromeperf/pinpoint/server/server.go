@@ -20,9 +20,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/proto"
-	"infra/chromeperf/pinpoint/server/convert"
 	"io"
 	"log"
 	"net"
@@ -39,6 +36,10 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+
+	"infra/chromeperf/pinpoint"
+	"infra/chromeperf/pinpoint/proto"
+	"infra/chromeperf/pinpoint/server/convert"
 )
 
 type pinpointServer struct {

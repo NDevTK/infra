@@ -12,15 +12,15 @@ import (
 	"testing"
 	"time"
 
-	"infra/chromeperf/pinpoint/proto"
-
-	"go.chromium.org/luci/common/errors"
+	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/backoff"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/errors"
+
+	"infra/chromeperf/pinpoint/proto"
 )
 
 // userEmail is the email address of the entity running the smoke tests.

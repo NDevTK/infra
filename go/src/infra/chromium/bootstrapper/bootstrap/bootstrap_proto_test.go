@@ -8,11 +8,12 @@ import (
 	"errors"
 	"testing"
 
-	. "infra/chromium/util"
-
 	. "github.com/smartystreets/goconvey/convey"
-	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	. "go.chromium.org/luci/common/testing/assertions"
+
+	. "infra/chromium/util"
 )
 
 func TestMultierror(t *testing.T) {
