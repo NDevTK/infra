@@ -10,7 +10,6 @@ import (
 	"os/signal"
 
 	"cloud.google.com/go/storage"
-
 	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/auth/client/authcli"
