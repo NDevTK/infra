@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
+
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
