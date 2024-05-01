@@ -17,7 +17,6 @@ package cli
 import (
 	"context"
 	"fmt"
-	"infra/chromeperf/pinpoint/proto"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -26,9 +25,10 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-
 	. "github.com/smartystreets/goconvey/convey"
 	grpc "google.golang.org/grpc"
+
+	"infra/chromeperf/pinpoint/proto"
 )
 
 const testPriority = 42

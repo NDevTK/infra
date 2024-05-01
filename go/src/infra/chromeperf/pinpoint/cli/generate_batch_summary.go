@@ -19,10 +19,6 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
-	"infra/chromeperf/output"
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/cli/render"
-	"infra/chromeperf/pinpoint/proto"
 	"io"
 	"math"
 	"os"
@@ -32,8 +28,14 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/chromeperf/output"
+	"infra/chromeperf/pinpoint"
+	"infra/chromeperf/pinpoint/cli/render"
+	"infra/chromeperf/pinpoint/proto"
 )
 
 const gerritBaseUrl = "https://chromium-review.googlesource.com/q/"
