@@ -11,11 +11,12 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/collection"

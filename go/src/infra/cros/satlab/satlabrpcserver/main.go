@@ -10,12 +10,13 @@ import (
 	"os/exec"
 	"time"
 
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/grpc/grpcutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/grpcutil"
+
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/site"
