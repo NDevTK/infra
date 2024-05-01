@@ -6,16 +6,18 @@ package configs
 
 import (
 	"context"
+	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/anypb"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_configs"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
-	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
-	"google.golang.org/protobuf/types/known/anypb"
 )
 
 func TestGenerateConfig_UnSupportedConfig(t *testing.T) {
