@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"infra/libs/vmlab/api"
-
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/libs/vmlab/api"
 )
 
 type mockImageApi struct {

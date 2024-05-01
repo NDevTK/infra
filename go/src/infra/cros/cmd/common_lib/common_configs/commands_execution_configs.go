@@ -12,14 +12,14 @@ import (
 
 	"cloud.google.com/go/bigquery"
 
-	"infra/cros/cmd/common_lib/analytics"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/ctpv2/data"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/analytics"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/ctpv2/data"
 )
 
 // CommandExecutorPairedConfig represents command and executor pair

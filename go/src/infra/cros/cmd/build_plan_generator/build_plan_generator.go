@@ -12,14 +12,10 @@ import (
 	"log"
 	"os"
 
-	"infra/cros/internal/buildplan"
-	igerrit "infra/cros/internal/gerrit"
-	"infra/cros/internal/manifestutil"
-	"infra/cros/internal/shared"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/maruel/subcommands"
+
 	cros_pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	testplans_pb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"go.chromium.org/luci/auth"
@@ -28,6 +24,11 @@ import (
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	"infra/cros/internal/buildplan"
+	igerrit "infra/cros/internal/gerrit"
+	"infra/cros/internal/manifestutil"
+	"infra/cros/internal/shared"
 )
 
 const (

@@ -8,9 +8,10 @@ import (
 	"regexp"
 	"strings"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // PlaceholderRegex provides the format for how to find placeholders

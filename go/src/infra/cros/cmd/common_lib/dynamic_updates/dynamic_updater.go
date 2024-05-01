@@ -5,12 +5,12 @@
 package dynamic_updates
 
 import (
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/cmd/common_lib/dynamic_updates/finders"
 	"infra/cros/cmd/common_lib/dynamic_updates/resolver"
 	"infra/cros/cmd/common_lib/dynamic_updates/updaters"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
 )
 
 // AddUserDefinedDynamicUpdates resolves placeholders and applies

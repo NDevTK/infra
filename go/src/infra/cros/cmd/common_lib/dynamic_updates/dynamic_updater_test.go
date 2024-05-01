@@ -5,19 +5,20 @@
 package dynamic_updates_test
 
 import (
-	"infra/cros/cmd/common_lib/common"
 	"reflect"
 	"testing"
 
-	dynamic "infra/cros/cmd/common_lib/dynamic_updates"
-
 	. "github.com/smartystreets/goconvey/convey"
-	_go "go.chromium.org/chromiumos/config/go"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	_go "go.chromium.org/chromiumos/config/go"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+
+	"infra/cros/cmd/common_lib/common"
+	dynamic "infra/cros/cmd/common_lib/dynamic_updates"
 )
 
 var (
