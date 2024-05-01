@@ -8,15 +8,14 @@ import (
 	"context"
 	"flag"
 
-	"infra/cmd/skylab/internal/site"
-	rem "infra/libs/skylab/inventory/removalreason"
-
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc/metadata"
 
-	ufsUtil "infra/unifiedfleet/app/util"
-
 	lflag "go.chromium.org/luci/common/flag"
+	"go.chromium.org/luci/common/logging"
+
+	"infra/cmd/skylab/internal/site"
+	rem "infra/libs/skylab/inventory/removalreason"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // DefaultTaskPriority is the default priority for a swarming task.

@@ -18,8 +18,9 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/genproto/protobuf/field_mask"
+
+	"go.chromium.org/luci/common/errors"
 
 	fleet "infra/libs/fleet/protos"
 	ufs "infra/libs/fleet/protos/go"
