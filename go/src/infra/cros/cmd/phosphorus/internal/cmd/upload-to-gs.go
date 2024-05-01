@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/phosphorus"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
