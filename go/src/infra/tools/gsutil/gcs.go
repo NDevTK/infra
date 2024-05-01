@@ -12,10 +12,9 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 
 	"go.chromium.org/luci/auth"
-
-	"google.golang.org/api/option"
 )
 
 func parseURL(path string) (bucket string, object string, err error) {

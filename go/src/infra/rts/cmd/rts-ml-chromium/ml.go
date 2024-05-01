@@ -20,10 +20,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/rts/cmd/rts-ml-chromium/proto"
 )

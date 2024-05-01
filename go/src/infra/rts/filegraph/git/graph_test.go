@@ -9,9 +9,9 @@ import (
 	"sort"
 	"testing"
 
-	"infra/rts/filegraph"
-
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/rts/filegraph"
 )
 
 func TestGraph(t *testing.T) {
