@@ -7,10 +7,11 @@ package logger
 
 import (
 	"bytes"
-	"infra/cros/internal/assert"
 	"log"
 	"os"
 	"testing"
+
+	"infra/cros/internal/assert"
 )
 
 var want = `
