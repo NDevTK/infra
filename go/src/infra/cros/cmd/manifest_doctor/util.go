@@ -6,12 +6,13 @@ package main
 import (
 	"context"
 	"fmt"
+
+	lgs "go.chromium.org/luci/common/gcloud/gs"
+
 	"infra/cros/internal/gerrit"
 	"infra/cros/internal/gs"
 	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/repo"
-
-	lgs "go.chromium.org/luci/common/gcloud/gs"
 )
 
 const (
