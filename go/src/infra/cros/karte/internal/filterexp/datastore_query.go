@@ -5,10 +5,11 @@
 package filterexp
 
 import (
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/gae/service/datastore"
 )
 
 // ApplyConditions takes a datastore query and a list of conditions to impose

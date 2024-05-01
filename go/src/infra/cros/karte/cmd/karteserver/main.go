@@ -12,6 +12,8 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/bigquery"
+	"google.golang.org/api/option"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
@@ -19,7 +21,6 @@ import (
 	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
-	"google.golang.org/api/option"
 
 	"infra/cros/karte/internal/externalclients"
 	"infra/cros/karte/internal/frontend"
