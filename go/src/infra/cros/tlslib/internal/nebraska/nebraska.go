@@ -24,8 +24,9 @@ import (
 	"syscall"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"golang.org/x/sys/unix"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
 )
 
 // Process represents an OS process.

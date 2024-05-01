@@ -9,9 +9,8 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"golang.org/x/time/rate"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/clock/testclock"

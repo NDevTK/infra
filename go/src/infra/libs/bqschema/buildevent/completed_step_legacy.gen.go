@@ -2,8 +2,11 @@
 
 package buildevent
 
-import pb "infra/libs/bqschema/tabledef"
-import time "time"
+import (
+	time "time"
+
+	pb "infra/libs/bqschema/tabledef"
+)
 
 // CompletedStepLegacyTable is the TableDef for the
 // "raw_events" dataset's "completed_step_legacy" table.

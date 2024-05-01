@@ -5,9 +5,9 @@
 package labels
 
 import (
+	"fmt"
 	"strings"
 
-	"fmt"
 	"infra/libs/skylab/inventory"
 )
 

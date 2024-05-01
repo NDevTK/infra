@@ -19,13 +19,11 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/storage"
-
 	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/storage"
+	"google.golang.org/api/iterator"
 
 	"go.chromium.org/luci/common/errors"
-
-	"google.golang.org/api/iterator"
 )
 
 const (

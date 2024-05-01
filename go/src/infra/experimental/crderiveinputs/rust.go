@@ -6,10 +6,11 @@ package main
 
 import (
 	"fmt"
-	"infra/experimental/crderiveinputs/inputpb"
 	"path"
 
 	"go.chromium.org/luci/common/data/text/sequence"
+
+	"infra/experimental/crderiveinputs/inputpb"
 )
 
 type RustUpdate struct{}
