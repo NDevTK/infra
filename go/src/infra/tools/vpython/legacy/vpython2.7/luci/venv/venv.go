@@ -29,18 +29,18 @@ import (
 	"github.com/danjacques/gofslock/fslock"
 	"google.golang.org/protobuf/proto"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
-	"infra/tools/vpython/legacy/vpython2.7/luci/venv/assets"
-	"infra/tools/vpython/legacy/vpython2.7/luci/wheel"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
+	"infra/tools/vpython/legacy/vpython2.7/luci/venv/assets"
+	"infra/tools/vpython/legacy/vpython2.7/luci/wheel"
 )
 
 // ErrNotComplete is a sentinel error returned by AssertCompleteAndLoad to
