@@ -10,9 +10,8 @@ import (
 	"testing"
 	"time"
 
-	logging "google.golang.org/api/logging/v2"
-
 	. "github.com/smartystreets/goconvey/convey"
+	logging "google.golang.org/api/logging/v2"
 )
 
 func TestClient(t *testing.T) {
