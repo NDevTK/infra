@@ -101,18 +101,18 @@ func TestRootSteps(t *testing.T) {
 
 		Convey("ok", func() {
 			r, err := s.UpdateRoot(ctx, actions.Package{
-				Action: &core.Action{Name: "first"}, DerivationID: "first-xxxx",
+				Action: &core.Action{Name: "first"}, ActionID: "first-xxxx",
 				BuildDependencies: []actions.Package{
-					{Action: &core.Action{Name: "second"}, DerivationID: "second-xxxx"},
+					{Action: &core.Action{Name: "second"}, ActionID: "second-xxxx"},
 					{
 						Action: &core.Action{
 							Name:     "third",
 							Metadata: &core.Action_Metadata{Luciexe: &core.Action_Metadata_LUCIExe{StepName: "third-step"}},
 						},
 						BuildDependencies: []actions.Package{
-							{Action: &core.Action{Name: "fourth"}, DerivationID: "fourth-xxxx"},
+							{Action: &core.Action{Name: "fourth"}, ActionID: "fourth-xxxx"},
 						},
-						DerivationID: "third-xxxx",
+						ActionID: "third-xxxx",
 					},
 				},
 			})
@@ -125,7 +125,7 @@ func TestRootSteps(t *testing.T) {
 			So(s.GetRoot("fourth-xxxx").ID(), ShouldEqual, "third-xxxx")
 
 			r, err = s.UpdateRoot(ctx, actions.Package{
-				Action: &core.Action{Name: "third"}, DerivationID: "third-xxxx",
+				Action: &core.Action{Name: "third"}, ActionID: "third-xxxx",
 			})
 			So(err, ShouldBeNil)
 			So(r.ID(), ShouldEqual, "third-xxxx")
@@ -133,25 +133,25 @@ func TestRootSteps(t *testing.T) {
 
 		Convey("conflict", func() {
 			r, err := s.UpdateRoot(ctx, actions.Package{
-				Action: &core.Action{Name: "first-1"}, DerivationID: "first-1-xxxx",
+				Action: &core.Action{Name: "first-1"}, ActionID: "first-1-xxxx",
 				BuildDependencies: []actions.Package{
-					{Action: &core.Action{Name: "second"}, DerivationID: "second-xxxx"},
+					{Action: &core.Action{Name: "second"}, ActionID: "second-xxxx"},
 					{Action: &core.Action{
 						Name:     "third",
 						Metadata: &core.Action_Metadata{Luciexe: &core.Action_Metadata_LUCIExe{StepName: "third-step"}},
-					}, DerivationID: "third-xxxx"},
+					}, ActionID: "third-xxxx"},
 				},
 			})
 			So(err, ShouldBeNil)
 			So(r.ID(), ShouldEqual, "first-1-xxxx")
 
 			r, err = s.UpdateRoot(ctx, actions.Package{
-				Action: &core.Action{Name: "first-2"}, DerivationID: "first-2-xxxx",
+				Action: &core.Action{Name: "first-2"}, ActionID: "first-2-xxxx",
 				BuildDependencies: []actions.Package{
 					{Action: &core.Action{
 						Name:     "third",
 						Metadata: &core.Action_Metadata{Luciexe: &core.Action_Metadata_LUCIExe{StepName: "third-step"}},
-					}, DerivationID: "third-xxxx"},
+					}, ActionID: "third-xxxx"},
 				},
 			})
 			So(err, ShouldBeNil)
@@ -161,25 +161,25 @@ func TestRootSteps(t *testing.T) {
 			So(s.GetRoot("third-xxxx").ID(), ShouldEqual, "third-xxxx")
 
 			r, err = s.UpdateRoot(ctx, actions.Package{
-				Action: &core.Action{Name: "first-3"}, DerivationID: "first-3-xxxx",
+				Action: &core.Action{Name: "first-3"}, ActionID: "first-3-xxxx",
 				BuildDependencies: []actions.Package{
-					{Action: &core.Action{Name: "second"}, DerivationID: "second-xxxx"},
+					{Action: &core.Action{Name: "second"}, ActionID: "second-xxxx"},
 				},
 			})
 			So(r, ShouldBeNil)
 			So(fmt.Sprintf("%s", err), ShouldContainSubstring, "must only belong to one root")
 
 			r, err = s.UpdateRoot(ctx, actions.Package{
-				Action: &core.Action{Name: "first-4"}, DerivationID: "first-4-xxxx",
+				Action: &core.Action{Name: "first-4"}, ActionID: "first-4-xxxx",
 				RuntimeDependencies: []actions.Package{
-					{Action: &core.Action{Name: "second"}, DerivationID: "second-xxxx"},
+					{Action: &core.Action{Name: "second"}, ActionID: "second-xxxx"},
 				},
 			})
 			So(r, ShouldBeNil)
 			So(fmt.Sprintf("%s", err), ShouldContainSubstring, "must only belong to one root")
 
 			r, err = s.UpdateRoot(ctx, actions.Package{
-				Action: &core.Action{Name: "second"}, DerivationID: "second-xxxx",
+				Action: &core.Action{Name: "second"}, ActionID: "second-xxxx",
 			})
 			So(r, ShouldBeNil)
 			So(fmt.Sprintf("%s", err), ShouldContainSubstring, "top level package")

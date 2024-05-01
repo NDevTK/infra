@@ -47,7 +47,7 @@ func (r *RootStep) ID() string { return r.id }
 func (r *RootStep) runRoot(ctx context.Context, name string) {
 	defer close(r.ended)
 
-	s, ctx := build.StartStep(ctx, name)
+	s, ctx := build.ScheduleStep(ctx, name)
 	defer func() { s.End(r.err) }()
 
 	for sub := range r.substep {
@@ -141,14 +141,14 @@ func (rs RootSteps) UpdateRoot(ctx context.Context, pkg actions.Package) (*RootS
 }
 
 func (rs RootSteps) update(ctx context.Context, pkg actions.Package, root *RootStep) (*RootStep, error) {
-	if r, ok := rs[pkg.DerivationID]; ok {
+	if r, ok := rs[pkg.ActionID]; ok {
 		// If pkg has root other than itself.
-		if r.ID() != pkg.DerivationID {
+		if r.ID() != pkg.ActionID {
 			if root == nil {
-				return nil, fmt.Errorf("top level package shouldn't belong to other root: %s, from %s", pkg.DerivationID, r.ID())
+				return nil, fmt.Errorf("top level package shouldn't belong to other root: %s, from %s", pkg.ActionID, r.ID())
 			}
 			if r.ID() != root.ID() {
-				return nil, fmt.Errorf("package must only belong to one root: %s, from %s and %s", pkg.DerivationID, r.ID(), root.ID())
+				return nil, fmt.Errorf("package must only belong to one root: %s, from %s and %s", pkg.ActionID, r.ID(), root.ID())
 			}
 		}
 
@@ -158,12 +158,12 @@ func (rs RootSteps) update(ctx context.Context, pkg actions.Package, root *RootS
 	if root == nil || isRootStep(pkg) {
 		name := pkg.Action.Metadata.GetLuciexe().GetStepName()
 		if name == "" {
-			name = pkg.DerivationID
+			name = pkg.ActionID
 		}
 
-		root = NewRootStep(ctx, name, pkg.DerivationID)
+		root = NewRootStep(ctx, name, pkg.ActionID)
 	}
-	rs[pkg.DerivationID] = root
+	rs[pkg.ActionID] = root
 
 	for _, dep := range pkg.RuntimeDependencies {
 		if _, err := rs.update(ctx, dep, root); err != nil {
@@ -180,7 +180,7 @@ func (rs RootSteps) update(ctx context.Context, pkg actions.Package, root *RootS
 	return root, nil
 }
 
-// GetRoot returns the root step for the derivation id.
+// GetRoot returns the root step for the action id.
 func (rs RootSteps) GetRoot(id string) *RootStep { return rs[id] }
 
 // isRootStep returns whether a package is a root step in luciexe.

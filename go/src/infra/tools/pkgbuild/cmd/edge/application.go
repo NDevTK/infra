@@ -322,7 +322,7 @@ func (b *PackageBuilder) filterUploaded(ctx context.Context, pkgs []actions.Pack
 
 	checked := stringset.New(len(pkgs))
 	for _, pkg := range pkgs {
-		if !checked.Add(pkg.DerivationID) {
+		if !checked.Add(pkg.ActionID) {
 			continue
 		}
 
@@ -352,9 +352,9 @@ func (b *PackageBuilder) defaultPackageExecutor(ctx context.Context, pkgs []acti
 		}
 	}
 
-	prepared := stringset.New(len(pkgs))
-	preExecFn := func(ctx context.Context, pkg actions.Package) error {
-		if !prepared.Add(pkg.DerivationID) {
+	expanded := stringset.New(len(pkgs))
+	preExpandFn := func(ctx context.Context, pkg actions.Package) error {
+		if !expanded.Add(pkg.ActionID) {
 			return nil
 		}
 
@@ -363,28 +363,24 @@ func (b *PackageBuilder) defaultPackageExecutor(ctx context.Context, pkgs []acti
 			return nil
 		}
 
-		r := rootSteps.GetRoot(pkg.DerivationID)
+		r := rootSteps.GetRoot(pkg.ActionID)
 		return r.RunSubstep(ctx, func(ctx context.Context, root *build.Step) error {
-			if err := cipdPkg.download(ctx, b.CipdService); err != nil {
-				// Error from cipd export is intentionally ignored here.
-				// Cache miss should not be treated as failure.
-				logging.Infof(ctx, "failed to download package from cipd (possible cache miss): %s", err)
-			} else if r.ID() == pkg.DerivationID {
-				// downloaded cached package. We don't need to build the step.
-				root.End(nil)
-			}
-
-			return nil
+			return cipdPkg.download(ctx, b.CipdService, true)
 		})
 	}
-	execFn := func(ctx context.Context, cfg *workflow.ExecutionConfig, drv *core.Derivation) error {
-		id, err := core.GetDerivationID(drv)
-		if err != nil {
-			return err
-		}
-		r := rootSteps.GetRoot(id)
 
-		err = r.RunSubstep(ctx, func(ctx context.Context, root *build.Step) (err error) {
+	type rootContextType string
+	var rootContext rootContextType = "rootContext"
+
+	preExecFn := func(ctx context.Context, pkg actions.Package) (context.Context, error) {
+		r := rootSteps.GetRoot(pkg.ActionID)
+		return context.WithValue(ctx, rootContext, r), nil
+	}
+
+	execFn := func(ctx context.Context, cfg *workflow.ExecutionConfig, drv *core.Derivation) error {
+		r := ctx.Value(rootContext).(*RootStep)
+
+		err := r.RunSubstep(ctx, func(ctx context.Context, root *build.Step) (err error) {
 			s, ctx := build.StartStep(ctx, fmt.Sprintf("build %s", drv.Name))
 			defer func() { s.End(err) }()
 
@@ -403,12 +399,16 @@ func (b *PackageBuilder) defaultPackageExecutor(ctx context.Context, pkgs []acti
 			return
 		})
 
-		if err != nil || r.ID() == id {
-			r.End()
-		}
-
 		return err
 	}
 
-	return workflow.NewPackageExecutor(b.BuildTempDir, preExecFn, execFn), nil
+	postExecFn := func(ctx context.Context, pkg actions.Package, execErr error) error {
+		r := rootSteps.GetRoot(pkg.ActionID)
+		if execErr != nil || r.ID() == pkg.ActionID {
+			r.End()
+		}
+		return nil
+	}
+
+	return workflow.NewPackageExecutor(b.BuildTempDir, preExpandFn, preExecFn, postExecFn, execFn), nil
 }

@@ -87,7 +87,7 @@ func (pkg *cipdPackage) upload(ctx context.Context, workdir, cipdService string,
 	return
 }
 
-func (pkg *cipdPackage) download(ctx context.Context, cipdService string) (err error) {
+func (pkg *cipdPackage) download(ctx context.Context, cipdService string, ignoreErr bool) (err error) {
 	cipd := pkg.Action.Metadata.GetCipd()
 
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("downloading cipd package %s:%s", cipd.Name, pkg.derivationTag()))
@@ -103,6 +103,11 @@ func (pkg *cipdPackage) download(ctx context.Context, cipdService string) (err e
 
 		return runStepCommand(ctx, cmd)
 	})
+
+	if ignoreErr && err != nil {
+		step.SetSummaryMarkdown(err.Error())
+		err = nil
+	}
 
 	return
 }

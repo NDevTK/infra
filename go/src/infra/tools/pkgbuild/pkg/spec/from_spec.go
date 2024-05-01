@@ -123,7 +123,8 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 
 	// Copy files for building from spec
 	defDerivation := &generators.ImportTargets{
-		Name: fmt.Sprintf("%s_from_spec_def", def.DerivationName()),
+		Name:     fmt.Sprintf("%s_from_spec_def", def.DerivationName()),
+		Metadata: &core.Action_Metadata{ContextInfo: pkgCacheKey},
 		Targets: map[string]generators.ImportTarget{
 			".": {Source: filepath.ToSlash(def.Dir), Mode: fs.ModeDir, FollowSymlinks: true},
 		},

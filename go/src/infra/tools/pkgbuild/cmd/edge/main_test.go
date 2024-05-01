@@ -89,8 +89,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			CIPDTarget:   cipdPlatform,
 			SpecLoader:   loader,
 			BuildTempDir: buildTemp,
-			packageExecutor: workflow.NewPackageExecutor(buildTemp,
-				func(ctx context.Context, pkg actions.Package) error { return nil },
+			packageExecutor: workflow.NewPackageExecutor(buildTemp, nil, nil, nil,
 				func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil },
 			),
 		}
@@ -155,8 +154,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			CIPDTarget:   cipdTarget,
 			SpecLoader:   loader,
 			BuildTempDir: buildTemp,
-			packageExecutor: workflow.NewPackageExecutor(buildTemp,
-				func(ctx context.Context, pkg actions.Package) error { return nil },
+			packageExecutor: workflow.NewPackageExecutor(buildTemp, nil, nil, nil,
 				func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil },
 			),
 		}
@@ -267,6 +265,72 @@ func TestRootPackges(t *testing.T) {
 			So(roots, ShouldEqual, expected)
 		})
 	})
+
+	Convey("cross-compile platform", t, func() {
+		tempBase := t.TempDir()
+		storeTemp := filepath.Join(tempBase, "store")
+		specs := filepath.Join(cwd, "testdata")
+
+		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig())
+		if err != nil {
+			t.Fatalf("failed to init spec loader: %v", err)
+		}
+
+		buildPlatform := generators.NewPlatform("linux", "amd64")
+		hostPlatform := generators.NewPlatform("linux", "arm64")
+		cipdHost := "linux-amd64"
+		cipdTarget := "linux-arm64"
+
+		initStdenv(buildPlatform)
+
+		pm, err := workflow.NewLocalPackageManager(storeTemp)
+		So(err, ShouldBeNil)
+
+		plats := generators.Platforms{
+			Build:  buildPlatform,
+			Host:   hostPlatform,
+			Target: hostPlatform,
+		}
+
+		initStdenv(buildPlatform)
+
+		var loaded []generators.Generator
+		load := func(name string) {
+			g, err := loader.FromSpec(name, cipdHost, cipdTarget)
+			So(err, ShouldBeNil)
+			loaded = append(loaded, g)
+		}
+
+		Convey("self depends", func() {
+			load("tests/step_cross")
+
+			builder := workflow.NewBuilder(plats, pm, actions.NewActionProcessor())
+			pkgs, err := builder.GeneratePackages(ctx, loaded)
+			So(err, ShouldBeNil)
+
+			rootSteps := NewRootSteps()
+			for _, pkg := range pkgs {
+				_, err = rootSteps.UpdateRoot(ctx, pkg)
+				So(err, ShouldBeNil)
+			}
+			var roots []string
+			for id, s := range rootSteps {
+				if s.ID() == id {
+					roots = append(roots, id[:strings.IndexAny(id, "+-")])
+				}
+				slices.Sort(roots)
+			}
+			expected := []string{
+				"stdenv", "setup", "stdenv_git", "stdenv_python3", "posix_import", // stdenv
+				"from_spec_support", "docker_import", // from_spec
+
+				"step_cross", "step_cross",
+			}
+			slices.Sort(expected)
+
+			So(roots, ShouldEqual, expected)
+		})
+	})
 }
 
 func TestPackageSources(t *testing.T) {
@@ -309,8 +373,7 @@ func TestPackageSources(t *testing.T) {
 			CIPDTarget:   cipdPlatform,
 			SpecLoader:   loader,
 			BuildTempDir: buildTemp,
-			packageExecutor: workflow.NewPackageExecutor(buildTemp,
-				func(ctx context.Context, pkg actions.Package) error { return nil },
+			packageExecutor: workflow.NewPackageExecutor(buildTemp, nil, nil, nil,
 				func(context.Context, *workflow.ExecutionConfig, *core.Derivation) error { return nil },
 			),
 		}
@@ -326,6 +389,7 @@ func TestPackageSources(t *testing.T) {
 					Name:    "mock/sources/git/github.com/ninja-build/ninja",
 					Version: "3@git-tag",
 				},
+				ContextInfo: "ninja:arch=amd64,os=linux",
 			})
 		})
 
@@ -340,6 +404,7 @@ func TestPackageSources(t *testing.T) {
 					Name:    "mock/sources/url/static_libs/curl/" + cipdPlatform,
 					Version: "3@7.59.0",
 				},
+				ContextInfo: "curl:arch=amd64,os=linux",
 			})
 		})
 
@@ -354,6 +419,7 @@ func TestPackageSources(t *testing.T) {
 					Name:    "mock/sources/script/tools/go/" + cipdPlatform,
 					Version: "3@script-version",
 				},
+				ContextInfo: "go:arch=amd64,os=linux",
 			})
 		})
 	})
