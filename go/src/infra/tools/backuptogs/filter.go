@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 
-	"infra/tools/backuptogs/filetree"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/types"
+
+	"infra/tools/backuptogs/filetree"
 )
 
 var (

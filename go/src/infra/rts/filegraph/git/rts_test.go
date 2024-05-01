@@ -9,11 +9,11 @@ import (
 	"math"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/rts"
 	"infra/rts/presubmit/eval"
 	evalpb "infra/rts/presubmit/eval/proto"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestEvalStrategy(t *testing.T) {

@@ -9,10 +9,10 @@ import (
 	"strings"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/rts"
 	evalpb "infra/rts/presubmit/eval/proto"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestPrintLostRejection(t *testing.T) {
