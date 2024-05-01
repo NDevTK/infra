@@ -8,16 +8,15 @@ import (
 	"context"
 	"testing"
 
-	"infra/cros/cmd/result_flow/internal/message"
-
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsub/pstest"
+	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/cros/cmd/result_flow/internal/message"
 )
 
 type received struct {

@@ -10,14 +10,14 @@ import (
 	"net/http"
 	"time"
 
+	"google.golang.org/genproto/protobuf/field_mask"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
+	pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/genproto/protobuf/field_mask"
-
-	pb "go.chromium.org/luci/buildbucket/proto"
 )
 
 // Client defines an interface used to interact with Buildbucket.
