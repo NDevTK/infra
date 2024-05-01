@@ -7,13 +7,14 @@ package stableversion
 import (
 	"context"
 	"fmt"
+	"strings"
+
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/libs/skylab/common/heuristics"
-	"strings"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 type getDHBID = func(context.Context, executor.IExecCommander) (string, error)
