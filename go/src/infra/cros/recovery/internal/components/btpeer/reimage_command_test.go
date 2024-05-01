@@ -20,6 +20,76 @@ func mockResult(output []string) components.Runner {
 	}
 }
 
+func TestGetHwInfo(t *testing.T) {
+	tests := []struct {
+		name             string
+		output           []string
+		wantErr          bool
+		expectedModel    Model
+		expectedRevision int
+	}{
+		{
+			name: "pass_modelb_rev1.1",
+			output: []string{
+				"c03111",
+			},
+			expectedModel:    17,
+			expectedRevision: 1,
+		},
+		{
+			name: "pass_modelb_rev1.1",
+			output: []string{
+				"c03114",
+			},
+			expectedModel:    17,
+			expectedRevision: 4,
+		},
+		{
+			name: "pass_unknown_model_rev1.0",
+			output: []string{
+				"a03140",
+			},
+			expectedModel:    20,
+			expectedRevision: 0,
+		},
+		{
+			name: "fail_hex_overflow",
+			output: []string{
+				"0x2540BE4000",
+			},
+			expectedModel:    0,
+			expectedRevision: 0,
+			wantErr:          true,
+		},
+		{
+			name: "fail_invalid_hex",
+			output: []string{
+				"",
+			},
+			expectedModel:    0,
+			expectedRevision: 0,
+			wantErr:          true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			runner := mockResult(test.output)
+			model, rev, err := GetHWInfo(context.Background(), runner)
+			if model != test.expectedModel {
+				t.Errorf("TestGetHWInfo: got model: %v, want: %v", model, test.expectedModel)
+			}
+			if rev != test.expectedRevision {
+				t.Errorf("TestGetHWInfo: got model: %v, want: %v", rev, test.expectedRevision)
+			}
+			if (err != nil) != test.wantErr {
+				t.Errorf("TestGetHWInfo: error = %v, wantErr %v", err, test.wantErr)
+				return
+			}
+		})
+	}
+}
+
 func TestGetDeviceInfo(t *testing.T) {
 	tests := []struct {
 		name           string

@@ -19,6 +19,7 @@ import (
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/retry"
 )
 
 const (
@@ -448,6 +449,57 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// isRaspi4BLessThanRevision14Exec checks that the raspberry PI is a Model 4B with revision < 1.4.
+func isRaspi4BLessThanRevision14Exec(ctx context.Context, info *execs.ExecInfo) error {
+	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+
+	model, revision, err := btpeer.GetHWInfo(ctx, runner.Run)
+	if err != nil {
+		return errors.Annotate(err, "is less than revision 1.4: failed to get revision information").Err()
+	}
+	if model != btpeer.Model4B {
+		return errors.Reason("is less than revision 1.4, unexpected model %v", model).Err()
+	}
+	if revision >= 4 {
+		return errors.Reason("is less than revision 1.4, revision: %d is not less than 4", revision).Err()
+	}
+	log.Infof(ctx, "Btpeer revision %d", revision)
+	return nil
+}
+
+// enableDebugQuirks sets the 'sdhci.debug_quirks2=4' kernel option which is required on older
+// Raspberry Pi devices (Rev < 1.4) to allow temp booting into other partitions (b/336878507).
+//
+// Without this option, the temp boot bit does not persist after power down so the device
+// will continue to boot into the same partition.
+func enableDebugQuirksExec(ctx context.Context, info *execs.ExecInfo) error {
+	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+
+	bootPath, err := btpeer.GetCurrentBootPath(ctx, runner.Run)
+	if err != nil {
+		return errors.Annotate(err, "enable debug quirks: failed to get current boot path").Err()
+	}
+
+	// cmdline.txt is a file with a single line that lists the args to be passed
+	// to the kerenel on startup.
+	filePath := bootPath + "cmdline.txt"
+
+	// Check if the 'sdhci.debug_quirks2=4' option already exists in cmdline.txt.
+	// If it's not present grep will fail with non-zero exit code.
+	checkCmd := fmt.Sprintf("cat %q | grep 'sdhci.debug_quirks2=4'", filePath)
+	if _, err := runner.Run(ctx, 15*time.Second, checkCmd); err == nil {
+		log.Infof(ctx, "option already exists, no change applied")
+		return nil
+	}
+
+	// If option doesn't already exist, append ' sdhci.debug_quirks2=4' to the first line in the file.
+	optionCmd := fmt.Sprintf("sed -i ' 1 s/.*/& sdhci.debug_quirks2=4/' %q", filePath)
+	if _, err := runner.Run(ctx, 15*time.Second, optionCmd); err != nil {
+		return errors.Annotate(err, "enable debug quirks: failed to add debug line to: %q", filePath).Err()
+	}
+	return nil
+}
+
 // setTempBootPartitionExec temporarily boots into the specified partition.
 //
 // This is done prior to changing the permanent boot partition to verify that the
@@ -459,10 +511,22 @@ func setTempBootPartitionExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("set temp boot partition: required arg boot_partition_label not provided.").Err()
 	}
 
-	rebootTime := argsMap.AsDuration(ctx, "wait_reboot", 300, time.Second)
 	runner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
-	if err := btpeer.TempBootIntoPartition(ctx, runner.Run, partition, rebootTime); err != nil {
-		return errors.Annotate(err, "set temp boot partition: failed to boot into requested partition").Err()
+	rebootTime := argsMap.AsDuration(ctx, "wait_reboot", 300, time.Second)
+	tempBoot := func() error {
+		if err := btpeer.TempBootIntoPartition(ctx, runner.Run, partition, rebootTime); err != nil {
+			return errors.Annotate(err, "failed to boot into requested partition").Err()
+		}
+		return nil
+	}
+
+	// In some cases, the device may reboot as part of the first-boot script and
+	// end up booting back into the previous partition. Allow up to two attempts to boot
+	// into the expected partition. This is mainly an issue on earlier revisions as the
+	// tryboot bit will be cleared on restart.
+	attempts := argsMap.AsInt(ctx, "retries", 2)
+	if err := retry.LimitCount(ctx, attempts, time.Second, tempBoot, "boot in recovery mode"); err != nil {
+		return errors.Annotate(err, "set temp boot partition:").Err()
 	}
 	return nil
 }
@@ -625,6 +689,8 @@ func init() {
 	execs.Register("btpeer_download_image", downloadImageExec)
 	execs.Register("btpeer_set_permanent_boot_partition", setPermanentBootPartitionExec)
 	execs.Register("btpeer_temp_boot_into_partition", setTempBootPartitionExec)
+	execs.Register("btpeer_is_raspi_4b_less_than_revision_14", isRaspi4BLessThanRevision14Exec)
+	execs.Register("btpeer_enable_debug_quirks", enableDebugQuirksExec)
 	execs.Register("btpeer_provision_device", provisionExec)
 	execs.Register("btpeer_image_fetch_release_config", fetchImageReleaseConfigExec)
 	execs.Register("btpeer_image_fetch_installed_uuid", fetchInstalledImageUUIDExec)

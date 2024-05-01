@@ -7,6 +7,7 @@ package btpeer
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -29,6 +30,43 @@ func AddLineToFile(ctx context.Context, runner components.Runner, filePath strin
 		return errors.Annotate(err, "add config option: failed to write %q to file %q", option, filePath).Err()
 	}
 	return nil
+}
+
+// Model is the btpeer HW model.
+type Model int
+
+const (
+	// Model4B is a Rasperry Pi 4B
+	Model4B Model = 17
+)
+
+// GetHWInfo returns the btpeer's model and revision.
+func GetHWInfo(ctx context.Context, runner components.Runner) (Model, int, error) {
+	const revisionCmd = "cat /proc/cpuinfo | awk '/Revision/ {print $3}'"
+	versionStr, err := runner(ctx, 15*time.Second, revisionCmd)
+	if err != nil {
+		return 0, 0, errors.Annotate(err, "get hw info: failed to get revision number").Err()
+	}
+	versionStr = strings.TrimSpace(versionStr)
+
+	// Parse the revision from the provided code.
+	// The code is in hex with bits 0-3 representing the revision number
+	// and bits 4 - 12 representing the model number
+	// C03114 -> 1 100 0000 0011 00010001 0100
+	//
+	// See: https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#old-style-revision-codes
+	versionCode, err := strconv.ParseInt(versionStr, 16, 64)
+	if err != nil {
+		return 0, 0, errors.Annotate(err, "get hw info: failed to parse revision code: %q", versionStr).Err()
+	}
+
+	// Discard revision number and mask with: 11111111
+	model := (versionCode >> 4) & 0xff
+
+	// Lowest 4 bits are the revision version so mask with 1111.
+	revision := (versionCode) & 0xf
+
+	return Model(model), int(revision), err
 }
 
 // RemoveLineFromFile removes any matching lines from a config file.
