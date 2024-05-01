@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/appengine/gaetesting"
 )
