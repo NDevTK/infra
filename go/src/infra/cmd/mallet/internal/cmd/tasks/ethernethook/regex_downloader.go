@@ -9,8 +9,9 @@ import (
 	"regexp"
 
 	"cloud.google.com/go/storage"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/iterator"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // NewRegexDownloader creates an object that manages the common pattern of downloading files matching certain regexes
