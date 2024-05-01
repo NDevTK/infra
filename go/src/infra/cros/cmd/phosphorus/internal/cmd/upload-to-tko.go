@@ -12,6 +12,7 @@ import (
 
 	"github.com/maruel/subcommands"
 	"github.com/pkg/errors"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/phosphorus"
 	"go.chromium.org/luci/common/cli"
 

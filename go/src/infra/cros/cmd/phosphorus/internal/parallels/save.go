@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/chromiumos/infra/proto/go/uprev/build_parallels_image"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/cli"
