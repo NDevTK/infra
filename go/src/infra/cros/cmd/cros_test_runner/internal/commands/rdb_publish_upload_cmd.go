@@ -203,19 +203,6 @@ func populateTestInvocationInfo(
 	populatePartnerInfo(ctx, testInv, sk)
 }
 
-// getPrimaryDut get the primary Dut if exists. Otherwise, return nil.
-func getPrimaryDut(sk *data.HwTestStateKeeper) *labapi.Dut {
-	if sk == nil {
-		return nil
-	}
-
-	duts := sk.Devices
-	if len(duts) > 0 {
-		return duts[common.Primary].GetDut()
-	}
-	return nil
-}
-
 // populateBuildInfo populates build info.
 func populateBuildInfo(
 	ctx context.Context,
@@ -239,7 +226,7 @@ func populateBuildInfo(
 		buildInfo.Board = buildTarget
 	} else {
 		// Falls back to the CTR and CFT requests if it's the primary DUT.
-		if dut == getPrimaryDut(sk) {
+		if dut == sk.PrimaryDevice.GetDut() {
 			if buildTarget = common.GetValueFromRequestKeyvals(ctx, nil, sk.CrosTestRunnerRequest, "build_target"); len(buildTarget) == 0 {
 				buildTarget = common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "build_target")
 			}
@@ -473,7 +460,7 @@ func populatePrimaryExecutionInfo(
 	primaryExecInfo := &artifactpb.ExecutionInfo{}
 	testInv.PrimaryExecutionInfo = primaryExecInfo
 
-	primaryDut := getPrimaryDut(sk)
+	primaryDut := sk.PrimaryDevice.GetDut()
 	requestedPrimaryDut := sk.CftTestRequest.GetPrimaryDut()
 	if sk.PrimaryDeviceMetadata != nil {
 		requestedPrimaryDut = sk.PrimaryDeviceMetadata
@@ -534,9 +521,16 @@ func populateDUTTopology(
 	if sk.DutTopology != nil {
 		testInv.DutTopology.Id = sk.DutTopology.GetId()
 	}
-	for _, device := range sk.Devices {
-		testInv.DutTopology.Duts = append(testInv.DutTopology.Duts, device.GetDut())
+
+	// Populates the DUTs with the primary DUT as the first in the list.
+	duts := make([]*labapi.Dut, 0, 1+len(sk.CompanionDevices))
+	duts = append(duts, sk.PrimaryDevice.GetDut())
+	if companionDevices := sk.CompanionDevices; len(companionDevices) > 0 {
+		for _, device := range companionDevices {
+			duts = append(duts, device.GetDut())
+		}
 	}
+	testInv.DutTopology.Duts = duts
 }
 
 // populateProjectTrackerMetadata populates project tracker metadata.
