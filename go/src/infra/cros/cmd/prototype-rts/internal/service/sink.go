@@ -7,10 +7,11 @@ import (
 	"log"
 	"net"
 
-	"go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
+	"go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
+	"go.chromium.org/luci/common/logging"
 )
 
 type fakeProgressSinkService struct {
