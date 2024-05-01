@@ -156,20 +156,30 @@ func ConstructCtpFilters(ctx context.Context, defaultFilterNames []string, contM
 	// Add default filters
 	logging.Infof(ctx, "Inside ConstructCtpFilters.")
 
-	for _, filter := range filtersToAdd {
-		// Only add non-default containers.
-		if !slices.Contains(defaultFilterNames, filter.GetContainerInfo().GetContainer().GetName()) {
-			defaultFilterNames = append(defaultFilterNames, filter.GetContainerInfo().GetContainer().GetName())
-		}
-	}
-
 	defFilters, err := GetDefaultFilters(ctx, defaultFilterNames, contMetadataMap, build)
 	if err != nil {
 		return filters, errors.Annotate(err, "failed to get default filters: ").Err()
 	}
 	logging.Infof(ctx, "After GetDefaultFilters. %s", defFilters)
 
-	filters = append(filters, defFilters...)
+	defFiltersIndexMap := map[string]int{}
+	for i, defFilter := range defFilters {
+		defFiltersIndexMap[defFilter.GetContainerInfo().GetContainer().GetName()] = i
+	}
+
+	nonDefFilters := []*api.CTPFilter{}
+	for _, filter := range filtersToAdd {
+		filterContainerName := filter.GetContainerInfo().GetContainer().GetName()
+		// Overwrite the default filter with the user defined filter.
+		if slices.Contains(defaultFilterNames, filterContainerName) {
+			defFilters[defFiltersIndexMap[filterContainerName]] = filter
+		} else {
+			nonDefFilters = append(nonDefFilters, filter)
+		}
+	}
+
+	// Default filters run first, then non default filters.
+	filters = append(defFilters, nonDefFilters...)
 
 	return filters, nil
 }

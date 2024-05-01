@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -108,8 +109,8 @@ func GroupEligibleV2Requests(ctx context.Context, v2s []*testapi.CTPRequest) []*
 
 		foundMatch := false
 		for _, suiteGroup := range groups[build] {
-			if proto.Equal(suiteGroup.GetSuiteRequest(), v2.GetSuiteRequest()) {
-				suiteGroup.ScheduleTargets = append(suiteGroup.ScheduleTargets, v2.GetScheduleTargets()...)
+			if canBeGrouped(suiteGroup, v2) {
+				combineRequests(suiteGroup, v2)
 				foundMatch = true
 				break
 			}
@@ -143,6 +144,63 @@ func GetBuilderManifestFromContainer(ctx context.Context, gcsPath string) (strin
 	return Private, nil
 }
 
+// combineRequests does various combining techniques to
+// reduce the requests into one.
+func combineRequests(r1, r2 *testapi.CTPRequest) {
+	// Combine list of schedule targets.
+	r1.ScheduleTargets = append(r1.GetScheduleTargets(), r2.GetScheduleTargets()...)
+
+	// Take the longest maximum duration for grouped suites.
+	if r1.GetSuiteRequest().GetMaximumDuration() != nil || r2.GetSuiteRequest().GetMaximumDuration() != nil {
+		timeoutSeconds := max(
+			r1.GetSuiteRequest().GetMaximumDuration().GetSeconds(),
+			r2.GetSuiteRequest().GetMaximumDuration().GetSeconds(),
+		)
+		r1.GetSuiteRequest().MaximumDuration = &durationpb.Duration{
+			Seconds: timeoutSeconds,
+		}
+	}
+}
+
+// canBeGrouped checks whether two CTPRequests can be grouped
+// together based on factors such as suite equality and matching
+// filters.
+func canBeGrouped(r1, r2 *testapi.CTPRequest) bool {
+	if !proto.Equal(
+		copyOnlyGroupableSuiteFields(r1.GetSuiteRequest()),
+		copyOnlyGroupableSuiteFields(r2.GetSuiteRequest())) {
+		return false
+	}
+
+	if len(r1.GetKarbonFilters()) != len(r2.GetKarbonFilters()) {
+		return false
+	}
+
+	for i := range r1.GetKarbonFilters() {
+		if !proto.Equal(
+			r1.GetKarbonFilters()[i],
+			r2.GetKarbonFilters()[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// copyOnlyGroupableSuiteFields creates a temp SuiteRequest that contains items that should match
+// exactly between two grouped together SuiteRequests. The other fields should be combined/reduced
+// in some way after being grouped.
+func copyOnlyGroupableSuiteFields(suite *testapi.SuiteRequest) *testapi.SuiteRequest {
+	return &testapi.SuiteRequest{
+		SuiteRequest:  suite.GetSuiteRequest(),
+		TestArgs:      suite.GetTestArgs(),
+		AnalyticsName: suite.GetAnalyticsName(),
+		MaxInShard:    suite.GetMaxInShard(),
+		RetryCount:    suite.GetRetryCount(),
+		DddSuite:      suite.GetDddSuite(),
+	}
+}
+
 // buildCTPRequest converts a v1 ctp request into a v2 CTPRequest.
 func buildCTPRequest(v1 *test_platform.Request) *testapi.CTPRequest {
 	return &testapi.CTPRequest{
@@ -150,6 +208,7 @@ func buildCTPRequest(v1 *test_platform.Request) *testapi.CTPRequest {
 		ScheduleTargets: buildScheduleTargets(v1),
 		SchedulerInfo:   buildSchedulerInfo(v1),
 		Pool:            getSchedulingPool(v1),
+		KarbonFilters:   v1.GetParams().GetUserDefinedFilters(),
 		// Reuse translate flag from v1 to signal dynamic run in v2.
 		RunDynamic: v1.GetParams().GetTranslateTrv2Request(),
 	}
