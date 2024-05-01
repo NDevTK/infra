@@ -21,11 +21,11 @@ import (
 	"sort"
 	"time"
 
+	"go.chromium.org/luci/common/data/stringset"
+
 	"infra/qscheduler/qslib/protos"
 	"infra/qscheduler/qslib/protos/metrics"
 	"infra/qscheduler/qslib/tutils"
-
-	"go.chromium.org/luci/common/data/stringset"
 )
 
 // state represents the state of quota scheduler.

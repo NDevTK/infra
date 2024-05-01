@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"go.chromium.org/luci/common/errors"
-
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
+	"go.chromium.org/luci/common/errors"
 )
 
 const (
