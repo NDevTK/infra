@@ -11,11 +11,12 @@ import (
 	"os"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cmdsupport/cmdlib"
