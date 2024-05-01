@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"os"
 
+	"go.chromium.org/luci/common/errors"
+
 	mv "infra/cros/internal/chromeosversion"
 	"infra/cros/internal/git"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 func (c *Client) bumpVersionIfNeeded(

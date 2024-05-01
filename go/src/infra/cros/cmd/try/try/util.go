@@ -6,12 +6,13 @@ package try
 import (
 	"context"
 	"fmt"
-	"infra/cros/internal/gerrit"
 	"regexp"
 	"strconv"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/internal/gerrit"
 )
 
 // interfaceSlicetoStr converts a slice of interface{}s to a slice of strings.
