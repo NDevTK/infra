@@ -11,11 +11,12 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
+	protojson "google.golang.org/protobuf/encoding/protojson"
+
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
-	protojson "google.golang.org/protobuf/encoding/protojson"
 )
 
 func cmdNative() *subcommands.Command {
