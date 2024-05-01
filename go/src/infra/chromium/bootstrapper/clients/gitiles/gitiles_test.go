@@ -7,7 +7,6 @@ package gitiles
 import (
 	"context"
 	"errors"
-	"infra/chromium/bootstrapper/clients/gob"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -20,6 +19,8 @@ import (
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/common/proto/gitiles/mock_gitiles"
 	. "go.chromium.org/luci/common/testing/assertions"
+
+	"infra/chromium/bootstrapper/clients/gob"
 )
 
 func TestClient(t *testing.T) {

@@ -17,10 +17,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"infra/chromium/bootstrapper/bootstrap"
-	"infra/chromium/bootstrapper/clients/gclient"
-	"infra/chromium/bootstrapper/clients/gerrit"
-	"infra/chromium/bootstrapper/clients/gitiles"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
@@ -30,9 +29,11 @@ import (
 	"go.chromium.org/luci/logdog/client/butlerlib/streamclient"
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe"
-	"golang.org/x/sync/errgroup"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
+
+	"infra/chromium/bootstrapper/bootstrap"
+	"infra/chromium/bootstrapper/clients/gclient"
+	"infra/chromium/bootstrapper/clients/gerrit"
+	"infra/chromium/bootstrapper/clients/gitiles"
 )
 
 type getOptionsFn func() options
