@@ -13,11 +13,11 @@ import (
 	"strconv"
 	"strings"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // Flagmap is a map from the name of a flag to its value(s).
