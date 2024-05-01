@@ -14,6 +14,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
+
 	"infra/libs/skylab/inventory"
 )
 
