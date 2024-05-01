@@ -10,10 +10,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/google/subcommands"
+
 	"infra/cros/cmd/lucifer/internal/api"
 	"infra/cros/cmd/lucifer/internal/event"
-
-	"github.com/google/subcommands"
 )
 
 type runTestCmd struct {
