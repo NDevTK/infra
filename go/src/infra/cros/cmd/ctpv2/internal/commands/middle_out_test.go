@@ -7,13 +7,15 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
 	"reflect"
 	"testing"
 
 	hashstructure "github.com/mitchellh/hashstructure/v2"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 func makeCtx() context.Context {

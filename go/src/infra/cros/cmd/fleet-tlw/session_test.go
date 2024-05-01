@@ -9,13 +9,14 @@ import (
 	"testing"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
 
 	"infra/cros/cmd/fleet-tlw/internal/cache"
 	"infra/cros/fleet/access"
