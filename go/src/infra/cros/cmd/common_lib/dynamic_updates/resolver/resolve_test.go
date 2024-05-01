@@ -8,11 +8,12 @@ import (
 	"fmt"
 	"testing"
 
-	. "infra/cros/cmd/common_lib/dynamic_updates/resolver"
-
 	. "github.com/smartystreets/goconvey/convey"
+
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	. "infra/cros/cmd/common_lib/dynamic_updates/resolver"
 )
 
 var lookupTable map[string]string = map[string]string{

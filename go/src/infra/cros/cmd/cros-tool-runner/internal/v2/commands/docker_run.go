@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gofrs/flock"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
