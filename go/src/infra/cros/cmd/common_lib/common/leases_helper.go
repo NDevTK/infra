@@ -13,22 +13,20 @@ import (
 	ufsutil "infra/unifiedfleet/app/util"
 
 	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
-
 	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/gcloud/googleoauth"
+	"go.chromium.org/luci/grpc/prpc"
 	"google.golang.org/grpc/metadata"
 )
 
+const ufsHost = "ufs.api.cr.dev"
+
 // listLeasesFromScheduke sends a request to Scheduke to list all requested and
 // in-flight leases for the current user.
-func listLeasesFromScheduke(ctx context.Context, flags *authcli.Flags) ([]*schedukepb.TaskWithState, error) {
-	user, err := getUserEmail(ctx, flags)
-	if err != nil {
-		return nil, err
-	}
+func listLeasesFromScheduke(ctx context.Context, authOpts auth.Options, dev bool) ([]*schedukepb.TaskWithState, error) {
+	user, err := getUserEmail(ctx, authOpts)
 
-	sc, err := NewLocalSchedukeClient(ctx)
+	sc, err := NewLocalSchedukeClient(ctx, dev, authOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -42,19 +40,25 @@ func listLeasesFromScheduke(ctx context.Context, flags *authcli.Flags) ([]*sched
 
 // leaseDeviceFromScheduke sends a lease request to Scheduke and waits for the
 // request to be fulfilled before returning a device name.
-func leaseDeviceFromScheduke(ctx context.Context, flags *authcli.Flags, dims map[string][]string, mins int64) (string, error) {
-	user, err := getUserEmail(ctx, flags)
+func leaseDeviceFromScheduke(ctx context.Context, authOpts auth.Options, dims map[string][]string, mins int64) (string, error) {
+	user, err := getUserEmail(ctx, authOpts)
 	if err != nil {
 		return "", err
 	}
 
-	sc, err := NewLocalSchedukeClient(ctx)
+	schedukeDims, pool, deviceName := schedukeDimsPoolAndDeviceNameForLease(dims)
+	dev := pool == schedukeDevPool
+
+	sc, err := NewLocalSchedukeClient(ctx, dev, authOpts)
 	if err != nil {
 		return "", err
 	}
 
 	t := time.Now()
-	req := leaseRequest(dims, mins, user, t)
+	req, err := sc.LeaseRequest(schedukeDims, pool, deviceName, user, mins, t)
+	if err != nil {
+		return "", err
+	}
 	scheduleResp, err := sc.ScheduleExecution(req)
 	if err != nil {
 		return "", err
@@ -91,9 +95,9 @@ func leaseDeviceFromScheduke(ctx context.Context, flags *authcli.Flags, dims map
 }
 
 // getDeviceInfo calls UFS to add information about the given device in-place.
-func addDeviceInfo(ctx context.Context, di *DeviceInfo, uc ufsapi.FleetClient) error {
+func addDeviceInfo(ctx context.Context, di *DeviceInfo, authOpts auth.Options) error {
 	ctx = ufsCTX(ctx)
-	var err error
+	uc, err := newUFSClient(ctx, authOpts)
 	di.LabSetup, err = uc.GetMachineLSE(ctx, &ufsapi.GetMachineLSERequest{
 		Name: ufsutil.AddPrefix(ufsutil.MachineLSECollection, di.Name),
 	})
@@ -124,12 +128,8 @@ func ufsCTX(ctx context.Context) context.Context {
 
 // getUserEmail parses the given auth flags and returns the email of the
 // authenticated crosfleet user.
-func getUserEmail(ctx context.Context, flags *authcli.Flags) (string, error) {
-	opts, err := flags.Options()
-	if err != nil {
-		return "", nil
-	}
-	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, opts)
+func getUserEmail(ctx context.Context, authOpts auth.Options) (string, error) {
+	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
 	tempToken, err := authenticator.GetAccessToken(time.Minute)
 	if err != nil {
 		return "", err
@@ -144,4 +144,20 @@ func getUserEmail(ctx context.Context, flags *authcli.Flags) (string, error) {
 		return "", fmt.Errorf("no email found for the current user")
 	}
 	return authInfo.Email, nil
+}
+
+// newUFSClient returns a UFS client.
+func newUFSClient(ctx context.Context, authOpts auth.Options) (ufsapi.FleetClient, error) {
+	a := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
+	c, err := a.Client()
+	if err != nil {
+		return nil, err
+	}
+	opts := prpc.DefaultOptions()
+	opts.UserAgent = "schedukeClient"
+	return ufsapi.NewFleetPRPCClient(&prpc.Client{
+		C:       c,
+		Host:    ufsHost,
+		Options: opts,
+	}), nil
 }

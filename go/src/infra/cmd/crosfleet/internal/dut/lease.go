@@ -12,12 +12,13 @@ import (
 	"time"
 
 	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
+	crosfleetcommon "infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
-	crosfleetpb "infra/cmd/crosfleet/internal/proto"
+	dutinfopb "infra/cmd/crosfleet/internal/proto"
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/cmd/common_lib/common"
 	"infra/libs/skylab/common/heuristics"
 
 	"github.com/maruel/subcommands"
@@ -32,10 +33,10 @@ const (
 	// Buildbucket priority for dut_leaser builds.
 	dutLeaserBuildPriority = 15
 	// leaseCmdName is the name of the `crosfleet dut lease` command.
-	leaseCmdName = "lease"
-	// Default DUT pool available for leasing from.
-	defaultLeasesPool        = "DUT_POOL_QUOTA"
+	leaseCmdName             = "lease"
 	maxLeaseReasonCharacters = 30
+	poolConfigsDirURL        = "https://chrome-internal.googlesource.com/chromeos/infra/config/+/refs/heads/main/testingconfig/"
+	poolLabelName            = "label-pool"
 )
 
 var lease = &subcommands.Command{
@@ -65,13 +66,13 @@ type leaseRun struct {
 	subcommands.CommandRunBase
 	leaseFlags
 	authFlags authcli.Flags
-	envFlags  common.EnvFlags
-	printer   common.CLIPrinter
+	envFlags  crosfleetcommon.EnvFlags
+	printer   crosfleetcommon.CLIPrinter
 }
 
 func (c *leaseRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
 	if err := c.innerRun(a, env); err != nil {
-		common.PrintCmdError(a, err)
+		crosfleetcommon.PrintCmdError(a, err)
 		return 1
 	}
 	return 0
@@ -102,43 +103,78 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 	buildProps := map[string]interface{}{
 		"lease_length_minutes": c.durationMins,
 	}
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return err
+	}
+	useScheduke, err := common.ShouldUseScheduke(ctx, c.pool, authOpts)
+	if err != nil {
+		return err
+	}
+	leaseInfo := &common.LeaseInfo{}
+	var host string
+	var allInfoFound bool
 
-	leasesBBClient, err := buildbucket.NewClient(ctx, c.envFlags.Env().DUTLeaserBuilder, c.envFlags.Env().BuildbucketService, c.authFlags)
-	if err != nil {
-		return err
-	}
-	var leaseInfo crosfleetpb.LeaseInfo
-	leaseInfo.Build, err = leasesBBClient.ScheduleBuild(ctx, buildProps, botDims, buildTags, dutLeaserBuildPriority)
-	if err != nil {
-		return err
-	}
-	c.printer.WriteTextStderr("Requesting %d minute lease at %s", c.durationMins, leasesBBClient.BuildURL(leaseInfo.Build.Id))
-	if !c.exitEarly {
-		c.printer.WriteTextStderr("Waiting to confirm DUT %s request validation and print leased DUT details...\n(To skip this step, pass the -exit-early flag on future DUT %s commands)", leaseCmdName, leaseCmdName)
+	if useScheduke {
+		// Scheduke flow.
+		c.printer.WriteTextStderr("Requesting %d minute lease from Scheduke", c.durationMins)
+		c.printer.WriteTextStderr("Waiting to confirm DUT %s request validation and print leased DUT details...", leaseCmdName)
+		listDims := map[string][]string{}
+		for key, val := range botDims {
+			listDims[key] = []string{val}
+		}
+		leaseInfo, allInfoFound, err = common.Lease(ctx, authOpts, listDims, c.durationMins)
+		if err != nil {
+			return err
+		}
+		host = leaseInfo.Device.Name
+	} else {
+		uc, err := ufs.NewUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
+		if err != nil {
+			return err
+		}
+		// Non-Scheduke (legacy) flow. TODO(b/332370221): Delete this.
+		leasesBBClient, err := buildbucket.NewClient(ctx, c.envFlags.Env().DUTLeaserBuilder, c.envFlags.Env().BuildbucketService, c.authFlags)
+		if err != nil {
+			return err
+		}
+		leaseInfo.Build, err = leasesBBClient.ScheduleBuild(ctx, buildProps, botDims, buildTags, dutLeaserBuildPriority)
+		if err != nil {
+			return err
+		}
+		c.printer.WriteTextStderr("Requesting %d minute lease at %s", c.durationMins, leasesBBClient.BuildURL(leaseInfo.Build.Id))
+
+		c.printer.WriteTextStderr("Waiting to confirm DUT %s request validation and print leased DUT details...", leaseCmdName)
 		leaseInfo.Build, err = leasesBBClient.WaitForBuildStepStart(ctx, leaseInfo.Build.Id, c.leaseStartStepName())
 		if err != nil {
 			return err
 		}
-		host := buildbucket.FindDimValInFinalDims("dut_name", leaseInfo.Build)
-		endTime := time.Now().Add(time.Duration(c.durationMins) * time.Minute).Format(time.RFC822)
-		c.printer.WriteTextStdout("Leased %s until %s\n", host, endTime)
+		host = buildbucket.FindDimValInFinalDims("dut_name", leaseInfo.Build)
 
-		// Swallow all errors from here on, since the DUT is already leased.
-		allInfoFound := false
-		ufsClient, err := ufs.NewUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
-		if err == nil {
-			leaseInfo.DUT, allInfoFound, err = getDutInfo(ctx, ufsClient, host)
-		}
-		c.printer.WriteTextStderr("%s\n", dutInfoAsBashVariables(leaseInfo.DUT))
-		if !allInfoFound {
-			c.printer.WriteTextStderr("Couldn't fetch complete DUT info for %s, possibly due to transient UFS RPC errors;\nrun `crosfleet dut %s %s` to try again", host, infoCmdName, host)
-		}
+		// Swallow any UFS errors since the lease has been secured at this point.
+		leaseInfo.Device, allInfoFound, err = getDutInfo(ctx, uc, host)
 		if err != nil {
 			c.printer.WriteTextStderr("RPC error: %s", err.Error())
 		}
 	}
-	c.printer.WriteJSONStdout(&leaseInfo)
+
+	// Slightly underestimate the printed end time to account for polling delay
+	// while waiting for Scheduke to return the lease status.
+	endTime := time.Now().Add(time.Duration(c.durationMins-1) * time.Minute).Format(time.RFC822)
+	c.printer.WriteTextStdout("Leased %s until %s\n", host, endTime)
+	c.printer.WriteTextStderr("%s\n", dutInfoAsBashVariables(leaseInfo.Device))
+	if !allInfoFound {
+		c.printer.WriteTextStderr("Couldn't fetch complete DUT info for %s, possibly due to transient UFS RPC errors;\nrun `crosfleet dut %s %s` to try again", host, infoCmdName, host)
+	}
 	c.printer.WriteTextStdout("Visit http://go/chromeos-lab-duts-ssh for up-to-date docs on SSHing to a leased DUT")
+	c.printer.WriteJSONStdout(&dutinfopb.LeaseInfo{
+		Build: leaseInfo.Build,
+		DUT: &dutinfopb.DUTInfo{
+			Hostname: leaseInfo.Device.Name,
+			LabSetup: leaseInfo.Device.LabSetup,
+			Machine:  leaseInfo.Device.Machine,
+		},
+	})
 	return nil
 }
 
@@ -160,17 +196,10 @@ func botDimsAndBuildTags(ctx context.Context, swarmingBotsClient swarmingapi.Bot
 	} else {
 		// Swarming dimension-based lease.
 		dims["dut_state"] = "ready"
-		userSpecifiedPool := false
 		// Add user-added dimensions to both bot dimensions and build tags.
 		for key, val := range leaseFlags.freeformDims {
-			if key == "label-pool" {
-				userSpecifiedPool = true
-			}
 			dims[key] = val
 			tags[key] = val
-		}
-		if !userSpecifiedPool {
-			dims["label-pool"] = defaultLeasesPool
 		}
 		if board := leaseFlags.board; board != "" {
 			tags["label-board"] = board
@@ -180,9 +209,13 @@ func botDimsAndBuildTags(ctx context.Context, swarmingBotsClient swarmingapi.Bot
 			tags["label-model"] = model
 			dims["label-model"] = model
 		}
+		if pool := leaseFlags.pool; pool != "" {
+			tags[poolLabelName] = pool
+			dims[poolLabelName] = pool
+		}
 	}
 	// Add these metadata tags last to avoid being overwritten by freeform dims.
-	tags[common.CrosfleetToolTag] = leaseCmdName
+	tags[crosfleetcommon.CrosfleetToolTag] = leaseCmdName
 	tags["lease-reason"] = leaseFlags.reason
 	tags["qs_account"] = "leases"
 	return
@@ -195,8 +228,8 @@ type leaseFlags struct {
 	host         string
 	model        string
 	board        string
+	pool         string
 	freeformDims map[string]string
-	exitEarly    bool
 }
 
 // Registers lease-specific flags.
@@ -205,13 +238,12 @@ func (c *leaseFlags) register(f *flag.FlagSet) {
 	f.StringVar(&c.reason, "reason", "", fmt.Sprintf("Optional reason for leasing (limit %d characters).", maxLeaseReasonCharacters))
 	f.StringVar(&c.board, "board", "", "'label-board' Swarming dimension to lease DUT by.")
 	f.StringVar(&c.model, "model", "", "'label-model' Swarming dimension to lease DUT by.")
+	f.StringVar(&c.pool, "pool", common.DefaultLeasesPool, "'label-pool' Swarming dimension to lease DUT by.")
 	f.StringVar(&c.host, "host", "", `Hostname of an individual DUT to lease. If leasing by hostname instead of other Swarming dimensions,
 and the host DUT is running another task, the lease won't start until that task completes.
 Mutually exclusive with -board/-model/-dim(s).`)
 	f.Var(flagx.KeyVals(&c.freeformDims), "dim", "Freeform Swarming dimension to lease DUT by, in format key=val or key:val; may be specified multiple times.")
 	f.Var(flagx.KeyVals(&c.freeformDims), "dims", "Comma-separated Swarming dimensions, in same format as -dim.")
-	f.BoolVar(&c.exitEarly, "exit-early", false, `Exit command as soon as lease is scheduled. crosfleet will not notify on lease validation failure,
-or print the hostname of the leased DUT.`)
 }
 
 func (c *leaseFlags) validate(f *flag.FlagSet) error {
@@ -239,7 +271,7 @@ func (c *leaseFlags) validate(f *flag.FlagSet) error {
 // or swarming dimensions (via -board/-model/-dim(s)), but not both.
 func (c *leaseFlags) hasEitherHostnameOrSwarmingDims() bool {
 	hasHostname := c.host != ""
-	hasSwarmingDims := c.board != "" || c.model != "" || len(c.freeformDims) > 0
+	hasSwarmingDims := c.board != "" || c.model != "" || c.pool != "" || len(c.freeformDims) > 0
 	return hasHostname != hasSwarmingDims
 }
 

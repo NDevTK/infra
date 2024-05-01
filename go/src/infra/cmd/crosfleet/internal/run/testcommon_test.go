@@ -8,13 +8,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"strings"
+	"testing"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
 	models "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	"strings"
-	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -659,7 +660,7 @@ var testGetCustomCTPBuilderData = []struct {
 	wantCtpBuilder *buildbucketpb.BuilderID
 }{
 	{ // With custom bucket and builder
-		common.EnvFlags{}.Env(),
+		(&common.EnvFlags{}).Env(),
 		testCommonFlags{
 			luciProject:         "testProject",
 			publicBuilderBucket: "testBucket",
@@ -672,7 +673,7 @@ var testGetCustomCTPBuilderData = []struct {
 		},
 	},
 	{ // No custom bucket or builder
-		common.EnvFlags{}.Env(),
+		(&common.EnvFlags{}).Env(),
 		testCommonFlags{},
 		&buildbucketpb.BuilderID{
 			Project: "chromeos",

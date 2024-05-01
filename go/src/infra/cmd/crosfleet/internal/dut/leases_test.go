@@ -6,11 +6,12 @@ package dut
 
 import (
 	"fmt"
-	"infra/cmd/crosfleet/internal/buildbucket"
-	dutinfopb "infra/cmd/crosfleet/internal/proto"
-	"infra/cmd/crosfleet/internal/site"
 	"testing"
 	"time"
+
+	"infra/cmd/crosfleet/internal/buildbucket"
+	"infra/cmd/crosfleet/internal/site"
+	"infra/cros/cmd/common_lib/common"
 
 	"github.com/google/go-cmp/cmp"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -19,11 +20,11 @@ import (
 )
 
 var testLeaseInfoAsBashVariablesData = []struct {
-	info         *dutinfopb.LeaseInfo
+	info         *common.LeaseInfo
 	wantBashVars string
 }{
 	{ // All variables found
-		&dutinfopb.LeaseInfo{
+		&common.LeaseInfo{
 			Build: &buildbucketpb.Build{
 				Id:     12345,
 				Status: buildbucketpb.Status_SCHEDULED,
@@ -35,8 +36,8 @@ var testLeaseInfoAsBashVariablesData = []struct {
 					},
 				},
 			},
-			DUT: &dutinfopb.DUTInfo{
-				Hostname: "sample-hostname",
+			Device: &common.DeviceInfo{
+				Name: "sample-hostname",
 			},
 		},
 		`LEASE_TASK=https://ci.chromium.org/ui/p/chromeos/builders/test_runner/dut_leaser/b12345
@@ -45,7 +46,7 @@ MINS_REMAINING=10
 DUT_HOSTNAME=sample-hostname`,
 	},
 	{ // Only lease build variables found
-		&dutinfopb.LeaseInfo{
+		&common.LeaseInfo{
 			Build: &buildbucketpb.Build{
 				Id:     12345,
 				Status: buildbucketpb.Status_SCHEDULED,
@@ -63,15 +64,15 @@ STATUS=SCHEDULED
 MINS_REMAINING=10`,
 	},
 	{ // Only DUT variables found
-		&dutinfopb.LeaseInfo{
-			DUT: &dutinfopb.DUTInfo{
-				Hostname: "sample-hostname",
+		&common.LeaseInfo{
+			Device: &common.DeviceInfo{
+				Name: "sample-hostname",
 			},
 		},
 		"DUT_HOSTNAME=sample-hostname",
 	},
 	{ // No variables found
-		&dutinfopb.LeaseInfo{},
+		&common.LeaseInfo{},
 		"",
 	},
 }

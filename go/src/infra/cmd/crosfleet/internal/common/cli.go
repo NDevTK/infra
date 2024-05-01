@@ -54,7 +54,7 @@ type CLIPrinter struct {
 
 // Register parses the -json flag.
 func (p *CLIPrinter) Register(fl *flag.FlagSet) {
-	p.json = false
+	fl.BoolVar(&p.json, "json", false, "Format output as JSON.")
 	fl.BoolVar(&p.silent, "silent", false, "Don't print any output from command.")
 }
 
@@ -132,11 +132,16 @@ func (f *EnvFlags) Register(fl *flag.FlagSet) {
 }
 
 // Env returns the environment, either dev or prod.
-func (f EnvFlags) Env() site.Environment {
+func (f *EnvFlags) Env() site.Environment {
 	if f.dev {
 		return site.Dev
 	}
 	return site.Prod
+}
+
+// UseDev returns a bool indicating whether to use downstream dev environments.
+func (f *EnvFlags) UseDev() bool {
+	return f.dev
 }
 
 // ToKeyvalSlice converts a key-val map to a slice of "key:val" strings.

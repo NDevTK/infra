@@ -9,15 +9,13 @@ import (
 	"time"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
 
 	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
-	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 )
 
 const (
-	defaultPool             = "DUT_POOL_QUOTA"
 	leasePriority           = 1
 	leasesSchedulingAccount = "leases"
 	leaseSchedulingWindow   = 2 * time.Hour
@@ -42,13 +40,13 @@ type LeaseInfo struct {
 // Abandon sends a cancellation request to Scheduke for the given device names,
 // releasing all leased devices for the current user if no devices are
 // specified.
-func Abandon(ctx context.Context, flags *authcli.Flags, deviceNames []string) error {
-	user, err := getUserEmail(ctx, flags)
+func Abandon(ctx context.Context, authOpts auth.Options, deviceNames []string, dev bool) error {
+	user, err := getUserEmail(ctx, authOpts)
 	if err != nil {
 		return err
 	}
 
-	sc, err := NewLocalSchedukeClient(ctx)
+	sc, err := NewLocalSchedukeClient(ctx, dev, authOpts)
 	if err != nil {
 		return err
 	}
@@ -56,10 +54,11 @@ func Abandon(ctx context.Context, flags *authcli.Flags, deviceNames []string) er
 	return sc.CancelTasks(nil, []string{user}, deviceNames)
 }
 
-// Info returns device information for the device with the given name.
-func Info(ctx context.Context, deviceName string, flags *authcli.Flags, uc ufsapi.FleetClient) (*DeviceInfo, error) {
+// UFSDeviceInfo returns device information from UFS for the device with the
+// given name.
+func UFSDeviceInfo(ctx context.Context, deviceName string, authOpts auth.Options) (*DeviceInfo, error) {
 	info := &DeviceInfo{Name: deviceName}
-	err := addDeviceInfo(ctx, info, uc)
+	err := addDeviceInfo(ctx, info, authOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -68,22 +67,22 @@ func Info(ctx context.Context, deviceName string, flags *authcli.Flags, uc ufsap
 
 // Lease leases a device from Scheduke and returns information about the device,
 // and a bool indicating whether full device information was retrieved.
-func Lease(ctx context.Context, flags *authcli.Flags, dims map[string][]string, mins int64, uc ufsapi.FleetClient) (*LeaseInfo, bool, error) {
-	deviceName, err := leaseDeviceFromScheduke(ctx, flags, dims, mins)
+func Lease(ctx context.Context, authOpts auth.Options, dims map[string][]string, mins int64) (*LeaseInfo, bool, error) {
+	deviceName, err := leaseDeviceFromScheduke(ctx, authOpts, dims, mins)
 	if err != nil {
 		return nil, false, err
 	}
 	info := &LeaseInfo{Device: &DeviceInfo{Name: deviceName}}
 	// Swallow any UFS errors since the lease has been secured at this point.
-	err = addDeviceInfo(ctx, info.Device, uc)
+	err = addDeviceInfo(ctx, info.Device, authOpts)
 	fullInfoRetrieved := err == nil
 	return info, fullInfoRetrieved, nil
 }
 
 // Leases retrieves device information for each in-flight lease for the current
 // user, and a bool indicating whether full device information was retrieved.
-func Leases(ctx context.Context, flags *authcli.Flags, uc ufsapi.FleetClient) ([]*LeaseInfo, bool, error) {
-	leaseStates, err := listLeasesFromScheduke(ctx, flags)
+func Leases(ctx context.Context, authOpts auth.Options, dev bool) ([]*LeaseInfo, bool, error) {
+	leaseStates, err := listLeasesFromScheduke(ctx, authOpts, dev)
 	if err != nil {
 		return nil, false, err
 	}
@@ -99,10 +98,20 @@ func Leases(ctx context.Context, flags *authcli.Flags, uc ufsapi.FleetClient) ([
 		li := &LeaseInfo{Device: &DeviceInfo{Name: ls.DeviceName}}
 		// Swallow any UFS errors since at least the device name has been retrieved
 		// at this point.
-		err = addDeviceInfo(ctx, li.Device, uc)
+		err = addDeviceInfo(ctx, li.Device, authOpts)
 		fullInfoRetrieved = fullInfoRetrieved && (err == nil)
 		info = append(info, li)
 	}
 
 	return info, fullInfoRetrieved, nil
+}
+
+// ShouldUseScheduke returns a bool indicating whether a lease request in the
+// pool should use this Scheduke API.
+func ShouldUseScheduke(ctx context.Context, pool string, authOpts auth.Options) (bool, error) {
+	sc, err := NewLocalSchedukeClient(ctx, true, authOpts)
+	if err != nil {
+		return false, err
+	}
+	return sc.AnyStringInGerritList([]string{pool}, schedukePoolsURL)
 }

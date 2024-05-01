@@ -6,21 +6,22 @@ package dut
 
 import (
 	"fmt"
-	dutinfopb "infra/cmd/crosfleet/internal/proto"
+	"testing"
+
+	"infra/cros/cmd/common_lib/common"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufslabpb "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
 
 var testDutInfoAsBashVariablesData = []struct {
-	info         *dutinfopb.DUTInfo
+	info         *common.DeviceInfo
 	wantBashVars string
 }{
 	{ // All variables found
-		&dutinfopb.DUTInfo{
-			Hostname: "sample-dut-hostname",
+		&common.DeviceInfo{
+			Name: "sample-dut-hostname",
 			Machine: &ufspb.Machine{Device: &ufspb.Machine_ChromeosMachine{
 				ChromeosMachine: &ufspb.ChromeOSMachine{
 					BuildTarget: "sample-board",
@@ -49,13 +50,13 @@ SERVO_PORT=12345
 SERVO_SERIAL=sample-serial`,
 	},
 	{ // One variable found
-		&dutinfopb.DUTInfo{
-			Hostname: "sample-dut-hostname",
+		&common.DeviceInfo{
+			Name: "sample-dut-hostname",
 		},
 		"DUT_HOSTNAME=sample-dut-hostname",
 	},
 	{ // No variables found
-		&dutinfopb.DUTInfo{},
+		&common.DeviceInfo{},
 		"",
 	},
 }

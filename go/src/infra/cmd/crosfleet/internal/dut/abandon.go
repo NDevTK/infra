@@ -6,10 +6,12 @@ package dut
 
 import (
 	"fmt"
+	"strings"
 
 	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
+	crosfleetcommon "infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
+	"infra/cros/cmd/common_lib/common"
 	"infra/libs/skylab/common/heuristics"
 
 	"github.com/maruel/subcommands"
@@ -43,13 +45,13 @@ type abandonRun struct {
 	subcommands.CommandRunBase
 	reason    string
 	authFlags authcli.Flags
-	envFlags  common.EnvFlags
-	printer   common.CLIPrinter
+	envFlags  crosfleetcommon.EnvFlags
+	printer   crosfleetcommon.CLIPrinter
 }
 
 func (c *abandonRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.innerRun(a, args, env); err != nil {
-		common.PrintCmdError(a, err)
+		crosfleetcommon.PrintCmdError(a, err)
 		return 1
 	}
 	return 0
@@ -57,7 +59,7 @@ func (c *abandonRun) Run(a subcommands.Application, args []string, env subcomman
 
 func (c *abandonRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
-	userEmail, err := common.GetUserEmail(ctx, &c.authFlags)
+	userEmail, err := crosfleetcommon.GetUserEmail(ctx, &c.authFlags)
 	if err != nil {
 		return err
 	}
@@ -69,20 +71,39 @@ func (c *abandonRun) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return err
 	}
-	earliestCreateTime := common.OffsetTimestamp(-1 * maxLeaseLengthMinutes)
+	earliestCreateTime := crosfleetcommon.OffsetTimestamp(-1 * maxLeaseLengthMinutes)
 	var botIDs []string
-	for _, hostname := range args {
-		correctedHostname := heuristics.NormalizeBotNameToDeviceName(hostname)
-		id, err := hostnameToBotID(ctx, swarmingBotsClient, correctedHostname)
+	var correctedDeviceNames []string
+	for _, deviceName := range args {
+		correctedDeviceName := heuristics.NormalizeBotNameToDeviceName(deviceName)
+		id, err := hostnameToBotID(ctx, swarmingBotsClient, correctedDeviceName)
 		if err != nil {
 			return err
 		}
 		botIDs = append(botIDs, id)
+		correctedDeviceNames = append(correctedDeviceNames, correctedDeviceName)
 	}
 
+	// Flow for non-Scheduke (legacy) leases. TODO(b/332370221): Delete this.
 	err = leasesBBClient.CancelBuildsByUser(ctx, c.printer, earliestCreateTime, userEmail, botIDs, c.reason)
 	if err != nil {
 		return err
 	}
+
+	// Flow for Scheduke leases.
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return err
+	}
+	err = common.Abandon(ctx, authOpts, correctedDeviceNames, c.envFlags.UseDev())
+	if err != nil {
+		return err
+	}
+	if len(correctedDeviceNames) > 0 {
+		c.printer.WriteTextStdout("Cancelled all leases for devices %s by the current user", strings.Join(correctedDeviceNames, ", "))
+	} else {
+		c.printer.WriteTextStdout("Cancelled all leases by the current user")
+	}
+
 	return nil
 }

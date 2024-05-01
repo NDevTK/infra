@@ -7,6 +7,7 @@ package common
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -15,16 +16,23 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 
 	schedukeapi "go.chromium.org/chromiumos/config/go/test/scheduling"
 	"go.chromium.org/luci/auth"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
-const schedukeDevPool = "schedukeTest"
+const (
+	dmExperiment      = "dm"
+	poolConfigsDirURL = "https://chrome-internal.googlesource.com/chromeos/infra/config/+/refs/heads/main/testingconfig/"
+	schedukeDevPool   = "schedukeTest"
+)
 
 var (
 	schedukeDevURL                  = "https://front-door-2q7tjgq5za-wl.a.run.app"
@@ -33,19 +41,29 @@ var (
 	schedukeGetExecutionEndpoint    = "tasks"
 	schedukeCancelExecutionEndpoint = "tasks/cancel"
 	maxHTTPRetries                  = 5
+	blockedPoolsURL                 = poolConfigsDirURL + "blocked_pools.txt?format=text"
+	dmPoolsURL                      = poolConfigsDirURL + "dm_pools.txt?format=text"
+	schedukePoolsURL                = poolConfigsDirURL + "ctp2_pools.txt?format=text"
+	gerritAuthOptsOnBot             = chromeinfra.SetDefaultAuthOptions(auth.Options{
+		Method: auth.AutoSelectMethod,
+		Scopes: []string{auth.OAuthScopeEmail, gitiles.OAuthScope},
+	})
 )
 
 type SchedukeClient struct {
-	baseURL string
-	client  *http.Client
-	ctx     context.Context
-	local   bool
+	baseURL                          string
+	gerritClient, schedukeHTTPClient *http.Client
+	ctx                              context.Context
+	local                            bool
 }
 
-func NewLocalSchedukeClient(ctx context.Context) (*SchedukeClient, error) {
-	// TODO (b/332370221): send to prod
-	client := SchedukeClient{ctx: ctx, local: true, baseURL: schedukeDevURL}
-	err := client.setUpHTTPClient()
+func NewLocalSchedukeClient(ctx context.Context, dev bool, gerritAuthOpts auth.Options) (*SchedukeClient, error) {
+	baseURL := schedukeProdURL
+	if dev {
+		baseURL = schedukeDevURL
+	}
+	client := SchedukeClient{ctx: ctx, local: true, baseURL: baseURL}
+	err := client.setUpHTTPClients(gerritAuthOpts)
 	return &client, err
 }
 
@@ -56,27 +74,36 @@ func NewSchedukeClient(ctx context.Context, pool string, local bool) (*SchedukeC
 	}
 
 	client := SchedukeClient{ctx: ctx, local: local, baseURL: baseURL}
-	err := client.setUpHTTPClient()
+	err := client.setUpHTTPClients(gerritAuthOptsOnBot)
 	return &client, err
 }
 
-// httpClient returns an HTTP client with authentication set up.
-func (s *SchedukeClient) setUpHTTPClient() error {
+// httpClient configures HTTP clients for Scheduke and Gerrit, with
+// authentication set up.
+func (s *SchedukeClient) setUpHTTPClients(gerritAuthOpts auth.Options) error {
+	// Gerrit requires auth options whether running locally or on a bot.
+	ga := auth.NewAuthenticator(s.ctx, auth.SilentLogin, gerritAuthOpts)
+	gc, err := ga.Client()
+	if err != nil {
+		return errors.Annotate(err, "create Gerrit http client").Err()
+	}
+	s.gerritClient = gc
+
+	// Scheduke only requires auth options when running on a bot.
 	if s.local {
-		s.client = &http.Client{}
+		s.schedukeHTTPClient = &http.Client{}
 		return nil
 	}
-
-	a := auth.NewAuthenticator(s.ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
+	sa := auth.NewAuthenticator(s.ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
 		UseIDTokens: true,
 		Audience:    s.baseURL,
 	}))
-	c, err := a.Client()
-	if err == nil {
-		s.client = c
-		return nil
+	sc, err := sa.Client()
+	if err != nil {
+		return errors.Annotate(err, "create Scheduke http client").Err()
 	}
-	return errors.Annotate(err, "create http client").Err()
+	s.schedukeHTTPClient = sc
+	return nil
 }
 
 // Not currently used; but is useful in the case we need to do a token based auth.
@@ -129,6 +156,18 @@ func (s *SchedukeClient) parseReadResponse(response *http.Response) (*schedukeap
 
 // ScheduleExecution will schedule TR executions via scheduke.
 func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEvents) (*schedukeapi.CreateTaskStatesResponse, error) {
+	var pools []string
+	for _, e := range req.GetEvents() {
+		pools = append(pools, e.Pool)
+	}
+	poolsBlocked, err := s.AnyStringInGerritList(pools, blockedPoolsURL)
+	if err != nil {
+		return nil, err
+	}
+	if poolsBlocked {
+		return nil, fmt.Errorf("leasing is currently blocked for pools %s; try again later", pools)
+	}
+
 	endpoint, err := url.JoinPath(s.baseURL, schedukeExecutionEndpoint)
 	if err != nil {
 		return nil, errors.Annotate(err, "url.joinpath").Err()
@@ -166,12 +205,11 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) 
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	r, err := sendRequestWithRetries(s.client, req)
+	r, err := sendRequestWithRetries(s.schedukeHTTPClient, req)
 	if err != nil {
 		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
 	return r, nil
-
 }
 
 type clientThatSendsRequests interface {
@@ -198,6 +236,165 @@ func sendRequestWithRetries(c clientThatSendsRequests, req *http.Request) (*http
 		retries += 1
 	}
 	return resp, err
+}
+
+// ScheduleBuildReqToSchedukeReq converts a Buildbucket ScheduleBuildRequest to
+// a Scheduke request with the given event time.
+func (s *SchedukeClient) ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*schedukeapi.KeyedTaskRequestEvents, error) {
+	bbReqBytes := []byte(protojson.Format(bbReq))
+	compressedReqJSON, err := compressAndEncodeBBReq(bbReqBytes)
+	if err != nil {
+		return nil, fmt.Errorf("error compressing and encoding ScheduleBuildRequest %v: %w", bbReq, err)
+	}
+	deadlineStruct, err := getDeadlineStruct(bbReq)
+	if err != nil {
+		return nil, err
+	}
+	parentBBIDStr, err := getParentBBIDstr(bbReq)
+	if err != nil {
+		return nil, err
+	}
+	var parentBBID int64
+	// Fail softly if parentBuildId field is not set on the request, as Scheduke
+	// only uses this for metadata/logging.
+	if parentBBIDStr != "" {
+		parentBBID, err = strconv.ParseInt(parentBBIDStr, 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid parent BBID found on ScheduleBuildRequest %v", bbReq)
+		}
+	}
+	deadline, err := timeFromTimestampPBString(deadlineStruct.GetStringValue())
+	if err != nil {
+		return nil, fmt.Errorf("error parsing deadline for ScheduleBuildRequest %v: %w", bbReq, err)
+	}
+	tags := bbReq.GetTags()
+	qsAccount := qsAccount(tags)
+	periodic := periodic(tags)
+	asap := asap(qsAccount, periodic)
+	dims, deviceName, pool := dimensionsDeviceNameAndPool(bbReq.GetDimensions())
+
+	var experiments []string
+	useDM, err := s.shouldUseDM(pool)
+	if useDM {
+		experiments = append(experiments, dmExperiment)
+	}
+
+	schedukeTask := &schedukeapi.TaskRequestEvent{
+		EventTime:                time.Now().UnixMicro(),
+		Deadline:                 deadline.UnixMicro(),
+		Periodic:                 periodic,
+		Priority:                 priority(tags),
+		RequestedDimensions:      dims,
+		RealExecutionMinutes:     0, // Unneeded outside of shadow mode.
+		MaxExecutionMinutes:      30,
+		QsAccount:                qsAccount,
+		Pool:                     pool,
+		Bbid:                     parentBBID,
+		Asap:                     asap,
+		ScheduleBuildRequestJson: compressedReqJSON,
+		DeviceName:               deviceName,
+		Experiments:              experiments,
+	}
+
+	return &schedukeapi.KeyedTaskRequestEvents{
+		Events: map[int64]*schedukeapi.TaskRequestEvent{
+			SchedukeTaskRequestKey: schedukeTask,
+		},
+	}, nil
+}
+
+// LeaseRequest constructs a keyed TaskRequestEvent to request a lease from
+// Scheduke with the given dimensions and lease length in minutes, for the given
+// user, at the given time.
+func (s *SchedukeClient) LeaseRequest(schedukeDims *schedukeapi.SwarmingDimensions, pool, deviceName, user string, mins int64, t time.Time) (*schedukeapi.KeyedTaskRequestEvents, error) {
+	useDM, err := s.shouldUseDM(pool)
+	if err != nil {
+		return nil, err
+	}
+	var (
+		scheduleBuildReqJSON string
+		experiments          []string
+	)
+	if useDM {
+		experiments = append(experiments, dmExperiment)
+	} else {
+		req, err := leaseBBReq(schedukeDims, mins)
+		if err != nil {
+			return nil, err
+		}
+		reqByes := []byte(protojson.Format(req))
+		scheduleBuildReqJSON, err = compressAndEncodeBBReq(reqByes)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &schedukeapi.KeyedTaskRequestEvents{
+		Events: map[int64]*schedukeapi.TaskRequestEvent{
+			schedukeTaskKey: {
+				EventTime:                t.UnixMicro(),
+				Deadline:                 t.Add(leaseSchedulingWindow).UnixMicro(),
+				Periodic:                 false,
+				Priority:                 leasePriority,
+				RequestedDimensions:      schedukeDims,
+				RealExecutionMinutes:     mins,
+				MaxExecutionMinutes:      mins,
+				ScheduleBuildRequestJson: scheduleBuildReqJSON,
+				QsAccount:                leasesSchedulingAccount,
+				Pool:                     pool,
+				Bbid:                     0,
+				Asap:                     false,
+				TaskStateId:              0,
+				DeviceName:               deviceName,
+				User:                     user,
+				Experiments:              experiments,
+			},
+		},
+	}, nil
+}
+
+// shouldUseDM returns a bool indicating whether a task request with the given
+// pool should enable the Device Manager experiment.
+func (s *SchedukeClient) shouldUseDM(pool string) (bool, error) {
+	return s.AnyStringInGerritList([]string{pool}, dmPoolsURL)
+}
+
+// AnyStringInGerritList checks for any overlap between the given list of
+// strings, adn the list at the given Gerrit URL.
+func (s *SchedukeClient) AnyStringInGerritList(list []string, listURL string) (bool, error) {
+	fileText, err := s.fetchFileFromURL(listURL)
+	if err != nil {
+		return false, err
+	}
+	listFromURL := strings.Split(string(fileText), ",")
+	mapFromURL := map[string]bool{}
+	for _, str := range listFromURL {
+		mapFromURL[str] = true
+	}
+	for _, str := range list {
+		if mapFromURL[str] {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// fetchFileFromURL retrieves text from the given URL, using LUCI auth.
+func (s *SchedukeClient) fetchFileFromURL(url string) ([]byte, error) {
+	resp, err := s.gerritClient.Get(url)
+	if err != nil {
+		return []byte{}, fmt.Errorf("error fetching file from %s: %w", url, err)
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, fmt.Errorf("error reading file body from %s: %w", url, err)
+	}
+	bs, err := base64.StdEncoding.DecodeString(string(data))
+	if err != nil {
+		return []byte{}, fmt.Errorf("error decoding data from %s: %w", url, err)
+	}
+	return bs, nil
 }
 
 // ReadTaskStates calls Scheduke to read task states for the given task state

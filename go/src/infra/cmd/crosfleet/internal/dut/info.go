@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"strings"
 
-	"infra/cmd/crosfleet/internal/common"
+	crosfleetcommon "infra/cmd/crosfleet/internal/common"
 	dutinfopb "infra/cmd/crosfleet/internal/proto"
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
+	"infra/cros/cmd/common_lib/common"
 	"infra/libs/skylab/common/heuristics"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 	ufsutil "infra/unifiedfleet/app/util"
@@ -45,13 +46,13 @@ Do not build automation around this subcommand.`,
 type infoRun struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
-	envFlags  common.EnvFlags
-	printer   common.CLIPrinter
+	envFlags  crosfleetcommon.EnvFlags
+	printer   crosfleetcommon.CLIPrinter
 }
 
 func (c *infoRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.innerRun(a, args, env); err != nil {
-		common.PrintCmdError(a, err)
+		crosfleetcommon.PrintCmdError(a, err)
 		return 1
 	}
 	return 0
@@ -62,26 +63,23 @@ func (c *infoRun) innerRun(a subcommands.Application, args []string, env subcomm
 		return fmt.Errorf("missing DUT hostname arg")
 	}
 	ctx := cli.GetContext(a, c, env)
-	ufsClient, err := ufs.NewUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
+	authOpts, err := c.authFlags.Options()
 	if err != nil {
 		return err
 	}
 
 	var infoList dutinfopb.DUTInfoList
-	for _, hostname := range args {
-		info, allInfoFound, err := getDutInfo(ctx, ufsClient, hostname)
-		// If outputting the command as JSON, collect all DUT info in a proto
-		// message first, then print together as one JSON object.
-		// Otherwise, just print each separately from this loop.
-		// Swallow all errors from here on, since we have partial info to print.
-		infoList.DUTs = append(infoList.DUTs, info)
-		c.printer.WriteTextStdout("%s\n", dutInfoAsBashVariables(info))
-		if !allInfoFound {
-			c.printer.WriteTextStdout("Couldn't fetch complete DUT info for %s, possibly due to transient UFS RPC errors;\nrun `crosfleet dut %s %s` to try again", hostname, infoCmdName, hostname)
-		}
+	for _, deviceName := range args {
+		info, err := common.UFSDeviceInfo(ctx, deviceName, authOpts)
 		if err != nil {
 			c.printer.WriteTextStdout("RPC error: %s", err.Error())
 		}
+		c.printer.WriteTextStdout("%s\n", dutInfoAsBashVariables(info))
+		infoList.DUTs = append(infoList.DUTs, &dutinfopb.DUTInfo{
+			Hostname: info.Name,
+			LabSetup: info.LabSetup,
+			Machine:  info.Machine,
+		})
 	}
 	c.printer.WriteJSONStdout(&infoList)
 	return nil
@@ -89,15 +87,15 @@ func (c *infoRun) innerRun(a subcommands.Application, args []string, env subcomm
 
 // getDutInfo returns information about the DUT with the given hostname, and a
 // bool indicating whether all information fields were found in UFS.
-func getDutInfo(ctx context.Context, ufsClient ufs.Client, hostname string) (*dutinfopb.DUTInfo, bool, error) {
-	info := &dutinfopb.DUTInfo{
-		Hostname: heuristics.NormalizeBotNameToDeviceName(hostname),
+func getDutInfo(ctx context.Context, ufsClient ufs.Client, hostname string) (*common.DeviceInfo, bool, error) {
+	info := &common.DeviceInfo{
+		Name: heuristics.NormalizeBotNameToDeviceName(hostname),
 	}
 
 	ctx = contextWithOSNamespace(ctx)
 	var err error
 	info.LabSetup, err = ufsClient.GetMachineLSE(ctx, &ufsapi.GetMachineLSERequest{
-		Name: ufsutil.AddPrefix(ufsutil.MachineLSECollection, info.Hostname),
+		Name: ufsutil.AddPrefix(ufsutil.MachineLSECollection, info.Name),
 	})
 	if err != nil {
 		return info, false, err
@@ -110,37 +108,41 @@ func getDutInfo(ctx context.Context, ufsClient ufs.Client, hostname string) (*du
 			return info, false, err
 		}
 	}
-	allFieldsFound := info.Hostname != "" && info.LabSetup != nil && info.Machine != nil
+	allFieldsFound := info.Name != "" && info.LabSetup != nil && info.Machine != nil
 	return info, allFieldsFound, nil
 }
 
 // dutInfoAsBashVariables returns a pretty-printed string containing info about
 // the given DUT formatted as bash variables. Only the variables that are found
 // in the DUT info proto message are printed.
-func dutInfoAsBashVariables(info *dutinfopb.DUTInfo) string {
+func dutInfoAsBashVariables(info *common.DeviceInfo) string {
 	var bashVars []string
 
-	hostname := info.GetHostname()
+	hostname := info.Name
 	if hostname != "" {
 		bashVars = append(bashVars,
 			fmt.Sprintf("DUT_HOSTNAME=%s", hostname))
 	}
 
-	chromeOSMachine := info.GetMachine().GetChromeosMachine()
-	if chromeOSMachine != nil {
-		bashVars = append(bashVars,
-			fmt.Sprintf("MODEL=%s\nBOARD=%s",
-				chromeOSMachine.GetModel(),
-				chromeOSMachine.GetBuildTarget()))
+	if info.Machine != nil {
+		chromeOSMachine := info.Machine.GetChromeosMachine()
+		if chromeOSMachine != nil {
+			bashVars = append(bashVars,
+				fmt.Sprintf("MODEL=%s\nBOARD=%s",
+					chromeOSMachine.GetModel(),
+					chromeOSMachine.GetBuildTarget()))
+		}
 	}
 
-	servo := info.GetLabSetup().GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo()
-	if servo != nil {
-		bashVars = append(bashVars,
-			fmt.Sprintf("SERVO_HOSTNAME=%s\nSERVO_PORT=%d\nSERVO_SERIAL=%s",
-				servo.GetServoHostname(),
-				servo.GetServoPort(),
-				servo.GetServoSerial()))
+	if info.LabSetup != nil {
+		servo := info.LabSetup.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo()
+		if servo != nil {
+			bashVars = append(bashVars,
+				fmt.Sprintf("SERVO_HOSTNAME=%s\nSERVO_PORT=%d\nSERVO_SERIAL=%s",
+					servo.GetServoHostname(),
+					servo.GetServoPort(),
+					servo.GetServoSerial()))
+		}
 	}
 
 	return strings.Join(bashVars, "\n")

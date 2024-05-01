@@ -9,23 +9,23 @@ import (
 	"compress/zlib"
 	"encoding/base64"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
-	"google.golang.org/protobuf/encoding/protojson"
-
 	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	structbuilder "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
 	// Higher integer value means lower priority.
-	noAccountPriority      int64 = 10
-	deviceNameDimensionKey       = "dut_name"
-	poolDimensionKey             = "label-pool"
-	quotaAccountTagKey           = "qs_account"
+	noAccountPriority int64 = 10
+	// DefaultLeasesPool is the default Swarming pool for leasing devices.
+	DefaultLeasesPool      = "DUT_POOL_QUOTA"
+	deviceNameDimensionKey = "dut_name"
+	poolDimensionKey       = "label-pool"
+	quotaAccountTagKey     = "qs_account"
 	// SchedukeTaskRequestKey is the key all Scheduke tasks are launched with.
 	// Scheduke supports batch task creation, but we send individually for now, so
 	// we use this key.
@@ -66,92 +66,33 @@ var (
 		"unmanaged_p4":         10,
 		"wificell":             3,
 	}
+	dutLeaserBuilder = &buildbucketpb.BuilderID{
+		Project: "chromeos",
+		Bucket:  "test_runner",
+		Builder: "dut_leaser",
+	}
 )
 
-// ScheduleBuildReqToSchedukeReq converts a Buildbucket ScheduleBuildRequest to
-// a Scheudke request with the given event time.
-func ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*schedukepb.KeyedTaskRequestEvents, error) {
-	bbReqBytes := []byte(protojson.Format(bbReq))
-	compressedReqJSON, err := compressAndEncodeBBReq(bbReqBytes)
-	if err != nil {
-		return nil, fmt.Errorf("error compressing and encoding ScheduleBuildRequest %v: %w", bbReq, err)
-	}
-	deadlineStruct, err := getDeadlineStruct(bbReq)
+// leaseBBReq returns a Buildbucket ScheduleBuildRequest for a dut_leaser build.
+func leaseBBReq(schedukeDims *schedukepb.SwarmingDimensions, mins int64) (*buildbucketpb.ScheduleBuildRequest, error) {
+	propsMap := map[string]interface{}{"lease_length_minutes": mins}
+	props, err := structbuilder.NewStruct(propsMap)
 	if err != nil {
 		return nil, err
 	}
-	parentBBIDStr, err := getParentBBIDstr(bbReq)
-	if err != nil {
-		return nil, err
+	var dims []*buildbucketpb.RequestedDimension
+	for key, vals := range schedukeDims.GetDimsMap() {
+		dims = append(dims, &buildbucketpb.RequestedDimension{
+			Key:   key,
+			Value: strings.Join(vals.GetValues(), "|"),
+		})
 	}
-	var parentBBID int64
-	// Fail softly if parentBuildId field is not set on the request, as Scheduke
-	// only uses this for metadata/logging.
-	if parentBBIDStr != "" {
-		parentBBID, err = strconv.ParseInt(parentBBIDStr, 10, 64)
-		if err != nil {
-			return nil, fmt.Errorf("invalid parent BBID found on ScheduleBuildRequest %v", bbReq)
-		}
-	}
-	deadline, err := timeFromTimestampPBString(deadlineStruct.GetStringValue())
-	if err != nil {
-		return nil, fmt.Errorf("error parsing deadline for ScheduleBuildRequest %v: %w", bbReq, err)
-	}
-	tags := bbReq.GetTags()
-	qsAccount := qsAccount(tags)
-	periodic := periodic(tags)
-	asap := asap(qsAccount, periodic)
-	dims, deviceName, pool := dimensionsDeviceNameAndPool(bbReq.GetDimensions())
-
-	schedukeTask := &schedukepb.TaskRequestEvent{
-		EventTime:                time.Now().UnixMicro(),
-		Deadline:                 deadline.UnixMicro(),
-		Periodic:                 periodic,
-		Priority:                 priority(tags),
-		RequestedDimensions:      dims,
-		RealExecutionMinutes:     0, // Unneeded outside of shadow mode.
-		MaxExecutionMinutes:      30,
-		QsAccount:                qsAccount,
-		Pool:                     pool,
-		Bbid:                     parentBBID,
-		Asap:                     asap,
-		ScheduleBuildRequestJson: compressedReqJSON,
-		DeviceName:               deviceName,
-	}
-
-	return &schedukepb.KeyedTaskRequestEvents{
-		Events: map[int64]*schedukepb.TaskRequestEvent{
-			SchedukeTaskRequestKey: schedukeTask,
-		},
+	return &buildbucketpb.ScheduleBuildRequest{
+		Builder:    dutLeaserBuilder,
+		Properties: props,
+		Dimensions: dims,
+		Priority:   15,
 	}, nil
-}
-
-// leaseRequest constructs a keyed TaskRequestEvent to request a lease from
-// Scheduke with the given dimensions and lease length in minutes, for the given
-// user, at the given time.
-func leaseRequest(dims map[string][]string, mins int64, user string, t time.Time) *schedukepb.KeyedTaskRequestEvents {
-	schedukeDims, pool, deviceName := schedukeDimsPoolAndDeviceNameForLease(dims)
-	return &schedukepb.KeyedTaskRequestEvents{
-		Events: map[int64]*schedukepb.TaskRequestEvent{
-			schedukeTaskKey: {
-				EventTime:                t.UnixMicro(),
-				Deadline:                 t.Add(leaseSchedulingWindow).UnixMicro(),
-				Periodic:                 false,
-				Priority:                 leasePriority,
-				RequestedDimensions:      schedukeDims,
-				RealExecutionMinutes:     mins,
-				MaxExecutionMinutes:      mins,
-				ScheduleBuildRequestJson: "",
-				QsAccount:                leasesSchedulingAccount,
-				Pool:                     pool,
-				Bbid:                     0,
-				Asap:                     false,
-				TaskStateId:              0,
-				DeviceName:               deviceName,
-				User:                     user,
-			},
-		},
-	}
 }
 
 // getParentBBIDstr searches the bbReq for the parentBuildId field.
@@ -293,7 +234,7 @@ func schedukeDimsPoolAndDeviceNameForLease(dims map[string][]string) (schedukeDi
 	}
 
 	if pool == "" {
-		pool = defaultPool
+		pool = DefaultLeasesPool
 		schedukeDimsMap[poolDimensionKey] = &schedukepb.DimValues{Values: []string{pool}}
 	}
 	schedukeDims = &schedukepb.SwarmingDimensions{DimsMap: schedukeDimsMap}
