@@ -7,9 +7,9 @@ package godep
 import (
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"golang.org/x/mod/modfile"
 
-	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 
