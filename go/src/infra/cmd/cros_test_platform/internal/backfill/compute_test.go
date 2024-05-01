@@ -7,9 +7,10 @@ package backfill
 import (
 	"testing"
 
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestPlanComputationForFailedRun(t *testing.T) {

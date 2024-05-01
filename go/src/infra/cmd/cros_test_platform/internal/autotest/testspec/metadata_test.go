@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/kylelemons/godebug/pretty"
+
 	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/luci/common/errors"
 )
