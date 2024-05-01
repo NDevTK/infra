@@ -11,18 +11,18 @@ import (
 	"reflect"
 	"time"
 
-	. "infra/appengine/poros/api/entities"
-	proto "infra/appengine/poros/api/proto"
-
-	"infra/appengine/poros/taskspb"
-
 	"github.com/google/uuid"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/tq"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+
+	. "infra/appengine/poros/api/entities"
+	proto "infra/appengine/poros/api/proto"
+	"infra/appengine/poros/taskspb"
 )
 
 type AssetInstanceHandler struct {

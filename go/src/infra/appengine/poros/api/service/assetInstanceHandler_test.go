@@ -11,9 +11,6 @@ import (
 	"testing"
 	"time"
 
-	. "infra/appengine/poros/api/entities"
-	proto "infra/appengine/poros/api/proto"
-
 	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -22,6 +19,9 @@ import (
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
+
+	. "infra/appengine/poros/api/entities"
+	proto "infra/appengine/poros/api/proto"
 )
 
 func mockCreateAssetInstanceRequest(assetId string, statusValue int32) *proto.CreateAssetInstanceRequest {
