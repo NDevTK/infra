@@ -75,6 +75,7 @@ type TrV2ReqHelper struct {
 	pool             string
 	currBBID         int64
 	maxDuration      time.Duration
+	lookupTable      map[string]string
 
 	analyticsName    string
 	parentRequestUID string
@@ -136,7 +137,7 @@ func populateHelperOldProto(ctx context.Context, trHelper *TrV2ReqHelper) error 
 		return err
 	}
 	trHelper.primaryTarget = target
-	target.provisionInfo = findProvisionInfo(ctx, trHelper)
+	target.provisionInfo, trHelper.lookupTable = findProvisionInfo(ctx, trHelper)
 
 	return nil
 }
@@ -159,6 +160,8 @@ func populateHelperNewProto(ctx context.Context, trHelper *TrV2ReqHelper) error 
 
 		trHelper.secondaryTargets = append(trHelper.secondaryTargets, target)
 	}
+	trHelper.lookupTable = trHelper.schedUnit.GetDynamicUpdateLookupTable()
+
 	return nil
 }
 
@@ -421,7 +424,7 @@ func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, variant string) str
 	return ""
 }
 
-func findProvisionInfo(ctx context.Context, trHelper *TrV2ReqHelper) []*testapi.ProvisionInfo {
+func findProvisionInfo(ctx context.Context, trHelper *TrV2ReqHelper) ([]*testapi.ProvisionInfo, map[string]string) {
 	logging.Infof(ctx, "looking for provision info for board: %s, variant: %s", trHelper.primaryTarget.board, trHelper.primaryTarget.variant)
 	logging.Infof(ctx, "looking for provision info for suiteMD: %s", trHelper.suiteInfo.GetSuiteMetadata())
 
@@ -430,7 +433,7 @@ func findProvisionInfo(ctx context.Context, trHelper *TrV2ReqHelper) []*testapi.
 
 		suiteDef := suiteTarget.GetHwRequirements().GetHwDefinition()
 		if len(suiteDef) == 0 {
-			return nil
+			return nil, map[string]string{}
 		}
 
 		suiteHwDef := suiteDef[0]
@@ -440,10 +443,10 @@ func findProvisionInfo(ctx context.Context, trHelper *TrV2ReqHelper) []*testapi.
 		logging.Infof(ctx, "looking for provision info for suiteInfo: %s", suiteSwDef)
 
 		if getBuildTargetfromHwDef(suiteHwDef) == trHelper.primaryTarget.board && suiteHwDef.GetVariant() == trHelper.primaryTarget.variant {
-			return suiteHwDef.GetProvisionInfo()
+			return suiteHwDef.GetProvisionInfo(), suiteHwDef.GetDynamicUpdateLookupTable()
 		}
 	}
-	return nil
+	return nil, map[string]string{}
 }
 
 // only works for new proto
@@ -499,7 +502,6 @@ func getBuildTargetWVariantFromSchedulingTarget(target *testapi.Target) string {
 }
 
 func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*api.CrosTestRunnerDynamicRequest, error) {
-	// TODO(cdelagarza): support multi-dut
 	testCaseIds := []*testapi.TestCase_Id{}
 	for _, testCase := range trHelper.testCases {
 		testCaseIds = append(testCaseIds, testCase.GetMetadata().GetTestCase().GetId())
@@ -526,10 +528,11 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 	keyvals["parent_job_id"] = trHelper.currSwarmingID
 
 	gsSourcePath := ""
-	if path, ok := trHelper.trReqHWDef.DynamicUpdateLookupTable["installPath"]; ok {
+	if path, ok := trHelper.lookupTable["installPath"]; ok {
 		gsSourcePath = path + "/metadata/sources.jsonpb"
 	}
 
+	primary, companions := createDutModelFromTargets(trHelper.primaryTarget, trHelper.secondaryTargets)
 	deadline := time.Now().UTC().Add(trHelper.maxDuration)
 	builder := common_builders.DynamicTrv2Builder{
 		ParentBuildId:        trHelper.currBBID,
@@ -539,12 +542,9 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 		BuildString:          trHelper.builderStr,
 		Deadline:             timestamppb.New(deadline),
 		TestSuites:           testSuites,
-		PrimaryDut: &labapi.DutModel{
-			BuildTarget: trHelper.primaryTarget.board,
-			ModelName:   trHelper.primaryTarget.model,
-		},
-		CompanionDuts: []*labapi.DutModel{},
-		Keyvals:       keyvals,
+		PrimaryDut:           primary,
+		CompanionDuts:        companions,
+		Keyvals:              keyvals,
 		OrderedTaskBuilders: []common_builders.DynamicTaskBuilder{
 			common_builders.DefaultDynamicTestTaskWrapper(common.CrosTest),
 			common_builders.DefaultDynamicRdbPublishTaskWrapper(gsSourcePath, false),
@@ -560,7 +560,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 	err = dynamic_updates.AddUserDefinedDynamicUpdates(
 		dynamicRequest,
 		trHelper.suiteInfo.SuiteMetadata.DynamicUpdates,
-		trHelper.trReqHWDef.DynamicUpdateLookupTable)
+		trHelper.lookupTable)
 
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to add user defined dynamic updates to trv2 request").Err()
@@ -660,12 +660,28 @@ func buildProvisionStateOldProto(provInfo []*testapi.ProvisionInfo) (*testapi.Pr
 	return provisionState, nil
 }
 
-func createCftDeviceRequestFromTarget(target *HwTarget) (*skylab_test_runner.CFTTestRequest_Device, error) {
-	var err error
-	dutModel := &labapi.DutModel{
+// createDutModelFromTargets forms DutModels for the
+// primary and companion targets.
+func createDutModelFromTargets(primaryTarget *HwTarget, companionTargets []*HwTarget) (*labapi.DutModel, []*labapi.DutModel) {
+	companions := []*labapi.DutModel{}
+	for _, companionTarget := range companionTargets {
+		companions = append(companions, createDutModelFromTarget(companionTarget))
+	}
+
+	return createDutModelFromTarget(primaryTarget), companions
+}
+
+// createDutModelFromTarget forms a DutModel for the target.
+func createDutModelFromTarget(target *HwTarget) *labapi.DutModel {
+	return &labapi.DutModel{
 		BuildTarget: target.board,
 		ModelName:   target.model,
 	}
+}
+
+func createCftDeviceRequestFromTarget(target *HwTarget) (*skylab_test_runner.CFTTestRequest_Device, error) {
+	var err error
+	dutModel := createDutModelFromTarget(target)
 
 	var provisionState *testapi.ProvisionState
 	provisionState = nil
