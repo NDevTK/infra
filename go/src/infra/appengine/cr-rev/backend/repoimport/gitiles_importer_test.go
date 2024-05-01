@@ -6,20 +6,22 @@ package repoimport
 
 import (
 	"context"
-	"infra/appengine/cr-rev/backend/gitiles"
-	"infra/appengine/cr-rev/common"
-	"infra/appengine/cr-rev/models"
 	"strconv"
 	"testing"
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/proto/git"
 	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/gae/service/datastore"
+
+	"infra/appengine/cr-rev/backend/gitiles"
+	"infra/appengine/cr-rev/common"
+	"infra/appengine/cr-rev/models"
 )
 
 func TestGitilesImporter(t *testing.T) {

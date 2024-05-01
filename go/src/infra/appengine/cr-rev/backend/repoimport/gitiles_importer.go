@@ -9,14 +9,14 @@ import (
 	"fmt"
 	"sync"
 
+	"go.chromium.org/luci/common/data/stringset"
+	"go.chromium.org/luci/common/logging"
+	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
+
 	"infra/appengine/cr-rev/backend/gitiles"
 	"infra/appengine/cr-rev/common"
 	"infra/appengine/cr-rev/config"
 	"infra/appengine/cr-rev/models"
-
-	"go.chromium.org/luci/common/data/stringset"
-	"go.chromium.org/luci/common/logging"
-	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
 )
 
 const (
