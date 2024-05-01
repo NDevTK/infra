@@ -11,11 +11,11 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 
