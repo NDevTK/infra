@@ -9,13 +9,13 @@ import (
 	"fmt"
 	"testing"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	crosbb "infra/cros/lib/buildbucket"
-
-	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/structpb"
 
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+
+	"infra/cmd/crosfleet/internal/buildbucket"
+	crosbb "infra/cros/lib/buildbucket"
 	models "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )

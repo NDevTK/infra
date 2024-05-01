@@ -16,6 +16,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/buildbucket"
@@ -26,8 +29,6 @@ import (
 	"go.chromium.org/luci/common/logging/memlogger"
 	"go.chromium.org/luci/lucictx"
 	resultpb "go.chromium.org/luci/resultdb/proto/v1"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 
 	"infra/cmd/cros_test_platform/internal/execution/types"
 	"infra/libs/skylab/inventory"
