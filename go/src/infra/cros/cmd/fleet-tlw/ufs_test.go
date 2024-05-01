@@ -9,10 +9,11 @@ import (
 	"errors"
 	"testing"
 
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
-	"go.chromium.org/luci/appengine/gaetesting"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls"
+	"go.chromium.org/luci/appengine/gaetesting"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufschromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
