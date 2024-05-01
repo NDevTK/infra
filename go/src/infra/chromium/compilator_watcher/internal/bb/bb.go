@@ -9,12 +9,13 @@ package bb
 import (
 	"context"
 
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
+
 	"go.chromium.org/luci/auth"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/grpc"
-	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 type buildsClient interface {

@@ -2,8 +2,11 @@
 
 package main
 
-import pb "infra/libs/bqschema/tabledef"
-import civil "cloud.google.com/go/civil"
+import (
+	civil "cloud.google.com/go/civil"
+
+	pb "infra/libs/bqschema/tabledef"
+)
 
 // TestSchemaTable is the TableDef for the
 // "dataset_id" dataset's "table_id" table.

@@ -8,14 +8,15 @@ import (
 	"context"
 	"fmt"
 
-	"infra/chromium/bootstrapper/clients/gerrit"
-	"infra/chromium/util"
-
-	"go.chromium.org/luci/common/errors"
-	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/errors"
+	gerritpb "go.chromium.org/luci/common/proto/gerrit"
+
+	"infra/chromium/bootstrapper/clients/gerrit"
+	"infra/chromium/util"
 )
 
 // Patchset is the fake data for a patchset of a change.
