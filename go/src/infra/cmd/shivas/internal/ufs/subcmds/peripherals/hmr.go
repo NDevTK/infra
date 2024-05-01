@@ -6,6 +6,15 @@ package peripherals
 
 import (
 	"fmt"
+	"strings"
+
+	"github.com/maruel/subcommands"
+
+	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/prpc"
+
 	"infra/cmd/shivas/cmdhelp"
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
@@ -13,13 +22,6 @@ import (
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	rpc "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/util"
-	"strings"
-
-	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/auth/client/authcli"
-	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/grpc/prpc"
 )
 
 var (
