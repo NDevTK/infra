@@ -10,12 +10,13 @@ import (
 	"os"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/protobuf/proto"
 
 	"infra/cmd/shivas/cmdhelp"
 	"infra/cmd/shivas/site"
