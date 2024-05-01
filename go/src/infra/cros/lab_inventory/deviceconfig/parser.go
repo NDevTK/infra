@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
+
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
