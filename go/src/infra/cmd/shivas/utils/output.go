@@ -18,9 +18,10 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	"go.chromium.org/luci/common/errors"
 	"golang.org/x/crypto/ssh/terminal"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"go.chromium.org/luci/common/errors"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
