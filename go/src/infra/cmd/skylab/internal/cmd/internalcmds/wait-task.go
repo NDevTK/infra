@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/maruel/subcommands"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_tool"
 	"go.chromium.org/luci/auth/client/authcli"
