@@ -10,8 +10,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
-	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	. "go.chromium.org/luci/common/testing/assertions"
 
 	"infra/libs/skylab/common/heuristics"
 )

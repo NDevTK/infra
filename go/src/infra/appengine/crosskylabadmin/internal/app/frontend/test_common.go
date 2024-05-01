@@ -11,12 +11,13 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"google.golang.org/protobuf/types/known/durationpb"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/gae/service/datastore"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
-	"google.golang.org/protobuf/types/known/durationpb"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
