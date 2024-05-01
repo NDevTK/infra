@@ -6,10 +6,11 @@ package configs
 
 import (
 	"context"
-	"infra/cros/cmd/cros_test_runner/data"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/cmd/cros_test_runner/data"
 )
 
 const (

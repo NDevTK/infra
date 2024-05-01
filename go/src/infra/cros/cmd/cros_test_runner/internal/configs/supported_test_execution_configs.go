@@ -7,6 +7,9 @@ package configs
 import (
 	"context"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
+	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
+
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_commands"
 	"infra/cros/cmd/common_lib/common_configs"
@@ -14,9 +17,6 @@ import (
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
-	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 )
 
 // All currently supported command-executor pairs.

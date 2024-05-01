@@ -6,12 +6,13 @@ package commands_test
 
 import (
 	"context"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/dutstate"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/cros/cmd/cros_test_runner/data"
+	"infra/cros/cmd/cros_test_runner/internal/commands"
+	"infra/cros/dutstate"
 )
 
 func TestUpdateDutStateCmd_UnsupportedSK(t *testing.T) {
