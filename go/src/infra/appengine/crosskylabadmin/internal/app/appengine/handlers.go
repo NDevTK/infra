@@ -17,13 +17,13 @@ package main
 import (
 	"net/http"
 
-	"go.chromium.org/luci/appengine/gaemiddleware/standard"
-	"go.chromium.org/luci/server/router"
-	"google.golang.org/appengine"
-
 	// Help gae.py to discover this <go1.13 dependency.
 	// TODO(gregorynisbet): fix this. See b/197140325 for details.
 	_ "golang.org/x/xerrors"
+	"google.golang.org/appengine"
+
+	"go.chromium.org/luci/appengine/gaemiddleware/standard"
+	"go.chromium.org/luci/server/router"
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/cron"

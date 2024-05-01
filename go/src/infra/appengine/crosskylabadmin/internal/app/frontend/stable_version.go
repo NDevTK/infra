@@ -11,6 +11,9 @@ import (
 	"strings"
 
 	"github.com/gogo/protobuf/jsonpb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	authclient "go.chromium.org/luci/auth"
 	gitilesApi "go.chromium.org/luci/common/api/gitiles"
@@ -19,8 +22,6 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/auth"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"

@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
