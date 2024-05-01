@@ -13,20 +13,21 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/result_flow/internal/bb"
-	"infra/cros/cmd/result_flow/internal/message"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/api/option"
+	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/grpc"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	"go.chromium.org/luci/auth"
 	pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/api/option"
-	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-	"google.golang.org/grpc"
+
+	"infra/cros/cmd/result_flow/internal/bb"
+	"infra/cros/cmd/result_flow/internal/message"
 )
 
 type state struct {
