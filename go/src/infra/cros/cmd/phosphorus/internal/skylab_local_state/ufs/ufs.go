@@ -8,11 +8,12 @@ package ufs
 import (
 	"context"
 
+	"google.golang.org/grpc/metadata"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/grpc/metadata"
 
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsutil "infra/unifiedfleet/app/util"
