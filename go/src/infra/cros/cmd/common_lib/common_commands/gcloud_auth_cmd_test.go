@@ -6,13 +6,14 @@ package common_commands_test
 
 import (
 	"context"
+	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/cros/cmd/common_lib/common_commands"
 	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
-	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGcloudAuthCmd_UnsupportedSK(t *testing.T) {
