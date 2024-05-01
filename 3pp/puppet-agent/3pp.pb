@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 create {
-  platform_re: "windows-.*"
+  platform_re: "windows-(386|amd64)"
   source {
     script { name: "fetch.py" }
     unpack_archive: false

@@ -29,7 +29,6 @@ _EXTENSION = {
 _PLATFORMS = {
     'windows-386': 'x86',
     'windows-amd64': 'x64',
-    'windows-arm64': 'x64',
 }
 
 
