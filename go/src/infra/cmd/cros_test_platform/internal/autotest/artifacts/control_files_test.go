@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cmd/cros_test_platform/internal/autotest/artifacts"
 	"infra/cmd/cros_test_platform/internal/testutils"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 func TestExtractControlFiles(t *testing.T) {

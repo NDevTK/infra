@@ -11,11 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"infra/cmd/cros_test_platform/internal/execution/testrunner"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/cmd/cros_test_platform/internal/execution/testrunner"
 )
 
 // RequestStepUpdater provides methods to update a step corresponding to the
