@@ -6,7 +6,8 @@ package data
 
 import (
 	"container/list"
-	vmlabapi "infra/libs/vmlab/api"
+
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -14,12 +15,12 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/protobuf/types/known/anypb"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/dutstate"
+	vmlabapi "infra/libs/vmlab/api"
 )
 
 // HwTestStateKeeper represents all the data hw test execution flow requires.
