@@ -21,13 +21,13 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/internal/shared"
-
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
+
+	"infra/cros/internal/shared"
 )
 
 type User struct {

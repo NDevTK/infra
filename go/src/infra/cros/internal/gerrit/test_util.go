@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/golang/mock/gomock"
+
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 )
 
