@@ -8,13 +8,13 @@ import (
 	"context"
 	"fmt"
 
-	"infra/cros/cmd/common_lib/common_configs"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
-
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/common_configs"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
 )
 
 // Config types
