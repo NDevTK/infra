@@ -7,8 +7,9 @@ package servo
 import (
 	"context"
 
-	"go.chromium.org/luci/common/errors"
 	"golang.org/x/exp/slices"
+
+	"go.chromium.org/luci/common/errors"
 
 	components_servo "infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"

@@ -10,9 +10,10 @@ import (
 	"strings"
 	"time"
 
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"

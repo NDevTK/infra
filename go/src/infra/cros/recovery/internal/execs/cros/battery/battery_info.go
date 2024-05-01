@@ -11,12 +11,12 @@ import (
 	"strconv"
 	"time"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/cros/power"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // batteryInfo struct holds info regarding the battery of the DUT.
