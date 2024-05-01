@@ -5,10 +5,11 @@
 package main
 
 import (
-	dashpb "infra/appengine/dashboard/api/dashboard"
-	"infra/appengine/dashboard/backend"
 	"reflect"
 	"testing"
+
+	dashpb "infra/appengine/dashboard/api/dashboard"
+	"infra/appengine/dashboard/backend"
 )
 
 func TestIngestPlatforms(t *testing.T) {

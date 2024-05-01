@@ -16,15 +16,14 @@ import (
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/encryptedcookies"
+	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/mailer"
 	"go.chromium.org/luci/server/module"
-	"go.chromium.org/luci/server/secrets"
-	"go.chromium.org/luci/server/tq"
-
-	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
 	"go.chromium.org/luci/server/router"
+	"go.chromium.org/luci/server/secrets"
 	"go.chromium.org/luci/server/templates"
+	"go.chromium.org/luci/server/tq"
 
 	"infra/appengine/poros/api/handlers"
 	"infra/appengine/poros/api/proto"

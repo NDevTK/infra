@@ -12,6 +12,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/common/data/strpair"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 

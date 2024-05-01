@@ -8,10 +8,11 @@ package middleware
 import (
 	"context"
 
-	"go.chromium.org/luci/server/cron"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
+
+	"go.chromium.org/luci/server/cron"
 )
 
 // Name used for OpenTelemetry tracers.

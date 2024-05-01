@@ -10,10 +10,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
-	"go.opentelemetry.io/otel"
 
 	"infra/appengine/drone-queen/api"
 	"infra/appengine/drone-queen/internal/config"

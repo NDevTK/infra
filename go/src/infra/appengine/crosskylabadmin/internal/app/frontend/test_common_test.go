@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
