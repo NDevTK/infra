@@ -7,9 +7,10 @@ import (
 	"path"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/iterator"
+
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/api/iterator"
 )
 
 func ListBuildDirectory(
