@@ -12,10 +12,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/cmd/cloudbuildhelper/fileset"
 	"infra/cmd/cloudbuildhelper/manifest"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 const testPinsYAML = `

@@ -7,18 +7,20 @@ package gerrit
 import (
 	"context"
 	"errors"
-	"infra/chromium/bootstrapper/clients/gob"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"go.chromium.org/luci/common/proto"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/grpc/grpcutil"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+
+	"infra/chromium/bootstrapper/clients/gob"
 )
 
 func TestGerritClientForHost(t *testing.T) {
