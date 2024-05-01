@@ -15,8 +15,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"go.chromium.org/luci/common/errors"
 
 	fleet "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
