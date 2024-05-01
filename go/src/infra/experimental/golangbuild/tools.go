@@ -158,11 +158,11 @@ golang/benchstat/${platform} latest
 	// See https://source.corp.google.com/h/chromium/infra/infra/+/main:go/src/infra/cmd/mac_toolchain/README.md and
 	// https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/recipes/recipe_modules/osx_sdk/api.py
 	if gotXcode {
-		xcodeInstall := exec.CommandContext(ctx, filepath.Join(toolsRoot, "mac_toolchain"), "install", "-xcode-version", inputs.XcodeVersion, "-output-dir", filepath.Join(toolsRoot, "Xcode.app"))
+		xcodeInstall := exec.CommandContext(ctx, filepath.Join(toolsRoot, "mac_toolchain"), "install", "-xcode-version", inputs.XcodeVersion, "-output-dir", filepath.Join(toolsRoot, inputs.XcodeVersion, "Xcode.app"))
 		if err := cmdStepRun(ctx, "install Xcode "+inputs.XcodeVersion, xcodeInstall, true); err != nil {
 			return "", err
 		}
-		xcodeSelect := exec.CommandContext(ctx, "sudo", "xcode-select", "--switch", filepath.Join(toolsRoot, "Xcode.app"))
+		xcodeSelect := exec.CommandContext(ctx, "sudo", "xcode-select", "--switch", filepath.Join(toolsRoot, inputs.XcodeVersion, "Xcode.app"))
 		if err := cmdStepRun(ctx, "select Xcode "+inputs.XcodeVersion, xcodeSelect, true); err != nil {
 			return "", err
 		}
