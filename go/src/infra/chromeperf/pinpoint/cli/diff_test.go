@@ -3,11 +3,12 @@ package cli
 import (
 	"testing"
 
-	pppb "infra/chromeperf/pinpoint/proto"
-
 	"github.com/google/go-cmp/cmp"
-	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+
+	pppb "infra/chromeperf/pinpoint/proto"
 )
 
 func TestDiffJob(t *testing.T) {
