@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/luci/common/logging"
+
 	dashpb "infra/appengine/dashboard/api/dashboard"
 	"infra/appengine/dashboard/backend"
-
-	"go.chromium.org/luci/common/logging"
 )
 
 // TemplateService bundles a backend.Service with its backend.ServiceIncident children.

@@ -8,12 +8,13 @@ import (
 	"context"
 	"net/http"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/site"

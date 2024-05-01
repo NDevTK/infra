@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
+
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 

@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"go.chromium.org/luci/common/data/stringset"
+
 	"infra/appengine/depot_tools_metrics/schema"
 )
 

@@ -9,10 +9,11 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/server/auth"
 
 	"infra/appengine/drone-queen/api"
 	"infra/appengine/drone-queen/internal/config"
