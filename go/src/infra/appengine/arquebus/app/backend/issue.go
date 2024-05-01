@@ -25,14 +25,13 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/wrappers"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/gae/service/memcache"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"infra/appengine/arquebus/app/backend/model"
 	"infra/appengine/arquebus/app/config"
