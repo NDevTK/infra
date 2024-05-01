@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strings"
 
+	"google.golang.org/appengine"
+
 	authServer "go.chromium.org/luci/appengine/gaeauth/server"
 	"go.chromium.org/luci/appengine/gaemiddleware"
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
@@ -21,7 +23,6 @@ import (
 	"go.chromium.org/luci/grpc/discovery"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
-	"google.golang.org/appengine"
 
 	admin "infra/tricium/api/admin/v1"
 	"infra/tricium/appengine/common"
