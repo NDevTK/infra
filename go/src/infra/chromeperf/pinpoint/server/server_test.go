@@ -26,6 +26,7 @@ import (
 	"os"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -34,8 +35,6 @@ import (
 	"infra/chromeperf/pinpoint"
 	. "infra/chromeperf/pinpoint/assertions"
 	"infra/chromeperf/pinpoint/proto"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 const bufSize = 1024 * 1024

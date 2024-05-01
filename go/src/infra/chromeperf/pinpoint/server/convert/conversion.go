@@ -26,11 +26,12 @@ import (
 	"strings"
 	"time"
 
-	"infra/chromeperf/pinpoint/proto"
-	"infra/chromeperf/pinpoint/server/identify"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/chromeperf/pinpoint/proto"
+	"infra/chromeperf/pinpoint/server/identify"
 )
 
 func gerritChangeToURL(c *proto.GerritChange) (string, error) {

@@ -13,6 +13,7 @@ import (
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/digest"
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/filemetadata"
 	. "github.com/smartystreets/goconvey/convey"
+
 	. "go.chromium.org/luci/common/testing/assertions"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 )

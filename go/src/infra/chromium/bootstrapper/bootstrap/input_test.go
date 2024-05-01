@@ -8,9 +8,10 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/structpb"
+
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	. "go.chromium.org/luci/common/testing/assertions"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestInput(t *testing.T) {

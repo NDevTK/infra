@@ -16,10 +16,11 @@ package render
 
 import (
 	"fmt"
-	"infra/chromeperf/pinpoint/proto"
 	"regexp"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/chromeperf/pinpoint/proto"
 )
 
 var (
