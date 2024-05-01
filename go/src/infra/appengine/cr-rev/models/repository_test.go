@@ -9,6 +9,7 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/gae/service/datastore"
 )
 
