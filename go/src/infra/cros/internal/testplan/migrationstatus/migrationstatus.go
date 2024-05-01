@@ -7,7 +7,6 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"infra/cros/internal/repo"
 	"io"
 	"regexp"
 	"sort"
@@ -17,6 +16,8 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/data/stringset"
 	cvpb "go.chromium.org/luci/cv/api/config/v2"
+
+	"infra/cros/internal/repo"
 )
 
 // names of relevant ConfigGroups and Builders in the CV config.
