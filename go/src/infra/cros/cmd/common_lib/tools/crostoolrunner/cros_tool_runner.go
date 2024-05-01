@@ -13,13 +13,14 @@ import (
 	"sync"
 	"time"
 
-	"infra/cros/cmd/common_lib/common"
+	"google.golang.org/grpc"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/grpc"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 const (

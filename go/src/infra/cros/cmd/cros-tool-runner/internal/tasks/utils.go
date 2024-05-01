@@ -11,8 +11,6 @@ import (
 	"os"
 	"time"
 
-	"infra/cros/cmd/cros-tool-runner/internal/common"
-
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -20,6 +18,8 @@ import (
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/target"
 	"go.chromium.org/luci/lucictx"
+
+	"infra/cros/cmd/cros-tool-runner/internal/common"
 )
 
 // readContainersMetadata reads the jsonproto at path containers metadata file.

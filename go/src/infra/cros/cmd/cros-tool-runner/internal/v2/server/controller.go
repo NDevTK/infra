@@ -15,10 +15,12 @@ import (
 	"regexp"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/system/signals"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/system/signals"
+
 	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/tsmon"
 )
