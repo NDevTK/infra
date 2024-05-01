@@ -23,13 +23,14 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	. "github.com/smartystreets/goconvey/convey"
+	bqapi "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
+
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/retry/transient"
-	bqapi "google.golang.org/api/bigquery/v2"
-	"google.golang.org/api/googleapi"
 )
 
 func TestRamBufferedBQInserter(t *testing.T) {

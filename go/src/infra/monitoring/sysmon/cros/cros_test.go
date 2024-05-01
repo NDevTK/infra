@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/tsmon"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestUpdate(t *testing.T) {

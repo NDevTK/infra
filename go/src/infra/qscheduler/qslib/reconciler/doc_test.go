@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"time"
 
+	"go.chromium.org/luci/common/data/stringset"
+
 	"infra/qscheduler/qslib/reconciler"
 	"infra/qscheduler/qslib/scheduler"
-
-	"go.chromium.org/luci/common/data/stringset"
 )
 
 func Example() {
