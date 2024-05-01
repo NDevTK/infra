@@ -5,9 +5,9 @@
 package run
 
 import (
-	"infra/cros/satlab/satlab/internal/flagx"
-
 	"github.com/maruel/subcommands"
+
+	"infra/cros/satlab/satlab/internal/flagx"
 )
 
 // runFlags holds the flags necessary for test execution
