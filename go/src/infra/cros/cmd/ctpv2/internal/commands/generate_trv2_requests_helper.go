@@ -74,6 +74,7 @@ type TrV2ReqHelper struct {
 	secondaryTargets []*HwTarget
 	pool             string
 	currBBID         int64
+	maxDuration      time.Duration
 
 	analyticsName    string
 	parentRequestUID string
@@ -187,6 +188,11 @@ func populateHelper(ctx context.Context, trHelper *TrV2ReqHelper) error {
 		logging.Infof(ctx, "SWARMING_TASK_ID NOT FOUND")
 	}
 	trHelper.analyticsName = trHelper.suiteInfo.GetSuiteRequest().GetAnalyticsName()
+	if trHelper.suiteInfo.GetSuiteRequest().GetMaximumDuration() == nil {
+		trHelper.maxDuration = DefaultTimeout
+	} else {
+		trHelper.maxDuration = trHelper.suiteInfo.GetSuiteRequest().GetMaximumDuration().AsDuration()
+	}
 
 	return nil
 }
@@ -222,15 +228,15 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 		return nil, fmt.Errorf("No Build Object set in helper.")
 	}
 	args := request.Args{
-		Cmd:               *createCommand(ctx, trHelper.suiteName),
+		Cmd:               *createCommand(ctx, trHelper),
 		SwarmingPool:      trHelper.pool,
 		Dimensions:        createFreeformDims(trHelper),
 		ParentTaskID:      trHelper.currSwarmingID,
 		ParentRequestUID:  trHelper.parentRequestUID,
 		Priority:          10,
-		TestRunnerRequest: nil,            // Always nil for CFT.
-		CFTIsEnabled:      true,           // Always true
-		Timeout:           DefaultTimeout, // TODO (azrahman): Get this from input.
+		TestRunnerRequest: nil,  // Always nil for CFT.
+		CFTIsEnabled:      true, // Always true
+		Timeout:           trHelper.maxDuration,
 		Experiments:       trHelper.build.Build().GetInput().Experiments,
 		GerritChanges:     trHelper.build.Build().GetInput().GerritChanges,
 		ResultsConfig:     nil, // TODO (azrahman): Investigate if we need this.
@@ -272,17 +278,17 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 }
 
 // createCommand creates cmd for the builder request.
-func createCommand(ctx context.Context, suiteName string) *worker.Command {
+func createCommand(ctx context.Context, trHelper *TrV2ReqHelper) *worker.Command {
 	keyvals := make(map[string]string)
-	keyvals["suite"] = suiteName
-	keyvals["label"] = suiteName
+	keyvals["suite"] = trHelper.suiteName
+	keyvals["label"] = trHelper.suiteName
 
 	cmd := &worker.Command{
 		ClientTest:      false,
-		Deadline:        time.Now().Add(DefaultTimeout), // Deadline should come from input (add it)
+		Deadline:        time.Now().UTC().Add(trHelper.maxDuration),
 		Keyvals:         keyvals,
 		OutputToIsolate: true,
-		TaskName:        suiteName,
+		TaskName:        trHelper.suiteName,
 	}
 
 	// This was retrieved from input in ctpv1 but turns out this was always the same.
@@ -494,8 +500,6 @@ func getBuildTargetWVariantFromSchedulingTarget(target *testapi.Target) string {
 
 func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*api.CrosTestRunnerDynamicRequest, error) {
 	// TODO(cdelagarza): support multi-dut
-	deadline := timestamppb.New(time.Now().Add(19 * time.Hour))
-
 	testCaseIds := []*testapi.TestCase_Id{}
 	for _, testCase := range trHelper.testCases {
 		testCaseIds = append(testCaseIds, testCase.GetMetadata().GetTestCase().GetId())
@@ -526,13 +530,14 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 		gsSourcePath = path + "/metadata/sources.jsonpb"
 	}
 
+	deadline := time.Now().UTC().Add(trHelper.maxDuration)
 	builder := common_builders.DynamicTrv2Builder{
 		ParentBuildId:        trHelper.currBBID,
 		ParentRequestUid:     trHelper.parentRequestUID,
 		ContainerGcsPath:     trHelper.primaryTarget.gcsArtifactPath + common.ContainerMetadataPath,
 		ContainerMetadataKey: trHelper.primaryTarget.boardWVaraint,
 		BuildString:          trHelper.builderStr,
-		Deadline:             deadline,
+		Deadline:             timestamppb.New(deadline),
 		TestSuites:           testSuites,
 		PrimaryDut: &labapi.DutModel{
 			BuildTarget: trHelper.primaryTarget.board,
@@ -566,8 +571,6 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 
 // createCftTestRequest creates cft test request.
 func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab_test_runner.CFTTestRequest, error) {
-	deadline := timestamppb.New(time.Now().Add(19 * time.Hour))
-
 	containerGcsPath := trHelper.primaryTarget.gcsArtifactPath + common.ContainerMetadataPath
 	containerMetadata, err := common.FetchContainerMetadata(ctx, containerGcsPath)
 	if err != nil {
@@ -614,8 +617,9 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 		companionDuts = append(companionDuts, secondaryDut)
 	}
 
+	deadline := time.Now().UTC().Add(trHelper.maxDuration)
 	cftTestRequest := &skylab_test_runner.CFTTestRequest{
-		Deadline:                     deadline,
+		Deadline:                     timestamppb.New(deadline),
 		ParentRequestUid:             trHelper.parentRequestUID,
 		ParentBuildId:                trHelper.currBBID,
 		PrimaryDut:                   primaryDut,
