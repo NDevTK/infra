@@ -14,6 +14,7 @@ import (
 	"os"
 
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	api_common "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
@@ -104,6 +105,9 @@ func executeHwTests(
 	buildState *build.State) (*skylab_test_runner.Result, error) {
 
 	// Validation
+	if err := validateDeadline(ctx, req.GetDeadline()); err != nil {
+		return nil, err
+	}
 	err := validateHwExecution(ctrCipdVersion, gsRoot)
 	if err != nil {
 		return nil, err
@@ -185,6 +189,9 @@ func executeHwTestsV2(
 	buildState *build.State) (*skylab_test_runner.Result, error) {
 
 	// Validation
+	if err := validateDeadline(ctx, req.GetParams().GetDeadline()); err != nil {
+		return nil, err
+	}
 	err := validateHwExecution(ctrCipdVersion, gsRoot)
 	if err != nil {
 		return nil, err
@@ -299,4 +306,22 @@ func setupCtr(ctrCipdVersion string) *crostoolrunner.CrosToolRunner {
 		CtrCipdInfo:       ctrCipdInfo,
 		EnvVarsToPreserve: configs.GetHwConfigsEnvVars(),
 	}
+}
+
+// validateDeadline ensures the request's deadline has not passed
+// before beginning execution. If it is past, mark as a failed step
+// and report the error.
+func validateDeadline(ctx context.Context, deadline *timestamppb.Timestamp) error {
+	if deadline == nil || deadline.AsTime().After(timestamppb.Now().AsTime()) {
+		return nil
+	}
+
+	timeSinceDeadline := timestamppb.Now().AsTime().Sub(deadline.AsTime())
+	err := fmt.Errorf("deadline exceeded: %s passed since deadline", timeSinceDeadline.String())
+	step, _ := build.StartStep(ctx, "Deadline Exceeded")
+	defer func() { step.End(err) }()
+
+	common.GlobalNonInfraError = err
+
+	return err
 }
