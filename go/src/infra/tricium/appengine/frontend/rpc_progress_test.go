@@ -10,12 +10,13 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc/codes"
+
 	"go.chromium.org/luci/auth/identity"
 	ds "go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
-	"google.golang.org/grpc/codes"
 
 	tricium "infra/tricium/api/v1"
 	"infra/tricium/appengine/common/track"

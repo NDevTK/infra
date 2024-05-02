@@ -5,10 +5,11 @@
 package gerrit
 
 import (
-	"infra/tricium/appengine/common/track"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/tricium/appengine/common/track"
 )
 
 func TestCLAndPatchSetNumberFunctions(t *testing.T) {

@@ -6,11 +6,12 @@ package track
 
 import (
 	"context"
-	tricium "infra/tricium/api/v1"
 	"testing"
 
 	"github.com/golang/protobuf/jsonpb"
 	. "github.com/smartystreets/goconvey/convey"
+
+	tricium "infra/tricium/api/v1"
 )
 
 func TestComment_UnpackComment(t *testing.T) {

@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/proto"
+
 	ds "go.chromium.org/luci/gae/service/datastore"
 
 	"infra/tricium/api/admin/v1"

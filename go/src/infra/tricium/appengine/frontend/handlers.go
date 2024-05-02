@@ -12,13 +12,14 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/templates"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 
 	tricium "infra/tricium/api/v1"
 	"infra/tricium/appengine/common/config"

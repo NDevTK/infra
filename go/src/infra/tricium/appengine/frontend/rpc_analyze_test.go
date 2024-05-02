@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/auth/identity"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 	"go.chromium.org/luci/server/auth"

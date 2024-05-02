@@ -18,11 +18,12 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/waigani/diffparser"
+	gr "golang.org/x/build/gerrit"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/auth"
-	gr "golang.org/x/build/gerrit"
 
 	tricium "infra/tricium/api/v1"
 	"infra/tricium/appengine/common/track"

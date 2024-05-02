@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/luci/common/clock/testclock"
 	ds "go.chromium.org/luci/gae/service/datastore"
 

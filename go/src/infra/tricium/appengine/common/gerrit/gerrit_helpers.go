@@ -6,8 +6,9 @@ package gerrit
 
 import (
 	"fmt"
-	"infra/tricium/appengine/common/track"
 	"regexp"
+
+	"infra/tricium/appengine/common/track"
 )
 
 var refRegexp = regexp.MustCompile("^refs/changes/[0-9]+/([0-9]+)/([0-9]+)$")
