@@ -7,9 +7,8 @@ package testspec_test
 import (
 	"testing"
 
-	"github.com/kylelemons/godebug/pretty"
-
 	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
+	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/cmd/cros_test_platform/internal/autotest/testspec"
 	"infra/cmd/cros_test_platform/internal/testutils"
@@ -48,7 +47,7 @@ func TestLoadAndParseSimple(t *testing.T) {
 			},
 		},
 	}
-	if diff := pretty.Compare(want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("response differs, -want +got: %s", diff)
 	}
 }
