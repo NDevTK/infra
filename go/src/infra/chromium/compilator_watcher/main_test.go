@@ -10,14 +10,16 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc/codes"
+	grpcStatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/structpb"
+
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/luciexe/exe"
-	"google.golang.org/grpc/codes"
-	grpcStatus "google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/structpb"
+
 	bb "infra/chromium/compilator_watcher/internal/bb"
 )
 
