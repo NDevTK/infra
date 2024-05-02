@@ -12,6 +12,8 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/grpc/metadata"
+
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -20,7 +22,6 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
-	"google.golang.org/grpc/metadata"
 )
 
 // ExitCodeCommandFailure indicates that a given command failed due to internal errors
