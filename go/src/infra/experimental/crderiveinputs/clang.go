@@ -7,13 +7,14 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"infra/experimental/crderiveinputs/inputpb"
 	"path"
 	"strings"
 
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/data/text/sequence"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/experimental/crderiveinputs/inputpb"
 )
 
 type ClangUpdate struct{}

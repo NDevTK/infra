@@ -12,9 +12,10 @@ import (
 	"strings"
 
 	"cloud.google.com/go/bigquery"
-	"go.chromium.org/luci/auth"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+
+	"go.chromium.org/luci/auth"
 
 	"infra/cros/support/internal/cli"
 )

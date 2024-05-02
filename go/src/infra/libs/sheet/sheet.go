@@ -8,8 +8,9 @@ import (
 	"context"
 	"net/http"
 
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/sheets/v4"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // Client consists of resources needed for querying gitiles and gerrit.

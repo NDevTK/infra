@@ -17,9 +17,10 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
-	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 )
 
 // operation is used by Manager to hold extra metadata.

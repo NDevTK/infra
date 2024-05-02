@@ -15,12 +15,13 @@ import (
 	"sync"
 	"time"
 
+	"google.golang.org/api/googleapi"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/sync/parallel"
-	"google.golang.org/api/googleapi"
 )
 
 // DirWriter exposes methods to write a local directory to Google Storage.

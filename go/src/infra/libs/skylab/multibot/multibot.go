@@ -2,16 +2,17 @@ package multibot
 
 import (
 	"fmt"
-	"infra/libs/skylab/dutstate"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/libs/skylab/dutstate"
 )
 
 func validateMultiBotHostInfo(message *skylab_local_state.MultiBotHostInfo) error {
