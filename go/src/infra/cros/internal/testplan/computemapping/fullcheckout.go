@@ -6,19 +6,21 @@ package computemapping
 import (
 	"context"
 	"fmt"
+	"path/filepath"
+	"strings"
+	"sync"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/sync/parallel"
+
 	"infra/cros/internal/git"
 	"infra/cros/internal/repo"
 	"infra/tools/dirmd"
 	"infra/tools/dirmd/cli/updater"
 	dirmdpb "infra/tools/dirmd/proto"
-	"path/filepath"
-	"strings"
-	"sync"
-
-	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/sync/parallel"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ToDirBQRows computes a DirBQRow for every DIR_METADATA in manifest. All

@@ -6,11 +6,12 @@ package pointless
 import (
 	"testing"
 
-	"infra/cros/internal/gerrit"
-
 	"github.com/bmatcuk/doublestar"
+
 	testplans_pb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
+
+	"infra/cros/internal/gerrit"
 )
 
 var builderName = "amd64-generic-cq"
