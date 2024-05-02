@@ -7,14 +7,16 @@ package tls
 import (
 	"context"
 	"fmt"
-	"infra/libs/lro"
 	"os"
 
 	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/grpc"
+
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/grpc"
+
+	"infra/libs/lro"
 )
 
 const (
