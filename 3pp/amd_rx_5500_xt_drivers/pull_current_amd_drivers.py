@@ -40,7 +40,7 @@ HEADER_ACCEPT_ENCODING = 'gzip, deflate, br'
 HEADER_ACCEPT_LANGUAGE = 'en-US,en;q=0.9'
 # Extracts the X.Y.Z driver version.
 DRIVER_VERSION_REGEX = re.compile(r'.*[^\d\.](\d+\.\d+\.\d+)[^\d\.].*')
-TEN_MEGABYTES = 10 * 1024 * 1024
+ONE_HUNDRED_MEGABYTES = 100 * 1024 * 1024
 RESPONSE_TIMEOUT = 5
 
 
@@ -70,6 +70,28 @@ def _get_html(url: str) -> str:
   return r.text
 
 
+def _get_windows_10_driver_group(soup: bs4.BeautifulSoup, url: str) -> bs4.Tag:
+  """Finds the group that contains all Windows 10 drivers.
+
+  Args:
+    soup: A BeautifulSoup object that has parsed the HTML for an AMD driver
+        download page.
+    url: A string containing the URL that provided the HTML parsed by |soup|.
+
+  Returns: A BeautifulSoup Tag object for the Windows 10 driver group.
+  """
+  os_groups = soup.find_all('div', attrs={'class': 'accordion-item'})
+  windows_10_group = None
+  for group in os_groups:
+    button = group.find('button', attrs={'class': 'accordion-button collapsed'})
+    if 'windows 10' in button.string.lower():
+      windows_10_group = group
+      break
+  else:
+    raise RuntimeError('Could not find Windows 10 group on %s' % url)
+  return windows_10_group
+
+
 def _get_download_button(soup: bs4.BeautifulSoup, url: str) -> bs4.Tag:
   """Finds the relevant download button for the driver.
 
@@ -82,16 +104,7 @@ def _get_download_button(soup: bs4.BeautifulSoup, url: str) -> bs4.Tag:
 
   Returns: A BeautifulSoup Tag object for the download button for the driver.
   """
-  os_groups = soup.find_all('details', attrs={'class': 'os-group'})
-  windows_10_group = None
-  for group in os_groups:
-    summary = group.find('summary')
-    if 'windows 10' in summary.string.lower():
-      windows_10_group = group
-      break
-  else:
-    raise RuntimeError('Could not find Windows 10 group on %s' % url)
-
+  windows_10_group = _get_windows_10_driver_group(soup, url)
   download_buttons = windows_10_group.find_all('a')
   matching_buttons = []
   for button in download_buttons:
@@ -123,22 +136,19 @@ def _get_driver_version(soup: bs4.BeautifulSoup, url: str) -> str:
   """
   # Downloads are organized by OS type with several download options available
   # for each OS. We look for the Windows 10 consumer drivers.
-  # The revision is in an element close to the download button, so get the
-  # correct button and work back from there.
-  download_button = _get_download_button(soup, url)
-  # Look for the "Revision Number" field__label, then grab the corresponding
-  # field__item.
-  labels = download_button.parent.parent.find_all(
-      'div', attrs={'class': 'field__label'})
-  revision_label = None
+  # The revision is a sibling of the first <strong>Revision Number</strong>
+  # tag in the group, so look for that.
+  os_group = _get_windows_10_driver_group(soup, url)
+  # Look for the "Revision Number" <strong>, then grab the sibling <p> which
+  # contains the actual revision number.
+  labels = os_group.find_all('strong')
   for l in labels:
     if 'revision' in l.string.lower():
       revision_label = l
       break
   else:
     raise RuntimeError('Unable to find revision label from %s' % url)
-  revision_item = revision_label.parent.find(
-      'div', attrs={'class': 'field__item'})
+  revision_item = revision_label.parent.find('p')
   match = DRIVER_VERSION_REGEX.match(revision_item.string)
   if not match:
     raise RuntimeError('Unable to extract driver version from %s' % url)
@@ -172,8 +182,8 @@ def _get_driver_binary(soup: bs4.BeautifulSoup, url: str) -> bytes:
     raise RuntimeError('Got non-OK status code %d downloading driver from %s' %
                        (r.status_code, download_url))
   # The drivers should be large, so if we didn't get back much data, that's
-  # indicative of something going wrong.
-  if len(r.content) < TEN_MEGABYTES:
+  # indicative of something going wrong or we downloaded the wrong thing.
+  if len(r.content) < ONE_HUNDRED_MEGABYTES:
     raise RuntimeError(
         'Only got back %d bytes from driver download, which is much less than '
         'expected' % len(r.content))

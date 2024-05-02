@@ -41,51 +41,89 @@ class GetDownloadButtonUnittest(unittest.TestCase):
     """Tests the happy path/success case when getting the download button."""
     html = """\
 <body>
-<details class="os-group">
-  <summary>Windows 11 - 64-Bit Edition</summary>
-  <div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 11 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <a href="foo.com/adrenalin-minimalsetup.exe">Download</a>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-  <div>
+  <div class="container">
     <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 1.2.3 (WHQL Recommended)</div>
+      <h4>AMD Software: Arenalin Edition</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-123.exe">Download</a>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 1.2.3 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-123.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
-<details class="os-group">
-  <summary>Windows 10 - 64-Bit Edition</summary>
-  <div>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 10 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <a href="foo.com/adrenalin-minimalsetup.exe">Download</a>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-  <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 2.3.4 (WHQL Recommended)</div>
+  <div class="container">
+    <div>
+      <h4>AMD Software: Arenalin Edition</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-234.exe">Download</a>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 2.3.4 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-234.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
-<details class="os-group">
-  <summary>Ubuntu x86 64-Bit</summary>
-  <div>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Ubuntu x86 64-Bit
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 3.4.5 (WHQL Recommended)</div>
+      <h4>Radeon Software for Linux</h4>
     </div>
     <div>
-      <a href="foo.com/ubuntu-adrenalin-345.tar">Download</a>
+      <strong>Revision Number</strong>
+      <p>23.40.2</p>
+    </div>
+    <div>
+      <a href="foo.com/amdgpu-install.deb">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
+</div>
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -101,35 +139,58 @@ class GetDownloadButtonUnittest(unittest.TestCase):
     # test_success' HTML but with the Windows 10 group deleted.
     html = """\
 <body>
-<details class="os-group">
-  <summary>Windows 11 - 64-Bit Edition</summary>
-  <div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 11 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <a href="foo.com/adrenalin-minimalsetup.exe">Download</a>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-  <div>
+  <div class="container">
     <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 1.2.3 (WHQL Recommended)</div>
+      <h4>AMD Software: Arenalin Edition</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-123.exe">Download</a>
-    </div>
-  </div>
-</details>
-<details class="os-group">
-  <summary>Ubuntu x86 64-Bit</summary>
-  <div>
-    <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 3.4.5 (WHQL Recommended)</div>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 1.2.3 (WHQL Recommended)</p>
     </div>
     <div>
-      <a href="foo.com/ubuntu-adrenalin-345.tar">Download</a>
+      <a href="foo.com/win10-win11-adrenalin-123.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Ubuntu x86 64-Bit
+    </button>
+  </h3>
+  <div class="container">
+    <div>
+      <h4>Radeon Software for Linux</h4>
+    </div>
+    <div>
+      <strong>Revision Number</strong>
+      <p>23.40.2</p>
+    </div>
+    <div>
+      <a href="foo.com/amdgpu-install.deb">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+</div>
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -142,51 +203,89 @@ class GetDownloadButtonUnittest(unittest.TestCase):
     # test_success' HTML but with the Windows 10 download link malformed.
     html = """\
 <body>
-<details class="os-group">
-  <summary>Windows 11 - 64-Bit Edition</summary>
-  <div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 11 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <a href="foo.com/adrenalin-minimalsetup.exe">Download</a>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-  <div>
+  <div class="container">
     <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 1.2.3 (WHQL Recommended)</div>
+      <h4>AMD Software: Arenalin Edition</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-123.exe">Download</a>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 1.2.3 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-123.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
-<details class="os-group">
-  <summary>Windows 10 - 64-Bit Edition</summary>
-  <div>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 10 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <a href="foo.com/adrenalin-minimalsetup.exe">Download</a>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-  <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 2.3.4 (WHQL Recommended)</div>
+  <div class="container">
+    <div>
+      <h4>AMD Software: Arenalin Edition</h4>
     </div>
     <div>
-      <a href="foo.com/win-adrenalin-234.exe">Download</a>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 2.3.4 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win-adrenalin-234.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
-<details class="os-group">
-  <summary>Ubuntu x86 64-Bit</summary>
-  <div>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Ubuntu x86 64-Bit
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 3.4.5 (WHQL Recommended)</div>
+      <h4>Radeon Software for Linux</h4>
     </div>
     <div>
-      <a href="foo.com/ubuntu-adrenalin-345.tar">Download</a>
+      <strong>Revision Number</strong>
+      <p>23.40.2</p>
+    </div>
+    <div>
+      <a href="foo.com/amdgpu-install.deb">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
+</div>
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -199,67 +298,105 @@ class GetDownloadButtonUnittest(unittest.TestCase):
     # test_success' HTML but with an additional Windows 10 download link added.
     html = """\
 <body>
-<details class="os-group">
-  <summary>Windows 11 - 64-Bit Edition</summary>
-  <div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 11 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <a href="foo.com/adrenalin-minimalsetup.exe">Download</a>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-  <div>
+  <div class="container">
     <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 1.2.3 (WHQL Recommended)</div>
+      <h4>AMD Software: Arenalin Edition</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-123.exe">Download</a>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 1.2.3 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-123.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
-<details class="os-group">
-  <summary>Windows 10 - 64-Bit Edition</summary>
-  <div>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 10 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <a href="foo.com/adrenalin-minimalsetup.exe">Download</a>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-  <div>
+  <div class="container">
     <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 2.3.4 (WHQL Recommended)</div>
+      <h4>AMD Software: Arenalin Edition</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-234.exe">Download</a>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 2.3.4 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-234.exe">
+        <span>Download</span>
+      </a>
+    </div>
+    <div>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 3.4.5 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-345.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-  <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 4.5.6 (WHQL Recommended)</div>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Ubuntu x86 64-Bit
+    </button>
+  </h3>
+  <div class="container">
+    <div>
+      <h4>Radeon Software for Linux</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-456.exe">Download</a>
+      <strong>Revision Number</strong>
+      <p>23.40.2</p>
+    </div>
+    <div>
+      <a href="foo.com/amdgpu-install.deb">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
-<details class="os-group">
-  <summary>Ubuntu x86 64-Bit</summary>
-  <div>
-    <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 3.4.5 (WHQL Recommended)</div>
-    </div>
-    <div>
-      <a href="foo.com/ubuntu-adrenalin-345.tar">Download</a>
-    </div>
-  </div>
-</details>
+</div>
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
     with self.assertRaisesRegex(RuntimeError,
                                 ('Found multiple relevant download buttons on '
                                  'url: foo.com/win10-win11-adrenalin-234.exe '
-                                 'foo.com/win10-win11-adrenalin-456.exe')):
+                                 'foo.com/win10-win11-adrenalin-345.exe')):
       pcad._get_download_button(soup, 'url')
 
 
@@ -269,18 +406,68 @@ class GetDriverVersionUnittest(unittest.TestCase):
     """Tests the happy path/success case when getting the driver version."""
     html = """\
 <body>
-<details class="os-group">
-  <summary>Windows 10 - 64-Bit Edition</summary>
-  <div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 11 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 2.3.4 (WHQL Recommended)</div>
+      <h4>Auto-Detect and Install</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-234.exe">Download</a>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
+  <div class="container">
+    <div>
+      <h4>AMD Software: Arenalin Edition</h4>
+    </div>
+    <div>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 1.2.3 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-123.exe">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 10 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
+    <div>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+  <div class="container">
+    <div>
+      <h4>AMD Software: Arenalin Edition</h4>
+    </div>
+    <div>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 2.3.4 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-234.exe">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+</div>
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -288,21 +475,41 @@ class GetDriverVersionUnittest(unittest.TestCase):
 
   def test_missing_revision_label(self):
     """Tests behavior when no valid revision label is found."""
-    # test_success' HTML but with the revision label malformed.
+    # test_success' HTML but with the revision label malformed and Windows 11
+    # download removed.
     html = """\
 <body>
-<details class="os-group">
-  <summary>Windows 10 - 64-Bit Edition</summary>
-  <div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 10 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <div class="field__label">Version Number</div>
-      <div class="field__item">Adrenalin 2.3.4 (WHQL Recommended)</div>
+      <h4>Auto-Detect and Install</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-234.exe">Download</a>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
+  <div class="container">
+    <div>
+      <h4>AMD Software: Arenalin Edition</h4>
+    </div>
+    <div>
+      <strong>Version Number</strong>
+      <p>Adrenalin 2.3.4 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-234.exe">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+</div>
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -312,21 +519,41 @@ class GetDriverVersionUnittest(unittest.TestCase):
 
   def test_missing_revision(self):
     """Tests behavior when no valid revision is found."""
-    # test_success' HTML but with the revision number malformed.
+    # test_success' HTML but with the revision number malformed and Windows 11
+    # download removed.
     html = """\
 <body>
-<details class="os-group">
-  <summary>Windows 10 - 64-Bit Edition</summary>
-  <div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 10 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 2.3.4.5 (WHQL Recommended)</div>
+      <h4>Auto-Detect and Install</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-234.exe">Download</a>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
+  <div class="container">
+    <div>
+      <h4>AMD Software: Arenalin Edition</h4>
+    </div>
+    <div>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 2.3.4.5 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-234.exe">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+</div>
 </body>
 """
     soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -344,29 +571,75 @@ class GetDriverBinaryUnittest(unittest.TestCase):
 
     self.html = """\
 <body>
-<details class="os-group">
-  <summary>Windows 10 - 64-Bit Edition</summary>
-  <div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 11 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <a href="foo.com/adrenalin-minimalsetup.exe">Download</a>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-  <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 2.3.4 (WHQL Recommended)</div>
+  <div class="container">
+    <div>
+      <h4>AMD Software: Arenalin Edition</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-234.exe">Download</a>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 1.2.3 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-123.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 10 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
+    <div>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+  <div class="container">
+    <div>
+      <h4>AMD Software: Arenalin Edition</h4>
+    </div>
+    <div>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 2.3.4 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-234.exe">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+</div>
 </body>
 """
 
   def test_success(self):
     """Tests the happy path/success case when downloading the driver."""
     soup = bs4.BeautifulSoup(self.html, 'html.parser')
-    byte_string = ('a' * 15 * 1024 * 1024).encode('utf-8')
+    byte_string = ('a' * 110 * 1024 * 1024).encode('utf-8')
     self._get_mock.return_value = mock.Mock(
         status_code=200, content=byte_string)
     self.assertEqual(pcad._get_driver_binary(soup, 'url'), byte_string)
@@ -402,22 +675,89 @@ class CmdGetCheckoutUnittest(fake_filesystem_unittest.TestCase):
 
     html = """\
 <body>
-<details class="os-group">
-  <summary>Windows 10 - 64-Bit Edition</summary>
-  <div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 11 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
     <div>
-      <a href="foo.com/adrenalin-minimalsetup.exe">Download</a>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-  <div>
-      <div class="field__label">Revision Number</div>
-      <div class="field__item">Adrenalin 2.3.4 (WHQL Recommended)</div>
+  <div class="container">
+    <div>
+      <h4>AMD Software: Arenalin Edition</h4>
     </div>
     <div>
-      <a href="foo.com/win10-win11-adrenalin-234.exe">Download</a>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 1.2.3 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-123.exe">
+        <span>Download</span>
+      </a>
     </div>
   </div>
-</details>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Windows 10 - 64-Bit Edition
+    </button>
+  </h3>
+  <div class="container">
+    <div>
+      <h4>Auto-Detect and Install</h4>
+    </div>
+    <div>
+      <a href="foo.com/adrenalin-minimalsetup.exe">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+  <div class="container">
+    <div>
+      <h4>AMD Software: Arenalin Edition</h4>
+    </div>
+    <div>
+      <strong>Revision Number</strong>
+      <p>Adrenalin 2.3.4 (WHQL Recommended)</p>
+    </div>
+    <div>
+      <a href="foo.com/win10-win11-adrenalin-234.exe">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+</div>
+<div data-cmp-hooks-accordion="item" class="accordion-item">
+  <h3 class="accordion-header">
+    <button class="accordion-button collapsed">
+      Ubuntu x86 64-Bit
+    </button>
+  </h3>
+  <div class="container">
+    <div>
+      <h4>Radeon Software for Linux</h4>
+    </div>
+    <div>
+      <strong>Revision Number</strong>
+      <p>23.40.2</p>
+    </div>
+    <div>
+      <a href="foo.com/amdgpu-install.deb">
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+</div>
 </body>
 """
     self._soup_mock.return_value = bs4.BeautifulSoup(html, 'html.parser')
@@ -434,7 +774,7 @@ class CmdGetCheckoutUnittest(fake_filesystem_unittest.TestCase):
 
   def test_success(self):
     """Tests the happy path/success case when running the get_checkout cmd."""
-    byte_string = ('a' * 20 * 1024 * 1024).encode('utf-8')
+    byte_string = ('a' * 110 * 1024 * 1024).encode('utf-8')
     self._get_mock.return_value = mock.Mock(
         status_code=200, content=byte_string)
     with mock.patch.dict(os.environ, {'_3PP_VERSION': '2.3.4'}, clear=True):
