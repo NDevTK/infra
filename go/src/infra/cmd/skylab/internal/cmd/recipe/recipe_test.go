@@ -9,16 +9,12 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/duration"
-	"github.com/kylelemons/godebug/pretty"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/luci/common/testing/typed"
 )
-
-var prettyConfig = &pretty.Config{
-	TrackCycles: true,
-}
 
 func TestRequest(t *testing.T) {
 	a := Args{
@@ -85,7 +81,7 @@ func TestRequest(t *testing.T) {
 			},
 		},
 	}
-	if diff := prettyConfig.Compare(got, want); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("Unexpected diff (-got +want): %s", diff)
 	}
 	if err != nil {
@@ -114,7 +110,7 @@ func TestDummyAutotestArg(t *testing.T) {
 	want := []*test_platform.Request_Test{
 		{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "test-with-args", TestArgs: "dummy=crbug.com/984103 foo-arg1=val1 foo-arg2=val2"}}},
 	}
-	if diff := prettyConfig.Compare(got, want); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("Unexpected diff (-got +want): %s", diff)
 	}
 }
@@ -140,7 +136,7 @@ func TestNoDummyAutotestArg(t *testing.T) {
 	want := []*test_platform.Request_Test{
 		{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "test-without-args", TestArgs: ""}}},
 	}
-	if diff := prettyConfig.Compare(got, want); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("Unexpected diff (-got +want): %s", diff)
 	}
 }

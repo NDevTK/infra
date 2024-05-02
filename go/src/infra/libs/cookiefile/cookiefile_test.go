@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kylelemons/godebug/pretty"
+	"go.chromium.org/luci/common/testing/typed"
 )
 
 func TestNewJar(t *testing.T) {
@@ -34,7 +34,7 @@ func TestNewJar(t *testing.T) {
 			Value: "git-bob.chromium.org=1/AAAAAAA",
 		},
 	}
-	if diff := pretty.Compare(want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("j.Cookies() differ -want +got, %s", diff)
 	}
 }
