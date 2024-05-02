@@ -112,6 +112,7 @@ func (s *SchedukeClient) setUpHTTPClients(gerritAuthOpts auth.Options) error {
 }
 
 // token generates the user's Gcloud auth token.
+// TODO: Use Google auth libs to generate this.
 func token() (string, error) {
 	args := []string{"auth", "print-identity-token"}
 	out, err := exec.Command("gcloud", args...).Output()
@@ -125,6 +126,7 @@ func token() (string, error) {
 }
 
 // confirmGcloudLogin confirms the user is logged into gcloud.
+// TODO: Use Google auth libs to confirm this.
 func confirmGcloudLogin() error {
 	args := []string{"auth", "list", "--filter", "status:Active", "--format", "value(account)"}
 	cmd := exec.Command("gcloud", args...)
