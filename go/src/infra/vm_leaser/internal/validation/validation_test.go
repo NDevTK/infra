@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	. "go.chromium.org/luci/common/testing/assertions"
 )

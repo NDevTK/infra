@@ -7,9 +7,10 @@ package validation
 import (
 	"regexp"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 var (

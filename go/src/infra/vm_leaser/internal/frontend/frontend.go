@@ -15,11 +15,12 @@ import (
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/libs/vmlab"
 	vmapi "infra/libs/vmlab/api"

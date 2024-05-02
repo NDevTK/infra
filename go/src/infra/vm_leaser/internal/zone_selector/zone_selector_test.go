@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"infra/vm_leaser/internal/constants"
