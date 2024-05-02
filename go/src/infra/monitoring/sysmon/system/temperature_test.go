@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/shirou/gopsutil/v3/host"
-
 	. "github.com/smartystreets/goconvey/convey"
 )
 
