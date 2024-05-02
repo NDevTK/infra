@@ -13,11 +13,12 @@ import (
 
 	"github.com/golang/protobuf/ptypes/duration"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func parseTime(s string) time.Time {
