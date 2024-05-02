@@ -16,6 +16,24 @@
       "message": "why is the file originally executable?",
       "revId": "59063192a3efa8d2c613a9078b22c1fc2a0a4f66",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d09001bd_91b2798a",
+        "filename": "go/src/infra/tools/result_adapter/gtest_json_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-05-02T06:20:16Z",
+      "side": 0,
+      "message": "No idea, but fixing it seems harmless enough.",
+      "parentUuid": "79cd4a80_a39da6b9",
+      "revId": "59063192a3efa8d2c613a9078b22c1fc2a0a4f66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
