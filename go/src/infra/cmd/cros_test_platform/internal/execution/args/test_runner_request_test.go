@@ -13,7 +13,6 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/kylelemons/godebug/pretty"
-
 	. "github.com/smartystreets/goconvey/convey"
 
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"

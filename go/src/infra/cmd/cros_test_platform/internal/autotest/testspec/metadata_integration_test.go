@@ -7,11 +7,12 @@ package testspec_test
 import (
 	"testing"
 
+	"github.com/kylelemons/godebug/pretty"
+
+	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
+
 	"infra/cmd/cros_test_platform/internal/autotest/testspec"
 	"infra/cmd/cros_test_platform/internal/testutils"
-
-	"github.com/kylelemons/godebug/pretty"
-	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 )
 
 func TestLoadAndParseSimple(t *testing.T) {
