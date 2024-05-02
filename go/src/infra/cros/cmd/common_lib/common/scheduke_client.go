@@ -92,6 +92,10 @@ func (s *SchedukeClient) setUpHTTPClients(gerritAuthOpts auth.Options) error {
 
 	// Scheduke only requires auth options when running on a bot.
 	if s.local {
+		err := confirmGcloudLogin()
+		if err != nil {
+			return err
+		}
 		s.schedukeHTTPClient = &http.Client{}
 		return nil
 	}
@@ -107,17 +111,35 @@ func (s *SchedukeClient) setUpHTTPClients(gerritAuthOpts auth.Options) error {
 	return nil
 }
 
-// Not currently used; but is useful in the case we need to do a token based auth.
+// token generates the user's Gcloud auth token.
 func token() (string, error) {
 	args := []string{"auth", "print-identity-token"}
 	out, err := exec.Command("gcloud", args...).Output()
 	if err != nil {
-		return "", errors.Annotate(err, "gcloud auth issue").Err()
+		return "", errors.Annotate(err, "error generating user token via gcloud auth").Err()
 	}
 	o := string(out)
 	fmted := strings.ReplaceAll(o, "\n", "")
 
 	return fmted, nil
+}
+
+// confirmGcloudLogin confirms the user is logged into gcloud.
+func confirmGcloudLogin() error {
+	args := []string{"auth", "list", "--filter", "status:Active", "--format", "value(account)"}
+	cmd := exec.Command("gcloud", args...)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if err != nil {
+		return errors.Annotate(err, "error confirming user is logged in to gcloud: %s", stderr.String()).Err()
+	}
+	if out.String() == "" {
+		return fmt.Errorf("no gcloud credentials detected; please run `gcloud auth login`")
+	}
+	return nil
 }
 
 func (s *SchedukeClient) parseSchedukeRequestResponse(response *http.Response) (*schedukeapi.CreateTaskStatesResponse, error) {
@@ -412,6 +434,9 @@ func (s *SchedukeClient) ReadTaskStates(taskStateIDs []int64, users, deviceNames
 		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
 	if r.StatusCode != 200 {
+		if r.StatusCode == 400 {
+			return nil, fmt.Errorf("scheduke returned %d; this likely means you still need Scheduke access (human users: see http://http://go/crosfleet#obtaining-access)", r.StatusCode)
+		}
 		return nil, fmt.Errorf("scheduke returned %d", r.StatusCode)
 	}
 	return s.parseReadResponse(r)

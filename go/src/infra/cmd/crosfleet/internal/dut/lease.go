@@ -5,7 +5,6 @@
 package dut
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"strings"
@@ -15,8 +14,6 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
-	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
-
 	"infra/cmd/crosfleet/internal/buildbucket"
 	crosfleetcommon "infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
@@ -38,6 +35,7 @@ const (
 	maxLeaseReasonCharacters = 30
 	poolConfigsDirURL        = "https://chrome-internal.googlesource.com/chromeos/infra/config/+/refs/heads/main/testingconfig/"
 	poolLabelName            = "label-pool"
+	deviceNameLabelName      = "dut_name"
 )
 
 var lease = &subcommands.Command{
@@ -88,7 +86,7 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 	if err != nil {
 		return err
 	}
-	botDims, buildTags, err := botDimsAndBuildTags(ctx, swarmingBotsClient, c.leaseFlags)
+	botDims, buildTags, err := botDimsAndBuildTags(c.leaseFlags)
 	if err != nil {
 		return err
 	}
@@ -181,19 +179,15 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 
 // botDimsAndBuildTags constructs bot dimensions and Buildbucket build tags for
 // a dut_leaser build from the given lease flags and optional bot ID.
-func botDimsAndBuildTags(ctx context.Context, swarmingBotsClient swarmingapi.BotsClient, leaseFlags leaseFlags) (dims, tags map[string]string, err error) {
+func botDimsAndBuildTags(leaseFlags leaseFlags) (dims, tags map[string]string, err error) {
 	dims = map[string]string{}
 	tags = map[string]string{}
 	if leaseFlags.host != "" {
 		// Hostname-based lease.
 		correctedHostname := heuristics.NormalizeBotNameToDeviceName(leaseFlags.host)
-		id, err := hostnameToBotID(ctx, swarmingBotsClient, correctedHostname)
-		if err != nil {
-			return nil, nil, err
-		}
 		tags["lease-by"] = "host"
-		tags["id"] = id
-		dims["id"] = id
+		tags[deviceNameLabelName] = correctedHostname
+		dims[deviceNameLabelName] = correctedHostname
 	} else {
 		// Swarming dimension-based lease.
 		dims["dut_state"] = "ready"
@@ -272,7 +266,7 @@ func (c *leaseFlags) validate(f *flag.FlagSet) error {
 // or swarming dimensions (via -board/-model/-dim(s)), but not both.
 func (c *leaseFlags) hasEitherHostnameOrSwarmingDims() bool {
 	hasHostname := c.host != ""
-	hasSwarmingDims := c.board != "" || c.model != "" || c.pool != "" || len(c.freeformDims) > 0
+	hasSwarmingDims := c.board != "" || c.model != "" || len(c.freeformDims) > 0
 	return hasHostname != hasSwarmingDims
 }
 

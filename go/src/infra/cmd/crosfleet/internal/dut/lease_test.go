@@ -5,7 +5,6 @@
 package dut
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"testing"
@@ -119,8 +118,7 @@ func TestBotDimsAndBuildTagsData(t *testing.T) {
 	for _, tt := range testBotDimsAndBuildTagsData {
 		tt := tt
 		t.Run(fmt.Sprintf("(%s, %s)", tt.wantDims, tt.wantTags), func(t *testing.T) {
-			ctx := context.Background()
-			gotDims, gotTags, err := botDimsAndBuildTags(ctx, nil, tt.leaseFlags)
+			gotDims, gotTags, err := botDimsAndBuildTags(tt.leaseFlags)
 			if err != nil {
 				t.Fatalf("unexpected error calling botDimsAndBuildTags: %v", err)
 			}
