@@ -77,7 +77,7 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device mod
 	msg, err = proto.Marshal(&schedulingAPI.DeviceEvent{
 		EventTime:        time.Now().Unix(),
 		DeviceId:         device.ID,
-		DeviceReady:      IsDeviceAvailable(ctx, convertDeviceStateToAPIFormat(ctx, device.DeviceState)),
+		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, convertDeviceStateToAPIFormat(ctx, device.DeviceState)),
 		DeviceDimensions: convertSchedulableLabelsToPubSubFormat(ctx, device.SchedulableLabels),
 	})
 	if err != nil {

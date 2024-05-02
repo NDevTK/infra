@@ -193,6 +193,7 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 	updatedDevice := model.Device{
 		ID:          record.DeviceID,
 		DeviceState: "DEVICE_STATE_AVAILABLE",
+		IsActive:    true,
 	}
 	err = UpdateDevice(ctx, tx, psClient, updatedDevice)
 	if err != nil {

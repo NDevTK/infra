@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 
 	"go.chromium.org/luci/common/logging"
@@ -94,7 +95,9 @@ func main() {
 		}
 
 		frontend.InstallServices(deviceLeaseServer, srv)
-		cron.RegisterHandler("import-ufs-devices", jobs.ImportUFSDevices)
+		cron.RegisterHandler("import-ufs-devices", func(ctx context.Context) error {
+			return jobs.ImportUFSDevices(ctx, deviceLeaseServer.ServiceClients)
+		})
 
 		logging.Debugf(srv.Context, "main: initialization finished")
 
