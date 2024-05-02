@@ -11,10 +11,11 @@ import (
 	"github.com/golang/mock/gomock"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc"
+
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging/memlogger"
 	"go.chromium.org/luci/gae/impl/memory"
-	"google.golang.org/grpc"
 
 	admin "infra/tricium/api/admin/v1"
 	tricium "infra/tricium/api/v1"

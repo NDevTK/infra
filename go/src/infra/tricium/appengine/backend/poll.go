@@ -14,6 +14,9 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	gr "golang.org/x/build/gerrit"
+	"google.golang.org/appengine"
+
 	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/data/stringset"
@@ -23,8 +26,6 @@ import (
 	ds "go.chromium.org/luci/gae/service/datastore"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 	"go.chromium.org/luci/server/auth"
-	gr "golang.org/x/build/gerrit"
-	"google.golang.org/appengine"
 
 	admin "infra/tricium/api/admin/v1"
 	tricium "infra/tricium/api/v1"

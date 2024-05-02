@@ -10,11 +10,12 @@ import (
 	"strconv"
 	"strings"
 
+	fm "google.golang.org/genproto/protobuf/field_mask"
+
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
-	fm "google.golang.org/genproto/protobuf/field_mask"
 
 	admin "infra/tricium/api/admin/v1"
 	tricium "infra/tricium/api/v1"

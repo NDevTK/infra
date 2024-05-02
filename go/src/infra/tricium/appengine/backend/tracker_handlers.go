@@ -9,10 +9,11 @@ import (
 	"net/http"
 
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/server/router"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/server/router"
 
 	admin "infra/tricium/api/admin/v1"
 )
