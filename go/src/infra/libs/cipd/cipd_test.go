@@ -7,7 +7,7 @@ package cipd
 import (
 	"testing"
 
-	"github.com/kylelemons/godebug/pretty"
+	"go.chromium.org/luci/common/testing/typed"
 )
 
 func TestUnmarshalPackages(t *testing.T) {
@@ -40,7 +40,7 @@ func TestUnmarshalPackages(t *testing.T) {
 			Tracking: "latest",
 		},
 	}
-	if diff := pretty.Compare(want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("InstalledPackages returned bad result -want +got, %s", diff)
 	}
 }
