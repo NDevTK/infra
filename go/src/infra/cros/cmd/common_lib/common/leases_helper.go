@@ -9,14 +9,15 @@ import (
 	"fmt"
 	"time"
 
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	"google.golang.org/grpc/metadata"
 
 	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/gcloud/googleoauth"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/grpc/metadata"
+
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
 const ufsHost = "ufs.api.cr.dev"

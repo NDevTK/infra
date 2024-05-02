@@ -6,18 +6,20 @@ package analytics
 
 import (
 	"context"
-	"infra/cros/cmd/ctpv2/data"
 	"strconv"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
+	"google.golang.org/api/option"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/api/option"
+
+	"infra/cros/cmd/ctpv2/data"
 )
 
 const dataset = "analytics"

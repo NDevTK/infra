@@ -6,11 +6,13 @@ package common_commands_test
 
 import (
 	"container/list"
-	"infra/cros/cmd/common_lib/common_commands"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/cros/cmd/common_lib/common_commands"
 )
 
 func TestPopQueueInstantiation_BadCast(t *testing.T) {
