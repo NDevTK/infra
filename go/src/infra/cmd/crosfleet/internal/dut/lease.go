@@ -233,7 +233,7 @@ func (c *leaseFlags) register(f *flag.FlagSet) {
 	f.StringVar(&c.reason, "reason", "", fmt.Sprintf("Optional reason for leasing (limit %d characters).", maxLeaseReasonCharacters))
 	f.StringVar(&c.board, "board", "", "'label-board' Swarming dimension to lease DUT by.")
 	f.StringVar(&c.model, "model", "", "'label-model' Swarming dimension to lease DUT by.")
-	f.StringVar(&c.pool, "pool", common.DefaultLeasesPool, "'label-pool' Swarming dimension to lease DUT by.")
+	f.StringVar(&c.pool, "pool", common.DefaultQuotaPool, "'label-pool' Swarming dimension to lease DUT by.")
 	f.StringVar(&c.host, "host", "", `Hostname of an individual DUT to lease. If leasing by hostname instead of other Swarming dimensions,
 and the host DUT is running another task, the lease won't start until that task completes.
 Mutually exclusive with -board/-model/-dim(s).`)

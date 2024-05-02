@@ -375,3 +375,104 @@ func TestCompressAndEncodeBBReq(t *testing.T) {
 		})
 	}
 }
+
+var testResolvePoolsData = []struct {
+	req, wantResolvedReq *schedukepb.TaskRequestEvent
+}{
+	{
+		req:             &schedukepb.TaskRequestEvent{},
+		wantResolvedReq: &schedukepb.TaskRequestEvent{},
+	},
+	{
+		req: &schedukepb.TaskRequestEvent{
+			Pool: "foo pool",
+			RequestedDimensions: &schedukepb.SwarmingDimensions{
+				DimsMap: map[string]*schedukepb.DimValues{
+					"label-pool": {Values: []string{"bar pool", "baz pool"}},
+					"label-foo":  {Values: []string{"MANAGED_POOL_QUOTA", "quota"}},
+				},
+			},
+		},
+		wantResolvedReq: &schedukepb.TaskRequestEvent{
+			Pool: "foo pool",
+			RequestedDimensions: &schedukepb.SwarmingDimensions{
+				DimsMap: map[string]*schedukepb.DimValues{
+					"label-pool": {Values: []string{"bar pool", "baz pool"}},
+					"label-foo":  {Values: []string{"MANAGED_POOL_QUOTA", "quota"}},
+				},
+			},
+		},
+	},
+	{
+		req: &schedukepb.TaskRequestEvent{
+			Pool: "MANAGED_POOL_QUOTA",
+			RequestedDimensions: &schedukepb.SwarmingDimensions{
+				DimsMap: map[string]*schedukepb.DimValues{
+					"label-pool": {Values: []string{"bar pool", "baz pool"}},
+				},
+			},
+		},
+		wantResolvedReq: &schedukepb.TaskRequestEvent{
+			Pool: "DUT_POOL_QUOTA",
+			RequestedDimensions: &schedukepb.SwarmingDimensions{
+				DimsMap: map[string]*schedukepb.DimValues{
+					"label-pool": {Values: []string{"bar pool", "baz pool"}},
+				},
+			},
+		},
+	},
+	{
+		req: &schedukepb.TaskRequestEvent{
+			Pool: "foo pool",
+			RequestedDimensions: &schedukepb.SwarmingDimensions{
+				DimsMap: map[string]*schedukepb.DimValues{
+					"label-pool": {Values: []string{"MANAGED_POOL_QUOTA", "bar pool"}},
+				},
+			},
+		},
+		wantResolvedReq: &schedukepb.TaskRequestEvent{
+			Pool: "foo pool",
+			RequestedDimensions: &schedukepb.SwarmingDimensions{
+				DimsMap: map[string]*schedukepb.DimValues{
+					"label-pool": {Values: []string{"DUT_POOL_QUOTA", "bar pool"}},
+				},
+			},
+		},
+	},
+	{
+		req: &schedukepb.TaskRequestEvent{
+			Pool: "quota",
+			RequestedDimensions: &schedukepb.SwarmingDimensions{
+				DimsMap: map[string]*schedukepb.DimValues{
+					"label-pool": {Values: []string{"MANAGED_POOL_QUOTA", "quota"}},
+				},
+			},
+		},
+		wantResolvedReq: &schedukepb.TaskRequestEvent{
+			Pool: "DUT_POOL_QUOTA",
+			RequestedDimensions: &schedukepb.SwarmingDimensions{
+				DimsMap: map[string]*schedukepb.DimValues{
+					"label-pool": {Values: []string{"DUT_POOL_QUOTA", "DUT_POOL_QUOTA"}},
+				},
+			},
+		},
+	},
+}
+
+func TestRespolvePoolName(t *testing.T) {
+	t.Parallel()
+	cmpOpts := cmpopts.IgnoreUnexported(
+		schedukepb.DimValues{},
+		schedukepb.SwarmingDimensions{},
+		schedukepb.TaskRequestEvent{})
+	for _, tt := range testResolvePoolsData {
+		tt := tt
+		t.Run(fmt.Sprintf("(%s)", tt.req), func(t *testing.T) {
+			t.Parallel()
+			resolvePool(tt.req)
+			if diff := cmp.Diff(tt.req, tt.wantResolvedReq, cmpOpts); diff != "" {
+				t.Errorf("unexpected diff (%s)", diff)
+			}
+		})
+	}
+}

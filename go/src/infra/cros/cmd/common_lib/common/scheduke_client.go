@@ -182,6 +182,7 @@ func (s *SchedukeClient) parseReadResponse(response *http.Response) (*schedukeap
 func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEvents) (*schedukeapi.CreateTaskStatesResponse, error) {
 	var pools []string
 	for _, e := range req.GetEvents() {
+		resolvePool(e)
 		pools = append(pools, e.Pool)
 	}
 	poolsBlocked, err := s.AnyStringInGerritList(pools, blockedPoolsURL)

@@ -21,8 +21,8 @@ import (
 const (
 	// Higher integer value means lower priority.
 	noAccountPriority int64 = 10
-	// DefaultLeasesPool is the default Swarming pool for leasing devices.
-	DefaultLeasesPool      = "DUT_POOL_QUOTA"
+	// DefaultQuotaPool is the main Swarming pool, and the default for leases.
+	DefaultQuotaPool       = "DUT_POOL_QUOTA"
 	deviceNameDimensionKey = "dut_name"
 	poolDimensionKey       = "label-pool"
 	quotaAccountTagKey     = "qs_account"
@@ -71,6 +71,7 @@ var (
 		Bucket:  "test_runner",
 		Builder: "dut_leaser",
 	}
+	legacyQuotaPools = []string{"MANAGED_POOL_QUOTA", "quota"}
 )
 
 // leaseBBReq returns a Buildbucket ScheduleBuildRequest for a dut_leaser build.
@@ -234,7 +235,7 @@ func schedukeDimsPoolAndDeviceNameForLease(dims map[string][]string) (schedukeDi
 	}
 
 	if pool == "" {
-		pool = DefaultLeasesPool
+		pool = DefaultQuotaPool
 		schedukeDimsMap[poolDimensionKey] = &schedukepb.DimValues{Values: []string{pool}}
 	}
 	schedukeDims = &schedukepb.SwarmingDimensions{DimsMap: schedukeDimsMap}
@@ -255,4 +256,34 @@ func compressAndEncodeBBReq(src []byte) (string, error) {
 		return "", err
 	}
 	return base64.StdEncoding.EncodeToString(in.Bytes()), nil
+}
+
+// resolvePool makes sure all requests with legacy synonyms of the default quota
+// pool have their pools resolved to DUT_POOL_QUOTA.
+func resolvePool(r *schedukepb.TaskRequestEvent) {
+	for key, valsPB := range r.GetRequestedDimensions().GetDimsMap() {
+		if key != poolDimensionKey {
+			continue
+		}
+		vals := valsPB.GetValues()
+		for i, v := range vals {
+			if poolIsLegacyQuotaPool(v) {
+				vals[i] = DefaultQuotaPool
+			}
+		}
+	}
+	if poolIsLegacyQuotaPool(r.GetPool()) {
+		r.Pool = DefaultQuotaPool
+	}
+}
+
+// poolIsLegacyQuotaPool returns a bool indicating whether the given pool is a
+// legacy synonym of the default quota pool.
+func poolIsLegacyQuotaPool(p string) bool {
+	for _, lp := range legacyQuotaPools {
+		if p == lp {
+			return true
+		}
+	}
+	return false
 }
