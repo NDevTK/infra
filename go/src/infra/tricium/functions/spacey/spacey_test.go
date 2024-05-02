@@ -5,12 +5,13 @@
 package main
 
 import (
+	"bufio"
+	"strings"
 	"testing"
 
-	"bufio"
 	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/tricium/api/v1"
-	"strings"
 )
 
 func TestCheckSpaceMix(t *testing.T) {

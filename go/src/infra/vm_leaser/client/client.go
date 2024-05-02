@@ -11,12 +11,13 @@ import (
 	"reflect"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 
 	"infra/vm_leaser/internal/site"
 )

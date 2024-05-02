@@ -10,11 +10,12 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/luci/server/auth"
-	"go.chromium.org/luci/server/auth/authtest"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/authtest"
 )
 
 func TestRPCAccessInterceptor(t *testing.T) {

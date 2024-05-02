@@ -14,13 +14,14 @@ import (
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/googleapis/gax-go/v2"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/vm_leaser/internal/constants"
 	"infra/vm_leaser/internal/validation"

@@ -16,11 +16,12 @@ import (
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/googleapis/gax-go/v2"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 	. "go.chromium.org/luci/common/testing/assertions"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 // mockComputeInstancesClient mocks compute.NewInstancesRESTClient for testing.

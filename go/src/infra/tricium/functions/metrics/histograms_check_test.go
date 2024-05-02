@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"go.chromium.org/luci/common/data/stringset"
-
 	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/data/stringset"
 
 	tricium "infra/tricium/api/v1"
 )

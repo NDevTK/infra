@@ -5,11 +5,12 @@
 package main
 
 import (
-	tricium "infra/tricium/api/v1"
 	"path/filepath"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	tricium "infra/tricium/api/v1"
 )
 
 func TestGosecWrapper(t *testing.T) {

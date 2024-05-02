@@ -7,12 +7,13 @@ package main
 import (
 	"flag"
 
+	"google.golang.org/grpc"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/openid"
-	"google.golang.org/grpc"
 
 	"infra/vm_leaser/internal/acl"
 	"infra/vm_leaser/internal/frontend"

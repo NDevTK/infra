@@ -6,11 +6,12 @@ package main
 
 import (
 	"bufio"
-	tricium "infra/tricium/api/v1"
 	"strings"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	tricium "infra/tricium/api/v1"
 )
 
 func TestSpellCheckerAnalyzeFiles(t *testing.T) {
