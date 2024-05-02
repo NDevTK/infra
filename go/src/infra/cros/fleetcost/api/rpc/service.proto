@@ -65,6 +65,13 @@ service FleetCost {
       post: "/v1/get-cost-result"
     };
   }
+
+  // PeristToBigquery persists records to BigQuery.
+  rpc PersistToBigquery(PersistToBigqueryRequest) returns (PersistToBigqueryResponse) {
+    option (google.api.http) = {
+      post: "/v1/tasks/persist-to-bigquery"
+    };
+  }
 }
 
 // PingRequest intentionally contains nothing.
@@ -166,3 +173,15 @@ message DeleteCostIndicatorRequest {
 message DeleteCostIndicatorResponse {
   models.CostIndicator cost_indicator = 1;
 }
+
+// PersistToBigqueryRequest does not contain any info, since
+// PersistToBigquery is intended to be called as a cron job.
+message PersistToBigqueryRequest {};
+
+message PersistToBigqueryResponse {
+  // Persisted records is the number of records that were persisted.
+  int32 persisted_records = 1;
+
+  // Succeeded is true if and only if no errors at all were encountered during persistence.
+  bool succeeded = 2;
+};
