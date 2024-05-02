@@ -187,7 +187,8 @@ func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget,
 			Decorations: &requestpb.Request_Params_Decorations{
 				Tags: getTags(board, model, buildImage, branchTrigger, config),
 			},
-			RunViaCft: config.RunOptions.RunViaCft,
+			RunViaCft:          config.RunOptions.RunViaCft,
+			UserDefinedFilters: append(config.GetKarbonFilters(), config.GetKoffeeFilters()...),
 		},
 		TestPlan: getTestPlan(config),
 	}
