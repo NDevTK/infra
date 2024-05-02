@@ -18,13 +18,14 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	lab "go.chromium.org/chromiumos/infra/proto/go/lab"
 	luciauth "go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 	lucigs "go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/cros/cmd/labpack/internal/site"
 	"infra/cros/cmd/labpack/internal/tlw"

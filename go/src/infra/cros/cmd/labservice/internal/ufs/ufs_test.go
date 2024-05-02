@@ -9,10 +9,11 @@ import (
 	"net"
 	"testing"
 
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
 	"google.golang.org/protobuf/proto"
+
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/cros/cmd/labservice/internal/ufs/cache"
 	ufspb "infra/unifiedfleet/api/v1/models"
