@@ -12,16 +12,12 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	"github.com/kylelemons/godebug/pretty"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/libs/skylab/inventory"
 )
-
-var prettyConfig = &pretty.Config{
-	TrackCycles: true,
-}
 
 func TestGetDeviceSpecs(t *testing.T) {
 	s := &deviceSpecsGetter{
@@ -39,14 +35,14 @@ func TestGetDeviceSpecs(t *testing.T) {
 		t.Errorf("error in GetDeviceSpecs(): %s", err)
 	}
 
-	want := inventory.DeviceUnderTest{
+	want := &inventory.DeviceUnderTest{
 		Common: &inventory.CommonDeviceSpecs{
 			Id:       stringPtr("some-id"),
 			Hostname: stringPtr("this-other-hostname"),
 		},
 	}
-	if !proto.Equal(&want, got) {
-		t.Errorf("incorrect response from GetDeviceSpecs, -want, +got:\n%s", prettyConfig.Compare(&want, got))
+	if !proto.Equal(want, got) {
+		t.Errorf("incorrect response from GetDeviceSpecs, -want, +got:\n%s", typed.Got(got).Want(want).Diff())
 	}
 }
 
@@ -124,7 +120,7 @@ func TestGetDeviceSpecsIterateOnError(t *testing.T) {
 			Hostname: stringPtr("yourhost"),
 		},
 	}
-	if diff := prettyConfig.Compare(want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("Incorrect response from GetDeviceSpecs, -want, +got:\n%s", diff)
 	}
 }
@@ -141,7 +137,7 @@ second line will be commented.
 	got := commentLines(text)
 	if want != got {
 		t.Errorf("Incorrect output from commentLines(), -want, +got:\n%s",
-			pretty.Compare(strings.Split(want, "\n"), strings.Split(got, "\n")))
+			typed.Got(got).Want(want).Diff())
 	}
 }
 
@@ -155,7 +151,7 @@ second line will survive.
 	got := DropCommentLines(text)
 	if want != got {
 		t.Errorf("Incorrect output from dropCommentLines(), -want, +got:\n%s",
-			pretty.Compare(strings.Split(want, "\n"), strings.Split(got, "\n")))
+			typed.Got(got).Want(want).Diff())
 	}
 }
 
@@ -205,7 +201,7 @@ text with some-hostname in the middle`))
 text with this-other-hostname in the middle`
 	if want != got {
 		t.Errorf("Incorrect output from regexpEditor.InteractiveInput(), -want, +got:\n%s",
-			pretty.Compare(strings.Split(want, "\n"), strings.Split(got, "\n")))
+			typed.Got(got).Want(want).Diff())
 	}
 }
 
@@ -215,7 +211,7 @@ func TestMcsvFieldsConsistentWithMcsvPrompt(t *testing.T) {
 	got := strings.Join(mcsvFields, ",")
 	if got != mcsvFieldsPrompt {
 		t.Errorf("mcsvFields not consistent with prompt -want +got:\n%s",
-			pretty.Compare(strings.Split(mcsvFieldsPrompt, "\n"), strings.Split(got, "\n")))
+			typed.Got(got).Want(mcsvFieldsPrompt).Diff())
 	}
 }
 

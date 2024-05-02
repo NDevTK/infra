@@ -9,14 +9,10 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/kylelemons/godebug/pretty"
+	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/libs/skylab/inventory"
 )
-
-var prettyConfig = &pretty.Config{
-	TrackCycles: true,
-}
 
 const fullTextProto = `
 variant: "somevariant"
@@ -494,7 +490,7 @@ func TestConvertFull(t *testing.T) {
 		t.Fatalf("Error unmarshalling example text: %s", err)
 	}
 	got := Convert(&ls)
-	if diff := prettyConfig.Compare(fullDimensions, got); diff != "" {
+	if diff := typed.Got(got).Want(fullDimensions).Diff(); diff != "" {
 		t.Errorf("labels differ -want +got, %s", diff)
 	}
 }
@@ -527,7 +523,7 @@ func TestConvertServoStateWorking(t *testing.T) {
 				dims = Dimensions{"label-servo_state": {testCase.expectValue}}
 			}
 			got := Convert(&ls)
-			if diff := prettyConfig.Compare(dims, got); diff != "" {
+			if diff := typed.Got(got).Want(dims).Diff(); diff != "" {
 				t.Errorf(
 					"Convert state from %d got labels differ -want +got, %s",
 					testCase.stateValue,
@@ -541,7 +537,7 @@ func TestRevertEmpty(t *testing.T) {
 	t.Parallel()
 	want := inventory.NewSchedulableLabels()
 	got := Revert(make(Dimensions))
-	if diff := prettyConfig.Compare(&want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("labels differ -want +got, %s", diff)
 	}
 }
@@ -572,7 +568,7 @@ func TestRevertServoStateInCaseEffect(t *testing.T) {
 				"label-servo_state": {testCase.labelValue},
 			}
 			got := Revert(dims)
-			if diff := prettyConfig.Compare(&want, got); diff != "" {
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf(
 					"Revert value from %v made labels differ -want +got, %s",
 					testCase.labelValue,
@@ -589,7 +585,7 @@ func TestRevertFull(t *testing.T) {
 		t.Fatalf("Error unmarshalling example text: %s", err)
 	}
 	got := Revert(cloneDimensions(fullDimensions))
-	if diff := prettyConfig.Compare(&want, got); diff != "" {
+	if diff := typed.Got(got).Want(&want).Diff(); diff != "" {
 		t.Errorf("labels differ -want +got, %s", diff)
 	}
 }
@@ -616,7 +612,7 @@ func TestConvertSpecial(t *testing.T) {
 		t.Fatalf("Error unmarshalling example text: %s", err)
 	}
 	got := Convert(&ls)
-	if diff := prettyConfig.Compare(fullDimensionsSpecial, got); diff != "" {
+	if diff := typed.Got(got).Want(fullDimensionsSpecial).Diff(); diff != "" {
 		t.Errorf("labels differ -want +got, %s", diff)
 	}
 }

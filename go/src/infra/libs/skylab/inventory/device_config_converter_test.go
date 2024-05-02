@@ -12,6 +12,7 @@ import (
 	"github.com/golang/protobuf/proto"
 
 	"go.chromium.org/chromiumos/infra/proto/go/device"
+	"go.chromium.org/luci/common/testing/typed"
 )
 
 const fullDeviceConfig = `
@@ -126,7 +127,7 @@ func TestConvertDeviceConfig(t *testing.T) {
 		t.Fatalf("error unmarshalling testing common specs: %s", err.Error())
 	}
 	ConvertDeviceConfig(allConfigs.Configs[0], &got)
-	if diff := prettyConfig.Compare(&want, &got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("device config differ -want +got, %s", diff)
 	}
 }
@@ -141,7 +142,7 @@ func TestCopyDCAmongLabels(t *testing.T) {
 		t.Fatalf("error unmarshalling testing common specs: %s", err.Error())
 	}
 	CopyDCAmongLabels(got.Labels, want.Labels)
-	if diff := prettyConfig.Compare(&want, &got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("device config differ -want +got, %s", diff)
 	}
 }
@@ -158,7 +159,7 @@ func TestCopyDCAmongEmptyLabels(t *testing.T) {
 	got.Labels.Capabilities = nil
 	got.Labels.Peripherals = nil
 	CopyDCAmongLabels(got.Labels, want.Labels)
-	if diff := prettyConfig.Compare(&want, &got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("device config differ -want +got, %s", diff)
 	}
 }
