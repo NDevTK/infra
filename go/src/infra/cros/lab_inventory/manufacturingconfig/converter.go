@@ -6,6 +6,7 @@ package manufacturingconfig
 
 import (
 	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
+
 	"infra/libs/skylab/inventory"
 )
 
