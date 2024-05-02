@@ -10,10 +10,10 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/storage"
+	"github.com/maruel/subcommands"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/option"
 
-	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
