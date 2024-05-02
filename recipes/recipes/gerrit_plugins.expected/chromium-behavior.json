@@ -127,7 +127,6 @@
       "@@@STEP_LOG_LINE@json.output@      \"revision\": \"22b0a493ace5d7229a0de8756246b8bb01ce0ce8\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false,@@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"infra/gerrit-plugins/chromium-behavior\",@@@",
       "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"22b0a493ace5d7229a0de8756246b8bb01ce0ce8\",@@@",

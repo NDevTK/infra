@@ -127,7 +127,6 @@
       "@@@STEP_LOG_LINE@json.output@      \"revision\": \"09f7265f8f65b6c15bc50b39b4b9a24f0fe7bc63\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false,@@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"infra/gerrit-plugins/tricium\",@@@",
       "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"09f7265f8f65b6c15bc50b39b4b9a24f0fe7bc63\",@@@",

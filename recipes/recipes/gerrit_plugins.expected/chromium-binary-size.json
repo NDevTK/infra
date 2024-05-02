@@ -127,7 +127,6 @@
       "@@@STEP_LOG_LINE@json.output@      \"revision\": \"2ed7808b06f04407962e9a5cee2e344a7f63ac57\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false,@@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"infra/gerrit-plugins/chromium-binary-size\",@@@",
       "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"2ed7808b06f04407962e9a5cee2e344a7f63ac57\",@@@",

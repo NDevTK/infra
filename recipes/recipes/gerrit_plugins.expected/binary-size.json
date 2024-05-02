@@ -127,7 +127,6 @@
       "@@@STEP_LOG_LINE@json.output@      \"revision\": \"0c9cb260ef960006ccb60862034b5daecd15b5f6\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false,@@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"infra/gerrit-plugins/binary-size\",@@@",
       "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"0c9cb260ef960006ccb60862034b5daecd15b5f6\",@@@",

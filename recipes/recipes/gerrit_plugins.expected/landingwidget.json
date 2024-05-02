@@ -127,7 +127,6 @@
       "@@@STEP_LOG_LINE@json.output@      \"revision\": \"318eb6a0683c85b1ce3bafa8b9c474f4058be127\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false,@@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"infra/gerrit-plugins/landingwidget\",@@@",
       "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"318eb6a0683c85b1ce3bafa8b9c474f4058be127\",@@@",

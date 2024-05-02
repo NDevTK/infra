@@ -161,7 +161,6 @@
       "@@@STEP_LOG_LINE@json.output@      \"revision\": \"fa15bb694b04af7f1ddca0323fac998aa0f87ebb\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false,@@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"luci-go\",@@@",
       "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"fa15bb694b04af7f1ddca0323fac998aa0f87ebb\",@@@",

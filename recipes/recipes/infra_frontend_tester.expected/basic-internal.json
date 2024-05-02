@@ -154,7 +154,6 @@
       "@@@STEP_LOG_LINE@json.output@      \"revision\": \"0a18b32e3a93913e1090d1ee6b8965c6dc3116d6\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
       "@@@STEP_LOG_LINE@json.output@  },@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"patch_failure\": false,@@@",
       "@@@STEP_LOG_LINE@json.output@  \"patch_root\": \"infra_internal\",@@@",
       "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"0a18b32e3a93913e1090d1ee6b8965c6dc3116d6\",@@@",
