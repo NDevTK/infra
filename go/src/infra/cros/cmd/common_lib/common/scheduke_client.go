@@ -18,15 +18,14 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
-
 	schedukeapi "go.chromium.org/chromiumos/config/go/test/scheduling"
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -230,37 +229,11 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) 
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	r, err := sendRequestWithRetries(s.schedukeHTTPClient, req)
+	r, err := sendHTTPRequestWithRetries(s.schedukeHTTPClient, req)
 	if err != nil {
 		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
 	return r, nil
-}
-
-type clientThatSendsRequests interface {
-	Do(*http.Request) (resp *http.Response, err error)
-}
-
-// sendRequestWithRetries sends the given request with the given HTTP client,
-// retrying if any HTTP errors are returned. Retry count is controlled by
-// maxHTTPRetries.
-func sendRequestWithRetries(c clientThatSendsRequests, req *http.Request) (*http.Response, error) {
-	var (
-		retries int
-		resp    *http.Response
-		err     error
-	)
-	for retries < maxHTTPRetries {
-		resp, err = c.Do(req)
-		if err != nil {
-			return nil, err
-		}
-		if resp.StatusCode == http.StatusOK {
-			return resp, err
-		}
-		retries += 1
-	}
-	return resp, err
 }
 
 // ScheduleBuildReqToSchedukeReq converts a Buildbucket ScheduleBuildRequest to

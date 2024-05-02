@@ -38,10 +38,10 @@ func (sc *DirectBBScheduler) Setup(_ string) error {
 	return nil
 }
 
-func (sc *DirectBBScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest, _ *build.Step) (*buildbucketpb.Build, error) {
+func (sc *DirectBBScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest, _ *build.Step) (*buildbucketpb.Build, string, error) {
 	scheduledBuild, err := (*sc.BBClient).ScheduleBuild(ctx, req)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	return scheduledBuild, nil
+	return scheduledBuild, "", nil
 }

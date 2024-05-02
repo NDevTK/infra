@@ -31,7 +31,9 @@ import (
 )
 
 const (
-	TestStepNameTemplate = "request %s-%s.hw.%s-shard-%v"
+	leaseExtensionAmount   = 7 * time.Minute
+	leaseExtensionInterval = 5 * time.Minute
+	TestStepNameTemplate   = "request %s-%s.hw.%s-shard-%v"
 )
 
 // getBuildFieldMask is the list of buildbucket fields that are needed.
@@ -252,11 +254,14 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	cmd.ObserveTrSchedulingStart(ctx, buildReq)
 
 	// BQ TODO log the request is in the scheduling tool (ie log the scheduke ID if possible?)
-	scheduledBuild, err := cmd.Scheduler.ScheduleRequest(ctx, req, step)
+	scheduledBuild, leaseID, err := cmd.Scheduler.ScheduleRequest(ctx, req, step)
 	if err != nil {
 		err = fmt.Errorf("error while scheduling req: %s", err)
 		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
 		return setTopLevelError(ctx, step, result, resultsChan, err)
+	}
+	if leaseID != "" {
+		step.Log(fmt.Sprintf("Device Manager lease ID: %s", leaseID))
 	}
 
 	if scheduledBuild != nil && scheduledBuild.GetId() != 0 {
@@ -275,7 +280,14 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// Re-init the data for the run build step. Keep the previously populated data.
 	cmd.ObserveTrBuildStart(ctx, buildReq)
 
+	dmc, err := common.NewDeviceManagerClient(ctx)
+	if err != nil {
+		err = fmt.Errorf("error while connecting to Device Manager: %w", err)
+		return setTopLevelError(ctx, step, result, resultsChan, err)
+	}
+
 	// Monitor here
+	lastLeaseExtensionTime := time.Now()
 	loopSleepInterval := 30 * time.Second
 	statusReq := &buildbucketpb.GetBuildStatusRequest{
 		Id: scheduledBuild.GetId(),
@@ -296,10 +308,25 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				return nil
 			}
 
+			if leaseID != "" && time.Since(lastLeaseExtensionTime) >= leaseExtensionInterval {
+				_, err = dmc.Extend(leaseID, leaseExtensionAmount)
+				if err != nil {
+					err = fmt.Errorf("error while extending lease %s with Device Manager: %w", leaseID, err)
+					return setTopLevelError(ctx, step, result, resultsChan, err)
+				}
+				lastLeaseExtensionTime = time.Now()
+			}
+
 			time.Sleep(loopSleepInterval)
 
 			// we don't wanna fail coz it could be a flake so we continue checking
 			continue
+		}
+
+		err = dmc.Release(leaseID)
+		if err != nil {
+			err = fmt.Errorf("error while releasing lease %s with Device Manager: %w", leaseID, err)
+			return setTopLevelError(ctx, step, result, resultsChan, err)
 		}
 
 		// The build ended so we extract results now

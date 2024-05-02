@@ -29,7 +29,7 @@ func (sc *LocalScheduler) Setup(_ string) error {
 	return nil
 }
 
-func (sc *LocalScheduler) ScheduleRequest(_ context.Context, _ *buildbucketpb.ScheduleBuildRequest, _ *build.Step) (*buildbucketpb.Build, error) {
+func (sc *LocalScheduler) ScheduleRequest(_ context.Context, _ *buildbucketpb.ScheduleBuildRequest, _ *build.Step) (*buildbucketpb.Build, string, error) {
 	// no-op
-	return nil, nil
+	return nil, "", nil
 }

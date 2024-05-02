@@ -22,6 +22,7 @@ type SchedulerInterface interface {
 	// Setup sets up the scheduler
 	Setup(string) error
 
-	// ScheduleRequest schedules request
-	ScheduleRequest(context.Context, *buildbucketpb.ScheduleBuildRequest, *build.Step) (*buildbucketpb.Build, error)
+	// ScheduleRequest schedules requests, returning a BBID and a Device Manager
+	// lease ID (if any).
+	ScheduleRequest(context.Context, *buildbucketpb.ScheduleBuildRequest, *build.Step) (*buildbucketpb.Build, string, error)
 }
