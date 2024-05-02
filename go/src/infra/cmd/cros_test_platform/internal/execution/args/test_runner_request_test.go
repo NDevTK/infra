@@ -12,13 +12,13 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	"github.com/kylelemons/godebug/pretty"
 	. "github.com/smartystreets/goconvey/convey"
 
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
+	"go.chromium.org/luci/common/testing/typed"
 )
 
 func defaultTest(tests map[string]*skylab_test_runner.Request_Test) *skylab_test_runner.Request_Test {
@@ -85,7 +85,7 @@ func TestSoftwareDependencies(t *testing.T) {
 			if err != nil {
 				t.Fatalf("g.testRunnerRequest() returned error: %s", err)
 			}
-			if diff := pretty.Compare(c.Deps, got.GetPrejob().GetSoftwareDependencies()); diff != "" {
+			if diff := typed.Got(got.GetPrejob().GetSoftwareDependencies()).Want(c.Deps).Diff(); diff != "" {
 				t.Errorf("Incorrect software dependencies, -want +got: %s", diff)
 			}
 		})
