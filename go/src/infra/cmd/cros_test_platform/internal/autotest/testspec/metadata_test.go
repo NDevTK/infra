@@ -10,10 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kylelemons/godebug/pretty"
-
 	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/typed"
 )
 
 func TestGetReturnsPartialResults(t *testing.T) {
@@ -37,7 +36,7 @@ func TestGetReturnsPartialResults(t *testing.T) {
 	for _, t := range resp.GetAutotest().GetTests() {
 		gotTests = append(gotTests, t.Name)
 	}
-	if diff := pretty.Compare(wantTests, gotTests); diff != "" {
+	if diff := typed.Got(gotTests).Want(wantTests).Diff(); diff != "" {
 		t.Errorf("Tests differ, -want +got, %s", diff)
 	}
 
@@ -46,7 +45,7 @@ func TestGetReturnsPartialResults(t *testing.T) {
 	for _, s := range resp.GetAutotest().GetSuites() {
 		gotSuites = append(gotSuites, s.Name)
 	}
-	if diff := pretty.Compare(wantSuites, gotSuites); diff != "" {
+	if diff := typed.Got(gotSuites).Want(wantSuites).Diff(); diff != "" {
 		t.Errorf("Suites differ, -want +got, %s", diff)
 	}
 }
@@ -65,7 +64,7 @@ func TestGetSuiteWithoutTests(t *testing.T) {
 	}
 	want := map[string][]string{"suite": {}}
 	got := extractSuiteTests(resp.GetAutotest().GetSuites())
-	if diff := pretty.Compare(want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("Suite.Tests differ, -want +got, %s", diff)
 	}
 }
@@ -87,7 +86,7 @@ func TestGetSuiteWithOneTest(t *testing.T) {
 	}
 	want := map[string][]string{"suite": {"test"}}
 	got := extractSuiteTests(resp.GetAutotest().GetSuites())
-	if diff := pretty.Compare(want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("Suite.Tests differ, -want +got, %s", diff)
 	}
 }
@@ -110,7 +109,7 @@ func TestGetSuiteWithTwoTests(t *testing.T) {
 	}
 	want := map[string][]string{"suite": {"test1", "test2"}}
 	got := extractSuiteTests(resp.GetAutotest().GetSuites())
-	if diff := pretty.Compare(want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("Suite.Tests differ, -want +got, %s", diff)
 	}
 }
@@ -136,7 +135,7 @@ func TestGetTwoSuitesWithSameTest(t *testing.T) {
 		"suite2": {"test"},
 	}
 	got := extractSuiteTests(resp.GetAutotest().GetSuites())
-	if diff := pretty.Compare(want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("Suite.Tests differ, -want +got, %s", diff)
 	}
 }
@@ -155,10 +154,11 @@ func TestGetTestInNonExistentSuite(t *testing.T) {
 	}
 	want := map[string][]string{}
 	got := extractSuiteTests(resp.GetAutotest().GetSuites())
-	if diff := pretty.Compare(want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("Suite.Tests differ, -want +got, %s", diff)
 	}
 }
+
 func TestGetValidatesTestName(t *testing.T) {
 	fl := newFakeLoader()
 	fl.AddTests([]string{"test", "corrupt_test"})
@@ -177,7 +177,7 @@ func TestGetValidatesTestName(t *testing.T) {
 	for _, t := range resp.GetAutotest().GetTests() {
 		gotTests = append(gotTests, t.Name)
 	}
-	if diff := pretty.Compare(wantTests, gotTests); diff != "" {
+	if diff := typed.Got(gotTests).Want(wantTests).Diff(); diff != "" {
 		t.Errorf("Tests differ, -want +got, %s", diff)
 	}
 }

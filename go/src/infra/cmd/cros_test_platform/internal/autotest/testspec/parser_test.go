@@ -7,10 +7,9 @@ package testspec
 import (
 	"testing"
 
-	"github.com/kylelemons/godebug/pretty"
-
 	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/luci/common/data/stringset"
+	"go.chromium.org/luci/common/testing/typed"
 )
 
 func TestParseTestControlName(t *testing.T) {
@@ -171,7 +170,7 @@ func TestParseTestControlDependencies(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parseTestControl: %s", err)
 			}
-			if diff := pretty.Compare(c.Want, autotestLabelSet(tm.Dependencies)); diff != "" {
+			if diff := typed.Got(autotestLabelSet(tm.Dependencies)).Want(c.Want).Diff(); diff != "" {
 				t.Errorf("Dependencies differ for |%s|, -want, +got, %s", c.Text, diff)
 			}
 		})
@@ -243,7 +242,7 @@ func TestParseTestControlSuites(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parseTestControl: %s", err)
 			}
-			if diff := pretty.Compare(c.Want, stringset.NewFromSlice(tm.Suites...)); diff != "" {
+			if diff := typed.Got(stringset.NewFromSlice(tm.Suites...)).Want(c.Want).Diff(); diff != "" {
 				t.Errorf("Suites differ for |%s|, -want, +got, %s", c.Text, diff)
 			}
 		})
@@ -292,7 +291,7 @@ func TestParseSuiteControlChildDependencies(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parseSuiteControl: %s", err)
 			}
-			if diff := pretty.Compare(c.Want, autotestLabelSet(as.ChildDependencies)); diff != "" {
+			if diff := typed.Got(autotestLabelSet(as.ChildDependencies)).Want(c.Want).Diff(); diff != "" {
 				t.Errorf("ChildDependencies differ for |%s|, -want, +got, %s", c.Text, diff)
 			}
 		})
