@@ -9,7 +9,6 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/dynamicpb"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 )
 
@@ -26,13 +25,4 @@ func CheckIfFieldDefinitionExists(msg proto.Message, fieldName string) (bool, er
 	}
 
 	return dynMsg.Descriptor().Fields().ByName(protoreflect.Name(fieldName)) != nil, nil
-}
-
-// CheckIfSchedulingUnitFieldExistsInSuiteMD checks if scheduling_units field
-// is defined in suiteMD.
-// TODO(azrahman): remove this in future when it's safe.
-func CheckIfSchedulingUnitFieldExistsInSuiteMD() (bool, error) {
-	newFieldName := "scheduling_units"
-	proto := &api.SuiteMetadata{}
-	return CheckIfFieldDefinitionExists(proto, newFieldName)
 }

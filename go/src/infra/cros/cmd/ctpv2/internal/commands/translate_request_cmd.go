@@ -18,7 +18,6 @@ import (
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/luciexe/build"
 
@@ -119,22 +118,12 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 		DynamicUpdates:    []*api.UserDefinedDynamicUpdate{},
 	}
 
-	// Check if new field exists
-	exists, err := common.CheckIfSchedulingUnitFieldExistsInSuiteMD()
-	if err != nil {
-		logging.Infof(ctx, "err while checking scheduling unit field check: %s", err)
-	}
+	// new field that supports multi-dut
+	suitemd.SchedulingUnits = getSchedulingUnits(cmd.CtpReq)
 
-	// TODO (azrahman): remove this when all the default containers are up to date
-	exists = false
-
-	if exists {
-		// new field exists that supports multi-dut
-		suitemd.SchedulingUnits = getSchedulingUnits(cmd.CtpReq)
-	} else {
-		// non-multi-dut legacy flow to support backwards compatibility
-		suitemd.TargetRequirements = targetRequirements(cmd.CtpReq)
-	}
+	// non-multi-dut legacy flow to support backwards compatibility
+	// TODO(azrahman): remove this when not needed any more
+	// suitemd.TargetRequirements = targetRequirements(cmd.CtpReq)
 
 	suitemd.SchedulerInfo = generateSchedulerInfo(cmd.CtpReq)
 
