@@ -11,11 +11,12 @@ package megadrone
 import (
 	"context"
 	"fmt"
+	"log"
+	"sync"
+
 	"infra/cmd/drone-agent/internal/bot"
 	"infra/cmd/drone-agent/internal/botman"
 	"infra/cmd/drone-agent/internal/draining"
-	"log"
-	"sync"
 )
 
 // An Agent manages a static number of Swarming bots.

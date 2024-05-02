@@ -10,8 +10,9 @@ import (
 	"regexp"
 
 	"cloud.google.com/go/storage"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/iterator"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // IteratorStatus is an enum that makes it easy to distinguish between iterators that

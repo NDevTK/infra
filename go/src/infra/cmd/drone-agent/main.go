@@ -20,13 +20,14 @@ import (
 	"time"
 
 	"github.com/opencontainers/runtime-spec/specs-go"
-	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/grpc/prpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"google.golang.org/grpc/metadata"
+
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/appengine/drone-queen/api"
 	"infra/cmd/drone-agent/internal/agent"
