@@ -11,9 +11,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"infra/cros/stableversion/validateconfig"
-
 	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+
+	"infra/cros/stableversion/validateconfig"
 )
 
 var testWithModelData = []struct {

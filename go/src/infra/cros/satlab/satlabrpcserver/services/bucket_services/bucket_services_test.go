@@ -13,8 +13,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/mock"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"google.golang.org/api/iterator"
+
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 )
 
 type fakeData struct {
