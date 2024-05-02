@@ -10,9 +10,10 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
+
+	"go.chromium.org/luci/common/errors"
 
 	ufsModel "infra/unifiedfleet/api/v1/models"
 	ufsApi "infra/unifiedfleet/api/v1/rpc"
