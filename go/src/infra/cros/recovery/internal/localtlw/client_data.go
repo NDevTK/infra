@@ -12,9 +12,10 @@ import (
 	"io"
 	"os"
 
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/errors"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cros/recovery/internal/execs/wifirouter/controller"
