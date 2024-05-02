@@ -8,11 +8,12 @@ import (
 	"fmt"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/genproto/protobuf/field_mask"
+
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
-	"google.golang.org/genproto/protobuf/field_mask"
 
 	"infra/cmd/mallet/internal/site"
 	"infra/cmd/shivas/utils"
