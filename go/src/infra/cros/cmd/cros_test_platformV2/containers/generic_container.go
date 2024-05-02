@@ -7,11 +7,12 @@ package containers
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
-	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/common_lib/common"
+	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 )
 
 type TemplatedContainer struct {

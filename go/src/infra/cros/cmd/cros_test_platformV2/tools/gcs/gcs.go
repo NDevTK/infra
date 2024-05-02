@@ -10,8 +10,9 @@ import (
 	"os/exec"
 	"regexp"
 
-	"go.chromium.org/chromiumos/config/go/build/api"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"go.chromium.org/chromiumos/config/go/build/api"
 )
 
 func FetchImageData(ctx context.Context, board string, template string) (map[string]*api.ContainerImageInfo, error) {

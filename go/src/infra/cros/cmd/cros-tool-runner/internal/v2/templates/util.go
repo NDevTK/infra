@@ -15,9 +15,11 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/state"
 )

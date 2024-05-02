@@ -5,12 +5,12 @@
 package service
 
 import (
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
-
 	"context"
 	"log"
 
 	"google.golang.org/grpc"
+
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
 
 // Populate as needed.
