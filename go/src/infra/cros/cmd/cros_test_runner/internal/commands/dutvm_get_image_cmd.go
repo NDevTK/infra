@@ -8,12 +8,12 @@ import (
 	"context"
 	"fmt"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 	vmlabapi "infra/libs/vmlab/api"
-
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
 
 // DutVmGetImageCmd defines the step I/O of get the GCE image of Dut VM.
