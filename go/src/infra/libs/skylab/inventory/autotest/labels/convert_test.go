@@ -10,14 +10,10 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/kylelemons/godebug/pretty"
+	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/libs/skylab/inventory"
 )
-
-var prettyConfig = &pretty.Config{
-	TrackCycles: true,
-}
 
 const fullTextProto = `
 variant: "somevariant"
@@ -347,7 +343,7 @@ func TestConvertEmptyLabels(t *testing.T) {
 	t.Parallel()
 	ls := inventory.SchedulableLabels{}
 	got := Convert(&ls)
-	if diff := prettyConfig.Compare(baseExpectedLabels, got); diff != "" {
+	if diff := typed.Got(got).Want(baseExpectedLabels).Diff(); diff != "" {
 		t.Errorf(
 			"Convert base labels %#v got labels differ -want +got, %s",
 			baseExpectedLabels,
@@ -365,7 +361,7 @@ func TestConvertFull(t *testing.T) {
 	sort.Sort(sort.StringSlice(got))
 	want := make([]string, len(fullLabels))
 	copy(want, fullLabels)
-	if diff := prettyConfig.Compare(want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("labels differ -want +got, %s", diff)
 	}
 }
@@ -392,7 +388,7 @@ func TestConvertServoStateWorking(t *testing.T) {
 			}
 			want := append(baseExpectedLabels, testCase.expectLabels...)
 			got := Convert(&ls)
-			if diff := prettyConfig.Compare(want, got); diff != "" {
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf(
 					"Convert servo_state %#v got labels differ -want +got, %s",
 					testCase.stateValue,
@@ -423,7 +419,7 @@ func TestConvertStorageState(t *testing.T) {
 			}
 			want := append(baseExpectedLabels, testCase.expectLabels...)
 			got := Convert(&ls)
-			if diff := prettyConfig.Compare(want, got); diff != "" {
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf(
 					"Convert storage_state %#v got labels differ -want +got, %s",
 					testCase.stateValue,
@@ -454,7 +450,7 @@ func TestConvertServoUSBState(t *testing.T) {
 			}
 			want := append(baseExpectedLabels, testCase.expectLabels...)
 			got := Convert(&ls)
-			if diff := prettyConfig.Compare(want, got); diff != "" {
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf(
 					"Convert servo_usb_state %#v got labels differ -want +got, %s",
 					testCase.stateValue,
@@ -484,7 +480,7 @@ func TestConvertServoTypeWorking(t *testing.T) {
 			}
 			want := append(baseExpectedLabels, testCase.expectLabels...)
 			got := Convert(&ls)
-			if diff := prettyConfig.Compare(want, got); diff != "" {
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf(
 					"Convert servo_type %#v got labels differ -want +got, %s",
 					testCase.val,
@@ -520,7 +516,7 @@ func TestConvertModemInfo(t *testing.T) {
 			}
 			want := append(testCase.expectLabels, baseExpectedLabels...)
 			got := Convert(&ls)
-			if diff := prettyConfig.Compare(want, got); diff != "" {
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf(
 					"Convert ModemInfo %#v got labels differ -want +got, %s",
 					testCase.testState,
@@ -562,7 +558,7 @@ func TestRevertModemInfoLabels(t *testing.T) {
 			}
 			got := Revert(testCase.labelValue)
 			t.Log(got)
-			if diff := prettyConfig.Compare(&want, got); diff != "" {
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf(
 					"Revert servo_state from %v made labels differ -want +got, %s",
 					testCase.labelValue,
@@ -576,7 +572,7 @@ func TestRevertEmpty(t *testing.T) {
 	t.Parallel()
 	want := inventory.NewSchedulableLabels()
 	got := Revert(nil)
-	if diff := prettyConfig.Compare(&want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("labels differ -want +got, %s", diff)
 	}
 }
@@ -587,7 +583,7 @@ func TestRevertServoStateWithWrongCase(t *testing.T) {
 	*want.Peripherals.ServoState = inventory.PeripheralState_NOT_CONNECTED
 	labels := []string{"servo_state:Not_Connected"}
 	got := Revert(labels)
-	if diff := prettyConfig.Compare(&want, got); diff != "" {
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 		t.Errorf("labels differ -want +got, %s", diff)
 	}
 }
@@ -616,7 +612,7 @@ func TestRevertServoStateWithWrongValue(t *testing.T) {
 			*want.Peripherals.ServoState = testCase.expectState
 			labels := []string{fmt.Sprintf("servo_state:%s", testCase.labelValue)}
 			got := Revert(labels)
-			if diff := prettyConfig.Compare(&want, got); diff != "" {
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf(
 					"Revert servo_state from %v made labels differ -want +got, %s",
 					testCase.labelValue,
@@ -649,7 +645,7 @@ func TestRevertServoTypeValues(t *testing.T) {
 				labels = []string{fmt.Sprintf("servo_type:%s", testCase.labelValue)}
 			}
 			got := Revert(labels)
-			if diff := prettyConfig.Compare(&want, got); diff != "" {
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf(
 					"Revert servo_type from %v made labels differ -want +got, %s",
 					testCase.labelValue,
@@ -668,7 +664,7 @@ func TestRevertFull(t *testing.T) {
 	labels := make([]string, len(fullLabels))
 	copy(labels, fullLabels)
 	got := Revert(labels)
-	if diff := prettyConfig.Compare(&want, got); diff != "" {
+	if diff := typed.Got(got).Want(&want).Diff(); diff != "" {
 		t.Errorf("labels differ -want +got, %s", diff)
 	}
 }
@@ -974,7 +970,7 @@ func TestRevertSpecial(t *testing.T) {
 	labels := make([]string, len(fullLabelsSpecial))
 	copy(labels, fullLabelsSpecial)
 	got := Revert(labels)
-	if diff := prettyConfig.Compare(&want, got); diff != "" {
+	if diff := typed.Got(got).Want(&want).Diff(); diff != "" {
 		t.Errorf("labels differ -want +got, %s", diff)
 	}
 }

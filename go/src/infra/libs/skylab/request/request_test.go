@@ -13,7 +13,6 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/kylelemons/godebug/pretty"
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -26,14 +25,11 @@ import (
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/request"
 )
-
-var prettyConfig = &pretty.Config{
-	TrackCycles: true,
-}
 
 func TestBuilderID(t *testing.T) {
 	Convey("Given request arguments that specify a builder ID", t, func() {
@@ -477,11 +473,11 @@ func TestProvisionableDimensions(t *testing.T) {
 					fmt.Sprintf("label-model:%s", model),
 					"k1:v1",
 				})
-				diff := prettyConfig.Compare(sortDimensions(s1.Properties.Dimensions), sortDimensions(s1Expect))
+				diff := typed.Got(sortDimensions(s1.Properties.Dimensions)).Want(sortDimensions(s1Expect)).Diff()
 				So(diff, ShouldBeEmpty)
 
 				s0Expect := append(s1Expect, toStringPairs([]string{"k2:v2", "k3:v3"})...)
-				diff = prettyConfig.Compare(sortDimensions(s0.Properties.Dimensions), sortDimensions(s0Expect))
+				diff = typed.Got(sortDimensions(s0.Properties.Dimensions)).Want(sortDimensions(s0Expect)).Diff()
 				So(diff, ShouldBeEmpty)
 
 				// First slice command doesn't include provisioning.
@@ -640,7 +636,7 @@ func TestStaticDimensions(t *testing.T) {
 			}
 			want := sortDimensions(c.Want)
 			got = sortDimensions(got)
-			if diff := prettyConfig.Compare(want, got); diff != "" {
+			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
 				t.Errorf("Incorrect static dimensions, -want +got: %s", diff)
 			}
 		})
