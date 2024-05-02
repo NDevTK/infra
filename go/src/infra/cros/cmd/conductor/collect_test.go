@@ -10,12 +10,12 @@ import (
 	"sort"
 	"testing"
 
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+
 	"infra/cros/cmd/try/try"
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
 	bb "infra/cros/lib/buildbucket"
-
-	bbpb "go.chromium.org/luci/buildbucket/proto"
 )
 
 const (

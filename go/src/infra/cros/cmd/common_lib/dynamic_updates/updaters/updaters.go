@@ -6,12 +6,13 @@ package updaters
 
 import (
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
 	"reflect"
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 // ProcessUpdateAction maps each update action to a handler.

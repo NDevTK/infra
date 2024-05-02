@@ -9,11 +9,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 const DockerRdbPublishLogsDir = "/tmp/rdb-publish/"

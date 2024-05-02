@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 

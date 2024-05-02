@@ -12,6 +12,8 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/maruel/subcommands"
+	"golang.org/x/sync/errgroup"
+
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -19,7 +21,6 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
-	"golang.org/x/sync/errgroup"
 
 	"infra/cros/cmd/cros-tool-runner/internal/common"
 	"infra/cros/cmd/cros-tool-runner/internal/provision"

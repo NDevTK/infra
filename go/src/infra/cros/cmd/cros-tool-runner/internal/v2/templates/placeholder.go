@@ -8,9 +8,10 @@ import (
 	"log"
 	"regexp"
 
-	"go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 // placeholderPopulator is the interface to populate a placeholder IpEndpoint
