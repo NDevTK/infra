@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"io/fs"
 	"os"
 	"path"
@@ -17,9 +18,11 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/duration"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -248,43 +251,72 @@ func parseMetadata(filePath string) (map[string]*api.TestCaseMetadata, error) {
 //   - bug_component, e.g. "b:167191"
 //   - criteria, e.g. "This test is a benchmark"
 //   - hw_agnostic (boolean), e.g. true, false
-func metadataToTags(metadata *api.TestCaseMetadata) []*pb.StringPair {
+func metadataToTags(ctx context.Context, metadata *api.TestCaseMetadata) []*pb.StringPair {
 	if metadata == nil {
 		return []*pb.StringPair{}
 	}
 
 	tags := make([]*pb.StringPair, 0)
-	info := metadata.TestCaseInfo
-	if info == nil {
-		return []*pb.StringPair{}
-	}
 
-	if info.Owners != nil {
-		owners := make([]string, 0)
-		for _, o := range info.Owners {
-			owners = append(owners, o.Email)
+	// Fetches tags from test case testCaseInfo
+	testCaseInfo := metadata.GetTestCaseInfo()
+	if testCaseInfo != nil {
+		if testCaseInfo.Owners != nil {
+			owners := make([]string, 0)
+			for _, o := range testCaseInfo.Owners {
+				owners = append(owners, o.Email)
+			}
+			tags = AppendTags(tags, "owners", strings.Join(owners, ","))
 		}
-		tags = AppendTags(tags, "owners", strings.Join(owners, ","))
-	}
 
-	if info.Requirements != nil {
-		requirements := make([]string, 0)
-		for _, r := range info.Requirements {
-			requirements = append(requirements, r.Value)
+		if testCaseInfo.Requirements != nil {
+			requirements := make([]string, 0)
+			for _, r := range testCaseInfo.Requirements {
+				requirements = append(requirements, r.Value)
+			}
+			tags = AppendTags(tags, "requirements", strings.Join(requirements, ","))
 		}
-		tags = AppendTags(tags, "requirements", strings.Join(requirements, ","))
+
+		if testCaseInfo.BugComponent != nil && strings.TrimSpace(testCaseInfo.BugComponent.Value) != "" {
+			tags = AppendTags(tags, "bug_component", testCaseInfo.BugComponent.Value)
+		}
+
+		if testCaseInfo.Criteria != nil {
+			tags = AppendTags(tags, "criteria", testCaseInfo.Criteria.Value)
+		}
+
+		if testCaseInfo.HwAgnostic != nil {
+			tags = AppendTags(tags, "hw_agnostic", strconv.FormatBool(testCaseInfo.HwAgnostic.Value))
+		}
 	}
 
-	if info.BugComponent != nil && strings.TrimSpace(info.BugComponent.Value) != "" {
-		tags = AppendTags(tags, "bug_component", info.BugComponent.Value)
-	}
+	// Fetches tags from test case execution
+	testCaseExec := metadata.GetTestCaseExec()
+	if testCaseExec != nil {
+		testHarness := testCaseExec.GetTestHarness()
+		if testHarness != nil {
+			harness := ""
+			switch testHarness.GetTestHarnessType().(type) {
+			case *api.TestHarness_Manual_:
+				harness = string(proto.MessageName(testHarness.GetManual()).Name())
+			case *api.TestHarness_Tauto_:
+				harness = string(proto.MessageName(testHarness.GetTauto()).Name())
+			case *api.TestHarness_Tast_:
+				harness = string(proto.MessageName(testHarness.GetTast()).Name())
+			case *api.TestHarness_Gtest_:
+				harness = string(proto.MessageName(testHarness.GetGtest()).Name())
+			case *api.TestHarness_Mobly_:
+				harness = string(proto.MessageName(testHarness.GetMobly()).Name())
+			case *api.TestHarness_Crosier_:
+				harness = string(proto.MessageName(testHarness.GetCrosier()).Name())
+			default:
+				logging.Warningf(ctx, "Warning: ignore the unsupported test harness: %v", testHarness)
+			}
 
-	if info.Criteria != nil {
-		tags = AppendTags(tags, "criteria", info.Criteria.Value)
-	}
-
-	if info.HwAgnostic != nil {
-		tags = AppendTags(tags, "hw_agnostic", strconv.FormatBool(info.HwAgnostic.Value))
+			if harness != "" {
+				tags = AppendTags(tags, "test_harness", harness)
+			}
+		}
 	}
 
 	return tags

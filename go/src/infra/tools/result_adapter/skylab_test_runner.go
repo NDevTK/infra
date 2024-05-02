@@ -100,7 +100,7 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string
 
 		testMetadata, ok := metadata[c.Name]
 		if ok {
-			tr.Tags = append(tr.Tags, metadataToTags(testMetadata)...)
+			tr.Tags = append(tr.Tags, metadataToTags(ctx, testMetadata)...)
 			tr.TestMetadata.BugComponent, err = parseBugComponentMetadata(testMetadata)
 			if err != nil {
 				logging.Errorf(

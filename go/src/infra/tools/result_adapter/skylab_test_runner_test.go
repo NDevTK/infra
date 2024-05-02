@@ -221,6 +221,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 						pbutil.StringPair("bug_component", "b:1234"),
 						pbutil.StringPair("criteria", "criteria 1"),
 						pbutil.StringPair("hw_agnostic", "true"),
+						pbutil.StringPair("test_harness", "Tauto"),
 					},
 					TestMetadata: &pb.TestMetadata{
 						BugComponent: &pb.BugComponent{
@@ -240,6 +241,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					Tags: []*pb.StringPair{
 						pbutil.StringPair(executionOrderTag, "2"),
 						pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
+						pbutil.StringPair("test_harness", "Tauto"),
 					},
 					TestMetadata: &pb.TestMetadata{},
 				},
@@ -257,6 +259,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					Tags: []*pb.StringPair{
 						pbutil.StringPair(executionOrderTag, "3"),
 						pbutil.StringPair("requirements", "requirement a,requirement b"),
+						pbutil.StringPair("test_harness", "Tauto"),
 					},
 					TestMetadata: &pb.TestMetadata{},
 				},
@@ -276,6 +279,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					Tags: []*pb.StringPair{
 						pbutil.StringPair(executionOrderTag, "4"),
 						pbutil.StringPair("bug_component", "crbug:Blink>JavaScript>WebAssembly"),
+						pbutil.StringPair("test_harness", "Tauto"),
 					},
 					TestMetadata: &pb.TestMetadata{
 						BugComponent: &pb.BugComponent{

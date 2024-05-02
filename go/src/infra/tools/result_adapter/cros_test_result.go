@@ -64,7 +64,7 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 			// TODO(b/251357069): Move the invocation-level info and
 			// result-level info to the new JSON type columns accordingly when
 			// the new JSON type columns are ready in place.
-			Tags: genTestResultTags(testRun, r.TestResult.GetTestInvocation()),
+			Tags: genTestResultTags(ctx, testRun, r.TestResult.GetTestInvocation()),
 		}
 
 		if len(testCaseResult.Errors) > 0 &&
@@ -185,7 +185,7 @@ func PopulateProperties(testResult *sinkpb.TestResult, testRun *artifactpb.TestR
 // ResultDB schema.
 // genTestResultTags generates test result tags based on the ChromeOS test
 // result contract proto and returns the sorted tags.
-func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.TestInvocation) []*pb.StringPair {
+func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInvocation *artifactpb.TestInvocation) []*pb.StringPair {
 	tags := []*pb.StringPair{}
 
 	// For common tags.
@@ -279,7 +279,7 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 			tags = AppendTags(tags, "suite", testCaseInfo.GetSuite())
 			tags = AppendTags(tags, "channel", testCaseInfo.GetChannel())
 
-			tags = configTestMetadataTags(tags, testCaseInfo.GetTestCaseResult().GetTestCaseMetadata())
+			tags = configTestMetadataTags(ctx, tags, testCaseInfo.GetTestCaseResult().GetTestCaseMetadata())
 		}
 
 		timeInfo := testRun.GetTimeInfo()
@@ -494,8 +494,8 @@ func configProjectTrackerMetadataTags(tags []*pb.StringPair, testInvocation *art
 }
 
 // configTestMetadataTags configs test result tags based on the test case metadata.
-func configTestMetadataTags(tags []*pb.StringPair, testMetadata *apipb.TestCaseMetadata) []*pb.StringPair {
-	metadataTags := metadataToTags(testMetadata)
+func configTestMetadataTags(ctx context.Context, tags []*pb.StringPair, testMetadata *apipb.TestCaseMetadata) []*pb.StringPair {
+	metadataTags := metadataToTags(ctx, testMetadata)
 	if len(metadataTags) == 0 {
 		return tags
 	}

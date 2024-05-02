@@ -125,7 +125,7 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 
 		testMetadata, ok := metadata[testName]
 		if ok {
-			tr.Tags = append(tr.Tags, metadataToTags(testMetadata)...)
+			tr.Tags = append(tr.Tags, metadataToTags(ctx, testMetadata)...)
 			tr.TestMetadata.BugComponent, err = parseBugComponentMetadata(testMetadata)
 			if err != nil {
 				logging.Warningf(
