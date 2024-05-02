@@ -10,13 +10,12 @@ import (
 	"strings"
 	"time"
 
+	buildbucket "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/logging"
+
 	"infra/cmd/cros_test_platform/internal/execution/build"
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 	"infra/cmd/cros_test_platform/internal/execution/types"
-
-	buildbucket "go.chromium.org/luci/buildbucket/proto"
-
-	"go.chromium.org/luci/common/logging"
 )
 
 const (

@@ -10,9 +10,10 @@ import (
 	"reflect"
 	"strings"
 
-	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
 	"infra/cmd/crosfleet/internal/common"
 )

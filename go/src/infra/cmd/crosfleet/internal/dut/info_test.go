@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"infra/cros/cmd/common_lib/common"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufslabpb "infra/unifiedfleet/api/v1/models/chromeos/lab"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 var testDutInfoAsBashVariablesData = []struct {

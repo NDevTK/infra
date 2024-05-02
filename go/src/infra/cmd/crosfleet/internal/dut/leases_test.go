@@ -9,14 +9,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cros/cmd/common_lib/common"
-
-	"github.com/google/go-cmp/cmp"
-	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	"google.golang.org/protobuf/types/known/structpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var testLeaseInfoAsBashVariablesData = []struct {

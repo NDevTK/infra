@@ -8,10 +8,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"infra/cmd/crosfleet/internal/common"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
+	"infra/cmd/crosfleet/internal/common"
 )
 
 var testValidateData = []struct {

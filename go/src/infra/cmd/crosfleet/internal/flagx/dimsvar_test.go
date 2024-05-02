@@ -6,10 +6,11 @@ package flagx
 
 import (
 	"fmt"
-	"infra/cmd/crosfleet/internal/common"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
+	"infra/cmd/crosfleet/internal/common"
 )
 
 var testSplitKeyValData = []struct {

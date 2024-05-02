@@ -11,17 +11,18 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc"
+
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
 	models "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
-	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
-	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	"google.golang.org/grpc"
 )
 
 var testValidateArgsData = []struct {
