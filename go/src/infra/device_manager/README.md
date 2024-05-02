@@ -144,5 +144,6 @@ your normal PubSub streams unless you clean up and reset your variables. Clean
 up by unsetting and resetting the environment variables we changed.
 
 ```bash
-unset PUBSUB_EMULATOR_HOST gcloud config set api_endpoint_overrides/pubsub https://pubsub.googleapis.com/
+unset PUBSUB_EMULATOR_HOST
+gcloud config set api_endpoint_overrides/pubsub https://pubsub.googleapis.com/
 ```
