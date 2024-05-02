@@ -16,7 +16,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"infra/cros/internal/gs"
 	"io"
 	"io/fs"
 	"io/ioutil"
@@ -25,6 +24,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"infra/cros/internal/gs"
 )
 
 type mockClient struct {
