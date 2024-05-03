@@ -296,6 +296,14 @@ const initialState: DataSourcesState = populateMaps({
           overhead`,
           color: colorGradient(MetricOptionColorType.DeltaPercentage, 0.1),
         },
+        {
+          name: 'Shard Expirations',
+          unit: Unit.Number,
+          hasSubsections: true,
+          description: `The number of shards from the test suite that have
+          a status of EXPIRED`,
+          color: colorGradient(MetricOptionColorType.DeltaAbsolute, 1),
+        },
       ],
       periods: [
         {
