@@ -39,10 +39,11 @@ func GetDevice(ctx context.Context, db *sql.DB, deviceName string) (*api.Device,
 	}
 
 	deviceProto := &api.Device{
-		Id:      device.ID,
-		Address: addr,
-		Type:    convertDeviceTypeToAPIFormat(ctx, device.DeviceType),
-		State:   convertDeviceStateToAPIFormat(ctx, device.DeviceState),
+		Id:           device.ID,
+		Address:      addr,
+		Type:         convertDeviceTypeToAPIFormat(ctx, device.DeviceType),
+		State:        convertDeviceStateToAPIFormat(ctx, device.DeviceState),
+		HardwareReqs: convertSchedulableLabelsToAPIFormat(ctx, device.SchedulableLabels),
 	}
 	return deviceProto, nil
 }
@@ -137,6 +138,19 @@ func convertDeviceTypeToAPIFormat(ctx context.Context, deviceType string) api.De
 // convertDeviceStateToAPIFormat takes a string and converts it to DeviceState.
 func convertDeviceStateToAPIFormat(ctx context.Context, state string) api.DeviceState {
 	return api.DeviceState(api.DeviceState_value[state])
+}
+
+// convertSchedulableLabelsToAPIFormat formats the labels for API.
+func convertSchedulableLabelsToAPIFormat(ctx context.Context, labels model.SchedulableLabels) *api.HardwareRequirements {
+	hardwareReqs := &api.HardwareRequirements{
+		SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{},
+	}
+	for k, v := range labels {
+		hardwareReqs.GetSchedulableLabels()[k] = &api.HardwareRequirements_LabelValues{
+			Values: v.Values,
+		}
+	}
+	return hardwareReqs
 }
 
 // convertSchedulableLabelsToPubSubFormat formats the labels for publishing.

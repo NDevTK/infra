@@ -95,6 +95,13 @@ func TestGetDevice(t *testing.T) {
 				},
 				Type:  api.DeviceType_DEVICE_TYPE_PHYSICAL,
 				State: api.DeviceState_DEVICE_STATE_AVAILABLE,
+				HardwareReqs: &api.HardwareRequirements{
+					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+						"label-test": {
+							Values: []string{"test-value-1"},
+						},
+					},
+				},
 			})
 		})
 		Convey("GetDevice: invalid request; no device name match", func() {
@@ -340,6 +347,42 @@ func TestConvertDeviceStateToAPIFormat(t *testing.T) {
 		Convey("convertDeviceStateToAPIFormat: unknown state", func() {
 			apiState := convertDeviceStateToAPIFormat(ctx, "UNKNOWN_STATE")
 			So(apiState, ShouldEqual, api.DeviceState_DEVICE_STATE_UNSPECIFIED)
+		})
+	})
+}
+
+func TestConvertSchedulableLabelsToAPIFormat(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("convertSchedulableLabelsToAPIFormat", t, func() {
+		Convey("convertSchedulableLabelsToAPIFormat: valid labels", func() {
+			labels := model.SchedulableLabels{
+				"label-test": model.LabelValues{
+					Values: []string{
+						"test-value-1",
+						"test-value-2",
+					},
+				},
+			}
+			dims := convertSchedulableLabelsToAPIFormat(ctx, labels)
+			So(dims, ShouldResembleProto, api.HardwareRequirements{
+				SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+					"label-test": {
+						Values: []string{
+							"test-value-1",
+							"test-value-2",
+						},
+					},
+				},
+			})
+		})
+		Convey("convertSchedulableLabelsToAPIFormat: empty labels", func() {
+			labels := model.SchedulableLabels{}
+			dims := convertSchedulableLabelsToAPIFormat(ctx, labels)
+			So(dims, ShouldEqual, &api.HardwareRequirements{
+				SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{},
+			})
 		})
 	})
 }
