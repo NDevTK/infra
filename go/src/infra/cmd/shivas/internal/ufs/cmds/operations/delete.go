@@ -108,6 +108,7 @@ func (c deleteApp) GetCommands() []*subcommands.Command {
 		peripherals.DeleteChameleonCmd,
 		peripherals.DeletePeripheralAudioLatencyToolkitCmd,
 		peripherals.DeletePeripheralALTCmd,
+		peripherals.DeletePasitTopologyCmd,
 	}
 }
 
