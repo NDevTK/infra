@@ -25,5 +25,10 @@ func Migrate(ctx context.Context, r *regulator.RegulatorOptions) error {
 	logging.Infof(ctx, "migration config: %v \n", cfg)
 	cs := migrator.NewConfigSearchable(ctx, cfg.Config)
 	logging.Infof(ctx, "config searchable: %v \n", cs)
+	mcs, err := m.FetchSFOMachines(ctx)
+	if err != nil {
+		return err
+	}
+	logging.Infof(ctx, "machines: %v", mcs)
 	return nil
 }

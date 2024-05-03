@@ -15,6 +15,8 @@ import (
 	"infra/cros/botsregulator/internal/clients"
 	"infra/cros/botsregulator/internal/regulator"
 	"infra/cros/botsregulator/protos"
+	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 // migrationFile is the the name of the CloudBots migration file.
@@ -44,4 +46,19 @@ func (m *migrator) GetMigrationConfig(ctx context.Context) (*protos.Migration, e
 		return nil, errors.Annotate(err, "could not fetch migration file").Err()
 	}
 	return out, nil
+}
+
+// FetchSFOMachines only returns the machines located in sfo36/em25.
+func (m *migrator) FetchSFOMachines(ctx context.Context) ([]*ufspb.Machine, error) {
+	logging.Infof(ctx, "fetching machines in SFO36")
+	ctx = clients.SetUFSNamespace(ctx, "os")
+	// TODO(b/328443703): Handle pagination. Current max value: 1000.
+	res, err := m.ufsClient.ListMachines(ctx, &ufsAPI.ListMachinesRequest{
+		PageSize: 1000,
+		Filter:   "zone=ZONE_SFO36_OS",
+	})
+	if err != nil {
+		return nil, err
+	}
+	return res.GetMachines(), nil
 }
