@@ -617,6 +617,10 @@ func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty bool) 
 							Value: "invocation-id",
 						},
 						{
+							Key:   "publishRequest.metadata.testhausUrl",
+							Value: "testhaus-url",
+						},
+						{
 							Key:   "publishRequest.metadata.testResult",
 							Value: common.NewTaskIdentifier(common.CrosTest).GetRpcResponse("rdbTestResult"),
 						},
