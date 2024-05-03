@@ -25,7 +25,7 @@ type UFSClient interface {
 	ListSchedulingUnits(ctx context.Context, in *ufsAPI.ListSchedulingUnitsRequest, opts ...grpc.CallOption) (*ufsAPI.ListSchedulingUnitsResponse, error)
 }
 
-func NewUFSClient(ctx context.Context, host, namespace string) (UFSClient, error) {
+func NewUFSClient(ctx context.Context, host string) (UFSClient, error) {
 	if mockClient, ok := ctx.Value(MockUFSClientKey).(UFSClient); ok {
 		return mockClient, nil
 	}

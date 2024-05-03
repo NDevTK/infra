@@ -34,7 +34,7 @@ type regulator struct {
 
 func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, error) {
 	logging.Infof(ctx, "creating regulator with flags: %v\n", opts)
-	uc, err := clients.NewUFSClient(ctx, opts.UFS, opts.Namespace)
+	uc, err := clients.NewUFSClient(ctx, opts.UFS)
 	if err != nil {
 		return nil, err
 	}

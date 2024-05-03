@@ -27,10 +27,13 @@ func main() {
 	r.RegisterFlags(flag.CommandLine)
 
 	server.Main(nil, mods, func(srv *server.Server) error {
-		logging.Infof(srv.Context, "Starting server.")
+		logging.Infof(srv.Context, "starting server")
 
 		scron.RegisterHandler("regulate-bots", func(ctx context.Context) error {
 			return cron.Regulate(ctx, &r)
+		})
+		scron.RegisterHandler("migrate-bots", func(ctx context.Context) error {
+			return cron.Migrate(ctx, &r)
 		})
 		return nil
 	})
