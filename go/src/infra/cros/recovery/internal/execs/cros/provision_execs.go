@@ -66,8 +66,12 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "download image to usb-drive").Err()
 	}
-	info.AddObservation(metrics.NewStringObservation("usbkey_model", info.GetChromeos().GetServo().GetUsbDrive().GetManufacturer()))
-	info.AddObservation(metrics.NewStringObservation("usbkey_state", info.GetChromeos().GetServo().GetUsbkeyState().String()))
+	servo := info.GetDut().GetChromeos().GetServo()
+	if servo == nil {
+		return errors.Reason("download image to usb-drive: setup does not have servo").Err()
+	}
+	info.AddObservation(metrics.NewStringObservation("usbkey_model", servo.GetUsbDrive().GetManufacturer()))
+	info.AddObservation(metrics.NewStringObservation("usbkey_state", servo.GetUsbkeyState().String()))
 	argsMap := info.GetActionArgs(ctx)
 	osImageName := argsMap.AsString(ctx, "os_name", sv.OSImage)
 	log.Debugf(ctx, "Used OS image name: %s", osImageName)
@@ -93,6 +97,14 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	log.Debugf(ctx, "Download image for USB-drive: %s", image)
 	val, err := info.NewServod().Call(ctx, "set", info.GetExecTimeout(), "download_image_to_usb_dev", image)
 	log.Debugf(ctx, "Received reponse: %v", val)
+
+	// If we fail we can detect issues with USB-drive, so we can mark it for replacement.
+	// Example:
+	if err != nil && strings.Contains(err.Error(), "Read-only file system:") {
+		log.Debugf(ctx, "USB-drive is read-only, it is recommended to replace the device.")
+		metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("servo_usb_replacement_reason", "read-only"))
+		servo.UsbkeyState = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+	}
 	return errors.Annotate(err, "download image to usb-drive").Err()
 }
 
