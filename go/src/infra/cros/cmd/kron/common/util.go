@@ -17,6 +17,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
@@ -29,6 +31,13 @@ import (
 var (
 	Stdout = log.New(os.Stdout, "", log.Lshortfile|log.LstdFlags)
 	Stderr = log.New(os.Stderr, "", log.Lshortfile|log.LstdFlags)
+
+	ProtoJSONUnmarshaller = &protojson.UnmarshalOptions{
+		DiscardUnknown: true,
+	}
+	ProtoUnmarshaller = &proto.UnmarshalOptions{
+		DiscardUnknown: true,
+	}
 )
 
 type KronTime struct {

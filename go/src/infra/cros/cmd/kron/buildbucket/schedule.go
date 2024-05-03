@@ -21,6 +21,7 @@ import (
 
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/cmd/kron/builds"
+	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/metrics"
 )
 
@@ -193,7 +194,7 @@ func ctpToBBRequest(requests []*builds.EventWrapper, isProd, dryRun bool, config
 	// unmarshall-er is chosen down the line, ensure that this functionality is
 	// maintained.
 	properties := &structpb.Struct{}
-	err = protojson.Unmarshal(msgJSON, properties)
+	err = common.ProtoJSONUnmarshaller.Unmarshal(msgJSON, properties)
 	if err != nil {
 		return nil, err
 	}

@@ -12,7 +12,6 @@ import (
 	"sync"
 
 	cloudPubsub "cloud.google.com/go/pubsub"
-	"google.golang.org/protobuf/proto"
 
 	buildPB "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 
@@ -62,7 +61,7 @@ func (p *Process3d) ProcessMessage(msg *cloudPubsub.Message) error {
 	defer p.mutex.Unlock()
 
 	buildReport := buildPB.BuildReport{}
-	err := proto.Unmarshal(msg.Data, &buildReport)
+	err := common.ProtoUnmarshaller.Unmarshal(msg.Data, &buildReport)
 	if err != nil {
 		return err
 	}

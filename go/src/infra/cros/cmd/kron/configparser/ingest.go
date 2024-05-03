@@ -8,8 +8,6 @@ package configparser
 import (
 	"fmt"
 
-	"google.golang.org/protobuf/encoding/protojson"
-
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/kron/common"
@@ -141,7 +139,7 @@ func IngestLabConfigs(labConfig *suschpb.LabConfig) *LabConfigs {
 func BytesToLabProto(configsBuffer []byte) (*suschpb.LabConfig, error) {
 	configs := &suschpb.LabConfig{}
 
-	err := protojson.Unmarshal(configsBuffer, configs)
+	err := common.ProtoJSONUnmarshaller.Unmarshal(configsBuffer, configs)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +152,7 @@ func BytesToLabProto(configsBuffer []byte) (*suschpb.LabConfig, error) {
 func BytesToSchedulerProto(configsBuffer []byte) (*suschpb.SchedulerCfg, error) {
 	configs := &suschpb.SchedulerCfg{}
 
-	err := protojson.Unmarshal(configsBuffer, configs)
+	err := common.ProtoJSONUnmarshaller.Unmarshal(configsBuffer, configs)
 	if err != nil {
 		return nil, err
 	}

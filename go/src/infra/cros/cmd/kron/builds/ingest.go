@@ -16,7 +16,6 @@ import (
 
 	cloudPubsub "cloud.google.com/go/pubsub"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 
 	buildPB "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -170,7 +169,7 @@ func (h *handler) processPSMessage(msg *cloudPubsub.Message) error {
 	// google.golang.org/protobuf/proto specifically needs to be used here to
 	// handle the format of proto serialization being done from the recipes
 	// builder.
-	err := proto.Unmarshal(msg.Data, &buildReport)
+	err := common.ProtoUnmarshaller.Unmarshal(msg.Data, &buildReport)
 	if err != nil {
 		return err
 	}

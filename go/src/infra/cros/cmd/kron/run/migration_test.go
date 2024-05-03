@@ -8,9 +8,10 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+
+	"infra/cros/cmd/kron/common"
 )
 
 func TestIsAllowedNewBuildAllow(t *testing.T) {
@@ -192,7 +193,7 @@ func TestIsAllowedSkipPartnersConfigs(t *testing.T) {
 	}`
 
 	configObject := &suschpb.SchedulerConfig{}
-	err := protojson.Unmarshal([]byte(config), configObject)
+	err := common.ProtoJSONUnmarshaller.Unmarshal([]byte(config), configObject)
 	if err != nil {
 		t.Error(err)
 	}
