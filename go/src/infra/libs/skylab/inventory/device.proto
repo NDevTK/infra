@@ -143,7 +143,7 @@ message Shard {
 //
 // Keep sorted by field name.
 //
-// NEXT TAG: 42
+// NEXT TAG: 43
 message SchedulableLabels {
   // Whether this device supports ARC execution environment.
   optional bool arc = 20;
@@ -437,7 +437,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 46
+// NEXT TAG: 47
 message Peripherals {
   reserved 32;
 
@@ -627,6 +627,10 @@ message Peripherals {
   // The state of Audio Latency Toolkit
   // See UFS peripherals.proto or go/teensy-in-audiobox-proposal for more context.
   optional PeripheralState audio_latency_toolkit_state = 43;
+
+  // The features supported by the pasit testbed. This is generally a list of all
+  // of the component models in the testbed, eg. docks, monitors, cameras, etc.
+  repeated string pasit_features = 46;
 }
 
 // Servo Firmware Channel describes the firmware expected to have on servos.
