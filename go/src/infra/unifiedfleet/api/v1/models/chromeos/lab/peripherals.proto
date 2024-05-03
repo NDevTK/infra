@@ -12,12 +12,13 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dolos.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
+import "infra/unifiedfleet/api/v1/models/chromeos/lab/pasit_topology.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
 
 // This proto defines setup labels in lab config of a DUT.
 
-// Peripherals of device. Next Tag: 22
+// Peripherals of device. Next Tag: 24
 message Peripherals {
   Servo servo = 1;
   Chameleon chameleon = 2;
@@ -26,6 +27,11 @@ message Peripherals {
   repeated Camera connected_camera = 4;
   Audio audio = 5;
   Wifi wifi = 6;
+  // The PASIT/perhipheral topology.
+  PasitTopology pasit_topology = 22;
+  // The features supported by the pasit testbed. This is generally a list of all
+  // of the component models in the testbed, eg. docks, monitors, cameras, etc.
+  repeated string pasit_features = 23;
   Touch touch = 7;
   // e.g: "att", "verizon",.. It's a manual label set by lab, varies dut by dut.
   string carrier = 8;
