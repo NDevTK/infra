@@ -286,7 +286,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
 
     # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/golangci-lint
     linter = self.m.cipd.ensure_tool(
-        'infra/3pp/tools/golangci-lint/${platform}', 'version:2@1.54.2')
+        'infra/3pp/tools/golangci-lint/${platform}', 'version:2@1.57.2')
 
     # Read locations of all directories with .golangci.yaml within them. Paths
     # are relative to `go_module_root`.
