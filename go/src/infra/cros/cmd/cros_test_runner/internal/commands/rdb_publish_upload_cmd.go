@@ -551,63 +551,6 @@ func populateProjectTrackerMetadata(
 	}
 }
 
-// populateTestRunsInfo populates test runs info.
-func populateTestRunsInfo(
-	ctx context.Context,
-	resultProto *artifactpb.TestResult,
-	sk *data.HwTestStateKeeper,
-	botDims []*buildbucketpb.StringPair,
-	build *buildbucketpb.Build) {
-
-	testRuns := []*artifactpb.TestRun{}
-	resultProto.TestRuns = testRuns
-
-	suite := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "suite")
-	branch := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "branch")
-	mainBuilderName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "master_build_config")
-	channel := getSingleTagValue(build.Tags, "branch-trigger")
-	displayName := getSingleTagValue(build.Tags, "display_name")
-	for _, testCaseResult := range sk.TestResponses.GetTestCaseResults() {
-		// - TestRun
-		testRun := &artifactpb.TestRun{}
-		testCaseInfo := &artifactpb.TestCaseInfo{}
-		testRun.TestCaseInfo = testCaseInfo
-
-		testRun.LogsInfo = []*_go.StoragePath{{HostType: _go.StoragePath_GS, Path: sk.GcsURL}}
-
-		// -- TestCaseInfo
-		testCaseInfo.TestCaseResult = testCaseResult
-		if displayName != "" {
-			testCaseInfo.DisplayName = displayName
-		}
-		if suite != "" {
-			testCaseInfo.Suite = suite
-		}
-		if branch != "" {
-			testCaseInfo.Branch = branch
-		}
-		if mainBuilderName != "" {
-			testCaseInfo.MainBuilderName = mainBuilderName
-		}
-		if channel != "" {
-			testCaseInfo.Channel = channel
-		}
-
-		timeInfo := &artifactpb.TimingInfo{}
-		testRun.TimeInfo = timeInfo
-
-		timeInfo.StartedTime = testCaseResult.GetStartTime()
-		timeInfo.Duration = testCaseResult.GetDuration()
-		timeInfo.QueuedTime = build.GetCreateTime()
-
-		testRun.TestHarness = testCaseResult.GetTestHarness()
-
-		testRuns = append(testRuns, testRun)
-	}
-
-	resultProto.TestRuns = testRuns
-}
-
 // populatePartnerInfo populates partner info.
 func populatePartnerInfo(
 	ctx context.Context,
@@ -620,6 +563,85 @@ func populatePartnerInfo(
 				testInv.PartnerInfo.AccountId = accountId
 			}
 		}
+	}
+}
+
+// populateTestRunsInfo populates test runs info.
+func populateTestRunsInfo(
+	ctx context.Context,
+	resultProto *artifactpb.TestResult,
+	sk *data.HwTestStateKeeper,
+	botDims []*buildbucketpb.StringPair,
+	build *buildbucketpb.Build) {
+	testCaseResults := sk.TestResponses.GetTestCaseResults()
+	if testCaseResults == nil {
+		return
+	}
+
+	testRuns := make([]*artifactpb.TestRun, 0, len(testCaseResults))
+	for _, testCaseResult := range testCaseResults {
+		testRun := &artifactpb.TestRun{}
+		populateTestRun(ctx, testRun, testCaseResult, sk, build)
+		testRuns = append(testRuns, testRun)
+	}
+
+	resultProto.TestRuns = testRuns
+}
+
+// populateTestRun populates test run.
+func populateTestRun(
+	ctx context.Context,
+	testRun *artifactpb.TestRun,
+	testCaseResult *testapipb.TestCaseResult,
+	sk *data.HwTestStateKeeper,
+	build *buildbucketpb.Build,
+) {
+	testRun.LogsInfo = []*_go.StoragePath{{HostType: _go.StoragePath_GS, Path: sk.GcsURL}}
+
+	populateTestCaseInfo(ctx, testRun, testCaseResult, sk, build)
+
+	populateTimeInfo(testRun, testCaseResult, build)
+}
+
+// populateTestCaseInfo populates test case info per test run.
+func populateTestCaseInfo(
+	ctx context.Context,
+	testRun *artifactpb.TestRun,
+	testCaseResult *testapipb.TestCaseResult,
+	sk *data.HwTestStateKeeper,
+	build *buildbucketpb.Build,
+) {
+	testCaseInfo := &artifactpb.TestCaseInfo{}
+	testCaseInfo.TestCaseResult = testCaseResult
+	if suite := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "suite"); suite != "" {
+		testCaseInfo.Suite = suite
+	}
+	if branch := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "branch"); branch != "" {
+		testCaseInfo.Branch = branch
+	}
+	if mainBuilderName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "master_build_config"); mainBuilderName != "" {
+		testCaseInfo.MainBuilderName = mainBuilderName
+	}
+	if channel := getSingleTagValue(build.Tags, "branch-trigger"); channel != "" {
+		testCaseInfo.Channel = channel
+	}
+	if displayName := getSingleTagValue(build.Tags, "display_name"); displayName != "" {
+		testCaseInfo.DisplayName = displayName
+	}
+
+	testRun.TestCaseInfo = testCaseInfo
+}
+
+// populateTestCaseInfo populates time info per test run.
+func populateTimeInfo(
+	testRun *artifactpb.TestRun,
+	testCaseResult *testapipb.TestCaseResult,
+	build *buildbucketpb.Build,
+) {
+	testRun.TimeInfo = &artifactpb.TimingInfo{
+		QueuedTime:  build.GetCreateTime(),
+		StartedTime: testCaseResult.GetStartTime(),
+		Duration:    testCaseResult.GetDuration(),
 	}
 }
 

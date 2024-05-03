@@ -334,11 +334,6 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							Path:     "gs://some-bucket/builder/build-12345",
 						},
 					},
-					TestHarness: &testapi.TestHarness{
-						TestHarnessType: &testapi.TestHarness_Tast_{
-							Tast: &testapi.TestHarness_Tast{},
-						},
-					},
 					TimeInfo: &artifactpb.TimingInfo{
 						QueuedTime:  createTime,
 						StartedTime: startedTime,
@@ -694,11 +689,6 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						{
 							HostType: configpb.StoragePath_GS,
 							Path:     "gs://some-bucket/builder/build-12345",
-						},
-					},
-					TestHarness: &testapi.TestHarness{
-						TestHarnessType: &testapi.TestHarness_Tast_{
-							Tast: &testapi.TestHarness_Tast{},
 						},
 					},
 					TimeInfo: &artifactpb.TimingInfo{
