@@ -56,7 +56,7 @@ type ramBufferedBQInserter struct {
 	//  * ratelimiting,
 	//  * retries,
 	// allowing ramBufferedBQInserter to focus on sending the data.
-	channel dispatcher.Channel
+	channel dispatcher.Channel[any]
 
 	// insertRPCMock is used by tests to mock actual BQ insert API call.
 	insertRPCMock func(context.Context, *bqapi.TableDataInsertAllRequest) (*bqapi.TableDataInsertAllResponse, error)
@@ -78,9 +78,9 @@ func NewInserter(ctx context.Context, op Options) (Inserter, error) {
 		TableID:    op.Target.Table,
 		httpClient: op.HTTPClient,
 	}
-	r.channel, err = dispatcher.NewChannel(
+	r.channel, err = dispatcher.NewChannel[any](
 		ctx,
-		&dispatcher.Options{
+		&dispatcher.Options[any]{
 			QPSLimit: rate.NewLimiter(qps, burst),
 			Buffer: buffer.Options{
 				MaxLeases:     maxLeases,
@@ -91,7 +91,7 @@ func NewInserter(ctx context.Context, op Options) (Inserter, error) {
 				Retry: inserterRetry,
 			},
 		},
-		func(batch *buffer.Batch) error { return r.send(ctx, batch) },
+		func(batch *buffer.Batch[any]) error { return r.send(ctx, batch) },
 	)
 	r.insertRPCMock = op.InsertRPCMock
 	return r, err
@@ -128,7 +128,7 @@ func (r *ramBufferedBQInserter) Close() {
 	r.channel.Close()
 }
 
-func (r *ramBufferedBQInserter) send(ctx context.Context, batch *buffer.Batch) error {
+func (r *ramBufferedBQInserter) send(ctx context.Context, batch *buffer.Batch[any]) error {
 	rows := make([]*bqapi.TableDataInsertAllRequestRows, 0, len(batch.Data))
 	for _, d := range batch.Data {
 		rows = append(rows, d.Item.(*bqapi.TableDataInsertAllRequestRows)) // despite '...Rows', it's just 1 row.
