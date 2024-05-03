@@ -37,7 +37,19 @@ func TestParseLine(t *testing.T) {
 			},
 		},
 		{
-			line: "a invalid json line",
+			line: "an invalid json line",
+			want: nil,
+		},
+		{
+			line: `{"status":200,"uri":"/check_health_abc"}`,
+			want: nil,
+		},
+		{
+			line: `{"status":200,"uri":"/static/quick-provision"}`,
+			want: nil,
+		},
+		{
+			line: `{"status":200,"uri":"/download/download-test.txt"}`,
 			want: nil,
 		},
 	}
@@ -46,6 +58,7 @@ func TestParseLine(t *testing.T) {
 		tc := tc
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
+			extraIgnoredPaths = []string{"/download/download-test.txt"}
 			got := parseLine(tc.line)
 			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(record{})); diff != "" {
 				t.Errorf("parseLine returned unexpected diff (-want +got):\n%s", diff)

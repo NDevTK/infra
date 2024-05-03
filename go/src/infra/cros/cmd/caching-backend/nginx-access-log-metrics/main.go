@@ -15,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	luciflag "go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/distribution"
 	"go.chromium.org/luci/common/tsmon/field"
@@ -41,6 +42,7 @@ var (
 	tsmonCredentialPath = flag.String("tsmon-credentials", "", "Path to a pkcs8 json credential file")
 	tsmonEndpoint       = flag.String("tsmon-endpoint", "", "URL (including file://, https://, pubsub://project/topic) to post monitoring metrics to")
 	tsmonTaskHostname   = flag.String("tsmon-task-hostname", "", "Name of the host reported to tsmon. (default is the hostname)")
+	extraIgnoredPaths   []string
 )
 
 func main() {
@@ -51,6 +53,7 @@ func main() {
 }
 
 func innerMain() error {
+	flag.Var(luciflag.StringSlice(&extraIgnoredPaths), "ignore-uri", "Additional URI to ignore (can be used multiple times)")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -141,6 +144,11 @@ func ignoredPath(path string) bool {
 		return true
 	case strings.HasPrefix(path, "/is_staged"):
 		return true
+	}
+	for _, p := range extraIgnoredPaths {
+		if p == path {
+			return true
+		}
 	}
 	return false
 }
