@@ -211,6 +211,7 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 
 	p.SmartUsbhub = &(d.SmartUsbhub)
 	c.StarfishSlotMapping = &(d.StarfishSlotMapping)
+	p.PasitFeatures = d.GetPasitFeatures()
 }
 
 func setServoTopology(p *inventory.Peripherals, st *chromeosLab.ServoTopology) {
