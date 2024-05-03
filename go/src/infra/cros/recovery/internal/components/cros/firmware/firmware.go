@@ -262,7 +262,7 @@ func installFirmwareImageViaUpdater(ctx context.Context, req *InstallFirmwareIma
 	// Override firmware model if target DUT is with hwid that using mult-firmware.
 	if IsMultiFirmwareHwid(req.Hwid) {
 		log.Debugf("Multi-firmware hwid detected, collecting firmware manifest key from the DUT.")
-		fwModel, err := getFirmwareManifestKeyFromDUT(ctx, req.DutRunner, log)
+		fwModel, err := GetFirmwareManifestKeyFromDUT(ctx, req.DutRunner, log)
 		if err != nil {
 			return errors.Annotate(err, "install firmware via updater").Err()
 		}
@@ -550,8 +550,8 @@ func getFirmwareTargetFromDUT(ctx context.Context, run components.Runner, log lo
 	return strings.ToLower(out), nil
 }
 
-// getFirmwareManifestKeyFromDUT read FIRMWARE_MANIFEST_KEY of crosid output from the DUT.
-func getFirmwareManifestKeyFromDUT(ctx context.Context, run components.Runner, log logger.Logger) (string, error) {
+// GetFirmwareManifestKeyFromDUT read FIRMWARE_MANIFEST_KEY of crosid output from the DUT.
+func GetFirmwareManifestKeyFromDUT(ctx context.Context, run components.Runner, log logger.Logger) (string, error) {
 	out, err := run(ctx, time.Second*15, "crosid")
 	if err != nil {
 		return "", errors.Annotate(err, "get firmware manifest key from DUT").Err()
