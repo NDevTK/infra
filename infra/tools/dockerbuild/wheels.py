@@ -1962,6 +1962,7 @@ SPECS.update({
         Universal('mdurl', '0.1.2', pyversions=['py3']),
         Universal('mock', '2.0.0'),
         Universal('mock', '4.0.3', pyversions=['py3']),
+        Universal('mock', '5.1.0', pyversions=['py3']),
         Universal('monotonic', '1.5'),
         Universal('more-itertools', '4.1.0', pyversions=['py3']),
         Universal('mox3', '1.1.0'),

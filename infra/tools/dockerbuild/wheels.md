@@ -5296,6 +5296,18 @@ wheel: <
 
 * *universal*
 
+### 5.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mock-py3"
+  version: "version:5.1.0"
+>
+```
+
+
+* *universal*
+
 ## **monotonic**
 
 ### 1.5
