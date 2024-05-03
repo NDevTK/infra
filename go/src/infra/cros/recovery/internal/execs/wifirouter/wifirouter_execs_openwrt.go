@@ -43,18 +43,12 @@ func identifyExpectedOpenWrtImageExec(ctx context.Context, info *execs.ExecInfo)
 	if dut == nil {
 		return errors.Reason("dut is not present").Err()
 	}
-	//provisionedInfo := info.GetDut().ProvisionedInfo
-	//if provisionedInfo == nil {
-	//	return errors.Reason("Dut.ProvisionedInfo is not present").Err()
-	//}
-	//if provisionedInfo.GetCrosVersion() == "" {
-	//	return errors.Reason("Dut.ProvisionedInfo.CrosVersion is empty").Err()
-	//}
-	//crosReleaseVersion, err := cros.ParseReleaseVersionFromBuilderPath(provisionedInfo.GetCrosVersion())
-	//if err != nil {
-	//	return errors.Annotate(err, "failed to parse release version from Dut.ProvisionedInfo.CrosVersion %q", provisionedInfo.GetCrosVersion()).Err()
-	//}
-	if err := c.IdentifyExpectedImage(ctx, dut.Name, "10"); err != nil {
+	// For now, we always want repair to select the highest non-next version, so
+	// a very high version is used for selection to force this behavior.
+	actionArgs := info.GetActionArgs(ctx)
+	const crosVersionActionArgKey = "cros_version"
+	crosVersion := actionArgs.AsString(ctx, crosVersionActionArgKey, "999999999")
+	if err := c.IdentifyExpectedImage(ctx, dut.Name, crosVersion); err != nil {
 		return errors.Annotate(err, "failed to identify expected OpenWrt OS image for device").Err()
 	}
 	return nil
