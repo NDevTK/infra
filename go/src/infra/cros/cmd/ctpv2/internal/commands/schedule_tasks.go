@@ -323,10 +323,13 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			continue
 		}
 
-		err = dmc.Release(leaseID)
-		if err != nil {
-			err = fmt.Errorf("error while releasing lease %s with Device Manager: %w", leaseID, err)
-			return setTopLevelError(ctx, step, result, resultsChan, err)
+		if leaseID != "" {
+			err = dmc.Release(leaseID)
+			if err != nil {
+				err = fmt.Errorf("error while releasing lease %s with Device Manager: %w", leaseID, err)
+				logging.Infof(ctx, err.Error())
+				step.SetSummaryMarkdown(err.Error())
+			}
 		}
 
 		// The build ended so we extract results now
