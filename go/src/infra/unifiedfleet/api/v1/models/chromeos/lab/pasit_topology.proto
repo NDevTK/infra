@@ -1,0 +1,107 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models.chromeos.lab;
+
+option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
+
+// This proto defines the perhipheral topology in a PASIT testbed.
+
+message PasitTopology {
+    // The DUTs in the topology, this can be more than one for multi-DUT testbeds.
+    repeated Host hosts = 1;
+    // The switches in the topology.
+    repeated Switch switches = 2;
+    // The docks in the topology.
+    repeated Dock docks = 3;
+    // The monitors in the topology.
+    repeated Monitor monitors = 4;
+    // The cameras in the topology.
+    repeated Camera cameras = 5;
+    // The networks in the topology.
+    repeated Network networks = 6;
+
+    // A single port/connection between two components in the topology.
+    message Port {
+        // The port type/technology.
+        PerhipheralTechnology technology = 1;
+        // The ID of the component connected to this port.
+        string connected_component = 2;
+        // The speed of the port, the units depend on the type of port/technology.
+        string speed = 3;
+    }
+
+    // A host in the topology.
+    message Host {
+        // The unique ID of the host (i.e hostname).
+        string id = 1;
+        // The ports in the device with connected components.
+        repeated Port ports = 2;
+    }
+
+    // The technology that a specific perhipheral uses.
+    enum PerhipheralTechnology {
+        PERHIPHERAL_TECHNOLOGY_UNKNOWN = 0;
+        PERHIPHERAL_TECHNOLOGY_USBA2 = 1;
+        PERHIPHERAL_TECHNOLOGY_USBA3 = 2;
+        PERHIPHERAL_TECHNOLOGY_USBC = 3;
+        PERHIPHERAL_TECHNOLOGY_HDMI = 4;
+        PERHIPHERAL_TECHNOLOGY_DISPLAY_PORT = 5;
+        PERHIPHERAL_TECHNOLOGY_ETHERNET = 6;
+    }
+
+    // A physical switch in the testbed responsible for changing the active component.
+    message Switch {
+        // The unique ID of the switch, this can be used to find the specific switch at runtime.
+        string id = 1;
+        // The perhipheral technology that the switch controls.
+        PerhipheralTechnology technology = 2;
+        // The ports in the device with connected components.
+        repeated Port ports = 3;
+    }
+
+    // Information on a components power supply requirements.
+    message PowerSupply {
+        string current = 1;
+        string voltage = 2;
+        string power = 3;
+    }
+
+    // A physical dock in the testbed.
+    message Dock {
+        // The unique ID of the dock.
+        string id = 1;
+        // The the make/model of the dock.
+        string model = 2;
+        // The ports in the device with connected components.
+        repeated Port ports = 3;
+
+        // Optional power supply information for verification.
+        PowerSupply power_supply = 4;
+    }
+
+    // A monitor in the testbed.
+    message Monitor {
+        // The unique ID of the monitor.
+        string id = 1;
+        // the make/model of the monitor.
+        string model = 2;
+    }
+
+    // A camera in the testbed.
+    message Camera {
+        // The unique ID of the camera.
+        string id = 1;
+        // The make/model of the camera.
+        string model = 2;
+    }
+
+    // A network in the testbed.
+    message Network {
+        // The unique ID of the network.
+        string id = 1;
+   }
+}
