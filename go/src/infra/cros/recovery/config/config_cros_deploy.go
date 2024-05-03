@@ -18,6 +18,7 @@ func crosDeployPlan() *Plan {
 			"Download stable version OS image to servo usbkey if necessary",
 			"Device is pingable before deploy",
 			"DUT is on test channel OS",
+			"Collect firmware target",
 			"DUT has correct cros image version",
 			"Set dev_boot_usb is enabled",
 			"DUT has expected dev firmware",

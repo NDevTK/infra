@@ -71,6 +71,7 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 		"Verify RO_VPD dsm_calib",
 		"Verify RO_VPD data on DUT",
 		"Verify system info",
+		"Collect firmware target",
 		"Update Servo NIC mac address",
 		"Backup CBI",
 		"Check CBI",
@@ -4550,6 +4551,22 @@ func crosRepairActions() map[string]*Action {
 				"Is serial-number known",
 			},
 			ExecName:   "sample_fail",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Collect firmware target": {
+			Docs: []string{
+				"Collect firmware target from DUT to inventory.",
+			},
+			Conditions: []string{
+				"Is crosid readable",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_collect_firmware_target",
+			ExecExtraArgs: []string{
+				"force_override:false",
+			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 	}
