@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -18,6 +17,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/log"
 )
 
 // Permissions is the default file permissions for log files.
@@ -29,17 +29,23 @@ const defaultFilePermissions fs.FileMode = 0666
 //
 // This exec function accepts the following parameters from the action:
 // human_readable: whether the dmesg output is expected to be in human-readlable form.
-// create_crashinfo_dir: whether the subdirectory for crashinfo needs to be created.
+// device_type: specifies device which used as source of data.
+// create_crashinfo_dir: whether the subdirectory created for crashinfo needs to be created.
+// use_host_dir: whether the subdirectory named like device_type name.
 func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 	argMap := info.GetActionArgs(ctx)
 	logRoot := info.GetLogRoot()
-	if argMap.AsBool(ctx, "create_crashinfo_dir", false) {
-		logRoot = filepath.Join(logRoot, fmt.Sprintf("crashinfo.%s", info.GetActiveResource()))
+	resource, err := info.GetDeviceName(argMap.AsString(ctx, "device_type", "active"))
+	if err != nil {
+		return errors.Annotate(err, "dmesg exec").Err()
 	}
-	run := info.DefaultRunner()
-	log := info.NewLogger()
+	if argMap.AsBool(ctx, "create_crashinfo_dir", false) {
+		logRoot = filepath.Join(logRoot, fmt.Sprintf("crashinfo.%s", resource))
+	} else if argMap.AsBool(ctx, "use_host_dir", false) {
+		logRoot = filepath.Join(logRoot, resource)
+	}
+	run := info.NewRunner(resource)
 	var output string
-	var err error
 	if argMap.AsBool(ctx, "human_readable", true) {
 		output, err = run(ctx, time.Minute, "dmesg", "-H")
 	} else {
@@ -57,8 +63,8 @@ func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "dmesg exec").Err()
 	}
 	f := filepath.Join(logRoot, "dmesg")
-	log.Debugf("dmesg path to safe: %s", f)
-	ioutil.WriteFile(f, []byte(output), defaultFilePermissions)
+	log.Debugf(ctx, "dmesg path to safe: %s", f)
+	os.WriteFile(f, []byte(output), defaultFilePermissions)
 	return nil
 }
 
@@ -71,53 +77,20 @@ func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 // src_type: specifies whether the source is a file or a directory, options are "file" and "dir".
 // use_host_dir: specifies whether the a subdirectory with the resource-name needs to be created.
 // dest_suffix: specifies any subdirectory that needs to be created within the source path.
-// filename: target name for the copied file. Default value is the complete file name of the source.
 func copyToLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	argMap := info.GetActionArgs(ctx)
-	fullPath := argMap.AsString(ctx, "src_path", "")
-	if fullPath == "" {
+	srcPath := argMap.AsString(ctx, "src_path", "")
+	if srcPath == "" {
 		return errors.Reason("copy to logs: src_path is empty or not provided").Err()
 	}
-	type srcType string
-	srcTypeArg := srcType(argMap.AsString(ctx, "src_type", "file"))
-	type hostType string
-	srcHostType := hostType(argMap.AsString(ctx, "src_host_type", ""))
-	const (
-		dutHostType   = hostType("dut")
-		servoHostType = hostType("servo_host")
-	)
-	var resource string
-	switch srcHostType {
-	case dutHostType:
-		resource = info.GetDut().Name
-	case servoHostType:
-		resource = info.GetChromeos().GetServo().GetName()
-	default:
-		return errors.Reason("copy to logs: src_host_type %q is either empty or an un-recognized value", srcHostType).Err()
+	if newName := filepath.Base(srcPath); newName == "" || newName == "." || newName == ".." || newName == "/" {
+		return errors.Reason("copy to logs: could not extracted filaname from src_path").Err()
 	}
-	run := info.NewRunner(resource)
-	log := info.NewLogger()
+	resource, err := info.GetDeviceName(argMap.AsString(ctx, "src_host_type", ""))
+	if err != nil {
+		return errors.Annotate(err, "copy to logs").Err()
+	}
 	logRoot := info.GetLogRoot()
-	const (
-		fileType = srcType("file")
-		dirType  = srcType("dir")
-	)
-	var testCmdFlag string
-	switch srcTypeArg {
-	case fileType:
-		testCmdFlag = "-f"
-	case dirType:
-		testCmdFlag = "-d"
-	default:
-		return errors.Reason("copy to logs: src_type %q is either empty, or an un-recognized value", srcTypeArg).Err()
-	}
-	if _, err := run(ctx, time.Minute, "test", testCmdFlag, fullPath); err != nil {
-		return errors.Annotate(err, "copy to logs: the src_file %s does not exist or it not a %s", fullPath, srcTypeArg).Err()
-	}
-	newName := strings.TrimSpace(argMap.AsString(ctx, "filename", ""))
-	if newName == "" {
-		newName = filepath.Base(fullPath)
-	}
 	// Logs will be saved to the resource folder.
 	if argMap.AsBool(ctx, "use_host_dir", false) {
 		logRoot = filepath.Join(logRoot, resource)
@@ -130,29 +103,26 @@ func copyToLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err := exec.CommandContext(ctx, "mkdir", "-p", logRoot).Run(); err != nil {
 		return errors.Annotate(err, "copy to logs").Err()
 	}
-	switch srcTypeArg {
-	case fileType:
-		if newName == "" {
-			return errors.Reason("copy to logs: filename is empty and could not extracted from filepath").Err()
+	isDir := argMap.AsString(ctx, "src_type", "file") == "dir"
+	testCmdFlag := "-f"
+	if isDir {
+		testCmdFlag = "-d"
+	}
+	run := info.NewRunner(resource)
+	if _, err := run(ctx, time.Minute, "test", testCmdFlag, srcPath); err != nil {
+		return errors.Annotate(err, "copy to logs: the src_file:%q does not exist", srcPath).Err()
+	}
+	if isDir {
+		log.Debugf(ctx, "Copy to Logs: Attempting to collect the logs from %q to %q", srcPath, logRoot)
+		if err := info.CopyDirectoryFrom(ctx, resource, srcPath, logRoot); err != nil {
+			return errors.Annotate(err, "copy to logs").Err()
 		}
+	} else {
 		destDir := logRoot
-		log.Debugf("Copy to Logs: Attempting to collect the logs from %q to %q!", fullPath, destDir)
-		if err := info.CopyFrom(ctx, resource, fullPath, destDir); err != nil {
+		log.Debugf(ctx, "Copy to Logs: Attempting to collect the logs from %q to %q!", srcPath, destDir)
+		if err := info.CopyFrom(ctx, resource, srcPath, destDir); err != nil {
 			return errors.Annotate(err, "copy to logs").Err()
 		}
-	case dirType:
-		if newName == "" || newName == "." || newName == ".." || newName == "/" {
-			return errors.Reason("copy to logs: filename is empty and could not extracted from filepath").Err()
-		}
-		log.Debugf("Copy to Logs: Attempting to collect the logs from %q to %q", fullPath, logRoot)
-		if err := info.CopyDirectoryFrom(ctx, resource, fullPath, logRoot); err != nil {
-			return errors.Annotate(err, "copy to logs").Err()
-		}
-		// Note: Any values others that the above cases will be an
-		// error (which would normally be caught by 'default' for this
-		// switch-case). Any such cases would have already been
-		// handled above when srcTypeArg is first used. We don't need
-		// to repeat that logic here since it will be never executed.
 	}
 	return nil
 }
@@ -183,28 +153,27 @@ func collectCrashDumpsExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "collect crash dumps exec").Err()
 	}
-	log := info.NewLogger()
 	if output != "" {
 		orphans := strings.Split(output, "\n")
 		argMap := info.GetActionArgs(ctx)
 		cleanUp := argMap.AsBool(ctx, "clean", true)
 		timeout := argMap.AsDuration(ctx, "cleanup_timeout", 10, time.Second)
 		for _, f := range orphans {
-			log.Debugf("Collect Crash Dumps Exec: Attempting to collect orphan file %q", f)
+			log.Debugf(ctx, "Collect Crash Dumps Exec: Attempting to collect orphan file %q", f)
 			if err := info.CopyFrom(ctx, info.GetDut().Name, f, infoDir); err != nil {
-				log.Debugf("Collect Crash Dumps Exec: (non-critical) error %s while copying %q to %q", err.Error(), f, infoDir)
+				log.Debugf(ctx, "Collect Crash Dumps Exec: (non-critical) error %s while copying %q to %q", err.Error(), f, infoDir)
 			}
 			if cleanUp {
 				fPath := crashDir + f
 				if _, err := run(ctx, timeout, "rm", "-f", fPath); err != nil {
-					log.Debugf("Collect Crash Dumps Exec: (non-critical) error %s while removing file %q on the DUT", err.Error(), fPath)
+					log.Debugf(ctx, "Collect Crash Dumps Exec: (non-critical) error %s while removing file %q on the DUT", err.Error(), fPath)
 				}
 			}
 		}
 		if len(orphans) == 0 {
-			log.Debugf("Collect Crash Dumps Exec: There are no orphaned crashdump files on the source-side, hence deleting the destination folder %q", infoDir)
+			log.Debugf(ctx, "Collect Crash Dumps Exec: There are no orphaned crashdump files on the source-side, hence deleting the destination folder %q", infoDir)
 			if err := os.RemoveAll(infoDir); err != nil {
-				log.Debugf("Collect Crash Dumps Exec: (non-critical) error %s while removing the source directory %q", err.Error(), infoDir)
+				log.Debugf(ctx, "Collect Crash Dumps Exec: (non-critical) error %s while removing the source directory %q", err.Error(), infoDir)
 			}
 		}
 	}
