@@ -45,8 +45,10 @@ func crosRepairClosingActions() map[string]*Action {
 				"Servo-host is sshable",
 			},
 			Dependencies: []string{
-				"Try copy messages from servo-host",
-				"Try to collect servod logs",
+				"Copy messages from servo-host",
+				"Copy eventlog.txt from servo-host",
+				"Collect dmesg logs from Servo-host",
+				"Collect servod logs",
 				"Remove in-use flag on servo-host",
 				"Remove request to reboot if servo is good",
 				"Turn off servo usbkey power",
@@ -56,11 +58,24 @@ func crosRepairClosingActions() map[string]*Action {
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			AllowFailAfterRecovery: true,
 		},
+		"Collect dmesg logs from Servo-host": {
+			Docs: []string{
+				"Collect the entire output of dmesg",
+			},
+			ExecName: "cros_dmesg",
+			ExecExtraArgs: []string{
+				"device_type:servo_host",
+				"use_host_dir:true",
+			},
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			AllowFailAfterRecovery: true,
+		},
 		"Remove in-use flag on servo-host": {
 			Conditions: []string{
 				"Servo-host known",
 			},
 			ExecName:               "cros_remove_servo_in_use",
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			AllowFailAfterRecovery: true,
 		},
 		"Is Flex device": {
@@ -80,7 +95,7 @@ func crosRepairClosingActions() map[string]*Action {
 			ExecName:      "dut_check_board",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Try to collect servod logs": {
+		"Collect servod logs": {
 			Docs: []string{
 				"Try to collect all servod logs since latest start time.",
 			},
@@ -88,9 +103,10 @@ func crosRepairClosingActions() map[string]*Action {
 				"Servo-host known",
 			},
 			ExecName:               "cros_collect_servod_logs",
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			AllowFailAfterRecovery: true,
 		},
-		"Try copy messages from servo-host": {
+		"Copy messages from servo-host": {
 			Docs: []string{
 				"Try to collect /var/log/messages from servo-host.",
 			},
@@ -104,6 +120,24 @@ func crosRepairClosingActions() map[string]*Action {
 				"src_type:file",
 				"use_host_dir:true",
 			},
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			AllowFailAfterRecovery: true,
+		},
+		"Copy eventlog.txt from servo-host": {
+			Docs: []string{
+				"Try to collect /var/log/eventlog.txt from servo-host.",
+			},
+			Conditions: []string{
+				"Servo-host known",
+			},
+			ExecName: "cros_copy_to_logs",
+			ExecExtraArgs: []string{
+				"src_host_type:servo_host",
+				"src_path:/var/log/eventlog.txt",
+				"src_type:file",
+				"use_host_dir:true",
+			},
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			AllowFailAfterRecovery: true,
 		},
 		"Is not in cellular pool": {
@@ -294,6 +328,7 @@ func crosRepairClosingActions() map[string]*Action {
 				"string_value:off",
 			},
 			RunControl:             RunControl_ALWAYS_RUN,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			AllowFailAfterRecovery: true,
 		},
 		"Stop servod": {
@@ -306,6 +341,7 @@ func crosRepairClosingActions() map[string]*Action {
 			},
 			ExecName:               "servo_host_servod_stop",
 			RunControl:             RunControl_ALWAYS_RUN,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			AllowFailAfterRecovery: true,
 		},
 		"Servo-host is sshable": {
@@ -320,7 +356,8 @@ func crosRepairClosingActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 15,
 			},
-			RunControl: RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_ALWAYS_RUN,
 		},
 		"Save UART capture": {
 			Dependencies: []string{
