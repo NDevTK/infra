@@ -21,7 +21,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
-	"text/template"
+	"text/template"  // NOLINT
 	"time"
 
 	"golang.org/x/oauth2/google"
