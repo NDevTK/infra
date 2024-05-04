@@ -11,7 +11,6 @@ option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
 import "google/protobuf/timestamp.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
-import "google/type/money.proto";
 import "infra/unifiedfleet/api/v1/models/chassis_x.proto";
 import "infra/unifiedfleet/api/v1/models/location.proto";
 import "infra/unifiedfleet/api/v1/models/peripherals.proto";
@@ -73,8 +72,8 @@ message Machine {
     // Ownership information of the host like ResourceGroup, Security level etc.
     OwnershipData ownership = 14;
 
-    // cost_per_hour is the cost per hour in USD.
-    google.type.Money cost_per_hour = 15;
+    reserved 15;
+    reserved "cost_per_hour";
 }
 
 // ChromeBrowserMachine refers to bare metal servers in Chrome Browser lab
