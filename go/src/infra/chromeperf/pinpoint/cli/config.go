@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"text/template"
+	"text/template" // NOLINT
 
 	"github.com/maruel/subcommands"
 	"gopkg.in/yaml.v2"
