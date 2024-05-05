@@ -5,33 +5,27 @@
 package frontend
 
 import (
+	"context"
 	"testing"
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	"go.chromium.org/luci/appengine/gaetesting"
-	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/clock/testclock"
-	"go.chromium.org/luci/gae/service/datastore"
-
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
+	"infra/cros/karte/internal/testsupport"
 )
 
 // TestCreateActionWithClock tests creating an action with the testing clock set to 10 seconds after
 // the beginning of time (UTC midnight on 1970-01-01).
 func TestCreateActionWithClock(t *testing.T) {
 	Convey("test create action with clock", t, func() {
-		ctx := gaetesting.TestingContext()
-		ctx = identifiers.Use(ctx, identifiers.NewDefault())
-		testClock := testclock.New(time.Unix(10, 0).UTC())
-		ctx = clock.Set(ctx, testClock)
-		datastore.GetTestable(ctx).Consistent(true)
+		tf := testsupport.NewFixture(context.Background())
+		tf.Ctx = identifiers.Use(tf.Ctx, identifiers.NewDefault())
 		k := NewKarteFrontend()
 
-		action, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
+		action, err := k.CreateAction(tf.Ctx, &kartepb.CreateActionRequest{
 			Action: &kartepb.Action{},
 		})
 		So(err, ShouldBeNil)
