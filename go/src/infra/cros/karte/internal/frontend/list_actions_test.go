@@ -5,17 +5,16 @@
 package frontend
 
 import (
+	"context"
 	"testing"
 
-	"go.chromium.org/luci/appengine/gaetesting"
-	"go.chromium.org/luci/gae/service/datastore"
+	"infra/cros/karte/internal/testsupport"
 )
 
 // TestListActionsWithFilter tests listing actions with a simple filter.
 func TestListActionsWithFilter(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	if err := PutActionEntities(
 		ctx,
 		&ActionEntity{ID: "hi", Kind: "w"},

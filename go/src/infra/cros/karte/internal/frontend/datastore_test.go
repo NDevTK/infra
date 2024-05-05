@@ -5,21 +5,20 @@
 package frontend
 
 import (
+	"context"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"go.chromium.org/luci/appengine/gaetesting"
-	"go.chromium.org/luci/gae/service/datastore"
+	"infra/cros/karte/internal/testsupport"
 )
 
 // TestReadActionEntityFromEmptyDatastore check that a read from a consistent datastore with
 // nothing in it consistently produces no action entities.
 func TestReadActionEntityFromEmptyDatastore(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	q, err := newActionEntitiesQuery("", "")
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
@@ -44,8 +43,7 @@ func TestReadActionEntityFromEmptyDatastore(t *testing.T) {
 // nothing in it consistently produces no observation entities.
 func TestReadObservationEntityFromEmptyDatastore(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	q, err := newObservationEntitiesQuery("", "")
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
@@ -67,8 +65,7 @@ func TestReadObservationEntityFromEmptyDatastore(t *testing.T) {
 // and then reading it back out.
 func TestReadSingleActionEntityFromDatastore(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	if err := PutActionEntities(ctx, &ActionEntity{
 		ID: "zzzz-hi",
 	}); err != nil {
@@ -101,8 +98,7 @@ func TestReadSingleActionEntityFromDatastore(t *testing.T) {
 // and then reading them back out.
 func TestReadTwoActionEntitiesFromDatastore(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	if err := PutActionEntities(ctx, &ActionEntity{
 		ID: "zzzz-hi",
 	}); err != nil {
@@ -140,8 +136,7 @@ func TestReadTwoActionEntitiesFromDatastore(t *testing.T) {
 // and then reading it back out.
 func TestReadSingleObservationEntityFromDatastore(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	if err := PutObservationEntities(ctx, &ObservationEntity{
 		ID: "hi",
 	}); err != nil {
@@ -162,8 +157,7 @@ func TestReadSingleObservationEntityFromDatastore(t *testing.T) {
 
 func TestWriteAndReadObservationEntitiesFromDatastore(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	data := []struct {
 		name     string
 		entities []*ObservationEntity
@@ -253,8 +247,7 @@ func TestWriteAndReadObservationEntitiesFromDatastore(t *testing.T) {
 // using pagination.
 func TestReadActionEntitiesFromDatastoreOneAtAtime(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	if err := PutActionEntities(
 		ctx,
 		&ActionEntity{
@@ -310,8 +303,7 @@ func TestReadActionEntitiesFromDatastoreOneAtAtime(t *testing.T) {
 // TestGetActionEntityByID test retrieving an entity from the fake datastore instance by its ID.
 func TestGetActionEntityByID(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	// Confirm that an item does not exist should produce an error.
 	t.Run("nonexistent entity", func(t *testing.T) {
 		_, err := GetActionEntityByID(ctx, "hi")

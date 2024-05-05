@@ -14,14 +14,13 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
-	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
+	"infra/cros/karte/internal/testsupport"
 )
 
 const invalidProjectID = "invalid project ID -- 5509d052-1fec-4ff6-bb2f-bb4e98951520"
@@ -29,11 +28,7 @@ const invalidProjectID = "invalid project ID -- 5509d052-1fec-4ff6-bb2f-bb4e9895
 // TestCreateAction makes sure that CreateAction returns the action it created and that the action is present in datastore.
 func TestCreateAction(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	ctx = identifiers.Use(ctx, identifiers.NewNaive())
-	testClock := testclock.New(time.Unix(3, 4))
-	ctx = clock.Set(ctx, testClock)
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	k := NewKarteFrontend()
 	resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
 		Action: &kartepb.Action{
@@ -43,7 +38,7 @@ func TestCreateAction(t *testing.T) {
 		},
 	})
 	expected := &kartepb.Action{
-		Name:       "zzzzUzzzzzzzzzk00000zzzzzk",
+		Name:       "zzzzUzzzzzzzzzJ00000zzzzzk",
 		Kind:       "ssh-attempt",
 		SealTime:   scalars.ConvertTimeToTimestampPtr(time.Unix(1+12*60*60, 2).UTC()),
 		CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 2).UTC()),
@@ -78,8 +73,7 @@ func TestCreateAction(t *testing.T) {
 // TestRejectActionWithUserDefinedName tests that an action with a user-defined name is rejected.
 func TestRejectActionWithUserDefinedName(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	k := NewKarteFrontend()
 	resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
 		Action: &kartepb.Action{
@@ -99,8 +93,7 @@ func TestRejectActionWithUserDefinedName(t *testing.T) {
 // See b/206651512 for details.
 func TestCreateActionWithNoTime(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	// Set a test clock to an arbitrary time to make sure that the correct time is supplied.
 	testClock := testclock.New(time.Unix(3, 4).UTC())
 	ctx = clock.Set(ctx, testClock)
@@ -131,8 +124,7 @@ func TestCreateActionWithNoTime(t *testing.T) {
 // TestCreateActionWithSwarmingAndBuildbucketID tests creating a new action with an swarming ID and a buildbucket ID and reading it back.
 func TestCreateActionWithSwarmingAndBuildbucketID(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	testClock := testclock.New(time.Unix(3, 4).UTC())
 	ctx = clock.Set(ctx, testClock)
 	ctx = identifiers.Use(ctx, identifiers.NewNaive())
@@ -179,8 +171,7 @@ func TestCreateActionWithSwarmingAndBuildbucketID(t *testing.T) {
 // it isn't implemented.
 func TestCreateObservation(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	k := NewKarteFrontend()
 	_, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{})
 	if err == nil {
@@ -191,8 +182,7 @@ func TestCreateObservation(t *testing.T) {
 // TestListActionsSmokeTest tests that ListActions does not error.
 func TestListActionsSmokeTest(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	k := NewKarteFrontend()
 	resp, err := k.ListActions(ctx, &kartepb.ListActionsRequest{})
 	if resp == nil {
@@ -209,8 +199,7 @@ func TestListActionsSmokeTest(t *testing.T) {
 // TestListActions tests that ListActions errors.
 func TestListActions(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	if err := PutActionEntities(
 		ctx,
 		&ActionEntity{
@@ -238,9 +227,8 @@ func TestListActions(t *testing.T) {
 // TestListObservations tests that ListObservations errors.
 func TestListObservations(t *testing.T) {
 	t.Parallel()
+	ctx := testsupport.NewTestingContext(context.Background())
 	k := NewKarteFrontend()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
 	resp, err := k.ListObservations(ctx, &kartepb.ListObservationsRequest{})
 	if resp == nil {
 		t.Errorf("expected resp to not be nil")
@@ -294,9 +282,8 @@ func (c *fakeClient) observationsSize() int {
 // returns a non-error response given an empty dataset
 func TestPersistActionRangeImpl_SmokeTest(t *testing.T) {
 	t.Parallel()
+	ctx := testsupport.NewTestingContext(context.Background())
 	k := NewKarteFrontend().(*karteFrontend)
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
 	fake := &fakeClient{}
 
 	_, err := k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
