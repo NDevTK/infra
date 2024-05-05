@@ -1,24 +1,23 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package frontend
 
 import (
+	"context"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"go.chromium.org/luci/appengine/gaetesting"
-	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
+	"infra/cros/karte/internal/testsupport"
 )
 
 // TestPersistObservations tests persisting observations.
@@ -29,14 +28,10 @@ func TestPersistObservations(t *testing.T) {
 	const metricKind = "abf5fa64-69e5-4983-83be-0366c3d4a4f8"
 
 	t.Run("test persisting observation", func(t *testing.T) {
-		ctx := gaetesting.TestingContext()
-		ctx = identifiers.Use(ctx, identifiers.NewDefault())
-		testClock := testclock.New(time.Unix(10, 0).UTC())
-		ctx = clock.Set(ctx, testClock)
-		datastore.GetTestable(ctx).Consistent(true)
+		tf := testsupport.NewFixture(context.Background())
 		k := NewKarteFrontend().(*karteFrontend)
 		fake := &fakeClient{}
-		a, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
+		a, err := k.CreateAction(tf.Ctx, &kartepb.CreateActionRequest{
 			Action: &kartepb.Action{
 				Kind:      kind,
 				StartTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0).UTC()),
@@ -56,7 +51,7 @@ func TestPersistObservations(t *testing.T) {
 		if diff := cmp.Diff(a.SealTime, scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0)), protocmp.Transform()); diff != "" {
 			t.Errorf("unexpected diff (-want +got): %s", diff)
 		}
-		o, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
+		o, err := k.CreateObservation(tf.Ctx, &kartepb.CreateObservationRequest{
 			Observation: &kartepb.Observation{
 				ActionName: a.Name,
 				MetricKind: metricKind,
@@ -71,7 +66,7 @@ func TestPersistObservations(t *testing.T) {
 		if o.ActionName != a.Name {
 			t.Errorf("expected o.ActionName %q to equal a.Name %q", o.ActionName, a.Name)
 		}
-		_, err = k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
+		_, err = k.persistActionRangeImpl(tf.Ctx, fake, &kartepb.PersistActionRangeRequest{
 			StartVersion: "zzzz",
 			StopVersion:  "zzzz",
 			StartTime:    scalars.ConvertTimeToTimestampPtr(time.Unix(0, 0).UTC()),
@@ -89,15 +84,12 @@ func TestPersistObservations(t *testing.T) {
 	})
 
 	t.Run("test persisting multiple observations associated with single action", func(t *testing.T) {
-		ctx := gaetesting.TestingContext()
-		ctx = identifiers.Use(ctx, identifiers.NewDefault())
-		testClock := testclock.New(time.Unix(10, 0).UTC())
-		ctx = clock.Set(ctx, testClock)
-		datastore.GetTestable(ctx).Consistent(true)
+		tf := testsupport.NewFixture(context.Background())
+		tf.Ctx = identifiers.Use(tf.Ctx, identifiers.NewDefault())
 		k := NewKarteFrontend().(*karteFrontend)
 		const times = 10
 		fake := &fakeClient{}
-		a, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
+		a, err := k.CreateAction(tf.Ctx, &kartepb.CreateActionRequest{
 			Action: &kartepb.Action{
 				Kind:      kind,
 				StartTime: scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0).UTC()),
@@ -115,7 +107,7 @@ func TestPersistObservations(t *testing.T) {
 			t.Errorf("unexpected diff (-want +got): %s", diff)
 		}
 		for i := 0; i < times; i++ {
-			o, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
+			o, err := k.CreateObservation(tf.Ctx, &kartepb.CreateObservationRequest{
 				Observation: &kartepb.Observation{
 					ActionName: a.Name,
 					MetricKind: metricKind,
@@ -131,14 +123,14 @@ func TestPersistObservations(t *testing.T) {
 				t.Errorf("expected o.ActionName %q to equal a.Name %q", o.ActionName, a.Name)
 			}
 		}
-		count, err := datastore.Count(ctx, datastore.NewQuery(ObservationKind))
+		count, err := datastore.Count(tf.Ctx, datastore.NewQuery(ObservationKind))
 		if err != nil {
 			t.Errorf("unexpected error: %s", err)
 		}
 		if diff := cmp.Diff(count, int64(times)); diff != "" {
 			t.Errorf("unexpected diff (-want +got): %s", diff)
 		}
-		resp, err := k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{
+		resp, err := k.persistActionRangeImpl(tf.Ctx, fake, &kartepb.PersistActionRangeRequest{
 			StartTime: scalars.ConvertTimeToTimestampPtr(time.Unix(0, 0).UTC()),
 			StopTime:  scalars.ConvertTimeToTimestampPtr(time.Unix(100, 0).UTC()),
 		})
