@@ -1,21 +1,19 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package frontend
 
 import (
+	"context"
 	"strings"
 	"testing"
 	"time"
 
-	"go.chromium.org/luci/appengine/gaetesting"
-	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/identifiers"
+	"infra/cros/karte/internal/testsupport"
 )
 
 // TestActionRangePersisterInsufficientInput tests that invoking actionRangePersister without
@@ -24,11 +22,7 @@ import (
 // as a favor.
 func TestActionRangePersisterInsufficientInput(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	ctx = identifiers.Use(ctx, identifiers.NewNaive())
-	testClock := testclock.New(time.Unix(10, 0).UTC())
-	ctx = clock.Set(ctx, testClock)
-	datastore.GetTestable(ctx).Consistent(true)
+	_ = testsupport.NewFixture(context.Background())
 
 	_, err := makeQuery(&actionRangePersistOptions{})
 	if err == nil {
@@ -42,11 +36,7 @@ func TestActionRangePersisterInsufficientInput(t *testing.T) {
 // actually exists, successfully does nothing.
 func TestActionRangePersisterSmokeTest(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	ctx = identifiers.Use(ctx, identifiers.NewNaive())
-	testClock := testclock.New(time.Unix(10, 0).UTC())
-	ctx = clock.Set(ctx, testClock)
-	datastore.GetTestable(ctx).Consistent(true)
+	tf := testsupport.NewFixture(context.Background())
 
 	a := &actionRangePersistOptions{
 		startID: time.Unix(0, 0).UTC(),
@@ -56,20 +46,20 @@ func TestActionRangePersisterSmokeTest(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error %s", err)
 	}
-	if _, _, err := persistActions(ctx, a, q.Query); err != nil {
+	if _, _, err := persistActions(tf.Ctx, a, q.Query); err != nil {
 		t.Errorf("unexpected error %s", err)
 	}
-	count, err := datastore.Count(ctx, datastore.NewQuery(ActionKind))
+	count, err := datastore.Count(tf.Ctx, datastore.NewQuery(ActionKind))
 	if count != 0 {
 		t.Errorf("unexpected count %d", count)
 	}
 	if err != nil {
 		t.Errorf("unexpected error %s", err)
 	}
-	if err := persistObservations(ctx, a); err != nil {
+	if err := persistObservations(tf.Ctx, a); err != nil {
 		t.Errorf("unexpected error %s", err)
 	}
-	count, err = datastore.Count(ctx, datastore.NewQuery(ObservationKind))
+	count, err = datastore.Count(tf.Ctx, datastore.NewQuery(ObservationKind))
 	if count != 0 {
 		t.Errorf("unexpected count %d", count)
 	}
@@ -81,17 +71,12 @@ func TestActionRangePersisterSmokeTest(t *testing.T) {
 // TestActionRangePersister tests persisting two actions and two observations.
 func TestActionRangePersister(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	ctx = identifiers.Use(ctx, identifiers.NewDefault())
-	testClock := testclock.New(time.Unix(10, 0).UTC())
-	ctx = clock.Set(ctx, testClock)
-	datastore.GetTestable(ctx).Consistent(true)
+	tf := testsupport.NewFixture(context.Background())
 	fake := &fakeClient{}
-
 	k := NewKarteFrontend()
 
 	action1 := func() string {
-		resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
+		resp, err := k.CreateAction(tf.Ctx, &kartepb.CreateActionRequest{
 			Action: &kartepb.Action{
 				Name: "",
 				Kind: "ssh-attempt",
@@ -107,7 +92,7 @@ func TestActionRangePersister(t *testing.T) {
 	}
 
 	action2 := func() string {
-		resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
+		resp, err := k.CreateAction(tf.Ctx, &kartepb.CreateActionRequest{
 			Action: &kartepb.Action{
 				Name: "",
 				Kind: "ssh-attempt",
@@ -123,7 +108,7 @@ func TestActionRangePersister(t *testing.T) {
 	}
 
 	observation1 := func() string {
-		resp, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
+		resp, err := k.CreateObservation(tf.Ctx, &kartepb.CreateObservationRequest{
 			Observation: &kartepb.Observation{
 				ActionName: action1,
 			},
@@ -138,7 +123,7 @@ func TestActionRangePersister(t *testing.T) {
 	}
 
 	observation2 := func() string {
-		resp, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
+		resp, err := k.CreateObservation(tf.Ctx, &kartepb.CreateObservationRequest{
 			Observation: &kartepb.Observation{
 				ActionName: action2,
 			},
@@ -160,21 +145,21 @@ func TestActionRangePersister(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	_, _, err = persistActions(ctx, a, q.Query)
+	_, _, err = persistActions(tf.Ctx, a, q.Query)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	count, err := datastore.Count(ctx, datastore.NewQuery(ActionKind))
+	count, err := datastore.Count(tf.Ctx, datastore.NewQuery(ActionKind))
 	if count != 2 {
 		t.Errorf("unexpected count: %d", count)
 	}
 	if err != nil {
 		t.Errorf("unexpected err: %s", err)
 	}
-	if err := persistObservations(ctx, a); err != nil {
+	if err := persistObservations(tf.Ctx, a); err != nil {
 		t.Errorf("unexpected err: %s", err)
 	}
-	count, err = datastore.Count(ctx, datastore.NewQuery(ObservationKind))
+	count, err = datastore.Count(tf.Ctx, datastore.NewQuery(ObservationKind))
 	if count != 2 {
 		t.Errorf("unexpected count: %d", count)
 	}
