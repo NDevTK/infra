@@ -46,6 +46,30 @@
       },
       "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1e4770e_11138704",
+        "filename": "go/src/infra/cros/karte/internal/testsupport/testsupport.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2024-05-06T17:14:46Z",
+      "side": 1,
+      "message": "Wouldn\u0027t it be better to have the bq client in the context?. That\u0027s how most of other services do it. Makes it easier for testing",
+      "parentUuid": "009a4217_e94afdc6",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 1
+      },
+      "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
