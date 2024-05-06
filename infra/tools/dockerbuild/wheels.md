@@ -8663,6 +8663,18 @@ wheel: <
 
 * *universal*
 
+### 2024.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytz-py2_py3"
+  version: "version:2024.1"
+>
+```
+
+
+* *universal*
+
 ## **pyusb-py3**
 
 ### 1.2.1
