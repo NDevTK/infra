@@ -118,6 +118,30 @@
       },
       "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc6155ad_51ba9b5d",
+        "filename": "go/src/infra/cros/karte/internal/testsupport/testsupport.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-05-06T18:09:05Z",
+      "side": 1,
+      "message": "This is how fleetcost does it. The bqclient is a member of the object representing the service.\n\nhttps://chromium-review.googlesource.com/c/infra/infra/+/5368196\n\nThis is how Karte does it. Originally the BQ client was per-request, but you extracted it to the context two years ago to make it long lived.\n\nhttps://chromium-review.googlesource.com/c/infra/infra/+/3991421\n\nI think both approaches are fine but if I had to write another project tomorrow I think I would opt for what fleet cost does and pass the client around as argument rather than passing it through the context.\n\nThat makes it more obvious what parts of the code depend on BigQuery.",
+      "parentUuid": "0fd00173_bb141326",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 1
+      },
+      "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
