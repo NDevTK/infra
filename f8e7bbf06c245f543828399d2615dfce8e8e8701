@@ -70,6 +70,30 @@
       },
       "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7bd2347e_1486667e",
+        "filename": "go/src/infra/cros/karte/internal/testsupport/testsupport.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-05-06T17:50:15Z",
+      "side": 1,
+      "message": "Karte does put the bigquery client in the context, as well as a bunch of stuff that arguably shouldn\u0027t be there.\n\nThis is actually a decision that I reversed in `fleetcost`. (In that project, I\u0027m passing the bigquery client around explicitly.) I think it makes the code harder to follow because you can\u0027t tell which parts of the code are using what resources.\n\nI changed the test fixture type to a context though because right now, for Karte, everything you need is in the context.",
+      "parentUuid": "f1e4770e_11138704",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 1
+      },
+      "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
