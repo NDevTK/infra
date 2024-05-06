@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69550cb6_8fcadcff",
+        "filename": "go/src/infra/cros/karte/internal/testsupport/testsupport.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2024-05-06T15:44:24Z",
+      "side": 1,
+      "message": "You could just return `context.Context` in the function. Why need `Fixture`",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 1
+      },
+      "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
