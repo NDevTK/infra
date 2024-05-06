@@ -15072,7 +15072,7 @@
           ],
           "dependencies": [
             {
-              "name": "Try copy messages from servo-host",
+              "name": "Copy messages from servo-host",
               "exec_name": "cros_copy_to_logs",
               "docs": [
                 "Try to collect /var/log/messages from servo-host."
@@ -15094,7 +15094,42 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
-              "name": "Try to collect servod logs",
+              "name": "Copy eventlog.txt from servo-host",
+              "exec_name": "cros_copy_to_logs",
+              "docs": [
+                "Try to collect /var/log/eventlog.txt from servo-host."
+              ],
+              "conditions": [
+                {
+                  "name": "Servo-host known",
+                  "exec_name": "dut_servo_host_present",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_args": [
+                "src_host_type:servo_host",
+                "src_path:/var/log/eventlog.txt",
+                "src_type:file",
+                "use_host_dir:true"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Collect dmesg logs from Servo-host",
+              "exec_name": "cros_dmesg",
+              "docs": [
+                "Collect the entire output of dmesg"
+              ],
+              "exec_args": [
+                "device_type:servo_host",
+                "use_host_dir:true"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Collect servod logs",
               "exec_name": "cros_collect_servod_logs",
               "docs": [
                 "Try to collect all servod logs since latest start time."

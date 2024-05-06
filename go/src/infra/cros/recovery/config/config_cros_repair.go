@@ -2556,7 +2556,10 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Collect the entire output of dmesg",
 			},
-			ExecName:               "cros_dmesg",
+			ExecName: "cros_dmesg",
+			ExecExtraArgs: []string{
+				"device_type:dut",
+			},
 			AllowFailAfterRecovery: true,
 		},
 		"Restore AC detection by EC console and wait for ping": {
@@ -4112,6 +4115,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_dmesg",
 			ExecExtraArgs: []string{
 				"human_readable:false",
+				"device_type:dut",
 				"create_crashinfo_dir:true",
 			},
 			RunControl:             RunControl_RUN_ONCE,
