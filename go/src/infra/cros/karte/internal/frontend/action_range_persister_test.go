@@ -72,7 +72,7 @@ func TestActionRangePersister(t *testing.T) {
 	t.Parallel()
 	ctx := testsupport.NewTestingContext(context.Background())
 	fake := &fakeClient{}
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 
 	action1 := func() string {
 		resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{

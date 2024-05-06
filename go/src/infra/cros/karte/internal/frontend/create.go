@@ -8,6 +8,7 @@ import (
 	"context"
 	"time"
 
+	"cloud.google.com/go/bigquery"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -82,9 +83,7 @@ func (k *karteFrontend) CreateAction(ctx context.Context, req *kartepb.CreateAct
 	default:
 		valueSaver := actionEntity.ConvertToValueSaver()
 		logging.Infof(ctx, "beginning to insert record to bigquery")
-		tbl := client.Dataset("entities").Table("actions")
-		inserter := tbl.Inserter()
-		if err := inserter.Put(ctx, valueSaver); err != nil {
+		if err := client.Put(ctx, k.GetProjectID(), "entities", "actions", []bigquery.ValueSaver{valueSaver}); err != nil {
 			logging.Errorf(ctx, "cannot insert action: %s", err)
 			return nil, status.Errorf(codes.Aborted, "error persisting single record: %s", err)
 		}
@@ -126,9 +125,7 @@ func (k *karteFrontend) CreateObservation(ctx context.Context, req *kartepb.Crea
 	default:
 		valueSaver := observationEntity.ConvertToValueSaver()
 		logging.Infof(ctx, "beginning to insert record to bigquery")
-		tbl := client.Dataset("entities").Table("observations")
-		inserter := tbl.Inserter()
-		if err := inserter.Put(ctx, valueSaver); err != nil {
+		if err := client.Put(ctx, k.GetProjectID(), "entities", "observations", []bigquery.ValueSaver{valueSaver}); err != nil {
 			logging.Errorf(ctx, "cannot insert action: %s", err)
 			return nil, status.Errorf(codes.Aborted, "error persisting single record: %s", err)
 		}

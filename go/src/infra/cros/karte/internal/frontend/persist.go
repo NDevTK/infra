@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ import (
 )
 
 // PersistAction persists a single action.
-func (*karteFrontend) PersistAction(ctx context.Context, req *kartepb.PersistActionRequest) (*kartepb.PersistActionResponse, error) {
+func (k *karteFrontend) PersistAction(ctx context.Context, req *kartepb.PersistActionRequest) (*kartepb.PersistActionResponse, error) {
 	client := externalclients.GetBQ(ctx)
 	id := req.GetActionId()
 	if id == "" {
@@ -38,9 +38,7 @@ func (*karteFrontend) PersistAction(ctx context.Context, req *kartepb.PersistAct
 	}
 	valueSaver := ent.ConvertToValueSaver()
 	logging.Infof(ctx, "beginning to insert record to bigquery")
-	tbl := client.Dataset("entities").Table("actions")
-	inserter := tbl.Inserter()
-	if err := inserter.Put(ctx, valueSaver); err != nil {
+	if err := client.Put(ctx, k.GetProjectID(), "entities", "actions", []cloudBQ.ValueSaver{valueSaver}); err != nil {
 		logging.Errorf(ctx, "cannot insert action: %s", err)
 		return nil, status.Errorf(codes.Aborted, "error persisting single record: %s", err)
 	}

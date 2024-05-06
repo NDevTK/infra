@@ -29,7 +29,7 @@ func TestModifyingSealedActionShouldFail(t *testing.T) {
 	testClock := testclock.New(time.Unix(3, 4).UTC())
 	ctx = clock.Set(ctx, testClock)
 
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 
 	if _, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
 		Action: &kartepb.Action{

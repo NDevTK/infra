@@ -29,7 +29,7 @@ const invalidProjectID = "invalid project ID -- 5509d052-1fec-4ff6-bb2f-bb4e9895
 func TestCreateAction(t *testing.T) {
 	t.Parallel()
 	ctx := testsupport.NewTestingContext(context.Background())
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 	resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
 		Action: &kartepb.Action{
 			Name:       "",
@@ -74,7 +74,7 @@ func TestCreateAction(t *testing.T) {
 func TestRejectActionWithUserDefinedName(t *testing.T) {
 	t.Parallel()
 	ctx := testsupport.NewTestingContext(context.Background())
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 	resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
 		Action: &kartepb.Action{
 			Name: "aaaaa",
@@ -99,7 +99,7 @@ func TestCreateActionWithNoTime(t *testing.T) {
 	ctx = clock.Set(ctx, testClock)
 	ctx = identifiers.Use(ctx, identifiers.NewDefault())
 
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 
 	resp, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
 		Action: &kartepb.Action{
@@ -129,7 +129,7 @@ func TestCreateActionWithSwarmingAndBuildbucketID(t *testing.T) {
 	ctx = clock.Set(ctx, testClock)
 	ctx = identifiers.Use(ctx, identifiers.NewNaive())
 
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 
 	expected := []*kartepb.Action{
 		{
@@ -172,7 +172,7 @@ func TestCreateActionWithSwarmingAndBuildbucketID(t *testing.T) {
 func TestCreateObservation(t *testing.T) {
 	t.Parallel()
 	ctx := testsupport.NewTestingContext(context.Background())
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 	_, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{})
 	if err == nil {
 		t.Error("expected Create Observation to fail")
@@ -183,7 +183,7 @@ func TestCreateObservation(t *testing.T) {
 func TestListActionsSmokeTest(t *testing.T) {
 	t.Parallel()
 	ctx := testsupport.NewTestingContext(context.Background())
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 	resp, err := k.ListActions(ctx, &kartepb.ListActionsRequest{})
 	if resp == nil {
 		t.Errorf("expected resp to not be nil")
@@ -208,7 +208,7 @@ func TestListActions(t *testing.T) {
 	); err != nil {
 		t.Error(err)
 	}
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 	resp, err := k.ListActions(ctx, &kartepb.ListActionsRequest{})
 	if err != nil {
 		t.Errorf("expected error to be nil not %s", err)
@@ -228,7 +228,7 @@ func TestListActions(t *testing.T) {
 func TestListObservations(t *testing.T) {
 	t.Parallel()
 	ctx := testsupport.NewTestingContext(context.Background())
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 	resp, err := k.ListObservations(ctx, &kartepb.ListObservationsRequest{})
 	if resp == nil {
 		t.Errorf("expected resp to not be nil")
@@ -283,7 +283,7 @@ func (c *fakeClient) observationsSize() int {
 func TestPersistActionRangeImpl_SmokeTest(t *testing.T) {
 	t.Parallel()
 	ctx := testsupport.NewTestingContext(context.Background())
-	k := NewKarteFrontend().(*karteFrontend)
+	k := NewKarteFrontend("").(*karteFrontend)
 	fake := &fakeClient{}
 
 	_, err := k.persistActionRangeImpl(ctx, fake, &kartepb.PersistActionRangeRequest{

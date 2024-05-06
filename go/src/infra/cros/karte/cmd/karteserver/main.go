@@ -25,6 +25,7 @@ import (
 	"infra/cros/karte/internal/externalclients"
 	"infra/cros/karte/internal/frontend"
 	"infra/cros/karte/internal/identifiers"
+	"infra/libs/bqwrapper"
 )
 
 // Transfer control to the LUCI server
@@ -45,14 +46,15 @@ func main() {
 		}
 		logging.Infof(srv.Context, "Installing dependencies into context")
 		srv.Context = identifiers.Use(srv.Context, identifiers.NewDefault())
-		client, err := bigquery.NewClient(srv.Context, srv.Options.CloudProject, option.WithHTTPClient(&http.Client{Transport: t}))
+		bqClient, err := bigquery.NewClient(srv.Context, srv.Options.CloudProject, option.WithHTTPClient(&http.Client{Transport: t}))
 		if err != nil {
 			return err
 		}
+		client := bqwrapper.NewCloudBQ(bqClient)
 		srv.Context = externalclients.UseBQ(srv.Context, client)
 		logging.Infof(srv.Context, "Starting server.")
 		logging.Infof(srv.Context, "Installing Services.")
-		k := frontend.NewKarteFrontend()
+		k := frontend.NewKarteFrontend(srv.Options.CloudProject)
 		frontend.InstallServices(k, srv)
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil

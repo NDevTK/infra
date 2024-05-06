@@ -22,18 +22,28 @@ import (
 
 // karteFrontend is the implementation of kartepb.KarteServer
 // used in the application.
-type karteFrontend struct{}
+type karteFrontend struct {
+	projectID string
+}
 
 // KarteFrontend is a combination of the Karte RPCs and the cron RPCs.
 // In the future, any other services exposes by Karte should also be added here.
 type KarteFrontend interface {
 	kartepb.KarteServer
 	kartepb.KarteCronServer
+	GetProjectID() string
 }
 
 // NewKarteFrontend produces a new Karte frontend.
-func NewKarteFrontend() KarteFrontend {
-	return &karteFrontend{}
+func NewKarteFrontend(projectID string) KarteFrontend {
+	return &karteFrontend{
+		projectID: projectID,
+	}
+}
+
+// GetProjectID gets the project ID for the Karte frontend.
+func (k *karteFrontend) GetProjectID() string {
+	return k.projectID
 }
 
 // ListActions lists the actions that Karte knows about.

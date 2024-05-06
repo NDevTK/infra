@@ -23,7 +23,7 @@ func TestCreateActionWithClock(t *testing.T) {
 	Convey("test create action with clock", t, func() {
 		ctx := testsupport.NewTestingContext(context.Background())
 		ctx = identifiers.Use(ctx, identifiers.NewDefault())
-		k := NewKarteFrontend()
+		k := NewKarteFrontend("")
 
 		action, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
 			Action: &kartepb.Action{},

@@ -29,7 +29,7 @@ func TestPersistObservations(t *testing.T) {
 
 	t.Run("test persisting observation", func(t *testing.T) {
 		ctx := testsupport.NewTestingContext(context.Background())
-		k := NewKarteFrontend().(*karteFrontend)
+		k := NewKarteFrontend("").(*karteFrontend)
 		fake := &fakeClient{}
 		a, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
 			Action: &kartepb.Action{
@@ -86,7 +86,7 @@ func TestPersistObservations(t *testing.T) {
 	t.Run("test persisting multiple observations associated with single action", func(t *testing.T) {
 		ctx := testsupport.NewTestingContext(context.Background())
 		ctx = identifiers.Use(ctx, identifiers.NewDefault())
-		k := NewKarteFrontend().(*karteFrontend)
+		k := NewKarteFrontend("").(*karteFrontend)
 		const times = 10
 		fake := &fakeClient{}
 		a, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{

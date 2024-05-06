@@ -24,7 +24,7 @@ func TestGetMostRecentAction(t *testing.T) {
 	ctx := testsupport.NewTestingContext(context.Background())
 
 	datastore.GetTestable(ctx).Consistent(true)
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 
 	_, err := k.CreateAction(
 		ctx,
@@ -71,7 +71,7 @@ func TestGetMostRecentAction(t *testing.T) {
 func TestGetMostRecentActionInKind(t *testing.T) {
 	t.Parallel()
 	ctx := testsupport.NewTestingContext(context.Background())
-	k := NewKarteFrontend()
+	k := NewKarteFrontend("")
 
 	_, err := k.CreateAction(
 		ctx,
