@@ -5,38 +5,39 @@
 package frontend
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 
-	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
-	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
+	"infra/cros/karte/internal/testsupport"
 )
 
 // TestModifyingSealedActionShouldFail tests that updating a record after the seal time fails.
 func TestModifyingSealedActionShouldFail(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	ctx = identifiers.Use(ctx, identifiers.NewDefault())
 	testClock := testclock.New(time.Unix(3, 4).UTC())
 	ctx = clock.Set(ctx, testClock)
 
 	k := NewKarteFrontend()
 
-	k.CreateAction(ctx, &kartepb.CreateActionRequest{
+	if _, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
 		Action: &kartepb.Action{
 			Kind: "w",
 		},
-	})
+	}); err != nil {
+		t.Error(err)
+	}
 
 	resp, err := k.ListActions(ctx, &kartepb.ListActionsRequest{
 		Filter: `kind == "w"`,

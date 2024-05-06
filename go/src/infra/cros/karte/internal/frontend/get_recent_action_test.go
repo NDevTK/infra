@@ -5,24 +5,23 @@
 package frontend
 
 import (
+	"context"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 
-	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
+	"infra/cros/karte/internal/testsupport"
 )
 
 // TestGetMostRecentAction tests that we can get the most recent action of any kind in the datastore db.
 func TestGetMostRecentAction(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	ctx = identifiers.Use(ctx, identifiers.NewNaive())
+	ctx := testsupport.NewTestingContext(context.Background())
 
 	datastore.GetTestable(ctx).Consistent(true)
 	k := NewKarteFrontend()
@@ -71,10 +70,7 @@ func TestGetMostRecentAction(t *testing.T) {
 // TestGetMostRecentActionInKind tests that we can get the most recent action of a given kind.
 func TestGetMostRecentActionInKind(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	ctx = identifiers.Use(ctx, identifiers.NewNaive())
-
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	k := NewKarteFrontend()
 
 	_, err := k.CreateAction(

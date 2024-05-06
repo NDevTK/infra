@@ -1,24 +1,23 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package frontend
 
 import (
+	"context"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"go.chromium.org/luci/appengine/gaetesting"
-	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/internal/identifiers"
 	"infra/cros/karte/internal/scalars"
+	"infra/cros/karte/internal/testsupport"
 )
 
 // TestPersistObservations tests persisting observations.
@@ -29,11 +28,7 @@ func TestPersistObservations(t *testing.T) {
 	const metricKind = "abf5fa64-69e5-4983-83be-0366c3d4a4f8"
 
 	t.Run("test persisting observation", func(t *testing.T) {
-		ctx := gaetesting.TestingContext()
-		ctx = identifiers.Use(ctx, identifiers.NewDefault())
-		testClock := testclock.New(time.Unix(10, 0).UTC())
-		ctx = clock.Set(ctx, testClock)
-		datastore.GetTestable(ctx).Consistent(true)
+		ctx := testsupport.NewTestingContext(context.Background())
 		k := NewKarteFrontend().(*karteFrontend)
 		fake := &fakeClient{}
 		a, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
@@ -89,11 +84,8 @@ func TestPersistObservations(t *testing.T) {
 	})
 
 	t.Run("test persisting multiple observations associated with single action", func(t *testing.T) {
-		ctx := gaetesting.TestingContext()
+		ctx := testsupport.NewTestingContext(context.Background())
 		ctx = identifiers.Use(ctx, identifiers.NewDefault())
-		testClock := testclock.New(time.Unix(10, 0).UTC())
-		ctx = clock.Set(ctx, testClock)
-		datastore.GetTestable(ctx).Consistent(true)
 		k := NewKarteFrontend().(*karteFrontend)
 		const times = 10
 		fake := &fakeClient{}

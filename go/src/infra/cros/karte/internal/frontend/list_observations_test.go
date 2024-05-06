@@ -5,17 +5,16 @@
 package frontend
 
 import (
+	"context"
 	"testing"
 
-	"go.chromium.org/luci/appengine/gaetesting"
-	"go.chromium.org/luci/gae/service/datastore"
+	"infra/cros/karte/internal/testsupport"
 )
 
 // TestListObservationsWithFilter tests listing observations with a simple filter.
 func TestListObservationsWithFilter(t *testing.T) {
 	t.Parallel()
-	ctx := gaetesting.TestingContext()
-	datastore.GetTestable(ctx).Consistent(true)
+	ctx := testsupport.NewTestingContext(context.Background())
 	if err := PutObservationEntities(
 		ctx,
 		&ObservationEntity{ID: "hi", MetricKind: "w"},
