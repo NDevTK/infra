@@ -94,6 +94,30 @@
       },
       "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0fd00173_bb141326",
+        "filename": "go/src/infra/cros/karte/internal/testsupport/testsupport.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2024-05-06T17:54:40Z",
+      "side": 1,
+      "message": "Interesting. I\u0027m not sure how this works, I\u0027ll have to check out the fleet cost code\n\nor you can tell me later",
+      "parentUuid": "7bd2347e_1486667e",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 1
+      },
+      "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
