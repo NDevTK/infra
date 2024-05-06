@@ -22,6 +22,7 @@ var MockUFSClientKey contextKey = "used in tests only for setting the mock UFSCl
 // It is used for mocking and testing.
 type UFSClient interface {
 	ListMachineLSEs(ctx context.Context, in *ufsAPI.ListMachineLSEsRequest, opts ...grpc.CallOption) (*ufsAPI.ListMachineLSEsResponse, error)
+	ListMachines(ctx context.Context, in *ufsAPI.ListMachinesRequest, opts ...grpc.CallOption) (*ufsAPI.ListMachinesResponse, error)
 	ListSchedulingUnits(ctx context.Context, in *ufsAPI.ListSchedulingUnitsRequest, opts ...grpc.CallOption) (*ufsAPI.ListSchedulingUnitsResponse, error)
 }
 
@@ -46,6 +47,10 @@ type ufsService struct {
 
 func (u *ufsService) ListMachineLSEs(ctx context.Context, in *ufsAPI.ListMachineLSEsRequest, opts ...grpc.CallOption) (*ufsAPI.ListMachineLSEsResponse, error) {
 	return u.client.ListMachineLSEs(ctx, in, opts...)
+}
+
+func (u *ufsService) ListMachines(ctx context.Context, in *ufsAPI.ListMachinesRequest, opts ...grpc.CallOption) (*ufsAPI.ListMachinesResponse, error) {
+	return u.client.ListMachines(ctx, in, opts...)
 }
 
 func (u *ufsService) ListSchedulingUnits(ctx context.Context, in *ufsAPI.ListSchedulingUnitsRequest, opts ...grpc.CallOption) (*ufsAPI.ListSchedulingUnitsResponse, error) {
