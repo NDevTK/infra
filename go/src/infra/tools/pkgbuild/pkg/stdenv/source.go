@@ -19,7 +19,7 @@ import (
 //go:embed git_archive.py
 var gitSourceEmbed embed.FS
 var gitSourceGen = generators.InitEmbeddedFS(
-	"git_source", gitSourceEmbed,
+	"git_source_script", gitSourceEmbed,
 )
 
 func (g *Generator) fetchSource(plats generators.Platforms) (generators.Generator, string, error) {
@@ -41,7 +41,7 @@ func (g *Generator) fetchSource(plats generators.Platforms) (generators.Generato
 				},
 				ContextInfo: g.Name + ":" + plats.Host.String(),
 			},
-			Args: []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", filepath.Join("{{.git_source}}", "git_archive.py"), s.URL, s.Ref},
+			Args: []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", filepath.Join("{{.git_source_script}}", "git_archive.py"), s.URL, s.Ref},
 			Dependencies: []generators.Dependency{
 				{Type: generators.DepsBuildHost, Generator: git},
 				{Type: generators.DepsBuildHost, Generator: cpython},

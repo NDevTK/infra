@@ -45,8 +45,9 @@ func TestRootStep(t *testing.T) {
 		})
 
 		Convey("err", func() {
+			failed1 := fmt.Errorf("failed1")
 			err := s.RunSubstep(ctx, func(ctx context.Context, root *build.Step) error {
-				return fmt.Errorf("failed1")
+				return failed1
 			})
 			So(fmt.Sprintf("%s", err), ShouldContainSubstring, "failed1")
 
@@ -63,7 +64,20 @@ func TestRootStep(t *testing.T) {
 			So(fmt.Sprintf("%s", s.Err()), ShouldContainSubstring, "failed1")
 			So(fmt.Sprintf("%s", s.Err()), ShouldContainSubstring, "failed2")
 
-			s.End()
+			Convey("end", func() {
+				s.End()
+			})
+
+			Convey("end with err", func() {
+				s.EndWith(fmt.Errorf("failed end"))
+				So(fmt.Sprintf("%s", s.Err()), ShouldContainSubstring, "failed end")
+			})
+
+			Convey("end with err duplicate", func() {
+				expected := s.Err()
+				s.EndWith(failed1)
+				So(s.Err(), ShouldEqual, expected)
+			})
 
 			err = s.RunSubstep(ctx, func(ctx context.Context, root *build.Step) error {
 				return nil

@@ -24,19 +24,26 @@ type RootStep struct {
 	id      string
 	substep chan SubstepFn
 
-	err   error
+	errs  []error
 	ended chan struct{}
+
+	initFn func()
 }
 
 // NewRootStep creates a root step for managing steps life time in luciexe.
+// luciexe step will be lazily created when RunSubstep is called or root step
+// ended.
 func NewRootStep(ctx context.Context, name, id string) *RootStep {
 	r := &RootStep{
 		id:      id,
 		substep: make(chan SubstepFn),
-
-		ended: make(chan struct{}),
 	}
-	go r.runRoot(ctx, name)
+	r.initFn = func() {
+		if r.ended == nil {
+			r.ended = make(chan struct{})
+			go r.runRoot(ctx, name)
+		}
+	}
 
 	return r
 }
@@ -48,15 +55,20 @@ func (r *RootStep) runRoot(ctx context.Context, name string) {
 	defer close(r.ended)
 
 	s, ctx := build.ScheduleStep(ctx, name)
-	defer func() { s.End(r.err) }()
+	defer func() { s.End(r.Err()) }()
 
 	for sub := range r.substep {
-		r.err = errors.Join(r.err, sub(ctx, s))
+		r.errs = append(r.errs, sub(ctx, s))
 	}
 }
 
 // IsEnded returns whether the step has been ended.
 func (r *RootStep) IsEnded() bool {
+	// Haven't started.
+	if r.ended == nil {
+		return false
+	}
+
 	select {
 	case <-r.ended:
 		return true
@@ -72,6 +84,8 @@ func (r *RootStep) RunSubstep(ctx context.Context, sub SubstepFn) error {
 	if r.IsEnded() {
 		return fmt.Errorf("root step ended")
 	}
+
+	r.initFn()
 
 	done := make(chan error)
 	r.substep <- func(ctx context.Context, root *build.Step) error {
@@ -90,7 +104,7 @@ func (r *RootStep) RunSubstep(ctx context.Context, sub SubstepFn) error {
 }
 
 func (r *RootStep) Err() error {
-	return r.err
+	return errors.Join(r.errs...)
 }
 
 func (r *RootStep) End() {
@@ -98,8 +112,23 @@ func (r *RootStep) End() {
 		return
 	}
 
+	r.initFn()
+
 	close(r.substep)
 	<-r.ended
+}
+
+func (r *RootStep) EndWith(err error) {
+	if r.IsEnded() {
+		return
+	}
+
+	// Avoid duplication
+	if !errors.Is(r.Err(), err) {
+		r.errs = append(r.errs, err)
+	}
+
+	r.End()
 }
 
 func runStepCommand(ctx context.Context, cmd *exec.Cmd) (err error) {

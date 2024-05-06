@@ -405,7 +405,7 @@ func (b *PackageBuilder) defaultPackageExecutor(ctx context.Context, pkgs []acti
 	postExecFn := func(ctx context.Context, pkg actions.Package, execErr error) error {
 		r := rootSteps.GetRoot(pkg.ActionID)
 		if execErr != nil || r.ID() == pkg.ActionID {
-			r.End()
+			r.EndWith(execErr)
 		}
 		return nil
 	}

@@ -93,6 +93,7 @@ func (pkg *cipdPackage) download(ctx context.Context, cipdService string, ignore
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("downloading cipd package %s:%s", cipd.Name, pkg.derivationTag()))
 	defer func() { step.End(err) }()
 
+	errOut := bytes.NewBuffer(nil)
 	err = pkg.Handler.Build(func() error {
 		cmd := cipdCommand("export",
 			"-service-url", cipdService,
@@ -100,12 +101,13 @@ func (pkg *cipdPackage) download(ctx context.Context, cipdService string, ignore
 			"-ensure-file", "-",
 		)
 		cmd.Stdin = strings.NewReader(fmt.Sprintf("%s %s", cipd.Name, pkg.derivationTag()))
+		cmd.Stderr = errOut
 
 		return runStepCommand(ctx, cmd)
 	})
 
 	if ignoreErr && err != nil {
-		step.SetSummaryMarkdown(err.Error())
+		step.SetSummaryMarkdown(errOut.String())
 		err = nil
 	}
 

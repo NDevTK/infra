@@ -233,7 +233,7 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 				Version: g.Version,
 			},
 			Luciexe: &core.Action_Metadata_LUCIExe{
-				StepName: fmt.Sprintf("%s@%s:%s", g.Name, g.Version, plats.Build.String()),
+				StepName: fmt.Sprintf("%s@%s:%s", g.Name, g.Version, plats.Host.String()),
 			},
 		},
 		Args:         []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", filepath.Join("{{.stdenv}}", "setup", "main.py")},

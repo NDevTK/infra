@@ -98,18 +98,18 @@ func Main(ctx context.Context, app *Application, args []string) error {
 	// Collect errors from build and upload.
 	// We do best effort upload for all built packages even in case BuildAll
 	// returns error.
-	var errs error
+	var errs []error
 
 	pkgs, err := b.BuildAll(ctx, true)
 	if err != nil {
-		errs = errors.Join(errs, errors.Annotate(err, "failed to build some packages").Err())
+		errs = append(errs, errors.Annotate(err, "failed to build some packages").Err())
 	}
 
 	if err := app.TryUpload(ctx, pkgs); err != nil {
-		errs = errors.Join(errs, errors.Annotate(err, "failed to upload some packages").Err())
+		errs = append(errs, errors.Annotate(err, "failed to upload some packages").Err())
 	}
 
 	app.PackageManager.Prune(ctx, time.Hour*24, 256)
 
-	return errs
+	return errors.Join(errs...)
 }
