@@ -22,6 +22,30 @@
       },
       "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "009a4217_e94afdc6",
+        "filename": "go/src/infra/cros/karte/internal/testsupport/testsupport.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2024-05-06T17:10:24Z",
+      "side": 1,
+      "message": "In the future I\u0027m going to put the bigquery client in there too. This is the way that `testsupport` works in `fleetcost`.\n\nIf I take the context out of this struct, I\u0027ll just have to put it back in the future.",
+      "parentUuid": "69550cb6_8fcadcff",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 1
+      },
+      "revId": "f8e7bbf06c245f543828399d2615dfce8e8e8701",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
