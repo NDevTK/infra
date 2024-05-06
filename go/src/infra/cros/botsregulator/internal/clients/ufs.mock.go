@@ -55,6 +55,26 @@ func (mr *MockUFSClientMockRecorder) ListMachineLSEs(ctx, in interface{}, opts .
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMachineLSEs", reflect.TypeOf((*MockUFSClient)(nil).ListMachineLSEs), varargs...)
 }
 
+// ListMachines mocks base method.
+func (m *MockUFSClient) ListMachines(ctx context.Context, in *ufspb.ListMachinesRequest, opts ...grpc.CallOption) (*ufspb.ListMachinesResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListMachines", varargs...)
+	ret0, _ := ret[0].(*ufspb.ListMachinesResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListMachines indicates an expected call of ListMachines.
+func (mr *MockUFSClientMockRecorder) ListMachines(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMachines", reflect.TypeOf((*MockUFSClient)(nil).ListMachines), varargs...)
+}
+
 // ListSchedulingUnits mocks base method.
 func (m *MockUFSClient) ListSchedulingUnits(ctx context.Context, in *ufspb.ListSchedulingUnitsRequest, opts ...grpc.CallOption) (*ufspb.ListSchedulingUnitsResponse, error) {
 	m.ctrl.T.Helper()
