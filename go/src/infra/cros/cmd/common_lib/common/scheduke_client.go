@@ -57,13 +57,21 @@ type SchedukeClient struct {
 	local                            bool
 }
 
-func NewLocalSchedukeClient(ctx context.Context, dev bool, gerritAuthOpts auth.Options) (*SchedukeClient, error) {
+// NewSchedukeClientForEnv returns a Scheduke client for the given environment
+// (dev/prod), and uses the given auth info to determine whether the run is
+// local or not.
+func NewSchedukeClientForEnv(ctx context.Context, dev bool, authOpts auth.Options) (*SchedukeClient, error) {
 	baseURL := schedukeProdURL
 	if dev {
 		baseURL = schedukeDevURL
 	}
-	client := SchedukeClient{ctx: ctx, local: true, baseURL: baseURL}
-	err := client.setUpHTTPClients(gerritAuthOpts)
+	userEmail, err := getUserEmail(ctx, authOpts)
+	if err != nil {
+		return nil, err
+	}
+	local := strings.HasSuffix(userEmail, "@google.com")
+	client := SchedukeClient{ctx: ctx, local: local, baseURL: baseURL}
+	err = client.setUpHTTPClients(authOpts)
 	return &client, err
 }
 
@@ -206,12 +214,11 @@ func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEven
 	if err != nil {
 		return nil, errors.Annotate(err, "HttpPost").Err()
 	}
-	if response.StatusCode != 200 {
-		return nil, fmt.Errorf("scheduke returned %d", response.StatusCode)
-	}
 	return s.parseSchedukeRequestResponse(response)
 }
 
+// makeRequest makes the given HTTP request and returns an error if the response
+// was not 200.
 func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
@@ -231,6 +238,12 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) 
 	}
 
 	r, err := sendHTTPRequestWithRetries(s.schedukeHTTPClient, req)
+	if r.StatusCode != 200 {
+		if r.StatusCode == 400 || r.StatusCode == 401 {
+			return nil, fmt.Errorf("scheduke returned %d; make sure you ran `gcloud auth login`, and if this error persists, see http://go/crosfleet#obtaining-access)", r.StatusCode)
+		}
+		return nil, fmt.Errorf("scheduke returned %d", r.StatusCode)
+	}
 	if err != nil {
 		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
@@ -409,12 +422,6 @@ func (s *SchedukeClient) ReadTaskStates(taskStateIDs []int64, users, deviceNames
 	if err != nil {
 		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
-	if r.StatusCode != 200 {
-		if r.StatusCode == 400 {
-			return nil, fmt.Errorf("scheduke returned %d; this likely means you still need Scheduke access (human users: see http://http://go/crosfleet#obtaining-access)", r.StatusCode)
-		}
-		return nil, fmt.Errorf("scheduke returned %d", r.StatusCode)
-	}
 	return s.parseReadResponse(r)
 }
 
@@ -427,12 +434,9 @@ func (s *SchedukeClient) CancelTasks(taskStateIDs []int64, users, deviceNames []
 	}
 
 	fullCancelURL := fmt.Sprintf("%s?%s", cancelEndpoint, schedukeParams(taskStateIDs, users, deviceNames))
-	r, err := s.makeRequest(http.MethodPost, fullCancelURL, nil)
+	_, err = s.makeRequest(http.MethodPost, fullCancelURL, nil)
 	if err != nil {
 		return errors.Annotate(err, "executing HTTP request").Err()
-	}
-	if r.StatusCode != 200 {
-		return fmt.Errorf("scheduke returned %d", r.StatusCode)
 	}
 	return nil
 }
