@@ -21,6 +21,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/proto/gitiles"
+	"go.chromium.org/luci/common/tsmon/field"
+	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/libs/git"
@@ -42,6 +44,16 @@ type ConfigSha struct {
 }
 
 var prevConfig = ConfigSha{sha1: ""}
+
+var OwnershipConfigsCounter = metric.NewCounter(
+	"ufs/fleet/ownership",
+	"ownership data updated at sync",
+	nil,
+	field.String("host"),
+	field.String("security_level"),
+	field.String("swarming_instance"),
+	field.String("customer"),
+)
 
 // ImportBotConfigs gets the OwnershipConfig and git client and passes them to functions for importing bot configs
 func ImportBotConfigs(ctx context.Context) error {
@@ -171,6 +183,15 @@ func ImportSecurityConfig(ctx context.Context, ownershipConfig *config.Ownership
 // data in the DataStore for every bot in the config.
 func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
 	botsMap, botPrefixesMap := parseConfigs(ctx, config)
+	defer func() {
+		// Update the counters for metrics
+		for botID, od := range botsMap {
+			OwnershipConfigsCounter.Add(ctx, 1, botID, od.GetSecurityLevel(), od.GetSwarmingInstance(), od.GetCustomer())
+		}
+		for botPrefix, od := range botPrefixesMap {
+			OwnershipConfigsCounter.Add(ctx, 1, botPrefix, od.GetSecurityLevel(), od.GetSwarmingInstance(), od.GetCustomer())
+		}
+	}()
 	// Updating the ownership for the botIdPrefixes (ie. HostPrefixes).
 	if err := updateBotConfigForBotIdPrefix(ctx, botPrefixesMap); err != nil {
 		logging.Debugf(ctx, "Got errors while parsing bot id prefixes config %v", err)
