@@ -88,7 +88,7 @@ def RunSteps(api, platforms, dry_run, rebuild):
           '--name-only',
           'HEAD~',
           name='git diff to find changed files',
-          stdout=api.raw_io.output_text()).stdout.split()
+          stdout=api.raw_io.output_text(add_output_log=True)).stdout.split()
       assert (files != [])
       # Avoid rebuilding everything if only the wheel specs have changed.
       wheel_only_change = True

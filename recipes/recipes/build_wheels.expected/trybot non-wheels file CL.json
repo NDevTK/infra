@@ -332,7 +332,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "git diff to find changed files"
+    "name": "git diff to find changed files",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@raw_io.output_text@infra/tools/dockerbuild/wheel_wheel.py@@@",
+      "@@@STEP_LOG_END@raw_io.output_text@@@"
+    ]
   },
   {
     "cmd": [
