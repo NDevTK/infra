@@ -24,6 +24,7 @@ import (
 	"go.chromium.org/luci/server/module"
 
 	"infra/cros/fleetcost/internal/costserver"
+	"infra/libs/bqwrapper"
 	ufspb "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -72,7 +73,7 @@ func main() {
 		if err != nil {
 			return errors.Annotate(err, "setting up bigquery client").Err()
 		}
-		costserver.SetBQClient(fleetCostFrontend, bqClient)
+		costserver.SetBQClient(fleetCostFrontend, bqwrapper.NewCloudBQ(bqClient))
 		costserver.InstallServices(fleetCostFrontend, srv)
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil

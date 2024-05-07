@@ -29,16 +29,16 @@ func MakeMemBQ(ctx context.Context) (*MemBQ, error) {
 func (mbq *MemBQ) Put(ctx context.Context, projectID string, dataset string, table string, data []bigquery.ValueSaver) error {
 	mustBeTestable(ctx)
 
-	var entities []*emulatedBigqueryRecord
+	var entities []*EmulatedBigqueryRecord
 	for _, valueSaver := range data {
 		row, _, err := valueSaver.Save()
 		if err != nil {
 			return err
 		}
-		entities = append(entities, &emulatedBigqueryRecord{
-			projectID: projectID,
-			dataset:   dataset,
-			table:     table,
+		entities = append(entities, &EmulatedBigqueryRecord{
+			ProjectID: projectID,
+			Dataset:   dataset,
+			Table:     table,
 			Extra:     rowToPropertyMap(row),
 		})
 	}
@@ -65,20 +65,21 @@ func mustBeTestable(ctx context.Context) {
 
 const emulatedBigqueryRecordKind = "emulatedBigqueryRecordKind"
 
-// emulatedBigqueryRecord is a record in datastore that emulates a bigquery row.
+// EmulatedBigqueryRecord is a record in datastore that emulates a bigquery row.
 //
 // Fields used internally by the emulator are prefixed with FOUR underscores. ____
-type emulatedBigqueryRecord struct {
-	_kind     string `gae:"$kind,emulatedBigqueryRecordKind"`
-	projectID string `gae:"____project_id"`
-	dataset   string `gae:"____dataset"`
-	table     string `gae:"____table"`
+type EmulatedBigqueryRecord struct {
+	_kind string `gae:"$kind,emulatedBigqueryRecordKind"`
+	// Make this public so unit tests can consume them.
+	ProjectID string `gae:"____project_id"`
+	Dataset   string `gae:"____dataset"`
+	Table     string `gae:"____table"`
 	// Extra *has* to be exported or the datastore ORM will crash.
 	Extra datastore.PropertyMap `gae:",extra"`
 }
 
 // Appease staticcheck.
-var _ = (emulatedBigqueryRecord{})._kind
+var _ = (EmulatedBigqueryRecord{})._kind
 
 func rowToPropertyMap(row map[string]bigquery.Value) datastore.PropertyMap {
 	out := make(datastore.PropertyMap, len(row))

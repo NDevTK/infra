@@ -38,7 +38,7 @@ func TestSimple(t *testing.T) {
 		t.Error(err)
 	}
 
-	var records []*emulatedBigqueryRecord
+	var records []*EmulatedBigqueryRecord
 	if err := datastore.GetAll(ctx, memBQ.UniversalRowQuery(ctx), &records); err != nil {
 		t.Error(err)
 	}
