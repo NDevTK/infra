@@ -8,6 +8,8 @@ package migrator
 import (
 	"context"
 	"fmt"
+	"math"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -125,4 +127,61 @@ func (m *migrator) ComputeBoardModelToState(ctx context.Context, mcs []*ufspb.Ma
 		}
 	}
 	return bms, nil
+}
+
+// ComputeNextMigrationState returns 2 slices of machineLSEs to be migrated/rolled backed based on the config file provided.
+// This function does not filter out DUTs. The DUT exclusion happens earlier in the flow.
+func (m *migrator) ComputeNextMigrationState(ctx context.Context, bms map[string]*migrationState, cs *configSearchable) *migrationState {
+	logging.Infof(ctx, "computing the next migration state")
+	// MachinesLSEs to be converted to CloudBots or Drone.
+	migrationNext := &migrationState{}
+	for bm, state := range bms {
+		t := strings.Split(bm, "/")
+		if len(t) != 2 {
+			panic("boardModelToState keys should always contain one '/'")
+		}
+		board := t[0]
+		model := t[1]
+		if target, ok := cs.overrideBoardModel[bm]; ok {
+			// Board/Model override.
+			computeNextModelState(ctx, bm, target, state, migrationNext)
+		} else if target, ok := cs.overrideBoardModel[fmt.Sprintf("*/%s", model)]; ok {
+			// Model override.
+			computeNextModelState(ctx, bm, target, state, migrationNext)
+		} else if target, ok := cs.overrideBoardModel[fmt.Sprintf("%s/*", board)]; ok {
+			// Board override.
+			computeNextModelState(ctx, bm, target, state, migrationNext)
+		} else if _, ok := cs.overrideLowRisks[model]; ok {
+			// Low risk model override.
+			computeNextModelState(ctx, bm, cs.minLowRiskModelsPercentage, state, migrationNext)
+		} else {
+			// No override.
+			computeNextModelState(ctx, bm, cs.minCloudbotsPercentage, state, migrationNext)
+		}
+	}
+	return migrationNext
+}
+
+// computeNextModelState computes the DUTs to migrate/roll back
+// based on a target percentage of CloudBots DUTs and a current state.
+// This results in appending DUTs to nextState.
+// These DUTs will get their hive switched further down.
+func computeNextModelState(ctx context.Context, bm string, target int32, currentState, nextState *migrationState) {
+	logging.Infof(ctx, "computeNextModelState: %s with target %d", bm, target)
+	totalDUTs := float64(len(currentState.Cloudbots) + len(currentState.Drone))
+	targetPercentage := float64(target)
+	// Number of CloudBots DUTs for this model expected after this migration iteration.
+	cloudbotsAmount := math.Ceil((targetPercentage * totalDUTs) / 100)
+	diff := len(currentState.Cloudbots) - int(cloudbotsAmount)
+	if diff == 0 {
+		logging.Infof(ctx, "computeNextModelState: no change for board/model %s; skipping", bm)
+	} else if diff < 0 {
+		ncb := currentState.Drone[:int(math.Abs(float64(diff)))]
+		nextState.Cloudbots = append(nextState.Cloudbots, ncb...)
+		logging.Infof(ctx, "computeNextModelState: adding %v to CloudBots", ncb)
+	} else {
+		nsf := currentState.Cloudbots[:int(math.Abs(float64(diff)))]
+		nextState.Drone = append(nextState.Drone, nsf...)
+		logging.Infof(ctx, "computeNextModelState: adding %v to SFO36", nsf)
+	}
 }

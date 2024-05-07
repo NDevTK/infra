@@ -37,6 +37,7 @@ func Migrate(ctx context.Context, r *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
-	logging.Infof(ctx, "bms: %v", bms)
+	ms := m.ComputeNextMigrationState(ctx, bms, cs)
+	logging.Infof(ctx, "ms: %v", ms)
 	return nil
 }
