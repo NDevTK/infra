@@ -33,7 +33,10 @@ func Migrate(ctx context.Context, r *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
-	logging.Infof(ctx, "machines: %v", mcs)
-	logging.Infof(ctx, "sfo lses: %v", lses)
+	bms, err := m.ComputeBoardModelToState(ctx, mcs, lses, cs)
+	if err != nil {
+		return err
+	}
+	logging.Infof(ctx, "bms: %v", bms)
 	return nil
 }
