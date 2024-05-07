@@ -332,6 +332,13 @@ func (c *ninjaCmdRun) run(ctx context.Context) (stats build.Stats, err error) {
 	if err != nil {
 		return stats, err
 	}
+	// check ninja marker
+	_, err = os.Stat(".ninja_deps")
+	if err == nil {
+		return stats, fmt.Errorf(`%s contains Ninja state file.
+Clean out dir (e.g. run "gn clean %s") to switch from siso to ninja.`, c.dir, c.dir)
+	}
+
 	if !c.dryRun {
 		lock, err := newLockFile(ctx, ".siso_lock")
 		switch {
