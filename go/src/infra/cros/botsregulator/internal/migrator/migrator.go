@@ -162,6 +162,31 @@ func (m *migrator) ComputeNextMigrationState(ctx context.Context, bms map[string
 	return migrationNext
 }
 
+// RunBatchUpdate calls UFS to update all the hive of the machineLSEs in migration state.
+func (m *migrator) RunBatchUpdate(ctx context.Context, migrationNext *migrationState) error {
+	logging.Infof(ctx, "starting batch update for cloudBots")
+	for _, cb := range migrationNext.Cloudbots {
+		req := clients.InitializeUpdateDUTRequest(cb, "cloudbots")
+		ctx = clients.SetUFSNamespace(ctx, "os")
+		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
+		// TODO(b/338242933): Add multi error.
+		if err != nil {
+			return err
+		}
+	}
+	logging.Infof(ctx, "starting batch update for drone")
+	for _, drone := range migrationNext.Drone {
+		req := clients.InitializeUpdateDUTRequest(drone, "e")
+		ctx = clients.SetUFSNamespace(ctx, "os")
+		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
+		// TODO(b/338242933): Add multi error.
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // computeNextModelState computes the DUTs to migrate/roll back
 // based on a target percentage of CloudBots DUTs and a current state.
 // This results in appending DUTs to nextState.
