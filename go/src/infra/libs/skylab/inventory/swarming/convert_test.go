@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
+
 	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/libs/skylab/inventory"

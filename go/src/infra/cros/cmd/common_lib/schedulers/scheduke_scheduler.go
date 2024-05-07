@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"time"
 
-	"infra/cros/cmd/common_lib/common"
-
 	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 const schedukePollingWait = 30 * time.Second

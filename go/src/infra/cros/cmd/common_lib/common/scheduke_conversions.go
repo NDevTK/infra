@@ -13,9 +13,10 @@ import (
 	"time"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	structbuilder "google.golang.org/protobuf/types/known/structpb"
+
 	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	structbuilder "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
