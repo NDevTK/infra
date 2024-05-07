@@ -7,7 +7,7 @@ create {
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:sqlite:sqlite"
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
   build {
     tool: "tools/sed"

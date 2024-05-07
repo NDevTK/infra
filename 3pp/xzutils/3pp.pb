@@ -7,7 +7,7 @@ create {
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:xz_project:xz"
-    patch_version: "chromium.2"
+    patch_version: "chromium.3"
   }
   build {
     tool: "tools/sed"

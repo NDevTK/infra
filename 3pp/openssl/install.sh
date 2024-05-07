@@ -8,6 +8,7 @@ set -x
 set -o pipefail
 
 PREFIX="$1"
+export CFLAGS="${CFLAGS} -fPIC"
 
 # TODO(iannucci): Remove this (and the patch to enable this) once the fleet
 # is using GLIBC 2.25 or higher. Currently the bulk of the fleet runs on

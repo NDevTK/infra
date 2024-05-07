@@ -6,7 +6,7 @@ create {
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:zlib:zlib"
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
 }
 

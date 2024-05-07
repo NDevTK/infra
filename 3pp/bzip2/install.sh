@@ -8,6 +8,7 @@ set -x
 set -o pipefail
 
 PREFIX="$1"
+sed -i 's/^CFLAGS=-Wall/CFLAGS=-fPIC -Wall/' Makefile
 
 if [[ $_3PP_PLATFORM == $_3PP_TOOL_PLATFORM ]]; then # not cross-compiling
   make test

@@ -8,6 +8,7 @@ set -x
 set -o pipefail
 
 PREFIX="$1"
+export CFLAGS="${CFLAGS} -fPIC"
 
 ./configure --static \
   --prefix "$PREFIX"

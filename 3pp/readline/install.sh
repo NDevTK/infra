@@ -10,8 +10,8 @@ set -o pipefail
 PREFIX="$1"
 DEPS_PREFIX="$2"
 
-export CCFLAGS="-I$DEPS_PREFIX/include"
-export CFLAGS="-I$DEPS_PREFIX/include"
+export CCFLAGS="-I$DEPS_PREFIX/include -fPIC"
+export CFLAGS="-I$DEPS_PREFIX/include -fPIC"
 export LDFLAGS="-L$DEPS_PREFIX/lib"
 
 ./configure --enable-static --disable-shared \

@@ -6,9 +6,11 @@ create {
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:bzip:bzip2"
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
-  build {}
+  build {
+    tool: "tools/sed"
+  }
 }
 
 create {

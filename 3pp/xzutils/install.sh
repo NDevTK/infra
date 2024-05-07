@@ -8,6 +8,7 @@ set -x
 set -o pipefail
 
 PREFIX="$1"
+export CFLAGS="${CFLAGS} -fPIC"
 
 ./configure --enable-static --disable-shared \
   --prefix "$PREFIX" \

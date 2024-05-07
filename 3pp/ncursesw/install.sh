@@ -22,6 +22,7 @@ if [[ $_3PP_TOOL_PLATFORM == mac-amd64 ]]; then
   export BUILD_CC="cc -arch x86_64"
 fi
 
+export CFLAGS="${CFLAGS} -fPIC"
 export CXXFLAGS+=" -std=c++14"
 
 # The "ncurses" package, by default, uses a fixed-path location for terminal
