@@ -23,5 +23,7 @@ func Migrate(ctx context.Context, r *regulator.RegulatorOptions) error {
 		return err
 	}
 	logging.Infof(ctx, "migration config: %v \n", cfg)
+	cs := migrator.NewConfigSearchable(ctx, cfg.Config)
+	logging.Infof(ctx, "config searchable: %v \n", cs)
 	return nil
 }
