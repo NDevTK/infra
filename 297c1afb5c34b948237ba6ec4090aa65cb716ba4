@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "433ec314_0ddb5556",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2024-05-07T07:59:54Z",
+      "side": 1,
+      "message": "hmm.\nlet\u0027s do in depot_tools, to match with ninja, autoninja.",
+      "parentUuid": "44189c48_ef19e9ed",
+      "revId": "297c1afb5c34b948237ba6ec4090aa65cb716ba4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "cb950252_0f7287b7",
         "filename": "go/src/infra/build/siso/subcmd/ninja/ninja.go",
         "patchSetId": 1
