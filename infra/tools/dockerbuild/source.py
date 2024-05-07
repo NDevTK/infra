@@ -263,9 +263,9 @@ class Repository(object):
         fd = open(path, 'wb')
       with fd:  # Release the lock so that the download can spawn a process.
         filename = self._DOWNLOAD_MAP[src.download_type](fd, src.download_meta)
-        # Move the downloaded "file" into the package under its download name
-        # and package it.
-        os.rename(path, os.path.join(package_dir, filename))
+      # Move the downloaded "file" into the package under its download name
+      # and package it.
+      os.rename(path, os.path.join(package_dir, filename))
 
       self._system.cipd.create_package(package, package_dir, package_path)
 
