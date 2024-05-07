@@ -29,6 +29,11 @@ func Migrate(ctx context.Context, r *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
+	lses, err := m.FetchSFOMachineLSEs(ctx)
+	if err != nil {
+		return err
+	}
 	logging.Infof(ctx, "machines: %v", mcs)
+	logging.Infof(ctx, "sfo lses: %v", lses)
 	return nil
 }

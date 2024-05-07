@@ -62,3 +62,18 @@ func (m *migrator) FetchSFOMachines(ctx context.Context) ([]*ufspb.Machine, erro
 	}
 	return res.GetMachines(), nil
 }
+
+// FetchSFOMachineLSEs only returns the machineLSEs located in sfo36/em25.
+func (m *migrator) FetchSFOMachineLSEs(ctx context.Context) ([]*ufspb.MachineLSE, error) {
+	logging.Infof(ctx, "fetching machineLSEs in SFO36")
+	ctx = clients.SetUFSNamespace(ctx, "os")
+	// TODO(b/328443703): Handle pagination. Current max value: 1000.
+	res, err := m.ufsClient.ListMachineLSEs(ctx, &ufsAPI.ListMachineLSEsRequest{
+		PageSize: 1000,
+		Filter:   "zone=ZONE_SFO36_OS",
+	})
+	if err != nil {
+		return nil, err
+	}
+	return res.GetMachineLSEs(), nil
+}
