@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44189c48_ef19e9ed",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-05-07T07:47:27Z",
+      "side": 1,
+      "message": "This check could be implemented inside `depot_tools/siso.py`. Which do you think is better?",
+      "revId": "297c1afb5c34b948237ba6ec4090aa65cb716ba4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb950252_0f7287b7",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/ninja.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2024-05-07T07:47:27Z",
+      "side": 1,
+      "message": "\u003e ST1005: error strings should not end with punctuation or newlines\n\nPlease fix.",
+      "parentUuid": "590efc4e_25f886c1",
+      "range": {
+        "startLine": 338,
+        "startChar": 0,
+        "endLine": 338,
+        "endChar": 0
+      },
+      "revId": "297c1afb5c34b948237ba6ec4090aa65cb716ba4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
