@@ -11,7 +11,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/genproto/googleapis/type/money"
 
-	"go.chromium.org/luci/common/testing/assert/structuraldiff"
 	"go.chromium.org/luci/common/testing/typed"
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -156,7 +155,7 @@ func TestGetCostIndicator(t *testing.T) {
 		Board: "e",
 	}
 
-	if diff := structuraldiff.DebugCompare(costIndicator, want).String(); diff != "" {
+	if diff := typed.Got(costIndicator).Want(want).Options(cmp.AllowUnexported(entities.CostIndicatorEntity{})).Diff(); diff != "" {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
 	}
 }
@@ -180,7 +179,7 @@ func TestListCostIndicator(t *testing.T) {
 		},
 	}
 
-	if diff := structuraldiff.DebugCompare(costIndicators, want).String(); diff != "" {
+	if diff := typed.Got(costIndicators).Want(want).Options(cmp.AllowUnexported(entities.CostIndicatorEntity{})).Diff(); diff != "" {
 		t.Errorf("unexpected diff: %s", diff)
 	}
 }
