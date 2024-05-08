@@ -506,7 +506,7 @@ Args:
 
 Stateless API for using public infra gclient checkout.
 
-&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#258)(self, co, go_module_root=None):**
+&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#256)(self, co, go_module_root=None):**
 
 Apply golangci-lint to existing diffs and emit lint warnings via tricium.
 
@@ -541,7 +541,7 @@ Arguments:
 Returns:
   a Checkout object with commands for common actions on infra checkout.
 
-&mdash; **def [get\_footer\_infra\_deps\_overrides](/recipes/recipe_modules/infra_checkout/api.py#231)(self, gerrit_change, step_test_data=None):**
+&mdash; **def [get\_footer\_infra\_deps\_overrides](/recipes/recipe_modules/infra_checkout/api.py#229)(self, gerrit_change, step_test_data=None):**
 
 Returns revision overrides for infra repos parsed from the gerrit footer.
 

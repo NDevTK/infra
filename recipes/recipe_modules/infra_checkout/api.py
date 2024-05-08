@@ -60,17 +60,15 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
     with self.m.context(cwd=path):
       self.m.gclient.set_config(gclient_config_name)
       if generate_py2_env:
-        py2_pkg = path / 'cpython'
+        py2_pkg = self.m.path.cache_dir / 'cpython'
         self.m.cipd.ensure(
             py2_pkg,
             self.m.cipd.EnsureFile().add_package(
                 'infra/3pp/tools/cpython/${platform}',
                 'version:2@2.7.18.chromium.47'))
-        py2_bin = self.m.path.abspath(
-            py2_pkg.joinpath('bin').joinpath('python'))
-        if self.m.platform.is_win:
-          py2_bin += '.exe'
-        self.m.gclient.c.solutions[0].custom_vars['infra_env_python'] = py2_bin
+        self.m.gclient.c.solutions[0].custom_vars['infra_env_python'] = str(
+            py2_pkg / 'bin' /
+            ('python.exe' if self.m.platform.is_win else 'python'))
 
       bot_update_step = self.m.bot_update.ensure_checkout(
           patch_root=patch_root, **kwargs)

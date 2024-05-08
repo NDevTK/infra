@@ -143,6 +143,7 @@ def builder(
         fail("unknown bucket")
 
     caches = list(caches or [])
+    caches.append(infra.cache_cpython)
     if os.startswith("Mac"):
         caches.append(infra.cache_osx_sdk)
 
@@ -215,6 +216,10 @@ infra = struct(
     SERVICE_ACCOUNT_TRY = "infra-try-builder@chops-service-accounts.iam.gserviceaccount.com",
     SERVICE_ACCOUNT_CI = "infra-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     cache_osx_sdk = swarming.cache("osx_sdk"),
+    # `cpython` cache is for the infra/infra_checkout recipe
+    # module, which is used to stash python2.7 in support of old python2 appengine
+    # app testing.
+    cache_cpython = swarming.cache("cpython"),
     poller = poller,
     recipe = recipe,
     console_view = console_view,
