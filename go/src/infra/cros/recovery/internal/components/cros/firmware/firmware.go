@@ -357,10 +357,11 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 
 	if req.UseCacheToExtractor {
 		var err error
+		imagePath = "ec.bin"
 		fwBoard, err = extractFromCache(ctx, run, log, &extractFromCacheRequest{
 			sourceCachePath:        req.DownloadImagePath,
 			destDirPath:            destDir,
-			destFileName:           "ec.bin",
+			destFileName:           imagePath,
 			candidates:             candidatesFiles,
 			metricsFwDst:           "ec",
 			downloadReattemptCount: req.DownloadImageReattemptCount,
@@ -430,10 +431,11 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 
 	var imagePath string
 	if req.UseCacheToExtractor {
+		imagePath = "image.bin"
 		_, err := extractFromCache(ctx, run, log, &extractFromCacheRequest{
 			sourceCachePath:        req.DownloadImagePath,
 			destDirPath:            destDir,
-			destFileName:           "image.bin",
+			destFileName:           imagePath,
 			candidates:             candidatesFiles,
 			metricsFwDst:           "ap",
 			downloadReattemptCount: req.DownloadImageReattemptCount,
