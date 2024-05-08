@@ -57,9 +57,13 @@ func (cmd *ParseEnvInfoCmd) Execute(ctx context.Context) error {
 	summary := []string{}
 
 	botID := os.Getenv("SWARMING_BOT_ID")
-	hostName := heuristics.NormalizeBotNameToDeviceName(botID)
-	summary = append(summary, fmt.Sprintf("hostname: %s", hostName))
-	cmd.HostName = hostName
+	if strings.HasPrefix(botID, "cloudbots-") {
+		cmd.HostName = os.Getenv("CLOUDBOTS_DUT_HOSTNAME")
+	} else {
+		hostName := heuristics.NormalizeBotNameToDeviceName(botID)
+		summary = append(summary, fmt.Sprintf("hostname: %s", hostName))
+		cmd.HostName = hostName
+	}
 
 	// Write all env vars to log for debugging
 	envVarsLog := step.Log("environment vars")
