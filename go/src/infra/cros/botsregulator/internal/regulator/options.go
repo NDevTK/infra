@@ -12,9 +12,10 @@ import (
 
 const (
 	// Default flag values.
-	ufsDev   string = "staging.ufs.api.cr.dev"
-	gcepDev  string = "gce-provider-dev.appspot.com"
-	configID string = "cloudbots-dev"
+	ufsDev      string = "staging.ufs.api.cr.dev"
+	gcepDev     string = "gce-provider-dev.appspot.com"
+	configID    string = "cloudbots-dev"
+	swarmingDev string = "chromium-swarm-dev.appspot.com"
 )
 
 // RegulatorOptions refers to the flag options needed
@@ -25,6 +26,7 @@ type RegulatorOptions struct {
 	Hive      string
 	Namespace string
 	UFS       string
+	Swarming  string
 }
 
 // RegisterFlags exposes the command line flags required to run the application.
@@ -35,4 +37,5 @@ func (r *RegulatorOptions) RegisterFlags(fs *flag.FlagSet) {
 	fs.StringVar(&r.Hive, "hive", "cloudbots", "hive used for UFS filtering.")
 	fs.StringVar(&r.Namespace, "ufs-namespace", ufsUtil.OSNamespace, "UFS namespace.")
 	fs.StringVar(&r.UFS, "ufs", ufsDev, "UFS endpoint.")
+	fs.StringVar(&r.Swarming, "swarming", swarmingDev, "Swarming server.")
 }
