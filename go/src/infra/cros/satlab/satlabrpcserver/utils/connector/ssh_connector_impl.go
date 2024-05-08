@@ -34,8 +34,6 @@ func (s *SSHConnector) Connect(ctx context.Context, addr string, config *ssh.Cli
 	clientCh := make(chan *ssh.Client, 1)
 	done := make(chan struct{}, 1)
 	var wg sync.WaitGroup
-	defer close(done)
-	defer close(clientCh)
 	for i := 0; i < s.retry+1; i++ {
 		wg.Add(1)
 		go func() {
