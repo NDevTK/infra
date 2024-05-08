@@ -73,6 +73,7 @@ func (p *ClosurePublishInfo) Save() (map[string]bigquery.Value, string, error) {
 		"id":    p.Closure.ID,
 		"child": p.Closure.Child,
 		"depth": p.Closure.Depth,
+		"path":  p.Closure.Path,
 	}
 	if err := saveBuildInfo(&p.Build, ret); err != nil {
 		return nil, "", err

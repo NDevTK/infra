@@ -136,6 +136,7 @@ func TestSaveSuiteClosure(t *testing.T) {
 					ID:    "test_1",
 					Child: "test_2",
 					Depth: 1,
+					Path:  "test_1 > test_2",
 				},
 				Build: BuildInfo{
 					BuildTarget:   "example_build_target",
@@ -151,6 +152,7 @@ func TestSaveSuiteClosure(t *testing.T) {
 					"id":             "test_1",
 					"child":          "test_2",
 					"depth":          1,
+					"path":           "test_1 > test_2",
 				},
 				dedupeID: "",
 				err:      nil,
