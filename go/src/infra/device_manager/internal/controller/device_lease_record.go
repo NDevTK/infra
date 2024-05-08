@@ -12,12 +12,17 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 
+	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/model"
+	"infra/libs/fleet/device"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // LeaseDevice leases a device specified by the request.
@@ -189,12 +194,36 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 		return nil, err
 	}
 
-	// Update device lease state to available after release
+	// Pull device data from UFS
+	ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
+	client, err := external.NewUFSClient(ctx, external.UFSServiceURI)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update device and device lease state to available after release
 	updatedDevice := model.Device{
 		ID:          record.DeviceID,
 		DeviceState: "DEVICE_STATE_AVAILABLE",
 		IsActive:    true,
 	}
+
+	// Try to pull dimensions from Device. Mark as inactive if not found.
+	reportFunc := func(e error) { logging.Debugf(ctx, "sanitize dimensions: %s\n", e) }
+	dims, err := device.GetOSResourceDims(ctx, client, reportFunc, record.DeviceID)
+	if err != nil {
+		switch status.Code(err) {
+		case codes.NotFound:
+			updatedDevice.IsActive = false
+		default:
+			return nil, err
+		}
+	}
+
+	if dims != nil {
+		updatedDevice.SchedulableLabels = ConvertBotDimsToSchedulableLabels(ctx, dims)
+	}
+
 	err = UpdateDevice(ctx, tx, psClient, updatedDevice)
 	if err != nil {
 		logging.Errorf(ctx, "ReleaseDevice: failed to release device %s: %s", record.DeviceID, err)

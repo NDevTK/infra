@@ -21,6 +21,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/device_manager/internal/model"
+	"infra/libs/skylab/inventory/swarming"
 )
 
 const DeviceEventsPubSubTopic string = "device-events-v1"
@@ -164,4 +165,16 @@ func convertSchedulableLabelsToPubSubFormat(ctx context.Context, labels model.Sc
 		}
 	}
 	return swarmingDims
+}
+
+// ConvertBotDimsToSchedulableLabels converts Swarming bot dimensions to Device
+// Manager SchedulableLabels.
+func ConvertBotDimsToSchedulableLabels(ctx context.Context, dims swarming.Dimensions) model.SchedulableLabels {
+	schedLabels := make(model.SchedulableLabels)
+	for k, v := range dims {
+		schedLabels[k] = model.LabelValues{
+			Values: v,
+		}
+	}
+	return schedLabels
 }

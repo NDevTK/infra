@@ -9,13 +9,17 @@ import (
 	"net/http"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
+
+const UFSServiceURI = "ufs.api.cr.dev"
 
 // UFSClient interface provides a subset of UFS methods relevant to Device
 // Manager. This provides an interface for testing and to add additional
@@ -41,4 +45,10 @@ func NewUFSClient(ctx context.Context, ufsHostname string) (ufsAPI.FleetClient, 
 		},
 		Host: ufsHostname,
 	}), nil
+}
+
+// SetupContext sets up context with a UFS namespace.
+func SetupContext(ctx context.Context, namespace string) context.Context {
+	md := metadata.Pairs(ufsUtil.Namespace, namespace)
+	return metadata.NewOutgoingContext(ctx, md)
 }

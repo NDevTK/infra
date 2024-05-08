@@ -359,7 +359,7 @@ func TestUpdateDeviceLeaseRecord(t *testing.T) {
 				UPDATE
 					"DeviceLeaseRecords"
 				SET
-					released_time=COALESCE($2, expiration_time),
+					released_time=COALESCE($2, released_time),
 					expiration_time=COALESCE($3, expiration_time),
 					last_updated_time=COALESCE($4, last_updated_time)
 				WHERE

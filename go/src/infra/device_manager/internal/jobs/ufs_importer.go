@@ -10,7 +10,6 @@ import (
 	"sync"
 	"time"
 
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/protoadapt"
 
 	"go.chromium.org/luci/common/errors"
@@ -27,21 +26,13 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
-const ufsServiceURI = "ufs.api.cr.dev"
-
-// setupContext sets up context with a UFS namespace.
-func setupContext(ctx context.Context, namespace string) context.Context {
-	md := metadata.Pairs(ufsUtil.Namespace, namespace)
-	return metadata.NewOutgoingContext(ctx, md)
-}
-
 // ImportUFSDevices registers the cron to trigger import for all Device
 // information from UFS.
 func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClients) error {
 	// TODO (b/331644796): Import non-OS device data
 	// TODO (b/328662436): Collect metrics
-	ctx = setupContext(ctx, ufsUtil.OSNamespace)
-	ufsClient, err := external.NewUFSClient(ctx, ufsServiceURI)
+	ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
+	ufsClient, err := external.NewUFSClient(ctx, external.UFSServiceURI)
 	if err != nil {
 		return err
 	}
@@ -216,13 +207,7 @@ func upsertDeviceData(ctx context.Context, wg *sync.WaitGroup, serviceClients fr
 		if err != nil {
 			return
 		}
-		schedLabels := make(model.SchedulableLabels)
-		for k, v := range dims {
-			schedLabels[k] = model.LabelValues{
-				Values: v,
-			}
-		}
-		deviceModel.SchedulableLabels = schedLabels
+		deviceModel.SchedulableLabels = controller.ConvertBotDimsToSchedulableLabels(ctx, dims)
 	}
 
 	// upsert deviceModel to DM db

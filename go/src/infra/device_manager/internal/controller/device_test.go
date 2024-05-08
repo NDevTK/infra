@@ -25,6 +25,7 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 
 	"infra/device_manager/internal/model"
+	"infra/libs/skylab/inventory/swarming"
 )
 
 func TestGetDevice(t *testing.T) {
@@ -419,6 +420,36 @@ func TestConvertSchedulableLabelsToPubSubFormat(t *testing.T) {
 			So(dims, ShouldEqual, &schedulingAPI.SwarmingDimensions{
 				DimsMap: map[string]*schedulingAPI.DimValues{},
 			})
+		})
+	})
+}
+
+func TestConvertBotDimsToSchedulableLabels(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("ConvertBotDimsToSchedulableLabels", t, func() {
+		Convey("ConvertBotDimsToSchedulableLabels: valid dims", func() {
+			dims := swarming.Dimensions{
+				"label-test": []string{
+					"test-value-1",
+					"test-value-2",
+				},
+			}
+			labels := ConvertBotDimsToSchedulableLabels(ctx, dims)
+			So(labels, ShouldEqual, model.SchedulableLabels{
+				"label-test": model.LabelValues{
+					Values: []string{
+						"test-value-1",
+						"test-value-2",
+					},
+				},
+			})
+		})
+		Convey("ConvertBotDimsToSchedulableLabels: empty dims", func() {
+			dims := swarming.Dimensions{}
+			labels := ConvertBotDimsToSchedulableLabels(ctx, dims)
+			So(labels, ShouldEqual, model.SchedulableLabels{})
 		})
 	})
 }
