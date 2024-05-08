@@ -33,7 +33,7 @@ func GetDevice(ctx context.Context, db *sql.DB, deviceName string) (*api.Device,
 		return &api.Device{}, err
 	}
 
-	addr, err := convertDeviceAddressToAPIFormat(ctx, device.DeviceAddress)
+	addr, err := stringToDeviceAddress(ctx, device.DeviceAddress)
 	if err != nil {
 		logging.Errorf(ctx, err.Error())
 		addr = &api.DeviceAddress{}
@@ -42,9 +42,9 @@ func GetDevice(ctx context.Context, db *sql.DB, deviceName string) (*api.Device,
 	deviceProto := &api.Device{
 		Id:           device.ID,
 		Address:      addr,
-		Type:         convertDeviceTypeToAPIFormat(ctx, device.DeviceType),
-		State:        convertDeviceStateToAPIFormat(ctx, device.DeviceState),
-		HardwareReqs: convertSchedulableLabelsToAPIFormat(ctx, device.SchedulableLabels),
+		Type:         stringToDeviceType(ctx, device.DeviceType),
+		State:        stringToDeviceState(ctx, device.DeviceState),
+		HardwareReqs: labelsToHardwareReqs(ctx, device.SchedulableLabels),
 	}
 	return deviceProto, nil
 }
@@ -79,8 +79,8 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device mod
 	msg, err = proto.Marshal(&schedulingAPI.DeviceEvent{
 		EventTime:        time.Now().Unix(),
 		DeviceId:         device.ID,
-		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, convertDeviceStateToAPIFormat(ctx, device.DeviceState)),
-		DeviceDimensions: convertSchedulableLabelsToPubSubFormat(ctx, device.SchedulableLabels),
+		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, stringToDeviceState(ctx, device.DeviceState)),
+		DeviceDimensions: labelsToSwarmingDims(ctx, device.SchedulableLabels),
 	})
 	if err != nil {
 		return fmt.Errorf("proto.Marshal err: %w", err)
@@ -102,11 +102,12 @@ func IsDeviceAvailable(ctx context.Context, state api.DeviceState) bool {
 	return state == api.DeviceState_DEVICE_STATE_AVAILABLE
 }
 
-// convertDeviceAddressToAPIFormat takes a net address string and converts it.
+// stringToDeviceAddress takes a net address string and converts to the
+// DeviceAddress in API format.
 //
 // The format is defined by the DeviceAddress proto. It does a basic split of
 // Host and Port and uses the net package. This package supports IPv4 and IPv6.
-func convertDeviceAddressToAPIFormat(ctx context.Context, addr string) (*api.DeviceAddress, error) {
+func stringToDeviceAddress(ctx context.Context, addr string) (*api.DeviceAddress, error) {
 	host, portStr, err := net.SplitHostPort(addr)
 	if err != nil {
 		return &api.DeviceAddress{}, errors.Annotate(err, "failed to split host and port %s", addr).Err()
@@ -123,26 +124,26 @@ func convertDeviceAddressToAPIFormat(ctx context.Context, addr string) (*api.Dev
 	}, nil
 }
 
-// convertAPIDeviceAddressToDBFormat takes a DeviceAddress and converts it to string.
+// deviceAddressToString takes a DeviceAddress and converts it to string.
 //
 // The format is defined by the DeviceAddress proto. It does a basic join of
 // Host and Port using the net package.
-func convertAPIDeviceAddressToDBFormat(ctx context.Context, addr *api.DeviceAddress) string {
+func deviceAddressToString(ctx context.Context, addr *api.DeviceAddress) string {
 	return net.JoinHostPort(addr.GetHost(), fmt.Sprint(addr.GetPort()))
 }
 
-// convertDeviceTypeToAPIFormat takes a string and converts it to DeviceType.
-func convertDeviceTypeToAPIFormat(ctx context.Context, deviceType string) api.DeviceType {
+// stringToDeviceType takes a string and converts it to DeviceType.
+func stringToDeviceType(ctx context.Context, deviceType string) api.DeviceType {
 	return api.DeviceType(api.DeviceType_value[deviceType])
 }
 
-// convertDeviceStateToAPIFormat takes a string and converts it to DeviceState.
-func convertDeviceStateToAPIFormat(ctx context.Context, state string) api.DeviceState {
+// stringToDeviceState takes a string and converts it to DeviceState.
+func stringToDeviceState(ctx context.Context, state string) api.DeviceState {
 	return api.DeviceState(api.DeviceState_value[state])
 }
 
-// convertSchedulableLabelsToAPIFormat formats the labels for API.
-func convertSchedulableLabelsToAPIFormat(ctx context.Context, labels model.SchedulableLabels) *api.HardwareRequirements {
+// labelsToHardwareReqs formats SchedulableLabels to be HardwareRequirements.
+func labelsToHardwareReqs(ctx context.Context, labels model.SchedulableLabels) *api.HardwareRequirements {
 	hardwareReqs := &api.HardwareRequirements{
 		SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{},
 	}
@@ -154,8 +155,8 @@ func convertSchedulableLabelsToAPIFormat(ctx context.Context, labels model.Sched
 	return hardwareReqs
 }
 
-// convertSchedulableLabelsToPubSubFormat formats the labels for publishing.
-func convertSchedulableLabelsToPubSubFormat(ctx context.Context, labels model.SchedulableLabels) *schedulingAPI.SwarmingDimensions {
+// labelsToSwarmingDims formats the labels to SwarmingDimensions for publishing.
+func labelsToSwarmingDims(ctx context.Context, labels model.SchedulableLabels) *schedulingAPI.SwarmingDimensions {
 	swarmingDims := &schedulingAPI.SwarmingDimensions{
 		DimsMap: map[string]*schedulingAPI.DimValues{},
 	}
@@ -167,9 +168,9 @@ func convertSchedulableLabelsToPubSubFormat(ctx context.Context, labels model.Sc
 	return swarmingDims
 }
 
-// ConvertBotDimsToSchedulableLabels converts Swarming bot dimensions to Device
-// Manager SchedulableLabels.
-func ConvertBotDimsToSchedulableLabels(ctx context.Context, dims swarming.Dimensions) model.SchedulableLabels {
+// SwarmingDimsToLabels converts SwarmingDimensions to Device Manager
+// SchedulableLabels.
+func SwarmingDimsToLabels(ctx context.Context, dims swarming.Dimensions) model.SchedulableLabels {
 	schedLabels := make(model.SchedulableLabels)
 	for k, v := range dims {
 		schedLabels[k] = model.LabelValues{

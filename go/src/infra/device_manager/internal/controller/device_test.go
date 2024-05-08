@@ -258,27 +258,27 @@ func TestIsDeviceAvailable(t *testing.T) {
 	})
 }
 
-func TestConvertDeviceAddressToAPIFormat(t *testing.T) {
+func Test_stringToDeviceAddress(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("convertDeviceAddressToAPIFormat", t, func() {
-		Convey("convertDeviceAddressToAPIFormat: valid address", func() {
-			addr, err := convertDeviceAddressToAPIFormat(ctx, "1.1.1.1:1")
+	Convey("stringToDeviceAddress", t, func() {
+		Convey("stringToDeviceAddress: valid address", func() {
+			addr, err := stringToDeviceAddress(ctx, "1.1.1.1:1")
 			So(err, ShouldBeNil)
 			So(addr, ShouldResembleProto, &api.DeviceAddress{
 				Host: "1.1.1.1",
 				Port: 1,
 			})
 		})
-		Convey("convertDeviceAddressToAPIFormat: invalid address; no port", func() {
-			addr, err := convertDeviceAddressToAPIFormat(ctx, "1.1.1.1.1.1")
+		Convey("stringToDeviceAddress: invalid address; no port", func() {
+			addr, err := stringToDeviceAddress(ctx, "1.1.1.1.1.1")
 			So(err, ShouldNotBeNil)
 			So(err, ShouldErrLike, "failed to split host and port")
 			So(addr, ShouldResembleProto, &api.DeviceAddress{})
 		})
-		Convey("convertDeviceAddressToAPIFormat: invalid address; bad port", func() {
-			addr, err := convertDeviceAddressToAPIFormat(ctx, "1.1.1.1:abc")
+		Convey("stringToDeviceAddress: invalid address; bad port", func() {
+			addr, err := stringToDeviceAddress(ctx, "1.1.1.1:abc")
 			So(err, ShouldNotBeNil)
 			So(err, ShouldErrLike, "port abc is not convertible to integer")
 			So(addr, ShouldResembleProto, &api.DeviceAddress{})
@@ -286,20 +286,20 @@ func TestConvertDeviceAddressToAPIFormat(t *testing.T) {
 	})
 }
 
-func TestConvertDeviceAddressToDBFormat(t *testing.T) {
+func Test_deviceAddressToString(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("convertAPIDeviceAddressToDBFormat", t, func() {
-		Convey("convertAPIDeviceAddressToDBFormat: valid address", func() {
-			addr := convertAPIDeviceAddressToDBFormat(ctx, &api.DeviceAddress{
+	Convey("deviceAddressToString", t, func() {
+		Convey("deviceAddressToString: valid address", func() {
+			addr := deviceAddressToString(ctx, &api.DeviceAddress{
 				Host: "1.1.1.1",
 				Port: 1,
 			})
 			So(addr, ShouldEqual, "1.1.1.1:1")
 		})
-		Convey("convertAPIDeviceAddressToDBFormat: ipv6 address", func() {
-			addr := convertAPIDeviceAddressToDBFormat(ctx, &api.DeviceAddress{
+		Convey("deviceAddressToString: ipv6 address", func() {
+			addr := deviceAddressToString(ctx, &api.DeviceAddress{
 				Host: "1:2:3",
 				Port: 1,
 			})
@@ -308,56 +308,56 @@ func TestConvertDeviceAddressToDBFormat(t *testing.T) {
 	})
 }
 
-func TestConvertDeviceTypeToAPIFormat(t *testing.T) {
+func Test_stringToDeviceType(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("convertDeviceTypeToAPIFormat", t, func() {
-		Convey("convertDeviceTypeToAPIFormat: valid types", func() {
+	Convey("stringToDeviceType", t, func() {
+		Convey("stringToDeviceType: valid types", func() {
 			for _, deviceType := range []string{
 				"DEVICE_TYPE_UNSPECIFIED",
 				"DEVICE_TYPE_VIRTUAL",
 				"DEVICE_TYPE_PHYSICAL",
 			} {
-				apiType := convertDeviceTypeToAPIFormat(ctx, deviceType)
+				apiType := stringToDeviceType(ctx, deviceType)
 				So(apiType, ShouldEqual, api.DeviceType_value[deviceType])
 			}
 		})
-		Convey("convertDeviceTypeToAPIFormat: unknown type", func() {
-			apiType := convertDeviceTypeToAPIFormat(ctx, "UNKNOWN_TYPE")
+		Convey("stringToDeviceType: unknown type", func() {
+			apiType := stringToDeviceType(ctx, "UNKNOWN_TYPE")
 			So(apiType, ShouldEqual, api.DeviceType_DEVICE_TYPE_UNSPECIFIED)
 		})
 	})
 }
 
-func TestConvertDeviceStateToAPIFormat(t *testing.T) {
+func Test_stringToDeviceState(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("convertDeviceStateToAPIFormat", t, func() {
-		Convey("convertDeviceStateToAPIFormat: valid types", func() {
+	Convey("stringToDeviceState", t, func() {
+		Convey("stringToDeviceState: valid types", func() {
 			for _, deviceState := range []string{
 				"DEVICE_STATE_UNSPECIFIED",
 				"DEVICE_STATE_AVAILABLE",
 				"DEVICE_STATE_LEASED",
 			} {
-				apiState := convertDeviceStateToAPIFormat(ctx, deviceState)
+				apiState := stringToDeviceState(ctx, deviceState)
 				So(apiState, ShouldEqual, api.DeviceState_value[deviceState])
 			}
 		})
-		Convey("convertDeviceStateToAPIFormat: unknown state", func() {
-			apiState := convertDeviceStateToAPIFormat(ctx, "UNKNOWN_STATE")
+		Convey("stringToDeviceState: unknown state", func() {
+			apiState := stringToDeviceState(ctx, "UNKNOWN_STATE")
 			So(apiState, ShouldEqual, api.DeviceState_DEVICE_STATE_UNSPECIFIED)
 		})
 	})
 }
 
-func TestConvertSchedulableLabelsToAPIFormat(t *testing.T) {
+func Test_labelsToHardwareReqs(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("convertSchedulableLabelsToAPIFormat", t, func() {
-		Convey("convertSchedulableLabelsToAPIFormat: valid labels", func() {
+	Convey("labelsToHardwareReqs", t, func() {
+		Convey("labelsToHardwareReqs: valid labels", func() {
 			labels := model.SchedulableLabels{
 				"label-test": model.LabelValues{
 					Values: []string{
@@ -366,7 +366,7 @@ func TestConvertSchedulableLabelsToAPIFormat(t *testing.T) {
 					},
 				},
 			}
-			dims := convertSchedulableLabelsToAPIFormat(ctx, labels)
+			dims := labelsToHardwareReqs(ctx, labels)
 			So(dims, ShouldResembleProto, api.HardwareRequirements{
 				SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
 					"label-test": {
@@ -378,9 +378,9 @@ func TestConvertSchedulableLabelsToAPIFormat(t *testing.T) {
 				},
 			})
 		})
-		Convey("convertSchedulableLabelsToAPIFormat: empty labels", func() {
+		Convey("labelsToHardwareReqs: empty labels", func() {
 			labels := model.SchedulableLabels{}
-			dims := convertSchedulableLabelsToAPIFormat(ctx, labels)
+			dims := labelsToHardwareReqs(ctx, labels)
 			So(dims, ShouldEqual, &api.HardwareRequirements{
 				SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{},
 			})
@@ -388,12 +388,12 @@ func TestConvertSchedulableLabelsToAPIFormat(t *testing.T) {
 	})
 }
 
-func TestConvertSchedulableLabelsToPubSubFormat(t *testing.T) {
+func Test_labelsToSwarmingDims(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("convertSchedulableLabelsToPubSubFormat", t, func() {
-		Convey("convertSchedulableLabelsToPubSubFormat: valid labels", func() {
+	Convey("labelsToSwarmingDims", t, func() {
+		Convey("labelsToSwarmingDims: valid labels", func() {
 			labels := model.SchedulableLabels{
 				"label-test": model.LabelValues{
 					Values: []string{
@@ -402,7 +402,7 @@ func TestConvertSchedulableLabelsToPubSubFormat(t *testing.T) {
 					},
 				},
 			}
-			dims := convertSchedulableLabelsToPubSubFormat(ctx, labels)
+			dims := labelsToSwarmingDims(ctx, labels)
 			So(dims, ShouldResembleProto, schedulingAPI.SwarmingDimensions{
 				DimsMap: map[string]*schedulingAPI.DimValues{
 					"label-test": {
@@ -414,9 +414,9 @@ func TestConvertSchedulableLabelsToPubSubFormat(t *testing.T) {
 				},
 			})
 		})
-		Convey("convertSchedulableLabelsToPubSubFormat: empty labels", func() {
+		Convey("labelsToSwarmingDims: empty labels", func() {
 			labels := model.SchedulableLabels{}
-			dims := convertSchedulableLabelsToPubSubFormat(ctx, labels)
+			dims := labelsToSwarmingDims(ctx, labels)
 			So(dims, ShouldEqual, &schedulingAPI.SwarmingDimensions{
 				DimsMap: map[string]*schedulingAPI.DimValues{},
 			})
@@ -424,19 +424,19 @@ func TestConvertSchedulableLabelsToPubSubFormat(t *testing.T) {
 	})
 }
 
-func TestConvertBotDimsToSchedulableLabels(t *testing.T) {
+func TestSwarmingDimsToLabels(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("ConvertBotDimsToSchedulableLabels", t, func() {
-		Convey("ConvertBotDimsToSchedulableLabels: valid dims", func() {
+	Convey("SwarmingDimsToLabels", t, func() {
+		Convey("SwarmingDimsToLabels: valid dims", func() {
 			dims := swarming.Dimensions{
 				"label-test": []string{
 					"test-value-1",
 					"test-value-2",
 				},
 			}
-			labels := ConvertBotDimsToSchedulableLabels(ctx, dims)
+			labels := SwarmingDimsToLabels(ctx, dims)
 			So(labels, ShouldEqual, model.SchedulableLabels{
 				"label-test": model.LabelValues{
 					Values: []string{
@@ -446,9 +446,9 @@ func TestConvertBotDimsToSchedulableLabels(t *testing.T) {
 				},
 			})
 		})
-		Convey("ConvertBotDimsToSchedulableLabels: empty dims", func() {
+		Convey("SwarmingDimsToLabels: empty dims", func() {
 			dims := swarming.Dimensions{}
-			labels := ConvertBotDimsToSchedulableLabels(ctx, dims)
+			labels := SwarmingDimsToLabels(ctx, dims)
 			So(labels, ShouldEqual, model.SchedulableLabels{})
 		})
 	})

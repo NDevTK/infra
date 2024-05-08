@@ -207,7 +207,7 @@ func upsertDeviceData(ctx context.Context, wg *sync.WaitGroup, serviceClients fr
 		if err != nil {
 			return
 		}
-		deviceModel.SchedulableLabels = controller.ConvertBotDimsToSchedulableLabels(ctx, dims)
+		deviceModel.SchedulableLabels = controller.SwarmingDimsToLabels(ctx, dims)
 	}
 
 	// upsert deviceModel to DM db

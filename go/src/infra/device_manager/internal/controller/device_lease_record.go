@@ -42,7 +42,7 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 		ID:              uuid.New().String(),
 		IdempotencyKey:  r.GetIdempotencyKey(),
 		DeviceID:        device.GetId(),
-		DeviceAddress:   convertAPIDeviceAddressToDBFormat(ctx, device.GetAddress()),
+		DeviceAddress:   deviceAddressToString(ctx, device.GetAddress()),
 		DeviceType:      device.GetType().String(),
 		LeasedTime:      timeNow,
 		ExpirationTime:  timeNow.Add(r.GetLeaseDuration().AsDuration()),
@@ -57,7 +57,7 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 
 	updatedDevice := model.Device{
 		ID:            device.GetId(),
-		DeviceAddress: convertAPIDeviceAddressToDBFormat(ctx, device.GetAddress()),
+		DeviceAddress: deviceAddressToString(ctx, device.GetAddress()),
 		DeviceType:    device.GetType().String(),
 		DeviceState:   api.DeviceState_DEVICE_STATE_LEASED.String(),
 	}
@@ -221,7 +221,7 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 	}
 
 	if dims != nil {
-		updatedDevice.SchedulableLabels = ConvertBotDimsToSchedulableLabels(ctx, dims)
+		updatedDevice.SchedulableLabels = SwarmingDimsToLabels(ctx, dims)
 	}
 
 	err = UpdateDevice(ctx, tx, psClient, updatedDevice)
@@ -250,7 +250,7 @@ func CheckLeaseIdempotency(ctx context.Context, db *sql.DB, idemKey string) (*ap
 	existingRecord, err := model.GetDeviceLeaseRecordByIdemKey(ctx, db, idemKey)
 	if err == nil {
 		if existingRecord.ExpirationTime.After(timeNow) {
-			addr, err := convertDeviceAddressToAPIFormat(ctx, existingRecord.DeviceAddress)
+			addr, err := stringToDeviceAddress(ctx, existingRecord.DeviceAddress)
 			if err != nil {
 				addr = &api.DeviceAddress{}
 			}
