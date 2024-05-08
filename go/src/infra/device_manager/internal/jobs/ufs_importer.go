@@ -26,6 +26,8 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
+const defaultPageSize = 1000
+
 // ImportUFSDevices registers the cron to trigger import for all Device
 // information from UFS.
 func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClients) error {
@@ -165,21 +167,25 @@ func listSchedulingUnits(ctx context.Context, ic ufsAPI.FleetClient, pageSize in
 // getAllDMDevices gets all Devices in the Device Manager DB
 func getAllDMDevices(ctx context.Context, db *sql.DB) ([]model.Device, error) {
 	var (
-		pageNumber int = 0
-		pageSize   int = 1000
-		res        []model.Device
-		devices    []model.Device
-		err        error
+		pageToken model.PageToken
+		devices   []model.Device
 	)
-	for (pageNumber == 0) || (pageNumber != 0 && len(devices) != 0) {
-		devices, err = model.ListDevices(ctx, db, pageNumber, pageSize)
+
+	for {
+		res, token, err := model.ListDevices(ctx, db, pageToken, defaultPageSize)
 		if err != nil {
 			return nil, err
 		}
-		res = append(res, devices...)
-		pageNumber += 1
+		devices = append(devices, res...)
+
+		if token == "" {
+			break
+		}
+		pageToken = token
 	}
-	return res, nil
+
+	logging.Debugf(ctx, "getAllDMDevices: found %d Devices in database", len(devices))
+	return devices, nil
 }
 
 // upsertDeviceData upserts to db and publishes a device event with UFS device data
@@ -232,7 +238,6 @@ func getInactiveDevices(ctx context.Context, serviceClients frontend.ServiceClie
 	if err != nil {
 		return nil, err
 	}
-	logging.Debugf(ctx, "getAllDMDevices: found %d Devices in DM database", len(dmDevices))
 
 	// create a map of active Device names
 	activeMap := make(map[string]struct{}, len(dmDevices))
@@ -248,7 +253,7 @@ func getInactiveDevices(ctx context.Context, serviceClients frontend.ServiceClie
 			inactiveDevices = append(inactiveDevices, dmDevice.ID)
 		}
 	}
-	logging.Debugf(ctx, "decommDevices: found %d inactive DUTs", len(inactiveDevices))
 
+	logging.Debugf(ctx, "getInactiveDevices: found %d inactive DUTs", len(inactiveDevices))
 	return inactiveDevices, nil
 }

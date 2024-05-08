@@ -32,21 +32,26 @@ func GetDevice(ctx context.Context, db *sql.DB, deviceName string) (*api.Device,
 	if err != nil {
 		return &api.Device{}, err
 	}
+	return deviceModelToAPIDevice(ctx, device), nil
+}
 
-	addr, err := stringToDeviceAddress(ctx, device.DeviceAddress)
+// ListDevices lists Devices from the db based on filters.
+func ListDevices(ctx context.Context, db *sql.DB, r *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
+	// TODO (b/337086313): Implement filtering
+	devices, nextPageToken, err := model.ListDevices(ctx, db, model.PageToken(r.GetPageToken()), int(r.GetPageSize()))
 	if err != nil {
-		logging.Errorf(ctx, err.Error())
-		addr = &api.DeviceAddress{}
+		return nil, err
 	}
 
-	deviceProto := &api.Device{
-		Id:           device.ID,
-		Address:      addr,
-		Type:         stringToDeviceType(ctx, device.DeviceType),
-		State:        stringToDeviceState(ctx, device.DeviceState),
-		HardwareReqs: labelsToHardwareReqs(ctx, device.SchedulableLabels),
+	devicesProtos := make([]*api.Device, len(devices))
+	for i, d := range devices {
+		devicesProtos[i] = deviceModelToAPIDevice(ctx, d)
 	}
-	return deviceProto, nil
+
+	return &api.ListDevicesResponse{
+		Devices:       devicesProtos,
+		NextPageToken: string(nextPageToken),
+	}, nil
 }
 
 // UpdateDevice updates a Device in a transaction.
@@ -178,4 +183,21 @@ func SwarmingDimsToLabels(ctx context.Context, dims swarming.Dimensions) model.S
 		}
 	}
 	return schedLabels
+}
+
+// deviceModelToAPIDevice takes a Device model and returns an API Device object.
+func deviceModelToAPIDevice(ctx context.Context, device model.Device) *api.Device {
+	addr, err := stringToDeviceAddress(ctx, device.DeviceAddress)
+	if err != nil {
+		logging.Errorf(ctx, err.Error())
+		addr = &api.DeviceAddress{}
+	}
+
+	return &api.Device{
+		Id:           device.ID,
+		Address:      addr,
+		Type:         stringToDeviceType(ctx, device.DeviceType),
+		State:        stringToDeviceState(ctx, device.DeviceState),
+		HardwareReqs: labelsToHardwareReqs(ctx, device.SchedulableLabels),
+	}
 }

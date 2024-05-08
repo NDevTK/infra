@@ -139,6 +139,282 @@ func TestGetDevice(t *testing.T) {
 	})
 }
 
+func TestListDevices(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("ListDevices", t, func() {
+		Convey("ListDevices: valid return; page token returned", func() {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			var (
+				pageSize int32 = 1
+				timeNow        = time.Now()
+			)
+
+			rows := sqlmock.NewRows([]string{
+				"id",
+				"device_address",
+				"device_type",
+				"device_state",
+				"schedulable_labels",
+				"last_updated_time",
+				"is_active"}).
+				AddRow(
+					"test-device-1",
+					"1.1.1.1:1",
+					"DEVICE_TYPE_PHYSICAL",
+					"DEVICE_STATE_AVAILABLE",
+					`{"label-test":{"Values":["test-value-1"]}}`,
+					timeNow,
+					true).
+				AddRow(
+					"test-device-2",
+					"2.2.2.2:2",
+					"DEVICE_TYPE_VIRTUAL",
+					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-2"]}}`,
+					timeNow,
+					false)
+
+			mock.ExpectQuery(regexp.QuoteMeta(`
+				SELECT
+					id,
+					device_address,
+					device_type,
+					device_state,
+					schedulable_labels,
+					last_updated_time,
+					is_active
+				FROM "Devices"
+				ORDER BY id
+				LIMIT $1;`)).
+				WithArgs(pageSize + 1).
+				WillReturnRows(rows)
+
+			devices, err := ListDevices(ctx, db, &api.ListDevicesRequest{
+				PageSize: pageSize,
+			})
+			So(err, ShouldBeNil)
+			So(devices, ShouldResembleProto, &api.ListDevicesResponse{
+				Devices: []*api.Device{
+					{
+						Id: "test-device-1",
+						Address: &api.DeviceAddress{
+							Host: "1.1.1.1",
+							Port: 1,
+						},
+						Type:  api.DeviceType_DEVICE_TYPE_PHYSICAL,
+						State: api.DeviceState_DEVICE_STATE_AVAILABLE,
+						HardwareReqs: &api.HardwareRequirements{
+							SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+								"label-test": {
+									Values: []string{"test-value-1"},
+								},
+							},
+						},
+					},
+				},
+				NextPageToken: "dGVzdC1kZXZpY2UtMQ==",
+			})
+
+			decodedToken, err := model.DecodePageToken(ctx, model.PageToken(devices.GetNextPageToken()))
+			So(err, ShouldBeNil)
+			So(decodedToken, ShouldEqual, "test-device-1")
+		})
+		Convey("ListDevices: valid return; no page token returned", func() {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			var (
+				pageSize int32 = 2
+				timeNow        = time.Now()
+			)
+
+			rows := sqlmock.NewRows([]string{
+				"id",
+				"device_address",
+				"device_type",
+				"device_state",
+				"schedulable_labels",
+				"last_updated_time",
+				"is_active"}).
+				AddRow(
+					"test-device-1",
+					"1.1.1.1:1",
+					"DEVICE_TYPE_PHYSICAL",
+					"DEVICE_STATE_AVAILABLE",
+					`{"label-test":{"Values":["test-value-1"]}}`,
+					timeNow,
+					true).
+				AddRow(
+					"test-device-2",
+					"2.2.2.2:2",
+					"DEVICE_TYPE_VIRTUAL",
+					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-2"]}}`,
+					timeNow,
+					false)
+
+			mock.ExpectQuery(regexp.QuoteMeta(`
+				SELECT
+					id,
+					device_address,
+					device_type,
+					device_state,
+					schedulable_labels,
+					last_updated_time,
+					is_active
+				FROM "Devices"
+				ORDER BY id
+				LIMIT $1;`)).
+				WithArgs(pageSize + 1).
+				WillReturnRows(rows)
+
+			devices, err := ListDevices(ctx, db, &api.ListDevicesRequest{
+				PageSize: pageSize,
+			})
+			So(err, ShouldBeNil)
+			So(devices.GetNextPageToken(), ShouldEqual, "")
+			So(devices, ShouldResembleProto, &api.ListDevicesResponse{
+				Devices: []*api.Device{
+					{
+						Id: "test-device-1",
+						Address: &api.DeviceAddress{
+							Host: "1.1.1.1",
+							Port: 1,
+						},
+						Type:  api.DeviceType_DEVICE_TYPE_PHYSICAL,
+						State: api.DeviceState_DEVICE_STATE_AVAILABLE,
+						HardwareReqs: &api.HardwareRequirements{
+							SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+								"label-test": {
+									Values: []string{"test-value-1"},
+								},
+							},
+						},
+					},
+					{
+						Id: "test-device-2",
+						Address: &api.DeviceAddress{
+							Host: "2.2.2.2",
+							Port: 2,
+						},
+						Type:  api.DeviceType_DEVICE_TYPE_VIRTUAL,
+						State: api.DeviceState_DEVICE_STATE_LEASED,
+						HardwareReqs: &api.HardwareRequirements{
+							SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+								"label-test": {
+									Values: []string{"test-value-2"},
+								},
+							},
+						},
+					},
+				},
+			})
+		})
+		Convey("ListDevices: valid request using page token", func() {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			var (
+				pageSize  int32 = 1
+				pageToken       = "dGVzdC1kZXZpY2UtMQ=="
+				timeNow         = time.Now()
+			)
+
+			// only add rows after test-device-1
+			rows := sqlmock.NewRows([]string{
+				"id",
+				"device_address",
+				"device_type",
+				"device_state",
+				"schedulable_labels",
+				"last_updated_time",
+				"is_active"}).
+				AddRow(
+					"test-device-2",
+					"2.2.2.2:2",
+					"DEVICE_TYPE_VIRTUAL",
+					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-2"]}}`,
+					timeNow,
+					false)
+
+			mock.ExpectQuery(regexp.QuoteMeta(`
+				SELECT
+					id,
+					device_address,
+					device_type,
+					device_state,
+					schedulable_labels,
+					last_updated_time,
+					is_active
+				FROM "Devices"
+				WHERE id > $1
+				ORDER BY id
+				LIMIT $2;`)).
+				WithArgs("test-device-1", pageSize+1).
+				WillReturnRows(rows)
+
+			devices, err := ListDevices(ctx, db, &api.ListDevicesRequest{
+				PageSize:  pageSize,
+				PageToken: pageToken,
+			})
+			So(err, ShouldBeNil)
+			So(devices.GetNextPageToken(), ShouldEqual, "")
+			So(devices, ShouldResembleProto, &api.ListDevicesResponse{
+				Devices: []*api.Device{
+					{
+						Id: "test-device-2",
+						Address: &api.DeviceAddress{
+							Host: "2.2.2.2",
+							Port: 2,
+						},
+						Type:  api.DeviceType_DEVICE_TYPE_VIRTUAL,
+						State: api.DeviceState_DEVICE_STATE_LEASED,
+						HardwareReqs: &api.HardwareRequirements{
+							SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+								"label-test": {
+									Values: []string{"test-value-2"},
+								},
+							},
+						},
+					},
+				},
+			})
+		})
+	})
+}
+
 func TestUpdateDevice(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -450,6 +726,80 @@ func TestSwarmingDimsToLabels(t *testing.T) {
 			dims := swarming.Dimensions{}
 			labels := SwarmingDimsToLabels(ctx, dims)
 			So(labels, ShouldEqual, model.SchedulableLabels{})
+		})
+	})
+}
+
+func Test_deviceModelToAPIDevice(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("deviceModelToAPIDevice", t, func() {
+		Convey("deviceModelToAPIDevice: valid device", func() {
+			modelDevice := model.Device{
+				ID:            "test-device-1",
+				DeviceAddress: "1.1.1.1:1",
+				DeviceType:    "DEVICE_TYPE_PHYSICAL",
+				DeviceState:   "DEVICE_STATE_AVAILABLE",
+				SchedulableLabels: model.SchedulableLabels{
+					"label-test": model.LabelValues{
+						Values: []string{"test-value-1"},
+					},
+				},
+			}
+
+			apiDevice := deviceModelToAPIDevice(ctx, modelDevice)
+
+			So(apiDevice, ShouldResembleProto, &api.Device{
+				Id: "test-device-1",
+				Address: &api.DeviceAddress{
+					Host: "1.1.1.1",
+					Port: 1,
+				},
+				Type:  api.DeviceType_DEVICE_TYPE_PHYSICAL,
+				State: api.DeviceState_DEVICE_STATE_AVAILABLE,
+				HardwareReqs: &api.HardwareRequirements{
+					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+						"label-test": {
+							Values: []string{"test-value-1"},
+						},
+					},
+				},
+			})
+		})
+		Convey("deviceModelToAPIDevice: invalid fields", func() {
+			modelDevice := model.Device{
+				ID:                "test-device-invalid",
+				DeviceAddress:     "1.1",
+				DeviceType:        "UNKNOWN",
+				DeviceState:       "UNKNOWN",
+				SchedulableLabels: model.SchedulableLabels{},
+			}
+
+			apiDevice := deviceModelToAPIDevice(ctx, modelDevice)
+
+			So(apiDevice, ShouldResembleProto, &api.Device{
+				Id:      "test-device-invalid",
+				Address: &api.DeviceAddress{},
+				HardwareReqs: &api.HardwareRequirements{
+					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{},
+				},
+			})
+		})
+		Convey("deviceModelToAPIDevice: empty device", func() {
+			modelDevice := model.Device{
+				ID: "test-device-empty",
+			}
+
+			apiDevice := deviceModelToAPIDevice(ctx, modelDevice)
+
+			So(apiDevice, ShouldResembleProto, &api.Device{
+				Id:      "test-device-empty",
+				Address: &api.DeviceAddress{},
+				HardwareReqs: &api.HardwareRequirements{
+					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{},
+				},
+			})
 		})
 	})
 }

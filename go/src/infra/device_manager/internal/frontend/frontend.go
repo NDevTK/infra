@@ -151,6 +151,15 @@ func (s *Server) GetDevice(ctx context.Context, r *api.GetDeviceRequest) (*api.D
 	return device, nil
 }
 
+// ListDevices takes a ListDevicesRequest and returns a list of corresponding devices.
 func (s *Server) ListDevices(ctx context.Context, r *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "ListDevices is not implemented")
+	// TODO (b/337086313): Implement filtering and endpoint-level validations
+	if r.GetParent() != "" {
+		return nil, status.Errorf(codes.Unimplemented, "ListDevices: filtering by parent (pool) is not yet supported")
+	}
+	if r.GetFilter() != "" {
+		return nil, status.Errorf(codes.Unimplemented, "ListDevices: filtering is not yet supported")
+	}
+
+	return controller.ListDevices(ctx, s.ServiceClients.DBClient.Conn, r)
 }

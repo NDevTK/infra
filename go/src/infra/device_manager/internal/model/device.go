@@ -8,8 +8,10 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"go.chromium.org/luci/common/logging"
@@ -26,6 +28,9 @@ type Device struct {
 	LastUpdatedTime time.Time
 	IsActive        bool
 }
+
+// PageToken is a string containing a page token to a database query.
+type PageToken string
 
 // LabelValues is the struct containing an array of label values.
 type LabelValues struct {
@@ -101,14 +106,14 @@ func GetDeviceByName(ctx context.Context, db *sql.DB, deviceName string) (Device
 }
 
 // ListDevices retrieves Devices with pagination.
-func ListDevices(ctx context.Context, db *sql.DB, pageNumber, pageSize int) ([]Device, error) {
+func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize int) ([]Device, PageToken, error) {
+	// TODO (b/337086313): Implement filtering
 	// handle potential errors for negative page numbers or page sizes
-	if pageNumber < 0 || pageSize <= 0 {
-		return nil, errors.New("ListDevices: invalid pagination parameters")
+	if pageSize <= 0 {
+		return nil, "", errors.New("ListDevices: invalid pagination parameters")
 	}
-	offset := pageNumber * pageSize
 
-	rows, err := db.QueryContext(ctx, `
+	query := `
 		SELECT
 			id,
 			device_address,
@@ -117,11 +122,31 @@ func ListDevices(ctx context.Context, db *sql.DB, pageNumber, pageSize int) ([]D
 			schedulable_labels,
 			last_updated_time,
 			is_active
-		FROM "Devices"
-		LIMIT $1
-		OFFSET $2`, pageSize, offset)
+		FROM "Devices"`
+	args := []interface{}{}
+	currArgPosition := 1
+
+	if pageToken != "" {
+		id, err := DecodePageToken(ctx, pageToken)
+		if err != nil {
+			return nil, "", fmt.Errorf("ListDevices: %w", err)
+		}
+
+		// TODO (b/339511151): Use an auto-incrementing field as token instead.
+		query += fmt.Sprintf(`
+			WHERE id > $%d`, currArgPosition)
+		args = append(args, id)
+		currArgPosition += 1
+	}
+
+	query += fmt.Sprintf(`
+		ORDER BY id
+		LIMIT $%d;`, currArgPosition)
+	args = append(args, pageSize+1) // fetch one extra to check for 'next page'
+
+	rows, err := db.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, "", fmt.Errorf("ListDevices: %w", err)
 	}
 	defer rows.Close()
 
@@ -141,19 +166,33 @@ func ListDevices(ctx context.Context, db *sql.DB, pageNumber, pageSize int) ([]D
 			&device.IsActive,
 		)
 		if err != nil {
-			return nil, err
+			return nil, "", fmt.Errorf("ListDevices: %w", err)
 		}
+
+		// handle possible null times
+		if lastUpdatedTime.Valid {
+			device.LastUpdatedTime = lastUpdatedTime.Time
+		}
+
 		results = append(results, device)
 	}
 
 	if err := rows.Close(); err != nil {
-		return nil, err
+		return nil, "", fmt.Errorf("ListDevices: %w", err)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, "", fmt.Errorf("ListDevices: %w", err)
 	}
-	return results, nil
+
+	// truncate results and use last Device ID as next page token
+	var nextPageToken PageToken
+	if len(results) > pageSize {
+		lastDevice := results[pageSize-1]
+		nextPageToken = EncodePageToken(ctx, lastDevice.ID)
+		results = results[0:pageSize] // trim results to page size
+	}
+	return results, nextPageToken, nil
 }
 
 // UpdateDevice updates a Device in a transaction.
@@ -244,4 +283,18 @@ func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 
 	logging.Debugf(ctx, "UpsertDevice: Device %s upserted successfully (%d row affected)", device.ID, rowsAffected)
 	return nil
+}
+
+// EncodePageToken encodes a Device ID as a base64 PageToken.
+func EncodePageToken(ctx context.Context, id string) PageToken {
+	return PageToken(base64.StdEncoding.EncodeToString([]byte(id)))
+}
+
+// DecodePageToken decodes a base64 PageToken as a string.
+func DecodePageToken(ctx context.Context, token PageToken) (string, error) {
+	id, err := base64.StdEncoding.DecodeString(string(token))
+	if err != nil {
+		return "", err
+	}
+	return string(id), nil
 }
