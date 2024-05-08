@@ -84,6 +84,7 @@ def setup(exe):
   import itertools
   import os
   import shutil
+  import stat
 
   d = os.path.join(os.getcwd(), '3pp_prefix')
   exe.env['_3PP_PREFIX'] = d
@@ -131,13 +132,13 @@ def setup(exe):
       # Reset all permission to write. This is a Workaround for copying from
       # different packages into same directory since cipd marks everything
       # readonly.
-      os.chmod(prefix_dir, mode=os.stat(prefix_dir).st_mode | os.ST_WRITE)
+      os.chmod(prefix_dir, mode=os.stat(prefix_dir).st_mode | stat.S_IWUSR)
       for root, dirs, files in os.walk(prefix_dir):
         for name in itertools.chain(dirs, files):
           path = os.path.join(root, name)
           os.chmod(
               path,
-              mode=os.stat(path).st_mode | os.ST_WRITE,
+              mode=os.stat(path).st_mode | stat.S_IWUSR,
               follow_symlinks=True,
           )
 
