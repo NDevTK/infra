@@ -15,6 +15,7 @@ create {
     tool: "tools/autoconf"
     tool: "tools/automake"
     tool: "tools/libtool"
+    tool: "tools/sed"
     dep: "static_libs/opensshlibs"
     dep: "static_libs/openssl"
     dep: "static_libs/zlib"
