@@ -1,0 +1,240 @@
+plans:
+    - name: cros
+      criticalactions:
+        - name: 'Set state: needs_deploy (RUN_ONCE)'
+          exec_name: dut_set_state
+          exec_args:
+            - state:needs_deploy
+          docs:
+            - The action set devices with request to be redeployed.
+        - name: Check stable versions exist
+          exec_name: sample_pass
+          docs:
+            - Check the DUT has model specific cros, firmware and faft stable_version configured.
+          conditions:
+            - name: Has a stable-version service (RUN_ONCE)
+              exec_name: has_stable_version_service_path
+              docs:
+                - Verify if we have access to the service provided access to the stable version
+          dependencies:
+            - name: Recovery version has OS image path
+              exec_name: has_stable_version_cros_image
+              docs:
+                - Verify that recovery version has OS image path.
+              dependencies:
+                - name: Has a stable-version service (RUN_ONCE)
+                  exec_name: has_stable_version_service_path
+                  docs:
+                    - Verify if we have access to the service provided access to the stable version
+            - name: Check stable firmware version exists
+              exec_name: has_stable_version_fw_version
+              docs:
+                - Check the DUT has model specific firmware stable_version configured.
+                - Flex device are exampted from this check as they don't run cros firmware
+              conditions:
+                - name: Is a Chromebook
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Has a stable-version service (RUN_ONCE)
+                  exec_name: has_stable_version_service_path
+                  docs:
+                    - Verify if we have access to the service provided access to the stable version
+        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+          exec_name: cros_ssh
+          docs:
+            - Verify that device is reachable by SSH.
+            - Limited to 15 seconds.
+          recoveries:
+            - name: Power cycle DUT by RPM and wait (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Perform RPM cycle and wait to device to boot back.
+              conditions:
+                - name: has_rpm_info
+                  exec_name: has_rpm_info
+              dependencies:
+                - name: rpm_power_cycle
+                  exec_name: rpm_power_cycle
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
+                  docs:
+                    - Wait DUT to be pingable after some action on it.
+                    - Waiting time 150 seconds.
+        - name: DUT has expected dev firmware (for browser DUTs) (time:'10m0s')
+          exec_name: cros_has_dev_signed_firmware
+          docs:
+            - Verify that FW on the DUT has dev keys.
+          conditions:
+            - name: dut_is_not_browser_legacy_duts
+              exec_name: dut_is_not_browser_legacy_duts
+          dependencies:
+            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+              exec_name: cros_ssh
+              docs:
+                - Verify that device is reachable by SSH.
+                - Limited to 15 seconds.
+              recoveries:
+                - name: Power cycle DUT by RPM and wait (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Perform RPM cycle and wait to device to boot back.
+                  conditions:
+                    - name: has_rpm_info
+                      exec_name: has_rpm_info
+                  dependencies:
+                    - name: rpm_power_cycle
+                      exec_name: rpm_power_cycle
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
+                      docs:
+                        - Wait DUT to be pingable after some action on it.
+                        - Waiting time 150 seconds.
+          recoveries:
+            - name: Update DUT firmware with factory mode and restart by host (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Force update FW on the DUT by factory mode.
+                - Reboot device by host
+              dependencies:
+                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Verify that device is reachable by SSH.
+                    - Limited to 15 seconds.
+                - name: Collect HWID into inventory (RUN_ONCE)
+                  exec_name: sample_pass
+                  docs:
+                    - Collect DUT hwid and update it into inventory info.
+                  dependencies:
+                    - name: Read HWID from DUT (ALWAYS_RUN)
+                      exec_name: cros_update_hwid_to_inventory
+                      conditions:
+                        - name: Not Satlab device
+                          exec_name: sample_fail
+                          docs:
+                            - Verify that DUT name is not belong Satlab.
+                          conditions:
+                            - name: Is Satlab device
+                              exec_name: dut_regex_name_match
+                              exec_args:
+                                - regex:^satlab
+                              docs:
+                                - Verify that DUT name is belong Satlab.
+                    - name: Read HWID from DUT (Satlab) (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_update_hwid_to_inventory
+                      conditions:
+                        - name: Is Satlab device
+                          exec_name: dut_regex_name_match
+                          exec_args:
+                            - regex:^satlab
+                          docs:
+                            - Verify that DUT name is belong Satlab.
+                - name: Disable software-controlled write-protect for 'internal' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
+                  exec_name: cros_disable_fprom_write_protect
+                  exec_args:
+                    - fprom:internal
+                  docs:
+                    - Disable write-protect fprom 'internal'.
+                  dependencies:
+                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Verify that device is reachable by SSH.
+                        - Limited to 15 seconds.
+                - name: Disable software-controlled write-protect for 'ec' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
+                  exec_name: cros_disable_fprom_write_protect
+                  exec_args:
+                    - fprom:ec
+                  docs:
+                    - Disable write-protect fprom 'ec'.
+                  dependencies:
+                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Verify that device is reachable by SSH.
+                        - Limited to 15 seconds.
+                - name: Try to update FW from firmware image with factory mode (Allow to fail) (ALWAYS_RUN) (time:'2h0m0s')
+                  exec_name: cros_update_firmware_from_firmware_image
+                  exec_args:
+                    - mode:factory
+                    - force:true
+                    - updater_timeout:600
+                    - update_ec_attempt_count:1
+                    - update_ap_attempt_count:1
+                    - use_cache_extractor:true
+                  docs:
+                    - Download firmware image to DUT, and install via firmware updater.
+                    - Update firmware from faft stable image with chromeos-firmwareupdate tool
+                    - --mode=facotry will be specified when run chromeos-firmwareupdate
+                    - Set timeout to 120 minutes = 10 minutes for download + 100 minutes for find and extract AP/EC images + 10 minutes for run updater.
+                  conditions:
+                    - name: has_stable_version_fw_image
+                      exec_name: has_stable_version_fw_image
+                - name: Try to update FW from OS image with factory mode (Allow to fail) (ALWAYS_RUN) (time:'15m0s')
+                  exec_name: cros_run_firmware_update
+                  exec_args:
+                    - mode:factory
+                    - force:true
+                    - updater_timeout:600
+                  docs:
+                    - Run chromeos-firmwareupdate with factory mode.
+                    - The reboot is not triggered as part of the action.
+                    - The action is not strict to not block repair actions.
+                    - Only runs when the DUT doesn't have a model specific faft stable_version, e.g. it's an early stage device use satlab or flex device.
+                  conditions:
+                    - name: Missing stable fw image
+                      exec_name: sample_fail
+                      docs:
+                        - Verify that the DUT doesn't have model specific stable_version record in faft section
+                      conditions:
+                        - name: has_stable_version_fw_image
+                          exec_name: has_stable_version_fw_image
+                - name: Simple reboot (ALWAYS_RUN)
+                  exec_name: cros_run_command
+                  exec_args:
+                    - host:dut
+                    - command:reboot
+                    - background:true
+                  docs:
+                    - Simple un-blocker reboot.
+                  dependencies:
+                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Verify that device is reachable by SSH.
+                        - Limited to 15 seconds.
+                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Try to wait device to be sshable after the device being rebooted.
+                    - Waiting time 150 seconds.
+        - name: Update inventory info
+          exec_name: sample_pass
+          docs:
+            - Updating device info in inventory.
+          dependencies:
+            - name: cros_ssh
+              exec_name: cros_ssh
+            - name: cros_update_hwid_to_inventory
+              exec_name: cros_update_hwid_to_inventory
+            - name: cros_update_serial_number_inventory
+              exec_name: cros_update_serial_number_inventory
+        - name: 'Set state: ready (RUN_ONCE)'
+          exec_name: dut_set_state
+          exec_args:
+            - state:ready
+          docs:
+            - The action set devices with state ready for the testing.
+          dependencies:
+            - name: All repair-requests resolved
+              exec_name: dut_has_no_repair_requests
+              docs:
+                - Checks if all repair requests are resolved
+            - name: Reset DUT-state reason
+              exec_name: dut_reset_state_reason
+              docs:
+                - Reset DUT-state-reason for good DUT as it becomes stale.

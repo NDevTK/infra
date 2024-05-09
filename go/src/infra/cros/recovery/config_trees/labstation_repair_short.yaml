@@ -1,0 +1,233 @@
+plans:
+    - name: cros
+      criticalactions:
+        - name: dut_state_repair_failed (RUN_ONCE)
+        - name: check_host_info ('sample_pass')
+          dependencies:
+            - name: dut_has_name
+            - name: dut_has_board_name
+            - name: dut_has_model_name
+        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+          recoveries:
+            - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: has_rpm_info
+              dependencies:
+                - name: rpm_power_cycle
+                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+        - name: System services is up ('cros_wait_for_system')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+              recoveries:
+                - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: has_rpm_info
+                  dependencies:
+                    - name: rpm_power_cycle
+                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+          recoveries:
+            - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+        - name: Clean up logs if necessary (Allow to fail) ('cros_log_clean_up')
+        - name: Filesystem is writable (Allow to fail) ('cros_is_file_system_writable')
+        - name: Check servod dependencies ('cros_run_command')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+              recoveries:
+                - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: has_rpm_info
+                  dependencies:
+                    - name: rpm_power_cycle
+                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+          recoveries:
+            - name: Powerwash repair labstation ('sample_pass')
+              conditions:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Labstation not in auto-update exempted pool ('dut_not_in_pool')
+              dependencies:
+                - name: Write factory-install-reset to file system ('cros_run_shell_command')
+                - name: Labstation reboot ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: cros_stop_powerd (Allow to fail) ('cros_run_shell_command') (ALWAYS_RUN)
+                    - name: cros_clean_tmp_owner_request (Allow to fail) (ALWAYS_RUN)
+                    - name: cros_allowed_reboot
+                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                      conditions:
+                        - name: cros_filesystem_io_not_blocked
+                    - name: Sysrq reboot (Allow to fail) ('cros_run_shell_command') (ALWAYS_RUN)
+                      conditions:
+                        - name: Filesystem IO blocked ('sample_fail') (ALWAYS_RUN)
+                          conditions:
+                            - name: cros_filesystem_io_not_blocked
+                    - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+                - name: Install stable labstation image without reboot ('cros_provision') (time:'1h0m0s')
+                  conditions:
+                    - name: has_stable_version_cros_image
+                    - name: cros_kernel_priority_has_not_changed
+                - name: Labstation reboot ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: cros_stop_powerd (Allow to fail) ('cros_run_shell_command') (ALWAYS_RUN)
+                    - name: cros_clean_tmp_owner_request (Allow to fail) (ALWAYS_RUN)
+                    - name: cros_allowed_reboot
+                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                      conditions:
+                        - name: cros_filesystem_io_not_blocked
+                    - name: Sysrq reboot (Allow to fail) ('cros_run_shell_command') (ALWAYS_RUN)
+                      conditions:
+                        - name: Filesystem IO blocked ('sample_fail') (ALWAYS_RUN)
+                          conditions:
+                            - name: cros_filesystem_io_not_blocked
+                    - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+        - name: cros_is_on_stable_version (Allow to fail)
+          conditions:
+            - name: has_stable_version_cros_image
+            - name: cros_kernel_priority_has_not_changed
+            - name: Labstation not in auto-update exempted pool ('dut_not_in_pool')
+          recoveries:
+            - name: Install stable labstation image without reboot ('cros_provision') (time:'1h0m0s')
+              conditions:
+                - name: has_stable_version_cros_image
+                - name: cros_kernel_priority_has_not_changed
+        - name: Update provisioned info (Allow to fail) ('cros_update_provision_info')
+        - name: booted_from_right_kernel ('cros_kernel_priority_has_not_changed')
+          conditions:
+            - name: cros_has_no_servo_in_use
+          recoveries:
+            - name: Labstation reboot ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: cros_stop_powerd (Allow to fail) ('cros_run_shell_command') (ALWAYS_RUN)
+                - name: cros_clean_tmp_owner_request (Allow to fail) (ALWAYS_RUN)
+                - name: cros_allowed_reboot
+                - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                  conditions:
+                    - name: cros_filesystem_io_not_blocked
+                - name: Sysrq reboot (Allow to fail) ('cros_run_shell_command') (ALWAYS_RUN)
+                  conditions:
+                    - name: Filesystem IO blocked ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: cros_filesystem_io_not_blocked
+                - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+            - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: has_rpm_info
+              dependencies:
+                - name: rpm_power_cycle
+                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+        - name: reboot_by_request ('sample_fail')
+          conditions:
+            - name: cros_has_reboot_request
+            - name: cros_has_no_servo_in_use
+            - name: labstation_uptime_6_hours ('cros_validate_uptime')
+          recoveries:
+            - name: Labstation reboot ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: cros_stop_powerd (Allow to fail) ('cros_run_shell_command') (ALWAYS_RUN)
+                - name: cros_clean_tmp_owner_request (Allow to fail) (ALWAYS_RUN)
+                - name: cros_allowed_reboot
+                - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                  conditions:
+                    - name: cros_filesystem_io_not_blocked
+                - name: Sysrq reboot (Allow to fail) ('cros_run_shell_command') (ALWAYS_RUN)
+                  conditions:
+                    - name: Filesystem IO blocked ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: cros_filesystem_io_not_blocked
+                - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+            - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: has_rpm_info
+              dependencies:
+                - name: rpm_power_cycle
+                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+        - name: Reboot labstation if uptime longer than 7 days ('cros_validate_uptime')
+          conditions:
+            - name: cros_has_no_servo_in_use
+          recoveries:
+            - name: Labstation reboot ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: cros_stop_powerd (Allow to fail) ('cros_run_shell_command') (ALWAYS_RUN)
+                - name: cros_clean_tmp_owner_request (Allow to fail) (ALWAYS_RUN)
+                - name: cros_allowed_reboot
+                - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                  conditions:
+                    - name: cros_filesystem_io_not_blocked
+                - name: Sysrq reboot (Allow to fail) ('cros_run_shell_command') (ALWAYS_RUN)
+                  conditions:
+                    - name: Filesystem IO blocked ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: cros_filesystem_io_not_blocked
+                - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+            - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: has_rpm_info
+              dependencies:
+                - name: rpm_power_cycle
+                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+        - name: Cleanup bluetooth (Allow to fail) ('sample_pass')
+          dependencies:
+            - name: Attempt to remove bluetooth device (Allow to fail) ('cros_remove_bt_devices')
+            - name: Attempt to power off bluetooth adapter (Allow to fail) ('cros_run_shell_command')
+        - name: Is crosid readable (Allow to fail) ('cros_run_command')
+          conditions:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+            - name: Is crosid present ('cros_run_command')
+          recoveries:
+            - name: Remove whitelabel_tag VPD field ('cros_run_command')
+              conditions:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+        - name: Update inventory info ('sample_pass')
+          dependencies:
+            - name: cros_update_hwid_to_inventory
+            - name: Read serial number from labstation (Allow to fail) ('cros_update_serial_number_inventory')
+        - name: dut_state_ready

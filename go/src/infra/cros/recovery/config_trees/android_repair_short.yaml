@@ -1,0 +1,795 @@
+plans:
+    - name: android
+      criticalactions:
+        - name: 'Set state: repair_failed (''dut_set_state'') (RUN_ONCE)'
+        - name: Validate DUT info ('sample_pass')
+          dependencies:
+            - name: dut_has_name
+            - name: android_dut_has_board_name
+            - name: android_dut_has_model_name
+            - name: android_dut_has_serial_number
+            - name: android_dut_has_associated_host
+        - name: Validate associated host ('android_associated_host_fs_is_writable')
+          dependencies:
+            - name: android_dut_has_serial_number
+            - name: android_dut_has_associated_host
+            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+            - name: Associated host is labstation ('android_associated_host_is_labstation')
+          recoveries:
+            - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: android_dut_has_serial_number
+                - name: android_dut_has_associated_host
+                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                - name: Associated host is labstation ('android_associated_host_is_labstation')
+              dependencies:
+                - name: android_associated_host_schedule_reboot
+        - name: Lock associated host ('android_associated_host_lock') (ALWAYS_RUN)
+          dependencies:
+            - name: Validate associated host ('android_associated_host_fs_is_writable')
+              dependencies:
+                - name: android_dut_has_serial_number
+                - name: android_dut_has_associated_host
+                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                - name: Associated host is labstation ('android_associated_host_is_labstation')
+              recoveries:
+                - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                  conditions:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  dependencies:
+                    - name: android_associated_host_schedule_reboot
+        - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+          recoveries:
+            - name: Restore private vendor key on associated host ('android_associated_host_restore_vendor_key')
+        - name: Validate adb ('android_associated_host_start_adb')
+          dependencies:
+            - name: Validate associated host ('android_associated_host_fs_is_writable')
+              dependencies:
+                - name: android_dut_has_serial_number
+                - name: android_dut_has_associated_host
+                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                - name: Associated host is labstation ('android_associated_host_is_labstation')
+              recoveries:
+                - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                  conditions:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  dependencies:
+                    - name: android_associated_host_schedule_reboot
+            - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+              recoveries:
+                - name: Restore private vendor key on associated host ('android_associated_host_restore_vendor_key')
+            - name: Associated host has adb ('android_associated_host_has_adb')
+            - name: Adb server is stopped ('android_associated_host_stop_adb')
+              conditions:
+                - name: android_associated_host_has_no_other_locks
+          recoveries:
+            - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: android_dut_has_serial_number
+                - name: android_dut_has_associated_host
+                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                - name: Associated host is labstation ('android_associated_host_is_labstation')
+              dependencies:
+                - name: android_associated_host_schedule_reboot
+        - name: DUT is accessible over adb ('android_dut_is_accessible') (ALWAYS_RUN)
+          dependencies:
+            - name: Validate associated host ('android_associated_host_fs_is_writable')
+              dependencies:
+                - name: android_dut_has_serial_number
+                - name: android_dut_has_associated_host
+                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                - name: Associated host is labstation ('android_associated_host_is_labstation')
+              recoveries:
+                - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                  conditions:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  dependencies:
+                    - name: android_associated_host_schedule_reboot
+            - name: Validate adb ('android_associated_host_start_adb')
+              dependencies:
+                - name: Validate associated host ('android_associated_host_fs_is_writable')
+                  dependencies:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  recoveries:
+                    - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      dependencies:
+                        - name: android_associated_host_schedule_reboot
+                - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                  recoveries:
+                    - name: Restore private vendor key on associated host ('android_associated_host_restore_vendor_key')
+                - name: Associated host has adb ('android_associated_host_has_adb')
+                - name: Adb server is stopped ('android_associated_host_stop_adb')
+                  conditions:
+                    - name: android_associated_host_has_no_other_locks
+              recoveries:
+                - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                  conditions:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  dependencies:
+                    - name: android_associated_host_schedule_reboot
+          recoveries:
+            - name: Reboot device if in fastboot mode ('sample_pass') (time:'11m30s')
+              dependencies:
+                - name: android_device_in_fastboot_mode
+                - name: android_reboot_device_via_fastboot
+                - name: Wait for Online DUT ('android_wait_for_online_dut') (ALWAYS_RUN) (time:'10m0s')
+            - name: Reconnect device if in offline state ('android_reconnect_offline_dut')
+              conditions:
+                - name: android_dut_is_offline
+            - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: android_dut_has_serial_number
+                - name: android_dut_has_associated_host
+                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                - name: Associated host is labstation ('android_associated_host_is_labstation')
+              dependencies:
+                - name: android_associated_host_schedule_reboot
+        - name: Reset DUT ('android_enable_test_harness') (time:'11m30s')
+          dependencies:
+            - name: Validate associated host ('android_associated_host_fs_is_writable')
+              dependencies:
+                - name: android_dut_has_serial_number
+                - name: android_dut_has_associated_host
+                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                - name: Associated host is labstation ('android_associated_host_is_labstation')
+              recoveries:
+                - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                  conditions:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  dependencies:
+                    - name: android_associated_host_schedule_reboot
+            - name: Validate adb ('android_associated_host_start_adb')
+              dependencies:
+                - name: Validate associated host ('android_associated_host_fs_is_writable')
+                  dependencies:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  recoveries:
+                    - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      dependencies:
+                        - name: android_associated_host_schedule_reboot
+                - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                  recoveries:
+                    - name: Restore private vendor key on associated host ('android_associated_host_restore_vendor_key')
+                - name: Associated host has adb ('android_associated_host_has_adb')
+                - name: Adb server is stopped ('android_associated_host_stop_adb')
+                  conditions:
+                    - name: android_associated_host_has_no_other_locks
+              recoveries:
+                - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                  conditions:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  dependencies:
+                    - name: android_associated_host_schedule_reboot
+            - name: DUT is accessible over adb ('android_dut_is_accessible') (ALWAYS_RUN)
+              dependencies:
+                - name: Validate associated host ('android_associated_host_fs_is_writable')
+                  dependencies:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  recoveries:
+                    - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      dependencies:
+                        - name: android_associated_host_schedule_reboot
+                - name: Validate adb ('android_associated_host_start_adb')
+                  dependencies:
+                    - name: Validate associated host ('android_associated_host_fs_is_writable')
+                      dependencies:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      recoveries:
+                        - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                          conditions:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          dependencies:
+                            - name: android_associated_host_schedule_reboot
+                    - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                      recoveries:
+                        - name: Restore private vendor key on associated host ('android_associated_host_restore_vendor_key')
+                    - name: Associated host has adb ('android_associated_host_has_adb')
+                    - name: Adb server is stopped ('android_associated_host_stop_adb')
+                      conditions:
+                        - name: android_associated_host_has_no_other_locks
+                  recoveries:
+                    - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      dependencies:
+                        - name: android_associated_host_schedule_reboot
+              recoveries:
+                - name: Reboot device if in fastboot mode ('sample_pass') (time:'11m30s')
+                  dependencies:
+                    - name: android_device_in_fastboot_mode
+                    - name: android_reboot_device_via_fastboot
+                    - name: Wait for Online DUT ('android_wait_for_online_dut') (ALWAYS_RUN) (time:'10m0s')
+                - name: Reconnect device if in offline state ('android_reconnect_offline_dut')
+                  conditions:
+                    - name: android_dut_is_offline
+                - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                  conditions:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  dependencies:
+                    - name: android_associated_host_schedule_reboot
+            - name: Reset public key ('android_reset_public_key')
+              conditions:
+                - name: DUT has userdebug build ('android_dut_has_userdebug_build')
+                  dependencies:
+                    - name: Validate associated host ('android_associated_host_fs_is_writable')
+                      dependencies:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                    - name: Validate adb ('android_associated_host_start_adb')
+                      dependencies:
+                        - name: Validate associated host ('android_associated_host_fs_is_writable')
+                          dependencies:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                        - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                        - name: Associated host has adb ('android_associated_host_has_adb')
+                        - name: Adb server is stopped ('android_associated_host_stop_adb')
+                          conditions:
+                            - name: android_associated_host_has_no_other_locks
+              dependencies:
+                - name: Validate associated host ('android_associated_host_fs_is_writable')
+                  dependencies:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  recoveries:
+                    - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      dependencies:
+                        - name: android_associated_host_schedule_reboot
+                - name: Validate adb ('android_associated_host_start_adb')
+                  dependencies:
+                    - name: Validate associated host ('android_associated_host_fs_is_writable')
+                      dependencies:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      recoveries:
+                        - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                          conditions:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          dependencies:
+                            - name: android_associated_host_schedule_reboot
+                    - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                      recoveries:
+                        - name: Restore private vendor key on associated host ('android_associated_host_restore_vendor_key')
+                    - name: Associated host has adb ('android_associated_host_has_adb')
+                    - name: Adb server is stopped ('android_associated_host_stop_adb')
+                      conditions:
+                        - name: android_associated_host_has_no_other_locks
+                  recoveries:
+                    - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      dependencies:
+                        - name: android_associated_host_schedule_reboot
+                - name: Ensure adbd runs as root ('android_restart_adbd_as_root') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT has userdebug build ('android_dut_has_userdebug_build')
+                      dependencies:
+                        - name: Validate associated host ('android_associated_host_fs_is_writable')
+                          dependencies:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                        - name: Validate adb ('android_associated_host_start_adb')
+                          dependencies:
+                            - name: Validate associated host ('android_associated_host_fs_is_writable')
+                              dependencies:
+                                - name: android_dut_has_serial_number
+                                - name: android_dut_has_associated_host
+                                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                                - name: Associated host is labstation ('android_associated_host_is_labstation')
+                            - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                            - name: Associated host has adb ('android_associated_host_has_adb')
+                            - name: Adb server is stopped ('android_associated_host_stop_adb')
+                              conditions:
+                                - name: android_associated_host_has_no_other_locks
+          recoveries:
+            - name: Unlock DUT screen ('sample_pass') (time:'11m30s')
+              conditions:
+                - name: DUT has userdebug build ('android_dut_has_userdebug_build')
+                  dependencies:
+                    - name: Validate associated host ('android_associated_host_fs_is_writable')
+                      dependencies:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                    - name: Validate adb ('android_associated_host_start_adb')
+                      dependencies:
+                        - name: Validate associated host ('android_associated_host_fs_is_writable')
+                          dependencies:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                        - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                        - name: Associated host has adb ('android_associated_host_has_adb')
+                        - name: Adb server is stopped ('android_associated_host_stop_adb')
+                          conditions:
+                            - name: android_associated_host_has_no_other_locks
+              dependencies:
+                - name: Validate associated host ('android_associated_host_fs_is_writable')
+                  dependencies:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                - name: Validate adb ('android_associated_host_start_adb')
+                  dependencies:
+                    - name: Validate associated host ('android_associated_host_fs_is_writable')
+                      dependencies:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                    - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                    - name: Associated host has adb ('android_associated_host_has_adb')
+                    - name: Adb server is stopped ('android_associated_host_stop_adb')
+                      conditions:
+                        - name: android_associated_host_has_no_other_locks
+                - name: Ensure adbd runs as root ('android_restart_adbd_as_root') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT has userdebug build ('android_dut_has_userdebug_build')
+                      dependencies:
+                        - name: Validate associated host ('android_associated_host_fs_is_writable')
+                          dependencies:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                        - name: Validate adb ('android_associated_host_start_adb')
+                          dependencies:
+                            - name: Validate associated host ('android_associated_host_fs_is_writable')
+                              dependencies:
+                                - name: android_dut_has_serial_number
+                                - name: android_dut_has_associated_host
+                                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                                - name: Associated host is labstation ('android_associated_host_is_labstation')
+                            - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                            - name: Associated host has adb ('android_associated_host_has_adb')
+                            - name: Adb server is stopped ('android_associated_host_stop_adb')
+                              conditions:
+                                - name: android_associated_host_has_no_other_locks
+                - name: android_remove_screen_lock
+                - name: android_dut_reboot
+                - name: Wait for Online DUT ('android_wait_for_online_dut') (ALWAYS_RUN) (time:'10m0s')
+        - name: Configure DUT ('sample_pass') (time:'11m30s')
+          dependencies:
+            - name: Wait for DUT to reboot ('sample_pass') (time:'11m30s')
+              dependencies:
+                - name: Wait for Offline DUT ('android_wait_for_offline_dut') (ALWAYS_RUN) (time:'1m30s')
+                - name: Wait for Online DUT ('android_wait_for_online_dut') (ALWAYS_RUN) (time:'10m0s')
+            - name: Connect to WiFi network ('android_connect_wifi_network') (time:'3m0s')
+              dependencies:
+                - name: Validate associated host ('android_associated_host_fs_is_writable')
+                  dependencies:
+                    - name: android_dut_has_serial_number
+                    - name: android_dut_has_associated_host
+                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                  recoveries:
+                    - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      dependencies:
+                        - name: android_associated_host_schedule_reboot
+                - name: Validate adb ('android_associated_host_start_adb')
+                  dependencies:
+                    - name: Validate associated host ('android_associated_host_fs_is_writable')
+                      dependencies:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      recoveries:
+                        - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                          conditions:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          dependencies:
+                            - name: android_associated_host_schedule_reboot
+                    - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                      recoveries:
+                        - name: Restore private vendor key on associated host ('android_associated_host_restore_vendor_key')
+                    - name: Associated host has adb ('android_associated_host_has_adb')
+                    - name: Adb server is stopped ('android_associated_host_stop_adb')
+                      conditions:
+                        - name: android_associated_host_has_no_other_locks
+                  recoveries:
+                    - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      dependencies:
+                        - name: android_associated_host_schedule_reboot
+                - name: DUT is accessible over adb ('android_dut_is_accessible') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Validate associated host ('android_associated_host_fs_is_writable')
+                      dependencies:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      recoveries:
+                        - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                          conditions:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          dependencies:
+                            - name: android_associated_host_schedule_reboot
+                    - name: Validate adb ('android_associated_host_start_adb')
+                      dependencies:
+                        - name: Validate associated host ('android_associated_host_fs_is_writable')
+                          dependencies:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          recoveries:
+                            - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                              conditions:
+                                - name: android_dut_has_serial_number
+                                - name: android_dut_has_associated_host
+                                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                                - name: Associated host is labstation ('android_associated_host_is_labstation')
+                              dependencies:
+                                - name: android_associated_host_schedule_reboot
+                        - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                          recoveries:
+                            - name: Restore private vendor key on associated host ('android_associated_host_restore_vendor_key')
+                        - name: Associated host has adb ('android_associated_host_has_adb')
+                        - name: Adb server is stopped ('android_associated_host_stop_adb')
+                          conditions:
+                            - name: android_associated_host_has_no_other_locks
+                      recoveries:
+                        - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                          conditions:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          dependencies:
+                            - name: android_associated_host_schedule_reboot
+                  recoveries:
+                    - name: Reboot device if in fastboot mode ('sample_pass') (time:'11m30s')
+                      dependencies:
+                        - name: android_device_in_fastboot_mode
+                        - name: android_reboot_device_via_fastboot
+                        - name: Wait for Online DUT ('android_wait_for_online_dut') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Reconnect device if in offline state ('android_reconnect_offline_dut')
+                      conditions:
+                        - name: android_dut_is_offline
+                    - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                      conditions:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      dependencies:
+                        - name: android_associated_host_schedule_reboot
+                - name: Enable WiFi ('android_enable_wifi') (time:'3m0s')
+                  dependencies:
+                    - name: Validate associated host ('android_associated_host_fs_is_writable')
+                      dependencies:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                      recoveries:
+                        - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                          conditions:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          dependencies:
+                            - name: android_associated_host_schedule_reboot
+                    - name: Validate adb ('android_associated_host_start_adb')
+                      dependencies:
+                        - name: Validate associated host ('android_associated_host_fs_is_writable')
+                          dependencies:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          recoveries:
+                            - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                              conditions:
+                                - name: android_dut_has_serial_number
+                                - name: android_dut_has_associated_host
+                                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                                - name: Associated host is labstation ('android_associated_host_is_labstation')
+                              dependencies:
+                                - name: android_associated_host_schedule_reboot
+                        - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                          recoveries:
+                            - name: Restore private vendor key on associated host ('android_associated_host_restore_vendor_key')
+                        - name: Associated host has adb ('android_associated_host_has_adb')
+                        - name: Adb server is stopped ('android_associated_host_stop_adb')
+                          conditions:
+                            - name: android_associated_host_has_no_other_locks
+                      recoveries:
+                        - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                          conditions:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          dependencies:
+                            - name: android_associated_host_schedule_reboot
+                    - name: DUT is accessible over adb ('android_dut_is_accessible') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Validate associated host ('android_associated_host_fs_is_writable')
+                          dependencies:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          recoveries:
+                            - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                              conditions:
+                                - name: android_dut_has_serial_number
+                                - name: android_dut_has_associated_host
+                                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                                - name: Associated host is labstation ('android_associated_host_is_labstation')
+                              dependencies:
+                                - name: android_associated_host_schedule_reboot
+                        - name: Validate adb ('android_associated_host_start_adb')
+                          dependencies:
+                            - name: Validate associated host ('android_associated_host_fs_is_writable')
+                              dependencies:
+                                - name: android_dut_has_serial_number
+                                - name: android_dut_has_associated_host
+                                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                                - name: Associated host is labstation ('android_associated_host_is_labstation')
+                              recoveries:
+                                - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: android_dut_has_serial_number
+                                    - name: android_dut_has_associated_host
+                                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                                  dependencies:
+                                    - name: android_associated_host_schedule_reboot
+                            - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                              recoveries:
+                                - name: Restore private vendor key on associated host ('android_associated_host_restore_vendor_key')
+                            - name: Associated host has adb ('android_associated_host_has_adb')
+                            - name: Adb server is stopped ('android_associated_host_stop_adb')
+                              conditions:
+                                - name: android_associated_host_has_no_other_locks
+                          recoveries:
+                            - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                              conditions:
+                                - name: android_dut_has_serial_number
+                                - name: android_dut_has_associated_host
+                                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                                - name: Associated host is labstation ('android_associated_host_is_labstation')
+                              dependencies:
+                                - name: android_associated_host_schedule_reboot
+                      recoveries:
+                        - name: Reboot device if in fastboot mode ('sample_pass') (time:'11m30s')
+                          dependencies:
+                            - name: android_device_in_fastboot_mode
+                            - name: android_reboot_device_via_fastboot
+                            - name: Wait for Online DUT ('android_wait_for_online_dut') (ALWAYS_RUN) (time:'10m0s')
+                        - name: Reconnect device if in offline state ('android_reconnect_offline_dut')
+                          conditions:
+                            - name: android_dut_is_offline
+                        - name: Schedule associated host reboot and fail ('sample_fail') (ALWAYS_RUN)
+                          conditions:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                          dependencies:
+                            - name: android_associated_host_schedule_reboot
+                    - name: Ensure adbd runs as root ('android_restart_adbd_as_root') (ALWAYS_RUN)
+                      conditions:
+                        - name: DUT has userdebug build ('android_dut_has_userdebug_build')
+                          dependencies:
+                            - name: Validate associated host ('android_associated_host_fs_is_writable')
+                              dependencies:
+                                - name: android_dut_has_serial_number
+                                - name: android_dut_has_associated_host
+                                - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                                - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                                - name: Associated host is labstation ('android_associated_host_is_labstation')
+                            - name: Validate adb ('android_associated_host_start_adb')
+                              dependencies:
+                                - name: Validate associated host ('android_associated_host_fs_is_writable')
+                                  dependencies:
+                                    - name: android_dut_has_serial_number
+                                    - name: android_dut_has_associated_host
+                                    - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                                    - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                                    - name: Associated host is labstation ('android_associated_host_is_labstation')
+                                - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                                - name: Associated host has adb ('android_associated_host_has_adb')
+                                - name: Adb server is stopped ('android_associated_host_stop_adb')
+                                  conditions:
+                                    - name: android_associated_host_has_no_other_locks
+            - name: Unroot DUT (Allow to fail) ('android_unroot_adbd') (ALWAYS_RUN)
+              conditions:
+                - name: DUT has userdebug build ('android_dut_has_userdebug_build')
+                  dependencies:
+                    - name: Validate associated host ('android_associated_host_fs_is_writable')
+                      dependencies:
+                        - name: android_dut_has_serial_number
+                        - name: android_dut_has_associated_host
+                        - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                        - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                        - name: Associated host is labstation ('android_associated_host_is_labstation')
+                    - name: Validate adb ('android_associated_host_start_adb')
+                      dependencies:
+                        - name: Validate associated host ('android_associated_host_fs_is_writable')
+                          dependencies:
+                            - name: android_dut_has_serial_number
+                            - name: android_dut_has_associated_host
+                            - name: Associated host is pingable ('android_associated_host_ping') (time:'15s')
+                            - name: Associated host is accessible over SSH ('android_associated_host_ssh') (time:'30s')
+                            - name: Associated host is labstation ('android_associated_host_is_labstation')
+                        - name: Associated host has vendor key ('android_associated_host_has_vendor_key')
+                        - name: Associated host has adb ('android_associated_host_has_adb')
+                        - name: Adb server is stopped ('android_associated_host_stop_adb')
+                          conditions:
+                            - name: android_associated_host_has_no_other_locks
+        - name: 'Set state: ready (''dut_set_state'') (RUN_ONCE)'
+    - name: close (Allow to fail)
+      criticalactions:
+        - name: Unlock associated host ('android_associated_host_unlock') (ALWAYS_RUN)
+          conditions:
+            - name: android_dut_has_serial_number
+            - name: android_dut_has_associated_host
+            - name: android_associated_host_ssh
+            - name: android_associated_host_is_labstation
+            - name: android_associated_host_fs_is_writable
+        - name: Update DUT state for failures more than threshold ('dut_set_state_reason')
+          conditions:
+            - name: DUT state is repair_failed ('dut_state_match')
+            - name: Failure count above threshold ('metrics_check_task_failures')
+          dependencies:
+            - name: 'Set state: needs_manual_repair (Allow to fail) (''dut_set_state'') (ALWAYS_RUN)'

@@ -39,8 +39,6 @@ type Plan struct {
 	Name string `json:"name,omitempty"`
 	// Critical actions are actions which have to pass for plan to succeed.
 	CriticalActions []*Action `json:"critical_actions,omitempty"`
-	// Is Plan is allowed to fail. If not then running of configuration will be stopped.
-	AllowFail bool `json:"allow_fail,omitempty"`
 }
 
 // planConverter holds data to convert actions of single plan.
@@ -51,11 +49,9 @@ type planConverter struct {
 // ConvertPlan converts Plan to a tree representation.
 func ConvertPlan(name string, plan *config.Plan, shortVersion bool) *Plan {
 	p := &Plan{
-		Name:      name,
-		AllowFail: plan.GetAllowFail(),
+		Name: name,
 	}
-	if shortVersion && p.AllowFail {
-		p.AllowFail = false
+	if plan.GetAllowFail() {
 		p.Name = fmt.Sprintf("%s (Allow to fail)", p.Name)
 	}
 	converter := &planConverter{srcPlan: plan}
@@ -69,26 +65,19 @@ func ConvertPlan(name string, plan *config.Plan, shortVersion bool) *Plan {
 // conditions, and other attributes.
 type Action struct {
 	// Name of the Action.
-	Name string `json:"name,omitempty"`
+	Name string `yaml:"name,omitempty"`
 	// Name of the exec function to use.
-	ExecName string `json:"exec_name,omitempty"`
-	// Documentation to describe detail of the action.
-	Docs []string `json:"docs,omitempty"`
-	// List of actions to determine if this action is applicable for the resource.
-	Conditions []interface{} `json:"conditions,omitempty"`
-	// List of actions that must pass before executing this action's exec function.
-	Dependencies []interface{} `json:"dependencies,omitempty"`
-	// List of actions used to recover this action if exec function fails.
-	Recoveries []interface{} `json:"recoveries,omitempty"`
+	ExecName string `yaml:"exec_name,omitempty"`
 	// Extra arguments provided to the exec function.
-	ExecArgs []string `json:"exec_args,omitempty"`
-	// Allowed time to execute exec function.
-	Timeout string `json:"timeout,omitempty"`
-	// If set to true, then the action is treated as if it passed even if it
-	// and all its recovery actions failed.
-	AllowFailAfterRecovery bool `json:"allow_fail_after_recovery,omitempty"`
-	// Controls how and when the action can be rerun throughout the plan.
-	RunControl string `json:"run_control,omitempty"`
+	ExecArgs []string `yaml:"exec_args,omitempty"`
+	// Documentation to describe detail of the action.
+	Docs []string `yaml:"docs,omitempty"`
+	// List of actions to determine if this action is applicable for the resource.
+	Conditions []*Action `yaml:"conditions,omitempty"`
+	// List of actions that must pass before executing this action's exec function.
+	Dependencies []*Action `yaml:"dependencies,omitempty"`
+	// List of actions used to recover this action if exec function fails.
+	Recoveries []*Action `yaml:"recoveries,omitempty"`
 }
 
 func (t *planConverter) convertAcion(name string, excludeRecoveries, shortVersion bool) *Action {
@@ -96,29 +85,25 @@ func (t *planConverter) convertAcion(name string, excludeRecoveries, shortVersio
 	if !ok {
 		return nil
 	}
-	var a *Action
+	a := &Action{Name: name}
+	if action.GetAllowFailAfterRecovery() {
+		a.Name = fmt.Sprintf("%s (Allow to fail)", a.Name)
+	}
 	if shortVersion {
-		a = &Action{
-			Name: name,
-		}
-		if action.GetAllowFailAfterRecovery() {
-			a.Name = fmt.Sprintf("%s (Allow to fail)", a.Name)
-		}
 		if name != action.GetExecName() {
-			a.ExecName = action.GetExecName()
+			a.Name = fmt.Sprintf("%s ('%s')", a.Name, action.GetExecName())
 		}
-	} else {
-		a = &Action{
-			Name:                   name,
-			ExecName:               action.GetExecName(),
-			AllowFailAfterRecovery: action.GetAllowFailAfterRecovery(),
-		}
+	}
+	if action.GetRunControl() != config.RunControl_RERUN_AFTER_RECOVERY {
+		a.Name = fmt.Sprintf("%s (%s)", a.Name, action.GetRunControl().String())
+	}
+	if action.GetExecTimeout() != nil {
+		a.Name = fmt.Sprintf("%s (time:'%s')", a.Name, action.GetExecTimeout().AsDuration().String())
+	}
+	if !shortVersion {
 		a.Docs = action.GetDocs()
+		a.ExecName = action.GetExecName()
 		a.ExecArgs = action.GetExecExtraArgs()
-		a.RunControl = action.GetRunControl().String()
-		if action.GetExecTimeout() != nil {
-			a.Timeout = action.GetExecTimeout().AsDuration().String()
-		}
 	}
 	for _, actionName := range action.GetConditions() {
 		a.Conditions = append(a.Conditions, t.convertAcion(actionName, true, shortVersion))

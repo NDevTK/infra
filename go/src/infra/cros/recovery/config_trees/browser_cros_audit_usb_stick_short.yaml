@@ -1,0 +1,2536 @@
+plans:
+    - name: servo
+      criticalactions:
+        - name: Set state:MISSING_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Servo is know in the setup ('dut_servo_host_present') (RUN_ONCE)
+          dependencies:
+            - name: Set state:WRONG_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Servod port specified ('servo_servod_port_present') (RUN_ONCE)
+          dependencies:
+            - name: Set state:WRONG_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Servo serial is specified ('dut_servo_has_serial') (RUN_ONCE)
+          dependencies:
+            - name: Set state:WRONG_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Initialize docker container ('servo_host_servod_init') (time:'6m0s')
+          conditions:
+            - name: Uses servod container ('servo_uses_servod_container')
+          dependencies:
+            - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+          dependencies:
+            - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+        - name: Mark labstation as servod is in-use ('cros_create_servo_in_use')
+          conditions:
+            - name: Is labstation ('servo_host_is_labstation')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:SERVO_HOST_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: Read release info (Allow to fail) ('cros_run_command') (RUN_ONCE)
+          conditions:
+            - name: Servod container is not used ('servo_uses_servod_container')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:SERVO_HOST_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Power-cycle by smart-hub (Allow to fail) ('servo_power_cycle_root_servo') (RUN_ONCE) (time:'2m0s')
+          conditions:
+            - name: DUT is not SSHable ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+        - name: Has enough free disk space ('cros_has_enough_storage_space')
+          conditions:
+            - name: Servod container is not used ('servo_uses_servod_container')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:BROKEN ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Remove logs and other files ('sample_pass')
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: servo_labstation_disk_cleanup
+                - name: Remove logs older 5 days ('servo_servod_old_logs_cleanup')
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: Cache latest servod start time (Allow to fail) ('cros_register_servod_logs_start')
+          conditions:
+            - name: Servod container is not used ('servo_uses_servod_container')
+        - name: Servo_v4(p1) main present ('servo_v4_root_present')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:NOT_CONNECTED ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: All servo's fw updated ('servo_fw_need_update') (time:'5m0s')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:SERVO_UPDATER_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+            - name: Update all servo's firmware ('servo_update_servo_firmware') (RUN_ONCE) (time:'10m0s')
+              dependencies:
+                - name: Stop servod daemon on servo-host ('servo_host_servod_init') (time:'6m0s')
+        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+          dependencies:
+            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Start servod daemon ('servo_host_servod_init') (time:'2m0s')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:SERVO_HOST_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Stop servod and request to use recovery-mode for servod ('sample_pass') (RUN_ONCE)
+              dependencies:
+                - name: Specify to use REC_MODE=1 for servo ('servo_create_flag_to_use_recovery_mode') (RUN_ONCE)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: cros_reset_ec (ALWAYS_RUN)
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+                - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                  conditions:
+                    - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+              dependencies:
+                - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+              dependencies:
+                - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: Start UART capture (Allow to fail) ('servod_start_uart_capture')
+        - name: Servod is responsive to dut-control ('servo_servod_echo_host') (time:'30s')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:SERVOD_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Stop servod and request to use recovery-mode for servod ('sample_pass') (RUN_ONCE)
+              dependencies:
+                - name: Specify to use REC_MODE=1 for servo ('servo_create_flag_to_use_recovery_mode') (RUN_ONCE)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: cros_reset_ec (ALWAYS_RUN)
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: Read servo serial by servod harness ('servod_echo')
+          dependencies:
+            - name: Set state:SERVOD_PROXY_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+            - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+                - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                  conditions:
+                    - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+              dependencies:
+                - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: cros_reset_ec (ALWAYS_RUN)
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Set cold_reset for c2d2 (Allow to fail) ('servo_set')
+          conditions:
+            - name: Servo used c2d2 ('servo_type_regex_match')
+        - name: Verify servo connected to the DUT ('servo_low_ppdut5')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board')
+            - name: Is servo_v4(p1) with type-a connector ('servo_check_servod_control')
+            - name: DUT has CrOS EC ('servo_check_servod_control')
+          dependencies:
+            - name: Set state:DUT_NOT_CONNECTED ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Power cycle by RPM with delay and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_micro
+                - name: RPM config present ('device_has_rpm_info')
+              dependencies:
+                - name: Set RPM OFF ('device_rpm_power_off') (ALWAYS_RUN)
+                - name: Sleep 35s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+                - name: Set RPM ON ('device_rpm_power_on') (ALWAYS_RUN)
+                - name: Try Cold reset by servod (Allow to fail) ('servo_power_state_reset') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+              conditions:
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+              dependencies:
+                - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+            - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: cros_reset_ec (ALWAYS_RUN)
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Force reflash servo_micro fw and stop ('sample_pass')
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+                - name: is_servo_micro
+                - name: Is ok to force update servo_micro firmware ('sample_fail')
+                  conditions:
+                    - name: Last servo_micro fw updated within 2 weeks ('metrics_found_at_last_time')
+              dependencies:
+                - name: Force update servo_micro firmware ('servo_update_servo_firmware') (time:'3m0s')
+                  conditions:
+                    - name: Is labstation ('servo_host_is_labstation')
+                    - name: is_servo_micro
+                    - name: Is ok to force update servo_micro firmware ('sample_fail')
+                      conditions:
+                        - name: Last servo_micro fw updated within 2 weeks ('metrics_found_at_last_time')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Debug header servo present ('servo_check_servod_control')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board')
+            - name: Servo uses debug header components ('servo_has_debug_header')
+          dependencies:
+            - name: Set state:DEBUG_HEADER_SERVO_MISSING ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: cros_reset_ec (ALWAYS_RUN)
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: Cold reset pin is detected ('servo_check_servod_control')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board')
+            - name: Is servo_v4(p1) with type-a connector ('servo_check_servod_control')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:COLD_RESET_PIN_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: cros_reset_ec (ALWAYS_RUN)
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Warm reset pin is detected (servo_micro) (Allow to fail) ('servo_check_servod_control')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board')
+            - name: is_servo_micro
+            - name: Warm reset control known by servo ('servo_check_servod_control')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:WARM_RESET_PIN_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Charger connected (Allow to fail) ('servo_control_min_double_value')
+          conditions:
+            - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+            - name: Has ppchg5_mv control ('servod_has')
+          dependencies:
+            - name: Read ppdut5_mv value ('servo_check_servod_control')
+            - name: Read ppchg5_mv value ('servo_check_servod_control')
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Set state:SERVOD_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Power on DUT by RPM ('rpm_power_on')
+              conditions:
+                - name: has_rpm_info
+        - name: Check if PD is src state (Allow to fail) ('servo_check_servod_control')
+          conditions:
+            - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+            - name: Has ppchg5_mv control ('servod_has')
+          dependencies:
+            - name: Set state:SERVOD_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+            - name: Read ppdut5_mv value ('servo_check_servod_control')
+            - name: Read ppchg5_mv value ('servo_check_servod_control')
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Charger connected (Allow to fail) ('servo_control_min_double_value')
+              conditions:
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                - name: Has ppchg5_mv control ('servod_has')
+              dependencies:
+                - name: Read ppdut5_mv value ('servo_check_servod_control')
+                - name: Read ppchg5_mv value ('servo_check_servod_control')
+                  recoveries:
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Set state:SERVOD_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Power on DUT by RPM ('rpm_power_on')
+                  conditions:
+                    - name: has_rpm_info
+          recoveries:
+            - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+              conditions:
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+              dependencies:
+                - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+            - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+        - name: Verify CCD GSC connection detected ('sample_pass')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board')
+            - name: Servo main device is CCD ('servo_main_device_is_ccd')
+              dependencies:
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+          dependencies:
+            - name: Set state:SBU_LOW_VOLTAGE ('servo_set_servo_state') (ALWAYS_RUN)
+            - name: Servo SBU voltage is good ('servo_cr50_low_sbu')
+              conditions:
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                - name: Servod detect voltage issue ('servo_check_servod_control')
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                      dependencies:
+                        - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                    - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                      conditions:
+                        - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+                  dependencies:
+                    - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: cros_reset_ec (ALWAYS_RUN)
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
+                      conditions:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is labstation ('servo_host_is_labstation')
+                  dependencies:
+                    - name: cros_create_reboot_request
+            - name: Set state:CR50_NOT_ENUMERATED ('servo_set_servo_state') (ALWAYS_RUN)
+            - name: Servo Cr50 enumerated ('sample_fail')
+              conditions:
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                - name: Servod detect voltage issue ('servo_check_servod_control')
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                      dependencies:
+                        - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: cros_reset_ec (ALWAYS_RUN)
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                    - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                      conditions:
+                        - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+                  dependencies:
+                    - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
+                      conditions:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Servod detect all children components ('servo_check_servod_control')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board')
+          dependencies:
+            - name: Set state:SERVOD_DUT_CONTROLLER_MISSING ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+            - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+              conditions:
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+              dependencies:
+                - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+            - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: cros_reset_ec (ALWAYS_RUN)
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+                - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                  conditions:
+                    - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+              dependencies:
+                - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+              dependencies:
+                - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: Servo topology ('sample_pass')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board')
+          dependencies:
+            - name: Servo topology min one child ('servo_topology_update')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                  recoveries:
+                    - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+                - name: Set state:TOPOLOGY_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                      dependencies:
+                        - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
+                      conditions:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: cros_reset_ec (ALWAYS_RUN)
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
+                      conditions:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is labstation ('servo_host_is_labstation')
+                  dependencies:
+                    - name: cros_create_reboot_request
+            - name: Servo topology min two children ('servo_topology_update')
+              conditions:
+                - name: is_dual_setup ('is_dual_setup_configured')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                  recoveries:
+                    - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+                - name: Set state:TOPOLOGY_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                      dependencies:
+                        - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                    - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                      conditions:
+                        - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+                  dependencies:
+                    - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: cros_reset_ec (ALWAYS_RUN)
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
+                      conditions:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is labstation ('servo_host_is_labstation')
+                  dependencies:
+                    - name: cros_create_reboot_request
+        - name: Update USB drive info (Allow to fail) ('servo_update_usbkey_history')
+          dependencies:
+            - name: Verify that USB drive is detectable (Allow to fail) ('servo_usbkey_is_detected')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                  recoveries:
+                    - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+              recoveries:
+                - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
+        - name: Initialize DUT part for servo ('init_dut_for_servo') (time:'2m0s')
+          dependencies:
+            - name: Set state:BROKEN ('servo_set_servo_state') (ALWAYS_RUN)
+            - name: Set main servo device ('servod_set_main_device')
+              conditions:
+                - name: Servod knows about active_dut_controller control ('servo_check_servod_control')
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: cros_reset_ec (ALWAYS_RUN)
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Open gsc testlab (Allow to fail) ('servo_set') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board')
+                - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
+                  dependencies:
+                    - name: Is a Chromebook ('dut_check_board')
+            - name: Reset CCD to factory settings (Allow to fail) ('servo_set') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board')
+                - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
+                  dependencies:
+                    - name: Is a Chromebook ('dut_check_board')
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+            - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+              conditions:
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+              dependencies:
+                - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+            - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+                - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                  conditions:
+                    - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+              dependencies:
+                - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: cros_reset_ec (ALWAYS_RUN)
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+              dependencies:
+                - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Verify cr50 console ('servod_can_read_all')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board')
+            - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
+              dependencies:
+                - name: Is a Chromebook ('dut_check_board')
+          dependencies:
+            - name: Initialize DUT part for servo ('init_dut_for_servo') (time:'2m0s')
+              dependencies:
+                - name: Set state:BROKEN ('servo_set_servo_state') (ALWAYS_RUN)
+                - name: Set main servo device ('servod_set_main_device')
+                  conditions:
+                    - name: Servod knows about active_dut_controller control ('servo_check_servod_control')
+                  recoveries:
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                    - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                      dependencies:
+                        - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                    - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                          conditions:
+                            - name: is_servo_type_ccd
+                        - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                              dependencies:
+                                - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                    - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                        - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                              dependencies:
+                                - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                    - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                        - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                              dependencies:
+                                - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                    - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: is_servo_type_ccd
+                      dependencies:
+                        - name: cros_reset_ec (ALWAYS_RUN)
+                          dependencies:
+                            - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                              dependencies:
+                                - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Open gsc testlab (Allow to fail) ('servo_set') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board')
+                    - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
+                      dependencies:
+                        - name: Is a Chromebook ('dut_check_board')
+                - name: Reset CCD to factory settings (Allow to fail) ('servo_set') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board')
+                    - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
+                      dependencies:
+                        - name: Is a Chromebook ('dut_check_board')
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                      dependencies:
+                        - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                    - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                      conditions:
+                        - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+                  dependencies:
+                    - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: cros_reset_ec (ALWAYS_RUN)
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
+                      conditions:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Set state:CR50_CONSOLE_MISSING ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+            - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+              conditions:
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+              dependencies:
+                - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+            - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+                - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                  conditions:
+                    - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+              dependencies:
+                - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: cros_reset_ec (ALWAYS_RUN)
+                  dependencies:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
+              conditions:
+                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+              dependencies:
+                - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Cr50 testlab is enabled ('servo_check_servod_control')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board')
+            - name: Is not in cr50 pools ('dut_not_in_pool_regex')
+            - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
+              dependencies:
+                - name: Is a Chromebook ('dut_check_board')
+          dependencies:
+            - name: Set state:CCD_TESTLAB_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+              dependencies:
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: is_servo_type_ccd
+              dependencies:
+                - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Verify EC ('sample_pass')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board')
+            - name: DUT has CrOS EC ('servo_check_servod_control')
+          dependencies:
+            - name: Set state:EC_BROKEN ('servo_set_servo_state') (ALWAYS_RUN)
+            - name: Verify EC console ('servod_can_read_all')
+              conditions:
+                - name: DUT has CrOS EC ('servo_check_servod_control')
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: cros_reset_ec (ALWAYS_RUN)
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Set state:BAD_RIBBON_CABLE ('servo_set_servo_state') (ALWAYS_RUN)
+            - name: Verify power button signal (Allow to fail) ('servo_check_servod_control')
+              conditions:
+                - name: pwr_button_supported_models ('dut_check_model')
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                      dependencies:
+                        - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle DTS Mode and Servo Role ('servo_servod_dts_and_servo_role_toggle_exec') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle PD (5 times) and stop ('servo_host_servod_stop') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
+                  dependencies:
+                    - name: Toggle PD 5 times ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                - name: Try fake disconnect and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut')
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Toggle CC line and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Toggle CC lines ('servo_servod_cc_toggle') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: cros_reset_ec (ALWAYS_RUN)
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Force reflash servo_micro fw and stop ('sample_pass')
+                  conditions:
+                    - name: Is labstation ('servo_host_is_labstation')
+                    - name: is_servo_micro
+                    - name: Is ok to force update servo_micro firmware ('sample_fail')
+                      conditions:
+                        - name: Last servo_micro fw updated within 2 weeks ('metrics_found_at_last_time')
+                  dependencies:
+                    - name: Force update servo_micro firmware ('servo_update_servo_firmware') (time:'3m0s')
+                      conditions:
+                        - name: Is labstation ('servo_host_is_labstation')
+                        - name: is_servo_micro
+                        - name: Is ok to force update servo_micro firmware ('sample_fail')
+                          conditions:
+                            - name: Last servo_micro fw updated within 2 weeks ('metrics_found_at_last_time')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                    - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                      conditions:
+                        - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+                  dependencies:
+                    - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Set state:LID_OPEN_FAILED ('servo_set_servo_state') (ALWAYS_RUN)
+            - name: Is lid open (Allow to fail) ('servod_lidopen')
+              recoveries:
+                - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                      dependencies:
+                        - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reboot by EC console and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Reboot by DUT's EC UART ('servo_set_ec_uart_cmd') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Cold reset the DUT by servod and stop ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Cold reset by servod ('servo_power_state_reset') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                    - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
+                      conditions:
+                        - name: Is reflash Cr50 was done within 24 hours ('metrics_found_at_last_time')
+                  dependencies:
+                    - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: is_servo_type_ccd
+                  dependencies:
+                    - name: cros_reset_ec (ALWAYS_RUN)
+                      dependencies:
+                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Verify battery by servo (Allow to fail) ('servo_battery_charging')
+              conditions:
+                - name: DUT has CrOS EC ('servo_check_servod_control')
+                - name: battery_last_charge_readable ('servo_check_servod_control')
+        - name: Record good servo type ('servo_update_servo_type_label')
+          dependencies:
+            - name: Set state:BROKEN ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Set state:WORKING ('servo_set_servo_state') (ALWAYS_RUN)
+    - name: cros_audit
+      criticalactions:
+        - name: 'Set state: needs_repair (''dut_set_state'') (ALWAYS_RUN)'
+        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+          recoveries:
+            - name: Cold reset by servo and wait for SSH ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+              dependencies:
+                - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+            - name: Install OS in recovery mode by booting from servo USB-drive (no storage check) ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                - name: Is a Chromebook ('dut_check_board')
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+              dependencies:
+                - name: Servo USB-Key needs to be reflashed ('sample_pass')
+                  conditions:
+                    - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
+                  dependencies:
+                    - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Stable version image is missing from servo usbkey ('sample_fail')
+                      conditions:
+                        - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                  dependencies:
+                    - name: servo_servod_echo_host
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                    - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Boot DUT in recovery and install from USB-drive (no storage check) ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
+              conditions:
+                - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                - name: Is a Chromebook ('dut_check_board')
+              dependencies:
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                  dependencies:
+                    - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (time:'1m0s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                  dependencies:
+                    - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+            - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
+              conditions:
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                - name: Is a Chromebook ('dut_check_board')
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+              dependencies:
+                - name: Set fw_wp_state to force_off ('servo_set')
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+            - name: Install OS in recovery mode by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                - name: Is a Chromebook ('dut_check_board')
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+              dependencies:
+                - name: Servo USB-Key needs to be reflashed ('sample_pass')
+                  conditions:
+                    - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
+                  dependencies:
+                    - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Stable version image is missing from servo usbkey ('sample_fail')
+                      conditions:
+                        - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                  dependencies:
+                    - name: servo_servod_echo_host
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                    - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Install OS in recovery mode by booting from servo USB-drive (Flex) ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is Flex device ('dut_check_board')
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+              dependencies:
+                - name: Servo USB-Key needs to be reflashed ('sample_pass')
+                  conditions:
+                    - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
+                  dependencies:
+                    - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Stable version image is missing from servo usbkey ('sample_fail')
+                      conditions:
+                        - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                  dependencies:
+                    - name: servo_servod_echo_host
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                    - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Power OFF DUT by servo ('servo_set') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Direct USB-drive to DUT ('servo_set') (ALWAYS_RUN) (time:'20s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                - name: Power ON DUT by servo ('servo_set') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Print active devices (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                - name: Is Flex booted from USB-drive ('cros_run_command') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Flex device ('dut_check_board')
+                - name: Run chromeos-install for Flex ('cros_run_command') (ALWAYS_RUN) (time:'10m0s')
+                  dependencies:
+                    - name: Is Flex device ('dut_check_board')
+                - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                - name: Power OFF DUT by servo ('servo_set') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Direct USB-drive to servo host ('servo_set') (ALWAYS_RUN) (time:'20s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Power ON DUT by servo ('servo_set') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Install OS in DEV mode by USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                - name: Is a Chromebook ('dut_check_board')
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+              dependencies:
+                - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
+                - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                  dependencies:
+                    - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Reset power using servo if booted from USB ('sample_pass')
+              conditions:
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+              dependencies:
+                - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+        - name: Audit USB-drive from DUT ('audit_usb_from_dut_side') (time:'1h0m0s')
+          dependencies:
+            - name: Servo state is working ('servo_match_state')
+            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Setup has servo info ('dut_servo_host_present')
+                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                  conditions:
+                    - name: Setup has servo info ('dut_servo_host_present')
+            - name: Device NOT booted from USB-drive ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board')
+                - name: Device booted from USB-drive ('cros_booted_from_external_storage') (ALWAYS_RUN)
+              recoveries:
+                - name: Set default boot as disk and reboot ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Set default boot as disk ('cros_update_crossystem')
+                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+            - name: Print block devices of the DUT (Allow to fail) ('cros_run_command')
+            - name: Check if USB-key drop connection after sleep ('servo_usbkey_is_detected') (time:'3m20s')
+          recoveries:
+            - name: Quick provision OS ('sample_pass')
+              conditions:
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Internal storage is responsive ('cros_is_file_system_writable')
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+    - name: close (Allow to fail)
+      criticalactions:
+        - name: Close Servo-host (Allow to fail) ('sample_pass')
+          conditions:
+            - name: Servo-host known ('dut_servo_host_present')
+            - name: Is a Chromebook ('dut_check_board')
+            - name: Servo-host is sshable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+          dependencies:
+            - name: Copy messages from servo-host (Allow to fail) ('cros_copy_to_logs')
+              conditions:
+                - name: Servo-host known ('dut_servo_host_present')
+            - name: Copy eventlog.txt from servo-host (Allow to fail) ('cros_copy_to_logs')
+              conditions:
+                - name: Servo-host known ('dut_servo_host_present')
+            - name: Collect dmesg logs from Servo-host (Allow to fail) ('cros_dmesg')
+            - name: Collect servod logs (Allow to fail) ('cros_collect_servod_logs')
+              conditions:
+                - name: Servo-host known ('dut_servo_host_present')
+            - name: Remove in-use flag on servo-host (Allow to fail) ('cros_remove_servo_in_use')
+              conditions:
+                - name: Servo-host known ('dut_servo_host_present')
+            - name: Remove request to reboot if servo is good (Allow to fail) ('cros_remove_reboot_request')
+              conditions:
+                - name: Is a Chromebook ('dut_check_board')
+                - name: Servo-host known ('dut_servo_host_present')
+                - name: Is servo_state:working ('servo_match_state')
+            - name: Turn off servo usbkey power (Allow to fail) ('servo_set') (ALWAYS_RUN)
+              conditions:
+                - name: Servo-host known ('dut_servo_host_present')
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')

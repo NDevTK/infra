@@ -1,0 +1,43 @@
+plans:
+    - name: cros
+      criticalactions:
+        - name: dut_state_needs_deploy
+        - name: check_host_info ('sample_pass')
+          dependencies:
+            - name: dut_has_name
+            - name: dut_has_board_name
+            - name: dut_has_model_name
+        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+          recoveries:
+            - name: Power cycle by RPM ('rpm_power_cycle') (ALWAYS_RUN)
+              conditions:
+                - name: has_rpm_info
+        - name: Update inventory info ('sample_pass')
+          dependencies:
+            - name: cros_ssh
+            - name: cros_update_hwid_to_inventory
+            - name: cros_update_serial_number_inventory
+        - name: Remove whitelabel_tag VPD field if necessary ('cros_run_command')
+          conditions:
+            - name: VPD cache has whitelabel_tag field ('cros_run_command')
+        - name: Installed OS is stable ('cros_is_on_stable_version')
+          conditions:
+            - name: has_stable_version_cros_image
+          recoveries:
+            - name: Install stable OS ('cros_provision') (time:'1h0m0s')
+              conditions:
+                - name: has_stable_version_cros_image
+                - name: cros_not_on_stable_version
+            - name: Power cycle by RPM ('rpm_power_cycle') (ALWAYS_RUN)
+              conditions:
+                - name: has_rpm_info
+        - name: Remove reboot requests from host (Allow to fail) ('cros_remove_all_reboot_request')
+        - name: Update provisioned info ('cros_update_provision_info')
+        - name: Validate RPM info ('rpm_audit_without_battery') (time:'15m0s')
+          conditions:
+            - name: has_rpm_info
+          recoveries:
+            - name: Power cycle by RPM ('rpm_power_cycle') (ALWAYS_RUN)
+              conditions:
+                - name: has_rpm_info
+        - name: dut_state_ready

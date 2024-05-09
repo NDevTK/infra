@@ -1,0 +1,106 @@
+plans:
+    - name: cros
+      criticalactions:
+        - name: dut_state_needs_deploy
+          exec_name: dut_state_needs_deploy
+        - name: check_host_info
+          exec_name: sample_pass
+          docs:
+            - Check basic info for deployment.
+          dependencies:
+            - name: dut_has_name
+              exec_name: dut_has_name
+            - name: dut_has_board_name
+              exec_name: dut_has_board_name
+            - name: dut_has_model_name
+              exec_name: dut_has_model_name
+        - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
+          exec_name: cros_ssh
+          docs:
+            - This verifier checks whether the host is accessible over ssh.
+          recoveries:
+            - name: Power cycle by RPM (ALWAYS_RUN)
+              exec_name: rpm_power_cycle
+              docs:
+                - Action is always runnable.
+              conditions:
+                - name: has_rpm_info
+                  exec_name: has_rpm_info
+        - name: Update inventory info
+          exec_name: sample_pass
+          docs:
+            - Updating device info in inventory.
+          dependencies:
+            - name: cros_ssh
+              exec_name: cros_ssh
+            - name: cros_update_hwid_to_inventory
+              exec_name: cros_update_hwid_to_inventory
+            - name: cros_update_serial_number_inventory
+              exec_name: cros_update_serial_number_inventory
+        - name: Remove whitelabel_tag VPD field if necessary
+          exec_name: cros_run_command
+          exec_args:
+            - 'host:'
+            - command:vpd -d whitelabel_tag
+          docs:
+            - Remove whitelabel_tag field from VPD cache when the field exists.
+          conditions:
+            - name: VPD cache has whitelabel_tag field
+              exec_name: cros_run_command
+              exec_args:
+                - 'host:'
+                - command:vpd -l | grep whitelabel_tag
+              docs:
+                - Check if unwanted whitelabel_tag field in VPD cache.
+        - name: Installed OS is stable
+          exec_name: cros_is_on_stable_version
+          docs:
+            - Verify that OS on the device is stable.
+            - Labstation will be rebooted to make it ready for use.
+          conditions:
+            - name: has_stable_version_cros_image
+              exec_name: has_stable_version_cros_image
+          recoveries:
+            - name: Install stable OS (time:'1h0m0s')
+              exec_name: cros_provision
+              docs:
+                - Install stable OS on the device.
+                - Labstation will be rebooted to make it ready for use.
+              conditions:
+                - name: has_stable_version_cros_image
+                  exec_name: has_stable_version_cros_image
+                - name: cros_not_on_stable_version
+                  exec_name: cros_not_on_stable_version
+            - name: Power cycle by RPM (ALWAYS_RUN)
+              exec_name: rpm_power_cycle
+              docs:
+                - Action is always runnable.
+              conditions:
+                - name: has_rpm_info
+                  exec_name: has_rpm_info
+        - name: Remove reboot requests from host (Allow to fail)
+          exec_name: cros_remove_all_reboot_request
+          docs:
+            - Remove reboot request flag files.
+        - name: Update provisioned info
+          exec_name: cros_update_provision_info
+          docs:
+            - Update OS version for provision info.
+        - name: Validate RPM info (time:'15m0s')
+          exec_name: rpm_audit_without_battery
+          docs:
+            - Validate and update rpm_state.
+            - The execs is not ready yet.
+          conditions:
+            - name: has_rpm_info
+              exec_name: has_rpm_info
+          recoveries:
+            - name: Power cycle by RPM (ALWAYS_RUN)
+              exec_name: rpm_power_cycle
+              docs:
+                - Action is always runnable.
+              conditions:
+                - name: has_rpm_info
+                  exec_name: has_rpm_info
+        - name: dut_state_ready
+          exec_name: dut_state_ready
