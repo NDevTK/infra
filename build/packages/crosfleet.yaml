@@ -1,21 +1,9 @@
 package: chromiumos/infra/crosfleet/${platform}
 description: Skylab command line tool.
 platforms:
-  - linux-386
   - linux-amd64
-  - linux-arm64
-  - linux-armv6l
-  - linux-mipsle
-  - linux-mips64
-  - linux-mips64le
-  - linux-ppc64
-  - linux-ppc64le
-  - linux-s390x
   - mac-amd64
   - mac-arm64
-  - windows-386
-  - windows-amd64
-  - windows-arm64
 go_packages:
   - infra/cmd/crosfleet
 root: ../../go/bin
