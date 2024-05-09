@@ -1472,6 +1472,9 @@ func (s *SatlabRpcServiceServer) GetJobDetails(ctx context.Context, taskInfo *sw
 	job.SatlabId = tagsInfo[site.SatlabIDTag]
 	job.LabelPool = tagsInfo[site.LabelPoolTag]
 	job.ParentJobId = tagsInfo[site.ParentBuildBucketIDTag]
+	job.Board = tagsInfo[site.LabelBoardTag]
+	job.Model = tagsInfo[site.LabelModelTag]
+	job.Build = tagsInfo[site.LabelImageTag]
 
 	if tagsInfo[site.BuilderTag] == site.GetCTPBuilder() {
 		if tagsInfo[site.TestTypeTag] == site.TestPlan {
