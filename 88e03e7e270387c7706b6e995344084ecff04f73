@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f30abe80_2c3f0859",
+        "filename": "go/src/infra/cros/botsregulator/internal/clients/gen.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2024-05-09T14:38:09Z",
+      "side": 1,
+      "message": "I like!",
+      "range": {
+        "startLine": 7,
+        "startChar": 108,
+        "endLine": 7,
+        "endChar": 133
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "e6b69cb7_13627da0",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cros/botsregulator/internal/clients/gen.go",
+              "range": {
+                "startLine": 7,
+                "startChar": 0,
+                "endLine": 10,
+                "endChar": 0
+              },
+              "replacement": "//go:generate mockgen -source ufs.go -destination ufs.mock.go -package clients -write_package_comment\u003dfalse -copyright_file\u003dcopyright -self_package\u003dclients\n//go:generate mockgen -source gcep.go -destination gcep.mock.go -package clients -write_package_comment\u003dfalse -copyright_file\u003dcopyright -self_package\u003dclients\n//go:generate mockgen -source swarming.go -destination swarming.mock.go -package clients -write_package_comment\u003dfalse -copyright_file\u003dcopyright -self_package\u003dclients\n"
+            }
+          ]
+        }
+      ],
+      "revId": "88e03e7e270387c7706b6e995344084ecff04f73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
