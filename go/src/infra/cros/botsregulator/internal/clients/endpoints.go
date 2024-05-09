@@ -6,9 +6,10 @@ package clients
 
 const (
 	// Default flag values.
-	UfsDev   string = "staging.ufs.api.cr.dev"
-	UfsProd  string = "ufs.api.cr.dev"
-	GcepDev  string = "gce-provider-dev.appspot.com"
-	GcepProd string = "gce-provider.appspot.com"
-	ConfigID string = "cloudbots-dev"
+	UfsDev      string = "staging.ufs.api.cr.dev"
+	UfsProd     string = "ufs.api.cr.dev"
+	GcepDev     string = "gce-provider-dev.appspot.com"
+	GcepProd    string = "gce-provider.appspot.com"
+	ConfigID    string = "cloudbots-dev"
+	SwarmingDev string = "chromium-swarm-dev.appspot.com"
 )
