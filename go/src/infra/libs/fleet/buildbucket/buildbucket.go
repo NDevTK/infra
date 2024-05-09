@@ -2,21 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package `buildbucket` contains all the necessary code to schedule a CTP
+// Package buildbucket contains all the necessary code to schedule a CTP
 // build for running a test using buildbucket APIs.
 package buildbucket
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"strconv"
 
+	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/grpc"
+
+	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
+	luciauth "go.chromium.org/luci/auth"
 	bb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 )
 
 // buildBucketHost is the URL host for the BuildBucket API.
-const buildBucketHost = "cr-buildbucket.appspot.com"
+const (
+	buildBucketHost    = "cr-buildbucket.appspot.com"
+	defaultImageBucket = "chromeos-image-archive"
+	defaultTestTypeTag = "test"
+	defaultCTPTimeout  = 1200
+)
+
+var (
+	ctpBuilderIDProd = bb.BuilderID{
+		Project: "chromeos",
+		Bucket:  "testplatform",
+		Builder: "cros_test_platform",
+	}
+	ctpBuilderIDStaging = bb.BuilderID{
+		Project: "chromeos",
+		Bucket:  "testplatform",
+		Builder: "cros_test_platform-dev",
+	}
+)
 
 // BuildbucketClient interface provides subset of Buildbucket methods relevant to Fleet use cases
 type BuildbucketClient interface {
@@ -25,11 +51,18 @@ type BuildbucketClient interface {
 
 // client wraps the buildbucket client.
 type client struct {
-	buildBucketClient bb.BuildsClient
+	buildBucketClient BuildsClient
 }
 
-// NewClient creates a client to communicate with Buildbucket.
-func NewClient(ctx context.Context) (*client, error) {
+// BuildsClient is a subset of buildbucketpb.BuildsClient providing a smaller surface area for unit tests
+type BuildsClient interface {
+	SearchBuilds(ctx context.Context, in *bb.SearchBuildsRequest, opts ...grpc.CallOption) (*bb.SearchBuildsResponse, error)
+	GetBuild(context.Context, *bb.GetBuildRequest, ...grpc.CallOption) (*bb.Build, error)
+	ScheduleBuild(context.Context, *bb.ScheduleBuildRequest, ...grpc.CallOption) (*bb.Build, error)
+}
+
+// NewBuildBucketClient creates a client to communicate with Buildbucket.
+func NewBuildBucketClient(ctx context.Context) (*client, error) {
 	bbClient, err := newBuildsClient(ctx, buildBucketHost)
 	if err != nil {
 		return nil, err
@@ -51,4 +84,127 @@ func newBuildsClient(ctx context.Context, host string) (bb.BuildsClient, error) 
 			Host:    host,
 			Options: prpc.DefaultOptions(),
 		}), nil
+}
+
+// GetLatestGreenBuild gets the latest green build for the given builder.
+func (c *client) GetLatestGreenBuild(ctx context.Context) (*bb.Build, error) {
+	searchBuildsRequest := &bb.SearchBuildsRequest{
+		Predicate: &bb.BuildPredicate{
+			Builder: &ctpBuilderIDProd,
+			Status:  bb.Status_SUCCESS,
+		},
+		Fields: &field_mask.FieldMask{Paths: []string{
+			"builds.*.id",
+			"builds.*.output.properties",
+		}},
+	}
+	// Avoid the getAllBuilds function since it scrolls through all pages of
+	// the search result, and we only want the most recent build.
+	response, err := c.buildBucketClient.SearchBuilds(ctx, searchBuildsRequest)
+	if err != nil {
+		return nil, err
+	}
+	if len(response.Builds) == 0 {
+		return nil, fmt.Errorf("no green builds found for builder %s", &ctpBuilderIDProd)
+	}
+	return response.Builds[0], nil
+}
+
+// Run holds the arguments that are needed for the run command.
+type Run struct {
+	Image     string
+	Model     string
+	Board     string
+	Milestone string
+	Build     string
+	Pool      string
+	Suite     string
+	Tests     []string
+	Testplan  string
+	Harness   string
+	TestArgs  string
+	CFT       bool
+	// TRV2 determines whether we will use Test Runner V2
+	TRV2        bool
+	TimeoutMins int
+	// Any configs related to results upload for this test run.
+	AddedDims map[string]string
+	Tags      map[string]string
+	IsProd    bool
+	BBClient  BuildsClient
+
+	UploadToCpcon bool
+}
+
+// TriggerRun triggers the Run with the given information
+// (it could be either single test or a suite or a test_plan in the GCS bucket or test_plan saved locally)
+func (c *Run) TriggerRun(ctx context.Context) (string, error) {
+	bbClient, err := c.createCTPBuilder(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	bbClient.BBClient = c.BBClient
+	link, err := ScheduleBuild(ctx, bbClient)
+	if err != nil {
+		return "", err
+	}
+	return link, nil
+}
+
+// ScheduleBuild register a build. If it successes, it returns a link of build. Otherwise,
+// return an error.
+func ScheduleBuild(ctx context.Context, bbClient BuildbucketClient) (string, error) {
+	ctpBuild, err := bbClient.ScheduleCTPBuild(ctx)
+	if err != nil {
+		return "", err
+	}
+	link := fmt.Sprintf("https://ci.chromium.org/ui/b/%s", strconv.Itoa(int(ctpBuild.Id)))
+	logging.Infof(ctx, "Scheduled build at %s", link)
+	return link, nil
+}
+
+func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error) {
+	// Create TestPlan for suite or test
+	tp := builder.TestPlanForTests("", c.Harness, c.Tests)
+	if tp == nil {
+		return nil, fmt.Errorf("failed to build test plan for tests")
+	}
+	var res *builder.CTPBuilder
+	// Set tags to pass to ctp and test runner builds
+	tags := map[string]string{}
+	tags["test-type"] = defaultTestTypeTag
+
+	dims := c.AddedDims
+	// Will be nil if not provided by user.
+	if dims == nil {
+		dims = make(map[string]string)
+	}
+
+	builderID := &ctpBuilderIDStaging
+	if c.IsProd {
+		builderID = &ctpBuilderIDProd
+	}
+
+	if c.Image == "" {
+		c.Image = fmt.Sprintf("%s-release/R%s-%s", c.Board, c.Milestone, c.Build)
+	}
+	res = &builder.CTPBuilder{
+		Image:               c.Image,
+		Board:               c.Board,
+		Model:               c.Model,
+		Pool:                c.Pool,
+		CFT:                 true,
+		TestPlan:            tp,
+		BuilderID:           builderID,
+		Dimensions:          dims,
+		ImageBucket:         defaultImageBucket,
+		AuthOptions:         &luciauth.Options{},
+		TestRunnerBuildTags: tags,
+		TimeoutMins:         defaultCTPTimeout,
+		CTPBuildTags:        tags,
+		TRV2:                c.TRV2,
+		CpconPublish:        c.UploadToCpcon,
+	}
+	return res, nil
 }
