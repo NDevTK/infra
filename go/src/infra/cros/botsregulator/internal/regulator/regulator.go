@@ -8,7 +8,6 @@ package regulator
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -17,13 +16,7 @@ import (
 	"infra/cros/botsregulator/internal/provider"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-)
-
-const (
-	// Common prefix for machineLSE keys.
-	MachineLSEPrefix string = "machineLSEs/"
-	// Common prefix for schedulingUnits keys.
-	SchedulingUnitsPrefix string = "schedulingunits/"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 type regulator struct {
@@ -82,15 +75,12 @@ func (r *regulator) FetchAllSchedulingUnits(ctx context.Context) ([]*ufspb.Sched
 // This list includes Scheduling Units and single DUTs, all sharing the same hive.
 // The assumption is that all LSEs in a Scheduling Unit should share the same hive.
 // This is enforced on UFS side.
-func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, lses []*ufspb.MachineLSE, sus []*ufspb.SchedulingUnit) ([]string, error) {
+func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, lses []*ufspb.MachineLSE, sus []*ufspb.SchedulingUnit) []string {
 	var ad []string
 	lsesInSU := make(map[string]bool, len(lses))
 	// All DUTs in this map have the correct hive.
 	for _, lse := range lses {
-		l, ok := strings.CutPrefix(lse.GetName(), MachineLSEPrefix)
-		if !ok {
-			return nil, errors.Reason("could not parse LSE name: %v", lse).Err()
-		}
+		l := ufsUtil.RemovePrefix(lse.GetName())
 		lsesInSU[l] = false
 	}
 	// Filtering SUs by hive.
@@ -104,10 +94,7 @@ func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, lses []*ufspb.
 		}
 		// At least 1 DUT in the SU has the corresponding hive.
 		if seen {
-			s, ok := strings.CutPrefix(su.GetName(), SchedulingUnitsPrefix)
-			if !ok {
-				return nil, errors.Reason("could not parse SU name: %v", su).Err()
-			}
+			s := ufsUtil.RemovePrefix(su.GetName())
 			ad = append(ad, s)
 		}
 	}
@@ -117,7 +104,7 @@ func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, lses []*ufspb.
 			ad = append(ad, lse)
 		}
 	}
-	return ad, nil
+	return ad
 }
 
 // UpdateConfig is a wrapper around the current provider UpdateConfig method.

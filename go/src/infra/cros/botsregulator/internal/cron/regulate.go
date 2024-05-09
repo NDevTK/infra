@@ -36,10 +36,7 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 		return err
 	}
 
-	ad, err := r.ConsolidateAvailableDUTs(ctx, lses, sus)
-	if err != nil {
-		return err
-	}
+	ad := r.ConsolidateAvailableDUTs(ctx, lses, sus)
 	logging.Infof(ctx, "available DUTs: %v\n", ad)
 
 	err = r.UpdateConfig(ctx, ad)

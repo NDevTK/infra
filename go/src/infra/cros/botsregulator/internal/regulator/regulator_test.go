@@ -22,39 +22,6 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 	trans := cmpopts.SortSlices(func(a, b string) bool {
 		return a < b
 	})
-	t.Run("Fail", func(t *testing.T) {
-		t.Parallel()
-		t.Run("CutPrefix cannot parse machineLSE", func(t *testing.T) {
-			t.Parallel()
-			lses := []*ufspb.MachineLSE{
-				{
-					Name: "dut-1",
-				},
-			}
-			_, err := r.ConsolidateAvailableDUTs(context.Background(), lses, nil)
-			if err == nil {
-				t.Errorf("CutPrefix should not be able to parse machineLSE name")
-			}
-		})
-		t.Run("CutPrefix cannot parse schedulingUnit", func(t *testing.T) {
-			t.Parallel()
-			sus := []*ufspb.SchedulingUnit{
-				{
-					Name:        "su-1",
-					MachineLSEs: []string{"dut-1"},
-				},
-			}
-			lses := []*ufspb.MachineLSE{
-				{
-					Name: "machineLSEs/dut-1",
-				},
-			}
-			_, err := r.ConsolidateAvailableDUTs(context.Background(), lses, sus)
-			if err == nil {
-				t.Errorf("CutPrefix should not be able to parse schedulingUnit name")
-			}
-		})
-	})
 
 	t.Run("Success", func(t *testing.T) {
 		t.Parallel()
@@ -91,10 +58,7 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					Name: "machineLSEs/dut-5",
 				},
 			}
-			got, err := r.ConsolidateAvailableDUTs(context.Background(), lses, sus)
-			if err != nil {
-				t.Fatalf("should not error: %v", err)
-			}
+			got := r.ConsolidateAvailableDUTs(context.Background(), lses, sus)
 			want := []string{
 				"su-1",
 				"su-2",
@@ -118,10 +82,7 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					Name: "machineLSEs/dut-1",
 				},
 			}
-			got, err := r.ConsolidateAvailableDUTs(context.Background(), lses, sus)
-			if err != nil {
-				t.Fatalf("should not error: %v", err)
-			}
+			got := r.ConsolidateAvailableDUTs(context.Background(), lses, sus)
 			want := []string{
 				"su-1",
 			}
@@ -131,21 +92,18 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 		})
 		t.Run("No schedulingUnits", func(t *testing.T) {
 			t.Parallel()
+			lses := []*ufspb.MachineLSE{
+				{
+					Name: "machineLSEs/dut-1",
+				},
+			}
+			got := r.ConsolidateAvailableDUTs(context.Background(), lses, nil)
+			want := []string{
+				"dut-1",
+			}
+			if diff := cmp.Diff(want, got, trans); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
 		})
-		lses := []*ufspb.MachineLSE{
-			{
-				Name: "machineLSEs/dut-1",
-			},
-		}
-		got, err := r.ConsolidateAvailableDUTs(context.Background(), lses, nil)
-		if err != nil {
-			t.Fatalf("should not error: %v", err)
-		}
-		want := []string{
-			"dut-1",
-		}
-		if diff := cmp.Diff(want, got, trans); diff != "" {
-			t.Errorf("mismatch (-want +got):\n%s", diff)
-		}
 	})
 }
