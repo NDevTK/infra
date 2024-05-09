@@ -334,7 +334,9 @@ func (ex *CrosVMProvisionExecutor) validateLeaseVMResponse(leaseVMResponse *api.
 
 func getDiskSizeByBoard(image string) int64 {
 
-	if strings.Contains(image, "reven-vmtest") {
+	if strings.Contains(image, "betty") {
+		return 37
+	} else if strings.Contains(image, "reven-vmtest") {
 		return 20
 	} else if strings.Contains(image, "amd64-generic") {
 		return 25
