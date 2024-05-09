@@ -254,7 +254,7 @@ func (q *DroneQueenImpl) DeclareDuts(ctx context.Context, req *api.DeclareDutsRe
 		// Create a map of cloudbot DUTs for easy search.
 		cbs, err := listCloudbots(ctx)
 		if err != nil {
-			logging.Errorf(ctx, "DecalreDuts: listCloudbots error %q", err)
+			logging.Errorf(ctx, "DeclareDuts: listCloudbots error %q", err)
 		}
 		cbMap := make(map[string]*apipb.BotInfo, len(cbs))
 		for _, cb := range cbs {
@@ -275,7 +275,7 @@ func (q *DroneQueenImpl) DeclareDuts(ctx context.Context, req *api.DeclareDutsRe
 			}
 			if _, ok := cbMap[availableDut.GetName()]; ok {
 				// This DUT is still running on CloudBots.
-				logging.Warningf(ctx, "DUT %s is stilll running on CloubBots. Not assigning to drone", availableDut.GetName())
+				logging.Warningf(ctx, "DUT %s is still running on CloudBots. Not assigning to drone", availableDut.GetName())
 				continue
 			}
 			dutID := entities.DUTID(availableDut.GetName())
