@@ -40,6 +40,30 @@
       ],
       "revId": "88e03e7e270387c7706b6e995344084ecff04f73",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "146e90cd_6ae5307e",
+        "filename": "go/src/infra/cros/botsregulator/internal/clients/gen.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1549129
+      },
+      "writtenOn": "2024-05-09T15:31:50Z",
+      "side": 1,
+      "message": "😎",
+      "parentUuid": "f30abe80_2c3f0859",
+      "range": {
+        "startLine": 7,
+        "startChar": 108,
+        "endLine": 7,
+        "endChar": 133
+      },
+      "revId": "88e03e7e270387c7706b6e995344084ecff04f73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
