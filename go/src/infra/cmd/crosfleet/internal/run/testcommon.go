@@ -86,7 +86,6 @@ type testCommonFlags struct {
 	lacrosPath             string
 	secondaryLacrosPaths   []string
 	cft                    bool
-	scheduke               bool
 	testHarness            string
 	publicBuilderBucket    string
 	publicBuilder          string
@@ -143,7 +142,6 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.Var(luciflag.CommaList(&c.secondaryLacrosPaths), "secondary-lacros-paths", "Comma-separated list of lacros paths(empty string can be used to skip lacros provision for a particular DUT, e.g. -secondary-lacros-paths $path1,,$path2) for secondary DUTs to run tests against, if provided it need to align with boards in secondary-boards args.")
 	f.BoolVar(&c.cft, "cft", true, "Run via CFT.")
 	f.BoolVar(&c.enableAutotestSharding, "enable-autotest-sharding", false, "Enable autotest sharding for autotest suite.")
-	f.BoolVar(&c.scheduke, "scheduke", false, "Schedule via Scheduke.")
 	f.StringVar(&c.publicBuilder, "public-builder", "", "Public CTP Builder on which the tests are scheduled.")
 	f.StringVar(&c.publicBuilderBucket, "public-builder-bucket", "", "Bucket for the Public CTP Builder on which the tests are scheduled.")
 	f.StringVar(&c.luciProject, "luci-project", "", "LUCI project which the bucket and builder are associated with")
@@ -435,7 +433,6 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 		TestPlan:             l.testPlan,
 		TestRunnerBuildTags:  testRunnerTags,
 		TimeoutMins:          l.cliFlags.timeoutMins,
-		UseScheduke:          l.cliFlags.scheduke,
 		TRV2:                 l.cliFlags.trv2,
 	}
 }

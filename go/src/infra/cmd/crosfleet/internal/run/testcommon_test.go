@@ -771,7 +771,6 @@ func Test_ctpRunLauncher_ctpBuilder(t *testing.T) {
 					lacrosPath:           "lacros",
 					secondaryLacrosPaths: []string{"secondary-lacros"},
 					cft:                  true,
-					scheduke:             true,
 					testHarness:          "tauto",
 					publicBuilderBucket:  "bucket",
 					publicBuilder:        "builder",
@@ -820,7 +819,6 @@ func Test_ctpRunLauncher_ctpBuilder(t *testing.T) {
 					"foo":            "bar",
 				},
 				TimeoutMins: 600,
-				UseScheduke: true,
 			},
 		},
 	}
