@@ -4,5 +4,6 @@
 
 package clients
 
-//go:generate mockgen -source ufs.go -destination ufs.mock.go -package clients -write_package_comment=false
-//go:generate mockgen -source gcep.go -destination gcep.mock.go -package clients -write_package_comment=false
+//go:generate mockgen -source ufs.go -destination ufs.mock.go -package clients -write_package_comment=false -copyright_file=copyright
+//go:generate mockgen -source gcep.go -destination gcep.mock.go -package clients -write_package_comment=false -copyright_file=copyright
+//go:generate mockgen -source swarming.go -destination swarming.mock.go -package clients -write_package_comment=false -copyright_file=copyright
