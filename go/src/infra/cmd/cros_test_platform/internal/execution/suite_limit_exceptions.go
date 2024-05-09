@@ -14,8 +14,8 @@ type suiteFilter struct {
 }
 
 var (
-	// Roughly end of Q2
-	standardExemption = time.Date(2024, time.July, 8, 0, 0, 0, 0, time.UTC)
+	// After end of Q3
+	standardExemption = time.Date(2024, time.September, 17, 0, 0, 0, 0, time.UTC)
 
 	// Date beyond the lifetime of this builder to ensure no lapse in coverage
 	releaseLongTerm = time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC)
@@ -141,6 +141,10 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "graphics_per-week",
+		expiration: standardExemption,
+	},
+	{
+		suiteName:  "dma-per-build",
 		expiration: standardExemption,
 	},
 	// Release specific exemptions, giving an extra year of time so the
