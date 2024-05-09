@@ -7229,6 +7229,31 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+### 5.9.8
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/psutil/${vpython_platform}"
+  version: "version:5.9.8"
+>
+```
+
+
+* *linux-arm64-py3.11*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
+* *windows-x64-py3.8*
+* *windows-x86-py3.11*
+* *windows-x86-py3.8*
+
 ## **ptyprocess**
 
 ### 0.7.0

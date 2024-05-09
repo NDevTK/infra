@@ -1093,6 +1093,12 @@ SPECS.update({
             pyversions=['py2', 'py3'],
         ),
         SourceOrPrebuilt(
+            'psutil',
+            '5.9.8',
+            packaged=(),
+            pyversions=['py2', 'py3'],
+        ),
+        SourceOrPrebuilt(
             'pyahocorasick',
             '1.4.1',
             packaged=(),
