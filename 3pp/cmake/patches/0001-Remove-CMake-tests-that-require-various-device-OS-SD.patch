@@ -1,6 +1,6 @@
-From 8b3db3d73d52de8b9d7ecf72950b42d18f1ab9d4 Mon Sep 17 00:00:00 2001
-From: Brian Ryner <bryner@google.com>
-Date: Mon, 15 Apr 2024 11:33:18 +1000
+cFrom 574faad7d9e3bf1314422fb40d2e0548a5156ec8 Mon Sep 17 00:00:00 2001
+From: Chenlin Fan <fancl@chromium.org>
+Date: Wed, 8 May 2024 05:42:34 +0000
 Subject: [PATCH] Remove CMake tests that require various device OS SDKs.
 
 ---
@@ -8,11 +8,11 @@ Subject: [PATCH] Remove CMake tests that require various device OS SDKs.
  1 file changed, 37 deletions(-)
 
 diff --git a/Tests/RunCMake/CMakePackage/RunCMakeTest.cmake b/Tests/RunCMake/CMakePackage/RunCMakeTest.cmake
-index 1551b55f67..04a97fa65c 100644
+index c4a05e3102..70c696577d 100644
 --- a/Tests/RunCMake/CMakePackage/RunCMakeTest.cmake
 +++ b/Tests/RunCMake/CMakePackage/RunCMakeTest.cmake
-@@ -79,47 +79,10 @@ if(APPLE AND CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
-   endif()
+@@ -89,47 +89,10 @@ if(APPLE AND CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
+   file(REMOVE_RECURSE "${apple_install}")
  
    apple_export(macos Darwin "${macos_archs}" macosx)
 -  apple_export(ios iOS "arm64" iphoneos)
@@ -60,5 +60,4 @@ index 1551b55f67..04a97fa65c 100644
    apple_import(unsupported-capture Darwin "${macos_archs}" macosx)
    apple_import(unsupported-fatal-platform Darwin "${macos_archs}" macosx)
 -- 
-2.44.0.683.g7961c838ac-goog
-
+2.45.0.rc1.225.g2a3ae87e7f-goog
