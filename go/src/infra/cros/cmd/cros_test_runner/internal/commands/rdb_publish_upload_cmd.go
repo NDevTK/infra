@@ -324,12 +324,19 @@ func populateBuildMetadata(
 		lacrosInfo.LacrosVersion = lacrosVersion
 	}
 
+	// Populate Chameleon type and connection type info.
+	chameleonInfo := &artifactpb.BuildMetadata_ChameleonInfo{}
+	buildMetadata.ChameleonInfo = chameleonInfo
+	if chameleonType := getSingleTagValue(botDims, "label-chameleon_type"); chameleonType != "" {
+		chameleonInfo.ChameleonType = chameleonType
+	}
+	if chameleonConnectionTypes := getSingleTagValue(botDims, "label-chameleon_connection_types"); chameleonConnectionTypes != "" {
+		chameleonInfo.ChameleonConnectionTypes = chameleonConnectionTypes
+	}
+
 	if dut != nil {
 		chromeOSInfo := dut.GetChromeos()
 		if chromeOSInfo != nil {
-			// - Chameleon info
-			buildMetadata.Chameleon = chromeOSInfo.GetChameleon()
-
 			// - Modem info
 			buildMetadata.ModemInfo = chromeOSInfo.GetModemInfo()
 		}
