@@ -24723,7 +24723,7 @@ plans:
                 - name: Is serial-number known ('dut_has_serial_number') (ALWAYS_RUN)
               recoveries:
                 - name: Restore serial-number ('cros_restore_serial_number')
-        - name: Collect firmware target ('cros_collect_firmware_target') (ALWAYS_RUN)
+        - name: Collect firmware target (Allow to fail) ('cros_collect_firmware_target') (ALWAYS_RUN)
           conditions:
             - name: Is crosid readable ('cros_run_command')
               conditions:

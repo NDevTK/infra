@@ -4571,7 +4571,8 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"force_override:false",
 			},
-			RunControl: RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+			RunControl:             RunControl_ALWAYS_RUN,
 		},
 	}
 }
