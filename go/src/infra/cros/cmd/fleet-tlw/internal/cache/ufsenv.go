@@ -92,7 +92,7 @@ func (e *ufsEnv) GetZoneForDUT(name string) (ufsmodels.Zone, error) {
 	if z, ok := e.zones[name]; ok {
 		return z, nil
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 
 	md := metadata.Pairs("namespace", "os")
