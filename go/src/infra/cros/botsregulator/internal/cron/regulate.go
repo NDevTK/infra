@@ -30,15 +30,16 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 		return nil
 	}
 	logging.Infof(ctx, "lses: %v\n", lses)
-
 	sus, err := r.FetchAllSchedulingUnits(ctx)
 	if err != nil {
 		return err
 	}
-
-	ad := r.ConsolidateAvailableDUTs(ctx, lses, sus)
+	dbs, err := r.ListDroneBots(ctx)
+	if err != nil {
+		return err
+	}
+	ad := r.ConsolidateAvailableDUTs(ctx, dbs, lses, sus)
 	logging.Infof(ctx, "available DUTs: %v\n", ad)
-
 	err = r.UpdateConfig(ctx, ad)
 	if err != nil {
 		return err

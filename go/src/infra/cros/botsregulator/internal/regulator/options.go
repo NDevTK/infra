@@ -19,6 +19,7 @@ type RegulatorOptions struct {
 	Hive      string
 	Namespace string
 	UFS       string
+	Swarming  string
 }
 
 // RegisterFlags exposes the command line flags required to run the application.
@@ -29,4 +30,5 @@ func (r *RegulatorOptions) RegisterFlags(fs *flag.FlagSet) {
 	fs.StringVar(&r.Hive, "hive", "cloudbots", "hive used for UFS filtering.")
 	fs.StringVar(&r.Namespace, "ufs-namespace", ufsUtil.OSNamespace, "UFS namespace.")
 	fs.StringVar(&r.UFS, "ufs", clients.UfsDev, "UFS endpoint.")
+	fs.StringVar(&r.Swarming, "swarming", clients.SwarmingDev, "Swarming server.")
 }

@@ -11,6 +11,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
+
 	ufspb "infra/unifiedfleet/api/v1/models"
 )
 
@@ -58,12 +60,29 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					Name: "machineLSEs/dut-5",
 				},
 			}
-			got := r.ConsolidateAvailableDUTs(context.Background(), lses, sus)
+			dbs := []*apipb.BotInfo{
+				{
+					Dimensions: []*apipb.StringListPair{
+						{
+							Key:   "dut_name",
+							Value: []string{"dut-1"},
+						},
+					},
+				},
+				{
+					Dimensions: []*apipb.StringListPair{
+						{
+							Key:   "dut_name",
+							Value: []string{"dut-5"},
+						},
+					},
+				},
+			}
+			got := r.ConsolidateAvailableDUTs(context.Background(), dbs, lses, sus)
 			want := []string{
 				"su-1",
 				"su-2",
 				"dut-4",
-				"dut-5",
 			}
 			if diff := cmp.Diff(want, got, trans); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
@@ -82,7 +101,7 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					Name: "machineLSEs/dut-1",
 				},
 			}
-			got := r.ConsolidateAvailableDUTs(context.Background(), lses, sus)
+			got := r.ConsolidateAvailableDUTs(context.Background(), nil, lses, sus)
 			want := []string{
 				"su-1",
 			}
@@ -97,9 +116,82 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					Name: "machineLSEs/dut-1",
 				},
 			}
-			got := r.ConsolidateAvailableDUTs(context.Background(), lses, nil)
+			got := r.ConsolidateAvailableDUTs(context.Background(), nil, lses, nil)
 			want := []string{
 				"dut-1",
+			}
+			if diff := cmp.Diff(want, got, trans); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+		t.Run("DUTs running on Drone should not be considered", func(t *testing.T) {
+			t.Parallel()
+			lses := []*ufspb.MachineLSE{
+				{
+					Name: "machineLSEs/dut-1",
+				},
+				{
+					Name: "machineLSEs/dut-3",
+				},
+			}
+			dbs := []*apipb.BotInfo{
+				{
+					Dimensions: []*apipb.StringListPair{
+						{
+							Key:   "dut_name",
+							Value: []string{"dut-1"},
+						},
+					},
+				},
+				{
+					Dimensions: []*apipb.StringListPair{
+						{
+							Key:   "dut_name",
+							Value: []string{"dut-2"},
+						},
+					},
+				},
+			}
+			got := r.ConsolidateAvailableDUTs(context.Background(), dbs, lses, nil)
+			want := []string{
+				"dut-3",
+			}
+			if diff := cmp.Diff(want, got, trans); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+		t.Run("SUs running on Drone should not be considered", func(t *testing.T) {
+			t.Parallel()
+			lses := []*ufspb.MachineLSE{
+				{
+					Name: "machineLSEs/dut-1",
+				},
+				{
+					Name: "machineLSEs/dut-2",
+				},
+				{
+					Name: "machineLSEs/dut-3",
+				},
+			}
+			dbs := []*apipb.BotInfo{
+				{
+					Dimensions: []*apipb.StringListPair{
+						{
+							Key:   "dut_name",
+							Value: []string{"su-1"},
+						},
+					},
+				},
+			}
+			sus := []*ufspb.SchedulingUnit{
+				{
+					Name:        "schedulingunits/su-1",
+					MachineLSEs: []string{"dut-1", "dut-2"},
+				},
+			}
+			got := r.ConsolidateAvailableDUTs(context.Background(), dbs, lses, sus)
+			want := []string{
+				"dut-3",
 			}
 			if diff := cmp.Diff(want, got, trans); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
