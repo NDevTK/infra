@@ -8,6 +8,10 @@ create {
     cpe_base_address: "cpe:/a:bzip:bzip2"
     patch_version: "chromium.2"
   }
+}
+
+create {
+  platform_re: "linux-.*|mac-.*"
   build {
     tool: "tools/sed"
   }
