@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -30,23 +30,23 @@ func TestCreateRackLSEPrototype(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	rackLSEPrototype1 := mockRackLSEPrototype("RackLSEPrototype-1")
 	rackLSEPrototype2 := mockRackLSEPrototype("")
-	Convey("CreateRackLSEPrototype", t, func() {
-		Convey("Create new rackLSEPrototype", func() {
+	ftt.Run("CreateRackLSEPrototype", t, func(t *ftt.Test) {
+		t.Run("Create new rackLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateRackLSEPrototype(ctx, rackLSEPrototype1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototype1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
 		})
-		Convey("Create existing rackLSEPrototype", func() {
+		t.Run("Create existing rackLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateRackLSEPrototype(ctx, rackLSEPrototype1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create rackLSEPrototype - invalid ID", func() {
+		t.Run("Create rackLSEPrototype - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateRackLSEPrototype(ctx, rackLSEPrototype2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -58,27 +58,27 @@ func TestUpdateRackLSEPrototype(t *testing.T) {
 	rackLSEPrototype2 := mockRackLSEPrototype("RackLSEPrototype-1")
 	rackLSEPrototype3 := mockRackLSEPrototype("RackLSEPrototype-3")
 	rackLSEPrototype4 := mockRackLSEPrototype("")
-	Convey("UpdateRackLSEPrototype", t, func() {
-		Convey("Update existing rackLSEPrototype", func() {
+	ftt.Run("UpdateRackLSEPrototype", t, func(t *ftt.Test) {
+		t.Run("Update existing rackLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateRackLSEPrototype(ctx, rackLSEPrototype1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototype1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
 
 			resp, err = UpdateRackLSEPrototype(ctx, rackLSEPrototype2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototype2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype2))
 		})
-		Convey("Update non-existing rackLSEPrototype", func() {
+		t.Run("Update non-existing rackLSEPrototype", func(t *ftt.Test) {
 			resp, err := UpdateRackLSEPrototype(ctx, rackLSEPrototype3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update rackLSEPrototype - invalid ID", func() {
+		t.Run("Update rackLSEPrototype - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateRackLSEPrototype(ctx, rackLSEPrototype4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -87,26 +87,26 @@ func TestGetRackLSEPrototype(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	rackLSEPrototype1 := mockRackLSEPrototype("RackLSEPrototype-1")
-	Convey("GetRackLSEPrototype", t, func() {
-		Convey("Get rackLSEPrototype by existing ID", func() {
+	ftt.Run("GetRackLSEPrototype", t, func(t *ftt.Test) {
+		t.Run("Get rackLSEPrototype by existing ID", func(t *ftt.Test) {
 			resp, err := CreateRackLSEPrototype(ctx, rackLSEPrototype1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototype1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
 			resp, err = GetRackLSEPrototype(ctx, "RackLSEPrototype-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototype1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
 		})
-		Convey("Get rackLSEPrototype by non-existing ID", func() {
+		t.Run("Get rackLSEPrototype by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetRackLSEPrototype(ctx, "rackLSEPrototype-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get rackLSEPrototype - invalid ID", func() {
+		t.Run("Get rackLSEPrototype - invalid ID", func(t *ftt.Test) {
 			resp, err := GetRackLSEPrototype(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -121,34 +121,34 @@ func TestListRackLSEPrototypes(t *testing.T) {
 		resp, _ := CreateRackLSEPrototype(ctx, rackLSEPrototype1)
 		rackLSEPrototypes = append(rackLSEPrototypes, resp)
 	}
-	Convey("ListRackLSEPrototypes", t, func() {
-		Convey("List rackLSEPrototypes - page_token invalid", func() {
+	ftt.Run("ListRackLSEPrototypes", t, func(t *ftt.Test) {
+		t.Run("List rackLSEPrototypes - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRackLSEPrototypes(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List rackLSEPrototypes - Full listing with no pagination", func() {
+		t.Run("List rackLSEPrototypes - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRackLSEPrototypes(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototypes)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototypes))
 		})
 
-		Convey("List rackLSEPrototypes - listing with pagination", func() {
+		t.Run("List rackLSEPrototypes - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRackLSEPrototypes(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototypes[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototypes[:3]))
 
 			resp, _, err = ListRackLSEPrototypes(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototypes[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototypes[3:]))
 		})
 	})
 }
@@ -158,29 +158,29 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	rackLSEPrototype2 := mockRackLSEPrototype("rackLSEPrototype-2")
-	Convey("DeleteRackLSEPrototype", t, func() {
-		Convey("Delete rackLSEPrototype successfully by existing ID", func() {
+	ftt.Run("DeleteRackLSEPrototype", t, func(t *ftt.Test) {
+		t.Run("Delete rackLSEPrototype successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateRackLSEPrototype(ctx, rackLSEPrototype2)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototype2)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype2))
 
 			err := DeleteRackLSEPrototype(ctx, "rackLSEPrototype-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, cerr = GetRackLSEPrototype(ctx, "rackLSEPrototype-2")
-			So(resp, ShouldBeNil)
-			So(cerr, ShouldNotBeNil)
-			So(cerr.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, cerr, should.NotBeNil)
+			assert.Loosely(t, cerr.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete rackLSEPrototype by non-existing ID", func() {
+		t.Run("Delete rackLSEPrototype by non-existing ID", func(t *ftt.Test) {
 			err := DeleteRackLSEPrototype(ctx, "rackLSEPrototype-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete rackLSEPrototype - invalid ID", func() {
+		t.Run("Delete rackLSEPrototype - invalid ID", func(t *ftt.Test) {
 			err := DeleteRackLSEPrototype(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
