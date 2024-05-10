@@ -117,7 +117,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
       api.git('clone', source_repo, source_checkout_dir)
 
   # This is implicitly used as the cwd by all the git steps below.
-  api.m.path['checkout'] = source_checkout_dir
+  api.m.path.checkout_dir = source_checkout_dir
 
   refs_to_mirror_set = set()
 
