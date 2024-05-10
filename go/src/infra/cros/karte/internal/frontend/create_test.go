@@ -9,7 +9,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	kartepb "infra/cros/karte/api"
 	"infra/cros/karte/internal/identifiers"
@@ -20,7 +22,7 @@ import (
 // TestCreateActionWithClock tests creating an action with the testing clock set to 10 seconds after
 // the beginning of time (UTC midnight on 1970-01-01).
 func TestCreateActionWithClock(t *testing.T) {
-	Convey("test create action with clock", t, func() {
+	ftt.Run("test create action with clock", t, func(t *ftt.Test) {
 		ctx := testsupport.NewTestingContext(context.Background())
 		ctx = identifiers.Use(ctx, identifiers.NewDefault())
 		k := NewKarteFrontend("")
@@ -28,12 +30,12 @@ func TestCreateActionWithClock(t *testing.T) {
 		action, err := k.CreateAction(ctx, &kartepb.CreateActionRequest{
 			Action: &kartepb.Action{},
 		})
-		So(err, ShouldBeNil)
-		So(action.Name[0:10], ShouldEqual, "zzzzUzzzzz")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, action.Name[0:10], should.Resemble("zzzzUzzzzz"))
 		action.Name = ""
-		So(action, ShouldResemble, &kartepb.Action{
+		assert.Loosely(t, action, should.Resemble(&kartepb.Action{
 			CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(10, 0)),
 			SealTime:   scalars.ConvertTimeToTimestampPtr(time.Unix(43210, 0)),
-		})
+		}))
 	})
 }
