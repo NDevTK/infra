@@ -7,9 +7,10 @@ package configuration
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func mockServiceConfig() *ServiceConfig {
@@ -22,11 +23,11 @@ func TestGetLastCheckedVMMacAddress(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	sc := mockServiceConfig()
-	Convey("GetLastCheckedVMMacAddress", t, func() {
+	ftt.Parallel("GetLastCheckedVMMacAddress", t, func(t *ftt.Test) {
 		err := UpdateServiceConfig(ctx, sc)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		resp, err := GetServiceConfig(ctx)
-		So(err, ShouldBeNil)
-		So(resp.LastCheckedVMMacAddress, ShouldEqual, "000000")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp.LastCheckedVMMacAddress, should.Resemble("000000"))
 	})
 }

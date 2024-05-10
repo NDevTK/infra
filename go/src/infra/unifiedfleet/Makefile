@@ -38,7 +38,7 @@ vet:
 # Run unittests
 .PHONY: test
 test:
-	go test ./... -coverprofile=coverage.out
+	go test -fullpath ./... -coverprofile=coverage.out
 
 # Check Code coverage
 .PHONY: cover
