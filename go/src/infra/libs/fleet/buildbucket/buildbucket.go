@@ -18,6 +18,7 @@ import (
 	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	luciauth "go.chromium.org/luci/auth"
 	bb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
@@ -139,6 +140,10 @@ type Run struct {
 // TriggerRun triggers the Run with the given information
 // (it could be either single test or a suite or a test_plan in the GCS bucket or test_plan saved locally)
 func (c *Run) TriggerRun(ctx context.Context) (string, error) {
+	err := c.validateDimensions(ctx)
+	if err != nil {
+		return "", err
+	}
 	bbClient, err := c.createCTPBuilder(ctx)
 	if err != nil {
 		return "", err
@@ -207,4 +212,36 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 		CpconPublish:        c.UploadToCpcon,
 	}
 	return res, nil
+}
+
+func (c *Run) validateDimensions(ctx context.Context) error {
+	errs := make(errors.MultiError, 0)
+	if c.Board == "" {
+		errs = append(errs, fmt.Errorf("missing board field"))
+	}
+	if c.Pool == "" {
+		errs = append(errs, fmt.Errorf("missing pool field"))
+	}
+
+	// If running an individual test via CTP, we require the test harness to be
+	// specified.
+	if c.CFT && c.Harness == "" {
+		errs = append(errs, fmt.Errorf("missing harness flag"))
+	}
+	// harness should not be provided for non-cft.
+	if !c.CFT && c.Harness != "" {
+		errs = append(errs, fmt.Errorf("harness should only be provided for single cft test case"))
+	}
+	// trv2 should be false for non-cft.
+	if !c.CFT && c.TRV2 {
+		errs = append(errs, fmt.Errorf("cannot run non-cft test case via trv2"))
+	}
+	if c.Image != "" && c.Milestone != "" {
+		errs = append(errs, fmt.Errorf("cannot specify both image and release branch"))
+	}
+
+	if errs.First() != nil {
+		return errs.AsError()
+	}
+	return nil
 }
