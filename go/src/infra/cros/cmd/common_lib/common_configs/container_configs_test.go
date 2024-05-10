@@ -7,9 +7,10 @@ package common_configs
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -17,38 +18,38 @@ import (
 
 func TestGetContainer_UnsupportedContainerType(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported container type", t, func() {
+	ftt.Parallel("Unsupported container type", t, func(t *ftt.Test) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		contConfig := NewContainerConfig(ctr, nil, false)
 		container, err := contConfig.GetContainer(containers.UnsupportedContainerType)
-		So(container, ShouldBeNil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, container, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestGetContainer_SupportedContainerType(t *testing.T) {
 	t.Parallel()
-	Convey("Supported container type", t, func() {
+	ftt.Parallel("Supported container type", t, func(t *ftt.Test) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		contConfig := NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
 
 		container, err := contConfig.GetContainer(containers.CrosDutTemplatedContainerType)
-		So(container, ShouldNotBeNil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, container, should.NotBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		container, err = contConfig.GetContainer(containers.CrosProvisionTemplatedContainerType)
-		So(container, ShouldNotBeNil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, container, should.NotBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		container, err = contConfig.GetContainer(containers.CrosTestFinderTemplatedContainerType)
-		So(container, ShouldNotBeNil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, container, should.NotBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		container, err = contConfig.GetContainer(containers.CacheServerTemplatedContainerType)
-		So(container.GetContainerType(), ShouldEqual, containers.CacheServerTemplatedContainerType)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, container.GetContainerType(), should.Equal(containers.CacheServerTemplatedContainerType))
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
