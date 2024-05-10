@@ -20,7 +20,7 @@ create {
 
   build {
     tool: "build_support/cmake_bootstrap"
-    tool: "tools/ninja"
+    tool: "build_support/ninja-1_11_1"
     dep: "static_libs/openssl"
   }
 
@@ -34,7 +34,7 @@ create {
   build {
     tool: "build_support/cmake_bootstrap"
     tool: "tools/sed"
-    tool: "tools/ninja"
+    tool: "build_support/ninja-1_11_1"
     dep: "static_libs/openssl"
   }
 }
