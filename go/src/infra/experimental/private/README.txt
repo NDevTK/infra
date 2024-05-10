@@ -4,7 +4,7 @@ Here is a sample function that might be useful but should NOT be checked in.
 
 ```
 func Assert(cond bool, message string) {
-	if cond {
+	if !cond {
 		panic(message)
 	}
 }
