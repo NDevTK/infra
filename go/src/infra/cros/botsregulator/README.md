@@ -1,12 +1,25 @@
 # BotsRegulator
-BotsRegulator(BR) is a Cloud Run service with a single cron job flow. BR does not accept incoming request except from this cron job. Periodically, BR retrieves specific UFS DUTs and update a specific GCE Provider config with these DUTs.
-
-To pass a service account use `-service-account-json` flag.
+BotsRegulator(BR) is a Cloud Run service with two cron jobs flow. BR does not accept incoming requests except from these cron jobs.
 
 ## Context
-[go/botsregulator](http://go/botsregulator)
-[go/cloudbots-gce](http://go/cloudbots-gce)
+[go/botsregulator](http://go/botsregulator)\
+[go/cloudbots-gce](http://go/cloudbots-gce)\
 [go/cloudbots](http://go/cloudbots)
+
+### regulate-bots cron
+BR periodically look for UFS DUTs with a specific hive value and send this set of DUTs to a Bots Provider API (e.g. GCE Provider).
+
+### migrate-bots cron
+Used for CloudBots migration. 
+BR migrates/rolls back DUTs based on a migration file stored in luci-config (services/bots-regulator-dev/migration.cfg).
+Migrating a DUT means updating the DUT's hive to cloudbots.
+
+### flags
+To pass a service account use `-service-account-json` flag.
+
+## Local testing
+to read a local config file: `cfgmodule.NewModule(&cfgmodule.ModuleOptions{LocalDir: "<path-to-file>"})`
+to read the dev config file pass this flag: `-cloud-project bots-regulator-dev`
 
 ## Dev
 gcp project: bots-regulator-dev
