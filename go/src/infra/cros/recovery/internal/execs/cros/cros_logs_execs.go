@@ -43,6 +43,8 @@ func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 		logRoot = filepath.Join(logRoot, fmt.Sprintf("crashinfo.%s", resource))
 	} else if argMap.AsBool(ctx, "use_host_dir", false) {
 		logRoot = filepath.Join(logRoot, resource)
+	} else if path := argMap.AsString(ctx, "custom_dir", ""); path != "" {
+		logRoot = filepath.Join(logRoot, path)
 	}
 	run := info.NewRunner(resource)
 	var output string
@@ -94,6 +96,8 @@ func copyToLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	// Logs will be saved to the resource folder.
 	if argMap.AsBool(ctx, "use_host_dir", false) {
 		logRoot = filepath.Join(logRoot, resource)
+	} else if path := argMap.AsString(ctx, "custom_dir", ""); path != "" {
+		logRoot = filepath.Join(logRoot, path)
 	}
 	// If a suffix for destination path has been specified, include it
 	// in the path for storing files on destination side.

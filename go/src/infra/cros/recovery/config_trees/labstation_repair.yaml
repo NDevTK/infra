@@ -14,6 +14,74 @@ plans:
               exec_name: dut_has_board_name
             - name: dut_has_model_name
               exec_name: dut_has_model_name
+        - name: Collect logs (before) (Allow to fail) (RUN_ONCE)
+          exec_name: sample_pass
+          docs:
+            - Collect any pre-existing logs from before deletes such logs.
+            - 'Any logs collection are not critical, and we marks '
+            - that action attempt to perform to avoid repeating it.
+            - 'Collection to folder: before.'
+          conditions:
+            - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
+              exec_name: cros_ssh
+              docs:
+                - This verifier checks whether the host is accessible over ssh.
+            - name: Confirm log collection info does not exist (before)
+              exec_name: cros_confirm_file_not_exists
+              exec_args:
+                - target_file:log_collection_info_before
+              docs:
+                - 'Need to check whether the log collection info file already '
+                - 'exists in the file system. A pre-existing file indicates that '
+                - 'the collection of any pre-existing logs has already been '
+                - tried to be collected.
+          dependencies:
+            - name: Create log collection info (before) (RUN_ONCE)
+              exec_name: cros_create_log_collection_info
+              exec_args:
+                - info_file:log_collection_info_before
+              docs:
+                - 'When the log collection completes, we create an info file that '
+                - indicates the successful completion of the collection process.
+              conditions:
+                - name: Confirm log collection info does not exist (before)
+                  exec_name: cros_confirm_file_not_exists
+                  exec_args:
+                    - target_file:log_collection_info_before
+                  docs:
+                    - 'Need to check whether the log collection info file already '
+                    - 'exists in the file system. A pre-existing file indicates that '
+                    - 'the collection of any pre-existing logs has already been '
+                    - tried to be collected.
+            - name: Copy messages (before) (Allow to fail)
+              exec_name: cros_copy_to_logs
+              exec_args:
+                - src_host_type:dut
+                - src_path:/var/log/messages
+                - src_type:file
+                - custom_dir:before
+              docs:
+                - Try to collect /var/log/messages.
+                - 'Collection to folder: before.'
+            - name: Copy eventlog.txt (before) (Allow to fail)
+              exec_name: cros_copy_to_logs
+              exec_args:
+                - src_host_type:dut
+                - src_path:/var/log/eventlog.txt
+                - src_type:file
+                - custom_dir:before
+              docs:
+                - Try to collect /var/log/eventlog.txt.
+                - 'Collection to folder: before.'
+            - name: Collect dmesg (before) (Allow to fail) (RUN_ONCE)
+              exec_name: cros_dmesg
+              exec_args:
+                - human_readable:false
+                - device_type:dut
+                - custom_dir:before
+              docs:
+                - Collect the dmesg output.
+                - 'Collection to folder: before.'
         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
           exec_name: cros_ssh
           docs:
@@ -769,3 +837,71 @@ plans:
               exec_name: cros_update_serial_number_inventory
         - name: dut_state_ready
           exec_name: dut_state_ready
+        - name: Collect logs (after) (Allow to fail) (RUN_ONCE)
+          exec_name: sample_pass
+          docs:
+            - Collect any pre-existing logs from before deletes such logs.
+            - 'Any logs collection are not critical, and we marks '
+            - that action attempt to perform to avoid repeating it.
+            - 'Collection to folder: after.'
+          conditions:
+            - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
+              exec_name: cros_ssh
+              docs:
+                - This verifier checks whether the host is accessible over ssh.
+            - name: Confirm log collection info does not exist (after)
+              exec_name: cros_confirm_file_not_exists
+              exec_args:
+                - target_file:log_collection_info_after
+              docs:
+                - 'Need to check whether the log collection info file already '
+                - 'exists in the file system. A pre-existing file indicates that '
+                - 'the collection of any pre-existing logs has already been '
+                - tried to be collected.
+          dependencies:
+            - name: Create log collection info (after) (RUN_ONCE)
+              exec_name: cros_create_log_collection_info
+              exec_args:
+                - info_file:log_collection_info_after
+              docs:
+                - 'When the log collection completes, we create an info file that '
+                - indicates the successful completion of the collection process.
+              conditions:
+                - name: Confirm log collection info does not exist (after)
+                  exec_name: cros_confirm_file_not_exists
+                  exec_args:
+                    - target_file:log_collection_info_after
+                  docs:
+                    - 'Need to check whether the log collection info file already '
+                    - 'exists in the file system. A pre-existing file indicates that '
+                    - 'the collection of any pre-existing logs has already been '
+                    - tried to be collected.
+            - name: Copy messages (after) (Allow to fail)
+              exec_name: cros_copy_to_logs
+              exec_args:
+                - src_host_type:dut
+                - src_path:/var/log/messages
+                - src_type:file
+                - custom_dir:after
+              docs:
+                - Try to collect /var/log/messages.
+                - 'Collection to folder: after.'
+            - name: Copy eventlog.txt (after) (Allow to fail)
+              exec_name: cros_copy_to_logs
+              exec_args:
+                - src_host_type:dut
+                - src_path:/var/log/eventlog.txt
+                - src_type:file
+                - custom_dir:after
+              docs:
+                - Try to collect /var/log/eventlog.txt.
+                - 'Collection to folder: after.'
+            - name: Collect dmesg (after) (Allow to fail) (RUN_ONCE)
+              exec_name: cros_dmesg
+              exec_args:
+                - human_readable:false
+                - device_type:dut
+                - custom_dir:after
+              docs:
+                - Collect the dmesg output.
+                - 'Collection to folder: after.'

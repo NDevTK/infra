@@ -34,6 +34,120 @@
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
+          "name": "Collect logs (before)",
+          "exec_name": "sample_pass",
+          "docs": [
+            "Collect any pre-existing logs from before deletes such logs.",
+            "Any logs collection are not critical, and we marks ",
+            "that action attempt to perform to avoid repeating it.",
+            "Collection to folder: before."
+          ],
+          "conditions": [
+            {
+              "name": "Device is SSHable",
+              "exec_name": "cros_ssh",
+              "docs": [
+                "This verifier checks whether the host is accessible over ssh."
+              ],
+              "timeout": "30s",
+              "run_control": "ALWAYS_RUN"
+            },
+            {
+              "name": "Confirm log collection info does not exist (before)",
+              "exec_name": "cros_confirm_file_not_exists",
+              "docs": [
+                "Need to check whether the log collection info file already ",
+                "exists in the file system. A pre-existing file indicates that ",
+                "the collection of any pre-existing logs has already been ",
+                "tried to be collected."
+              ],
+              "exec_args": [
+                "target_file:log_collection_info_before"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "dependencies": [
+            {
+              "name": "Create log collection info (before)",
+              "exec_name": "cros_create_log_collection_info",
+              "docs": [
+                "When the log collection completes, we create an info file that ",
+                "indicates the successful completion of the collection process."
+              ],
+              "conditions": [
+                {
+                  "name": "Confirm log collection info does not exist (before)",
+                  "exec_name": "cros_confirm_file_not_exists",
+                  "docs": [
+                    "Need to check whether the log collection info file already ",
+                    "exists in the file system. A pre-existing file indicates that ",
+                    "the collection of any pre-existing logs has already been ",
+                    "tried to be collected."
+                  ],
+                  "exec_args": [
+                    "target_file:log_collection_info_before"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_args": [
+                "info_file:log_collection_info_before"
+              ],
+              "run_control": "RUN_ONCE"
+            },
+            {
+              "name": "Copy messages (before)",
+              "exec_name": "cros_copy_to_logs",
+              "docs": [
+                "Try to collect /var/log/messages.",
+                "Collection to folder: before."
+              ],
+              "exec_args": [
+                "src_host_type:dut",
+                "src_path:/var/log/messages",
+                "src_type:file",
+                "custom_dir:before"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Copy eventlog.txt (before)",
+              "exec_name": "cros_copy_to_logs",
+              "docs": [
+                "Try to collect /var/log/eventlog.txt.",
+                "Collection to folder: before."
+              ],
+              "exec_args": [
+                "src_host_type:dut",
+                "src_path:/var/log/eventlog.txt",
+                "src_type:file",
+                "custom_dir:before"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Collect dmesg (before)",
+              "exec_name": "cros_dmesg",
+              "docs": [
+                "Collect the dmesg output.",
+                "Collection to folder: before."
+              ],
+              "exec_args": [
+                "human_readable:false",
+                "device_type:dut",
+                "custom_dir:before"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "RUN_ONCE"
+            }
+          ],
+          "allow_fail_after_recovery": true,
+          "run_control": "RUN_ONCE"
+        },
+        {
           "name": "Device is SSHable",
           "exec_name": "cros_ssh",
           "docs": [
@@ -1553,6 +1667,120 @@
           "name": "dut_state_ready",
           "exec_name": "dut_state_ready",
           "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "Collect logs (after)",
+          "exec_name": "sample_pass",
+          "docs": [
+            "Collect any pre-existing logs from before deletes such logs.",
+            "Any logs collection are not critical, and we marks ",
+            "that action attempt to perform to avoid repeating it.",
+            "Collection to folder: after."
+          ],
+          "conditions": [
+            {
+              "name": "Device is SSHable",
+              "exec_name": "cros_ssh",
+              "docs": [
+                "This verifier checks whether the host is accessible over ssh."
+              ],
+              "timeout": "30s",
+              "run_control": "ALWAYS_RUN"
+            },
+            {
+              "name": "Confirm log collection info does not exist (after)",
+              "exec_name": "cros_confirm_file_not_exists",
+              "docs": [
+                "Need to check whether the log collection info file already ",
+                "exists in the file system. A pre-existing file indicates that ",
+                "the collection of any pre-existing logs has already been ",
+                "tried to be collected."
+              ],
+              "exec_args": [
+                "target_file:log_collection_info_after"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "dependencies": [
+            {
+              "name": "Create log collection info (after)",
+              "exec_name": "cros_create_log_collection_info",
+              "docs": [
+                "When the log collection completes, we create an info file that ",
+                "indicates the successful completion of the collection process."
+              ],
+              "conditions": [
+                {
+                  "name": "Confirm log collection info does not exist (after)",
+                  "exec_name": "cros_confirm_file_not_exists",
+                  "docs": [
+                    "Need to check whether the log collection info file already ",
+                    "exists in the file system. A pre-existing file indicates that ",
+                    "the collection of any pre-existing logs has already been ",
+                    "tried to be collected."
+                  ],
+                  "exec_args": [
+                    "target_file:log_collection_info_after"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_args": [
+                "info_file:log_collection_info_after"
+              ],
+              "run_control": "RUN_ONCE"
+            },
+            {
+              "name": "Copy messages (after)",
+              "exec_name": "cros_copy_to_logs",
+              "docs": [
+                "Try to collect /var/log/messages.",
+                "Collection to folder: after."
+              ],
+              "exec_args": [
+                "src_host_type:dut",
+                "src_path:/var/log/messages",
+                "src_type:file",
+                "custom_dir:after"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Copy eventlog.txt (after)",
+              "exec_name": "cros_copy_to_logs",
+              "docs": [
+                "Try to collect /var/log/eventlog.txt.",
+                "Collection to folder: after."
+              ],
+              "exec_args": [
+                "src_host_type:dut",
+                "src_path:/var/log/eventlog.txt",
+                "src_type:file",
+                "custom_dir:after"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Collect dmesg (after)",
+              "exec_name": "cros_dmesg",
+              "docs": [
+                "Collect the dmesg output.",
+                "Collection to folder: after."
+              ],
+              "exec_args": [
+                "human_readable:false",
+                "device_type:dut",
+                "custom_dir:after"
+              ],
+              "allow_fail_after_recovery": true,
+              "run_control": "RUN_ONCE"
+            }
+          ],
+          "allow_fail_after_recovery": true,
+          "run_control": "RUN_ONCE"
         }
       ]
     }
