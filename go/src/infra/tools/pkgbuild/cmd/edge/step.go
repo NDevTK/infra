@@ -19,10 +19,15 @@ import (
 
 type SubstepFn func(ctx context.Context, root *build.Step) error
 
+type substep struct {
+	fn   SubstepFn
+	done chan error
+}
+
 // RootStep manages lifetime of root step.
 type RootStep struct {
 	id      string
-	substep chan SubstepFn
+	substep chan substep
 
 	errs  []error
 	ended chan struct{}
@@ -36,7 +41,7 @@ type RootStep struct {
 func NewRootStep(ctx context.Context, name, id string) *RootStep {
 	r := &RootStep{
 		id:      id,
-		substep: make(chan SubstepFn),
+		substep: make(chan substep),
 	}
 	r.initFn = func() {
 		if r.ended == nil {
@@ -58,7 +63,9 @@ func (r *RootStep) runRoot(ctx context.Context, name string) {
 	defer func() { s.End(r.Err()) }()
 
 	for sub := range r.substep {
-		r.errs = append(r.errs, sub(ctx, s))
+		err := sub.fn(ctx, s)
+		r.errs = append(r.errs, err)
+		sub.done <- err
 	}
 }
 
@@ -88,11 +95,7 @@ func (r *RootStep) RunSubstep(ctx context.Context, sub SubstepFn) error {
 	r.initFn()
 
 	done := make(chan error)
-	r.substep <- func(ctx context.Context, root *build.Step) error {
-		err := sub(ctx, root)
-		done <- err
-		return err
-	}
+	r.substep <- substep{fn: sub, done: done}
 
 	// Either current context or RootStep is canceled/finished.
 	select {
