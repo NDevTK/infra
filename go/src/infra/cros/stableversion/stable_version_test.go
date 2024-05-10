@@ -9,47 +9,49 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 // TODO(gregorynisbet): replace with table-driven test
 func TestCompareCrOSVersions(t *testing.T) {
-	Convey("Test v1 > v2", t, func() {
+	ftt.Run("Test v1 > v2", t, func(t *ftt.Test) {
 		v1 := "R2-2.3.4"
 		v2 := "R1-2.3.4"
 		cv, err := CompareCrOSVersions(v1, v2)
-		So(err, ShouldBeNil)
-		So(cv, ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cv, should.Equal(1))
 
 		v1 = "R1-2.5.4"
 		v2 = "R1-2.3.4"
 		cv, err = CompareCrOSVersions(v1, v2)
-		So(err, ShouldBeNil)
-		So(cv, ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cv, should.Equal(1))
 	})
-	Convey("Test v1 < v2", t, func() {
+	ftt.Run("Test v1 < v2", t, func(t *ftt.Test) {
 		v1 := "R2-1.3.4"
 		v2 := "R2-2.3.4"
 		cv, err := CompareCrOSVersions(v1, v2)
-		So(err, ShouldBeNil)
-		So(cv, ShouldEqual, -1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cv, should.Equal(-1))
 
 		v1 = "R1-2.3.4"
 		v2 = "R1-2.3.5"
 		cv, err = CompareCrOSVersions(v1, v2)
-		So(err, ShouldBeNil)
-		So(cv, ShouldEqual, -1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cv, should.Equal(-1))
 	})
-	Convey("Test v1 == v2", t, func() {
+	ftt.Run("Test v1 == v2", t, func(t *ftt.Test) {
 		v1 := "R1-2.3.4"
 		v2 := "R1-2.3.4"
 		cv, err := CompareCrOSVersions(v1, v2)
-		So(err, ShouldBeNil)
-		So(cv, ShouldEqual, 0)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cv, should.BeZero)
 	})
 }
 
@@ -82,15 +84,15 @@ func TestSerializeCrOSVersion(t *testing.T) {
 
 // TODO(gregorynisbet): replace with table-driven test
 func TestParseCrOSVersion(t *testing.T) {
-	Convey("Test parsing CrOS Version", t, func() {
+	ftt.Run("Test parsing CrOS Version", t, func(t *ftt.Test) {
 		release, tip, branch, branchBranch, err := ParseCrOSVersion("R1-2.3.4")
 		if err != nil {
 			t.Errorf("expected R1-2.3.4 to parse: %s", err)
 		} else {
-			So(release, ShouldEqual, 1)
-			So(tip, ShouldEqual, 2)
-			So(branch, ShouldEqual, 3)
-			So(branchBranch, ShouldEqual, 4)
+			assert.Loosely(t, release, should.Equal(1))
+			assert.Loosely(t, tip, should.Equal(2))
+			assert.Loosely(t, branch, should.Equal(3))
+			assert.Loosely(t, branchBranch, should.Equal(4))
 		}
 	})
 }
@@ -304,16 +306,16 @@ func TestSerializeFirmwareVersion(t *testing.T) {
 
 // TODO(gregorynisbet): replace with table-driven test
 func TestParseFirmwareVersion(t *testing.T) {
-	Convey("Test Parsing RW Faft Version", t, func() {
+	ftt.Run("Test Parsing RW Faft Version", t, func(t *ftt.Test) {
 		company, platform, tip, branch, branchBranch, err := ParseFirmwareVersion("Google_Rammus.11275.41.0")
 		if err != nil {
 			t.Errorf("expected Google_Rammus.11275.41.0 to parse: %s", err)
 		} else {
-			So(company, ShouldEqual, "Google")
-			So(platform, ShouldEqual, "Rammus")
-			So(tip, ShouldEqual, 11275)
-			So(branch, ShouldEqual, 41)
-			So(branchBranch, ShouldEqual, "0")
+			assert.Loosely(t, company, should.Equal("Google"))
+			assert.Loosely(t, platform, should.Equal("Rammus"))
+			assert.Loosely(t, tip, should.Equal(11275))
+			assert.Loosely(t, branch, should.Equal(41))
+			assert.Loosely(t, branchBranch, should.Equal("0"))
 		}
 	})
 }
@@ -342,16 +344,16 @@ func TestAddUpdatedCros(t *testing.T) {
 		m[crosSVKey(r)] = r.GetVersion()
 	}
 
-	Convey("Test add", t, func() {
-		So(m["b3"], ShouldEqual, "R3-3.3.3")
+	ftt.Run("Test add", t, func(t *ftt.Test) {
+		assert.Loosely(t, m["b3"], should.Equal("R3-3.3.3"))
 	})
 
-	Convey("Test update", t, func() {
-		So(m["b1"], ShouldEqual, "R1-1.1.1111")
+	ftt.Run("Test update", t, func(t *ftt.Test) {
+		assert.Loosely(t, m["b1"], should.Equal("R1-1.1.1111"))
 	})
 
-	Convey("Test reserve", t, func() {
-		So(m["b2"], ShouldEqual, "R2-2.2.2")
+	ftt.Run("Test reserve", t, func(t *ftt.Test) {
+		assert.Loosely(t, m["b2"], should.Equal("R2-2.2.2"))
 	})
 }
 
@@ -379,22 +381,22 @@ func TestAddUpdatedFirmware(t *testing.T) {
 		m[firmwareSVKey(r)] = r.GetVersion()
 	}
 
-	Convey("Test add", t, func() {
-		So(m["b3:m3"], ShouldEqual, "a-firmware/R3-3.3.3")
+	ftt.Run("Test add", t, func(t *ftt.Test) {
+		assert.Loosely(t, m["b3:m3"], should.Equal("a-firmware/R3-3.3.3"))
 	})
 
-	Convey("Test update", t, func() {
-		So(m["b1:m1"], ShouldEqual, "a-firmware/R1-1.1.1111")
+	ftt.Run("Test update", t, func(t *ftt.Test) {
+		assert.Loosely(t, m["b1:m1"], should.Equal("a-firmware/R1-1.1.1111"))
 	})
 
-	Convey("Test reserve", t, func() {
-		So(m["b2:m2"], ShouldEqual, "a-firmware/R2-2.2.2")
+	ftt.Run("Test reserve", t, func(t *ftt.Test) {
+		assert.Loosely(t, m["b2:m2"], should.Equal("a-firmware/R2-2.2.2"))
 	})
 }
 
 // TODO(gregorynisbet): replace with table-driven test
 func TestWriteSVToString(t *testing.T) {
-	Convey("Test order of stable versions after writing to strings", t, func() {
+	ftt.Run("Test order of stable versions after writing to strings", t, func(t *ftt.Test) {
 		all := makeBaseStableVersions(
 			[]versions{
 				{"b1", "m1", "R1-1.1.1"},
@@ -487,8 +489,8 @@ func TestWriteSVToString(t *testing.T) {
 		s, err := WriteSVToString(all)
 		diff := cmp.Diff(s, source)
 		fmt.Printf("17f08250-8616-4063-b748-8a161b5c7489 (%s)\n", diff)
-		So(err, ShouldBeNil)
-		So(s, ShouldEqual, source)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, s, should.Equal(source))
 	})
 }
 
@@ -539,21 +541,21 @@ func makeStableVersionKey(buildTarget, model string) *sv.StableVersionKey {
 }
 
 func TestJoinBuildTargetModel(t *testing.T) {
-	Convey("test joining buildTarget and model", t, func() {
-		Convey("non-empty strings good", func() {
+	ftt.Run("test joining buildTarget and model", t, func(t *ftt.Test) {
+		t.Run("non-empty strings good", func(t *ftt.Test) {
 			s, err := JoinBuildTargetModel("a", "m")
-			So(s, ShouldEqual, "a;m")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, s, should.Equal("a;m"))
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("non-empty strings with upper case good", func() {
+		t.Run("non-empty strings with upper case good", func(t *ftt.Test) {
 			s, err := JoinBuildTargetModel("Aaa", "Mmm")
-			So(s, ShouldEqual, "aaa;mmm")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, s, should.Equal("aaa;mmm"))
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("empty string bad", func() {
+		t.Run("empty string bad", func(t *ftt.Test) {
 			s, err := JoinBuildTargetModel("", "m")
-			So(s, ShouldEqual, "")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, s, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
