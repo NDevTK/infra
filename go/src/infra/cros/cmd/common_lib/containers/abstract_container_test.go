@@ -9,9 +9,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -20,31 +21,30 @@ import (
 func TestGetContainerType(t *testing.T) {
 	t.Parallel()
 
-	Convey("GetContainerType", t, func() {
+	ftt.Parallel("GetContainerType", t, func(t *ftt.Test) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		absContainer := NewAbstractContainer(wantContType, "test-container", "container-image", ctr)
 		gotContType := absContainer.GetContainerType()
-		So(gotContType, ShouldNotBeNil)
-		So(gotContType, ShouldEqual, wantContType)
+		assert.Loosely(t, gotContType, should.Equal(wantContType))
 	})
 }
 
 func TestGetLogsLocation(t *testing.T) {
 	t.Parallel()
 
-	Convey("GetLogsLocation_error", t, func() {
+	ftt.Parallel("GetLogsLocation_error", t, func(t *ftt.Test) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		logsLoc, err := absContainer.GetLogsLocation()
-		So(err, ShouldNotBeNil)
-		So(logsLoc, ShouldEqual, "")
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, logsLoc, should.BeEmpty)
 	})
 
-	Convey("GetLogsLocation_success", t, func() {
+	ftt.Parallel("GetLogsLocation_success", t, func(t *ftt.Test) {
 		contType := CrosProvisionTemplatedContainerType
 		wantLogsLoc := "temp/dir/loc"
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -52,15 +52,15 @@ func TestGetLogsLocation(t *testing.T) {
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		absContainer.TempDirLoc = wantLogsLoc
 		gotLogsLoc, err := absContainer.GetLogsLocation()
-		So(err, ShouldBeNil)
-		So(gotLogsLoc, ShouldEqual, wantLogsLoc)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, gotLogsLoc, should.Equal(wantLogsLoc))
 	})
 }
 
 func TestInitializeBase(t *testing.T) {
 	t.Parallel()
 
-	Convey("InitializeBase_wrong_state", t, func() {
+	ftt.Parallel("InitializeBase_wrong_state", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -68,56 +68,56 @@ func TestInitializeBase(t *testing.T) {
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		absContainer.state = ContainerStateStarted
 		err := absContainer.InitializeBase(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("InitializeBase_missing_namePrefix", t, func() {
+	ftt.Parallel("InitializeBase_missing_namePrefix", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		absContainer := NewAbstractContainer(contType, "", "container-image", ctr)
 		err := absContainer.InitializeBase(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("InitializeBase_missing_containerImage", t, func() {
+	ftt.Parallel("InitializeBase_missing_containerImage", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		absContainer := NewAbstractContainer(contType, "test-container", "", ctr)
 		err := absContainer.InitializeBase(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("InitializeBase_success", t, func() {
+	ftt.Parallel("InitializeBase_success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		err := absContainer.InitializeBase(ctx)
-		So(err, ShouldBeNil)
-		So(absContainer.TempDirLoc, ShouldNotEqual, "")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, absContainer.TempDirLoc, should.NotEqual(""))
 	})
 }
 
 func TestGetContainer(t *testing.T) {
 	t.Parallel()
 
-	Convey("GetContainer_wrong_state", t, func() {
+	ftt.Parallel("GetContainer_wrong_state", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		resp, err := absContainer.GetContainer(ctx)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("GetContainer_empty_container_name", t, func() {
+	ftt.Parallel("GetContainer_empty_container_name", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -125,11 +125,11 @@ func TestGetContainer(t *testing.T) {
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		absContainer.state = ContainerStateStarted
 		resp, err := absContainer.GetContainer(ctx)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("GetContainer_without_starting_client", t, func() {
+	ftt.Parallel("GetContainer_without_starting_client", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -138,25 +138,25 @@ func TestGetContainer(t *testing.T) {
 		absContainer.state = ContainerStateStarted
 		absContainer.Name = "container-1234"
 		resp, err := absContainer.GetContainer(ctx)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 }
 
 func TestStopContainer(t *testing.T) {
 	t.Parallel()
 
-	Convey("StopContainer_wrong_state", t, func() {
+	ftt.Parallel("StopContainer_wrong_state", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		err := absContainer.StopContainer(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("StopContainer_empty_container_name", t, func() {
+	ftt.Parallel("StopContainer_empty_container_name", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -164,7 +164,7 @@ func TestStopContainer(t *testing.T) {
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		absContainer.state = ContainerStateStarted
 		err := absContainer.StopContainer(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 	// TODO (azrahman): fix test for windows (sudo not in path)
 	//
@@ -184,7 +184,7 @@ func TestStopContainer(t *testing.T) {
 func TestProcessContainer(t *testing.T) {
 	t.Parallel()
 
-	Convey("ProcessContainer_initialization_error", t, func() {
+	ftt.Parallel("ProcessContainer_initialization_error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -192,11 +192,11 @@ func TestProcessContainer(t *testing.T) {
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		absContainer.ConcreteContainer = &MockContainer{InitializeErr: fmt.Errorf("some err")}
 		address, err := absContainer.ProcessContainer(ctx, nil)
-		So(err, ShouldNotBeNil)
-		So(address, ShouldEqual, "")
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, address, should.BeEmpty)
 	})
 
-	Convey("ProcessContainer_startcontainer_error", t, func() {
+	ftt.Parallel("ProcessContainer_startcontainer_error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -204,11 +204,11 @@ func TestProcessContainer(t *testing.T) {
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		absContainer.ConcreteContainer = &MockContainer{InitializeErr: nil, StartContainerResp: nil, StartContainerErr: fmt.Errorf("some err")}
 		address, err := absContainer.ProcessContainer(ctx, nil)
-		So(err, ShouldNotBeNil)
-		So(address, ShouldEqual, "")
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, address, should.BeEmpty)
 	})
 
-	Convey("ProcessContainer_getcontainer_error", t, func() {
+	ftt.Parallel("ProcessContainer_getcontainer_error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -216,11 +216,11 @@ func TestProcessContainer(t *testing.T) {
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		absContainer.ConcreteContainer = &MockContainer{InitializeErr: nil, StartContainerResp: &api.StartContainerResponse{}, StartContainerErr: nil, GetContainerResp: nil, GetContainerErr: fmt.Errorf("some err")}
 		address, err := absContainer.ProcessContainer(ctx, nil)
-		So(err, ShouldNotBeNil)
-		So(address, ShouldEqual, "")
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, address, should.BeEmpty)
 	})
 
-	Convey("ProcessContainer_server_address_retrieval_error", t, func() {
+	ftt.Parallel("ProcessContainer_server_address_retrieval_error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -228,11 +228,11 @@ func TestProcessContainer(t *testing.T) {
 		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
 		absContainer.ConcreteContainer = &MockContainer{InitializeErr: nil, StartContainerResp: &api.StartContainerResponse{}, StartContainerErr: nil, GetContainerResp: nil, GetContainerErr: nil}
 		address, err := absContainer.ProcessContainer(ctx, nil)
-		So(err, ShouldNotBeNil)
-		So(address, ShouldEqual, "")
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, address, should.BeEmpty)
 	})
 
-	Convey("ProcessContainer_success", t, func() {
+	ftt.Parallel("ProcessContainer_success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		hostIp := "localhost"
 		hostPort := int32(1234)
@@ -256,8 +256,8 @@ func TestProcessContainer(t *testing.T) {
 			GetContainerResp:   getResp,
 			GetContainerErr:    nil}
 		address, err := absContainer.ProcessContainer(ctx, nil)
-		So(err, ShouldBeNil)
-		So(address, ShouldEqual, fmt.Sprintf("%s:%v", hostIp, hostPort))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, address, should.Equal(fmt.Sprintf("%s:%v", hostIp, hostPort)))
 	})
 }
 
