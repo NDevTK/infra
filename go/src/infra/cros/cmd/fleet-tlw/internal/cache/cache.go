@@ -74,14 +74,14 @@ func NewFrontend(env Environment) *Frontend {
 // This function is concurrency safe.
 func (f *Frontend) AssignBackend(dutName, filename string) (string, error) {
 	log.Printf("Assign caching backend: try UFS zone based")
-	b, err := f.assignBackendByZone(dutName, filename)
-	if err == nil {
+	b, errZone := f.assignBackendByZone(dutName, filename)
+	if errZone == nil {
 		return b, nil
 	}
-	log.Printf("Assign caching backend: fall back to subnet based: %s", err)
-	b, err = f.assignBackendBySubnet(dutName, filename)
-	if err != nil {
-		return "", fmt.Errorf("assign backend: %s", err)
+	log.Printf("Assign caching backend: fall back to subnet based: %s", errZone)
+	b, errSubnet := f.assignBackendBySubnet(dutName, filename)
+	if errSubnet != nil {
+		return "", fmt.Errorf("assign backend: %w (fall back to subnet based): %w", errZone, errSubnet)
 	}
 	return b, nil
 }
@@ -112,7 +112,7 @@ func (f *Frontend) assignBackendBySubnet(dutName, filename string) (string, erro
 	// Get cache backends serving the DUT subnet.
 	subnet, ok := f.findSubnet(net.ParseIP(dutAddr))
 	if !ok {
-		return "", fmt.Errorf("%q is not in any cache subnets (all subnets: %v)", dutAddr, f.env.Subnets())
+		return "", fmt.Errorf("DUT %q(%q) is not in any cache subnets (all subnets: %v)", dutName, dutAddr, f.env.Subnets())
 	}
 	// Get a cache backend according to the hash value of 'filename'.
 	return findOneBackend(filename, subnet.Backends), nil
