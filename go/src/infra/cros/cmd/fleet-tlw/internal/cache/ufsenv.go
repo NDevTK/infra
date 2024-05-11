@@ -86,6 +86,12 @@ func (e *ufsEnv) GetZoneForServer(name string) (ufsmodels.Zone, error) {
 
 // GetZoneForDUT implements the Environment interface.
 func (e *ufsEnv) GetZoneForDUT(name string) (ufsmodels.Zone, error) {
+	// Sometimes the call to UFS is problematic, so hardcode the case for SFO36.
+	if strings.HasPrefix(name, "chromeos8-") {
+		log.Printf("GetZoneForDUT(%q): returned hardcode zone", name)
+		return ufsmodels.Zone_ZONE_SFO36_OS, nil
+	}
+
 	e.zonesMu.Lock()
 	defer e.zonesMu.Unlock()
 
