@@ -339,6 +339,12 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						StartedTime: startedTime,
 						Duration:    duration,
 					},
+					ExecutionMetadata: &artifactpb.ExecutionMetadata{
+						TestArgs: map[string]string{
+							"bug_id":      "12345",
+							"qual_run_id": "1712172839652",
+						},
+					},
 				},
 			},
 		}
@@ -411,6 +417,32 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					"suite":               "arc-cts-vm",
 					"branch":              "main",
 					"master_build_config": "main-release",
+				},
+				TestSuites: []*testapi.TestSuite{
+					{
+						Spec: &testapi.TestSuite_TestCaseIds{
+							TestCaseIds: &testapi.TestCaseIdList{
+
+								TestCaseIds: []*testapi.TestCase_Id{
+									{
+										Value: "tast.rlz_CheckPing",
+									},
+								},
+							},
+						},
+						ExecutionMetadata: &testapi.ExecutionMetadata{
+							Args: []*testapi.Arg{
+								{
+									Flag:  "bug_id",
+									Value: "12345",
+								},
+								{
+									Flag:  "qual_run_id",
+									Value: "1712172839652",
+								},
+							},
+						},
+					},
 				},
 			},
 			CommonConfig: &skylab_test_runner.CommonConfig{

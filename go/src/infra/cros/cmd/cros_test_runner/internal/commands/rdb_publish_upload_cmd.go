@@ -601,6 +601,8 @@ func populateTestRun(
 	populateTestCaseInfo(ctx, testRun, testCaseResult, sk, build)
 
 	populateTimeInfo(testRun, testCaseResult, build)
+
+	populateExecutionMetadata(testRun, sk.CftTestRequest)
 }
 
 // populateTestCaseInfo populates test case info per test run.
@@ -642,6 +644,36 @@ func populateTimeInfo(
 		QueuedTime:  build.GetCreateTime(),
 		StartedTime: testCaseResult.GetStartTime(),
 		Duration:    testCaseResult.GetDuration(),
+	}
+}
+
+// populateExecutionMetadata populates execution metadata per test run.
+func populateExecutionMetadata(testRun *artifactpb.TestRun, cftTestRequest *skylab_test_runner.CFTTestRequest) {
+	// Returns early if no test suite is provided.
+	if len(cftTestRequest.GetTestSuites()) == 0 {
+		return
+	}
+
+	// Returns early if the first test suite is empty.
+	firstTestSuite := cftTestRequest.GetTestSuites()[0]
+	if firstTestSuite == nil || len(firstTestSuite.GetTestCaseIds().GetTestCaseIds()) == 0 {
+		return
+	}
+
+	// Returns early if no execution metadata is specified.
+	suiteExecMetadata := firstTestSuite.GetExecutionMetadata()
+	if suiteExecMetadata == nil {
+		return
+	}
+
+	args := suiteExecMetadata.GetArgs()
+	testArgs := make(map[string]string, len(args))
+	for _, arg := range args {
+		testArgs[arg.GetFlag()] = arg.GetValue()
+	}
+
+	testRun.ExecutionMetadata = &artifactpb.ExecutionMetadata{
+		TestArgs: testArgs,
 	}
 }
 
