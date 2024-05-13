@@ -147,7 +147,7 @@ func populateHelperNewProto(ctx context.Context, trHelper *TrV2ReqHelper) error 
 	if err != nil {
 		return err
 	}
-	target.provisionInfo = getProvisionInfoFromSuiteInfo(target.board, target.variant, trHelper.suiteInfo)
+	target.provisionInfo, trHelper.lookupTable = getProvisionInfoFromSuiteInfo(target.board, target.variant, trHelper.suiteInfo)
 	trHelper.primaryTarget = target
 
 	trHelper.secondaryTargets = []*HwTarget{}
@@ -156,7 +156,8 @@ func populateHelperNewProto(ctx context.Context, trHelper *TrV2ReqHelper) error 
 		if err != nil {
 			return err
 		}
-		target.provisionInfo = getProvisionInfoFromSuiteInfo(target.board, target.variant, trHelper.suiteInfo)
+		// Ignore lookup table, already set by primary.
+		target.provisionInfo, _ = getProvisionInfoFromSuiteInfo(target.board, target.variant, trHelper.suiteInfo)
 
 		trHelper.secondaryTargets = append(trHelper.secondaryTargets, target)
 	}
@@ -453,20 +454,20 @@ func findProvisionInfo(ctx context.Context, trHelper *TrV2ReqHelper) ([]*testapi
 // this will return the first one that matches provided board/variant
 // if there are multiple targets with same board/variant, assumption here is that
 // they all have same provision info
-func getProvisionInfoFromSuiteInfo(board string, variant string, suiteInfo *api.SuiteInfo) []*testapi.ProvisionInfo {
+func getProvisionInfoFromSuiteInfo(board string, variant string, suiteInfo *api.SuiteInfo) ([]*testapi.ProvisionInfo, map[string]string) {
 	for _, schedUnit := range suiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
 		// check primary
 		if provInfo := getProvisionInfoFromTarget(schedUnit.GetPrimaryTarget(), board, variant); provInfo != nil {
-			return provInfo
+			return provInfo, schedUnit.GetDynamicUpdateLookupTable()
 		}
 		// check secondary
 		for _, secondary := range schedUnit.GetCompanionTargets() {
 			if provInfo := getProvisionInfoFromTarget(secondary, board, variant); provInfo != nil {
-				return provInfo
+				return provInfo, schedUnit.GetDynamicUpdateLookupTable()
 			}
 		}
 	}
-	return nil
+	return nil, nil
 }
 
 // ----- TODO (oldProt-azrahman): remove oldProto func defs -----
