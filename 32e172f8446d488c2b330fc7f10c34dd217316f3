@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7bd564c3_be58f10b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1267867
+      },
+      "writtenOn": "2024-05-13T20:54:59Z",
+      "side": 1,
+      "message": "Hi Jason, Kaidong,\n\nI am modifying the check that pouplates label-wifi_state as the previous check was not detecting some failures.\n\nRegards\nShjin\n\nPS: I am not been able to locally test this changes. I am checking with the infra team about the steps.",
+      "revId": "32e172f8446d488c2b330fc7f10c34dd217316f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
