@@ -67,6 +67,30 @@ const (
 			}
 		}
 	}`
+	// unknown enum value
+	unknownEnumValue = `{
+		"buildbucket": {
+			"bbagent_args": {
+				"build": {
+					"input": {
+						"properties": {
+							"$chromeos/my_module": {
+								"my_prop": 100
+							},
+							"my_other_prop": 101
+						}
+					},
+					"infra": {
+						"buildbucket": {
+							"experiment_reasons": {
+								"chromeos.cros_artifacts.use_gcloud_storage": "EXPERIMENT_MAKE_BELIEVE"
+							}
+						}
+					}
+				}
+			}
+		}
+	}`
 	// "input" is misspelled
 	unmarshalErrorWithNoInputProperties = `{
 		"buildbucket": {
@@ -114,6 +138,7 @@ func TestGetBuilderInputProps(t *testing.T) {
 		{validJSON, false, okInputProperties},
 		{invalidJSON, true, nil},
 		{unmarshalErrorButInputPropsOK, false, okInputProperties},
+		{unknownEnumValue, false, okInputProperties},
 		{unmarshalErrorWithNoInputProperties, true, nil},
 	} {
 		c := NewClient(cmd.FakeCommandRunner{

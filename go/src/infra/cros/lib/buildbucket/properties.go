@@ -10,73 +10,15 @@ import (
 	"io/ioutil"
 	"os"
 	"reflect"
-	"strconv"
 	"strings"
-	"time"
 
-	"github.com/savaki/jq"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/led/job"
 )
-
-// parseBuild parses the given JSON into a bbpb.Build object.
-func parseBuild(buildJSON string) (*bbpb.Build, error) {
-	var build bbpb.Build
-	// See the comment below for more context, but enum fields cannot be
-	// extracted properly. Manually extract the fields we care about.
-	op, err := jq.Parse(".status")
-	if err != nil {
-		return nil, errors.Annotate(err, "error constructing status jq").Err()
-	}
-	status, err := op.Apply([]byte(buildJSON))
-	if err != nil {
-		return nil, errors.Annotate(err, "error extracting status").Err()
-	}
-	build.Status = bbpb.Status(bbpb.Status_value[strings.Trim(string(status), "\"")])
-
-	// Extract id.
-	op, err = jq.Parse(".id")
-	if err != nil {
-		return nil, errors.Annotate(err, "error constructing id jq").Err()
-	}
-	id, err := op.Apply([]byte(buildJSON))
-	if err != nil {
-		return nil, errors.Annotate(err, "error extracting id").Err()
-	}
-	build.Id, _ = strconv.ParseInt(strings.Trim(string(id), "\""), 10, 64)
-
-	// Extract create time.
-	op, err = jq.Parse(".createTime")
-	if err != nil {
-		return nil, errors.Annotate(err, "error constructing createTime jq").Err()
-	}
-	createTimestamp, err := op.Apply([]byte(buildJSON))
-	if err != nil {
-		return nil, errors.Annotate(err, "error extracting createTime").Err()
-	}
-	createTime, err := time.Parse(time.RFC3339, strings.Trim(string(createTimestamp), "\""))
-	if err != nil {
-		return nil, errors.Annotate(err, "error parsing createTime").Err()
-	}
-	build.CreateTime = timestamppb.New(createTime)
-
-	if err := json.Unmarshal([]byte(buildJSON), &build); err != nil {
-		// `bb get` returns proto enum fields as strings instead of ints,
-		// like buildbucket.bbagent_args.infra.experiment_reasons.
-		// json.Unmarshal considers that to be an inappropriate type, returns an
-		// UnmarshalTypeError, and otherwise unmarshals as best as it can.
-		// If the error is an UnmarshalTypeError then there's no problem.
-		if _, ok := err.(*json.UnmarshalTypeError); ok {
-			return &build, nil
-		}
-		return nil, errors.Annotate(err, "unmarshaling `bb get` output").Err()
-	}
-	return &build, nil
-}
 
 // GetBuild gets the specified build using `bb get`.
 func (c *Client) GetBuild(ctx context.Context, bbid string) (*bbpb.Build, error) {
@@ -112,11 +54,11 @@ func (c *Client) getBuildsInner(ctx context.Context, command string, terms []str
 	buildJSONs := strings.Split(strings.TrimSpace(stdout), "\n")
 	builds := make([]*bbpb.Build, len(buildJSONs))
 	for i, buildJSON := range buildJSONs {
-		build, err := parseBuild(buildJSON)
-		if err != nil {
-			return nil, err
+		var build bbpb.Build
+		if err := protojson.Unmarshal([]byte(buildJSON), &build); err != nil {
+			return nil, errors.Annotate(err, "unmarshaling `bb get` output").Err()
 		}
-		builds[i] = build
+		builds[i] = &build
 	}
 	return builds, nil
 }

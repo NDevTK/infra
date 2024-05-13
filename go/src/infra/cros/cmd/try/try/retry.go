@@ -595,6 +595,9 @@ func (r *retryRun) innerRun() (string, int) {
 		r.LogErr(errors.Annotate(err, "writing input properties to tempfile").Err().Error())
 		return "", UnspecifiedError
 	}
+	if commit := buildData.GetInput().GetGitilesCommit(); commit != nil {
+		r.bbAddArgs = append(r.bbAddArgs, "-commit", fmt.Sprintf("https://%s/%s/+/%s", commit.GetHost(), commit.GetProject(), commit.GetId()))
+	}
 	if r.propsFile == nil {
 		defer os.Remove(propsFile.Name())
 	}
