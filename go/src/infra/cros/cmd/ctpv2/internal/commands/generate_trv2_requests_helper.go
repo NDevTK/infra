@@ -692,7 +692,7 @@ func createCftDeviceRequestFromTarget(target *HwTarget) (*skylab_test_runner.CFT
 			provisionState, err = buildProvisionStateOldProto(target.provisionInfo)
 		} else {
 			// new proto flow
-			provisionState, err = buildCrosProvisionState(target.apiTarget)
+			provisionState, err = buildProvisionStateOldProto(target.provisionInfo)
 		}
 
 		if err != nil {
