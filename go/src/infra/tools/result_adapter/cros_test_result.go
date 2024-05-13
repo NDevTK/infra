@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -289,10 +290,34 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 				tags = AppendTags(tags, "queued_time", timeInfo.GetQueuedTime().AsTime().UTC().String())
 			}
 		}
+
+		execMetadata := testRun.GetExecutionMetadata()
+		if execMetadata != nil {
+			testArgs := convertTestArgsTag(execMetadata.GetTestArgs())
+			if testArgs != "" {
+				tags = AppendTags(tags, "test_args", testArgs)
+			}
+		}
 	}
 
 	pbutil.SortStringPairs(tags)
 	return tags
+}
+
+// convertTestArgsTag convert the test args map into a tag.
+func convertTestArgsTag(testArgs map[string]string) string {
+	testArgsLen := len(testArgs)
+	if testArgsLen == 0 {
+		return ""
+	}
+
+	testArgsSlice := make([]string, 0, testArgsLen)
+	for key, val := range testArgs {
+		testArgsSlice = append(testArgsSlice, key+"="+val)
+	}
+
+	sort.Strings(testArgsSlice)
+	return truncateString(strings.Join(testArgsSlice, " "), maxTagValueBytes)
 }
 
 // configBuildMetaDataTags configs test result tags based on the build metadata.

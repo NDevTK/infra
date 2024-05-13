@@ -415,6 +415,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("rw_fwid", "Google_Voema.13672.224.0"),
 						pbutil.StringPair("suite_task_id", "59ef5e9532bbd611"),
 						pbutil.StringPair("task_id", "59f0e13fe7af0710"),
+						pbutil.StringPair("test_args", "bug_id=12345 qual_run_id=1712172839652"),
 						pbutil.StringPair("test_harness", "Tast"),
 						pbutil.StringPair("label_pool", "DUT_POOL_QUOTA"),
 						pbutil.StringPair("ufs_zone", "ZONE_SFO36_OS"),

@@ -161,6 +161,12 @@
             ],
             "time_info":{
                 "queued_time":"2022-06-03T18:53:33.983328614Z"
+            },
+            "execution_metadata": {
+                "test_args": {
+                    "bug_id": "12345",
+                    "qual_run_id": "1712172839652"
+                }
             }
         }
     ]
