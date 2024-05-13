@@ -311,12 +311,22 @@ func populateBuildMetadata(
 		lacrosInfo.LacrosVersion = lacrosVersion
 	}
 
+	// Populate Chameleon type and connection type info.
+	chameleonInfo := &artifactpb.BuildMetadata_ChameleonInfo{}
+	buildMetadata.ChameleonInfo = chameleonInfo
+	if chameleonTypes := getTagValues(botDims, "label-chameleon_type"); chameleonTypes != nil {
+		chameleonInfo.ChameleonType = getChameleonType(chameleonTypes)
+	}
+	if chameleonConnectionTypes := getTagValues(botDims, "label-chameleon_connection_types"); chameleonConnectionTypes != nil {
+		chameleonInfo.ChameleonConnectionTypes = getChameleonConnectionType(chameleonConnectionTypes)
+	}
+
 	if dut != nil {
 		chromeOSInfo := dut.GetChromeos()
 		if chromeOSInfo != nil {
 			// - Chameleon info
 			buildMetadata.Chameleon = chromeOSInfo.GetChameleon()
-
+			
 			// - Modem info
 			buildMetadata.ModemInfo = chromeOSInfo.GetModemInfo()
 		}
@@ -669,6 +679,34 @@ func getSingleTagValue(tags []*buildbucketpb.StringPair, key string) string {
 	} else {
 		return ""
 	}
+}
+
+// getChameleonType gets the corresponding BuildMetadata_ChameleonTypeType
+// based on given string set
+func getChameleonType(strings []string) []artifactpb.BuildMetadata_ChameleonType {
+	var chameleonTypes []artifactpb.BuildMetadata_ChameleonType
+	for _, str := range strings {
+		if index, exists := artifactpb.BuildMetadata_ChameleonType_value[str]; exists {
+			if chameleonType := artifactpb.BuildMetadata_ChameleonType(index); chameleonType >= 0 {
+				chameleonTypes = append(chameleonTypes, chameleonType)
+			}
+		}
+	}
+	return chameleonTypes
+}
+
+// getChameleonConnectionType gets the corresponding BuildMetadata_ChameleonConnectionType
+// based on given string set
+func getChameleonConnectionType(strings []string) []artifactpb.BuildMetadata_ChameleonConnectionType {
+	var chameleonConnectionTypes []artifactpb.BuildMetadata_ChameleonConnectionType
+	for _, str := range strings {
+		if index, exists := artifactpb.BuildMetadata_ChameleonConnectionType_value[str]; exists {
+			if chameleonConnectionType := artifactpb.BuildMetadata_ChameleonConnectionType(index); chameleonConnectionType >= 0 {
+				chameleonConnectionTypes = append(chameleonConnectionTypes, chameleonConnectionType)
+			}
+		}
+	}
+	return chameleonConnectionTypes
 }
 
 // getTaskRequestId converts the swarming task run id with non "0" suffix to the swarming task
