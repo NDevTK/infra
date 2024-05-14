@@ -9,8 +9,10 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/protoadapt"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
+	shivasUtil "infra/cmd/shivas/utils"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -25,9 +27,9 @@ var MockUFSClientKey contextKey = "used in tests only for setting the mock UFSCl
 // UFSClient is UFS API	wrapper for BotsRegulator specific usage.
 // It is used for mocking and testing.
 type UFSClient interface {
-	ListMachineLSEs(ctx context.Context, in *ufsAPI.ListMachineLSEsRequest, opts ...grpc.CallOption) (*ufsAPI.ListMachineLSEsResponse, error)
-	ListMachines(ctx context.Context, in *ufsAPI.ListMachinesRequest, opts ...grpc.CallOption) (*ufsAPI.ListMachinesResponse, error)
-	ListSchedulingUnits(ctx context.Context, in *ufsAPI.ListSchedulingUnitsRequest, opts ...grpc.CallOption) (*ufsAPI.ListSchedulingUnitsResponse, error)
+	BatchListMachineLSEs(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error)
+	BatchListMachines(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error)
+	BatchListSchedulingUnits(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error)
 	UpdateMachineLSE(ctx context.Context, in *ufsAPI.UpdateMachineLSERequest, opts ...grpc.CallOption) (*ufspb.MachineLSE, error)
 }
 
@@ -50,16 +52,16 @@ type ufsService struct {
 	client ufsAPI.FleetClient
 }
 
-func (u *ufsService) ListMachineLSEs(ctx context.Context, in *ufsAPI.ListMachineLSEsRequest, opts ...grpc.CallOption) (*ufsAPI.ListMachineLSEsResponse, error) {
-	return u.client.ListMachineLSEs(ctx, in, opts...)
+func (u *ufsService) BatchListMachineLSEs(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error) {
+	return shivasUtil.BatchList(ctx, u.client, listMachineLSEs, filters, pageSize, keysOnly, full)
 }
 
-func (u *ufsService) ListMachines(ctx context.Context, in *ufsAPI.ListMachinesRequest, opts ...grpc.CallOption) (*ufsAPI.ListMachinesResponse, error) {
-	return u.client.ListMachines(ctx, in, opts...)
+func (u *ufsService) BatchListMachines(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error) {
+	return shivasUtil.BatchList(ctx, u.client, listMachines, filters, pageSize, keysOnly, full)
 }
 
-func (u *ufsService) ListSchedulingUnits(ctx context.Context, in *ufsAPI.ListSchedulingUnitsRequest, opts ...grpc.CallOption) (*ufsAPI.ListSchedulingUnitsResponse, error) {
-	return u.client.ListSchedulingUnits(ctx, in, opts...)
+func (u *ufsService) BatchListSchedulingUnits(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error) {
+	return shivasUtil.BatchList(ctx, u.client, listSchedulingUnits, filters, pageSize, keysOnly, full)
 }
 
 func (u *ufsService) UpdateMachineLSE(ctx context.Context, in *ufsAPI.UpdateMachineLSERequest, opts ...grpc.CallOption) (*ufspb.MachineLSE, error) {
@@ -112,4 +114,63 @@ func InitializeUpdateDUTRequest(hostname, hive string) *ufsAPI.UpdateMachineLSER
 		},
 	}
 	return req
+}
+
+// listMachineLSEs is a helper function to list MachineLSEs from UFS.
+func listMachineLSEs(ctx context.Context, ic ufsAPI.FleetClient, pageSize int32, pageToken, filter string, keysOnly, full bool) ([]protoadapt.MessageV1, string, error) {
+	req := &ufsAPI.ListMachineLSEsRequest{
+		PageSize:  pageSize,
+		PageToken: pageToken,
+		Filter:    filter,
+		KeysOnly:  keysOnly,
+		Full:      full,
+	}
+	res, err := ic.ListMachineLSEs(ctx, req)
+	if err != nil {
+		return nil, "", err
+	}
+	protos := make([]protoadapt.MessageV1, len(res.GetMachineLSEs()))
+	for i, lse := range res.GetMachineLSEs() {
+		protos[i] = lse
+	}
+	return protos, res.GetNextPageToken(), nil
+}
+
+// listMachines is a helper function to list Machines from UFS.
+func listMachines(ctx context.Context, ic ufsAPI.FleetClient, pageSize int32, pageToken, filter string, keysOnly, full bool) ([]protoadapt.MessageV1, string, error) {
+	req := &ufsAPI.ListMachinesRequest{
+		PageSize:  pageSize,
+		PageToken: pageToken,
+		Filter:    filter,
+		KeysOnly:  keysOnly,
+		Full:      full,
+	}
+	res, err := ic.ListMachines(ctx, req)
+	if err != nil {
+		return nil, "", err
+	}
+	protos := make([]protoadapt.MessageV1, len(res.GetMachines()))
+	for i, mc := range res.GetMachines() {
+		protos[i] = mc
+	}
+	return protos, res.GetNextPageToken(), nil
+}
+
+// listSchedulingUnits is a helper function to list SchedulingUnits from UFS.
+func listSchedulingUnits(ctx context.Context, ic ufsAPI.FleetClient, pageSize int32, pageToken, filter string, keysOnly, full bool) ([]protoadapt.MessageV1, string, error) {
+	req := &ufsAPI.ListSchedulingUnitsRequest{
+		PageSize:  pageSize,
+		PageToken: pageToken,
+		Filter:    filter,
+		KeysOnly:  keysOnly,
+	}
+	res, err := ic.ListSchedulingUnits(ctx, req)
+	if err != nil {
+		return nil, "", err
+	}
+	protos := make([]protoadapt.MessageV1, len(res.GetSchedulingUnits()))
+	for i, su := range res.GetSchedulingUnits() {
+		protos[i] = su
+	}
+	return protos, res.GetNextPageToken(), nil
 }

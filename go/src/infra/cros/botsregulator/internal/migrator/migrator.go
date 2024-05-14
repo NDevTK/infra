@@ -19,7 +19,6 @@ import (
 	"infra/cros/botsregulator/internal/regulator"
 	"infra/cros/botsregulator/protos"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -64,30 +63,32 @@ func (m *migrator) GetMigrationConfig(ctx context.Context) (*protos.Migration, e
 func (m *migrator) FetchSFOMachines(ctx context.Context) ([]*ufspb.Machine, error) {
 	logging.Infof(ctx, "fetching machines in SFO36")
 	ctx = clients.SetUFSNamespace(ctx, "os")
-	// TODO(b/328443703): Handle pagination. Current max value: 1000.
-	res, err := m.ufsClient.ListMachines(ctx, &ufsAPI.ListMachinesRequest{
-		PageSize: 1000,
-		Filter:   "zone=ZONE_SFO36_OS",
-	})
+	filters := []string{"zone=ZONE_SFO36_OS"}
+	res, err := m.ufsClient.BatchListMachines(ctx, filters, 0, false, false)
 	if err != nil {
 		return nil, err
 	}
-	return res.GetMachines(), nil
+	mcs := make([]*ufspb.Machine, len(res))
+	for i, r := range res {
+		mcs[i] = r.(*ufspb.Machine)
+	}
+	return mcs, nil
 }
 
 // FetchSFOMachineLSEs only returns the machineLSEs located in sfo36/em25.
 func (m *migrator) FetchSFOMachineLSEs(ctx context.Context) ([]*ufspb.MachineLSE, error) {
 	logging.Infof(ctx, "fetching machineLSEs in SFO36")
 	ctx = clients.SetUFSNamespace(ctx, "os")
-	// TODO(b/328443703): Handle pagination. Current max value: 1000.
-	res, err := m.ufsClient.ListMachineLSEs(ctx, &ufsAPI.ListMachineLSEsRequest{
-		PageSize: 1000,
-		Filter:   "zone=ZONE_SFO36_OS",
-	})
+	filters := []string{"zone=ZONE_SFO36_OS"}
+	res, err := m.ufsClient.BatchListMachineLSEs(ctx, filters, 0, true, false)
 	if err != nil {
 		return nil, err
 	}
-	return res.GetMachineLSEs(), nil
+	lses := make([]*ufspb.MachineLSE, len(res))
+	for i, r := range res {
+		lses[i] = r.(*ufspb.MachineLSE)
+	}
+	return lses, nil
 }
 
 // ComputeBoardModelToState returns a map of board/model to migration state.

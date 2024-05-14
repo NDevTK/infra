@@ -15,6 +15,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	grpc "google.golang.org/grpc"
+	protoadapt "google.golang.org/protobuf/protoadapt"
 )
 
 // MockUFSClient is a mock of UFSClient interface.
@@ -40,64 +41,49 @@ func (m *MockUFSClient) EXPECT() *MockUFSClientMockRecorder {
 	return m.recorder
 }
 
-// ListMachineLSEs mocks base method.
-func (m *MockUFSClient) ListMachineLSEs(ctx context.Context, in *ufspb0.ListMachineLSEsRequest, opts ...grpc.CallOption) (*ufspb0.ListMachineLSEsResponse, error) {
+// BatchListMachineLSEs mocks base method.
+func (m *MockUFSClient) BatchListMachineLSEs(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListMachineLSEs", varargs...)
-	ret0, _ := ret[0].(*ufspb0.ListMachineLSEsResponse)
+	ret := m.ctrl.Call(m, "BatchListMachineLSEs", ctx, filters, pageSize, keysOnly, full)
+	ret0, _ := ret[0].([]protoadapt.MessageV1)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListMachineLSEs indicates an expected call of ListMachineLSEs.
-func (mr *MockUFSClientMockRecorder) ListMachineLSEs(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+// BatchListMachineLSEs indicates an expected call of BatchListMachineLSEs.
+func (mr *MockUFSClientMockRecorder) BatchListMachineLSEs(ctx, filters, pageSize, keysOnly, full interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMachineLSEs", reflect.TypeOf((*MockUFSClient)(nil).ListMachineLSEs), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchListMachineLSEs", reflect.TypeOf((*MockUFSClient)(nil).BatchListMachineLSEs), ctx, filters, pageSize, keysOnly, full)
 }
 
-// ListMachines mocks base method.
-func (m *MockUFSClient) ListMachines(ctx context.Context, in *ufspb0.ListMachinesRequest, opts ...grpc.CallOption) (*ufspb0.ListMachinesResponse, error) {
+// BatchListMachines mocks base method.
+func (m *MockUFSClient) BatchListMachines(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListMachines", varargs...)
-	ret0, _ := ret[0].(*ufspb0.ListMachinesResponse)
+	ret := m.ctrl.Call(m, "BatchListMachines", ctx, filters, pageSize, keysOnly, full)
+	ret0, _ := ret[0].([]protoadapt.MessageV1)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListMachines indicates an expected call of ListMachines.
-func (mr *MockUFSClientMockRecorder) ListMachines(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+// BatchListMachines indicates an expected call of BatchListMachines.
+func (mr *MockUFSClientMockRecorder) BatchListMachines(ctx, filters, pageSize, keysOnly, full interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMachines", reflect.TypeOf((*MockUFSClient)(nil).ListMachines), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchListMachines", reflect.TypeOf((*MockUFSClient)(nil).BatchListMachines), ctx, filters, pageSize, keysOnly, full)
 }
 
-// ListSchedulingUnits mocks base method.
-func (m *MockUFSClient) ListSchedulingUnits(ctx context.Context, in *ufspb0.ListSchedulingUnitsRequest, opts ...grpc.CallOption) (*ufspb0.ListSchedulingUnitsResponse, error) {
+// BatchListSchedulingUnits mocks base method.
+func (m *MockUFSClient) BatchListSchedulingUnits(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListSchedulingUnits", varargs...)
-	ret0, _ := ret[0].(*ufspb0.ListSchedulingUnitsResponse)
+	ret := m.ctrl.Call(m, "BatchListSchedulingUnits", ctx, filters, pageSize, keysOnly, full)
+	ret0, _ := ret[0].([]protoadapt.MessageV1)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListSchedulingUnits indicates an expected call of ListSchedulingUnits.
-func (mr *MockUFSClientMockRecorder) ListSchedulingUnits(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+// BatchListSchedulingUnits indicates an expected call of BatchListSchedulingUnits.
+func (mr *MockUFSClientMockRecorder) BatchListSchedulingUnits(ctx, filters, pageSize, keysOnly, full interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSchedulingUnits", reflect.TypeOf((*MockUFSClient)(nil).ListSchedulingUnits), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchListSchedulingUnits", reflect.TypeOf((*MockUFSClient)(nil).BatchListSchedulingUnits), ctx, filters, pageSize, keysOnly, full)
 }
 
 // UpdateMachineLSE mocks base method.

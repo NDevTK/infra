@@ -21,7 +21,7 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
-	lses, err := r.FetchLSEsByHive(ctx)
+	lses, err := r.ListAllMachineLSEsByHive(ctx)
 	if err != nil {
 		return err
 	}
@@ -30,11 +30,11 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 		return nil
 	}
 	logging.Infof(ctx, "lses: %v\n", lses)
-	sus, err := r.FetchAllSchedulingUnits(ctx)
+	sus, err := r.ListAllSchedulingUnits(ctx)
 	if err != nil {
 		return err
 	}
-	dbs, err := r.ListDroneBots(ctx)
+	dbs, err := r.ListAllDroneBots(ctx)
 	if err != nil {
 		return err
 	}

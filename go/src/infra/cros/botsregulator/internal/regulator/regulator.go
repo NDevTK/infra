@@ -9,14 +9,12 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
 	"infra/cros/botsregulator/internal/clients"
 	"infra/cros/botsregulator/internal/provider"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -49,37 +47,37 @@ func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, erro
 	}, nil
 }
 
-// FetchLSEsByHive fetches machineLSEs from UFS by hive.
-func (r *regulator) FetchLSEsByHive(ctx context.Context) ([]*ufspb.MachineLSE, error) {
+// ListAllMachineLSEsByHive fetches machineLSEs from UFS by hive.
+func (r *regulator) ListAllMachineLSEsByHive(ctx context.Context) ([]*ufspb.MachineLSE, error) {
 	ctx = clients.SetUFSNamespace(ctx, r.opts.Namespace)
-	// TODO(b/328443703): Handle pagination. Current max value: 1000.
-	res, err := r.ufsClient.ListMachineLSEs(ctx, &ufsAPI.ListMachineLSEsRequest{
-		Filter: fmt.Sprintf("hive=%s", r.opts.Hive),
-		// KeysOnly returns the entities' ID only. It is faster than a full query.
-		KeysOnly: true,
-		PageSize: 1000,
-	})
-	if err != nil {
-		return nil, errors.Annotate(err, "could not list machinesLSEs").Err()
-	}
-	return res.GetMachineLSEs(), nil
-}
-
-// FetchAllSchedulingUnits fetches ALL Scheduling Units from UFS.
-func (r *regulator) FetchAllSchedulingUnits(ctx context.Context) ([]*ufspb.SchedulingUnit, error) {
-	ctx = clients.SetUFSNamespace(ctx, r.opts.Namespace)
-	// TODO(b/328443703): Handle pagination. Current max value: 1000.
-	res, err := r.ufsClient.ListSchedulingUnits(ctx, &ufsAPI.ListSchedulingUnitsRequest{
-		PageSize: 1000,
-	})
+	filters := []string{fmt.Sprintf("hive=%s", r.opts.Hive)}
+	res, err := r.ufsClient.BatchListMachineLSEs(ctx, filters, 0, true, false)
 	if err != nil {
 		return nil, err
 	}
-	return res.GetSchedulingUnits(), nil
+	lses := make([]*ufspb.MachineLSE, len(res))
+	for i, p := range res {
+		lses[i] = p.(*ufspb.MachineLSE)
+	}
+	return lses, nil
 }
 
-// ListDroneBots returns list of running Drone Swarming bots.
-func (r *regulator) ListDroneBots(ctx context.Context) ([]*apipb.BotInfo, error) {
+// ListAllSchedulingUnits fetches ALL Scheduling Units from UFS.
+func (r *regulator) ListAllSchedulingUnits(ctx context.Context) ([]*ufspb.SchedulingUnit, error) {
+	ctx = clients.SetUFSNamespace(ctx, r.opts.Namespace)
+	res, err := r.ufsClient.BatchListSchedulingUnits(ctx, nil, 0, false, false)
+	if err != nil {
+		return nil, err
+	}
+	sus := make([]*ufspb.SchedulingUnit, len(res))
+	for i, p := range res {
+		sus[i] = p.(*ufspb.SchedulingUnit)
+	}
+	return sus, nil
+}
+
+// ListAllDroneBots returns list of running Drone Swarming bots.
+func (r *regulator) ListAllDroneBots(ctx context.Context) ([]*apipb.BotInfo, error) {
 	cursor := ""
 	var bots []*apipb.BotInfo
 	for {

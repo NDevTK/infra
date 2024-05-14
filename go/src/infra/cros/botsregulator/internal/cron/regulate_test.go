@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"google.golang.org/protobuf/protoadapt"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
@@ -18,7 +19,6 @@ import (
 	"infra/cros/botsregulator/internal/clients"
 	"infra/cros/botsregulator/internal/regulator"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 func TestRegulate(t *testing.T) {
@@ -44,25 +44,17 @@ func TestRegulate(t *testing.T) {
 
 	ctxWithNS := clients.SetUFSNamespace(ctx, "os")
 	gomock.InOrder(
-		mockUFS.EXPECT().ListMachineLSEs(ctxWithNS, &ufsAPI.ListMachineLSEsRequest{
-			Filter:   "hive=cloudbots",
-			KeysOnly: true,
-			PageSize: 1000,
-		}).Return(&ufsAPI.ListMachineLSEsResponse{
-			MachineLSEs: []*ufspb.MachineLSE{
-				{Name: "machineLSEs/dut-1"},
-				{Name: "machineLSEs/dut-2"},
-				{Name: "machineLSEs/dut-3"},
-				{Name: "machineLSEs/dut-4"},
-			}}, nil),
-		mockUFS.EXPECT().ListSchedulingUnits(ctxWithNS, &ufsAPI.ListSchedulingUnitsRequest{
-			PageSize: 1000,
-		}).Return(&ufsAPI.ListSchedulingUnitsResponse{
-			SchedulingUnits: []*ufspb.SchedulingUnit{
-				{Name: "schedulingunits/su-1", MachineLSEs: []string{"dut-1"}},
-				{Name: "schedulingunits/su-2", MachineLSEs: []string{"dut-2", "dut-3"}},
-				{Name: "schedulingunits/su-3", MachineLSEs: []string{"dut-8", "dut-9"}},
-			}}, nil),
+		mockUFS.EXPECT().BatchListMachineLSEs(ctxWithNS, []string{"hive=cloudbots"}, 0, true, false).Return([]protoadapt.MessageV1{
+			&ufspb.MachineLSE{Name: "machineLSEs/dut-1"},
+			&ufspb.MachineLSE{Name: "machineLSEs/dut-2"},
+			&ufspb.MachineLSE{Name: "machineLSEs/dut-3"},
+			&ufspb.MachineLSE{Name: "machineLSEs/dut-4"},
+		}, nil),
+		mockUFS.EXPECT().BatchListSchedulingUnits(ctxWithNS, nil, 0, false, false).Return([]protoadapt.MessageV1{
+			&ufspb.SchedulingUnit{Name: "schedulingunits/su-1", MachineLSEs: []string{"dut-1"}},
+			&ufspb.SchedulingUnit{Name: "schedulingunits/su-2", MachineLSEs: []string{"dut-2", "dut-3"}},
+			&ufspb.SchedulingUnit{Name: "schedulingunits/su-3", MachineLSEs: []string{"dut-8", "dut-9"}},
+		}, nil),
 		mockSwarming.EXPECT().ListBots(ctx, &apipb.BotsRequest{
 			Limit:  1000,
 			Cursor: "",
