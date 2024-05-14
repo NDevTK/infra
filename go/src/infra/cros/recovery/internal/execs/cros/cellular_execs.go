@@ -20,7 +20,6 @@ import (
 )
 
 func init() {
-	execs.Register("carrier_not_in", carrierNotInExec)
 	execs.Register("cros_audit_cellular_modem", auditCellularModemExec)
 	execs.Register("cros_collect_supported_carriers", collectSupportedCarriersExec)
 	execs.Register("cros_update_cellular_modem_labels", updateCellularModemLabelsExec)
@@ -116,28 +115,6 @@ func setCellularModemStateExec(ctx context.Context, info *execs.ExecInfo) error 
 	}
 
 	c.ModemState = tlw.HardwareState(s)
-	return nil
-}
-
-// carrierNotInExec validates that the DUT cellular network carrier is not in a provided list.
-func carrierNotInExec(ctx context.Context, info *execs.ExecInfo) error {
-	c := info.GetChromeos().GetCellular()
-	if c == nil {
-		return errors.Reason("carrier not in: cellular data is not present in dut info").Err()
-	}
-
-	if c.GetCarrier() == "" {
-		return errors.Reason("carrier not in: DUT carrier label is empty").Err()
-	}
-
-	argsMap := info.GetActionArgs(ctx)
-	carriers := argsMap.AsStringSlice(ctx, "carriers", []string{})
-	for _, carrier := range carriers {
-		if strings.EqualFold(carrier, c.GetCarrier()) {
-			return errors.Reason("carrier not in: carrier %q is in the provided list", c.Carrier).Err()
-		}
-	}
-
 	return nil
 }
 
