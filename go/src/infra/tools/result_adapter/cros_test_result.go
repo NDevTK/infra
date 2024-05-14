@@ -515,7 +515,7 @@ func configProjectTrackerMetadataTags(tags []*pb.StringPair, testInvocation *art
 	newTags := make([]*pb.StringPair, 0, len(tags))
 	newTags = append(newTags, tags...)
 
-	newTags = AppendTags(newTags, "project_tracker_bug_id", projectTrackerMetadata.GetBugId())
+	newTags = AppendTags(newTags, "qual_bug_id", projectTrackerMetadata.GetBugId())
 	return newTags
 }
 
