@@ -748,7 +748,7 @@ message FirmwareInfo {
 }
 
 // Chrome OS specific DUT details
-// NEXT TAG: 33
+// NEXT TAG: 34
 message ChromeOS {
   reserved 1;
   // Board name of the DUT.
@@ -869,6 +869,8 @@ message ChromeOS {
 
   // Dolos device info.
   Dolos dolos = 30;
+
+  string gpu_id = 33;
 }
 
 // TestbedCapability specifies whether the testbed can execute certain tests.

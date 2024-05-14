@@ -203,6 +203,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			AudioLatencyToolkit: createDUTAudioLatencyToolkit(p, ds),
 			Dolos:               createDUTDolos(p, ds),
 			FirmwareInfo:        createFirmwareInfo(ds),
+			GpuId:               ds.GetGpuId(),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -629,6 +630,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.DolosState = ufslab.PeripheralState_UNKNOWN
 	state.FwApTarget = ""
 	state.FwEcTarget = ""
+	state.GpuId = ""
 
 	// Update states for present components.
 	if chromeos := dut.GetChromeos(); chromeos != nil {
@@ -717,6 +719,8 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 			state.FwApTarget = fi.GetApTarget()
 			state.FwEcTarget = fi.GetEcTarget()
 		}
+		state.GpuId = chromeos.GetGpuId()
+
 	} else if devboard := dut.GetDevBoard(); devboard != nil {
 		if s := devboard.GetServo(); s != nil {
 			for us, ls := range servoStates {
