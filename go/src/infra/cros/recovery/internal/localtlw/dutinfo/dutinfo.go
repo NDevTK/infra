@@ -452,6 +452,7 @@ func createDUTBluetooth(ds *ufslab.DutState, dc *ufsdevice.Config) *tlw.Bluetoot
 func createDUTCellular(ds *ufslab.DutState, p *ufslab.Peripherals, m *ufslab.ModemInfo, siOld []*ufslab.SIMInfo) *tlw.Cellular {
 	cellular := &tlw.Cellular{
 		ModemState:        convertHardwareState(ds.GetCellularModemState()),
+		StarfishState:     convertStarfishStates(ds.GetStarfishState()),
 		Carrier:           p.GetCarrier(),
 		SupportedCarriers: p.GetSupportedCarriers(),
 		ModelVariant:      m.GetModelVariant(),
@@ -619,6 +620,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.WifiState = ufslab.HardwareState_HARDWARE_UNKNOWN
 	state.BluetoothState = ufslab.HardwareState_HARDWARE_UNKNOWN
 	state.CellularModemState = ufslab.HardwareState_HARDWARE_UNKNOWN
+	state.StarfishState = ufslab.PeripheralState_UNKNOWN
 	state.Chameleon = ufslab.PeripheralState_UNKNOWN
 	state.HmrState = ufslab.PeripheralState_UNKNOWN
 	state.WorkingBluetoothBtpeer = 0
@@ -669,6 +671,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		}
 		if c := chromeos.GetCellular(); c != nil {
 			state.CellularModemState = convertHardwareStateToUFS(c.GetModemState())
+			state.StarfishState = convertStarfishStateToUFS(c.GetStarfishState())
 		}
 		if ch := chromeos.GetChameleon(); ch != nil {
 			for us, rs := range chameleonStates {

@@ -637,6 +637,20 @@ message Cellular {
 
   // Information on all carrier dependencies that can be satisfied by this DUT.
   repeated string supported_carriers = 6;
+
+  // State of the starfish connected to the device.
+  StarfishState starfish_state = 7;
+
+  // PeripheralStarfishState describes the state of a starfish device in a testbed.
+  enum StarfishState {
+    STARFISH_STATE_UNSPECIFIED = 0;
+    // Starfish is working and SIMS detected as expected.
+    STARFISH_STATE_WORKING = 1;
+    // Starfish is not working or SIMs are not detected as expected.
+    STARFISH_STATE_BROKEN = 2;
+    // Does not apply to this device.
+    STARFISH_STATE_NOT_APPLICABLE = 3;
+  }
 }
 
 // Battery holds info about battery of the DUT.

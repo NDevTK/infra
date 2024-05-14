@@ -480,6 +480,30 @@ func convertSIMProviderToUFS(s tlw.Cellular_NetworkProvider) ufslab.NetworkProvi
 	return ufslab.NetworkProvider_NETWORK_OTHER
 }
 
+// starfishSTates maps the ufs peripheral states to tlw starfish states.
+var starfishStates = map[ufslab.PeripheralState]tlw.Cellular_StarfishState{
+	ufslab.PeripheralState_WORKING: tlw.Cellular_STARFISH_STATE_WORKING,
+	ufslab.PeripheralState_BROKEN:  tlw.Cellular_STARFISH_STATE_BROKEN,
+}
+
+// convertStarfishStates converts UFS state to TLW starfish states.
+func convertStarfishStates(s ufslab.PeripheralState) tlw.Cellular_StarfishState {
+	if ns, ok := starfishStates[s]; ok {
+		return ns
+	}
+	return tlw.Cellular_STARFISH_STATE_UNSPECIFIED
+}
+
+// convertStarfishStateToUFS TLW modem types to UFS starfish states.
+func convertStarfishStateToUFS(s tlw.Cellular_StarfishState) ufslab.PeripheralState {
+	for us, ls := range starfishStates {
+		if ls == s {
+			return us
+		}
+	}
+	return ufslab.PeripheralState_UNKNOWN
+}
+
 var dolosStates = map[ufslab.PeripheralState]tlw.Dolos_State{
 	ufslab.PeripheralState_WORKING:        tlw.Dolos_WORKING,
 	ufslab.PeripheralState_BROKEN:         tlw.Dolos_BROKEN,
