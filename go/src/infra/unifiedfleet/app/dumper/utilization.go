@@ -23,17 +23,7 @@ import (
 )
 
 // inventoryCounter collects number of DUTs per bucket and status.
-// Copied from infra/go/src/infra/cros/lab_inventory/utilization/utilization.go
-type inventoryCounter map[bucket]map[string]int
-
-func (c inventoryCounter) increment(b *bucket, status string) {
-	sc := c[*b]
-	if sc == nil {
-		sc = make(map[string]int)
-		c[*b] = sc
-	}
-	sc[status]++
-}
+type inventoryCounter map[*bucket]int
 
 // suMetric is the metric name for scheduling unit count.
 var suMetric = metric.NewInt(
@@ -94,8 +84,7 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 				logging.Warningf(ctx, err.Error())
 				continue
 			}
-			s := schedulingUnitStatusFromLses(suLses)
-			c.increment(b, s)
+			c[b]++
 			for _, lseName := range su.GetMachineLSEs() {
 				lseInSUnitMap[lseName] = true
 			}
@@ -112,8 +101,7 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 			continue
 		}
 		b := getBucketForDevice(lse, machine, env)
-		s := dutstate.ConvertFromUFSState(lse.GetResourceState()).String()
-		c.increment(b, s)
+		c[b]++
 	}
 	logging.Infof(ctx, "report UFS inventory metrics for %d devices", len(c))
 	c.Report(ctx)
@@ -121,13 +109,8 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 }
 
 func (c inventoryCounter) Report(ctx context.Context) {
-	for b, counts := range c {
-		if counts == nil {
-			continue
-		}
-		for status, count := range counts {
-			suMetric.Set(ctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, string(status))
-		}
+	for b, count := range c {
+		suMetric.Set(ctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.status)
 	}
 }
 
@@ -154,6 +137,7 @@ func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env strin
 		pool:        "[None]",
 		environment: env,
 		zone:        lse.GetZone(),
+		status:      dutstate.ConvertFromUFSState(lse.GetResourceState()).String(),
 	}
 	if dut := lse.GetChromeosMachineLse().GetDeviceLse().GetDut(); dut != nil {
 		b.pool = getReportPool(dut.GetPools())
@@ -184,6 +168,7 @@ func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineL
 		pool:        getReportPool(su.GetPools()),
 		environment: env,
 		zone:        "[None]",
+		status:      schedulingUnitStatusFromLses(lses),
 	}
 	// fields from all DUTs
 	switch su.GetExposeType() {
@@ -285,6 +270,7 @@ type bucket struct {
 	pool        string
 	environment string
 	zone        string
+	status      string
 }
 
 func (b *bucket) String() string {
