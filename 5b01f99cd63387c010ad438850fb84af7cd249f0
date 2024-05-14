@@ -92,6 +92,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0728fe30_0bd12ffc",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1515677
+      },
+      "writtenOn": "2024-05-14T03:41:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a482152d_a4222bd5",
+      "range": {
+        "startLine": 318,
+        "startChar": 32,
+        "endLine": 318,
+        "endChar": 48
+      },
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2a235bab_8b9c0567",
@@ -105,6 +129,30 @@
       "writtenOn": "2024-05-14T01:34:34Z",
       "side": 1,
       "message": "nit: getChameleonConnectionType -\u003e getChameleonConnectionTypes\n\nDitto below.",
+      "range": {
+        "startLine": 321,
+        "startChar": 43,
+        "endLine": 321,
+        "endChar": 69
+      },
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3429c4ce_1ed3de98",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 1515677
+      },
+      "writtenOn": "2024-05-14T03:41:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a235bab_8b9c0567",
       "range": {
         "startLine": 321,
         "startChar": 43,
@@ -156,6 +204,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e88f964_6794ae02",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1515677
+      },
+      "writtenOn": "2024-05-14T03:41:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c97e8990_a8fd8bbe",
+      "range": {
+        "startLine": 327,
+        "startChar": 3,
+        "endLine": 328,
+        "endChar": 56
+      },
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a986ee4a_1f526815",
@@ -170,6 +242,30 @@
       "side": 1,
       "message": "\u003e \n\u003e Import order is not sorted.\n\u003e Run `golangci-lint run --fix cros/cmd/cros_test_runner/internal/commands` to fix this.\n\nPlease fix.",
       "parentUuid": "f39ee439_b5de6424",
+      "range": {
+        "startLine": 329,
+        "startChar": 0,
+        "endLine": 329,
+        "endChar": 0
+      },
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a015f8f0_a6042a3e",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1515677
+      },
+      "writtenOn": "2024-05-14T03:41:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a986ee4a_1f526815",
       "range": {
         "startLine": 329,
         "startChar": 0,
@@ -291,6 +387,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f87865b_15886652",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 686,
+      "author": {
+        "id": 1515677
+      },
+      "writtenOn": "2024-05-14T03:41:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "93cdf7ee_191bb2b9",
+      "range": {
+        "startLine": 686,
+        "startChar": 22,
+        "endLine": 686,
+        "endChar": 29
+      },
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ae53dce0_6e5a0438",
@@ -393,6 +513,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "28a8eeca_8d227627",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 687,
+      "author": {
+        "id": 1515677
+      },
+      "writtenOn": "2024-05-14T03:41:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "303a841e_8a717205",
+      "range": {
+        "startLine": 687,
+        "startChar": 1,
+        "endLine": 687,
+        "endChar": 60
+      },
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf007475_572fcc9d",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 687,
+      "author": {
+        "id": 1515677
+      },
+      "writtenOn": "2024-05-14T03:41:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ae53dce0_6e5a0438",
+      "range": {
+        "startLine": 687,
+        "startChar": 1,
+        "endLine": 687,
+        "endChar": 60
+      },
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eaf2d6cb_bf8e9110",
@@ -444,6 +612,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a90abceb_0873bfc4",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 690,
+      "author": {
+        "id": 1515677
+      },
+      "writtenOn": "2024-05-14T03:41:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eaf2d6cb_bf8e9110",
+      "range": {
+        "startLine": 690,
+        "startChar": 3,
+        "endLine": 690,
+        "endChar": 90
+      },
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "588e86ef_91fba80a",
@@ -481,6 +673,30 @@
           ]
         }
       ],
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "07a89f36_8bf63f3d",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1515677
+      },
+      "writtenOn": "2024-05-14T03:41:29Z",
+      "side": 1,
+      "message": "Added for the chameleon type one.",
+      "parentUuid": "588e86ef_91fba80a",
+      "range": {
+        "startLine": 246,
+        "startChar": 0,
+        "endLine": 252,
+        "endChar": 10
+      },
       "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
