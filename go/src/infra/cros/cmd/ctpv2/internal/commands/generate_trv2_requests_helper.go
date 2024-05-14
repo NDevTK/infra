@@ -16,6 +16,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 	"time"
 
@@ -147,23 +148,117 @@ func populateHelperNewProto(ctx context.Context, trHelper *TrV2ReqHelper) error 
 	if err != nil {
 		return err
 	}
-	target.provisionInfo, trHelper.lookupTable = getProvisionInfoFromSuiteInfo(target.board, target.variant, trHelper.suiteInfo)
-	trHelper.primaryTarget = target
-
-	trHelper.secondaryTargets = []*HwTarget{}
-	for _, secondary := range trHelper.schedUnit.GetCompanionTargets() {
-		target, err := populateHwTarget(ctx, secondary, trHelper.suiteInfo)
+	companionTargets := []*HwTarget{}
+	for _, companion := range trHelper.schedUnit.GetCompanionTargets() {
+		target, err := populateHwTarget(ctx, companion, trHelper.suiteInfo)
 		if err != nil {
 			return err
 		}
-		// Ignore lookup table, already set by primary.
-		target.provisionInfo, _ = getProvisionInfoFromSuiteInfo(target.board, target.variant, trHelper.suiteInfo)
-
-		trHelper.secondaryTargets = append(trHelper.secondaryTargets, target)
+		companionTargets = append(companionTargets, target)
 	}
-	trHelper.lookupTable = trHelper.schedUnit.GetDynamicUpdateLookupTable()
+
+	schedUnit := findSchedulingUnit(target, companionTargets, trHelper.suiteInfo)
+	if schedUnit == nil {
+		return fmt.Errorf("failed to find scheduling unit match")
+	}
+	trHelper.lookupTable = schedUnit.GetDynamicUpdateLookupTable()
+	target.provisionInfo = schedUnit.GetPrimaryTarget().GetSwarmingDef().GetProvisionInfo()
+	trHelper.primaryTarget = target
+	// Assign provision information to each companion
+	for _, companion := range companionTargets {
+		// O(n^2), but like, max(n) is around 3-4, so its all good.
+		for _, companionTarget := range schedUnit.GetCompanionTargets() {
+			board, model, variant := targetToBoardModelVariant(companionTarget)
+			if companion.board == board && companion.model == model && companion.variant == variant {
+				companion.provisionInfo = companionTarget.GetSwarmingDef().GetProvisionInfo()
+				break
+			}
+		}
+	}
+	trHelper.secondaryTargets = companionTargets
 
 	return nil
+}
+
+func findSchedulingUnit(primary *HwTarget, companions []*HwTarget, suiteInfo *api.SuiteInfo) *api.SchedulingUnit {
+	for _, schedUnit := range suiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
+		// check primary
+		board, model, variant := targetToBoardModelVariant(schedUnit.PrimaryTarget)
+		if primary.board != board || primary.model != model || primary.variant != variant {
+			continue
+		}
+		// check secondary
+		companionsPool := make([]*HwTarget, len(companions))
+		copy(companionsPool, companions)
+		for _, secondary := range strictestTargetsFirst(schedUnit.GetCompanionTargets()) {
+			matchIndex := findCompanionMatch(companionsPool, secondary)
+			if matchIndex == -1 {
+				continue
+			}
+			companionsPool = slices.Delete(companionsPool, matchIndex, matchIndex+1)
+		}
+
+		return schedUnit
+	}
+	return nil
+}
+
+func findCompanionMatch(companions []*HwTarget, target *api.Target) int {
+	for i, companion := range companions {
+		board, model, variant := targetToBoardModelVariant(target)
+		if board != companion.board {
+			continue
+		}
+		if model != "" && model != companion.model {
+			continue
+		}
+		if variant != "" && variant != companion.variant {
+			continue
+		}
+		return i
+	}
+
+	return -1
+}
+
+// strictestTargetsFirst orders the targets list by their board/model/variant
+// provided. Targets with all three provided should be matched first. Prioritize
+// variant, then model, then board.
+//
+// Scores:
+//
+//	Board only -> 0
+//	Board/Model -> 1
+//	Board/Variant -> 2
+//	Board/Model/Variant -> 3
+//
+// This means that Board=0, Model=1, Variant=2.
+// Bucket sort seems appropriate.
+func strictestTargetsFirst(targets []*api.Target) []*api.Target {
+	strictnessBuckets := [][]*api.Target{
+		{}, {}, {}, {},
+	}
+	for _, target := range targets {
+		score := 0
+		_, model, variant := targetToBoardModelVariant(target)
+		if model != "" {
+			score += 1
+		}
+		if variant != "" {
+			score += 2
+		}
+	}
+	res := []*api.Target{}
+	for _, bucket := range strictnessBuckets {
+		res = append(bucket, res...)
+	}
+	return res
+}
+
+func targetToBoardModelVariant(target *api.Target) (string, string, string) {
+	return strings.ToLower(getBuildTargetFromSchedulingTarget(target)),
+		strings.ToLower(getModelFromSchedulingTarget(target)),
+		strings.ToLower(target.GetSwarmingDef().GetVariant())
 }
 
 func populateHelper(ctx context.Context, trHelper *TrV2ReqHelper) error {
@@ -448,26 +543,6 @@ func findProvisionInfo(ctx context.Context, trHelper *TrV2ReqHelper) ([]*testapi
 		}
 	}
 	return nil, map[string]string{}
-}
-
-// only works for new proto
-// this will return the first one that matches provided board/variant
-// if there are multiple targets with same board/variant, assumption here is that
-// they all have same provision info
-func getProvisionInfoFromSuiteInfo(board string, variant string, suiteInfo *api.SuiteInfo) ([]*testapi.ProvisionInfo, map[string]string) {
-	for _, schedUnit := range suiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
-		// check primary
-		if provInfo := getProvisionInfoFromTarget(schedUnit.GetPrimaryTarget(), board, variant); provInfo != nil {
-			return provInfo, schedUnit.GetDynamicUpdateLookupTable()
-		}
-		// check secondary
-		for _, secondary := range schedUnit.GetCompanionTargets() {
-			if provInfo := getProvisionInfoFromTarget(secondary, board, variant); provInfo != nil {
-				return provInfo, schedUnit.GetDynamicUpdateLookupTable()
-			}
-		}
-	}
-	return nil, nil
 }
 
 // ----- TODO (oldProt-azrahman): remove oldProto func defs -----
