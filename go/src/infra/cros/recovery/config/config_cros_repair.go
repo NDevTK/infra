@@ -1437,6 +1437,23 @@ func crosRepairActions() map[string]*Action {
 				UploadPolicy: MetricsConfig_SKIP_ALL,
 			},
 		},
+		"Is starfish device": {
+			Docs: []string{
+				"Verify that DUT is a starfish device",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"has_cellular_info",
+			},
+			ExecName: "carrier_is_in",
+			ExecExtraArgs: []string{
+				"carriers:STARFISH,STARFISH_PLUS",
+			},
+			RunControl: RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
 		"Has live carrier": {
 			Docs: []string{
 				"Verify that DUT has a connectable carrier and not a test device.",
@@ -1561,6 +1578,20 @@ func crosRepairActions() map[string]*Action {
 			},
 			AllowFailAfterRecovery: true,
 		},
+		"Audit cellular starfish": {
+			Docs: []string{
+				"Verify DUT is able to connect to the default cellular network.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"Is starfish device",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName:               "cros_audit_cellular_starfish",
+			AllowFailAfterRecovery: true,
+		},
 		"Collect additional cellular labels": {
 			Docs: []string{
 				"Automatically populates/constructs additional cellular labels",
@@ -1585,6 +1616,7 @@ func crosRepairActions() map[string]*Action {
 				"Update cellular sim labels if missing",
 				"Update cellular modem labels if missing",
 				"Audit cellular network connection",
+				"Audit cellular starfish",
 				"Collect additional cellular labels",
 				"Collect var/log/messages from DUT",
 				"Collect var/log/net.log from DUT",
