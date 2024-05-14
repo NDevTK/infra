@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2245d4c5_0238e55a",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 690,
+      "author": {
+        "id": 1128994
+      },
+      "writtenOn": "2024-05-14T04:03:01Z",
+      "side": 1,
+      "message": "optional: just use `i` here",
+      "revId": "61cbc7a5cebbcc37b4bd48c11cf73e42745e1ed1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "54e9ac86_0c6b1888",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 703,
+      "author": {
+        "id": 1128994
+      },
+      "writtenOn": "2024-05-14T04:03:01Z",
+      "side": 1,
+      "message": "ditto?",
+      "fixSuggestions": [
+        {
+          "fixId": "d3346f43_da7a665c",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 703,
+                "startChar": 0,
+                "endLine": 704,
+                "endChar": 0
+              },
+              "replacement": "\t\tif index, ok :\u003d artifactpb.BuildMetadata_ChameleonConnectionType_value[str]; ok {\n"
+            }
+          ]
+        }
+      ],
+      "revId": "61cbc7a5cebbcc37b4bd48c11cf73e42745e1ed1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "96122b7a_dc91ec1f",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 707,
+      "author": {
+        "id": 1128994
+      },
+      "writtenOn": "2024-05-14T04:03:01Z",
+      "side": 1,
+      "message": "Add log if there are unrecognized bad values?\n\nDitto above.",
+      "revId": "61cbc7a5cebbcc37b4bd48c11cf73e42745e1ed1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
