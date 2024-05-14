@@ -13,7 +13,7 @@ import "google/api/field_behavior.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
 
 // This proto defines status labels in lab config of a DUT.
-// Next Tag: 28
+// Next Tag: 29
 message DutState {
   ChromeOSDeviceID id = 1;
   PeripheralState servo = 2;
@@ -106,6 +106,8 @@ message DutState {
   // FW targets name for EC/AP used for FW flash.
   string fw_ec_target = 26;
   string fw_ap_target = 27;
+
+  string gpu_id = 28;
 }
 
 // Next Tag: 28
