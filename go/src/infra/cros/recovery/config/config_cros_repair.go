@@ -4569,7 +4569,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_collect_firmware_target",
 			ExecExtraArgs: []string{
-				"force_override:false",
+				// TODO(b/333895984): Disable force before enable for production usage.
+				"force_override:true",
 			},
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_ALWAYS_RUN,
