@@ -25,6 +25,16 @@ dispatch:
   - url: "*/build/*"
     service: default-go
 
+  - url: "*/builds/*"
+    service: default-go
+
+  # Serve the builder redirection on default-go.
+  - url: "*/builder/*"
+    service: default-go
+
+  - url: "*/builders/*"
+    service: default-go
+
   # Serve the log redirection on default-go.
   - url: "*/log/*"
     service: default-go
