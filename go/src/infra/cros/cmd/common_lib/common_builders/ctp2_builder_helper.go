@@ -62,6 +62,7 @@ func GroupV2Requests(ctx context.Context, v2s []*testapi.CTPRequest, manifestFet
 func FilterV2RequestsBasedOnManifest(ctx context.Context, v2s []*testapi.CTPRequest, manifestFetcher ManifestFetcher) ([]*testapi.CTPRequest, []*testapi.CTPRequest) {
 	public := []*testapi.CTPRequest{}
 	nonPublic := []*testapi.CTPRequest{}
+	imageManifestMap := make(map[string]string)
 	for _, v2 := range v2s {
 		// Safe guard against CTPRequests missing targets to schedule on.
 		if len(v2.GetScheduleTargets()) == 0 || len(v2.GetScheduleTargets()[0].GetTargets()) == 0 {
@@ -71,20 +72,32 @@ func FilterV2RequestsBasedOnManifest(ctx context.Context, v2s []*testapi.CTPRequ
 		// Translator only supplies singular length schedule targets,
 		// and only care about checking the primary target's gcspath when grouping.
 		gcsPath := v2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()
-
-		// Fetch manifest info from containerImageInfo
-		manifest, err := manifestFetcher(ctx, gcsPath)
-		if err != nil {
-			// Instead of dropping, add it to public
-			logging.Infof(ctx, "failed to fetch manifest info for %s, add to public list: %v", gcsPath, v2)
-			public = append(public, v2)
-			continue
-		}
-		// If manifest is "PUBLIC" then add to public
-		if manifest == Public {
-			public = append(public, v2)
+		// Check if manifest for given gcsPath already exists
+		manifest, ok := imageManifestMap[gcsPath]
+		if !ok {
+			// Fetch manifest info from containerImageInfo
+			manifest, err := manifestFetcher(ctx, gcsPath)
+			if err != nil {
+				// Instead of dropping, add it to public
+				logging.Infof(ctx, "failed to fetch manifest info for %s, add to public list: %v", gcsPath, v2)
+				public = append(public, v2)
+				continue
+			}
+			// Update the imageManifestMap with manifest info
+			imageManifestMap[gcsPath] = manifest
+			// If manifest is "PUBLIC" then add to public
+			if manifest == Public {
+				public = append(public, v2)
+			} else {
+				nonPublic = append(nonPublic, v2)
+			}
 		} else {
-			nonPublic = append(nonPublic, v2)
+			// If manifest is "PUBLIC" then add to public
+			if manifest == Public {
+				public = append(public, v2)
+			} else {
+				nonPublic = append(nonPublic, v2)
+			}
 		}
 	}
 	return nonPublic, public
@@ -140,6 +153,7 @@ func GetBuilderManifestFromContainer(ctx context.Context, gcsPath string) (strin
 				return Public, nil
 			}
 		}
+		break
 	}
 	return Private, nil
 }
