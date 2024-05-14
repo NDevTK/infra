@@ -51,7 +51,7 @@ func (p *crosDutProcessor) Process(request *api.StartTemplatedContainerRequest) 
 		Env:     additionalEnvs(),
 	}
 	// Add cloudbots related options
-	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbot-") {
+	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
 		cloudbotsOptions := cloudbotsAdditionalOptions()
 		additionalOptions.Volume = append(additionalOptions.Volume, cloudbotsOptions.Volume...)
 		additionalOptions.Env = append(additionalOptions.Env, cloudbotsOptions.Env...)
