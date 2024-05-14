@@ -130,6 +130,7 @@ capabilities {
   graphics: "graphicsval"
   internal_display: true
   gpu_family: "gpufamilyval"
+  gpu_id: ""
   flashrom: true
   detachablebase: true
   carrier: 2
@@ -763,6 +764,7 @@ capabilities {
   graphics: "graphicsval"
   internal_display: true
   gpu_family: "gpufamilyval"
+  gpu_id: ""
   flashrom: true
   detachablebase: true
   carrier: 2

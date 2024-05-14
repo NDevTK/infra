@@ -23,6 +23,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 			Fingerprint:         new(bool),
 			Flashrom:            new(bool),
 			GpuFamily:           new(string),
+			GpuId:               new(string),
 			Graphics:            new(string),
 			Hotwording:          new(bool),
 			InternalDisplay:     new(bool),

@@ -76,6 +76,9 @@ func stringCapabilitiesConverter(dims Dimensions, ls *inventory.SchedulableLabel
 	if v := c.GetGpuFamily(); v != "" {
 		dims["label-gpu_family"] = []string{v}
 	}
+	if v := c.GetGpuId(); v != "" {
+		dims["label-gpu_id"] = []string{v}
+	}
 	if v := c.GetGraphics(); v != "" {
 		dims["label-graphics"] = []string{v}
 	}
@@ -99,6 +102,7 @@ func stringCapabilitiesConverter(dims Dimensions, ls *inventory.SchedulableLabel
 func stringCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 	c := ls.Capabilities
 	d = assignLastStringValueAndDropKey(d, c.GpuFamily, "label-gpu_family")
+	d = assignLastStringValueAndDropKey(d, c.GpuId, "label-gpu_id")
 	d = assignLastStringValueAndDropKey(d, c.Graphics, "label-graphics")
 	d = assignLastStringValueAndDropKey(d, c.Modem, "label-modem")
 	d = assignLastStringValueAndDropKey(d, c.Power, "label-power")

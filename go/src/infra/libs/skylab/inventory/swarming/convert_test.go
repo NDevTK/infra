@@ -112,6 +112,7 @@ capabilities {
   internal_display: true
   graphics: "graphicsval"
   gpu_family: "gpufamilyval"
+  gpu_id: "gpuidval"
   flashrom: true
   fingerprint: true
   detachablebase: true
@@ -278,6 +279,7 @@ capabilities {
   internal_display: true
   graphics: "graphicsval"
   gpu_family: "gpufamilyval"
+  gpu_id: "gpuidval"
   flashrom: true
   fingerprint: true
   detachablebase: true
@@ -384,6 +386,7 @@ var fullDimensions = Dimensions{
 	"label-flashrom":                {"True"},
 	"label-form_factor":             {"FORM_FACTOR_CLAMSHELL"},
 	"label-gpu_family":              {"gpufamilyval"},
+	"label-gpu_id":                  {"gpuidval"},
 	"label-graphics":                {"graphicsval"},
 	"label-hangout_app":             {"True"},
 	"label-hwid_sku":                {"eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB"},
