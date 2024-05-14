@@ -17,7 +17,8 @@ message Config {
     int32 min_low_risk_models_percentage = 2;
     repeated string low_risk_models = 3;
     repeated string exclude_duts = 4;
-    repeated Override overrides = 5;
+    repeated string exclude_pools = 5;
+    repeated Override overrides = 6;
 }
 
 message Override {

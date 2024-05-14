@@ -80,7 +80,7 @@ func (m *migrator) FetchSFOMachineLSEs(ctx context.Context) ([]*ufspb.MachineLSE
 	logging.Infof(ctx, "fetching machineLSEs in SFO36")
 	ctx = clients.SetUFSNamespace(ctx, "os")
 	filters := []string{"zone=ZONE_SFO36_OS"}
-	res, err := m.ufsClient.BatchListMachineLSEs(ctx, filters, 0, true, false)
+	res, err := m.ufsClient.BatchListMachineLSEs(ctx, filters, 0, false, false)
 	if err != nil {
 		return nil, err
 	}
@@ -101,9 +101,14 @@ func (m *migrator) ComputeBoardModelToState(ctx context.Context, mcs []*ufspb.Ma
 	}
 	bms := make(map[string]*migrationState)
 	for _, lse := range lses {
-		// Filtering out DUTs based on config file.
-		if _, ok := searchable.overrideDUTs[ufsUtil.RemovePrefix(lse.GetName())]; ok {
+		// Filtering out DUTs based on DUT name.
+		if _, ok := searchable.excludeDUTs[ufsUtil.RemovePrefix(lse.GetName())]; ok {
 			logging.Infof(ctx, "machineLSE: %s found in exclude_duts in %s; skipping", ufsUtil.RemovePrefix(lse.GetName()), migrationFile)
+			continue
+		}
+		// Filtering out DUTs based on pool name.
+		if pool, ok := shouldExcludePool(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), searchable.excludePools); ok {
+			logging.Infof(ctx, "pool: %s found in exclude_pools in %s for DUT %s; skipping", pool, migrationFile, ufsUtil.RemovePrefix(lse.GetName()))
 			continue
 		}
 		for _, machine := range lse.GetMachines() {
@@ -210,4 +215,14 @@ func computeNextModelState(ctx context.Context, bm string, target int32, current
 		nextState.Drone = append(nextState.Drone, nsf...)
 		logging.Infof(ctx, "computeNextModelState: adding %v to SFO36", nsf)
 	}
+}
+
+// shouldExcludePool returns true if the DUT pools can be found in the exclude_pools set.
+func shouldExcludePool(pools []string, op map[string]struct{}) (string, bool) {
+	for _, pool := range pools {
+		if _, ok := op[pool]; ok {
+			return pool, true
+		}
+	}
+	return "", false
 }

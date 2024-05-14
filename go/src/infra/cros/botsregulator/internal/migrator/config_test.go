@@ -21,6 +21,7 @@ func TestNewConfigSearchable(t *testing.T) {
 			MinLowRiskModelsPercentage: 60,
 			LowRiskModels:              []string{"model-1", "model-2"},
 			ExcludeDuts:                []string{"dut-1", "dut-2"},
+			ExcludePools:               []string{"wifi", "chameleon_display"},
 			Overrides: []*protos.Override{
 				{
 					Board:      "board-1",
@@ -52,9 +53,13 @@ func TestNewConfigSearchable(t *testing.T) {
 				"model-1": {},
 				"model-2": {},
 			},
-			overrideDUTs: map[string]struct{}{
+			excludeDUTs: map[string]struct{}{
 				"dut-1": {},
 				"dut-2": {},
+			},
+			excludePools: map[string]struct{}{
+				"wifi":              {},
+				"chameleon_display": {},
 			},
 			overrideBoardModel: map[string]int32{
 				"board-1/model-1": 1,

@@ -58,6 +58,15 @@ func TestComputeBoardModelToState(t *testing.T) {
 					},
 				},
 			},
+			{
+				Name: "machines/machine-5",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "board-2",
+						Model:       "model-1",
+					},
+				},
+			},
 		}
 		lses := []*ufspb.MachineLSE{
 			{
@@ -136,10 +145,33 @@ func TestComputeBoardModelToState(t *testing.T) {
 					},
 				},
 			},
+			{
+				Name: "machineLSEs/dut-5",
+				Machines: []string{
+					"machine-5",
+				},
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: &ufspb.ChromeOSDeviceLSE_Dut{
+									Dut: &chromeosLab.DeviceUnderTest{
+										Hive:  "",
+										Pools: []string{"wifi"},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		}
 		cs := &configSearchable{
-			overrideDUTs: map[string]struct{}{
+			excludeDUTs: map[string]struct{}{
 				"dut-1": {},
+			},
+			excludePools: map[string]struct{}{
+				"wifi": {},
 			},
 		}
 		got, err := m.ComputeBoardModelToState(context.Background(), mcs, lses, cs)
@@ -371,12 +403,15 @@ func TestComputeNextMigrationSate(t *testing.T) {
 				"model-1": {},
 				"model-2": {},
 			},
-			// computeNextMigrationSate does not filter out overrideDUTs.
+			// computeNextMigrationSate does not filter out excludeDUTs.
 			// The filtering happens earlier.
-			overrideDUTs: map[string]struct{}{
+			excludeDUTs: map[string]struct{}{
 				"dut-74": {},
 				"dut-75": {},
 			},
+			// computeNextMigrationSate does not filter out excludePools.
+			// The filtering happens earlier.
+			excludePools: nil,
 			overrideBoardModel: map[string]int32{
 				"board-2/*":       90,
 				"board-1/model-1": 0,

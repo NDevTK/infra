@@ -16,8 +16,9 @@ import (
 type configSearchable struct {
 	minCloudbotsPercentage     int32
 	minLowRiskModelsPercentage int32
+	excludeDUTs                map[string]struct{}
+	excludePools               map[string]struct{}
 	overrideBoardModel         map[string]int32
-	overrideDUTs               map[string]struct{}
 	overrideLowRisks           map[string]struct{}
 }
 
@@ -51,12 +52,22 @@ func NewConfigSearchable(ctx context.Context, config *protos.Config) *configSear
 			logging.Errorf(ctx, "exclude dut %s has already been processed. Check for duplicate in %s", dut, migrationFile)
 		}
 	}
+	// Exclude pools.
+	pools := make(map[string]struct{})
+	for _, pool := range config.ExcludePools {
+		if _, ok := pools[pool]; !ok {
+			pools[pool] = struct{}{}
+		} else {
+			logging.Errorf(ctx, "exclude pool %s has already been processed. Check for duplicate in %s", pool, migrationFile)
+		}
+	}
 	searchable := &configSearchable{
 		minCloudbotsPercentage:     config.MinCloudbotsPercentage,
 		minLowRiskModelsPercentage: config.MinLowRiskModelsPercentage,
+		excludeDUTs:                duts,
+		excludePools:               pools,
 		overrideBoardModel:         obm,
 		overrideLowRisks:           lr,
-		overrideDUTs:               duts,
 	}
 	return searchable
 }
