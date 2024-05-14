@@ -6,7 +6,6 @@ package cros
 
 import (
 	"context"
-	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -23,27 +22,33 @@ import (
 func collectFirmwareTargetExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	isForceOverride := argsMap.AsBool(ctx, "force_override", false)
-	if info.GetChromeos() == nil {
+	cros := info.GetChromeos()
+	if cros == nil {
 		return errors.Reason("collect firmware target: only for chromeos devices").Err()
 	}
-	fi := info.GetChromeos().GetFirmwareInfo()
+	fi := cros.GetFirmwareInfo()
 	if fi == nil {
 		fi = &tlw.FirmwareInfo{}
-		info.GetChromeos().FirmwareInfo = fi
+		cros.FirmwareInfo = fi
 	}
 	log.Debugf(ctx, "Fw targets before update ec:%q, ap:%q", fi.GetEcTarget(), fi.GetApTarget())
 	run := info.NewRunner(info.GetDut().Name)
-	fwTarget, err := firmware.GetFirmwareManifestKeyFromDUT(ctx, run, log.Get(ctx))
+	ec, ap, err := firmware.ReadConfigYAML(ctx, cros.GetModel(), run, log.Get(ctx))
 	if err != nil {
 		return errors.Annotate(err, "collect firmware target").Err()
 	}
-	fwTarget = strings.TrimSpace(fwTarget)
-	metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("collected_fw_target", fwTarget))
+	metrics.DefaultActionAddObservations(ctx,
+		metrics.NewStringObservation("collected_ec_target", ec),
+		metrics.NewStringObservation("collected_ap_target", ap),
+	)
 	if isForceOverride || fi.GetApTarget() == "" {
-		fi.ApTarget = fwTarget
-		fi.EcTarget = fwTarget
+		log.Debugf(ctx, "AP target updated from %q to %q.", fi.GetApTarget(), ap)
+		fi.ApTarget = ap
 	}
-	log.Debugf(ctx, "Fw targets after update ec:%q, ap:%q", fi.GetEcTarget(), fi.GetApTarget())
+	if isForceOverride || fi.GetEcTarget() == "" {
+		log.Debugf(ctx, "EC target updated from %q to %q.", fi.GetEcTarget(), ec)
+		fi.EcTarget = ec
+	}
 	return nil
 }
 

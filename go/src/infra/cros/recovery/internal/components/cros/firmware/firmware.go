@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -20,13 +19,6 @@ import (
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
 )
-
-// Regexp that match to output of `crosid` from a given DUT.
-// Below is an example output of `crosid`:
-// SKU='163840'
-// CONFIG_INDEX='88'
-// FIRMWARE_MANIFEST_KEY='nirwen_ufs'
-var firmwareManifestRegexp = regexp.MustCompile("FIRMWARE_MANIFEST_KEY='(.*)'")
 
 const (
 	DevSignedFirmwareKeyPrefix = "b11d"
@@ -262,7 +254,7 @@ func installFirmwareImageViaUpdater(ctx context.Context, req *InstallFirmwareIma
 	// Override firmware model if target DUT is with hwid that using mult-firmware.
 	if IsMultiFirmwareHwid(req.Hwid) {
 		log.Debugf("Multi-firmware hwid detected, collecting firmware manifest key from the DUT.")
-		fwModel, err := GetFirmwareManifestKeyFromDUT(ctx, req.DutRunner, log)
+		fwModel, err := ReadFirmwareManifestKeyFromCrosID(ctx, req.DutRunner)
 		if err != nil {
 			return errors.Annotate(err, "install firmware via updater").Err()
 		}
@@ -550,19 +542,6 @@ func getFirmwareTargetFromDUT(ctx context.Context, run components.Runner, log lo
 	log.Debugf("Firmware target info from DUT: %s", out)
 	// The first letter of firmware target read from DUT is capitalized, so convert to lower case here.
 	return strings.ToLower(out), nil
-}
-
-// GetFirmwareManifestKeyFromDUT read FIRMWARE_MANIFEST_KEY of crosid output from the DUT.
-func GetFirmwareManifestKeyFromDUT(ctx context.Context, run components.Runner, log logger.Logger) (string, error) {
-	out, err := run(ctx, time.Second*15, "crosid")
-	if err != nil {
-		return "", errors.Annotate(err, "get firmware manifest key from DUT").Err()
-	}
-	fwLine := firmwareManifestRegexp.FindStringSubmatch(out)
-	if len(fwLine) == 0 || fwLine[1] == "" {
-		return "", errors.Reason("get firmware manifest key: empty content from crosid").Err()
-	}
-	return fwLine[1], nil
 }
 
 // Helper function to decide firmware candidate image.

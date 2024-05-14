@@ -12,21 +12,21 @@ import (
 type defaultMetricActionKeyType string
 
 const (
-	deafultMetricActionKey defaultMetricActionKeyType = "default_metric_action"
+	defaultMetricActionKey defaultMetricActionKeyType = "default_metric_action"
 )
 
 // WithAction sets metrics to the context.
 // If Logger is not provided process will be finished with panic.
 func WithAction(ctx context.Context, action *Action) context.Context {
 	if action != nil {
-		return context.WithValue(ctx, deafultMetricActionKey, action)
+		return context.WithValue(ctx, defaultMetricActionKey, action)
 	}
 	return ctx
 }
 
 // GetDefaultAction returns default action from context.
 func GetDefaultAction(ctx context.Context) *Action {
-	if v, ok := ctx.Value(deafultMetricActionKey).(*Action); ok {
+	if v, ok := ctx.Value(defaultMetricActionKey).(*Action); ok {
 		return v
 	}
 	return nil
