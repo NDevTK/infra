@@ -243,6 +243,15 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							ModemInfo: &labapi.ModemInfo{
 								Type: labapi.ModemType_MODEM_TYPE_FIBOCOMM_L850GL,
 							},
+							ChameleonInfo: &artifactpb.BuildMetadata_ChameleonInfo{
+								ChameleonType: []artifactpb.BuildMetadata_ChameleonType{
+									artifactpb.BuildMetadata_CHAMELEON_TYPE_V2,
+									artifactpb.BuildMetadata_CHAMELEON_TYPE_V3,
+								},
+								ChameleonConnectionTypes: []artifactpb.BuildMetadata_ChameleonConnectionType{
+									artifactpb.BuildMetadata_CHAMELEON_CONNECTION_TYPE_HDMI,
+								},
+							},
 						},
 					},
 					DutInfo: &artifactpb.DutInfo{
@@ -377,6 +386,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					{Key: "pool", Value: "ChromeOSSkylab"},
 					{Key: "label-pool", Value: "DUT_POOL_QUOTA"},
 					{Key: "ufs_zone", Value: "ZONE_SFO36_OS"},
+					{Key: "label-chameleon_type", Value: "CHAMELEON_TYPE_V2"},
+					{Key: "label-chameleon_connection_types", Value: "CHAMELEON_CONNECTION_TYPE_HDMI"},
+					{Key: "label-chameleon_type", Value: "CHAMELEON_TYPE_V3"},
 				},
 			}},
 		}
@@ -531,6 +543,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 									labapi.Chameleon_V3,
 								},
 							},
+							ChameleonInfo: &artifactpb.BuildMetadata_ChameleonInfo{},
 							ModemInfo: &labapi.ModemInfo{
 								Type: labapi.ModemType_MODEM_TYPE_FIBOCOMM_L850GL,
 							},
@@ -601,6 +614,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 										labapi.Chameleon_V3,
 									},
 								},
+								ChameleonInfo: &artifactpb.BuildMetadata_ChameleonInfo{},
 								ModemInfo: &labapi.ModemInfo{
 									Type: labapi.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
 								},
