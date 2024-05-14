@@ -16,6 +16,29 @@
       "message": "Hi Jason, Kaidong,\n\nI am modifying the check that pouplates label-wifi_state as the previous check was not detecting some failures.\n\nRegards\nShjin\n\nPS: I am not been able to locally test this changes. I am checking with the infra team about the steps.",
       "revId": "32e172f8446d488c2b330fc7f10c34dd217316f3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f4e19452_19977cf2",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/wifi_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1529893
+      },
+      "writtenOn": "2024-05-14T02:25:53Z",
+      "side": 1,
+      "message": "If the driver is not loaded, `iw list` returns nothing but no error message. \nFor example, run `rmmod iwlmvm; rmmod iwlwifi` on an Intel WiFi device to unload the Intel driver and run `iw list`, it returns nothing. \nTherefore, the output of `iw list` can be parsed to check if any phy radio is available, see [iw.ListPhys](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/common/wifi/iw/runner.go;drc\u003d15dc6f27b047e4731cd2d32851f3a0ae1e626971;l\u003d305).",
+      "range": {
+        "startLine": 21,
+        "startChar": 18,
+        "endLine": 21,
+        "endChar": 25
+      },
+      "revId": "32e172f8446d488c2b330fc7f10c34dd217316f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
