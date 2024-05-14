@@ -88,9 +88,10 @@ func (r *DefaultSourceResolver) ResolveScriptSource(hostCipdPlatform, dir string
 		return
 	}
 	version := strings.TrimSpace(string(out))
+	info.Version = version
 
 	if script.GetUseFetchCheckoutWorkflow() {
-		// TODO(fancl): running checkout inside derivation
+		// Fetch script will be invoked in the preUnpack hook.
 		return
 	}
 
@@ -108,7 +109,6 @@ func (r *DefaultSourceResolver) ResolveScriptSource(hostCipdPlatform, dir string
 	if err = json.Unmarshal(out, &info); err != nil {
 		return
 	}
-	info.Version = version
 
 	return
 }

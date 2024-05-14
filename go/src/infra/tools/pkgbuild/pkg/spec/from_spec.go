@@ -144,10 +144,10 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 	if err := create.ParseBuilder(); err != nil {
 		return nil, err
 	}
-	if err := create.ParseVerifier(); err != nil {
+	if err := create.LoadDependencies(buildCipdPlatform, l); err != nil {
 		return nil, err
 	}
-	if err := create.LoadDependencies(buildCipdPlatform, l); err != nil {
+	if err := create.ParseVerifier(); err != nil {
 		return nil, err
 	}
 
@@ -339,6 +339,16 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 				return nil, "", fmt.Errorf("failed to resolve latest: %w", err)
 			}
 
+			if s.UseFetchCheckoutWorkflow {
+				p.Enviroments.Set("_3PP_FETCH_CHECKOUT_WORKFLOW", "1")
+				fetch, err := json.Marshal(s.GetName())
+				if err != nil {
+					return nil, "", err
+				}
+				p.Enviroments.Set("fromSpecFetch", string(fetch))
+				return nil, info.Version, nil
+			}
+
 			// info.Name is optional.
 			names := info.Name
 			if len(names) == 0 {
@@ -404,6 +414,10 @@ func (p *createParser) FindPatches(name, dir string) error {
 
 func (p *createParser) ParseBuilder() error {
 	build := p.create.GetBuild()
+	if build == nil {
+		p.Enviroments.Set("_3PP_NO_INSTALL", "1")
+		return nil
+	}
 
 	installArgs := build.GetInstall()
 	if len(installArgs) == 0 {
@@ -439,7 +453,6 @@ func (p *createParser) ParseVerifier() error {
 func (p *createParser) LoadDependencies(buildCipdPlatform string, l *SpecLoader) error {
 	build := p.create.GetBuild()
 	if build == nil {
-		p.Enviroments.Set("_3PP_NO_INSTALL", "1")
 		return nil
 	}
 

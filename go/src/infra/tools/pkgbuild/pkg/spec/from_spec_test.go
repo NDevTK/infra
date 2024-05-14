@@ -471,7 +471,7 @@ func TestLoadDependencies(t *testing.T) {
 		Convey("no install", func() {
 			p, err := newCreateParser("linux-amd64", []*Spec_Create{{}})
 			So(err, ShouldBeNil)
-			err = p.LoadDependencies("linux-amd64", l)
+			err = p.ParseBuilder()
 			So(err, ShouldBeNil)
 			So(p.Enviroments.Get("_3PP_NO_INSTALL"), ShouldEqual, "1")
 		})

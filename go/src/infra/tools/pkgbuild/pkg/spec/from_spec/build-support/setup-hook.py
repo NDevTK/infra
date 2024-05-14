@@ -82,6 +82,7 @@ def install_verify_phase(exe) -> None:
 def setup(exe):
   """Copy all libraries into a single directory."""
   import itertools
+  import json
   import os
   import shutil
   import stat
@@ -101,6 +102,12 @@ def setup(exe):
   def skip_unpack(exe):
     if exe.env.get('_3PP_UNPACK_ARCHIVE'):
       return False
+
+    # Do nothing if src is relative to working directory.
+    if not os.path.isabs(exe.current_context.src):
+      return True
+
+    # ...otherwise copy src from other derivation.
     return extract.copy_cmd(exe)
 
   # We don't actually flatten the directories. We chdir into the single
@@ -117,6 +124,21 @@ def setup(exe):
       root = names[0]
 
     exe.env[exe.ENV_SOURCE_ROOT] = root
+    return True
+
+  def pre_unpack(exe) -> bool:
+    if exe.env.get('_3PP_FETCH_CHECKOUT_WORKFLOW'):
+      root = os.getcwd()
+
+      args = json.loads(exe.env['fromSpecFetch'])
+      script = pathlib.Path(exe.env['_3PP_DEF'], args[0])
+      args[0] = str(script)
+      args.insert(0, 'vpython3' if script.suffix == '.py' else 'bash')
+      args.append('checkout')
+      args.append(root)
+
+      exe.execute_cmd(args)
+      exe.env[exe.ENV_SOURCES] = os.path.pathsep.join(os.listdir(root))
     return True
 
   def post_unpack(exe) -> bool:
@@ -145,6 +167,7 @@ def setup(exe):
     return True
 
   exe.add_hook('activatePkg', activate_pkg)
+  exe.add_hook('preUnpack', pre_unpack)
   exe.add_hook('unpackCmd', skip_unpack)
   exe.add_hook('setSourceRoot', set_source_root)
   exe.add_hook('postUnpack', post_unpack)

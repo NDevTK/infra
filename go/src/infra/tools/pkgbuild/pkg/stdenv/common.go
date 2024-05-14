@@ -63,6 +63,21 @@ var (
 			},
 		},
 	}
+	// Vpython is a workaround for fetch_checkout_workflow.
+	// TODO: Move fetch_checkout_workflow outside pkgbuild when we have a dedicated
+	// updater.
+	vpython = &generators.CIPDExport{
+		Name:     "stdenv_vpython3",
+		Metadata: &core.Action_Metadata{Luciexe: &core.Action_Metadata_LUCIExe{StepName: "stdenv_vpython3"}},
+		Ensure: ensure.File{
+			PackagesBySubdir: map[string]ensure.PackageSlice{
+				"": {
+					{PackageTemplate: "infra/tools/luci/vpython3/${platform}", UnresolvedVersion: "latest"},
+					{PackageTemplate: "infra/tools/cipd/${platform}", UnresolvedVersion: "latest"},
+				},
+			},
+		},
+	}
 )
 
 type Config struct {
@@ -109,7 +124,7 @@ func Init(cfg *Config) error {
 	)
 
 	// Prebuilt binaries
-	base = append(base, git, cpython)
+	base = append(base, git, cpython, vpython)
 
 	posixUtils := []string{
 		"awk",
@@ -206,14 +221,19 @@ type Generator struct {
 }
 
 func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*core.Action, error) {
-	src, srcsEnv, err := g.fetchSource(plats)
-	if err != nil {
-		return nil, err
+	var deps []generators.Dependency
+	env := g.Env.Clone()
+
+	if g.Source != nil {
+		src, srcsEnv, err := g.fetchSource(plats)
+		if err != nil {
+			return nil, err
+		}
+		deps = append(deps, generators.Dependency{Type: generators.DepsBuildHost, Generator: src})
+		env.SetEntry(srcsEnv)
 	}
 
-	deps := append([]generators.Dependency{
-		{Type: generators.DepsBuildHost, Generator: src},
-	}, g.Dependencies...)
+	deps = append(deps, g.Dependencies...)
 	for _, g := range baseByOS[plats.Build.OS()] {
 		deps = append(deps, generators.Dependency{
 			Type:      generators.DepsBuildHost,
@@ -221,10 +241,8 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 		})
 	}
 
-	env := g.Env.Clone()
 	env.Set("buildFlags", "")
 	env.Set("installFlags", "")
-	env.SetEntry(srcsEnv)
 	tmpl := &workflow.Generator{
 		Name: g.Name,
 		Metadata: &core.Action_Metadata{

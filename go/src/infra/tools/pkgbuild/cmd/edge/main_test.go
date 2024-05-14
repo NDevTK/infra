@@ -253,7 +253,7 @@ func TestRootPackges(t *testing.T) {
 				slices.Sort(roots)
 			}
 			expected := []string{
-				"stdenv", "setup", "stdenv_git", "stdenv_python3", "posix_import", // stdenv
+				"stdenv", "setup", "stdenv_git", "stdenv_python3", "stdenv_vpython3", "posix_import", // stdenv
 				"from_spec_support", "docker_import", // from_spec
 
 				"step_1", "step_2", // loaded packages
@@ -321,7 +321,7 @@ func TestRootPackges(t *testing.T) {
 				slices.Sort(roots)
 			}
 			expected := []string{
-				"stdenv", "setup", "stdenv_git", "stdenv_python3", "posix_import", // stdenv
+				"stdenv", "setup", "stdenv_git", "stdenv_python3", "stdenv_vpython3", "posix_import", // stdenv
 				"from_spec_support", "docker_import", // from_spec
 
 				"step_cross", "step_cross",
