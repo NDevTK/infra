@@ -1,0 +1,488 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a482152d_a4222bd5",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2024-05-14T01:34:34Z",
+      "side": 1,
+      "message": "nit: getChameleonType -\u003e getChameleonTypes\n\nDitto below.",
+      "range": {
+        "startLine": 318,
+        "startChar": 32,
+        "endLine": 318,
+        "endChar": 48
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "8693daac_9a81f6d1",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 318,
+                "startChar": 0,
+                "endLine": 319,
+                "endChar": 0
+              },
+              "replacement": "\t\tchameleonInfo.ChameleonType \u003d getChameleonTypes(chameleonTypes)\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 321,
+                "startChar": 0,
+                "endLine": 322,
+                "endChar": 0
+              },
+              "replacement": "\t\tchameleonInfo.ChameleonConnectionTypes \u003d getChameleonConnectionTypes(chameleonConnectionTypes)\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 684,
+                "startChar": 0,
+                "endLine": 685,
+                "endChar": 0
+              },
+              "replacement": "// getChameleonTypes gets the corresponding BuildMetadata_ChameleonTypeType\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 686,
+                "startChar": 0,
+                "endLine": 687,
+                "endChar": 0
+              },
+              "replacement": "func getChameleonTypes(strings []string) []artifactpb.BuildMetadata_ChameleonType {\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 698,
+                "startChar": 0,
+                "endLine": 699,
+                "endChar": 0
+              },
+              "replacement": "// getChameleonConnectionTypes gets the corresponding BuildMetadata_ChameleonConnectionType\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 700,
+                "startChar": 0,
+                "endLine": 701,
+                "endChar": 0
+              },
+              "replacement": "func getChameleonConnectionTypes(strings []string) []artifactpb.BuildMetadata_ChameleonConnectionType {\n"
+            }
+          ]
+        }
+      ],
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a235bab_8b9c0567",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2024-05-14T01:34:34Z",
+      "side": 1,
+      "message": "nit: getChameleonConnectionType -\u003e getChameleonConnectionTypes\n\nDitto below.",
+      "range": {
+        "startLine": 321,
+        "startChar": 43,
+        "endLine": 321,
+        "endChar": 69
+      },
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c97e8990_a8fd8bbe",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2024-05-14T01:34:34Z",
+      "side": 1,
+      "message": "nit: add a TODO comment and remove this once you remove its usage in the result adapter.",
+      "range": {
+        "startLine": 327,
+        "startChar": 3,
+        "endLine": 328,
+        "endChar": 56
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "8a21f0a9_e9e44537",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 328,
+                "startChar": 0,
+                "endLine": 328,
+                "endChar": 0
+              },
+              "replacement": "\t\t\t// TODO (b/270230867): remove this once result adapter is updated.\n"
+            }
+          ]
+        }
+      ],
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a986ee4a_1f526815",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2024-05-14T01:34:34Z",
+      "side": 1,
+      "message": "\u003e \n\u003e Import order is not sorted.\n\u003e Run `golangci-lint run --fix cros/cmd/cros_test_runner/internal/commands` to fix this.\n\nPlease fix.",
+      "parentUuid": "f39ee439_b5de6424",
+      "range": {
+        "startLine": 329,
+        "startChar": 0,
+        "endLine": 329,
+        "endChar": 0
+      },
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93cdf7ee_191bb2b9",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 686,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2024-05-14T01:34:34Z",
+      "side": 1,
+      "message": "nit: use a more specific name instead.\n\nDitto below",
+      "range": {
+        "startLine": 686,
+        "startChar": 22,
+        "endLine": 686,
+        "endChar": 29
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "0715a57d_a00f59a8",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 318,
+                "startChar": 0,
+                "endLine": 319,
+                "endChar": 0
+              },
+              "replacement": "\t\tchameleonInfo.ChameleonType \u003d getChameleonTypes(chameleonTypes)\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 321,
+                "startChar": 0,
+                "endLine": 322,
+                "endChar": 0
+              },
+              "replacement": "\t\tchameleonInfo.ChameleonConnectionTypes \u003d getChameleonConnectionTypes(chameleonConnectionTypes)\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 684,
+                "startChar": 0,
+                "endLine": 685,
+                "endChar": 0
+              },
+              "replacement": "// getChameleonTypes gets the corresponding BuildMetadata_ChameleonTypeType\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 686,
+                "startChar": 0,
+                "endLine": 687,
+                "endChar": 0
+              },
+              "replacement": "func getChameleonTypes(chameleonTypes []string) []artifactpb.BuildMetadata_ChameleonType {\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 688,
+                "startChar": 0,
+                "endLine": 689,
+                "endChar": 0
+              },
+              "replacement": "\tfor _, str :\u003d range chameleonTypes {\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 698,
+                "startChar": 0,
+                "endLine": 699,
+                "endChar": 0
+              },
+              "replacement": "// getChameleonConnectionTypes gets the corresponding BuildMetadata_ChameleonConnectionType\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 700,
+                "startChar": 0,
+                "endLine": 701,
+                "endChar": 0
+              },
+              "replacement": "func getChameleonConnectionTypes(chameleonConnectionTypes []string) []artifactpb.BuildMetadata_ChameleonConnectionType {\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 702,
+                "startChar": 0,
+                "endLine": 703,
+                "endChar": 0
+              },
+              "replacement": "\tfor _, str :\u003d range chameleonConnectionTypes {\n"
+            }
+          ]
+        }
+      ],
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae53dce0_6e5a0438",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 687,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2024-05-14T01:34:34Z",
+      "side": 1,
+      "message": "Prefer to initialize a list with a capicity.\n\nExample:\n\nchameleonTypes :\u003d make([]artifactpb.BuildMetadata_ChameleonType, 0, len(strings))\n\nDitto below.",
+      "range": {
+        "startLine": 687,
+        "startChar": 1,
+        "endLine": 687,
+        "endChar": 60
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "33352e2d_8b4d3525",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 687,
+                "startChar": 0,
+                "endLine": 688,
+                "endChar": 0
+              },
+              "replacement": "\tchameleonTypes :\u003d make([]artifactpb.BuildMetadata_ChameleonType, 0, len(strings))\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 701,
+                "startChar": 0,
+                "endLine": 702,
+                "endChar": 0
+              },
+              "replacement": "\tchameleonConnectionTypes :\u003d make([]artifactpb.BuildMetadata_ChameleonConnectionType, 0, len(strings))\n"
+            }
+          ]
+        }
+      ],
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "303a841e_8a717205",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 687,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2024-05-14T01:34:34Z",
+      "side": 1,
+      "message": "Prefer to intialize a list with a",
+      "range": {
+        "startLine": 687,
+        "startChar": 1,
+        "endLine": 687,
+        "endChar": 60
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "9ee4d0fa_9de3ebed",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 687,
+                "startChar": 0,
+                "endLine": 688,
+                "endChar": 0
+              },
+              "replacement": "\tvar chameleonTypes []artifactpb.BuildMetadata_ChameleonType \u003d []artifactpb.BuildMetadata_ChameleonType{}\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 701,
+                "startChar": 0,
+                "endLine": 702,
+                "endChar": 0
+              },
+              "replacement": "\tvar chameleonConnectionTypes []artifactpb.BuildMetadata_ChameleonConnectionType \u003d []artifactpb.BuildMetadata_ChameleonConnectionType{}\n"
+            }
+          ]
+        }
+      ],
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eaf2d6cb_bf8e9110",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 690,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2024-05-14T01:34:34Z",
+      "side": 1,
+      "message": "If the `exists` is true, do we still need to check the `chameleonType` again?\n\nDitto below.",
+      "range": {
+        "startLine": 690,
+        "startChar": 3,
+        "endLine": 690,
+        "endChar": 90
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "7fdfd07b_f10fc7c4",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 690,
+                "startChar": 0,
+                "endLine": 693,
+                "endChar": 0
+              },
+              "replacement": "\t\t\tchameleonTypes \u003d append(chameleonTypes, artifactpb.BuildMetadata_ChameleonType(index))\n"
+            },
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+              "range": {
+                "startLine": 704,
+                "startChar": 0,
+                "endLine": 707,
+                "endChar": 0
+              },
+              "replacement": "\t\t\tchameleonConnectionTypes \u003d append(chameleonConnectionTypes, artifactpb.BuildMetadata_ChameleonConnectionType(index))\n"
+            }
+          ]
+        }
+      ],
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "588e86ef_91fba80a",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2024-05-14T01:34:34Z",
+      "side": 1,
+      "message": "nit: prefer to test them again multiple values if they\u0027re a repeated field.",
+      "range": {
+        "startLine": 246,
+        "startChar": 0,
+        "endLine": 252,
+        "endChar": 10
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "5dbf901b_b077acf9",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd_test.go",
+              "range": {
+                "startLine": 249,
+                "startChar": 0,
+                "endLine": 249,
+                "endChar": 0
+              },
+              "replacement": "\t\t\t\t\t\t\t\t\tartifactpb.BuildMetadata_CHAMELEON_TYPE_V3,\n"
+            }
+          ]
+        }
+      ],
+      "revId": "5b01f99cd63387c010ad438850fb84af7cd249f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
