@@ -172,6 +172,11 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 			appendDim(dims, "label-cellular_modem_state", state[hardwareStatePrefixLength:])
 		}
 	}
+	if starfishState := p.GetStarfishState(); starfishState != inventory.PeripheralState_UNKNOWN {
+		if state, ok := lab.PeripheralState_name[int32(starfishState)]; ok {
+			appendDim(dims, "label-starfish_state", state)
+		}
+	}
 	if peripheralBtpeerState := p.GetPeripheralBtpeerState(); peripheralBtpeerState != inventory.PeripheralState_UNKNOWN {
 		if pwsState, ok := lab.PeripheralState_name[int32(peripheralBtpeerState)]; ok {
 			dims["label-peripheral_btpeer_state"] = []string{pwsState}
@@ -324,7 +329,13 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		}
 		delete(d, "label-cellular_modem_state")
 	}
-
+	if starfishState, ok := getLastStringValue(d, "label-starfish_state"); ok {
+		if sIndex, ok := lab.PeripheralState_value[strings.ToUpper(starfishState)]; ok {
+			state := inventory.PeripheralState(sIndex)
+			p.StarfishState = &state
+		}
+		delete(d, "label-starfish_state")
+	}
 	if pbsStateName, ok := getLastStringValue(d, "label-peripheral_btpeer_state"); ok {
 		pbsState := inventory.PeripheralState_UNKNOWN
 		if sIndex, ok := lab.PeripheralState_value[strings.ToUpper(pbsStateName)]; ok {

@@ -438,7 +438,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 46
+// NEXT TAG: 47
 message Peripherals {
   reserved 32;
 
@@ -549,6 +549,7 @@ message Peripherals {
   optional HardwareState wifi_state = 28;
   optional HardwareState bluetooth_state = 29;
   optional HardwareState cellular_modem_state = 34;
+  optional PeripheralState starfish_state = 46;
   optional PeripheralState rpm_state = 25;
 
   // The overall state of all btpeer peripherals in the testbed.
