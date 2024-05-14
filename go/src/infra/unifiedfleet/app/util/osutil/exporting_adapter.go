@@ -536,6 +536,11 @@ func setCr50Configs(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	l.Cr50RoKeyid = &cr50Env
 }
 
+func setGpuId(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
+	c := l.GetCapabilities()
+	c.GpuId = &(s.GpuId)
+}
+
 func setHardwareState(s chromeosLab.HardwareState) *inventory.HardwareState {
 	target := inventory.HardwareState_HARDWARE_UNKNOWN
 	if s != chromeosLab.HardwareState_HARDWARE_UNKNOWN {
@@ -569,6 +574,7 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 		p.WorkingBluetoothBtpeer = &n
 	}
 	setCr50Configs(l, s)
+	setGpuId(l, s)
 }
 
 // TODO(echoyang@): Add CBX branding
@@ -775,6 +781,7 @@ func adaptV2LabstationToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.De
 		Fingerprint:         &falseValue,
 		Flashrom:            &falseValue,
 		GpuFamily:           &emptyString,
+		GpuId:               &emptyString,
 		Graphics:            &emptyString,
 		Hotwording:          &falseValue,
 		InternalDisplay:     &falseValue,

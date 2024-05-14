@@ -316,7 +316,7 @@ message SchedulableLabels {
 
 // Keep sorted by field name.
 //
-// NEXT TAG: 24
+// NEXT TAG: 25
 message HardwareCapabilities {
   optional bool atrus = 17;
   optional bool bluetooth = 7;
@@ -398,6 +398,7 @@ message HardwareCapabilities {
   optional FormFactor form_factor = 23;
 
   optional string gpu_family = 3;
+  optional string gpu_id = 24;
   optional string graphics = 4;
   optional bool hotwording = 15;
   optional bool internal_display = 8;

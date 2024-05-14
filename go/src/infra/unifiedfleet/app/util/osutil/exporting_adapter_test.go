@@ -262,6 +262,7 @@ var devUFSState = chromeosLab.DutState{
 	WifiPeripheralState:      chromeosLab.PeripheralState_WORKING,
 	PeripheralBtpeerState:    chromeosLab.PeripheralState_WORKING,
 	AudioLatencyToolkitState: chromeosLab.PeripheralState_WORKING,
+	GpuId:                    "test_gpu_id",
 }
 
 var labstationMachine = ufspb.Machine{
@@ -472,6 +473,7 @@ common {
 			fingerprint: true
 			form_factor: FORM_FACTOR_CHROMEBASE
 			gpu_family: "test_gpu"
+			gpu_id: "test_gpu_id"
 			graphics: "gles"
 			power: "AC_only"
 			starfish_slot_mapping: "test-map-key:test-value"
@@ -676,6 +678,7 @@ common {
 			fingerprint: false
 			flashrom: false
 			gpu_family: ""
+			gpu_id: "test_gpu_id"
 			graphics: ""
 			hotwording: false
 			internal_display: false
