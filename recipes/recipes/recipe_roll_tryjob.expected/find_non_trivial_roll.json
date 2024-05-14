@@ -496,7 +496,9 @@
   {
     "cmd": [
       "python3",
-      "[CACHE]/builder/depot_tools/depot_tools/some/path/recipes.py",
+      "[CACHE]/builder/recipe_engine/recipe_engine/recipes.py",
+      "--package",
+      "[CACHE]/builder/depot_tools/depot_tools/infra/config/recipes.cfg",
       "-O",
       "recipe_engine=[CACHE]/builder/recipe_engine/recipe_engine",
       "test",
@@ -644,7 +646,9 @@
   {
     "cmd": [
       "python3",
-      "[CACHE]/builder/depot_tools/depot_tools/some/path/recipes.py",
+      "[CACHE]/builder/recipe_engine/recipe_engine/recipes.py",
+      "--package",
+      "[CACHE]/builder/depot_tools/depot_tools/infra/config/recipes.cfg",
       "-O",
       "recipe_engine=[CACHE]/builder/recipe_engine/recipe_engine",
       "test",

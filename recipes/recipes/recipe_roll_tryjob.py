@@ -251,10 +251,19 @@ class RecipesRepo(object):
     Raises:
       `RecipeTrainingFailure` if the training produces an uncaught exception.
     """
+    recipes_py = self._root / self.recipes_py
+    # If upstream is specifically the engine repo itself, we want to use its
+    # copy of recipes.py, because this version will be included as part of any
+    # roll into the current repo.
+    if upstream_repo.name == 'recipe_engine':
+      recipes_py = upstream_repo.root / 'recipes.py'
+
     try:
       return self._api.step(step_name, [
           'python3',
-          self._root / self.recipes_py,
+          recipes_py,
+          '--package',
+          self._root / 'infra' / 'config' / 'recipes.cfg',
           '-O',
           '%s=%s' % (upstream_repo.name, upstream_repo.root),
           'test',
@@ -631,6 +640,16 @@ def GenTests(api):
                            [CL_TANGENTIAL, CL_CHANGE_ACTUAL], BYPASS_FOOTER) +
          api.step_data('parse description',
                        api.json.output({BYPASS_FOOTER: ['Reasons']})))
+
+  yield test_with_changes(
+      'non-engine upstream',
+      'depot_tools',
+      'build', [GerritChange(
+          host='chromium-review.googlesource.com',
+          project='chromium/build',
+          change=456789,
+          patchset=12,
+      ) ])
 
   yield (api.test('crash_for_no_upstream_patchset') + api.buildbucket.build(
       Build(id=1234567, input=Build.Input(gerrit_changes=[CL_UNSUPPORTED]))) +
