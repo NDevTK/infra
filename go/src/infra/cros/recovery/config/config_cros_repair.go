@@ -72,6 +72,7 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 		"Verify RO_VPD data on DUT",
 		"Verify system info",
 		"Collect firmware target",
+		"Collect gpu_id",
 		"Update Servo NIC mac address",
 		"Backup CBI",
 		"Check CBI",
@@ -4604,6 +4605,17 @@ func crosRepairActions() map[string]*Action {
 				// TODO(b/333895984): Disable force before enable for production usage.
 				"force_override:true",
 			},
+			AllowFailAfterRecovery: true,
+			RunControl:             RunControl_ALWAYS_RUN,
+		},
+		"Collect gpu_id": {
+			Docs: []string{
+				"Collect gpu_id from DUT with graphics hardware_probe to UFS and recoveries's label GpuId.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName:               "cros_collect_gpu_id",
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_ALWAYS_RUN,
 		},
