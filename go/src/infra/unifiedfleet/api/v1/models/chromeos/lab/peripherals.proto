@@ -17,7 +17,7 @@ import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_rou
 
 // This proto defines setup labels in lab config of a DUT.
 
-// Peripherals of device. Next Tag: 22
+// Peripherals of device. Next Tag: 24
 message Peripherals {
   Servo servo = 1;
   Chameleon chameleon = 2;
@@ -26,6 +26,9 @@ message Peripherals {
   repeated Camera connected_camera = 4;
   Audio audio = 5;
   Wifi wifi = 6;
+  // The features supported by the pasit testbed. This is generally a list of all
+  // of the component models in the testbed, eg. docks, monitors, cameras, etc.
+  repeated string pasit_features = 22;
   Touch touch = 7;
   // e.g: "att", "verizon",.. It's a manual label set by lab, varies dut by dut.
   string carrier = 8;
@@ -57,6 +60,8 @@ message Peripherals {
   AudioLatencyToolkit audio_latency_toolkit = 19;
   // Indicate if the DUT uses Dolos as a battery replacement
   Dolos dolos = 20;
+  // The host and topology used in peripheral interop test beds.
+  PasitHost pasit_host = 23;
 }
 
 
@@ -73,6 +78,10 @@ enum CameraType {
 // Next Tag: 2
 message Camera {
   CameraType camera_type = 1;
+  // The unique ID of the camera.
+  string id = 2;
+  // The make/model of the camera for items not in the type enum.
+  string model = 3;
 }
 
 enum CableType {
@@ -230,4 +239,74 @@ message HumanMotionRobot {
 // Next Tag: 1
 message AudioLatencyToolkit {
   string version = 1; // default: "4.1"
+}
+
+// PASIT is a connected set of peripheral components used in interop testing. The
+// components connected are controlled via an external host. PasitHost describes the
+// devices in the testbed and their connection topology.
+message PasitHost {
+  // The id of the host that controls the devices (e.g. switches)
+  string id = 1;
+  // The components/devices in the PASIT testbed (e.g. docks, switches, cameras, monitors, etc)
+  repeated Device devices = 2;
+  // The connections between devices/components in the testbed.
+  repeated Connection connections = 3;
+
+  // A single connection between two components in the topology.
+  message Connection {
+    // The physical port type/technology.
+    Technology technology = 1;
+    // The ID of the parent component;
+    string parent = 2;
+    // The ID of the child component;
+    string child = 3;
+    // The speed of the connection.
+    float speed = 4;
+    // If the parent device has multiple connection ports/slots,
+    // this is the id of the connection.
+    string id = 5;
+
+    // The technology that a specific perhipheral/connection uses.
+    enum Technology {
+      UNKNOWN = 0;
+      USBA2 = 1;
+      USBA3 = 2;
+      USBC = 3;
+      HDMI = 4;
+      DISPLAY_PORT = 5;
+      ETHERNET = 6;
+    }
+  }
+
+  // A single device/component in the testbed.
+  message Device {
+    // The unique ID of the device.
+    string id = 1;
+    // The the make/model of the device.
+    string model = 2;
+    // The type of device represented.
+    Type type = 3;
+    // Additional power supply information for devices that provide
+    // power to the DUT.
+    PowerSupply power_supply = 4;
+
+    // The type of device represented.
+    enum Type {
+      UNKNOWN = 0;
+      DOCKING_STATION = 1;
+      MONITOR = 2;
+      CAMERA = 3;
+      STORAGE = 4;
+      HID = 5;
+      NETWORK = 6;
+      SWITCH_FIXTURE = 7;
+    }
+
+    // Information on the power capabilities of the device.
+    message PowerSupply {
+      float current = 1;
+      float voltage = 2;
+      float power = 3;
+    }
+  }
 }
