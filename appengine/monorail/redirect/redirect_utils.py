@@ -11,6 +11,7 @@ from tracker import tracker_bizobj
 from redirect import redirect_custom_labels
 
 PROJECT_REDIRECT_MAP = {
+    'angleproject': 'https://issues.angleproject.org',
     'chromium': 'https://issues.chromium.org',
     'dawn': 'https://issues.chromium.org',
     'fuchsia': 'https://issues.fuchsia.dev',
