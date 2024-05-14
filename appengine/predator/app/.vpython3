@@ -5,7 +5,7 @@
 # List of available wheels:
 #   https://chromium.googlesource.com/infra/infra/+/main/infra/tools/dockerbuild/wheels.md
 
-python_version: "3.8"
+python_version: "3.11"
 
 wheel: <
   name: "infra/python/wheels/appengine-python-standard-py3"
@@ -13,8 +13,8 @@ wheel: <
 >
 
 wheel: <
-  name: "infra/python/wheels/flask-py2_py3"
-  version: "version:1.0.2"
+  name: "infra/python/wheels/flask-py3"
+  version: "version:2.0.2"
 >
 
 wheel: <
@@ -49,7 +49,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.2x.supported.1"
+  version: "version:1.23.5.chromium.4"
 >
 
 wheel: <
@@ -64,7 +64,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/scipy/${vpython_platform}"
-  version: "version:1.6.2"
+  version: "version:1.10.1"
 >
 
 wheel: <
@@ -80,7 +80,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/pytest-py3"
-  version: "version:6.2.2"
+  version: "version:7.3.1"
 >
 
 wheel: <
@@ -118,7 +118,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/pillow/${vpython_platform}"
-  version: "version:8.3.1"
+  version: "version:9.5.0"
 >
 
 wheel: <
@@ -139,28 +139,28 @@ wheel: <
 # Required by ruamel.yaml==0.17.16
 wheel: <
   name: "infra/python/wheels/ruamel_yaml_clib/${vpython_platform}"
-  version: "version:0.2.6"
+  version: "version:0.2.8"
 >
 
 # Required by Flask==1.0.2
 wheel: <
-  name: "infra/python/wheels/click-py2_py3"
-  version: "version:7.0"
+  name: "infra/python/wheels/click-py3"
+  version: "version:8.0.3"
 >
 
 wheel: <
-  name: "infra/python/wheels/itsdangerous-py2_py3"
-  version: "version:1.1.0"
+  name: "infra/python/wheels/itsdangerous-py3"
+  version: "version:2.0.1"
 >
 
 wheel: <
-  name: "infra/python/wheels/jinja2-py2_py3"
-  version: "version:2.10.1"
+  name: "infra/python/wheels/jinja2-py3"
+  version: "version:3.0.2"
 >
 
 wheel: <
-  name: "infra/python/wheels/werkzeug-py2_py3"
-  version: "version:1.0.1"
+  name: "infra/python/wheels/werkzeug-py3"
+  version: "version:2.0.1"
 >
 
 # Required by requests==2.25.1
@@ -187,7 +187,7 @@ wheel: <
 # Required by Jinja2==2.10.1
 wheel: <
   name: "infra/python/wheels/markupsafe/${vpython_platform}"
-  version: "version:1.1.1"
+  version: "version:2.0.1"
 >
 
 # Required by google-cloud-storage==1.41.1
@@ -254,10 +254,9 @@ wheel: <
   version: "version:0.4.8"
 >
 
-# Required by pytest==6.2.2
 wheel: <
-  name: "infra/python/wheels/attrs-py2_py3"
-  version: "version:21.4.0"
+  name: "infra/python/wheels/attrs-py3"
+  version: "version:23.1.0"
 >
 
 # Required by pytest==6.2.2
@@ -268,21 +267,15 @@ wheel: <
 
 # Required by pytest==6.2.2
 wheel: <
-  name: "infra/python/wheels/packaging-py2_py3"
-  version: "version:16.8"
+  name: "infra/python/wheels/packaging-py3"
+  version: "version:23.0"
 >
 
-# Required by pytest==6.2.2
 wheel: <
   name: "infra/python/wheels/pluggy-py3"
   version: "version:0.13.1"
 >
 
-# Required by pytest==6.2.2
-wheel: <
-  name: "infra/python/wheels/py-py2_py3"
-  version: "version:1.10.0"
->
 
 # Required by pytest==6.2.2
 wheel: <
@@ -295,4 +288,3 @@ wheel: <
   name: "infra/python/wheels/pyparsing-py2_py3"
   version: "version:2.4.7"
 >
-

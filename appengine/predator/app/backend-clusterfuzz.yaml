@@ -1,5 +1,5 @@
 service: backend-clusterfuzz
-runtime: python38
+runtime: python311
 app_engine_apis: true
 instance_class: B4
 basic_scaling:
