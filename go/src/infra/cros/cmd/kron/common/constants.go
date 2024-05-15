@@ -51,7 +51,7 @@ const (
 
 	BuildsSubscription          = "chromeos-builds-all"
 	BuildsSubscriptionTesting   = "chromeos-builds-all-testing"
-	BuildsSubscription3dTesting = "chromeos-builds-all-3D-testing"
+	BuildsSubscription3dTesting = "chromeos-builds-all-3d-testing"
 
 	BuildsPubSubTopic = "kron-builds"
 	EventsPubSubTopic = "kron-events"

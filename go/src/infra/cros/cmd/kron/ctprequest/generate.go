@@ -47,7 +47,7 @@ var priorityMap = map[suschpb.SchedulerConfig_LaunchCriteria_LaunchProfile]int64
 func getSwarmingDimensions(config *suschpb.SchedulerConfig) []string {
 	dims := []string{}
 
-	for _, dim := range config.RunOptions.Dimensions {
+	for _, dim := range config.GetRunOptions().GetDimensions() {
 		str := fmt.Sprintf("%s:%s", dim.Key, dim.Value)
 
 		dims = append(dims, str)
@@ -57,12 +57,11 @@ func getSwarmingDimensions(config *suschpb.SchedulerConfig) []string {
 
 // getSchedulingFields transforms SuSch SchedulerConfig_PoolOptions into ctp SchedulerConfig_LaunchCriteria_LaunchProfile.
 func getSchedulingFields(PoolOptions *suschpb.SchedulerConfig_PoolOptions, launchType suschpb.SchedulerConfig_LaunchCriteria_LaunchProfile) *requestpb.Request_Params_Scheduling {
-
 	schedParams := &requestpb.Request_Params_Scheduling{
-		QsAccount: PoolOptions.QsAccount,
+		QsAccount: PoolOptions.GetQsAccount(),
 	}
 
-	if PoolOptions.QsAccount == "" {
+	if PoolOptions.GetQsAccount() == "" {
 		// Get the priority for the run.
 		priority := Default
 		if val, ok := priorityMap[launchType]; ok {
@@ -74,10 +73,10 @@ func getSchedulingFields(PoolOptions *suschpb.SchedulerConfig_PoolOptions, launc
 
 	// Because of the proto typing we need cast the pool to one of these values.
 	// In the CTP run the key of managedPool versus unManagedPool matters.
-	if managedPool, ok := requestpb.Request_Params_Scheduling_ManagedPool_value[PoolOptions.Pool]; ok {
+	if managedPool, ok := requestpb.Request_Params_Scheduling_ManagedPool_value[PoolOptions.GetPool()]; ok {
 		schedParams.Pool = &requestpb.Request_Params_Scheduling_ManagedPool_{ManagedPool: requestpb.Request_Params_Scheduling_ManagedPool(managedPool)}
 	} else {
-		schedParams.Pool = &requestpb.Request_Params_Scheduling_UnmanagedPool{UnmanagedPool: PoolOptions.Pool}
+		schedParams.Pool = &requestpb.Request_Params_Scheduling_UnmanagedPool{UnmanagedPool: PoolOptions.GetPool()}
 
 	}
 
@@ -91,11 +90,11 @@ func getTimeoutSeconds(timeoutMins int32) int64 {
 func getTags(board, model, build, branchTrigger string, config *suschpb.SchedulerConfig) []string {
 	tags := []string{
 		fmt.Sprintf("build:%s", build),
-		fmt.Sprintf("label-pool:%s", config.PoolOptions.Pool),
-		fmt.Sprintf("ctp-fwd-task-name:%s", config.Name),
-		fmt.Sprintf("label-suite:%s", config.Suite),
-		fmt.Sprintf("suite:%s", config.Suite),
-		fmt.Sprintf("analytics_name:%s", config.AnalyticsName),
+		fmt.Sprintf("label-pool:%s", config.GetPoolOptions().GetPool()),
+		fmt.Sprintf("ctp-fwd-task-name:%s", config.GetName()),
+		fmt.Sprintf("label-suite:%s", config.GetSuite()),
+		fmt.Sprintf("suite:%s", config.GetSuite()),
+		fmt.Sprintf("analytics_name:%s", config.GetAnalyticsName()),
 		fmt.Sprintf("branch-trigger:%s", branchTrigger),
 	}
 
@@ -138,7 +137,7 @@ func getTestPlan(config *suschpb.SchedulerConfig) *requestpb.Request_TestPlan {
 		TagCriteria: config.GetRunOptions().GetTagCriteria(),
 	}
 
-	if config.GetTestArgs() != "" && len(testPlan.Suite) > 0 {
+	if config.GetTestArgs() != "" && len(testPlan.GetSuite()) > 0 {
 		testPlan.Suite[0].TestArgs = config.GetTestArgs()
 	}
 
@@ -173,8 +172,8 @@ func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget,
 					},
 				},
 			},
-			Scheduling: getSchedulingFields(config.PoolOptions, config.LaunchCriteria.LaunchProfile),
-			Retry:      getRetryParams(config.RunOptions.Retry),
+			Scheduling: getSchedulingFields(config.GetPoolOptions(), config.GetLaunchCriteria().GetLaunchProfile()),
+			Retry:      getRetryParams(config.GetRunOptions().GetRetry()),
 			Metadata: &requestpb.Request_Params_Metadata{
 				TestMetadataUrl:        GSPrefix + buildImage,
 				DebugSymbolsArchiveUrl: GSPrefix + buildImage,
@@ -182,12 +181,12 @@ func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget,
 				ContainerMetadataUrl: GSPrefix + buildImage + ContainerMetadataLocation,
 			},
 			Time: &requestpb.Request_Params_Time{
-				MaximumDuration: &durationpb.Duration{Seconds: getTimeoutSeconds(config.RunOptions.TimeoutMins)},
+				MaximumDuration: &durationpb.Duration{Seconds: getTimeoutSeconds(config.GetRunOptions().GetTimeoutMins())},
 			},
 			Decorations: &requestpb.Request_Params_Decorations{
 				Tags: getTags(board, model, buildImage, branchTrigger, config),
 			},
-			RunViaCft:          config.RunOptions.RunViaCft,
+			RunViaCft:          config.GetRunOptions().GetRunViaCft(),
 			UserDefinedFilters: append(config.GetKarbonFilters(), config.GetKoffeeFilters()...),
 		},
 		TestPlan: getTestPlan(config),

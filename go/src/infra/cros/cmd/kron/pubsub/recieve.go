@@ -31,13 +31,17 @@ type ReceiveClient interface {
 	initSubscription(subscriptionID string) error
 	ingestMessage(ctx context.Context, msg *pubsub.Message)
 	PullMessages() error
+	// Deprecate: The finalize feature is now implemented by the build ingestion
+	// handler.
 	PullAllMessagesForProcessing(finalize func()) error
 }
 
 // ReceiveTimer defines an interface with for an auto-decrementing timer.
 type ReceiveTimer interface {
-	Start(parentCtxCancel context.CancelFunc)
-	FinalizeBeforeContextCancel(parentCtxCancel context.CancelFunc, finalize func())
+	Start(receiveCtxCancel context.CancelFunc, closeHandlerChan func())
+	// Deprecate: The finalize feature is now implemented by the build ingestion
+	// handler.
+	FinalizeBeforeContextCancel(receiveCtxCancel context.CancelFunc, finalize func())
 	Refresh()
 	Decrement(duration time.Duration)
 	checkMillisecondsLeft() int64
@@ -61,7 +65,7 @@ func (t *Timer) checkMillisecondsLeft() int64 {
 
 // Start is a busy loop that will auto decrement the timer and call the provided
 // cancel function when it has fully expired.
-func (t *Timer) Start(parentCtxCancel context.CancelFunc) {
+func (t *Timer) Start(receiveCtxCancel context.CancelFunc, closeHandlerChan func()) {
 	lastTick := time.Now()
 
 	common.Stdout.Printf("Starting the Pub/Sub timer with a max of %d seconds\n", t.maxSeconds)
@@ -72,7 +76,11 @@ func (t *Timer) Start(parentCtxCancel context.CancelFunc) {
 
 		if t.checkMillisecondsLeft() < 0 {
 			// Cancel the parent context controlling this timer.
-			parentCtxCancel()
+			receiveCtxCancel()
+
+			// Cancel the handler ctx to trigger the
+			closeHandlerChan()
+
 			common.Stdout.Println("No time left, cancelling the timer context to end receiving from Pub/Sub")
 			return
 		}
@@ -82,7 +90,10 @@ func (t *Timer) Start(parentCtxCancel context.CancelFunc) {
 
 // FinalizeBeforeContextCancel starts a busy loop that will auto decrement the timer and executes
 // finalize before cancelling the context.
-func (t *Timer) FinalizeBeforeContextCancel(parentCtxCancel context.CancelFunc, finalize func()) {
+//
+// Deprecate: The finalize feature is now implemented by the build ingestion
+// handler.
+func (t *Timer) FinalizeBeforeContextCancel(receiveCtxCancel context.CancelFunc, finalize func()) {
 	lastTick := time.Now()
 
 	common.Stdout.Printf("Starting the Pub/Sub timer with a max of %d seconds\n", t.maxSeconds)
@@ -95,7 +106,7 @@ func (t *Timer) FinalizeBeforeContextCancel(parentCtxCancel context.CancelFunc, 
 			common.Stdout.Println("No time left, calling finalize before cancelling the context to end receiving from Pub/Sub")
 			finalize()
 			// Cancel the parent context controlling this timer.
-			parentCtxCancel()
+			receiveCtxCancel()
 			common.Stdout.Println("Finalize complete, cancelling the timer context to end receiving from Pub/Sub")
 			return
 		}
@@ -141,21 +152,23 @@ func InitTimer(maxSeconds int) *Timer {
 // more to arrive within the next hour(s). If any unexpectedly arrive after the
 // receive is closed then they will be picked up in the next run.
 type ReceiveWithTimer struct {
-	ctx           context.Context
-	cancel        context.CancelFunc
-	client        *pubsub.Client
-	subscription  *pubsub.Subscription
-	handleMessage func(*pubsub.Message) error
-	idleTimer     ReceiveTimer
+	ctx              context.Context
+	receiveCancel    context.CancelFunc
+	closeHandlerChan func()
+	client           *pubsub.Client
+	subscription     *pubsub.Subscription
+	handleMessage    func(*pubsub.Message) error
+	idleTimer        ReceiveTimer
 }
 
 // InitReceiveClientWithTimer returns a newly created Pub/Sub Client interface.
-func InitReceiveClientWithTimer(ctx context.Context, projectID, subscriptionID string, handleMessage func(*pubsub.Message) error) (ReceiveClient, error) {
+func InitReceiveClientWithTimer(ctx context.Context, projectID, subscriptionID string, closeHandlerChan func(), handleMessage func(*pubsub.Message) error) (ReceiveClient, error) {
 	psClient := &ReceiveWithTimer{
-		handleMessage: handleMessage,
+		handleMessage:    handleMessage,
+		closeHandlerChan: closeHandlerChan,
 	}
 
-	psClient.ctx, psClient.cancel = context.WithCancel(ctx)
+	psClient.ctx, psClient.receiveCancel = context.WithCancel(ctx)
 
 	err := psClient.initClient(projectID)
 	if err != nil {
@@ -194,8 +207,10 @@ func (r *ReceiveWithTimer) initSubscription(subscriptionID string) error {
 		return fmt.Errorf("subscription is already initialized")
 	}
 
+	// NOTE: A negative value here means that no limit is set for outstanding
+	// messages. The default is 1000.
 	rSettings := pubsub.ReceiveSettings{
-		MaxOutstandingMessages: 1000,
+		MaxOutstandingMessages: -1,
 	}
 
 	r.subscription = r.client.Subscription(subscriptionID)
@@ -221,7 +236,7 @@ func (r *ReceiveWithTimer) ingestMessage(ctx context.Context, msg *pubsub.Messag
 func (r *ReceiveWithTimer) PullMessages() error {
 	// Begin the timer. When it expires it'll cancel the Receive client's
 	// context ending the blocking receive.
-	go r.idleTimer.Start(r.cancel)
+	go r.idleTimer.Start(r.receiveCancel, r.closeHandlerChan)
 
 	// Blocking pull all messages in the feed.
 	common.Stdout.Printf("Begin receiving from Pub/Sub Subscription %s on project %s\n", r.subscription.ID(), r.client.Project())
@@ -241,7 +256,7 @@ func (r *ReceiveWithTimer) PullMessages() error {
 func (r *ReceiveWithTimer) PullAllMessagesForProcessing(finalize func()) error {
 	// Begin the timer. When it expires it'll execute "finalize" and cancel the Receive
 	// client's context ending the blocking receive.
-	go r.idleTimer.FinalizeBeforeContextCancel(r.cancel, finalize)
+	go r.idleTimer.FinalizeBeforeContextCancel(r.receiveCancel, finalize)
 
 	// Blocking pull all messages in the feed.
 	common.Stdout.Printf("Begin receiving from Pub/Sub Subscription %s on project %s\n", r.subscription.ID(), r.client.Project())

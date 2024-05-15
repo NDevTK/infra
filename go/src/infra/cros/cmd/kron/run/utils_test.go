@@ -5,301 +5,325 @@
 package run
 
 import (
+	"io"
+	"log"
 	"testing"
 
-	cloudPubsub "cloud.google.com/go/pubsub"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
-	"go.chromium.org/chromiumos/infra/proto/go/testplans"
-
-	"infra/cros/cmd/kron/builds"
 	"infra/cros/cmd/kron/common"
+	"infra/cros/cmd/kron/metrics"
 )
 
-// TestCombineCTPRequests verifies that combineCTPRequests() is properly
-// generating the map and not mutating the objects.
-func TestCombineCTPRequests(t *testing.T) {
-	expectedEventsTestConfig := []*builds.EventWrapper{
+// SetUp sets the RunID and discards the stdout and stderr for cleaner test
+// runs.
+func SetUp() {
+	_ = metrics.SetSuiteSchedulerRunID("")
+	common.Stdout = log.New(io.Discard, "", log.Lshortfile|log.LstdFlags)
+	common.Stderr = log.New(io.Discard, "", log.Lshortfile|log.LstdFlags)
+}
+
+func TestLimitStagingRequestsUnderMax(t *testing.T) {
+	t.Parallel()
+
+	requests := []*ctpEvent{
 		{
-			Event: &kron.Event{
-				EventUuid: "1",
-			},
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     &suschpb.SchedulerConfig{},
 		},
 		{
-			Event: &kron.Event{
-				EventUuid: "2",
-			},
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     &suschpb.SchedulerConfig{},
 		},
 		{
-			Event: &kron.Event{
-				EventUuid: "3",
-			},
-		},
-		{
-			Event: &kron.Event{
-				EventUuid: "4",
-			},
-		},
-	}
-	expectedEventsTestConfig2 := []*builds.EventWrapper{
-		{
-			Event: &kron.Event{
-				EventUuid: "5",
-			},
-		},
-		{
-			Event: &kron.Event{
-				EventUuid: "6",
-			},
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     &suschpb.SchedulerConfig{},
 		},
 	}
 
-	mockBuilds := []*builds.BuildPackage{
+	limitedRequests := limitStagingRequests(requests)
+
+	if len(limitedRequests) != len(requests) {
+		t.Errorf("%d requests expected, got %d", len(limitedRequests), len(requests))
+	}
+}
+func TestLimitStagingRequestsOverMax(t *testing.T) {
+	t.Parallel()
+
+	requests := []*ctpEvent{
 		{
-			Build:   &kron.Build{},
-			Message: &cloudPubsub.Message{},
-			TriggeredConfigs: []*builds.ConfigDetails{
-				{
-					Config: &testplans.SchedulerConfig{
-						Name: "TestConfig",
-					},
-					Events: []*builds.EventWrapper{
-						expectedEventsTestConfig[0],
-						expectedEventsTestConfig[1],
-					},
-				},
-			},
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     &suschpb.SchedulerConfig{},
 		},
 		{
-			Build:   &kron.Build{},
-			Message: &cloudPubsub.Message{},
-			TriggeredConfigs: []*builds.ConfigDetails{
-				{
-					Config: &testplans.SchedulerConfig{
-						Name: "TestConfig",
-					},
-					Events: []*builds.EventWrapper{
-						expectedEventsTestConfig[2],
-						expectedEventsTestConfig[3],
-					},
-				},
-			},
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     &suschpb.SchedulerConfig{},
 		},
 		{
-			Build:   &kron.Build{},
-			Message: &cloudPubsub.Message{},
-			TriggeredConfigs: []*builds.ConfigDetails{
-				{
-					Config: &testplans.SchedulerConfig{
-						Name: "TestConfig2",
-					},
-					Events: []*builds.EventWrapper{
-						expectedEventsTestConfig2[0],
-						expectedEventsTestConfig2[1],
-					},
-				},
-			},
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     &suschpb.SchedulerConfig{},
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     &suschpb.SchedulerConfig{},
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     &suschpb.SchedulerConfig{},
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     &suschpb.SchedulerConfig{},
 		},
 	}
 
-	expectedMap := map[string][]*builds.EventWrapper{
-		"TestConfig": {
-			expectedEventsTestConfig[0],
-			expectedEventsTestConfig[1],
-			expectedEventsTestConfig[2],
-			expectedEventsTestConfig[3],
-		},
-		"TestConfig2": {
-			expectedEventsTestConfig2[0],
-			expectedEventsTestConfig2[1],
-		},
+	limitedRequests := limitStagingRequests(requests)
+
+	if len(limitedRequests) != common.StagingMaxRequests {
+		t.Errorf("%d requests expected, got %d", len(limitedRequests), common.StagingMaxRequests)
+	}
+}
+
+func TestBuildPerModelConfigsMultipleModels(t *testing.T) {
+	SetUp()
+	models := []string{
+		"model1",
+		"model2",
+		"model3",
 	}
 
-	requestMap := combineCTPRequests(mockBuilds)
+	testConfig := &suschpb.SchedulerConfig{
+		Name:  "testConfig",
+		Suite: "testSutie",
+	}
 
-	for key, eventList := range requestMap {
-		// Ensure the key provided is in the expected return map
-		expectedEventList, ok := expectedMap[key]
-		if !ok {
-			t.Errorf("key %s was provided but not in expectedMap", key)
+	testBuild := &kronpb.Build{
+		BuildUuid:   "123",
+		RunUuid:     "abc",
+		BuildTarget: "bt1",
+		Milestone:   120,
+		Version:     "9876",
+		Board:       "board1",
+	}
+
+	testBranch := "CANARY"
+
+	events, err := buildPerModelConfigs(models, testConfig, testBuild, testBranch)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	for _, event := range events {
+		if event.config.GetName() != testConfig.Name {
+			t.Errorf("config name %s  expected, got %s", event.config.GetName(), testConfig.Name)
 			return
 		}
 
-		// Ensure that all events are in the expected map.
-		for _, event := range eventList {
-			inExpected := false
-			for _, expectedEvent := range expectedEventList {
-				inExpected = event == expectedEvent
-				if inExpected {
-					break
-				}
-			}
-
-			if !inExpected {
-				t.Errorf("event %s was not seen in expectedMap[%s]", event.Event.EventUuid, key)
-				return
-			}
+		if event.event.Board != testBuild.Board {
+			t.Errorf("board %s  expected, got %s", event.event.GetBoard(), testBuild.GetBoard())
+			return
 		}
 	}
 
-	for key, expectedEventList := range expectedMap {
-		// Ensure the key provided is in the expected return map
-		eventList, ok := requestMap[key]
-		if !ok {
-			t.Errorf("key %s was expected but not provided", key)
+	if len(events) != len(models) {
+		t.Errorf("expected %d events got %d", len(models), len(events))
+	}
+
+	for _, model := range models {
+		found := false
+		for _, event := range events {
+			if event.event.Model == model {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			t.Errorf("model %s never seen in resulting events", model)
+			return
+		}
+	}
+}
+
+func TestBuildPerModelConfigsNoModels(t *testing.T) {
+	SetUp()
+
+	models := []string{}
+
+	testConfig := &suschpb.SchedulerConfig{
+		Name:  "testConfig",
+		Suite: "testSutie",
+	}
+
+	testBuild := &kronpb.Build{
+		BuildUuid:   "123",
+		RunUuid:     "abc",
+		BuildTarget: "bt1",
+		Milestone:   120,
+		Version:     "9876",
+		Board:       "board1",
+	}
+
+	testBranch := "CANARY"
+
+	events, err := buildPerModelConfigs(models, testConfig, testBuild, testBranch)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	for _, event := range events {
+		if event.config.GetName() != testConfig.Name {
+			t.Errorf("config name %s  expected, got %s", event.config.GetName(), testConfig.Name)
 			return
 		}
 
-		// Ensure that all events are in the expected map.
-		for _, event := range expectedEventList {
-			inExpected := false
-			for _, expectedEvent := range eventList {
-				inExpected = event == expectedEvent
-				if inExpected {
-					break
-				}
-			}
+		if event.event.GetBoard() != testBuild.Board {
+			t.Errorf("board %s expected, got %s", event.event.GetBoard(), testBuild.GetBoard())
+			return
+		}
 
-			if !inExpected {
-				t.Errorf("event %s was not seen in in the return", event.Event.EventUuid)
-				return
-			}
+		if event.event.GetModel() != "" {
+			t.Errorf("empty model expected, got %s", event.event.GetBoard())
+			return
 		}
 	}
 
-}
-
-func TestLimitStagingRequestsSingleConfigOverMax(t *testing.T) {
-	mockRequestMap := map[string][]*builds.EventWrapper{
-		"suite1": {
-			{},
-			{},
-			{},
-			{},
-			{},
-			{},
-		},
-	}
-
-	limitedRequestMap := limitStagingRequests(mockRequestMap)
-
-	requestCount := 0
-
-	for _, requestList := range limitedRequestMap {
-		for range requestList {
-			requestCount += 1
-		}
-	}
-
-	if requestCount != common.StagingMaxRequests {
-		t.Errorf("%d requests expected, got %d", common.StagingMaxRequests, requestCount)
-	}
-}
-func TestLimitStagingRequestsSingleConfigUnderMax(t *testing.T) {
-	mockRequestMap := map[string][]*builds.EventWrapper{
-		"suite1": {
-			{},
-			{},
-			{},
-			{},
-		},
-	}
-
-	limitedRequestMap := limitStagingRequests(mockRequestMap)
-
-	requestCount := 0
-
-	for _, requestList := range limitedRequestMap {
-		for range requestList {
-			requestCount += 1
-		}
-	}
-
-	if requestCount != 4 {
-		t.Errorf("%d requests expected, got %d", 4, requestCount)
+	if len(events) != 1 {
+		t.Errorf("expected %d events got %d", 1, len(events))
 	}
 }
 
-func TestLimitStagingRequestsMultipleConfigsOverMax(t *testing.T) {
-	mockRequestMap := map[string][]*builds.EventWrapper{
-		"suite1": {
-			{},
-			{},
-			{},
-			{},
-		},
-		"suite2": {
-			{},
-			{},
-			{},
-			{},
-		},
+func TestFillEventResponseScheduled(t *testing.T) {
+	SetUp()
+	events := []*kronpb.Event{
+		{},
+		{},
+		{},
 	}
 
-	limitedRequestMap := limitStagingRequests(mockRequestMap)
-
-	requestCount := 0
-
-	suite1Seen := false
-	suite2Seen := false
-	for configName, requestList := range limitedRequestMap {
-		if configName == "suite1" {
-			suite1Seen = true
-		}
-		if configName == "suite2" {
-			suite2Seen = true
-		}
-
-		for range requestList {
-			requestCount += 1
-		}
+	fakeBBResponse := &buildbucketpb.Build{
+		Id:     123,
+		Status: buildbucketpb.Status_SCHEDULED,
 	}
 
-	if requestCount != common.StagingMaxRequests {
-		t.Errorf("%d requests expected, got %d", common.StagingMaxRequests, requestCount)
-	}
+	fillEventResponse(events, fakeBBResponse)
 
-	if !(suite1Seen && suite2Seen) {
-		t.Errorf("Suite 1 and 2 were expected to be seen. suite1Seen:%t\tsuite2Seen:%t", suite1Seen, suite2Seen)
+	for _, event := range events {
+		if event.GetDecision().GetType() != kronpb.DecisionType_SCHEDULED && event.GetBbid() != fakeBBResponse.GetId() {
+			t.Errorf("expected type %d bbid %d, got type %s bbid %d", kronpb.DecisionType_SCHEDULED, fakeBBResponse.GetId(), event.GetDecision().GetType(), event.GetBbid())
+		}
 	}
 }
 
-func TestLimitStagingRequestsMultipleConfigsUnderMax(t *testing.T) {
-	mockRequestMap := map[string][]*builds.EventWrapper{
-		"suite1": {
-			{},
-			{},
-			{},
+func TestFillEventResponseFailed(t *testing.T) {
+	SetUp()
+	events := []*kronpb.Event{
+		{},
+		{},
+		{},
+	}
+
+	fakeBBResponse := &buildbucketpb.Build{
+		Id:     123,
+		Status: buildbucketpb.Status_FAILURE,
+	}
+
+	fillEventResponse(events, fakeBBResponse)
+
+	for _, event := range events {
+		if event.GetDecision().GetType() != kronpb.DecisionType_UNKNOWN && event.GetBbid() != 0 {
+			t.Errorf("expected type %d bbid %d, got type %s bbid %d", kronpb.DecisionType_UNKNOWN, 0, event.GetDecision().GetType(), event.GetBbid())
+		}
+	}
+
+	fakeBBResponse = &buildbucketpb.Build{
+		Id:     123,
+		Status: buildbucketpb.Status_INFRA_FAILURE,
+	}
+
+	fillEventResponse(events, fakeBBResponse)
+
+	for _, event := range events {
+		if event.GetDecision().GetType() != kronpb.DecisionType_UNKNOWN && event.GetBbid() != 0 {
+			t.Errorf("expected type %d bbid %d, got type %s bbid %d", kronpb.DecisionType_UNKNOWN, 0, event.GetDecision().GetType(), event.GetBbid())
+		}
+	}
+
+	fakeBBResponse = &buildbucketpb.Build{
+		Id:     123,
+		Status: buildbucketpb.Status_CANCELED,
+	}
+
+	fillEventResponse(events, fakeBBResponse)
+
+	for _, event := range events {
+		if event.GetDecision().GetType() != kronpb.DecisionType_UNKNOWN && event.GetBbid() != 0 {
+			t.Errorf("expected type %d bbid %d, got type %s bbid %d", kronpb.DecisionType_UNKNOWN, 0, event.GetDecision().GetType(), event.GetBbid())
+		}
+	}
+
+	fakeBBResponse = &buildbucketpb.Build{
+		Id:     123,
+		Status: buildbucketpb.Status_STATUS_UNSPECIFIED,
+	}
+
+	fillEventResponse(events, fakeBBResponse)
+
+	for _, event := range events {
+		if event.GetDecision().GetType() != kronpb.DecisionType_UNKNOWN && event.GetBbid() != 0 {
+			t.Errorf("expected type %d bbid %d, got type %s bbid %d", kronpb.DecisionType_UNKNOWN, 0, event.GetDecision().GetType(), event.GetBbid())
+		}
+	}
+}
+
+func TestMapEventsByConfig(t *testing.T) {
+	t.Parallel()
+
+	config1 := &suschpb.SchedulerConfig{}
+	config2 := &suschpb.SchedulerConfig{}
+
+	fakeCtpRequests := []*ctpEvent{
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     config1,
 		},
-		"suite2": {
-			{},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: &test_platform.Request{},
+			config:     config2,
 		},
 	}
 
-	limitedRequestMap := limitStagingRequests(mockRequestMap)
+	configToEventsMap := mapEventsByConfig(fakeCtpRequests)
 
-	requestCount := 0
-
-	suite1Seen := false
-	suite2Seen := false
-	for configName, requestList := range limitedRequestMap {
-		if configName == "suite1" {
-			suite1Seen = true
+	for key, events := range configToEventsMap {
+		if key == config1 && len(events) != 1 {
+			t.Errorf("expected %d events for config1 got %d", 1, len(events))
+			return
 		}
-		if configName == "suite2" {
-			suite2Seen = true
+		if key == config2 && len(events) != 2 {
+			t.Errorf("expected %d events for config2 got %d", 2, len(events))
+			return
 		}
-
-		for range requestList {
-			requestCount += 1
-		}
-	}
-
-	if requestCount != 4 {
-		t.Errorf("%d requests expected, got %d", 4, requestCount)
-	}
-
-	if !(suite1Seen && suite2Seen) {
-		t.Errorf("Suite 1 and 2 were expected to be seen. suite1Seen:%t\tsuite2Seen:%t", suite1Seen, suite2Seen)
 	}
 }

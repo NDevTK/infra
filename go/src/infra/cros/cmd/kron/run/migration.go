@@ -7,7 +7,7 @@ package run
 import (
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
-	"infra/cros/cmd/kron/builds"
+	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/configparser"
 )
 
@@ -46,29 +46,20 @@ func isAllowed(config *suschpb.SchedulerConfig) bool {
 // configs which are not on the allowlist.
 //
 // TODO(b/319273876): Remove slow migration logic upon completion of
-// transition.
-func filterConfigs(buildPackages []*builds.BuildPackage) []*builds.BuildPackage {
-	filteredBuilds := []*builds.BuildPackage{}
+// transition from SuiteScheduler to Kron.
+func filterConfigs(configs []*suschpb.SchedulerConfig) []*suschpb.SchedulerConfig {
+	filteredMap := []*suschpb.SchedulerConfig{}
 
-	hadAllowedConfig := false
-	for _, build := range buildPackages {
-		// Copy the build by value so that we can clear the requests field.
-		tempBuild := *build
-		tempBuild.TriggeredConfigs = []*builds.ConfigDetails{}
-
-		// Iterate through the requests and only add requests to the temp build
-		// if their SuSch config is on the allowlist.
-		for _, triggeredConfig := range build.TriggeredConfigs {
-			if isAllowed(triggeredConfig.Config) {
-				tempBuild.TriggeredConfigs = append(tempBuild.TriggeredConfigs, triggeredConfig)
-				hadAllowedConfig = true
-			}
+	// Check each triggered config to ensure that they are not disallowed by the
+	// current migration rules.
+	for _, config := range configs {
+		if !isAllowed(config) {
+			common.Stdout.Printf("Config %s was filtered out by the current migration rules.", config.Name)
+			continue
 		}
 
-		if hadAllowedConfig {
-			filteredBuilds = append(filteredBuilds, &tempBuild)
-		}
+		filteredMap = append(filteredMap, config)
 	}
 
-	return filteredBuilds
+	return filteredMap
 }

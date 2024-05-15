@@ -26,8 +26,8 @@ func GenerateEventMessage(config *suschpb.SchedulerConfig, schedulingDecision *k
 	return &kronpb.Event{
 		RunUuid:    runID,
 		EventUuid:  uuid.NewString(),
-		ConfigName: config.Name,
-		SuiteName:  config.Suite,
+		ConfigName: config.GetName(),
+		SuiteName:  config.GetSuite(),
 		EventTime:  common.TimestamppbNowWithoutNanos(),
 		Decision:   schedulingDecision,
 		Bbid:       bbid,

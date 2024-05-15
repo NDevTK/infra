@@ -6,19 +6,20 @@ package run
 
 import (
 	"context"
+	"fmt"
 	"strconv"
-	"sync"
 
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	ctppb "go.chromium.org/chromiumos/infra/proto/go/test_platform/cros_test_platform"
 	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
 	"infra/cros/cmd/kron/buildbucket"
-	"infra/cros/cmd/kron/builds"
 	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/configparser"
 	"infra/cros/cmd/kron/ctprequest"
@@ -27,55 +28,15 @@ import (
 	"infra/cros/cmd/kron/totmanager"
 )
 
-// launchCTPRequests takes in build images, generates CTP requests, and launches
-// them via BuildBucket.
-func launchCTPRequests(fetchedBuilds []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs, authOpts *authcli.Flags, projectID string, isProd, dryRun bool) error {
-	// Build CTP Requests for all triggered configs.
-	common.Stdout.Println("Generating CTP requests for all configs and builds")
-	err := buildCTPRequests(fetchedBuilds, suiteSchedulerConfigs)
-	if err != nil {
-		return err
-	}
+type ctpEvent struct {
+	event      *kronpb.Event
+	ctpRequest *requestpb.Request
+	config     *suschpb.SchedulerConfig
+}
 
-	// CTP is bottlenecked by it's drone count. To combat this, combine tests
-	// requests into one large CTP request.
-	common.Stdout.Println("Grouping CTP request by config name")
-	ctpRequests := combineCTPRequests(fetchedBuilds)
-
-	// If staging reduce requests to 5 MAX.
-	if !isProd {
-		common.Stdout.Printf("Limiting CTP request to %d max because we are running in staging", common.StagingMaxRequests)
-		ctpRequests = limitStagingRequests(ctpRequests)
-	}
-
-	// Initialize an authenticated BuildBucket client for scheduling.
-	common.Stdout.Printf("Initializing BuildBucket scheduling client prod: %t dryRun: %t", isProd, dryRun)
-	schedulerClient, err := buildbucket.InitScheduler(context.Background(), authOpts, isProd, dryRun)
-	if err != nil {
-		return err
-	}
-	// Initialize the Pub/Sub client for event message publishing.
-	common.Stdout.Printf("Initializing client for pub sub topic %s", common.EventsPubSubTopic)
-	publishClient, err := pubsub.InitPublishClient(context.Background(), projectID, common.EventsPubSubTopic)
-	if err != nil {
-		return err
-	}
-
-	// Introduce a wait group to hold for all spun out goroutines.
-	var wg sync.WaitGroup
-
-	// Schedule all requests via BuildBucket in parallel.
-	common.Stdout.Println("Scheduling CTP request batches in parallel.")
-	for configName, requestList := range ctpRequests {
-		wg.Add(1)
-		go scheduleBatchViaBB(requestList, configName, schedulerClient, publishClient, &wg)
-	}
-
-	common.Stdout.Println("Waiting for batched requests to finish scheduling...")
-	wg.Wait()
-	common.Stdout.Println("NEW_BUILD scheduling completed")
-
-	return nil
+type ctpEventBatch struct {
+	events    []*kronpb.Event
+	bbRequest *buildbucketpb.ScheduleBuildRequest
 }
 
 // fetchTriggeredDailyEvents returns all DAILY configs which are triggered at
@@ -135,6 +96,7 @@ func fetchTriggeredFortnightlyEvents(currTime common.KronTime, ingestedConfigs *
 
 // fetchTimedEvents gathers all timed event config which will are triggered at
 // the provided time.
+//
 // NOTE: This function in conjunction with the KronTime struct handles
 // fortnightly/weekly differences natively.
 func fetchTimedEvents(currTime common.KronTime, ingestedConfigs *configparser.SuiteSchedulerConfigs) (configparser.ConfigList, error) {
@@ -161,270 +123,428 @@ func fetchTimedEvents(currTime common.KronTime, ingestedConfigs *configparser.Su
 	return timedConfigs, nil
 }
 
-// publishEvent sends the event message to Pub/Sub.
-func publishEvent(client pubsub.PublishClient, event *kronpb.Event) error {
-	data, err := protojson.Marshal(event)
-	if err != nil {
-		return err
-	}
-
-	err = client.PublishMessage(context.Background(), data)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// fetchTriggeredNewBuildConfigs attaches all configs to the builds which
-// triggered their run.
-func fetchTriggeredNewBuildConfigs(buildPackages []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) error {
-	for _, build := range buildPackages {
-		configs := suiteSchedulerConfigs.FetchNewBuildConfigsByBuildTarget(configparser.BuildTarget(build.Build.BuildTarget))
-		for _, config := range configs {
-			// If the build's milestone did not match the config's targeted
-			// branches then do not add this config to the build's to run list.
-			targeted, _, err := totmanager.IsTargetedBranch(int(build.Build.Milestone), config.Branches)
-			if err != nil {
-				return err
-			}
-			if !targeted {
-				common.Stdout.Printf("Config %s did not match milestone %d for buildTarget %s on build %s\n", config.Name, build.Build.Milestone, build.Build.BuildTarget, build.Build.BuildUuid)
-				continue
-			}
-			common.Stdout.Printf("Config %s matched with build %s for buildTarget %s and milestone %d", config.Name, build.Build.BuildUuid, build.Build.BuildTarget, build.Build.Milestone)
-
-			request := &builds.ConfigDetails{
-				Config: config,
-			}
-
-			build.TriggeredConfigs = append(build.TriggeredConfigs, request)
-		}
-	}
-
-	return nil
-}
-
-// wrapEvent wraps and returns a package containing a ctp request and it's newly
-// generated event metrics message.
-func wrapEvent(ctpRequest *test_platform.Request, config *suschpb.SchedulerConfig, buildUUID, board, model string) (*builds.EventWrapper, error) {
-	var err error
-	event := &builds.EventWrapper{
-		CtpRequest: ctpRequest,
-	}
-	event.Event, err = metrics.GenerateEventMessage(config, nil, 0, buildUUID, board, model)
-	if err != nil {
-		return nil, err
-	}
-
-	return event, nil
-
-}
-
-// buildPerModelConfigs builds a CTP request per model (if it exists) for the
-// given config.
-func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, build *kronpb.Build, branch string) ([]*builds.EventWrapper, error) {
-	events := []*builds.EventWrapper{}
-	// If provided, build a CTP request per model, otherwise leave the model
-	// field absent.
-	if len(models) > 0 {
-		// Generate a CTP Request for each board/model combo.
-		for _, model := range models {
-			request := ctprequest.BuildCTPRequest(config, build.Board, model, build.BuildTarget, strconv.FormatInt(build.Milestone, 10), build.Version, branch)
-			event, err := wrapEvent(request, config, build.BuildUuid, build.Board, model)
-			if err != nil {
-				return nil, err
-			}
-			events = append(events, event)
-		}
-	} else {
-		request := ctprequest.BuildCTPRequest(config, build.Board, "", build.BuildTarget, strconv.FormatInt(build.Milestone, 10), build.Version, branch)
-		event, err := wrapEvent(request, config, build.BuildUuid, build.Board, "")
-		if err != nil {
-			return nil, err
-		}
-		events = append(events, event)
-	}
-
-	return events, nil
-}
-
-// buildConfigEventsPerModel generates an event message for the current config,
-// board, model(s).
-func buildConfigEventsPerModel(models []string, config *suschpb.SchedulerConfig, board, buildUUID string, schedulingDecision *kronpb.SchedulingDecision) ([]*kronpb.Event, error) {
-	events := []*kronpb.Event{}
-
-	if len(models) > 0 {
-		for _, model := range models {
-			event, err := metrics.GenerateEventMessage(config, schedulingDecision, 0, buildUUID, board, model)
-			if err != nil {
-				return nil, err
-			}
-			events = append(events, event)
-		}
-	} else {
-		event, err := metrics.GenerateEventMessage(config, schedulingDecision, 0, buildUUID, board, "")
-		if err != nil {
-			return nil, err
-		}
-		events = append(events, event)
-	}
-
-	return events, nil
-}
-
-// buildCTPRequests iterates through all the provided BuildPackages and
-// generates BuildBucket CTP requests for all triggered configs.
-func buildCTPRequests(buildPackages []*builds.BuildPackage, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) error {
-	// Iterate through the wrapped builds and insert CTP request and their
-	// associated metrics events into the package.
-	for _, wrappedBuild := range buildPackages {
-		// Iterate through all
-		for _, triggeredConfig := range wrappedBuild.TriggeredConfigs {
-			// Fetch the target options requested for the current board on the
-			// current configuration.
-			boardTargetOption, err := suiteSchedulerConfigs.FetchConfigTargetOptionsForBoard(triggeredConfig.Config.Name, configparser.Board(wrappedBuild.Build.Board))
-			if err != nil {
-				return err
-			}
-
-			// Get get the branch target which this build matched with.
-			_, branch, err := totmanager.IsTargetedBranch(int(wrappedBuild.Build.Milestone), triggeredConfig.Config.Branches)
-			if err != nil {
-				return err
-			}
-
-			events, err := buildPerModelConfigs(boardTargetOption.Models, triggeredConfig.Config, wrappedBuild.Build, suschpb.Branch_name[int32(branch)])
-			if err != nil {
-				return err
-			}
-
-			triggeredConfig.Events = append(triggeredConfig.Events, events...)
-		}
-	}
-	return nil
-}
-
-// combineCTPRequests fetches all CTP Requests from inside the puck packages and
-// groups them by SuSch config.
-func combineCTPRequests(releaseBuilds []*builds.BuildPackage) map[string][]*builds.EventWrapper {
-	configMap := map[string][]*builds.EventWrapper{}
-
-	// Iterate through all CTP Requests
-	for _, build := range releaseBuilds {
-		for _, request := range build.TriggeredConfigs {
-			if _, ok := configMap[request.Config.Name]; !ok {
-				configMap[request.Config.Name] = []*builds.EventWrapper{}
-			}
-
-			configMap[request.Config.Name] = append(configMap[request.Config.Name], request.Events...)
-		}
-	}
-
-	return configMap
-}
-
-// sendBatch sends the request batch to the BuildBucket client, attaches the
-// scheduling responses to the events, and finally publishes all events to
-// Pub/Sub.
-func sendBatch(configName string, schedulerClient buildbucket.Scheduler, publishClient pubsub.PublishClient, requestBatch []*builds.EventWrapper) {
-	// Schedule the builds.
-	// TODO(b/309683890): Add better support for failure/infra_failure/cancelled.
-	response, err := schedulerClient.Schedule(requestBatch, configName)
-	if err != nil {
-		for _, sentEvent := range requestBatch {
-			sentEvent.Event.Decision = &kronpb.SchedulingDecision{
-				Type:         kronpb.DecisionType_UNKNOWN,
-				Scheduled:    false,
-				FailedReason: err.Error(),
-			}
-			common.Stderr.Printf("Event %s failed to schedule: %s", sentEvent.Event.EventUuid, err)
-		}
-	}
-
-	// Populate scheduling status field.
-	for _, request := range requestBatch {
-		if response.Status == buildbucketpb.Status_SCHEDULED {
-			request.Event.Decision = &kronpb.SchedulingDecision{
-				Type:      kronpb.DecisionType_SCHEDULED,
-				Scheduled: true,
-			}
-
-			request.Event.Bbid = response.Id
-
-			common.Stdout.Printf("Event %s for config %s scheduled at http://go/bbid/%d using buildId %s", request.Event.EventUuid, request.Event.ConfigName, response.Id, request.Event.BuildUuid)
-		} else {
-			request.Event.Decision = &kronpb.SchedulingDecision{
-				Type:         kronpb.DecisionType_UNKNOWN,
-				Scheduled:    false,
-				FailedReason: buildbucketpb.Status_name[int32(response.Status.Number())],
-			}
-
-			common.Stdout.Printf("Event %s failed to schedule for unknown reason", request.Event.EventUuid)
-		}
-
-		// Publish the events that just got sent.
-		err = publishEvent(publishClient, request.Event)
-		if err != nil {
-			common.Stderr.Println(err)
-		}
-	}
-}
-
-// scheduleBatchViaBB batches the requests according to common.MultirequestSize
-// and sends it off to be scheduled via BuildBucket.
-func scheduleBatchViaBB(requests []*builds.EventWrapper, configName string, schedulerClient buildbucket.Scheduler, publishClient pubsub.PublishClient, wg *sync.WaitGroup) {
-	defer wg.Done()
-	if len(requests) == 0 {
-		common.Stdout.Println("No requests passed into scheduleBatchViaBB()")
-		return
-	}
-
-	batchRequestList := []*builds.EventWrapper{}
-	for _, request := range requests {
-		if len(batchRequestList) == common.MultirequestSize {
-			// Schedule the builds.
-			sendBatch(configName, schedulerClient, publishClient, batchRequestList)
-
-			//  Reset the running batch.
-			batchRequestList = []*builds.EventWrapper{}
-		}
-
-		batchRequestList = append(batchRequestList, request)
-	}
-
-	// Send the remaining requests when
-	// len(batchRequestList) % common.MultirequestSize != 0
-	sendBatch(configName, schedulerClient, publishClient, batchRequestList)
-
-}
-
 // limitStagingRequests scrubs outs ctp requests to ensure that only
 // common.StagingMaxRequests maximum requests can be sent to CTP-staging. This
 // limits the pressure that kron places on our staging pools while allowing us a
 // functional staging environment.
-func limitStagingRequests(requestMap map[string][]*builds.EventWrapper) map[string][]*builds.EventWrapper {
-	if requestMap == nil {
+func limitStagingRequests(ctpRequests []*ctpEvent) []*ctpEvent {
+	common.Stdout.Printf("limiting staging requests to %d max, starting with %d", common.StagingMaxRequests, len(ctpRequests))
+	if len(ctpRequests) == 0 {
 		return nil
 	}
 
-	returnMap := map[string][]*builds.EventWrapper{}
-	count := 0
-	for configName, requestList := range requestMap {
-		if count == common.StagingMaxRequests {
+	limitedRequests := []*ctpEvent{}
+	for _, configWrapper := range ctpRequests {
+		if len(limitedRequests) == common.StagingMaxRequests {
 			break
 		}
 
-		returnMap[configName] = []*builds.EventWrapper{}
-		for _, request := range requestList {
-			if count == common.StagingMaxRequests {
-				break
+		limitedRequests = append(limitedRequests, configWrapper)
+	}
+
+	return limitedRequests
+}
+
+// buildPerModelConfigs builds a CTP request per model (if it exists) for the
+// given config.
+func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, build *kronpb.Build, branch string) ([]*ctpEvent, error) {
+	ctpRequests := []*ctpEvent{}
+	// If provided, build a CTP request per model, otherwise leave the model
+	// field absent.
+	if len(models) > 0 {
+		// Generate a CTP Request for each model.
+		for _, model := range models {
+			ctpRequest := ctprequest.BuildCTPRequest(config, build.GetBoard(), model, build.GetBuildTarget(), strconv.FormatInt(build.GetMilestone(), 10), build.GetVersion(), branch)
+
+			event, err := metrics.GenerateEventMessage(config, nil, 0, build.GetBuildUuid(), build.GetBoard(), model)
+			if err != nil {
+				return nil, err
+			}
+			request := &ctpEvent{
+				event:      event,
+				ctpRequest: ctpRequest,
+				config:     config,
 			}
 
-			returnMap[configName] = append(returnMap[configName], request)
-			count += 1
+			ctpRequests = append(ctpRequests, request)
+		}
+	} else {
+		ctpRequest := ctprequest.BuildCTPRequest(config, build.GetBoard(), "", build.GetBuildTarget(), strconv.FormatInt(build.GetMilestone(), 10), build.GetVersion(), branch)
+
+		event, err := metrics.GenerateEventMessage(config, nil, 0, build.GetBuildUuid(), build.GetBoard(), "")
+		if err != nil {
+			return nil, err
+		}
+
+		request := &ctpEvent{
+			event:      event,
+			ctpRequest: ctpRequest,
+			config:     config,
+		}
+		ctpRequests = append(ctpRequests, request)
+	}
+
+	return ctpRequests, nil
+}
+
+// buildCTPRequests iterates through all the provided triggered configs and
+// generates BuildBucket CTP requests for all triggered configs.
+func buildCTPRequests(buildToConfigsMap map[*kronpb.Build][]*suschpb.SchedulerConfig, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) ([]*ctpEvent, error) {
+	requests := []*ctpEvent{}
+
+	// Iterate through the wrapped builds and insert CTP request and their
+	// associated metrics events into the package.
+	for kronBuild, configs := range buildToConfigsMap {
+		// Iterate through all
+		for _, triggeredConfig := range configs {
+			// Fetch the target options requested for the current board on the
+			// current configuration.
+			boardTargetOption, err := suiteSchedulerConfigs.FetchConfigTargetOptionsForBoard(triggeredConfig.Name, configparser.Board(kronBuild.Board))
+			if err != nil {
+				return nil, err
+			}
+
+			// Get get the branch target which this build matched with.
+			_, branch, err := totmanager.IsTargetedBranch(int(kronBuild.Milestone), triggeredConfig.Branches)
+			if err != nil {
+				return nil, err
+			}
+
+			ctpRequests, err := buildPerModelConfigs(boardTargetOption.Models, triggeredConfig, kronBuild, suschpb.Branch_name[int32(branch)])
+			if err != nil {
+				return nil, err
+			}
+
+			requests = append(requests, ctpRequests...)
+		}
+	}
+	return requests, nil
+}
+
+// generateBuilderTags generates a list of BuildBucket String pairs which will
+// be used for a builders tags. These tags contain metadata about the CTP
+// request which can be used in PLX analysis later on.
+func generateBuilderTags(suiteName, configName string, requests []*ctpEvent) ([]*buildbucketpb.StringPair, error) {
+	tags := []*buildbucketpb.StringPair{
+		{
+			Key:   "kron-run",
+			Value: metrics.GetRunID(),
+		},
+		{
+			Key:   "suite",
+			Value: suiteName,
+		},
+		{
+			Key:   "label-suite",
+			Value: suiteName,
+		},
+		{
+			Key:   "user_agent",
+			Value: "kron",
+		},
+		{
+			Key:   "suite-scheduler-config",
+			Value: configName,
+		},
+	}
+
+	// Add all image, buildUuid, and eventUuid fields per test request.
+	for _, request := range requests {
+		image := ""
+		for _, dep := range request.ctpRequest.Params.SoftwareDependencies {
+			// The SoftwareDependencies proto type includes many types of deps,
+			// so search for one which can provide the image value.
+			if dep.GetChromeosBuild() != "" {
+				image = dep.GetChromeosBuild()
+				break
+			}
+		}
+
+		// A CTP request cannot function with a nil image value so throw an
+		// error here.
+		if image == "" {
+			return nil, fmt.Errorf("no ChromeOS build found")
+		}
+
+		tags = append(tags,
+			&buildbucketpb.StringPair{
+				Key:   "build-id",
+				Value: request.event.BuildUuid,
+			})
+		tags = append(tags,
+			&buildbucketpb.StringPair{
+				Key:   "event-id",
+				Value: request.event.EventUuid,
+			})
+		tags = append(tags,
+			&buildbucketpb.StringPair{
+				Key:   "label-image",
+				Value: image,
+			})
+	}
+
+	return tags, nil
+}
+
+// generateGenericBBProperties takes in the CTPEvents and generates a generic
+// structpb type for the buildBucketProperties.
+func generateGenericBBProperties(requests []*ctpEvent) (*structpb.Struct, error) {
+	ctpRequestInputProps := &ctppb.CrosTestPlatformProperties{
+		Requests: map[string]*requestpb.Request{},
+	}
+
+	// Add all CTP Test Requests to the input properties struct mapped by their
+	// unique request metadata.
+	for _, request := range requests {
+		key := fmt.Sprintf("%s.%s.%s", request.ctpRequest.Params.SoftwareAttributes.BuildTarget.Name, request.event.ConfigName, request.event.SuiteName)
+		if _, ok := ctpRequestInputProps.Requests[key]; ok {
+			// If the key is duplicated for some reason then add the eventUuid
+			// to differentiate.
+			key = fmt.Sprintf("%s.%s", key, request.event.EventUuid)
+
+		}
+		ctpRequestInputProps.Requests[key] = request.ctpRequest
+	}
+	// Transform the properties proto into a json string.
+	msgJSON, err := protojson.Marshal(ctpRequestInputProps)
+	if err != nil {
+		return nil, err
+	}
+
+	// Now that we have the raw json unmarshal, transform the text into the
+	// "generic" proto struct. This "generic" proto struct type is required by
+	// the BuildBucket API.
+	//
+	// NOTE: The default unmarshall-er from the protojson package does not throw
+	// errors on unknown JSON fields. This is required because the generic
+	// struct and CTP struct do not share any field names. If a different
+	// unmarshall-er is chosen down the line, ensure that this functionality is
+	// maintained.
+	properties := &structpb.Struct{}
+	err = protojson.Unmarshal(msgJSON, properties)
+	if err != nil {
+		return nil, err
+	}
+
+	return properties, nil
+}
+
+// mergeRequests merge all CTP requests into one CTP recipe input properties object.
+func mergeRequests(requests []*ctpEvent, suiteName, configName string, isProd, dryRun bool) (*ctpEventBatch, error) {
+	properties, err := generateGenericBBProperties(requests)
+	if err != nil {
+		return nil, err
+	}
+
+	// Based on the isProd flag choose the corresponding builder identification.
+	builder := &buildbucket.CtpBuilderIDStaging
+	if isProd {
+		builder = &buildbucket.CtpBuilderIDProd
+	}
+
+	tags, err := generateBuilderTags(suiteName, configName, requests)
+	if err != nil {
+		return nil, err
+	}
+
+	// Generate the generic BuildBucket request from the items build above.
+	bbRequest := generateBBRequest(dryRun, builder, properties, tags...)
+
+	batch := &ctpEventBatch{
+		events:    []*kronpb.Event{},
+		bbRequest: bbRequest,
+	}
+	for _, request := range requests {
+		batch.events = append(batch.events, request.event)
+	}
+
+	return batch, nil
+}
+
+// batchCTPRequests groups configs/events into common.MultirequestSize sized
+// batches.
+//
+// NOTE: Requests in these batches will all share the same SuiteScheduler
+// Config.
+func batchCTPRequests(ctpRequests map[*suschpb.SchedulerConfig][]*ctpEvent, isProd, dryRun bool) ([]*ctpEventBatch, error) {
+	batches := []*ctpEventBatch{}
+
+	// Create batches of common.MultirequestSize size.
+	for config, configWrappers := range ctpRequests {
+		currentBatch := []*ctpEvent{}
+
+		for _, request := range configWrappers {
+			// If we have reached the max length, merge the current batch list
+			// into a batch event and start a new batch.
+			if len(currentBatch) == common.MultirequestSize {
+				batch, err := mergeRequests(currentBatch, config.Suite, config.Name, isProd, dryRun)
+				if err != nil {
+					return nil, err
+				}
+
+				batches = append(batches, batch)
+
+				currentBatch = []*ctpEvent{}
+			}
+
+			currentBatch = append(currentBatch, request)
+		}
+
+		if len(currentBatch) != 0 {
+			batch, err := mergeRequests(currentBatch, config.Suite, config.Name, isProd, dryRun)
+			if err != nil {
+				return nil, err
+			}
+
+			batches = append(batches, batch)
+		}
+	}
+	return batches, nil
+}
+
+// generateBBRequest creates a BuildBucket Request proto with proper metadata in
+// the tags.
+func generateBBRequest(dryRun bool, builder *buildbucketpb.BuilderID, properties *structpb.Struct, tags ...*buildbucketpb.StringPair) *buildbucketpb.ScheduleBuildRequest {
+	return &buildbucketpb.ScheduleBuildRequest{
+		Builder:    builder,
+		Properties: properties,
+		DryRun:     dryRun,
+		// These tags will appear on the Milo UI and will help us search for
+		// builds in plx.
+		Tags: tags,
+	}
+}
+
+// mapEventsByConfig iterates though the list of individual CTP events and
+// groups them by the SuiteScheduler which it was generated from.
+func mapEventsByConfig(ctpRequests []*ctpEvent) map[*suschpb.SchedulerConfig][]*ctpEvent {
+	configToEventsMap := map[*suschpb.SchedulerConfig][]*ctpEvent{}
+	for _, ctpRequest := range ctpRequests {
+		// If the config key hasn't been added to the event yet then instantiate
+		// it's key.
+		if _, ok := configToEventsMap[ctpRequest.config]; !ok {
+			configToEventsMap[ctpRequest.config] = []*ctpEvent{}
+		}
+
+		configToEventsMap[ctpRequest.config] = append(configToEventsMap[ctpRequest.config], ctpRequest)
+	}
+	return configToEventsMap
+}
+
+// initPubSubAndSchedulerClients builds clients for later use.
+func initPubSubAndSchedulerClients(isProd, dryRun bool, projectID string, authOpts *authcli.Flags) (buildbucket.Scheduler, pubsub.PublishClient, error) {
+	// Initialize an authenticated BuildBucket client for scheduling.
+	common.Stdout.Printf("Initializing BuildBucket scheduling client prod: %t dryRun: %t", isProd, dryRun)
+	schedulerClient, err := buildbucket.InitScheduler(context.Background(), authOpts, isProd, dryRun)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Initialize the Pub/Sub client for event message publishing.
+	common.Stdout.Printf("Initializing client for pub sub topic %s", common.EventsPubSubTopic)
+	publishClient, err := pubsub.InitPublishClient(context.Background(), projectID, common.EventsPubSubTopic)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return schedulerClient, publishClient, nil
+}
+
+// fillEventResponse interprets the response from the BuildBucket schedule
+// action and fills each affected event with is results.
+func fillEventResponse(events []*kronpb.Event, bbResponse *buildbucketpb.Build) {
+	for _, event := range events {
+		if bbResponse.GetStatus() == buildbucketpb.Status_SCHEDULED {
+			event.Decision = &kronpb.SchedulingDecision{
+				Type:      kronpb.DecisionType_SCHEDULED,
+				Scheduled: true,
+			}
+
+			event.Bbid = bbResponse.GetId()
+
+			common.Stdout.Printf("Event %s for config %s scheduled at http://go/bbid/%d using buildId %s", event.GetEventUuid(), event.GetConfigName(), bbResponse.GetId(), event.GetBuildUuid())
+		} else {
+			event.Decision = &kronpb.SchedulingDecision{
+				Type:         kronpb.DecisionType_UNKNOWN,
+				Scheduled:    false,
+				FailedReason: buildbucketpb.Status_name[int32(bbResponse.GetStatus().Number())],
+			}
+
+			common.Stdout.Printf("Event %s failed to schedule for unknown reason", event.GetEventUuid())
+		}
+	}
+}
+
+// publishEvents sends all of the event message to Pub/Sub. A flag is provided
+// to skip publishing errors if desired.
+func publishEvents(client pubsub.PublishClient, events []*kronpb.Event, allowPublishErrors bool) error {
+	for _, event := range events {
+		data, err := protojson.Marshal(event)
+		if err != nil {
+			return err
+		}
+
+		err = client.PublishMessage(context.Background(), data)
+		if err != nil {
+			if allowPublishErrors {
+				return err
+			} else {
+				common.Stderr.Println(err)
+			}
 		}
 	}
 
-	return returnMap
+	return nil
+}
+
+// handleBatch schedules ands publishes results for each of the pre-batched CTP
+// requests.
+func handleBatch(schedulerClient buildbucket.Scheduler, publishClient pubsub.PublishClient, batch *ctpEventBatch, fillEventResponse func([]*kronpb.Event, *buildbucketpb.Build), publishEvent bool) error {
+	bbResponse, err := schedulerClient.Schedule(batch.bbRequest)
+	if err != nil {
+		for _, event := range batch.events {
+			event.Decision = &kronpb.SchedulingDecision{
+				Type:         kronpb.DecisionType_UNKNOWN,
+				Scheduled:    false,
+				FailedReason: err.Error(),
+			}
+			common.Stderr.Printf("Event %s failed to schedule: %s", event.EventUuid, err)
+		}
+	} else {
+		// Populate scheduling status field.
+		fillEventResponse(batch.events, bbResponse)
+
+	}
+
+	// Only publish events if explicitly commanded to.
+	if !publishEvent {
+		return nil
+	}
+
+	// Publish the events that just got sent.
+	err = publishEvents(publishClient, batch.events, disallowPublishErrors)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// scheduleBatches takes in a list of CTPEvent batches and schedules them in
+// series to BuildBucket.
+func scheduleBatches(batches []*ctpEventBatch, isProd, dryRun bool, projectID string, authOpts *authcli.Flags) error {
+	// Initialize an authenticated BuildBucket client for scheduling.
+	schedulerClient, publishClient, err := initPubSubAndSchedulerClients(isProd, dryRun, projectID, authOpts)
+	if err != nil {
+		return err
+	}
+
+	common.Stdout.Printf("scheduling %d batches to BB", len(batches))
+	for _, batch := range batches {
+		err := handleBatch(schedulerClient, publishClient, batch, fillEventResponse, publishEventsToPubSub)
+		if err != nil {
+			common.Stderr.Println(err)
+		}
+
+	}
+	return nil
 }

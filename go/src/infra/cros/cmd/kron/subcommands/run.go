@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 
 	"infra/cros/cmd/kron/common"
+	"infra/cros/cmd/kron/configparser"
 	"infra/cros/cmd/kron/metrics"
 	"infra/cros/cmd/kron/pubsub"
 	"infra/cros/cmd/kron/run"
@@ -25,25 +26,30 @@ import (
 
 type runCommand struct {
 	subcommands.CommandRunBase
-	authFlags   authcli.Flags
-	runID       string
-	prod        bool
-	dryRun      bool
-	newBuilds   bool
-	timedEvents bool
-	newBuilds3d bool
+	authFlags          authcli.Flags
+	runID              string
+	configCFGInputPath string
+	labCFGInputPath    string
+	isProd             bool
+	isTest             bool
+	dryRun             bool
+	newBuilds          bool
+	timedEvents        bool
+	newBuilds3d        bool
 }
 
 // setFlags adds also CLI flags to the subcommand.
 func (c *runCommand) setFlags() {
 	// TODO(b/319463660): Allow for execution time to be set for TIMED_EVENTS
-	// TODO(b/319273179): Allow a path to local configs to be passed in via CLI
 	// TODO(TBD): Allow for execution of only specified types of TIMED_EVENTS.
 	// E.g. (DAILY | WEEKLY), (DAILY), (FORTNIGHTLY | WEEKLY), etc.
 
 	c.Flags.StringVar(&c.runID, "run-id", common.DefaultString, "Used to manually set the runID. Should only be used by the recipe builder.")
+	c.Flags.StringVar(&c.configCFGInputPath, "config-input-path", common.DefaultString, "Provide if a local version of the config .cfg is planned on being used. If omitted, the program will fetch the ToT config .cfg from gerrit.")
+	c.Flags.StringVar(&c.labCFGInputPath, "lab-input-path", common.DefaultString, "Provide if a local version of the lab .cfg is planned on being used. If omitted, the program will fetch the ToT lab .cfg from gerrit.")
 
-	c.Flags.BoolVar(&c.prod, "prod", false, "Run using prod environments.")
+	c.Flags.BoolVar(&c.isTest, "test", false, "Run the binary as a test. This means that we will pull from the testing Pub/Sub, Nack all Messages, and run in the staging environment.")
+	c.Flags.BoolVar(&c.isProd, "prod", false, "Run using prod environments.")
 	c.Flags.BoolVar(&c.dryRun, "dry-run", false, "Do not send the builds to BB.")
 
 	// TODO(b/319464677): Implement a backfill run command
@@ -62,6 +68,10 @@ func (c *runCommand) validate() error {
 
 	if totmanager.GetTot() == 0 {
 		return fmt.Errorf("totmanager was not initialized")
+	}
+
+	if c.isTest && c.isProd {
+		return fmt.Errorf("-test can only be run in the staging environment")
 	}
 
 	return nil
@@ -111,6 +121,28 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 		return 1
 	}
 
+	// Ingest lab configs into memory.
+	common.Stdout.Println("Fetch lab configs")
+	labConfigs, err := configparser.FetchLabConfigs(c.labCFGInputPath)
+	if err != nil {
+		common.Stderr.Println(err)
+		return 1
+	}
+
+	// Ingest SuiteScheduler configs into memory.
+	common.Stdout.Println("Fetch SuSch configs")
+	suiteSchedulerConfigs, err := configparser.FetchSchedulerConfigs(c.configCFGInputPath, labConfigs)
+	if err != nil {
+		common.Stderr.Println(err)
+		return 1
+	}
+
+	// Determine which GCP Project should be used for the run.
+	projectID := common.StagingProjectID
+	if c.isProd {
+		projectID = common.ProdProjectID
+	}
+
 	common.Stdout.Println("Validating flags")
 	err = c.validate()
 	if err != nil {
@@ -132,7 +164,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	err = metrics.SetStartTime()
 	if err != nil {
 		// Stop run timer and publish the message to pubsub
-		endRunErr := endRun(c.prod)
+		endRunErr := endRun(c.isProd)
 		if endRunErr != nil {
 			common.Stderr.Println(err)
 		}
@@ -141,59 +173,41 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 		return 1
 	}
 
+	// nbCommands stores the NEW_BUILD-esque commands chosen to run according to
+	// the passed in CLI flags.
+	nbCommands := []run.NewBuildCommand{}
+
+	// timedEventCommands stores the TIMED_EVENT-esque commands chosen to run
+	// according to the passed in CLI flags.
+	//
+	// TODO(b/319463660): Launch these commands like the NEW_BUILD commands once
+	// we have implemented the final parts of the timed events pipeline.
+	timedEventCommands := []run.TimedEventCommand{}
+
 	// Launch execution path for NEW_BUILD type configs
 	if c.newBuilds {
-		common.Stdout.Println("Launching NEW_BUILDS")
-		err := run.NewBuilds(&c.authFlags, c.prod, c.dryRun)
-		if err != nil {
-			// Stop run timer and publish the message to pubsub
-			endRunErr := endRun(c.prod)
-			if endRunErr != nil {
-				common.Stderr.Println(err)
-			}
-
-			common.Stderr.Println(err)
-			return 1
-		}
-		common.Stdout.Println("Done launching NEW_BUILDS")
+		nbCommands = append(nbCommands, run.InitCrOSNewBuildCommand(&c.authFlags, c.isProd, c.dryRun, c.isTest, labConfigs, suiteSchedulerConfigs, projectID))
 	}
 
 	// Launch execution path for all TIMED_EVENT configs
 	if c.timedEvents {
-		common.Stdout.Println("Launching TIMED_EVENTS")
-		err := run.TimedEvents(&c.authFlags, c.prod, c.dryRun)
-		if err != nil {
-			// Stop run timer and publish the message to pubsub
-			endRunErr := endRun(c.prod)
-			if endRunErr != nil {
-				common.Stderr.Println(err)
-			}
-
-			common.Stderr.Println(err)
-			return 1
-		}
-		common.Stdout.Println("Done launching TIMED_EVENTS")
+		timedEventCommands = append(timedEventCommands, run.InitCrOSTimedEventCommand(&c.authFlags, c.isProd, c.dryRun, labConfigs, suiteSchedulerConfigs, projectID))
 	}
 
-	// Launch execution path for all 3d configs
-	if c.newBuilds3d {
-		common.Stdout.Println("Launching 3d events")
-		err := run.Process3d(&c.authFlags, c.prod, c.dryRun)
+	// Run all NEW_BUILD type command types requested. Each run is hermetic and
+	// will not affect the runs of the other commands
+	for _, nbCommand := range nbCommands {
+		common.Stdout.Printf("Launching %s", nbCommand.Name())
+		err = run.RunNewBuildCommand(nbCommand)
 		if err != nil {
-			// Stop run timer and publish the message to pubsub
-			endRunErr := endRun(c.prod)
-			if endRunErr != nil {
-				common.Stderr.Println(err)
-			}
-
-			common.Stderr.Println(err)
-			return 1
+			common.Stderr.Printf("%s terminated with error: %s", nbCommand.Name(), err)
+			continue
 		}
-		common.Stdout.Println("Done launching 3d events")
+		common.Stdout.Printf("Done launching %s", nbCommand.Name())
 	}
 
 	// Stop run timer and publish the message to pubsub
-	endRunErr := endRun(c.prod)
+	endRunErr := endRun(c.isProd)
 	if endRunErr != nil {
 		common.Stderr.Println(err)
 		return 1
