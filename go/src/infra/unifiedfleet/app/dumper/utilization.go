@@ -110,6 +110,7 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 
 func (c inventoryCounter) Report(ctx context.Context) {
 	for b, count := range c {
+		logging.Infof(ctx, "bucket: %s, number: %d", b.String(), count)
 		suMetric.Set(ctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.status)
 	}
 }
@@ -274,7 +275,7 @@ type bucket struct {
 }
 
 func (b *bucket) String() string {
-	return fmt.Sprintf("board: %s, model: %s, pool: %s, env: %s, zone: %q", b.board, b.model, b.pool, b.environment, b.zone)
+	return fmt.Sprintf("board: %s, model: %s, pool: %s, env: %s, zone: %q, status: %s", b.board, b.model, b.pool, b.environment, b.zone, b.status)
 }
 
 func summarizeValues(vs []string) string {
