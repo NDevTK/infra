@@ -41,6 +41,7 @@ func TestGetDeviceByName(t *testing.T) {
 				"device_type",
 				"device_state",
 				"schedulable_labels",
+				"created_time",
 				"last_updated_time",
 				"is_active"}).
 				AddRow(
@@ -50,6 +51,7 @@ func TestGetDeviceByName(t *testing.T) {
 					"DEVICE_STATE_AVAILABLE",
 					`{"label-test":{"Values":["test-value-1"]}}`,
 					timeNow,
+					timeNow,
 					true).
 				AddRow(
 					"test-device-2",
@@ -57,6 +59,7 @@ func TestGetDeviceByName(t *testing.T) {
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
 					`{"label-test":{"Values":["test-value-2"]}}`,
+					timeNow,
 					timeNow,
 					false)
 
@@ -67,6 +70,7 @@ func TestGetDeviceByName(t *testing.T) {
 					device_type,
 					device_state,
 					schedulable_labels,
+					created_time,
 					last_updated_time,
 					is_active
 				FROM "Devices"
@@ -86,6 +90,7 @@ func TestGetDeviceByName(t *testing.T) {
 						Values: []string{"test-value-1"},
 					},
 				},
+				CreatedTime:     timeNow,
 				LastUpdatedTime: timeNow,
 				IsActive:        true,
 			})
@@ -110,6 +115,7 @@ func TestGetDeviceByName(t *testing.T) {
 					device_type,
 					device_state,
 					schedulable_labels,
+					created_time,
 					last_updated_time,
 					is_active
 				FROM "Devices"

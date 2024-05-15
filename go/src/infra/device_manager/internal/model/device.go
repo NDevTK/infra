@@ -25,6 +25,7 @@ type Device struct {
 	DeviceState       string
 	SchedulableLabels SchedulableLabels `json:"SchedulableLabels"`
 
+	CreatedTime     time.Time
 	LastUpdatedTime time.Time
 	IsActive        bool
 }
@@ -70,6 +71,7 @@ func (s SchedulableLabels) Value() (driver.Value, error) {
 func GetDeviceByName(ctx context.Context, db *sql.DB, deviceName string) (Device, error) {
 	var (
 		device          Device
+		createdTime     sql.NullTime
 		lastUpdatedTime sql.NullTime
 	)
 	err := db.QueryRowContext(ctx, `
@@ -79,6 +81,7 @@ func GetDeviceByName(ctx context.Context, db *sql.DB, deviceName string) (Device
 			device_type,
 			device_state,
 			schedulable_labels,
+			created_time,
 			last_updated_time,
 			is_active
 		FROM "Devices"
@@ -88,6 +91,7 @@ func GetDeviceByName(ctx context.Context, db *sql.DB, deviceName string) (Device
 		&device.DeviceType,
 		&device.DeviceState,
 		&device.SchedulableLabels,
+		&createdTime,
 		&lastUpdatedTime,
 		&device.IsActive,
 	)
@@ -98,6 +102,9 @@ func GetDeviceByName(ctx context.Context, db *sql.DB, deviceName string) (Device
 	}
 
 	// Handle possible null times
+	if createdTime.Valid {
+		device.CreatedTime = createdTime.Time
+	}
 	if lastUpdatedTime.Valid {
 		device.LastUpdatedTime = lastUpdatedTime.Time
 	}
