@@ -127,6 +127,7 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize 
 			device_type,
 			device_state,
 			schedulable_labels,
+			created_time,
 			last_updated_time,
 			is_active
 		FROM "Devices"`
@@ -134,20 +135,19 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize 
 	currArgPosition := 1
 
 	if pageToken != "" {
-		id, err := DecodePageToken(ctx, pageToken)
+		decodedTime, err := DecodePageToken(ctx, pageToken)
 		if err != nil {
 			return nil, "", fmt.Errorf("ListDevices: %w", err)
 		}
 
-		// TODO (b/339511151): Use an auto-incrementing field as token instead.
 		query += fmt.Sprintf(`
-			WHERE id > $%d`, currArgPosition)
-		args = append(args, id)
+			WHERE created_time > $%d`, currArgPosition)
+		args = append(args, decodedTime)
 		currArgPosition += 1
 	}
 
 	query += fmt.Sprintf(`
-		ORDER BY id
+		ORDER BY created_time
 		LIMIT $%d;`, currArgPosition)
 	args = append(args, pageSize+1) // fetch one extra to check for 'next page'
 
@@ -161,6 +161,7 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize 
 	for rows.Next() {
 		var (
 			device          Device
+			createdTime     sql.NullTime
 			lastUpdatedTime sql.NullTime
 		)
 		err := rows.Scan(
@@ -169,6 +170,7 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize 
 			&device.DeviceType,
 			&device.DeviceState,
 			&device.SchedulableLabels,
+			&createdTime,
 			&lastUpdatedTime,
 			&device.IsActive,
 		)
@@ -177,6 +179,9 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize 
 		}
 
 		// handle possible null times
+		if createdTime.Valid {
+			device.CreatedTime = createdTime.Time
+		}
 		if lastUpdatedTime.Valid {
 			device.LastUpdatedTime = lastUpdatedTime.Time
 		}
@@ -196,7 +201,7 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize 
 	var nextPageToken PageToken
 	if len(results) > pageSize {
 		lastDevice := results[pageSize-1]
-		nextPageToken = EncodePageToken(ctx, lastDevice.ID)
+		nextPageToken = EncodePageToken(ctx, lastDevice.CreatedTime.Format(time.RFC3339Nano))
 		results = results[0:pageSize] // trim results to page size
 	}
 	return results, nextPageToken, nil
@@ -292,16 +297,16 @@ func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 	return nil
 }
 
-// EncodePageToken encodes a Device ID as a base64 PageToken.
-func EncodePageToken(ctx context.Context, id string) PageToken {
-	return PageToken(base64.StdEncoding.EncodeToString([]byte(id)))
+// EncodePageToken encodes a Device CreatedTime as a base64 PageToken.
+func EncodePageToken(ctx context.Context, createdTime string) PageToken {
+	return PageToken(base64.StdEncoding.EncodeToString([]byte(createdTime)))
 }
 
 // DecodePageToken decodes a base64 PageToken as a string.
 func DecodePageToken(ctx context.Context, token PageToken) (string, error) {
-	id, err := base64.StdEncoding.DecodeString(string(token))
+	createdTime, err := base64.StdEncoding.DecodeString(string(token))
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("DecodePageToken: %w", err)
 	}
-	return string(id), nil
+	return string(createdTime), nil
 }

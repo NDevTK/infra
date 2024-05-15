@@ -153,12 +153,16 @@ func TestListDevices(t *testing.T) {
 				timeNow  = time.Now()
 			)
 
+			createdTime, err := time.Parse("2006-01-02 15:04:05", "2024-01-01 12:00:00")
+			So(err, ShouldBeNil)
+
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"device_address",
 				"device_type",
 				"device_state",
 				"schedulable_labels",
+				"created_time",
 				"last_updated_time",
 				"is_active"}).
 				AddRow(
@@ -167,6 +171,7 @@ func TestListDevices(t *testing.T) {
 					"DEVICE_TYPE_PHYSICAL",
 					"DEVICE_STATE_AVAILABLE",
 					`{"label-test":{"Values":["test-value-1"]}}`,
+					createdTime,
 					timeNow,
 					true).
 				AddRow(
@@ -175,6 +180,7 @@ func TestListDevices(t *testing.T) {
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
 					`{"label-test":{"Values":["test-value-2"]}}`,
+					createdTime,
 					timeNow,
 					false)
 
@@ -185,17 +191,18 @@ func TestListDevices(t *testing.T) {
 					device_type,
 					device_state,
 					schedulable_labels,
+					created_time,
 					last_updated_time,
 					is_active
 				FROM "Devices"
-				ORDER BY id
+				ORDER BY created_time
 				LIMIT $1;`)).
 				WithArgs(pageSize + 1).
 				WillReturnRows(rows)
 
 			devices, nextPageToken, err := ListDevices(ctx, db, "", pageSize)
 			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldEqual, PageToken("dGVzdC1kZXZpY2UtMQ=="))
+			So(nextPageToken, ShouldEqual, PageToken("MjAyNC0wMS0wMVQxMjowMDowMFo="))
 			So(devices, ShouldEqual, []Device{
 				{
 					ID:            "test-device-1",
@@ -207,6 +214,7 @@ func TestListDevices(t *testing.T) {
 							Values: []string{"test-value-1"},
 						},
 					},
+					CreatedTime:     createdTime,
 					LastUpdatedTime: timeNow,
 					IsActive:        true,
 				},
@@ -214,7 +222,7 @@ func TestListDevices(t *testing.T) {
 
 			decodedToken, err := DecodePageToken(ctx, PageToken(nextPageToken))
 			So(err, ShouldBeNil)
-			So(decodedToken, ShouldEqual, "test-device-1")
+			So(decodedToken, ShouldEqual, createdTime.Format(time.RFC3339Nano))
 		})
 		Convey("ListDevices: valid return; no page token returned", func() {
 			db, mock, err := sqlmock.New()
@@ -234,12 +242,16 @@ func TestListDevices(t *testing.T) {
 				timeNow  = time.Now()
 			)
 
+			createdTime, err := time.Parse("2006-01-02 15:04:05", "2024-01-01 12:00:00")
+			So(err, ShouldBeNil)
+
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"device_address",
 				"device_type",
 				"device_state",
 				"schedulable_labels",
+				"created_time",
 				"last_updated_time",
 				"is_active"}).
 				AddRow(
@@ -248,6 +260,7 @@ func TestListDevices(t *testing.T) {
 					"DEVICE_TYPE_PHYSICAL",
 					"DEVICE_STATE_AVAILABLE",
 					`{"label-test":{"Values":["test-value-1"]}}`,
+					createdTime,
 					timeNow,
 					true).
 				AddRow(
@@ -256,6 +269,7 @@ func TestListDevices(t *testing.T) {
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
 					`{"label-test":{"Values":["test-value-2"]}}`,
+					createdTime,
 					timeNow,
 					false)
 
@@ -266,10 +280,11 @@ func TestListDevices(t *testing.T) {
 					device_type,
 					device_state,
 					schedulable_labels,
+					created_time,
 					last_updated_time,
 					is_active
 				FROM "Devices"
-				ORDER BY id
+				ORDER BY created_time
 				LIMIT $1;`)).
 				WithArgs(pageSize + 1).
 				WillReturnRows(rows)
@@ -288,6 +303,7 @@ func TestListDevices(t *testing.T) {
 							Values: []string{"test-value-1"},
 						},
 					},
+					CreatedTime:     createdTime,
 					LastUpdatedTime: timeNow,
 					IsActive:        true,
 				},
@@ -301,6 +317,7 @@ func TestListDevices(t *testing.T) {
 							Values: []string{"test-value-2"},
 						},
 					},
+					CreatedTime:     createdTime,
 					LastUpdatedTime: timeNow,
 					IsActive:        false,
 				},
@@ -321,9 +338,12 @@ func TestListDevices(t *testing.T) {
 
 			var (
 				pageSize  = 1
-				pageToken = "dGVzdC1kZXZpY2UtMQ=="
+				pageToken = "MjAyNC0wMS0wMVQxMjowMDowMFo="
 				timeNow   = time.Now()
 			)
+
+			createdTime, err := time.Parse("2006-01-02 15:04:05", "2024-01-01 12:00:00")
+			So(err, ShouldBeNil)
 
 			// only add rows after test-device-1
 			rows := sqlmock.NewRows([]string{
@@ -332,6 +352,7 @@ func TestListDevices(t *testing.T) {
 				"device_type",
 				"device_state",
 				"schedulable_labels",
+				"created_time",
 				"last_updated_time",
 				"is_active"}).
 				AddRow(
@@ -340,6 +361,7 @@ func TestListDevices(t *testing.T) {
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
 					`{"label-test":{"Values":["test-value-2"]}}`,
+					createdTime,
 					timeNow,
 					false)
 
@@ -350,13 +372,14 @@ func TestListDevices(t *testing.T) {
 					device_type,
 					device_state,
 					schedulable_labels,
+					created_time,
 					last_updated_time,
 					is_active
 				FROM "Devices"
-				WHERE id > $1
-				ORDER BY id
+				WHERE created_time > $1
+				ORDER BY created_time
 				LIMIT $2;`)).
-				WithArgs("test-device-1", pageSize+1).
+				WithArgs(createdTime.Format(time.RFC3339Nano), pageSize+1).
 				WillReturnRows(rows)
 
 			devices, nextPageToken, err := ListDevices(ctx, db, PageToken(pageToken), pageSize)
@@ -373,6 +396,7 @@ func TestListDevices(t *testing.T) {
 							Values: []string{"test-value-2"},
 						},
 					},
+					CreatedTime:     createdTime,
 					LastUpdatedTime: timeNow,
 					IsActive:        false,
 				},
