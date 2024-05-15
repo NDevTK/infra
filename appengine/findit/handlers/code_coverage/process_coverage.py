@@ -827,6 +827,7 @@ class ProcessCodeCoverageData(BaseHandler):
                 'cohorts_matched': cohorts_matched,
                 'cohorts_violated': cohorts_violated
             }),
+            headers={'Content-Type': 'application/json'},
             url='/coverage/task/low-coverage-blocking')
 
       if low_coverage_threshold_with_violators:
