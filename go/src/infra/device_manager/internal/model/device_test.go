@@ -448,3 +448,70 @@ func TestUpdateDevice(t *testing.T) {
 		})
 	})
 }
+
+func TestUpsertDevice(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("UpsertDevice", t, func() {
+		Convey("UpsertDevice: valid upsert", func() {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			timeNow := time.Now()
+			mock.ExpectExec(regexp.QuoteMeta(`
+				INSERT INTO "Devices" AS d
+					(
+						id,
+						device_address,
+						device_type,
+						device_state,
+						schedulable_labels,
+						last_updated_time,
+						is_active
+					)
+				VALUES ($1, $2, $3, $4, $5, $6, $7)
+				ON CONFLICT(id)
+				DO UPDATE SET
+					device_address=COALESCE(EXCLUDED.device_address, d.device_address),
+					device_type=COALESCE(EXCLUDED.device_type, d.device_type),
+					device_state=COALESCE(EXCLUDED.device_state, d.device_state),
+					schedulable_labels=COALESCE(EXCLUDED.schedulable_labels, d.schedulable_labels),
+					last_updated_time=COALESCE(EXCLUDED.last_updated_time, d.last_updated_time),
+					is_active=COALESCE(EXCLUDED.is_active, d.is_active);`)).
+				WithArgs(
+					"test-device-1",
+					"2.2.2.2:2",
+					"DEVICE_TYPE_VIRTUAL",
+					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-1"]}}`,
+					timeNow,
+					false).
+				WillReturnResult(sqlmock.NewResult(1, 1))
+
+			err = UpsertDevice(ctx, db, Device{
+				ID:            "test-device-1",
+				DeviceAddress: "2.2.2.2:2",
+				DeviceType:    "DEVICE_TYPE_VIRTUAL",
+				DeviceState:   "DEVICE_STATE_LEASED",
+				SchedulableLabels: SchedulableLabels{
+					"label-test": LabelValues{
+						Values: []string{"test-value-1"},
+					},
+				},
+				LastUpdatedTime: timeNow,
+				IsActive:        false,
+			})
+			So(err, ShouldBeNil)
+		})
+	})
+}

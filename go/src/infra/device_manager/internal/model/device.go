@@ -251,7 +251,7 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, updatedDevice Device) error {
 // the ID, the old device record will be updated with the new information.
 func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 	result, err := db.ExecContext(ctx, `
-		INSERT INTO "Devices"
+		INSERT INTO "Devices" AS d
 			(
 				id,
 				device_address,
@@ -264,12 +264,12 @@ func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		ON CONFLICT(id)
 		DO UPDATE SET
-			device_address=COALESCE($2, EXCLUDED.device_address),
-			device_type=COALESCE($3, EXCLUDED.device_type),
-			device_state=COALESCE($4, EXCLUDED.device_state),
-			schedulable_labels=COALESCE($5, EXCLUDED.schedulable_labels),
-			last_updated_time=COALESCE($6, EXCLUDED.last_updated_time),
-			is_active=COALESCE($7, EXCLUDED.is_active);`,
+			device_address=COALESCE(EXCLUDED.device_address, d.device_address),
+			device_type=COALESCE(EXCLUDED.device_type, d.device_type),
+			device_state=COALESCE(EXCLUDED.device_state, d.device_state),
+			schedulable_labels=COALESCE(EXCLUDED.schedulable_labels, d.schedulable_labels),
+			last_updated_time=COALESCE(EXCLUDED.last_updated_time, d.last_updated_time),
+			is_active=COALESCE(EXCLUDED.is_active, d.is_active);`,
 		device.ID,
 		device.DeviceAddress,
 		device.DeviceType,
