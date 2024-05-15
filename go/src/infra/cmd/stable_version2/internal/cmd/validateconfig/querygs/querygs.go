@@ -120,16 +120,16 @@ func (r *Reader) Init(ctx context.Context, t http.RoundTripper, unmarshaler json
 	r.dld = func(remotePath gs.Path) ([]byte, error) {
 		dir, err := ioutil.TempDir("", tempPrefix)
 		if err != nil {
-			return nil, fmt.Errorf("download adapter: making temporary directory: %s", err)
+			return nil, fmt.Errorf("download adapter: making temporary directory: %w", err)
 		}
 		defer os.RemoveAll(dir)
 		localPath := filepath.Join(dir, "metadata.json")
 		if err := gsc.Download(remotePath, localPath); err != nil {
-			return nil, fmt.Errorf("download adapter: fetching file: %s", err)
+			return nil, fmt.Errorf("download adapter: fetching file: %w", err)
 		}
 		contents, err := ioutil.ReadFile(localPath)
 		if err != nil {
-			return nil, fmt.Errorf("download adapter: reading local file: %s", err)
+			return nil, fmt.Errorf("download adapter: reading local file: %w", err)
 		}
 		return contents, nil
 	}
@@ -176,7 +176,7 @@ func (r *Reader) ValidateConfig(ctx context.Context, sv *labPlatform.StableVersi
 			out.NonLowercaseEntries = append(out.NonLowercaseEntries, model)
 			continue
 		}
-		if _, err := r.getAllModelsForBuildTarget(ctx, bt, version); err != nil {
+		if _, err := r.getAllModelsForBuildTarget(ctx, bt, model, version); err != nil {
 			out.MissingBoards = append(out.MissingBoards, bt)
 			continue
 		}
@@ -193,38 +193,18 @@ func (r *Reader) ValidateConfig(ctx context.Context, sv *labPlatform.StableVersi
 	return &out, nil
 }
 
-// allModels returns a mapping from model names to fimrware versions given a buildTaret and CrOS version.
-func (r *Reader) getAllModelsForBuildTarget(ctx context.Context, buildTarget string, version string) (map[string]string, error) {
+// allModels returns a mapping from model names to firmware versions given a buildTaret and CrOS version.
+func (r *Reader) getAllModelsForBuildTarget(ctx context.Context, buildTarget string, model string, version string) (map[string]string, error) {
 	if err := r.maybeDownloadFile(ctx, buildTarget, version); err != nil {
-		logging.Infof(ctx, "failed to get contents for %q %q", buildTarget, version)
-		return nil, fmt.Errorf("all models: downloading: %s", err)
+		logging.Errorf(ctx, "failed to get CrOS image from GCS for board=%q, model=%q, os=%q from path: %q",
+			buildTarget, model, version, crosImagePath(buildTarget, version))
+		return nil, fmt.Errorf("all models: downloading: %w", err)
 	}
 	m, err := getAllModels(r, buildTarget, version)
 	if err != nil {
-		return nil, fmt.Errorf("all models: reading: %s", err)
+		return nil, fmt.Errorf("all models: reading: %w", err)
 	}
 	return m, nil
-}
-
-// getFirmwareVersion returns the firmware version for a specific model given the buildTarget and CrOS version.
-func (r *Reader) getFirmwareVersion(ctx context.Context, buildTarget string, model string, version string) (string, error) {
-	if err := r.maybeDownloadFile(ctx, buildTarget, version); err != nil {
-		logging.Infof(ctx, "failed to get contents for %q %q %q", buildTarget, version, model)
-		return "", fmt.Errorf("FirmwareVersion: %s", err)
-	}
-	if r.cache == nil {
-		return "", fmt.Errorf("getFirmwareVersion: cache cannot be empty")
-	}
-	if _, ok := (*r.cache)[buildTarget]; !ok {
-		// If control makes it here, then maybeDownloadFile should have returned
-		// a non-nil error.
-		panic(fmt.Sprintf("getFirmwareVersion: buildTarget MUST be present (%s)", buildTarget))
-	}
-	fwversion := get(r.cache, buildTarget, version, model)
-	if fwversion == "" {
-		return "", fmt.Errorf("no info for model (%s)", model)
-	}
-	return fwversion, nil
 }
 
 // maybeDownloadFile fetches a metadata.json corresponding to a buildTarget and version if it doesn't already exist in the cache.
@@ -236,19 +216,18 @@ func (r *Reader) maybeDownloadFile(ctx context.Context, buildTarget string, cros
 	if m, _ := getAllModels(r, buildTarget, crosVersion); m != nil {
 		return nil
 	}
-	rawRemotePath := fmt.Sprintf("gs://chromeos-image-archive/%s-release/%s/metadata.json", buildTarget, crosVersion)
+	rawRemotePath := crosImagePath(buildTarget, crosVersion)
 	remotePath := gs.Path(rawRemotePath)
 	contents, err := (r.dld)(remotePath)
 	if err != nil {
-		return fmt.Errorf("Reader::maybeDownloadFile: fetching file: %s", err)
+		return fmt.Errorf("Reader::maybeDownloadFile: fetching file: %w", err)
 	}
 	fws, err := gslib.ParseMetadata(contents)
 	if err != nil {
-		return fmt.Errorf("Reader::maybeDownloadFile: parsing metadata.json: %s", err)
+		return fmt.Errorf("Reader::maybeDownloadFile: parsing metadata.json: %w", err)
 	}
 	switch len(fws.FirmwareVersions) {
 	case 0:
-		logging.Infof(ctx, "no firmware versions for board %q at %q, creating special board entry", buildTarget, rawRemotePath)
 		r.specialBoards = append(r.specialBoards, specialBoardEntry{buildTarget, crosVersion})
 	default:
 		// TODO(gregorynisbet): Consider throwing an error or panicking if we encounter
@@ -261,6 +240,11 @@ func (r *Reader) maybeDownloadFile(ctx context.Context, buildTarget string, cros
 		}
 	}
 	return nil
+}
+
+// Generates the GCS path for a ChromeOS image.
+func crosImagePath(buildTarget string, crosVersion string) string {
+	return fmt.Sprintf("gs://chromeos-image-archive/%s-release/%s/metadata.json", buildTarget, crosVersion)
 }
 
 // check if string has entirely lowercase letters

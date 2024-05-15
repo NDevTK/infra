@@ -124,27 +124,6 @@ var testFirmwareVersionData = []struct {
 	},
 }
 
-func TestGetFirmwareVersion(t *testing.T) {
-	t.Parallel()
-	for _, tt := range testFirmwareVersionData {
-		t.Run(tt.name, func(t *testing.T) {
-			var r Reader
-			bg := context.Background()
-			r.dld = makeConstantDownloader(tt.metadata)
-			version, e := r.getFirmwareVersion(bg, tt.bt, tt.model, tt.CrOSVersion)
-			if e != nil {
-				msg := fmt.Sprintf("name (%s): uuid (%s): unexpected error (%s)", tt.name, tt.uuid, e.Error())
-				t.Errorf(msg)
-			}
-			diff := cmp.Diff(tt.out, version)
-			if diff != "" {
-				msg := fmt.Sprintf("name (%s): uuid (%s): unexpected diff (%s)", tt.name, tt.uuid, diff)
-				t.Errorf(msg)
-			}
-		})
-	}
-}
-
 var testValidateConfigData = []struct {
 	name          string
 	uuid          string
