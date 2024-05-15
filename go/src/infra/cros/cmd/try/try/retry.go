@@ -596,7 +596,9 @@ func (r *retryRun) innerRun() (string, int) {
 		return "", UnspecifiedError
 	}
 	if commit := buildData.GetInput().GetGitilesCommit(); commit != nil {
-		r.bbAddArgs = append(r.bbAddArgs, "-commit", fmt.Sprintf("https://%s/%s/+/%s", commit.GetHost(), commit.GetProject(), commit.GetId()))
+		r.bbAddArgs = append(r.bbAddArgs,
+			"-commit", fmt.Sprintf("https://%s/%s/+/%s", commit.GetHost(), commit.GetProject(), commit.GetId()),
+			"-ref", commit.GetRef())
 	}
 	if r.propsFile == nil {
 		defer os.Remove(propsFile.Name())
