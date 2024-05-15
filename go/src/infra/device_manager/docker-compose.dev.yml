@@ -30,7 +30,7 @@ services:
       DB_PORT: 5432
       DB_NAME: device_manager_db
       DATABASE_URL: "host=device_manager_db user=postgres password=password dbname=device_manager_db sslmode=disable"
-      # PUBSUB_EMULATOR_HOST: pubsub:8085 # uncomment to enable pubsub emulator
+      PUBSUB_EMULATOR_HOST: pubsub:8085 # uncomment to enable pubsub emulator
     ports:
       - "8800:8800"
       - "8900:8900"
