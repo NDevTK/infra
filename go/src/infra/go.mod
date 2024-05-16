@@ -9,7 +9,7 @@ require (
 	cloud.google.com/go/cloudsqlconn v1.8.1
 	cloud.google.com/go/cloudtasks v1.12.6
 	cloud.google.com/go/compute v1.24.0
-	cloud.google.com/go/compute/metadata v0.2.3
+	cloud.google.com/go/compute/metadata v0.3.0
 	cloud.google.com/go/datastore v1.15.0
 	cloud.google.com/go/firestore v1.14.0
 	cloud.google.com/go/logging v1.9.0
@@ -29,7 +29,7 @@ require (
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
 	github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1
 	github.com/bazelbuild/remote-apis v0.0.0-20240215191509-9ff14cecffe5
-	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240508160443-20c1af50b823
+	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240516144943-e74bc3da2efc
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/containerd/cgroups v1.0.4
 	github.com/danjacques/gofslock v0.0.0-20240212154529-d899e02bfe22
@@ -99,7 +99,7 @@ require (
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/mod v0.15.0
 	golang.org/x/net v0.23.0
-	golang.org/x/oauth2 v0.18.0
+	golang.org/x/oauth2 v0.20.0
 	golang.org/x/perf v0.0.0-20210220033136-40a54f11e909
 	golang.org/x/sync v0.6.0
 	golang.org/x/sys v0.18.0
@@ -241,9 +241,6 @@ require (
 	k8s.io/utils v0.0.0-20211116205334-6203023598ed // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.1 // indirect
 )
-
-// See https://github.com/google/cel-go/issues/441.
-exclude github.com/antlr/antlr4 v0.0.0-20200503195918-621b933c7a7f
 
 // Apparently checking out NDKs at head isn't really safe.
 replace golang.org/x/mobile => golang.org/x/mobile v0.0.0-20170111200746-6f0c9f6df9bb

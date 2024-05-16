@@ -48,8 +48,8 @@ cloud.google.com/go/cloudtasks v1.12.6 h1:EUt1hIZ9bLv8Iz9yWaCrqgMnIU+Tdh0yXM1MMV
 cloud.google.com/go/cloudtasks v1.12.6/go.mod h1:b7c7fe4+TJsFZfDyzO51F7cjq7HLUlRi/KZQLQjDsaY=
 cloud.google.com/go/compute v1.24.0 h1:phWcR2eWzRJaL/kOiJwfFsPs4BaKq1j6vnpZrc1YlVg=
 cloud.google.com/go/compute v1.24.0/go.mod h1:kw1/T+h/+tK2LJK0wiPPx1intgdAM3j/g3hFDlscY40=
-cloud.google.com/go/compute/metadata v0.2.3 h1:mg4jlk7mCAj6xXp9UJ4fjI9VUI5rubuGBW5aJ7UnBMY=
-cloud.google.com/go/compute/metadata v0.2.3/go.mod h1:VAV5nSsACxMJvgaAuX6Pk2AawlZn8kiOGuCv6gTkwuA=
+cloud.google.com/go/compute/metadata v0.3.0 h1:Tz+eQXMEqDIKRsmY3cHTL6FVaynIjX2QxYC4trgAKZc=
+cloud.google.com/go/compute/metadata v0.3.0/go.mod h1:zFmK7XCadkQkj6TtorcaGlCW1hT1fIilQDwofLpJ20k=
 cloud.google.com/go/datacatalog v1.19.3 h1:A0vKYCQdxQuV4Pi0LL9p39Vwvg4jH5yYveMv50gU5Tw=
 cloud.google.com/go/datacatalog v1.19.3/go.mod h1:ra8V3UAsciBpJKQ+z9Whkxzxv7jmQg1hfODr3N3YPJ4=
 cloud.google.com/go/datastore v1.0.0/go.mod h1:LXYbyblFSglQ5pkeyhO+Qmw7ukd3C+pD7TKLgZqpHYE=
@@ -219,8 +219,8 @@ github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1 h1:vi3GIvE
 github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1/go.mod h1:k9FlPXDUqPDWgAALgLoRbx+8gKcZ9/NXGfee4xJKe6c=
 github.com/bazelbuild/remote-apis v0.0.0-20240215191509-9ff14cecffe5 h1:fm5Ceq2rIwkGYaaw40jjd8y1x0iOuKRnvxdoipWr2JA=
 github.com/bazelbuild/remote-apis v0.0.0-20240215191509-9ff14cecffe5/go.mod h1:ry8Y6CkQqCVcYsjPOlLXDX2iRVjOnjogdNwhvHmRcz8=
-github.com/bazelbuild/remote-apis-sdks v0.0.0-20240508160443-20c1af50b823 h1:ctvQL0G6ccwwzzONe8seE41jpWi82zfjwoZ+XHsgv/c=
-github.com/bazelbuild/remote-apis-sdks v0.0.0-20240508160443-20c1af50b823/go.mod h1:39z3/n/4vqdt2ZpJyKQEFwhXAyQ5Vi8Jl4RCvmfH/s4=
+github.com/bazelbuild/remote-apis-sdks v0.0.0-20240516144943-e74bc3da2efc h1:GfYKt7dmQqMEfHZPNPwBCc7b82qQQ+4ZRmJwtrVlsAU=
+github.com/bazelbuild/remote-apis-sdks v0.0.0-20240516144943-e74bc3da2efc/go.mod h1:xTnFpTrMb0eMa4bsueAUc3/K2MSLiTwhrTjpuDJVSSQ=
 github.com/beorn7/perks v0.0.0-20160804104726-4c0e84591b9a/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
@@ -1558,8 +1558,8 @@ golang.org/x/oauth2 v0.0.0-20210805134026-6f1e6394065a/go.mod h1:KelEdhl1UZF7XfJ
 golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
 golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
 golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
-golang.org/x/oauth2 v0.18.0 h1:09qnuIAgzdx1XplqJvW6CQqMCtGZykZWcXzPMPUusvI=
-golang.org/x/oauth2 v0.18.0/go.mod h1:Wf7knwG0MPoWIMMBgFlEaSUDaKskp0dCfrlJRJXbBi8=
+golang.org/x/oauth2 v0.20.0 h1:4mQdhULixXKP1rwYBW0vAijoXnkTG0BLCDRzfe1idMo=
+golang.org/x/oauth2 v0.20.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
 golang.org/x/perf v0.0.0-20210220033136-40a54f11e909 h1:rWw0Gj4DMl/2otJ8CnfTcwOWkpROAc6qhXXoMrYOCgo=
 golang.org/x/perf v0.0.0-20210220033136-40a54f11e909/go.mod h1:KRSrLY7jerMEa0Ih7gBheQ3FYDiSx6liMnniX1o3j2g=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
