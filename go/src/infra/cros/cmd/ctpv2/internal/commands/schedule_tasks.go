@@ -180,6 +180,10 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 		logging.Infof(ctx, "%s: %s", errmsg, err)
 		return errors.Annotate(err, errmsg).Err()
 	}
+	dmc, err := common.NewDeviceManagerClient(ctx, pool)
+	if err != nil {
+		return errors.Annotate(err, "error while connecting to Device Manager").Err()
+	}
 	cmd.ObserveSchedulerSetupSuccess(ctx)
 
 	// Todo: batch call
@@ -187,7 +191,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	wg := &sync.WaitGroup{}
 	for k, v := range cmd.BuildsMap {
 		wg.Add(1)
-		go cmd.ScheduleAndMonitor(ctx, k, v, wg, resultsChan, 0)
+		go cmd.ScheduleAndMonitor(ctx, k, v, wg, resultsChan, 0, dmc)
 	}
 
 	go func() {
@@ -210,7 +214,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 
 }
 
-func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int) error {
+func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *common.DeviceManagerClient) error {
 	defer wg.Done()
 	var err error
 
@@ -280,12 +284,6 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// Re-init the data for the run build step. Keep the previously populated data.
 	cmd.ObserveTrBuildStart(ctx, buildReq)
 
-	dmc, err := common.NewDeviceManagerClient(ctx)
-	if err != nil {
-		err = fmt.Errorf("error while connecting to Device Manager: %w", err)
-		return setTopLevelError(ctx, step, result, resultsChan, err)
-	}
-
 	// Monitor here
 	lastLeaseExtensionTime := time.Now()
 	loopSleepInterval := 30 * time.Second
@@ -309,7 +307,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			}
 
 			if leaseID != "" && time.Since(lastLeaseExtensionTime) >= leaseExtensionInterval {
-				_, err = dmc.Extend(leaseID, leaseExtensionAmount)
+				_, err = dmc.Extend(ctx, leaseID, leaseExtensionAmount)
 				if err != nil {
 					err = fmt.Errorf("error while extending lease %s with Device Manager: %w", leaseID, err)
 					return setTopLevelError(ctx, step, result, resultsChan, err)
@@ -324,7 +322,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		}
 
 		if leaseID != "" {
-			err = dmc.Release(leaseID)
+			err = dmc.Release(ctx, leaseID)
 			if err != nil {
 				err = fmt.Errorf("error while releasing lease %s with Device Manager: %w", leaseID, err)
 				logging.Infof(ctx, err.Error())
@@ -359,7 +357,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			if newBuildReq != nil && newBuildReq.ScheduleBuildRequest != nil {
 				// Schedule retry
 				wg.Add(1)
-				go cmd.ScheduleAndMonitor(rootCtx, newBuildReq.Key, newBuildReq, wg, resultsChan, retryNum+1)
+				go cmd.ScheduleAndMonitor(rootCtx, newBuildReq.Key, newBuildReq, wg, resultsChan, retryNum+1, dmc)
 			}
 		}
 
