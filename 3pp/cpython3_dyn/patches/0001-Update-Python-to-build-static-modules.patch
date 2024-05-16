@@ -1,0 +1,36 @@
+From 055f25ce239f47be45cefb416f6e428883df3ce4 Mon Sep 17 00:00:00 2001
+From: Brian Ryner <bryner@google.com>
+Date: Mon, 7 Nov 2022 16:40:17 +1100
+Subject: [PATCH] Update Python to build static modules.
+
+This includes:
+
+- Update the Modules "makesetup" script to accept assembly (".S") files
+  as source input.
+---
+ Modules/makesetup | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Modules/makesetup b/Modules/makesetup
+index 08303814c8..349ff0d5f3 100755
+--- a/Modules/makesetup
++++ b/Modules/makesetup
+@@ -187,6 +187,7 @@ sed -e 's/[ 	]*#.*//' -e '/^[ 	]*$/d' |
+ 			*.c++)		srcs="$srcs $arg";;
+ 			*.cxx)		srcs="$srcs $arg";;
+ 			*.cpp)		srcs="$srcs $arg";;
++                        *.S)		srcs="$srcs $arg";;
+ 			\$\(*_CFLAGS\))		cpps="$cpps $arg";;
+ 			\$\(*_INCLUDES\))	cpps="$cpps $arg";;
+ 			\$\(*_LIBS\))		libs="$libs $arg";;
+@@ -247,6 +248,7 @@ sed -e 's/[ 	]*#.*//' -e '/^[ 	]*$/d' |
+ 			*.cxx) obj=`basename $src .cxx`.o; cc='$(CXX)';;
+ 			*.cpp) obj=`basename $src .cpp`.o; cc='$(CXX)';;
+ 			*.m)   obj=`basename $src .m`.o; cc='$(CC)';; # Obj-C
++                        *.S)   obj=`basename $src .S`.o; cc='$(CC)';;
+ 			*)     continue;;
+ 			esac
+ 			case $src in
+-- 
+2.38.1.431.g37b22c650d-goog
+
