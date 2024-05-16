@@ -78,6 +78,9 @@ peripherals: {
   wifi_router_features: [2,3,4,5,999]
   wifi_router_models: ["gale","OPENWRT[Ubiquiti_Unifi_6_Lite]"]
   hmr_state: 1
+  pasit_features: "CAMERA_XXYY"
+  pasit_features: "MONITOR_XXYY"
+  pasit_features: "DOCK_XXYY"
 }
 os_type: 2
 model: "modelval"
@@ -246,6 +249,9 @@ peripherals: {
   wifi_router_features: [2,3,4,5,999]
   wifi_router_models: ["gale","OPENWRT[Ubiquiti_Unifi_6_Lite]"]
   hmr_state: 1
+  pasit_features: "CAMERA_XXYY"
+  pasit_features: "MONITOR_XXYY"
+  pasit_features: "DOCK_XXYY"
 }
 os_type: 2
 model: "modelval"
@@ -479,6 +485,7 @@ var fullDimensions = Dimensions{
 	"label-cr50_rw_version":          {"21.22.23"},
 	"label-wifi_chip":                {"wireless_xxxx"},
 	"label-working_bluetooth_btpeer": {"1", "2", "3"},
+	"label-pasit_features":           {"CAMERA_XXYY", "MONITOR_XXYY", "DOCK_XXYY"},
 }
 
 func TestConvertEmpty(t *testing.T) {

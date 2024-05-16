@@ -193,6 +193,12 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 	for _, v := range p.GetWifiRouterModels() {
 		appendDim(dims, "label-wifi_router_models", v)
 	}
+
+	for _, v := range p.GetPasitFeatures() {
+		if v != "" {
+			appendDim(dims, "label-pasit_features", v)
+		}
+	}
 }
 
 func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
@@ -374,6 +380,12 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		p.WifiRouterModels[i] = v
 	}
 	delete(d, "label-wifi_router_models")
+
+	p.PasitFeatures = make([]string, len(d["label-pasit_features"]))
+	for i, v := range d["label-pasit_features"] {
+		p.PasitFeatures[i] = v
+	}
+	delete(d, "label-pasit_features")
 
 	return d
 }
