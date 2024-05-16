@@ -2,20 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-GOTESTFLAGS ?= -count 20
-
 .PHONY: default
 default: build
 
 .PHONY:
 build:
 	@go vet ./...
-	@go test $(GOTESTFLAGS) ./...
+	@go test ./...
 	go build ./...
 
-.PHONY: test test-slow
-test-slow:
-	go test ./... $(GOTESTFLAGS) -p 1
+.PHONY: test
 test:
 	go test ./...
 

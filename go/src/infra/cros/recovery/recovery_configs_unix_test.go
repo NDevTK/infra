@@ -133,9 +133,11 @@ func TestConfigTreeChanges(t *testing.T) {
 	for _, c := range configTreeChangesCases {
 		cs := c
 		t.Run(cs.name, func(t *testing.T) {
+			t.Parallel()
 			testRun_ConfigTreeChanges(t, cs.name, cs.setupType, cs.taskName, cs.treeFilename, true)
 		})
 		t.Run(cs.name, func(t *testing.T) {
+			t.Parallel()
 			testRun_ConfigTreeChanges(t, cs.name, cs.setupType, cs.taskName, cs.treeFilename, false)
 		})
 	}
