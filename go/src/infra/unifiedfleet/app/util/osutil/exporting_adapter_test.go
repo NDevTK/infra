@@ -165,6 +165,7 @@ var lse = ufspb.MachineLSE{
 								},
 								SmartUsbhub:         true,
 								StarfishSlotMapping: "test-map-key:test-value",
+								PasitFeatures:       []string{"DOCK_XXYY", "MONITOR_XXYY", "CAMERA_XXYY"},
 							},
 							Licenses: []*chromeosLab.License{
 								{
@@ -623,6 +624,9 @@ common {
 			working_bluetooth_btpeer: 3
 			hmr_state: UNKNOWN
 			audio_latency_toolkit_state: WORKING
+			pasit_features: "DOCK_XXYY"
+			pasit_features: "MONITOR_XXYY"
+			pasit_features: "CAMERA_XXYY"
 		}
 		phase: PHASE_DVT
 		platform: "coral"
