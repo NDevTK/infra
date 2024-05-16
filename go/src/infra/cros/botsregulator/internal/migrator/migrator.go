@@ -171,26 +171,30 @@ func (m *migrator) ComputeNextMigrationState(ctx context.Context, bms map[string
 // RunBatchUpdate calls UFS to update all the hive of the machineLSEs in migration state.
 func (m *migrator) RunBatchUpdate(ctx context.Context, migrationNext *migrationState) error {
 	logging.Infof(ctx, "starting batch update for cloudBots")
+	errs := errors.NewLazyMultiError(len(migrationNext.Cloudbots) + len(migrationNext.Drone))
+	cpt := 0
 	for _, cb := range migrationNext.Cloudbots {
 		req := clients.InitializeUpdateDUTRequest(cb, "cloudbots")
 		ctx = clients.SetUFSNamespace(ctx, "os")
 		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
-		// TODO(b/338242933): Add multi error.
 		if err != nil {
-			return err
+			logging.Errorf(ctx, "failed to update machineLSE %s to hive cloudbots: %v", cb, err)
+			errs.Assign(cpt, err)
 		}
+		cpt++
 	}
 	logging.Infof(ctx, "starting batch update for drone")
 	for _, drone := range migrationNext.Drone {
 		req := clients.InitializeUpdateDUTRequest(drone, "e")
 		ctx = clients.SetUFSNamespace(ctx, "os")
 		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
-		// TODO(b/338242933): Add multi error.
 		if err != nil {
-			return err
+			logging.Errorf(ctx, "failed to update machineLSE %s to hive e: %v", drone, err)
+			errs.Assign(cpt, err)
 		}
+		cpt++
 	}
-	return nil
+	return errs.Get()
 }
 
 // computeNextModelState computes the DUTs to migrate/roll back
