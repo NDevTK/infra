@@ -320,6 +320,7 @@
       "--",
       "go",
       "test",
+      "-fullpath",
       "-json",
       "./..."
     ],
@@ -368,6 +369,7 @@
       "--",
       "go",
       "test",
+      "-fullpath",
       "-json",
       "-race",
       "./..."

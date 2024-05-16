@@ -87,14 +87,18 @@ def RunSteps(
             api.step('go build', ['go', 'build', './...'])
             api.step(
                 'go test',
-                api.resultdb.wrap(
-                    [adapter, 'go', '--', 'go', 'test', '-json', './...']))
+                api.resultdb.wrap([
+                    adapter, 'go', '--', 'go', 'test', '-fullpath', '-json',
+                    './...'
+                ]))
           # The race detector requires CGO.
           if not api.platform.is_win:
             # Windows bots do not have gcc installed at the moment.
-            cmd = api.resultdb.wrap(
-                [adapter, 'go', '--', 'go', 'test', '-json', '-race', './...'],
-                base_variant={'race': 'true'})
+            cmd = api.resultdb.wrap([
+                adapter, 'go', '--', 'go', 'test', '-fullpath', '-json',
+                '-race', './...'
+            ],
+                                    base_variant={'race': 'true'})
             api.step('go test -race', cmd)
 
 
