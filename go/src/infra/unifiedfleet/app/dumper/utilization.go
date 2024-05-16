@@ -23,7 +23,7 @@ import (
 )
 
 // inventoryCounter collects number of DUTs per bucket and status.
-type inventoryCounter map[*bucket]int
+type inventoryCounter map[bucket]int
 
 // suMetric is the metric name for scheduling unit count.
 var suMetric = metric.NewInt(
@@ -84,7 +84,7 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 				logging.Warningf(ctx, err.Error())
 				continue
 			}
-			c[b]++
+			c[*b]++
 			for _, lseName := range su.GetMachineLSEs() {
 				lseInSUnitMap[lseName] = true
 			}
@@ -101,7 +101,7 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 			continue
 		}
 		b := getBucketForDevice(lse, machine, env)
-		c[b]++
+		c[*b]++
 	}
 	logging.Infof(ctx, "report UFS inventory metrics for %d devices", len(c))
 	c.Report(ctx)
