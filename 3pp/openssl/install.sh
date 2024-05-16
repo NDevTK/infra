@@ -45,6 +45,9 @@ case $_3PP_PLATFORM in
     ;;
 esac
 
+# Unset ${perl} from pkgbuild. This will confuse Configure.
+unset perl
+
 case $_3PP_PLATFORM in
   mac-amd64)
     TARGET=darwin64-x86_64-cc

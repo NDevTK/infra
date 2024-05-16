@@ -12,6 +12,7 @@ mkdir -p "$PREFIX"/bin
 cat <<EOF > "$PREFIX"/bin/perl.bat
 @echo off
 setlocal
+set PERL5SHELL=%COMSPEC:\\=\\\\% /C
 set PATH=%~dp0..\perl\site\bin;%~dp0..\perl\bin;%~dp0c\bin;%PATH%
 perl.exe %*
 EOF
