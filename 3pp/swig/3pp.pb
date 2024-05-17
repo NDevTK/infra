@@ -1,6 +1,6 @@
 create {
   source {
-    patch_version: "chromium.2"
+    patch_version: "chromium.3"
   }
 }
 
