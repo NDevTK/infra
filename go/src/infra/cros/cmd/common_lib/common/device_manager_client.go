@@ -7,13 +7,13 @@ package common
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
-	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -29,16 +29,23 @@ type DeviceManagerClient struct {
 }
 
 func NewDeviceManagerClient(ctx context.Context, pool string) (*DeviceManagerClient, error) {
-	t, err := auth.GetRPCTransport(ctx, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
-	if err != nil {
-		return nil, errors.Annotate(err, "setting up DM client").Err()
-	}
 	baseURL := DMProdURL
 	if pool == schedukeDevPool {
 		baseURL = DMDevURL
 	}
+	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
+		UseIDTokens: true,
+		// No "https://" included in the base URL since we omit it for RPC calls;
+		// however, it's still needed for the auth audience.
+		Audience: fmt.Sprintf("https://%s", baseURL),
+	})
+	a := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
+	hc, err := a.Client()
+	if err != nil {
+		return nil, errors.Annotate(err, "setting up DM client").Err()
+	}
 	prpcClient := &prpc.Client{
-		C:    &http.Client{Transport: t},
+		C:    hc,
 		Host: fmt.Sprintf("%s:%d", baseURL, DMLeasesPort),
 	}
 	c := api.NewDeviceLeaseServiceClient(prpcClient)
