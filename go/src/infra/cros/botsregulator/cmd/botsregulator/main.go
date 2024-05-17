@@ -32,9 +32,11 @@ func main() {
 		logging.Infof(srv.Context, "starting server")
 
 		scron.RegisterHandler("regulate-bots", func(ctx context.Context) error {
+			ctx = logging.SetField(ctx, "activity", "regulate-bots")
 			return cron.Regulate(ctx, &r)
 		})
 		scron.RegisterHandler("migrate-bots", func(ctx context.Context) error {
+			ctx = logging.SetField(ctx, "activity", "migrate-bots")
 			return cron.Migrate(ctx, &r)
 		})
 		return nil

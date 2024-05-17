@@ -202,7 +202,7 @@ func (m *migrator) RunBatchUpdate(ctx context.Context, migrationNext *migrationS
 // This results in appending DUTs to nextState.
 // These DUTs will get their hive switched further down.
 func computeNextModelState(ctx context.Context, bm string, target int32, currentState, nextState *migrationState) {
-	logging.Infof(ctx, "computeNextModelState: %s with target %d", bm, target)
+	logging.Infof(ctx, "computeNextModelState: %s with target %d%%", bm, target)
 	totalDUTs := float64(len(currentState.Cloudbots) + len(currentState.Drone))
 	targetPercentage := float64(target)
 	// Number of CloudBots DUTs for this model expected after this migration iteration.

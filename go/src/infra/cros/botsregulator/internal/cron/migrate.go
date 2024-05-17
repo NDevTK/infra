@@ -14,6 +14,7 @@ import (
 )
 
 func Migrate(ctx context.Context, r *regulator.RegulatorOptions) error {
+	logging.Infof(ctx, "starting migrate-bots")
 	m, err := migrator.NewMigrator(ctx, r)
 	if err != nil {
 		return err
@@ -43,5 +44,6 @@ func Migrate(ctx context.Context, r *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
+	logging.Infof(ctx, "ending migrate-bots")
 	return nil
 }

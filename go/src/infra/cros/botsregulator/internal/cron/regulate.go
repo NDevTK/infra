@@ -17,6 +17,7 @@ import (
 // It fetches available DUTs from UFS based on specific filters
 // and sends out the result to a predefined Bots Provider Interface.
 func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
+	logging.Infof(ctx, "starting regulate-bots")
 	r, err := regulator.NewRegulator(ctx, opts)
 	if err != nil {
 		return err
@@ -44,5 +45,6 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
+	logging.Infof(ctx, "ending regulate-bots")
 	return nil
 }
