@@ -149,7 +149,7 @@ func GetBuilderManifestFromContainer(ctx context.Context, gcsPath string) (strin
 	}
 	for _, imageInfo := range containerImageInfo {
 		for _, tag := range imageInfo.GetTags() {
-			if tag == Public {
+			if strings.Contains(tag, Public) {
 				return Public, nil
 			}
 		}
