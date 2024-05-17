@@ -18,7 +18,7 @@ DEPS = [
 def RunSteps(api):
   api.gclient.set_config('infra')
   update_step = api.bot_update.ensure_checkout()
-  properties = update_step.json.output['properties']
+  properties = update_step.properties
   kythe_commit_hash = 'a' * 40
   if api.properties.get('set_kythe_commit_hash_to_none'):
     kythe_commit_hash = None

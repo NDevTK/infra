@@ -203,7 +203,7 @@ def _checkout_gclient(api, project, version_label_template):
       go_version_variant='bleeding_edge')
   co.gclient_runhooks()
 
-  props = co.bot_update_step.presentation.properties
+  props = co.bot_update_step.properties
 
   @contextmanager
   def build_environ(api):
@@ -241,7 +241,7 @@ def _checkout_gclient(api, project, version_label_template):
       ),
       checkout=api.cloudbuildhelper.CheckoutMetadata(
           root=co.path,
-          repos=co.bot_update_step.json.output['manifest'],
+          repos=co.bot_update_step.manifest,
       )), build_environ
 
 

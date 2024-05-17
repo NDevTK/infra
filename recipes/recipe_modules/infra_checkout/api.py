@@ -200,7 +200,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
       def run_presubmit():
         assert patch_root
         revs = self.m.bot_update.get_project_revision_properties(patch_root)
-        upstream = bot_update_step.json.output['properties'].get(revs[0])
+        upstream = bot_update_step.properties.get(revs[0])
         gerrit_change = self.m.buildbucket.build.input.gerrit_changes[0]
         with self.m.context(env={'PRESUBMIT_BUILDER': '1'}):
           return self.m.step('presubmit', [

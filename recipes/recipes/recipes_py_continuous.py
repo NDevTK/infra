@@ -21,9 +21,9 @@ def RunSteps(api):
   bot_update_step = api.bot_update.ensure_checkout()
 
   tags = {
-    'buildbucket_id': str(api.buildbucket.build.id),
-    'git_repository': api.gclient.c.solutions[0].url,
-    'git_revision': bot_update_step.presentation.properties['got_revision'],
+      'buildbucket_id': str(api.buildbucket.build.id),
+      'git_repository': api.gclient.c.solutions[0].url,
+      'git_revision': bot_update_step.properties['got_revision'],
   }
 
   api.cipd.create_from_yaml(

@@ -222,7 +222,7 @@ def RunSteps(api):
   # Whatever is checked out by bot_update. It is usually equal to
   # api.buildbucket.gitiles_commit.id except when the build was triggered
   # manually (commit id is empty in that case).
-  rev = co.bot_update_step.presentation.properties['got_revision']
+  rev = co.bot_update_step.properties['got_revision']
   return build_main(api, co, buildername, project_name, repo_url, rev)
 
 

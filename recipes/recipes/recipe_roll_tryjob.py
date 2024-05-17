@@ -211,7 +211,7 @@ class RecipesRepo(object):
           # Only try to checkout the CL if this repo is the one that triggered
           # the current build.
           patch=is_triggering_repo)
-      self._root = self._workdir / ret.json.output['root']
+      self._root = ret.source_root.path
 
       if is_triggering_repo:
         with self._api.context(cwd=self._root):

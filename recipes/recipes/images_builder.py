@@ -182,7 +182,7 @@ def _checkout_committed(api, mode, project):
       go_version_variant=GO_VERSION_VARIANT)
   co.gclient_runhooks()
 
-  props = co.bot_update_step.presentation.properties
+  props = co.bot_update_step.properties
 
   canonical_tag = None
   if mode == PROPERTIES.MODE_CI:
@@ -210,7 +210,7 @@ def _checkout_committed(api, mode, project):
       tags=['latest'],
       checkout=api.cloudbuildhelper.CheckoutMetadata(
           root=co.path,
-          repos=co.bot_update_step.json.output['manifest'],
+          repos=co.bot_update_step.manifest,
       )), lambda api: _infra_checkout_build_environ(co, api)
 
 
@@ -276,7 +276,7 @@ def _checkout_pending(api, project):
       ],
       checkout=api.cloudbuildhelper.CheckoutMetadata(
           root=co.path,
-          repos=co.bot_update_step.json.output['manifest'],
+          repos=co.bot_update_step.manifest,
       )), lambda api: _infra_checkout_build_environ(co, api)
 
 
