@@ -2,7 +2,7 @@ create {
   platform_re: "linux-.*|mac-.*"
   source {
     url {
-      download_url: "https://ixpeering.dl.sourceforge.net/project/lzmautils/xz-5.2.4.tar.gz"
+      download_url: "https://ixpeering.dl.sourceforge.net/project/lzmautils/xz-5.2.4.tar.gz?viasf=1"
       version: "5.2.4"
     }
     unpack_archive: true

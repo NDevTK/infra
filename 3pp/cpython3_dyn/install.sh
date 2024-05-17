@@ -28,7 +28,7 @@ rm -rf .git
 export PYTHONPATH=""
 
 CPPFLAGS="-I$DEPS_PREFIX/include"
-LDFLAGS="-L$DEPS_PREFIX/lib"
+LDFLAGS="-L$DEPS_PREFIX/lib -Wl,-rpath,'\$\$ORIGIN/../lib'"
 
 export CONFIG_ARGS="--host $CROSS_TRIPLE"
 

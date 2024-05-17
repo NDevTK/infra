@@ -51,7 +51,7 @@ class TestPython(unittest.TestCase):
 
   def test_version(self):
     output = subprocess.check_output([self.python, '-VV'],
-                                     stderr=subprocess.STDOUT, env={'LD_LIBRARY_PATH': '/work/checkout'}).decode('utf-8')
+                                     stderr=subprocess.STDOUT).decode('utf-8')
     name, version, buildinfo = output.splitlines()[0].split(' ', maxsplit=2)
     self.assertEqual(name, 'Python')
     self.assertEqual(version, os.environ['_3PP_VERSION'])
@@ -65,13 +65,13 @@ class TestPython(unittest.TestCase):
   def test_package_import(self):
     for pkg in ('ctypes', 'ssl', 'io', 'binascii', 'hashlib', 'sqlite3'):
       script = 'import %s; print(%s)' % (pkg, pkg)
-      rv = subprocess.call([self.python, '-c', script], env={'LD_LIBRARY_PATH': '/work/checkout'})
+      rv = subprocess.call([self.python, '-c', script])
       self.assertEqual(rv, 0, 'Could not import %r.' % (pkg,))
 
   def test_use_https(self):
     script = 'import urllib.request; print(urllib.request.urlopen("%s"))' % (
         self.HTTPS_REPO_URL)
-    rv = subprocess.call([self.python, '-c', script], env={'LD_LIBRARY_PATH': '/work/checkout'})
+    rv = subprocess.call([self.python, '-c', script])
     self.assertEqual(rv, 0)
 
   def test_no_version_script_in_sysconfig(self):
@@ -84,7 +84,7 @@ class TestPython(unittest.TestCase):
               '      and k not in ("PY_CORE_LDFLAGS", "BLDSHARED")):\n'
               '    assert "version-script" not in v, (\n'
               '      "Found unexpected version-script in %s: %s" % (k, v))')
-    rv = subprocess.call([self.python, '-c', script], env={'LD_LIBRARY_PATH': '/work/checkout'})
+    rv = subprocess.call([self.python, '-c', script])
     self.assertEqual(rv, 0)
 
 

@@ -1,10 +1,4 @@
 create {
-  verify { test: "python_test.py" }
-  source { patch_version: "chromium.35" }
-  package { version_file: ".versions/cpython3.cipd_version" }
-}
-
-create {
   platform_re: "linux-.*"
   source {
     git {
@@ -15,6 +9,7 @@ create {
       version_restriction: { op: LT val: "3.12a0"}
     }
     patch_dir: "patches"
+    patch_version: "chromium.36"
   }
   build {
     # no binutils on mac since it includes some tools like 'ar' that we don't
@@ -23,6 +18,8 @@ create {
     tool: "tools/autoconf"
     tool: "tools/sed"
   }
+  verify { test: "python_test.py" }
+  package { version_file: ".versions/cpython3.cipd_version" }
 }
 
 
