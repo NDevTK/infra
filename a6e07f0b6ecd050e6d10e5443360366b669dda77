@@ -1,0 +1,246 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f684685_63e79418",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-17T23:19:00Z",
+      "side": 1,
+      "message": "\u003e \n\u003e Import order is not sorted.\n\u003e Run `golangci-lint run --fix cmd/shivas/internal/ufs/subcmds/peripherals` to fix this.\n\nPlease fix.",
+      "parentUuid": "737aeb64_b32aac65",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 0
+      },
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "411ca566_fd6ca3fb",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-17T23:19:00Z",
+      "side": 1,
+      "message": "\u003e \n\u003e Import order is not sorted.\n\u003e Run `golangci-lint run --fix cmd/shivas/internal/ufs/subcmds/peripherals` to fix this.\n\nPlease fix.",
+      "parentUuid": "12ef71c4_7cd5e75a",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 0
+      },
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ec810206_4ab0d5d9",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-17T23:19:00Z",
+      "side": 1,
+      "message": "is option with file only one option? if so why do we need separate tool vs just add option of json in add/update/delete of DUT?",
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "34e7ff6c_e7441c15",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-17T23:19:00Z",
+      "side": 1,
+      "message": "do we need any validation with fields and types. empty fields or trimming of the data.",
+      "fixSuggestions": [
+        {
+          "fixId": "a91e037d_f29c721d",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 35,
+                "startChar": 0,
+                "endLine": 35,
+                "endChar": 0
+              },
+              "replacement": "\terrNoDevices            \u003d \"host topology has no devices\"\n"
+            },
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 162,
+                "startChar": 0,
+                "endLine": 162,
+                "endChar": 0
+              },
+              "replacement": "\t// Verify that the host topology has at least one device.\n\tif len(c.hostObj.GetDevices()) \u003d\u003d 0 {\n\t\treturn errors.Reason(errNoDevices).Err()\n\t}\n\n"
+            }
+          ]
+        }
+      ],
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e5637d0_04272fbf",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-17T23:19:00Z",
+      "side": 1,
+      "message": "need check parent \u003d\u003d child and if all parent, child are present.  also parent probably can be empty.",
+      "range": {
+        "startLine": 206,
+        "startChar": 29,
+        "endLine": 206,
+        "endChar": 43
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "1667d938_6e11338b",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 34,
+                "startChar": 0,
+                "endLine": 34,
+                "endChar": 0
+              },
+              "replacement": "\terrMissingParent        \u003d \"host topology does not contain parent device with matching ID\"\n\terrMissingChild         \u003d \"host topology does not contain child device with matching ID\"\n\terrParentChild          \u003d \"host topology has parent and child with same ID\"\n"
+            },
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 174,
+                "startChar": 0,
+                "endLine": 175,
+                "endChar": 0
+              },
+              "replacement": "\treturn c.checkIDs(ids)\n"
+            },
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 205,
+                "startChar": 0,
+                "endLine": 207,
+                "endChar": 0
+              },
+              "replacement": "// checkIDs ensures that all connection child/parent IDs are found in the topology.\nfunc (c *managePasitHostCmd) checkIDs(ids map[string]bool) error {\n"
+            },
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 208,
+                "startChar": 0,
+                "endLine": 208,
+                "endChar": 0
+              },
+              "replacement": "\t\tif c.GetParentId() \u003d\u003d c.GetChildId() {\n\t\t\treturn errors.Reason(errParentChild).Err()\n\t\t}\n"
+            },
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 210,
+                "startChar": 0,
+                "endLine": 211,
+                "endChar": 0
+              },
+              "replacement": "\t\t\treturn errors.Reason(errMissingParent).Err()\n"
+            },
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 214,
+                "startChar": 0,
+                "endLine": 215,
+                "endChar": 0
+              },
+              "replacement": "\t\t\treturn errors.Reason(errMissingChild).Err()\n"
+            }
+          ]
+        }
+      ],
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8ae61773_2137833b",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-17T23:19:00Z",
+      "side": 1,
+      "message": "not sure that is right way to collect the data as label can be very long.\n\nmaybe it need to be part of host as clear field instead dynamic collect? and maybe it can be enum if we know types of testbeds. if the goal to target specific model then we need do some another types.",
+      "range": {
+        "startLine": 220,
+        "startChar": 0,
+        "endLine": 239,
+        "endChar": 1
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "bfc548b8_b829e4af",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 220,
+                "startChar": 0,
+                "endLine": 222,
+                "endChar": 0
+              },
+              "replacement": "// getModels gets all hardware models in the testbed so we know what features the testbed can support.\n"
+            }
+          ]
+        }
+      ],
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
