@@ -75,53 +75,33 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(runCounter(), ShouldEqual, len(runRequest))
 	})
-	Convey("block for ite chips (1)", t, func() {
-		// TODO(b:270170790): remove when we can recover functionality fo flash EC for ite chips.
+	Convey("Happy path for ite chip on ccd", t, func() {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
+		runRequest := map[string]string{
+			"which flash_ec": "",
+			"flash_ec --chip=it8XXXX --image=ec_image.bin --port=95 --verify --verbose --nouse_i2c_pseudo": "",
+		}
 		servod := mocks.NewMockServod(ctrl)
-		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(0)
-		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(0)
-		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
-		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8XXXX"), nil).Times(1)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_ccd_cr50"), nil).Times(1)
-		servod.EXPECT().Port().Return(95).Times(0)
-
+		servod.EXPECT().Port().Return(95).Times(1)
+		run, runCounter := mockRunnerWithCheck(runRequest)
 		p := &v3Programmer{
-			run:    nil, // Runner is not expected to be used.
+			run:    run,
 			servod: servod,
 			log:    logger,
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
 		So(err, ShouldBeNil)
+		So(runCounter(), ShouldEqual, len(runRequest))
 	})
-	Convey("block for ite chips (2)", t, func() {
-		// TODO(b:270170790): remove when we can recover functionality fo flash EC for ite chips.
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		servod := mocks.NewMockServod(ctrl)
-		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(0)
-		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(0)
-		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
-		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(0)
-		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8yyyyy"), nil).Times(1)
-		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_ccd_cr50"), nil).Times(1)
-		servod.EXPECT().Port().Return(95).Times(0)
-
-		p := &v3Programmer{
-			run:    nil, // Runner is not expected to be used.
-			servod: servod,
-			log:    logger,
-		}
-
-		err := p.programEC(ctx, fwBoard, imagePath)
-		// Skip os not a reason to fail.
-		So(err, ShouldBeNil)
-	})
-	Convey("allowed for ite chips if uses servo_micro", t, func() {
-		// TODO(b:270170790): remove when we can recover functionality fo flash EC for ite chips.
+	Convey("Happy path for ite chip on servo_micro", t, func() {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		runRequest := map[string]string{

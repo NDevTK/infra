@@ -42,6 +42,7 @@ const (
 	// Tools and commands used for flashing EC.
 	ecProgrammerToolName     = "flash_ec"
 	ecProgrammerCmdGlob      = "flash_ec --chip=%s --image=%s --port=%d --verify --verbose"
+	ecProgrammerITECmdGlob   = "flash_ec --chip=%s --image=%s --port=%d --verify --verbose --nouse_i2c_pseudo"
 	ecProgrammerStm32CmdGlob = "flash_ec --chip=%s --image=%s --port=%d --bitbang_rate=57600 --verify --verbose"
 
 	// Tools and commands used for flashing AP.
@@ -74,10 +75,8 @@ func (p *v3Programmer) programEC(ctx context.Context, fwBoard, imagePath string)
 	if ecChip == "stm32" {
 		cmd = fmt.Sprintf(ecProgrammerStm32CmdGlob, ecChip, imagePath, p.servod.Port())
 	} else if strings.HasPrefix(ecChip, "it8") && !servoType.IsMicro() {
-		// TODO(b:270170790): Flashing blocked by b/268108518
-		log.Infof(ctx, "Flash for `ite` chips is blocked by b/268108518.")
-		log.Infof(ctx, "Hint: Try deploying with servo_micro!")
-		return nil
+		// TODO(b/130037062): This special case can be removed when all labstations reach R126.
+		cmd = fmt.Sprintf(ecProgrammerITECmdGlob, ecChip, imagePath, p.servod.Port())
 	} else {
 		cmd = fmt.Sprintf(ecProgrammerCmdGlob, ecChip, imagePath, p.servod.Port())
 	}
