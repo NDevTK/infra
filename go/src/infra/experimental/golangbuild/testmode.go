@@ -289,7 +289,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []*gola
 			testErrors = append(testErrors, err)
 		}
 	}
-	return errors.Join(testErrors...)
+	return attachTestsFailed(errors.Join(testErrors...))
 }
 
 func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []module, ports []*golangbuildpb.Port) error {
