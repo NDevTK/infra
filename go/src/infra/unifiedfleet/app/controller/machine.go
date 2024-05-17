@@ -171,14 +171,16 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 		}
 
 		if machine.GetChromeosMachine() != nil {
-			// OUTPUT_ONLY fields for chrome os machine.
-			// copy back original values.
-			machine.SerialNumber = oldMachine.GetSerialNumber()
-			machine.GetChromeosMachine().Sku = oldMachine.GetChromeosMachine().GetSku()
-
-			// Allow users to modify hwid before we can get authoritative source from HaRT
-			// Don't allow users to modify it to empty
-			if machine.GetChromeosMachine().Hwid == "" {
+			// Allow users to modify following fields if data provided. if not,
+			// restore value from original.
+			// Don't allow users to modify it to empty.
+			if strings.TrimSpace(machine.SerialNumber) == "" {
+				machine.SerialNumber = oldMachine.GetSerialNumber()
+			}
+			if strings.TrimSpace(machine.GetChromeosMachine().GetSku()) == "" {
+				machine.GetChromeosMachine().Sku = oldMachine.GetChromeosMachine().GetSku()
+			}
+			if strings.TrimSpace(machine.GetChromeosMachine().GetHwid()) == "" {
 				machine.GetChromeosMachine().Hwid = oldMachine.GetChromeosMachine().GetHwid()
 			}
 		}

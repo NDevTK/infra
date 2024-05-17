@@ -733,6 +733,85 @@ func TestUpdateMachine(t *testing.T) {
 			So(msgs, ShouldHaveLength, 1)
 			So(msgs[0].Delete, ShouldBeFalse)
 		})
+		Convey("Restore stricted fields - serial number, sku, hwid", func() {
+			name := "machine-update-serial-hwid-skuwith-lse"
+			machine := &ufspb.Machine{
+				Name:         name,
+				SerialNumber: "serial-update-with-lse1",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						Sku:  "Sku1",
+						Hwid: "hwid1",
+					},
+				},
+			}
+			respMachine, err := registration.CreateMachine(ctx, machine)
+			So(err, ShouldBeNil)
+			So(respMachine, ShouldNotBeNil)
+			So(respMachine.GetSerialNumber(), ShouldResemble, "serial-update-with-lse1")
+			So(respMachine.GetChromeosMachine().GetSku(), ShouldResemble, "Sku1")
+			So(respMachine.GetChromeosMachine().GetHwid(), ShouldResemble, "hwid1")
+			machineLSE1 := &ufspb.MachineLSE{
+				Name:     name,
+				Hostname: name,
+				Machines: []string{name},
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{},
+				},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, machineLSE1)
+			So(err, ShouldBeNil)
+
+			// No update
+			machine1 := &ufspb.Machine{
+				Name: name,
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{},
+				},
+			}
+			resp, err := UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{}})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetSerialNumber(), ShouldResemble, "serial-update-with-lse1")
+			So(resp.GetChromeosMachine().GetSku(), ShouldResemble, "Sku1")
+			So(resp.GetChromeosMachine().GetHwid(), ShouldResemble, "hwid1")
+
+			// Update fields
+			machine1 = &ufspb.Machine{
+				Name:         name,
+				SerialNumber: "serial-update-with-lse2",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						Sku:  "Sku2",
+						Hwid: "hwid2",
+					},
+				},
+			}
+			resp, err = UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{}})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetSerialNumber(), ShouldResemble, "serial-update-with-lse2")
+			So(resp.GetChromeosMachine().GetHwid(), ShouldResemble, "hwid2")
+			So(resp.GetChromeosMachine().GetSku(), ShouldResemble, "Sku2")
+
+			// Do not update if use paths.
+			machine1 = &ufspb.Machine{
+				Name:         name,
+				SerialNumber: "serial-update-with-lse3",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						Sku:  "Sku3",
+						Hwid: "hwid3",
+					},
+				},
+			}
+			resp, err = UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{"resourceState"}})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetSerialNumber(), ShouldResemble, "serial-update-with-lse2")
+			So(resp.GetChromeosMachine().GetHwid(), ShouldResemble, "hwid2")
+			So(resp.GetChromeosMachine().GetSku(), ShouldResemble, "Sku2")
+		})
 
 		Convey("Partial Update machine - duplicated kvm", func() {
 			_, err := registration.CreateKVM(ctx, &ufspb.KVM{
