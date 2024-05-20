@@ -17,15 +17,6 @@
 // Usage:
 //
 //	$ gcp_metrics_get --project $PROJECT_ID --filter '...' --end_time YYYY-MM-DDThh:mm:dd.ss
-//
-//	$ gcp_metrics_get --project_id goma-rbe-chromium --filter \
-//	 'metric.type="kubernetes.io/container/memory/request_utilization"
-//	  resource.labels.container_name="esp"' | \
-//	 jq --slurp -r 'sort_by(.points[0].value.Value.DoubleValue) |
-//	       reverse | .[] | \
-//	       select(.points[0].value.Value.DoubleValue >= 0.5) | \
-//	       [.resource.labels.pod_name, .points[0].value.Value.DoubleValue] | \
-//	       @tsv'
 package main
 
 import (
