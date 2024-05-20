@@ -30,7 +30,7 @@ func MockManifestFetcher(ctx context.Context, gcsPath string) (string, error) {
 func TestCTPv1Tov2Translation(t *testing.T) {
 	Convey("Single Translation", t, func() {
 		requests := map[string]*test_platform.Request{
-			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", ""),
+			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", false),
 		}
 		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
 
@@ -46,8 +46,8 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 
 	Convey("Multi Translation, no grouping", t, func() {
 		requests := map[string]*test_platform.Request{
-			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", ""),
-			"r2": getCTPv1Request("board", "model", "board-release/R124.0.0", "suite", "", ""),
+			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", true),
+			"r2": getCTPv1Request("board", "model", "board-release/R124.0.0", "suite", "", "", false),
 		}
 		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
 
@@ -65,12 +65,14 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 		}
 		So(target1.GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/board-release/R123.0.0")
 		So(target2.GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/board-release/R124.0.0")
+		So(result.GetRequests()[0].GetSchedulerInfo().GetScheduler(), ShouldEqual, testapi.SchedulerInfo_QSCHEDULER)
+		So(result.GetRequests()[1].GetSchedulerInfo().GetScheduler(), ShouldEqual, testapi.SchedulerInfo_SCHEDUKE)
 	})
 
 	Convey("Multi Translation, grouping", t, func() {
 		requests := map[string]*test_platform.Request{
-			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", ""),
-			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", ""),
+			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", false),
+			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", "", false),
 		}
 		result := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
 
@@ -91,8 +93,8 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 
 	Convey("Multi Translation, grouping, including public manifest", t, func() {
 		requests := map[string]*test_platform.Request{
-			"r1": getCTPv1Request("board", "model", "public-manifest-release/R123.0.0", "suite", "", ""),
-			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", ""),
+			"r1": getCTPv1Request("board", "model", "public-manifest-release/R123.0.0", "suite", "", "", false),
+			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", "", false),
 		}
 		result := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
 
@@ -236,7 +238,7 @@ func TestCTP2Grouping(t *testing.T) {
 	})
 }
 
-func getCTPv1Request(board, model, build, suite, testArgs string, analyticsName string) *test_platform.Request {
+func getCTPv1Request(board, model, build, suite, testArgs string, analyticsName string, runWithQs bool) *test_platform.Request {
 	return &test_platform.Request{
 		TestPlan: &test_platform.Request_TestPlan{
 			Suite: []*test_platform.Request_Suite{
@@ -272,6 +274,7 @@ func getCTPv1Request(board, model, build, suite, testArgs string, analyticsName 
 					},
 				},
 			},
+			RunCtpv2WithQs: runWithQs,
 		},
 	}
 }
@@ -344,8 +347,8 @@ func getChromeosSoftwareDeps(chromeosBuild string) []*test_platform.Request_Para
 // For now, use the ddd prefix, but long term will move to a proper flag.
 func TestIsDDDSuite(t *testing.T) {
 	requests := map[string]*test_platform.Request{
-		"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "ddd_meme"),
-		"r2": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "not_ddd_suite"),
+		"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "ddd_meme", false),
+		"r2": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "not_ddd_suite", false),
 	}
 	if builders.IsDDDSuite(requests["r1"]) != true {
 		t.Fatalf("Incorrectly determined if a request was for 3d")

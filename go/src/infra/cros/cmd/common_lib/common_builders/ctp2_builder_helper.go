@@ -231,9 +231,14 @@ func buildCTPRequest(v1 *test_platform.Request) *testapi.CTPRequest {
 // buildSchedulerInfo produces the scheduling system to be used,
 // as well as the qs account for qs scheduling.
 func buildSchedulerInfo(v1 *test_platform.Request) *testapi.SchedulerInfo {
+	runWithQs := v1.GetParams().GetRunCtpv2WithQs()
+	scheduler := testapi.SchedulerInfo_SCHEDUKE
+	if runWithQs {
+		scheduler = testapi.SchedulerInfo_QSCHEDULER
+	}
 	return &testapi.SchedulerInfo{
 		// TODO(cdelagarza): Update to upstream variable.
-		Scheduler: testapi.SchedulerInfo_SCHEDUKE,
+		Scheduler: scheduler,
 		QsAccount: v1.GetParams().GetScheduling().GetQsAccount(),
 	}
 }
