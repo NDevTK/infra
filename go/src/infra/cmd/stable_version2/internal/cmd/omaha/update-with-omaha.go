@@ -163,7 +163,6 @@ func validateFile(ctx context.Context, a subcommands.Application, t http.RoundTr
 	if err != nil {
 		return fmt.Errorf("valdating config using Google Storage: %s", err)
 	}
-	res.RemoveAllowedDUTs()
 	msg, err := json.MarshalIndent(res, "", "    ")
 	if err != nil {
 		panic("failed to marshal JSON")
