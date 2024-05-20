@@ -75,6 +75,7 @@ func main() {
 		}
 		costserver.SetBQClient(fleetCostFrontend, bqwrapper.NewCloudBQ(bqClient))
 		costserver.InstallServices(fleetCostFrontend, srv)
+		costserver.SetProjectID(fleetCostFrontend, srv.Options.CloudProject)
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil
 	})

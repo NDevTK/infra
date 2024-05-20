@@ -25,6 +25,8 @@ type FleetCostFrontend struct {
 	ufsHostname string
 	// bqClient is a BigQuery client.
 	bqClient bqwrapper.BQIf
+	// projectID is our own projectID
+	projectID string
 }
 
 // InstallServices installs services (such as the prpc server) into the frontend.
@@ -53,4 +55,9 @@ func SetUFSHostname(costFrontend *FleetCostFrontend, ufsHostname string) {
 // SetBQClient sets the bigquery client.
 func SetBQClient(costFrontend *FleetCostFrontend, client bqwrapper.BQIf) {
 	costFrontend.bqClient = client
+}
+
+// SetProjectID records the projectID, needed for writing to BigQuery.
+func SetProjectID(costFrontend *FleetCostFrontend, projectID string) {
+	costFrontend.projectID = projectID
 }
