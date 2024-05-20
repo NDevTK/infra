@@ -12,9 +12,16 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"time"
+
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/luciexe/build"
+	resultpb "go.chromium.org/luci/resultdb/proto/v1"
+	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 )
 
 // cmdStepRun calls Run on the provided command and wraps it in a build step.
@@ -23,15 +30,15 @@ import (
 // It runs the command with the environment from the context, so change
 // the context's environment to alter the command's environment.
 func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (err error) {
-	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
+	step, ctx, startStepErr := cmdStartStep(ctx, stepName, cmd)
 	defer func() {
 		if infra {
 			err = infraWrap(err) // Failure is deemed to be an infrastructure failure.
 		}
 		step.End(err)
 	}()
-	if err != nil {
-		return err
+	if startStepErr != nil {
+		return startStepErr
 	}
 
 	// Combine output because it's annoying to pick one of stdout and stderr
@@ -55,15 +62,15 @@ func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool)
 // It runs the command with the environment from the context, so change
 // the context's environment to alter the command's environment.
 func cmdStepOutput(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (output []byte, err error) {
-	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
+	step, ctx, startStepErr := cmdStartStep(ctx, stepName, cmd)
 	defer func() {
 		if infra {
 			err = infraWrap(err) // Failure is deemed to be an infrastructure failure.
 		}
 		step.End(err)
 	}()
-	if err != nil {
-		return nil, err
+	if startStepErr != nil {
+		return nil, startStepErr
 	}
 
 	// Make sure we log stderr.
@@ -87,6 +94,96 @@ func cmdStepOutput(ctx context.Context, stepName string, cmd *exec.Cmd, infra bo
 		return output, err
 	}
 	return output, nil
+}
+
+// cmdStepTest calls CombinedOutput on the provided command, wraps it in a build step, and uploads
+// the command result as a test result to ResultDB.
+//
+// It overwrites cmd.Stdout and cmd.Stderr to redirect into step logs.
+// It runs the command with the environment from the context, so change
+// the context's environment to alter the command's environment.
+func cmdStepTest(ctx context.Context, spec *buildSpec, stepName, testID string, cmd *exec.Cmd) (err error) {
+	step, ctx, startStepErr := cmdStartStep(ctx, stepName, cmd)
+	defer func() {
+		step.End(err)
+	}()
+	if startStepErr != nil {
+		return startStepErr
+	}
+
+	// Run the command and capture the output.
+	start := time.Now()
+	output, cmdErr := cmd.CombinedOutput()
+	dur := time.Since(start)
+
+	// Log the combined before we do anything else.
+	log := step.Log("output")
+	_, _ = log.Write(output)
+
+	// Spruce up the error.
+	if cmdErr != nil {
+		cmdErr = fmt.Errorf("failed to run %q: %w", stepName, cmdErr)
+		cmdErr = attachLinks(cmdErr,
+			fmt.Sprintf("%q (combined output)", stepName), log.UILink(),
+		)
+	}
+
+	// Set up a test result in a file.
+	status := resultpb.TestStatus_PASS
+	if cmdErr != nil {
+		status = resultpb.TestStatus_FAIL
+	}
+	tr := &sinkpb.TestResult{
+		TestId:    testID,
+		Expected:  cmdErr == nil,
+		Status:    status,
+		StartTime: timestamppb.New(start),
+		Duration:  durationpb.New(dur),
+		Artifacts: map[string]*sinkpb.Artifact{
+			"output": {Body: &sinkpb.Artifact_Contents{Contents: output}},
+		},
+		SummaryHtml: `<p><text-artifact artifact-id="output"></p>`,
+	}
+	trMsg, err := protojson.Marshal(tr)
+	if err != nil {
+		log := step.Log("test result marshalling error")
+		_, _ = io.WriteString(log, err.Error())
+		return cmdErr
+	}
+	resultFile, err := writeTempFile("", fmt.Sprintf("%s-test-result-", stepName), trMsg)
+	if err != nil {
+		log := step.Log("result file creation error")
+		_, _ = io.WriteString(log, err.Error())
+		return cmdErr
+	}
+
+	// Send off the test result.
+	//
+	// Note: This seems really roundabout, but there isn't an easier way to just send
+	// tests results through the Sink API which is much nicer to work with than the
+	// ResultDB API directly. We could set up a sink server and talk to ourselves,
+	// but that requires a ton of boilerplate (most of which is basically what 'rdb stream'
+	// already does).
+	//
+	// TODO(mknyszek): This is actually really gross. The only alternative I can think
+	// of is to provide a mode to result_adapter to not actually require a command, or
+	// to add a mode to rdb to directly ingest results from a file.
+
+	trArgs := []string{"stream"}
+	trArgs = append(trArgs, spec.rdbStreamArgs(ctx)...)
+	trArgs = append(trArgs, toolPath(ctx, "result_adapter"), "native", "-result-file", resultFile, "--")
+	// We need *any* dummy command here. Let's pick something we know we have and that we know won't do anything bad.
+	// TODO(mknyszek): Do something better here. Ideally we'd just "echo 'This is a dummy command.'" or something,
+	// but I'm not actually sure how to do that portably.
+	trArgs = append(trArgs, toolPath(ctx, "rdb"), "-help")
+	trCmd := exec.Command(toolPath(ctx, "rdb"), trArgs...)
+
+	// N.B. Do not propagate any errors produced in trying to send the test off.
+	// The step will still appear as failed in the UI, but it won't abort the
+	// whole run, which is preferable.
+	_ = cmdStepRun(ctx, fmt.Sprintf("upload test result for %s", stepName), trCmd, true)
+
+	return cmdErr
 }
 
 // cmdStartStep sets up a command step.
@@ -299,4 +396,21 @@ func topLevelLogLinks(ctx context.Context) []link {
 		panic("topLevelLog called without topLevelLogger in context")
 	}
 	return logger.links
+}
+
+func writeTempFile(dir, pattern string, data []byte) (string, error) {
+	f, err := os.CreateTemp(dir, pattern)
+	if err != nil {
+		return "", err
+	}
+	name := f.Name()
+	if _, err := f.Write(data); err != nil {
+		os.Remove(name)
+		return "", err
+	}
+	if err := f.Close(); err != nil {
+		os.Remove(name)
+		return "", err
+	}
+	return name, nil
 }
