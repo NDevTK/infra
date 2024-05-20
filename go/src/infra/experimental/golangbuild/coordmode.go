@@ -121,6 +121,11 @@ func ensurePrebuiltGoExists(ctx context.Context, spec *buildSpec, builder string
 		return err
 	}
 
+	// Include the ResultDB invocations in ours. It will contain build results as test results.
+	if err := includeResultDBInvocations(ctx, spec, build.GetInfra().GetResultdb().GetInvocation()); err != nil {
+		return infraWrap(err)
+	}
+
 	// Wait on build to finish.
 	return waitOnBuilds(ctx, spec, "wait for make.bash", build.Id)
 }
