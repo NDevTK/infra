@@ -57,7 +57,7 @@ func newTestRunner(props *golangbuildpb.TestMode, gotShard *golangbuildpb.TestSh
 // Run implements the runner interface for testRunner.
 func (r *testRunner) Run(ctx context.Context, spec *buildSpec) error {
 	// Get a built Go toolchain and require it to be prebuilt.
-	if err := getGoFromSpec(ctx, spec, true); err != nil {
+	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, true); err != nil {
 		return err
 	}
 	// Determine what ports to test.

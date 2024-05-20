@@ -79,7 +79,7 @@ func (r *perfRunner) Run(ctx context.Context, spec *buildSpec) error {
 func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode) ([]byte, map[string]string, error) {
 	// Get a built Go toolchain or build it if necessary. This will be
 	// our experiment toolchain.
-	if err := getGoFromSpec(ctx, spec, false); err != nil {
+	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, false); err != nil {
 		return nil, nil, err
 	}
 
@@ -89,7 +89,7 @@ func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuil
 	if err != nil {
 		return nil, nil, err
 	}
-	if err := getGo(ctx, "get baseline go", gorootBaseline, goBaselineSrc, spec.inputs, false); err != nil {
+	if err := getGo(ctx, spec, "baseline", gorootBaseline, goBaselineSrc, false); err != nil {
 		return nil, nil, err
 	}
 
@@ -160,7 +160,7 @@ func runSubrepoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golan
 
 	// Get the baseline Go.
 	gorootBaseline := filepath.Join(spec.workdir, "go_baseline")
-	if err := getGo(ctx, "get baseline go", gorootBaseline, goBaselineSrc, spec.inputs, false); err != nil {
+	if err := getGo(ctx, spec, "baseline", gorootBaseline, goBaselineSrc, false); err != nil {
 		return nil, nil, err
 	}
 

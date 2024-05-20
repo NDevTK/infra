@@ -394,6 +394,25 @@ func (b *buildSpec) wrapTestCmd(ctx context.Context, cmd *exec.Cmd) *exec.Cmd {
 	}
 
 	// Compute all the test tags and variants we want to send to ResultDB.
+	rdbArgs := b.rdbStreamArgs(ctx)
+
+	// Assemble args and update the command.
+	//
+	// Note: result_adapter is invoked with the flag -v=false, which means that the output
+	// it logs should correspond to "go test" output in non-verbose mode. This is generally
+	// much easier to read for humans and maintains compatibility with watchflakes rules that
+	// match on the entire log. Full structured test output still gets sent to ResultDB, even
+	// with this flag set.
+	cmd.Path = toolPath(ctx, "rdb")
+	args := []string{cmd.Path, "stream"}
+	args = append(args, rdbArgs...)
+	args = append(args, "--", toolPath(ctx, "result_adapter"), "go", "-v=false", "--")
+	args = append(args, cmd.Args...)
+	cmd.Args = args
+	return cmd
+}
+
+func (b *buildSpec) rdbStreamArgs(ctx context.Context) []string {
 	rdbArgs := []string{
 		"-var", fmt.Sprintf("goos:%s", b.inputs.Target.Goos),
 		"-var", fmt.Sprintf("goarch:%s", b.inputs.Target.Goarch),
@@ -430,21 +449,7 @@ func (b *buildSpec) wrapTestCmd(ctx context.Context, cmd *exec.Cmd) *exec.Cmd {
 		// created by default. Do the same here.
 		rdbArgs = append(rdbArgs, "-new", "-realm", fmt.Sprintf("golang:%s", b.bucket))
 	}
-
-	// Assemble args and update the command.
-	//
-	// Note: result_adapter is invoked with the flag -v=false, which means that the output
-	// it logs should correspond to "go test" output in non-verbose mode. This is generally
-	// much easier to read for humans and maintains compatibility with watchflakes rules that
-	// match on the entire log. Full structured test output still gets sent to ResultDB, even
-	// with this flag set.
-	cmd.Path = toolPath(ctx, "rdb")
-	args := []string{cmd.Path, "stream"}
-	args = append(args, rdbArgs...)
-	args = append(args, "--", toolPath(ctx, "result_adapter"), "go", "-v=false", "--")
-	args = append(args, cmd.Args...)
-	cmd.Args = args
-	return cmd
+	return rdbArgs
 }
 
 func goScriptCmd(ctx context.Context, goroot, script string) *exec.Cmd {
