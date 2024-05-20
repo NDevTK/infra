@@ -283,7 +283,7 @@ func (e *AssetInstanceHandler) FetchLogs(ctx context.Context, req *proto.FetchLo
 func gcpProjectList() []string {
 	projectList := []string{}
 	// Increase the number once more GCP project created and configured
-	for i := 1; i <= 30; i++ {
+	for i := 1; i <= 60; i++ {
 		projectList = append(projectList, fmt.Sprintf("celab-poros-%03d", i))
 	}
 	return projectList
