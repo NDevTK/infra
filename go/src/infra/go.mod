@@ -81,9 +81,9 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/ulikunitz/xz v0.5.10
 	github.com/waigani/diffparser v0.0.0-20190828052634-7391f219313d
-	go.chromium.org/chromiumos/config/go v0.0.0-20230102123018-be9aaedc3af8
-	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20240117203213-273a2bfa2e7e
-	go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20240216220433-8a9cb838503d
+	go.chromium.org/chromiumos/config/go v0.0.0-20240309015314-b8a183866804
+	go.chromium.org/chromiumos/ctp v0.0.0-00010101000000-000000000000
+	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20240515181838-a7a5fd53a4ff
 	go.chromium.org/luci v0.0.0-20230103053340-8a57daa72e32
 	go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace v0.47.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0
@@ -254,3 +254,6 @@ replace (
 	go.chromium.org/chromiumos/infra/proto/go => ../go.chromium.org/chromiumos/infra/proto/go
 	go.chromium.org/luci => ../go.chromium.org/luci
 )
+
+// Replace longform path to module with proper module name.
+replace go.chromium.org/chromiumos/ctp => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20240520165433-fa0c67297a8a

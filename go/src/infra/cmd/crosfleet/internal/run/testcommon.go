@@ -12,8 +12,8 @@ import (
 	"strings"
 	"sync"
 
+	"go.chromium.org/chromiumos/ctp/builder"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	luciflag "go.chromium.org/luci/common/flag"
@@ -91,6 +91,7 @@ type testCommonFlags struct {
 	publicBuilder          string
 	luciProject            string
 	trv2                   bool
+	dynamicTrv2            bool
 	testArgs               string
 	tagIncludes            []string
 	tagExcludes            []string
@@ -146,6 +147,7 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.StringVar(&c.publicBuilderBucket, "public-builder-bucket", "", "Bucket for the Public CTP Builder on which the tests are scheduled.")
 	f.StringVar(&c.luciProject, "luci-project", "", "LUCI project which the bucket and builder are associated with")
 	f.BoolVar(&c.trv2, "trv2", false, "Run via Trv2.")
+	f.BoolVar(&c.dynamicTrv2, "dynamic-trv2", false, "Run via Trv2.")
 	f.StringVar(&c.testArgs, "test-args", "", "Test arguments string (meaning depends on test).")
 
 	if mainArgType == testCmdName {
@@ -198,6 +200,10 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, args []string, mainArgTy
 	// trv2 should be false for non-cft.
 	if !c.cft && c.trv2 {
 		errors = append(errors, fmt.Sprintf("cannot run non-cft test case via trv2"))
+	}
+	// trv2 should be false for non-cft.
+	if !c.cft && c.dynamicTrv2 {
+		errors = append(errors, "cannot run non-cft test case via dynamic trv2")
 	}
 	// trv2 should be false for non-cft.
 	if !c.cft && c.enableAutotestSharding {
@@ -433,7 +439,8 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 		TestPlan:             l.testPlan,
 		TestRunnerBuildTags:  testRunnerTags,
 		TimeoutMins:          l.cliFlags.timeoutMins,
-		TRV2:                 l.cliFlags.trv2,
+		TRV2:                 l.cliFlags.trv2 || l.cliFlags.dynamicTrv2,
+		DynamicTRV2:          l.cliFlags.dynamicTrv2,
 	}
 }
 

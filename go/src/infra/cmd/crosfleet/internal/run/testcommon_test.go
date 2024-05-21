@@ -14,8 +14,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 
+	"go.chromium.org/chromiumos/ctp/builder"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
 	"infra/cmd/crosfleet/internal/buildbucket"

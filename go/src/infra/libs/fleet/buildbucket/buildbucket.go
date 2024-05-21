@@ -15,7 +15,7 @@ import (
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 
-	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
+	"go.chromium.org/chromiumos/ctp/builder"
 	luciauth "go.chromium.org/luci/auth"
 	bb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
