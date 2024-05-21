@@ -299,18 +299,14 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
         'autoroll_recipe_options', {}
     ).get('disable_reason')
 
-  def _roll_project(self, project_id, *args, **kwargs):
+  def _roll_project(self, project_id, project_url, recipes_dir,
+                    db_gcs_bucket):
     with self.m.step.nest(str(project_id)) as presentation:
       try:
-        return self._roll_project_impl(project_id, *args, **kwargs)
+        return self._roll_project_impl(
+            project_id, project_url, recipes_dir, db_gcs_bucket)
       except Exception:
-        # TODO(crbug.com/1256194): Print the stack trace unconditionally, even
-        # in testing mode, once Py2 support is no longer required. Stack trace
-        # formatting differs slightly between Python 2 and 3, making it
-        # difficult to maintain compatibility between the two versions for
-        # expectation files that contain stack traces.
-        if not self._test_data.enabled:  # pragma: no cover
-          presentation.logs['exception'] = traceback.format_exc()
+        presentation.logs['exception'] = traceback.format_exc()
         raise
 
   def _roll_project_impl(self, project_id, project_url, recipes_dir,
