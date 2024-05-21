@@ -383,7 +383,6 @@ var data = ufspb.ChromeOSDeviceData{
 		HardwareFeatures: []device.Config_HardwareFeature{
 			device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD,
 			device.Config_HARDWARE_FEATURE_FINGERPRINT,
-			device.Config_HARDWARE_FEATURE_TOUCHSCREEN,
 		},
 		Power:   device.Config_POWER_SUPPLY_AC_ONLY,
 		Storage: device.Config_STORAGE_SSD,
@@ -395,8 +394,10 @@ var data = ufspb.ChromeOSDeviceData{
 		Cpu: device.Config_ARM64,
 	},
 	HwidData: &ufspb.HwidData{
-		Sku:     "test_sku",
-		Variant: "test_variant",
+		Sku:      "test_sku",
+		Variant:  "test_variant",
+		Stylus:   true,
+		Touchpad: true,
 	},
 	ManufacturingConfig: &manufacturing.ManufacturingConfig{
 		ManufacturingId: &manufacturing.ConfigID{
@@ -479,7 +480,7 @@ common {
 			power: "AC_only"
 			starfish_slot_mapping: "test-map-key:test-value"
 			storage: "ssd"
-			touchscreen: true
+			touchpad: true
 			video_acceleration: VIDEO_ACCELERATION_ENC_H264
 			video_acceleration: VIDEO_ACCELERATION_ENC_VP8
 			video_acceleration: VIDEO_ACCELERATION_ENC_VP9
@@ -623,6 +624,7 @@ common {
 			working_bluetooth_btpeer: 3
 			hmr_state: UNKNOWN
 			audio_latency_toolkit_state: WORKING
+			stylus: true
 		}
 		phase: PHASE_DVT
 		platform: "coral"

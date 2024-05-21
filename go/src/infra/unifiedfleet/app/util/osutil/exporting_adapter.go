@@ -251,7 +251,6 @@ func setManufacturingConfig(l *inventory.SchedulableLabels, m *ufsmanufacturing.
 }
 
 func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
-	p := labels.GetPeripherals()
 	c := labels.GetCapabilities()
 	if d == nil {
 		return
@@ -282,12 +281,6 @@ func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
 			c.Lucidsleep = &trueValue
 		case device.Config_HARDWARE_FEATURE_WEBCAM:
 			c.Webcam = &trueValue
-		case device.Config_HARDWARE_FEATURE_STYLUS:
-			p.Stylus = &trueValue
-		case device.Config_HARDWARE_FEATURE_TOUCHPAD:
-			c.Touchpad = &trueValue
-		case device.Config_HARDWARE_FEATURE_TOUCHSCREEN:
-			c.Touchscreen = &trueValue
 		}
 	}
 
@@ -361,6 +354,18 @@ func setHwidData(l *inventory.SchedulableLabels, h *ufspb.HwidData) {
 	l.HwidSku = &sku
 	l.Variant = []string{
 		h.GetVariant(),
+	}
+
+	p := l.GetPeripherals()
+	if h.GetStylus() {
+		p.Stylus = &trueValue
+	}
+	c := l.GetCapabilities()
+	if h.GetTouchpad() {
+		c.Touchpad = &trueValue
+	}
+	if h.GetTouchscreen() {
+		c.Touchscreen = &trueValue
 	}
 }
 

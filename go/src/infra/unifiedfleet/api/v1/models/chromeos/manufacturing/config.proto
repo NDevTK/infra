@@ -53,6 +53,11 @@ message ManufacturingConfig {
 
   // Save repeated hwid components obtained from hwid service
   repeated string hwid_component = 6;
+
+  // Indicate if stylus, touchpad, touchscreen exist for a DUT
+  bool stylus = 7;
+  bool touchpad = 8;
+  bool touchscreen = 9;
 }
 
 // Message contains all ChromeOS manufacturing configs.
