@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "58630cae_d0ca06c8",
+        "filename": "go/src/infra/experimental/golangbuild/buildmode.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-05-21T15:59:25Z",
+      "side": 1,
+      "message": "I think I prefer keeping the extension. you\u0027re right that you have to search for separate test IDs, but I can imagine some confusion on the team like \"what is make?\" or if we used \"make.bash\" everywhere (just hypothetically) \"but Windows doesn\u0027t run make.bash?\".",
+      "parentUuid": "fd345bb1_8093975a",
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e0e2fb6a_5e2a1bb4",
         "filename": "go/src/infra/experimental/golangbuild/steps.go",
         "patchSetId": 1
@@ -48,6 +66,24 @@
       "writtenOn": "2024-05-21T15:43:48Z",
       "side": 1,
       "message": "This line is a no-op, isn\u0027t it? It\u0027s overwriting \u0027err\u0027, which isn\u0027t used anywhere.\n\nI think this meant to be \u0027cmdErr \u003d infraWrap(cmdErr)\u0027, that is to infraWrap the return value of cmdStepRun func.\n\n---\n\nMaybe it could work out better to keep cmdStepRun\u0027s return value named \u0027err\u0027, but instead rename the \u0027err\u0027 returned from cmdStartStep. (It would be even better if we could get cmdStartStep not to return an error at all, which is close but unfortunately doesn\u0027t seem to be quite possible by only relying on public documented behavior of the luciexe/build package.)\n\nThat is, something like:\n\n```Go\nfunc cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (err error) {\n\tstep, ctx, startStepError :\u003d cmdStartStep(ctx, stepName, cmd)\n\tdefer func() {\n\t\tif infra {\n\t\t\terr \u003d infraWrap(err) // ...\n\t\t}\n\t\tstep.End(err)\n\t}()\n\tif startStepError !\u003d nil {\n\t\treturn startStepError\n\t}\n\t\n\t...\n```",
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7fb49127_92eaa939",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-05-21T15:59:25Z",
+      "side": 1,
+      "message": "your startStepError suggestion is a good one. I implemented that.",
+      "parentUuid": "e0e2fb6a_5e2a1bb4",
       "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -97,6 +133,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "655ffa0b_7037408f",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-05-21T15:59:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "69cf0ebe_92eea94d",
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "88fbe7d4_65792d1d",
@@ -120,6 +174,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "76461b37_26fa53a8",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-05-21T15:59:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "88fbe7d4_65792d1d",
+      "range": {
+        "startLine": 104,
+        "startChar": 96,
+        "endLine": 104,
+        "endChar": 102
+      },
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b5433292_380df36e",
@@ -133,6 +211,30 @@
       "writtenOn": "2024-05-21T15:43:48Z",
       "side": 1,
       "message": "(minor) The caller doesn\u0027t use the file pathname when there\u0027s an error, so maybe in that case writeTempFile should try to delete the temp file, something like this?\n\n```suggestion\n\tif _, err :\u003d f.Write(data); err !\u003d nil {\n\t\tf.Close()\n\t\tos.Remove(name)\n\t\treturn \"\", err\n\t}\n\tif _, err :\u003d f.Close(); err !\u003d nil {\n\t\tos.Remove(name)\n\t\treturn \"\", err\n\t}\n\treturn name, nil\n```",
+      "range": {
+        "startLine": 406,
+        "startChar": 0,
+        "endLine": 409,
+        "endChar": 23
+      },
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "57cdaeb7_7df4c182",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-05-21T15:59:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b5433292_380df36e",
       "range": {
         "startLine": 406,
         "startChar": 0,
