@@ -367,6 +367,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
 
     upload_args = ['--send-mail']
     if roll_result['trivial']:
+      upload_args.extend(('--hashtag', 'trivial-roll'))
       s = spec.autoroll_recipe_options.trivial
       opts = AutorollRecipeOptions.TrivialOptions
       if s.self_approve_method == opts.CODE_REVIEW_1_APPROVE:
@@ -390,6 +391,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
         if s.dry_run:
           upload_args.append('--cq-dry-run')
     else:
+      upload_args.extend(('--hashtag', 'nontrivial-roll'))
       s = spec.autoroll_recipe_options.nontrivial
       if s.extra_reviewer_emails:
         upload_args.append('--reviewers=%s' % ','.join(s.extra_reviewer_emails))

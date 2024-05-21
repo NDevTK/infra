@@ -544,6 +544,8 @@
       "RECIPE_REPO[depot_tools]/git_cl.py",
       "upload",
       "--send-mail",
+      "--hashtag",
+      "nontrivial-roll",
       "--r-owners",
       "--bypass-hooks",
       "-f",
