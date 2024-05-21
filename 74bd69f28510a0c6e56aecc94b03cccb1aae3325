@@ -1,0 +1,146 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3f7fe9b2_baa762ba",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T15:43:48Z",
+      "side": 1,
+      "message": "A few initial review comments.",
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd345bb1_8093975a",
+        "filename": "go/src/infra/experimental/golangbuild/buildmode.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T15:43:48Z",
+      "side": 1,
+      "message": "I want to point out that using `ext` in the test ID means it\u0027ll be different between Windows/Plan 9/all other OSes. I\u0027m not sure if that\u0027s a good thing, since the actual behavior is the same, and so someone may want to see compare results or history across those OSes.\n\nThe upside is that \"make.bash\" or \"make.bat\" are quite clear as test IDs, whereas going with a more generic test ID like \"make\" might be a little less clear.\n\nMaybe it\u0027s fine as is.",
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0e2fb6a_5e2a1bb4",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T15:43:48Z",
+      "side": 1,
+      "message": "This line is a no-op, isn\u0027t it? It\u0027s overwriting \u0027err\u0027, which isn\u0027t used anywhere.\n\nI think this meant to be \u0027cmdErr \u003d infraWrap(cmdErr)\u0027, that is to infraWrap the return value of cmdStepRun func.\n\n---\n\nMaybe it could work out better to keep cmdStepRun\u0027s return value named \u0027err\u0027, but instead rename the \u0027err\u0027 returned from cmdStartStep. (It would be even better if we could get cmdStartStep not to return an error at all, which is close but unfortunately doesn\u0027t seem to be quite possible by only relying on public documented behavior of the luciexe/build package.)\n\nThat is, something like:\n\n```Go\nfunc cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (err error) {\n\tstep, ctx, startStepError :\u003d cmdStartStep(ctx, stepName, cmd)\n\tdefer func() {\n\t\tif infra {\n\t\t\terr \u003d infraWrap(err) // ...\n\t\t}\n\t\tstep.End(err)\n\t}()\n\tif startStepError !\u003d nil {\n\t\treturn startStepError\n\t}\n\t\n\t...\n```",
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69cf0ebe_92eea94d",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T15:43:48Z",
+      "side": 1,
+      "message": "Similarly here, I think this won\u0027t do the intended thing in all cases unless it\u0027s written as `cmdErr \u003d infraWrap(cmdErr)`.\n\nAlso consider the \u0027startStepError\u0027 suggestion from inline comment above.",
+      "fixSuggestions": [
+        {
+          "fixId": "c6cd10a5_55509953",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/experimental/golangbuild/steps.go",
+              "range": {
+                "startLine": 35,
+                "startChar": 0,
+                "endLine": 36,
+                "endChar": 0
+              },
+              "replacement": "\t\t\tcmdErr \u003d infraWrap(cmdErr) // Failure is deemed to be an infrastructure failure.\n"
+            },
+            {
+              "path": "go/src/infra/experimental/golangbuild/steps.go",
+              "range": {
+                "startLine": 67,
+                "startChar": 0,
+                "endLine": 68,
+                "endChar": 0
+              },
+              "replacement": "\t\t\tcmdErr \u003d infraWrap(cmdErr) // Failure is deemed to be an infrastructure failure.\n"
+            }
+          ]
+        }
+      ],
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "88fbe7d4_65792d1d",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T15:43:48Z",
+      "side": 1,
+      "message": "Also consider the \u0027startStepError\u0027 suggestion from inline comment above, which would let you name the return value `err` while avoiding hard-to-tell-whether-shadowed on the cmdStartStep line.",
+      "range": {
+        "startLine": 104,
+        "startChar": 96,
+        "endLine": 104,
+        "endChar": 102
+      },
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b5433292_380df36e",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T15:43:48Z",
+      "side": 1,
+      "message": "(minor) The caller doesn\u0027t use the file pathname when there\u0027s an error, so maybe in that case writeTempFile should try to delete the temp file, something like this?\n\n```suggestion\n\tif _, err :\u003d f.Write(data); err !\u003d nil {\n\t\tf.Close()\n\t\tos.Remove(name)\n\t\treturn \"\", err\n\t}\n\tif _, err :\u003d f.Close(); err !\u003d nil {\n\t\tos.Remove(name)\n\t\treturn \"\", err\n\t}\n\treturn name, nil\n```",
+      "range": {
+        "startLine": 406,
+        "startChar": 0,
+        "endLine": 409,
+        "endChar": 23
+      },
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
