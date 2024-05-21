@@ -58,7 +58,7 @@ func restoreSerialNumberFromInvExec(ctx context.Context, info *execs.ExecInfo) e
 	if _, err := run(ctx, info.GetExecTimeout(), fmt.Sprintf("vpd -s serial_number=%s", invSerialNumber)); err != nil {
 		return errors.Annotate(err, "restore serial number from inventory").Err()
 	}
-	// TODO(b/77594752): remove once dump_vpd_log consumers are gone.
+	// TODO(b/77594752): dump_vpd_log was removed in M-127. Remove when we're done testing pre-M-127.
 	if _, err := run(ctx, info.GetExecTimeout(), "dump_vpd_log --force"); err != nil {
 		log.Debugf(ctx, "Restore serial-number %q: fail to dump vpd of the host", invSerialNumber)
 	}
