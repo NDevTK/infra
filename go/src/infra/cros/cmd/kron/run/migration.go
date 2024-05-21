@@ -12,7 +12,13 @@ import (
 )
 
 var (
-	allowedConfigs = map[string]bool{}
+	allowedConfigs = map[string]bool{
+		"CrosAVAnalysisPerDay": true,
+		"CTPV2Demo":            true,
+		"CUJWeekly0":           true,
+		"wifi_endtoend_daily__wificell__wifi_endtoend__tauto__daily_hour_15": true,
+		"PreprodDaily": true,
+	}
 )
 
 // isAllowed checks the migration rules to determine if a config has been

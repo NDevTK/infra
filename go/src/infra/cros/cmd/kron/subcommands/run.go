@@ -9,6 +9,7 @@ package subcommands
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/maruel/subcommands"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -191,19 +192,40 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 
 	// Launch execution path for all TIMED_EVENT configs
 	if c.timedEvents {
-		timedEventCommands = append(timedEventCommands, run.InitCrOSTimedEventCommand(&c.authFlags, c.isProd, c.dryRun, labConfigs, suiteSchedulerConfigs, projectID))
+		timedEventCommands = append(timedEventCommands, run.InitCrOSTimedEventCommand(&c.authFlags, c.isProd, c.dryRun, c.isTest, labConfigs, suiteSchedulerConfigs, projectID))
 	}
 
 	// Run all NEW_BUILD type command types requested. Each run is hermetic and
 	// will not affect the runs of the other commands
 	for _, nbCommand := range nbCommands {
+		common.Stdout.Printf("**********************************************")
 		common.Stdout.Printf("Launching %s", nbCommand.Name())
+		common.Stdout.Printf("**********************************************")
 		err = run.RunNewBuildCommand(nbCommand)
 		if err != nil {
 			common.Stderr.Printf("%s terminated with error: %s", nbCommand.Name(), err)
 			continue
 		}
+		common.Stdout.Printf("**********************************************")
 		common.Stdout.Printf("Done launching %s", nbCommand.Name())
+		common.Stdout.Printf("**********************************************")
+	}
+
+	// Run all NEW_BUILD type command types requested. Each run is hermetic and
+	// will not affect the runs of the other commands
+	timeEventTriggerTime := common.TimeToKronTime(time.Now())
+	for _, teCommand := range timedEventCommands {
+		common.Stdout.Printf("**********************************************")
+		common.Stdout.Printf("Launching %s", teCommand.Name())
+		common.Stdout.Printf("**********************************************")
+		err = run.RunTimedEventsCommand(teCommand, timeEventTriggerTime)
+		if err != nil {
+			common.Stderr.Printf("%s terminated with error: %s", teCommand.Name(), err)
+			continue
+		}
+		common.Stdout.Printf("**********************************************")
+		common.Stdout.Printf("Done launching %s", teCommand.Name())
+		common.Stdout.Printf("**********************************************")
 	}
 
 	// Stop run timer and publish the message to pubsub
