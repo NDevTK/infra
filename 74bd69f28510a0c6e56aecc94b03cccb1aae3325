@@ -285,6 +285,30 @@
       },
       "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff51df3f_011ea1d0",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-05-21T20:00:03Z",
+      "side": 1,
+      "message": "nope! not intentional. thanks, fixed.",
+      "parentUuid": "f2242349_0a6d0609",
+      "range": {
+        "startLine": 406,
+        "startChar": 0,
+        "endLine": 409,
+        "endChar": 23
+      },
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -43,6 +43,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "5791e238_b75ccdec",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-05-21T20:00:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cac7d9e0_0f79bf40",
+      "range": {
+        "startLine": 153,
+        "startChar": 34,
+        "endLine": 153,
+        "endChar": 38
+      },
+      "revId": "57b20f7436d00d2245954c4caa3d70ccc3c0584e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "498a0d4c_3d47cf0d",
         "filename": "go/src/infra/experimental/golangbuild/steps.go",
         "patchSetId": 2
@@ -54,6 +78,24 @@
       "writtenOn": "2024-05-21T16:38:55Z",
       "side": 1,
       "message": "Yeah, I guess we want a portable \u0027cat\u0027, but that isn\u0027t as easy as it should be.",
+      "revId": "57b20f7436d00d2245954c4caa3d70ccc3c0584e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1fd54113_2ab324a6",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2024-05-21T20:00:03Z",
+      "side": 1,
+      "message": "yup. I struggled with that for a while, and even thought of reinvoking golangbuild in a mode that\u0027s just the `cat` command. that somehow seemed worse and just made me sad about software.",
+      "parentUuid": "498a0d4c_3d47cf0d",
       "revId": "57b20f7436d00d2245954c4caa3d70ccc3c0584e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
