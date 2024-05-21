@@ -166,6 +166,30 @@
       },
       "revId": "a0292cd30d630083cd060a8c78784b19831d083f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a0378e71_d4e35049",
+        "filename": "go/src/infra/build/siso/execute/reproxyexec/reproxyexec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2024-05-21T04:59:28Z",
+      "side": 1,
+      "message": "Closing since resolved, and to remove from my dashboard",
+      "parentUuid": "bc85b9ca_fa2bc27b",
+      "range": {
+        "startLine": 74,
+        "startChar": 1,
+        "endLine": 83,
+        "endChar": 0
+      },
+      "revId": "a0292cd30d630083cd060a8c78784b19831d083f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
