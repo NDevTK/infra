@@ -31,8 +31,8 @@ luci_gae_vars:
     MAX_PENDING_LATENCY: "0.2s"
   monorail-prod:
     WORKERS: "8"
-    MIN_IDLE_INSTANCES: "25"
-    MAX_INSTANCES: "800"
+    MIN_IDLE_INSTANCES: "10"
+    MAX_INSTANCES: "100"
     MAX_PENDING_LATENCY: "0.2s"
 
 env_variables:
