@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ce52c2c_a779aa33",
+        "filename": "go/src/infra/experimental/golangbuild/buildmode.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T16:38:55Z",
+      "side": 1,
+      "message": "I agree it\u0027s tricky. Sounds good to start with this as the test ID; we can change it later if we think it\u0027s worthwhile to unify it across OSes and find a good name for it.",
+      "parentUuid": "58630cae_d0ca06c8",
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e0e2fb6a_5e2a1bb4",
@@ -235,6 +253,30 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "b5433292_380df36e",
+      "range": {
+        "startLine": 406,
+        "startChar": 0,
+        "endLine": 409,
+        "endChar": 23
+      },
+      "revId": "74bd69f28510a0c6e56aecc94b03cccb1aae3325",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2242349_0a6d0609",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T16:38:55Z",
+      "side": 1,
+      "message": "To confirm, not including `f.Close()` on line 407 was intentional? (Fine if so.)",
+      "parentUuid": "57cdaeb7_7df4c182",
       "range": {
         "startLine": 406,
         "startChar": 0,

@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2200b6a5_c78911a1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T16:38:55Z",
+      "side": 1,
+      "message": "Thanks.",
+      "revId": "57b20f7436d00d2245954c4caa3d70ccc3c0584e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cac7d9e0_0f79bf40",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T16:38:55Z",
+      "side": 1,
+      "message": "(minor) If you wanted, you could get rid of the \u0027dir\u0027 parameter. It\u0027s always the default value now, and it seems unlikely we\u0027d want to use something other than what os.TempDir already returns.",
+      "range": {
+        "startLine": 153,
+        "startChar": 34,
+        "endLine": 153,
+        "endChar": 38
+      },
+      "revId": "57b20f7436d00d2245954c4caa3d70ccc3c0584e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "498a0d4c_3d47cf0d",
+        "filename": "go/src/infra/experimental/golangbuild/steps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2024-05-21T16:38:55Z",
+      "side": 1,
+      "message": "Yeah, I guess we want a portable \u0027cat\u0027, but that isn\u0027t as easy as it should be.",
+      "revId": "57b20f7436d00d2245954c4caa3d70ccc3c0584e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
