@@ -41,7 +41,7 @@ func auditUSBFromDUTSideKeyExec(ctx context.Context, info *execs.ExecInfo) error
 		return errors.Reason("audit USB from DUT side: could not check DUT usb path %q", dutUSB).Err()
 	}
 	servoHost.UsbkeyState = state
-	log.Infof(ctx, "Successfully end servo audit USB from DUT side for %q %q", dut.Name, servoHost.GetName())
+	log.Infof(ctx, "Successfully end servo audit USB. DUT: %q:  %q", dut.Name, servoHost.GetUsbkeyState())
 	return nil
 }
 

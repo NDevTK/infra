@@ -113,17 +113,16 @@ func FindUSBDrivePathOnDut(ctx context.Context, run components.Runner, s compone
 	for _, p := range strings.Split(out, "\n") {
 		dtOut, dtErr := run(ctx, time.Minute, fmt.Sprintf(". /usr/share/misc/chromeos-common.sh; get_device_type %s", p))
 		if dtErr != nil {
-			log.Debugf(ctx, "Failed to check device type for path %q, error: %s", p, dtErr)
+			log.Debugf(ctx, "Skip because device type check for %q failed, error: %s", p, dtErr)
 			continue
 		}
 		if dtOut != "USB" {
-			log.Debugf(ctx, "The path %q lead to not USB devices!", p)
+			log.Debugf(ctx, "Skip as %q device, not as USB device!", p)
 			continue
 		}
-		_, fErr := run(ctx, time.Minute, fmt.Sprintf("fdisk -l %s", p))
-		if fErr != nil {
-			log.Debugf(ctx, "Failed to device by path %q, error: %s", p, dtErr)
-			return p, nil
+		if _, err := run(ctx, time.Minute, fmt.Sprintf("fdisk -l %s", p)); err != nil {
+			log.Debugf(ctx, "Skip because device %q could not be read, error: %s", p, err)
+			continue
 		}
 		log.Debugf(ctx, "The path %q is good to assume is USB-drive.", p)
 		return p, nil
