@@ -26,6 +26,17 @@ For the above command, the exact path to your local copy of
 up. You can also copy the `stable_versions.cfg` file somewhere else and manually
 make changes for testing.
 
+To test against a prod config, you can use the `-remote-file` flag:
+
+`stable_version2 validate-config -remote-file`
+
+## Authentiction
+
 If you need to login, run:
 
 `./stable_version2 login`
+
+## Deployment
+
+`stable_version2` is deployed onto ChromeOS bots running infra presubmit through
+[CIPD](https://chrome-infra-packages.appspot.com/p/chromiumos/infra/stable_version2/linux-amd64).
