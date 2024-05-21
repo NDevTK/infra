@@ -17,6 +17,7 @@ from recipe_engine import recipe_api
 from recipe_engine.post_process import MustRun
 
 from PB.recipe_engine.recipes_cfg import RepoSpec, DepRepoSpecs
+from PB.recipe_engine.recipes_cfg import AutorollRecipeOptions
 
 PROPERTIES = {
     'projects':
@@ -190,22 +191,25 @@ def GenTests(api):
           'build', repo_spec(trivial_commit=False, trivial_dryrun=True)),
   )
 
+  CODE_REVIEW_1_APPROVE = AutorollRecipeOptions.TrivialOptions.CODE_REVIEW_1_APPROVE
   yield test(
       'trivial_code_review_1',
       api.recipe_autoroller.roll_data(
-          'build', repo_spec(self_approve_method='CODE_REVIEW_1_APPROVE')),
+          'build', repo_spec(self_approve_method=CODE_REVIEW_1_APPROVE)),
   )
 
+  CODE_REVIEW_2_APPROVE = AutorollRecipeOptions.TrivialOptions.CODE_REVIEW_2_APPROVE
   yield test(
       'trivial_code_review_2',
       api.recipe_autoroller.roll_data(
-          'build', repo_spec(self_approve_method='CODE_REVIEW_2_APPROVE')),
+          'build', repo_spec(self_approve_method=CODE_REVIEW_2_APPROVE)),
   )
 
+  NO_LABELS_APPROVE = AutorollRecipeOptions.TrivialOptions.NO_LABELS_APPROVE
   yield test(
       'trivial_no_labels_approval',
       api.recipe_autoroller.roll_data(
-          'build', repo_spec(self_approve_method='NO_LABELS_APPROVE')),
+          'build', repo_spec(self_approve_method=NO_LABELS_APPROVE)),
   )
 
   yield test(

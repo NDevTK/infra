@@ -4,8 +4,13 @@
 
 import json
 
+from google.protobuf import json_format
+
 from recipe_engine import recipe_test_api
 
+from PB.recipe_engine.recipes_cfg import RepoSpec, AutorollRecipeOptions
+
+BOT_COMMIT_APPROVE = AutorollRecipeOptions.TrivialOptions.BOT_COMMIT_APPROVE
 
 class RecipeAutorollerTestApi(recipe_test_api.RecipeTestApi):
   _TBR_EMAILS = ('foo@bar.example.com', 'meep@example.com')
@@ -16,38 +21,30 @@ class RecipeAutorollerTestApi(recipe_test_api.RecipeTestApi):
                 tbr_emails=_TBR_EMAILS,
                 extra_reviewers=_EXTRA_REVIEWERS,
                 disable_reason='',
-                self_approve_method='BOT_COMMIT_APPROVE',
+                self_approve_method=BOT_COMMIT_APPROVE,
                 trivial_commit=True,
                 trivial_dryrun=False,
                 nontrivial_dryrun=True,
                 nontrivial_autosubmit=True,
                 include_autoroll_options=True,
                 no_cc_authors=False):
-    spec = {
-        'api_version': 2,
-        'deps': {
-            'recipe_engine': {
-                'url':
-                    'https://chromium.googlesource.com/infra/luci/recipes-py',
-            },
-        },
-    }
+    spec = RepoSpec(api_version=2)
+    spec.deps['recipe_engine'].url = (
+      'https://chromium.googlesource.com/infra/luci/recipes-py')
     if include_autoroll_options:
-      spec['autoroll_recipe_options'] = {
-          'trivial': {
-              'tbr_emails': list(tbr_emails),
-              'automatic_commit': trivial_commit,
-              'dry_run': trivial_dryrun,
-              'self_approve_method': self_approve_method,
-          },
-          'nontrivial': {
-              'extra_reviewer_emails': list(extra_reviewers),
-              'automatic_commit_dry_run': nontrivial_dryrun,
-              'set_autosubmit': nontrivial_autosubmit,
-          },
-          'disable_reason': disable_reason,
-          'no_cc_authors': no_cc_authors,
-      }
+      trivial = spec.autoroll_recipe_options.trivial
+      trivial.tbr_emails.extend(tbr_emails)
+      trivial.automatic_commit = trivial_commit
+      trivial.dry_run = trivial_dryrun
+      trivial.self_approve_method = self_approve_method
+
+      nontrivial = spec.autoroll_recipe_options.nontrivial
+      nontrivial.extra_reviewer_emails.extend(extra_reviewers)
+      nontrivial.automatic_commit_dry_run = nontrivial_dryrun
+      nontrivial.set_autosubmit = nontrivial_autosubmit
+
+      spec.autoroll_recipe_options.disable_reason = disable_reason
+      spec.autoroll_recipe_options.no_cc_authors = no_cc_authors
     return spec
 
   def roll_data(self,
@@ -64,7 +61,7 @@ class RecipeAutorollerTestApi(recipe_test_api.RecipeTestApi):
       success = False
 
     ret = self.empty_test_data() + self.recipe_cfg(project, spec)
-    if spec.get('autoroll_recipe_options', {}).get('disable_reason'):
+    if spec.autoroll_recipe_options.disable_reason:
       return ret
 
     commit_infos = []
@@ -85,7 +82,7 @@ class RecipeAutorollerTestApi(recipe_test_api.RecipeTestApi):
         'commit_infos': {
             'recipe_engine': commit_infos,
         },
-        'spec': spec,
+        'spec': json_format.MessageToDict(spec),
     }
 
     roll_result = {
@@ -131,5 +128,4 @@ class RecipeAutorollerTestApi(recipe_test_api.RecipeTestApi):
     if spec is None:
       spec = self.repo_spec()
     return self.override_step_data(
-      '%s.read recipes.cfg' % project, self.m.json.output(spec)
-    )
+      '%s.read recipes.cfg' % project, self.m.file.read_proto(spec))

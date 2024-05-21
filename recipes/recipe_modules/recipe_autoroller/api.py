@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 import base64
+from dataclasses import dataclass
 import datetime
 import re
 import traceback
 
-import attr
 from google.protobuf import json_format as jsonpb
 
 from recipe_engine import recipe_api
@@ -87,10 +87,10 @@ Bugdroid-Send-Email: False
 ROLL_SUCCESS, ROLL_EMPTY, ROLL_FAILURE, ROLL_SKIP = range(4)
 
 
-@attr.s
+@dataclass
 class _Status(object):
-  code = attr.ib(type=int)
-  url = attr.ib(type=str, default=None)
+  code: int
+  url: str = ""
 
 
 _ROLL_STALE_THRESHOLD = datetime.timedelta(hours=2)
@@ -290,15 +290,6 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
                         name='git cl set-close')
     return None
 
-  def _get_disable_reason(self, recipes_cfg_path):
-    current_cfg = self.m.json.read(
-      'read recipes.cfg',
-      recipes_cfg_path, step_test_data=lambda: self.m.json.test_api.output({}))
-
-    return current_cfg.json.output.get(
-        'autoroll_recipe_options', {}
-    ).get('disable_reason')
-
   def _roll_project(self, project_id, project_url, recipes_dir,
                     db_gcs_bucket):
     with self.m.step.nest(str(project_id)) as presentation:
@@ -316,10 +307,12 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
     workdir = self._prepare_checkout(project_id, project_url)
 
     recipes_cfg_path = workdir.joinpath('infra', 'config', 'recipes.cfg')
+    recipes_cfg = self.m.file.read_proto(
+        'read recipes.cfg', recipes_cfg_path, RepoSpec, 'JSONPB',
+        decoding_kwargs = {'ignore_unknown_fields': True})
 
-    disable_reason = self._get_disable_reason(recipes_cfg_path)
-    if disable_reason:
-      rslt = self.m.step.empty('disabled', step_text=disable_reason)
+    if reason := recipes_cfg.autoroll_recipe_options.disable_reason:
+      rslt = self.m.step.empty('disabled', step_text=reason)
       rslt.presentation.status = self.m.step.WARNING
       return _Status(ROLL_SKIP)
 
