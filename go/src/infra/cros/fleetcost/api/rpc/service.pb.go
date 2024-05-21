@@ -929,6 +929,103 @@ func (x *PersistToBigqueryResponse) GetSucceeded() bool {
 	return false
 }
 
+// RepopulateCacheRequest doesn't contain any information. We always persist the entire cache.
+type RepopulateCacheRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *RepopulateCacheRequest) Reset() {
+	*x = RepopulateCacheRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[17]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RepopulateCacheRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RepopulateCacheRequest) ProtoMessage() {}
+
+func (x *RepopulateCacheRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[17]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RepopulateCacheRequest.ProtoReflect.Descriptor instead.
+func (*RepopulateCacheRequest) Descriptor() ([]byte, []int) {
+	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{17}
+}
+
+// RepopulateCacheResponse records the result of repopulating the cache.
+type RepopulateCacheResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Persisted records is the number of records that were repopulated.
+	ProcessedRecords int32 `protobuf:"varint,1,opt,name=processed_records,json=processedRecords,proto3" json:"processed_records,omitempty"`
+	// Succeeded is true if and only if no errors at all were encountered when repopulating the cache.
+	Succeeded bool `protobuf:"varint,2,opt,name=succeeded,proto3" json:"succeeded,omitempty"`
+}
+
+func (x *RepopulateCacheResponse) Reset() {
+	*x = RepopulateCacheResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[18]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RepopulateCacheResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RepopulateCacheResponse) ProtoMessage() {}
+
+func (x *RepopulateCacheResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[18]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RepopulateCacheResponse.ProtoReflect.Descriptor instead.
+func (*RepopulateCacheResponse) Descriptor() ([]byte, []int) {
+	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *RepopulateCacheResponse) GetProcessedRecords() int32 {
+	if x != nil {
+		return x.ProcessedRecords
+	}
+	return 0
+}
+
+func (x *RepopulateCacheResponse) GetSucceeded() bool {
+	if x != nil {
+		return x.Succeeded
+	}
+	return false
+}
+
 var File_infra_cros_fleetcost_api_rpc_service_proto protoreflect.FileDescriptor
 
 var file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc = []byte{
@@ -1052,8 +1149,16 @@ var file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc = []byte{
 	0x64, 0x5f, 0x72, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
 	0x10, 0x70, 0x65, 0x72, 0x73, 0x69, 0x73, 0x74, 0x65, 0x64, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
 	0x73, 0x12, 0x1c, 0x0a, 0x09, 0x73, 0x75, 0x63, 0x63, 0x65, 0x65, 0x64, 0x65, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x73, 0x75, 0x63, 0x63, 0x65, 0x65, 0x64, 0x65, 0x64, 0x22,
+	0x18, 0x0a, 0x16, 0x52, 0x65, 0x70, 0x6f, 0x70, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x43, 0x61, 0x63,
+	0x68, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x64, 0x0a, 0x17, 0x52, 0x65, 0x70,
+	0x6f, 0x70, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x43, 0x61, 0x63, 0x68, 0x65, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2b, 0x0a, 0x11, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x65,
+	0x64, 0x5f, 0x72, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
+	0x10, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x65, 0x64, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
+	0x73, 0x12, 0x1c, 0x0a, 0x09, 0x73, 0x75, 0x63, 0x63, 0x65, 0x65, 0x64, 0x65, 0x64, 0x18, 0x02,
 	0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x73, 0x75, 0x63, 0x63, 0x65, 0x65, 0x64, 0x65, 0x64, 0x32,
-	0xcb, 0x08, 0x0a, 0x09, 0x46, 0x6c, 0x65, 0x65, 0x74, 0x43, 0x6f, 0x73, 0x74, 0x12, 0x59, 0x0a,
+	0xda, 0x09, 0x0a, 0x09, 0x46, 0x6c, 0x65, 0x65, 0x74, 0x43, 0x6f, 0x73, 0x74, 0x12, 0x59, 0x0a,
 	0x04, 0x50, 0x69, 0x6e, 0x67, 0x12, 0x1e, 0x2e, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73,
 	0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x52, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73,
@@ -1121,11 +1226,19 @@ var file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc = []byte{
 	0x73, 0x69, 0x73, 0x74, 0x54, 0x6f, 0x42, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65,
 	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x25, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1f, 0x22, 0x1d,
 	0x2f, 0x76, 0x31, 0x2f, 0x74, 0x61, 0x73, 0x6b, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x73, 0x69, 0x73,
-	0x74, 0x2d, 0x74, 0x6f, 0x2d, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x42, 0x2a, 0x5a,
-	0x28, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66, 0x6c, 0x65, 0x65,
-	0x74, 0x63, 0x6f, 0x73, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x70, 0x63, 0x3b, 0x66, 0x6c,
-	0x65, 0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x74, 0x2d, 0x74, 0x6f, 0x2d, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x12, 0x8c, 0x01,
+	0x0a, 0x0f, 0x52, 0x65, 0x70, 0x6f, 0x70, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x43, 0x61, 0x63, 0x68,
+	0x65, 0x12, 0x29, 0x2e, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x72, 0x70, 0x63, 0x2e, 0x52, 0x65, 0x70, 0x6f, 0x70, 0x75, 0x6c, 0x61, 0x74, 0x65,
+	0x43, 0x61, 0x63, 0x68, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x66,
+	0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x72, 0x70, 0x63,
+	0x2e, 0x52, 0x65, 0x70, 0x6f, 0x70, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x43, 0x61, 0x63, 0x68, 0x65,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x22, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1c,
+	0x22, 0x1a, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x61, 0x73, 0x6b, 0x73, 0x2f, 0x72, 0x65, 0x70, 0x6f,
+	0x70, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x2d, 0x63, 0x61, 0x63, 0x68, 0x65, 0x42, 0x2a, 0x5a, 0x28,
+	0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74,
+	0x63, 0x6f, 0x73, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x70, 0x63, 0x3b, 0x66, 0x6c, 0x65,
+	0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1140,7 +1253,7 @@ func file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP() []byte {
 	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescData
 }
 
-var file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_infra_cros_fleetcost_api_rpc_service_proto_goTypes = []interface{}{
 	(*PingRequest)(nil),                 // 0: fleetcost.api.rpc.PingRequest
 	(*PingResponse)(nil),                // 1: fleetcost.api.rpc.PingResponse
@@ -1159,24 +1272,26 @@ var file_infra_cros_fleetcost_api_rpc_service_proto_goTypes = []interface{}{
 	(*DeleteCostIndicatorResponse)(nil), // 14: fleetcost.api.rpc.DeleteCostIndicatorResponse
 	(*PersistToBigqueryRequest)(nil),    // 15: fleetcost.api.rpc.PersistToBigqueryRequest
 	(*PersistToBigqueryResponse)(nil),   // 16: fleetcost.api.rpc.PersistToBigqueryResponse
-	(*anypb.Any)(nil),                   // 17: google.protobuf.Any
-	(*models.CostIndicator)(nil),        // 18: fleetcost.api.models.CostIndicator
-	(*fieldmaskpb.FieldMask)(nil),       // 19: google.protobuf.FieldMask
-	(*models.CostResult)(nil),           // 20: fleetcost.api.models.CostResult
+	(*RepopulateCacheRequest)(nil),      // 17: fleetcost.api.rpc.RepopulateCacheRequest
+	(*RepopulateCacheResponse)(nil),     // 18: fleetcost.api.rpc.RepopulateCacheResponse
+	(*anypb.Any)(nil),                   // 19: google.protobuf.Any
+	(*models.CostIndicator)(nil),        // 20: fleetcost.api.models.CostIndicator
+	(*fieldmaskpb.FieldMask)(nil),       // 21: google.protobuf.FieldMask
+	(*models.CostResult)(nil),           // 22: fleetcost.api.models.CostResult
 }
 var file_infra_cros_fleetcost_api_rpc_service_proto_depIdxs = []int32{
-	17, // 0: fleetcost.api.rpc.PingUFSResponse.ufs_request:type_name -> google.protobuf.Any
-	17, // 1: fleetcost.api.rpc.PingUFSResponse.ufs_response:type_name -> google.protobuf.Any
-	18, // 2: fleetcost.api.rpc.CreateCostIndicatorRequest.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
-	18, // 3: fleetcost.api.rpc.CreateCostIndicatorResponse.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
+	19, // 0: fleetcost.api.rpc.PingUFSResponse.ufs_request:type_name -> google.protobuf.Any
+	19, // 1: fleetcost.api.rpc.PingUFSResponse.ufs_response:type_name -> google.protobuf.Any
+	20, // 2: fleetcost.api.rpc.CreateCostIndicatorRequest.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
+	20, // 3: fleetcost.api.rpc.CreateCostIndicatorResponse.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
 	7,  // 4: fleetcost.api.rpc.ListCostIndicatorsRequest.filter:type_name -> fleetcost.api.rpc.ListCostIndicatorsFilter
-	18, // 5: fleetcost.api.rpc.ListCostIndicatorsResponse.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
-	18, // 6: fleetcost.api.rpc.UpdateCostIndicatorRequest.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
-	19, // 7: fleetcost.api.rpc.UpdateCostIndicatorRequest.update_mask:type_name -> google.protobuf.FieldMask
-	18, // 8: fleetcost.api.rpc.UpdateCostIndicatorResponse.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
-	20, // 9: fleetcost.api.rpc.GetCostResultResponse.result:type_name -> fleetcost.api.models.CostResult
-	18, // 10: fleetcost.api.rpc.DeleteCostIndicatorRequest.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
-	18, // 11: fleetcost.api.rpc.DeleteCostIndicatorResponse.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
+	20, // 5: fleetcost.api.rpc.ListCostIndicatorsResponse.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
+	20, // 6: fleetcost.api.rpc.UpdateCostIndicatorRequest.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
+	21, // 7: fleetcost.api.rpc.UpdateCostIndicatorRequest.update_mask:type_name -> google.protobuf.FieldMask
+	20, // 8: fleetcost.api.rpc.UpdateCostIndicatorResponse.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
+	22, // 9: fleetcost.api.rpc.GetCostResultResponse.result:type_name -> fleetcost.api.models.CostResult
+	20, // 10: fleetcost.api.rpc.DeleteCostIndicatorRequest.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
+	20, // 11: fleetcost.api.rpc.DeleteCostIndicatorResponse.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
 	0,  // 12: fleetcost.api.rpc.FleetCost.Ping:input_type -> fleetcost.api.rpc.PingRequest
 	2,  // 13: fleetcost.api.rpc.FleetCost.PingUFS:input_type -> fleetcost.api.rpc.PingUFSRequest
 	4,  // 14: fleetcost.api.rpc.FleetCost.CreateCostIndicator:input_type -> fleetcost.api.rpc.CreateCostIndicatorRequest
@@ -1185,16 +1300,18 @@ var file_infra_cros_fleetcost_api_rpc_service_proto_depIdxs = []int32{
 	13, // 17: fleetcost.api.rpc.FleetCost.DeleteCostIndicator:input_type -> fleetcost.api.rpc.DeleteCostIndicatorRequest
 	11, // 18: fleetcost.api.rpc.FleetCost.GetCostResult:input_type -> fleetcost.api.rpc.GetCostResultRequest
 	15, // 19: fleetcost.api.rpc.FleetCost.PersistToBigquery:input_type -> fleetcost.api.rpc.PersistToBigqueryRequest
-	1,  // 20: fleetcost.api.rpc.FleetCost.Ping:output_type -> fleetcost.api.rpc.PingResponse
-	3,  // 21: fleetcost.api.rpc.FleetCost.PingUFS:output_type -> fleetcost.api.rpc.PingUFSResponse
-	5,  // 22: fleetcost.api.rpc.FleetCost.CreateCostIndicator:output_type -> fleetcost.api.rpc.CreateCostIndicatorResponse
-	8,  // 23: fleetcost.api.rpc.FleetCost.ListCostIndicators:output_type -> fleetcost.api.rpc.ListCostIndicatorsResponse
-	10, // 24: fleetcost.api.rpc.FleetCost.UpdateCostIndicator:output_type -> fleetcost.api.rpc.UpdateCostIndicatorResponse
-	14, // 25: fleetcost.api.rpc.FleetCost.DeleteCostIndicator:output_type -> fleetcost.api.rpc.DeleteCostIndicatorResponse
-	12, // 26: fleetcost.api.rpc.FleetCost.GetCostResult:output_type -> fleetcost.api.rpc.GetCostResultResponse
-	16, // 27: fleetcost.api.rpc.FleetCost.PersistToBigquery:output_type -> fleetcost.api.rpc.PersistToBigqueryResponse
-	20, // [20:28] is the sub-list for method output_type
-	12, // [12:20] is the sub-list for method input_type
+	17, // 20: fleetcost.api.rpc.FleetCost.RepopulateCache:input_type -> fleetcost.api.rpc.RepopulateCacheRequest
+	1,  // 21: fleetcost.api.rpc.FleetCost.Ping:output_type -> fleetcost.api.rpc.PingResponse
+	3,  // 22: fleetcost.api.rpc.FleetCost.PingUFS:output_type -> fleetcost.api.rpc.PingUFSResponse
+	5,  // 23: fleetcost.api.rpc.FleetCost.CreateCostIndicator:output_type -> fleetcost.api.rpc.CreateCostIndicatorResponse
+	8,  // 24: fleetcost.api.rpc.FleetCost.ListCostIndicators:output_type -> fleetcost.api.rpc.ListCostIndicatorsResponse
+	10, // 25: fleetcost.api.rpc.FleetCost.UpdateCostIndicator:output_type -> fleetcost.api.rpc.UpdateCostIndicatorResponse
+	14, // 26: fleetcost.api.rpc.FleetCost.DeleteCostIndicator:output_type -> fleetcost.api.rpc.DeleteCostIndicatorResponse
+	12, // 27: fleetcost.api.rpc.FleetCost.GetCostResult:output_type -> fleetcost.api.rpc.GetCostResultResponse
+	16, // 28: fleetcost.api.rpc.FleetCost.PersistToBigquery:output_type -> fleetcost.api.rpc.PersistToBigqueryResponse
+	18, // 29: fleetcost.api.rpc.FleetCost.RepopulateCache:output_type -> fleetcost.api.rpc.RepopulateCacheResponse
+	21, // [21:30] is the sub-list for method output_type
+	12, // [12:21] is the sub-list for method input_type
 	12, // [12:12] is the sub-list for extension type_name
 	12, // [12:12] is the sub-list for extension extendee
 	0,  // [0:12] is the sub-list for field type_name
@@ -1410,6 +1527,30 @@ func file_infra_cros_fleetcost_api_rpc_service_proto_init() {
 				return nil
 			}
 		}
+		file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RepopulateCacheRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RepopulateCacheResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1417,7 +1558,7 @@ func file_infra_cros_fleetcost_api_rpc_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -1460,6 +1601,8 @@ type FleetCostClient interface {
 	GetCostResult(ctx context.Context, in *GetCostResultRequest, opts ...grpc.CallOption) (*GetCostResultResponse, error)
 	// PeristToBigquery persists records to BigQuery.
 	PersistToBigquery(ctx context.Context, in *PersistToBigqueryRequest, opts ...grpc.CallOption) (*PersistToBigqueryResponse, error)
+	// RepopulateCache ensures that the cache matches the state of UFS.
+	RepopulateCache(ctx context.Context, in *RepopulateCacheRequest, opts ...grpc.CallOption) (*RepopulateCacheResponse, error)
 }
 type fleetCostPRPCClient struct {
 	client *prpc.Client
@@ -1535,6 +1678,15 @@ func (c *fleetCostPRPCClient) GetCostResult(ctx context.Context, in *GetCostResu
 func (c *fleetCostPRPCClient) PersistToBigquery(ctx context.Context, in *PersistToBigqueryRequest, opts ...grpc.CallOption) (*PersistToBigqueryResponse, error) {
 	out := new(PersistToBigqueryResponse)
 	err := c.client.Call(ctx, "fleetcost.api.rpc.FleetCost", "PersistToBigquery", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fleetCostPRPCClient) RepopulateCache(ctx context.Context, in *RepopulateCacheRequest, opts ...grpc.CallOption) (*RepopulateCacheResponse, error) {
+	out := new(RepopulateCacheResponse)
+	err := c.client.Call(ctx, "fleetcost.api.rpc.FleetCost", "RepopulateCache", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1621,6 +1773,15 @@ func (c *fleetCostClient) PersistToBigquery(ctx context.Context, in *PersistToBi
 	return out, nil
 }
 
+func (c *fleetCostClient) RepopulateCache(ctx context.Context, in *RepopulateCacheRequest, opts ...grpc.CallOption) (*RepopulateCacheResponse, error) {
+	out := new(RepopulateCacheResponse)
+	err := c.cc.Invoke(ctx, "/fleetcost.api.rpc.FleetCost/RepopulateCache", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FleetCostServer is the server API for FleetCost service.
 type FleetCostServer interface {
 	// Ping does not send or receive any information. It just checks that the service is there.
@@ -1640,6 +1801,8 @@ type FleetCostServer interface {
 	GetCostResult(context.Context, *GetCostResultRequest) (*GetCostResultResponse, error)
 	// PeristToBigquery persists records to BigQuery.
 	PersistToBigquery(context.Context, *PersistToBigqueryRequest) (*PersistToBigqueryResponse, error)
+	// RepopulateCache ensures that the cache matches the state of UFS.
+	RepopulateCache(context.Context, *RepopulateCacheRequest) (*RepopulateCacheResponse, error)
 }
 
 // UnimplementedFleetCostServer can be embedded to have forward compatible implementations.
@@ -1669,6 +1832,9 @@ func (*UnimplementedFleetCostServer) GetCostResult(context.Context, *GetCostResu
 }
 func (*UnimplementedFleetCostServer) PersistToBigquery(context.Context, *PersistToBigqueryRequest) (*PersistToBigqueryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PersistToBigquery not implemented")
+}
+func (*UnimplementedFleetCostServer) RepopulateCache(context.Context, *RepopulateCacheRequest) (*RepopulateCacheResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RepopulateCache not implemented")
 }
 
 func RegisterFleetCostServer(s prpc.Registrar, srv FleetCostServer) {
@@ -1819,6 +1985,24 @@ func _FleetCost_PersistToBigquery_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FleetCost_RepopulateCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RepopulateCacheRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetCostServer).RepopulateCache(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/fleetcost.api.rpc.FleetCost/RepopulateCache",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetCostServer).RepopulateCache(ctx, req.(*RepopulateCacheRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _FleetCost_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "fleetcost.api.rpc.FleetCost",
 	HandlerType: (*FleetCostServer)(nil),
@@ -1854,6 +2038,10 @@ var _FleetCost_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PersistToBigquery",
 			Handler:    _FleetCost_PersistToBigquery_Handler,
+		},
+		{
+			MethodName: "RepopulateCache",
+			Handler:    _FleetCost_RepopulateCache_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

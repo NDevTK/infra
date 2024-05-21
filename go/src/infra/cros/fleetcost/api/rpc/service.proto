@@ -72,6 +72,13 @@ service FleetCost {
       post: "/v1/tasks/persist-to-bigquery"
     };
   }
+
+  // RepopulateCache ensures that the cost data matches the state of UFS.
+  rpc RepopulateCache(RepopulateCacheRequest) returns (RepopulateCacheResponse) {
+    option (google.api.http) = {
+      post: "/v1/tasks/repopulate-cache"
+    };
+  }
 }
 
 // PingRequest intentionally contains nothing.
@@ -183,5 +190,17 @@ message PersistToBigqueryResponse {
   int32 persisted_records = 1;
 
   // Succeeded is true if and only if no errors at all were encountered during persistence.
+  bool succeeded = 2;
+};
+
+// RepopulateCacheRequest doesn't contain any information. We always persist the entire cache.
+message RepopulateCacheRequest {};
+
+// RepopulateCacheResponse records the result of repopulating the cache.
+message RepopulateCacheResponse {
+  // Persisted records is the number of records that were repopulated.
+  int32 processed_records = 1;
+
+  // Succeeded is true if and only if no errors at all were encountered when repopulating the cache.
   bool succeeded = 2;
 };

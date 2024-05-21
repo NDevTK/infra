@@ -18,3 +18,8 @@ import (
 func (f *FleetCostFrontend) PersistToBigquery(ctx context.Context, request *fleetcostAPI.PersistToBigqueryRequest) (*fleetcostAPI.PersistToBigqueryResponse, error) {
 	return nil, errors.New("not yet implemented")
 }
+
+// RepopulateCache repopulates the datastore cache ahead of persisting to bigquery.
+func (f *FleetCostFrontend) RepopulateCache(ctx context.Context, request *fleetcostAPI.RepopulateCacheRequest) (*fleetcostAPI.RepopulateCacheResponse, error) {
+	return nil, errors.New("not yet implemented")
+}
