@@ -186,7 +186,7 @@ func Init(cfg *Config) error {
 			return importDarwin(ctx, cfg, posixUtils...)
 		case "windows":
 			posixUtils = append(posixUtils, "cygpath", "nproc")
-			return importWindows(cfg, posixUtils...)
+			return importWindows(cfg)
 		default:
 			return nil, fmt.Errorf("unknown os: %s", os)
 		}

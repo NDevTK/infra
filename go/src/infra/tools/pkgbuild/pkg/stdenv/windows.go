@@ -8,38 +8,13 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/cipkg/base/workflow"
 )
 
-func importWindows(cfg *Config, bins ...string) (gs []generators.Generator, err error) {
-	// Import posix utilities from MinGW
-	// We use bash.exe to locate where MinGW is installed.
-	bash, err := generators.FromPathBatch("", cfg.FindBinary, "bash.exe")
-	if err != nil {
-		return nil, fmt.Errorf("failed to find MinGW: %w", err)
-	}
-	mingwDir := path.Dir(bash.Targets["bin/bash.exe"].Source)
-	if mingwDir == "" {
-		return nil, fmt.Errorf("failed to determine mingw dir: %v", bash.Targets)
-	}
-
-	g := &generators.ImportTargets{
-		Name:    "posix_import",
-		Targets: make(map[string]generators.ImportTarget),
-	}
-	for _, bin := range bins {
-		bin = bin + ".exe"
-		g.Targets[path.Join("bin", bin)] = generators.ImportTarget{
-			Source: path.Join(mingwDir, bin),
-			Mode:   fs.ModeSymlink,
-		}
-	}
-	gs = append(gs, g)
-
+func importWindows(cfg *Config) (gs []generators.Generator, err error) {
 	// Copy windows sdk
 	winSDK := cfg.WinSDK
 	if winSDK == nil {
@@ -67,9 +42,10 @@ func importWindows(cfg *Config, bins ...string) (gs []generators.Generator, err 
 	gs = append(gs, winSDK)
 
 	// Import platform-specific tools
-	g, err = generators.FromPathBatch("windows_import", cfg.FindBinary,
+	g, err := generators.FromPathBatch("windows_import", cfg.FindBinary,
 		"attrib",
 		"cmd",
+		"fc",
 		"where",
 	)
 	gs = append(gs, g)
