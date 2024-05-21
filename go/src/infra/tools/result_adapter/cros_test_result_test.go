@@ -163,6 +163,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 60},
 					Tags: SortTags([]*pb.StringPair{
+						pbutil.StringPair("account_id", "1"),
 						pbutil.StringPair("board", "hatch"),
 						pbutil.StringPair("build", "R106-15048.0.0"),
 						pbutil.StringPair("cbx", "false"),
@@ -187,6 +188,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
 					Tags: SortTags([]*pb.StringPair{
+						pbutil.StringPair("account_id", "1"),
 						pbutil.StringPair("board", "hatch"),
 						pbutil.StringPair("build", "R106-15048.0.0"),
 						pbutil.StringPair("cbx", "false"),
@@ -448,6 +450,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 60},
 					Tags: SortTags([]*pb.StringPair{
+						pbutil.StringPair("account_id", "1"),
 						pbutil.StringPair("board", "hatch"),
 						pbutil.StringPair("build", "R106-15048.0.0"),
 						pbutil.StringPair("cbx", "false"),

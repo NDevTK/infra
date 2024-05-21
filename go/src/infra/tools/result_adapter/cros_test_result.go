@@ -253,13 +253,17 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 			}
 		}
 
+		// Set default account ID as Google ID from Testhaus
+		// because Account ID in PartnerInfo is set only for Partner accounts.
+		accountIDTag := "1"
 		partnerInfo := testInvocation.GetPartnerInfo()
 		if partnerInfo != nil {
 			accountID := partnerInfo.GetAccountId()
 			if accountID != 0 {
-				tags = AppendTags(tags, "account_id", strconv.FormatInt(accountID, 10))
+				accountIDTag = strconv.FormatInt(accountID, 10)
 			}
 		}
+		tags = AppendTags(tags, "account_id", accountIDTag)
 
 		tags = configProjectTrackerMetadataTags(tags, testInvocation)
 	}
