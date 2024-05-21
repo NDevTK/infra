@@ -1818,6 +1818,7 @@ SPECS.update({
         Universal('chardet', '3.0.4'),
         Universal('chardet', '4.0.0'),
         Universal('charset_normalizer', '2.0.4', pyversions=['py3']),
+        Universal('charset_normalizer', '2.0.12', pyversions=['py3']),
         Universal('charset_normalizer', '3.1.0', pyversions=['py3']),
         Universal('charset_normalizer', '3.3.2', pyversions=['py3']),
         Universal('cheroot', '6.2.4'),

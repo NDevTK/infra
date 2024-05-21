@@ -1717,6 +1717,18 @@ wheel: <
 
 * *universal*
 
+### 2.0.12
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/charset_normalizer-py3"
+  version: "version:2.0.12"
+>
+```
+
+
+* *universal*
+
 ### 3.1.0
 
 ```protobuf
