@@ -883,6 +883,134 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		So(sk.TestResultForRdb, ShouldResembleProto, wantTestResult)
 	})
 
+	Convey("Populate ancestor buildbucket ids from buildbucket tags", t, func() {
+		ctx := context.Background()
+		wantTestResult := &artifactpb.TestResult{
+			TestInvocation: &artifactpb.TestInvocation{
+				PrimaryExecutionInfo: &artifactpb.ExecutionInfo{
+					BuildInfo: &artifactpb.BuildInfo{
+						BuildMetadata: &artifactpb.BuildMetadata{
+							Sku:      &artifactpb.BuildMetadata_Sku{},
+							Chipset:  &artifactpb.BuildMetadata_Chipset{},
+							Cellular: &artifactpb.BuildMetadata_Cellular{},
+							Firmware: &artifactpb.BuildMetadata_Firmware{},
+							Kernel:   &artifactpb.BuildMetadata_Kernel{},
+							Lacros:   &artifactpb.BuildMetadata_Lacros{},
+							ChameleonInfo: &artifactpb.BuildMetadata_ChameleonInfo{
+								ChameleonType:            []artifactpb.BuildMetadata_ChameleonType{},
+								ChameleonConnectionTypes: []artifactpb.BuildMetadata_ChameleonConnectionType{},
+							},
+						},
+					},
+					DutInfo: &artifactpb.DutInfo{
+						ProvisionState: &testapi.ProvisionState{
+							SystemImage: &testapi.ProvisionState_SystemImage{
+								SystemImagePath: &_go.StoragePath{
+									HostType: _go.StoragePath_GS,
+									Path:     "gs://some-bucket/builder/build-12345",
+								},
+							},
+						},
+					},
+					EnvInfo: &artifactpb.ExecutionInfo_SkylabInfo{
+						SkylabInfo: &artifactpb.SkylabInfo{
+							DroneInfo: &artifactpb.DroneInfo{},
+							BuildbucketInfo: &artifactpb.BuildbucketInfo{
+								Id:          100,
+								AncestorIds: []int64{99},
+							},
+							SwarmingInfo: &artifactpb.SwarmingInfo{},
+						},
+					},
+					InventoryInfo: &artifactpb.InventoryInfo{},
+				},
+				DutTopology: &labapi.DutTopology{Duts: []*labapi.Dut{{}}},
+				SchedulingMetadata: &artifactpb.SchedulingMetadata{
+					SchedulingArgs: map[string]string{
+						"parent_buildbucket_id": "99",
+					},
+				},
+				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{},
+				PartnerInfo:            &artifactpb.PartnerInfo{},
+			},
+			TestRuns: []*artifactpb.TestRun{
+				{
+					TestCaseInfo: &artifactpb.TestCaseInfo{
+						TestCaseResult: &testapi.TestCaseResult{
+							TestHarness: &testapi.TestHarness{
+								TestHarnessType: &testapi.TestHarness_Tast_{
+									Tast: &testapi.TestHarness_Tast{},
+								},
+							},
+							TestCaseId: &testapi.TestCase_Id{
+								Value: "tast.rlz_CheckPing",
+							},
+							Verdict: &testapi.TestCaseResult_Pass_{},
+						},
+					},
+					LogsInfo: []*configpb.StoragePath{
+						{
+							HostType: configpb.StoragePath_GS,
+							Path:     "gs://some-bucket/builder/build-12345",
+						},
+					},
+					TimeInfo: &artifactpb.TimingInfo{},
+				},
+			},
+		}
+
+		// Sets up the build info.
+		buildPb := &bbpb.Build{
+			Id:     100,
+			Status: bbpb.Status_SUCCESS,
+			Tags: []*buildbucketpb.StringPair{
+				{Key: "parent_buildbucket_id", Value: "99"},
+			},
+		}
+		buildState, ctx, err := build.Start(ctx, buildPb)
+		defer func() { buildState.End(err) }()
+
+		sk := &data.HwTestStateKeeper{
+			CurrentInvocationId: "Inv-1234",
+			TesthausURL:         "www.testhaus.com",
+			CftTestRequest: &skylab_test_runner.CFTTestRequest{
+				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
+					DutModel: &labapi.DutModel{},
+					ProvisionState: &api.ProvisionState{
+						SystemImage: &api.ProvisionState_SystemImage{
+							SystemImagePath: &_go.StoragePath{
+								HostType: _go.StoragePath_GS,
+								Path:     "gs://some-bucket/builder/build-12345",
+							},
+						},
+					},
+				},
+			},
+			GcsURL:     "gs://some-bucket/builder/build-12345",
+			BuildState: buildState,
+			TestResponses: &testapi.CrosTestResponse{
+				TestCaseResults: []*testapi.TestCaseResult{
+					{
+						TestHarness: &testapi.TestHarness{
+							TestHarnessType: &testapi.TestHarness_Tast_{
+								Tast: &testapi.TestHarness_Tast{},
+							},
+						},
+						TestCaseId: &testapi.TestCase_Id{
+							Value: "tast.rlz_CheckPing",
+						},
+						Verdict: &testapi.TestCaseResult_Pass_{},
+					},
+				},
+			},
+		}
+
+		// Extract deps first
+		err = cmd.ExtractDependencies(ctx, sk)
+		So(err, ShouldBeNil)
+		So(sk.TestResultForRdb, ShouldResembleProto, wantTestResult)
+	})
+
 	Convey("ProvisionStartCmd extract deps with TestResultForRdb", t, func() {
 		ctx := context.Background()
 		wantInvId := "Inv-1234"

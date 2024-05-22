@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
 	_go "go.chromium.org/chromiumos/config/go"
@@ -412,6 +413,15 @@ func populateEnvInfo(
 	}
 	if len(build.AncestorIds) > 0 {
 		bbInfo.AncestorIds = build.AncestorIds
+	} else {
+		// Falls back to the bb tag for tests coming from Scheduke because
+		// they're not scheduled via a parent BBID call.
+		parentBBID := getSingleTagValue(build.Tags, "parent_buildbucket_id")
+		if parentBBID != "" {
+			if id, err := strconv.ParseInt(parentBBID, 10, 64); err == nil {
+				bbInfo.AncestorIds = []int64{id}
+			}
+		}
 	}
 
 	if isSkylab(dut) {
