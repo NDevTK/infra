@@ -159,7 +159,6 @@ import (
 	"os"
 	"strings"
 
-	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/experimental/golangbuild/golangbuildpb"
@@ -183,7 +182,6 @@ func main() {
 
 		// Extract any links from the error. nil errors are OK and have no links.
 		links := extractLinks(runErr)
-		status, _ := build.ExtractStatus(runErr)
 
 		// Populate output properties.
 		var outpb golangbuildpb.Outputs
@@ -210,7 +208,6 @@ func main() {
 
 		// Set summary markdown.
 		var sb strings.Builder
-		fmt.Fprintf(&sb, "**%s**\n\n", strings.ReplaceAll(bbpb.Status_name[int32(status)], "_", " "))
 		if spec != nil {
 			needNewLine := false
 			if spec.goSrc != nil {
@@ -236,17 +233,18 @@ func main() {
 		if runErr != nil {
 			testsFailed := errorTestsFailed(runErr)
 			if testsFailed {
-				fmt.Fprintf(&sb, "**Tests failed.** [See all test results.](%s)\n\n", testResultsURL(st.Build().Id))
-			}
-			if e := runErr.Error(); !strings.ContainsAny(e, "\n`") {
-				// Simple error, viable to put it in a Markdown code span.
-				fmt.Fprintf(&sb, "Error: `%s`\n\n", e)
+				fmt.Fprintf(&sb, "[Build or test failure, click here for results.](%s)\n\n", testResultsURL(st.Build().Id))
 			} else {
-				// Put the error in a Markdown code block (using indentation)
-				// to avoid error content from being interpreted as Markdown.
-				fmt.Fprintf(&sb, "Error:\n\n%s\n\n", "\t"+strings.ReplaceAll(e, "\n", "\n\t"))
+				if e := runErr.Error(); !strings.ContainsAny(e, "\n`") {
+					// Simple error, viable to put it in a Markdown code span.
+					fmt.Fprintf(&sb, "Error: `%s`\n\n", e)
+				} else {
+					// Put the error in a Markdown code block (using indentation)
+					// to avoid error content from being interpreted as Markdown.
+					fmt.Fprintf(&sb, "Error:\n\n%s\n\n", "\t"+strings.ReplaceAll(e, "\n", "\n\t"))
+				}
 			}
-			fmt.Fprintf(&sb, "Links:\n")
+			fmt.Fprintf(&sb, "Additional links for debugging:\n")
 			for _, link := range links {
 				fmt.Fprintf(&sb, "* [%s](%s)\n", link.name, link.url)
 			}

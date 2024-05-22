@@ -384,9 +384,10 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 			}
 			e := errorFromOutputProperties(props, fmt.Sprintf("shard %d", i+1))
 			if e != nil {
-				e = attachLinks(e, fmt.Sprintf("shard %d build page", i+1), buildURL(build.Id))
-				if errorTestsFailed(e) {
-					e = attachLinks(e, fmt.Sprintf("shard %d test results", i+1), testResultsURL(build.Id))
+				if !errorTestsFailed(e) {
+					// Attach build page link for shard when it's not just a test failure. Test failures
+					// should already all be aggregated in the coordinator build page.
+					e = attachLinks(e, fmt.Sprintf("Shard %d encountered a non-build/non-test failure, click here for the shard's build page", i+1), buildURL(build.Id))
 				}
 				failures = append(failures, e)
 			}
@@ -427,13 +428,13 @@ func parseOutputProperties(build *bbpb.Build) (*golangbuildpb.Outputs, error) {
 
 // errorFromOutputProperties synthesizes any failures described by the output properties
 // into an error.
-func errorFromOutputProperties(props *golangbuildpb.Outputs, title string) error {
+func errorFromOutputProperties(props *golangbuildpb.Outputs, detail string) error {
 	if props == nil || props.GetFailure() == nil {
 		return nil
 	}
-	err := fmt.Errorf("%s: %s", title, props.GetFailure().GetDescription())
+	err := fmt.Errorf("%s: %s", detail, props.GetFailure().GetDescription())
 	for _, link := range props.GetFailure().GetLinks() {
-		err = attachLinks(err, fmt.Sprintf("%s %s", title, link.Name), link.Url)
+		err = attachLinks(err, fmt.Sprintf("%s [%s]", link.Name, detail), link.Url)
 	}
 	if props.GetFailure().GetTestsFailed() {
 		err = attachTestsFailed(err)

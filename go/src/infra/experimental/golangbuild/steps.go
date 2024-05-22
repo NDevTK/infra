@@ -49,8 +49,8 @@ func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool)
 
 	// Run the command.
 	if err := cmd.Run(); err != nil {
-		err = fmt.Errorf("failed to run %q: %w", stepName, err)
-		err = attachLinks(err, fmt.Sprintf("%q (combined output)", stepName), output.UILink())
+		err = fmt.Errorf("failed to run %s: %w", stepName, err)
+		err = attachLinks(err, fmt.Sprintf("Output for %s", stepName), output.UILink())
 		return err
 	}
 	return nil
@@ -86,10 +86,10 @@ func cmdStepOutput(ctx context.Context, stepName string, cmd *exec.Cmd, infra bo
 
 	// Check for errors.
 	if err != nil {
-		err = fmt.Errorf("failed to run %q: %w", stepName, err)
+		err = fmt.Errorf("failed to run %s: %w", stepName, err)
 		err = attachLinks(err,
-			fmt.Sprintf("%q (stdout)", stepName), stdout.UILink(),
-			fmt.Sprintf("%q (stderr)", stepName), stderr.UILink(),
+			fmt.Sprintf("Stdout for %s", stepName), stdout.UILink(),
+			fmt.Sprintf("Stderr for %s", stepName), stderr.UILink(),
 		)
 		return output, err
 	}
@@ -122,9 +122,10 @@ func cmdStepTest(ctx context.Context, spec *buildSpec, stepName, testID string, 
 
 	// Spruce up the error.
 	if cmdErr != nil {
-		cmdErr = fmt.Errorf("failed to run %q: %w", stepName, cmdErr)
+		cmdErr = fmt.Errorf("failed to run %s: %w", stepName, cmdErr)
+		cmdErr = attachTestsFailed(cmdErr)
 		cmdErr = attachLinks(cmdErr,
-			fmt.Sprintf("%q (combined output)", stepName), log.UILink(),
+			fmt.Sprintf("Output for %s", stepName), log.UILink(),
 		)
 	}
 
