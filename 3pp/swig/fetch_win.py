@@ -43,8 +43,7 @@ TAGS = 'https://api.github.com/repos/swig/swig/tags'
 
 # Once we have the release tag, download the prebuilt binary
 # from this URL.
-SWIGWIN_URL = 'http://ixpeering.dl.sourceforge.net/project/swig/swigwin/swigwin-{0}/swigwin-{0}.zip/download'
-
+SWIGWIN_URL = 'http://ixpeering.dl.sourceforge.net/project/swig/swigwin/swigwin-{0}/swigwin-{0}.zip?viasf=1'
 
 def do_latest():
   tags = json.load(urllib.request.urlopen(TAGS))
