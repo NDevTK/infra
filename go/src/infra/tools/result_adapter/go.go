@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"sort"
 	"strings"
 	"time"
@@ -58,6 +59,11 @@ func (r *goRun) ensureArgsValid(args []string) ([]string, error) {
 }
 
 func (r *goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb.TestResult, error) {
+	if r.DumpJSONFile != "" {
+		if err := os.WriteFile(r.DumpJSONFile, data, 0o666); err != nil {
+			return nil, errors.Annotate(err, "dumping Go test JSON to a file").Err()
+		}
+	}
 	ordered := goTestJSONToPackageRecords(ctx, data, r.CopyTestOutput, r.VerboseTestOutput)
 
 	ret := make([]*sinkpb.TestResult, 0, 8)

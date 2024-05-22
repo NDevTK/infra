@@ -24,6 +24,10 @@ type goRun struct {
 	// VerboseTestOutput, if true, will emit the full test output akin
 	// to go test -v.
 	VerboseTestOutput bool
+
+	// DumpJSONFile, if not empty, causes goRun to dump the raw JSON produced
+	// by the Go command to the filepath specified.
+	DumpJSONFile string
 }
 
 func cmdGo() *subcommands.Command {
@@ -44,6 +48,9 @@ func cmdGo() *subcommands.Command {
 			r.Flags.BoolVar(&r.VerboseTestOutput, "v", r.VerboseTestOutput, text.Doc(`
 				Flag to emit the full go test -v output to stdout.
 				If false, then the output will look more like go test without -v.
+			`))
+			r.Flags.StringVar(&r.DumpJSONFile, "dump-json", r.DumpJSONFile, text.Doc(`
+				Flag to dump raw Go test JSON to a file.
 			`))
 			r.captureOutput = true
 			// Ignore global flags, go tests are expected to only produce
