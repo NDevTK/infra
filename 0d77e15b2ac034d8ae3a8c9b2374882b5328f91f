@@ -45,6 +45,29 @@
       },
       "revId": "0d77e15b2ac034d8ae3a8c9b2374882b5328f91f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d1b5ce3_72af5d36",
+        "filename": "go/src/infra/cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2024-05-22T21:15:56Z",
+      "side": 1,
+      "message": "I don\u0027t think we should match empty variant with non-empty variant",
+      "range": {
+        "startLine": 231,
+        "startChar": 1,
+        "endLine": 231,
+        "endChar": 43
+      },
+      "revId": "0d77e15b2ac034d8ae3a8c9b2374882b5328f91f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
