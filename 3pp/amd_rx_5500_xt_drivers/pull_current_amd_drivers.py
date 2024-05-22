@@ -18,9 +18,9 @@ import bs4
 import certifi
 import requests
 
-DRIVER_PAGE_URL = ('https://www.amd.com/en/support/graphics/'
-                   'amd-radeon-5500-series/amd-radeon-rx-5500-series/'
-                   'amd-radeon-rx-5500-xt')
+DRIVER_PAGE_URL = ('https://www.amd.com/en/support/downloads/drivers.html/'
+                   'graphics/radeon-rx/radeon-rx-5000-series/'
+                   'amd-radeon-rx-5500-xt.html')
 # Driver downloads do not work if not referred to the download link by AMD.
 REFERER = 'https://www.amd.com/'
 # Needs to be non-empty for requests to be processed. Sometimes requests work
