@@ -87,6 +87,17 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 	if err != nil {
 		return err
 	}
+	// Set correct pool if hostname-based lease, as our default pool value may be
+	// incorrect.
+	if c.host != "" {
+		c.host = heuristics.NormalizeBotNameToDeviceName(c.host)
+		pool, err := hostnameToPool(ctx, swarmingBotsClient, c.host)
+		if err != nil {
+			return err
+		}
+		c.pool = pool
+	}
+
 	botDims, buildTags, err := botDimsAndBuildTags(c.leaseFlags)
 	if err != nil {
 		return err
@@ -185,10 +196,9 @@ func botDimsAndBuildTags(leaseFlags leaseFlags) (dims, tags map[string]string, e
 	tags = map[string]string{}
 	if leaseFlags.host != "" {
 		// Hostname-based lease.
-		correctedHostname := heuristics.NormalizeBotNameToDeviceName(leaseFlags.host)
 		tags["lease-by"] = "host"
-		tags[deviceNameLabelName] = correctedHostname
-		dims[deviceNameLabelName] = correctedHostname
+		tags[deviceNameLabelName] = leaseFlags.host
+		dims[deviceNameLabelName] = leaseFlags.host
 	} else {
 		// Swarming dimension-based lease.
 		dims["dut_state"] = "ready"
@@ -205,11 +215,14 @@ func botDimsAndBuildTags(leaseFlags leaseFlags) (dims, tags map[string]string, e
 			tags["label-model"] = model
 			dims["label-model"] = model
 		}
-		if pool := leaseFlags.pool; pool != "" {
-			tags[poolLabelName] = pool
-			dims[poolLabelName] = pool
-		}
 	}
+
+	// Add pool regardless of whether lease is by hostname or dims.
+	if pool := leaseFlags.pool; pool != "" {
+		tags[poolLabelName] = pool
+		dims[poolLabelName] = pool
+	}
+
 	// Add these metadata tags last to avoid being overwritten by freeform dims.
 	tags[crosfleetcommon.CrosfleetToolTag] = leaseCmdName
 	tags["lease-reason"] = leaseFlags.reason
