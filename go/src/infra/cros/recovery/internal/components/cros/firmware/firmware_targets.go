@@ -74,6 +74,7 @@ var targetOverridebyHwid = map[string]string{
 	"YAHIKO-OPUT B3B-G4H-D2B-X6F-P24-Y4M":        "yaviks_ufs",
 	"YAHIKO-OPUT C4B-G3F-H3D-I2E-V26-E7J":        "yaviks_ufs",
 	"YAHIKO-OPUT C4B-G3F-H3D-I2E-V36-U92":        "yaviks_ufs",
+	"YAHIKO-OPUT C4B-G3F-H3D-I2F-F36-E8R":        "yaviks_ufs",
 	"YAVIKS-BVSW B3B-A2C-B2A-Q6W-I3T":            "yaviks_ufs",
 	"YAVIKS-BVSW C4B-C2C-C3B-H4H-66N":            "yaviks_ufs",
 	"YAVIKSO-OFRL C4C-B2D-D3B-Q3E-X66":           "yaviks_ufs",
