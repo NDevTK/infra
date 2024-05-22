@@ -31,20 +31,21 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 	const expectedIntKey = "expected_int_value"
 	const expectedIntGreaterKey = "expected_int_value_greater"
 	const expectedIntLessKey = "expected_int_value_less"
-	const expectedFloatKey = "expected_float_value"
+	const expectedFloatGreaterKey = "expected_float_value_greater"
 	const expectedBoolKey = "expected_bool_value"
-	var servodControlValue string
+	var observation *metrics.Observation
 	defer func() {
-		info.AddObservation(metrics.NewStringObservation(fmt.Sprintf("servod:%s", command), servodControlValue))
+		if observation != nil {
+			info.AddObservation(observation)
+		}
 	}()
 	if argsMap.Has(expectedStringKey) {
 		expectedValue := argsMap.AsString(ctx, expectedStringKey, "")
 		controlValue, err := servodGetString(ctx, info.NewServod(), command)
 		if err != nil {
-			servodControlValue = err.Error()
 			return errors.Annotate(err, "servo check servod control exec").Err()
 		}
-		servodControlValue = controlValue
+		observation = metrics.NewStringObservation(command, controlValue)
 		log.Infof(ctx, "Compare (String), expected value %q, actual value %q", expectedValue, controlValue)
 		if controlValue != expectedValue {
 			return errors.Reason("compare (string): expected value %q, actual value %q do not match.", expectedValue, controlValue).Err()
@@ -52,10 +53,9 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 	} else if argsMap.Has(expectedIntKey) || argsMap.Has(expectedIntGreaterKey) || argsMap.Has(expectedIntLessKey) {
 		controlValue, err := servodGetInt(ctx, info.NewServod(), command)
 		if err != nil {
-			servodControlValue = err.Error()
 			return errors.Annotate(err, "servo check servod control exec").Err()
 		}
-		servodControlValue = fmt.Sprintf("%v", controlValue)
+		observation = metrics.NewInt64Observation(command, int64(controlValue))
 		if argsMap.Has(expectedIntKey) {
 			expectedValue := argsMap.AsInt(ctx, expectedIntKey, 0)
 			if controlValue != int32(expectedValue) {
@@ -78,26 +78,24 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 				log.Debugf(ctx, "Compare (Int), expected value %s, actual value %d", expectedValue, controlValue)
 			}
 		}
-	} else if argsMap.Has(expectedFloatKey) {
-		expectedValue := argsMap.AsFloat64(ctx, expectedFloatKey, 0)
+	} else if argsMap.Has(expectedFloatGreaterKey) {
+		expectedValue := argsMap.AsFloat64(ctx, expectedFloatGreaterKey, 0)
 		controlValue, err := servodGetDouble(ctx, info.NewServod(), command)
 		if err != nil {
-			servodControlValue = err.Error()
 			return errors.Annotate(err, "servo check servod control exec").Err()
 		}
-		servodControlValue = fmt.Sprintf("%v", controlValue)
+		observation = metrics.NewFloat64Observation(command, controlValue)
 		log.Debugf(ctx, "Compare (Double), expected value %s, actual value %f", expectedValue, controlValue)
-		if controlValue != expectedValue {
-			return errors.Reason("compare: expected value %f, actual value %f do not match", expectedValue, controlValue).Err()
+		if controlValue > expectedValue {
+			return errors.Reason("compare: actual value %f is bigger then expected value %f", controlValue, expectedValue).Err()
 		}
 	} else if argsMap.Has(expectedBoolKey) {
 		expectedValue := argsMap.AsBool(ctx, expectedBoolKey, false)
 		controlValue, err := servodGetBool(ctx, info.NewServod(), command)
 		if err != nil {
-			servodControlValue = err.Error()
 			return errors.Annotate(err, "servo check servod control exec").Err()
 		}
-		servodControlValue = fmt.Sprintf("%v", controlValue)
+		observation = metrics.NewStringObservation(command, fmt.Sprintf("%v", controlValue))
 		log.Debugf(ctx, "Compare (Bool), expected value %s, actual value %t", expectedValue, controlValue)
 		if controlValue != expectedValue {
 			return errors.Reason("compare: expected value %t, actual value %t do not match", expectedValue, controlValue).Err()
@@ -106,13 +104,12 @@ func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) erro
 		log.Infof(ctx, "Servo Check Servod Control Exec: expected value type not specified in config, or did not match any known types.")
 		res, err := info.NewServod().Get(ctx, command)
 		if err != nil {
-			servodControlValue = err.Error()
 			return errors.Annotate(err, "servo check servod control exec").Err()
 		}
 		// The value can contain different value types.
 		// Ex.: "double:xxxx.xx"
 		resRawString := strings.TrimSpace(res.String())
-		servodControlValue = resRawString
+		observation = metrics.NewStringObservation(command, resRawString)
 		log.Infof(ctx, "Servo Check Servod Control Exec: for command %q, received %q.", command, resRawString)
 	}
 	return nil

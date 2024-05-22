@@ -1305,7 +1305,22 @@ func crosRepairActions() map[string]*Action {
 				//TODO(b:234761994, Flex device does not have charge_full file)
 				"Is a Chromebook",
 			},
+			Dependencies: []string{
+				"Battery temperature below threshold",
+			},
 			ExecName:               "cros_audit_battery",
+			AllowFailAfterRecovery: true,
+		},
+		"Battery temperature below threshold": {
+			Docs: []string{
+				"Read and print battery_tempc control value to logs.",
+				"Part of analysis of b/267384675",
+			},
+			ExecName: "servo_check_servod_control",
+			ExecExtraArgs: []string{
+				"command:battery_tempc",
+				"expected_float_value_greater:45.0",
+			},
 			AllowFailAfterRecovery: true,
 		},
 		"Device without cros EC": {
