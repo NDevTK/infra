@@ -7,6 +7,7 @@ package model
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"regexp"
 	"testing"
@@ -14,14 +15,78 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/testing/typed"
 )
 
-func TestGetDeviceByName(t *testing.T) {
+func TestGetDeviceByID(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("GetDeviceByName", t, func() {
-		Convey("GetDeviceByName: valid return", func() {
+	baseQuery := `
+		SELECT
+			id,
+			device_address,
+			device_type,
+			device_state,
+			schedulable_labels,
+			created_time,
+			last_updated_time,
+			is_active
+		FROM "Devices"`
+
+	timeNow := time.Now()
+	validCases := []struct {
+		name           string
+		idType         DeviceIDType
+		expectedDevice Device
+		err            error
+	}{
+		{
+			name:   "GetDeviceByID: valid return; search by hostname",
+			idType: IDTypeHostname,
+			expectedDevice: Device{
+				ID:            "test-device-1",
+				DeviceAddress: "1.1.1.1:1",
+				DeviceType:    "DEVICE_TYPE_PHYSICAL",
+				DeviceState:   "DEVICE_STATE_AVAILABLE",
+				SchedulableLabels: SchedulableLabels{
+					"label-test": LabelValues{
+						Values: []string{"test-value-1"},
+					},
+				},
+				CreatedTime:     timeNow,
+				LastUpdatedTime: timeNow,
+				IsActive:        true,
+			},
+			err: nil,
+		},
+		{
+			name:   "GetDeviceByID: valid return; search by DUT ID",
+			idType: IDTypeDutID,
+			expectedDevice: Device{
+				ID:            "test-device-1",
+				DeviceAddress: "1.1.1.1:1",
+				DeviceType:    "DEVICE_TYPE_PHYSICAL",
+				DeviceState:   "DEVICE_STATE_AVAILABLE",
+				SchedulableLabels: SchedulableLabels{
+					"label-test": LabelValues{
+						Values: []string{"test-value-1"},
+					},
+				},
+				CreatedTime:     timeNow,
+				LastUpdatedTime: timeNow,
+				IsActive:        true,
+			},
+			err: nil,
+		},
+	}
+
+	for _, tt := range validCases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -34,7 +99,6 @@ func TestGetDeviceByName(t *testing.T) {
 				}
 			}()
 
-			timeNow := time.Now()
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"device_address",
@@ -63,39 +127,61 @@ func TestGetDeviceByName(t *testing.T) {
 					timeNow,
 					false)
 
-			mock.ExpectQuery(regexp.QuoteMeta(`
-				SELECT
-					id,
-					device_address,
-					device_type,
-					device_state,
-					schedulable_labels,
-					created_time,
-					last_updated_time,
-					is_active
-				FROM "Devices"
-				WHERE id=$1;`)).
+			query := baseQuery
+			switch tt.idType {
+			case IDTypeDutID:
+				query += `
+					WHERE
+						jsonb_path_query_array(
+							schedulable_labels,
+							'$.dut_id.Values[0]'
+						) @> to_jsonb($1::text);`
+			case IDTypeHostname:
+				query += `
+					WHERE id=$1;`
+			default:
+				t.Errorf("unexpected error: id type %s is not supported", tt.idType)
+			}
+
+			mock.ExpectQuery(regexp.QuoteMeta(query)).
 				WithArgs("test-device-1").
 				WillReturnRows(rows)
 
-			device, err := GetDeviceByName(ctx, db, "test-device-1")
-			So(err, ShouldBeNil)
-			So(device, ShouldEqual, Device{
-				ID:            "test-device-1",
-				DeviceAddress: "1.1.1.1:1",
-				DeviceType:    "DEVICE_TYPE_PHYSICAL",
-				DeviceState:   "DEVICE_STATE_AVAILABLE",
-				SchedulableLabels: SchedulableLabels{
-					"label-test": LabelValues{
-						Values: []string{"test-value-1"},
-					},
-				},
-				CreatedTime:     timeNow,
-				LastUpdatedTime: timeNow,
-				IsActive:        true,
-			})
+			device, err := GetDeviceByID(ctx, db, tt.idType, "test-device-1")
+			if !errors.Is(err, tt.err) {
+				t.Errorf("unexpected error: %v; want: %v", err, tt.err)
+			}
+			if diff := typed.Got(device).Want(tt.expectedDevice).Diff(); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
+			}
 		})
-		Convey("GetDeviceByName: invalid request; no device name match", func() {
+	}
+
+	failedCases := []struct {
+		name           string
+		idType         DeviceIDType
+		expectedDevice Device
+		err            error
+	}{
+		{
+			name:           "invalid request; search by hostname, no device name match",
+			idType:         IDTypeHostname,
+			expectedDevice: Device{},
+			err:            fmt.Errorf("GetDeviceByID: failed to get Device"),
+		},
+		{
+			name:           "invalid request; search by DUT ID, no device name match",
+			idType:         IDTypeDutID,
+			expectedDevice: Device{},
+			err:            fmt.Errorf("GetDeviceByID: failed to get Device"),
+		},
+	}
+
+	for _, tt := range failedCases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -108,26 +194,35 @@ func TestGetDeviceByName(t *testing.T) {
 				}
 			}()
 
-			mock.ExpectQuery(regexp.QuoteMeta(`
-				SELECT
-					id,
-					device_address,
-					device_type,
-					device_state,
-					schedulable_labels,
-					created_time,
-					last_updated_time,
-					is_active
-				FROM "Devices"
-				WHERE id=$1;`)).
-				WithArgs("test-device-2").
-				WillReturnError(fmt.Errorf("GetDeviceByName: failed to get Device"))
+			query := baseQuery
+			switch tt.idType {
+			case IDTypeDutID:
+				query += `
+					WHERE
+						jsonb_path_query_array(
+							schedulable_labels,
+							'$.dut_id.Values[0]'
+						) @> to_jsonb($1::text);`
+			case IDTypeHostname:
+				query += `
+					WHERE id=$1;`
+			default:
+				t.Errorf("unexpected error: id type %s is not supported", tt.idType)
+			}
 
-			device, err := GetDeviceByName(ctx, db, "test-device-2")
-			So(err, ShouldNotBeNil)
-			So(device, ShouldEqual, Device{})
+			mock.ExpectQuery(regexp.QuoteMeta(query)).
+				WithArgs("test-device-1").
+				WillReturnError(fmt.Errorf("GetDeviceByID: failed to get Device"))
+
+			device, err := GetDeviceByID(ctx, db, tt.idType, "test-device-1")
+			if err.Error() != tt.err.Error() {
+				t.Errorf("unexpected error: %s", err)
+			}
+			if diff := typed.Got(device).Want(tt.expectedDevice).Diff(); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
+			}
 		})
-	})
+	}
 }
 
 func TestListDevices(t *testing.T) {

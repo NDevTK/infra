@@ -19,6 +19,7 @@ import (
 	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/external"
+	"infra/device_manager/internal/model"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -98,18 +99,42 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 		return rsp, nil
 	}
 
-	// Parse hardware requirements. Initial iteration will take a deviceID and
-	// search for the device to lease.
+	// Parse hardware requirements. Initial iteration will take an ID and search
+	// for the device to lease.
 	deviceLabels := r.GetHardwareDeviceReqs().GetSchedulableLabels()
-	deviceID := deviceLabels["device_id"].GetValues()[0] // assumes only leasing one device
-	device, err := controller.GetDevice(ctx, s.ServiceClients.DBClient.Conn, deviceID)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "LeaseDevice: failed to find Device %s: %s", deviceID, err)
+	if len(deviceLabels) == 0 {
+		return nil, status.Errorf(codes.NotFound, "LeaseDevice: schedulable labels are empty")
 	}
-	logging.Debugf(ctx, "LeaseDevice: found Device %s: %v", deviceID, device)
+
+	var (
+		idType model.DeviceIDType
+		val    string
+	)
+
+	for _, v := range []model.DeviceIDType{
+		model.IDTypeDutID,
+		model.IDTypeHostname,
+	} {
+		val, err = controller.ExtractSingleValuedDimension(ctx, deviceLabels, string(v))
+		if err == nil {
+			idType = v
+			break
+		}
+		logging.Debugf(ctx, err.Error())
+	}
+
+	if val == "" {
+		return nil, status.Errorf(codes.NotFound, "LeaseDevice: dut_id and device_id labels have no values")
+	}
+
+	device, err := controller.GetDevice(ctx, s.ServiceClients.DBClient.Conn, idType, val)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "LeaseDevice: failed to find Device %s: %s", val, err)
+	}
+	logging.Debugf(ctx, "LeaseDevice: found Device %s: %v", val, device)
 
 	if !controller.IsDeviceAvailable(ctx, device.GetState()) {
-		return nil, status.Errorf(codes.Unavailable, "LeaseDevice: device %s is unavailable for lease", deviceID)
+		return nil, status.Errorf(codes.Unavailable, "LeaseDevice: device %s is unavailable for lease", val)
 	}
 	return controller.LeaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r, device)
 }
@@ -143,7 +168,8 @@ func (s *Server) GetDevice(ctx context.Context, r *api.GetDeviceRequest) (*api.D
 		return nil, status.Errorf(codes.Internal, "GetDevice: request has no device name")
 	}
 
-	device, err := controller.GetDevice(ctx, s.ServiceClients.DBClient.Conn, r.Name)
+	// Default to using hostname as the query ID type.
+	device, err := controller.GetDevice(ctx, s.ServiceClients.DBClient.Conn, model.IDTypeHostname, r.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "GetDevice: failed to get Device %s: %s", r.Name, err)
 	}

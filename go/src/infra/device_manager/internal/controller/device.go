@@ -26,9 +26,9 @@ import (
 
 const DeviceEventsPubSubTopic string = "device-events-v1"
 
-// GetDevice gets a Device from the database based on deviceName.
-func GetDevice(ctx context.Context, db *sql.DB, deviceName string) (*api.Device, error) {
-	device, err := model.GetDeviceByName(ctx, db, deviceName)
+// GetDevice gets a Device from the database based on a deviceID.
+func GetDevice(ctx context.Context, db *sql.DB, idType model.DeviceIDType, deviceID string) (*api.Device, error) {
+	device, err := model.GetDeviceByID(ctx, db, idType, deviceID)
 	if err != nil {
 		return &api.Device{}, err
 	}
@@ -199,5 +199,22 @@ func deviceModelToAPIDevice(ctx context.Context, device model.Device) *api.Devic
 		Type:         stringToDeviceType(ctx, device.DeviceType),
 		State:        stringToDeviceState(ctx, device.DeviceState),
 		HardwareReqs: labelsToHardwareReqs(ctx, device.SchedulableLabels),
+	}
+}
+
+// ExtractSingleValuedDimension extracts one specified dimension from a
+// dimension slice.
+func ExtractSingleValuedDimension(ctx context.Context, dims map[string]*api.HardwareRequirements_LabelValues, key string) (string, error) {
+	vs, ok := dims[key]
+	if !ok {
+		return "", fmt.Errorf("ExtractSingleValuedDimension: failed to find dimension %s", key)
+	}
+	switch len(vs.GetValues()) {
+	case 1:
+		return vs.GetValues()[0], nil
+	case 0:
+		return "", fmt.Errorf("ExtractSingleValuedDimension: no value for dimension %s", key)
+	default:
+		return "", fmt.Errorf("ExtractSingleValuedDimension: multiple values for dimension %s", key)
 	}
 }

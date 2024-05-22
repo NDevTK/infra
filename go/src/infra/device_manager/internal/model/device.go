@@ -30,6 +30,14 @@ type Device struct {
 	IsActive        bool
 }
 
+// DeviceIDType indicates the type of ID used to identify a Device in DB.
+type DeviceIDType string
+
+const (
+	IDTypeHostname DeviceIDType = "hostname"
+	IDTypeDutID    DeviceIDType = "dut_id"
+)
+
 // PageToken is a string containing a page token to a database query.
 type PageToken string
 
@@ -67,14 +75,14 @@ func (s SchedulableLabels) Value() (driver.Value, error) {
 	return string(bytes), err
 }
 
-// GetDeviceByName gets a Device from the database by name.
-func GetDeviceByName(ctx context.Context, db *sql.DB, deviceName string) (Device, error) {
+// GetDeviceByID gets a Device from the database by a type of ID.
+func GetDeviceByID(ctx context.Context, db *sql.DB, idType DeviceIDType, deviceID string) (Device, error) {
 	var (
 		device          Device
 		createdTime     sql.NullTime
 		lastUpdatedTime sql.NullTime
 	)
-	err := db.QueryRowContext(ctx, `
+	query := `
 		SELECT
 			id,
 			device_address,
@@ -84,8 +92,26 @@ func GetDeviceByName(ctx context.Context, db *sql.DB, deviceName string) (Device
 			created_time,
 			last_updated_time,
 			is_active
-		FROM "Devices"
-		WHERE id=$1;`, deviceName).Scan(
+		FROM "Devices"`
+
+	switch idType {
+	case IDTypeDutID:
+		// Use DUT ID type also known as Asset Tag.
+		query += `
+			WHERE
+				jsonb_path_query_array(
+					schedulable_labels,
+					'$.dut_id.Values[0]'
+				) @> to_jsonb($1::text);`
+	case IDTypeHostname:
+		// Use hostname which is how they are stored in DB.
+		query += `
+			WHERE id=$1;`
+	default:
+		return Device{}, fmt.Errorf("GetDeviceByID: unsupported Device ID type: %s", idType)
+	}
+
+	err := db.QueryRowContext(ctx, query, deviceID).Scan(
 		&device.ID,
 		&device.DeviceAddress,
 		&device.DeviceType,
@@ -95,9 +121,10 @@ func GetDeviceByName(ctx context.Context, db *sql.DB, deviceName string) (Device
 		&lastUpdatedTime,
 		&device.IsActive,
 	)
+
 	// TODO (b/328662436): Collect metrics on results
 	if err != nil {
-		logging.Errorf(ctx, "GetDeviceByName: failed to get Device %s: %s", deviceName, err)
+		logging.Errorf(ctx, "GetDeviceByID: failed to get Device %s: %s", deviceID, err)
 		return device, err
 	}
 

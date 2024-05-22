@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"regexp"
 	"testing"
@@ -23,6 +24,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	schedulingAPI "go.chromium.org/chromiumos/config/go/test/scheduling"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/device_manager/internal/model"
 	"infra/libs/skylab/inventory/swarming"
@@ -32,8 +34,74 @@ func TestGetDevice(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("GetDevice", t, func() {
-		Convey("GetDevice: valid return", func() {
+	baseQuery := `
+		SELECT
+			id,
+			device_address,
+			device_type,
+			device_state,
+			schedulable_labels,
+			created_time,
+			last_updated_time,
+			is_active
+		FROM "Devices"`
+
+	timeNow := time.Now()
+	validCases := []struct {
+		name           string
+		idType         model.DeviceIDType
+		expectedDevice *api.Device
+		err            error
+	}{
+		{
+			name:   "GetDeviceByID: valid return; search by hostname",
+			idType: model.IDTypeHostname,
+			expectedDevice: &api.Device{
+				Id: "test-device-1",
+				Address: &api.DeviceAddress{
+					Host: "1.1.1.1",
+					Port: 1,
+				},
+				Type:  api.DeviceType_DEVICE_TYPE_PHYSICAL,
+				State: api.DeviceState_DEVICE_STATE_AVAILABLE,
+				HardwareReqs: &api.HardwareRequirements{
+					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+						"label-test": {
+							Values: []string{"test-value-1"},
+						},
+					},
+				},
+			},
+			err: nil,
+		},
+		{
+			name:   "GetDeviceByID: valid return; search by DUT ID",
+			idType: model.IDTypeDutID,
+			expectedDevice: &api.Device{
+				Id: "test-device-1",
+				Address: &api.DeviceAddress{
+					Host: "1.1.1.1",
+					Port: 1,
+				},
+				Type:  api.DeviceType_DEVICE_TYPE_PHYSICAL,
+				State: api.DeviceState_DEVICE_STATE_AVAILABLE,
+				HardwareReqs: &api.HardwareRequirements{
+					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+						"label-test": {
+							Values: []string{"test-value-1"},
+						},
+					},
+				},
+			},
+			err: nil,
+		},
+	}
+
+	for _, tt := range validCases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -46,7 +114,6 @@ func TestGetDevice(t *testing.T) {
 				}
 			}()
 
-			timeNow := time.Now()
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"device_address",
@@ -75,41 +142,61 @@ func TestGetDevice(t *testing.T) {
 					timeNow,
 					false)
 
-			mock.ExpectQuery(regexp.QuoteMeta(`
-				SELECT
-					id,
-					device_address,
-					device_type,
-					device_state,
-					schedulable_labels,
-					created_time,
-					last_updated_time,
-					is_active
-				FROM "Devices"
-				WHERE id=$1;`)).
+			query := baseQuery
+			switch tt.idType {
+			case model.IDTypeDutID:
+				query += `
+					WHERE
+						jsonb_path_query_array(
+							schedulable_labels,
+							'$.dut_id.Values[0]'
+						) @> to_jsonb($1::text);`
+			case model.IDTypeHostname:
+				query += `
+					WHERE id=$1;`
+			default:
+				t.Errorf("unexpected error: id type %s is not supported", tt.idType)
+			}
+
+			mock.ExpectQuery(regexp.QuoteMeta(query)).
 				WithArgs("test-device-1").
 				WillReturnRows(rows)
 
-			device, err := GetDevice(ctx, db, "test-device-1")
-			So(err, ShouldBeNil)
-			So(device, ShouldResembleProto, &api.Device{
-				Id: "test-device-1",
-				Address: &api.DeviceAddress{
-					Host: "1.1.1.1",
-					Port: 1,
-				},
-				Type:  api.DeviceType_DEVICE_TYPE_PHYSICAL,
-				State: api.DeviceState_DEVICE_STATE_AVAILABLE,
-				HardwareReqs: &api.HardwareRequirements{
-					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
-						"label-test": {
-							Values: []string{"test-value-1"},
-						},
-					},
-				},
-			})
+			device, err := GetDevice(ctx, db, tt.idType, "test-device-1")
+			if !errors.Is(err, tt.err) {
+				t.Errorf("unexpected error: %s", err)
+			}
+			if diff := typed.Got(device).Want(tt.expectedDevice).Diff(); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
+			}
 		})
-		Convey("GetDevice: invalid request; no device name match", func() {
+	}
+
+	failedCases := []struct {
+		name           string
+		idType         model.DeviceIDType
+		expectedDevice *api.Device
+		err            error
+	}{
+		{
+			name:           "invalid request; search by hostname, no device name match",
+			idType:         model.IDTypeHostname,
+			expectedDevice: &api.Device{},
+			err:            fmt.Errorf("GetDeviceByID: failed to get Device"),
+		},
+		{
+			name:           "invalid request; search by DUT ID, no device name match",
+			idType:         model.IDTypeDutID,
+			expectedDevice: &api.Device{},
+			err:            fmt.Errorf("GetDeviceByID: failed to get Device"),
+		},
+	}
+
+	for _, tt := range failedCases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -122,26 +209,35 @@ func TestGetDevice(t *testing.T) {
 				}
 			}()
 
-			mock.ExpectQuery(regexp.QuoteMeta(`
-				SELECT
-					id,
-					device_address,
-					device_type,
-					device_state,
-					schedulable_labels,
-					created_time,
-					last_updated_time,
-					is_active
-				FROM "Devices"
-				WHERE id=$1;`)).
-				WithArgs("test-device-2").
-				WillReturnError(fmt.Errorf("GetDevice: failed to get Device"))
+			query := baseQuery
+			switch tt.idType {
+			case model.IDTypeDutID:
+				query += `
+					WHERE
+						jsonb_path_query_array(
+							schedulable_labels,
+							'$.dut_id.Values[0]'
+						) @> to_jsonb($1::text);`
+			case model.IDTypeHostname:
+				query += `
+					WHERE id=$1;`
+			default:
+				t.Errorf("unexpected error: id type %s is not supported", tt.idType)
+			}
 
-			device, err := GetDevice(ctx, db, "test-device-2")
-			So(err, ShouldNotBeNil)
-			So(device, ShouldResembleProto, &api.Device{})
+			mock.ExpectQuery(regexp.QuoteMeta(query)).
+				WithArgs("test-device-2").
+				WillReturnError(fmt.Errorf("GetDeviceByID: failed to get Device"))
+
+			device, err := GetDevice(ctx, db, tt.idType, "test-device-2")
+			if err.Error() != tt.err.Error() {
+				t.Errorf("unexpected error: %s", err)
+			}
+			if diff := typed.Got(device).Want(tt.expectedDevice).Diff(); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
+			}
 		})
-	})
+	}
 }
 
 func TestListDevices(t *testing.T) {
@@ -825,6 +921,49 @@ func Test_deviceModelToAPIDevice(t *testing.T) {
 					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{},
 				},
 			})
+		})
+	})
+}
+
+func TestExtractSingleValuedDimension(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("ExtractSingleValuedDimension", t, func() {
+		Convey("pass: one dim", func() {
+			dims := map[string]*api.HardwareRequirements_LabelValues{
+				"dut_id": {
+					Values: []string{
+						"test-id",
+					},
+				},
+			}
+			res, err := ExtractSingleValuedDimension(ctx, dims, "dut_id")
+			So(err, ShouldBeNil)
+			So(res, ShouldEqual, "test-id")
+		})
+		Convey("fail: too many dims", func() {
+			dims := map[string]*api.HardwareRequirements_LabelValues{
+				"dut_id": {
+					Values: []string{
+						"id-1",
+						"id-2",
+					},
+				},
+			}
+			res, err := ExtractSingleValuedDimension(ctx, dims, "dut_id")
+			So(err, ShouldErrLike, "ExtractSingleValuedDimension: multiple values for dimension dut_id")
+			So(res, ShouldEqual, "")
+		})
+		Convey("fail: empty dim", func() {
+			dims := map[string]*api.HardwareRequirements_LabelValues{
+				"dut_id": {
+					Values: []string{},
+				},
+			}
+			res, err := ExtractSingleValuedDimension(ctx, dims, "dut_id")
+			So(err, ShouldErrLike, "ExtractSingleValuedDimension: no value for dimension dut_id")
+			So(res, ShouldEqual, "")
 		})
 	})
 }
