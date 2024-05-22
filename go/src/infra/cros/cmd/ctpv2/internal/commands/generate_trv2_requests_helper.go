@@ -157,6 +157,7 @@ func populateHelperNewProto(ctx context.Context, trHelper *TrV2ReqHelper) error 
 		companionTargets = append(companionTargets, target)
 	}
 
+	companionTargets = strictestTargetsFirst(companionTargets)
 	schedUnit := findSchedulingUnit(target, companionTargets, trHelper.suiteInfo)
 	if schedUnit == nil {
 		return fmt.Errorf("failed to find scheduling unit match")
@@ -168,11 +169,12 @@ func populateHelperNewProto(ctx context.Context, trHelper *TrV2ReqHelper) error 
 	for _, companion := range companionTargets {
 		// O(n^2), but like, max(n) is around 3-4, so its all good.
 		for _, companionTarget := range schedUnit.GetCompanionTargets() {
-			board, model, variant := targetToBoardModelVariant(companionTarget)
-			if companion.board == board && companion.model == model && companion.variant == variant {
-				companion.provisionInfo = companionTarget.GetSwarmingDef().GetProvisionInfo()
-				break
+			if !isTargetMatch(companion, companionTarget) {
+				continue
 			}
+
+			companion.provisionInfo = companionTarget.GetSwarmingDef().GetProvisionInfo()
+			break
 		}
 	}
 	trHelper.secondaryTargets = companionTargets
@@ -182,20 +184,24 @@ func populateHelperNewProto(ctx context.Context, trHelper *TrV2ReqHelper) error 
 
 func findSchedulingUnit(primary *HwTarget, companions []*HwTarget, suiteInfo *api.SuiteInfo) *api.SchedulingUnit {
 	for _, schedUnit := range suiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
-		// check primary
-		board, model, variant := targetToBoardModelVariant(schedUnit.PrimaryTarget)
-		if primary.board != board || primary.model != model || primary.variant != variant {
+		// check if primary candidate matches needs of the primary.
+		if !isTargetMatch(primary, schedUnit.PrimaryTarget) {
 			continue
 		}
-		// check secondary
+
+		// check if companion candidates within schedUnit
+		// match the companionsPool.
 		companionsPool := make([]*HwTarget, len(companions))
 		copy(companionsPool, companions)
-		for _, secondary := range strictestTargetsFirst(schedUnit.GetCompanionTargets()) {
-			matchIndex := findCompanionMatch(companionsPool, secondary)
+		for _, companionCandidate := range schedUnit.GetCompanionTargets() {
+			matchIndex := findCompanionMatch(companionsPool, companionCandidate)
 			if matchIndex == -1 {
 				continue
 			}
 			companionsPool = slices.Delete(companionsPool, matchIndex, matchIndex+1)
+		}
+		if len(companionsPool) > 0 {
+			continue
 		}
 
 		return schedUnit
@@ -203,22 +209,30 @@ func findSchedulingUnit(primary *HwTarget, companions []*HwTarget, suiteInfo *ap
 	return nil
 }
 
-func findCompanionMatch(companions []*HwTarget, target *api.Target) int {
+func findCompanionMatch(companions []*HwTarget, candidate *api.Target) int {
 	for i, companion := range companions {
-		board, model, variant := targetToBoardModelVariant(target)
-		if board != companion.board {
-			continue
-		}
-		if model != "" && model != companion.model {
-			continue
-		}
-		if variant != "" && variant != companion.variant {
+		if !isTargetMatch(companion, candidate) {
 			continue
 		}
 		return i
 	}
 
 	return -1
+}
+
+func isTargetMatch(hwTarget *HwTarget, apiTarget *api.Target) bool {
+	board, model, variant := targetToBoardModelVariant(apiTarget)
+	if hwTarget.board != board {
+		return false
+	}
+	if hwTarget.model != "" && model != "" && hwTarget.model != model {
+		return false
+	}
+	if hwTarget.variant != "" && variant != "" && hwTarget.variant != variant {
+		return false
+	}
+
+	return true
 }
 
 // strictestTargetsFirst orders the targets list by their board/model/variant
@@ -234,21 +248,20 @@ func findCompanionMatch(companions []*HwTarget, target *api.Target) int {
 //
 // This means that Board=0, Model=1, Variant=2.
 // Bucket sort seems appropriate.
-func strictestTargetsFirst(targets []*api.Target) []*api.Target {
-	strictnessBuckets := [][]*api.Target{
+func strictestTargetsFirst(targets []*HwTarget) []*HwTarget {
+	strictnessBuckets := [][]*HwTarget{
 		{}, {}, {}, {},
 	}
 	for _, target := range targets {
 		score := 0
-		_, model, variant := targetToBoardModelVariant(target)
-		if model != "" {
+		if target.model != "" {
 			score += 1
 		}
-		if variant != "" {
+		if target.variant != "" {
 			score += 2
 		}
 	}
-	res := []*api.Target{}
+	res := []*HwTarget{}
 	for _, bucket := range strictnessBuckets {
 		res = append(bucket, res...)
 	}
