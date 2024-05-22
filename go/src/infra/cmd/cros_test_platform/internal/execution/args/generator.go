@@ -938,7 +938,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 
 // ShouldRunViaTrv2 decides if the request should run via trv2 flow based on provided suite.
 func ShouldRunViaTrv2(ctx context.Context, suite string) bool {
-	suiteAllowList := []string{"crosier-cq-minimal", "tfc-demo"}
+	suiteAllowList := []string{"crosier-cq-minimal", "crosier-cq-vm", "tfc-demo"}
 
 	for _, allowedSuite := range suiteAllowList {
 		if suite == allowedSuite {
