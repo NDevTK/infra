@@ -2,7 +2,8 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Pulls the most recent NVIDIA RTX 4060 GPU drivers and uploads them to CIPD.
+"""Pulls the most recent NVIDIA RTX 4060 Ti GPU drivers and uploads them to
+CIPD.
 
 This is done by querying the endpoint that gets an ordered list of driver
 versions for a specified configuration. If the version is one that we do not
@@ -20,12 +21,12 @@ import requests
 
 # The GPU constants were determined by using NVIDIA's advanced driver search at
 # https://www.nvidia.com/Download/Find.aspx, entering the correct information
-# for the RTX 4060, and observing the network calls that are made when the
+# for the RTX 4060 Ti, and observing the network calls that are made when the
 # "Search" button is clicked. The other constants were determined by following
 # what https://github.com/lord-carlos/nvidia-update does, which is a third
 # party tool for checking/installing the newest NVIDIA driver.
 SERIES_ID = 127  # GeForce 40 series.
-PRODUCT_ID = 1023  # GeForce RTX 4060.
+PRODUCT_ID = 1022  # GeForce RTX 4060 Ti.
 OS_ID = 57  # Windows 10 64-bit.
 LANGUAGE_CODE = 1033  # en-US.
 IS_WHQL = 1  # Only look for WHQL-certified drivers.
