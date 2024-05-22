@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa42947d_7d745d9b",
+        "filename": "go/src/infra/cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2024-05-22T21:10:58Z",
+      "side": 1,
+      "message": "why are we checking here; and also in L195?",
+      "range": {
+        "startLine": 171,
+        "startChar": 9,
+        "endLine": 171,
+        "endChar": 24
+      },
+      "revId": "0d77e15b2ac034d8ae3a8c9b2374882b5328f91f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f043159_ebf5678c",
+        "filename": "go/src/infra/cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2024-05-22T21:10:58Z",
+      "side": 1,
+      "message": "lets test this",
+      "range": {
+        "startLine": 223,
+        "startChar": 5,
+        "endLine": 223,
+        "endChar": 18
+      },
+      "revId": "0d77e15b2ac034d8ae3a8c9b2374882b5328f91f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
