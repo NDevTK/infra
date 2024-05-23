@@ -185,6 +185,10 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	// we have implemented the final parts of the timed events pipeline.
 	timedEventCommands := []run.TimedEventCommand{}
 
+	// dddCommands stores the NEW_BUILD-3D-esque commands chosen to run according to
+	// the passed in CLI flags.
+	dddCommands := []run.DDDCommand{}
+
 	// Launch execution path for NEW_BUILD type configs
 	if c.newBuilds {
 		nbCommands = append(nbCommands, run.InitCrOSNewBuildCommand(&c.authFlags, c.isProd, c.dryRun, c.isTest, labConfigs, suiteSchedulerConfigs, projectID))
@@ -193,6 +197,10 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	// Launch execution path for all TIMED_EVENT configs
 	if c.timedEvents {
 		timedEventCommands = append(timedEventCommands, run.InitCrOSTimedEventCommand(&c.authFlags, c.isProd, c.dryRun, c.isTest, labConfigs, suiteSchedulerConfigs, projectID))
+	}
+
+	if c.newBuilds3d {
+		dddCommands = append(dddCommands, run.InitCrOSNewBuild3dCommand(&c.authFlags, c.isProd, c.dryRun, c.isTest, labConfigs, suiteSchedulerConfigs, projectID))
 	}
 
 	// Run all NEW_BUILD type command types requested. Each run is hermetic and
@@ -225,6 +233,22 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 		}
 		common.Stdout.Printf("**********************************************")
 		common.Stdout.Printf("Done launching %s", teCommand.Name())
+		common.Stdout.Printf("**********************************************")
+	}
+
+	// Run all 3D type command types requested. Each run is hermetic and
+	// will not affect the runs of the other commands
+	for _, dddCommand := range dddCommands {
+		common.Stdout.Printf("**********************************************")
+		common.Stdout.Printf("Launching %s", dddCommand.Name())
+		common.Stdout.Printf("**********************************************")
+		err = run.RunDDDCommand(dddCommand)
+		if err != nil {
+			common.Stderr.Printf("%s terminated with error: %s", dddCommand.Name(), err)
+			continue
+		}
+		common.Stdout.Printf("**********************************************")
+		common.Stdout.Printf("Done launching %s", dddCommand.Name())
 		common.Stdout.Printf("**********************************************")
 	}
 

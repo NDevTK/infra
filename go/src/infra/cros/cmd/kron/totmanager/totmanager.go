@@ -142,3 +142,19 @@ func BranchesToMilestones(branches []suschpb.Branch) ([]int, error) {
 
 	return milestones, nil
 }
+
+// IdentifyBranch returns the branch which the given milestone maps to based on the current ToT.
+func IdentifyBranch(milestone int) (suschpb.Branch, error) {
+	switch {
+	case isCanary(milestone):
+		return suschpb.Branch_CANARY, nil
+	case isDev(milestone):
+		return suschpb.Branch_DEV, nil
+	case isBeta(milestone):
+		return suschpb.Branch_BETA, nil
+	case isStable(milestone):
+		return suschpb.Branch_STABLE, nil
+	default:
+		return suschpb.Branch_BRANCH_UNSPECIFIED, fmt.Errorf("branch unspecified not supported")
+	}
+}

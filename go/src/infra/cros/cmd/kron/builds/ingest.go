@@ -129,16 +129,17 @@ func TransformReportToKronBuild(report *buildpb.BuildReport) (*kronpb.Build, err
 		return nil, err
 	}
 	return &kronpb.Build{
-		BuildUuid:   buildHash,
-		RunUuid:     metrics.GetRunID(),
-		CreateTime:  common.TimestamppbNowWithoutNanos(),
-		Bbid:        report.GetBuildbucketId(),
-		BuildTarget: report.Config.Target.Name,
-		Milestone:   milestone,
-		Version:     version,
-		ImagePath:   imagePath,
-		Board:       board,
-		Variant:     variant}, nil
+		BuildUuid:       buildHash,
+		RunUuid:         metrics.GetRunID(),
+		CreateTime:      common.TimestamppbNowWithoutNanos(),
+		Bbid:            report.GetBuildbucketId(),
+		BuildTarget:     report.Config.Target.Name,
+		Milestone:       milestone,
+		Version:         version,
+		ImagePath:       imagePath,
+		Board:           board,
+		Variant:         variant,
+		ReleaseOrchBbid: report.GetParent().GetBuildbucketId()}, nil
 }
 
 // validateReport checks that all necessary fields are not nil.
@@ -154,6 +155,9 @@ func validateReport(report *buildpb.BuildReport) error {
 
 	if report.Status == nil {
 		return fmt.Errorf("report for go/bbid/%d contains a nil status field", reportBBID)
+	}
+	if report.GetParent().GetBuildbucketId() == 0 {
+		return fmt.Errorf("report for go/bbid/%d does not contains parent bbid", reportBBID)
 	}
 	return nil
 }

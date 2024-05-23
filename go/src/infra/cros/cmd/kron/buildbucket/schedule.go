@@ -8,12 +8,14 @@ package buildbucket
 
 import (
 	"context"
+	"fmt"
 
 	"go.chromium.org/luci/auth/client/authcli"
 	bb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/cmd/kron/common"
 )
 
 // buildBucketHost is the URL host for the BuildBucket API.
@@ -35,6 +37,7 @@ var (
 // Scheduler interface type describes the BB API functionality connection.
 type Scheduler interface {
 	Schedule(request *bb.ScheduleBuildRequest) (*bb.Build, error)
+	GetBuildStatus(buildID int64) (*bb.Build, error)
 }
 
 // client implements the Scheduler interface.
@@ -45,23 +48,30 @@ type client struct {
 	dryRun            bool
 }
 
+// NewBBClient returns a bb client
+func NewBBClient(ctx context.Context, authOpts *authcli.Flags) (bb.BuildsClient, error) {
+	httpClient, err := cmdlib.NewHTTPClient(context.Background(), authOpts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create BuildBucket client: %w", err)
+	}
+	pClient := &prpc.Client{
+		C:    httpClient,
+		Host: buildBucketHost,
+	}
+	return bb.NewBuildsClient(pClient), nil
+}
+
 // InitScheduler returns an operable Scheduler interface.
 func InitScheduler(ctx context.Context, authOpts *authcli.Flags, isProd, dryRun bool) (Scheduler, error) {
 	// Build the underlying HTTP client with the proper Auth Scoping.
-	httpClient, err := cmdlib.NewHTTPClient(ctx, authOpts)
+	bbclient, err := NewBBClient(ctx, authOpts)
 	if err != nil {
 		return nil, err
 	}
 
-	// Form the custom prpc client that LUCI requires.
-	prpcClient := &prpc.Client{
-		C:    httpClient,
-		Host: buildBucketHost,
-	}
-
 	return &client{
 		ctx:               ctx,
-		buildBucketClient: bb.NewBuildsClient(prpcClient),
+		buildBucketClient: bbclient,
 		isProd:            isProd,
 		dryRun:            dryRun,
 	}, nil
@@ -75,5 +85,19 @@ func (c *client) Schedule(request *bb.ScheduleBuildRequest) (*bb.Build, error) {
 		return nil, err
 	}
 
+	return build, nil
+}
+
+// GetBuildStatus returns the status of a build.
+func (c *client) GetBuildStatus(buildID int64) (*bb.Build, error) {
+	ctx := context.Background()
+	statusReq := &bb.GetBuildStatusRequest{
+		Id: buildID,
+	}
+	build, err := c.buildBucketClient.GetBuildStatus(ctx, statusReq)
+	if err != nil {
+		common.Stdout.Printf("Failed to fetch build status for build id :%d", buildID)
+		return nil, err
+	}
 	return build, nil
 }
