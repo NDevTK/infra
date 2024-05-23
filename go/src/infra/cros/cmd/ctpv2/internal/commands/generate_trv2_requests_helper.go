@@ -494,7 +494,7 @@ func createFreeformDims(trv2ReqHelper *TrV2ReqHelper) []string {
 }
 
 func formatLabel(label string) string {
-	if strings.HasPrefix(label, "label") || strings.HasPrefix(label, "dut_name") {
+	if strings.HasPrefix(label, "label") || strings.HasPrefix(label, "dut_name") || strings.HasPrefix(label, "drone") {
 		return label
 	} else {
 		return fmt.Sprintf("label-%s", label)
