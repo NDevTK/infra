@@ -62,12 +62,13 @@ type TrV2ReqHelper struct {
 	dynamicRun bool
 
 	// Top Level Variables
-	schedUnit  *testapi.SchedulingUnit
-	trReqHWDef *testapi.SwarmingDefinition // TODO (oldProto-azrahman): remove when new proto fully rolls in
-	testCases  []*testapi.CTPTestCase
-	suiteInfo  *testapi.SuiteInfo
-	shardNum   int
-	build      *build.State
+	schedUnit            *testapi.SchedulingUnit
+	trReqHWDef           *testapi.SwarmingDefinition // TODO (oldProto-azrahman): remove when new proto fully rolls in
+	testCases            []*testapi.CTPTestCase
+	suiteInfo            *testapi.SuiteInfo
+	shardNum             int
+	build                *build.State
+	schedUnitMetadataMap map[string][]*testapi.SchedulingUnit
 
 	// Other fields often used several times throughout.
 	suiteName        string
@@ -92,6 +93,15 @@ type HwTarget struct {
 	provisionInfo   []*testapi.ProvisionInfo
 	gcsArtifactPath string // if cros type
 	apiTarget       *api.Target
+}
+
+// FakeHwTarget is for testing since fields are private.
+func FakeHwTarget(board, model, variant string) *HwTarget {
+	return &HwTarget{
+		board:   board,
+		model:   model,
+		variant: variant,
+	}
 }
 
 // GenerateTrv2Req generates ScheduleBuildRequest.
@@ -157,68 +167,98 @@ func populateHelperNewProto(ctx context.Context, trHelper *TrV2ReqHelper) error 
 		companionTargets = append(companionTargets, target)
 	}
 
-	schedUnit := findSchedulingUnit(target, companionTargets, trHelper.suiteInfo)
+	companionTargets = strictestTargetsFirst(companionTargets)
+	schedUnit := FindSchedulingUnit(target, companionTargets, trHelper.schedUnitMetadataMap)
 	if schedUnit == nil {
 		return fmt.Errorf("failed to find scheduling unit match")
 	}
 	trHelper.lookupTable = schedUnit.GetDynamicUpdateLookupTable()
-	target.provisionInfo = schedUnit.GetPrimaryTarget().GetSwarmingDef().GetProvisionInfo()
 	trHelper.primaryTarget = target
-	// Assign provision information to each companion
-	for _, companion := range companionTargets {
-		// O(n^2), but like, max(n) is around 3-4, so its all good.
-		for _, companionTarget := range schedUnit.GetCompanionTargets() {
-			board, model, variant := targetToBoardModelVariant(companionTarget)
-			if companion.board == board && companion.model == model && companion.variant == variant {
-				companion.provisionInfo = companionTarget.GetSwarmingDef().GetProvisionInfo()
-				break
-			}
-		}
-	}
 	trHelper.secondaryTargets = companionTargets
 
 	return nil
 }
 
-func findSchedulingUnit(primary *HwTarget, companions []*HwTarget, suiteInfo *api.SuiteInfo) *api.SchedulingUnit {
-	for _, schedUnit := range suiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
-		// check primary
-		board, model, variant := targetToBoardModelVariant(schedUnit.PrimaryTarget)
-		if primary.board != board || primary.model != model || primary.variant != variant {
-			continue
+// FindSchedulingUnit matches scheduling targets by board-variant, then attempts to find by
+// model. If the requested target has a model then try to match on model, fall back to match on
+// no model. If no request model, choose first match.
+func FindSchedulingUnit(primary *HwTarget, companions []*HwTarget, schedUnitMetadataMap map[string][]*testapi.SchedulingUnit) *api.SchedulingUnit {
+	primaryKey := primary.board + "-" + primary.variant
+	schedulingUnitCandidates, ok := schedUnitMetadataMap[primaryKey]
+	if !ok {
+		return nil
+	}
+	var matchedSchedUnit *api.SchedulingUnit
+	for _, schedulingUnitCandidate := range schedulingUnitCandidates {
+		_, model, _ := targetToBoardModelVariant(schedulingUnitCandidate.GetPrimaryTarget())
+		// If not requested model, models must match.
+		if primary.model != "" && primary.model != model {
+			// However, if candidate has no model, allow through
+			// if we haven't found any match.
+			if model != "" || matchedSchedUnit != nil {
+				continue
+			}
 		}
-		// check secondary
-		companionsPool := make([]*HwTarget, len(companions))
-		copy(companionsPool, companions)
-		for _, secondary := range strictestTargetsFirst(schedUnit.GetCompanionTargets()) {
-			matchIndex := findCompanionMatch(companionsPool, secondary)
+		primary.provisionInfo = schedulingUnitCandidate.GetPrimaryTarget().GetSwarmingDef().GetProvisionInfo()
+
+		// Check if companions all have a match.
+		companionsPool := []*HwTarget{}
+		companionsPool = append(companionsPool, companions...)
+		for _, companionCandidate := range schedulingUnitCandidate.GetCompanionTargets() {
+			matchIndex := findCompanionMatch(companionsPool, companionCandidate)
 			if matchIndex == -1 {
 				continue
 			}
+			companionsPool[matchIndex].provisionInfo = companionCandidate.GetSwarmingDef().GetProvisionInfo()
 			companionsPool = slices.Delete(companionsPool, matchIndex, matchIndex+1)
 		}
-
-		return schedUnit
+		// Continue if not all companions found a match.
+		if len(companionsPool) > 0 {
+			continue
+		}
+		matchedSchedUnit = schedulingUnitCandidate
 	}
-	return nil
+	return matchedSchedUnit
 }
 
-func findCompanionMatch(companions []*HwTarget, target *api.Target) int {
-	for i, companion := range companions {
-		board, model, variant := targetToBoardModelVariant(target)
-		if board != companion.board {
-			continue
+// buildSchedUnitMap converts the metadata scheduling units into
+// a map keyed by board-variant.
+func buildSchedUnitMap(suiteInfo *api.SuiteInfo) map[string][]*api.SchedulingUnit {
+	schedMap := map[string][]*api.SchedulingUnit{}
+
+	for _, schedUnit := range suiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
+		board, _, variant := targetToBoardModelVariant(schedUnit.PrimaryTarget)
+		key := board + "-" + variant
+		if _, ok := schedMap[key]; !ok {
+			schedMap[key] = []*api.SchedulingUnit{}
 		}
-		if model != "" && model != companion.model {
-			continue
-		}
-		if variant != "" && variant != companion.variant {
-			continue
-		}
-		return i
+		schedMap[key] = append(schedMap[key], schedUnit)
 	}
 
-	return -1
+	return schedMap
+}
+
+// findCompanionMatch matches companions to the candidate based
+// on board-variant, and same model matching as primary.
+func findCompanionMatch(companions []*HwTarget, candidate *api.Target) int {
+	board, model, variant := targetToBoardModelVariant(candidate)
+	matchedIndex := -1
+	for i, companion := range companions {
+		// Must match on board and variant.
+		if companion.board != board && companion.variant != variant {
+			continue
+		}
+		// If companion request has model, must match model.
+		if companion.model != "" && companion.model != model {
+			// Fallback onto empty model if no match has been found yet.
+			if model != "" || matchedIndex != -1 {
+				continue
+			}
+		}
+		matchedIndex = i
+	}
+
+	return matchedIndex
 }
 
 // strictestTargetsFirst orders the targets list by their board/model/variant
@@ -227,28 +267,22 @@ func findCompanionMatch(companions []*HwTarget, target *api.Target) int {
 //
 // Scores:
 //
-//	Board only -> 0
-//	Board/Model -> 1
-//	Board/Variant -> 2
-//	Board/Model/Variant -> 3
+//	No model -> 0
+//	Model -> 1
 //
-// This means that Board=0, Model=1, Variant=2.
 // Bucket sort seems appropriate.
-func strictestTargetsFirst(targets []*api.Target) []*api.Target {
-	strictnessBuckets := [][]*api.Target{
-		{}, {}, {}, {},
+func strictestTargetsFirst(targets []*HwTarget) []*HwTarget {
+	strictnessBuckets := [][]*HwTarget{
+		{}, {},
 	}
 	for _, target := range targets {
 		score := 0
-		_, model, variant := targetToBoardModelVariant(target)
-		if model != "" {
+		if target.model != "" {
 			score += 1
 		}
-		if variant != "" {
-			score += 2
-		}
+		strictnessBuckets[score] = append(strictnessBuckets[score], target)
 	}
-	res := []*api.Target{}
+	res := []*HwTarget{}
 	for _, bucket := range strictnessBuckets {
 		res = append(bucket, res...)
 	}
