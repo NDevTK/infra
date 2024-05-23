@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 
@@ -211,6 +212,22 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 
 	p.SmartUsbhub = &(d.SmartUsbhub)
 	c.StarfishSlotMapping = &(d.StarfishSlotMapping)
+
+	if h := d.GetPasitHost(); h != nil {
+		count := make(map[labapi.PasitHost_Device_Type]int)
+		p.PasitComponents = []string{}
+		for _, dev := range h.GetDevices() {
+			dType := dev.GetType()
+			// Ignore switches and DUTs since they are never used for scheduling.
+			if dType == labapi.PasitHost_Device_UNKNOWN ||
+				dType == labapi.PasitHost_Device_SWITCH_FIXTURE ||
+				dType == labapi.PasitHost_Device_DUT {
+				continue
+			}
+			count[dType]++
+			p.PasitComponents = append(p.PasitComponents, fmt.Sprintf("%v-%d", dType, count[dType]))
+		}
+	}
 }
 
 func setServoTopology(p *inventory.Peripherals, st *chromeosLab.ServoTopology) {
