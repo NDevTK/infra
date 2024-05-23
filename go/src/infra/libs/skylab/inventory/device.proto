@@ -438,7 +438,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 47
+// NEXT TAG: 48
 message Peripherals {
   reserved 32;
 
@@ -632,6 +632,10 @@ message Peripherals {
   // The state of Audio Latency Toolkit
   // See UFS peripherals.proto or go/teensy-in-audiobox-proposal for more context.
   optional PeripheralState audio_latency_toolkit_state = 43;
+
+  // The components supported by the PASIT testbed. This is a list of all of the
+  // components in the testbed and their count e.g. "DOCK-1, MONITOR-1, MONITOR-2..."
+  repeated string pasit_components = 47;
 }
 
 // Servo Firmware Channel describes the firmware expected to have on servos.
