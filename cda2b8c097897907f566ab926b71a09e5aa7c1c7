@@ -1,0 +1,191 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a332c170_41441da7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-23T22:39:00Z",
+      "side": 1,
+      "message": "LGTM % comments",
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "406d6961_826d9f30",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-23T22:39:00Z",
+      "side": 1,
+      "message": "envFlags has name space. please check it and flag if namespace specified something different than os.\n\nor use like \n```\nctx :\u003d cli.GetContext(a, c, env)\nns, err :\u003d c.getNamespace()\nif err !\u003d nil {\n\treturn err\n}\n```",
+      "fixSuggestions": [
+        {
+          "fixId": "3f20b81b_857bcbbd",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 93,
+                "startChar": 0,
+                "endLine": 94,
+                "endChar": 0
+              },
+              "replacement": "\tctx \u003d utils.SetupContext(ctx, c.envFlags.GetNamespace())\n"
+            }
+          ]
+        }
+      ],
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "297cc3d8_ef011093",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-23T22:39:00Z",
+      "side": 1,
+      "message": "nits: maybe rewrite to avoid duplicates?\n\n```\n// hostObj can be defined only test so, no validation needed for that.\nif c.hostObj \u003d\u003d nil {\n\tif c.hostFile \u003d\u003d \"\" {\n\t        return errors.Reason(errFileMissing).Err()\n\t}\n\n\tc.hostObj \u003d \u0026labapi.PasitHost{}\n\tif err :\u003d utils.ParseJSONFile(c.hostFile, c.hostObj); err !\u003d nil {\n\t\treturn errors.Annotate(err, \"json parse error\").Err()\n\t}\n}\nreturn c.validateNewHost()\n```",
+      "range": {
+        "startLine": 144,
+        "startChar": 1,
+        "endLine": 158,
+        "endChar": 27
+      },
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a6226f3_183fd49c",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-23T22:39:00Z",
+      "side": 1,
+      "message": "i think we need cover cases where data is incorrect.\n\n1) if strings.EqualFold(h.GetId(), c.dutName) \u0026\u0026 h.Type !\u003d labapi.PasitHost_Device_DUT\n2) if !strings.EqualFold(h.GetId(), c.dutName) \u0026\u0026 h.Type \u003d\u003d labapi.PasitHost_Device_DUT\n\n[p2] also probably model for this type should be empty?",
+      "range": {
+        "startLine": 188,
+        "startChar": 2,
+        "endLine": 190,
+        "endChar": 3
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "985fd46e_b08157f4",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 33,
+                "startChar": 0,
+                "endLine": 34,
+                "endChar": 0
+              },
+              "replacement": "\terrDUTNotInHost         \u003d \"dut is not included in host topology or is not of type DUT\"\n"
+            },
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 188,
+                "startChar": 0,
+                "endLine": 189,
+                "endChar": 0
+              },
+              "replacement": "\t\tif strings.EqualFold(h.GetId(), c.dutName) \u0026\u0026 h.Type \u003d\u003d labapi.PasitHost_Device_DUT {\n"
+            }
+          ]
+        }
+      ],
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "12240304_c6378e92",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-23T22:39:00Z",
+      "side": 1,
+      "message": "nits: do we want to make all of them in upper/lower cases to cover duplicates?\n\nmaybe add option to modify all ids after parse the file?",
+      "range": {
+        "startLine": 199,
+        "startChar": 8,
+        "endLine": 199,
+        "endChar": 17
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "6b9527aa_67b1c961",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 11,
+                "startChar": 0,
+                "endLine": 11,
+                "endChar": 0
+              },
+              "replacement": "\t\"github.com/golang/protobuf/proto\"\n"
+            },
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 157,
+                "startChar": 0,
+                "endLine": 157,
+                "endChar": 0
+              },
+              "replacement": "\tc.hostObj \u003d proto.Clone(c.hostObj).(*labapi.PasitHost)\n\tc.normalizeIDs()\n"
+            },
+            {
+              "path": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+              "range": {
+                "startLine": 239,
+                "startChar": 0,
+                "endLine": 239,
+                "endChar": 0
+              },
+              "replacement": "\n// normalizeIDs ensures that all IDs are in lower case.\nfunc (c *managePasitHostCmd) normalizeIDs() {\n\tfor _, d :\u003d range c.hostObj.GetDevices() {\n\t\td.Id \u003d strings.ToLower(d.GetId())\n\t}\n\tfor _, c :\u003d range c.hostObj.GetConnections() {\n\t\tc.ParentId \u003d strings.ToLower(c.GetParentId())\n\t\tc.ChildId \u003d strings.ToLower(c.GetChildId())\n\t}\n}\n"
+            }
+          ]
+        }
+      ],
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
