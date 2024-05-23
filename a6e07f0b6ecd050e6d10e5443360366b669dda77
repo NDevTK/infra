@@ -25,6 +25,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a65b718c_3d878b2d",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-23T21:06:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4f684685_63e79418",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 0
+      },
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "411ca566_fd6ca3fb",
@@ -49,6 +73,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "685aae04_abb6cf1f",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-23T21:06:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "411ca566_fd6ca3fb",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 0
+      },
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ec810206_4ab0d5d9",
@@ -62,6 +110,24 @@
       "writtenOn": "2024-05-17T23:19:00Z",
       "side": 1,
       "message": "is option with file only one option? if so why do we need separate tool vs just add option of json in add/update/delete of DUT?",
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "554983af_194517c5",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-23T21:06:03Z",
+      "side": 1,
+      "message": "We will likely need to add options later to make configuration easier for the lab team. Planning on some \"default\" configurations that just take a couple of IDs rather than needing to provide the entire .json.",
+      "parentUuid": "ec810206_4ab0d5d9",
       "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -107,6 +173,24 @@
           ]
         }
       ],
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b803e238_14b4f9d3",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-23T21:06:03Z",
+      "side": 1,
+      "message": "Added check for \u003c 2 devices and \u003c 1 connection since those would be invalid.",
+      "parentUuid": "34e7ff6c_e7441c15",
       "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -202,6 +286,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4afffbd9_f3c88ad8",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-23T21:06:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5e5637d0_04272fbf",
+      "range": {
+        "startLine": 206,
+        "startChar": 29,
+        "endLine": 206,
+        "endChar": 43
+      },
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8ae61773_2137833b",
@@ -239,6 +347,30 @@
           ]
         }
       ],
+      "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "45d7e70e_763b407e",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-23T21:06:03Z",
+      "side": 1,
+      "message": "No longer needed. Made dynamic and moved into `exporting_adapter`",
+      "parentUuid": "8ae61773_2137833b",
+      "range": {
+        "startLine": 220,
+        "startChar": 0,
+        "endLine": 239,
+        "endChar": 1
+      },
       "revId": "a6e07f0b6ecd050e6d10e5443360366b669dda77",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
