@@ -111,7 +111,7 @@ message DutState {
   string gpu_id = 28;
 }
 
-// Next Tag: 28
+// Next Tag: 35
 enum PeripheralState {
   // Please keep for all unknown states.
   UNKNOWN = 0;
@@ -176,7 +176,27 @@ enum PeripheralState {
   // The servo device connected to debug header is not detected.
   // Reported by dut_controller_missing_fault control.
   DEBUG_HEADER_SERVO_MISSING = 27;
+
+  // Dolos related states.
+  // See platform/dolos/tools/doloscmd/proto/doloscmd.proto for the
+  // definative list.
+
+  // No power from charger detected.
+  DOLOS_NO_POWER_SUPPLIED = 28;
+  // No power is being delivered to the DUT.
+  DOLOS_OUTPUT_POWER_FAILED = 29;
+  // Internal battery management state fail.
+  DOLOS_BMS_STATE_INVALID = 30;
+  // SMBus failure.
+  DOLOS_SMBUS_COMM_NOT_DETECTED = 31;
+  // Unable to communicate with the eeprom on the battery cable.
+  DOLOS_EEPROM_FAILURE = 32;
+  // UART device is present but unable to communicate with it.
+  DOLOS_NO_COMMUNICATION = 33;
+  // UART device is missing from the host.
+  DOLOS_NOT_PRESENT = 34;
 }
+
 
 // The states are using for DUT storage and USB-drive on servo.
 // Next Tag: 5
