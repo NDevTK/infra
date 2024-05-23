@@ -181,8 +181,8 @@ func combineRequests(r1, r2 *testapi.CTPRequest) {
 // filters.
 func canBeGrouped(r1, r2 *testapi.CTPRequest) bool {
 	if !proto.Equal(
-		copyOnlyGroupableSuiteFields(r1.GetSuiteRequest()),
-		copyOnlyGroupableSuiteFields(r2.GetSuiteRequest())) {
+		removeNonGroupableSuiteFields(r1.GetSuiteRequest()),
+		removeNonGroupableSuiteFields(r2.GetSuiteRequest())) {
 		return false
 	}
 
@@ -201,18 +201,16 @@ func canBeGrouped(r1, r2 *testapi.CTPRequest) bool {
 	return true
 }
 
-// copyOnlyGroupableSuiteFields creates a temp SuiteRequest that contains items that should match
+// removeNonGroupableSuiteFields creates a temp SuiteRequest that contains items that should match
 // exactly between two grouped together SuiteRequests. The other fields should be combined/reduced
 // in some way after being grouped.
-func copyOnlyGroupableSuiteFields(suite *testapi.SuiteRequest) *testapi.SuiteRequest {
-	return &testapi.SuiteRequest{
-		SuiteRequest:  suite.GetSuiteRequest(),
-		TestArgs:      suite.GetTestArgs(),
-		AnalyticsName: suite.GetAnalyticsName(),
-		MaxInShard:    suite.GetMaxInShard(),
-		RetryCount:    suite.GetRetryCount(),
-		DddSuite:      suite.GetDddSuite(),
-	}
+func removeNonGroupableSuiteFields(suite *testapi.SuiteRequest) *testapi.SuiteRequest {
+	groupable := proto.Clone(suite).(*testapi.SuiteRequest)
+
+	// Remove non-groupable fields.
+	groupable.MaximumDuration = nil
+
+	return groupable
 }
 
 // buildCTPRequest converts a v1 ctp request into a v2 CTPRequest.
