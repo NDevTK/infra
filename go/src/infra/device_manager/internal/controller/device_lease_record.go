@@ -203,9 +203,10 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 
 	// Update device and device lease state to available after release
 	updatedDevice := model.Device{
-		ID:          record.DeviceID,
-		DeviceState: "DEVICE_STATE_AVAILABLE",
-		IsActive:    true,
+		ID:              record.DeviceID,
+		DeviceState:     "DEVICE_STATE_AVAILABLE",
+		IsActive:        true,
+		LastUpdatedTime: timeNow,
 	}
 
 	// Try to pull dimensions from Device. Mark as inactive if not found.
