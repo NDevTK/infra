@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
@@ -61,7 +62,7 @@ func (d *DeviceManagerClient) Extend(ctx context.Context, leaseID string, dur ti
 	req := &api.ExtendLeaseRequest{
 		LeaseId:        leaseID,
 		ExtendDuration: durationpb.New(dur),
-		IdempotencyKey: "1",
+		IdempotencyKey: uuid.New().String(),
 	}
 	res, err := d.client.ExtendLease(ctx, req)
 	if err != nil {
