@@ -44,6 +44,9 @@ type GenerateTrv2RequestsCmd struct {
 	BQClient          *bigquery.Client
 	StartCmdTime      time.Time
 	StartTrReqGenTime time.Time
+
+	// Helper structures
+	schedulingUnitsMetadataMap map[string][]*api.SchedulingUnit
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -109,6 +112,9 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 	cmd.DynamicRun = sk.CtpReq.RunDynamic
 	cmd.MiddledOutResp = sk.MiddledOutResp
 	cmd.BuildState = sk.BuildState
+
+	// Convert scheduling units into map for better searching.
+	cmd.schedulingUnitsMetadataMap = buildSchedUnitMap(cmd.InternalTestPlan.GetSuiteInfo())
 
 	return nil
 }
@@ -240,13 +246,14 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 	}
 
 	helper := &TrV2ReqHelper{
-		schedUnit:  schedUnit,
-		trReqHWDef: TrReqhwDef,
-		testCases:  testCases,
-		build:      cmd.BuildState,
-		suiteInfo:  cmd.InternalTestPlan.SuiteInfo,
-		shardNum:   shardNum,
-		dynamicRun: cmd.DynamicRun,
+		schedUnit:            schedUnit,
+		trReqHWDef:           TrReqhwDef,
+		testCases:            testCases,
+		build:                cmd.BuildState,
+		suiteInfo:            cmd.InternalTestPlan.SuiteInfo,
+		shardNum:             shardNum,
+		dynamicRun:           cmd.DynamicRun,
+		schedUnitMetadataMap: cmd.schedulingUnitsMetadataMap,
 	}
 
 	req, err := GenerateTrv2Req(ctx, true, helper)
