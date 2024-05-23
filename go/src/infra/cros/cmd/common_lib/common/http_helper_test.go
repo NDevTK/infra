@@ -57,7 +57,7 @@ func TestSendRequestWithRetries(t *testing.T) {
 		tt := tt
 		t.Run(fmt.Sprintf("%v", tt.client), func(t *testing.T) {
 			t.Parallel()
-			gotResp, err := sendHTTPRequestWithRetries(tt.client, nil)
+			gotResp, err := sendHTTPRequestWithRetries(tt.client, nil, false)
 			if err != nil {
 				t.Errorf("unexpected error %v", err)
 			}

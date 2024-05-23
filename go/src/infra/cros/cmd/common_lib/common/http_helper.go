@@ -5,17 +5,19 @@
 package common
 
 import (
+	"math"
 	"net/http"
+	"time"
 )
 
 type clientThatSendsRequests interface {
 	Do(*http.Request) (resp *http.Response, err error)
 }
 
-// sendHTTPRequestWithRetries sends the given request with the given HTTP client,
-// retrying if any HTTP errors are returned. Retry count is controlled by
-// maxHTTPRetries.
-func sendHTTPRequestWithRetries(c clientThatSendsRequests, req *http.Request) (*http.Response, error) {
+// sendHTTPRequestWithRetries sends the given request with the given HTTP
+// client, retrying if any HTTP errors are returned with optional backoff. Retry
+// count is controlled by maxHTTPRetries.
+func sendHTTPRequestWithRetries(c clientThatSendsRequests, req *http.Request, backoff bool) (*http.Response, error) {
 	var (
 		retries int
 		resp    *http.Response
@@ -28,6 +30,9 @@ func sendHTTPRequestWithRetries(c clientThatSendsRequests, req *http.Request) (*
 			break
 		}
 		retries += 1
+		if backoff {
+			time.Sleep(time.Duration(math.Pow(2, float64(retries))) * time.Second)
+		}
 	}
 	if err != nil {
 		return nil, err

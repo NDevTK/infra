@@ -238,7 +238,7 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) 
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	r, err := sendHTTPRequestWithRetries(s.schedukeHTTPClient, req)
+	r, err := sendHTTPRequestWithRetries(s.schedukeHTTPClient, req, true)
 	if err != nil {
 		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
@@ -394,7 +394,11 @@ func (s *SchedukeClient) AnyStringInGerritList(list []string, listURL string) (b
 
 // fetchFileFromURL retrieves text from the given URL, using LUCI auth.
 func (s *SchedukeClient) fetchFileFromURL(url string) ([]byte, error) {
-	resp, err := s.gerritClient.Get(url)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return []byte{}, fmt.Errorf("error constructing GET request to %s: %w", url, err)
+	}
+	resp, err := sendHTTPRequestWithRetries(s.gerritClient, req, true)
 	if err != nil {
 		return []byte{}, fmt.Errorf("error fetching file from %s: %w", url, err)
 	}
