@@ -1,0 +1,68 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f0a736e_e3ff4e1c",
+        "filename": "go/src/infra/cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2024-05-23T20:13:39Z",
+      "side": 1,
+      "message": "// If no scheduling unit is found in the map which matched the board, exit immediately",
+      "range": {
+        "startLine": 187,
+        "startChar": 0,
+        "endLine": 190,
+        "endChar": 2
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "15face46_1637595f",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "go/src/infra/cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go",
+              "range": {
+                "startLine": 188,
+                "startChar": 0,
+                "endLine": 188,
+                "endChar": 0
+              },
+              "replacement": "\t// If no scheduling unit found for primary target, return nil.\n"
+            }
+          ]
+        }
+      ],
+      "revId": "36ca2741b7bf7d1efbda7cccfc5c452e19a4aa01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "045f12ad_7bca3ccd",
+        "filename": "go/src/infra/cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2024-05-23T20:13:39Z",
+      "side": 1,
+      "message": "lets just put a comment example (based on our VC disc)",
+      "range": {
+        "startLine": 194,
+        "startChar": 0,
+        "endLine": 197,
+        "endChar": 36
+      },
+      "revId": "36ca2741b7bf7d1efbda7cccfc5c452e19a4aa01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
