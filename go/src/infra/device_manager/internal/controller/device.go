@@ -62,7 +62,6 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, psClient *pubsub.Client, devi
 		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s: %s", device.ID, err)
 		return err
 	}
-	logging.Debugf(ctx, "UpdateDevice: updated Device %s successfully", device.ID)
 	return PublishDeviceEvent(ctx, psClient, device)
 }
 
@@ -99,6 +98,7 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device mod
 	if err != nil {
 		logging.Debugf(ctx, "PublishDeviceEvent: failed to publish to PubSub %s", err)
 	}
+	logging.Debugf(ctx, "PublishDeviceEvent: successfully published DeviceEvent %v", msg)
 	return nil
 }
 
