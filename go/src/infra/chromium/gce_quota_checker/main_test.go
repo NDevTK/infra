@@ -92,9 +92,15 @@ func initMaps(possibleRegions []string, possibleNetworks []string, possibleFamil
 	quotasPerRegion := make(map[string]*regionQuotas)
 	quotasPerNetwork := make(map[string]*quotaVals)
 	for _, region := range possibleRegions {
-		quotasPerRegion[region] = &regionQuotas{localSSDPerFamilyQuota: make(map[string]*quotaVals)}
+		quotasPerRegion[region] = &regionQuotas{
+			localSSDPerFamilyQuota: make(map[string]*quotaVals),
+			cpusPerFamilyQuota:     make(map[string]*quotaVals),
+		}
 		for _, family := range possibleFamilies {
 			quotasPerRegion[region].localSSDPerFamilyQuota[family] = &quotaVals{}
+			if family != "n1" && family != "e2" {
+				quotasPerRegion[region].cpusPerFamilyQuota[family] = &quotaVals{}
+			}
 		}
 	}
 	for _, network := range possibleNetworks {
@@ -209,10 +215,11 @@ func TestParseCfgFiles(t *testing.T) {
 
 		parseCfgFiles("project", configPaths, possibleRegions, quotasPerRegion, quotasPerNetwork)
 
-		So(quotasPerRegion[region1].cpusQuota.used, ShouldEqual, 301)
-		So(quotasPerRegion[region1].n2CpusQuota.used, ShouldEqual, 40)
+		So(quotasPerRegion[region1].cpusQuota.used, ShouldEqual, 298)
+		So(quotasPerRegion[region1].cpusPerFamilyQuota["n2"].used, ShouldEqual, 40)
+		So(quotasPerRegion[region1].cpusPerFamilyQuota["g1"].used, ShouldEqual, 3)
 		So(quotasPerRegion[region2].cpusQuota.used, ShouldEqual, 1600)
-		So(quotasPerRegion[region2].n2CpusQuota.used, ShouldEqual, 800)
+		So(quotasPerRegion[region2].cpusPerFamilyQuota["n2"].used, ShouldEqual, 800)
 	})
 
 	Convey("test disks", t, func() {

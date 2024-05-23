@@ -68,9 +68,11 @@ type regionQuotas struct {
 	instancesQuota quotaVals
 	ipsQuota       quotaVals
 
-	// CPUs
-	cpusQuota   quotaVals
-	n2CpusQuota quotaVals
+	// Some families' CPUs share the same quota, while others have their
+	// own. Use cpusQuota for the former and cpusPerFamilyQuota for the
+	// latter.
+	cpusQuota          quotaVals
+	cpusPerFamilyQuota map[string]*quotaVals
 
 	// Disk
 	hddQuota       quotaVals
@@ -213,12 +215,13 @@ func getRegionQuotas(ctx context.Context, project string) (map[string]*regionQuo
 		if err != nil {
 			log.Fatalln("Error listing regions:", err)
 		}
-		quotas := regionQuotas{localSSDPerFamilyQuota: make(map[string]*quotaVals)}
+		quotas := regionQuotas{
+			localSSDPerFamilyQuota: make(map[string]*quotaVals),
+			cpusPerFamilyQuota:     make(map[string]*quotaVals),
+		}
 		region := *resp.Name
 		for _, quota := range resp.Quotas {
 			switch *quota.Metric {
-			case "N2_CPUS":
-				quotas.n2CpusQuota = quotaVals{max: int64(*quota.Limit), desc: "N2 CPUs in " + region}
 			case "CPUS":
 				quotas.cpusQuota = quotaVals{max: int64(*quota.Limit), desc: "CPUs in " + region}
 			case "IN_USE_ADDRESSES":
@@ -229,6 +232,11 @@ func getRegionQuotas(ctx context.Context, project string) (map[string]*regionQuo
 				quotas.hddQuota = quotaVals{max: int64(*quota.Limit), desc: "HDD in " + region}
 			case "SSD_TOTAL_GB":
 				quotas.remoteSSDQuota = quotaVals{max: int64(*quota.Limit), desc: "Remote SSDs in " + region}
+			default:
+				if strings.HasSuffix(*quota.Metric, "_CPUS") {
+					cpuFamily := strings.ToLower(strings.TrimSuffix(*quota.Metric, "_CPUS"))
+					quotas.cpusPerFamilyQuota[cpuFamily] = &quotaVals{max: int64(*quota.Limit), desc: cpuFamily + " CPUs in " + region}
+				}
 			}
 		}
 		quotasPerRegion[region] = &quotas
@@ -366,13 +374,15 @@ func parseCfgFiles(project string, cfgPaths []string, regionNames []string, quot
 			quotasPerRegion[region].ipsQuota.used += int64(maxInstances)
 		}
 
-		// Get core count
+		// Get core count. Families like n1 and e2 share the same base
+		// CPU quota, but families like n2 and n2d have their own.
 		parts := strings.Split(config.Attributes.MachineType, "/")
 		mt := parts[len(parts)-1]
 		family, cores := getFamilyAndCoresFromType(mt)
 		maxCores := int64(maxInstances) * cores
-		if family == "n2" {
-			quotasPerRegion[region].n2CpusQuota.used += maxCores
+		customFamilyQuota, hasCustomFamilyQuota := quotasPerRegion[region].cpusPerFamilyQuota[family]
+		if hasCustomFamilyQuota {
+			customFamilyQuota.used += maxCores
 		} else {
 			quotasPerRegion[region].cpusQuota.used += maxCores
 		}
@@ -410,11 +420,13 @@ func findQuotaErrors(quotasPerRegion map[string]*regionQuotas, quotasPerNetwork 
 			quotas.instancesQuota,
 			quotas.ipsQuota,
 			quotas.cpusQuota,
-			quotas.n2CpusQuota,
 			quotas.hddQuota,
 			quotas.remoteSSDQuota,
 		)
 		for _, quota := range quotas.localSSDPerFamilyQuota {
+			allQuotas = append(allQuotas, *quota)
+		}
+		for _, quota := range quotas.cpusPerFamilyQuota {
 			allQuotas = append(allQuotas, *quota)
 		}
 	}
