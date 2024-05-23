@@ -239,14 +239,14 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) 
 	}
 
 	r, err := sendHTTPRequestWithRetries(s.schedukeHTTPClient, req)
+	if err != nil {
+		return nil, errors.Annotate(err, "executing HTTP request").Err()
+	}
 	if r.StatusCode != 200 {
 		if r.StatusCode == 400 || r.StatusCode == 401 || r.StatusCode == 403 {
 			return nil, fmt.Errorf("scheduke returned %d; make sure you ran `gcloud auth login`, and if this error persists, see http://go/crosfleet#obtaining-access)", r.StatusCode)
 		}
 		return nil, fmt.Errorf("scheduke returned %d", r.StatusCode)
-	}
-	if err != nil {
-		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
 	return r, nil
 }

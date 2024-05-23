@@ -23,13 +23,14 @@ func sendHTTPRequestWithRetries(c clientThatSendsRequests, req *http.Request) (*
 	)
 	for retries < maxHTTPRetries {
 		resp, err = c.Do(req)
-		if err != nil {
-			return nil, err
-		}
-		if resp.StatusCode == http.StatusOK {
-			return resp, err
+		// Only retry if request was sent successfully and status was not 200.
+		if err != nil || resp.StatusCode == http.StatusOK {
+			break
 		}
 		retries += 1
 	}
-	return resp, err
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
