@@ -129,7 +129,7 @@ func (c *listVMSlot) listFreeVMSlots(ctx context.Context, ic ufsAPI.FleetClient,
 	var total int32
 	full := utils.FullMode(c.outputFlags.Full())
 	for _, filter := range filters {
-		protos, err := utils.DoList(ctx, ic, listFreeSlots, int32(c.number), filter, false, full)
+		protos, err := utils.DoList(ctx, ic, listFreeSlots, int32(c.number), filter, false, full, nil)
 		if err != nil {
 			return nil, err
 		}

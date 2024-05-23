@@ -108,7 +108,7 @@ func (c *getAttachedDeviceHost) innerRun(a subcommands.Application, args []strin
 	if len(args) > 0 {
 		res = utils.ConcurrentGet(ctx, ic, args, c.getSingle)
 	} else {
-		res, err = utils.BatchList(ctx, ic, listAttachedDeviceHosts, c.formatFilters(), c.pageSize, c.keysOnly, full)
+		res, err = utils.BatchList(ctx, ic, listAttachedDeviceHosts, c.formatFilters(), c.pageSize, c.keysOnly, full, nil)
 	}
 	if err != nil {
 		return err

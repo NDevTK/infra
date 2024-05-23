@@ -104,7 +104,7 @@ func (c *getSchedulingUnit) innerRun(a subcommands.Application, args []string, e
 	if len(args) > 0 {
 		res = utils.ConcurrentGet(ctx, ic, args, c.getSingle)
 	} else {
-		res, err = utils.BatchList(ctx, ic, listSchedulingUnits, c.formatFilters(), c.pageSize, c.keysOnly, full)
+		res, err = utils.BatchList(ctx, ic, listSchedulingUnits, c.formatFilters(), c.pageSize, c.keysOnly, full, nil)
 	}
 	if err != nil {
 		return err

@@ -126,7 +126,7 @@ func (c *updateDUTBatch) innerRun(a subcommands.Application, args []string, env 
 	})
 
 	var filteredDuts []proto.Message
-	filteredDuts, err = utils.BatchList(ctx, ic, host.ListHosts, c.formatFilters(), 0, true, false)
+	filteredDuts, err = utils.BatchList(ctx, ic, host.ListHosts, c.formatFilters(), 0, true, false, nil)
 	if err != nil {
 		return err
 	}

@@ -135,7 +135,7 @@ func (c *getMachine) innerRun(a subcommands.Application, args []string, env subc
 	if len(args) > 0 {
 		res = utils.ConcurrentGet(ctx, ic, args, c.getSingle)
 	} else {
-		res, err = utils.BatchList(ctx, ic, listMachines, c.formatFilters(), c.pageSize, c.keysOnly, full)
+		res, err = utils.BatchList(ctx, ic, listMachines, c.formatFilters(), c.pageSize, c.keysOnly, full, nil)
 	}
 	if err != nil {
 		return err

@@ -117,7 +117,7 @@ func (c *getAttachedDeviceMachine) innerRun(a subcommands.Application, args []st
 		res = utils.ConcurrentGet(ctx, ic, args, c.getSingle)
 	} else {
 		c.formatAttachedDeviceTypes()
-		res, err = utils.BatchList(ctx, ic, listAttachedDeviceMachines, c.formatFilters(), c.pageSize, c.keysOnly, full)
+		res, err = utils.BatchList(ctx, ic, listAttachedDeviceMachines, c.formatFilters(), c.pageSize, c.keysOnly, full, nil)
 	}
 	if err != nil {
 		return err

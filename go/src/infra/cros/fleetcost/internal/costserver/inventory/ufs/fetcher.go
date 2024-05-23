@@ -19,7 +19,7 @@ import (
 
 // GetAllMachineLSEs gets all MachineLSEs.
 func GetAllMachineLSEs(ctx context.Context, ic ufsAPI.FleetClient) ([]*ufspb.MachineLSE, error) {
-	res, err := shivasUtil.BatchList(ctx, ic, listMachineLSEs, []string{}, 0, false, false)
+	res, err := shivasUtil.BatchList(ctx, ic, listMachineLSEs, []string{}, 0, false, false, nil)
 	if err != nil {
 		return nil, errors.Annotate(err, "get all chromeos machinelses").Err()
 	}

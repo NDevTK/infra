@@ -78,7 +78,7 @@ func (c *pushDutsRun) innerRun(a subcommands.Application, args []string, env sub
 	})
 	// Get all the MachineLSEs
 	// Set keysOnly to true to get only keys
-	res, err := utils.BatchList(ctx, ic, host.ListHosts, nil, 0, true, false)
+	res, err := utils.BatchList(ctx, ic, host.ListHosts, nil, 0, true, false, nil)
 	availableDuts := make([]*api.DeclareDutsRequest_Dut, len(res))
 	for i, r := range res {
 		lse := r.(*ufspb.MachineLSE)

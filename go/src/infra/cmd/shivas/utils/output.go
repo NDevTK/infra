@@ -130,12 +130,12 @@ func PrintEntities(ctx context.Context, ic ufsAPI.FleetClient, res []proto.Messa
 }
 
 // BatchList returns the all listed entities by filters
-func BatchList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, filters []string, pageSize int, keysOnly, full bool) ([]proto.Message, error) {
+func BatchList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, filters []string, pageSize int, keysOnly, full bool, sink chan<- proto.Message) ([]proto.Message, error) {
 	errs := make(map[string]error)
 	res := make([]proto.Message, 0)
 	if len(filters) == 0 {
 		// No filters, single DoList call
-		protos, err := DoList(ctx, ic, listFunc, int32(pageSize), "", keysOnly, full)
+		protos, err := DoList(ctx, ic, listFunc, int32(pageSize), "", keysOnly, full, sink)
 		if err != nil {
 			errs["emptyFilter"] = err
 		}
@@ -147,7 +147,7 @@ func BatchList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, fil
 		// Filters with a pagesize limit
 		// If user specifies a limit, calling DoList without concrrency avoids non-required list calls to UFS
 		for _, filter := range filters {
-			protos, err := DoList(ctx, ic, listFunc, int32(pageSize), filter, keysOnly, full)
+			protos, err := DoList(ctx, ic, listFunc, int32(pageSize), filter, keysOnly, full, sink)
 			if err != nil {
 				errs[filter] = err
 			} else {
@@ -161,7 +161,7 @@ func BatchList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, fil
 	} else {
 		// Filters without pagesize limit
 		// If user doesnt specify any limit, call DoList for each filter concurrently to improve latency
-		res, errs = concurrentList(ctx, ic, listFunc, filters, pageSize, keysOnly, full)
+		res, errs = concurrentList(ctx, ic, listFunc, filters, pageSize, keysOnly, full, sink)
 	}
 
 	if len(errs) > 0 {
@@ -177,7 +177,7 @@ func BatchList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, fil
 }
 
 // concurrentList calls Dolist concurrently for each filter
-func concurrentList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, filters []string, pageSize int, keysOnly, full bool) ([]proto.Message, map[string]error) {
+func concurrentList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, filters []string, pageSize int, keysOnly, full bool, sink chan<- proto.Message) ([]proto.Message, map[string]error) {
 	// buffered channel to append data to a slice in a thread safe env
 	queue := make(chan []proto.Message, 1)
 	// waitgroup for multiple goroutines
@@ -191,7 +191,7 @@ func concurrentList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll
 	for i := 0; i < len(filters); i++ {
 		// goroutine for each filter
 		go func(i int) {
-			protos, err := DoList(ctx, ic, listFunc, int32(pageSize), filters[i], keysOnly, full)
+			protos, err := DoList(ctx, ic, listFunc, int32(pageSize), filters[i], keysOnly, full, sink)
 			if err != nil {
 				// store the err in sync map
 				merr.Store(filters[i], err)
@@ -229,7 +229,10 @@ func concurrentList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll
 }
 
 // DoList lists the outputs
-func DoList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, pageSize int32, filter string, keysOnly, full bool) ([]proto.Message, error) {
+//
+// The sink parameter, if non-nil, is a dispatcher.Channel that processes proto messages as they are returned
+// by UFS.
+func DoList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, pageSize int32, filter string, keysOnly, full bool, sink chan<- proto.Message) ([]proto.Message, error) {
 	var pageToken string
 	res := make([]proto.Message, 0)
 	if pageSize == 0 {
@@ -238,6 +241,7 @@ func DoList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, pageSi
 			if err != nil {
 				return nil, err
 			}
+			pushBack(sink, protos)
 			res = append(res, protos...)
 			if token == "" {
 				break
@@ -256,6 +260,7 @@ func DoList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll, pageSi
 			if err != nil {
 				return nil, err
 			}
+			pushBack(sink, protos)
 			res = append(res, protos...)
 			if token == "" {
 				break
@@ -2277,4 +2282,13 @@ func PrintDefaultWifisJSON(res []proto.Message, emit bool) {
 		}
 	}
 	fmt.Println("]")
+}
+
+// pushBack adds items to a channel of proto messages if it is non-nil.
+func pushBack(sink chan<- proto.Message, protos []proto.Message) {
+	if sink != nil {
+		for _, proto := range protos {
+			sink <- proto
+		}
+	}
 }

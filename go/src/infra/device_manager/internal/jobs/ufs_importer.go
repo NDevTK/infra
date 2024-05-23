@@ -101,7 +101,7 @@ func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClient
 
 // getAllMachineLSEs gets all MachineLSEs
 func getAllMachineLSEs(ctx context.Context, ic ufsAPI.FleetClient) ([]*ufspb.MachineLSE, error) {
-	res, err := shivasUtil.BatchList(ctx, ic, listMachineLSEs, []string{}, 0, true, false)
+	res, err := shivasUtil.BatchList(ctx, ic, listMachineLSEs, []string{}, 0, true, false, nil)
 	if err != nil {
 		return nil, errors.Annotate(err, "getAllMachineLSEs").Err()
 	}
@@ -134,7 +134,7 @@ func listMachineLSEs(ctx context.Context, ic ufsAPI.FleetClient, pageSize int32,
 
 // getAllSchedulingUnits gets all SchedulingUnits
 func getAllSchedulingUnits(ctx context.Context, ic ufsAPI.FleetClient) ([]*ufspb.SchedulingUnit, error) {
-	res, err := shivasUtil.BatchList(ctx, ic, listSchedulingUnits, []string{}, 0, false, true)
+	res, err := shivasUtil.BatchList(ctx, ic, listSchedulingUnits, []string{}, 0, false, true, nil)
 	if err != nil {
 		return nil, errors.Annotate(err, "getAllSchedulingUnits").Err()
 	}

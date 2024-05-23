@@ -102,7 +102,7 @@ func (c *getRackLSEPrototype) innerRun(a subcommands.Application, args []string,
 	if len(args) > 0 {
 		res = utils.ConcurrentGet(ctx, ic, args, c.getSingle)
 	} else {
-		res, err = utils.BatchList(ctx, ic, listRPMs, c.formatFilters(), c.pageSize, c.keysOnly, full)
+		res, err = utils.BatchList(ctx, ic, listRPMs, c.formatFilters(), c.pageSize, c.keysOnly, full, nil)
 	}
 	if err != nil {
 		return err

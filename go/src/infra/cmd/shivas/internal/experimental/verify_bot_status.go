@@ -96,12 +96,12 @@ func (c *verifyBotStatusRun) innerRun(a subcommands.Application, args []string, 
 		Options: site.DefaultPRPCOptions,
 	})
 	hostToStateMap := make(map[string]ufspb.State)
-	res, err := utils.BatchList(ctx, ic, host.ListHosts, make([]string, 0), 0, false, false)
+	res, err := utils.BatchList(ctx, ic, host.ListHosts, make([]string, 0), 0, false, false, nil)
 	for _, r := range res {
 		lse := r.(*ufspb.MachineLSE)
 		hostToStateMap[ufsUtil.RemovePrefix(lse.Name)] = lse.ResourceState
 	}
-	resVMs, err := utils.BatchList(ctx, ic, vm.ListVMs, make([]string, 0), 0, false, false)
+	resVMs, err := utils.BatchList(ctx, ic, vm.ListVMs, make([]string, 0), 0, false, false, nil)
 	for _, r := range resVMs {
 		vm := r.(*ufspb.VM)
 		hostToStateMap[ufsUtil.RemovePrefix(vm.Name)] = vm.ResourceState

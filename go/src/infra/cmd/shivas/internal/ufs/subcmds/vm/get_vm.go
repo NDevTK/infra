@@ -122,7 +122,7 @@ func (c *getVM) innerRun(a subcommands.Application, args []string, env subcomman
 		if err != nil {
 			return err
 		}
-		res, err = utils.BatchList(ctx, ic, ListVMs, filters, c.pageSize, c.keysOnly, full)
+		res, err = utils.BatchList(ctx, ic, ListVMs, filters, c.pageSize, c.keysOnly, full, nil)
 	}
 	if err != nil {
 		return err

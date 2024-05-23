@@ -53,15 +53,15 @@ type ufsService struct {
 }
 
 func (u *ufsService) BatchListMachineLSEs(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error) {
-	return shivasUtil.BatchList(ctx, u.client, listMachineLSEs, filters, pageSize, keysOnly, full)
+	return shivasUtil.BatchList(ctx, u.client, listMachineLSEs, filters, pageSize, keysOnly, full, nil)
 }
 
 func (u *ufsService) BatchListMachines(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error) {
-	return shivasUtil.BatchList(ctx, u.client, listMachines, filters, pageSize, keysOnly, full)
+	return shivasUtil.BatchList(ctx, u.client, listMachines, filters, pageSize, keysOnly, full, nil)
 }
 
 func (u *ufsService) BatchListSchedulingUnits(ctx context.Context, filters []string, pageSize int, keysOnly, full bool) ([]protoadapt.MessageV1, error) {
-	return shivasUtil.BatchList(ctx, u.client, listSchedulingUnits, filters, pageSize, keysOnly, full)
+	return shivasUtil.BatchList(ctx, u.client, listSchedulingUnits, filters, pageSize, keysOnly, full, nil)
 }
 
 func (u *ufsService) UpdateMachineLSE(ctx context.Context, in *ufsAPI.UpdateMachineLSERequest, opts ...grpc.CallOption) (*ufspb.MachineLSE, error) {
