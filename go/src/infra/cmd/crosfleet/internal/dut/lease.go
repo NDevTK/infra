@@ -36,6 +36,8 @@ const (
 	maxLeaseReasonCharacters = 30
 	poolConfigsDirURL        = "https://chrome-internal.googlesource.com/chromeos/infra/config/+/refs/heads/main/testingconfig/"
 	poolLabelName            = "label-pool"
+	boardLabelName           = "label-board"
+	modelLabelName           = "label-model"
 	deviceNameLabelName      = "dut_name"
 )
 
@@ -202,18 +204,13 @@ func botDimsAndBuildTags(leaseFlags leaseFlags) (dims, tags map[string]string, e
 	} else {
 		// Swarming dimension-based lease.
 		dims["dut_state"] = "ready"
-		// Add user-added dimensions to both bot dimensions and build tags.
-		for key, val := range leaseFlags.freeformDims {
-			dims[key] = val
-			tags[key] = val
-		}
 		if board := leaseFlags.board; board != "" {
-			tags["label-board"] = board
-			dims["label-board"] = board
+			tags[boardLabelName] = board
+			dims[boardLabelName] = board
 		}
 		if model := leaseFlags.model; model != "" {
-			tags["label-model"] = model
-			dims["label-model"] = model
+			tags[modelLabelName] = model
+			dims[modelLabelName] = model
 		}
 	}
 
@@ -221,6 +218,11 @@ func botDimsAndBuildTags(leaseFlags leaseFlags) (dims, tags map[string]string, e
 	if pool := leaseFlags.pool; pool != "" {
 		tags[poolLabelName] = pool
 		dims[poolLabelName] = pool
+	}
+	// Add free-form dims last to allow them to override any defaults.
+	for key, val := range leaseFlags.freeformDims {
+		dims[key] = val
+		tags[key] = val
 	}
 
 	// Add these metadata tags last to avoid being overwritten by freeform dims.
@@ -245,9 +247,9 @@ type leaseFlags struct {
 func (c *leaseFlags) register(f *flag.FlagSet) {
 	f.Int64Var(&c.durationMins, "minutes", 60, "Duration of lease in minutes.")
 	f.StringVar(&c.reason, "reason", "", fmt.Sprintf("Optional reason for leasing (limit %d characters).", maxLeaseReasonCharacters))
-	f.StringVar(&c.board, "board", "", "'label-board' Swarming dimension to lease DUT by.")
-	f.StringVar(&c.model, "model", "", "'label-model' Swarming dimension to lease DUT by.")
-	f.StringVar(&c.pool, "pool", common.DefaultQuotaPool, "'label-pool' Swarming dimension to lease DUT by.")
+	f.StringVar(&c.board, "board", "", fmt.Sprintf("'%s' Swarming dimension to lease DUT by.", boardLabelName))
+	f.StringVar(&c.model, "model", "", fmt.Sprintf("'%s' Swarming dimension to lease DUT by.", modelLabelName))
+	f.StringVar(&c.pool, "pool", common.DefaultQuotaPool, fmt.Sprintf("'%s' Swarming dimension to lease DUT by.", poolLabelName))
 	f.StringVar(&c.host, "host", "", `Hostname of an individual DUT to lease. If leasing by hostname instead of other Swarming dimensions,
 and the host DUT is running another task, the lease won't start until that task completes.
 Mutually exclusive with -board/-model/-dim(s).`)
@@ -280,7 +282,7 @@ func (c *leaseFlags) validate(f *flag.FlagSet) error {
 // or swarming dimensions (via -board/-model/-dim(s)), but not both.
 func (c *leaseFlags) hasEitherHostnameOrSwarmingDims() bool {
 	hasHostname := c.host != ""
-	hasSwarmingDims := c.board != "" || c.model != "" || len(c.freeformDims) > 0
+	hasSwarmingDims := c.board != "" || c.model != "" || len(c.freeformDims) > 0 || (c.pool != common.DefaultQuotaPool && c.pool != "")
 	return hasHostname != hasSwarmingDims
 }
 

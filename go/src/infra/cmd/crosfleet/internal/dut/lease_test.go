@@ -111,6 +111,51 @@ var testBotDimsAndBuildTagsData = []struct {
 			"qs_account":     "leases",
 		},
 	},
+	{ // Freeform dims that override defaults
+		leaseFlags{
+			board:        "b1",
+			model:        "m1",
+			pool:         "p1",
+			reason:       "sample reason 2",
+			freeformDims: map[string]string{"label-board": "b2", "label-pool": "p2"},
+		},
+		map[string]string{
+			"dut_state":   "ready",
+			"label-board": "b2",
+			"label-model": "m1",
+			"label-pool":  "p2",
+		},
+		map[string]string{
+			"crosfleet-tool": "lease",
+			"lease-reason":   "sample reason 2",
+			"label-board":    "b2",
+			"label-model":    "m1",
+			"label-pool":     "p2",
+			"qs_account":     "leases",
+		},
+	},
+	{ // Hostname-based lease
+		leaseFlags{
+			board:        "b1",
+			model:        "m1",
+			pool:         "p1",
+			host:         "sample hostname",
+			reason:       "sample reason 3",
+			freeformDims: map[string]string{"label-pool": "p2"},
+		},
+		map[string]string{
+			"dut_name":   "sample hostname",
+			"label-pool": "p2",
+		},
+		map[string]string{
+			"crosfleet-tool": "lease",
+			"lease-reason":   "sample reason 3",
+			"dut_name":       "sample hostname",
+			"label-pool":     "p2",
+			"qs_account":     "leases",
+			"lease-by":       "host",
+		},
+	},
 }
 
 func TestBotDimsAndBuildTagsData(t *testing.T) {
