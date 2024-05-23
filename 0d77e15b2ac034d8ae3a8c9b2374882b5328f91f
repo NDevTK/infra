@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4158b918_8b4d933d",
+        "filename": "go/src/infra/cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1552838
+      },
+      "writtenOn": "2024-05-23T18:27:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aa42947d_7d745d9b",
+      "range": {
+        "startLine": 171,
+        "startChar": 9,
+        "endLine": 171,
+        "endChar": 24
+      },
+      "revId": "0d77e15b2ac034d8ae3a8c9b2374882b5328f91f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5f043159_ebf5678c",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fed28fb0_3c9d6c2f",
+        "filename": "go/src/infra/cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1552838
+      },
+      "writtenOn": "2024-05-23T18:27:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f043159_ebf5678c",
+      "range": {
+        "startLine": 223,
+        "startChar": 5,
+        "endLine": 223,
+        "endChar": 18
+      },
+      "revId": "0d77e15b2ac034d8ae3a8c9b2374882b5328f91f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4d1b5ce3_72af5d36",
@@ -60,6 +108,30 @@
       "writtenOn": "2024-05-22T21:15:56Z",
       "side": 1,
       "message": "I don\u0027t think we should match empty variant with non-empty variant",
+      "range": {
+        "startLine": 231,
+        "startChar": 1,
+        "endLine": 231,
+        "endChar": 43
+      },
+      "revId": "0d77e15b2ac034d8ae3a8c9b2374882b5328f91f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4dec1f3_c7175747",
+        "filename": "go/src/infra/cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1552838
+      },
+      "writtenOn": "2024-05-23T18:27:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4d1b5ce3_72af5d36",
       "range": {
         "startLine": 231,
         "startChar": 1,
