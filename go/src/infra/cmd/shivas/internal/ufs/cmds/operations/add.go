@@ -53,6 +53,7 @@ var AddCmd = &subcommands.Command{
 	peripheral-hmr
 	peripheral-wifi
 	bluetooth-peers
+	peripheral-pasit-host
 	peripheral-audio-latency-toolkit`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &add{}
@@ -109,6 +110,7 @@ func (c addApp) GetCommands() []*subcommands.Command {
 		peripherals.AddChameleonCmd,
 		peripherals.AddPeripheralAudioLatencyToolkitCmd,
 		peripherals.AddPeripheralALTCmd,
+		peripherals.AddPasitHostCmd,
 	}
 }
 
