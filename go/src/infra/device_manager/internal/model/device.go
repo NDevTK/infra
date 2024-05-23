@@ -244,9 +244,9 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, updatedDevice Device) error {
 		UPDATE
 			"Devices"
 		SET
-			device_address=COALESCE($2, device_address),
-			device_type=COALESCE($3, device_type),
-			device_state=COALESCE($4, device_state),
+			device_address=COALESCE(NULLIF($2, ''), device_address),
+			device_type=COALESCE(NULLIF($3, ''), device_type),
+			device_state=COALESCE(NULLIF($4, ''), device_state),
 			schedulable_labels=COALESCE($5, schedulable_labels),
 			last_updated_time=COALESCE($6, last_updated_time),
 			is_active=COALESCE($7, is_active)
@@ -296,9 +296,9 @@ func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		ON CONFLICT(id)
 		DO UPDATE SET
-			device_address=COALESCE(EXCLUDED.device_address, d.device_address),
-			device_type=COALESCE(EXCLUDED.device_type, d.device_type),
-			device_state=COALESCE(EXCLUDED.device_state, d.device_state),
+			device_address=COALESCE(NULLIF(EXCLUDED.device_address, ''), d.device_address),
+			device_type=COALESCE(NULLIF(EXCLUDED.device_type, ''), d.device_type),
+			device_state=COALESCE(NULLIF(EXCLUDED.device_state, ''), NULLIF(d.device_state, ''), 'DEVICE_STATE_AVAILABLE'),
 			schedulable_labels=COALESCE(EXCLUDED.schedulable_labels, d.schedulable_labels),
 			last_updated_time=COALESCE(EXCLUDED.last_updated_time, d.last_updated_time),
 			is_active=COALESCE(EXCLUDED.is_active, d.is_active);`,

@@ -603,9 +603,9 @@ func TestUpdateDevice(t *testing.T) {
 				UPDATE
 					"Devices"
 				SET
-					device_address=COALESCE($2, device_address),
-					device_type=COALESCE($3, device_type),
-					device_state=COALESCE($4, device_state),
+					device_address=COALESCE(NULLIF($2, ''), device_address),
+					device_type=COALESCE(NULLIF($3, ''), device_type),
+					device_state=COALESCE(NULLIF($4, ''), device_state),
 					schedulable_labels=COALESCE($5, schedulable_labels),
 					last_updated_time=COALESCE($6, last_updated_time),
 					is_active=COALESCE($7, is_active)

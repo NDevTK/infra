@@ -56,10 +56,11 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 	}
 
 	updatedDevice := model.Device{
-		ID:            device.GetId(),
-		DeviceAddress: deviceAddressToString(ctx, device.GetAddress()),
-		DeviceType:    device.GetType().String(),
-		DeviceState:   api.DeviceState_DEVICE_STATE_LEASED.String(),
+		ID:              device.GetId(),
+		DeviceAddress:   deviceAddressToString(ctx, device.GetAddress()),
+		DeviceType:      device.GetType().String(),
+		DeviceState:     api.DeviceState_DEVICE_STATE_LEASED.String(),
+		LastUpdatedTime: timeNow,
 	}
 	err = UpdateDevice(ctx, tx, psClient, updatedDevice)
 	if err != nil {
