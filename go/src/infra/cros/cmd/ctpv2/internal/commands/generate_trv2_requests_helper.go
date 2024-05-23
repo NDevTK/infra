@@ -24,6 +24,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	goconfig "go.chromium.org/chromiumos/config/go"
+	gobuildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -684,6 +685,10 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 		return nil, err
 	}
 
+	transateTrv2Request := false
+	if primaryDut.GetProvisionState().Firmware != nil {
+		transateTrv2Request = true
+	}
 	companionDuts := []*skylab_test_runner.CFTTestRequest_Device{}
 	for _, secondary := range trHelper.secondaryTargets {
 		secondaryDut, err := createCftDeviceRequestFromTarget(secondary)
@@ -691,6 +696,9 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 			return nil, err
 		}
 		companionDuts = append(companionDuts, secondaryDut)
+		if secondaryDut.GetProvisionState().Firmware != nil {
+			transateTrv2Request = true
+		}
 	}
 
 	deadline := time.Now().UTC().Add(trHelper.maxDuration)
@@ -705,6 +713,7 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 		DefaultTestExecutionBehavior: test_platform.Request_Params_NON_CRITICAL,
 		AutotestKeyvals:              keyvals,
 		RunViaTrv2:                   true,
+		TranslateTrv2Request:         transateTrv2Request,
 		StepsConfig:                  nil,
 	}
 
@@ -785,11 +794,35 @@ func createCftDeviceRequestFromTarget(target *HwTarget) (*skylab_test_runner.CFT
 		return nil, fmt.Errorf("nil provisionState!")
 	}
 
+	tryAttachFirmwareConfig(provisionState, target.apiTarget)
+
 	return &skylab_test_runner.CFTTestRequest_Device{
 		DutModel:             dutModel,
 		ProvisionState:       provisionState,
 		ContainerMetadataKey: target.boardWVaraint,
 	}, nil
+}
+
+func tryAttachFirmwareConfig(provisionState *testapi.ProvisionState, target *api.Target) {
+	imageBucket := common_builders.DefaultChromeosBuildGcsBucket
+	firmwareRO := ""
+	firmwareRW := ""
+
+	kvs := target.GetSwReq().GetKeyValues()
+
+	for _, kv := range kvs {
+		if kv.Key == common_builders.RoFirmwareBuild {
+			firmwareRO = kv.Value
+		}
+		if kv.Key == common_builders.RwFirmwareBuild {
+			firmwareRW = kv.Value
+		}
+		if kv.Key == common_builders.ChromeosBuildGcsBucket {
+			imageBucket = kv.Value
+		}
+	}
+
+	provisionState.Firmware = buildFirmwareConfig(firmwareRO, firmwareRW, imageBucket)
 }
 
 // getBuildFromGcsPath gets build from gcs path.
@@ -1071,6 +1104,42 @@ func buildAndroidProvisionState(target *api.Target) (*testapi.ProvisionState, er
 	}
 
 	return &testapi.ProvisionState{ProvisionMetadata: provisionMetadata}, nil
+}
+
+func buildFirmwareConfig(firmwareRo, firmwareRw, imageBucket string) *gobuildapi.FirmwareConfig {
+	firmwarePathFormat := "gs://%s/%s/firmware_from_source.tar.bz2"
+	if (firmwareRo == "" || firmwareRo == "None") && (firmwareRw == "" || firmwareRw == "None") {
+		return nil
+	}
+
+	var ro *gobuildapi.FirmwarePayload
+	var rw *gobuildapi.FirmwarePayload
+	if firmwareRo != "" && firmwareRo != "None" {
+		ro = &gobuildapi.FirmwarePayload{
+			FirmwareImage: &gobuildapi.FirmwarePayload_FirmwareImagePath{
+				FirmwareImagePath: &goconfig.StoragePath{
+					HostType: goconfig.StoragePath_GS,
+					Path:     fmt.Sprintf(firmwarePathFormat, imageBucket, firmwareRo),
+				},
+			},
+		}
+	}
+	if firmwareRw != "" && firmwareRw != "None" {
+		rw = &gobuildapi.FirmwarePayload{
+			FirmwareImage: &gobuildapi.FirmwarePayload_FirmwareImagePath{
+				FirmwareImagePath: &goconfig.StoragePath{
+					HostType: goconfig.StoragePath_GS,
+					Path:     fmt.Sprintf(firmwarePathFormat, imageBucket, firmwareRw),
+				},
+			},
+		}
+	}
+
+	return &gobuildapi.FirmwareConfig{
+		MainRoPayload: ro,
+		EcRoPayload:   ro,
+		MainRwPayload: rw,
+	}
 }
 
 func suiteName(suiteInfo *testapi.SuiteInfo) string {
