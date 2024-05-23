@@ -27,10 +27,12 @@ class RecipeAutorollerTestApi(recipe_test_api.RecipeTestApi):
                 nontrivial_dryrun=True,
                 nontrivial_autosubmit=True,
                 include_autoroll_options=True,
-                no_cc_authors=False):
+                no_cc_authors=False,
+                recipes_path=""):
     spec = RepoSpec(api_version=2)
     spec.deps['recipe_engine'].url = (
       'https://chromium.googlesource.com/infra/luci/recipes-py')
+    spec.recipes_path = recipes_path
     if include_autoroll_options:
       trivial = spec.autoroll_recipe_options.trivial
       trivial.tbr_emails.extend(tbr_emails)

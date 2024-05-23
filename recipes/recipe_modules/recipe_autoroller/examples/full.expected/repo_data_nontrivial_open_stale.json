@@ -1,93 +1,16 @@
 [
   {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CACHE]/builder/recipe_engine"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "ensure recipe_dir gone"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[CACHE]/builder"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "ensure builder cache dir exists"
-  },
-  {
-    "cmd": [
-      "git",
-      "clone",
-      "--depth",
-      "1",
-      "https://chromium.googlesource.com/infra/luci/recipes-py",
-      "[CACHE]/builder/recipe_engine"
-    ],
-    "cwd": "[CACHE]/builder",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "clone recipe engine"
-  },
-  {
     "cmd": [],
     "name": "build",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@exception@Traceback (most recent call last):@@@",
-      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/recipe_autoroller/api.py\", line 297, in _roll_project@@@",
+      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/recipe_autoroller/api.py\", line 285, in _roll_project@@@",
       "@@@STEP_LOG_LINE@exception@    return self._roll_project_impl(@@@",
       "@@@STEP_LOG_LINE@exception@           ^^^^^^^^^^^^^^^^^^^^^^^^@@@",
-      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/recipe_autoroller/api.py\", line 319, in _roll_project_impl@@@",
+      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/recipe_autoroller/api.py\", line 306, in _roll_project_impl@@@",
       "@@@STEP_LOG_LINE@exception@    status = self._check_previous_roll(project_url, workdir, db_gcs_bucket)@@@",
       "@@@STEP_LOG_LINE@exception@             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@@@",
-      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/recipe_autoroller/api.py\", line 274, in _check_previous_roll@@@",
+      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/recipe_autoroller/api.py\", line 263, in _check_previous_roll@@@",
       "@@@STEP_LOG_LINE@exception@    self.m.step.empty(@@@",
       "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[recipe_engine]/recipe_modules/step/api.py\", in empty@@@",
       "@@@STEP_LOG_LINE@exception@    self.raise_on_failure(ret)@@@",

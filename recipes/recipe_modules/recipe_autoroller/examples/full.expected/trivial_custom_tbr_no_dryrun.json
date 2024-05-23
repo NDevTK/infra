@@ -1,82 +1,5 @@
 [
   {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "rmtree",
-      "[CACHE]/builder/recipe_engine"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "ensure recipe_dir gone"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[CACHE]/builder"
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "ensure builder cache dir exists"
-  },
-  {
-    "cmd": [
-      "git",
-      "clone",
-      "--depth",
-      "1",
-      "https://chromium.googlesource.com/infra/luci/recipes-py",
-      "[CACHE]/builder/recipe_engine"
-    ],
-    "cwd": "[CACHE]/builder",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "clone recipe engine"
-  },
-  {
     "cmd": [],
     "name": "build"
   },
@@ -392,7 +315,7 @@
   {
     "cmd": [
       "vpython3",
-      "[CACHE]/builder/recipe_engine/recipes.py",
+      "[CACHE]/builder/recipe_autoroller/build/recipes.py",
       "--package",
       "[CACHE]/builder/recipe_autoroller/build/infra/config/recipes.cfg",
       "-vv",
@@ -533,7 +456,7 @@
   {
     "cmd": [
       "vpython3",
-      "[CACHE]/builder/recipe_engine/recipes.py",
+      "[CACHE]/builder/recipe_autoroller/build/recipes.py",
       "--package",
       "[CACHE]/builder/recipe_autoroller/build/infra/config/recipes.cfg",
       "dump_specs"

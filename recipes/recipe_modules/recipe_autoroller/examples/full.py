@@ -57,6 +57,13 @@ def GenTests(api):
   )
 
   yield test(
+      'basic with recipes_path',
+      api.properties(db_gcs_bucket='somebucket'),
+      api.recipe_autoroller.roll_data('build', repo_spec(
+          trivial_commit=False, recipes_path='some/path')),
+  )
+
+  yield test(
       'multiple_commits',
       api.properties(db_gcs_bucket='somebucket'),
       api.recipe_autoroller.roll_data('build', num_commits=3),
