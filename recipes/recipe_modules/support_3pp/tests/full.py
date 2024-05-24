@@ -754,31 +754,32 @@ def GenTests(api):
 
   # test for git tag movement.
   pkg = 'dir_deps/bottom_dep_git'
-  yield (api.test('catch-git-tag-movement')
-      + api.properties(GOOS='linux', GOARCH='amd64', use_new_checkout=True)
-      + api.step_data('find package specs',
-                      api.file.glob_paths(['%s/3pp.pb' % pkg]))
-      + api.step_data(
+  yield api.test(
+      'catch-git-tag-movement',
+      api.properties(GOOS='linux', GOARCH='amd64', use_new_checkout=True),
+      api.step_data('find package specs',
+                    api.file.glob_paths(['%s/3pp.pb' % pkg])),
+      api.step_data(
           mk_name("load package specs", "read '%s/3pp.pb'" % pkg),
-          api.file.read_text(pkgs_dict[pkg]))
-      + api.override_step_data(
+          api.file.read_text(pkgs_dict[pkg])),
+      api.override_step_data(
           mk_name('building deps/bottom_dep_git',
                   'fetch sources',
                   'cipd describe 3pp/sources/git/go.repo/dep/linux-amd64'),
-        api.cipd.example_describe(
-        '3pp/sources/git/go.repo/dep/linux-amd64',
-        version='version:1.5.0-rc1',
-        test_data_tags=['version:1.5.0-rc1','external_hash:deadbeef']),
-      )
-      + api.expect_exception('AssertionError')
-         + api.post_process(post_process.ResultReasonRE,
-                            'External hash verification failed')
-      + api.post_process(post_process.StepFailure,
-                         mk_name('building deps/bottom_dep_git',
-                                 'fetch sources',
-                                 'Verify External Hash'))
-      + api.post_process(post_process.StatusException)
-      + api.post_process(post_process.DropExpectation)
+          api.cipd.example_describe(
+              '3pp/sources/git/go.repo/dep/linux-amd64',
+              version='version:1.5.0-rc1',
+              test_data_tags=['version:1.5.0-rc1','external_hash:deadbeef']),
+      ),
+      api.expect_exception('AssertionError'),
+      api.post_process(post_process.SummaryMarkdownRE,
+                       'External hash verification failed'),
+      api.post_process(post_process.StepFailure,
+                       mk_name('building deps/bottom_dep_git',
+                               'fetch sources',
+                               'Verify External Hash')),
+      api.post_process(post_process.StatusException),
+      api.post_process(post_process.DropExpectation),
   )
 
   yield (api.test('ambiguous-version-tag') +
@@ -815,14 +816,15 @@ def GenTests(api):
       + api.post_process(post_process.DropExpectation)
   )
 
-  yield (api.test('empty-source_cache_prefix')
-      + api.properties(GOOS='linux', GOARCH='amd64', source_cache_prefix='',
-                       use_new_checkout=True)
-      + api.expect_exception('AssertionError')
-      + api.post_process(post_process.ResultReasonRE,
-                         'A non-empty source cache prefix is required.')
-      + api.post_process(post_process.StatusException)
-      + api.post_process(post_process.DropExpectation)
+  yield api.test(
+      'empty-source_cache_prefix',
+      api.properties(GOOS='linux', GOARCH='amd64', source_cache_prefix='',
+                     use_new_checkout=True),
+      api.expect_exception('AssertionError'),
+      api.post_process(post_process.SummaryMarkdownRE,
+                       'A non-empty source cache prefix is required.'),
+      api.post_process(post_process.StatusException),
+      api.post_process(post_process.DropExpectation),
   )
 
   yield (api.test('experimental-mode')
@@ -844,24 +846,25 @@ def GenTests(api):
 
   # test fail to resolve latest for source CIPD package
   pkg = 'dir_deps/deep_dep'
-  yield (api.test('source-cipd-latest-failure')
-      + api.properties(GOOS='linux', GOARCH='amd64', use_new_checkout=True)
-      + api.step_data('find package specs',
-                      api.file.glob_paths(['%s/3pp.pb' % pkg]))
-      + api.step_data(
+  yield api.test(
+      'source-cipd-latest-failure',
+      api.properties(GOOS='linux', GOARCH='amd64', use_new_checkout=True),
+      api.step_data('find package specs',
+                    api.file.glob_paths(['%s/3pp.pb' % pkg])),
+      api.step_data(
           mk_name("load package specs", "read '%s/3pp.pb'" % pkg),
-          api.file.read_text(pkgs_dict[pkg]))
-      + api.step_data(
+          api.file.read_text(pkgs_dict[pkg])),
+      api.step_data(
           mk_name("building deps/deep_dep",
                   "cipd describe source/deep_dep"),
           api.cipd.example_describe(
               'source/deep_dep',
               version='latest',
-              test_data_tags=['non-version:1']))
-      + api.expect_exception('AssertionError')
-      + api.post_process(post_process.ResultReasonRE,
-                         'Failed to resolve the latest version')
-      + api.post_process(post_process.DropExpectation)
+              test_data_tags=['non-version:1'])),
+      api.expect_exception('AssertionError'),
+      api.post_process(post_process.SummaryMarkdownRE,
+                       'Failed to resolve the latest version'),
+      api.post_process(post_process.DropExpectation),
   )
 
   # Tools may need to depend on themselves for a host version to use when
@@ -1302,19 +1305,21 @@ def GenTests(api):
   }
   upload { pkg_prefix: "tools" }
   '''
-  yield (api.test('fixed-commit-with-tag-pattern') + api.platform('linux', 64) +
-         api.properties(GOOS='linux', GOARCH='amd64')
-         + api.properties(key_path=KEY_PATH)
-         + api.step_data(
-             'find package specs',
-             api.file.glob_paths(['dir_tools/tool/3pp.pb']))
-         + api.step_data(
-             mk_name("load package specs",
-                     "read 'dir_tools/tool/3pp.pb'"),
-             api.file.read_text(spec))
-         + api.expect_exception('AssertionError')
-         + api.post_process(post_process.ResultReasonRE,
-                            'fixed_commit is mutually exclusive with tags.'))
+  yield api.test(
+      'fixed-commit-with-tag-pattern',
+      api.platform('linux', 64),
+      api.properties(GOOS='linux', GOARCH='amd64'),
+      api.properties(key_path=KEY_PATH),
+      api.step_data(
+          'find package specs',
+          api.file.glob_paths(['dir_tools/tool/3pp.pb'])),
+      api.step_data(
+          mk_name("load package specs",
+                  "read 'dir_tools/tool/3pp.pb'"),
+          api.file.read_text(spec)),
+      api.expect_exception('AssertionError'),
+      api.post_process(post_process.SummaryMarkdownRE,
+                       'fixed_commit is mutually exclusive with tags.'))
 
   spec = '''
   create {
@@ -1325,17 +1330,19 @@ def GenTests(api):
   }
   upload { pkg_prefix: "tools" }
   '''
-  yield (api.test('fixed-commit-invalid-commit') + api.platform('linux', 64) +
-         api.properties(GOOS='linux', GOARCH='amd64') +
-         api.properties(key_path=KEY_PATH) +
-         api.step_data('find package specs',
-                       api.file.glob_paths(['dir_tools/tool/3pp.pb'])) +
-         api.step_data(
-             mk_name("load package specs", "read 'dir_tools/tool/3pp.pb'"),
-             api.file.read_text(spec)) +
-         api.expect_exception('AssertionError') +
-         api.post_process(post_process.ResultReasonRE,
-                          'Non git-rev commit specified: refs/heads/main'))
+  yield api.test(
+      'fixed-commit-invalid-commit',
+      api.platform('linux', 64),
+      api.properties(GOOS='linux', GOARCH='amd64'),
+      api.properties(key_path=KEY_PATH),
+      api.step_data('find package specs',
+                    api.file.glob_paths(['dir_tools/tool/3pp.pb'])),
+      api.step_data(
+          mk_name("load package specs", "read 'dir_tools/tool/3pp.pb'"),
+          api.file.read_text(spec)),
+      api.expect_exception('AssertionError'),
+      api.post_process(post_process.SummaryMarkdownRE,
+                       'Non git-rev commit specified: refs/heads/main'))
 
   spec = '''
   create {

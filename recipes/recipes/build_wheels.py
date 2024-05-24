@@ -216,7 +216,7 @@ def GenTests(api):
       api.platform('win', 64) +
       api.properties(platforms=['windows-x64', 'windows-x86']) +
       api.post_process(
-          post_process.ResultReasonRE,
+          post_process.SummaryMarkdownRE,
           'Must specify either 32-bit or 64-bit windows platform.') +
       api.post_process(post_process.DropExpectation),
       status='FAILURE')
@@ -224,7 +224,7 @@ def GenTests(api):
   yield api.test(
       'win-noplatforms',
       api.platform('win', 64) + api.post_process(
-          post_process.ResultReasonRE,
+          post_process.SummaryMarkdownRE,
           'Must specify either 32-bit or 64-bit windows platform.') +
       api.post_process(post_process.DropExpectation),
       status='FAILURE')
