@@ -115,13 +115,13 @@ func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuil
 	)
 
 	var extraAttrs map[string]string
-	if spec.invokedSrc.commit != nil {
-		t, err := fetchCommitTime(ctx, spec.auth, spec.invokedSrc.commit)
+	if spec.goSrc.commit != nil {
+		t, err := fetchCommitTime(ctx, spec.auth, spec.goSrc.commit)
 		if err != nil {
-			return nil, nil, fmt.Errorf("failed to fetch commit time for %s: %w", spec.invokedSrc.asURL(), err)
+			return nil, nil, fmt.Errorf("failed to fetch commit time for %s: %w", spec.goSrc.asURL(), err)
 		}
 		extraAttrs = map[string]string{
-			"experiment-commit":      spec.invokedSrc.commit.Id,
+			"experiment-commit":      spec.goSrc.commit.Id,
 			"experiment-commit-time": t.In(time.UTC).Format(time.RFC3339Nano),
 			"baseline-commit":        goBaselineSrc.commit.Id,
 			"benchmarks-commit":      benchmarksSrc.commit.Id,
@@ -188,13 +188,13 @@ func runSubrepoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golan
 
 	// Add extra attributes. These will be added to the results later.
 	var extraAttrs map[string]string
-	if spec.invokedSrc.commit != nil {
-		t, err := fetchCommitTime(ctx, spec.auth, spec.invokedSrc.commit)
+	if spec.subrepoSrc.commit != nil {
+		t, err := fetchCommitTime(ctx, spec.auth, spec.subrepoSrc.commit)
 		if err != nil {
-			return nil, nil, fmt.Errorf("failed to fetch commit time for %s: %w", spec.invokedSrc.asURL(), err)
+			return nil, nil, fmt.Errorf("failed to fetch commit time for %s: %w", spec.subrepoSrc.asURL(), err)
 		}
 		extraAttrs = map[string]string{
-			"experiment-commit":      spec.invokedSrc.commit.Id,
+			"experiment-commit":      spec.subrepoSrc.commit.Id,
 			"experiment-commit-time": t.In(time.UTC).Format(time.RFC3339Nano),
 			"baseline-commit":        subrepoBaselineSrc.commit.Id,
 			"toolchain-commit":       goBaselineSrc.commit.Id,
