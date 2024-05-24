@@ -550,6 +550,8 @@
       "upload",
       "--send-mail",
       "--hashtag",
+      "recipe-dep-roll",
+      "--hashtag",
       "trivial-roll",
       "--set-bot-commit",
       "-r",

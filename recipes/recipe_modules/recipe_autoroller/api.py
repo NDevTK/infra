@@ -346,7 +346,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
 
     spec = jsonpb.ParseDict(picked_details['spec'], RepoSpec())
 
-    upload_args = ['--send-mail']
+    upload_args = ['--send-mail', '--hashtag', 'recipe-dep-roll']
     if roll_result['trivial']:
       upload_args.extend(('--hashtag', 'trivial-roll'))
       s = spec.autoroll_recipe_options.trivial
