@@ -48,6 +48,11 @@ func (tf *Fixture) RegisterGetDeviceDataFailure(reqMatcher gomock.Matcher, failu
 	tf.MockUFS.EXPECT().GetDeviceData(gomock.Any(), reqMatcher).Return(nil, failure)
 }
 
+// RegisterListMachineLSEs registers a listMachineLSEs request.
+func (tf *Fixture) RegisterListMachineLSEs(reqMatcher gomock.Matcher, resp *ufsAPI.ListMachineLSEsResponse) {
+	tf.MockUFS.EXPECT().ListMachineLSEs(gomock.Any(), reqMatcher).Return(resp, nil)
+}
+
 // NewFixture creates a basic fixture with fake versions of datastore and UFS with properties
 // that are convenient for unit tests.
 func NewFixture(ctx context.Context, t *testing.T) *Fixture {

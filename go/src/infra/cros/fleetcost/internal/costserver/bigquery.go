@@ -10,6 +10,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
+	"infra/cros/fleetcost/internal/costserver/inventory/ufs"
 )
 
 // PersistToBigquery persists the current cost indicators to BigQuery.
@@ -21,5 +22,20 @@ func (f *FleetCostFrontend) PersistToBigquery(ctx context.Context, request *flee
 
 // RepopulateCache repopulates the datastore cache ahead of persisting to bigquery.
 func (f *FleetCostFrontend) RepopulateCache(ctx context.Context, request *fleetcostAPI.RepopulateCacheRequest) (*fleetcostAPI.RepopulateCacheResponse, error) {
-	return nil, errors.New("not yet implemented")
+	machines, err := ufs.GetAllMachineLSEs(ctx, f.fleetClient, true, nil)
+	if err != nil {
+		return nil, errors.Annotate(err, "reading machine LSEs from UFS").Err()
+	}
+
+	for _, machineLSE := range machines {
+		hostname := machineLSE.GetName()
+		if _, err := f.GetCostResult(ctx, &fleetcostAPI.GetCostResultRequest{
+			Hostname:    hostname,
+			ForceUpdate: true,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	return &fleetcostAPI.RepopulateCacheResponse{}, nil
 }

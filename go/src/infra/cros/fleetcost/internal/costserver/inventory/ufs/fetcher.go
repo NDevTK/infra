@@ -7,7 +7,6 @@ package ufs
 import (
 	"context"
 
-	// UFS and shivas still uses deprecated "github.com/golang/protobuf/proto" package, hence we use the apater here.
 	"google.golang.org/protobuf/protoadapt"
 
 	"go.chromium.org/luci/common/errors"
@@ -18,8 +17,8 @@ import (
 )
 
 // GetAllMachineLSEs gets all MachineLSEs.
-func GetAllMachineLSEs(ctx context.Context, ic ufsAPI.FleetClient) ([]*ufspb.MachineLSE, error) {
-	res, err := shivasUtil.BatchList(ctx, ic, listMachineLSEs, []string{}, 0, false, false, nil)
+func GetAllMachineLSEs(ctx context.Context, ic ufsAPI.FleetClient, keysOnly bool, sink chan<- protoadapt.MessageV1) ([]*ufspb.MachineLSE, error) {
+	res, err := shivasUtil.BatchList(ctx, ic, listMachineLSEs, []string{}, 0, keysOnly, false, sink)
 	if err != nil {
 		return nil, errors.Annotate(err, "get all chromeos machinelses").Err()
 	}

@@ -13,6 +13,8 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
+const MaxIterations = 1000000
+
 // progName is the name of the program
 const progName = "fleetcost"
 
