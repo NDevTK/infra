@@ -95,7 +95,7 @@ func (c *deleteCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 		},
 	}
 	resp, err := fleetCostClient.DeleteCostIndicator(ctx, request)
-	if err == nil {
+	if err != nil {
 		return errors.Annotate(err, "delete cost result").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
