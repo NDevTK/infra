@@ -33,6 +33,7 @@ func getApplication() *cli.Application {
 			commands.CreateCostIndicatorCommand,
 			commands.UpdateCostIndicatorCommand,
 			commands.DeleteCostIndicatorCommand,
+			commands.RepopulateCacheCommand,
 			subcommands.Section("Cost Results"),
 			commands.GetCostResultCommand,
 			subcommands.Section("Debugging"),
