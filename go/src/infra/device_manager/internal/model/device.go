@@ -337,3 +337,15 @@ func DecodePageToken(ctx context.Context, token PageToken) (string, error) {
 	}
 	return string(createdTime), nil
 }
+
+// DUTID returns the DUT ID (i.e. Swarming asset tag) for the given device.
+func (d *Device) DUTID() (string, error) {
+	idLabel, ok := d.SchedulableLabels[string(IDTypeDutID)]
+	if !ok || len(idLabel.Values) == 0 {
+		return "", fmt.Errorf("found no DUT ID for device %v", d.ID)
+	}
+	if len(idLabel.Values) > 1 {
+		return "", fmt.Errorf("found multiple DUT IDs for device %v", d.ID)
+	}
+	return idLabel.Values[0], nil
+}

@@ -634,3 +634,13 @@ func TestUpsertDevice(t *testing.T) {
 		})
 	})
 }
+
+func TestDUTID(t *testing.T) {
+	t.Parallel()
+	Convey("DUTID should return dut_id label", t, func() {
+		d := Device{ID: "foo", SchedulableLabels: SchedulableLabels{"dut_id": LabelValues{Values: []string{"bar"}}, "hostname": LabelValues{Values: []string{"baz", "lol"}}}}
+		dutID, err := d.DUTID()
+		So(err, ShouldBeNil)
+		So(dutID, ShouldEqual, "bar")
+	})
+}

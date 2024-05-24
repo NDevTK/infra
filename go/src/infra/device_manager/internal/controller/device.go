@@ -79,12 +79,17 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device mod
 		return fmt.Errorf("PublishDeviceEvent: topic %s not found", DeviceEventsPubSubTopic)
 	}
 
+	dutID, err := device.DUTID()
+	if err != nil {
+		return errors.Annotate(err, "PublishDeviceEvent").Err()
+	}
+
 	marshalOpts := protojson.MarshalOptions{EmitUnpopulated: true}
 
 	var msg []byte
 	msg, err = marshalOpts.Marshal(&schedulingAPI.DeviceEvent{
 		EventTime:        time.Now().Unix(),
-		DeviceId:         device.ID,
+		DeviceId:         dutID,
 		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, stringToDeviceState(ctx, device.DeviceState)),
 		DeviceDimensions: labelsToSwarmingDims(ctx, device.SchedulableLabels),
 	})

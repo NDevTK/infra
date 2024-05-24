@@ -616,7 +616,7 @@ func TestUpdateDevice(t *testing.T) {
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
-					`{"label-test":{"Values":["test-value-1"]}}`,
+					`{"dut_id":{"Values":["test-dut-id-1"]}}`,
 					timeNow,
 					false).
 				WillReturnResult(sqlmock.NewResult(1, 1))
@@ -627,8 +627,8 @@ func TestUpdateDevice(t *testing.T) {
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
 				DeviceState:   "DEVICE_STATE_LEASED",
 				SchedulableLabels: model.SchedulableLabels{
-					"label-test": model.LabelValues{
-						Values: []string{"test-value-1"},
+					"dut_id": model.LabelValues{
+						Values: []string{"test-dut-id-1"},
 					},
 				},
 				LastUpdatedTime: timeNow,
