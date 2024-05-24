@@ -22,6 +22,7 @@ import (
 	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/retry"
 )
 
 const (
@@ -68,15 +69,22 @@ func DownloadChameleondBundle(ctx context.Context, sshRunner ssh.Runner, cacheAc
 //
 // Note: We use the public URL here rather than the cache to ensure we always
 // use the latest version of the config file from GCS.
-func FetchBtpeerChameleondReleaseConfig(ctx context.Context, sshRunner ssh.Runner) (*labapi.BluetoothPeerChameleondConfig, error) {
+func FetchBtpeerChameleondReleaseConfig(ctx context.Context, sshRunner ssh.Runner, fetchTimeout time.Duration) (*labapi.BluetoothPeerChameleondConfig, error) {
 	btpeerChameleondConfigProdGCSPublicURL, err := url.JoinPath(btpeerArtifactsGCSPublicURLBasePath, "btpeer_chameleond_config_prod.json")
 	if err != nil {
 		return nil, errors.Annotate(err, "fetch btpeer chameleond release config: failed to build download URL").Err()
 	}
-	btpeerChameleondConfigJSON, _, err := linux.CurlURL(ctx, sshRunner.Run, 10*time.Second, btpeerChameleondConfigProdGCSPublicURL, nil)
+
+	var btpeerChameleondConfigJSON string
+	err = retry.WithTimeout(ctx, 1*time.Second, fetchTimeout, func() error {
+		var err error
+		btpeerChameleondConfigJSON, _, err = linux.CurlURL(ctx, sshRunner.Run, 5*time.Second, btpeerChameleondConfigProdGCSPublicURL, nil)
+		return err
+	}, "fetch config")
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to curl %q on the host", btpeerChameleondConfigProdGCSPublicURL).Err()
 	}
+
 	config := &labapi.BluetoothPeerChameleondConfig{}
 	if err := protojson.Unmarshal([]byte(btpeerChameleondConfigJSON), config); err != nil {
 		return nil, errors.Annotate(err, "failed to unmarshal BluetoothPeerChameleondConfig from %q", btpeerChameleondConfigProdGCSPublicURL).Err()

@@ -7,6 +7,7 @@ package btpeer
 import (
 	"context"
 	"strings"
+	"time"
 
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -45,8 +46,11 @@ func fetchBtpeerChameleondReleaseConfigExec(ctx context.Context, info *execs.Exe
 	if err != nil {
 		return errors.Annotate(err, "failed to get btpeer scope state").Err()
 	}
+
+	args := info.GetActionArgs(ctx)
+	timeout := args.AsDuration(ctx, "fetch_timeout", 45, time.Second)
 	sshRunner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
-	config, err := chameleond.FetchBtpeerChameleondReleaseConfig(ctx, sshRunner)
+	config, err := chameleond.FetchBtpeerChameleondReleaseConfig(ctx, sshRunner, timeout)
 	if err != nil {
 		return errors.Annotate(err, "failed to fetch btpeer chameleond release config").Err()
 	}
