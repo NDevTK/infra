@@ -404,6 +404,9 @@ func populateEnvInfo(
 	if labelPool := getSingleTagValue(botDims, "label-pool"); labelPool != "" {
 		swarmingInfo.LabelPool = labelPool
 	}
+	if botID := getSingleTagValue(botDims, "id"); botID != "" {
+		swarmingInfo.BotId = botID
+	}
 
 	// - BuildBucket info
 	bbInfo := &artifactpb.BuildbucketInfo{Id: buildID}
