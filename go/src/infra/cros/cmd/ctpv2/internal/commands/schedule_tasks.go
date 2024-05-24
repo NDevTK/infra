@@ -17,6 +17,7 @@ import (
 	protobuf "google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
@@ -68,6 +69,7 @@ type ScheduleTasksCmd struct {
 	StartCmdTime          time.Time
 	StartTrSchedulingTime time.Time
 	StartTrBuildTime      time.Time
+	Config                *config.Config
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -122,7 +124,11 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	}
 
 	if sk.BuildState == nil {
-		return fmt.Errorf("Cmd %q missing dependency: Scheduler", cmd.GetCommandType())
+		return fmt.Errorf("Cmd %q missing dependency: BuildState", cmd.GetCommandType())
+	}
+
+	if sk.Config == nil {
+		logging.Warningf(ctx, "cmd %q missing Config", cmd.GetCommandType())
 	}
 
 	if sk.Scheduler == api.SchedulerInfo_UNSPECIFIED {
@@ -141,6 +147,7 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	cmd.DynamicRun = sk.CtpReq.RunDynamic
 	cmd.BuildsMap = sk.BuildsMap
 	cmd.BuildState = sk.BuildState
+	cmd.Config = sk.Config
 	// Assign scheduler
 	cmd.Scheduler = schedulers.NewLocalScheduler() // Default
 	if sk.Scheduler == api.SchedulerInfo_QSCHEDULER {
@@ -248,7 +255,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// Spit out requested dims since scheduke doesn't pass this info to swarming
 	common.WriteAnyObjectToStepLog(ctx, step, req.GetDimensions(), "requested dimensions")
 
-	builderId := common.TestRunnerBuilderID()
+	builderID := common.TestRunnerBuilderID(cmd.Config)
 
 	bbClient, err := newBBClient(ctx)
 	if err != nil {
@@ -269,8 +276,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	}
 
 	if scheduledBuild != nil && scheduledBuild.GetId() != 0 {
-		result.BuildUrl = common.BBUrl(builderId, scheduledBuild.GetId())
-		step.SetSummaryMarkdown(fmt.Sprintf("[latest attempt](%s)", common.BBUrl(builderId, scheduledBuild.GetId())))
+		result.BuildUrl = common.BBUrl(builderID, scheduledBuild.GetId())
+		step.SetSummaryMarkdown(fmt.Sprintf("[latest attempt](%s)", common.BBUrl(builderID, scheduledBuild.GetId())))
 	} else {
 		errStr := "no bbid found from scheduler"
 		err = fmt.Errorf(errStr)

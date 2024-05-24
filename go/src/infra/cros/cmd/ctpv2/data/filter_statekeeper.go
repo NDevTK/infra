@@ -11,6 +11,7 @@ import (
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/interfaces"
@@ -27,6 +28,7 @@ type FilterStateKeeper struct {
 	Scheduler               testapi.SchedulerInfo_Scheduler
 	SuiteTestResults        map[string]*TestResults
 	BuildsMap               map[string]*BuildRequest
+	Config                  *config.Config
 
 	// Build related
 	BuildState *build.State

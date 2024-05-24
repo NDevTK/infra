@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -134,7 +135,7 @@ func executeRequests(
 	}
 
 	// Execute Ctpv2 Reqs
-	resultsMap := executeCtpv2Reqs(ctx, sk.CtpV2Request, buildState, ctr, BQClient)
+	resultsMap := executeCtpv2Reqs(ctx, sk.CtpV2Request, input.Config, buildState, ctr, BQClient)
 	sk.AllTestResults = resultsMap
 
 	// Execute post configs
@@ -147,7 +148,7 @@ func executeRequests(
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	ctpv2Req *api.CTPv2Request, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client) map[string][]*data.TestResults {
+	ctpv2Req *api.CTPv2Request, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client) map[string][]*data.TestResults {
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
@@ -169,7 +170,7 @@ func executeCtpv2Reqs(ctx context.Context,
 			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
 		}
 		wg.Add(1)
-		go executeFiltersInLuciBuild(ctx, ctpReq, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient)
+		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient)
 	}
 	go func() {
 		wg.Wait()
@@ -192,6 +193,7 @@ func executeCtpv2Reqs(ctx context.Context,
 func executeFiltersInLuciBuild(
 	ctx context.Context,
 	req *api.CTPRequest,
+	config *config.Config,
 	buildState *build.State,
 	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client) error {
 	defer wg.Done()
@@ -210,6 +212,7 @@ func executeFiltersInLuciBuild(
 		Scheduler:          req.GetSchedulerInfo().GetScheduler(),
 		ContainerInfoMap:   contInfoMap,
 		BQClient:           BQClient,
+		Config:             config,
 	}
 
 	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest()), common.DefaultKoffeeFilterNames)

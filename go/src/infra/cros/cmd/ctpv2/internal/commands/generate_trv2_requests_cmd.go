@@ -14,6 +14,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -35,6 +36,7 @@ type GenerateTrv2RequestsCmd struct {
 	Scheduler        interfaces.SchedulerInterface
 	DynamicRun       bool
 	InternalTestPlan *api.InternalTestplan
+	Config           *config.Config
 
 	// Updates
 	BuildsMap   map[string]*data.BuildRequest
@@ -100,6 +102,10 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 		return fmt.Errorf("Cmd %q missing dependency: Scheduler", cmd.GetCommandType())
 	}
 
+	if sk.Config == nil {
+		logging.Warningf(ctx, "cmd %q missing Config", cmd.GetCommandType())
+	}
+
 	if sk.BQClient != nil {
 		cmd.BQClient = sk.BQClient
 	}
@@ -112,6 +118,7 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 	cmd.DynamicRun = sk.CtpReq.RunDynamic
 	cmd.MiddledOutResp = sk.MiddledOutResp
 	cmd.BuildState = sk.BuildState
+	cmd.Config = sk.Config
 
 	// Convert scheduling units into map for better searching.
 	cmd.schedulingUnitsMetadataMap = buildSchedUnitMap(cmd.InternalTestPlan.GetSuiteInfo())
@@ -254,6 +261,7 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 		shardNum:             shardNum,
 		dynamicRun:           cmd.DynamicRun,
 		schedUnitMetadataMap: cmd.schedulingUnitsMetadataMap,
+		config:               cmd.Config,
 	}
 
 	req, err := GenerateTrv2Req(ctx, true, helper)

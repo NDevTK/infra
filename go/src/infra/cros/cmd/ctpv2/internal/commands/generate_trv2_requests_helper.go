@@ -70,6 +70,7 @@ type TrV2ReqHelper struct {
 	shardNum             int
 	build                *build.State
 	schedUnitMetadataMap map[string][]*testapi.SchedulingUnit
+	config               *config.Config
 
 	// Other fields often used several times throughout.
 	suiteName        string
@@ -118,7 +119,7 @@ func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2R
 	if err != nil {
 		return nil, errors.Annotate(err, "error while creating req: ").Err()
 	}
-	req, err := reqArgs.NewBBRequest(common.TestRunnerBuilderID())
+	req, err := reqArgs.NewBBRequest(common.TestRunnerBuilderID(trHelper.config))
 	if err != nil {
 		return nil, err
 	}

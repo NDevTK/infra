@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
@@ -41,7 +42,15 @@ func HttpClient(ctx context.Context) (*http.Client, error) {
 }
 
 // TestRunnerBuilderID returns builderid for test_runner.
-func TestRunnerBuilderID() *buildbucketpb.BuilderID {
+func TestRunnerBuilderID(conf *config.Config) *buildbucketpb.BuilderID {
+	bbConfig := conf.GetTestRunner().GetBuildbucket()
+	if bbConfig != nil {
+		return &buildbucketpb.BuilderID{
+			Project: bbConfig.GetProject(),
+			Bucket:  bbConfig.GetBucket(),
+			Builder: bbConfig.GetBuilder(),
+		}
+	}
 	return &buildbucketpb.BuilderID{
 		Project: "chromeos",
 		Bucket:  "test_runner",
