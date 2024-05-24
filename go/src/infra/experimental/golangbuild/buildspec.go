@@ -378,12 +378,13 @@ func (b *buildSpec) installDatastoreClient(ctx context.Context) (context.Context
 
 // wrapTestCmd wraps cmd with 'rdb' and 'result_adapter' to send test results
 // to ResultDB. cmd must be a test command that emits a JSON stream in the
-// https://go.dev/cmd/test2json#hdr-Output_Format format.
+// https://go.dev/cmd/test2json#hdr-Output_Format format. If dumpJSONFile is
+// non-empty, the raw JSON output is written to that file.
 //
 // If external network access is to be disabled, cmd is also prefixed with 'unshare'.
 //
 // It edits cmd in place but for convenience also returns cmd back to its caller.
-func (b *buildSpec) wrapTestCmd(ctx context.Context, cmd *exec.Cmd) *exec.Cmd {
+func (b *buildSpec) wrapTestCmd(ctx context.Context, cmd *exec.Cmd, dumpJSONFile string) *exec.Cmd {
 	if b.inputs.NoNetwork {
 		// Disable external network access for the test command.
 		// Permit internal loopback access.
@@ -406,7 +407,11 @@ func (b *buildSpec) wrapTestCmd(ctx context.Context, cmd *exec.Cmd) *exec.Cmd {
 	cmd.Path = toolPath(ctx, "rdb")
 	args := []string{cmd.Path, "stream"}
 	args = append(args, rdbArgs...)
-	args = append(args, "--", toolPath(ctx, "result_adapter"), "go", "-v=false", "--")
+	args = append(args, "--", toolPath(ctx, "result_adapter"), "go", "-v=false")
+	if dumpJSONFile != "" {
+		args = append(args, "-dump-json", dumpJSONFile)
+	}
+	args = append(args, "--")
 	args = append(args, cmd.Args...)
 	cmd.Args = args
 	return cmd

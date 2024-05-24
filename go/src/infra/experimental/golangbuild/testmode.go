@@ -112,7 +112,9 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 		for i, p := range ports {
 			i, p := i, p
 			portContext := addPortEnv(ctx, p, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/len(ports))))
-			testCmd := spec.wrapTestCmd(ctx, spec.distTestCmd(portContext, gorootSrc, "", nil, true))
+			// TODO(go.dev/issue/62067): Dump the raw JSON to a file and log it once `go build -json` is
+			// available.
+			testCmd := spec.wrapTestCmd(ctx, spec.distTestCmd(portContext, gorootSrc, "", nil, true), "")
 			g.Go(func() error {
 				testErrors[i] = cmdStepRun(portContext, fmt.Sprintf("compile %s port", p), testCmd, false)
 				return nil
@@ -146,8 +148,9 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 	}
 
 	// Invoke go tool dist test (with -json flag).
-	testCmd := spec.wrapTestCmd(ctx, spec.distTestCmd(ctx, gorootSrc, "", tests, true))
-	if err := cmdStepRun(ctx, "go tool dist test -json", testCmd, false); err != nil {
+	jsonDumpFile := filepath.Join(spec.workdir, "dist.testjson")
+	testCmd := spec.wrapTestCmd(ctx, spec.distTestCmd(ctx, gorootSrc, "", tests, true), jsonDumpFile)
+	if err := cmdStepRun(ctx, "go tool dist test -json", testCmd, false, jsonDumpFile); err != nil {
 		return attachTestsFailed(err)
 	}
 	return nil
@@ -284,8 +287,9 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []*gola
 	}
 	var testErrors []error
 	for _, m := range modules {
-		testCmd := spec.wrapTestCmd(ctx, spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...))
-		if err := cmdStepRun(ctx, fmt.Sprintf("test %s module", m.Path), testCmd, false); err != nil {
+		jsonDumpFile := filepath.Join(spec.workdir, "go.testjson")
+		testCmd := spec.wrapTestCmd(ctx, spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...), jsonDumpFile)
+		if err := cmdStepRun(ctx, fmt.Sprintf("test %s module", m.Path), testCmd, false, jsonDumpFile); err != nil {
 			testErrors = append(testErrors, err)
 		}
 	}
@@ -304,7 +308,9 @@ func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []modu
 			if len(ports) > 1 || !proto.Equal(p, spec.inputs.Target) {
 				stepName += fmt.Sprintf(" for %s", p)
 			}
-			testCmd := spec.wrapTestCmd(ctx, spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...))
+			// TODO(go.dev/issue/62067): Dump the raw JSON to a file and log it once `go build -json` is
+			// available.
+			testCmd := spec.wrapTestCmd(ctx, spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...), "")
 			if spec.inputs.CompileOnly && compileOptOut(spec.inputs.Project, p, m.Path) {
 				stepName += " (skipped)"
 				testCmd = command(portContext, "echo", "(skipped)")

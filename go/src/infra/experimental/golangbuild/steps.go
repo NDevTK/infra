@@ -12,6 +12,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	"google.golang.org/protobuf/encoding/protojson"
@@ -29,7 +30,7 @@ import (
 // It overwrites cmd.Stdout and cmd.Stderr to redirect into step logs.
 // It runs the command with the environment from the context, so change
 // the context's environment to alter the command's environment.
-func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (err error) {
+func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool, logExtraFiles ...string) (err error) {
 	step, ctx, startStepErr := cmdStartStep(ctx, stepName, cmd)
 	defer func() {
 		if infra {
@@ -48,12 +49,29 @@ func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool)
 	cmd.Stderr = output
 
 	// Run the command.
-	if err := cmd.Run(); err != nil {
-		err = fmt.Errorf("failed to run %s: %w", stepName, err)
-		err = attachLinks(err, fmt.Sprintf("Output for %s", stepName), output.UILink())
-		return err
+	cmdErr := cmd.Run()
+	if cmdErr != nil {
+		cmdErr = fmt.Errorf("failed to run %s: %w", stepName, cmdErr)
+		cmdErr = attachLinks(cmdErr, fmt.Sprintf("Output for %s", stepName), output.UILink())
 	}
-	return nil
+
+	// Log extra files.
+	for _, filename := range logExtraFiles {
+		name := filepath.Base(filename)
+		f, err := os.Open(filename)
+		if err != nil {
+			log := step.Log("file: " + name + " (error)")
+			_, _ = io.WriteString(log, err.Error())
+			continue
+		}
+		log := step.Log("file: " + name)
+		if _, err := io.Copy(log, f); err != nil {
+			log := step.Log("file: " + name + " (error)")
+			_, _ = io.WriteString(log, err.Error())
+		}
+		_ = f.Close()
+	}
+	return cmdErr
 }
 
 // cmdStepOutput calls Output on the provided command and wraps it in a build step.
