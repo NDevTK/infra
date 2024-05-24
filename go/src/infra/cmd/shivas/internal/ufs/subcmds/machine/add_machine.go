@@ -102,11 +102,14 @@ func (c *addMachine) innerRun(a subcommands.Application, args []string, env subc
 
 	var machineRegistrationReq ufsAPI.MachineRegistrationRequest
 	if c.newSpecsFile != "" {
-		if err = utils.ParseJSONFile(c.newSpecsFile, &machineRegistrationReq); err != nil {
+		var machine ufspb.Machine
+		if err = utils.ParseJSONFile(c.newSpecsFile, &machine); err != nil {
 			return err
 		}
-		ufsZone := machineRegistrationReq.GetMachine().GetLocation().GetZone()
-		machineRegistrationReq.GetMachine().Realm = ufsUtil.ToUFSRealm(ufsZone.String())
+		ufsZone := machine.GetLocation().GetZone()
+		machine.Realm = ufsUtil.ToUFSRealm(ufsZone.String())
+
+		machineRegistrationReq.Machine = &machine
 	} else {
 		c.parseArgs(&machineRegistrationReq)
 	}
@@ -124,6 +127,8 @@ func (c *addMachine) innerRun(a subcommands.Application, args []string, env subc
 	return nil
 }
 
+// Populates given ufsAPI.MachineRegistrationRequest struct with the CLI
+// arguments that the user
 func (c *addMachine) parseArgs(req *ufsAPI.MachineRegistrationRequest) {
 	ufsZone := ufsUtil.ToUFSZone(c.zoneName)
 	req.Machine = &ufspb.Machine{
