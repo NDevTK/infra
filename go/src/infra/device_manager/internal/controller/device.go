@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/pubsub"
-	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	schedulingAPI "go.chromium.org/chromiumos/config/go/test/scheduling"
@@ -79,15 +79,17 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device mod
 		return fmt.Errorf("PublishDeviceEvent: topic %s not found", DeviceEventsPubSubTopic)
 	}
 
+	marshalOpts := protojson.MarshalOptions{EmitUnpopulated: true}
+
 	var msg []byte
-	msg, err = proto.Marshal(&schedulingAPI.DeviceEvent{
+	msg, err = marshalOpts.Marshal(&schedulingAPI.DeviceEvent{
 		EventTime:        time.Now().Unix(),
 		DeviceId:         device.ID,
 		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, stringToDeviceState(ctx, device.DeviceState)),
 		DeviceDimensions: labelsToSwarmingDims(ctx, device.SchedulableLabels),
 	})
 	if err != nil {
-		return fmt.Errorf("proto.Marshal err: %w", err)
+		return fmt.Errorf("protojson.Marshal err: %w", err)
 	}
 
 	rsp := topic.Publish(ctx, &pubsub.Message{
