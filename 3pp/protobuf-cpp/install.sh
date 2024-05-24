@@ -18,8 +18,7 @@ fi
 
 PROTOC_OPT=
 if [[ $_3PP_PLATFORM != $_3PP_TOOL_PLATFORM ]]; then  # cross compiling
-  BUILD_PROTOC=`which protoc`
-  PROTOC_OPT=-DWITH_PROTOC=${BUILD_PROTOC}
+  PROTOC_OPT="-Dprotobuf_BUILD_TESTS=OFF"
 fi
 
 mkdir cmake-build

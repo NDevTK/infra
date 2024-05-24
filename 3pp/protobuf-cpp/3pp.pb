@@ -16,16 +16,4 @@ create {
   }
 }
 
-create {
-  platform_re: "linux-arm.*|linux-mips.*|linux-riscv.*"
-
-  build {
-    # Depend on the host protoc for cross-compiling
-    tool: "tools/protobuf-cpp"
-    tool: "tools/cmake"
-    tool: "tools/sed"
-    dep: "static_libs/zlib"
-  }
-}
-
 upload { pkg_prefix: "tools" }
