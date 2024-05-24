@@ -1,50 +1,45 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package main
 
 import (
-	"log"
+	"log/slog"
+	"net"
 	"os"
 
-	"github.com/maruel/subcommands"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
-	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/auth/client/authcli"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
+	smpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_manager"
+
+	"infra/cros/cmd/suite_manager/server"
 )
 
-var (
-	StdoutLog = log.New(os.Stdout, "", logFlags)
-	StderrLog = log.New(os.Stderr, "", logFlags)
-	logFlags  = log.LstdFlags | log.Lmicroseconds
-)
-
-func getApplication(authOpts auth.Options) *subcommands.DefaultApplication {
-	return &subcommands.DefaultApplication{
-		Name:  "suitemanager",
-		Title: "SuiteManager CLI, go/suitemanager-dd",
-		Commands: []*subcommands.Command{
-			subcommands.CmdHelp,
-			authcli.SubcommandInfo(authOpts, "auth-info", false),
-			authcli.SubcommandLogin(authOpts, "auth-login", false),
-			authcli.SubcommandLogout(authOpts, "auth-logout", false),
-		},
+func innerRun() int {
+	listener, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		slog.Error(err.Error())
+		return 1
 	}
-}
 
-type suiteManagerApplication struct {
-	*subcommands.DefaultApplication
-	stdoutLog *log.Logger
-	stderrLog *log.Logger
+	suiteManagerServer := server.InitServer()
+
+	opts := []grpc.ServerOption{}
+	grpcServer := grpc.NewServer(opts...)
+
+	smpb.RegisterSuiteManagerServiceServer(grpcServer, suiteManagerServer)
+	reflection.Register(grpcServer)
+	err = grpcServer.Serve(listener)
+	if err != nil {
+		slog.Error(err.Error())
+		return 1
+	}
+
+	return 0
 }
 
 func main() {
-	opts := chromeinfra.DefaultAuthOptions()
-	s := &suiteManagerApplication{
-		getApplication(opts),
-		log.New(os.Stdout, "", logFlags),
-		log.New(os.Stderr, "", logFlags)}
-	os.Exit(subcommands.Run(s, nil))
+	os.Exit(innerRun())
 }

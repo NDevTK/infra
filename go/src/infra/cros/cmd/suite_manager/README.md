@@ -1,10 +1,6 @@
+<!-- Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
 # SuiteManager
-
-This project implements the commands necessary for SuiteManager to function.
-go/suitemanager-dd for more information.
-
-# Status: WIP
-The UI is well underway but this CLI is in the initial stages. Work to come will
-include Firestore auto-replication of the suite_scheduler.ini file, .ini
-replication of SuiteManager changes, and command line tools to modify SuSch
-configs.
+This project implements the SuiteManager gRPC server.
