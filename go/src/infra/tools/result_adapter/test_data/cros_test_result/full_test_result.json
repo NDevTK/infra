@@ -30,10 +30,14 @@
                         "ash_version":"109.0.5391.0",
                         "lacros_version":"109.0.5391.0"
                     },
-                    "chameleon":{
-                        "types":[
-                            "V2",
-                            "V3"
+                    "chameleon_info": {
+                        "chameleon_type": [
+                            "CHAMELEON_TYPE_V2",
+                            "CHAMELEON_TYPE_V3"
+                        ],
+                        "chameleon_connection_types": [
+                            "CHAMELEON_CONNECTION_TYPE_HDMI",
+                            "CHAMELEON_CONNECTION_TYPE_USB"
                         ]
                     },
                     "modem_info": {

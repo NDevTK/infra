@@ -367,20 +367,28 @@ func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.Bu
 		newTags = AppendTags(newTags, "lacros_version", lacros.GetLacrosVersion())
 	}
 
-	chameleon := buildMetadata.GetChameleon()
-	if chameleon != nil {
-		chameleonTypes := []string{}
-		for _, t := range chameleon.GetTypes() {
-			chameleonTypes = append(chameleonTypes, t.Enum().String())
+	chameleonInfo := buildMetadata.GetChameleonInfo()
+	if chameleonInfo != nil {
+		chameleonTypes := make([]string, 0, len(chameleonInfo.ChameleonType))
+		for _, t := range chameleonInfo.ChameleonType {
+			chameleonTypes = append(chameleonTypes, t.String())
 		}
 		if len(chameleonTypes) != 0 {
 			newTags = AppendTags(newTags, "chameleon_type", strings.Join(chameleonTypes, ","))
+		}
+
+		chameleonConnectionTypes := make([]string, 0, len(chameleonInfo.ChameleonConnectionTypes))
+		for _, t := range chameleonInfo.ChameleonConnectionTypes {
+			chameleonConnectionTypes = append(chameleonConnectionTypes, t.String())
+		}
+		if len(chameleonConnectionTypes) != 0 {
+			newTags = AppendTags(newTags, "chameleon_connection_types", strings.Join(chameleonConnectionTypes, ","))
 		}
 	}
 
 	modemInfo := buildMetadata.GetModemInfo()
 	if modemInfo != nil {
-		newTags = AppendTags(newTags, "modem_type", modemInfo.GetType().Enum().String())
+		newTags = AppendTags(newTags, "modem_type", modemInfo.GetType().String())
 	}
 
 	return newTags
