@@ -189,6 +189,26 @@ func GetDeviceLeaseRecordByIdemKey(ctx context.Context, db *sql.DB, idemKey stri
 // values. If there is no value provided, then it will use the current value of
 // the device field in the db.
 func UpdateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, updatedRec DeviceLeaseRecord) error {
+	var (
+		releasedTime    sql.NullTime
+		expirationTime  sql.NullTime
+		lastUpdatedTime sql.NullTime
+	)
+
+	// Handle possible null times
+	if !updatedRec.ReleasedTime.IsZero() {
+		releasedTime.Time = updatedRec.ReleasedTime
+		releasedTime.Valid = true
+	}
+	if !updatedRec.ExpirationTime.IsZero() {
+		expirationTime.Time = updatedRec.ExpirationTime
+		expirationTime.Valid = true
+	}
+	if !updatedRec.LastUpdatedTime.IsZero() {
+		lastUpdatedTime.Time = updatedRec.LastUpdatedTime
+		lastUpdatedTime.Valid = true
+	}
+
 	result, err := tx.ExecContext(ctx, `
 		UPDATE
 			"DeviceLeaseRecords"
@@ -199,9 +219,9 @@ func UpdateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, updatedRec DeviceL
 		WHERE
 			id=$1;`,
 		updatedRec.ID,
-		updatedRec.ReleasedTime,
-		updatedRec.ExpirationTime,
-		updatedRec.LastUpdatedTime,
+		releasedTime,
+		expirationTime,
+		lastUpdatedTime,
 	)
 	if err != nil {
 		logging.Errorf(ctx, "UpdateDeviceLeaseRecord: failed to update DeviceLeaseRecord %s: %s", updatedRec.ID, err)
