@@ -170,7 +170,7 @@ func getAllDMDevices(ctx context.Context, db *sql.DB) ([]model.Device, error) {
 	)
 
 	for {
-		res, token, err := model.ListDevices(ctx, db, pageToken, model.DefaultPageSize)
+		res, token, err := model.ListDevices(ctx, db, pageToken, model.DefaultPageSize, "")
 		if err != nil {
 			return nil, err
 		}

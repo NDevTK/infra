@@ -37,8 +37,7 @@ func GetDevice(ctx context.Context, db *sql.DB, idType model.DeviceIDType, devic
 
 // ListDevices lists Devices from the db based on filters.
 func ListDevices(ctx context.Context, db *sql.DB, r *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
-	// TODO (b/337086313): Implement filtering
-	devices, nextPageToken, err := model.ListDevices(ctx, db, model.PageToken(r.GetPageToken()), int(r.GetPageSize()))
+	devices, nextPageToken, err := model.ListDevices(ctx, db, model.PageToken(r.GetPageToken()), int(r.GetPageSize()), r.GetFilter())
 	if err != nil {
 		return nil, err
 	}

@@ -14,6 +14,8 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/logging"
+
+	"infra/device_manager/internal/database"
 )
 
 const DefaultPageSize = 1000
@@ -141,44 +143,18 @@ func GetDeviceByID(ctx context.Context, db *sql.DB, idType DeviceIDType, deviceI
 }
 
 // ListDevices retrieves Devices with pagination.
-func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize int) ([]Device, PageToken, error) {
-	// TODO (b/337086313): Implement filtering
+func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize int, filter string) ([]Device, PageToken, error) {
 	// handle potential errors for negative page numbers or page sizes
 	if pageSize <= 0 {
 		pageSize = DefaultPageSize
 	}
 
-	query := `
-		SELECT
-			id,
-			device_address,
-			device_type,
-			device_state,
-			schedulable_labels,
-			created_time,
-			last_updated_time,
-			is_active
-		FROM "Devices"`
-	args := []interface{}{}
-	currArgPosition := 1
-
-	if pageToken != "" {
-		decodedTime, err := DecodePageToken(ctx, pageToken)
-		if err != nil {
-			return nil, "", fmt.Errorf("ListDevices: %w", err)
-		}
-
-		query += fmt.Sprintf(`
-			WHERE created_time > $%d`, currArgPosition)
-		args = append(args, decodedTime)
-		currArgPosition += 1
+	query, args, err := buildListDevicesQuery(ctx, pageToken, pageSize, filter)
+	if err != nil {
+		return nil, "", fmt.Errorf("ListDevices: %w", err)
 	}
 
-	query += fmt.Sprintf(`
-		ORDER BY created_time
-		LIMIT $%d;`, currArgPosition)
-	args = append(args, pageSize+1) // fetch one extra to check for 'next page'
-
+	logging.Debugf(ctx, "ListDevices: running query: %s", query)
 	rows, err := db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, "", fmt.Errorf("ListDevices: %w", err)
@@ -233,6 +209,43 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize 
 		results = results[0:pageSize] // trim results to page size
 	}
 	return results, nextPageToken, nil
+}
+
+// buildListDevicesQuery builds a ListDevices query using given params.
+func buildListDevicesQuery(ctx context.Context, pageToken PageToken, pageSize int, filter string) (string, []interface{}, error) {
+	var queryArgs []interface{}
+	query := `
+		SELECT
+			id,
+			device_address,
+			device_type,
+			device_state,
+			schedulable_labels,
+			created_time,
+			last_updated_time,
+			is_active
+		FROM "Devices"`
+
+	if pageToken != "" {
+		decodedTime, err := DecodePageToken(ctx, pageToken)
+		if err != nil {
+			return "", queryArgs, fmt.Errorf("buildListDevicesQuery: %w", err)
+		}
+		filter = fmt.Sprintf("created_time > %s%s", decodedTime, func() string {
+			if filter == "" {
+				return "" // No additional filter provided
+			}
+			return " AND " + filter
+		}())
+	}
+
+	queryFilter, filterArgs := database.BuildQueryFilter(ctx, filter)
+	query += queryFilter + fmt.Sprintf(`
+		ORDER BY created_time
+		LIMIT $%d;`, len(filterArgs)+1)
+	filterArgs = append(filterArgs, pageSize+1) // fetch one extra to check for 'next page'
+
+	return query, filterArgs, nil
 }
 
 // UpdateDevice updates a Device in a transaction.

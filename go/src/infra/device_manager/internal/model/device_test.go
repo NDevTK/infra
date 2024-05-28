@@ -9,7 +9,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"reflect"
 	"regexp"
+	"strings"
 	"testing"
 	"time"
 
@@ -295,7 +297,7 @@ func TestListDevices(t *testing.T) {
 				WithArgs(pageSize + 1).
 				WillReturnRows(rows)
 
-			devices, nextPageToken, err := ListDevices(ctx, db, "", pageSize)
+			devices, nextPageToken, err := ListDevices(ctx, db, "", pageSize, "")
 			So(err, ShouldBeNil)
 			So(nextPageToken, ShouldEqual, PageToken("MjAyNC0wMS0wMVQxMjowMDowMFo="))
 			So(devices, ShouldEqual, []Device{
@@ -384,7 +386,7 @@ func TestListDevices(t *testing.T) {
 				WithArgs(pageSize + 1).
 				WillReturnRows(rows)
 
-			devices, nextPageToken, err := ListDevices(ctx, db, "", pageSize)
+			devices, nextPageToken, err := ListDevices(ctx, db, "", pageSize, "")
 			So(err, ShouldBeNil)
 			So(nextPageToken, ShouldEqual, PageToken(""))
 			So(devices, ShouldEqual, []Device{
@@ -477,7 +479,7 @@ func TestListDevices(t *testing.T) {
 				WithArgs(createdTime.Format(time.RFC3339Nano), pageSize+1).
 				WillReturnRows(rows)
 
-			devices, nextPageToken, err := ListDevices(ctx, db, PageToken(pageToken), pageSize)
+			devices, nextPageToken, err := ListDevices(ctx, db, PageToken(pageToken), pageSize, "")
 			So(err, ShouldBeNil)
 			So(nextPageToken, ShouldEqual, PageToken(""))
 			So(devices, ShouldEqual, []Device{
@@ -498,6 +500,94 @@ func TestListDevices(t *testing.T) {
 			})
 		})
 	})
+}
+
+func Test_buildListDevicesQuery(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	tests := []struct {
+		name       string
+		pageToken  PageToken
+		pageSize   int
+		filter     string
+		wantQuery  string
+		wantArgs   []interface{}
+		wantErrStr string
+	}{
+		{
+			name:      "empty filter, page token",
+			pageToken: "",
+			pageSize:  10,
+			filter:    "",
+			wantQuery: `
+		SELECT
+			id,
+			device_address,
+			device_type,
+			device_state,
+			schedulable_labels,
+			created_time,
+			last_updated_time,
+			is_active
+		FROM "Devices"
+		ORDER BY created_time
+		LIMIT $1;`,
+			wantArgs:   []interface{}{11},
+			wantErrStr: "",
+		},
+		{
+			name:       "bad page token",
+			pageToken:  "1",
+			pageSize:   10,
+			filter:     "is_active = true",
+			wantQuery:  "",
+			wantArgs:   nil,
+			wantErrStr: "DecodePageToken: illegal base64 data",
+		},
+		{
+			name:      "valid request",
+			pageToken: "MjAyNC0wNS0xNVQyMTo0NzoyMy44MjIyODNa",
+			pageSize:  10,
+			filter:    "is_active = true",
+			wantQuery: `
+		SELECT
+			id,
+			device_address,
+			device_type,
+			device_state,
+			schedulable_labels,
+			created_time,
+			last_updated_time,
+			is_active
+		FROM "Devices"
+		WHERE created_time > $1 AND is_active = $2
+		ORDER BY created_time
+		LIMIT $3;`,
+			wantArgs:   []interface{}{"2024-05-15T21:47:23.822283Z", "true", 11},
+			wantErrStr: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			gotQuery, gotArgs, gotErr := buildListDevicesQuery(ctx, tt.pageToken, tt.pageSize, tt.filter)
+
+			if gotErr != nil && tt.wantErrStr == "" {
+				t.Errorf("buildListDevicesQuery() gotErr = %v, want %v", gotErr, tt.wantErrStr)
+			}
+			if gotErr != nil && !strings.Contains(gotErr.Error(), tt.wantErrStr) {
+				t.Errorf("buildListDevicesQuery() gotErr = %v, want %v", gotErr, tt.wantErrStr)
+			}
+			if gotQuery != tt.wantQuery {
+				t.Errorf("buildListDevicesQuery() gotQuery = %v, want %v", gotQuery, tt.wantQuery)
+			}
+			if !reflect.DeepEqual(gotArgs, tt.wantArgs) {
+				t.Errorf("buildListDevicesQuery() gotArgs = %v, want %v", gotArgs, tt.wantArgs)
+			}
+		})
+	}
 }
 
 func TestUpdateDevice(t *testing.T) {
