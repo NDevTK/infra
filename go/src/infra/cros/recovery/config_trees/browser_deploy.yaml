@@ -32,7 +32,7 @@ plans:
                 - Check the DUT has model specific firmware stable_version configured.
                 - Flex device are exampted from this check as they don't run cros firmware
               conditions:
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven

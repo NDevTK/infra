@@ -796,12 +796,14 @@ func servoRepairPlan() *Plan {
 				},
 			},
 			"pwr_button_supported_models": {
-				Docs: []string{"power button check is not applicable for these models"},
+				Docs:     []string{"power button check is not applicable for these models"},
+				ExecName: "dut_check_model",
 				ExecExtraArgs: []string{
 					"string_values:arkham,gale,mistral,storm,whirlwind",
 					"invert_result:true",
 				},
-				ExecName: "dut_check_model",
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Verify power button signal": {
 				Docs: []string{
@@ -1909,11 +1911,12 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Verify that the device is a Chromebook by checking for non-Chromebook boards",
 				},
+				ExecName: "dut_check_board",
 				ExecExtraArgs: []string{
 					"string_values:aurora,reven",
 					"invert_result:true",
 				},
-				ExecName:      "dut_check_board",
+				RunControl:    RunControl_RUN_ONCE,
 				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 		},

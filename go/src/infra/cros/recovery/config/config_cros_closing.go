@@ -79,20 +79,22 @@ func crosRepairClosingActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 		},
 		"Is Flex device": {
-			Docs: []string{"Verify that device is belong Reven models"},
+			Docs:     []string{"Verify that device is belong Reven models"},
+			ExecName: "dut_check_board",
 			ExecExtraArgs: []string{
 				"string_values:aurora,reven",
 			},
-			ExecName:      "dut_check_board",
+			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Is a Chromebook": {
-			Docs: []string{"Verify that the device is a Chromebook by checking for non-Chromebook boards"},
+			Docs:     []string{"Verify that the device is a Chromebook by checking for non-Chromebook boards"},
+			ExecName: "dut_check_board",
 			ExecExtraArgs: []string{
 				"string_values:aurora,reven",
 				"invert_result:true",
 			},
-			ExecName:      "dut_check_board",
+			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Collect servod logs": {

@@ -11,7 +11,7 @@ plans:
                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
             - name: Check stable firmware version exists ('has_stable_version_fw_version')
               conditions:
-                - name: Is a Chromebook ('dut_check_board')
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
           recoveries:

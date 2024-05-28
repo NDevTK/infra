@@ -145,7 +145,7 @@ plans:
                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                       conditions:
                         - name: Setup has servo info ('dut_servo_host_present')
-                - name: Is a Chromebook ('dut_check_board')
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Is servo USB key detected ('servo_usbkey_is_detected')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -208,7 +208,7 @@ plans:
                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                       conditions:
                         - name: Setup has servo info ('dut_servo_host_present')
-                - name: Is a Chromebook ('dut_check_board')
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Is servo USB key detected ('servo_usbkey_is_detected')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -292,7 +292,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Install OS in recovery mode by booting from servo USB-drive (Flex) ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is Flex device ('dut_check_board')
+                - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present')
@@ -374,10 +374,10 @@ plans:
                 - name: Print active devices (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                 - name: Is Flex booted from USB-drive ('cros_run_command') (ALWAYS_RUN)
                   conditions:
-                    - name: Is Flex device ('dut_check_board')
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                 - name: Run chromeos-install for Flex ('cros_run_command') (ALWAYS_RUN) (time:'10m0s')
                   dependencies:
-                    - name: Is Flex device ('dut_check_board')
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                 - name: Power OFF DUT by servo ('servo_set') (ALWAYS_RUN)
                   dependencies:
@@ -413,7 +413,7 @@ plans:
                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                       conditions:
                         - name: Setup has servo info ('dut_servo_host_present')
-                - name: Is a Chromebook ('dut_check_board')
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Is servo USB key detected ('servo_usbkey_is_detected')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -445,7 +445,7 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Is a Chromebook ('dut_check_board')
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is servo USB key detected ('servo_usbkey_is_detected')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)

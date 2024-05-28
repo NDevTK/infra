@@ -63,7 +63,6 @@ func deployActions() map[string]*Action {
 				"Install OS in DEV mode",
 				"Install OS in DEV mode, with force to DEV-mode",
 				"Install OS in DEV mode with fresh image",
-				"Install OS in DEV mode, with force to DEV-mode with test firmware",
 			},
 		},
 		"DUT has expected dev firmware": {

@@ -90,7 +90,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -310,7 +310,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -450,7 +450,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -519,7 +519,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -714,7 +714,7 @@ plans:
                 - This action installs the test image on DUT utilizing the features of servo.
                 - When DUT sees USB-key it will always try to boot from it.
               conditions:
-                - name: Is Flex device
+                - name: Is Flex device (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -977,7 +977,7 @@ plans:
                   docs:
                     - Check if device booted from USB in installer mode.
                   conditions:
-                    - name: Is Flex device
+                    - name: Is Flex device (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -994,7 +994,7 @@ plans:
                     - Run chromeos-install for Flex DUTs with detecting destination.
                     - Flex device does not detect destination as part of chromeos-install script.
                   dependencies:
-                    - name: Is Flex device
+                    - name: Is Flex device (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -1111,7 +1111,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -1382,7 +1382,7 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -1602,7 +1602,7 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -1742,7 +1742,7 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -1811,7 +1811,7 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -2006,7 +2006,7 @@ plans:
                     - This action installs the test image on DUT utilizing the features of servo.
                     - When DUT sees USB-key it will always try to boot from it.
                   conditions:
-                    - name: Is Flex device
+                    - name: Is Flex device (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -2269,7 +2269,7 @@ plans:
                       docs:
                         - Check if device booted from USB in installer mode.
                       conditions:
-                        - name: Is Flex device
+                        - name: Is Flex device (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -2286,7 +2286,7 @@ plans:
                         - Run chromeos-install for Flex DUTs with detecting destination.
                         - Flex device does not detect destination as part of chromeos-install script.
                       dependencies:
-                        - name: Is Flex device
+                        - name: Is Flex device (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -2403,7 +2403,7 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -2619,7 +2619,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -2708,7 +2708,7 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -2832,7 +2832,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -2942,7 +2942,7 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -3066,7 +3066,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -3240,7 +3240,7 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven

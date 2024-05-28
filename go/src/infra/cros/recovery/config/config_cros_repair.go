@@ -1327,11 +1327,13 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Check that is board without chromeOS EC.",
 			},
+			ExecName: "dut_check_board",
 			ExecExtraArgs: []string{
 				"string_values:drallion,sarien",
 				"invert_result:false",
 			},
-			ExecName: "dut_check_board",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Battery is expected on device": {
 			Docs: []string{
@@ -2368,21 +2370,24 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Check that DUT is a Flex board",
 			},
+			ExecName: "dut_check_board",
 			ExecExtraArgs: []string{
 				"string_values:aurora,reven",
 				"invert_result:false",
 			},
-			ExecName: "dut_check_board",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Is a Chromebook": {
 			Docs: []string{
 				"Check that DUT is a Chromebook by checking for non-Chromebook boards",
 			},
+			ExecName: "dut_check_board",
 			ExecExtraArgs: []string{
 				"string_values:aurora,reven",
 				"invert_result:true",
 			},
-			ExecName:      "dut_check_board",
+			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Quick provision OS": {
@@ -4326,6 +4331,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify crosid cli is responsive.",
 			},
 			Conditions: []string{
+				"Is a Chromebook",
 				"Device is SSHable",
 				"Is crosid present",
 			},
@@ -4610,15 +4616,16 @@ func crosRepairActions() map[string]*Action {
 				"Collect firmware target from DUT to inventory.",
 			},
 			Conditions: []string{
-				"Is crosid readable",
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
+				"Is crosid readable",
 			},
 			ExecName: "cros_collect_firmware_target",
-			ExecExtraArgs: []string{
-				// TODO(b/333895984): Disable force before enable for production usage.
-				"force_override:true",
+			RecoveryActions: []string{
+				// Just try again as we are awaiting health data.
+				"Sleep 1s",
 			},
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_ALWAYS_RUN,

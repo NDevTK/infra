@@ -1062,7 +1062,7 @@ plans:
           docs:
             - Verify if servo connected to the DUTand received required voltage from it.
           conditions:
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -1401,7 +1401,7 @@ plans:
           docs:
             - Check if servod detected debug header components as expected.
           conditions:
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -1511,7 +1511,7 @@ plans:
             - command:cold_reset
             - expected_string_value:off
           conditions:
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -1625,7 +1625,7 @@ plans:
             - Verify that warm_reset pin is detected by servod.
             - If pin is not present then issue can be related to incorrect connected servo or issue with connector.
           conditions:
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -1942,7 +1942,7 @@ plans:
           docs:
             - Run basic cr50/ti50 detections checks.
           conditions:
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -2667,7 +2667,7 @@ plans:
           docs:
             - Check if servod detected all required children components.
           conditions:
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -3016,7 +3016,7 @@ plans:
           docs:
             - Make sure the servo has the required number of servo components.
           conditions:
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -3949,7 +3949,7 @@ plans:
               docs:
                 - If servo uses c2d2/cr50/gsc to control the DUT, open testlab will allowed to work (cr50_reboot, cold_reset, warm_reset)
               conditions:
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -3961,7 +3961,7 @@ plans:
                   docs:
                     - This devices should use testlab to open CCD and reset capabilities to factory settings.
                   dependencies:
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -3976,7 +3976,7 @@ plans:
               docs:
                 - Reset CCD to the factory settings.
               conditions:
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -3988,7 +3988,7 @@ plans:
                   docs:
                     - This devices should use testlab to open CCD and reset capabilities to factory settings.
                   dependencies:
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -4322,7 +4322,7 @@ plans:
           docs:
             - Verify that Cr50 console is responsive.
           conditions:
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -4334,7 +4334,7 @@ plans:
               docs:
                 - This devices should use testlab to open CCD and reset capabilities to factory settings.
               dependencies:
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -4509,7 +4509,7 @@ plans:
                   docs:
                     - If servo uses c2d2/cr50/gsc to control the DUT, open testlab will allowed to work (cr50_reboot, cold_reset, warm_reset)
                   conditions:
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -4521,7 +4521,7 @@ plans:
                       docs:
                         - This devices should use testlab to open CCD and reset capabilities to factory settings.
                       dependencies:
-                        - name: Is a Chromebook
+                        - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -4536,7 +4536,7 @@ plans:
                   docs:
                     - Reset CCD to the factory settings.
                   conditions:
-                    - name: Is a Chromebook
+                    - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -4548,7 +4548,7 @@ plans:
                       docs:
                         - This devices should use testlab to open CCD and reset capabilities to factory settings.
                       dependencies:
-                        - name: Is a Chromebook
+                        - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -5206,7 +5206,7 @@ plans:
             - Verify that testlab flag is enabled in GSC chip.
             - Expect that cr50/GSC will required to set cr50 testlab is enabled.
           conditions:
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -5224,7 +5224,7 @@ plans:
               docs:
                 - This devices should use testlab to open CCD and reset capabilities to factory settings.
               dependencies:
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -5333,7 +5333,7 @@ plans:
         - name: Verify EC
           exec_name: sample_pass
           conditions:
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -5549,7 +5549,7 @@ plans:
                 - verify that pwr_button signal is present.
                 - If signal is not present then probably we have issue with servo connection.
               conditions:
-                - name: pwr_button_supported_models
+                - name: pwr_button_supported_models (RUN_ONCE)
                   exec_name: dut_check_model
                   exec_args:
                     - string_values:arkham,gale,mistral,storm,whirlwind
@@ -6169,7 +6169,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -6389,7 +6389,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -6529,7 +6529,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -6598,7 +6598,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -6793,7 +6793,7 @@ plans:
                 - This action installs the test image on DUT utilizing the features of servo.
                 - When DUT sees USB-key it will always try to boot from it.
               conditions:
-                - name: Is Flex device
+                - name: Is Flex device (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -7056,7 +7056,7 @@ plans:
                   docs:
                     - Check if device booted from USB in installer mode.
                   conditions:
-                    - name: Is Flex device
+                    - name: Is Flex device (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -7073,7 +7073,7 @@ plans:
                     - Run chromeos-install for Flex DUTs with detecting destination.
                     - Flex device does not detect destination as part of chromeos-install script.
                   dependencies:
-                    - name: Is Flex device
+                    - name: Is Flex device (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -7190,7 +7190,7 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -7378,7 +7378,7 @@ plans:
               docs:
                 - Verify that device was not booted from USB-drive.
               conditions:
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -7483,7 +7483,7 @@ plans:
           conditions:
             - name: Servo-host known
               exec_name: dut_servo_host_present
-            - name: Is a Chromebook
+            - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -7544,7 +7544,7 @@ plans:
             - name: Remove request to reboot if servo is good (Allow to fail)
               exec_name: cros_remove_reboot_request
               conditions:
-                - name: Is a Chromebook
+                - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
