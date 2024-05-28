@@ -19,6 +19,9 @@ import (
 	"infra/cros/botsregulator/internal/regulator"
 )
 
+// migrateSeenInfo caches the last successful migrate-bots run.
+var migrateSeenInfo cron.LastSeenConfig
+
 func main() {
 	mods := []module.Module{
 		scron.NewModuleFromFlags(),
@@ -37,7 +40,7 @@ func main() {
 		})
 		scron.RegisterHandler("migrate-bots", func(ctx context.Context) error {
 			ctx = logging.SetField(ctx, "activity", "migrate-bots")
-			return cron.Migrate(ctx, &r)
+			return cron.Migrate(ctx, &r, &migrateSeenInfo)
 		})
 		return nil
 	})
