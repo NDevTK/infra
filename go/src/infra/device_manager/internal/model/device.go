@@ -10,12 +10,13 @@ import (
 	"database/sql/driver"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
 	"go.chromium.org/luci/common/logging"
 )
+
+const DefaultPageSize = 1000
 
 // Device contains a single row from the Devices table in the database.
 type Device struct {
@@ -144,7 +145,7 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize 
 	// TODO (b/337086313): Implement filtering
 	// handle potential errors for negative page numbers or page sizes
 	if pageSize <= 0 {
-		return nil, "", errors.New("ListDevices: invalid pagination parameters")
+		pageSize = DefaultPageSize
 	}
 
 	query := `

@@ -26,8 +26,6 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
-const defaultPageSize = 1000
-
 // ImportUFSDevices registers the cron to trigger import for all Device
 // information from UFS.
 func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClients) error {
@@ -172,7 +170,7 @@ func getAllDMDevices(ctx context.Context, db *sql.DB) ([]model.Device, error) {
 	)
 
 	for {
-		res, token, err := model.ListDevices(ctx, db, pageToken, defaultPageSize)
+		res, token, err := model.ListDevices(ctx, db, pageToken, model.DefaultPageSize)
 		if err != nil {
 			return nil, err
 		}
