@@ -2386,6 +2386,21 @@ Example DefaultWifi ("name" must be in the lower case):
 
 The protobuf definition of DefaultWifi is part of
 https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/unifiedfleet/api/v1/models/secret.proto`
+
+	// PasitHostLongDesc is a long description for PASIT host topology subcommands
+	PasitHostLongDesc string = `Manage peripheral PASIT host topology associated to a DUT.
+
+This cmd always runs in the OS namespace.
+The command requires specifying an action which is either add or delete.
+Only one PASIT Host is allowed per DUT.
+
+Add adds the specified PASIT Host to the DUT.
+Delete deletes the PASIT Host attached to the DUT.
+
+Examples:
+shivas add peripheral-pasit-host -dut {DUT name} -f {host .json file}
+shivas delete peripheral-pasit-host -dut {DUT name}
+`
 )
 
 func CronTriggerAvailableJobsString() string {
