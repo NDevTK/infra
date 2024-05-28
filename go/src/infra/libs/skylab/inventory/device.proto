@@ -603,6 +603,9 @@ message Peripherals {
 
     // GCMP and GCMP-256 pairwise and group cipher support.
     WIFI_ROUTER_FEATURE_GCMP = 11;
+
+    // SAE-EXT-KEY support for AKM-24/25.
+    WIFI_ROUTER_FEATURE_SAE_EXT_KEY = 12;
   }
 
   // WifiRouterFeatures that are supported by all wifi routers in the testbed.
