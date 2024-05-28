@@ -25552,6 +25552,18 @@ plans:
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
           recoveries:
             - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+            - name: Quick provision OS ('sample_pass')
+              conditions:
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Internal storage is responsive ('cros_is_file_system_writable')
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
         - name: Collect gpu_id (Allow to fail) ('cros_collect_gpu_id') (ALWAYS_RUN)
           dependencies:
             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')

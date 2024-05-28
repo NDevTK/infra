@@ -324,6 +324,7 @@ plans:
                     - update_ec_attempt_count:5
                     - download_timeout:600
                     - use_cache_extractor:true
+                    - use_fw_targets_from_inventory:true
                   docs:
                     - Download fw-image specified in stable version and flash EC to the DUT by servo
                     - Set timeout for 110 minutes for now as = 10m(download)+4*20m(find/extract file)+20m(ec-update with retry).
@@ -383,6 +384,7 @@ plans:
                     - download_timeout:600
                     - gbb_flags:0x18
                     - use_cache_extractor:true
+                    - use_fw_targets_from_inventory:true
                   docs:
                     - Download fw-image specified in stable version and flash AP to the DUT by servo
                     - Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).
@@ -1616,6 +1618,7 @@ plans:
                         - update_ec_attempt_count:5
                         - download_timeout:600
                         - use_cache_extractor:true
+                        - use_fw_targets_from_inventory:true
                       docs:
                         - Download fw-image specified in stable version and flash EC to the DUT by servo
                         - Set timeout for 110 minutes for now as = 10m(download)+4*20m(find/extract file)+20m(ec-update with retry).
@@ -1675,6 +1678,7 @@ plans:
                         - download_timeout:600
                         - gbb_flags:0x18
                         - use_cache_extractor:true
+                        - use_fw_targets_from_inventory:true
                       docs:
                         - Download fw-image specified in stable version and flash AP to the DUT by servo
                         - Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).
@@ -3120,6 +3124,7 @@ plans:
                     - update_ec_attempt_count:5
                     - download_timeout:600
                     - use_cache_extractor:true
+                    - use_fw_targets_from_inventory:true
                   docs:
                     - Download fw-image specified in stable version and flash EC to the DUT by servo
                     - Set timeout for 110 minutes for now as = 10m(download)+4*20m(find/extract file)+20m(ec-update with retry).
@@ -3179,6 +3184,7 @@ plans:
                     - download_timeout:600
                     - gbb_flags:0x18
                     - use_cache_extractor:true
+                    - use_fw_targets_from_inventory:true
                   docs:
                     - Download fw-image specified in stable version and flash AP to the DUT by servo
                     - Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).

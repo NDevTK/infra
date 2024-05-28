@@ -1240,6 +1240,7 @@ func crosRepairActions() map[string]*Action {
 				"update_ap_attempt_count:1",
 				"updater_timeout:600",
 				"use_cache_extractor:true",
+				"use_fw_targets_from_inventory:true",
 			},
 			// Allowed to fail as part of b/236417969 to check affect of it.
 			AllowFailAfterRecovery: true,
@@ -3322,6 +3323,7 @@ func crosRepairActions() map[string]*Action {
 				"download_timeout:600",
 				"gbb_flags:0x18",
 				"use_cache_extractor:true",
+				"use_fw_targets_from_inventory:true",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 5400,
@@ -3347,6 +3349,7 @@ func crosRepairActions() map[string]*Action {
 				"gbb_flags:0x18",
 				"use_cache_extractor:true",
 				"use_serial_fw_target:true",
+				"use_fw_targets_from_inventory:true",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 5400,
@@ -3370,6 +3373,7 @@ func crosRepairActions() map[string]*Action {
 				"update_ec_attempt_count:5",
 				"download_timeout:600",
 				"use_cache_extractor:true",
+				"use_fw_targets_from_inventory:true",
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 6600},
 			AllowFailAfterRecovery: true,
@@ -3391,6 +3395,7 @@ func crosRepairActions() map[string]*Action {
 				"update_ec_attempt_count:5",
 				"download_timeout:600",
 				"use_cache_extractor:true",
+				"use_fw_targets_from_inventory:true",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 6600},
 		},
@@ -3415,6 +3420,7 @@ func crosRepairActions() map[string]*Action {
 				"download_timeout:600",
 				"gbb_flags:0x18",
 				"use_cache_extractor:true",
+				"use_fw_targets_from_inventory:true",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 5400,
@@ -4624,9 +4630,13 @@ func crosRepairActions() map[string]*Action {
 				"Is crosid readable",
 			},
 			ExecName: "cros_collect_firmware_target",
+			ExecExtraArgs: []string{
+				"force_override:false",
+			},
 			RecoveryActions: []string{
 				// Just try again as we are awaiting health data.
 				"Sleep 1s",
+				"Quick provision OS",
 			},
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_ALWAYS_RUN,
