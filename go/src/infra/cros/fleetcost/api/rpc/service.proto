@@ -183,7 +183,11 @@ message DeleteCostIndicatorResponse {
 
 // PersistToBigqueryRequest does not contain any info, since
 // PersistToBigquery is intended to be called as a cron job.
-message PersistToBigqueryRequest {};
+message PersistToBigqueryRequest {
+  // If readonly is true, then we perform a dry run and do not update BigQuery.
+  // If readonly is false, then we do update BigQuery.
+  bool readonly = 1;
+};
 
 message PersistToBigqueryResponse {
   // Persisted records is the number of records that were persisted.
