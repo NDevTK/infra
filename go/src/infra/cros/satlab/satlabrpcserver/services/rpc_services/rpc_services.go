@@ -1482,6 +1482,8 @@ func (s *SatlabRpcServiceServer) GetJobDetails(ctx context.Context, taskInfo *sw
 		job.ResultsUrl = getTestResultsLink(tagsInfo)
 	}
 
+	job.CpconUrl = getStorageQualCPCONLink(tagsInfo)
+
 	// Only a task in RUNNINING state can have child tasks.
 	if tagsInfo[site.BuilderTag] == site.GetCTPBuilder() && (job.Status == pb.Job_RUNNING) {
 
@@ -1511,6 +1513,16 @@ func (s *SatlabRpcServiceServer) GetJobDetails(ctx context.Context, taskInfo *sw
 	}
 
 	return &job, nil
+}
+
+func getStorageQualCPCONLink(tagsInfo map[string]string) string {
+	accountID := site.GetCPConAccountID()
+	bugID := tagsInfo[site.BugIDTag]
+	runID := tagsInfo[site.QualRunIDTag]
+	if accountID == "" || bugID == "" || runID == "" {
+		return ""
+	}
+	return fmt.Sprintf(site.CPConLinkTemplate, accountID, runID, bugID)
 }
 
 // getJobStatus converts Swarming Task state to Satlab Job status.
@@ -1547,7 +1559,6 @@ func getDutHostName(botDims []*swarmingapi.StringListPair) string {
 		}
 		return dim.Value[0]
 	}
-
 	return ""
 }
 

@@ -183,6 +183,8 @@ const (
 	TaskRunningDeploy         = "Deploying"
 	TestRunnerSwarmingPoolEnv = "TEST_RUNNER_SWARMING_POOL"
 	CTPSwarmingPoolEnv        = "CTP_SWARMING_POOL"
+	CPConAccountIDEnv         = "CPCON_ACCOUNT_ID"
+	CPConLinkTemplate         = "https://chromeos.google.com/partner/console/a/%s/pvsAvlDetails?runId=%s&issueId=%s"
 )
 
 // CommonFlags controls some commonly-used CLI flags.
@@ -511,19 +513,15 @@ const MaxIshCTPTimeoutMins = 4319
 // GetTestRunnerSwarmingPool determines which Partner Swarming Pool for test runner,
 // based on the environment.
 func GetTestRunnerSwarmingPool() string {
-	pool := os.Getenv(TestRunnerSwarmingPoolEnv)
-	if pool != "" {
-		return pool
-	}
-	return ""
+	return os.Getenv(TestRunnerSwarmingPoolEnv)
 }
 
 // GetCTPSwarmingPool determines which Partner Swarming Pool for CTP,
 // based on the environment.
 func GetCTPSwarmingPool() string {
-	pool := os.Getenv(CTPSwarmingPoolEnv)
-	if pool != "" {
-		return pool
-	}
-	return ""
+	return os.Getenv(CTPSwarmingPoolEnv)
+}
+
+func GetCPConAccountID() string {
+	return os.Getenv(CPConAccountIDEnv)
 }
