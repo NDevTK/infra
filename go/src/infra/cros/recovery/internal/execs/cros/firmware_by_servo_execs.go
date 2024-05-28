@@ -95,6 +95,10 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 		DownloadImageReattemptCount: am.AsInt(ctx, "reattempt_count", 3),
 		DownloadImageReattemptWait:  am.AsDuration(ctx, "reattempt_wait", 5, time.Second),
 	}
+	if am.AsBool(ctx, "use_fw_targets_from_inventory", false) {
+		req.APTarget = info.GetChromeos().GetFirmwareInfo().GetApTarget()
+		req.ECTarget = info.GetChromeos().GetFirmwareInfo().GetEcTarget()
+	}
 	err = firmware.InstallFirmwareImage(ctx, req, info.NewLogger())
 	return errors.Annotate(err, mn).Err()
 }

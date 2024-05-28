@@ -200,6 +200,10 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		DownloadImageReattemptCount: actionArgs.AsInt(ctx, "reattempt_count", 3),
 		DownloadImageReattemptWait:  actionArgs.AsDuration(ctx, "reattempt_wait", 5, time.Second),
 	}
+	if actionArgs.AsBool(ctx, "use_fw_targets_from_inventory", false) {
+		req.APTarget = info.GetChromeos().GetFirmwareInfo().GetApTarget()
+		req.ECTarget = info.GetChromeos().GetFirmwareInfo().GetEcTarget()
+	}
 	logger := info.NewLogger()
 	if err := firmware.InstallFirmwareImage(ctx, req, logger); err != nil {
 		logger.Debugf("Update firmware image: failed to run updater. Error: %s", err)

@@ -56,6 +56,10 @@ type InstallFirmwareImageRequest struct {
 	// Board and model of the DUT.
 	Board string
 	Model string
+	// Firmware targets from inventory.
+	// Use this target first if provided.
+	APTarget string
+	ECTarget string
 
 	// Hwid of the DUT.
 	Hwid string
@@ -343,7 +347,7 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	// Candidate files contains new and old format names.
 	// New: fw_target/ec.bin
 	// Old: ./fw_target/ec.bin
-	candidatesFiles := getFirmwareImageCandidates(ctx, req, []string{"%s/ec.bin", "./%s/ec.bin"}, log)
+	candidatesFiles := getFirmwareImageCandidates(ctx, req, req.ECTarget, []string{"%s/ec.bin", "./%s/ec.bin"}, log)
 	// Some old boards has only one image with vanilla naming in their firmware artifacts.
 	candidatesFiles = append(candidatesFiles, "ec.bin", "./ec.bin")
 
@@ -408,7 +412,7 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	// New: image-fw_target.bin
 	// Old: ./image-fw_target.bin
 	imageNamePatterns := []string{"image-%s.bin", "./image-%s.bin"}
-	candidatesFiles := getFirmwareImageCandidates(ctx, req, imageNamePatterns, log)
+	candidatesFiles := getFirmwareImageCandidates(ctx, req, req.APTarget, imageNamePatterns, log)
 	// Some old boards has only one image with vanilla naming in their firmware artifacts.
 	candidatesFiles = append(candidatesFiles, "image.bin", "./image.bin")
 	// TODO(b/269342655) Remove this temporary fix for brya model once the bug closed.
@@ -558,7 +562,7 @@ func getFirmwareTargetFromDUT(ctx context.Context, run components.Runner, log lo
 //
 // If a candidate found in (1) or (2), then it will be the only candidate we returns.
 // Candidates generated based on (3)-(6) will be all included in a slice based above rule order.
-func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRequest, imageNamePatterns []string, log logger.Logger) []string {
+func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRequest, fwTarget string, imageNamePatterns []string, log logger.Logger) []string {
 	run := req.targetHostRunner()
 	candidates := []string{}
 	generateCandidateByImageNamePatterns := func(m string) {
@@ -569,6 +573,12 @@ func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRe
 	if req.CandidateFirmwareTarget != "" {
 		log.Debugf("Firmware target override by CandidateFirmwareTarget, new firmware target: %s", req.CandidateFirmwareTarget)
 		generateCandidateByImageNamePatterns(req.CandidateFirmwareTarget)
+		// We don't need to try other candidates if an override is detected.
+		return candidates
+	}
+	if fwTarget != "" {
+		log.Debugf("Firmware target override by fwTraget, new firmware target: %s", fwTarget)
+		generateCandidateByImageNamePatterns(fwTarget)
 		// We don't need to try other candidates if an override is detected.
 		return candidates
 	}
