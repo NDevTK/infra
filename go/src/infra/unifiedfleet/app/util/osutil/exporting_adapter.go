@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 
@@ -72,6 +73,18 @@ var noArcBoardMap = map[string]bool{
 
 var appMap = map[string]bool{
 	"hotrod": true,
+}
+
+// pasitComponentsMap are the components allowed to be included as swarming labels in PASIT testbeds.
+var pasitComponentsMap = map[labapi.PasitHost_Device_Type]bool{
+	labapi.PasitHost_Device_DOCKING_STATION: true,
+	labapi.PasitHost_Device_MONITOR:         true,
+	labapi.PasitHost_Device_CAMERA:          true,
+	labapi.PasitHost_Device_STORAGE:         true,
+	labapi.PasitHost_Device_HID:             true,
+	labapi.PasitHost_Device_NETWORK:         true,
+	labapi.PasitHost_Device_HEADPHONE:       true,
+	labapi.PasitHost_Device_SPEAKER:         true,
 }
 
 type attributes []*inventory.KeyValue
@@ -211,6 +224,21 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 
 	p.SmartUsbhub = &(d.SmartUsbhub)
 	c.StarfishSlotMapping = &(d.StarfishSlotMapping)
+
+	if h := d.GetPasitHost(); h != nil {
+		count := make(map[labapi.PasitHost_Device_Type]int)
+		p.PasitComponents = []string{}
+		for _, dev := range h.GetDevices() {
+			dType := dev.GetType()
+			// Skip not allowlisted components.
+			if !pasitComponentsMap[dType] {
+				continue
+			}
+
+			count[dType]++
+			p.PasitComponents = append(p.PasitComponents, fmt.Sprintf("%v-%d", dType, count[dType]))
+		}
+	}
 }
 
 func setServoTopology(p *inventory.Peripherals, st *chromeosLab.ServoTopology) {
