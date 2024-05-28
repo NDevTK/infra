@@ -171,7 +171,7 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 	}
 
 	timeNow := time.Now()
-	if record.ExpirationTime.Before(timeNow) {
+	if !record.ReleasedTime.IsZero() && record.ReleasedTime.Before(timeNow) {
 		logging.Debugf(ctx, "ReleaseDevice: leased device was already released")
 		return &api.ReleaseDeviceResponse{
 			LeaseId: r.GetLeaseId(),
