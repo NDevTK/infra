@@ -5,6 +5,8 @@
 package state
 
 import (
+	"sync"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
@@ -22,25 +24,31 @@ type TemplateRequestRecorder interface {
 // templateRequestState is the implementation of TemplateRequestRecorder. It
 // uses a map to track the state.
 type templateRequestState struct {
-	state map[string]*api.StartTemplatedContainerRequest
+	state *sync.Map
 }
 
 // newTemplateRequestState returns an instance of templateRequestState
 func newTemplateRequestState() TemplateRequestRecorder {
-	return &templateRequestState{state: make(map[string]*api.StartTemplatedContainerRequest)}
+	return &templateRequestState{
+		state: new(sync.Map),
+	}
 }
 
 func (t *templateRequestState) Add(containerId string, request *api.StartTemplatedContainerRequest) {
-	t.state[containerId] = request
+	t.state.Store(containerId, request)
 }
 
 func (t *templateRequestState) Exist(containerId string) bool {
-	if _, ok := t.state[containerId]; ok {
+	if _, ok := t.state.Load(containerId); ok {
 		return true
 	}
 	return false
 }
 
 func (t *templateRequestState) Get(containerId string) *api.StartTemplatedContainerRequest {
-	return t.state[containerId]
+	request, ok := t.state.Load(containerId)
+	if !ok {
+		return nil
+	}
+	return request.(*api.StartTemplatedContainerRequest)
 }
