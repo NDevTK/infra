@@ -14,10 +14,11 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/pasit_host.proto";
 
 // This proto defines setup labels in lab config of a DUT.
 
-// Peripherals of device. Next Tag: 22
+// Peripherals of device. Next Tag: 23
 message Peripherals {
   Servo servo = 1;
   Chameleon chameleon = 2;
@@ -57,6 +58,8 @@ message Peripherals {
   AudioLatencyToolkit audio_latency_toolkit = 19;
   // Indicate if the DUT uses Dolos as a battery replacement
   Dolos dolos = 20;
+  // The host and topology used in peripheral interop test beds.
+  chromiumos.test.lab.api.PasitHost pasit_host = 23;
 }
 
 
