@@ -7,9 +7,12 @@ package model
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	"go.chromium.org/luci/common/logging"
+
+	"infra/device_manager/internal/database"
 )
 
 // DeviceLeaseRecordData is used to pass data to the HTML template.
@@ -181,6 +184,123 @@ func GetDeviceLeaseRecordByIdemKey(ctx context.Context, db *sql.DB, idemKey stri
 
 	logging.Debugf(ctx, "GetDeviceLeaseRecordByIdemKey: success: %v", record)
 	return record, nil
+}
+
+// ListLeases retrieves DeviceLeaseRecords with pagination.
+func ListLeases(ctx context.Context, db *sql.DB, pageToken database.PageToken, pageSize int, filter string) ([]DeviceLeaseRecord, database.PageToken, error) {
+	// handle potential errors for negative page numbers or page sizes
+	if pageSize <= 0 {
+		pageSize = database.DefaultPageSize
+	}
+
+	query, args, err := buildListLeasesQuery(ctx, pageToken, pageSize, filter)
+	if err != nil {
+		return nil, "", fmt.Errorf("ListLeases: %w", err)
+	}
+
+	logging.Debugf(ctx, "ListLeases: running query: %s", query)
+	rows, err := db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, "", fmt.Errorf("ListLeases: %w", err)
+	}
+	defer rows.Close()
+
+	var results []DeviceLeaseRecord
+	for rows.Next() {
+		var (
+			lease           DeviceLeaseRecord
+			leasedTime      sql.NullTime
+			releasedTime    sql.NullTime
+			expirationTime  sql.NullTime
+			lastUpdatedTime sql.NullTime
+		)
+
+		err := rows.Scan(
+			&lease.ID,
+			&lease.DeviceID,
+			&lease.DeviceAddress,
+			&lease.DeviceType,
+			&lease.OwnerID,
+			&leasedTime,
+			&releasedTime,
+			&expirationTime,
+			&lastUpdatedTime,
+		)
+		if err != nil {
+			return nil, "", fmt.Errorf("ListLeases: %w", err)
+		}
+
+		// handle possible null times
+		if leasedTime.Valid {
+			lease.LeasedTime = leasedTime.Time
+		}
+		if releasedTime.Valid {
+			lease.ReleasedTime = releasedTime.Time
+		}
+		if expirationTime.Valid {
+			lease.ExpirationTime = expirationTime.Time
+		}
+		if lastUpdatedTime.Valid {
+			lease.LastUpdatedTime = lastUpdatedTime.Time
+		}
+
+		results = append(results, lease)
+	}
+
+	if err := rows.Close(); err != nil {
+		return nil, "", fmt.Errorf("ListLeases: %w", err)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, "", fmt.Errorf("ListLeases: %w", err)
+	}
+
+	// truncate results and use last Device ID as next page token
+	var nextPageToken database.PageToken
+	if len(results) > pageSize {
+		lastDevice := results[pageSize-1]
+		nextPageToken = database.EncodePageToken(ctx, lastDevice.LeasedTime.Format(time.RFC3339Nano))
+		results = results[0:pageSize] // trim results to page size
+	}
+	return results, nextPageToken, nil
+}
+
+// buildListLeasesQuery builds a ListLeases query using given params.
+func buildListLeasesQuery(ctx context.Context, pageToken database.PageToken, pageSize int, filter string) (string, []interface{}, error) {
+	var queryArgs []interface{}
+	query := `
+		SELECT
+			id,
+			device_id,
+			device_address,
+			device_type,
+			owner_id,
+			leased_time,
+			released_time,
+			expiration_time,
+			last_updated_time
+		FROM "DeviceLeaseRecords"`
+
+	if pageToken != "" {
+		decodedTime, err := database.DecodePageToken(ctx, pageToken)
+		if err != nil {
+			return "", queryArgs, fmt.Errorf("buildListLeasesQuery: %w", err)
+		}
+		filter = fmt.Sprintf("leased_time > %s%s", decodedTime, func() string {
+			if filter == "" {
+				return "" // No additional filter provided
+			}
+			return " AND " + filter
+		}())
+	}
+
+	queryFilter, filterArgs := database.BuildQueryFilter(ctx, filter)
+	query += queryFilter + fmt.Sprintf(`
+		ORDER BY leased_time
+		LIMIT $%d;`, len(filterArgs)+1)
+	filterArgs = append(filterArgs, pageSize+1) // fetch one extra to check for 'next page'
+
+	return query, filterArgs, nil
 }
 
 // UpdateDeviceLeaseRecord updates a lease record in a transaction.
