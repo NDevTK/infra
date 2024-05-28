@@ -164,6 +164,8 @@ message GetCostResultRequest {
   string device_id = 1;
   string hostname = 2;
   bool force_update = 3;
+  // forgive missing entries forgives entries that are missing.
+  bool forgive_missing_entries = 4;
 }
 
 // GetCostResultResponse is the cost detail information obtained by GetCostResult.
@@ -198,7 +200,10 @@ message PersistToBigqueryResponse {
 };
 
 // RepopulateCacheRequest doesn't contain any information. We always persist the entire cache.
-message RepopulateCacheRequest {};
+message RepopulateCacheRequest {
+  // forgive missing entries forgives entries that are missing.
+  bool forgive_missing_entries = 1;
+};
 
 // RepopulateCacheResponse records the result of repopulating the cache.
 message RepopulateCacheResponse {

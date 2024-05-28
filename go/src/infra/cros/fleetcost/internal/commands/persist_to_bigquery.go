@@ -21,30 +21,28 @@ import (
 	"infra/cros/fleetcost/internal/site"
 )
 
-// RepopulateCacheCommand repopulates the cache.
-var RepopulateCacheCommand *subcommands.Command = &subcommands.Command{
-	UsageLine: "repopulate-cache [options...]",
-	ShortDesc: "Repopulate the cache",
-	LongDesc:  "Repopulate the cache",
+// PersistToBigqueryCommand persists to BigQuery.
+var PersistToBigqueryCommand *subcommands.Command = &subcommands.Command{
+	UsageLine: "persist-to-bigquery [options...]",
+	ShortDesc: "Persist to bigquery",
+	LongDesc:  "Persist to bigquery",
 	CommandRun: func() subcommands.CommandRun {
-		c := &repopulateCacheCommand{}
+		c := &persistToBigqueryCommand{}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
-		c.Flags.BoolVar(&c.forgiveMissingEntries, "forgive", false, "forgive missing entries")
 		return c
 	},
 }
 
-type repopulateCacheCommand struct {
+type persistToBigqueryCommand struct {
 	subcommands.CommandRunBase
-	authFlags             authcli.Flags
-	commonFlags           site.CommonFlags
-	forgiveMissingEntries bool
+	authFlags   authcli.Flags
+	commonFlags site.CommonFlags
 }
 
-// Run is the main entrypoint for calling the RepopulateCache RPC.
-func (c *repopulateCacheCommand) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+// Run is the main entrypoint for calling the PersistToBigqueryCommand RPC.
+func (c *persistToBigqueryCommand) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, c, env)
 	if err := c.innerRun(ctx, a); err != nil {
 		cmdlib.PrintError(a, err)
@@ -53,17 +51,17 @@ func (c *repopulateCacheCommand) Run(a subcommands.Application, args []string, e
 	return 0
 }
 
-func (c *repopulateCacheCommand) innerRun(ctx context.Context, a subcommands.Application) error {
+func (c *persistToBigqueryCommand) innerRun(ctx context.Context, a subcommands.Application) error {
 	host, err := c.commonFlags.Host()
 	if err != nil {
-		return errors.Annotate(err, "get cost result command").Err()
+		return errors.Annotate(err, "persist to bigquery").Err()
 	}
 	var httpClient *http.Client
 	if !c.commonFlags.HTTP() {
 		var err error
 		httpClient, err = getSecureClient(ctx, host, c.authFlags)
 		if err != nil {
-			return errors.Annotate(err, "get cost result").Err()
+			return errors.Annotate(err, "persist to bigquery").Err()
 		}
 	}
 	prpcClient := &prpc.Client{
@@ -75,13 +73,13 @@ func (c *repopulateCacheCommand) innerRun(ctx context.Context, a subcommands.App
 		},
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
-	request := &fleetcostAPI.RepopulateCacheRequest{
-		ForgiveMissingEntries: c.forgiveMissingEntries,
+	request := &fleetcostAPI.PersistToBigqueryRequest{
+		Readonly: true,
 	}
-	resp, err := fleetCostClient.RepopulateCache(ctx, request)
+	resp, err := fleetCostClient.PersistToBigquery(ctx, request)
 	if err != nil {
-		return errors.Annotate(err, "repopulate cache").Err()
+		return errors.Annotate(err, "persist to bigquery").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "repopulate cache").Err()
+	return errors.Annotate(err, "persist to bigquery").Err()
 }

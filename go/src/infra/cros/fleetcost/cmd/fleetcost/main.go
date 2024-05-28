@@ -34,6 +34,7 @@ func getApplication() *cli.Application {
 			commands.UpdateCostIndicatorCommand,
 			commands.DeleteCostIndicatorCommand,
 			commands.RepopulateCacheCommand,
+			commands.PersistToBigqueryCommand,
 			subcommands.Section("Cost Results"),
 			commands.GetCostResultCommand,
 			subcommands.Section("Debugging"),

@@ -41,7 +41,7 @@ func TestGetServoCost(t *testing.T) {
 		panic(err)
 	}
 
-	cost, err := controller.GetServoCost(tf.Ctx, "servo_v4_with_servo_micro_and_ccd_cr50", fleetcostpb.Location_LOCATION_ALL)
+	cost, err := controller.GetServoCost(tf.Ctx, "servo_v4_with_servo_micro_and_ccd_cr50", fleetcostpb.Location_LOCATION_ALL, false)
 
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
@@ -101,7 +101,7 @@ func TestCalculateCostForSingleChromeosDut(t *testing.T) {
 		panic(err)
 	}
 
-	resp, err := controller.CalculateCostForSingleChromeosDut(tf.Ctx, tf.MockUFS, req)
+	resp, err := controller.CalculateCostForSingleChromeosDut(tf.Ctx, tf.MockUFS, req, false)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}

@@ -9,6 +9,7 @@ import (
 	"math"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
@@ -16,8 +17,8 @@ import (
 	"infra/cros/fleetcost/internal/utils"
 )
 
-// GetCostIndicatorValue gets the value of a cost indicator, potentially falling back/
-func GetCostIndicatorValue(ctx context.Context, attribute *IndicatorAttribute, usefallbacks bool) (float64, error) {
+// GetCostIndicatorValue gets the value of a cost indicator, potentially falling back.
+func GetCostIndicatorValue(ctx context.Context, attribute *IndicatorAttribute, usefallbacks bool, forgiveMissingEntries bool) (float64, error) {
 	if !usefallbacks {
 		return GetCostIndicatorValueDirectly(ctx, attribute)
 	}
@@ -37,6 +38,12 @@ func GetCostIndicatorValue(ctx context.Context, attribute *IndicatorAttribute, u
 		}
 
 	}
+
+	if forgiveMissingEntries {
+		logging.Debugf(ctx, "forgiving missing attribute: %q", attribute.FriendlyString())
+		return 0.0, nil
+	}
+
 	return math.NaN(), datastore.ErrNoSuchEntity
 }
 
