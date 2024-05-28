@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"sync"
 
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -538,13 +539,24 @@ func scheduleBatches(batches []*ctpEventBatch, isProd, dryRun bool, projectID st
 		return err
 	}
 
-	common.Stdout.Printf("scheduling %d batches to BB", len(batches))
+	common.Stdout.Printf("Scheduling %d batches to BB", len(batches))
+	var wg sync.WaitGroup
 	for _, batch := range batches {
-		err := handleBatch(schedulerClient, publishClient, batch, fillEventResponse, publishEventsToPubSub)
-		if err != nil {
-			common.Stderr.Println(err)
-		}
+		wg.Add(1)
+		go func(wg *sync.WaitGroup, schedulerClient buildbucket.Scheduler, publishClient pubsub.PublishClient, batch *ctpEventBatch) {
+			defer wg.Done()
+
+			err := handleBatch(schedulerClient, publishClient, batch, fillEventResponse, publishEventsToPubSub)
+			if err != nil {
+				common.Stderr.Println(err)
+			}
+
+		}(&wg, schedulerClient, publishClient, batch)
 
 	}
+
+	common.Stdout.Println("Waiting for batches to finish scheduling...")
+	wg.Wait()
+
 	return nil
 }
