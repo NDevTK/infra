@@ -16,9 +16,6 @@ import (
 	"infra/cros/satlab/common/site"
 )
 
-// BUG_ID is a key for the run suite tag.
-const BUG_ID = "bug_id"
-
 // RunStorageQual run a storage qualification suite
 func (s *SatlabRpcServiceServer) RunStorageQual(
 	ctx context.Context,
@@ -49,7 +46,8 @@ func (s *SatlabRpcServiceServer) RunStorageQual(
 		Pool:      in.GetPool(),
 		AddedDims: parseDims(in.GetDims()),
 		Tags: map[string]string{
-			BUG_ID: bugId,
+			site.BugIDTag:     bugId,
+			site.QualRunIDTag: fmt.Sprintf("%d", testRunId),
 		},
 		TRV2:          true,
 		CFT:           true,

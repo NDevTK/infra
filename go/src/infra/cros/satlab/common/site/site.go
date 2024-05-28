@@ -171,6 +171,8 @@ const (
 	TestPlan                  = "testplan"
 	TestPlanIDTag             = "test-plan-id"
 	TestTypeTag               = "test-type"
+	BugIDTag                  = "bug_id"
+	QualRunIDTag              = "qual_run_id"
 	MiloSite                  = "http://ci.chromium.org/b/"
 	TesthausURLTemplate       = "https://tests.chromeos.goog/p/chromeos/search?union=AND&viewMode=List&"
 	BuildBucketID             = "buildbucket_id"
