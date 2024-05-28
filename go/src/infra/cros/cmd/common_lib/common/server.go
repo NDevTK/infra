@@ -51,6 +51,8 @@ func getGrpcDialOpts(ctx context.Context, timeout time.Duration) []grpc.DialOpti
 		grpc.WithBlock(),
 		grpc.WithTimeout(timeout),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(32 * 1024 * 1024)),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(32 * 1024 * 1024)),
 	}
 
 	return opts
