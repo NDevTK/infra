@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "151dc2a5_153e8057",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-28T23:30:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "406d6961_826d9f30",
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "297cc3d8_ef011093",
@@ -66,6 +84,30 @@
       "writtenOn": "2024-05-23T22:39:00Z",
       "side": 1,
       "message": "nits: maybe rewrite to avoid duplicates?\n\n```\n// hostObj can be defined only test so, no validation needed for that.\nif c.hostObj \u003d\u003d nil {\n\tif c.hostFile \u003d\u003d \"\" {\n\t        return errors.Reason(errFileMissing).Err()\n\t}\n\n\tc.hostObj \u003d \u0026labapi.PasitHost{}\n\tif err :\u003d utils.ParseJSONFile(c.hostFile, c.hostObj); err !\u003d nil {\n\t\treturn errors.Annotate(err, \"json parse error\").Err()\n\t}\n}\nreturn c.validateNewHost()\n```",
+      "range": {
+        "startLine": 144,
+        "startChar": 1,
+        "endLine": 158,
+        "endChar": 27
+      },
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5eaded56_0516fa43",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-28T23:30:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "297cc3d8_ef011093",
       "range": {
         "startLine": 144,
         "startChar": 1,
@@ -127,6 +169,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "abce16a0_e828847e",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-28T23:30:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a6226f3_183fd49c",
+      "range": {
+        "startLine": 188,
+        "startChar": 2,
+        "endLine": 190,
+        "endChar": 3
+      },
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "12240304_c6378e92",
@@ -184,6 +250,30 @@
           ]
         }
       ],
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d532732c_bba4c930",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-28T23:30:39Z",
+      "side": 1,
+      "message": "Added normalize function+cli arg.",
+      "parentUuid": "12240304_c6378e92",
+      "range": {
+        "startLine": 199,
+        "startChar": 8,
+        "endLine": 199,
+        "endChar": 17
+      },
       "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
