@@ -4537,6 +4537,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Device is SSHable",
+				"Not Satlab device",
 			},
 			ExecName:               "cache_download_check",
 			RunControl:             RunControl_ALWAYS_RUN,

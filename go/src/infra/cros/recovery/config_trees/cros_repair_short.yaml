@@ -5066,6 +5066,9 @@ plans:
         - name: Verify access to cache (Allow to fail) ('cache_download_check') (ALWAYS_RUN)
           conditions:
             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+            - name: Not Satlab device ('sample_fail')
+              conditions:
+                - name: Is Satlab device ('dut_regex_name_match')
         - name: Read bootId ('cros_read_bootid')
           recoveries:
             - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
