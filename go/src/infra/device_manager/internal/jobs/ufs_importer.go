@@ -17,6 +17,7 @@ import (
 
 	shivasUtil "infra/cmd/shivas/utils"
 	"infra/device_manager/internal/controller"
+	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/frontend"
 	"infra/device_manager/internal/model"
@@ -165,12 +166,12 @@ func listSchedulingUnits(ctx context.Context, ic ufsAPI.FleetClient, pageSize in
 // getAllDMDevices gets all Devices in the Device Manager DB
 func getAllDMDevices(ctx context.Context, db *sql.DB) ([]model.Device, error) {
 	var (
-		pageToken model.PageToken
+		pageToken database.PageToken
 		devices   []model.Device
 	)
 
 	for {
-		res, token, err := model.ListDevices(ctx, db, pageToken, model.DefaultPageSize, "")
+		res, token, err := model.ListDevices(ctx, db, pageToken, database.DefaultPageSize, "")
 		if err != nil {
 			return nil, err
 		}

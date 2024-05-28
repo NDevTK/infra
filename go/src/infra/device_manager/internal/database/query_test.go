@@ -75,6 +75,18 @@ func TestBuildQueryFilter(t *testing.T) {
 			wantArgs:  []interface{}{"dut-name", "2024-05-01"},
 		},
 		{
+			name:      "single operator with multiple operands",
+			filter:    "created_time IS NOT NULL",
+			wantQuery: "WHERE created_time IS NOT NULL",
+			wantArgs:  nil,
+		},
+		{
+			name:      "mixed operators with multiple operands",
+			filter:    "name = dut-name AND created_time IS NOT NULL",
+			wantQuery: "WHERE name = $1 AND created_time IS NOT NULL",
+			wantArgs:  []interface{}{"dut-name"},
+		},
+		{
 			name:      "extra AND",
 			filter:    "name = dut-name AND ",
 			wantQuery: "WHERE name = $1",

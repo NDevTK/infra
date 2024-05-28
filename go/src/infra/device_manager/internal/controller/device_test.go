@@ -26,6 +26,7 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/common/testing/typed"
 
+	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/model"
 	"infra/libs/skylab/inventory/swarming"
 )
@@ -336,7 +337,7 @@ func TestListDevices(t *testing.T) {
 				NextPageToken: "MjAyNC0wMS0wMVQxMjowMDowMFo=",
 			})
 
-			decodedToken, err := model.DecodePageToken(ctx, model.PageToken(devices.GetNextPageToken()))
+			decodedToken, err := database.DecodePageToken(ctx, database.PageToken(devices.GetNextPageToken()))
 			So(err, ShouldBeNil)
 			So(decodedToken, ShouldEqual, createdTime.Format(time.RFC3339Nano))
 		})

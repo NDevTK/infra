@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
+	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/model"
 	"infra/libs/skylab/inventory/swarming"
 )
@@ -37,7 +38,7 @@ func GetDevice(ctx context.Context, db *sql.DB, idType model.DeviceIDType, devic
 
 // ListDevices lists Devices from the db based on filters.
 func ListDevices(ctx context.Context, db *sql.DB, r *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
-	devices, nextPageToken, err := model.ListDevices(ctx, db, model.PageToken(r.GetPageToken()), int(r.GetPageSize()), r.GetFilter())
+	devices, nextPageToken, err := model.ListDevices(ctx, db, database.PageToken(r.GetPageToken()), int(r.GetPageSize()), r.GetFilter())
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,6 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -17,8 +16,6 @@ import (
 
 	"infra/device_manager/internal/database"
 )
-
-const DefaultPageSize = 1000
 
 // Device contains a single row from the Devices table in the database.
 type Device struct {
@@ -40,9 +37,6 @@ const (
 	IDTypeHostname DeviceIDType = "hostname"
 	IDTypeDutID    DeviceIDType = "dut_id"
 )
-
-// PageToken is a string containing a page token to a database query.
-type PageToken string
 
 // LabelValues is the struct containing an array of label values.
 type LabelValues struct {
@@ -143,10 +137,10 @@ func GetDeviceByID(ctx context.Context, db *sql.DB, idType DeviceIDType, deviceI
 }
 
 // ListDevices retrieves Devices with pagination.
-func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize int, filter string) ([]Device, PageToken, error) {
+func ListDevices(ctx context.Context, db *sql.DB, pageToken database.PageToken, pageSize int, filter string) ([]Device, database.PageToken, error) {
 	// handle potential errors for negative page numbers or page sizes
 	if pageSize <= 0 {
-		pageSize = DefaultPageSize
+		pageSize = database.DefaultPageSize
 	}
 
 	query, args, err := buildListDevicesQuery(ctx, pageToken, pageSize, filter)
@@ -202,17 +196,17 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken PageToken, pageSize 
 	}
 
 	// truncate results and use last Device ID as next page token
-	var nextPageToken PageToken
+	var nextPageToken database.PageToken
 	if len(results) > pageSize {
 		lastDevice := results[pageSize-1]
-		nextPageToken = EncodePageToken(ctx, lastDevice.CreatedTime.Format(time.RFC3339Nano))
+		nextPageToken = database.EncodePageToken(ctx, lastDevice.CreatedTime.Format(time.RFC3339Nano))
 		results = results[0:pageSize] // trim results to page size
 	}
 	return results, nextPageToken, nil
 }
 
 // buildListDevicesQuery builds a ListDevices query using given params.
-func buildListDevicesQuery(ctx context.Context, pageToken PageToken, pageSize int, filter string) (string, []interface{}, error) {
+func buildListDevicesQuery(ctx context.Context, pageToken database.PageToken, pageSize int, filter string) (string, []interface{}, error) {
 	var queryArgs []interface{}
 	query := `
 		SELECT
@@ -227,7 +221,7 @@ func buildListDevicesQuery(ctx context.Context, pageToken PageToken, pageSize in
 		FROM "Devices"`
 
 	if pageToken != "" {
-		decodedTime, err := DecodePageToken(ctx, pageToken)
+		decodedTime, err := database.DecodePageToken(ctx, pageToken)
 		if err != nil {
 			return "", queryArgs, fmt.Errorf("buildListDevicesQuery: %w", err)
 		}
@@ -336,20 +330,6 @@ func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 
 	logging.Debugf(ctx, "UpsertDevice: Device %s upserted successfully (%d row affected)", device.ID, rowsAffected)
 	return nil
-}
-
-// EncodePageToken encodes a Device CreatedTime as a base64 PageToken.
-func EncodePageToken(ctx context.Context, createdTime string) PageToken {
-	return PageToken(base64.StdEncoding.EncodeToString([]byte(createdTime)))
-}
-
-// DecodePageToken decodes a base64 PageToken as a string.
-func DecodePageToken(ctx context.Context, token PageToken) (string, error) {
-	createdTime, err := base64.StdEncoding.DecodeString(string(token))
-	if err != nil {
-		return "", fmt.Errorf("DecodePageToken: %w", err)
-	}
-	return string(createdTime), nil
 }
 
 // DUTID returns the DUT ID (i.e. Swarming asset tag) for the given device.

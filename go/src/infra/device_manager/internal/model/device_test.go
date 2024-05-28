@@ -19,6 +19,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/common/testing/typed"
+
+	"infra/device_manager/internal/database"
 )
 
 func TestGetDeviceByID(t *testing.T) {
@@ -299,7 +301,7 @@ func TestListDevices(t *testing.T) {
 
 			devices, nextPageToken, err := ListDevices(ctx, db, "", pageSize, "")
 			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldEqual, PageToken("MjAyNC0wMS0wMVQxMjowMDowMFo="))
+			So(nextPageToken, ShouldEqual, database.PageToken("MjAyNC0wMS0wMVQxMjowMDowMFo="))
 			So(devices, ShouldEqual, []Device{
 				{
 					ID:            "test-device-1",
@@ -317,7 +319,7 @@ func TestListDevices(t *testing.T) {
 				},
 			})
 
-			decodedToken, err := DecodePageToken(ctx, PageToken(nextPageToken))
+			decodedToken, err := database.DecodePageToken(ctx, database.PageToken(nextPageToken))
 			So(err, ShouldBeNil)
 			So(decodedToken, ShouldEqual, createdTime.Format(time.RFC3339Nano))
 		})
@@ -388,7 +390,7 @@ func TestListDevices(t *testing.T) {
 
 			devices, nextPageToken, err := ListDevices(ctx, db, "", pageSize, "")
 			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldEqual, PageToken(""))
+			So(nextPageToken, ShouldEqual, database.PageToken(""))
 			So(devices, ShouldEqual, []Device{
 				{
 					ID:            "test-device-1",
@@ -479,9 +481,9 @@ func TestListDevices(t *testing.T) {
 				WithArgs(createdTime.Format(time.RFC3339Nano), pageSize+1).
 				WillReturnRows(rows)
 
-			devices, nextPageToken, err := ListDevices(ctx, db, PageToken(pageToken), pageSize, "")
+			devices, nextPageToken, err := ListDevices(ctx, db, database.PageToken(pageToken), pageSize, "")
 			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldEqual, PageToken(""))
+			So(nextPageToken, ShouldEqual, database.PageToken(""))
 			So(devices, ShouldEqual, []Device{
 				{
 					ID:            "test-device-2",
@@ -508,7 +510,7 @@ func Test_buildListDevicesQuery(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		pageToken  PageToken
+		pageToken  database.PageToken
 		pageSize   int
 		filter     string
 		wantQuery  string
