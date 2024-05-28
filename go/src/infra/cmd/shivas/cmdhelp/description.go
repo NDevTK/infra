@@ -699,7 +699,6 @@ This file must contain required machine field and optional nics/drac field.
 
 Example Browser machine creation request:
 {
-  "machine": {
     "name": "cr254-32-3930",
     "serialNumber": "92YL673",
     "location": {
@@ -729,7 +728,6 @@ Example Browser machine creation request:
         }
       ]
     }
-  }
 }
 
 
