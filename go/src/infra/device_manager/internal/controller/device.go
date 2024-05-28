@@ -92,6 +92,7 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device mod
 		DeviceId:         dutID,
 		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, stringToDeviceState(ctx, device.DeviceState)),
 		DeviceDimensions: labelsToSwarmingDims(ctx, device.SchedulableLabels),
+		DeviceName:       device.ID,
 	})
 	if err != nil {
 		return fmt.Errorf("protojson.Marshal err: %w", err)
