@@ -195,6 +195,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e5904f26_f1a2d629",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-28T23:36:35Z",
+      "side": 1,
+      "message": "do we need second case?",
+      "parentUuid": "abce16a0_e828847e",
+      "range": {
+        "startLine": 188,
+        "startChar": 2,
+        "endLine": 190,
+        "endChar": 3
+      },
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "12240304_c6378e92",
         "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
         "patchSetId": 15
