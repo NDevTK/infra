@@ -267,6 +267,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "39a6a7a1_a61a4215",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2024-05-29T01:11:46Z",
+      "side": 1,
+      "message": "\u003e what is example for multi-dut?\n\nMulti-DUT would involve multiple DUTs connected to a single switch so we can reuse the PASIT components between DUTs to minimize space requirements in the lab.\n\n\u003e will each dut has own pasit-host?\n\nThere would be one pasit-host topology but it would be shared between the DUTs. I.e. the same topology would be set for each DUT.\n\nThe DUTs don\u0027t need to really interact with each other, but it would be much easier to manage one topology definition shared between them than having multiple definitions scoped to each DUT in the testbed.",
+      "parentUuid": "35efc804_546740cb",
+      "range": {
+        "startLine": 188,
+        "startChar": 2,
+        "endLine": 190,
+        "endChar": 3
+      },
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "12240304_c6378e92",
         "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
         "patchSetId": 15
