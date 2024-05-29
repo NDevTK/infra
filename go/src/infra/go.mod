@@ -30,6 +30,7 @@ require (
 	github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1
 	github.com/bazelbuild/remote-apis v0.0.0-20240215191509-9ff14cecffe5
 	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240521192600-a5e60eb5cc47
+	github.com/beevik/etree v1.4.0
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/containerd/cgroups v1.0.4
 	github.com/danjacques/gofslock v0.0.0-20240212154529-d899e02bfe22
@@ -81,6 +82,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/ulikunitz/xz v0.5.10
 	github.com/waigani/diffparser v0.0.0-20190828052634-7391f219313d
+	github.com/xinsnake/go-http-digest-auth-client v0.6.0
 	go.chromium.org/chromiumos/config/go v0.0.0-20240309015314-b8a183866804
 	go.chromium.org/chromiumos/ctp v0.0.0-00010101000000-000000000000
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20240515181838-a7a5fd53a4ff
