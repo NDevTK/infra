@@ -291,6 +291,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "eb0729cd_3d4d38be",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2024-05-29T01:31:11Z",
+      "side": 1,
+      "message": "\u003e what is example for multi-dut?\nI was asking about example of pasit for that.\n\nso when we create PASIt it will be applied to each DUT? PARIS works with eahch dut separate and they are not shared.\n\nThat seems like instead or creating data under the DUT we should to create PASIT as a new host which will represent something? or add it only to scheduling object as that is what we have for multi-dut and it also can be used for a single dut.\n\nLet sync again and brainstorm on your case. please create a few examples.",
+      "parentUuid": "39a6a7a1_a61a4215",
+      "range": {
+        "startLine": 188,
+        "startChar": 2,
+        "endLine": 190,
+        "endChar": 3
+      },
+      "revId": "cda2b8c097897907f566ab926b71a09e5aa7c1c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "12240304_c6378e92",
         "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/pasit_host.go",
         "patchSetId": 15
