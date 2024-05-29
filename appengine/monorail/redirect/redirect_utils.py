@@ -17,6 +17,7 @@ PROJECT_REDIRECT_MAP = {
     'fuchsia': 'https://issues.fuchsia.dev',
     'gerrit': 'https://issues.gerritcodereview.com',
     'git': 'https://git.issues.gerritcodereview.com',
+    'libyuv': 'https://libyuv.issues.chromium.org',
     'pdfium': 'https://issues.chromium.org',
     'pigweed': 'https://issues.pigweed.dev',
     'skia': 'http://issues.skia.org',
