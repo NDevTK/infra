@@ -580,7 +580,7 @@ func (cmd *ScheduleTasksCmd) ObserveCmdStart(ctx context.Context) {
 }
 
 func (cmd *ScheduleTasksCmd) ObserveCmdEndSuccess(ctx context.Context) {
-	bqData := &analytics.BqData{Step: string(cmd.GetCommandType()), Status: analytics.Start, Duration: float32(time.Since(cmd.StartCmdTime).Seconds())}
+	bqData := &analytics.BqData{Step: string(cmd.GetCommandType()), Status: analytics.Success, Duration: float32(time.Since(cmd.StartCmdTime).Seconds())}
 	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
 }
 

@@ -148,14 +148,18 @@ func (cmd *GenerateTrv2RequestsCmd) Execute(ctx context.Context) error {
 	defer func() { step.End(err) }()
 
 	cmd.ObserveCmdStart(ctx)
+	cmd.ObserveEnumerationStart(ctx)
 
+	// Generate trv2 requests
 	if len(cmd.MiddledOutResp.TrReqs) == 0 {
+		cmd.ObserveCmdEndFailure(ctx)
 		err = cmd.ProcessEnumError(ctx, step)
 		return err
 	}
 
 	buildMap, err := cmd.GenerateRequests(ctx, step)
 	if len(buildMap) == 0 {
+		cmd.ObserveCmdEndFailure(ctx)
 		err = cmd.ProcessEnumError(ctx, step)
 		return err
 	}
@@ -354,7 +358,17 @@ func (cmd *GenerateTrv2RequestsCmd) ObserveCmdStart(ctx context.Context) {
 }
 
 func (cmd *GenerateTrv2RequestsCmd) ObserveCmdEndSuccess(ctx context.Context) {
-	bqData := &analytics.BqData{Step: string(cmd.GetCommandType()), Status: analytics.Start, Duration: float32(time.Since(cmd.StartCmdTime).Seconds())}
+	bqData := &analytics.BqData{Step: string(cmd.GetCommandType()), Status: analytics.Success, Duration: float32(time.Since(cmd.StartCmdTime).Seconds())}
+	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
+}
+
+func (cmd *GenerateTrv2RequestsCmd) ObserveCmdEndFailure(ctx context.Context) {
+	bqData := &analytics.BqData{Step: string(cmd.GetCommandType()), Status: analytics.Fail, Duration: float32(time.Since(cmd.StartCmdTime).Seconds())}
+	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
+}
+
+func (cmd *GenerateTrv2RequestsCmd) ObserveEnumerationStart(ctx context.Context) {
+	bqData := &analytics.BqData{Step: "Enumeration", Status: analytics.Start, Duration: float32(time.Since(cmd.StartCmdTime).Seconds())}
 	analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, bqData, cmd.InternalTestPlan, cmd.BuildState)
 }
 
