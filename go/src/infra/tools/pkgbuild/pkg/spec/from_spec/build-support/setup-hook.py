@@ -84,6 +84,7 @@ def setup(exe):
   import itertools
   import json
   import os
+  import pathlib
   import shutil
   import stat
 
@@ -128,17 +129,25 @@ def setup(exe):
 
   def pre_unpack(exe) -> bool:
     if exe.env.get('_3PP_FETCH_CHECKOUT_WORKFLOW'):
-      root = os.getcwd()
+      checkout = pathlib.Path('checkout').absolute()
+      vpython = pathlib.Path('vpython-root').absolute()
+
+      checkout.mkdir()
 
       args = json.loads(exe.env['fromSpecFetch'])
       script = pathlib.Path(exe.env['_3PP_DEF'], args[0])
       args[0] = str(script)
-      args.insert(0, 'vpython3' if script.suffix == '.py' else 'bash')
+      if script.suffix == '.py':
+        args = ['vpython3', '-vpython-root', str(vpython)] + args
+      else:
+        args = ['bash'] + args
       args.append('checkout')
-      args.append(root)
+      args.append(str(checkout))
 
       exe.execute_cmd(args)
-      exe.env[exe.ENV_SOURCES] = os.path.pathsep.join(os.listdir(root))
+
+      exe.env[exe.ENV_SOURCES] = os.path.pathsep.join(os.listdir(checkout))
+      os.chdir(checkout) # Move to checkout dir and use it as working directory.
     return True
 
   def post_unpack(exe) -> bool:
