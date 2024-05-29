@@ -71,12 +71,8 @@ func handler(w http.ResponseWriter, req *http.Request) {
 		if strings.HasPrefix(loc, "gs://chrome-goma-log") {
 			logPath := strings.TrimPrefix(loc, "gs://chrome-goma-log")
 			basename := path.Base(loc)
-			switch {
-			case strings.HasPrefix(basename, "ninja_log."):
+			if strings.HasPrefix(basename, "ninja_log.") {
 				http.Redirect(w, req, "/ninja_log"+logPath, http.StatusSeeOther)
-				return
-			case strings.HasPrefix(basename, "compiler_proxy."):
-				http.Redirect(w, req, "/compiler_proxy_log"+logPath, http.StatusSeeOther)
 				return
 			}
 		}

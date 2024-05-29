@@ -123,9 +123,6 @@ type Metadata struct {
 	// Env is environment variables.
 	Env map[string]string `json:"env"`
 
-	// CompilerProxyInfo is a path name of associated compiler_proxy.INFO log.
-	CompilerProxyInfo string `json:"compiler_proxy_info"`
-
 	// Jobs is number of parallel process in a build.
 	Jobs int `json:"jobs"`
 

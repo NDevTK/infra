@@ -40,9 +40,6 @@ handlers:
 - url: /ninja_log.*
   script: auto
   secure: always
-- url: /compiler_proxy_log.*
-  script: auto
-  secure: always
 - url: /_ah/push-handlers/.*
   script: auto
   login: admin

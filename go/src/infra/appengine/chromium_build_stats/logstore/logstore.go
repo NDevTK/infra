@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package logstore provides an access to storage of ninja_log and compiler_proxy.INFO log.
+// Package logstore provides an access to storage of ninja_log.
 package logstore
 
 import (

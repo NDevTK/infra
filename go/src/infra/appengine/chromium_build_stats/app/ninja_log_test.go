@@ -42,11 +42,6 @@ func TestNinjalogPath(t *testing.T) {
 			logPath: "",
 			isErr:   true,
 		},
-		{
-			reqPath: "/2014/09/08/build48-m1/compiler_proxy.build48-m1.chrome-bot.INFO.20140907-204617.14600.gz",
-			logPath: "",
-			isErr:   true,
-		},
 	}
 
 	for i, tc := range testCases {

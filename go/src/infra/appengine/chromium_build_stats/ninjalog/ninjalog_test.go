@@ -157,9 +157,8 @@ var (
 			"USER":    "chrome-bot",
 			"PATH":    "/home/chrome-bot/bin:/b/depot_tools:/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin",
 		},
-		CompilerProxyInfo: "/tmp/compiler_proxy.build48-m1.chrome-bot.log.INFO.20140907-203827.14676",
-		Jobs:              50,
-		Targets:           []string{"all"},
+		Jobs:    50,
+		Targets: []string{"all"},
 	}
 )
 
@@ -273,7 +272,7 @@ func TestParseWithMetadata(t *testing.T) {
 287	290	0	obj/third_party/angle/src/copy_scripts.actions_rules_copies.stamp	b211d373de72f455
 
 # end of ninja log
-{"build_id": 12345, "platform": "Linux", "argv": ["../../../scripts/compile.py", "--target", "Release", "--clobber", "--compiler=goma", "--", "all"], "exit": 0, "step_name": "compile", "env": {"LANG": "en_US.UTF-8", "SHELL": "/bin/bash", "HOME": "/home/chrome-bot", "PWD": "/b/build/Linux_x64/build", "LOGNAME": "chrome-bot", "USER": "chrome-bot", "PATH": "/home/chrome-bot/bin:/b/depot_tools:/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin" }, "compiler_proxy_info": "/tmp/compiler_proxy.build48-m1.chrome-bot.log.INFO.20140907-203827.14676", "cwd": "/b/build/Linux_x64/build/src", "compiler": "goma", "jobs": 50, "targets": ["all"]}
+{"build_id": 12345, "platform": "Linux", "argv": ["../../../scripts/compile.py", "--target", "Release", "--clobber", "--compiler=goma", "--", "all"], "exit": 0, "step_name": "compile", "env": {"LANG": "en_US.UTF-8", "SHELL": "/bin/bash", "HOME": "/home/chrome-bot", "PWD": "/b/build/Linux_x64/build", "LOGNAME": "chrome-bot", "USER": "chrome-bot", "PATH": "/home/chrome-bot/bin:/b/depot_tools:/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin" }, "cwd": "/b/build/Linux_x64/build/src", "compiler": "goma", "jobs": 50, "targets": ["all"]}
 `))
 	if err != nil {
 		t.Errorf(`Parse()=_, %#v; want=_, <nil>`, err)
